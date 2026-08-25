@@ -1,0 +1,14 @@
+node_modules/
+.next/
+dist/
+coverage/
+.env
+.env.*
+!.env.example
+!.env.test.example
+*.log
+*.tsbuildinfo
+.docker-cli/
+.payload-upstream/
+test-results/
+playwright-report/

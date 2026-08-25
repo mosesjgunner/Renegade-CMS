@@ -1,0 +1,11 @@
+.next
+node_modules
+src/payload-types.ts
+src/app/(payload)/admin/importMap.js
+package-lock.json
+next-env.d.ts
+.payload-upstream
+BUILD_PLAN.md.md
+renegade-cms-15-codex-prompts (1).md
+docs/research/*.md
+docs/tasks/m01-foundation/*.md

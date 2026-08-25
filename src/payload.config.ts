@@ -1,0 +1,211 @@
+import { postgresAdapter } from '@payloadcms/db-postgres'
+import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+import { buildConfig } from 'payload'
+
+import { Sites } from './collections/Sites'
+import { PageLayouts } from './collections/PageLayouts'
+import { SiteSettings } from './globals/SiteSettings'
+import { createUsersCollection } from './collections/Users'
+import {
+  CalendarEntries,
+  DiscussionPosts,
+  Discussions,
+  Forums,
+  ForumSections,
+} from './collections/Community'
+import {
+  Authors,
+  Brands,
+  Members,
+  LinkedIdentities,
+  MemberSessions,
+  IdentityTokens,
+  MemberRecoveryCodes,
+  IdentityAuditEvents,
+  Profiles,
+  Publications,
+  Relationships,
+  Spaces,
+} from './collections/Identity'
+import {
+  Albums,
+  ArticleFamilyContent,
+  Categories,
+  Content,
+  Events,
+  MarkdownConversionReports,
+  MediaAssets,
+  MediaUsages,
+  PreviewTokens,
+  RevisionRecords,
+  ScheduledPublishJobs,
+  Sections,
+  Series,
+  Sources,
+  Tags,
+  TaxonomyRedirects,
+  TimelineMemberships,
+  Timelines,
+  Topics,
+} from './collections/Publishing'
+import { loadConfig } from './modules/core/config'
+import { editorialTasks } from './modules/editorial/tasks'
+import { operationsTasks } from './modules/operations/tasks'
+import { seed } from './scripts/seed'
+import {
+  Books,
+  BookParts,
+  BookChapters,
+  BookEditions,
+  PodcastShows,
+  PodcastSeasons,
+  PodcastEpisodes,
+  VideoChannels,
+  VideoPlaylists,
+  Videos,
+  Interviews,
+  Livestreams,
+  TranscriptRevisions,
+  MediaJobs,
+  TtsOutputs,
+  GraphicDocuments,
+  MediaDerivatives,
+  EditSessions,
+  QuickCaptureDrafts,
+} from './collections/MediaPublishing'
+import { mediaTasks } from './modules/media/tasks'
+import {
+  Campaigns,
+  ExternalPosts,
+  SocialAccounts,
+  SocialCalendarEntries,
+  SocialDrafts,
+  SocialNetworkVariants,
+  SocialPublishAttempts,
+  SocialQueueItems,
+} from './collections/Social'
+import { socialTasks } from './modules/social/tasks'
+
+const dirname = path.dirname(fileURLToPath(import.meta.url))
+const config = loadConfig()
+const Users = createUsersCollection(config)
+
+export default buildConfig({
+  admin: {
+    user: Users.slug,
+    importMap: { baseDir: dirname },
+  },
+  bin: [
+    { key: 'seed', scriptPath: path.resolve(dirname, 'scripts/seed.ts') },
+    {
+      key: 'recover-installation',
+      scriptPath: path.resolve(dirname, 'scripts/recover-installation.ts'),
+    },
+  ],
+  collections: [
+    Users,
+    Sites,
+    PageLayouts,
+    Brands,
+    Members,
+    LinkedIdentities,
+    MemberSessions,
+    IdentityTokens,
+    MemberRecoveryCodes,
+    IdentityAuditEvents,
+    Profiles,
+    Spaces,
+    Authors,
+    Publications,
+    Relationships,
+    MediaAssets,
+    Sections,
+    Categories,
+    Topics,
+    Tags,
+    Series,
+    TaxonomyRedirects,
+    Content,
+    ArticleFamilyContent,
+    MarkdownConversionReports,
+    RevisionRecords,
+    PreviewTokens,
+    ScheduledPublishJobs,
+    Events,
+    Timelines,
+    TimelineMemberships,
+    Sources,
+    Albums,
+    MediaUsages,
+    Books,
+    BookParts,
+    BookChapters,
+    BookEditions,
+    PodcastShows,
+    PodcastSeasons,
+    PodcastEpisodes,
+    VideoChannels,
+    VideoPlaylists,
+    Videos,
+    Interviews,
+    Livestreams,
+    TranscriptRevisions,
+    MediaJobs,
+    TtsOutputs,
+    GraphicDocuments,
+    MediaDerivatives,
+    EditSessions,
+    QuickCaptureDrafts,
+    SocialAccounts,
+    SocialDrafts,
+    SocialNetworkVariants,
+    SocialQueueItems,
+    SocialPublishAttempts,
+    ExternalPosts,
+    Campaigns,
+    SocialCalendarEntries,
+    ForumSections,
+    Forums,
+    Discussions,
+    DiscussionPosts,
+    CalendarEntries,
+  ],
+  globals: [SiteSettings],
+  db: postgresAdapter({
+    idType: 'uuid',
+    migrationDir: path.resolve(dirname, 'migrations'),
+    pool: { connectionString: config.databaseUrl },
+    push: false,
+  }),
+  cors: [config.appUrl],
+  csrf: [config.appUrl],
+  editor: lexicalEditor(),
+  endpoints: [],
+  jobs: {
+    access: {
+      cancel: ({ req }) => req.user?.role === 'owner',
+      queue: ({ req }) => req.user?.role === 'owner',
+      run: ({ req }) => req.user?.role === 'owner',
+    },
+    deleteJobOnComplete: false,
+    enableConcurrencyControl: true,
+    jobsCollectionOverrides: ({ defaultJobsCollection }) => ({
+      ...defaultJobsCollection,
+      admin: {
+        ...defaultJobsCollection.admin,
+        group: 'System',
+        hidden: false,
+      },
+    }),
+    processingOrder: 'createdAt',
+    tasks: [...operationsTasks, ...editorialTasks, ...mediaTasks, ...socialTasks],
+  },
+  onInit: async (payload) => {
+    if (process.env.SEED_ON_INIT === 'true') await seed(payload)
+  },
+  secret: config.payloadSecret,
+  serverURL: config.appUrl,
+  typescript: { outputFile: path.resolve(dirname, 'payload-types.ts') },
+})
