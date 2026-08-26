@@ -180,3 +180,28 @@ export const analyticsRetention = {
   timezone: 'UTC',
   uniqueCount: 'daily salted anonymous/session hash; approximate across rollups',
 } as const
+
+/** Rollup workers process a bounded window of deduplicated events, never a historical raw-event scan. */
+export function rollupEvents(
+  events: readonly FirstPartyEvent[],
+  windowStart: string,
+  windowEnd: string,
+) {
+  const unique = new Map(
+    events
+      .filter((event) => event.occurredAt >= windowStart && event.occurredAt < windowEnd)
+      .map((event) => [event.dedupeKey, event]),
+  )
+  const byMetric = new Map<string, number>()
+  for (const event of unique.values()) {
+    const metric = goalForEvent(event) ? `goal:${goalForEvent(event)}` : event.eventType
+    byMetric.set(metric, (byMetric.get(metric) ?? 0) + 1)
+  }
+  return [...byMetric].map(([metric, value]) => ({
+    metric,
+    value: String(value),
+    windowStart,
+    windowEnd,
+    sourceEventCount: unique.size,
+  }))
+}

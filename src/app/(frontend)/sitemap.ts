@@ -6,10 +6,13 @@ import { canDiscoverPublic, type PublicState } from '@/modules/public/contracts'
 
 type SitemapContent = PublicState & { canonicalPath?: unknown; updatedAtEditorial?: unknown }
 
+export const dynamic = 'force-dynamic'
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const payload = await getPayload({ config })
   const base = process.env.APP_URL ?? 'http://localhost:3000'
-  const content = await payload.find({
+  try {
+    const payload = await getPayload({ config })
+    const content = await payload.find({
     collection: 'content',
     where: { status: { in: ['published', 'updated'] } },
     limit: 1000,
@@ -30,4 +33,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         },
       ]
     })
+  } catch {
+    return [{ url: base, lastModified: new Date() }]
+  }
 }

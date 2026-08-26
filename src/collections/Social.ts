@@ -210,9 +210,55 @@ export const Campaigns: CollectionConfig = {
     { name: 'title', type: 'text', required: true },
     { name: 'sourceContent', type: 'relationship', relationTo: 'content' },
     { name: 'status', type: 'select', required: true, defaultValue: 'draft', options: states },
+    {
+      name: 'visibility',
+      type: 'select',
+      required: true,
+      defaultValue: 'public',
+      options: ['public', 'private'],
+    },
     { name: 'launchAt', type: 'date' },
+    { name: 'startAt', type: 'date' },
+    { name: 'endAt', type: 'date' },
     { name: 'timeZone', type: 'text' },
+    {
+      name: 'goal',
+      type: 'json',
+      admin: {
+        description: 'Canonical goal amount/currency and transparent public progress snapshot.',
+      },
+    },
     { name: 'goals', type: 'json' },
+    { name: 'milestones', type: 'json', defaultValue: [] },
+    {
+      name: 'updates',
+      type: 'json',
+      defaultValue: [],
+      admin: {
+        description:
+          'Each update includes visibility; private content must not be exposed by public projections.',
+      },
+    },
+    {
+      name: 'tiers',
+      type: 'json',
+      defaultValue: [],
+      admin: {
+        description: 'Reward tiers link existing Products and entitlement/fulfillment references.',
+      },
+    },
+    {
+      name: 'progress',
+      type: 'json',
+      defaultValue: { raisedMinor: '0', supporterCount: 0, history: [] },
+    },
+    { name: 'calendarEntry', type: 'relationship', relationTo: 'calendar-entries' },
+    {
+      name: 'supporterVisibility',
+      type: 'select',
+      defaultValue: 'aggregate',
+      options: ['aggregate', 'named-opt-in', 'private'],
+    },
     { name: 'newsletterHook', type: 'json' },
     { name: 'productLinks', type: 'json' },
     { name: 'graphics', type: 'relationship', relationTo: 'graphic-documents', hasMany: true },

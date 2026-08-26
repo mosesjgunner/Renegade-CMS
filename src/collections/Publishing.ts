@@ -105,6 +105,12 @@ export const MediaAssets: CollectionConfig = {
     },
     { name: 'replaceGloballyWith', type: 'relationship', relationTo: 'media-assets' },
     { name: 'originalExportAllowed', type: 'checkbox', defaultValue: true },
+    {
+      name: 'rightsStatus',
+      type: 'select',
+      defaultValue: 'approved',
+      options: ['pending', 'approved', 'restricted', 'expired'],
+    },
     ...retentionFields(),
   ],
 }
@@ -824,7 +830,15 @@ export const MediaUsages: CollectionConfig = {
     {
       name: 'usedBy',
       type: 'relationship',
-      relationTo: ['content', 'albums', 'discussions', 'discussion-posts', 'events', 'timelines'],
+      relationTo: [
+        'content',
+        'albums',
+        'discussions',
+        'discussion-posts',
+        'events',
+        'timelines',
+        'email-messages',
+      ] as never,
       required: true,
       index: true,
     },
@@ -833,7 +847,7 @@ export const MediaUsages: CollectionConfig = {
       name: 'purpose',
       type: 'select',
       required: true,
-      options: ['hero', 'inline', 'cover', 'attachment', 'avatar', 'thumbnail'],
+      options: ['hero', 'inline', 'cover', 'attachment', 'avatar', 'thumbnail', 'newsletter'],
     },
     { name: 'replaceGlobally', type: 'checkbox', defaultValue: false },
   ],

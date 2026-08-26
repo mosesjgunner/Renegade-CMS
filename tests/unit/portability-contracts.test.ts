@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import {
   createPortableManifest,
+  createPortableArchive,
+  restorePortableArchive,
   createTemplateConversionReport,
   discoverImport,
   executeImport,
@@ -89,5 +91,19 @@ describe('M15 portability contracts', () => {
         unconvertibleCode: ['legacy.js'],
       }).requiresVisualReview,
     ).toBe(true)
+  })
+
+  it('encrypts a portable archive and rejects a tampered restore', () => {
+    const manifest = createPortableManifest({
+      createdAt: '2026-08-25T00:00:00Z',
+      records: [{ collection: 'content', id: 'article-1', data: { title: 'Portable' } }],
+      media: [],
+    })
+    const key = new Uint8Array(32).fill(7)
+    const archive = createPortableArchive(manifest, key)
+    expect(restorePortableArchive(archive, key).records[0]?.id).toBe('article-1')
+    expect(() => restorePortableArchive({ ...archive, checksum: 'sha256:tampered' }, key)).toThrow(
+      'integrity',
+    )
   })
 })

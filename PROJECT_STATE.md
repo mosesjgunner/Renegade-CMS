@@ -26,3 +26,11 @@
 - Historical handoff records a pre-existing production build failure during `/_global-error` prerendering (`useContext` on null). This remains production-hardening debt.
 - There is no Git worktree in this directory, so clean status/history/remote evidence is unavailable.
 - Background operations must continue to use idempotency keys, bounded retries, observable Payload jobs, permissions, lifecycle state and audit records. External-provider failure must not break public reading or ordinary editorial work.
+
+## Second Pass Prompt 14 � First-party analytics, privacy-safe experimentation, and Quality Center
+
+- Registered canonical analytics events/rollups/goals/snapshots and Command Center preferences, together with the Experiment/Experience family and Quality Policy/Rule/Scan/Issue/Exception/Waiver/Report family.
+- Analytics remains first-party, consent-gated, deduplicated and bounded; rollups aggregate only bounded deduplicated windows. No fingerprinting, cross-site identity graph, or third-party tracking is introduced.
+- Experiment variants are registered components only. Deterministic salted assignment returns a non-personalized control on opt-out or Lean collection disablement; exposure/conversion are separate idempotent events, analysis gives uncertainty/effect/sample warnings, and winner selection requires human approval.
+- Quality Center reuses local source producers through a common issue shape, blocks release scheduling on publication-blocking findings, keeps remote link failure uncertain, and restricts waivers for security/privacy/blocking issues.
+- Added metric, privacy-experiment, and quality-policy documentation plus focused Prompt 14 tests. PostgreSQL migration generation remains dependent on the configured service, as recorded in prior Second Pass handoffs.

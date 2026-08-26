@@ -77,6 +77,7 @@ export type PaymentIntentState =
   | 'expired'
   | 'refunded'
   | 'disputed'
+  | 'exception'
 export type PaymentIntent = Readonly<{
   id: string
   scope: MerchantScope
@@ -85,6 +86,7 @@ export type PaymentIntent = Readonly<{
   capabilityId: string
   providerReference?: string
   settlementReference?: string
+  cryptoInvoice?: CryptoInvoice
   expiresAt: string
   financialEvents: readonly FinancialEvent[]
 }>
@@ -212,4 +214,143 @@ export function cryptoRequestFingerprint(request: CryptoPaymentRequest): string 
 }
 export function canWalletLoginAlterPaymentIntent(): false {
   return false
+}
+
+export type CryptoInvoiceState =
+  | 'created'
+  | 'detected'
+  | 'confirming'
+  | 'confirmed'
+  | 'underpaid'
+  | 'overpaid'
+  | 'expired'
+  | 'late'
+  | 'reorged'
+  | 'exception'
+export type CryptoInvoice = Readonly<{
+  network: string
+  asset: string
+  exactAmountAtomic: string
+  destination: string
+  reference?: string
+  uri?: string
+  qrPayload: string
+  expiresAt: string
+  requiredConfirmations: number
+  state: CryptoInvoiceState
+  confirmations: number
+  transactionIds: readonly string[]
+  detectedAmountAtomic?: string
+  observedAt?: string
+}>
+export type ChainPaymentObservation = Readonly<{
+  transactionId: string
+  network: string
+  asset: string
+  destination: string
+  amountAtomic: string
+  confirmations: number
+  blockHash?: string
+  observedAt: string
+  orphaned?: boolean
+}>
+export type CryptoVerification = Readonly<{
+  invoice: CryptoInvoice
+  accepted: boolean
+  manualReconciliationAllowed: boolean
+}>
+
+/** Projects a public campaign without ever serializing private updates/supporters. */
+export function publicCampaignProjection<
+  T extends {
+    visibility: 'public' | 'private'
+    progress: unknown
+    updates?: readonly { visibility?: string }[]
+  },
+>(campaign: T) {
+  if (campaign.visibility !== 'public') return null
+  return {
+    ...campaign,
+    updates: (campaign.updates ?? []).filter((update) => update.visibility !== 'private'),
+  }
+}
+export function grantCampaignEntitlement(input: {
+  supporterId: string
+  campaignId: string
+  paymentIntentId: string
+  entitlement: string
+  fulfillmentReference?: unknown
+  now: string
+}): EntitlementGrant & {
+  campaignId: string
+  paymentIntentId: string
+  fulfillmentReference?: unknown
+} {
+  return {
+    id: 'campaign:' + input.campaignId + ':' + input.paymentIntentId + ':' + input.entitlement,
+    supporterId: input.supporterId,
+    entitlement: input.entitlement,
+    source: 'campaign:' + input.campaignId,
+    startsAt: input.now,
+    campaignId: input.campaignId,
+    paymentIntentId: input.paymentIntentId,
+    fulfillmentReference: input.fulfillmentReference,
+  }
+}
+export function verifyCryptoObservation(
+  invoice: CryptoInvoice,
+  observation: ChainPaymentObservation,
+  now: string,
+): CryptoVerification {
+  if (observation.network !== invoice.network) throw new Error('Wrong payment network.')
+  if (observation.asset !== invoice.asset) throw new Error('Wrong payment asset.')
+  if (observation.destination !== invoice.destination) throw new Error('Wrong payment destination.')
+  if (invoice.transactionIds.includes(observation.transactionId))
+    throw new Error('Duplicate transaction observation.')
+  const observedAfterExpiry = observation.observedAt > invoice.expiresAt || now > invoice.expiresAt
+  const received = BigInt(observation.amountAtomic)
+  const required = BigInt(invoice.exactAmountAtomic)
+  const base: CryptoInvoice = {
+    ...invoice,
+    transactionIds: [...invoice.transactionIds, observation.transactionId],
+    confirmations: observation.confirmations,
+    detectedAmountAtomic: observation.amountAtomic,
+    observedAt: observation.observedAt,
+  }
+  if (observation.orphaned)
+    return {
+      invoice: { ...base, state: 'reorged', confirmations: 0 },
+      accepted: false,
+      manualReconciliationAllowed: true,
+    }
+  if (observedAfterExpiry)
+    return {
+      invoice: { ...base, state: 'late' },
+      accepted: false,
+      manualReconciliationAllowed: true,
+    }
+  if (received < required)
+    return {
+      invoice: { ...base, state: 'underpaid' },
+      accepted: false,
+      manualReconciliationAllowed: true,
+    }
+  if (received > required)
+    return {
+      invoice: { ...base, state: 'overpaid' },
+      accepted: false,
+      manualReconciliationAllowed: true,
+    }
+  return {
+    invoice: {
+      ...base,
+      state:
+        observation.confirmations >= invoice.requiredConfirmations ? 'confirmed' : 'confirming',
+    },
+    accepted: observation.confirmations >= invoice.requiredConfirmations,
+    manualReconciliationAllowed: false,
+  }
+}
+export function manualCryptoReconciliationAllowed(invoice: CryptoInvoice): boolean {
+  return ['underpaid', 'overpaid', 'late', 'reorged', 'exception'].includes(invoice.state)
 }

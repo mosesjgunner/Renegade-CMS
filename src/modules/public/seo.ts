@@ -51,7 +51,7 @@ export type SchemaInput = {
   site: { ownerKind: 'organization' | 'person'; name: string; sameAs?: string[] }
   breadcrumb: Array<{ name: string; path: string }>
   entity?: {
-    kind: 'article' | 'profile' | 'event' | 'timeline' | 'album' | 'forum'
+    kind: 'article' | 'profile' | 'event' | 'timeline' | 'album' | 'forum' | 'product'
     id: string
     name: string
     description?: string | null
@@ -108,6 +108,7 @@ export function buildJsonLd(input: SchemaInput): {
         timeline: 'CollectionPage',
         album: 'CollectionPage',
         forum: 'CollectionPage',
+        product: 'Product',
       } as const
     )[entity.kind]
     const node: SchemaEntity = {

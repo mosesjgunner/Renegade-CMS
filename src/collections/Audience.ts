@@ -64,6 +64,29 @@ export const FormSchemas: CollectionConfig = {
     { name: 'locale', type: 'text', required: true, defaultValue: 'en' },
     { name: 'schema', type: 'json', required: true },
     { name: 'consentText', type: 'textarea' },
+    {
+      name: 'consentRevision',
+      type: 'text',
+      admin: { description: 'Immutable reviewed legal/consent revision used by this locale.' },
+    },
+    status(
+      'consentTranslationStatus',
+      ['not-required', 'reviewed', 'outdated', 'machine-generated'],
+      'not-required',
+    ),
+    {
+      name: 'translationProject',
+      type: 'text',
+      admin: {
+        description:
+          'Prompt 2 TranslationProject identifier; legal text is never silently machine substituted.',
+      },
+    },
+    {
+      name: 'localeCompleteness',
+      type: 'json',
+      admin: { description: 'Prompt 2 LocaleCompleteness snapshot for this schema revision.' },
+    },
     { name: 'brandSnapshot', type: 'json' },
     { name: 'publishedAt', type: 'date' },
   ],
@@ -307,6 +330,29 @@ export const AudienceSegments: CollectionConfig = {
     status('status', ['active', 'archived'], 'active'),
   ],
 }
+export const AudienceMemberships: CollectionConfig = {
+  ...base('audience-memberships', 'id'),
+  fields: [
+    ref('subscriber', 'subscribers', true),
+    ref('audienceList', 'audience-lists', true),
+    status('status', ['pending', 'active', 'unsubscribed', 'suppressed'], 'pending'),
+    { name: 'confirmedAt', type: 'date' },
+    { name: 'source', type: 'text', required: true, defaultValue: 'form' },
+  ],
+  indexes: [{ fields: ['subscriber', 'audienceList'], unique: true }],
+}
+export const SubscriberConfirmationTokens: CollectionConfig = {
+  ...base('subscriber-confirmation-tokens', 'tokenHash'),
+  fields: [
+    ref('subscriber', 'subscribers', true),
+    ref('audienceList', 'audience-lists'),
+    { name: 'tokenHash', type: 'text', required: true, unique: true, index: true },
+    { name: 'expiresAt', type: 'date', required: true },
+    { name: 'usedAt', type: 'date' },
+    { name: 'locale', type: 'text', required: true },
+    { name: 'consentWording', type: 'textarea', required: true },
+  ],
+}
 export const Subscribers: CollectionConfig = {
   ...base('subscribers', 'emailHash'),
   fields: [
@@ -384,6 +430,15 @@ export const EmailMessages: CollectionConfig = {
     { name: 'scheduledFor', type: 'date' },
     { name: 'idempotencyKey', type: 'text', unique: true },
     { name: 'tracking', type: 'json' },
+    {
+      name: 'audience',
+      type: 'json',
+      admin: { description: 'Lists/segments frozen at review; no hidden personalization.' },
+    },
+    { name: 'reviewedAt', type: 'date' },
+    { name: 'cancelCutoffAt', type: 'date' },
+    { name: 'translationProject', type: 'text' },
+    { name: 'localeCompleteness', type: 'json' },
   ],
 }
 export const DeliveryIdentities: CollectionConfig = {

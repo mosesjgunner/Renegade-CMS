@@ -1,4 +1,4 @@
-import { createHash } from 'node:crypto'
+import { createCipheriv, createDecipheriv, createHash, randomBytes } from 'node:crypto'
 
 /** Versioned, lawful-export-only M15 portability interchange boundary. */
 export const PORTABILITY_FORMAT_VERSION = 1
@@ -417,6 +417,74 @@ export function validatePortableManifest(manifest: PortableManifest): void {
   for (const record of manifest.records)
     if (manifest.checksums[`${record.collection}/${record.id}`] !== checksum(record.data))
       throw new Error(`Checksum mismatch for ${record.collection}/${record.id}.`)
+}
+
+/** AES-256-GCM portable archive envelope; encryption keys are supplied out of band. */
+export type PortableArchive = Readonly<{
+  format: 'renegade-portable-archive'
+  version: number
+  cipher: 'aes-256-gcm'
+  salt: string
+  iv: string
+  ciphertext: string
+  tag: string
+  checksum: string
+}>
+export function createPortableArchive(
+  manifest: PortableManifest,
+  encryptionKey: Uint8Array,
+): PortableArchive {
+  validatePortableManifest(manifest)
+  if (encryptionKey.byteLength !== 32)
+    throw new Error('Portable archive encryption key must be exactly 32 bytes.')
+  const salt = randomBytes(16),
+    iv = randomBytes(12)
+  const cipher = createCipheriv('aes-256-gcm', encryptionKey, iv)
+  const ciphertext = Buffer.concat([
+    cipher.update(JSON.stringify(manifest), 'utf8'),
+    cipher.final(),
+  ])
+  const tag = cipher.getAuthTag()
+  return {
+    format: 'renegade-portable-archive',
+    version: PORTABILITY_FORMAT_VERSION,
+    cipher: 'aes-256-gcm',
+    salt: salt.toString('base64'),
+    iv: iv.toString('base64'),
+    ciphertext: ciphertext.toString('base64'),
+    tag: tag.toString('base64'),
+    checksum: checksum(ciphertext.toString('base64')),
+  }
+}
+export function restorePortableArchive(
+  archive: PortableArchive,
+  encryptionKey: Uint8Array,
+): PortableManifest {
+  if (
+    archive.format !== 'renegade-portable-archive' ||
+    archive.version !== PORTABILITY_FORMAT_VERSION ||
+    archive.cipher !== 'aes-256-gcm'
+  )
+    throw new Error('Unsupported portable archive version.')
+  if (encryptionKey.byteLength !== 32 || checksum(archive.ciphertext) !== archive.checksum)
+    throw new Error('Portable archive integrity validation failed.')
+  try {
+    const decipher = createDecipheriv(
+      'aes-256-gcm',
+      encryptionKey,
+      Buffer.from(archive.iv, 'base64'),
+    )
+    decipher.setAuthTag(Buffer.from(archive.tag, 'base64'))
+    const plaintext = Buffer.concat([
+      decipher.update(Buffer.from(archive.ciphertext, 'base64')),
+      decipher.final(),
+    ]).toString('utf8')
+    const manifest = JSON.parse(plaintext) as PortableManifest
+    validatePortableManifest(manifest)
+    return manifest
+  } catch {
+    throw new Error('Portable archive cannot be decrypted or validated.')
+  }
 }
 export type TemplateInventory = {
   files: readonly string[]

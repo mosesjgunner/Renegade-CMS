@@ -95,6 +95,7 @@ export interface Config {
     'revision-records': RevisionRecord;
     'preview-tokens': PreviewToken;
     'scheduled-publish-jobs': ScheduledPublishJob;
+    'content-releases': ContentRelease;
     events: Event;
     timelines: Timeline;
     'timeline-memberships': TimelineMembership;
@@ -133,6 +134,72 @@ export interface Config {
     discussions: Discussion;
     'discussion-posts': DiscussionPost;
     'calendar-entries': CalendarEntry;
+    'form-definitions': FormDefinition;
+    'form-schemas': FormSchema;
+    'form-submissions': FormSubmission;
+    'submission-attachments': SubmissionAttachment;
+    contacts: Contact;
+    organizations: Organization;
+    'relationship-records': RelationshipRecord;
+    'contact-tags': ContactTag;
+    'contact-taggings': ContactTagging;
+    'interaction-records': InteractionRecord;
+    'relationship-notes': RelationshipNote;
+    'deals-opportunities': DealsOpportunity;
+    'owner-assignments': OwnerAssignment;
+    'next-actions': NextAction;
+    'workflow-items': WorkflowItem;
+    'audience-lists': AudienceList;
+    'audience-segments': AudienceSegment;
+    'audience-memberships': AudienceMembership;
+    'subscriber-confirmation-tokens': SubscriberConfirmationToken;
+    subscribers: Subscriber;
+    'consent-events': ConsentEvent;
+    preferences: Preference;
+    suppressions: Suppression;
+    'email-messages': EmailMessage;
+    'delivery-identities': DeliveryIdentity;
+    'email-deliveries': EmailDelivery;
+    'activity-events': ActivityEvent;
+    notifications: Notification;
+    'notification-preferences': NotificationPreference;
+    'notification-channels': NotificationChannel;
+    'digest-definitions': DigestDefinition;
+    'digest-runs': DigestRun;
+    'delivery-receipts': DeliveryReceipt;
+    'automation-definitions': AutomationDefinition;
+    'analytics-events': AnalyticsEvent;
+    'analytics-rollups': AnalyticsRollup;
+    'metric-snapshots': MetricSnapshot;
+    'analytics-goals': AnalyticsGoal;
+    'command-center-preferences': CommandCenterPreference;
+    'experience-rules': ExperienceRule;
+    'experience-variants': ExperienceVariant;
+    experiments: Experiment;
+    'experiment-variants': ExperimentVariant;
+    'traffic-allocations': TrafficAllocation;
+    'experiment-assignments': ExperimentAssignment;
+    'conversion-goals': ConversionGoal;
+    'experiment-events': ExperimentEvent;
+    'experiment-analyses': ExperimentAnalysis;
+    'experiment-decisions': ExperimentDecision;
+    'quality-policies': QualityPolicy;
+    'quality-rules': QualityRule;
+    'quality-scans': QualityScan;
+    'quality-issues': QualityIssue;
+    'quality-exceptions': QualityException;
+    'quality-waivers': QualityWaiver;
+    'quality-reports': QualityReport;
+    'merchant-connections': MerchantConnection;
+    'payment-method-capabilities': PaymentMethodCapability;
+    products: Product;
+    carts: Cart;
+    'checkout-sessions': CheckoutSession;
+    'payment-intents': PaymentIntent;
+    orders: Order;
+    'payment-webhook-events': PaymentWebhookEvent;
+    supporters: Supporter;
+    entitlements: Entitlement;
     'payload-kv': PayloadKv;
     'payload-jobs': PayloadJob;
     'payload-locked-documents': PayloadLockedDocument;
@@ -169,6 +236,7 @@ export interface Config {
     'revision-records': RevisionRecordsSelect<false> | RevisionRecordsSelect<true>;
     'preview-tokens': PreviewTokensSelect<false> | PreviewTokensSelect<true>;
     'scheduled-publish-jobs': ScheduledPublishJobsSelect<false> | ScheduledPublishJobsSelect<true>;
+    'content-releases': ContentReleasesSelect<false> | ContentReleasesSelect<true>;
     events: EventsSelect<false> | EventsSelect<true>;
     timelines: TimelinesSelect<false> | TimelinesSelect<true>;
     'timeline-memberships': TimelineMembershipsSelect<false> | TimelineMembershipsSelect<true>;
@@ -207,6 +275,72 @@ export interface Config {
     discussions: DiscussionsSelect<false> | DiscussionsSelect<true>;
     'discussion-posts': DiscussionPostsSelect<false> | DiscussionPostsSelect<true>;
     'calendar-entries': CalendarEntriesSelect<false> | CalendarEntriesSelect<true>;
+    'form-definitions': FormDefinitionsSelect<false> | FormDefinitionsSelect<true>;
+    'form-schemas': FormSchemasSelect<false> | FormSchemasSelect<true>;
+    'form-submissions': FormSubmissionsSelect<false> | FormSubmissionsSelect<true>;
+    'submission-attachments': SubmissionAttachmentsSelect<false> | SubmissionAttachmentsSelect<true>;
+    contacts: ContactsSelect<false> | ContactsSelect<true>;
+    organizations: OrganizationsSelect<false> | OrganizationsSelect<true>;
+    'relationship-records': RelationshipRecordsSelect<false> | RelationshipRecordsSelect<true>;
+    'contact-tags': ContactTagsSelect<false> | ContactTagsSelect<true>;
+    'contact-taggings': ContactTaggingsSelect<false> | ContactTaggingsSelect<true>;
+    'interaction-records': InteractionRecordsSelect<false> | InteractionRecordsSelect<true>;
+    'relationship-notes': RelationshipNotesSelect<false> | RelationshipNotesSelect<true>;
+    'deals-opportunities': DealsOpportunitiesSelect<false> | DealsOpportunitiesSelect<true>;
+    'owner-assignments': OwnerAssignmentsSelect<false> | OwnerAssignmentsSelect<true>;
+    'next-actions': NextActionsSelect<false> | NextActionsSelect<true>;
+    'workflow-items': WorkflowItemsSelect<false> | WorkflowItemsSelect<true>;
+    'audience-lists': AudienceListsSelect<false> | AudienceListsSelect<true>;
+    'audience-segments': AudienceSegmentsSelect<false> | AudienceSegmentsSelect<true>;
+    'audience-memberships': AudienceMembershipsSelect<false> | AudienceMembershipsSelect<true>;
+    'subscriber-confirmation-tokens': SubscriberConfirmationTokensSelect<false> | SubscriberConfirmationTokensSelect<true>;
+    subscribers: SubscribersSelect<false> | SubscribersSelect<true>;
+    'consent-events': ConsentEventsSelect<false> | ConsentEventsSelect<true>;
+    preferences: PreferencesSelect<false> | PreferencesSelect<true>;
+    suppressions: SuppressionsSelect<false> | SuppressionsSelect<true>;
+    'email-messages': EmailMessagesSelect<false> | EmailMessagesSelect<true>;
+    'delivery-identities': DeliveryIdentitiesSelect<false> | DeliveryIdentitiesSelect<true>;
+    'email-deliveries': EmailDeliveriesSelect<false> | EmailDeliveriesSelect<true>;
+    'activity-events': ActivityEventsSelect<false> | ActivityEventsSelect<true>;
+    notifications: NotificationsSelect<false> | NotificationsSelect<true>;
+    'notification-preferences': NotificationPreferencesSelect<false> | NotificationPreferencesSelect<true>;
+    'notification-channels': NotificationChannelsSelect<false> | NotificationChannelsSelect<true>;
+    'digest-definitions': DigestDefinitionsSelect<false> | DigestDefinitionsSelect<true>;
+    'digest-runs': DigestRunsSelect<false> | DigestRunsSelect<true>;
+    'delivery-receipts': DeliveryReceiptsSelect<false> | DeliveryReceiptsSelect<true>;
+    'automation-definitions': AutomationDefinitionsSelect<false> | AutomationDefinitionsSelect<true>;
+    'analytics-events': AnalyticsEventsSelect<false> | AnalyticsEventsSelect<true>;
+    'analytics-rollups': AnalyticsRollupsSelect<false> | AnalyticsRollupsSelect<true>;
+    'metric-snapshots': MetricSnapshotsSelect<false> | MetricSnapshotsSelect<true>;
+    'analytics-goals': AnalyticsGoalsSelect<false> | AnalyticsGoalsSelect<true>;
+    'command-center-preferences': CommandCenterPreferencesSelect<false> | CommandCenterPreferencesSelect<true>;
+    'experience-rules': ExperienceRulesSelect<false> | ExperienceRulesSelect<true>;
+    'experience-variants': ExperienceVariantsSelect<false> | ExperienceVariantsSelect<true>;
+    experiments: ExperimentsSelect<false> | ExperimentsSelect<true>;
+    'experiment-variants': ExperimentVariantsSelect<false> | ExperimentVariantsSelect<true>;
+    'traffic-allocations': TrafficAllocationsSelect<false> | TrafficAllocationsSelect<true>;
+    'experiment-assignments': ExperimentAssignmentsSelect<false> | ExperimentAssignmentsSelect<true>;
+    'conversion-goals': ConversionGoalsSelect<false> | ConversionGoalsSelect<true>;
+    'experiment-events': ExperimentEventsSelect<false> | ExperimentEventsSelect<true>;
+    'experiment-analyses': ExperimentAnalysesSelect<false> | ExperimentAnalysesSelect<true>;
+    'experiment-decisions': ExperimentDecisionsSelect<false> | ExperimentDecisionsSelect<true>;
+    'quality-policies': QualityPoliciesSelect<false> | QualityPoliciesSelect<true>;
+    'quality-rules': QualityRulesSelect<false> | QualityRulesSelect<true>;
+    'quality-scans': QualityScansSelect<false> | QualityScansSelect<true>;
+    'quality-issues': QualityIssuesSelect<false> | QualityIssuesSelect<true>;
+    'quality-exceptions': QualityExceptionsSelect<false> | QualityExceptionsSelect<true>;
+    'quality-waivers': QualityWaiversSelect<false> | QualityWaiversSelect<true>;
+    'quality-reports': QualityReportsSelect<false> | QualityReportsSelect<true>;
+    'merchant-connections': MerchantConnectionsSelect<false> | MerchantConnectionsSelect<true>;
+    'payment-method-capabilities': PaymentMethodCapabilitiesSelect<false> | PaymentMethodCapabilitiesSelect<true>;
+    products: ProductsSelect<false> | ProductsSelect<true>;
+    carts: CartsSelect<false> | CartsSelect<true>;
+    'checkout-sessions': CheckoutSessionsSelect<false> | CheckoutSessionsSelect<true>;
+    'payment-intents': PaymentIntentsSelect<false> | PaymentIntentsSelect<true>;
+    orders: OrdersSelect<false> | OrdersSelect<true>;
+    'payment-webhook-events': PaymentWebhookEventsSelect<false> | PaymentWebhookEventsSelect<true>;
+    supporters: SupportersSelect<false> | SupportersSelect<true>;
+    entitlements: EntitlementsSelect<false> | EntitlementsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -240,6 +374,9 @@ export interface Config {
       'media-transcribe': TaskMediaTranscribe;
       'media-tts': TaskMediaTts;
       'social-publish': TaskSocialPublish;
+      'audience-email-delivery': TaskAudienceEmailDelivery;
+      'audience-newsletter-dispatch': TaskAudienceNewsletterDispatch;
+      'commerce-abandon-checkouts': TaskCommerceAbandonCheckouts;
       inline: {
         input: unknown;
         output: unknown;
@@ -603,6 +740,7 @@ export interface MediaAsset {
     | null;
   replaceGloballyWith?: (string | null) | MediaAsset;
   originalExportAllowed?: boolean | null;
+  rightsStatus?: ('pending' | 'approved' | 'restricted' | 'expired') | null;
   retentionMode: 'permanent' | 'expire-at' | 'manual-burn' | 'archive' | 'tombstone';
   retentionExpiresAt?: string | null;
   retentionHold: 'none' | 'legal' | 'moderation';
@@ -1535,7 +1673,10 @@ export interface PayloadJob {
           | 'media-render'
           | 'media-transcribe'
           | 'media-tts'
-          | 'social-publish';
+          | 'social-publish'
+          | 'audience-email-delivery'
+          | 'audience-newsletter-dispatch'
+          | 'commerce-abandon-checkouts';
         taskID: string;
         input?:
           | {
@@ -1579,6 +1720,9 @@ export interface PayloadJob {
         | 'media-transcribe'
         | 'media-tts'
         | 'social-publish'
+        | 'audience-email-delivery'
+        | 'audience-newsletter-dispatch'
+        | 'commerce-abandon-checkouts'
       )
     | null;
   queue?: string | null;
@@ -1589,6 +1733,157 @@ export interface PayloadJob {
    */
   concurrencyKey?: string | null;
   meta?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "content-releases".
+ */
+export interface ContentRelease {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  title: string;
+  content?: (string | null) | Content;
+  article?: (string | null) | ArticleFamilyContent;
+  product?: (string | null) | Product;
+  /**
+   * Approved Product revision pinned for storefront release; never a payment instruction.
+   */
+  productRevision?: string | null;
+  scheduledFor?: string | null;
+  timeZone?: string | null;
+  status?: ('draft' | 'scheduled' | 'released' | 'cancelled') | null;
+  lastScheduleMutationId?: string | null;
+  scheduleAudit?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "products".
+ */
+export interface Product {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  merchantConnection: string | MerchantConnection;
+  name: string;
+  slug: string;
+  canonicalPath: string;
+  kind: 'physical' | 'digital' | 'pod-reference' | 'subscription' | 'membership';
+  state: 'draft' | 'review' | 'approved' | 'published' | 'archived';
+  description?: string | null;
+  /**
+   * Prompt 2 reviewed product text keyed by locale; legal/payment copy is kept separately and reviewed.
+   */
+  localized?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  categories?: (string | null) | Category;
+  collections?: (string | Album)[] | null;
+  media?: (string | MediaAsset)[] | null;
+  variants?:
+    | {
+        sku: string;
+        title: string;
+        attributes?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        inventoryPolicy?: ('untracked' | 'tracked' | 'external-hook' | 'pod-provider') | null;
+        inventoryQuantity?: number | null;
+        inventoryReference?: string | null;
+        digitalFiles?: (string | MediaAsset)[] | null;
+        podReference?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  prices?:
+    | {
+        currency: string;
+        amountMinor: string;
+        compareAtMinor?: string | null;
+        variantSku?: string | null;
+        recurringInterval?: ('month' | 'year') | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Existing entitlement key for subscription/membership products.
+   */
+  entitlement?: string | null;
+  releaseRevision?: string | null;
+  retentionMode: 'permanent' | 'expire-at' | 'manual-burn' | 'archive' | 'tombstone';
+  retentionExpiresAt?: string | null;
+  retentionHold: 'none' | 'legal' | 'moderation';
+  /**
+   * Removes expired or burned records from routes, search, feeds, and sitemaps.
+   */
+  removeFromDiscovery?: boolean | null;
+  tombstoneLabel?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "merchant-connections".
+ */
+export interface MerchantConnection {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  label: string;
+  providerKey: string;
+  merchantCountry: string;
+  status: 'active' | 'disabled' | 'degraded';
+  /**
+   * Secret-manager reference only; never store processor credentials in Payload.
+   */
+  credentialReference?: string | null;
+  configuration?:
     | {
         [k: string]: unknown;
       }
@@ -1986,9 +2281,13 @@ export interface MediaUsage {
     | {
         relationTo: 'timelines';
         value: string | Timeline;
+      }
+    | {
+        relationTo: 'email-messages';
+        value: string | EmailMessage;
       };
   usageKey: string;
-  purpose: 'hero' | 'inline' | 'cover' | 'attachment' | 'avatar' | 'thumbnail';
+  purpose: 'hero' | 'inline' | 'cover' | 'attachment' | 'avatar' | 'thumbnail' | 'newsletter';
   replaceGlobally?: boolean | null;
   updatedAt: string;
   createdAt: string;
@@ -2103,6 +2402,66 @@ export interface DiscussionPost {
    */
   removeFromDiscovery?: boolean | null;
   tombstoneLabel?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "email-messages".
+ */
+export interface EmailMessage {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  subject: string;
+  blocks:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  kind: 'transactional' | 'bulk' | 'digest';
+  status: 'draft' | 'review' | 'scheduled' | 'queued' | 'sending' | 'sent' | 'cancelled' | 'failed';
+  scheduledFor?: string | null;
+  idempotencyKey?: string | null;
+  tracking?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Lists/segments frozen at review; no hidden personalization.
+   */
+  audience?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  reviewedAt?: string | null;
+  cancelCutoffAt?: string | null;
+  translationProject?: string | null;
+  localeCompleteness?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -2746,6 +3105,10 @@ export interface TtsOutput {
  */
 export interface GraphicDocument {
   id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
   title: string;
   sourceMedia: string | MediaAsset;
   sourceRevision: string;
@@ -2768,6 +3131,11 @@ export interface GraphicDocument {
     | boolean
     | null;
   brandKit?: (string | null) | Brand;
+  template?: string | null;
+  /**
+   * Registered approved variant key; reserved for Prompt 14 targeting.
+   */
+  layoutVariant?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -2947,8 +3315,23 @@ export interface Campaign {
     | 'failed'
     | 'cancelled'
     | 'deletion-requested';
+  visibility: 'public' | 'private';
   launchAt?: string | null;
+  startAt?: string | null;
+  endAt?: string | null;
   timeZone?: string | null;
+  /**
+   * Canonical goal amount/currency and transparent public progress snapshot.
+   */
+  goal?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   goals?:
     | {
         [k: string]: unknown;
@@ -2958,6 +3341,50 @@ export interface Campaign {
     | number
     | boolean
     | null;
+  milestones?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Each update includes visibility; private content must not be exposed by public projections.
+   */
+  updates?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Reward tiers link existing Products and entitlement/fulfillment references.
+   */
+  tiers?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  progress?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  calendarEntry?: (string | null) | CalendarEntry;
+  supporterVisibility?: ('aggregate' | 'named-opt-in' | 'private') | null;
   newsletterHook?:
     | {
         [k: string]: unknown;
@@ -3162,6 +3589,1964 @@ export interface CalendarEntryAudit {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "form-definitions".
+ */
+export interface FormDefinition {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  name: string;
+  template:
+    | 'contact'
+    | 'newsletter-signup'
+    | 'volunteer'
+    | 'sponsorship-inquiry'
+    | 'advertiser-media-kit'
+    | 'donation-interest'
+    | 'reader-submission'
+    | 'confidential-tip'
+    | 'event-rsvp'
+    | 'survey'
+    | 'poll'
+    | 'application'
+    | 'waitlist'
+    | 'quote-request'
+    | 'product-preorder-interest'
+    | 'custom';
+  publicPath: string;
+  visibility: 'public' | 'private' | 'members';
+  activeSchema?: (string | null) | FormSchema;
+  settings:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  retentionMode: 'permanent' | 'expire-at' | 'manual-burn' | 'archive' | 'tombstone';
+  retentionExpiresAt?: string | null;
+  retentionHold: 'none' | 'legal' | 'moderation';
+  /**
+   * Removes expired or burned records from routes, search, feeds, and sitemaps.
+   */
+  removeFromDiscovery?: boolean | null;
+  tombstoneLabel?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "form-schemas".
+ */
+export interface FormSchema {
+  id: string;
+  form: string | FormDefinition;
+  version: number;
+  state: 'draft' | 'published' | 'retired';
+  locale: string;
+  schema:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  consentText?: string | null;
+  /**
+   * Immutable reviewed legal/consent revision used by this locale.
+   */
+  consentRevision?: string | null;
+  consentTranslationStatus: 'not-required' | 'reviewed' | 'outdated' | 'machine-generated';
+  /**
+   * Prompt 2 TranslationProject identifier; legal text is never silently machine substituted.
+   */
+  translationProject?: string | null;
+  /**
+   * Prompt 2 LocaleCompleteness snapshot for this schema revision.
+   */
+  localeCompleteness?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  brandSnapshot?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  publishedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "form-submissions".
+ */
+export interface FormSubmission {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  form: string | FormDefinition;
+  schema: string | FormSchema;
+  status: 'received' | 'challenged' | 'held' | 'triaged' | 'accepted' | 'rejected' | 'redacted' | 'expired';
+  locale: string;
+  values:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  consentSnapshot?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  privacyClass: 'standard' | 'sensitive' | 'confidential';
+  abuse?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  contact?: (string | null) | Contact;
+  organization?: (string | null) | Organization;
+  workflowItem?: (string | null) | WorkflowItem;
+  idempotencyKey?: string | null;
+  retentionMode: 'permanent' | 'expire-at' | 'manual-burn' | 'archive' | 'tombstone';
+  retentionExpiresAt?: string | null;
+  retentionHold: 'none' | 'legal' | 'moderation';
+  /**
+   * Removes expired or burned records from routes, search, feeds, and sitemaps.
+   */
+  removeFromDiscovery?: boolean | null;
+  tombstoneLabel?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "contacts".
+ */
+export interface Contact {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  displayName: string;
+  email?: string | null;
+  emailHash?: string | null;
+  member?: (string | null) | Member;
+  status: 'lead' | 'active' | 'inactive' | 'blocked' | 'archived';
+  profile?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  mergeState?: ('clear' | 'proposed' | 'merged') | null;
+  mergedInto?: (string | null) | Contact;
+  retentionMode: 'permanent' | 'expire-at' | 'manual-burn' | 'archive' | 'tombstone';
+  retentionExpiresAt?: string | null;
+  retentionHold: 'none' | 'legal' | 'moderation';
+  /**
+   * Removes expired or burned records from routes, search, feeds, and sitemaps.
+   */
+  removeFromDiscovery?: boolean | null;
+  tombstoneLabel?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "organizations".
+ */
+export interface Organization {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  name: string;
+  domain?: string | null;
+  status: 'lead' | 'active' | 'inactive' | 'archived';
+  metadata?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  retentionMode: 'permanent' | 'expire-at' | 'manual-burn' | 'archive' | 'tombstone';
+  retentionExpiresAt?: string | null;
+  retentionHold: 'none' | 'legal' | 'moderation';
+  /**
+   * Removes expired or burned records from routes, search, feeds, and sitemaps.
+   */
+  removeFromDiscovery?: boolean | null;
+  tombstoneLabel?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "workflow-items".
+ */
+export interface WorkflowItem {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  title: string;
+  type:
+    | 'campaign-launch'
+    | 'sponsor-approval'
+    | 'social-package'
+    | 'event-production'
+    | 'product-launch'
+    | 'media-processing'
+    | 'moderation'
+    | 'outreach'
+    | 'form-intake'
+    | 'partner-follow-up'
+    | 'system-exception'
+    | 'custom';
+  status: 'open' | 'in-progress' | 'blocked' | 'completed' | 'cancelled' | 'reopened';
+  priority: 'low' | 'normal' | 'high' | 'urgent';
+  assignee?: (string | null) | User;
+  watchers?: (string | User)[] | null;
+  startsAt?: string | null;
+  dueAt?: string | null;
+  checklist?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  comments?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  attachments?: (string | MediaAsset)[] | null;
+  sourceReferences?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  dependencies?: (string | WorkflowItem)[] | null;
+  outcome?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  audit?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  calendarEntry?: (string | null) | CalendarEntry;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "submission-attachments".
+ */
+export interface SubmissionAttachment {
+  id: string;
+  submission: string | FormSubmission;
+  media?: (string | null) | MediaAsset;
+  filename: string;
+  contentType?: string | null;
+  size?: number | null;
+  scanStatus: 'pending' | 'clean' | 'rejected';
+  private?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "relationship-records".
+ */
+export interface RelationshipRecord {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  contact: string | Contact;
+  organization?: (string | null) | Organization;
+  role?: string | null;
+  related?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  context?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "contact-tags".
+ */
+export interface ContactTag {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  name: string;
+  color?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "contact-taggings".
+ */
+export interface ContactTagging {
+  id: string;
+  contact: string | Contact;
+  tag: string | ContactTag;
+  source?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "interaction-records".
+ */
+export interface InteractionRecord {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  contact?: (string | null) | Contact;
+  organization?: (string | null) | Organization;
+  kind: 'form' | 'email' | 'call' | 'meeting' | 'note' | 'campaign' | 'order' | 'contribution';
+  occurredAt: string;
+  summary?: string | null;
+  references?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "relationship-notes".
+ */
+export interface RelationshipNote {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  contact?: (string | null) | Contact;
+  organization?: (string | null) | Organization;
+  body: string;
+  private?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "deals-opportunities".
+ */
+export interface DealsOpportunity {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  contact?: (string | null) | Contact;
+  organization?: (string | null) | Organization;
+  campaign?: (string | null) | Campaign;
+  title: string;
+  stage: 'new' | 'qualified' | 'proposal' | 'creative-approval' | 'placement' | 'won' | 'lost';
+  amount?: number | null;
+  currency?: string | null;
+  ownerAssignment?: (string | null) | OwnerAssignment;
+  nextAction?: (string | null) | NextAction;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "owner-assignments".
+ */
+export interface OwnerAssignment {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  assignee?: (string | null) | User;
+  subject:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  assignedAt: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "next-actions".
+ */
+export interface NextAction {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  title: string;
+  dueAt?: string | null;
+  status: 'open' | 'done' | 'cancelled';
+  subject:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "audience-lists".
+ */
+export interface AudienceList {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  name: string;
+  description?: string | null;
+  status: 'active' | 'archived';
+  doubleOptIn?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "audience-segments".
+ */
+export interface AudienceSegment {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  name: string;
+  definition:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  consentBasisRequired?: boolean | null;
+  status: 'active' | 'archived';
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "audience-memberships".
+ */
+export interface AudienceMembership {
+  id: string;
+  subscriber: string | Subscriber;
+  audienceList: string | AudienceList;
+  status: 'pending' | 'active' | 'unsubscribed' | 'suppressed';
+  confirmedAt?: string | null;
+  source: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "subscribers".
+ */
+export interface Subscriber {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  email: string;
+  emailHash: string;
+  member?: (string | null) | Member;
+  contact?: (string | null) | Contact;
+  status: 'pending' | 'active' | 'unsubscribed' | 'suppressed';
+  verifiedAt?: string | null;
+  globalUnsubscribedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "subscriber-confirmation-tokens".
+ */
+export interface SubscriberConfirmationToken {
+  id: string;
+  subscriber: string | Subscriber;
+  audienceList?: (string | null) | AudienceList;
+  tokenHash: string;
+  expiresAt: string;
+  usedAt?: string | null;
+  locale: string;
+  consentWording: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "consent-events".
+ */
+export interface ConsentEvent {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  subscriber?: (string | null) | Subscriber;
+  contact?: (string | null) | Contact;
+  formSubmission?: (string | null) | FormSubmission;
+  audienceList?: (string | null) | AudienceList;
+  event: 'requested' | 'double-opt-in-confirmed' | 'unsubscribe' | 'resubscribe' | 'imported' | 'bounce' | 'complaint';
+  basis: string;
+  wording?: string | null;
+  locale?: string | null;
+  occurredAt: string;
+  evidence?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "preferences".
+ */
+export interface Preference {
+  id: string;
+  subscriber: string | Subscriber;
+  audienceList?: (string | null) | AudienceList;
+  preferences:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "suppressions".
+ */
+export interface Suppression {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  emailHash: string;
+  reason: 'unsubscribe' | 'bounce' | 'complaint' | 'provider';
+  provider?: string | null;
+  occurredAt: string;
+  global?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "delivery-identities".
+ */
+export interface DeliveryIdentity {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  emailHash: string;
+  provider: string;
+  providerRecipientId?: string | null;
+  metadata?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "email-deliveries".
+ */
+export interface EmailDelivery {
+  id: string;
+  message: string | EmailMessage;
+  subscriber?: (string | null) | Subscriber;
+  recipientEmail: string;
+  idempotencyKey: string;
+  status: 'queued' | 'sending' | 'sent' | 'delivered' | 'bounced' | 'complained' | 'cancelled' | 'failed';
+  provider?: string | null;
+  providerMessageId?: string | null;
+  attempts?: number | null;
+  outcome?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "activity-events".
+ */
+export interface ActivityEvent {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  type: string;
+  actor?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  object?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  payload?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  visibilitySnapshot?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  occurredAt: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "notifications".
+ */
+export interface Notification {
+  id: string;
+  activityEvent: string | ActivityEvent;
+  recipientMember: string | Member;
+  status: 'unread' | 'read' | 'archived';
+  channels:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  readAt?: string | null;
+  mutedUntil?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "notification-preferences".
+ */
+export interface NotificationPreference {
+  id: string;
+  member: string | Member;
+  rules:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  quietHours?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "notification-channels".
+ */
+export interface NotificationChannel {
+  id: string;
+  member: string | Member;
+  kind: 'in-app' | 'email' | 'push';
+  address?: string | null;
+  enabled?: boolean | null;
+  verifiedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "digest-definitions".
+ */
+export interface DigestDefinition {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  member?: (string | null) | Member;
+  name: string;
+  filters:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  cadence: 'immediate' | 'daily' | 'weekly' | 'custom';
+  channels:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  template?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  reviewRequired?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "digest-runs".
+ */
+export interface DigestRun {
+  id: string;
+  definition: string | DigestDefinition;
+  sourceEventIds:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  frozenAt: string;
+  status: 'draft' | 'queued' | 'sent' | 'failed' | 'cancelled';
+  outcome?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "delivery-receipts".
+ */
+export interface DeliveryReceipt {
+  id: string;
+  delivery?: (string | null) | EmailDelivery;
+  notification?: (string | null) | Notification;
+  channel: 'email' | 'push' | 'in-app';
+  status: 'queued' | 'sent' | 'delivered' | 'failed';
+  providerEvent?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "automation-definitions".
+ */
+export interface AutomationDefinition {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  name: string;
+  status: 'draft' | 'active' | 'paused' | 'archived';
+  trigger:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  conditions?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  actions:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  requiresApproval?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-events".
+ */
+export interface AnalyticsEvent {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  eventId: string;
+  dedupeKey: string;
+  eventType: string;
+  occurredAt: string;
+  receivedAt: string;
+  schemaVersion: number;
+  consentBasis: 'necessary' | 'analytics-consent' | 'server-trusted' | 'denied';
+  anonymousHash?: string | null;
+  sessionHash?: string | null;
+  member?: (string | null) | Member;
+  context:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  properties?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  trusted?: boolean | null;
+  retentionMode: 'permanent' | 'expire-at' | 'manual-burn' | 'archive' | 'tombstone';
+  retentionExpiresAt?: string | null;
+  retentionHold: 'none' | 'legal' | 'moderation';
+  /**
+   * Removes expired or burned records from routes, search, feeds, and sitemaps.
+   */
+  removeFromDiscovery?: boolean | null;
+  tombstoneLabel?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-rollups".
+ */
+export interface AnalyticsRollup {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  metric: string;
+  definition: string;
+  grain: 'daily' | 'campaign' | 'content' | 'channel' | 'goal';
+  windowStart: string;
+  windowEnd: string;
+  dimensions:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  value: string;
+  uniqueCountMethod?: string | null;
+  schemaVersion: number;
+  lateEventsIncludedUntil?: string | null;
+  retentionMode: 'permanent' | 'expire-at' | 'manual-burn' | 'archive' | 'tombstone';
+  retentionExpiresAt?: string | null;
+  retentionHold: 'none' | 'legal' | 'moderation';
+  /**
+   * Removes expired or burned records from routes, search, feeds, and sitemaps.
+   */
+  removeFromDiscovery?: boolean | null;
+  tombstoneLabel?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "metric-snapshots".
+ */
+export interface MetricSnapshot {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  metric: string;
+  value: string;
+  definition: string;
+  provider?: string | null;
+  grain: 'event' | 'daily' | 'campaign' | 'order' | 'delivery';
+  windowStart: string;
+  windowEnd: string;
+  financial?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  reconciliationStatus: 'unreconciled' | 'reconciled' | 'provider-reported' | 'estimated';
+  sourceReference?: string | null;
+  retentionMode: 'permanent' | 'expire-at' | 'manual-burn' | 'archive' | 'tombstone';
+  retentionExpiresAt?: string | null;
+  retentionHold: 'none' | 'legal' | 'moderation';
+  /**
+   * Removes expired or burned records from routes, search, feeds, and sitemaps.
+   */
+  removeFromDiscovery?: boolean | null;
+  tombstoneLabel?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-goals".
+ */
+export interface AnalyticsGoal {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  key: string;
+  name: string;
+  eventTypes:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  definition: string;
+  enabled?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "command-center-preferences".
+ */
+export interface CommandCenterPreference {
+  id: string;
+  user: string | User;
+  hiddenSections?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  sectionOrder?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "experience-rules".
+ */
+export interface ExperienceRule {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  name: string;
+  description?: string | null;
+  conditions:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  status: 'draft' | 'approved' | 'active' | 'paused' | 'archived';
+  approvedBy?: (string | null) | User;
+  approvedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "experience-variants".
+ */
+export interface ExperienceVariant {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  rule: string | ExperienceRule;
+  name: string;
+  registeredComponent: string;
+  contentRevision?: (string | null) | RevisionRecord;
+  properties:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  status: 'draft' | 'approved' | 'active' | 'archived';
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "experiments".
+ */
+export interface Experiment {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  name: string;
+  description?: string | null;
+  rule?: (string | null) | ExperienceRule;
+  conversionGoal?: (string | null) | ConversionGoal;
+  state: 'draft' | 'approved' | 'running' | 'paused' | 'stopped' | 'inconclusive' | 'winner-selected';
+  assignmentSalt: string;
+  collectionEnabled?: boolean | null;
+  approvedBy?: (string | null) | User;
+  approvedAt?: string | null;
+  startedAt?: string | null;
+  stoppedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "conversion-goals".
+ */
+export interface ConversionGoal {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  key: string;
+  name: string;
+  eventTypes:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  definition: string;
+  enabled?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "experiment-variants".
+ */
+export interface ExperimentVariant {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  experiment: string | Experiment;
+  experienceVariant?: (string | null) | ExperienceVariant;
+  name: string;
+  isControl?: boolean | null;
+  allocation: number;
+  registeredComponent: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "traffic-allocations".
+ */
+export interface TrafficAllocation {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  experiment: string | Experiment;
+  variant: string | ExperimentVariant;
+  allocation: number;
+  effectiveAt: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "experiment-assignments".
+ */
+export interface ExperimentAssignment {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  experiment: string | Experiment;
+  variant: string | ExperimentVariant;
+  subjectKey: string;
+  dedupeKey: string;
+  consentBasis: string;
+  assignedAt: string;
+  isDefault?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "experiment-events".
+ */
+export interface ExperimentEvent {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  experiment: string | Experiment;
+  variant: string | ExperimentVariant;
+  assignment?: (string | null) | ExperimentAssignment;
+  kind: 'exposure' | 'conversion';
+  goalKey?: string | null;
+  dedupeKey: string;
+  occurredAt: string;
+  consentBasis: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "experiment-analyses".
+ */
+export interface ExperimentAnalysis {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  experiment: string | Experiment;
+  computedAt: string;
+  result:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  warnings:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "experiment-decisions".
+ */
+export interface ExperimentDecision {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  experiment: string | Experiment;
+  selectedVariant?: (string | null) | ExperimentVariant;
+  decision: 'pause' | 'stop' | 'inconclusive' | 'winner-selected';
+  reason: string;
+  actor: string | User;
+  decidedAt: string;
+  approvalRequired?: boolean | null;
+  approvedBy?: (string | null) | User;
+  approvedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "quality-policies".
+ */
+export interface QualityPolicy {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  name: string;
+  status: 'draft' | 'active' | 'archived';
+  releaseChecksRequired?: boolean | null;
+  rules?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "quality-rules".
+ */
+export interface QualityRule {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  policy?: (string | null) | QualityPolicy;
+  key: string;
+  producer: string;
+  description: string;
+  severity: 'informational' | 'warning' | 'publication_blocking';
+  enabled?: boolean | null;
+  configuration?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "quality-scans".
+ */
+export interface QualityScan {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  policy?: (string | null) | QualityPolicy;
+  targetType: 'document' | 'content-release' | 'publication' | 'space' | 'site';
+  targetId: string;
+  revisionId?: string | null;
+  status: 'queued' | 'running' | 'completed' | 'failed';
+  startedAt?: string | null;
+  completedAt?: string | null;
+  summary?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "quality-issues".
+ */
+export interface QualityIssue {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  scan?: (string | null) | QualityScan;
+  rule?: (string | null) | QualityRule;
+  dedupeKey: string;
+  revisionId?: string | null;
+  targetType: string;
+  targetId: string;
+  surface?: string | null;
+  severity: 'informational' | 'warning' | 'publication_blocking';
+  status: 'open' | 'resolved' | 'waived' | 'uncertain';
+  message: string;
+  remediation?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  owner?: (string | null) | User;
+  firstSeenAt: string;
+  resolvedAt?: string | null;
+  dependencyFingerprint?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "quality-exceptions".
+ */
+export interface QualityException {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  rule: string | QualityRule;
+  targetType: string;
+  targetId: string;
+  reason: string;
+  actor: string | User;
+  expiresAt: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "quality-waivers".
+ */
+export interface QualityWaiver {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  issue: string | QualityIssue;
+  reason: string;
+  actor: string | User;
+  expiresAt: string;
+  authorizedBy: string | User;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "quality-reports".
+ */
+export interface QualityReport {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  scan: string | QualityScan;
+  report:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  generatedAt: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payment-method-capabilities".
+ */
+export interface PaymentMethodCapability {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  merchantConnection: string | MerchantConnection;
+  providerKey: string;
+  railKey: string;
+  family:
+    | 'card'
+    | 'wallet'
+    | 'bank-debit'
+    | 'bank-transfer'
+    | 'open-banking'
+    | 'mobile-money'
+    | 'cash-voucher'
+    | 'buy-now-pay-later'
+    | 'crypto'
+    | 'external-link';
+  flow: 'hosted' | 'redirect' | 'qr' | 'asynchronous' | 'manual';
+  merchantCountries?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  buyerCountries?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  presentmentCurrencies?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  settlementCurrencies?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  minimumAmountMinor?: string | null;
+  maximumAmountMinor?: string | null;
+  recurring?: boolean | null;
+  refunds?: boolean | null;
+  enabled?: boolean | null;
+  health: 'healthy' | 'degraded' | 'unavailable';
+  requiredCustomerFields?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  instructions?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "carts".
+ */
+export interface Cart {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  merchantConnection: string | MerchantConnection;
+  currency: string;
+  buyerCountry?: string | null;
+  items:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  state: 'active' | 'converted' | 'abandoned' | 'expired';
+  idempotencyKey?: string | null;
+  expiresAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "checkout-sessions".
+ */
+export interface CheckoutSession {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  cart: string | Cart;
+  merchantConnection: string | MerchantConnection;
+  currency: string;
+  amountMinor: string;
+  buyerCountry?: string | null;
+  state: 'open' | 'pending' | 'completed' | 'failed' | 'cancelled' | 'abandoned' | 'expired';
+  selectedCapabilityId?: string | null;
+  legalCopy?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  idempotencyKey?: string | null;
+  expiresAt?: string | null;
+  shippingExtension?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  taxExtension?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payment-intents".
+ */
+export interface PaymentIntent {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  checkoutSession: string | CheckoutSession;
+  merchantConnection: string | MerchantConnection;
+  capabilityId: string;
+  providerKey: string;
+  amountMinor: string;
+  currency: string;
+  state:
+    | 'created'
+    | 'requires-action'
+    | 'pending'
+    | 'paid'
+    | 'failed'
+    | 'cancelled'
+    | 'expired'
+    | 'refunded'
+    | 'disputed'
+    | 'exception';
+  providerReference?: string | null;
+  /**
+   * Noncustodial intent-bound invoice: destination, network, asset, exact amount, URI/QR, expiry, server-verified observations, confirmations and reorg history. Never private keys.
+   */
+  cryptoInvoice?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Scoped operational exception only; it does not alter financial history.
+   */
+  exception?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  financialEvents?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  expiresAt: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "orders".
+ */
+export interface Order {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  checkoutSession: string | CheckoutSession;
+  merchantConnection: string | MerchantConnection;
+  orderNumber: string;
+  state: 'pending-payment' | 'paid' | 'fulfilling' | 'fulfilled' | 'cancelled' | 'failed' | 'refunded' | 'exception';
+  currency: string;
+  amountMinor: string;
+  items:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  transitionLog?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  refundExtension?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  receipt?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * External POD fulfillment state, provider request idempotency and tracking. CMS Order remains canonical.
+   */
+  fulfillmentExtension?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  exception?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Optional note, tip, discount and receipt-brand snapshot; no card or wallet credentials.
+   */
+  posMetadata?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payment-webhook-events".
+ */
+export interface PaymentWebhookEvent {
+  id: string;
+  merchantConnection: string | MerchantConnection;
+  providerKey: string;
+  providerEventId: string;
+  payloadHash: string;
+  verifiedAt: string;
+  processedAt?: string | null;
+  outcome?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "supporters".
+ */
+export interface Supporter {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  displayName?: string | null;
+  member?: (string | null) | Member;
+  emailHash?: string | null;
+  providerReferences?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  visibilityPreference?: ('public' | 'anonymous' | 'private') | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "entitlements".
+ */
+export interface Entitlement {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  supporter: string | Supporter;
+  campaign?: (string | null) | Campaign;
+  paymentIntent?: (string | null) | PaymentIntent;
+  entitlement: string;
+  source: string;
+  startsAt: string;
+  endsAt?: string | null;
+  revokedAt?: string | null;
+  fulfillmentReference?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -3295,6 +5680,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'scheduled-publish-jobs';
         value: string | ScheduledPublishJob;
+      } | null)
+    | ({
+        relationTo: 'content-releases';
+        value: string | ContentRelease;
       } | null)
     | ({
         relationTo: 'events';
@@ -3447,6 +5836,270 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'calendar-entries';
         value: string | CalendarEntry;
+      } | null)
+    | ({
+        relationTo: 'form-definitions';
+        value: string | FormDefinition;
+      } | null)
+    | ({
+        relationTo: 'form-schemas';
+        value: string | FormSchema;
+      } | null)
+    | ({
+        relationTo: 'form-submissions';
+        value: string | FormSubmission;
+      } | null)
+    | ({
+        relationTo: 'submission-attachments';
+        value: string | SubmissionAttachment;
+      } | null)
+    | ({
+        relationTo: 'contacts';
+        value: string | Contact;
+      } | null)
+    | ({
+        relationTo: 'organizations';
+        value: string | Organization;
+      } | null)
+    | ({
+        relationTo: 'relationship-records';
+        value: string | RelationshipRecord;
+      } | null)
+    | ({
+        relationTo: 'contact-tags';
+        value: string | ContactTag;
+      } | null)
+    | ({
+        relationTo: 'contact-taggings';
+        value: string | ContactTagging;
+      } | null)
+    | ({
+        relationTo: 'interaction-records';
+        value: string | InteractionRecord;
+      } | null)
+    | ({
+        relationTo: 'relationship-notes';
+        value: string | RelationshipNote;
+      } | null)
+    | ({
+        relationTo: 'deals-opportunities';
+        value: string | DealsOpportunity;
+      } | null)
+    | ({
+        relationTo: 'owner-assignments';
+        value: string | OwnerAssignment;
+      } | null)
+    | ({
+        relationTo: 'next-actions';
+        value: string | NextAction;
+      } | null)
+    | ({
+        relationTo: 'workflow-items';
+        value: string | WorkflowItem;
+      } | null)
+    | ({
+        relationTo: 'audience-lists';
+        value: string | AudienceList;
+      } | null)
+    | ({
+        relationTo: 'audience-segments';
+        value: string | AudienceSegment;
+      } | null)
+    | ({
+        relationTo: 'audience-memberships';
+        value: string | AudienceMembership;
+      } | null)
+    | ({
+        relationTo: 'subscriber-confirmation-tokens';
+        value: string | SubscriberConfirmationToken;
+      } | null)
+    | ({
+        relationTo: 'subscribers';
+        value: string | Subscriber;
+      } | null)
+    | ({
+        relationTo: 'consent-events';
+        value: string | ConsentEvent;
+      } | null)
+    | ({
+        relationTo: 'preferences';
+        value: string | Preference;
+      } | null)
+    | ({
+        relationTo: 'suppressions';
+        value: string | Suppression;
+      } | null)
+    | ({
+        relationTo: 'email-messages';
+        value: string | EmailMessage;
+      } | null)
+    | ({
+        relationTo: 'delivery-identities';
+        value: string | DeliveryIdentity;
+      } | null)
+    | ({
+        relationTo: 'email-deliveries';
+        value: string | EmailDelivery;
+      } | null)
+    | ({
+        relationTo: 'activity-events';
+        value: string | ActivityEvent;
+      } | null)
+    | ({
+        relationTo: 'notifications';
+        value: string | Notification;
+      } | null)
+    | ({
+        relationTo: 'notification-preferences';
+        value: string | NotificationPreference;
+      } | null)
+    | ({
+        relationTo: 'notification-channels';
+        value: string | NotificationChannel;
+      } | null)
+    | ({
+        relationTo: 'digest-definitions';
+        value: string | DigestDefinition;
+      } | null)
+    | ({
+        relationTo: 'digest-runs';
+        value: string | DigestRun;
+      } | null)
+    | ({
+        relationTo: 'delivery-receipts';
+        value: string | DeliveryReceipt;
+      } | null)
+    | ({
+        relationTo: 'automation-definitions';
+        value: string | AutomationDefinition;
+      } | null)
+    | ({
+        relationTo: 'analytics-events';
+        value: string | AnalyticsEvent;
+      } | null)
+    | ({
+        relationTo: 'analytics-rollups';
+        value: string | AnalyticsRollup;
+      } | null)
+    | ({
+        relationTo: 'metric-snapshots';
+        value: string | MetricSnapshot;
+      } | null)
+    | ({
+        relationTo: 'analytics-goals';
+        value: string | AnalyticsGoal;
+      } | null)
+    | ({
+        relationTo: 'command-center-preferences';
+        value: string | CommandCenterPreference;
+      } | null)
+    | ({
+        relationTo: 'experience-rules';
+        value: string | ExperienceRule;
+      } | null)
+    | ({
+        relationTo: 'experience-variants';
+        value: string | ExperienceVariant;
+      } | null)
+    | ({
+        relationTo: 'experiments';
+        value: string | Experiment;
+      } | null)
+    | ({
+        relationTo: 'experiment-variants';
+        value: string | ExperimentVariant;
+      } | null)
+    | ({
+        relationTo: 'traffic-allocations';
+        value: string | TrafficAllocation;
+      } | null)
+    | ({
+        relationTo: 'experiment-assignments';
+        value: string | ExperimentAssignment;
+      } | null)
+    | ({
+        relationTo: 'conversion-goals';
+        value: string | ConversionGoal;
+      } | null)
+    | ({
+        relationTo: 'experiment-events';
+        value: string | ExperimentEvent;
+      } | null)
+    | ({
+        relationTo: 'experiment-analyses';
+        value: string | ExperimentAnalysis;
+      } | null)
+    | ({
+        relationTo: 'experiment-decisions';
+        value: string | ExperimentDecision;
+      } | null)
+    | ({
+        relationTo: 'quality-policies';
+        value: string | QualityPolicy;
+      } | null)
+    | ({
+        relationTo: 'quality-rules';
+        value: string | QualityRule;
+      } | null)
+    | ({
+        relationTo: 'quality-scans';
+        value: string | QualityScan;
+      } | null)
+    | ({
+        relationTo: 'quality-issues';
+        value: string | QualityIssue;
+      } | null)
+    | ({
+        relationTo: 'quality-exceptions';
+        value: string | QualityException;
+      } | null)
+    | ({
+        relationTo: 'quality-waivers';
+        value: string | QualityWaiver;
+      } | null)
+    | ({
+        relationTo: 'quality-reports';
+        value: string | QualityReport;
+      } | null)
+    | ({
+        relationTo: 'merchant-connections';
+        value: string | MerchantConnection;
+      } | null)
+    | ({
+        relationTo: 'payment-method-capabilities';
+        value: string | PaymentMethodCapability;
+      } | null)
+    | ({
+        relationTo: 'products';
+        value: string | Product;
+      } | null)
+    | ({
+        relationTo: 'carts';
+        value: string | Cart;
+      } | null)
+    | ({
+        relationTo: 'checkout-sessions';
+        value: string | CheckoutSession;
+      } | null)
+    | ({
+        relationTo: 'payment-intents';
+        value: string | PaymentIntent;
+      } | null)
+    | ({
+        relationTo: 'orders';
+        value: string | Order;
+      } | null)
+    | ({
+        relationTo: 'payment-webhook-events';
+        value: string | PaymentWebhookEvent;
+      } | null)
+    | ({
+        relationTo: 'supporters';
+        value: string | Supporter;
+      } | null)
+    | ({
+        relationTo: 'entitlements';
+        value: string | Entitlement;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -3806,6 +6459,7 @@ export interface MediaAssetsSelect<T extends boolean = true> {
       };
   replaceGloballyWith?: T;
   originalExportAllowed?: T;
+  rightsStatus?: T;
   retentionMode?: T;
   retentionExpiresAt?: T;
   retentionHold?: T;
@@ -4122,6 +6776,28 @@ export interface ScheduledPublishJobsSelect<T extends boolean = true> {
   idempotencyKey?: T;
   status?: T;
   createdBy?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "content-releases_select".
+ */
+export interface ContentReleasesSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  title?: T;
+  content?: T;
+  article?: T;
+  product?: T;
+  productRevision?: T;
+  scheduledFor?: T;
+  timeZone?: T;
+  status?: T;
+  lastScheduleMutationId?: T;
+  scheduleAudit?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -4719,12 +7395,18 @@ export interface TtsOutputsSelect<T extends boolean = true> {
  * via the `definition` "graphic-documents_select".
  */
 export interface GraphicDocumentsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
   title?: T;
   sourceMedia?: T;
   sourceRevision?: T;
   layers?: T;
   history?: T;
   brandKit?: T;
+  template?: T;
+  layoutVariant?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -4900,9 +7582,19 @@ export interface CampaignsSelect<T extends boolean = true> {
   title?: T;
   sourceContent?: T;
   status?: T;
+  visibility?: T;
   launchAt?: T;
+  startAt?: T;
+  endAt?: T;
   timeZone?: T;
+  goal?: T;
   goals?: T;
+  milestones?: T;
+  updates?: T;
+  tiers?: T;
+  progress?: T;
+  calendarEntry?: T;
+  supporterVisibility?: T;
   newsletterHook?: T;
   productLinks?: T;
   graphics?: T;
@@ -5040,6 +7732,1274 @@ export interface CalendarEntriesSelect<T extends boolean = true> {
   retentionHold?: T;
   removeFromDiscovery?: T;
   tombstoneLabel?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "form-definitions_select".
+ */
+export interface FormDefinitionsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  name?: T;
+  template?: T;
+  publicPath?: T;
+  visibility?: T;
+  activeSchema?: T;
+  settings?: T;
+  retentionMode?: T;
+  retentionExpiresAt?: T;
+  retentionHold?: T;
+  removeFromDiscovery?: T;
+  tombstoneLabel?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "form-schemas_select".
+ */
+export interface FormSchemasSelect<T extends boolean = true> {
+  form?: T;
+  version?: T;
+  state?: T;
+  locale?: T;
+  schema?: T;
+  consentText?: T;
+  consentRevision?: T;
+  consentTranslationStatus?: T;
+  translationProject?: T;
+  localeCompleteness?: T;
+  brandSnapshot?: T;
+  publishedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "form-submissions_select".
+ */
+export interface FormSubmissionsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  form?: T;
+  schema?: T;
+  status?: T;
+  locale?: T;
+  values?: T;
+  consentSnapshot?: T;
+  privacyClass?: T;
+  abuse?: T;
+  contact?: T;
+  organization?: T;
+  workflowItem?: T;
+  idempotencyKey?: T;
+  retentionMode?: T;
+  retentionExpiresAt?: T;
+  retentionHold?: T;
+  removeFromDiscovery?: T;
+  tombstoneLabel?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "submission-attachments_select".
+ */
+export interface SubmissionAttachmentsSelect<T extends boolean = true> {
+  submission?: T;
+  media?: T;
+  filename?: T;
+  contentType?: T;
+  size?: T;
+  scanStatus?: T;
+  private?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "contacts_select".
+ */
+export interface ContactsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  displayName?: T;
+  email?: T;
+  emailHash?: T;
+  member?: T;
+  status?: T;
+  profile?: T;
+  mergeState?: T;
+  mergedInto?: T;
+  retentionMode?: T;
+  retentionExpiresAt?: T;
+  retentionHold?: T;
+  removeFromDiscovery?: T;
+  tombstoneLabel?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "organizations_select".
+ */
+export interface OrganizationsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  name?: T;
+  domain?: T;
+  status?: T;
+  metadata?: T;
+  retentionMode?: T;
+  retentionExpiresAt?: T;
+  retentionHold?: T;
+  removeFromDiscovery?: T;
+  tombstoneLabel?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "relationship-records_select".
+ */
+export interface RelationshipRecordsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  contact?: T;
+  organization?: T;
+  role?: T;
+  related?: T;
+  context?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "contact-tags_select".
+ */
+export interface ContactTagsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  name?: T;
+  color?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "contact-taggings_select".
+ */
+export interface ContactTaggingsSelect<T extends boolean = true> {
+  contact?: T;
+  tag?: T;
+  source?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "interaction-records_select".
+ */
+export interface InteractionRecordsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  contact?: T;
+  organization?: T;
+  kind?: T;
+  occurredAt?: T;
+  summary?: T;
+  references?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "relationship-notes_select".
+ */
+export interface RelationshipNotesSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  contact?: T;
+  organization?: T;
+  body?: T;
+  private?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "deals-opportunities_select".
+ */
+export interface DealsOpportunitiesSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  contact?: T;
+  organization?: T;
+  campaign?: T;
+  title?: T;
+  stage?: T;
+  amount?: T;
+  currency?: T;
+  ownerAssignment?: T;
+  nextAction?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "owner-assignments_select".
+ */
+export interface OwnerAssignmentsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  assignee?: T;
+  subject?: T;
+  assignedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "next-actions_select".
+ */
+export interface NextActionsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  title?: T;
+  dueAt?: T;
+  status?: T;
+  subject?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "workflow-items_select".
+ */
+export interface WorkflowItemsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  title?: T;
+  type?: T;
+  status?: T;
+  priority?: T;
+  assignee?: T;
+  watchers?: T;
+  startsAt?: T;
+  dueAt?: T;
+  checklist?: T;
+  comments?: T;
+  attachments?: T;
+  sourceReferences?: T;
+  dependencies?: T;
+  outcome?: T;
+  audit?: T;
+  calendarEntry?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "audience-lists_select".
+ */
+export interface AudienceListsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  name?: T;
+  description?: T;
+  status?: T;
+  doubleOptIn?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "audience-segments_select".
+ */
+export interface AudienceSegmentsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  name?: T;
+  definition?: T;
+  consentBasisRequired?: T;
+  status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "audience-memberships_select".
+ */
+export interface AudienceMembershipsSelect<T extends boolean = true> {
+  subscriber?: T;
+  audienceList?: T;
+  status?: T;
+  confirmedAt?: T;
+  source?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "subscriber-confirmation-tokens_select".
+ */
+export interface SubscriberConfirmationTokensSelect<T extends boolean = true> {
+  subscriber?: T;
+  audienceList?: T;
+  tokenHash?: T;
+  expiresAt?: T;
+  usedAt?: T;
+  locale?: T;
+  consentWording?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "subscribers_select".
+ */
+export interface SubscribersSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  email?: T;
+  emailHash?: T;
+  member?: T;
+  contact?: T;
+  status?: T;
+  verifiedAt?: T;
+  globalUnsubscribedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "consent-events_select".
+ */
+export interface ConsentEventsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  subscriber?: T;
+  contact?: T;
+  formSubmission?: T;
+  audienceList?: T;
+  event?: T;
+  basis?: T;
+  wording?: T;
+  locale?: T;
+  occurredAt?: T;
+  evidence?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "preferences_select".
+ */
+export interface PreferencesSelect<T extends boolean = true> {
+  subscriber?: T;
+  audienceList?: T;
+  preferences?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "suppressions_select".
+ */
+export interface SuppressionsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  emailHash?: T;
+  reason?: T;
+  provider?: T;
+  occurredAt?: T;
+  global?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "email-messages_select".
+ */
+export interface EmailMessagesSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  subject?: T;
+  blocks?: T;
+  kind?: T;
+  status?: T;
+  scheduledFor?: T;
+  idempotencyKey?: T;
+  tracking?: T;
+  audience?: T;
+  reviewedAt?: T;
+  cancelCutoffAt?: T;
+  translationProject?: T;
+  localeCompleteness?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "delivery-identities_select".
+ */
+export interface DeliveryIdentitiesSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  emailHash?: T;
+  provider?: T;
+  providerRecipientId?: T;
+  metadata?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "email-deliveries_select".
+ */
+export interface EmailDeliveriesSelect<T extends boolean = true> {
+  message?: T;
+  subscriber?: T;
+  recipientEmail?: T;
+  idempotencyKey?: T;
+  status?: T;
+  provider?: T;
+  providerMessageId?: T;
+  attempts?: T;
+  outcome?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "activity-events_select".
+ */
+export interface ActivityEventsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  type?: T;
+  actor?: T;
+  object?: T;
+  payload?: T;
+  visibilitySnapshot?: T;
+  occurredAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "notifications_select".
+ */
+export interface NotificationsSelect<T extends boolean = true> {
+  activityEvent?: T;
+  recipientMember?: T;
+  status?: T;
+  channels?: T;
+  readAt?: T;
+  mutedUntil?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "notification-preferences_select".
+ */
+export interface NotificationPreferencesSelect<T extends boolean = true> {
+  member?: T;
+  rules?: T;
+  quietHours?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "notification-channels_select".
+ */
+export interface NotificationChannelsSelect<T extends boolean = true> {
+  member?: T;
+  kind?: T;
+  address?: T;
+  enabled?: T;
+  verifiedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "digest-definitions_select".
+ */
+export interface DigestDefinitionsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  member?: T;
+  name?: T;
+  filters?: T;
+  cadence?: T;
+  channels?: T;
+  template?: T;
+  reviewRequired?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "digest-runs_select".
+ */
+export interface DigestRunsSelect<T extends boolean = true> {
+  definition?: T;
+  sourceEventIds?: T;
+  frozenAt?: T;
+  status?: T;
+  outcome?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "delivery-receipts_select".
+ */
+export interface DeliveryReceiptsSelect<T extends boolean = true> {
+  delivery?: T;
+  notification?: T;
+  channel?: T;
+  status?: T;
+  providerEvent?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "automation-definitions_select".
+ */
+export interface AutomationDefinitionsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  name?: T;
+  status?: T;
+  trigger?: T;
+  conditions?: T;
+  actions?: T;
+  requiresApproval?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-events_select".
+ */
+export interface AnalyticsEventsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  eventId?: T;
+  dedupeKey?: T;
+  eventType?: T;
+  occurredAt?: T;
+  receivedAt?: T;
+  schemaVersion?: T;
+  consentBasis?: T;
+  anonymousHash?: T;
+  sessionHash?: T;
+  member?: T;
+  context?: T;
+  properties?: T;
+  trusted?: T;
+  retentionMode?: T;
+  retentionExpiresAt?: T;
+  retentionHold?: T;
+  removeFromDiscovery?: T;
+  tombstoneLabel?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-rollups_select".
+ */
+export interface AnalyticsRollupsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  metric?: T;
+  definition?: T;
+  grain?: T;
+  windowStart?: T;
+  windowEnd?: T;
+  dimensions?: T;
+  value?: T;
+  uniqueCountMethod?: T;
+  schemaVersion?: T;
+  lateEventsIncludedUntil?: T;
+  retentionMode?: T;
+  retentionExpiresAt?: T;
+  retentionHold?: T;
+  removeFromDiscovery?: T;
+  tombstoneLabel?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "metric-snapshots_select".
+ */
+export interface MetricSnapshotsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  metric?: T;
+  value?: T;
+  definition?: T;
+  provider?: T;
+  grain?: T;
+  windowStart?: T;
+  windowEnd?: T;
+  financial?: T;
+  reconciliationStatus?: T;
+  sourceReference?: T;
+  retentionMode?: T;
+  retentionExpiresAt?: T;
+  retentionHold?: T;
+  removeFromDiscovery?: T;
+  tombstoneLabel?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-goals_select".
+ */
+export interface AnalyticsGoalsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  key?: T;
+  name?: T;
+  eventTypes?: T;
+  definition?: T;
+  enabled?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "command-center-preferences_select".
+ */
+export interface CommandCenterPreferencesSelect<T extends boolean = true> {
+  user?: T;
+  hiddenSections?: T;
+  sectionOrder?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "experience-rules_select".
+ */
+export interface ExperienceRulesSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  name?: T;
+  description?: T;
+  conditions?: T;
+  status?: T;
+  approvedBy?: T;
+  approvedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "experience-variants_select".
+ */
+export interface ExperienceVariantsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  rule?: T;
+  name?: T;
+  registeredComponent?: T;
+  contentRevision?: T;
+  properties?: T;
+  status?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "experiments_select".
+ */
+export interface ExperimentsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  name?: T;
+  description?: T;
+  rule?: T;
+  conversionGoal?: T;
+  state?: T;
+  assignmentSalt?: T;
+  collectionEnabled?: T;
+  approvedBy?: T;
+  approvedAt?: T;
+  startedAt?: T;
+  stoppedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "experiment-variants_select".
+ */
+export interface ExperimentVariantsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  experiment?: T;
+  experienceVariant?: T;
+  name?: T;
+  isControl?: T;
+  allocation?: T;
+  registeredComponent?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "traffic-allocations_select".
+ */
+export interface TrafficAllocationsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  experiment?: T;
+  variant?: T;
+  allocation?: T;
+  effectiveAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "experiment-assignments_select".
+ */
+export interface ExperimentAssignmentsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  experiment?: T;
+  variant?: T;
+  subjectKey?: T;
+  dedupeKey?: T;
+  consentBasis?: T;
+  assignedAt?: T;
+  isDefault?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "conversion-goals_select".
+ */
+export interface ConversionGoalsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  key?: T;
+  name?: T;
+  eventTypes?: T;
+  definition?: T;
+  enabled?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "experiment-events_select".
+ */
+export interface ExperimentEventsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  experiment?: T;
+  variant?: T;
+  assignment?: T;
+  kind?: T;
+  goalKey?: T;
+  dedupeKey?: T;
+  occurredAt?: T;
+  consentBasis?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "experiment-analyses_select".
+ */
+export interface ExperimentAnalysesSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  experiment?: T;
+  computedAt?: T;
+  result?: T;
+  warnings?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "experiment-decisions_select".
+ */
+export interface ExperimentDecisionsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  experiment?: T;
+  selectedVariant?: T;
+  decision?: T;
+  reason?: T;
+  actor?: T;
+  decidedAt?: T;
+  approvalRequired?: T;
+  approvedBy?: T;
+  approvedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "quality-policies_select".
+ */
+export interface QualityPoliciesSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  name?: T;
+  status?: T;
+  releaseChecksRequired?: T;
+  rules?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "quality-rules_select".
+ */
+export interface QualityRulesSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  policy?: T;
+  key?: T;
+  producer?: T;
+  description?: T;
+  severity?: T;
+  enabled?: T;
+  configuration?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "quality-scans_select".
+ */
+export interface QualityScansSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  policy?: T;
+  targetType?: T;
+  targetId?: T;
+  revisionId?: T;
+  status?: T;
+  startedAt?: T;
+  completedAt?: T;
+  summary?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "quality-issues_select".
+ */
+export interface QualityIssuesSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  scan?: T;
+  rule?: T;
+  dedupeKey?: T;
+  revisionId?: T;
+  targetType?: T;
+  targetId?: T;
+  surface?: T;
+  severity?: T;
+  status?: T;
+  message?: T;
+  remediation?: T;
+  owner?: T;
+  firstSeenAt?: T;
+  resolvedAt?: T;
+  dependencyFingerprint?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "quality-exceptions_select".
+ */
+export interface QualityExceptionsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  rule?: T;
+  targetType?: T;
+  targetId?: T;
+  reason?: T;
+  actor?: T;
+  expiresAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "quality-waivers_select".
+ */
+export interface QualityWaiversSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  issue?: T;
+  reason?: T;
+  actor?: T;
+  expiresAt?: T;
+  authorizedBy?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "quality-reports_select".
+ */
+export interface QualityReportsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  scan?: T;
+  report?: T;
+  generatedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "merchant-connections_select".
+ */
+export interface MerchantConnectionsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  label?: T;
+  providerKey?: T;
+  merchantCountry?: T;
+  status?: T;
+  credentialReference?: T;
+  configuration?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payment-method-capabilities_select".
+ */
+export interface PaymentMethodCapabilitiesSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  merchantConnection?: T;
+  providerKey?: T;
+  railKey?: T;
+  family?: T;
+  flow?: T;
+  merchantCountries?: T;
+  buyerCountries?: T;
+  presentmentCurrencies?: T;
+  settlementCurrencies?: T;
+  minimumAmountMinor?: T;
+  maximumAmountMinor?: T;
+  recurring?: T;
+  refunds?: T;
+  enabled?: T;
+  health?: T;
+  requiredCustomerFields?: T;
+  instructions?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "products_select".
+ */
+export interface ProductsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  merchantConnection?: T;
+  name?: T;
+  slug?: T;
+  canonicalPath?: T;
+  kind?: T;
+  state?: T;
+  description?: T;
+  localized?: T;
+  categories?: T;
+  collections?: T;
+  media?: T;
+  variants?:
+    | T
+    | {
+        sku?: T;
+        title?: T;
+        attributes?: T;
+        inventoryPolicy?: T;
+        inventoryQuantity?: T;
+        inventoryReference?: T;
+        digitalFiles?: T;
+        podReference?: T;
+        id?: T;
+      };
+  prices?:
+    | T
+    | {
+        currency?: T;
+        amountMinor?: T;
+        compareAtMinor?: T;
+        variantSku?: T;
+        recurringInterval?: T;
+        id?: T;
+      };
+  entitlement?: T;
+  releaseRevision?: T;
+  retentionMode?: T;
+  retentionExpiresAt?: T;
+  retentionHold?: T;
+  removeFromDiscovery?: T;
+  tombstoneLabel?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "carts_select".
+ */
+export interface CartsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  merchantConnection?: T;
+  currency?: T;
+  buyerCountry?: T;
+  items?: T;
+  state?: T;
+  idempotencyKey?: T;
+  expiresAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "checkout-sessions_select".
+ */
+export interface CheckoutSessionsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  cart?: T;
+  merchantConnection?: T;
+  currency?: T;
+  amountMinor?: T;
+  buyerCountry?: T;
+  state?: T;
+  selectedCapabilityId?: T;
+  legalCopy?: T;
+  idempotencyKey?: T;
+  expiresAt?: T;
+  shippingExtension?: T;
+  taxExtension?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payment-intents_select".
+ */
+export interface PaymentIntentsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  checkoutSession?: T;
+  merchantConnection?: T;
+  capabilityId?: T;
+  providerKey?: T;
+  amountMinor?: T;
+  currency?: T;
+  state?: T;
+  providerReference?: T;
+  cryptoInvoice?: T;
+  exception?: T;
+  financialEvents?: T;
+  expiresAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "orders_select".
+ */
+export interface OrdersSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  checkoutSession?: T;
+  merchantConnection?: T;
+  orderNumber?: T;
+  state?: T;
+  currency?: T;
+  amountMinor?: T;
+  items?: T;
+  transitionLog?: T;
+  refundExtension?: T;
+  receipt?: T;
+  fulfillmentExtension?: T;
+  exception?: T;
+  posMetadata?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payment-webhook-events_select".
+ */
+export interface PaymentWebhookEventsSelect<T extends boolean = true> {
+  merchantConnection?: T;
+  providerKey?: T;
+  providerEventId?: T;
+  payloadHash?: T;
+  verifiedAt?: T;
+  processedAt?: T;
+  outcome?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "supporters_select".
+ */
+export interface SupportersSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  displayName?: T;
+  member?: T;
+  emailHash?: T;
+  providerReferences?: T;
+  visibilityPreference?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "entitlements_select".
+ */
+export interface EntitlementsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  supporter?: T;
+  campaign?: T;
+  paymentIntent?: T;
+  entitlement?: T;
+  source?: T;
+  startsAt?: T;
+  endsAt?: T;
+  revokedAt?: T;
+  fulfillmentReference?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -5428,6 +9388,32 @@ export interface TaskSocialPublish {
     queueItemId: string;
     workerId: string;
   };
+  output?: unknown;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskAudience-email-delivery".
+ */
+export interface TaskAudienceEmailDelivery {
+  input: {
+    deliveryId: string;
+  };
+  output?: unknown;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskAudience-newsletter-dispatch".
+ */
+export interface TaskAudienceNewsletterDispatch {
+  input?: unknown;
+  output?: unknown;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskCommerce-abandon-checkouts".
+ */
+export interface TaskCommerceAbandonCheckouts {
+  input?: unknown;
   output?: unknown;
 }
 /**

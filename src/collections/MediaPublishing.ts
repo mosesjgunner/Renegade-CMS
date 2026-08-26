@@ -177,12 +177,19 @@ export const TtsOutputs = collection('tts-outputs', [
   { name: 'status', type: 'select', required: true, options: ['processing', 'ready', 'failed'] },
 ])
 export const GraphicDocuments = collection('graphic-documents', [
+  ...ownerFields(),
   { name: 'title', type: 'text', required: true },
   { name: 'sourceMedia', type: 'relationship', relationTo: 'media-assets', required: true },
   { name: 'sourceRevision', type: 'text', required: true },
   { name: 'layers', type: 'json', required: true },
   { name: 'history', type: 'json', required: true, defaultValue: [] },
   { name: 'brandKit', type: 'relationship', relationTo: 'brands' },
+  { name: 'template', type: 'text' },
+  {
+    name: 'layoutVariant',
+    type: 'text',
+    admin: { description: 'Registered approved variant key; reserved for Prompt 14 targeting.' },
+  },
 ])
 export const MediaDerivatives = collection('media-derivatives', [
   { name: 'title', type: 'text', required: true },

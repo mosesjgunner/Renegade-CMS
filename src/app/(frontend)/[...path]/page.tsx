@@ -10,7 +10,7 @@ import { PublicLayout } from '@/modules/public/PublicLayout'
 type Args = { params: Promise<{ path: string[] }> }
 type PublicRecord = PublicState & Record<string, unknown>
 
-const candidates = ['content', 'events', 'timelines', 'albums', 'discussions'] as const
+const candidates = ['content', 'events', 'timelines', 'albums', 'discussions', 'products'] as const
 
 function label(record: PublicRecord): string {
   return String(record.title ?? record.name ?? record.displayName ?? 'Publication')
@@ -18,7 +18,7 @@ function label(record: PublicRecord): string {
 
 function kind(
   collection: (typeof candidates)[number],
-): 'article' | 'event' | 'timeline' | 'album' | 'forum' {
+): 'article' | 'event' | 'timeline' | 'album' | 'forum' | 'product' {
   if (collection === 'events') return 'event'
   if (collection === 'timelines') return 'timeline'
   if (collection === 'albums') return 'album'
