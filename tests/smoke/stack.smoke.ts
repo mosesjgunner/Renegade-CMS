@@ -1,8 +1,7 @@
-import { execFileSync, spawn } from 'node:child_process'
+import { spawn } from 'node:child_process'
 import path from 'node:path'
 import process from 'node:process'
 
-const npmCli = process.env.npm_execpath
 const baseUrl = process.env.SMOKE_BASE_URL ?? 'http://127.0.0.1:3100'
 const token = process.env.SMOKE_TEST_TOKEN
 const secret = process.env.PAYLOAD_SECRET
@@ -10,7 +9,6 @@ const secret = process.env.PAYLOAD_SECRET
 if (!process.env.DATABASE_URL || !secret || !token) {
   throw new Error('DATABASE_URL, PAYLOAD_SECRET and SMOKE_TEST_TOKEN are required for stack smoke')
 }
-if (!npmCli) throw new Error('Run the smoke proof through npm so npm_execpath is available')
 
 const env = {
   ...process.env,
@@ -20,9 +18,6 @@ const env = {
   PORT: new URL(baseUrl).port || '3100',
 }
 
-execFileSync(process.execPath, [npmCli, 'run', 'db:migrate'], { env, stdio: 'inherit' })
-execFileSync(process.execPath, [npmCli, 'run', 'db:seed'], { env, stdio: 'inherit' })
-
 const nextCli = path.resolve('node_modules/next/dist/bin/next')
 const app = spawn(process.execPath, [nextCli, 'start'], {
   env,
@@ -30,6 +25,9 @@ const app = spawn(process.execPath, [nextCli, 'start'], {
 })
 let logs = ''
 app.stdout.on('data', (chunk) => (logs += chunk.toString()))
+  const liveness = await (await fetch(`${baseUrl}/health/live`)).json()
+  assert(liveness.status === 'live', 'liveness did not report live')
+
 app.stderr.on('data', (chunk) => (logs += chunk.toString()))
 
 try {

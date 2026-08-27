@@ -11,7 +11,7 @@ jobs:
       postgres:
         image: postgres:17.6-alpine
         env:
-          POSTGRES_DB: renegade_test
+          POSTGRES_DB: renegade_release_acceptance
           POSTGRES_USER: renegade
           POSTGRES_PASSWORD: ci_test_only
         ports:
@@ -22,22 +22,15 @@ jobs:
           --health-timeout 3s
           --health-retries 20
     env:
-      DATABASE_URL: postgresql://renegade:ci_test_only@127.0.0.1:5432/renegade_test
+      DATABASE_URL: postgresql://renegade:ci_test_only@127.0.0.1:5432/renegade_release_acceptance
       PAYLOAD_SECRET: ci-only-test-value-with-at-least-32-characters
       APP_URL: http://127.0.0.1:3100
       SMOKE_TEST_TOKEN: ci-only-smoke-token-with-24-characters
+      UPGRADE_MIGRATION_DATABASE_URL: postgresql://renegade:ci_test_only@127.0.0.1:5432/renegade_upgrade_acceptance
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 24
           cache: npm
-      - run: npm ci
-      - run: npm run db:migrate
-      - run: npm run format:check
-      - run: npm run lint
-      - run: npm run typecheck
-      - run: npm run test
-      - run: npm run test:integration
-      - run: npm run build
-      - run: npm run test:smoke
+      - run: npm run verify:release

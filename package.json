@@ -26,8 +26,12 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run tests/unit",
     "test:integration": "vitest run tests/integration --no-file-parallelism",
+    "test:migrations:fresh": "tsx src/scripts/verify-fresh-migration.ts",
+    "test:migrations:upgrade": "tsx src/scripts/verify-upgrade-migration.ts",
     "test:smoke": "tsx tests/smoke/stack.smoke.ts",
-    "verify": "npm run format:check && npm run lint && npm run typecheck && npm run test && npm run test:integration && npm run build && npm run test:smoke",
+    "verify:release:checks": "tsx src/scripts/verify-release.ts",
+    "verify:release": "node scripts/verify-clean-clone.mjs",
+    "verify": "npm run verify:release",
     "jobs:worker": "npm run payload -- jobs:run --cron \"*/10 * * * * *\" --queue operations --handle-schedules"
   },
   "dependencies": {

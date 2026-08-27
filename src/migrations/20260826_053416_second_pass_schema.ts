@@ -409,26 +409,9 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   ALTER TYPE "public"."enum_payload_jobs_task_slug" ADD VALUE 'audience-email-delivery';
   ALTER TYPE "public"."enum_payload_jobs_task_slug" ADD VALUE 'audience-newsletter-dispatch';
   ALTER TYPE "public"."enum_payload_jobs_task_slug" ADD VALUE 'commerce-abandon-checkouts';
-  CREATE TABLE "content_releases" (
-  	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
-  	"site_id" uuid NOT NULL,
-  	"publication_id" uuid,
-  	"space_id" uuid,
-  	"owner_id" uuid,
-  	"title" varchar NOT NULL,
-  	"content_id" uuid,
-  	"article_id" uuid,
-  	"product_id" uuid,
-  	"product_revision" varchar,
-  	"scheduled_for" timestamp(3) with time zone,
-  	"time_zone" varchar DEFAULT 'UTC',
-  	"status" "enum_content_releases_status" DEFAULT 'draft',
-  	"last_schedule_mutation_id" varchar,
-  	"schedule_audit" jsonb DEFAULT '[]'::jsonb,
-  	"updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
-  	"created_at" timestamp(3) with time zone DEFAULT now() NOT NULL
-  );
-  
+  -- Content releases existed before the Second Pass. Preserve its rows and add only the new commerce fields.
+  ALTER TABLE "content_releases" ADD COLUMN IF NOT EXISTS "product_id" uuid;
+  ALTER TABLE "content_releases" ADD COLUMN IF NOT EXISTS "product_revision" varchar;
   CREATE TABLE "form_definitions" (
   	"id" uuid PRIMARY KEY DEFAULT gen_random_uuid() NOT NULL,
   	"site_id" uuid NOT NULL,
@@ -1580,14 +1563,14 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"created_at" timestamp(3) with time zone DEFAULT now() NOT NULL
   );
   
-  ALTER TABLE "media_assets" ADD COLUMN "rights_status" "enum_media_assets_rights_status" DEFAULT 'approved';
+  ALTER TABLE "media_assets" ADD COLUMN IF NOT EXISTS "rights_status" "enum_media_assets_rights_status" DEFAULT 'approved';
   ALTER TABLE "media_usages_rels" ADD COLUMN "email_messages_id" uuid;
-  ALTER TABLE "graphic_documents" ADD COLUMN "site_id" uuid NOT NULL;
-  ALTER TABLE "graphic_documents" ADD COLUMN "publication_id" uuid;
-  ALTER TABLE "graphic_documents" ADD COLUMN "space_id" uuid;
-  ALTER TABLE "graphic_documents" ADD COLUMN "owner_id" uuid;
-  ALTER TABLE "graphic_documents" ADD COLUMN "template" varchar;
-  ALTER TABLE "graphic_documents" ADD COLUMN "layout_variant" varchar;
+  ALTER TABLE "graphic_documents" ADD COLUMN IF NOT EXISTS "site_id" uuid NOT NULL;
+  ALTER TABLE "graphic_documents" ADD COLUMN IF NOT EXISTS "publication_id" uuid;
+  ALTER TABLE "graphic_documents" ADD COLUMN IF NOT EXISTS "space_id" uuid;
+  ALTER TABLE "graphic_documents" ADD COLUMN IF NOT EXISTS "owner_id" uuid;
+  ALTER TABLE "graphic_documents" ADD COLUMN IF NOT EXISTS "template" varchar;
+  ALTER TABLE "graphic_documents" ADD COLUMN IF NOT EXISTS "layout_variant" varchar;
   ALTER TABLE "campaigns" ADD COLUMN "visibility" "enum_campaigns_visibility" DEFAULT 'public' NOT NULL;
   ALTER TABLE "campaigns" ADD COLUMN "start_at" timestamp(3) with time zone;
   ALTER TABLE "campaigns" ADD COLUMN "end_at" timestamp(3) with time zone;
@@ -1665,13 +1648,13 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   ALTER TABLE "payload_locked_documents_rels" ADD COLUMN "payment_webhook_events_id" uuid;
   ALTER TABLE "payload_locked_documents_rels" ADD COLUMN "supporters_id" uuid;
   ALTER TABLE "payload_locked_documents_rels" ADD COLUMN "entitlements_id" uuid;
-  ALTER TABLE "content_releases" ADD CONSTRAINT "content_releases_site_id_sites_id_fk" FOREIGN KEY ("site_id") REFERENCES "public"."sites"("id") ON DELETE set null ON UPDATE no action;
-  ALTER TABLE "content_releases" ADD CONSTRAINT "content_releases_publication_id_publications_id_fk" FOREIGN KEY ("publication_id") REFERENCES "public"."publications"("id") ON DELETE set null ON UPDATE no action;
-  ALTER TABLE "content_releases" ADD CONSTRAINT "content_releases_space_id_spaces_id_fk" FOREIGN KEY ("space_id") REFERENCES "public"."spaces"("id") ON DELETE set null ON UPDATE no action;
-  ALTER TABLE "content_releases" ADD CONSTRAINT "content_releases_owner_id_members_id_fk" FOREIGN KEY ("owner_id") REFERENCES "public"."members"("id") ON DELETE set null ON UPDATE no action;
-  ALTER TABLE "content_releases" ADD CONSTRAINT "content_releases_content_id_content_id_fk" FOREIGN KEY ("content_id") REFERENCES "public"."content"("id") ON DELETE set null ON UPDATE no action;
-  ALTER TABLE "content_releases" ADD CONSTRAINT "content_releases_article_id_article_family_content_id_fk" FOREIGN KEY ("article_id") REFERENCES "public"."article_family_content"("id") ON DELETE set null ON UPDATE no action;
-  ALTER TABLE "content_releases" ADD CONSTRAINT "content_releases_product_id_products_id_fk" FOREIGN KEY ("product_id") REFERENCES "public"."products"("id") ON DELETE set null ON UPDATE no action;
+  DO $$ BEGIN ALTER TABLE "content_releases" ADD CONSTRAINT "content_releases_site_id_sites_id_fk" FOREIGN KEY ("site_id") REFERENCES "public"."sites"("id") ON DELETE set null ON UPDATE no action; EXCEPTION WHEN duplicate_object THEN null; END $$;
+  DO $$ BEGIN ALTER TABLE "content_releases" ADD CONSTRAINT "content_releases_publication_id_publications_id_fk" FOREIGN KEY ("publication_id") REFERENCES "public"."publications"("id") ON DELETE set null ON UPDATE no action; EXCEPTION WHEN duplicate_object THEN null; END $$;
+  DO $$ BEGIN ALTER TABLE "content_releases" ADD CONSTRAINT "content_releases_space_id_spaces_id_fk" FOREIGN KEY ("space_id") REFERENCES "public"."spaces"("id") ON DELETE set null ON UPDATE no action; EXCEPTION WHEN duplicate_object THEN null; END $$;
+  DO $$ BEGIN ALTER TABLE "content_releases" ADD CONSTRAINT "content_releases_owner_id_members_id_fk" FOREIGN KEY ("owner_id") REFERENCES "public"."members"("id") ON DELETE set null ON UPDATE no action; EXCEPTION WHEN duplicate_object THEN null; END $$;
+  DO $$ BEGIN ALTER TABLE "content_releases" ADD CONSTRAINT "content_releases_content_id_content_id_fk" FOREIGN KEY ("content_id") REFERENCES "public"."content"("id") ON DELETE set null ON UPDATE no action; EXCEPTION WHEN duplicate_object THEN null; END $$;
+  DO $$ BEGIN ALTER TABLE "content_releases" ADD CONSTRAINT "content_releases_article_id_article_family_content_id_fk" FOREIGN KEY ("article_id") REFERENCES "public"."article_family_content"("id") ON DELETE set null ON UPDATE no action; EXCEPTION WHEN duplicate_object THEN null; END $$;
+  DO $$ BEGIN ALTER TABLE "content_releases" ADD CONSTRAINT "content_releases_product_id_products_id_fk" FOREIGN KEY ("product_id") REFERENCES "public"."products"("id") ON DELETE set null ON UPDATE no action; EXCEPTION WHEN duplicate_object THEN null; END $$;
   ALTER TABLE "form_definitions" ADD CONSTRAINT "form_definitions_site_id_sites_id_fk" FOREIGN KEY ("site_id") REFERENCES "public"."sites"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "form_definitions" ADD CONSTRAINT "form_definitions_publication_id_publications_id_fk" FOREIGN KEY ("publication_id") REFERENCES "public"."publications"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "form_definitions" ADD CONSTRAINT "form_definitions_space_id_spaces_id_fk" FOREIGN KEY ("space_id") REFERENCES "public"."spaces"("id") ON DELETE set null ON UPDATE no action;
@@ -1992,7 +1975,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE INDEX "content_releases_content_idx" ON "content_releases" USING btree ("content_id");
   CREATE INDEX "content_releases_article_idx" ON "content_releases" USING btree ("article_id");
   CREATE INDEX "content_releases_product_idx" ON "content_releases" USING btree ("product_id");
-  CREATE INDEX "content_releases_scheduled_for_idx" ON "content_releases" USING btree ("scheduled_for");
+  CREATE INDEX IF NOT EXISTS "content_releases_scheduled_for_idx" ON "content_releases" USING btree ("scheduled_for");
   CREATE INDEX "content_releases_updated_at_idx" ON "content_releases" USING btree ("updated_at");
   CREATE INDEX "content_releases_created_at_idx" ON "content_releases" USING btree ("created_at");
   CREATE INDEX "form_definitions_site_idx" ON "form_definitions" USING btree ("site_id");
