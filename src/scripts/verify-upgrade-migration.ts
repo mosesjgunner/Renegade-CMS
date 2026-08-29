@@ -229,6 +229,7 @@ async function assertUpgrade(payload: Payload) {
   )
   for (const task of [
     'editorial-publish',
+    'content-release-execute',
     'media-import',
     'social-publish',
     'audience-email-delivery',
@@ -295,6 +296,12 @@ export async function verifyUpgradeMigration() {
 }
 
 if (process.argv[1]?.endsWith('verify-upgrade-migration.ts'))
-  verifyUpgradeMigration().then(() =>
-    console.log(`Upgrade rehearsal passed: ${UPGRADE_BASELINE} -> current.`),
-  )
+  verifyUpgradeMigration()
+    .then(() => {
+      console.log(`Upgrade rehearsal passed: ${UPGRADE_BASELINE} -> current.`)
+      process.exit(0)
+    })
+    .catch((error) => {
+      console.error(error)
+      process.exit(1)
+    })

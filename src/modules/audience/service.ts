@@ -246,7 +246,8 @@ export async function suppressSubscriber(
     limit: 1,
     overrideAccess: true,
   })
-  if (!prior.docs.length)
+  const created = !prior.docs.length
+  if (created)
     await payload.create({
       collection: 'suppressions',
       data: {
@@ -259,7 +260,8 @@ export async function suppressSubscriber(
       },
       overrideAccess: true,
     })
-  if (subscriber)
+  // A provider retry must not create duplicate consent-history evidence.
+  if (subscriber && created)
     await payload.create({
       collection: 'consent-events',
       data: {
@@ -272,8 +274,40 @@ export async function suppressSubscriber(
       },
       overrideAccess: true,
     })
+  return { created, subscriber }
 }
 
+export async function isSubscriberSuppressed(payload: Store, siteId: string, emailHash: string) {
+  const suppression = await payload.find({
+    collection: 'suppressions',
+    where: { site: { equals: siteId }, emailHash: { equals: emailHash } },
+    limit: 1,
+    depth: 0,
+    overrideAccess: true,
+  })
+  return suppression.docs.length > 0
+}
+
+export async function canDeliverToSubscriber(
+  payload: Store,
+  input: { siteId: string; subscriberId?: string; recipientEmail: string },
+) {
+  // Transactional deliveries can omit a Subscriber. Bulk newsletter snapshots cannot.
+  if (!input.subscriberId) return true
+  const subscriber = (await payload.findByID({
+    collection: 'subscribers',
+    id: input.subscriberId,
+    depth: 0,
+    overrideAccess: true,
+  })) as Doc
+  if (
+    subscriber.status !== 'active' ||
+    String(subscriber.site) !== input.siteId ||
+    String(subscriber.email).trim().toLowerCase() !== input.recipientEmail.trim().toLowerCase()
+  )
+    return false
+  return !(await isSubscriberSuppressed(payload, input.siteId, subscriber.emailHash))
+}
 export async function reviewAndScheduleNewsletter(
   payload: Store,
   input: { messageId: string; scheduledFor: string; cancelCutoffAt: string; blocks: EmailBlock[] },
@@ -307,48 +341,60 @@ export async function queueNewsletterDeliveries(payload: Store, messageId: strin
     depth: 0,
     overrideAccess: true,
   })) as Doc
-  if (message.status === 'cancelled' || new Date(message.scheduledFor) > new Date()) return 0
+  if (
+    !['scheduled', 'queued'].includes(message.status) ||
+    new Date(message.scheduledFor) > new Date()
+  )
+    return 0
   const lists = Array.isArray(message.audience?.lists) ? message.audience.lists : []
   let queued = 0
   for (const listId of lists) {
-    const memberships = await payload.find({
-      collection: 'audience-memberships',
-      where: { audienceList: { equals: listId }, status: { equals: 'active' } },
-      limit: 1000,
-      depth: 1,
-      overrideAccess: true,
-    })
-    for (const membership of memberships.docs as Doc[]) {
-      const subscriber = membership.subscriber as Doc
-      if (!subscriber?.email || subscriber.status !== 'active') continue
-      const key = deliveryIdempotencyKey(messageId, subscriber.id)
-      const exists = await payload.find({
-        collection: 'email-deliveries',
-        where: { idempotencyKey: { equals: key } },
-        limit: 1,
+    // This pages in bounded batches. The unique delivery key is the database-backed
+    // snapshot and deduplicates a subscriber that belongs to several selected lists.
+    for (let page = 1; ; page++) {
+      const memberships = await payload.find({
+        collection: 'audience-memberships',
+        where: { audienceList: { equals: listId }, status: { equals: 'active' } },
+        limit: 100,
+        page,
+        depth: 1,
         overrideAccess: true,
       })
-      const delivery =
-        exists.docs[0] ||
-        (await payload.create({
+      for (const membership of memberships.docs as Doc[]) {
+        const subscriber = membership.subscriber as Doc
+        if (!subscriber?.email || subscriber.status !== 'active') continue
+        if (await isSubscriberSuppressed(payload, String(message.site), subscriber.emailHash))
+          continue
+        const key = deliveryIdempotencyKey(messageId, subscriber.id)
+        const exists = await payload.find({
           collection: 'email-deliveries',
-          data: {
-            message: messageId,
-            subscriber: subscriber.id,
-            recipientEmail: subscriber.email,
-            idempotencyKey: key,
-            status: 'queued',
-          },
+          where: { idempotencyKey: { equals: key } },
+          limit: 1,
           overrideAccess: true,
-        }))
-      if (!exists.docs.length) {
-        await payload.jobs.queue({
-          task: 'audience-email-delivery',
-          input: { deliveryId: delivery.id },
-          queue: 'operations',
         })
-        queued++
+        const delivery =
+          exists.docs[0] ||
+          (await payload.create({
+            collection: 'email-deliveries',
+            data: {
+              message: messageId,
+              subscriber: subscriber.id,
+              recipientEmail: subscriber.email,
+              idempotencyKey: key,
+              status: 'queued',
+            },
+            overrideAccess: true,
+          }))
+        if (!exists.docs.length) {
+          await payload.jobs.queue({
+            task: 'audience-email-delivery',
+            input: { deliveryId: delivery.id },
+            queue: 'operations',
+          })
+          queued++
+        }
       }
+      if (!memberships.hasNextPage) break
     }
   }
   await payload.update({
@@ -358,4 +404,48 @@ export async function queueNewsletterDeliveries(payload: Store, messageId: strin
     overrideAccess: true,
   })
   return queued
+}
+
+export async function processProviderSuppressionEvent(
+  payload: Store,
+  input: {
+    siteId: string
+    email: string
+    event: 'bounce' | 'complaint' | 'unsubscribe'
+    provider?: string
+    providerMessageId: string
+  },
+) {
+  // A signed event is additionally bound to a known delivery/message/site. It cannot
+  // use the caller-supplied site or address to affect an unrelated subscriber.
+  const found = await payload.find({
+    collection: 'email-deliveries',
+    where: { providerMessageId: { equals: input.providerMessageId } },
+    limit: 1,
+    depth: 1,
+    overrideAccess: true,
+  })
+  const delivery = found.docs[0] as Doc | undefined
+  const message = delivery?.message as Doc | undefined
+  if (
+    !delivery ||
+    !message ||
+    String(message.site) !== input.siteId ||
+    String(delivery.recipientEmail).trim().toLowerCase() !== input.email.trim().toLowerCase()
+  )
+    throw new Error('Provider event does not match a delivery in this site.')
+  const status =
+    input.event === 'unsubscribe'
+      ? 'cancelled'
+      : input.event === 'bounce'
+        ? 'bounced'
+        : 'complained'
+  if (delivery.status !== status)
+    await payload.update({
+      collection: 'email-deliveries',
+      id: delivery.id,
+      data: { status, outcome: { ...(delivery.outcome ?? {}), providerEvent: input.event } },
+      overrideAccess: true,
+    })
+  return suppressSubscriber(payload, { ...input, reason: input.event })
 }

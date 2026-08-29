@@ -9,5 +9,6 @@ Raw `analytics-events` are consent-gated, first-party only, deduplicated by `ded
 | `click_internal` / `click_outbound`                              | A consented activation of a first-party or external link.        |
 | `signup`, `form_submit`, `payment_completed`, `media_engagement` | First-party interaction events, never inferred identity signals. |
 | `goal:<key>`                                                     | A configured goal matched from a trusted or consented event.     |
+| `experiment_exposure` / `experiment_conversion`                  | Consent-gated first-party experiment outcomes, keyed separately. |
 
 Campaign/referrer fields are attribution context only. First-touch and last-non-direct reporting explicitly state that they are first-party-path estimates.

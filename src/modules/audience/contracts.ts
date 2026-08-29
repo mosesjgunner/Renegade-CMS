@@ -119,13 +119,19 @@ export function assertReviewedLocalizedConsent(input: {
   }
 }
 export function safeUploadMetadata(file: { filename: string; contentType: string; size: number }) {
-  if (!/^[a-zA-Z0-9][a-zA-Z0-9._ -]{0,180}$/.test(file.filename) || file.filename.includes('..'))
+  const normalized = file.filename.normalize('NFKC')
+  if (
+    normalized !== file.filename ||
+    !/^[a-zA-Z0-9][a-zA-Z0-9._ -]{0,180}$/.test(normalized) ||
+    normalized.includes('..') ||
+    /[\\/:\0]/.test(normalized)
+  )
     throw new Error('Unsafe upload filename.')
   if (file.size <= 0 || file.size > 10 * 1024 * 1024)
     throw new Error('Upload exceeds the 10MB safety limit.')
   if (!['application/pdf', 'image/jpeg', 'image/png', 'text/plain'].includes(file.contentType))
     throw new Error('Unsupported upload type.')
-  return { ...file, scanStatus: 'pending' as const, private: true }
+  return { ...file, filename: normalized, scanStatus: 'pending' as const, private: true }
 }
 export function isDeliveryTerminal(status: string) {
   return ['sent', 'delivered', 'bounced', 'complained', 'cancelled'].includes(status)
@@ -144,4 +150,17 @@ export function verifyAudienceToken(token: string, secret: string) {
   )
     return null
   return value
+}
+
+/** Provider signatures cover the exact raw body, before JSON parsing. */
+export const signEmailWebhook = (raw: string, secret: string) =>
+  createHmac('sha256', secret).update(raw).digest('base64url')
+
+export function verifyEmailWebhookSignature(raw: string, signature: string, secret?: string) {
+  if (!secret) return false
+  const expected = signEmailWebhook(raw, secret)
+  return (
+    signature.length === expected.length &&
+    timingSafeEqual(Buffer.from(signature), Buffer.from(expected))
+  )
 }

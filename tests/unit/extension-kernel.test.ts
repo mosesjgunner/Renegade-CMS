@@ -11,6 +11,7 @@ import {
 import {
   CapabilityRegistry,
   testConnection,
+  validateExtensionManifest,
   validateEnable,
 } from '../../src/modules/extensions/registry'
 import type { ConnectionRecord, ExtensionManifest } from '../../src/modules/extensions/contracts'
@@ -66,7 +67,7 @@ const connection = (
 describe('extension kernel', () => {
   it('refuses incompatible modules before mutation and preserves unrelated capabilities', () => {
     expect(validateEnable(manifest('example.bad', '^2.0.0'), [], '0.1.0', '1.0.0')).toContain(
-      'incompatible core',
+      'Extension "example.bad" version "1.0.0" is incompatible with core version "0.1.0"; requested compatibleCore range "^2.0.0" does not include it.',
     )
     expect(
       new CapabilityRegistry([developmentEmailAdapter, localFilesystemAdapter]).has(
@@ -144,5 +145,85 @@ describe('extension kernel', () => {
   it('guides constrained hosts to Lean without altering canonical data', () => {
     expect(recommendProfile(1024)).toBe('Lean')
     expect(PROFILE_GUIDANCE.Lean.allowedHeavyWork).toBe(false)
+  })
+  it('uses standards-compliant semver ranges, including 0.x caret semantics', () => {
+    expect(validateEnable(manifest('example.range', '1.4.2'), [], '1.4.2', '1.0.0')).toEqual([])
+    expect(validateEnable(manifest('example.range', '1.4.2'), [], '1.4.3', '1.0.0')).not.toEqual([])
+    expect(validateEnable(manifest('example.range', '^0.1.0'), [], '0.1.5', '1.0.0')).toEqual([])
+    expect(validateEnable(manifest('example.range', '^0.2.0'), [], '0.1.5', '1.0.0')).not.toEqual(
+      [],
+    )
+    expect(validateEnable(manifest('example.range', '^0.1.0'), [], '0.2.0', '1.0.0')).not.toEqual(
+      [],
+    )
+    expect(validateEnable(manifest('example.range', '^1.2.0'), [], '1.4.2', '1.0.0')).toEqual([])
+    expect(validateEnable(manifest('example.range', '^1.2.0'), [], '2.0.0', '1.0.0')).not.toEqual(
+      [],
+    )
+    expect(validateEnable(manifest('example.range', '~1.4.0'), [], '1.4.9', '1.0.0')).toEqual([])
+    expect(validateEnable(manifest('example.range', '~1.4.0'), [], '1.5.0', '1.0.0')).not.toEqual(
+      [],
+    )
+    expect(
+      validateEnable(manifest('example.range', '>=1.2.0 <2.0.0'), [], '1.9.9', '1.0.0'),
+    ).toEqual([])
+    expect(
+      validateEnable(manifest('example.range', '>=1.2.0 <2.0.0'), [], '2.0.0', '1.0.0'),
+    ).not.toEqual([])
+    expect(validateEnable(manifest('example.range', '>=1.2.0'), [], '1.2.0', '1.0.0')).toEqual([])
+    expect(validateEnable(manifest('example.range', '*'), [], '99.0.0', '1.0.0')).toEqual([])
+  })
+  it('rejects prereleases unless a manifest explicitly includes a prerelease comparator', () => {
+    expect(
+      validateEnable(manifest('example.stable', '^1.0.0'), [], '1.1.0-beta.1', '1.0.0'),
+    ).not.toEqual([])
+    expect(
+      validateEnable(
+        manifest('example.preview', '>=1.0.0-beta.1 <1.0.0'),
+        [],
+        '1.0.0-beta.2',
+        '1.0.0',
+      ),
+    ).toEqual([])
+  })
+  it('rejects malformed manifest versions and ranges before compatibility activation', () => {
+    expect(
+      validateExtensionManifest({ ...manifest('example.invalid'), version: 'not-a-version' }),
+    ).toContain(
+      'Extension "example.invalid" version "not-a-version" has an invalid extension version; expected a valid semantic version.',
+    )
+    expect(
+      validateExtensionManifest({ ...manifest('example.invalid'), compatibleCore: 'not-a-range' }),
+    ).toContain(
+      'Extension "example.invalid" version "1.0.0" has an invalid compatibleCore range "not-a-range".',
+    )
+    expect(
+      validateEnable(
+        { ...manifest('example.invalid'), compatibleSchema: 'not-a-range' },
+        [],
+        '1.0.0',
+        '1.0.0',
+      ),
+    ).toContain(
+      'Extension "example.invalid" version "1.0.0" has an invalid compatibleSchema range "not-a-range".',
+    )
+  })
+  it('preserves dependency and conflict validation after manifest validation', () => {
+    expect(
+      validateEnable(
+        { ...manifest('example.child'), dependencies: ['example.parent'] },
+        [],
+        '0.1.0',
+        '1.0.0',
+      ),
+    ).toContain('missing dependency: example.parent')
+    expect(
+      validateEnable(
+        { ...manifest('example.child'), conflicts: ['example.conflict'] },
+        [manifest('example.conflict')],
+        '0.1.0',
+        '1.0.0',
+      ),
+    ).toContain('conflict: example.conflict')
   })
 })

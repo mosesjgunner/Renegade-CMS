@@ -13,6 +13,9 @@ if (!process.env.DATABASE_URL || !secret || !token) {
 const env = {
   ...process.env,
   APP_URL: baseUrl,
+  // This remains a production Next.js server (`next start`), but uses the
+  // explicit test configuration required to expose the guarded smoke route.
+  NODE_ENV: 'test',
   ALLOW_FIXTURE_SEED: 'true',
   ENABLE_TEST_ROUTES: 'true',
   PORT: new URL(baseUrl).port || '3100',
@@ -20,17 +23,19 @@ const env = {
 
 const nextCli = path.resolve('node_modules/next/dist/bin/next')
 const app = spawn(process.execPath, [nextCli, 'start'], {
-  env,
-  stdio: ['ignore', 'pipe', 'pipe'],
+  env: env as NodeJS.ProcessEnv,
+  stdio: 'pipe',
 })
+app.stdin.end()
 let logs = ''
 app.stdout.on('data', (chunk) => (logs += chunk.toString()))
-  const liveness = await (await fetch(`${baseUrl}/health/live`)).json()
-  assert(liveness.status === 'live', 'liveness did not report live')
 
 app.stderr.on('data', (chunk) => (logs += chunk.toString()))
 
 try {
+  const liveness = await (await fetch(`${baseUrl}/health/live`)).json()
+  assert(liveness.status === 'live', 'liveness did not report live')
+
   await waitUntilReady(`${baseUrl}/health/ready`)
 
   const publicResponse = await fetch(baseUrl)

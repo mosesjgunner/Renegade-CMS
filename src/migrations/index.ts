@@ -1,19 +1,22 @@
-import * as migration_20260812_010209_initial_foundation from './20260812_010209_initial_foundation';
-import * as migration_20260812_034055_m02_operations_jobs from './20260812_034055_m02_operations_jobs';
-import * as migration_20260812_080000_m02_first_run_installation from './20260812_080000_m02_first_run_installation';
-import * as migration_20260812_081000_m02_single_use_setup_token from './20260812_081000_m02_single_use_setup_token';
-import * as migration_20260813_054441_canonical_information_architecture from './20260813_054441_canonical_information_architecture';
-import * as migration_20260814_120000_m03_5_event_timeline_reconciliation from './20260814_120000_m03_5_event_timeline_reconciliation';
-import * as migration_20260818_000000_site_settings from './20260818_000000_site_settings';
-import * as migration_20260818_010000_reconcile_seo_canonical_columns from './20260818_010000_reconcile_seo_canonical_columns';
-import * as migration_20260818_062327_m04_c_editorial_workflow from './20260818_062327_m04_c_editorial_workflow';
-import * as migration_20260822_010232_page_layouts from './20260822_010232_page_layouts';
-import * as migration_20260822_012313_m07_a_passwordless_identity from './20260822_012313_m07_a_passwordless_identity';
-import * as migration_20260825_171336 from './20260825_171336';
-import * as migration_20260825_171738 from './20260825_171738';
-import * as migration_20260825_173116_social_distribution from './20260825_173116_social_distribution';
-import * as migration_20260825_180000_calendar_graphics from './20260825_180000_calendar_graphics';
-import * as migration_20260826_053416_second_pass_schema from './20260826_053416_second_pass_schema';
+import * as migration_20260812_010209_initial_foundation from './20260812_010209_initial_foundation'
+import * as migration_20260812_034055_m02_operations_jobs from './20260812_034055_m02_operations_jobs'
+import * as migration_20260812_080000_m02_first_run_installation from './20260812_080000_m02_first_run_installation'
+import * as migration_20260812_081000_m02_single_use_setup_token from './20260812_081000_m02_single_use_setup_token'
+import * as migration_20260813_054441_canonical_information_architecture from './20260813_054441_canonical_information_architecture'
+import * as migration_20260814_120000_m03_5_event_timeline_reconciliation from './20260814_120000_m03_5_event_timeline_reconciliation'
+import * as migration_20260818_000000_site_settings from './20260818_000000_site_settings'
+import * as migration_20260818_010000_reconcile_seo_canonical_columns from './20260818_010000_reconcile_seo_canonical_columns'
+import * as migration_20260818_062327_m04_c_editorial_workflow from './20260818_062327_m04_c_editorial_workflow'
+import * as migration_20260822_010232_page_layouts from './20260822_010232_page_layouts'
+import * as migration_20260822_012313_m07_a_passwordless_identity from './20260822_012313_m07_a_passwordless_identity'
+import * as migration_20260825_171336 from './20260825_171336'
+import * as migration_20260825_171738 from './20260825_171738'
+import * as migration_20260825_173116_social_distribution from './20260825_173116_social_distribution'
+import * as migration_20260825_180000_calendar_graphics from './20260825_180000_calendar_graphics'
+import * as migration_20260826_053416_second_pass_schema from './20260826_053416_second_pass_schema'
+import * as migration_20260829_110000_content_release_execution from './20260829_110000_content_release_execution'
+import * as migration_20260829_120000_quality_runtime from './20260829_120000_quality_runtime'
+import * as migration_20260829_130000_progressive_disclosure_admin from './20260829_130000_progressive_disclosure_admin'
 
 export const migrations = [
   {
@@ -94,6 +97,21 @@ export const migrations = [
   {
     up: migration_20260826_053416_second_pass_schema.up,
     down: migration_20260826_053416_second_pass_schema.down,
-    name: '20260826_053416_second_pass_schema'
+    name: '20260826_053416_second_pass_schema',
   },
-];
+  {
+    up: migration_20260829_110000_content_release_execution.up,
+    down: migration_20260829_110000_content_release_execution.down,
+    name: '20260829_110000_content_release_execution',
+  },
+  {
+    up: migration_20260829_120000_quality_runtime.up,
+    down: migration_20260829_120000_quality_runtime.down,
+    name: '20260829_120000_quality_runtime',
+  },
+  {
+    up: migration_20260829_130000_progressive_disclosure_admin.up,
+    down: migration_20260829_130000_progressive_disclosure_admin.down,
+    name: '20260829_130000_progressive_disclosure_admin',
+  },
+]

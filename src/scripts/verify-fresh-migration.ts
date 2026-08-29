@@ -43,5 +43,13 @@ export async function verifyFreshMigration() {
 }
 
 if (process.argv[1]?.endsWith('verify-fresh-migration.ts')) {
-  verifyFreshMigration().then(() => console.log('Fresh migration acceptance passed.'))
+  verifyFreshMigration()
+    .then(() => {
+      console.log('Fresh migration acceptance passed.')
+      process.exit(0)
+    })
+    .catch((error) => {
+      console.error(error)
+      process.exit(1)
+    })
 }

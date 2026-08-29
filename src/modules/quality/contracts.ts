@@ -11,7 +11,6 @@ export type QualityFinding = Readonly<{
 export const qualityDedupeKey = (input: {
   rule: string
   targetId: string
-  revisionId?: string
   location?: string
   dependencyFingerprint?: string
 }) => `quality:${createHash('sha256').update(JSON.stringify(input)).digest('hex')}`
@@ -49,6 +48,7 @@ export function scanLocal(input: {
       severity: 'publication_blocking',
       message: 'Canonical URL is invalid.',
       remediation: 'Use an absolute http(s) canonical URL.',
+      location: 'seoCanonicalURL',
     })
   if (
     input.headings?.some((heading, index) => index > 0 && heading > input.headings![index - 1] + 1)
@@ -58,6 +58,7 @@ export function scanLocal(input: {
       severity: 'warning',
       message: 'Heading hierarchy skips a level.',
       remediation: 'Use heading levels in order.',
+      location: 'document.headings',
     })
   for (const image of input.images ?? []) {
     if (!image.altText?.trim())
@@ -66,6 +67,7 @@ export function scanLocal(input: {
         severity: 'publication_blocking',
         message: `Image ${image.id} is missing alt text.`,
         remediation: 'Add concise, meaningful alt text.',
+        location: `media:${image.id}:alt`,
       })
     if (
       image.rightsStatus === 'expired' ||
@@ -76,6 +78,7 @@ export function scanLocal(input: {
         severity: 'publication_blocking',
         message: `Image ${image.id} has expired rights.`,
         remediation: 'Replace the asset or renew its rights.',
+        location: `media:${image.id}:rights`,
       })
   }
   for (const link of input.internalLinks ?? [])
@@ -85,6 +88,7 @@ export function scanLocal(input: {
         severity: 'publication_blocking',
         message: `Internal link ${link.href} is unavailable or unauthorized.`,
         remediation: 'Repair the link or change the target visibility.',
+        location: `link:${link.href}`,
       })
   if (
     input.translationStatus &&
@@ -95,6 +99,7 @@ export function scanLocal(input: {
       severity: 'publication_blocking',
       message: 'Required translation is stale or incomplete.',
       remediation: 'Update and review the translation.',
+      location: 'translation',
     })
   return findings
 }

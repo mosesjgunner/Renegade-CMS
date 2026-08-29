@@ -7,6 +7,7 @@ import {
   applyVerifiedWebhook,
   createDevelopmentAdapter,
   transitionOrder,
+  validWebhookEvent,
 } from '@/modules/commerce/service'
 
 export async function POST(
@@ -30,6 +31,8 @@ export async function POST(
     depth: 1,
     overrideAccess: true,
   })
+  if (!validWebhookEvent(event, intent.id))
+    return NextResponse.json({ error: 'Invalid webhook event.' }, { status: 400 })
   if (intent.providerKey !== provider)
     return NextResponse.json({ error: 'Provider does not own this intent.' }, { status: 403 })
   const replay = await db.find({

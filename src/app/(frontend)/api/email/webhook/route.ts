@@ -1,32 +1,42 @@
-import { timingSafeEqual } from 'node:crypto'
 import config from '@payload-config'
 import { getPayload } from 'payload'
-import { suppressSubscriber } from '@/modules/audience/service'
-import { audienceDigest } from '@/modules/audience/contracts'
+import { verifyEmailWebhookSignature } from '@/modules/audience/contracts'
+import { processProviderSuppressionEvent } from '@/modules/audience/service'
+
 export async function POST(request: Request) {
   const raw = await request.text()
-  const secret = process.env.EMAIL_WEBHOOK_SECRET
-  const actual = request.headers.get('x-audience-signature') ?? ''
-  const expected = secret ? audienceDigest(`${secret}:${raw}`) : ''
   if (
-    !secret ||
-    actual.length !== expected.length ||
-    !timingSafeEqual(Buffer.from(actual), Buffer.from(expected))
+    !verifyEmailWebhookSignature(
+      raw,
+      request.headers.get('x-audience-signature') ?? '',
+      process.env.EMAIL_WEBHOOK_SECRET,
+    )
   )
     return Response.json({ error: 'Invalid provider signature.' }, { status: 401 })
   const body = JSON.parse(raw) as {
     siteId?: string
     email?: string
-    event?: 'bounce' | 'complaint'
+    event?: 'bounce' | 'complaint' | 'unsubscribe'
     provider?: string
+    providerMessageId?: string
   }
-  if (!body.siteId || !body.email || !['bounce', 'complaint'].includes(body.event ?? ''))
+  if (
+    !body.siteId ||
+    !body.email ||
+    !body.providerMessageId ||
+    !['bounce', 'complaint', 'unsubscribe'].includes(body.event ?? '')
+  )
     return Response.json({ error: 'Invalid provider event.' }, { status: 400 })
-  await suppressSubscriber(await getPayload({ config }), {
-    siteId: body.siteId,
-    email: body.email,
-    reason: body.event!,
-    provider: body.provider,
-  })
+  try {
+    await processProviderSuppressionEvent(await getPayload({ config }), {
+      siteId: body.siteId,
+      email: body.email,
+      event: body.event!,
+      provider: body.provider,
+      providerMessageId: body.providerMessageId,
+    })
+  } catch {
+    return Response.json({ error: 'Provider event does not match a delivery.' }, { status: 400 })
+  }
   return Response.json({ accepted: true })
 }

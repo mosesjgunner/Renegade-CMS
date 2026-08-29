@@ -84,7 +84,33 @@ describe('loadConfig', () => {
 
   it('validates SMTP placeholders without logging their values', () => {
     expect(() => loadConfig({ ...valid, EMAIL_MODE: 'smtp' })).toThrow(
-      /EMAIL_FROM.*SMTP_HOST.*SMTP_PASSWORD.*SMTP_PORT.*SMTP_USERNAME/,
+      /EMAIL_FROM.*SMTP_HOST.*SMTP_PORT/,
     )
+  })
+  it('allows unauthenticated SMTP but requires complete credentials when authentication is configured', () => {
+    expect(
+      loadConfig({
+        ...valid,
+        EMAIL_MODE: 'smtp',
+        EMAIL_FROM: 'mail@example.test',
+        SMTP_HOST: 'smtp.example.test',
+        SMTP_PORT: '465',
+      }).email,
+    ).toMatchObject({
+      mode: 'smtp',
+      secure: true,
+      connectionTimeoutMs: 10000,
+      sendTimeoutMs: 30000,
+    })
+    expect(() =>
+      loadConfig({
+        ...valid,
+        EMAIL_MODE: 'smtp',
+        EMAIL_FROM: 'mail@example.test',
+        SMTP_HOST: 'smtp.example.test',
+        SMTP_PORT: '465',
+        SMTP_USERNAME: 'only-user',
+      }),
+    ).toThrow(/SMTP_PASSWORD/)
   })
 })

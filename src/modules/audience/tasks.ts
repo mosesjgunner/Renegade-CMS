@@ -1,16 +1,30 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { TaskConfig } from 'payload'
-import { isDeliveryTerminal } from './contracts'
-import { queueNewsletterDeliveries } from './service'
+
+import { loadConfig } from '../core/config'
+import { selectEmailDeliveryAdapter } from '../email/delivery'
+import { isDeliveryTerminal, type EmailBlock } from './contracts'
+import { canDeliverToSubscriber, queueNewsletterDeliveries } from './service'
 
 type DeliveryInput = { deliveryId: string }
-/** Development capture is a real, testable adapter. Production adapters are selected only via configured Connections. */
-export const developmentEmailAdapter = {
-  id: 'development-capture',
-  send: async (message: { id: string }, recipient: string) => ({
-    providerMessageId: `dev:${message.id}:${Buffer.from(recipient).toString('base64url')}`,
-  }),
+type Doc = Record<string, any>
+
+function emailText(blocks: readonly EmailBlock[] = []): string {
+  return blocks
+    .flatMap((block) => {
+      if (block.type === 'heading' || block.type === 'text') return [block.text]
+      if (block.type === 'button') return [`${block.label}: ${block.href}`]
+      if (block.type === 'content-cards')
+        return block.cards.map(
+          (card) => `${card.title}${card.text ? ` - ${card.text}` : ''}: ${card.href}`,
+        )
+      if (block.type === 'columns')
+        return block.columns.flatMap((column) => emailText(column.blocks).split('\n'))
+      return []
+    })
+    .join('\n')
 }
+
 export const emailDeliveryTask = {
   slug: 'audience-email-delivery',
   label: 'Audience email delivery',
@@ -24,29 +38,70 @@ export const emailDeliveryTask = {
       id: input.deliveryId,
       depth: 1,
       overrideAccess: true,
-    })) as any
-    if (isDeliveryTerminal(delivery.status)) return { output: {} }
+    })) as Doc
+    if (isDeliveryTerminal(delivery.status) || delivery.status === 'failed') return { output: {} }
+    const message = delivery.message as Doc
+    const eligible = await canDeliverToSubscriber(req.payload, {
+      siteId: String(message.site),
+      subscriberId: delivery.subscriber
+        ? String((delivery.subscriber as Doc).id ?? delivery.subscriber)
+        : undefined,
+      recipientEmail: delivery.recipientEmail,
+    })
+    // This is intentionally adjacent to adapter use: a late unsubscribe wins over a snapshot.
+    if (!eligible) {
+      await req.payload.update({
+        collection: 'email-deliveries',
+        id: delivery.id,
+        data: { status: 'cancelled', outcome: { code: 'suppressed-before-send' } },
+        overrideAccess: true,
+      })
+      return { output: {} }
+    }
     await req.payload.update({
       collection: 'email-deliveries',
       id: delivery.id,
       data: { status: 'sending', attempts: Number(delivery.attempts || 0) + 1 },
       overrideAccess: true,
     })
-    const result = await developmentEmailAdapter.send(
-      delivery.message as any,
-      delivery.recipientEmail,
-    )
+    const adapter = selectEmailDeliveryAdapter(loadConfig())
+    const result = await adapter.send({
+      from: loadConfig().email.from ?? '',
+      to: delivery.recipientEmail,
+      subject: String(message.subject ?? 'Renegade notification'),
+      text: emailText(Array.isArray(message.blocks) ? (message.blocks as EmailBlock[]) : []),
+      idempotencyKey: delivery.idempotencyKey,
+    })
+    if (result.ok) {
+      await req.payload.update({
+        collection: 'email-deliveries',
+        id: delivery.id,
+        data: {
+          status: 'sent',
+          provider: result.provider,
+          providerMessageId: result.providerMessageId,
+          outcome: { sentAt: new Date().toISOString() },
+        },
+        overrideAccess: true,
+      })
+      return { output: {} }
+    }
     await req.payload.update({
       collection: 'email-deliveries',
       id: delivery.id,
       data: {
-        status: 'sent',
-        provider: 'development-capture',
-        providerMessageId: result.providerMessageId,
-        outcome: { capturedAt: new Date().toISOString() },
+        status: result.failure.kind === 'permanent' ? 'failed' : 'queued',
+        provider: result.provider,
+        outcome: {
+          code: result.failure.code,
+          message: result.failure.message,
+          retryable: result.failure.kind === 'retryable',
+        },
       },
       overrideAccess: true,
     })
+    if (result.failure.kind === 'retryable')
+      throw new Error(`Email delivery retryable: ${result.failure.code}`)
     return { output: {} }
   },
 } as unknown as TaskConfig

@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto'
 import { redactDiagnostic } from '../extensions/registry'
+import { readBoundedJson, safeFetch } from '../core/external-boundary'
 import {
   AI_TASKS,
   type AiAdapter,
@@ -149,7 +150,7 @@ export const openAiCompatibleAdapter = (
   providerKey,
   supports: ['ai.text.rewrite', 'ai.text.structured', 'ai.image.assist'],
   async complete({ model, prompt, signal }) {
-    const response = await fetch(`${endpoint.replace(/\/$/, '')}/chat/completions`, {
+    const response = await safeFetch(`${endpoint.replace(/\/$/, '')}/chat/completions`, {
       method: 'POST',
       signal,
       headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
@@ -160,7 +161,7 @@ export const openAiCompatibleAdapter = (
       }),
     })
     if (!response.ok) throw new Error(`provider unavailable (${response.status})`)
-    const body = (await response.json()) as {
+    const body = (await readBoundedJson(response)) as {
       choices?: { message?: { content?: string } }[]
       usage?: { prompt_tokens?: number; completion_tokens?: number }
     }
@@ -175,14 +176,14 @@ export const ollamaAdapter = (endpoint: string): AiAdapter => ({
   providerKey: 'ai.ollama',
   supports: ['ai.text.rewrite', 'ai.text.structured'],
   async complete({ model, prompt, signal }) {
-    const response = await fetch(`${endpoint.replace(/\/$/, '')}/api/generate`, {
+    const response = await safeFetch(`${endpoint.replace(/\/$/, '')}/api/generate`, {
       method: 'POST',
       signal,
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ model, prompt, stream: false }),
     })
     if (!response.ok) throw new Error(`provider unavailable (${response.status})`)
-    const body = (await response.json()) as {
+    const body = (await readBoundedJson(response)) as {
       response?: string
       prompt_eval_count?: number
       eval_count?: number

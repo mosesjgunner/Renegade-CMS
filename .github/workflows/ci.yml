@@ -17,7 +17,7 @@ jobs:
         ports:
           - 5432:5432
         options: >-
-          --health-cmd "pg_isready -U renegade -d renegade_test"
+          --health-cmd "pg_isready -U renegade -d renegade_release_acceptance"
           --health-interval 2s
           --health-timeout 3s
           --health-retries 20
@@ -28,9 +28,16 @@ jobs:
       SMOKE_TEST_TOKEN: ci-only-smoke-token-with-24-characters
       UPGRADE_MIGRATION_DATABASE_URL: postgresql://renegade:ci_test_only@127.0.0.1:5432/renegade_upgrade_acceptance
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
         with:
           node-version: 24
           cache: npm
-      - run: npm run verify:release
+      - name: Create upgrade migration acceptance database
+        run: >-
+          PGPASSWORD=ci_test_only psql
+          --host=127.0.0.1 --username=renegade
+          --dbname=renegade_release_acceptance
+          --command='CREATE DATABASE renegade_upgrade_acceptance'
+      - name: Run canonical clean-clone release verification
+        run: npm run verify:release

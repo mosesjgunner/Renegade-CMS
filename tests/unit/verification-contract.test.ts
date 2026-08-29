@@ -16,7 +16,10 @@ describe('release verification contract', () => {
   it('requires separate, clearly disposable migration databases without exposing values', () => {
     expect(releaseVerificationEnvironment(valid)).toMatchObject({ databaseUrl: valid.DATABASE_URL })
     expect(() =>
-      releaseVerificationEnvironment({ ...valid, DATABASE_URL: valid.UPGRADE_MIGRATION_DATABASE_URL }),
+      releaseVerificationEnvironment({
+        ...valid,
+        DATABASE_URL: valid.UPGRADE_MIGRATION_DATABASE_URL,
+      }),
     ).toThrow(/DATABASE_URL and UPGRADE_MIGRATION_DATABASE_URL/)
     expect(() => releaseVerificationEnvironment({ ...valid, PAYLOAD_SECRET: 'short' })).toThrow(
       /PAYLOAD_SECRET/,
@@ -24,8 +27,10 @@ describe('release verification contract', () => {
   })
 
   it('propagates a failed child stage', () => {
-    expect(() => runStage('deliberate failure', () => { throw new Error('child failed') })).toThrow(
-      'child failed',
-    )
+    expect(() =>
+      runStage('deliberate failure', () => {
+        throw new Error('child failed')
+      }),
+    ).toThrow('child failed')
   })
 })

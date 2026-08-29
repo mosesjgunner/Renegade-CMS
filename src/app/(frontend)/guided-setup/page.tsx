@@ -59,8 +59,8 @@ export default function GuidedSetupPage() {
             </h1>
           </div>
           <p className="mt-1 text-sm text-stone-600 dark:text-stone-400">
-            Select what you are creating. Modules stay cleanly decoupled without forcing a bloated
-            monolithic theme.
+            Start with publishing essentials. Commerce, AI, social scheduling, experiments, and
+            other advanced capabilities are optional and can be enabled later in Capability Center.
           </p>
         </div>
         <Link href="/admin" className="btn btn-secondary text-xs">

@@ -6,7 +6,9 @@ import {
   createDevelopmentAdapter,
   createFixtureCryptoAdapter,
   methodsForCart,
+  sameCommerceScope,
 } from '@/modules/commerce/service'
+import { safeRelativeRedirect } from '@/modules/core/external-boundary'
 
 const id = (value: unknown) =>
   typeof value === 'string' ? value : (value as { id?: string } | null)?.id
@@ -55,6 +57,29 @@ export async function POST(request: Request) {
     depth: 0,
     overrideAccess: true,
   })
+  const scope = {
+    siteId: id(session.site)!,
+    spaceId: id(session.space)!,
+    merchantConnectionId: merchantId,
+  }
+  if (
+    !sameCommerceScope(scope, {
+      siteId: id(cart.site)!,
+      spaceId: id(cart.space)!,
+      merchantConnectionId: id(cart.merchantConnection)!,
+    }) ||
+    !sameCommerceScope(scope, {
+      siteId: id(merchant.site)!,
+      spaceId: id(merchant.space)!,
+      merchantConnectionId: merchant.id,
+    }) ||
+    !sameCommerceScope(scope, {
+      siteId: id(capability.site)!,
+      spaceId: id(capability.space)!,
+      merchantConnectionId: id(capability.merchantConnection)!,
+    })
+  )
+    return NextResponse.json({ error: 'Cross-site checkout scope denied.' }, { status: 403 })
   const recurring = list(cart.items).some((line: any) =>
     ['subscription', 'membership'].includes(line.kind),
   )
@@ -157,7 +182,7 @@ export async function POST(request: Request) {
     intentId: intent.id,
     amountMinor: intent.amountMinor,
     currency: intent.currency,
-    returnUrl: input.returnUrl ?? '/cart',
+    returnUrl: safeRelativeRedirect(input.returnUrl, '/cart'),
   })
   await db.update({
     collection: 'payment-intents',

@@ -1,4 +1,5 @@
 import { createHmac, timingSafeEqual } from 'node:crypto'
+import type { Payload } from 'payload'
 import {
   appendFinancialEvent,
   assertSingleMerchant,
@@ -31,6 +32,32 @@ export type ProviderEvent = {
   intentId: string
   kind: 'confirmed' | 'failed' | 'cancelled'
   occurredAt: string
+}
+export function sameCommerceScope(
+  expected: { siteId: string; spaceId: string; merchantConnectionId: string },
+  actual: { siteId: string; spaceId: string; merchantConnectionId: string },
+) {
+  return (
+    expected.siteId === actual.siteId &&
+    expected.spaceId === actual.spaceId &&
+    expected.merchantConnectionId === actual.merchantConnectionId
+  )
+}
+export function validWebhookEvent(
+  event: ProviderEvent | null,
+  expectedIntentId: string,
+  now = new Date(),
+  maxAgeMs = 10 * 60 * 1000,
+) {
+  if (!event || !/^[A-Za-z0-9_.:-]{1,200}$/.test(event.id) || event.intentId !== expectedIntentId)
+    return false
+  if (!['confirmed', 'failed', 'cancelled'].includes(event.kind)) return false
+  const occurredAt = Date.parse(event.occurredAt)
+  return (
+    Number.isFinite(occurredAt) &&
+    occurredAt <= now.getTime() + 60_000 &&
+    now.getTime() - occurredAt <= maxAgeMs
+  )
 }
 export type PaymentAdapter = {
   key: string
@@ -78,7 +105,11 @@ export const createDevelopmentAdapter = (
       !timingSafeEqual(Buffer.from(signature), Buffer.from(expected))
     )
       return null
-    return JSON.parse(raw) as ProviderEvent
+    try {
+      return JSON.parse(raw) as ProviderEvent
+    } catch {
+      return null
+    }
   },
 })
 export const representativeDevelopmentAdapters = (secret: string) =>
@@ -254,3 +285,41 @@ export const createFixturePodAdapter = (
     return JSON.parse(raw)
   },
 })
+
+/** Commerce-owned product publication boundary. It only exposes a reviewed product and never starts checkout or payment. */
+export async function publishProductRelease(
+  payload: Payload,
+  input: { productId: string; revisionId?: string; idempotencyKey: string },
+): Promise<boolean> {
+  const product = (await payload.findByID({
+    collection: 'products' as never,
+    id: input.productId,
+    depth: 1,
+    overrideAccess: true,
+  } as never)) as Record<string, any>
+  if (input.revisionId && product.releaseRevision !== input.revisionId)
+    throw new Error('Pinned product revision is stale.')
+  if (
+    product.state === 'published' &&
+    (!input.revisionId || product.releaseRevision === input.revisionId)
+  )
+    return false
+  if (product.state !== 'approved') throw new Error('Only approved products can be released.')
+  assertReleaseDoesNotCharge({ releaseAction: 'publish' })
+  assertGovernedProductMedia(
+    Array.isArray(product.media)
+      ? product.media.map((asset: any) => ({
+          id: String(asset?.id ?? asset),
+          rightsStatus: asset?.rightsStatus,
+          originalExportAllowed: asset?.originalExportAllowed,
+        }))
+      : [],
+  )
+  await payload.update({
+    collection: 'products' as never,
+    id: input.productId,
+    data: { state: 'published' },
+    overrideAccess: true,
+  } as never)
+  return true
+}

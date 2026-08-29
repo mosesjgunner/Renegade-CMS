@@ -56,6 +56,7 @@ export const QualityScans: CollectionConfig = {
     select('status', ['queued', 'running', 'completed', 'failed'], 'queued'),
     { name: 'startedAt', type: 'date' },
     { name: 'completedAt', type: 'date' },
+    { name: 'job', type: 'relationship', relationTo: 'payload-jobs' as never, index: true },
     { name: 'summary', type: 'json' },
   ],
 }
@@ -72,11 +73,14 @@ export const QualityIssues: CollectionConfig = {
     { name: 'surface', type: 'text' },
     select('severity', ['informational', 'warning', 'publication_blocking'], 'warning'),
     select('status', ['open', 'resolved', 'waived', 'uncertain'], 'open'),
+    select('workflowState', ['new', 'assigned', 'in_remediation', 'ready_for_rescan'], 'new'),
+    { name: 'category', type: 'text', required: true, defaultValue: 'content' },
     { name: 'message', type: 'textarea', required: true },
     { name: 'remediation', type: 'json' },
     rel('owner', 'users'),
     { name: 'firstSeenAt', type: 'date', required: true },
     { name: 'resolvedAt', type: 'date' },
+    { name: 'lastSeenAt', type: 'date', required: true },
     { name: 'dependencyFingerprint', type: 'text' },
   ],
 }

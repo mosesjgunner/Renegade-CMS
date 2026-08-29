@@ -13,26 +13,26 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   try {
     const payload = await getPayload({ config })
     const content = await payload.find({
-    collection: 'content',
-    where: { status: { in: ['published', 'updated'] } },
-    limit: 1000,
-    depth: 0,
-    overrideAccess: true,
-  } as never)
+      collection: 'content',
+      where: { status: { in: ['published', 'updated'] } },
+      limit: 1000,
+      depth: 0,
+      overrideAccess: true,
+    } as never)
 
-  return (content.docs as unknown as SitemapContent[])
-    .filter((record) => canDiscoverPublic(record))
-    .flatMap((record) => {
-      if (typeof record.canonicalPath !== 'string') return []
-      return [
-        {
-          url: new URL(record.canonicalPath, base).toString(),
-          lastModified: record.updatedAtEditorial
-            ? new Date(String(record.updatedAtEditorial))
-            : undefined,
-        },
-      ]
-    })
+    return (content.docs as unknown as SitemapContent[])
+      .filter((record) => canDiscoverPublic(record))
+      .flatMap((record) => {
+        if (typeof record.canonicalPath !== 'string') return []
+        return [
+          {
+            url: new URL(record.canonicalPath, base).toString(),
+            lastModified: record.updatedAtEditorial
+              ? new Date(String(record.updatedAtEditorial))
+              : undefined,
+          },
+        ]
+      })
   } catch {
     return [{ url: base, lastModified: new Date() }]
   }

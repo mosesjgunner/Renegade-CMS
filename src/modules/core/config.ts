@@ -12,13 +12,15 @@ export type AppConfig = {
     mediaDir: string
   }
   email: {
-    mode: 'disabled' | 'smtp'
+    mode: 'disabled' | 'development' | 'smtp'
     from?: string
     host?: string
     port?: number
     secure: boolean
     username?: string
     password?: string
+    connectionTimeoutMs: number
+    sendTimeoutMs: number
   }
   secureCookies: boolean
   enableTestRoutes: boolean
@@ -74,15 +76,21 @@ export function loadConfig(env: Record<string, string | undefined> = process.env
   const mediaDir = env.MEDIA_DIR ?? (production ? '' : path.resolve('media'))
   const emailMode = parseChoice(
     env.EMAIL_MODE ?? 'disabled',
-    ['disabled', 'smtp'] as const,
+    ['disabled', 'development', 'smtp'] as const,
     'EMAIL_MODE',
     invalid,
   )
   const ownerEmail = env.OWNER_EMAIL?.trim().toLowerCase()
 
   if (databaseUrl && !/^postgres(ql)?:\/\//.test(databaseUrl)) invalid.push('DATABASE_URL')
-  if (production && /renegade_dev_only|:password@|:changeme@/i.test(databaseUrl)) {
-    invalid.push('DATABASE_URL')
+  if (production) {
+    try {
+      const database = new URL(databaseUrl)
+      if (isPlaceholder(database.password) || /renegade_dev_only/i.test(databaseUrl))
+        invalid.push('DATABASE_URL')
+    } catch {
+      // The protocol validation above reports DATABASE_URL for malformed URLs.
+    }
   }
   if (
     payloadSecret &&
@@ -121,11 +129,26 @@ export function loadConfig(env: Record<string, string | undefined> = process.env
 
   const smtpPort =
     emailMode === 'smtp' ? parseInteger(env.SMTP_PORT, 'SMTP_PORT', invalid, 1, 65535) : undefined
+  const smtpConnectionTimeoutMs = parseInteger(
+    env.SMTP_CONNECTION_TIMEOUT_MS ?? '10000',
+    'SMTP_CONNECTION_TIMEOUT_MS',
+    invalid,
+    1000,
+    120000,
+  )
+  const smtpSendTimeoutMs = parseInteger(
+    env.SMTP_SEND_TIMEOUT_MS ?? '30000',
+    'SMTP_SEND_TIMEOUT_MS',
+    invalid,
+    1000,
+    120000,
+  )
   if (emailMode === 'smtp') {
     required(env.SMTP_HOST, 'SMTP_HOST', invalid)
     required(env.EMAIL_FROM, 'EMAIL_FROM', invalid)
-    required(env.SMTP_USERNAME, 'SMTP_USERNAME', invalid)
-    required(env.SMTP_PASSWORD, 'SMTP_PASSWORD', invalid)
+    if (Boolean(env.SMTP_USERNAME) !== Boolean(env.SMTP_PASSWORD)) {
+      invalid.push(env.SMTP_USERNAME ? 'SMTP_PASSWORD' : 'SMTP_USERNAME')
+    }
   }
 
   if (invalid.length) throw new ConfigurationError([...new Set(invalid)].sort())
@@ -151,6 +174,8 @@ export function loadConfig(env: Record<string, string | undefined> = process.env
       secure: env.SMTP_SECURE !== 'false',
       username: env.SMTP_USERNAME,
       password: env.SMTP_PASSWORD,
+      connectionTimeoutMs: smtpConnectionTimeoutMs,
+      sendTimeoutMs: smtpSendTimeoutMs,
     },
     secureCookies,
     enableTestRoutes,

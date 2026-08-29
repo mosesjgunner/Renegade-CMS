@@ -1,54 +1,32 @@
-# Verification
+# Clean-clone release verification
 
-Run with PostgreSQL healthy and the required values from `.env` loaded into the shell.
+`npm run verify:release` is the authoritative release-verification contract. It performs a clean `npm ci`, then runs fresh and upgrade migration acceptance, fixture seeding, formatting, linting, type-checking, unit and PostgreSQL integration tests, a production build, and a production-server HTTP/persistence smoke test. Each layer is printed as `verify:release [stage]`; a failed child exits the command immediately with that stage name.
+
+The command deliberately uses two disposable databases. It resets their `public` schemas during migration acceptance. Never aim it at an operator, staging, or production database.
+
+## Local execution
+
+Start PostgreSQL and create the two acceptance databases once for the local container volume:
 
 ```powershell
-npm run format:check
-npm run lint
-npm run typecheck
-npm run test
-npm run test:integration
-npm run build
-$env:SMOKE_TEST_TOKEN='a-local-test-token-of-at-least-24-characters'
-npm run test:smoke
+docker compose up -d --wait
+docker compose exec postgres createdb -U renegade renegade_release_acceptance
+docker compose exec postgres createdb -U renegade renegade_upgrade_acceptance
 ```
 
-`test:integration` uses the configured database, creates a UUID-backed site through Payload, reads it and removes it. Do not point it at production. `test:smoke` applies migrations, runs the idempotent seed, starts the built Next application, requests public and Payload admin routes, performs a guarded Next -> Payload -> PostgreSQL write/read, checks readiness, scans captured output for `PAYLOAD_SECRET`, and shuts the app down.
+Set the required environment values, then run the single command:
 
-## Observed M01 evidence (2026-08-11 America/Chicago)
+```powershell
+$env:DATABASE_URL='postgresql://renegade:renegade_dev_only@127.0.0.1:5432/renegade_release_acceptance'
+$env:UPGRADE_MIGRATION_DATABASE_URL='postgresql://renegade:renegade_dev_only@127.0.0.1:5432/renegade_upgrade_acceptance'
+$env:PAYLOAD_SECRET='local-release-verification-secret-with-at-least-32-characters'
+$env:APP_URL='http://127.0.0.1:3100'
+$env:SMOKE_TEST_TOKEN='local-release-smoke-token-at-least-24-characters'
+npm run verify:release
+```
 
-| Command                       | Result                                                     |
-| ----------------------------- | ---------------------------------------------------------- |
-| `docker compose config`       | pass                                                       |
-| `docker compose up -d --wait` | PostgreSQL 17.6 healthy                                    |
-| `npm run db:migrate` twice    | initial migration applied; repeat no-op                    |
-| `npm run db:seed` twice       | pass; neutral fixture upserted                             |
-| `npm run db:status`           | `20260812_010209_initial_foundation`, batch 1, ran yes     |
-| `npm run format:check`        | pass                                                       |
-| `npm run lint`                | pass, zero warnings                                        |
-| `npm run typecheck`           | pass                                                       |
-| `npm run test`                | 3 files, 5 tests passed                                    |
-| `npm run test:integration`    | 1 file, 1 PostgreSQL/Payload test passed                   |
-| `npm run build`               | pass; Next 16.3.0 production build                         |
-| `npm run test:smoke`          | pass; public/admin/readiness/persistence and secret checks |
+The runner rejects missing values, short secrets/tokens, non-PostgreSQL URLs, database names that are not clearly dedicated to release verification, matching acceptance URLs, and a production `NODE_ENV`. The smoke process starts the built app via `next start`, with `NODE_ENV=test` only inside that child process so the token-protected smoke route can exist. Real production configuration rejects `ENABLE_TEST_ROUTES=true`.
 
-GitHub Actions repeats the same layers with a disposable PostgreSQL service. No hosted CI run exists yet because this checkout has no Git repository or remote.
+Focused commands remain available: `format:check`, `lint`, `typecheck`, `test`, `test:integration`, `test:migrations:fresh`, `test:migrations:upgrade`, and `test:smoke`. Run focused database commands only against disposable PostgreSQL.
 
-## Observed M02 partial evidence (2026-08-11 America/Chicago)
-
-| Command / scenario                | Result                                                                       |
-| --------------------------------- | ---------------------------------------------------------------------------- |
-| `npm run db:migrate`              | applied `20260812_034055_m02_operations_jobs`; repeat no-op                  |
-| production config unit matrix     | 7 tests; unsafe origin/secret/credentials/storage/proxy/test routes rejected |
-| retained heartbeat job            | pass; UUID record, success log and concurrency key retained                  |
-| forced failure/retry              | pass; 3 attempts, 100/200 ms backoff, terminal failure retained              |
-| scheduled restart proof           | pass; future job queued in one Node process, completed in a fresh process    |
-| `npm run format:check`            | pass                                                                         |
-| `npm run lint`                    | pass, zero warnings                                                          |
-| `npm run typecheck`               | pass against regenerated Payload job types                                   |
-| `npm run test`                    | 3 files, 9 tests passed                                                      |
-| `npm run test:integration`        | 2 files, 4 PostgreSQL/Payload tests passed                                   |
-| production-safety `npm run build` | pass with HTTPS, trusted proxy, strong values and absolute media path        |
-| `npm run test:smoke`              | pass; migrations/seed/public/admin/readiness/persistence/secret checks       |
-
-This closes M02 Tasks 01 and 03 only, not installation, backup/restore, rich diagnostics or VPS deployment.
+GitHub Actions creates the same two disposable PostgreSQL databases and invokes only `npm run verify:release`; it does not maintain a second sequence of checks. The smoke stage checks liveness, readiness, public and admin routes, a guarded Next -> Payload -> PostgreSQL write/read, and secret redaction in response and captured server output.

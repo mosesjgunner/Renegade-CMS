@@ -30,6 +30,8 @@ export const EVENT_TYPES = [
   'event_registration',
   'goal_completed',
   'editorial_promotion',
+  'experiment_exposure',
+  'experiment_conversion',
 ] as const
 export type EventType = (typeof EVENT_TYPES)[number]
 export type ConsentBasis = 'necessary' | 'analytics-consent' | 'server-trusted' | 'denied'

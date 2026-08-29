@@ -8,9 +8,63 @@ const ownerOnly = ({ req }: { req: { user?: { role?: string } | null } }) =>
 export const SiteSettings: GlobalConfig = {
   slug: 'site-settings',
   label: 'Site Settings',
-  admin: { group: 'Publishing' },
+  admin: { group: 'Settings' },
   access: { read: () => true, update: ownerOnly },
   fields: [
+    {
+      name: 'adminExperience',
+      type: 'group',
+      label: 'Optional capabilities',
+      admin: {
+        description:
+          'Enable a capability to make its existing tools discoverable in Capability Center. This changes presentation only; it never grants permissions or deletes data.',
+      },
+      fields: [
+        {
+          name: 'optionalCapabilities',
+          type: 'group',
+          fields: [
+            {
+              name: 'mediaProcessing',
+              type: 'checkbox',
+              defaultValue: false,
+              label: 'Advanced media & DAM',
+            },
+            {
+              name: 'socialDistribution',
+              type: 'checkbox',
+              defaultValue: false,
+              label: 'Social scheduling',
+            },
+            {
+              name: 'transactionalEmail',
+              type: 'checkbox',
+              defaultValue: false,
+              label: 'Audience delivery',
+            },
+            {
+              name: 'commerceCheckout',
+              type: 'checkbox',
+              defaultValue: false,
+              label: 'Commerce & POS',
+            },
+            {
+              name: 'analyticsReporting',
+              type: 'checkbox',
+              defaultValue: false,
+              label: 'Advanced analytics',
+            },
+            { name: 'experiments', type: 'checkbox', defaultValue: false, label: 'Experiments' },
+            {
+              name: 'qualityScanning',
+              type: 'checkbox',
+              defaultValue: false,
+              label: 'Quality Center',
+            },
+          ],
+        },
+      ],
+    },
     {
       name: 'ownerKind',
       type: 'select',

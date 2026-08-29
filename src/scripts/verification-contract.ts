@@ -27,7 +27,8 @@ export function releaseVerificationEnvironment(
   }
   if (env.SMOKE_TEST_TOKEN && env.SMOKE_TEST_TOKEN.length < 24) invalid.push('SMOKE_TEST_TOKEN')
   if (env.PAYLOAD_SECRET && env.PAYLOAD_SECRET.length < 32) invalid.push('PAYLOAD_SECRET')
-  if (env.NODE_ENV === 'production') invalid.push('NODE_ENV must not be production for guarded smoke routes')
+  if (env.NODE_ENV === 'production')
+    invalid.push('NODE_ENV must not be production for guarded smoke routes')
 
   if (invalid.length) {
     throw new Error(
