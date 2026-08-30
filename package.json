@@ -35,7 +35,12 @@
     "jobs:worker": "tsx src/scripts/run-jobs-worker.ts",
     "worker:health": "node docker/worker-healthcheck.mjs",
     "backup:operational": "tsx src/scripts/operational-backup.ts",
-    "restore:operational": "tsx src/scripts/operational-restore.ts"
+    "restore:operational": "tsx src/scripts/operational-restore.ts",
+    "status:operational": "tsx src/scripts/operational-status.ts",
+    "maintenance:operational": "tsx src/scripts/operational-maintenance.ts",
+    "upgrade:operational": "tsx src/scripts/operational-upgrade.ts",
+    "rollback:operational": "tsx src/scripts/operational-rollback.ts",
+    "portability": "tsx src/scripts/portability.ts"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "3.88.0",
@@ -55,7 +60,8 @@
     "qrcode": "^1.5.4",
     "react": "19.2.8",
     "react-dom": "19.2.8",
-    "semver": "^7.8.5"
+    "semver": "^7.8.5",
+    "server-only": "0.0.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "4.3.3",

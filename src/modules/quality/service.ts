@@ -4,11 +4,28 @@ import { buildTableOfContents } from '../editorial/presentation'
 import { OPERATIONS_QUEUE } from '../operations/tasks'
 import { canWaive, qualityDedupeKey, scanLocal, type QualityFinding } from './contracts'
 
-type Doc = Record<string, any>
+type Doc = Record<string, unknown>
 type ScanTargetType = 'document' | 'content-release' | 'publication' | 'space' | 'site'
-const idOf = (value: unknown) =>
-  typeof value === 'string' ? value : String((value as Doc | undefined)?.id ?? '')
-const docs = (value: unknown) => (value as { docs?: Doc[] }).docs ?? []
+const idOf = (value: unknown): string => {
+  if (typeof value === 'string') return value
+  if (typeof value === 'number') return String(value)
+  if (typeof value === 'object' && value !== null && 'id' in value) {
+    const id = (value as { id: unknown }).id
+    return typeof id === 'string' || typeof id === 'number' ? String(id) : ''
+  }
+  return ''
+}
+const docs = (value: unknown): Doc[] => {
+  if (
+    typeof value === 'object' &&
+    value !== null &&
+    'docs' in value &&
+    Array.isArray((value as { docs: unknown }).docs)
+  ) {
+    return (value as { docs: Doc[] }).docs
+  }
+  return []
+}
 const categoryFor = (rule: string) =>
   rule.startsWith('media-')
     ? 'media'
@@ -43,7 +60,8 @@ export async function produceLocalFindings(
     id: input.targetId,
     depth: 0,
     overrideAccess: true,
-  } as never)) as Doc
+  } as never)) as unknown as Doc | null
+  if (!article) return [] as QualityFinding[]
   const contentId = idOf(article.content)
   const content = contentId
     ? ((await payload.findByID({
@@ -51,7 +69,7 @@ export async function produceLocalFindings(
         id: contentId,
         depth: 0,
         overrideAccess: true,
-      } as never)) as Doc)
+      } as never)) as unknown as Doc | null)
     : null
   const mediaId = idOf(content?.heroMedia)
   const media = mediaId
@@ -60,24 +78,38 @@ export async function produceLocalFindings(
         id: mediaId,
         depth: 0,
         overrideAccess: true,
-      } as never)) as Doc)
+      } as never)) as unknown as Doc | null)
     : null
-  const translation = content?.translationStatus ?? content?.localeCompleteness?.status
+  const localeStatus =
+    typeof content?.localeCompleteness === 'object' &&
+    content?.localeCompleteness !== null &&
+    'status' in content.localeCompleteness &&
+    typeof (content.localeCompleteness as { status?: unknown }).status === 'string'
+      ? (content.localeCompleteness as { status: string }).status
+      : undefined
+  const translation =
+    typeof content?.translationStatus === 'string' ? content.translationStatus : localeStatus
+  const docObj =
+    typeof article.document === 'object' && article.document !== null
+      ? (article.document as Record<string, unknown>)
+      : {}
   return scanLocal({
     targetId: input.targetId,
-    canonicalUrl: content?.seoCanonicalURL,
-    headings: buildTableOfContents(article.document ?? {}).map((heading) => heading.level),
+    canonicalUrl:
+      typeof content?.seoCanonicalURL === 'string' ? content.seoCanonicalURL : undefined,
+    headings: buildTableOfContents(docObj).map((heading) => heading.level),
     images: media
       ? [
           {
-            id: String(media.id),
-            altText: media.altText,
-            rightsStatus: media.rightsStatus,
-            rightsExpiresAt: media.rightsExpiresAt,
+            id: idOf(media.id) || mediaId,
+            altText: typeof media.altText === 'string' ? media.altText : undefined,
+            rightsStatus: typeof media.rightsStatus === 'string' ? media.rightsStatus : undefined,
+            rightsExpiresAt:
+              typeof media.rightsExpiresAt === 'string' ? media.rightsExpiresAt : undefined,
           },
         ]
       : [],
-    translationStatus: typeof translation === 'string' ? translation : undefined,
+    translationStatus: translation,
   })
 }
 
@@ -99,10 +131,12 @@ export async function persistQualityFindings(
   let created = 0,
     updated = 0,
     reopened = 0
+  const scanTargetId = String(input.scan.targetId ?? '')
+  const scanTargetType = String(input.scan.targetType ?? '')
   for (const finding of input.findings) {
     const dedupeKey = qualityDedupeKey({
       rule: finding.rule,
-      targetId: String(input.scan.targetId),
+      targetId: scanTargetId,
       location: finding.location,
     })
     seen.add(dedupeKey)
@@ -133,19 +167,21 @@ export async function persistQualityFindings(
     ) {
       await payload.update({
         collection: 'quality-issues' as never,
-        id: existing.id,
+        id: String(existing.id),
         data: { ...base, status: 'waived' },
         overrideAccess: true,
       } as never)
       updated++
     } else {
       if (existing.status === 'resolved') reopened++
+      const currentWorkflowState =
+        typeof existing.workflowState === 'string' ? existing.workflowState : 'new'
       await payload.update({
         collection: 'quality-issues' as never,
-        id: existing.id,
+        id: String(existing.id),
         data: {
           ...base,
-          workflowState: existing.status === 'resolved' ? 'new' : (existing.workflowState ?? 'new'),
+          workflowState: existing.status === 'resolved' ? 'new' : currentWorkflowState,
           resolvedAt: null,
         },
         overrideAccess: true,
@@ -158,8 +194,8 @@ export async function persistQualityFindings(
       collection: 'quality-issues' as never,
       where: {
         and: [
-          { targetType: { equals: input.scan.targetType } },
-          { targetId: { equals: input.scan.targetId } },
+          { targetType: { equals: scanTargetType } },
+          { targetId: { equals: scanTargetId } },
           { status: { in: ['open', 'uncertain'] } },
         ],
       },
@@ -170,10 +206,10 @@ export async function persistQualityFindings(
   )
   let resolved = 0
   for (const issue of open)
-    if (!seen.has(String(issue.dedupeKey))) {
+    if (!seen.has(String(issue.dedupeKey ?? ''))) {
       await payload.update({
         collection: 'quality-issues' as never,
-        id: issue.id,
+        id: String(issue.id),
         data: {
           status: 'resolved',
           resolvedAt: now.toISOString(),
@@ -192,22 +228,21 @@ export async function executeQualityScan(payload: Payload, input: { scanId: stri
     id: input.scanId,
     depth: 0,
     overrideAccess: true,
-  } as never)) as Doc
+  } as never)) as unknown as Doc
   await payload.update({
     collection: 'quality-scans' as never,
-    id: scan.id,
+    id: String(scan.id),
     data: { status: 'running', startedAt: new Date().toISOString() },
     overrideAccess: true,
   } as never)
   try {
-    const findings = await produceLocalFindings(
-      payload,
-      scan as { targetType: ScanTargetType; targetId: string },
-    )
+    const targetType = scan.targetType as ScanTargetType
+    const targetId = String(scan.targetId ?? '')
+    const findings = await produceLocalFindings(payload, { targetType, targetId })
     const summary = await persistQualityFindings(payload, { scan, findings })
     await payload.update({
       collection: 'quality-scans' as never,
-      id: scan.id,
+      id: String(scan.id),
       data: { status: 'completed', completedAt: new Date().toISOString(), summary },
       overrideAccess: true,
     } as never)
@@ -215,7 +250,7 @@ export async function executeQualityScan(payload: Payload, input: { scanId: stri
   } catch (error) {
     await payload.update({
       collection: 'quality-scans' as never,
-      id: scan.id,
+      id: String(scan.id),
       data: {
         status: 'failed',
         completedAt: new Date().toISOString(),
@@ -240,15 +275,15 @@ export async function queueQualityScan(
       status: 'queued',
     },
     overrideAccess: true,
-  } as never)) as Doc
+  } as never)) as unknown as Doc
   const job = (await payload.jobs.queue({
     task: 'quality-scan',
     input: { scanId: String(scan.id) },
     queue: OPERATIONS_QUEUE,
-  } as never)) as Doc
+  } as never)) as unknown as Doc
   return payload.update({
     collection: 'quality-scans' as never,
-    id: scan.id,
+    id: String(scan.id),
     data: { job: job.id },
     overrideAccess: true,
   } as never)
@@ -276,11 +311,18 @@ export async function waiveQualityIssue(
     id: input.issueId,
     depth: 0,
     overrideAccess: true,
-  } as never)) as Doc
+  } as never)) as unknown as Doc
+  const severity =
+    issue.severity === 'informational' ||
+    issue.severity === 'warning' ||
+    issue.severity === 'publication_blocking'
+      ? issue.severity
+      : 'warning'
+  const category = typeof issue.category === 'string' ? issue.category : 'content'
   if (
     !canWaive({
-      severity: issue.severity,
-      category: issue.category ?? 'content',
+      severity,
+      category,
       actorRole: input.actorRole,
     })
   )
@@ -298,7 +340,7 @@ export async function waiveQualityIssue(
   } as never)
   return payload.update({
     collection: 'quality-issues' as never,
-    id: issue.id,
+    id: String(issue.id),
     data: { status: 'waived' },
     overrideAccess: true,
   } as never)

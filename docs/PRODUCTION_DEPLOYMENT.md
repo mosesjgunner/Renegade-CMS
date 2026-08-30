@@ -31,3 +31,21 @@ docker compose --env-file .env.production -f compose.production.yaml down
 Back up `renegade_postgres_data` and `renegade_media` together. Restore into an isolated environment, run the migration service, then verify web readiness and the worker heartbeat before exposing it. The image runs all application roles as the unprivileged `nextjs` user and contains both standalone web output and the source/dependencies required by Payload CLI migration and worker commands.
 
 Development remains unchanged: use `docker compose up -d --wait`, then `npm run db:migrate`, `npm run dev`, and `npm run jobs:worker`.
+
+## VPS bootstrap
+
+On a Linux VPS with Docker Engine and Docker Compose v2, use the supported installer:
+
+```sh
+./install.sh
+# or automation:
+./install.sh --non-interactive --app-url https://cms.example.com --profile Lean
+```
+
+The installer checks the CPU architecture, Docker/Compose availability, memory, disk, loopback listener, write permissions, unsafe configuration, and existing-install state. It generates `.env.production` with cryptographic secrets once, starts the existing migration-gated Compose stack, and verifies both `/health/ready` and the worker heartbeat. It never overwrites a non-installer `.env.production`; rerunning after a failed start preserves generated configuration and named volumes.
+
+Use `Lean` for 1 GB-class VPS instances and `Standard` for 2 GB+ instances. The profile is runtime guidance only: it does not alter the database schema or add services.
+
+The web service remains bound to `127.0.0.1:3000` by default. Connect Caddy, Nginx, Traefik, or another external TLS proxy to that address. With `PROXY_MODE=trusted`, the proxy must overwrite `X-Forwarded-For`, `X-Forwarded-Host`, and `X-Forwarded-Proto`; set `TRUSTED_PROXY_HOPS` to its controlled hop count. Caddy/Nginx/Traefik configuration remains operator-owned rather than bundled into the stack.
+
+After successful startup the installer prints `${APP_URL}/setup`. Open it, then retrieve the one-time setup token only from local `renegade-web` logs; do not paste it into tickets or chat. The existing `/setup` passkey enrollment and local recovery flow remain the sole owner-bootstrap path.

@@ -278,20 +278,25 @@ export async function verifyUpgradeMigration() {
   } finally {
     await client.end()
   }
+  const previousDatabaseUrl = process.env.DATABASE_URL
   process.env.DATABASE_URL = url
-  const { default: config } = await import('../payload.config')
-  const payload = await getPayload({ config })
   try {
-    await migrationDb(payload).migrate({ migrations: migrations.slice(0, baselineIndex + 1) })
-    await createHistoricalFixture(payload)
-    await migrationDb(payload).migrate({ migrations })
-    await assertUpgrade(payload)
-    await migrationDb(payload).migrate({ migrations })
-    const applied = await poolFor(payload).query('SELECT count(*) FROM payload_migrations')
-    if (Number(applied.rows[0]?.count) !== migrations.length)
-      throw new Error('Repeat migration invocation changed migration state.')
+    const { default: config } = await import('../payload.config')
+    const payload = await getPayload({ config })
+    try {
+      await migrationDb(payload).migrate({ migrations: migrations.slice(0, baselineIndex + 1) })
+      await createHistoricalFixture(payload)
+      await migrationDb(payload).migrate({ migrations })
+      await assertUpgrade(payload)
+      await migrationDb(payload).migrate({ migrations })
+      const applied = await poolFor(payload).query('SELECT count(*) FROM payload_migrations')
+      if (Number(applied.rows[0]?.count) !== migrations.length)
+        throw new Error('Repeat migration invocation changed migration state.')
+    } finally {
+      await payload.db.destroy?.()
+    }
   } finally {
-    await payload.db.destroy?.()
+    process.env.DATABASE_URL = previousDatabaseUrl
   }
 }
 

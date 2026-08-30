@@ -34,19 +34,31 @@ export function isPrivateAddress(address: string): boolean {
 }
 
 /** Validates every hop before a server-side request. DNS is resolved first to block SSRF. */
-export async function assertSafeOutboundUrl(value: string, resolve: Lookup = lookup): Promise<URL> {
+export async function assertSafeOutboundUrl(
+  value: string,
+  resolve: Lookup = lookup,
+  options: { allowHttp?: boolean; allowPrivate?: boolean } = {},
+): Promise<URL> {
   let url: URL
   try {
     url = new URL(value)
   } catch {
     throw new Error('Outbound URL is invalid.')
   }
-  if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password)
-    throw new Error('Outbound URL must be an unauthenticated HTTP(S) URL.')
-  if (url.hostname === 'localhost' || isPrivateAddress(url.hostname))
+  if (!options.allowPrivate && (url.hostname === 'localhost' || isPrivateAddress(url.hostname)))
     throw new Error('Outbound URL resolves to a private destination.')
+  if (
+    (!options.allowHttp && url.protocol !== 'https:') ||
+    !['http:', 'https:'].includes(url.protocol) ||
+    url.username ||
+    url.password
+  )
+    throw new Error('Outbound URL must be an unauthenticated HTTPS URL.')
   const addresses = await resolve(url.hostname, { all: true, verbatim: true })
-  if (!addresses.length || addresses.some(({ address }) => isPrivateAddress(address)))
+  if (
+    !addresses.length ||
+    (!options.allowPrivate && addresses.some(({ address }) => isPrivateAddress(address)))
+  )
     throw new Error('Outbound URL resolves to a private destination.')
   return url
 }
@@ -54,12 +66,21 @@ export async function assertSafeOutboundUrl(value: string, resolve: Lookup = loo
 export async function safeFetch(
   input: string,
   init: RequestInit = {},
-  options: { resolve?: Lookup; fetcher?: typeof fetch; maxBytes?: number; timeoutMs?: number } = {},
+  options: {
+    resolve?: Lookup
+    fetcher?: typeof fetch
+    maxBytes?: number
+    timeoutMs?: number
+    allowHttp?: boolean
+    allowPrivate?: boolean
+    allowedContentTypes?: readonly string[]
+    retries?: number
+  } = {},
 ): Promise<Response> {
   const fetcher = options.fetcher ?? fetch
   const maxBytes = options.maxBytes ?? MAX_RESPONSE_BYTES
   const timeoutMs = options.timeoutMs ?? REQUEST_TIMEOUT_MS
-  let url = await assertSafeOutboundUrl(input, options.resolve)
+  let url = await assertSafeOutboundUrl(input, options.resolve, options)
   for (let redirect = 0; redirect <= MAX_REDIRECTS; redirect += 1) {
     const response = await fetcher(url, {
       ...init,
@@ -69,12 +90,18 @@ export async function safeFetch(
     if (![301, 302, 303, 307, 308].includes(response.status)) {
       if (Number(response.headers.get('content-length') ?? 0) > maxBytes)
         throw new Error('Outbound response exceeds the size limit.')
+      const contentType = response.headers.get('content-type')?.split(';')[0].toLowerCase()
+      if (
+        options.allowedContentTypes &&
+        (!contentType || !options.allowedContentTypes.includes(contentType))
+      )
+        throw new Error('Outbound response has an unsupported content type.')
       return response
     }
     const location = response.headers.get('location')
     if (!location || redirect === MAX_REDIRECTS)
       throw new Error('Outbound redirect is not allowed.')
-    url = await assertSafeOutboundUrl(new URL(location, url).toString(), options.resolve)
+    url = await assertSafeOutboundUrl(new URL(location, url).toString(), options.resolve, options)
   }
   throw new Error('Outbound redirect is not allowed.')
 }

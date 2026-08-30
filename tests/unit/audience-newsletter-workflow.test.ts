@@ -18,6 +18,21 @@ describe('newsletter snapshot acceptance boundaries', () => {
         status: 'active',
       },
     }))
+    type MockFindInput = {
+      collection: string
+      page?: number
+      where?: {
+        emailHash?: { equals?: string }
+        idempotencyKey?: { equals?: string }
+      }
+    }
+    type MockCreateInput = {
+      collection: string
+      data: {
+        idempotencyKey: string
+        [key: string]: unknown
+      }
+    }
     const deliveries = new Map<string, Record<string, unknown>>()
     const payload = {
       findByID: async () => ({
@@ -27,7 +42,7 @@ describe('newsletter snapshot acceptance boundaries', () => {
         scheduledFor: new Date(0).toISOString(),
         audience: { lists: ['list-1', 'list-2'] },
       }),
-      find: async (input: any) => {
+      find: async (input: MockFindInput) => {
         if (input.collection === 'audience-memberships') {
           const page = input.page ?? 1
           const docs = memberships.slice((page - 1) * 100, page * 100)
@@ -36,19 +51,20 @@ describe('newsletter snapshot acceptance boundaries', () => {
         if (input.collection === 'suppressions')
           return {
             docs:
-              input.where.emailHash.equals === memberships[7].subscriber.emailHash
+              input.where?.emailHash?.equals === memberships[7].subscriber.emailHash
                 ? [{ id: 'suppressed' }]
                 : [],
           }
-        if (input.collection === 'email-deliveries')
+        if (input.collection === 'email-deliveries') {
+          const key = input.where?.idempotencyKey?.equals
+          const delivery = key ? deliveries.get(key) : undefined
           return {
-            docs: deliveries.has(input.where.idempotencyKey.equals)
-              ? [deliveries.get(input.where.idempotencyKey.equals)]
-              : [],
+            docs: delivery ? [delivery] : [],
           }
+        }
         return { docs: [] }
       },
-      create: async (input: any) => {
+      create: async (input: MockCreateInput) => {
         const doc = { id: `delivery-${deliveries.size}`, ...input.data }
         deliveries.set(input.data.idempotencyKey, doc)
         return doc

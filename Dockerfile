@@ -15,7 +15,12 @@ RUN npm run build
 
 FROM node:24-alpine AS runner
 WORKDIR /app
+ARG APP_VERSION=0.1.0
+ARG BUILD_SHA=unknown
+LABEL org.opencontainers.image.version=$APP_VERSION \
+	org.opencontainers.image.revision=$BUILD_SHA
 ENV NODE_ENV=production PORT=3000 HOSTNAME=0.0.0.0
+ENV APP_VERSION=$APP_VERSION BUILD_SHA=$BUILD_SHA
 RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 nextjs
 RUN mkdir -p /app/media /tmp/renegade-worker && chown -R nextjs:nodejs /app
 # The web server uses Next's standalone output. Payload's migration and worker

@@ -2,9 +2,33 @@ import { describe, expect, it } from 'vitest'
 
 import { executeContentRelease } from '../../src/modules/releases/service'
 
+type MockExecutionItem = {
+  key: string
+  type: 'article' | 'product'
+  targetId: string
+  status: 'pending' | 'succeeded' | 'failed' | 'blocked' | 'skipped'
+  attempts: number
+  updatedAt: string
+}
+
+type MockRelease = {
+  id: string
+  lastScheduleMutationId: string
+  status: string
+  executionAudit: unknown[]
+  executionItems: MockExecutionItem[]
+}
+
+type MockProduct = {
+  id: string
+  state: string
+  media: unknown[]
+  [key: string]: unknown
+}
+
 describe('content release execution saga', () => {
   it('retains successful items and retries only the failed item', async () => {
-    const release: any = {
+    const release: MockRelease = {
       id: 'release-1',
       lastScheduleMutationId: 'schedule-1',
       status: 'scheduled',
@@ -28,16 +52,24 @@ describe('content release execution saga', () => {
         },
       ],
     }
-    const products: Record<string, any> = {
+    const products: Record<string, MockProduct> = {
       good: { id: 'good', state: 'approved', media: [] },
       bad: { id: 'bad', state: 'approved', media: [] },
     }
     let productWrites = 0
-    const payload: any = {
-      findByID: async ({ collection, id }: any) =>
+    const payload = {
+      findByID: async ({ collection, id }: { collection: string; id: string }) =>
         collection === 'content-releases' ? release : products[id],
       find: async () => ({ docs: [] }),
-      update: async ({ collection, id, data }: any) => {
+      update: async ({
+        collection,
+        id,
+        data,
+      }: {
+        collection: string
+        id: string | number
+        data: Record<string, unknown>
+      }) => {
         if (collection === 'products') {
           if (id === 'bad') throw new Error('injected product failure')
           productWrites++
@@ -45,14 +77,17 @@ describe('content release execution saga', () => {
         } else Object.assign(release, data)
       },
     }
-    const first = await executeContentRelease(payload, {
+    const first = await executeContentRelease(payload as never, {
       releaseId: 'release-1',
       scheduleMutationId: 'schedule-1',
       actorId: 'publisher',
     })
     expect(first).toMatchObject({ status: 'partial-failure', succeeded: 1, unresolved: 1 })
-    expect(release.executionItems.map((item: any) => item.status)).toEqual(['succeeded', 'failed'])
-    await executeContentRelease(payload, {
+    expect(release.executionItems.map((item: MockExecutionItem) => item.status)).toEqual([
+      'succeeded',
+      'failed',
+    ])
+    await executeContentRelease(payload as never, {
       releaseId: 'release-1',
       scheduleMutationId: 'schedule-1',
       actorId: 'publisher',
@@ -62,7 +97,7 @@ describe('content release execution saga', () => {
   })
 
   it('does not execute a stale scheduled job after a reschedule', async () => {
-    const payload: any = {
+    const payload = {
       findByID: async () => ({
         id: 'release-1',
         lastScheduleMutationId: 'new',
@@ -71,7 +106,7 @@ describe('content release execution saga', () => {
       }),
     }
     await expect(
-      executeContentRelease(payload, {
+      executeContentRelease(payload as never, {
         releaseId: 'release-1',
         scheduleMutationId: 'old',
         actorId: 'publisher',

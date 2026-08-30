@@ -11,7 +11,7 @@ export const PROFILE_GUIDANCE: Record<
   },
   Standard: {
     memory: '2 GB+',
-    allowedHeavyWork: false,
+    allowedHeavyWork: true,
     explanation: 'Use workers for imports and media work.',
   },
   Media: {

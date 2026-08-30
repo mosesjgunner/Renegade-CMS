@@ -1,5 +1,7 @@
 import path from 'node:path'
 
+import type { ResourceProfile } from '../extensions/contracts'
+
 export type AppConfig = {
   nodeEnv: 'development' | 'test' | 'production'
   databaseUrl: string
@@ -28,6 +30,13 @@ export type AppConfig = {
   logLevel: 'debug' | 'info' | 'warn' | 'error'
   version: string
   buildSha?: string
+  networking: {
+    enabled: boolean
+    /** Development-only escape hatch for isolated fixture servers. */
+    allowPrivateDevelopment: boolean
+  }
+  schemaVersion: string
+  deploymentProfile: ResourceProfile
   ownerEmail?: string
   warnings: string[]
 }
@@ -81,6 +90,18 @@ export function loadConfig(env: Record<string, string | undefined> = process.env
     invalid,
   )
   const ownerEmail = env.OWNER_EMAIL?.trim().toLowerCase()
+  const deploymentProfile = parseChoice(
+    env.DEPLOYMENT_PROFILE ?? 'Standard',
+    ['Lean', 'Standard', 'Media', 'Scale'] as const,
+    'DEPLOYMENT_PROFILE',
+    invalid,
+  )
+  const networkingEnabled = env.NETWORKING_ENABLED === 'true'
+  const allowPrivateDevelopment = env.NETWORK_ALLOW_PRIVATE_DEVELOPMENT === 'true'
+  if (networkingEnabled && deploymentProfile === 'Lean') invalid.push('NETWORKING_ENABLED')
+  if (allowPrivateDevelopment && nodeEnv !== 'development')
+    invalid.push('NETWORK_ALLOW_PRIVATE_DEVELOPMENT')
+  if (networkingEnabled && production && !appUrl.startsWith('https://')) invalid.push('APP_URL')
 
   if (databaseUrl && !/^postgres(ql)?:\/\//.test(databaseUrl)) invalid.push('DATABASE_URL')
   if (production) {
@@ -166,6 +187,7 @@ export function loadConfig(env: Record<string, string | undefined> = process.env
     proxyMode,
     trustedProxyHops,
     storage: { driver: storageDriver, mediaDir: path.resolve(mediaDir) },
+    networking: { enabled: networkingEnabled, allowPrivateDevelopment },
     email: {
       mode: emailMode,
       from: env.EMAIL_FROM,
@@ -183,6 +205,8 @@ export function loadConfig(env: Record<string, string | undefined> = process.env
     logLevel: logLevel as AppConfig['logLevel'],
     version: env.APP_VERSION ?? '0.1.0-dev',
     buildSha: env.BUILD_SHA,
+    schemaVersion: env.SCHEMA_VERSION ?? '1.0.0',
+    deploymentProfile,
     ownerEmail,
     warnings,
   }

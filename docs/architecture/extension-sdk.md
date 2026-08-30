@@ -17,3 +17,11 @@ Future API clients and webhook subscriptions must use these exact manifests with
 ## Resource profiles and extraction triggers
 
 Lean, Standard, Media and Scale are one schema/codebase guidance profiles. Lean is the verified 1 GB-class path: public reads, forms, auth, payments and core jobs remain available while AI, graph, transcoding, high-resolution rendering, large imports and realtime are hidden, queued or externally delegated. Profile changes do not delete data or change ownership. Before out-of-process modules, third-party server code, marketplace, or true multitenancy, record measured queue pressure, public-read latency, memory/CPU/disk/network peaks, isolation failures and a rollback plan; semver alone is insufficient.
+
+## Lifecycle
+
+`ExtensionLifecycleService` coordinates `discovered`, `compatible`, `incompatible`, `installed`, `disabled`, `enabled`, `degraded`, `update-available`, and `failed` states. Discovery reads only already-deployed manifest metadata: it has no downloader, browser execution path, or dynamic marketplace code loader. Executable extensions must be local deployments or explicitly trusted packages, and may declare a restart requirement.
+
+Before installation or activation it displays requested permissions and resource budget, validates core/schema SemVer compatibility, dependencies and conflicts, and verifies granted permissions. Only the manifest-declared migration owner may run its migration versions. A migration failure is contained to that extension; runtime health failures degrade the extension and do not affect public rendering. Uninstall follows its declared retain/archive/export/delete-confirmed policy, requiring a completed export or explicit delete confirmation where applicable.
+
+`EXTENSION_CONTRACT_VERSION`, `CORE_COMPATIBILITY_CONTRACT_VERSION`, and `SCHEMA_COMPATIBILITY_CONTRACT_VERSION` version the SDK boundary. First-party extension authors use `defineExtension`, configuration, capability, provider, job, migration and test helpers in `sdk.ts`; `example-extension.ts` is a deliberately tiny reference implementation.

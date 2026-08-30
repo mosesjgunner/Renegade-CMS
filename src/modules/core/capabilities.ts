@@ -12,6 +12,17 @@ export type CapabilityStatus =
   | 'misconfigured'
   | 'unavailable'
 
+/** Product-facing readiness language. status remains for existing callers. */
+export type CapabilityReadinessState =
+  | 'enabled'
+  | 'disabled'
+  | 'available'
+  | 'configuration-required'
+  | 'credential-required'
+  | 'degraded'
+  | 'unavailable'
+  | 'unhealthy'
+
 export type CapabilityReasonCode =
   | 'feature_intentionally_disabled'
   | 'capability_not_installed'
@@ -32,6 +43,9 @@ export type CapabilityLifecycle = {
   enabled: boolean
   configuration: 'complete' | 'incomplete' | 'invalid' | 'not-required'
   status: CapabilityStatus
+  readiness: CapabilityReadinessState
+  requiresExternalProvider: boolean
+  requiresWorker: boolean
   reason: { code: CapabilityReasonCode; detail: string } | null
 }
 
@@ -51,6 +65,7 @@ export type CapabilityDefinition = {
  */
 export const CAPABILITY_DEFINITIONS: readonly CapabilityDefinition[] = [
   { key: 'core.publishing', domainId: 'core', required: true },
+  { key: 'editorial.workflow', domainId: 'editorial', required: true },
   { key: 'media.processing', domainId: 'media', required: false, requiresWorker: true },
   {
     key: 'social.distribution',
@@ -74,6 +89,28 @@ export const CAPABILITY_DEFINITIONS: readonly CapabilityDefinition[] = [
   { key: 'analytics.reporting', domainId: 'analytics', required: false },
   { key: 'experiences.experiments', domainId: 'experiences', required: false },
   { key: 'quality.scanning', domainId: 'quality', required: false, requiresWorker: true },
+  { key: 'portability.import-export', domainId: 'core', required: false },
+  { key: 'extensions.connections', domainId: 'extensions', required: false },
+  {
+    key: 'networking.federation',
+    domainId: 'networking',
+    required: false,
+    providerCapability: 'federation.activitypub.actor',
+    configurationRequired: true,
+  },
+  {
+    key: 'collaboration.realtime',
+    domainId: 'collaboration',
+    required: false,
+    configurationRequired: true,
+    requiresWorker: true,
+  },
+  {
+    key: 'ai.assistance',
+    domainId: 'ai',
+    required: false,
+    providerCapability: 'ai.text.rewrite',
+  },
 ]
 
 export type CapabilityEvidence = {
@@ -108,7 +145,7 @@ export class CapabilityLifecycleService {
 
   read(now = new Date().toISOString()): readonly CapabilityLifecycle[] {
     return (this.source.definitions ?? CAPABILITY_DEFINITIONS).map((definition) =>
-      this.evaluate(definition, now),
+      this.withReadiness(this.evaluate(definition, now), definition),
     )
   }
 
@@ -120,10 +157,45 @@ export class CapabilityLifecycleService {
     return { status: blocking.length ? 'not_ready' : 'ready', capabilities, blocking }
   }
 
-  private evaluate(definition: CapabilityDefinition, now: string): CapabilityLifecycle {
+  private withReadiness(
+    capability: Omit<
+      CapabilityLifecycle,
+      'readiness' | 'requiresExternalProvider' | 'requiresWorker'
+    >,
+    definition: CapabilityDefinition,
+  ): CapabilityLifecycle {
+    const readiness: CapabilityReadinessState =
+      capability.status === 'disabled'
+        ? 'disabled'
+        : capability.status === 'configuring' || capability.status === 'misconfigured'
+          ? 'configuration-required'
+          : capability.reason?.code === 'missing_provider'
+            ? 'credential-required'
+            : capability.reason?.code === 'core_database_unavailable'
+              ? 'unhealthy'
+              : capability.status === 'degraded'
+                ? 'degraded'
+                : capability.status === 'unavailable'
+                  ? 'unavailable'
+                  : capability.status === 'available'
+                    ? 'available'
+                    : 'enabled'
+    return {
+      ...capability,
+      readiness,
+      requiresExternalProvider: Boolean(definition.providerCapability),
+      requiresWorker: Boolean(definition.requiresWorker),
+    }
+  }
+
+  private evaluate(
+    definition: CapabilityDefinition,
+    now: string,
+  ): Omit<CapabilityLifecycle, 'readiness' | 'requiresExternalProvider' | 'requiresWorker'> {
     const evidence = this.source.evidence?.[definition.key] ?? {}
     const exists = evidence.exists ?? true
-    const enabled = evidence.enabled ?? true
+    // Registry knowledge only makes a capability discoverable; it never activates optional work.
+    const enabled = evidence.enabled ?? definition.required
     const configuration: CapabilityLifecycle['configuration'] = definition.configurationRequired
       ? (evidence.configuration ?? 'incomplete')
       : (evidence.configuration ?? 'not-required')
@@ -225,7 +297,11 @@ export class CapabilityLifecycleService {
     return {
       ...base,
       status:
-        definition.providerCapability || evidence.health === 'healthy' ? 'healthy' : 'available',
+        definition.providerCapability ||
+        evidence.health === 'healthy' ||
+        (definition.requiresWorker && this.source.workers?.[definition.key] === 'healthy')
+          ? 'healthy'
+          : 'available',
       reason: null,
     }
   }

@@ -12,6 +12,23 @@ export const SiteSettings: GlobalConfig = {
   access: { read: () => true, update: ownerOnly },
   fields: [
     {
+      name: 'onboarding',
+      label: 'Onboarding preferences',
+      type: 'group',
+      admin: {
+        description:
+          'Non-secret first-run choices. Provider credentials remain in their provider configuration.',
+      },
+      fields: [
+        { name: 'primaryUrl', type: 'text' },
+        { name: 'locale', type: 'text' },
+        { name: 'timezone', type: 'text' },
+        { name: 'featureProfile', type: 'select', options: ['Lean', 'Standard'] },
+        { name: 'starterType', type: 'text' },
+        { name: 'starterContent', type: 'checkbox', defaultValue: true },
+      ],
+    },
+    {
       name: 'adminExperience',
       type: 'group',
       label: 'Optional capabilities',

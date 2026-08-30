@@ -29,6 +29,17 @@ describe('loadConfig', () => {
       proxyMode: 'direct',
       secureCookies: false,
       storage: { driver: 'local' },
+      schemaVersion: '1.0.0',
+      deploymentProfile: 'Standard',
+    })
+  })
+
+  it('accepts the documented lean deployment profile', () => {
+    expect(
+      loadConfig({ ...valid, DEPLOYMENT_PROFILE: 'Lean', SCHEMA_VERSION: '1.2.3' }),
+    ).toMatchObject({
+      deploymentProfile: 'Lean',
+      schemaVersion: '1.2.3',
     })
   })
 

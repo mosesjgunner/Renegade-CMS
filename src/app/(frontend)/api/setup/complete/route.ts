@@ -3,16 +3,18 @@ import { getPayload } from 'payload'
 
 import { InstallationError, completeInstallation } from '@/modules/operations/installation'
 import { loadConfig } from '@/modules/core/config'
+import type { OnboardingInput } from '@/modules/operations/onboarding'
 
 export async function POST(request: Request) {
   try {
     const input = (await request.json()) as {
       credential?: Parameters<typeof completeInstallation>[2]['credential']
-      name?: string
-      slug?: string
+      onboarding?: OnboardingInput
     }
     if (!input.credential)
       return Response.json({ error: 'Passkey credential is required.' }, { status: 400 })
+    if (!input.onboarding)
+      return Response.json({ error: 'Onboarding choices are required.' }, { status: 400 })
     const enrollmentToken = request.headers
       .get('cookie')
       ?.split(';')
@@ -24,8 +26,7 @@ export async function POST(request: Request) {
     const result = await completeInstallation(payload, loadConfig(), {
       credential: input.credential,
       enrollmentToken,
-      name: input.name ?? '',
-      slug: input.slug ?? '',
+      onboarding: input.onboarding as OnboardingInput,
     })
     return Response.json(result, {
       headers: { 'set-cookie': 'renegade-setup=; Max-Age=0; Path=/; HttpOnly; SameSite=Lax' },

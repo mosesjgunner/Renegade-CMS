@@ -4,6 +4,7 @@ import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
 import {
   createFixtureCryptoAdapter,
+  finalizeVerifiedOrder,
   verifySubmittedCryptoTransaction,
 } from '@/modules/commerce/service'
 
@@ -46,10 +47,66 @@ export async function POST(request: Request) {
       id: intent.id,
       data: {
         cryptoInvoice: verification.invoice,
-        state: verification.accepted ? 'paid' : 'pending',
+        state: verification.accepted
+          ? 'paid'
+          : verification.invoice.state === 'reorged'
+            ? 'exception'
+            : 'pending',
       },
       overrideAccess: true,
     })
+    const session: any = await db.findByID({
+      collection: 'checkout-sessions',
+      id:
+        typeof intent.checkoutSession === 'string'
+          ? intent.checkoutSession
+          : intent.checkoutSession.id,
+      depth: 1,
+      overrideAccess: true,
+    })
+    if (verification.accepted) {
+      await db.update({
+        collection: 'checkout-sessions',
+        id: session.id,
+        data: { state: 'completed' },
+        overrideAccess: true,
+      })
+      await finalizeVerifiedOrder(db, {
+        intent: { ...intent, state: 'paid' },
+        session,
+        merchantId:
+          typeof intent.merchantConnection === 'string'
+            ? intent.merchantConnection
+            : intent.merchantConnection.id,
+        verifiedAt: new Date().toISOString(),
+      })
+    } else if (verification.invoice.state === 'reorged') {
+      await db.update({
+        collection: 'checkout-sessions',
+        id: session.id,
+        data: { state: 'pending' },
+        overrideAccess: true,
+      })
+      const orders = await db.find({
+        collection: 'orders',
+        where: { checkoutSession: { equals: session.id } },
+        limit: 1,
+        overrideAccess: true,
+      })
+      if (orders.docs[0])
+        await db.update({
+          collection: 'orders',
+          id: orders.docs[0].id,
+          data: {
+            state: 'exception',
+            exception: {
+              code: 'crypto_reorg_reconciliation_required',
+              at: new Date().toISOString(),
+            },
+          },
+          overrideAccess: true,
+        })
+    }
     return NextResponse.json({
       state: verification.invoice.state,
       confirmations: verification.invoice.confirmations,

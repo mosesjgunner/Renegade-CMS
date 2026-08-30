@@ -33,6 +33,7 @@ app.stdout.on('data', (chunk) => (logs += chunk.toString()))
 app.stderr.on('data', (chunk) => (logs += chunk.toString()))
 
 try {
+  await waitUntilReady(`${baseUrl}/health/live`)
   const liveness = await (await fetch(`${baseUrl}/health/live`)).json()
   assert(liveness.status === 'live', 'liveness did not report live')
 

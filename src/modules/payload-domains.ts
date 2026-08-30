@@ -10,7 +10,9 @@ import {
 import { editorialDomain } from './editorial/payload-domain'
 import { experiencesDomain } from './experiences/payload-domain'
 import { identityDomain } from './identity/payload-domain'
+import { integrationsDomain } from './integrations/payload-domain'
 import { mediaDomain } from './media/payload-domain'
+import { networkDomain } from './network/payload-domain'
 import { operationsDomain } from './operations/payload-domain'
 import { qualityDomain } from './quality/payload-domain'
 import { releasesDomain } from './releases/payload-domain'
@@ -22,10 +24,12 @@ export function payloadDomains(config: AppConfig): DomainDefinition[] {
     operationsDomain,
     identityDomain(config),
     coreDomain,
+    integrationsDomain,
     editorialDomain,
     releasesDomain,
     mediaDomain,
     socialDomain,
+    networkDomain,
     audienceDomain,
     analyticsDomain,
     experiencesDomain,
@@ -46,10 +50,12 @@ export function registeredPayloadDomains(config: AppConfig): PayloadRegistration
     ,
     identity,
     core,
+    integrations,
     editorial,
     releases,
     media,
     social,
+    network,
     audience,
     analytics,
     experiences,
@@ -65,6 +71,7 @@ export function registeredPayloadDomains(config: AppConfig): PayloadRegistration
     collections: [
       ...identityCollections.slice(0, 1),
       ...collections(core),
+      ...collections(integrations),
       ...identityCollections.slice(1),
       ...editorialCollections.slice(0, 13),
       ...collections(releases),
@@ -72,6 +79,7 @@ export function registeredPayloadDomains(config: AppConfig): PayloadRegistration
       ...collections(media),
       ...collections(social),
       ...editorialCollections.slice(19),
+      ...collections(network),
       ...collections(audience),
       ...collections(analytics),
       ...collections(experiences),

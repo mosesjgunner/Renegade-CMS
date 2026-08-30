@@ -10,6 +10,7 @@ export type EmailDeliveryRequest = {
   text: string
   html?: string
   idempotencyKey: string
+  category?: 'transactional' | 'operational' | 'marketing'
 }
 
 export type EmailDeliveryFailure = {
@@ -37,6 +38,7 @@ export type EmailDeliveryHealth = {
 
 export interface EmailDeliveryAdapter {
   readonly id: string
+  readonly capabilities: readonly ('transactional' | 'operational' | 'marketing')[]
   send(request: EmailDeliveryRequest): Promise<EmailDeliveryResult>
   health(): Promise<EmailDeliveryHealth>
 }
@@ -46,6 +48,7 @@ type SmtpDependencies = { createTransport?: (options: object) => SmtpTransport }
 
 export const developmentCaptureEmailAdapter: EmailDeliveryAdapter = {
   id: 'development-capture',
+  capabilities: ['transactional', 'operational', 'marketing'],
   async send(request) {
     return {
       ok: true,
@@ -60,6 +63,7 @@ export const developmentCaptureEmailAdapter: EmailDeliveryAdapter = {
 
 export const disabledEmailAdapter: EmailDeliveryAdapter = {
   id: 'disabled',
+  capabilities: [],
   async send() {
     return {
       ok: false,
@@ -98,6 +102,7 @@ export function createSmtpEmailAdapter(
   })
   return {
     id: 'smtp',
+    capabilities: ['transactional', 'operational', 'marketing'],
     async send(request) {
       try {
         const response = await transport.sendMail({

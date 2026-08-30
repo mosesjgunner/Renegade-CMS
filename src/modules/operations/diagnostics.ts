@@ -42,7 +42,12 @@ type Provider = {
 export type OperationsDiagnostics = {
   generatedAt: string
   status: DiagnosticStatus
-  version: { app: string; buildSha: string | null }
+  version: {
+    app: string
+    buildSha: string | null
+    schemaVersion?: string
+    deploymentProfile?: AppConfig['deploymentProfile']
+  }
   database: { status: 'healthy' | 'unavailable' }
   migrations: {
     status: 'current' | 'behind' | 'unavailable'
@@ -256,7 +261,12 @@ export async function buildOperationsDiagnostics(
     return {
       generatedAt: now.toISOString(),
       status: degraded ? 'degraded' : 'healthy',
-      version: { app: config.version, buildSha: config.buildSha ?? null },
+      version: {
+        app: config.version,
+        buildSha: config.buildSha ?? null,
+        schemaVersion: config.schemaVersion,
+        deploymentProfile: config.deploymentProfile,
+      },
       database: { status: 'healthy' },
       migrations: {
         status: missing.length ? 'behind' : 'current',
@@ -284,7 +294,12 @@ export async function buildOperationsDiagnostics(
     return {
       generatedAt: now.toISOString(),
       status: 'unhealthy_core',
-      version: { app: config.version, buildSha: config.buildSha ?? null },
+      version: {
+        app: config.version,
+        buildSha: config.buildSha ?? null,
+        schemaVersion: config.schemaVersion,
+        deploymentProfile: config.deploymentProfile,
+      },
       database: { status: 'unavailable' },
       migrations: {
         status: 'unavailable',

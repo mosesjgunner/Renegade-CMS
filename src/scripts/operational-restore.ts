@@ -2,16 +2,18 @@
 import { createReadStream } from 'node:fs'
 import path from 'node:path'
 import { assertRestoreSafety, verifyOperationalBackup } from '../modules/operations/backup'
+import { assertRestoreVersionCompatibility } from '../modules/operations/lifecycle'
 
 const args = process.argv.slice(2)
 const value = (name: string, fallback?: string) =>
   args.includes(name) ? args[args.indexOf(name) + 1] : fallback
 const archive = value('--archive')
+const targetVersion = value('--target-version')
 const compose = value('--compose-file', 'compose.restore.yaml')!
 const envFile = value('--env-file', '.env.restore')!
-if (!archive)
+if (!archive || !targetVersion)
   throw new Error(
-    'Usage: restore:operational -- --archive <directory> --isolated --authorize-restore',
+    'Usage: restore:operational -- --archive <directory> --target-version <semver> --isolated --authorize-restore',
   )
 assertRestoreSafety({
   isolated: args.includes('--isolated'),
@@ -48,7 +50,11 @@ function capture(commandArgs: string[]) {
   })
 }
 
-await verifyOperationalBackup(root)
+const manifest = await verifyOperationalBackup(root)
+assertRestoreVersionCompatibility({
+  archiveVersion: manifest.renegade.version,
+  targetVersion,
+})
 const running = await capture([...composeArgs, 'ps', '--status', 'running', '--services'])
 if (
   running

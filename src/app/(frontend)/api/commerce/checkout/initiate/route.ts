@@ -25,6 +25,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'sessionId and capabilityId are required.' }, { status: 400 })
   const payload = await getPayload({ config })
   const db: any = payload
+  const settings: any = await db.findGlobal({
+    slug: 'site-settings',
+    depth: 0,
+    overrideAccess: true,
+  })
+  if (!settings.adminExperience?.optionalCapabilities?.commerceCheckout)
+    return NextResponse.json({ error: 'Commerce checkout is disabled.' }, { status: 503 })
   const session: any = await db.findByID({
     collection: 'checkout-sessions',
     id: input.sessionId,

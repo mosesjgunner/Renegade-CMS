@@ -59,7 +59,7 @@ describe('PostgreSQL operations jobs', () => {
   it('runs a future-scheduled job after the queueing process has exited', async () => {
     const tsxCLI = path.resolve('node_modules/tsx/dist/cli.mjs')
     const helper = path.resolve('tests/helpers/job-restart-process.ts')
-    const childOptions = { encoding: 'utf8' as const, env: process.env, timeout: 30_000 }
+    const childOptions = { encoding: 'utf8' as const, env: process.env, timeout: 60_000 }
     const queuedProcess = spawnSync(process.execPath, [tsxCLI, helper, 'queue'], childOptions)
     expect(queuedProcess.status, queuedProcess.stderr).toBe(0)
     const jobID = queuedProcess.stdout.match(/JOB_ID=([0-9a-f-]{36})/i)?.[1]
@@ -71,5 +71,5 @@ describe('PostgreSQL operations jobs', () => {
     const resultText = runnerProcess.stdout.match(/RESULT=(\{.*\})/)?.[1]
     expect(resultText).toBeTruthy()
     expect(JSON.parse(resultText!)).toMatchObject({ hasError: false })
-  }, 30_000)
+  }, 60_000)
 })

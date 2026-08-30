@@ -12,6 +12,11 @@ import type { Payload } from 'payload'
 
 import type { AppConfig } from '../core/config'
 import { createPasskeySession } from './passkey-auth'
+import {
+  provisionOnboardingSite,
+  validateOnboardingInput,
+  type OnboardingInput,
+} from './onboarding'
 
 const bootstrapLifetimeMs = 15 * 60 * 1000
 const recoveryCodeCount = 10
@@ -130,10 +135,19 @@ export async function completeInstallation(
   input: {
     credential: RegistrationResponseJSON
     enrollmentToken: string
-    name: string
-    slug: string
+    onboarding: OnboardingInput
   },
-): Promise<{ recoveryCodes: string[] }> {
+): Promise<{
+  recoveryCodes: string[]
+  onboarding: {
+    publicUrl: string
+    adminUrl: string
+    configuredCapabilities: string[]
+    needsConfiguration: string[]
+    availableLater: string[]
+    systemHealth: string
+  }
+}> {
   const pool = getPool(payload)
   const state = await getRequiredEnrollmentState(pool, config, input.enrollmentToken)
   if (!state.registration_challenge || !state.registration_email) {
@@ -155,8 +169,8 @@ export async function completeInstallation(
     throw new InstallationError('INSTALLATION_INVALID', 'Passkey enrollment could not be verified.')
   }
 
-  const name = validateSiteName(input.name)
-  const slug = validateSlug(input.slug)
+  const onboarding = validateOnboardingInput(input.onboarding)
+  const provisioned = await provisionOnboardingSite(payload, state.registration_email, onboarding)
   const recoveryCodes = createRecoveryCodes()
   const client = await pool.connect()
   try {
@@ -186,10 +200,6 @@ export async function completeInstallation(
     if (!ownerId)
       throw new InstallationError('INSTALLATION_INVALID', 'Owner creation did not return an ID.')
 
-    await client.query(`INSERT INTO sites (name, slug, lifecycle) VALUES ($1, $2, 'active')`, [
-      name,
-      slug,
-    ])
     await client.query(
       `INSERT INTO passkeys (user_id, credential_id, public_key, counter, device_type, backed_up)
        VALUES ($1, $2, $3, $4, $5, $6)`,
@@ -218,7 +228,25 @@ export async function completeInstallation(
       [ownerId],
     )
     await client.query('COMMIT')
-    return { recoveryCodes }
+    return {
+      recoveryCodes,
+      onboarding: {
+        publicUrl: onboarding.primaryUrl,
+        adminUrl: new URL('/admin', onboarding.primaryUrl).toString(),
+        configuredCapabilities: provisioned.configuredCapabilities,
+        needsConfiguration: onboarding.optionalConnections,
+        availableLater: ['email', 'ai', 'social', 'commerce', 'analytics', 'networking'].filter(
+          (key) =>
+            !onboarding.optionalConnections.includes(
+              key as OnboardingInput['optionalConnections'][number],
+            ),
+        ),
+        systemHealth:
+          onboarding.featureProfile === 'Lean'
+            ? 'Core publishing is ready. Worker-heavy optional features remain deferred.'
+            : 'Core publishing and the standard operations profile are ready.',
+      },
+    }
   } catch (error) {
     await client.query('ROLLBACK')
     throw error
@@ -407,28 +435,6 @@ function validateOwnerEmail(value: string, configuredOwner?: string): string {
     )
   }
   return email
-}
-
-function validateSiteName(value: string): string {
-  const name = value.trim()
-  if (name.length < 2 || name.length > 120) {
-    throw new InstallationError(
-      'INSTALLATION_INVALID',
-      'Site name must be between 2 and 120 characters.',
-    )
-  }
-  return name
-}
-
-function validateSlug(value: string): string {
-  const slug = value.trim().toLowerCase()
-  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug)) {
-    throw new InstallationError(
-      'INSTALLATION_INVALID',
-      'Site slug must use lowercase letters, numbers, and hyphens.',
-    )
-  }
-  return slug
 }
 
 function createBootstrapToken(): string {

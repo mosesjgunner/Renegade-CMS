@@ -252,6 +252,7 @@ describe('M10 media publication acceptance', () => {
     const graphic = (await payload.create({
       collection: 'graphic-documents',
       data: {
+        ...scope,
         title: 'Layered acceptance graphic',
         sourceMedia: asset.id,
         sourceRevision: 'sha256:immutable-source',

@@ -56,7 +56,16 @@ export const SocialAccounts: CollectionConfig = {
       defaultValue: 'manual-handoff',
       options: ['available', 'limited', 'approval-required', 'manual-handoff', 'unavailable'],
     },
-    { name: 'capabilities', type: 'json', required: true, defaultValue: {} },
+    {
+      name: 'capabilities',
+      type: 'json',
+      required: true,
+      defaultValue: {},
+      admin: {
+        description:
+          'Provider-declared capabilities only; this is not a promise of every network feature.',
+      },
+    },
     {
       name: 'credentialHealth',
       type: 'select',
@@ -66,7 +75,14 @@ export const SocialAccounts: CollectionConfig = {
     { name: 'credentialExpiresAt', type: 'date' },
     { name: 'connectionReference', type: 'text' },
     { name: 'lastVerifiedAt', type: 'date' },
-    { name: 'diagnostics', type: 'json' },
+    {
+      name: 'diagnostics',
+      type: 'json',
+      admin: {
+        description:
+          'Connection, credential, and provider diagnostics. Secrets are never stored here.',
+      },
+    },
   ],
   indexes: [{ fields: ['site', 'network', 'externalAccountId'], unique: true }],
 }
@@ -139,8 +155,22 @@ export const SocialQueueItems: CollectionConfig = {
     { name: 'leaseUntil', type: 'date' },
     { name: 'leaseOwner', type: 'text' },
     { name: 'attemptCount', type: 'number', defaultValue: 0 },
-    { name: 'nextAttemptAt', type: 'date' },
-    { name: 'deadLetterReason', type: 'json' },
+    {
+      name: 'nextAttemptAt',
+      type: 'date',
+      admin: {
+        description:
+          'Next bounded Payload Job retry, including a provider retry-after when supplied.',
+      },
+    },
+    {
+      name: 'deadLetterReason',
+      type: 'json',
+      admin: {
+        description:
+          'Terminal provider failure. Reconnect-required and manual-handoff messages explain the required action.',
+      },
+    },
     { name: 'cancelledAt', type: 'date' },
   ],
 }

@@ -26,8 +26,11 @@ export function createUsersCollection(
         type: 'select',
         required: true,
         defaultValue: 'owner',
-        options: ['owner', 'staff'],
+        options: ['owner', 'administrator', 'staff'],
       },
+      // This links an enterprise administrator account to the canonical member identity.
+      // It intentionally does not create a second authentication system.
+      { name: 'member', type: 'relationship', relationTo: 'members', unique: true, index: true },
     ],
   }
 }

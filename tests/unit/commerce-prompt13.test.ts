@@ -92,13 +92,13 @@ describe('Prompt 13 crypto, crowdfunding, and POD acceptance contracts', () => {
         observation.observedAt,
       ).invoice.state,
     ).toBe('overpaid')
-    expect(() =>
+    expect(
       verifyCryptoObservation(
         { ...invoice, transactionIds: ['0xtx'] },
         observation,
         observation.observedAt,
-      ),
-    ).toThrow('Duplicate')
+      ).invoice.transactionIds,
+    ).toEqual(['0xtx'])
     expect(
       verifyCryptoObservation(
         { ...invoice, expiresAt: '2026-08-24T00:00:00.000Z' },

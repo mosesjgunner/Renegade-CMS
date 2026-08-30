@@ -164,3 +164,8 @@ export function verifyEmailWebhookSignature(raw: string, signature: string, secr
     timingSafeEqual(Buffer.from(signature), Buffer.from(expected))
   )
 }
+export const testDeliveryIdempotencyKey = (messageId: string, recipientEmail: string) =>
+  `email:test:${messageId}:${audienceDigest(recipientEmail.trim().toLowerCase())}`
+export function isMarketingMessage(kind: string) {
+  return kind === 'bulk' || kind === 'digest'
+}

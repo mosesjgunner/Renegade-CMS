@@ -21,7 +21,10 @@ services:
     build:
       context: .
       target: runner
-    image: renegade-cms:${RENEGADE_IMAGE_TAG:-local}
+      args:
+        APP_VERSION: ${APP_VERSION:-0.1.0}
+        BUILD_SHA: ${BUILD_SHA:-unknown}
+    image: ${RENEGADE_IMAGE:-renegade-cms}:${RENEGADE_IMAGE_TAG:-local}
     environment: &app_environment
       NODE_ENV: production
       DATABASE_URL: postgresql://renegade:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env.production}@postgres:5432/renegade
@@ -34,6 +37,9 @@ services:
       EMAIL_MODE: ${EMAIL_MODE:-disabled}
       LOG_LEVEL: ${LOG_LEVEL:-info}
       APP_VERSION: ${APP_VERSION:-0.1.0}
+      BUILD_SHA: ${BUILD_SHA:-unknown}
+      RENEGADE_IMAGE_TAG: ${RENEGADE_IMAGE_TAG:-local}
+      DEPLOYMENT_PROFILE: ${DEPLOYMENT_PROFILE:-Standard}
       ENABLE_TEST_ROUTES: 'false'
     command: ['npm', 'run', 'db:migrate']
     depends_on:
@@ -42,7 +48,7 @@ services:
     restart: 'no'
 
   renegade-web:
-    image: renegade-cms:${RENEGADE_IMAGE_TAG:-local}
+    image: ${RENEGADE_IMAGE:-renegade-cms}:${RENEGADE_IMAGE_TAG:-local}
     restart: unless-stopped
     environment: *app_environment
     ports:
@@ -66,7 +72,7 @@ services:
       start_period: 20s
 
   renegade-worker:
-    image: renegade-cms:${RENEGADE_IMAGE_TAG:-local}
+    image: ${RENEGADE_IMAGE:-renegade-cms}:${RENEGADE_IMAGE_TAG:-local}
     restart: unless-stopped
     environment:
       <<: *app_environment

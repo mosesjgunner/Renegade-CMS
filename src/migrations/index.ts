@@ -17,6 +17,11 @@ import * as migration_20260826_053416_second_pass_schema from './20260826_053416
 import * as migration_20260829_110000_content_release_execution from './20260829_110000_content_release_execution'
 import * as migration_20260829_120000_quality_runtime from './20260829_120000_quality_runtime'
 import * as migration_20260829_130000_progressive_disclosure_admin from './20260829_130000_progressive_disclosure_admin'
+import * as migration_20260829_140000_onboarding_settings from './20260829_140000_onboarding_settings'
+import * as migration_20260829_150000_integrations from './20260829_150000_integrations'
+import * as migration_20260829_160000_activitypub_delivery from './20260829_160000_activitypub_delivery'
+import * as migration_20260829_170000_network_experience from './20260829_170000_network_experience'
+import * as migration_20260829_180000_collaboration from './20260829_180000_collaboration'
 
 export const migrations = [
   {
@@ -113,5 +118,30 @@ export const migrations = [
     up: migration_20260829_130000_progressive_disclosure_admin.up,
     down: migration_20260829_130000_progressive_disclosure_admin.down,
     name: '20260829_130000_progressive_disclosure_admin',
+  },
+  {
+    up: migration_20260829_140000_onboarding_settings.up,
+    down: migration_20260829_140000_onboarding_settings.down,
+    name: '20260829_140000_onboarding_settings',
+  },
+  {
+    up: migration_20260829_150000_integrations.up,
+    down: migration_20260829_150000_integrations.down,
+    name: '20260829_150000_integrations',
+  },
+  {
+    up: migration_20260829_160000_activitypub_delivery.up,
+    down: migration_20260829_160000_activitypub_delivery.down,
+    name: '20260829_160000_activitypub_delivery',
+  },
+  {
+    up: migration_20260829_170000_network_experience.up,
+    down: migration_20260829_170000_network_experience.down,
+    name: '20260829_170000_network_experience',
+  },
+  {
+    up: migration_20260829_180000_collaboration.up,
+    down: migration_20260829_180000_collaboration.down,
+    name: '20260829_180000_collaboration',
   },
 ]

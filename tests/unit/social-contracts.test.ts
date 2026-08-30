@@ -5,8 +5,10 @@ import {
   rescheduleCalendarEntry,
   socialHash,
   socialIdempotencyKey,
+  validateForProvider,
   validateVariant,
 } from '../../src/modules/social/contracts'
+import { socialProviderFor } from '../../src/modules/social/provider-runtime'
 
 describe('social distribution contracts', () => {
   const variant = {
@@ -41,5 +43,34 @@ describe('social distribution contracts', () => {
         },
       ).audit.action,
     ).toBe('calendar.rescheduled')
+  })
+  it('declares live, unavailable, and manual boundaries and rejects unsupported media', () => {
+    const bluesky = socialProviderFor('bluesky')
+    expect(bluesky.mode).toBe('live')
+    expect(
+      validateForProvider(
+        { ...variant, attachments: [{ mediaAssetId: 'm1', role: 'video' }] },
+        bluesky.capabilities,
+      ),
+    ).toContain('This provider does not support video attachments.')
+    expect(socialProviderFor('x').mode).toBe('manual-handoff')
+    expect(socialProviderFor('activitypub').mode).toBe('unavailable')
+  })
+  it('reports expired credentials and provider outages deterministically', async () => {
+    const adapter = socialProviderFor('bluesky')
+    expect(await adapter.publish?.(variant, { accountId: 'a1', credentials: null })).toMatchObject({
+      status: 'failed',
+      error: { kind: 'reconnect-required' },
+    })
+    const originalFetch = globalThis.fetch
+    globalThis.fetch = async () => {
+      throw new Error('offline')
+    }
+    const outage = await adapter.publish?.(variant, {
+      accountId: 'a1',
+      credentials: { identifier: 'a', appPassword: 'b' },
+    })
+    globalThis.fetch = originalFetch
+    expect(outage).toMatchObject({ status: 'failed', error: { kind: 'transient' } })
   })
 })

@@ -3,7 +3,7 @@ import type { TaskConfig } from 'payload'
 
 import { loadConfig } from '../core/config'
 import { selectEmailDeliveryAdapter } from '../email/delivery'
-import { isDeliveryTerminal, type EmailBlock } from './contracts'
+import { isDeliveryTerminal, isMarketingMessage, type EmailBlock } from './contracts'
 import { canDeliverToSubscriber, queueNewsletterDeliveries } from './service'
 
 type DeliveryInput = { deliveryId: string }
@@ -41,13 +41,17 @@ export const emailDeliveryTask = {
     })) as Doc
     if (isDeliveryTerminal(delivery.status) || delivery.status === 'failed') return { output: {} }
     const message = delivery.message as Doc
-    const eligible = await canDeliverToSubscriber(req.payload, {
-      siteId: String(message.site),
-      subscriberId: delivery.subscriber
-        ? String((delivery.subscriber as Doc).id ?? delivery.subscriber)
-        : undefined,
-      recipientEmail: delivery.recipientEmail,
-    })
+    const category = isMarketingMessage(String(message.kind)) ? 'marketing' : 'transactional'
+    const eligible =
+      category === 'marketing'
+        ? await canDeliverToSubscriber(req.payload, {
+            siteId: String(message.site),
+            subscriberId: delivery.subscriber
+              ? String((delivery.subscriber as Doc).id ?? delivery.subscriber)
+              : undefined,
+            recipientEmail: delivery.recipientEmail,
+          })
+        : true
     // This is intentionally adjacent to adapter use: a late unsubscribe wins over a snapshot.
     if (!eligible) {
       await req.payload.update({
@@ -65,12 +69,22 @@ export const emailDeliveryTask = {
       overrideAccess: true,
     })
     const adapter = selectEmailDeliveryAdapter(loadConfig())
+    if (!adapter.capabilities.includes(category)) {
+      await req.payload.update({
+        collection: 'email-deliveries',
+        id: delivery.id,
+        data: { status: 'failed', outcome: { code: 'email_capability_disabled', category } },
+        overrideAccess: true,
+      })
+      return { output: {} }
+    }
     const result = await adapter.send({
       from: loadConfig().email.from ?? '',
       to: delivery.recipientEmail,
       subject: String(message.subject ?? 'Renegade notification'),
       text: emailText(Array.isArray(message.blocks) ? (message.blocks as EmailBlock[]) : []),
       idempotencyKey: delivery.idempotencyKey,
+      category,
     })
     if (result.ok) {
       await req.payload.update({

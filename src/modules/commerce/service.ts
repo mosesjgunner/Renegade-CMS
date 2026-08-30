@@ -130,7 +130,7 @@ export function methodsForCart(
   return eligiblePaymentMethods(methods, context)
 }
 export function transitionOrder(state: string, event: ProviderEvent): string {
-  if (['paid', 'fulfilled', 'refunded'].includes(state)) return state
+  if (['paid', 'fulfilled', 'refunded', 'cancelled'].includes(state)) return state
   if (event.kind === 'confirmed') return 'paid'
   if (event.kind === 'failed') return 'failed'
   return 'cancelled'
@@ -148,6 +148,65 @@ export function applyVerifiedWebhook(intent: PaymentIntent, event: ProviderEvent
 }
 export function clientCallbackCannotConfirmPayment(): false {
   return false
+}
+
+export type InventoryLine = Readonly<{
+  productId: string
+  variantSku: string
+  quantity: number
+}>
+export type InventoryProduct = Readonly<{
+  id: string
+  variants?: readonly {
+    sku?: string
+    inventoryPolicy?: 'untracked' | 'tracked' | 'external-hook' | 'pod-provider'
+    inventoryQuantity?: number | null
+  }[]
+}>
+/** The receipt stores these keys, preventing webhook/indexer replays from decrementing twice. */
+export function inventoryAdjustmentsForOrder(input: {
+  orderId: string
+  appliedKeys: readonly string[]
+  lines: readonly InventoryLine[]
+  products: readonly InventoryProduct[]
+}) {
+  const adjustments: { key: string; productId: string; variantSku: string; quantity: number }[] = []
+  for (const line of input.lines) {
+    const key = `commerce.inventory:${input.orderId}:${line.productId}:${line.variantSku}`
+    if (input.appliedKeys.includes(key)) continue
+    const product = input.products.find((candidate) => candidate.id === line.productId)
+    const variant = product?.variants?.find((candidate) => candidate.sku === line.variantSku)
+    if (!variant || variant.inventoryPolicy !== 'tracked') continue
+    if (!Number.isInteger(line.quantity) || line.quantity <= 0)
+      throw new Error(`Invalid quantity for ${line.variantSku}.`)
+    if ((variant.inventoryQuantity ?? 0) < line.quantity)
+      throw new Error(`Insufficient inventory for ${line.variantSku}.`)
+    adjustments.push({
+      key,
+      productId: line.productId,
+      variantSku: line.variantSku,
+      quantity: line.quantity,
+    })
+  }
+  return adjustments
+}
+export function receiptForVerifiedPayment(input: {
+  orderId: string
+  intentId: string
+  providerKey: string
+  amountMinor: string
+  currency: string
+  verifiedAt: string
+}) {
+  return {
+    state: 'issued' as const,
+    receiptNumber: `receipt_${input.orderId}`,
+    paymentIntentId: input.intentId,
+    providerKey: input.providerKey,
+    amountMinor: input.amountMinor,
+    currency: input.currency,
+    verifiedAt: input.verifiedAt,
+  }
 }
 
 /** Product publication can reference only DAM-approved assets; private/restricted files stay unavailable. */
@@ -286,6 +345,19 @@ export const createFixturePodAdapter = (
   },
 })
 
+export type ProductMediaAsset = {
+  id?: string | number
+  rightsStatus?: string
+  originalExportAllowed?: boolean
+}
+
+export type ProductPublicationDoc = {
+  id: string | number
+  state?: string
+  releaseRevision?: string | null
+  media?: readonly (ProductMediaAsset | string | number)[] | null
+}
+
 /** Commerce-owned product publication boundary. It only exposes a reviewed product and never starts checkout or payment. */
 export async function publishProductRelease(
   payload: Payload,
@@ -296,7 +368,8 @@ export async function publishProductRelease(
     id: input.productId,
     depth: 1,
     overrideAccess: true,
-  } as never)) as Record<string, any>
+  } as never)) as ProductPublicationDoc | null
+  if (!product) throw new Error('Product not found.')
   if (input.revisionId && product.releaseRevision !== input.revisionId)
     throw new Error('Pinned product revision is stale.')
   if (
@@ -308,11 +381,18 @@ export async function publishProductRelease(
   assertReleaseDoesNotCharge({ releaseAction: 'publish' })
   assertGovernedProductMedia(
     Array.isArray(product.media)
-      ? product.media.map((asset: any) => ({
-          id: String(asset?.id ?? asset),
-          rightsStatus: asset?.rightsStatus,
-          originalExportAllowed: asset?.originalExportAllowed,
-        }))
+      ? product.media.map((asset) => {
+          if (typeof asset === 'object' && asset !== null) {
+            return {
+              id: String(asset.id ?? ''),
+              rightsStatus: asset.rightsStatus,
+              originalExportAllowed: asset.originalExportAllowed,
+            }
+          }
+          return {
+            id: String(asset),
+          }
+        })
       : [],
   )
   await payload.update({
@@ -322,4 +402,113 @@ export async function publishProductRelease(
     overrideAccess: true,
   } as never)
   return true
+}
+
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/** Applies a server-verified settlement to the canonical Order exactly once. */
+export async function finalizeVerifiedOrder(
+  db: any,
+  input: { intent: any; session: any; merchantId: string; verifiedAt: string },
+) {
+  const found = await db.find({
+    collection: 'orders',
+    where: { checkoutSession: { equals: input.session.id } },
+    limit: 1,
+    overrideAccess: true,
+  })
+  let order = found.docs[0]
+  const cart =
+    typeof input.session.cart === 'object'
+      ? input.session.cart
+      : await db.findByID({
+          collection: 'carts',
+          id: input.session.cart,
+          depth: 0,
+          overrideAccess: true,
+        })
+  if (!order) {
+    order = await db.create({
+      collection: 'orders',
+      data: {
+        site: input.session.site,
+        publication: input.session.publication,
+        space: input.session.space,
+        checkoutSession: input.session.id,
+        merchantConnection: input.merchantId,
+        orderNumber: `order_${input.session.id}`,
+        state: 'pending-payment',
+        currency: input.session.currency,
+        amountMinor: input.session.amountMinor,
+        items: cart.items,
+      },
+      overrideAccess: true,
+    })
+  }
+  if (order.receipt?.state === 'issued') return { order, replay: true }
+  const lines = (Array.isArray(order.items) ? order.items : []) as InventoryLine[]
+  const productIds = [...new Set(lines.map((line) => line.productId).filter(Boolean))]
+  const products = await Promise.all(
+    productIds.map((id) =>
+      db.findByID({ collection: 'products', id, depth: 0, overrideAccess: true }),
+    ),
+  )
+  const appliedKeys = Array.isArray(order.transitionLog)
+    ? order.transitionLog
+        .filter((entry: any) => entry?.kind === 'inventory-applied')
+        .map((entry: any) => entry.key)
+    : []
+  const adjustments = inventoryAdjustmentsForOrder({
+    orderId: String(order.id),
+    appliedKeys,
+    lines,
+    products: products.map((product: any) => ({
+      id: String(product.id),
+      variants: product.variants,
+    })),
+  })
+  for (const adjustment of adjustments) {
+    const product = products.find((candidate: any) => String(candidate.id) === adjustment.productId)
+    await db.update({
+      collection: 'products',
+      id: product.id,
+      data: {
+        variants: product.variants.map((variant: any) =>
+          variant.sku === adjustment.variantSku
+            ? {
+                ...variant,
+                inventoryQuantity: Number(variant.inventoryQuantity ?? 0) - adjustment.quantity,
+              }
+            : variant,
+        ),
+      },
+      overrideAccess: true,
+    })
+  }
+  const transitionLog = [
+    ...(Array.isArray(order.transitionLog) ? order.transitionLog : []),
+    ...adjustments.map((adjustment) => ({
+      kind: 'inventory-applied',
+      ...adjustment,
+      at: input.verifiedAt,
+    })),
+    { kind: 'payment-confirmed', intentId: input.intent.id, at: input.verifiedAt },
+  ]
+  order = await db.update({
+    collection: 'orders',
+    id: order.id,
+    data: {
+      state: 'paid',
+      transitionLog,
+      receipt: receiptForVerifiedPayment({
+        orderId: String(order.id),
+        intentId: String(input.intent.id),
+        providerKey: input.intent.providerKey,
+        amountMinor: input.intent.amountMinor,
+        currency: input.intent.currency,
+        verifiedAt: input.verifiedAt,
+      }),
+    },
+    overrideAccess: true,
+  })
+  return { order, replay: false }
 }

@@ -48,8 +48,14 @@ export function applyCoreGlobalGroups(globals: readonly GlobalConfig[]): GlobalC
 export type CapabilityPresentationState = 'disabled' | 'setup required' | 'healthy' | 'degraded'
 
 export function capabilityPresentationState(
-  capability: Pick<CapabilityLifecycle, 'status'>,
+  capability: Pick<CapabilityLifecycle, 'status'> & Partial<Pick<CapabilityLifecycle, 'readiness'>>,
 ): CapabilityPresentationState {
+  if (
+    capability.readiness === 'configuration-required' ||
+    capability.readiness === 'credential-required'
+  )
+    return 'setup required'
+  if (capability.readiness === 'unhealthy') return 'degraded'
   if (capability.status === 'disabled' || capability.status === 'unavailable') return 'disabled'
   if (capability.status === 'configuring' || capability.status === 'misconfigured')
     return 'setup required'

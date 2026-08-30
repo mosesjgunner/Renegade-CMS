@@ -1,5 +1,15 @@
 import { createUsersCollection } from '../../collections/Users'
 import {
+  EditorialAssignments,
+  EditorialComments,
+  EditorialDiscussions,
+  TeamAuditEvents,
+  TeamInvitations,
+  TeamMemberships,
+  WorkConversations,
+  WorkMessages,
+} from '../../collections/Collaboration'
+import {
   Authors,
   Brands,
   IdentityAuditEvents,
@@ -33,6 +43,14 @@ export function identityDomain(config: AppConfig): DomainDefinition {
       Authors,
       Publications,
       Relationships,
+      TeamMemberships,
+      TeamInvitations,
+      TeamAuditEvents,
+      EditorialAssignments,
+      EditorialDiscussions,
+      EditorialComments,
+      WorkConversations,
+      WorkMessages,
     ],
   }
 }

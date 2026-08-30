@@ -8,6 +8,16 @@ import { buildOperationsDiagnostics, isOperator } from '../operations/diagnostic
 import { capabilityPresentationState, operationalOverview } from './progressive-disclosure'
 
 const capabilityRoutes: Record<string, { label: string; href: string; description: string }> = {
+  'core.publishing': {
+    label: 'Core publishing',
+    href: '/admin/collections/content',
+    description: 'Local public reading and publishing foundations.',
+  },
+  'editorial.workflow': {
+    label: 'Editorial workflow',
+    href: '/admin/collections/content',
+    description: 'Draft, review, revision, and release workflow.',
+  },
   'media.processing': {
     label: 'Advanced media',
     href: '/admin/collections/media-derivatives',
@@ -42,6 +52,11 @@ const capabilityRoutes: Record<string, { label: string; href: string; descriptio
     label: 'Quality Center',
     href: '/admin/collections/quality-scans',
     description: 'Policies, scans, issues, and waivers.',
+  },
+  'networking.federation': {
+    label: 'Optional network',
+    href: '/admin/collections/network-relationships',
+    description: 'Remote discovery, relationships, moderation, inboxes, and delivery diagnostics.',
   },
 }
 
@@ -86,6 +101,7 @@ export default async function CapabilityCenter({ initPageResult }: AdminViewServ
     'analytics.reporting': configured?.analyticsReporting ?? false,
     'experiences.experiments': configured?.experiments ?? false,
     'quality.scanning': configured?.qualityScanning ?? false,
+    'networking.federation': config.networking.enabled,
   }
   const capabilities = new CapabilityLifecycleService({
     profile: 'Standard',
@@ -116,7 +132,20 @@ export default async function CapabilityCenter({ initPageResult }: AdminViewServ
         <Link href="/admin/operations">Operational overview</Link>
       </p>
       <section style={{ marginTop: 28 }}>
-        <h2>Optional capabilities</h2>
+        <h2>Runtime identity</h2>
+        <p>
+          Application {diagnostics.version.app} · Schema{' '}
+          {diagnostics.version.schemaVersion ?? 'unknown'} · Build{' '}
+          {diagnostics.version.buildSha ?? 'not supplied'} · Profile{' '}
+          {diagnostics.version.deploymentProfile ?? 'unknown'}
+        </p>
+        <p>
+          Migrations: {diagnostics.migrations.status} ({diagnostics.migrations.applied}/
+          {diagnostics.migrations.expected}) · Worker: {diagnostics.worker.status}
+        </p>
+      </section>
+      <section style={{ marginTop: 28 }}>
+        <h2>Capability readiness</h2>
         <div
           style={{
             display: 'grid',
@@ -134,6 +163,10 @@ export default async function CapabilityCenter({ initPageResult }: AdminViewServ
                 <article key={capability.key} className="card" style={{ padding: 16 }}>
                   <h3>{item.label}</h3>
                   <p>{item.description}</p>
+                  <p>
+                    {capability.requiresExternalProvider ? 'External provider required. ' : ''}
+                    {capability.requiresWorker ? 'Worker-backed. ' : ''}
+                  </p>
                   <p>
                     <strong className={`status ${statusClass(state)}`}>{state}</strong>
                   </p>

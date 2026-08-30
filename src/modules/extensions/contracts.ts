@@ -1,5 +1,10 @@
 import type { Capability, Iso8601Instant, SemVer, SemVerRange } from '../core/contracts'
 
+/** Stable, independently versioned boundaries used before an extension is loaded. */
+export const EXTENSION_CONTRACT_VERSION = 1
+export const CORE_COMPATIBILITY_CONTRACT_VERSION = 1
+export const SCHEMA_COMPATIBILITY_CONTRACT_VERSION = 1
+
 export const CAPABILITY_KEYS = [
   'social.publish.text',
   'email.transactional',
@@ -60,6 +65,8 @@ export type ResourceBudget = {
   degradedMode: string
 }
 export type ExtensionManifest = {
+  /** Omitted only by legacy in-tree manifests; new extensions should declare 1. */
+  contractVersion?: number
   key: `${string}.${string}`
   version: SemVer
   family: ExtensionFamily
@@ -97,7 +104,16 @@ export type ConnectionRecord = ConnectionScope & {
   providerKey: string
   externalAccountId: string
   label: string
-  status: 'configured' | 'active' | 'expired' | 'invalid' | 'disabled' | 'disconnected'
+  status:
+    | 'configured'
+    | 'authorizing'
+    | 'active'
+    | 'expired'
+    | 'revoked'
+    | 'invalid'
+    | 'degraded'
+    | 'disabled'
+    | 'disconnected'
   encryptedSecretRef: string | null
   scopes: readonly string[]
   expiresAt: Iso8601Instant | null

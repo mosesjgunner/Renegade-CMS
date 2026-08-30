@@ -449,3 +449,255 @@ export async function processProviderSuppressionEvent(
     })
   return suppressSubscriber(payload, { ...input, reason: input.event })
 }
+
+/** Public signup only creates marketing consent from the explicit subscription action. */
+export async function requestNewsletterSubscription(
+  payload: Store,
+  input: {
+    siteId: string
+    listId: string
+    email: string
+    locale: string
+    consentWording: string
+    source: string
+  },
+) {
+  const email = input.email.trim().toLowerCase()
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error('Enter a valid email address.')
+  const list = (await payload.findByID({
+    collection: 'audience-lists',
+    id: input.listId,
+    depth: 0,
+    overrideAccess: true,
+  })) as Doc
+  if (!list || list.status !== 'active' || String(list.site) !== input.siteId)
+    throw new Error('Newsletter unavailable.')
+  if (await isSubscriberSuppressed(payload, input.siteId, audienceDigest(email)))
+    throw new Error('This address has been unsubscribed.')
+  if (list.doubleOptIn !== false)
+    return { ...(await requestDoubleOptIn(payload, input)), status: 'pending' as const }
+  const result = await requestDoubleOptIn(payload, input)
+  const timestamp = now()
+  await payload.update({
+    collection: 'subscribers',
+    id: result.subscriber.id,
+    data: { status: 'active', verifiedAt: timestamp },
+    overrideAccess: true,
+  })
+  const memberships = await payload.find({
+    collection: 'audience-memberships',
+    where: { subscriber: { equals: result.subscriber.id }, audienceList: { equals: input.listId } },
+    limit: 1,
+    overrideAccess: true,
+  })
+  if (memberships.docs[0])
+    await payload.update({
+      collection: 'audience-memberships',
+      id: memberships.docs[0].id,
+      data: { status: 'active', confirmedAt: timestamp },
+      overrideAccess: true,
+    })
+  await payload.create({
+    collection: 'consent-events',
+    data: {
+      site: input.siteId,
+      subscriber: result.subscriber.id,
+      audienceList: input.listId,
+      event: 'resubscribe',
+      basis: 'consent',
+      wording: input.consentWording,
+      locale: input.locale,
+      occurredAt: timestamp,
+      evidence: { source: input.source, doubleOptIn: false },
+    },
+    overrideAccess: true,
+  })
+  return { subscriber: result.subscriber, status: 'active' as const }
+}
+
+export async function updateAudiencePreferences(
+  payload: Store,
+  input: {
+    siteId: string
+    email: string
+    audienceList?: string
+    preferences: Record<string, boolean | string | number>
+  },
+) {
+  const emailHash = audienceDigest(input.email.trim().toLowerCase())
+  const subscribers = await payload.find({
+    collection: 'subscribers',
+    where: { site: { equals: input.siteId }, emailHash: { equals: emailHash } },
+    limit: 1,
+    overrideAccess: true,
+  })
+  const subscriber = subscribers.docs[0] as Doc | undefined
+  if (!subscriber) throw new Error('Subscriber was not found.')
+  const prior = await payload.find({
+    collection: 'preferences',
+    where: {
+      subscriber: { equals: subscriber.id },
+      ...(input.audienceList ? { audienceList: { equals: input.audienceList } } : {}),
+    },
+    limit: 1,
+    overrideAccess: true,
+  })
+  if (prior.docs[0])
+    return payload.update({
+      collection: 'preferences',
+      id: prior.docs[0].id,
+      data: { preferences: input.preferences },
+      overrideAccess: true,
+    })
+  return payload.create({
+    collection: 'preferences',
+    data: {
+      subscriber: subscriber.id,
+      audienceList: input.audienceList,
+      preferences: input.preferences,
+    },
+    overrideAccess: true,
+  })
+}
+
+/** Generates a reviewable digest from canonical published content; it does not track readers. */
+export async function composeDigestFromContent(
+  payload: Store,
+  definitionId: string,
+  since: string,
+) {
+  const definition = (await payload.findByID({
+    collection: 'digest-definitions',
+    id: definitionId,
+    depth: 0,
+    overrideAccess: true,
+  })) as Doc
+  const content = await payload.find({
+    collection: 'content',
+    where: {
+      and: [
+        { site: { equals: definition.site } },
+        { status: { in: ['published', 'updated'] } },
+        { publishedAt: { greater_than_equal: since } },
+      ],
+    },
+    sort: '-publishedAt',
+    limit: 25,
+    depth: 0,
+    overrideAccess: true,
+  })
+  const cards = (content.docs as Doc[]).map((item) => ({
+    title: String(item.title),
+    text: String(item.summary ?? item.excerpt ?? ''),
+    href: new URL(String(item.canonicalPath), process.env.APP_URL).toString(),
+  }))
+  const message = await payload.create({
+    collection: 'email-messages',
+    data: {
+      site: definition.site,
+      subject: `${definition.name}: latest publishing`,
+      kind: 'digest',
+      status: definition.reviewRequired ? 'review' : 'scheduled',
+      scheduledFor: definition.reviewRequired ? undefined : now(),
+      blocks: [
+        { type: 'heading', text: String(definition.name) },
+        { type: 'content-cards', cards },
+      ],
+      audience: definition.filters?.audience ?? { lists: [] },
+      idempotencyKey: `digest:${definition.id}:${since}`,
+    },
+    overrideAccess: true,
+  })
+  return payload.create({
+    collection: 'digest-runs',
+    data: {
+      definition: definition.id,
+      sourceEventIds: (content.docs as Doc[]).map((item) => item.id),
+      frozenAt: now(),
+      status: definition.reviewRequired ? 'draft' : 'queued',
+      outcome: { messageId: message.id },
+    },
+    overrideAccess: true,
+  })
+}
+
+export async function queueTestSend(
+  payload: Store,
+  input: { messageId: string; recipientEmail: string },
+) {
+  const message = (await payload.findByID({
+    collection: 'email-messages',
+    id: input.messageId,
+    depth: 0,
+    overrideAccess: true,
+  })) as Doc
+  if (!message || !['draft', 'review', 'scheduled'].includes(message.status))
+    throw new Error('Message cannot be test sent.')
+  const email = input.recipientEmail.trim().toLowerCase()
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) throw new Error('Enter a valid email address.')
+  const key = `email:test:${message.id}:${audienceDigest(email)}`
+  const prior = await payload.find({
+    collection: 'email-deliveries',
+    where: { idempotencyKey: { equals: key } },
+    limit: 1,
+    overrideAccess: true,
+  })
+  const delivery =
+    prior.docs[0] ||
+    (await payload.create({
+      collection: 'email-deliveries',
+      data: {
+        message: message.id,
+        recipientEmail: email,
+        idempotencyKey: key,
+        status: 'queued',
+        outcome: { test: true },
+      },
+      overrideAccess: true,
+    }))
+  if (!prior.docs[0])
+    await payload.jobs.queue({
+      task: 'audience-email-delivery',
+      input: { deliveryId: delivery.id },
+      queue: 'operations',
+    })
+  return delivery
+}
+export async function queueSubscriptionConfirmation(
+  payload: Store,
+  input: { siteId: string; subscriberId: string; email: string; token: string },
+) {
+  const url = new URL('/subscribe/confirm', process.env.APP_URL)
+  url.searchParams.set('token', input.token)
+  const message = await payload.create({
+    collection: 'email-messages',
+    data: {
+      site: input.siteId,
+      subject: 'Confirm your subscription',
+      kind: 'transactional',
+      status: 'queued',
+      blocks: [
+        { type: 'heading', text: 'Confirm your subscription' },
+        { type: 'button', label: 'Confirm subscription', href: url.toString() },
+      ],
+      idempotencyKey: `subscription-confirmation:${audienceDigest(input.token)}`,
+    },
+    overrideAccess: true,
+  })
+  const delivery = await payload.create({
+    collection: 'email-deliveries',
+    data: {
+      message: message.id,
+      subscriber: input.subscriberId,
+      recipientEmail: input.email,
+      idempotencyKey: `subscription-confirmation:${audienceDigest(input.token)}`,
+      status: 'queued',
+    },
+    overrideAccess: true,
+  })
+  await payload.jobs.queue({
+    task: 'audience-email-delivery',
+    input: { deliveryId: delivery.id },
+    queue: 'operations',
+  })
+}

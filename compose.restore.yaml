@@ -15,7 +15,7 @@ services:
       timeout: 3s
       retries: 12
   migrate:
-    image: renegade-cms:${RENEGADE_IMAGE_TAG:-local}
+    image: ${RENEGADE_IMAGE:-renegade-cms}:${RENEGADE_IMAGE_TAG:-local}
     environment: &app_environment
       NODE_ENV: production
       DATABASE_URL: postgresql://renegade:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env.restore}@postgres:5432/renegade
@@ -27,6 +27,8 @@ services:
       MEDIA_DIR: /app/media
       EMAIL_MODE: disabled
       APP_VERSION: ${APP_VERSION:-0.1.0}
+      BUILD_SHA: ${BUILD_SHA:-unknown}
+      RENEGADE_IMAGE_TAG: ${RENEGADE_IMAGE_TAG:-local}
       ENABLE_TEST_ROUTES: 'false'
     command: ['npm', 'run', 'db:migrate']
     volumes: [renegade_restore_media:/app/media]
@@ -34,7 +36,7 @@ services:
       postgres:
         condition: service_healthy
   renegade-web:
-    image: renegade-cms:${RENEGADE_IMAGE_TAG:-local}
+    image: ${RENEGADE_IMAGE:-renegade-cms}:${RENEGADE_IMAGE_TAG:-local}
     environment: *app_environment
     ports: ['${RENEGADE_RESTORE_WEB_BIND:-127.0.0.1:3300}:3000']
     volumes: [renegade_restore_media:/app/media]
@@ -54,7 +56,7 @@ services:
       retries: 12
       start_period: 20s
   renegade-worker:
-    image: renegade-cms:${RENEGADE_IMAGE_TAG:-local}
+    image: ${RENEGADE_IMAGE:-renegade-cms}:${RENEGADE_IMAGE_TAG:-local}
     environment:
       <<: *app_environment
       WORKER_HEARTBEAT_FILE: /tmp/renegade-worker/heartbeat.json

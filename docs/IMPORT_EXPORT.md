@@ -9,3 +9,7 @@ Use a dry run before writes. Stable source IDs plus deterministic IDs make resum
 ## Portable archive
 
 The version-1 portable manifest is checksummed and refuses secret material. The portable archive uses AES-256-GCM with a separately held 32-byte key; restore authenticates ciphertext and validates manifest checksums. Never export OAuth/provider secrets, session tokens, passkey private material, wallet private keys, recovery keys, raw payment credentials, IdP secrets, or plaintext break-glass material.
+
+## Supported executable workflow
+
+Use `npm run portability -- export --file site.rpa.json --key <64-hex-character-key>` to create an encrypted portable archive. The key is intentionally never written to the archive or checkpoints. Use `npm run portability -- import --file site.rpa.json --key <key> --dry-run` first; it validates the archive and prints the planned report without writes. Run again without `--dry-run` only after review. `--checkpoint <file> --resume` resumes a failed write safely and writes failed-row details to the checkpoint file. Credential-dependent adapters are not configured by this command.

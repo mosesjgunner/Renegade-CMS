@@ -58,5 +58,5 @@ export default async function SetupPage() {
     )
   }
 
-  return <SetupForm initialEmail={loadConfig().ownerEmail ?? ''} />
+  return <SetupForm initialEmail={loadConfig().ownerEmail ?? ''} appUrl={loadConfig().appUrl} />
 }

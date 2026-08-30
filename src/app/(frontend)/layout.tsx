@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { Inter, Newsreader, JetBrains_Mono } from 'next/font/google'
 
 import './styles.css'
+import { loadConfig } from '@/modules/core/config'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -30,6 +31,7 @@ export const metadata: Metadata = {
 }
 
 export default function FrontendLayout({ children }: { children: ReactNode }) {
+  const networkingEnabled = loadConfig().networking.enabled
   return (
     <html
       lang="en"
@@ -79,6 +81,14 @@ export default function FrontendLayout({ children }: { children: ReactNode }) {
                 >
                   Connections
                 </Link>
+                {networkingEnabled ? (
+                  <Link
+                    href="/network"
+                    className="px-3 py-1.5 rounded-lg text-sm font-medium text-stone-600 hover:text-stone-950 dark:text-stone-300 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800/60 transition-colors"
+                  >
+                    Network
+                  </Link>
+                ) : null}
               </nav>
             </div>
 

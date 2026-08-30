@@ -90,6 +90,7 @@ describe('capability lifecycle', () => {
       ],
       connections: [connection()],
       manifests: [manifest()],
+      evidence: { email: { enabled: true } },
     }).read()[0]
     expect(item.status).toBe('healthy')
   })
@@ -98,6 +99,7 @@ describe('capability lifecycle', () => {
       definitions: [
         { key: 'optional', domainId: 'social', required: false, configurationRequired: true },
       ],
+      evidence: { optional: { enabled: true } },
     }).read()[0]
     expect(item).toMatchObject({ status: 'configuring', reason: { code: 'missing_configuration' } })
   })
@@ -113,6 +115,7 @@ describe('capability lifecycle', () => {
         { key: 'core.publishing', domainId: 'core', required: true },
       ],
       connections: [connection('invalid')],
+      evidence: { email: { enabled: true } },
     })
     expect(service.read()[0]).toMatchObject({
       status: 'degraded',
@@ -132,6 +135,7 @@ describe('capability lifecycle', () => {
       ],
       connections: [connection()],
       manifests: [manifest('^2.0.0')],
+      evidence: { email: { enabled: true } },
     }).read()[0]
     expect(item).toMatchObject({
       status: 'misconfigured',
@@ -149,6 +153,7 @@ describe('capability lifecycle', () => {
         },
       ],
       connections: [connection('invalid')],
+      evidence: { email: { enabled: true } },
     }
     expect(lifecycle(source).read()[0].status).toBe('degraded')
     expect(lifecycle({ ...source, connections: [connection()] }).read()[0].status).toBe('healthy')
@@ -159,8 +164,67 @@ describe('capability lifecycle', () => {
         { key: 'media.processing', domainId: 'media', required: false, requiresWorker: true },
       ],
       workers: { 'media.processing': 'unavailable' },
+      evidence: { 'media.processing': { enabled: true } },
     }).read()[0]
-    expect(item).toMatchObject({ status: 'degraded', reason: { code: 'worker_unavailable' } })
+    expect(item).toMatchObject({
+      status: 'degraded',
+      readiness: 'degraded',
+      requiresWorker: true,
+      reason: { code: 'worker_unavailable' },
+    })
+  })
+  it('keeps the canonical registry discoverable without activating optional capabilities', () => {
+    const items = lifecycle().read()
+    expect(items.map((item) => item.key)).toEqual(
+      expect.arrayContaining([
+        'core.publishing',
+        'editorial.workflow',
+        'media.processing',
+        'audience.transactional-email',
+        'social.distribution',
+        'commerce.checkout',
+        'ai.assistance',
+        'analytics.reporting',
+        'experiences.experiments',
+        'quality.scanning',
+        'portability.import-export',
+        'extensions.connections',
+        'networking.federation',
+        'collaboration.realtime',
+      ]),
+    )
+    expect(items.find((item) => item.key === 'media.processing')).toMatchObject({
+      status: 'disabled',
+      readiness: 'disabled',
+    })
+  })
+  it('distinguishes a missing provider credential from provider degradation', () => {
+    const item = lifecycle({
+      definitions: [
+        { key: 'ai', domainId: 'ai', required: false, providerCapability: 'ai.text.rewrite' },
+      ],
+      evidence: { ai: { enabled: true } },
+    }).read()[0]
+    expect(item).toMatchObject({ readiness: 'credential-required', requiresExternalProvider: true })
+  })
+  it('keeps lean installations from activating heavy worker work while standard reports a healthy worker', () => {
+    const definitions = [{ key: 'media', domainId: 'media', required: false, requiresWorker: true }]
+    expect(
+      new CapabilityLifecycleService({
+        profile: 'Lean',
+        coreVersion: '0.1.0',
+        schemaVersion: '1.0.0',
+        definitions,
+        evidence: { media: { enabled: true } },
+      }).read()[0],
+    ).toMatchObject({ status: 'available', readiness: 'available' })
+    expect(
+      lifecycle({
+        definitions,
+        evidence: { media: { enabled: true } },
+        workers: { media: 'healthy' },
+      }).read()[0],
+    ).toMatchObject({ status: 'healthy', readiness: 'enabled' })
   })
   it('blocks readiness when required core publishing loses its database dependency', () => {
     const service = lifecycle({

@@ -14,6 +14,8 @@ import {
 const config = {
   version: '1.2.3',
   buildSha: 'abc123',
+  schemaVersion: '1.0.0',
+  deploymentProfile: 'Standard',
   storage: { driver: 'local' as const, mediaDir: 'media' },
   email: { mode: 'disabled' as const, secure: true, password: 'configured-secret' },
   proxyMode: 'direct' as const,
@@ -67,6 +69,12 @@ describe('operations diagnostics', () => {
       },
     )
     expect(diagnostics.status).toBe('healthy')
+    expect(diagnostics.version).toMatchObject({
+      app: '1.2.3',
+      buildSha: 'abc123',
+      schemaVersion: '1.0.0',
+      deploymentProfile: 'Standard',
+    })
     expect(diagnostics.jobs.recentFailures).toHaveLength(DIAGNOSTICS_MAX_FAILED_JOBS)
     expect(diagnostics.jobs.recentFailures[0].error).not.toContain('super-secret')
   })

@@ -39,6 +39,7 @@ export type ProviderError = {
     | 'transient'
     | 'remote-unknown'
     | 'unsupported'
+    | 'reconnect-required'
   message: string
   retryAfter?: string
   providerCode?: string
@@ -67,6 +68,27 @@ export type AdapterResult =
   | { status: 'failed'; error: ProviderError }
   | { status: 'unknown'; error: ProviderError }
 
+export type SocialProviderCapabilities = Readonly<{
+  postTypes: readonly ('text' | 'link' | 'image' | 'video' | 'thread')[]
+  textLimit: number | null
+  media: Readonly<{ images: boolean; video: boolean; audio: boolean; maxAttachments?: number }>
+  threads: boolean
+  linkCards: 'native' | 'text-only' | 'none'
+  edit: boolean
+  delete: boolean
+  nativeScheduling: boolean
+  authentication: Readonly<{ required: boolean; modes: readonly string[] }>
+  rateLimit: Readonly<{ requestsPerMinute?: number; retryAfterHeader?: string }>
+}>
+export type SocialProviderAdapter = Readonly<{
+  network: SocialNetwork
+  mode: 'live' | 'manual-handoff' | 'unavailable'
+  capabilities: SocialProviderCapabilities
+  publish?: (
+    variant: SocialVariant,
+    context: Readonly<{ accountId: string; credentials: Record<string, string> | null }>,
+  ) => Promise<AdapterResult>
+}>
 export const socialHash = (
   input: Pick<SocialVariant, 'text' | 'attachments' | 'linkUrl' | 'network'>,
 ) => `sha256:${createHash('sha256').update(JSON.stringify(input)).digest('hex')}`
@@ -93,6 +115,37 @@ export const validateVariant = (variant: SocialVariant, maxCharacters?: number):
     issues.push('Instagram publishing requires media.')
   return issues
 }
+export const validateForProvider = (
+  variant: SocialVariant,
+  capabilities: SocialProviderCapabilities,
+): string[] => {
+  const issues = validateVariant(variant, capabilities.textLimit ?? undefined)
+  const images = variant.attachments.filter((item) => item.role === 'image')
+  if (images.length > (capabilities.media.maxAttachments ?? 0))
+    issues.push('This provider does not support that many image attachments.')
+  if (variant.attachments.some((item) => item.role === 'video') && !capabilities.media.video)
+    issues.push('This provider does not support video attachments.')
+  if (
+    variant.attachments.some(
+      (item) =>
+        !['image', 'video'].includes(item.role) ||
+        (item.role === 'image' && !capabilities.media.images),
+    )
+  )
+    issues.push('This provider does not support one or more attachment types.')
+  return issues
+}
+
+export const retryDelayMs = (error: ProviderError, attemptNumber: number) => {
+  const retryAfter = error.retryAfter ? Date.parse(error.retryAfter) - Date.now() : Number.NaN
+  return Number.isFinite(retryAfter) && retryAfter > 0
+    ? retryAfter
+    : Math.min(900000, 1000 * 2 ** Math.max(0, attemptNumber - 1))
+}
+
+export const shouldRetryProviderError = (error: ProviderError) =>
+  error.kind === 'transient' || error.kind === 'rate-limit'
+
 export const canTransitionSocial = (from: SocialState, to: SocialState) => {
   const allowed: Record<SocialState, readonly SocialState[]> = {
     draft: ['review', 'cancelled'],
@@ -122,7 +175,7 @@ export const campaignState = (states: readonly SocialState[]): SocialState => {
   if (states.includes('approved')) return 'approved'
   return states.includes('review') ? 'review' : 'draft'
 }
-/** Only deterministic provider fixture adapters are enabled until account credentials are configured. */
+/** Test-only deterministic boundary; production resolves provider-runtime.ts. */
 export const fixtureAdapter = (network: 'activitypub' | 'bluesky', fail = false) => ({
   network,
   mode: 'fixture' as const,

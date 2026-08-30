@@ -4,7 +4,9 @@ import {
   applyVerifiedWebhook,
   clientCallbackCannotConfirmPayment,
   createDevelopmentAdapter,
+  inventoryAdjustmentsForOrder,
   methodsForCart,
+  receiptForVerifiedPayment,
   transitionOrder,
 } from '../../src/modules/commerce/service'
 import type { PaymentIntent, PaymentMethodCapability } from '../../src/modules/commerce/contracts'
@@ -219,4 +221,80 @@ it('uses Prompt 2 localized route and currency conventions for product surfaces'
   expect(
     new Intl.NumberFormat('fr-FR', { style: 'currency', currency: 'EUR' }).format(12.5),
   ).toContain('12,50')
+})
+
+describe('verified settlement completion', () => {
+  it('applies tracked inventory once and creates a deterministic receipt', () => {
+    const input = {
+      orderId: 'order-1',
+      lines: [{ productId: 'shirt', variantSku: 'blue-m', quantity: 2 }],
+      products: [
+        {
+          id: 'shirt',
+          variants: [{ sku: 'blue-m', inventoryPolicy: 'tracked' as const, inventoryQuantity: 3 }],
+        },
+      ],
+    }
+    const first = inventoryAdjustmentsForOrder({ ...input, appliedKeys: [] })
+    expect(first).toEqual([
+      {
+        key: 'commerce.inventory:order-1:shirt:blue-m',
+        productId: 'shirt',
+        variantSku: 'blue-m',
+        quantity: 2,
+      },
+    ])
+    expect(
+      inventoryAdjustmentsForOrder({ ...input, appliedKeys: first.map((item) => item.key) }),
+    ).toEqual([])
+    expect(() =>
+      inventoryAdjustmentsForOrder({
+        ...input,
+        lines: [{ ...input.lines[0], quantity: 4 }],
+        appliedKeys: [],
+      }),
+    ).toThrow('Insufficient')
+    expect(
+      receiptForVerifiedPayment({
+        orderId: 'order-1',
+        intentId: 'pi-1',
+        providerKey: 'development-stripe',
+        amountMinor: '1200',
+        currency: 'USD',
+        verifiedAt: '2026-08-29T00:00:00.000Z',
+      }).state,
+    ).toBe('issued')
+  })
+  it('keeps cancelled orders terminal and refuses a disabled payment method', () => {
+    expect(
+      transitionOrder('cancelled', {
+        id: 'evt-cancel',
+        intentId: 'pi',
+        kind: 'confirmed',
+        occurredAt: '',
+      }),
+    ).toBe('cancelled')
+    expect(
+      methodsForCart(
+        [{ ...card, enabled: false }],
+        {
+          merchant: scope,
+          merchantCountry: 'US',
+          buyerCountry: 'US',
+          currency: 'USD',
+          amountMinor: '1000',
+          recurring: false,
+        },
+        [
+          {
+            productId: 'p',
+            variantSku: 'v',
+            quantity: 1,
+            merchantConnectionId: 'merchant-a',
+            kind: 'digital',
+          },
+        ],
+      ),
+    ).toEqual([])
+  })
 })

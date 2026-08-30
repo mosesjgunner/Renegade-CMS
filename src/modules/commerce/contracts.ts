@@ -305,14 +305,17 @@ export function verifyCryptoObservation(
   if (observation.network !== invoice.network) throw new Error('Wrong payment network.')
   if (observation.asset !== invoice.asset) throw new Error('Wrong payment asset.')
   if (observation.destination !== invoice.destination) throw new Error('Wrong payment destination.')
-  if (invoice.transactionIds.includes(observation.transactionId))
-    throw new Error('Duplicate transaction observation.')
+  // Indexers return the same transaction as confirmations change. A repeat is
+  // a replay-safe refresh, rather than new settlement evidence.
+  const knownTransaction = invoice.transactionIds.includes(observation.transactionId)
   const observedAfterExpiry = observation.observedAt > invoice.expiresAt || now > invoice.expiresAt
   const received = BigInt(observation.amountAtomic)
   const required = BigInt(invoice.exactAmountAtomic)
   const base: CryptoInvoice = {
     ...invoice,
-    transactionIds: [...invoice.transactionIds, observation.transactionId],
+    transactionIds: knownTransaction
+      ? invoice.transactionIds
+      : [...invoice.transactionIds, observation.transactionId],
     confirmations: observation.confirmations,
     detectedAmountAtomic: observation.amountAtomic,
     observedAt: observation.observedAt,
