@@ -1,10 +1,12 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import Link from 'next/link'
-import { notFound } from 'next/navigation'
+import { notFound, permanentRedirect, redirect } from 'next/navigation'
 
 import { canRenderPublic, type PublicState } from '@/modules/public/contracts'
-import { buildJsonLd } from '@/modules/public/seo'
+import { buildJsonLd, buildMetadata } from '@/modules/public/seo'
+import type { Metadata } from 'next'
+import { resolveRedirect, type RedirectRule } from '@/modules/public/discovery'
 import { PublicLayout } from '@/modules/public/PublicLayout'
 
 type Args = { params: Promise<{ path: string[] }> }
@@ -28,13 +30,102 @@ function kind(
 
 export const dynamic = 'force-dynamic'
 
+export async function generateMetadata({ params }: Args): Promise<Metadata> {
+  const path = `/${(await params).path.join('/')}`
+  try {
+    const payload = await getPayload({ config })
+    const publications = await payload.find({
+      collection: 'publications',
+      where: { and: [{ status: { equals: 'active' } }, { visibility: { equals: 'public' } }] },
+      limit: 1,
+      depth: 0,
+      overrideAccess: true,
+    } as never)
+    const publication = publications.docs[0] as unknown as Record<string, unknown> | undefined
+    const siteId =
+      typeof publication?.site === 'string'
+        ? publication.site
+        : String((publication?.site as { id?: unknown } | undefined)?.id ?? '')
+    for (const collection of candidates) {
+      const found = await payload.find({
+        collection,
+        where: { and: [{ canonicalPath: { equals: path } }, { site: { equals: siteId } }] },
+        limit: 1,
+        depth: 0,
+        overrideAccess: true,
+      } as never)
+      const record = found.docs[0] as unknown as PublicRecord | undefined
+      if (record && canRenderPublic(record))
+        return buildMetadata({
+          ...record,
+          title: label(record),
+          description:
+            typeof record.summary === 'string'
+              ? record.summary
+              : typeof record.description === 'string'
+                ? record.description
+                : null,
+          canonicalPath: path,
+          siteUrl: process.env.APP_URL ?? 'http://localhost:3000',
+        })
+    }
+  } catch {
+    /* safe noindex fallback during recovery */
+  }
+  return { robots: { index: false, follow: false } }
+}
+
 export default async function CanonicalPublicPage({ params }: Args) {
   const path = `/${(await params).path.join('/')}`
   const payload = await getPayload({ config })
 
+  const publications = await payload.find({
+    collection: 'publications',
+    where: { and: [{ status: { equals: 'active' } }, { visibility: { equals: 'public' } }] },
+    limit: 1,
+    depth: 0,
+    overrideAccess: true,
+  } as never)
+  const publication = publications.docs[0] as unknown as Record<string, unknown> | undefined
+  if (!publication) notFound()
+  const siteId =
+    typeof publication.site === 'string'
+      ? publication.site
+      : String((publication.site as { id?: unknown } | undefined)?.id ?? '')
+
+  const redirects = await payload
+    .find({
+      collection: 'public-redirects',
+      where: { site: { equals: siteId } },
+      limit: 1000,
+      depth: 0,
+      overrideAccess: true,
+    } as never)
+    .catch(() => ({ docs: [] }))
+  const resolution = resolveRedirect(
+    (redirects.docs as unknown as Array<Record<string, unknown>>).map((item) => ({
+      id: String(item.id),
+      siteId,
+      fromPath: String(item.fromPath),
+      toPath: String(item.toPath),
+      match: item.match as RedirectRule['match'],
+      statusCode: Number(item.statusCode) as RedirectRule['statusCode'],
+      preserveQuery: item.preserveQuery !== false,
+      enabled: item.enabled !== false,
+    })),
+    siteId,
+    path,
+  )
+  if (resolution && 'target' in resolution) {
+    if (resolution.statusCode === 301 || resolution.statusCode === 308)
+      permanentRedirect(resolution.target)
+    redirect(resolution.target)
+  }
+  if (resolution) notFound()
+
   const layoutResult = await payload.find({
     collection: 'page-layouts',
-    where: { path: { equals: path } },
+    where: { and: [{ path: { equals: path } }, { site: { equals: siteId } }] },
     limit: 1,
     depth: 0,
     overrideAccess: true,
@@ -48,7 +139,7 @@ export default async function CanonicalPublicPage({ params }: Args) {
   for (const collection of candidates) {
     const result = await payload.find({
       collection,
-      where: { canonicalPath: { equals: path } },
+      where: { and: [{ canonicalPath: { equals: path } }, { site: { equals: siteId } }] },
       limit: 1,
       depth: 0,
       overrideAccess: true,

@@ -1,7 +1,7 @@
 import type { CollectionConfig, Field } from 'payload'
 
 const staff = ({ req }: { req: { user?: { role?: string } | null } }) =>
-  req.user?.role === 'owner' || req.user?.role === 'staff'
+  ['owner', 'administrator', 'staff'].includes(String(req.user?.role))
 
 const scopeFields: Field[] = [
   { name: 'site', type: 'relationship', relationTo: 'sites', required: true, index: true },

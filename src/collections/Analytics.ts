@@ -2,7 +2,7 @@ import type { CollectionConfig } from 'payload'
 import { ownerFields, retentionFields } from './canonical-shared'
 
 const staffOnly = ({ req }: { req: { user?: { role?: string } | null } }) =>
-  req.user?.role === 'owner' || req.user?.role === 'staff'
+  ['owner', 'administrator', 'staff'].includes(String(req.user?.role))
 const base = (slug: string, title: string): CollectionConfig => ({
   slug,
   admin: { useAsTitle: title, group: 'Analytics' },

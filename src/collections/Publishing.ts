@@ -16,7 +16,7 @@ import {
 } from './canonical-shared'
 
 const staffOnly = ({ req }: { req: { user?: { role?: string } | null } }) =>
-  req.user?.role === 'owner' || req.user?.role === 'staff'
+  ['owner', 'administrator', 'staff'].includes(String(req.user?.role))
 
 const taxonomyScope = [
   {
@@ -85,10 +85,20 @@ export const MediaAssets: CollectionConfig = {
     { name: 'storageProvider', type: 'text', required: true, defaultValue: 'local' },
     { name: 'mimeType', type: 'text' },
     { name: 'sizeBytes', type: 'number', min: 0 },
+    { name: 'checksum', type: 'text', admin: { readOnly: true } },
     { name: 'width', type: 'number', min: 0 },
     { name: 'height', type: 'number', min: 0 },
     { name: 'durationSeconds', type: 'number', min: 0 },
     { name: 'altText', type: 'text' },
+    {
+      name: 'focalPoint',
+      type: 'group',
+      admin: { description: 'Normalized focal point for supported image crops.' },
+      fields: [
+        { name: 'x', type: 'number', min: 0, max: 1 },
+        { name: 'y', type: 'number', min: 0, max: 1 },
+      ],
+    },
     { name: 'caption', type: 'textarea' },
     { name: 'credits', type: 'text' },
     { name: 'license', type: 'text' },
@@ -206,10 +216,105 @@ export const TaxonomyRedirects: CollectionConfig = {
   ],
 }
 
+/** Public redirects are site-scoped and intentionally separate from taxonomy move history. */
+export const PublicRedirects: CollectionConfig = {
+  slug: 'public-redirects',
+  admin: { useAsTitle: 'fromPath', group: 'Publishing' },
+  access: { create: staffOnly, delete: staffOnly, read: () => true, update: staffOnly },
+  hooks: {
+    beforeValidate: [
+      ({ data }) => {
+        const from = String(data?.fromPath ?? '')
+        const to = String(data?.toPath ?? '')
+        if (
+          !from.startsWith('/') ||
+          from.startsWith('//') ||
+          !to.startsWith('/') ||
+          to.startsWith('//')
+        )
+          throw new Error('Redirect paths must remain on this site.')
+        if (from === to) throw new Error('A redirect cannot target itself.')
+        if (data?.match === 'regex')
+          try {
+            new RegExp(from)
+          } catch {
+            throw new Error('Redirect regex is invalid.')
+          }
+        return data
+      },
+    ],
+  },
+  fields: [
+    { name: 'site', type: 'relationship', relationTo: 'sites', required: true, index: true },
+    { name: 'fromPath', type: 'text', required: true },
+    { name: 'toPath', type: 'text', required: true },
+    {
+      name: 'match',
+      type: 'select',
+      required: true,
+      defaultValue: 'exact',
+      options: ['exact', 'prefix', 'regex'],
+    },
+    {
+      name: 'statusCode',
+      type: 'select',
+      required: true,
+      defaultValue: '308',
+      options: ['301', '302', '307', '308'],
+    },
+    { name: 'preserveQuery', type: 'checkbox', defaultValue: true },
+    { name: 'enabled', type: 'checkbox', defaultValue: true },
+    {
+      name: 'hitCount',
+      type: 'number',
+      required: true,
+      defaultValue: 0,
+      admin: { readOnly: true },
+    },
+    { name: 'lastHitAt', type: 'date', admin: { readOnly: true } },
+  ],
+  indexes: [{ fields: ['site', 'fromPath'], unique: true }],
+}
+
 export const Content: CollectionConfig = {
   slug: 'content',
   admin: { useAsTitle: 'title', group: 'Publishing' },
   access: { create: staffOnly, delete: staffOnly, read: () => true, update: staffOnly },
+  hooks: {
+    afterChange: [
+      async ({ doc, previousDoc, operation, req }) => {
+        if (operation !== 'update') return doc
+        const fromPath =
+          typeof previousDoc?.canonicalPath === 'string' ? previousDoc.canonicalPath : ''
+        const toPath = typeof doc?.canonicalPath === 'string' ? doc.canonicalPath : ''
+        const site = typeof doc?.site === 'string' ? doc.site : doc?.site?.id
+        // Canonical path (normally derived from a slug) is the durable public URL contract.
+        if (!site || !fromPath || !toPath || fromPath === toPath) return doc
+        const existing = await req.payload.find({
+          collection: 'public-redirects',
+          where: { and: [{ site: { equals: site } }, { fromPath: { equals: fromPath } }] },
+          limit: 1,
+          depth: 0,
+          overrideAccess: true,
+        } as never)
+        if (!existing.docs.length)
+          await req.payload.create({
+            collection: 'public-redirects',
+            data: {
+              site,
+              fromPath,
+              toPath,
+              match: 'exact',
+              statusCode: '308',
+              preserveQuery: true,
+              enabled: true,
+            },
+            overrideAccess: true,
+          } as never)
+        return doc
+      },
+    ],
+  },
   fields: [
     ...ownerFields(),
     {

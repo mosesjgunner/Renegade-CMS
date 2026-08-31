@@ -8,7 +8,13 @@ export function createUsersCollection(
 ): CollectionConfig {
   return {
     slug: 'users',
-    admin: { useAsTitle: 'email' },
+    admin: { useAsTitle: 'email', group: 'Settings' },
+    access: {
+      create: ({ req }) => req.user?.role === 'owner',
+      delete: ({ req }) => req.user?.role === 'owner',
+      read: ({ req }) => ['owner', 'administrator', 'staff'].includes(String(req.user?.role)),
+      update: ({ req }) => req.user?.role === 'owner',
+    },
     auth: {
       disableLocalStrategy: true,
       strategies: [createPasskeyAuthStrategy(config.payloadSecret)],

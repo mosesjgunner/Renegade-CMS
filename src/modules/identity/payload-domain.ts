@@ -6,6 +6,8 @@ import {
   TeamAuditEvents,
   TeamInvitations,
   TeamMemberships,
+  RealtimeEvents,
+  RealtimePresence,
   WorkConversations,
   WorkMessages,
 } from '../../collections/Collaboration'
@@ -51,6 +53,8 @@ export function identityDomain(config: AppConfig): DomainDefinition {
       EditorialComments,
       WorkConversations,
       WorkMessages,
+      RealtimeEvents,
+      RealtimePresence,
     ],
   }
 }

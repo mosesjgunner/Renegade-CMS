@@ -27,6 +27,7 @@ export default buildConfig({
       beforeNavLinks: ['./modules/admin/CapabilityCenterLink'],
       views: {
         capabilities: { Component: './modules/admin/CapabilityCenter', path: '/capabilities' },
+        security: { Component: './modules/admin/SecurityCenter', path: '/security' },
       },
     },
   },

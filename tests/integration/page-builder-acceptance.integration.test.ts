@@ -12,6 +12,7 @@ import {
   renderLayout,
   validateLayout,
 } from '../../src/modules/public/page-builder'
+import { normalizeNavigation } from '../../src/modules/public/navigation'
 import { seed } from '../../src/scripts/seed'
 
 let payload: Payload
@@ -95,5 +96,44 @@ describe('visual builder acceptance', () => {
     })
     expect(checked.layout.unknownBlocks).toHaveLength(1)
     expect(checked.errors[0]).toContain('preserved')
+  })
+
+  it('stores the representative published navigation contract alongside public layouts', async () => {
+    const publication = (
+      await payload.find({
+        collection: 'publications',
+        limit: 1,
+        depth: 0,
+        overrideAccess: true,
+      } as never)
+    ).docs[0] as any
+    await payload.update({
+      collection: 'publications',
+      id: publication.id,
+      data: {
+        navigation: {
+          primary: [
+            { label: 'Home', href: '/' },
+            {
+              label: 'Journal',
+              href: '/articles',
+              children: [{ label: 'Welcome', href: '/articles/welcome' }],
+            },
+          ],
+          secondary: [{ label: 'About', href: '/about' }],
+          footer: [{ label: 'Privacy', href: '/privacy' }],
+        },
+      },
+      overrideAccess: true,
+    } as never)
+    const updated = (await payload.findByID({
+      collection: 'publications',
+      id: publication.id,
+      depth: 0,
+      overrideAccess: true,
+    } as never)) as any
+    const navigation = normalizeNavigation(updated.navigation)
+    expect(navigation.primary[1]?.children[0]?.href).toBe('/articles/welcome')
+    expect(navigation.footer[0]?.label).toBe('Privacy')
   })
 })

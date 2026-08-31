@@ -158,6 +158,8 @@ export type PublicState = {
   removeFromDiscovery?: boolean
   retentionExpiresAt?: string | null
   suspendedAt?: string | null
+  /** A scheduled record is not public until this instant. */
+  publishedAt?: string | null
 }
 
 export function canRenderPublic(record: PublicState, now = new Date()): boolean {
@@ -167,6 +169,10 @@ export function canRenderPublic(record: PublicState, now = new Date()): boolean 
     !['published', 'updated', 'active', 'open', 'scheduled'].includes(record.status)
   )
     return false
+  // "scheduled" is a workflow state, not a public visibility state.  A future
+  // publishedAt also keeps an accidentally pre-dated published record private.
+  if (record.status === 'scheduled' && !record.publishedAt) return false
+  if (record.publishedAt && new Date(record.publishedAt).getTime() > now.getTime()) return false
   if (record.moderationState && record.moderationState !== 'clear') return false
   if (
     record.suspendedAt ||

@@ -236,9 +236,38 @@ export function renderLayout(
 ): ReactNode {
   const { layout: safe } = validateLayout(layout)
   resolveTheme(safe.themeId)
-  return safe.blocks
+  const rendered = safe.blocks
     .filter((block) => !block.hidden && block.visible?.[viewport] !== false)
-    .map((block) => componentRegistry[block.component].render(block.props))
+    .map((block) => {
+      const definition = componentRegistry[block.component]
+      // A saved legacy block must never make a public page fail closed. The
+      // original JSON remains in unknownBlocks for an editor to recover.
+      return definition ? (
+        definition.render(block.props)
+      ) : (
+        <section
+          key={block.id}
+          data-unavailable-component={block.component}
+          role="status"
+          aria-label="Unavailable page section"
+        >
+          This section is unavailable.
+        </section>
+      )
+    })
+  return [
+    ...rendered,
+    ...(safe.unknownBlocks ?? []).map((block) => (
+      <section
+        key={`unavailable:${block.id}`}
+        data-unavailable-component={block.component}
+        role="status"
+        aria-label="Unavailable page section"
+      >
+        This section is unavailable.
+      </section>
+    )),
+  ]
 }
 
 export function canRenderLayout(layout: PageLayout, state: Parameters<typeof canRenderPublic>[0]) {

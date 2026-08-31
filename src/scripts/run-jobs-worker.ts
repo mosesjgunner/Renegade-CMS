@@ -18,6 +18,19 @@ async function cycle(): Promise<void> {
   try {
     await payload.jobs.handleSchedules({ queue: 'operations' })
     await payload.jobs.run({ queue: 'operations' })
+    // Presence is intentionally short-lived operational state, never an analytics log.
+    const stalePresence = await payload.find({
+      collection: 'realtime-presence',
+      where: { expiresAt: { less_than_equal: new Date().toISOString() } },
+      limit: 100,
+      overrideAccess: true,
+    } as never)
+    for (const entry of stalePresence.docs)
+      await payload.delete({
+        collection: 'realtime-presence',
+        id: entry.id,
+        overrideAccess: true,
+      } as never)
     await writeFile(
       heartbeatFile,
       JSON.stringify({ observedAt: new Date().toISOString(), pid: process.pid }),

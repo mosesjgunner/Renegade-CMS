@@ -1,4 +1,5 @@
 import type { EditorialPresentation } from './persistence'
+import Image from 'next/image'
 
 export function EditorialArticleView({ article }: { article: EditorialPresentation }) {
   return (
@@ -63,6 +64,16 @@ export function EditorialArticleView({ article }: { article: EditorialPresentati
           <div className="p-4 rounded-xl bg-stone-100/80 dark:bg-stone-900/60 border-l-4 border-red-600 text-stone-700 dark:text-stone-300 text-base sm:text-lg leading-relaxed">
             {article.excerpt}
           </div>
+        ) : null}
+        {article.heroMedia ? (
+          <Image
+            src={article.heroMedia.url}
+            alt={article.heroMedia.altText}
+            width={article.heroMedia.width ?? 1200}
+            height={article.heroMedia.height ?? 675}
+            sizes="(max-width: 1024px) 100vw, 896px"
+            className="w-full rounded-xl border border-stone-200 object-cover dark:border-stone-800"
+          />
         ) : null}
       </header>
 

@@ -2,7 +2,7 @@ import type { CollectionConfig, Field } from 'payload'
 import { ownerFields, retentionFields } from './canonical-shared'
 
 const staff = ({ req }: { req: { user?: { role?: string } | null } }) =>
-  req.user?.role === 'owner' || req.user?.role === 'staff'
+  ['owner', 'administrator', 'staff'].includes(String(req.user?.role))
 const publicRead = ({ req }: { req: { user?: { role?: string } | null } }) =>
   Boolean(req.user) || true
 const base = (slug: string, title: string): CollectionConfig => ({

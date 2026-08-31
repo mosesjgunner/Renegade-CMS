@@ -230,3 +230,42 @@ export const WorkMessages: CollectionConfig = {
     { name: 'mentions', type: 'relationship', relationTo: 'members', hasMany: true },
   ],
 }
+
+/** Durable wake-up records. They carry no draft body; PostgreSQL revisions remain canonical. */
+export const RealtimeEvents: CollectionConfig = {
+  ...base('realtime-events', 'sequence'),
+  fields: [
+    ...scopeFields(),
+    { name: 'sequence', type: 'number', unique: true, admin: { readOnly: true } },
+    { name: 'kind', type: 'text', required: true, index: true },
+    { name: 'recipientMember', type: 'relationship', relationTo: 'members', index: true },
+    {
+      name: 'article',
+      type: 'relationship',
+      relationTo: 'article-family-content' as never,
+      index: true,
+    },
+    { name: 'payload', type: 'json', required: true, defaultValue: {} },
+    { name: 'occurredAt', type: 'date', required: true, index: true },
+  ],
+}
+
+/** Short-lived operational state only; workers remove expired rows and it is never exported as analytics. */
+export const RealtimePresence: CollectionConfig = {
+  ...base('realtime-presence', 'clientId'),
+  fields: [
+    ...scopeFields(),
+    { name: 'member', type: 'relationship', relationTo: 'members', required: true, index: true },
+    {
+      name: 'article',
+      type: 'relationship',
+      relationTo: 'article-family-content' as never,
+      index: true,
+    },
+    { name: 'clientId', type: 'text', required: true, index: true },
+    { name: 'mode', type: 'select', required: true, options: ['viewing', 'editing'] },
+    { name: 'expiresAt', type: 'date', required: true, index: true },
+    { name: 'lastHeartbeatAt', type: 'date', required: true },
+  ],
+  indexes: [{ fields: ['member', 'article', 'clientId'], unique: true }],
+}

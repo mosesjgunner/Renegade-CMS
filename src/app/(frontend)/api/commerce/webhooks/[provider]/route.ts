@@ -6,6 +6,7 @@ import { NextResponse } from 'next/server'
 import {
   applyVerifiedWebhook,
   createDevelopmentAdapter,
+  finalizeVerifiedOrder,
   transitionOrder,
   validWebhookEvent,
 } from '@/modules/commerce/service'
@@ -100,6 +101,19 @@ export async function POST(
     data: { state: nextState },
     overrideAccess: true,
   })
+  if (event.kind === 'confirmed') {
+    await finalizeVerifiedOrder(db, {
+      intent: {
+        ...intent,
+        state: updated.state,
+        financialEvents: updated.financialEvents,
+      },
+      session,
+      merchantId,
+      verifiedAt: new Date().toISOString(),
+    })
+    return NextResponse.json({ received: true })
+  }
   const orders = await db.find({
     collection: 'orders',
     where: { checkoutSession: { equals: session.id } },

@@ -9,7 +9,7 @@ import {
 } from './canonical-shared'
 
 const staffOnly = ({ req }: { req: { user?: { role?: string } | null } }) =>
-  req.user?.role === 'owner' || req.user?.role === 'staff'
+  ['owner', 'administrator', 'staff'].includes(String(req.user?.role))
 
 export const Brands: CollectionConfig = {
   slug: 'brands',

@@ -13,6 +13,7 @@ import {
   type EditorialRevision,
 } from './workflow'
 import { OPERATIONS_QUEUE } from '../operations/tasks'
+import { canRenderPublic } from '../public/contracts'
 
 type Doc = Record<string, any>
 
@@ -83,6 +84,7 @@ export type EditorialPresentation = {
   updatedAt: string | null
   previewMode: 'desktop' | 'mobile'
   preview: boolean
+  heroMedia: { url: string; altText: string; width?: number; height?: number } | null
 }
 
 type EditorialBundle = {
@@ -788,6 +790,17 @@ export async function buildArticlePresentation(
   if (!revision) throw new Error('Requested revision does not exist.')
   const document = toRichTextDocument(revision.document)
   const sources = await sourceLookup(payload, bundle.article)
+  const heroMediaId = idOf(bundle.content.heroMedia)
+  const heroMedia = heroMediaId
+    ? ((await payload
+        .findByID({
+          collection: 'media-assets',
+          id: heroMediaId,
+          depth: 0,
+          overrideAccess: true,
+        } as never)
+        .catch(() => undefined)) as Doc | undefined)
+    : undefined
 
   return {
     title: String(bundle.content.title),
@@ -834,6 +847,15 @@ export async function buildArticlePresentation(
     updatedAt: bundle.content.updatedAtEditorial ? String(bundle.content.updatedAtEditorial) : null,
     previewMode: input.previewMode ?? 'desktop',
     preview: Boolean(input.preview),
+    heroMedia:
+      heroMedia && heroMedia.kind === 'image'
+        ? {
+            url: `/media/${heroMedia.id}`,
+            altText: String(heroMedia.altText || heroMedia.title || ''),
+            width: typeof heroMedia.width === 'number' ? heroMedia.width : undefined,
+            height: typeof heroMedia.height === 'number' ? heroMedia.height : undefined,
+          }
+        : null,
   }
 }
 
@@ -871,6 +893,7 @@ export async function loadPublishedArticleBySlug(payload: Payload, slug: string)
     2,
   )
   if (!content) throw new Error('Published article not found.')
+  if (!canRenderPublic(content)) throw new Error('Published article is not publicly available.')
   const article = await findOne(
     payload,
     'article-family-content',

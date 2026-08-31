@@ -14,7 +14,7 @@ import {
 } from '../modules/publications/information-architecture'
 
 const staffOnly = ({ req }: { req: { user?: { role?: string } | null } }) =>
-  req.user?.role === 'owner' || req.user?.role === 'staff'
+  ['owner', 'administrator', 'staff'].includes(String(req.user?.role))
 
 export const ForumSections: CollectionConfig = {
   slug: 'forum-sections',

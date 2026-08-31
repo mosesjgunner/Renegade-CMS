@@ -15,6 +15,17 @@ Terminate TLS at the proxy, redirect HTTP to HTTPS, preserve the original host, 
 
 For Cloudflare or another CDN, keep authenticated TLS from the edge to the origin, restrict origin ingress to the edge/proxy where practical, and configure the origin proxy to derive the client chain only from provider-published networks. Renegade does not depend on Cloudflare-specific headers or services.
 
+## Realtime collaboration
+
+The default appliance uses authenticated HTTP mutations and an optional SSE stream at
+`/api/realtime/stream`; it requires no WebSocket broker, Redis, Kafka, or hosted realtime
+service. Do not buffer that path at the reverse proxy: preserve `text/event-stream`, disable
+response buffering, and allow a read timeout longer than the client reconnect interval.
+
+SSE is an advisory wake-up channel. Clients resume with `Last-Event-ID` (or `after`) from the
+PostgreSQL-backed event outbox and must refetch canonical notifications/drafts after reconnect.
+The ordinary draft checkpoint endpoint remains available even with `REALTIME_ENABLED=false`.
+
 ## Origin exposure checklist
 
 - App port is private/firewalled.

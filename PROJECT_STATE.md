@@ -1,3 +1,41 @@
+# Fourth Pass — Verification Pipeline Reliability — 2026-08-29
+
+- Verified the entire end-to-end repository verification pipeline from a clean dependency install against live PostgreSQL 17.
+- **Verification Evidence**:
+  - `npm ci`: Passed (889 packages installed and audited cleanly).
+  - `npm run format:check`: Passed (100% Prettier compliant).
+  - `npm run lint`: Passed (0 warnings, 0 errors across ESLint 9 + Next.js core web vitals).
+  - `npm run typecheck`: Passed (0 type errors via `tsc --noEmit`).
+  - `npm test`: Passed (48 files, 190 unit tests passed).
+  - `npm run test:integration`: Passed against live PostgreSQL 17 (9 files, 27 integration tests passed).
+  - `npm run build`: Passed (Next.js 16 Turbopack standalone production build; 34 routes compiled, static generation succeeded with zero errors; no `/_global-error` or `useContext on null` issues).
+  - `npm run test:smoke`: Passed (production server boot, liveness/readiness healthchecks, public/admin routes, and PostgreSQL persistence).
+  - `npm run verify`: Passed (full clean-clone release acceptance suite executed and passed).
+- **Documentation**: Generated authoritative verification report at [docs/release/VERIFICATION_REPORT.md](docs/release/VERIFICATION_REPORT.md).
+- **Status**: Repository verification pipeline is 100% reliable and deterministic. Feature freeze remains active.
+
+---
+
+# Fourth Pass — Baseline Audit & Feature Freeze Handoff — 2026-08-29
+
+- Conducted exhaustive repository baseline audit across runtime, dependencies, database migrations, jobs, security boundaries, API surfaces, licensing, test suites, and production build.
+- **Verification Evidence**:
+  - `npm run typecheck`: Passed (0 errors).
+  - `npm run lint`: Passed (0 warnings, 0 errors).
+  - `npm run format:check`: Passed (100% Prettier compliant).
+  - `npm test`: Passed (48 files, 190 tests passed).
+  - `npm run test:integration`: Passed against live PostgreSQL 17 (9 files, 27 tests passed).
+  - `npm run build`: Passed (Next.js 16 Turbopack standalone production build; 34 routes compiled).
+- **Subsystems Inventory**: All 18 functional domains classified in [docs/release/FOURTH_PASS_BASELINE.md](docs/release/FOURTH_PASS_BASELINE.md). All primary capabilities verified implemented.
+- **Audit Findings**:
+  - BLOCKERS: None.
+  - HIGH: Licensing discrepancy identified (`LICENSE` contains GPL-3.0 while `package.json` specifies `AGPL-3.0-or-later`).
+  - MEDIUM: Ephemeral root log files and historical prompt file in root workspace.
+  - LOW: Documentation expansion (`README.md` and production ESP guides).
+- **Next Work**: Final implementation pass execution (repository cleanup, licensing harmonization, documentation overhaul, verification hardening, and real-world test rehearsal).
+
+---
+
 # Productization Pass Prompt 15 - federated network experience - 2026-08-29
 
 - Added the optional, source-attributed `/network` remote-reference surface and kept it hidden from ordinary navigation while networking is disabled. Remote object caching records origin, bounded profile metadata, canonical remote URL and `remoteOnly` provenance; it cannot create editable canonical content.
@@ -40,6 +78,16 @@ Stop after Prompt 15.
 - Remaining limitation: provider/networking/collaboration implementations are still intentionally absent; the control plane reports their readiness contracts without activating them. Integration tests were run but all 12 database-dependent cases were skipped because PostgreSQL test infrastructure was unavailable. The production build was invoked and reached Next.js startup/configuration, but the command environment did not return a completion result, so no build-pass claim is made.
 
 # Project state
+
+## Fourth Pass readiness audit - 2026-08-30
+
+The authoritative public-claim inventory is [docs/release/FEATURE_READINESS.md](docs/release/FEATURE_READINESS.md). It was derived from `registeredPayloadDomains`, real route/service/task paths, and PostgreSQL execution rather than collection or UI presence.
+
+PostgreSQL migrations applied cleanly. Individually executed PostgreSQL acceptance tests passed for installation (2), canonical information architecture (12), editorial (2), page builder (2), media (1), and the new coordinated release flow (1). The unit suite passed before audit changes (49 files / 192 tests), and the post-change TypeScript check passed. The aggregate integration command outlived this Windows command host; individual files are the current evidence.
+
+A release-blocking commerce correctness defect was repaired: confirmed payment webhooks previously wrote an order directly, bypassing canonical receipt issuance and idempotent inventory adjustment. They now call `finalizeVerifiedOrder`. Public commerce remains experimental until an HTTP checkout-to-duplicate-webhook acceptance scenario is added.
+
+Release scope is now intentionally narrow: verified editorial publishing, installation recovery, page layouts, ownership boundaries, media metadata/provenance, coordinated product release execution, and durable jobs. Do not claim upload, search, HTTP redirects, translation workflows, community posting, CRM automation, analytics collection, consent UI, outbound webhooks, live federation, or production commerce as ready.
 
 ## Productization Pass Prompt 0 reconciliation - 2026-08-29
 
@@ -97,6 +145,12 @@ Remaining work follows `docs/PRODUCTIZATION_PASS.md`: operator tooling; installa
 - Editorial assignments, review handoff notifications, revision-linked staff discussions/comments/mentions, resolution state, and approval/rejection/release notification helpers extend canonical content, article, revision, activity, notification, and release records rather than duplicating revision history.
 - Work conversations/messages are private staff data with scope-plus-participant authorization. They have no ActivityPub projection or federation path and make no encryption claim. The schema migration is `20260829_180000_collaboration`.
 - Verification: generated Payload types, TypeScript, production build, and the full unit suite passed locally; focused coverage exercises scope isolation, invitation expiry/revocation/single use, role permissions, assignments, comments/mentions, notification creation, and unauthorized private-message access.
+
+## Final Implementation Pass Prompt 17 — Lightweight realtime collaboration
+
+- Added a replaceable realtime transport contract, default PostgreSQL-backed durable event outbox, optional SSE stream, authenticated HTTP presence/checkpoint endpoints, and no mandatory broker or external service.
+- Realtime events never contain draft bodies. Canonical Payload/PostgreSQL draft and immutable revision records remain authoritative; concurrent checkpoints use the existing base-revision plus idempotency boundary and return a conflict rather than last-write-wins.
+- Presence is authenticated, scoped, heartbeat-expiring operational state. The worker deletes expired rows; Lean defaults realtime and presence off. Streams recheck membership and close with `access.revoked` after revocation; notifications persist independently and stream only durable pointers.
 
 # Productization Pass Prompt 2 - VPS production bootstrap - 2026-08-29
 

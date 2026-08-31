@@ -1,7 +1,7 @@
 import type { CollectionConfig, GlobalConfig } from 'payload'
 
 const staffOnly = ({ req }: { req: { user?: { role?: string } | null } }) =>
-  req.user?.role === 'owner' || req.user?.role === 'staff'
+  ['owner', 'administrator', 'staff'].includes(String(req.user?.role))
 const internal = { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly }
 const base = (slug: string, title: string): CollectionConfig => ({
   slug,

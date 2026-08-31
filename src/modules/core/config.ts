@@ -10,8 +10,18 @@ export type AppConfig = {
   proxyMode: 'direct' | 'trusted'
   trustedProxyHops: number
   storage: {
-    driver: 'local'
+    /** The effective driver. An incomplete optional S3 configuration degrades to local outside production. */
+    driver: 'local' | 's3'
     mediaDir: string
+    maxUploadBytes: number
+    s3?: {
+      endpoint: string
+      bucket: string
+      region: string
+      accessKeyId: string
+      secretAccessKey: string
+      publicBaseUrl?: string
+    }
   }
   email: {
     mode: 'disabled' | 'development' | 'smtp'
@@ -34,6 +44,11 @@ export type AppConfig = {
     enabled: boolean
     /** Development-only escape hatch for isolated fixture servers. */
     allowPrivateDevelopment: boolean
+  }
+  realtime: {
+    enabled: boolean
+    presenceEnabled: boolean
+    presenceTtlSeconds: number
   }
   schemaVersion: string
   deploymentProfile: ResourceProfile
@@ -76,13 +91,20 @@ export function loadConfig(env: Record<string, string | undefined> = process.env
     1,
     3,
   )
-  const storageDriver = parseChoice(
+  const requestedStorageDriver = parseChoice(
     env.STORAGE_DRIVER ?? 'local',
-    ['local'] as const,
+    ['local', 's3'] as const,
     'STORAGE_DRIVER',
     invalid,
   )
   const mediaDir = env.MEDIA_DIR ?? (production ? '' : path.resolve('media'))
+  const maxUploadBytes = parseInteger(
+    env.MEDIA_MAX_UPLOAD_BYTES ?? String(25 * 1024 * 1024),
+    'MEDIA_MAX_UPLOAD_BYTES',
+    invalid,
+    1,
+    100 * 1024 * 1024,
+  )
   const emailMode = parseChoice(
     env.EMAIL_MODE ?? 'disabled',
     ['disabled', 'development', 'smtp'] as const,
@@ -97,6 +119,18 @@ export function loadConfig(env: Record<string, string | undefined> = process.env
     invalid,
   )
   const networkingEnabled = env.NETWORKING_ENABLED === 'true'
+  const realtimeEnabled = env.REALTIME_ENABLED ?? (deploymentProfile === 'Lean' ? 'false' : 'true')
+  const presenceEnabled = env.PRESENCE_ENABLED ?? (deploymentProfile === 'Lean' ? 'false' : 'true')
+  if (!['true', 'false'].includes(realtimeEnabled)) invalid.push('REALTIME_ENABLED')
+  if (!['true', 'false'].includes(presenceEnabled)) invalid.push('PRESENCE_ENABLED')
+  const presenceTtlSeconds = parseInteger(
+    env.REALTIME_PRESENCE_TTL_SECONDS ?? '90',
+    'REALTIME_PRESENCE_TTL_SECONDS',
+    invalid,
+    30,
+    600,
+  )
+  if (presenceEnabled === 'true' && realtimeEnabled !== 'true') invalid.push('PRESENCE_ENABLED')
   const allowPrivateDevelopment = env.NETWORK_ALLOW_PRIVATE_DEVELOPMENT === 'true'
   if (networkingEnabled && deploymentProfile === 'Lean') invalid.push('NETWORKING_ENABLED')
   if (allowPrivateDevelopment && nodeEnv !== 'development')
@@ -145,7 +179,8 @@ export function loadConfig(env: Record<string, string | undefined> = process.env
     invalid.push('SMOKE_TEST_TOKEN')
   }
   if (production && enableTestRoutes) invalid.push('ENABLE_TEST_ROUTES')
-  if (!mediaDir || (production && !path.isAbsolute(mediaDir))) invalid.push('MEDIA_DIR')
+  if (!mediaDir || (production && requestedStorageDriver === 'local' && !path.isAbsolute(mediaDir)))
+    invalid.push('MEDIA_DIR')
   if (ownerEmail && !isEmail(ownerEmail)) invalid.push('OWNER_EMAIL')
 
   const smtpPort =
@@ -172,9 +207,55 @@ export function loadConfig(env: Record<string, string | undefined> = process.env
     }
   }
 
-  if (invalid.length) throw new ConfigurationError([...new Set(invalid)].sort())
-
   const warnings: string[] = []
+  const s3Values = {
+    endpoint: env.S3_ENDPOINT?.trim(),
+    bucket: env.S3_BUCKET?.trim(),
+    region: env.S3_REGION?.trim(),
+    accessKeyId: env.S3_ACCESS_KEY_ID?.trim(),
+    secretAccessKey: env.S3_SECRET_ACCESS_KEY?.trim(),
+    publicBaseUrl: env.S3_PUBLIC_BASE_URL?.trim(),
+  }
+  const missingS3 = [
+    !s3Values.endpoint && 'S3_ENDPOINT',
+    !s3Values.bucket && 'S3_BUCKET',
+    !s3Values.region && 'S3_REGION',
+    !s3Values.accessKeyId && 'S3_ACCESS_KEY_ID',
+    !s3Values.secretAccessKey && 'S3_SECRET_ACCESS_KEY',
+  ].filter(Boolean) as string[]
+  if (s3Values.endpoint) {
+    try {
+      const endpoint = new URL(s3Values.endpoint)
+      if (
+        !['http:', 'https:'].includes(endpoint.protocol) ||
+        endpoint.username ||
+        endpoint.password
+      )
+        missingS3.push('S3_ENDPOINT')
+    } catch {
+      missingS3.push('S3_ENDPOINT')
+    }
+  }
+  if (s3Values.publicBaseUrl) {
+    try {
+      const publicBaseUrl = new URL(s3Values.publicBaseUrl)
+      if (
+        !['http:', 'https:'].includes(publicBaseUrl.protocol) ||
+        publicBaseUrl.username ||
+        publicBaseUrl.password
+      )
+        missingS3.push('S3_PUBLIC_BASE_URL')
+    } catch {
+      missingS3.push('S3_PUBLIC_BASE_URL')
+    }
+  }
+  const s3Configured = requestedStorageDriver === 's3' && missingS3.length === 0
+  if (requestedStorageDriver === 's3' && !s3Configured) {
+    if (production) invalid.push(...missingS3)
+    else warnings.push('storage.s3_configuration_incomplete_using_local')
+  }
+  const storageDriver = s3Configured ? 's3' : 'local'
+  if (invalid.length) throw new ConfigurationError([...new Set(invalid)].sort())
   if (proxyMode === 'trusted') warnings.push('proxy.forwarded_headers_must_be_overwritten')
   if (storageDriver === 'local') warnings.push('storage.local_path_requires_persistent_volume')
   if (emailMode === 'disabled') warnings.push('email.disabled')
@@ -186,8 +267,27 @@ export function loadConfig(env: Record<string, string | undefined> = process.env
     appUrl,
     proxyMode,
     trustedProxyHops,
-    storage: { driver: storageDriver, mediaDir: path.resolve(mediaDir) },
+    storage: {
+      driver: storageDriver,
+      mediaDir: path.resolve(mediaDir),
+      maxUploadBytes,
+      s3: s3Configured
+        ? {
+            endpoint: s3Values.endpoint!,
+            bucket: s3Values.bucket!,
+            region: s3Values.region!,
+            accessKeyId: s3Values.accessKeyId!,
+            secretAccessKey: s3Values.secretAccessKey!,
+            publicBaseUrl: s3Values.publicBaseUrl || undefined,
+          }
+        : undefined,
+    },
     networking: { enabled: networkingEnabled, allowPrivateDevelopment },
+    realtime: {
+      enabled: realtimeEnabled === 'true',
+      presenceEnabled: presenceEnabled === 'true',
+      presenceTtlSeconds,
+    },
     email: {
       mode: emailMode,
       from: env.EMAIL_FROM,

@@ -3,6 +3,7 @@ import { getPayload } from 'payload'
 
 import { InstallationError, completeInstallation } from '@/modules/operations/installation'
 import { loadConfig } from '@/modules/core/config'
+import { passkeySessionCookie } from '@/modules/operations/passkey-auth'
 import type { OnboardingInput } from '@/modules/operations/onboarding'
 
 export async function POST(request: Request) {
@@ -28,10 +29,13 @@ export async function POST(request: Request) {
       enrollmentToken,
       onboarding: input.onboarding as OnboardingInput,
     })
-    return Response.json(result, {
-      headers: { 'set-cookie': 'renegade-setup=; Max-Age=0; Path=/; HttpOnly; SameSite=Lax' },
-      status: 201,
-    })
+    const headers = new Headers()
+    headers.append(
+      'set-cookie',
+      passkeySessionCookie(result.session.token, result.session.expirationSeconds, loadConfig().secureCookies),
+    )
+    headers.append('set-cookie', 'renegade-setup=; Max-Age=0; Path=/; HttpOnly; SameSite=Lax')
+    return Response.json({ recoveryCodes: result.recoveryCodes, onboarding: result.onboarding }, { headers, status: 201 })
   } catch (error) {
     const message = error instanceof InstallationError ? error.message : 'Setup is unavailable.'
     const status =

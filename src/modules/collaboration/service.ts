@@ -1,4 +1,5 @@
 import { digest, opaqueToken, normalizeEmail } from '../identity/member-identity'
+import { emitRealtimeEvent } from './realtime'
 
 export const TEAM_ROLES = [
   'owner',
@@ -140,11 +141,21 @@ async function notify(
       occurredAt: nowIso(now),
     },
   })
-  return store.create({
+  const notification = await store.create({
     collection: 'notifications',
     overrideAccess: true,
     data: { activityEvent: id(event), recipientMember, status: 'unread', channels: ['in-app'] },
   })
+  // The notification remains authoritative in its own collection. This is only a
+  // durable stream cursor so a disconnected client can catch up later.
+  await emitRealtimeEvent(store, {
+    kind: 'notification.created',
+    scope,
+    recipientMemberId: recipientMember,
+    payload: { notificationId: id(notification), activityEventId: id(event), type },
+    occurredAt: nowIso(now),
+  })
+  return notification
 }
 
 export async function assertTeamPermission(

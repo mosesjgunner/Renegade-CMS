@@ -94,6 +94,8 @@ export interface Config {
     'editorial-comments': EditorialComment;
     'work-conversations': WorkConversation;
     'work-messages': WorkMessage;
+    'realtime-events': RealtimeEvent;
+    'realtime-presence': RealtimePresence;
     'media-assets': MediaAsset;
     sections: Section;
     categories: Category;
@@ -257,6 +259,8 @@ export interface Config {
     'editorial-comments': EditorialCommentsSelect<false> | EditorialCommentsSelect<true>;
     'work-conversations': WorkConversationsSelect<false> | WorkConversationsSelect<true>;
     'work-messages': WorkMessagesSelect<false> | WorkMessagesSelect<true>;
+    'realtime-events': RealtimeEventsSelect<false> | RealtimeEventsSelect<true>;
+    'realtime-presence': RealtimePresenceSelect<false> | RealtimePresenceSelect<true>;
     'media-assets': MediaAssetsSelect<false> | MediaAssetsSelect<true>;
     sections: SectionsSelect<false> | SectionsSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
@@ -771,10 +775,18 @@ export interface MediaAsset {
   storageProvider: string;
   mimeType?: string | null;
   sizeBytes?: number | null;
+  checksum?: string | null;
   width?: number | null;
   height?: number | null;
   durationSeconds?: number | null;
   altText?: string | null;
+  /**
+   * Normalized focal point for supported image crops.
+   */
+  focalPoint?: {
+    x?: number | null;
+    y?: number | null;
+  };
   caption?: string | null;
   credits?: string | null;
   license?: string | null;
@@ -1868,6 +1880,54 @@ export interface WorkMessage {
   author: string | Member;
   body: string;
   mentions?: (string | Member)[] | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "realtime-events".
+ */
+export interface RealtimeEvent {
+  id: string;
+  scopeKind: 'site' | 'publication' | 'space';
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  scopeKey: string;
+  sequence?: number | null;
+  kind: string;
+  recipientMember?: (string | null) | Member;
+  article?: (string | null) | ArticleFamilyContent;
+  payload:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  occurredAt: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "realtime-presence".
+ */
+export interface RealtimePresence {
+  id: string;
+  scopeKind: 'site' | 'publication' | 'space';
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  scopeKey: string;
+  member: string | Member;
+  article?: (string | null) | ArticleFamilyContent;
+  clientId: string;
+  mode: 'viewing' | 'editing';
+  expiresAt: string;
+  lastHeartbeatAt: string;
   updatedAt: string;
   createdAt: string;
 }
@@ -6276,6 +6336,14 @@ export interface PayloadLockedDocument {
         value: string | WorkMessage;
       } | null)
     | ({
+        relationTo: 'realtime-events';
+        value: string | RealtimeEvent;
+      } | null)
+    | ({
+        relationTo: 'realtime-presence';
+        value: string | RealtimePresence;
+      } | null)
+    | ({
         relationTo: 'media-assets';
         value: string | MediaAsset;
       } | null)
@@ -7338,6 +7406,44 @@ export interface WorkMessagesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "realtime-events_select".
+ */
+export interface RealtimeEventsSelect<T extends boolean = true> {
+  scopeKind?: T;
+  site?: T;
+  publication?: T;
+  space?: T;
+  scopeKey?: T;
+  sequence?: T;
+  kind?: T;
+  recipientMember?: T;
+  article?: T;
+  payload?: T;
+  occurredAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "realtime-presence_select".
+ */
+export interface RealtimePresenceSelect<T extends boolean = true> {
+  scopeKind?: T;
+  site?: T;
+  publication?: T;
+  space?: T;
+  scopeKey?: T;
+  member?: T;
+  article?: T;
+  clientId?: T;
+  mode?: T;
+  expiresAt?: T;
+  lastHeartbeatAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media-assets_select".
  */
 export interface MediaAssetsSelect<T extends boolean = true> {
@@ -7351,10 +7457,17 @@ export interface MediaAssetsSelect<T extends boolean = true> {
   storageProvider?: T;
   mimeType?: T;
   sizeBytes?: T;
+  checksum?: T;
   width?: T;
   height?: T;
   durationSeconds?: T;
   altText?: T;
+  focalPoint?:
+    | T
+    | {
+        x?: T;
+        y?: T;
+      };
   caption?: T;
   credits?: T;
   license?: T;

@@ -22,6 +22,11 @@ import * as migration_20260829_150000_integrations from './20260829_150000_integ
 import * as migration_20260829_160000_activitypub_delivery from './20260829_160000_activitypub_delivery'
 import * as migration_20260829_170000_network_experience from './20260829_170000_network_experience'
 import * as migration_20260829_180000_collaboration from './20260829_180000_collaboration'
+import * as migration_20260830_090000_realtime_collaboration from './20260830_090000_realtime_collaboration'
+import * as migration_20260830_100000_media_storage_workflow from './20260830_100000_media_storage_workflow'
+import * as migration_20260830_110000_discoverability from './20260830_110000_discoverability'
+import * as migration_20260830_120000_discoverability_lock_relation from './20260830_120000_discoverability_lock_relation'
+import * as migration_20260830_130000_admin_auth_hardening from './20260830_130000_admin_auth_hardening'
 
 export const migrations = [
   {
@@ -143,5 +148,30 @@ export const migrations = [
     up: migration_20260829_180000_collaboration.up,
     down: migration_20260829_180000_collaboration.down,
     name: '20260829_180000_collaboration',
+  },
+  {
+    up: migration_20260830_090000_realtime_collaboration.up,
+    down: migration_20260830_090000_realtime_collaboration.down,
+    name: '20260830_090000_realtime_collaboration',
+  },
+  {
+    up: migration_20260830_100000_media_storage_workflow.up,
+    down: migration_20260830_100000_media_storage_workflow.down,
+    name: '20260830_100000_media_storage_workflow',
+  },
+  {
+    up: migration_20260830_110000_discoverability.up,
+    down: migration_20260830_110000_discoverability.down,
+    name: '20260830_110000_discoverability',
+  },
+  {
+    up: migration_20260830_120000_discoverability_lock_relation.up,
+    down: migration_20260830_120000_discoverability_lock_relation.down,
+    name: '20260830_120000_discoverability_lock_relation',
+  },
+  {
+    up: migration_20260830_130000_admin_auth_hardening.up,
+    down: migration_20260830_130000_admin_auth_hardening.down,
+    name: '20260830_130000_admin_auth_hardening',
   },
 ]
