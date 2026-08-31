@@ -26,6 +26,7 @@ export class PayloadAnalyticsEventStore implements AnalyticsEventStore {
     await this.payload.create({
       collection: 'analytics-events',
       data: {
+        site: normalized.context.siteId,
         eventId: normalized.id,
         dedupeKey: normalized.dedupeKey,
         eventType: normalized.eventType,

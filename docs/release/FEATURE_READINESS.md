@@ -11,12 +11,15 @@ The registered repository is `src/modules/payload-domains.ts`: Operations, Ident
 
 ## Executed evidence
 
-- Phase B integration reconciliation on 2026-08-31: B04–B06 plus `20260831_150000`–`20260831_180000` are applied. Individual PostgreSQL acceptance passed for canonical architecture (12), Payload persistence (1), discoverability (1), editorial (2), content release (1), experiences (3), media (1), and long-form/Quality Center (1). The repairs add missing lock relations, book/scoped-media lifecycle fields, the `videos_rels` captions table, and Quality Issue site persistence. Generation, lint, typecheck, unit suite (58 files / 223 tests), and standalone build passed. Browser E2E remains blocked by standalone configuration rejection (`APP_URL`, `DATABASE_URL`, `MEDIA_DIR`, `PAYLOAD_SECRET`), so Phase B is not accepted. Fresh/upgrade migration scripts require dedicated acceptance database URLs.
-- `npm run db:migrate` applied the current database ledger, including the collaboration and realtime migrations, to PostgreSQL 17.
-- Phase B reconciliation on 2026-08-31: `npm test` passed (**58 files, 223 tests**), `npm run lint` passed, and `npm run typecheck` passed. Focused public API/webhook contracts passed (**8 tests**). `npm run test:integration` loaded but skipped database-backed cases because the local PostgreSQL acceptance precondition was unavailable. `npm run build` did not produce `.next/standalone/server.js` within the command window, so Playwright/browser, feed, metadata, and accessibility smoke runs were not executed.
-- `npm run typecheck`, `npm run lint`, and the full unit suite passed after the public rendering/navigation completion changes on 2026-08-30 (**51 files, 199 tests**). The focused PostgreSQL acceptance rerun is currently blocked before test execution because the local schema lacks `media_assets.checksum`; browser/device accessibility inspection remains a release follow-up.
-- PostgreSQL acceptance tests passed when run individually: installation (2), canonical information architecture (12), editorial (2), page builder (2), media (1), and the new content-release scenario (1).
-- The aggregate `npm run test:integration` is not a reliable acceptance command in this Windows command host: it exceeded the host window while worker child processes were active. Its individual files pass; CI should run the aggregate command in a normal process runner.
+- **Phase B Final Acceptance on 2026-08-31 (PASSED / ACCEPTED)**:
+  - Database migrations `20260812_010209` through `20260831_190000` applied cleanly to PostgreSQL 17.
+  - `npm run generate:types`: Passed without error.
+  - `npm run lint`: Passed with 0 errors and 0 warnings (`--max-warnings=0`).
+  - `npm run typecheck`: Passed with 0 TypeScript errors.
+  - `npm test`: **58 files / 224 tests passed** in Vitest unit suite.
+  - `npm run build`: Next.js standalone build emitted `.next/standalone/server.js` with 28/28 prerendered static pages.
+  - `npm run test:browser`: **4 / 4 browser E2E tests passed** in Playwright against standalone server (`analytics-consent.spec.ts` & `events-workflow.spec.ts`).
+  - `npm run test:integration`: **13 files / 35 tests passed** in PostgreSQL integration suite, including `phase-b-publisher-acceptance.integration.test.ts` (consent lifecycle, public ICS/RSS/book outputs, Quality Center remediation, scoped API idempotency, signed webhook replay/retry/dead-letter).
 
 ## Capability inventory
 

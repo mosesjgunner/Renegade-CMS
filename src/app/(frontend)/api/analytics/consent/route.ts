@@ -4,6 +4,7 @@ import { NextResponse } from 'next/server'
 import { loadConfig } from '@/modules/core/config'
 import { normalizeConsentChoices } from '@/modules/analytics/contracts'
 import {
+  browserPrivacySignals,
   consentSetCookie,
   consentSubject,
   consentSubjectHash,
@@ -18,10 +19,12 @@ export async function GET(request: Request) {
     await payload.findGlobal({ slug: 'site-settings', overrideAccess: true }),
   )
   const current = readConsent(request.headers.get('cookie'), runtime.payloadSecret)
+  const signals = browserPrivacySignals(new Headers(request.headers))
   return NextResponse.json({
     policy,
     choices: current?.choices ?? null,
     version: current?.version ?? policy.consentVersion,
+    signals,
   })
 }
 export async function POST(request: Request) {
@@ -62,8 +65,9 @@ export async function POST(request: Request) {
     },
     overrideAccess: true,
   } as never)
+  const signals = browserPrivacySignals(new Headers(request.headers))
   return NextResponse.json(
-    { choices, policy },
+    { choices, policy, signals },
     {
       headers: {
         'set-cookie': consentSetCookie(

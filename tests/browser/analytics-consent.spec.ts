@@ -60,7 +60,7 @@ test('Do Not Track suppresses collection after analytics consent', async ({ page
   })
   await page
     .getByRole('button', { name: 'Privacy choices' })
-    .click()
+    .click({ timeout: 1000 })
     .catch(() => undefined)
   await page.getByLabel('Analytics').check()
   await page.getByRole('button', { name: 'Save choices' }).click()

@@ -37,6 +37,7 @@ import * as migration_20260831_150000_phase_b_locked_document_relations from './
 import * as migration_20260831_160000_phase_b_book_lifecycle_reconciliation from './20260831_160000_phase_b_book_lifecycle_reconciliation'
 import * as migration_20260831_170000_phase_b_scoped_media_reconciliation from './20260831_170000_phase_b_scoped_media_reconciliation'
 import * as migration_20260831_180000_phase_b_video_captions_relation from './20260831_180000_phase_b_video_captions_relation'
+import * as migration_20260831_190000_phase_b_integrations_id_defaults from './20260831_190000_phase_b_integrations_id_defaults'
 
 export const migrations = [
   {
@@ -233,5 +234,10 @@ export const migrations = [
     up: migration_20260831_180000_phase_b_video_captions_relation.up,
     down: migration_20260831_180000_phase_b_video_captions_relation.down,
     name: '20260831_180000_phase_b_video_captions_relation',
+  },
+  {
+    up: migration_20260831_190000_phase_b_integrations_id_defaults.up,
+    down: migration_20260831_190000_phase_b_integrations_id_defaults.down,
+    name: '20260831_190000_phase_b_integrations_id_defaults',
   },
 ]

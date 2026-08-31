@@ -26,9 +26,9 @@ export default defineConfig({
   timeout: 30_000,
   use: { baseURL: 'http://127.0.0.1:3110', browserName: 'chromium', channel: 'chrome' },
   webServer: {
-    command: 'node --env-file=.env .next/standalone/server.js',
+    command: 'node .next/standalone/server.js',
     url: 'http://127.0.0.1:3110/health/ready',
-    reuseExistingServer: !process.env.CI,
+    reuseExistingServer: false,
     timeout: 120_000,
     env: { ...process.env, ...e2eEnv },
   },

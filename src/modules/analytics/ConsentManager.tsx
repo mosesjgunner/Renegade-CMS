@@ -25,9 +25,13 @@ const cookie = (name: string, value: string, maxAge?: number) => {
   document.cookie = `${name}=${value}; Path=/; SameSite=Lax${maxAge ? `; Max-Age=${maxAge}` : '; Max-Age=0'}`
 }
 
+type Signals = { globalPrivacyControl?: boolean; doNotTrack?: boolean }
+
 export function ConsentManager({ siteId }: { siteId?: string }) {
   const [policy, setPolicy] = useState<Policy | null>(null)
   const [choices, setChoices] = useState<Choices | null | undefined>(undefined)
+  const [draft, setDraft] = useState<Choices | null>(null)
+  const [signals, setSignals] = useState<Signals>({})
   const [editing, setEditing] = useState(false)
   useEffect(() => {
     void fetch('/api/analytics/consent', { credentials: 'same-origin' })
@@ -35,13 +39,20 @@ export function ConsentManager({ siteId }: { siteId?: string }) {
       .then((value) => {
         setPolicy(value.policy)
         setChoices(value.choices)
+        setDraft(value.choices ?? empty)
+        if (value.signals) setSignals(value.signals)
       })
-      .catch(() => setChoices(empty))
+      .catch(() => {
+        setChoices(empty)
+        setDraft(empty)
+      })
   }, [])
-  const privacySignal =
-    typeof navigator !== 'undefined' &&
-    ((navigator as Navigator & { globalPrivacyControl?: boolean }).globalPrivacyControl ||
-      navigator.doNotTrack === '1')
+  const isGpc =
+    Boolean(signals.globalPrivacyControl) ||
+    (typeof navigator !== 'undefined' &&
+      Boolean((navigator as Navigator & { globalPrivacyControl?: boolean }).globalPrivacyControl))
+  const isDnt =
+    Boolean(signals.doNotTrack) || (typeof navigator !== 'undefined' && navigator.doNotTrack === '1')
   const save = async (next: Choices) => {
     if (!siteId) return
     const response = await fetch('/api/analytics/consent', {
@@ -51,8 +62,11 @@ export function ConsentManager({ siteId }: { siteId?: string }) {
       body: JSON.stringify({ siteId, choices: next }),
     })
     if (!response.ok) return
+    const data = await response.json().catch(() => ({}))
     setChoices(next)
+    setDraft(next)
     setEditing(false)
+    if (data.signals) setSignals(data.signals)
     if (!next.analytics) {
       cookie('renegade-aid', '')
       cookie('renegade-sid', '')
@@ -63,7 +77,8 @@ export function ConsentManager({ siteId }: { siteId?: string }) {
       !siteId ||
       !policy ||
       !choices?.analytics ||
-      (policy.respectGlobalPrivacyControl && privacySignal) ||
+      (policy.respectGlobalPrivacyControl && isGpc) ||
+      (policy.respectDoNotTrack && isDnt) ||
       !policy.analyticsEnabled
     )
       return
@@ -86,19 +101,22 @@ export function ConsentManager({ siteId }: { siteId?: string }) {
         ...identity,
       }),
     })
-  }, [siteId, policy, choices, privacySignal])
+  }, [siteId, policy, choices, isGpc, isDnt])
   if (!policy || choices === undefined) return null
   if (choices && !editing)
     return (
       <button
         type="button"
-        onClick={() => setEditing(true)}
+        onClick={() => {
+          setDraft(choices)
+          setEditing(true)
+        }}
         className="fixed bottom-3 left-3 z-50 text-xs underline"
       >
         Privacy choices
       </button>
     )
-  const current = choices ?? empty
+  const current = draft ?? choices ?? empty
   return (
     <section
       aria-label="Privacy choices"
@@ -114,7 +132,7 @@ export function ConsentManager({ siteId }: { siteId?: string }) {
           <input
             type="checkbox"
             checked={current[category]}
-            onChange={(event) => setChoices({ ...current, [category]: event.target.checked })}
+            onChange={(event) => setDraft({ ...current, [category]: event.target.checked })}
           />{' '}
           {category[0].toUpperCase() + category.slice(1)}
         </label>
