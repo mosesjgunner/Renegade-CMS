@@ -1,6 +1,7 @@
 .next
 node_modules
 src/payload-types.ts
+src/migrations/*.json
 src/app/(payload)/admin/importMap.js
 package-lock.json
 next-env.d.ts

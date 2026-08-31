@@ -6,6 +6,7 @@ import {
   deliveryIdempotencyKey,
   opaqueDeliveryToken,
   validateEmailBlocks,
+  validateFormSchema,
   validateSubmission,
   type EmailBlock,
   type FormSchemaSnapshot,
@@ -35,6 +36,8 @@ export async function submitPublicForm(
 ) {
   if (input.honeypot) throw new Error('Submission was rejected.')
   assertReviewedLocalizedConsent(input.schema)
+  const schemaErrors = validateFormSchema(input.schema)
+  if (schemaErrors.length) throw new Error(schemaErrors.join(' '))
   const errors = validateSubmission(input.schema, input.values)
   if (Object.keys(errors).length) return { errors }
   const seen = await payload.find({
@@ -460,6 +463,7 @@ export async function requestNewsletterSubscription(
     locale: string
     consentWording: string
     source: string
+    formSubmissionId?: string
   },
 ) {
   const email = input.email.trim().toLowerCase()

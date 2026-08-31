@@ -223,18 +223,10 @@ export async function publicMedia(payload: Payload, mediaId: string): Promise<Do
     .findByID({ collection: 'media-assets', id: mediaId, depth: 0, overrideAccess: true } as never)
     .catch(() => undefined)) as unknown as Doc | undefined
   if (!media || media.removeFromDiscovery || media.retentionMode === 'tombstone') return undefined
-  const reference = await payload.find({
-    collection: 'content',
-    where: {
-      and: [
-        { heroMedia: { equals: mediaId } },
-        { status: { in: ['published', 'updated'] } },
-        { site: { equals: id(media.site) } },
-      ],
-    },
-    limit: 1,
-    depth: 0,
-    overrideAccess: true,
-  } as never)
-  return reference.docs.length ? media : undefined
+  const references = await Promise.all([
+    payload.find({ collection: 'content', where: { and: [{ heroMedia: { equals: mediaId } }, { status: { in: ['published', 'updated'] } }, { site: { equals: id(media.site) } }] }, limit: 1, depth: 0, overrideAccess: true } as never),
+    payload.find({ collection: 'podcast-episodes', where: { and: [{ audio: { equals: mediaId } }, { status: { in: ['published', 'updated'] } }, { site: { equals: id(media.site) } }] }, limit: 1, depth: 0, overrideAccess: true } as never),
+    payload.find({ collection: 'videos', where: { and: [{ nativeMedia: { equals: mediaId } }, { status: { in: ['published', 'updated'] } }, { site: { equals: id(media.site) } }] }, limit: 1, depth: 0, overrideAccess: true } as never),
+  ])
+  return references.some((reference) => reference.docs.length) ? media : undefined
 }

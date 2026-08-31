@@ -33,7 +33,8 @@ describe('analytics contracts', () => {
       event('article', 'read_depth', '2026-08-25T10:01:00Z'),
       event('signup', 'signup', '2026-08-25T10:02:00Z'),
     ]
-    expect(normalizeEvent(events[0])?.dedupeKey).toBe('event:social:page_view')
+    expect(normalizeEvent(events[0])?.dedupeKey).toBe('site:event:social:page_view')
+    expect(normalizeEvent({ ...events[0], context: { ...events[0].context, siteId: 'other-site' } })?.dedupeKey).not.toBe(normalizeEvent(events[0])?.dedupeKey)
     expect(attributePath(events, 'signup').map((item) => item.channel)).toEqual([
       'social',
       'social',

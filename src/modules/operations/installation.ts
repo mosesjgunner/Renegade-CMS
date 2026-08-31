@@ -316,7 +316,11 @@ export async function beginPasskeyAuthentication(payload: Payload, email: string
   })
   await pool.query(
     `UPDATE passkeys SET login_challenge = $1, login_expires_at = $2 WHERE user_id = $3`,
-    [options.challenge, new Date(Date.now() + authChallengeLifetimeMs), credentials.rows[0].user_id],
+    [
+      options.challenge,
+      new Date(Date.now() + authChallengeLifetimeMs),
+      credentials.rows[0].user_id,
+    ],
   )
   await audit(payload, credentials.rows[0].user_id, 'passkey.authentication.started')
   return options
@@ -345,7 +349,11 @@ export async function completePasskeyAuthentication(
     [credential.id],
   )
   const stored = result.rows[0]
-  if (!stored?.login_challenge || !stored.login_expires_at || stored.login_expires_at <= new Date()) {
+  if (
+    !stored?.login_challenge ||
+    !stored.login_expires_at ||
+    stored.login_expires_at <= new Date()
+  ) {
     throw new InstallationError(
       'INSTALLATION_INVALID',
       'Start passkey sign-in before completing it.',
@@ -374,14 +382,24 @@ export async function completePasskeyAuthentication(
     [verification.authenticationInfo.newCounter, stored.credential_id, stored.login_challenge],
   )
   if (!consumed.rowCount) {
-    throw new InstallationError('INSTALLATION_INVALID', 'This passkey request has already been used.')
+    throw new InstallationError(
+      'INSTALLATION_INVALID',
+      'This passkey request has already been used.',
+    )
   }
-  const session = await createAdminSession(payload, config, { email: stored.email, id: stored.user_id })
+  const session = await createAdminSession(payload, config, {
+    email: stored.email,
+    id: stored.user_id,
+  })
   await audit(payload, stored.user_id, 'passkey.authentication.completed', stored.credential_id)
   return session
 }
 
-async function createAdminSession(payload: Payload, config: AppConfig, user: { email: string; id: string }) {
+async function createAdminSession(
+  payload: Payload,
+  config: AppConfig,
+  user: { email: string; id: string },
+) {
   const pool = getPool(payload)
   return createPasskeySession(user, config.payloadSecret, async (id, expiresAt) => {
     await pool.query(`INSERT INTO admin_sessions (id, user_id, expires_at) VALUES ($1, $2, $3)`, [
@@ -392,7 +410,12 @@ async function createAdminSession(payload: Payload, config: AppConfig, user: { e
   })
 }
 
-async function audit(payload: Payload, userId: string | null, event: string, credentialId?: string) {
+async function audit(
+  payload: Payload,
+  userId: string | null,
+  event: string,
+  credentialId?: string,
+) {
   await getPool(payload).query(
     `INSERT INTO admin_auth_audit_events (user_id, event, credential_id) VALUES ($1, $2, $3)`,
     [userId, event, credentialId ?? null],
@@ -411,7 +434,10 @@ async function enforceRateLimit(pool: SqlPool, key: string) {
     [key, new Date(now.getTime() - authWindowMs)],
   )
   if ((result.rows[0]?.attempts ?? authWindowAttempts + 1) > authWindowAttempts) {
-    throw new InstallationError('INSTALLATION_INVALID', 'Too many sign-in attempts. Try again later.')
+    throw new InstallationError(
+      'INSTALLATION_INVALID',
+      'Too many sign-in attempts. Try again later.',
+    )
   }
 }
 
@@ -453,12 +479,22 @@ export async function completeAdditionalPasskeyRegistration(
   const user = await requireAdminUser(payload, config.payloadSecret, headers)
   const pool = getPool(payload)
   const sessionId = await sessionIdFromHeaders(headers, config.payloadSecret)
-  const challenge = await pool.query<{ registration_challenge: string | null; registration_expires_at: Date | null }>(
-    `SELECT registration_challenge, registration_expires_at FROM admin_sessions WHERE id = $1`, [sessionId],
-  )
+  const challenge = await pool.query<{
+    registration_challenge: string | null
+    registration_expires_at: Date | null
+  }>(`SELECT registration_challenge, registration_expires_at FROM admin_sessions WHERE id = $1`, [
+    sessionId,
+  ])
   const pending = challenge.rows[0]
-  if (!pending?.registration_challenge || !pending.registration_expires_at || pending.registration_expires_at <= new Date())
-    throw new InstallationError('INSTALLATION_INVALID', 'Start passkey enrollment before completing it.')
+  if (
+    !pending?.registration_challenge ||
+    !pending.registration_expires_at ||
+    pending.registration_expires_at <= new Date()
+  )
+    throw new InstallationError(
+      'INSTALLATION_INVALID',
+      'Start passkey enrollment before completing it.',
+    )
   const verification = await verifyRegistrationResponse({
     response: input.credential,
     expectedChallenge: pending.registration_challenge,
@@ -466,22 +502,42 @@ export async function completeAdditionalPasskeyRegistration(
     expectedRPID: new URL(config.appUrl).hostname,
     requireUserVerification: true,
   })
-  if (!verification.verified) throw new InstallationError('INSTALLATION_INVALID', 'Passkey enrollment could not be verified.')
+  if (!verification.verified)
+    throw new InstallationError('INSTALLATION_INVALID', 'Passkey enrollment could not be verified.')
   const claimed = await pool.query(
     `UPDATE admin_sessions SET registration_challenge = NULL, registration_expires_at = NULL
-     WHERE id = $1 AND registration_challenge = $2 RETURNING id`, [sessionId, pending.registration_challenge],
+     WHERE id = $1 AND registration_challenge = $2 RETURNING id`,
+    [sessionId, pending.registration_challenge],
   )
-  if (!claimed.rowCount) throw new InstallationError('INSTALLATION_INVALID', 'This enrollment request has already been used.')
+  if (!claimed.rowCount)
+    throw new InstallationError(
+      'INSTALLATION_INVALID',
+      'This enrollment request has already been used.',
+    )
   try {
     await pool.query(
       `INSERT INTO passkeys (user_id, credential_id, public_key, counter, device_type, backed_up, name, transports)
        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
-      [user.id, verification.registrationInfo.credential.id, Buffer.from(verification.registrationInfo.credential.publicKey).toString('base64url'), verification.registrationInfo.credential.counter, verification.registrationInfo.credentialDeviceType, verification.registrationInfo.credentialBackedUp, normalizePasskeyName(input.name), JSON.stringify(input.credential.response.transports ?? [])],
+      [
+        user.id,
+        verification.registrationInfo.credential.id,
+        Buffer.from(verification.registrationInfo.credential.publicKey).toString('base64url'),
+        verification.registrationInfo.credential.counter,
+        verification.registrationInfo.credentialDeviceType,
+        verification.registrationInfo.credentialBackedUp,
+        normalizePasskeyName(input.name),
+        JSON.stringify(input.credential.response.transports ?? []),
+      ],
     )
-  } catch (error) {
+  } catch {
     throw new InstallationError('INSTALLATION_INVALID', 'That passkey is already registered.')
   }
-  await audit(payload, user.id, 'passkey.registration.completed', verification.registrationInfo.credential.id)
+  await audit(
+    payload,
+    user.id,
+    'passkey.registration.completed',
+    verification.registrationInfo.credential.id,
+  )
 }
 
 export async function listOrRemovePasskeys(
@@ -493,24 +549,46 @@ export async function listOrRemovePasskeys(
   const user = await requireAdminUser(payload, config.payloadSecret, headers)
   const pool = getPool(payload)
   if (credentialId) {
-    const count = await pool.query<{ count: string }>(`SELECT count(*) FROM passkeys WHERE user_id = $1`, [user.id])
-    if (Number(count.rows[0]?.count) <= 1) throw new InstallationError('INSTALLATION_INVALID', 'Keep one passkey or use recovery before removing this one.')
-    const removed = await pool.query(`DELETE FROM passkeys WHERE user_id = $1 AND credential_id = $2 RETURNING credential_id`, [user.id, credentialId])
+    const count = await pool.query<{ count: string }>(
+      `SELECT count(*) FROM passkeys WHERE user_id = $1`,
+      [user.id],
+    )
+    if (Number(count.rows[0]?.count) <= 1)
+      throw new InstallationError(
+        'INSTALLATION_INVALID',
+        'Keep one passkey or use recovery before removing this one.',
+      )
+    const removed = await pool.query(
+      `DELETE FROM passkeys WHERE user_id = $1 AND credential_id = $2 RETURNING credential_id`,
+      [user.id, credentialId],
+    )
     if (!removed.rowCount) throw new InstallationError('INSTALLATION_INVALID', 'Passkey not found.')
     await audit(payload, user.id, 'passkey.removed', credentialId)
     return []
   }
-  return (await pool.query<{ credential_id: string; created_at: Date; last_used_at: Date | null; name: string }>(
-    `SELECT credential_id, name, created_at, last_used_at FROM passkeys WHERE user_id = $1 ORDER BY created_at`, [user.id],
-  )).rows
+  return (
+    await pool.query<{
+      credential_id: string
+      created_at: Date
+      last_used_at: Date | null
+      name: string
+    }>(
+      `SELECT credential_id, name, created_at, last_used_at FROM passkeys WHERE user_id = $1 ORDER BY created_at`,
+      [user.id],
+    )
+  ).rows
 }
 
 async function sessionIdFromHeaders(headers: Headers, secret: string): Promise<string> {
-  const cookie = headers.get('cookie')?.split(';').map((part) => part.trim().split('='))
+  const cookie = headers
+    .get('cookie')
+    ?.split(';')
+    .map((part) => part.trim().split('='))
     .find(([name]) => name === 'renegade-passkey')?.[1]
   if (!cookie) throw new InstallationError('INSTALLATION_INVALID', 'Sign in is required.')
   const verified = await jwtVerify(cookie, new TextEncoder().encode(secret))
-  if (typeof verified.payload.sid !== 'string') throw new InstallationError('INSTALLATION_INVALID', 'Your session has expired.')
+  if (typeof verified.payload.sid !== 'string')
+    throw new InstallationError('INSTALLATION_INVALID', 'Your session has expired.')
   return verified.payload.sid
 }
 

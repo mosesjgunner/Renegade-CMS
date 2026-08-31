@@ -1,10 +1,10 @@
 import type { Payload } from 'payload'
 
-import { normalizeEvent, type FirstPartyEvent } from './contracts'
+import { analyticsRetention, normalizeEvent, type FirstPartyEvent } from './contracts'
 
 /** Canonical first-party analytics writer. Callers never create parallel event stores. */
 export interface AnalyticsEventStore {
-  record(event: FirstPartyEvent): Promise<{ event: FirstPartyEvent; deduplicated: boolean }>
+  record(event: FirstPartyEvent, rawRetentionDays?: number): Promise<{ event: FirstPartyEvent; deduplicated: boolean }>
 }
 
 type AnalyticsPayload = Pick<Payload, 'create' | 'find'>
@@ -12,7 +12,7 @@ type AnalyticsPayload = Pick<Payload, 'create' | 'find'>
 export class PayloadAnalyticsEventStore implements AnalyticsEventStore {
   constructor(private readonly payload: AnalyticsPayload) {}
 
-  async record(event: FirstPartyEvent) {
+  async record(event: FirstPartyEvent, rawRetentionDays: number = analyticsRetention.rawDays) {
     const normalized = normalizeEvent(event)
     if (!normalized) return { event, deduplicated: true }
     const existing = await this.payload.find({
@@ -39,6 +39,8 @@ export class PayloadAnalyticsEventStore implements AnalyticsEventStore {
         context: normalized.context,
         properties: normalized.properties,
         trusted: normalized.trusted,
+        retentionMode: 'expire-at',
+        retentionExpiresAt: new Date(new Date(normalized.receivedAt).getTime() + rawRetentionDays * 86_400_000).toISOString(),
       },
       overrideAccess: true,
     } as never)

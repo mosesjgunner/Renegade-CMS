@@ -28,6 +28,17 @@ export type FormField = {
   validation?: Record<string, unknown>
   visibleWhen?: { field: string; equals: string | boolean | number }
 }
+export const SUPPORTED_FORM_FIELD_TYPES = [
+  'text',
+  'email',
+  'textarea',
+  'select',
+  'radio',
+  'checkbox',
+  'number',
+  'date',
+  'hidden',
+] as const
 export type FormSchemaSnapshot = {
   version: number
   locale: string
@@ -47,7 +58,11 @@ export function validateSubmission(schema: FormSchemaSnapshot, values: Record<st
     const visible =
       !field.visibleWhen || values[field.visibleWhen.field] === field.visibleWhen.equals
     const value = values[field.key]
-    if (visible && field.required && (value === undefined || value === null || value === ''))
+    if (
+      visible &&
+      field.required &&
+      (value === undefined || value === null || value === '' || value === false)
+    )
       errors[field.key] = 'Required.'
     if (
       visible &&
@@ -56,6 +71,20 @@ export function validateSubmission(schema: FormSchemaSnapshot, values: Record<st
       !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value))
     )
       errors[field.key] = 'Enter a valid email address.'
+  }
+  return errors
+}
+export function validateFormSchema(schema: Pick<FormSchemaSnapshot, 'fields'>) {
+  const errors: string[] = []
+  const keys = new Set<string>()
+  for (const field of schema.fields) {
+    if (!/^[a-z][a-z0-9_]{0,63}$/.test(field.key)) errors.push(`Invalid field key: ${field.key}`)
+    if (keys.has(field.key)) errors.push(`Duplicate field key: ${field.key}`)
+    keys.add(field.key)
+    if (!(SUPPORTED_FORM_FIELD_TYPES as readonly string[]).includes(field.type))
+      errors.push(`Unsupported field type: ${field.type}`)
+    if (!field.label.trim() && field.type !== 'hidden')
+      errors.push(`Field ${field.key} needs a label.`)
   }
   return errors
 }

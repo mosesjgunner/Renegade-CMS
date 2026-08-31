@@ -46,6 +46,7 @@ export type EventContext = Readonly<{
   utm?: Record<string, string>
   deviceClass?: 'desktop' | 'mobile' | 'tablet' | 'other'
   region?: string
+  path?: string
   sourceEventId?: string
   provider?: string
   goal?: string
@@ -125,7 +126,9 @@ export function normalizeEvent(event: FirstPartyEvent): FirstPartyEvent | null {
     throw new Error('Event identity, site and timestamps are required.')
   return {
     ...event,
-    dedupeKey: eventDedupeKey(event),
+    // The database unique index is global, so make an otherwise identical browser retry
+    // tenant-safe before persistence.
+    dedupeKey: `${event.context.siteId}:${eventDedupeKey(event)}`,
     identity: { ...event.identity },
     context: { ...event.context, utm: event.context.utm ? { ...event.context.utm } : undefined },
   }
@@ -182,6 +185,50 @@ export const analyticsRetention = {
   timezone: 'UTC',
   uniqueCount: 'daily salted anonymous/session hash; approximate across rollups',
 } as const
+
+export const CONSENT_CATEGORIES = ['necessary', 'analytics', 'personalization', 'marketing'] as const
+export type ConsentCategory = (typeof CONSENT_CATEGORIES)[number]
+export type ConsentChoices = Record<ConsentCategory, boolean>
+export type PrivacyPolicy = Readonly<{
+  analyticsEnabled: boolean
+  consentVersion: string
+  respectGlobalPrivacyControl: boolean
+  respectDoNotTrack: boolean
+  rawEventRetentionDays: number
+  rollupRetentionDays: number
+}>
+export const defaultPrivacyPolicy: PrivacyPolicy = {
+  analyticsEnabled: false,
+  consentVersion: '2026-08-31',
+  respectGlobalPrivacyControl: true,
+  respectDoNotTrack: true,
+  rawEventRetentionDays: 90,
+  rollupRetentionDays: 730,
+}
+export const necessaryOnlyChoices = (): ConsentChoices => ({
+  necessary: true, analytics: false, personalization: false, marketing: false,
+})
+export const normalizeConsentChoices = (value: Partial<ConsentChoices> | undefined): ConsentChoices => ({
+  necessary: true,
+  analytics: value?.analytics === true,
+  personalization: value?.personalization === true,
+  marketing: value?.marketing === true,
+})
+export const analyticsAllowed = (input: {
+  choices: ConsentChoices
+  policy: PrivacyPolicy
+  globalPrivacyControl?: boolean
+  doNotTrack?: boolean
+}) =>
+  input.policy.analyticsEnabled &&
+  input.choices.analytics &&
+  !(input.policy.respectGlobalPrivacyControl && input.globalPrivacyControl) &&
+  !(input.policy.respectDoNotTrack && input.doNotTrack)
+
+/** Retention works on received time and never removes a legal/audit consent record. */
+export const expiredAnalyticsRecordIds = <T extends { id: string; receivedAt?: string; occurredAt: string }>(
+  records: readonly T[], now: Date, retentionDays: number,
+) => records.filter((record) => now.getTime() - new Date(record.receivedAt ?? record.occurredAt).getTime() >= retentionDays * 86_400_000).map(({ id }) => id)
 
 /** Rollup workers process a bounded window of deduplicated events, never a historical raw-event scan. */
 export function rollupEvents(

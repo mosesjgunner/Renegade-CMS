@@ -93,6 +93,20 @@ describe('loadConfig', () => {
     ).toThrow(/DATABASE_URL.*PAYLOAD_SECRET/)
   })
 
+  it('allows development-only credentials only for an explicit loopback E2E runtime', () => {
+    expect(
+      loadConfig({ ...valid, NODE_ENV: 'production', LOCAL_E2E_TEST_MODE: 'true' }),
+    ).toMatchObject({ appUrl: 'http://localhost:3000', secureCookies: false })
+    expect(() =>
+      loadConfig({
+        ...valid,
+        NODE_ENV: 'production',
+        APP_URL: 'https://cms.example.test',
+        LOCAL_E2E_TEST_MODE: 'true',
+      }),
+    ).toThrow(/LOCAL_E2E_TEST_MODE/)
+  })
+
   it('validates SMTP placeholders without logging their values', () => {
     expect(() => loadConfig({ ...valid, EMAIL_MODE: 'smtp' })).toThrow(
       /EMAIL_FROM.*SMTP_HOST.*SMTP_PORT/,
@@ -123,5 +137,16 @@ describe('loadConfig', () => {
         SMTP_USERNAME: 'only-user',
       }),
     ).toThrow(/SMTP_PASSWORD/)
+  })
+  it('rejects unsafe SMTP sender headers', () => {
+    expect(() =>
+      loadConfig({
+        ...valid,
+        EMAIL_MODE: 'smtp',
+        EMAIL_FROM: 'mail@example.test\r\nBcc: attacker@example.test',
+        SMTP_HOST: 'smtp.example.test',
+        SMTP_PORT: '465',
+      }),
+    ).toThrow(/EMAIL_FROM/)
   })
 })

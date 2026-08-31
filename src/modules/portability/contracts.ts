@@ -352,6 +352,9 @@ export type MediaManifestEntry = {
   originalChecksum: string
   derivativeChecksums: readonly string[]
   encryptedBlobChecksum: string | null
+  /** Base64 object bytes. Present only for executable site exports. */
+  objectData?: string
+  mimeType?: string
 }
 export type PortableRecord = { collection: string; id: string; data: Record<string, unknown> }
 export type PortableManifest = {
@@ -417,6 +420,9 @@ export function validatePortableManifest(manifest: PortableManifest): void {
   for (const record of manifest.records)
     if (manifest.checksums[`${record.collection}/${record.id}`] !== checksum(record.data))
       throw new Error(`Checksum mismatch for ${record.collection}/${record.id}.`)
+  for (const media of manifest.media)
+    if (manifest.checksums[`media/${media.id}`] !== checksum(media))
+      throw new Error(`Checksum mismatch for media/${media.id}.`)
 }
 
 /** AES-256-GCM portable archive envelope; encryption keys are supplied out of band. */

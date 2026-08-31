@@ -157,6 +157,25 @@ export async function importPortableManifest(
     },
   }
 }
+
+/**
+ * Portable site bundles must name exactly one source site. This prevents a
+ * command intended for one tenant from silently carrying another tenant's
+ * records along with it.
+ */
+export function assertPortableSiteBoundary(manifest: PortableManifest, sourceSiteId: string) {
+  const sites = manifest.records.filter((record) => record.collection === 'sites')
+  if (sites.length !== 1 || sites[0]?.id !== sourceSiteId)
+    throw new Error('Portable archive does not contain exactly the requested source site.')
+  for (const record of manifest.records) {
+    if (record.collection === 'sites') continue
+    const site = record.data.site
+    if (site !== undefined && String(site) !== sourceSiteId)
+      throw new Error(
+        `Portable archive crosses a tenant boundary at ${record.collection}/${record.id}.`,
+      )
+  }
+}
 export function portableIdentityMap(manifest: PortableManifest): Record<string, string> {
   return Object.fromEntries(
     manifest.records.map((record) => [

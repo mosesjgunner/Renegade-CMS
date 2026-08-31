@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { assertEvent } from '../modules/events/contracts'
 
 import {
   canonicalSlug,
@@ -671,6 +672,12 @@ export const Events: CollectionConfig = {
   slug: 'events',
   admin: { useAsTitle: 'title', group: 'Calendar' },
   access: { create: staffOnly, delete: staffOnly, read: () => true, update: staffOnly },
+  hooks: {
+    beforeValidate: [({ data }) => {
+      if (data) assertEvent(data as Parameters<typeof assertEvent>[0])
+      return data
+    }],
+  },
   fields: [
     ...ownerFields(),
     { name: 'title', type: 'text', required: true },
@@ -703,6 +710,7 @@ export const Events: CollectionConfig = {
     },
     { name: 'venueName', type: 'text' },
     { name: 'venueRegion', type: 'text' },
+    { name: 'venueAddress', type: 'textarea' },
     {
       name: 'attendanceMode',
       type: 'select',
@@ -710,6 +718,21 @@ export const Events: CollectionConfig = {
       defaultValue: 'in-person',
       options: ['in-person', 'virtual', 'hybrid'],
     },
+    { name: 'onlineUrl', type: 'text', admin: { description: 'Meeting or livestream URL; required for virtual events.' } },
+    { name: 'organizerName', type: 'text' },
+    { name: 'organizerUrl', type: 'text' },
+    { name: 'capacity', type: 'number', min: 1 },
+    { name: 'registrationUrl', type: 'text', admin: { description: 'External registration only; ticketing and payments are not part of Events.' } },
+    {
+      name: 'recurrence', type: 'json',
+      admin: { description: 'Optional daily, weekly, or monthly series. Expansion is limited to 250 occurrences / 366 days.' },
+    },
+    {
+      name: 'recurrenceOverrides', type: 'json',
+      admin: { description: 'Edit one occurrence by its original ISO start instant; edit the series by changing this event. Cancelled overrides suppress only that occurrence.' },
+    },
+    { name: 'categories', type: 'relationship', relationTo: 'categories', hasMany: true },
+    { name: 'relatedContent', type: 'relationship', relationTo: ['content', 'events'], hasMany: true },
     { name: 'heroMedia', type: 'relationship', relationTo: 'media-assets' },
     { name: 'calendarEntry', type: 'relationship', relationTo: 'calendar-entries', index: true },
     { name: 'audience', type: 'json' },

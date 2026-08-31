@@ -70,7 +70,9 @@ export interface Config {
     users: User;
     sites: Site;
     'page-layouts': PageLayout;
+    'execution-events': ExecutionEvent;
     'api-clients': ApiClient;
+    'api-request-records': ApiRequestRecord;
     'webhook-subscriptions': WebhookSubscription;
     'webhook-deliveries': WebhookDelivery;
     'integration-audit-events': IntegrationAuditEvent;
@@ -103,19 +105,19 @@ export interface Config {
     tags: Tag;
     series: Series;
     'taxonomy-redirects': TaxonomyRedirect;
+    'public-redirects': PublicRedirect;
     content: Content;
     'article-family-content': ArticleFamilyContent;
     'markdown-conversion-reports': MarkdownConversionReport;
     'revision-records': RevisionRecord;
     'preview-tokens': PreviewToken;
-    'scheduled-publish-jobs': ScheduledPublishJob;
     'content-releases': ContentRelease;
+    'scheduled-publish-jobs': ScheduledPublishJob;
     events: Event;
     timelines: Timeline;
     'timeline-memberships': TimelineMembership;
     sources: Source;
     albums: Album;
-    'media-usages': MediaUsage;
     books: Book;
     'book-parts': BookPart;
     'book-chapters': BookChapter;
@@ -143,6 +145,7 @@ export interface Config {
     'external-posts': ExternalPost;
     campaigns: Campaign;
     'calendar-entry-audits': CalendarEntryAudit;
+    'media-usages': MediaUsage;
     'forum-sections': ForumSection;
     forums: Forum;
     discussions: Discussion;
@@ -193,6 +196,7 @@ export interface Config {
     'delivery-receipts': DeliveryReceipt;
     'automation-definitions': AutomationDefinition;
     'analytics-events': AnalyticsEvent;
+    'analytics-consent-records': AnalyticsConsentRecord;
     'analytics-rollups': AnalyticsRollup;
     'metric-snapshots': MetricSnapshot;
     'analytics-goals': AnalyticsGoal;
@@ -235,7 +239,9 @@ export interface Config {
     users: UsersSelect<false> | UsersSelect<true>;
     sites: SitesSelect<false> | SitesSelect<true>;
     'page-layouts': PageLayoutsSelect<false> | PageLayoutsSelect<true>;
+    'execution-events': ExecutionEventsSelect<false> | ExecutionEventsSelect<true>;
     'api-clients': ApiClientsSelect<false> | ApiClientsSelect<true>;
+    'api-request-records': ApiRequestRecordsSelect<false> | ApiRequestRecordsSelect<true>;
     'webhook-subscriptions': WebhookSubscriptionsSelect<false> | WebhookSubscriptionsSelect<true>;
     'webhook-deliveries': WebhookDeliveriesSelect<false> | WebhookDeliveriesSelect<true>;
     'integration-audit-events': IntegrationAuditEventsSelect<false> | IntegrationAuditEventsSelect<true>;
@@ -268,19 +274,19 @@ export interface Config {
     tags: TagsSelect<false> | TagsSelect<true>;
     series: SeriesSelect<false> | SeriesSelect<true>;
     'taxonomy-redirects': TaxonomyRedirectsSelect<false> | TaxonomyRedirectsSelect<true>;
+    'public-redirects': PublicRedirectsSelect<false> | PublicRedirectsSelect<true>;
     content: ContentSelect<false> | ContentSelect<true>;
     'article-family-content': ArticleFamilyContentSelect<false> | ArticleFamilyContentSelect<true>;
     'markdown-conversion-reports': MarkdownConversionReportsSelect<false> | MarkdownConversionReportsSelect<true>;
     'revision-records': RevisionRecordsSelect<false> | RevisionRecordsSelect<true>;
     'preview-tokens': PreviewTokensSelect<false> | PreviewTokensSelect<true>;
-    'scheduled-publish-jobs': ScheduledPublishJobsSelect<false> | ScheduledPublishJobsSelect<true>;
     'content-releases': ContentReleasesSelect<false> | ContentReleasesSelect<true>;
+    'scheduled-publish-jobs': ScheduledPublishJobsSelect<false> | ScheduledPublishJobsSelect<true>;
     events: EventsSelect<false> | EventsSelect<true>;
     timelines: TimelinesSelect<false> | TimelinesSelect<true>;
     'timeline-memberships': TimelineMembershipsSelect<false> | TimelineMembershipsSelect<true>;
     sources: SourcesSelect<false> | SourcesSelect<true>;
     albums: AlbumsSelect<false> | AlbumsSelect<true>;
-    'media-usages': MediaUsagesSelect<false> | MediaUsagesSelect<true>;
     books: BooksSelect<false> | BooksSelect<true>;
     'book-parts': BookPartsSelect<false> | BookPartsSelect<true>;
     'book-chapters': BookChaptersSelect<false> | BookChaptersSelect<true>;
@@ -308,6 +314,7 @@ export interface Config {
     'external-posts': ExternalPostsSelect<false> | ExternalPostsSelect<true>;
     campaigns: CampaignsSelect<false> | CampaignsSelect<true>;
     'calendar-entry-audits': CalendarEntryAuditsSelect<false> | CalendarEntryAuditsSelect<true>;
+    'media-usages': MediaUsagesSelect<false> | MediaUsagesSelect<true>;
     'forum-sections': ForumSectionsSelect<false> | ForumSectionsSelect<true>;
     forums: ForumsSelect<false> | ForumsSelect<true>;
     discussions: DiscussionsSelect<false> | DiscussionsSelect<true>;
@@ -358,6 +365,7 @@ export interface Config {
     'delivery-receipts': DeliveryReceiptsSelect<false> | DeliveryReceiptsSelect<true>;
     'automation-definitions': AutomationDefinitionsSelect<false> | AutomationDefinitionsSelect<true>;
     'analytics-events': AnalyticsEventsSelect<false> | AnalyticsEventsSelect<true>;
+    'analytics-consent-records': AnalyticsConsentRecordsSelect<false> | AnalyticsConsentRecordsSelect<true>;
     'analytics-rollups': AnalyticsRollupsSelect<false> | AnalyticsRollupsSelect<true>;
     'metric-snapshots': MetricSnapshotsSelect<false> | MetricSnapshotsSelect<true>;
     'analytics-goals': AnalyticsGoalsSelect<false> | AnalyticsGoalsSelect<true>;
@@ -418,6 +426,9 @@ export interface Config {
     tasks: {
       'operations-heartbeat': TaskOperationsHeartbeat;
       'operations-forced-failure': TaskOperationsForcedFailure;
+      'execution-outbox-dispatch': TaskExecutionOutboxDispatch;
+      'execution-outbox-handle': TaskExecutionOutboxHandle;
+      'webhook-delivery-dispatch': TaskWebhookDeliveryDispatch;
       'editorial-publish': TaskEditorialPublish;
       'content-release-execute': TaskContentReleaseExecute;
       'media-import': TaskMediaImport;
@@ -428,6 +439,7 @@ export interface Config {
       'network-delivery': TaskNetworkDelivery;
       'audience-email-delivery': TaskAudienceEmailDelivery;
       'audience-newsletter-dispatch': TaskAudienceNewsletterDispatch;
+      'analytics-retention-cleanup': TaskAnalyticsRetentionCleanup;
       'quality-scan': TaskQualityScan;
       'commerce-abandon-checkouts': TaskCommerceAbandonCheckouts;
       inline: {
@@ -1016,6 +1028,46 @@ export interface Author {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "execution-events".
+ */
+export interface ExecutionEvent {
+  id: string;
+  site: string | Site;
+  tenantId: string;
+  actor:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  eventType: string;
+  eventVersion: number;
+  occurredAt: string;
+  correlationId: string;
+  causationId?: string | null;
+  idempotencyKey: string;
+  privacyClass: 'public' | 'internal' | 'restricted';
+  payload:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  state: 'ready' | 'dispatched' | 'retrying' | 'processed' | 'dead-letter' | 'cancelled';
+  attempts: number;
+  lastError?: string | null;
+  jobId?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "api-clients".
  */
 export interface ApiClient {
@@ -1038,6 +1090,32 @@ export interface ApiClient {
   expiresAt?: string | null;
   revokedAt?: string | null;
   lastUsedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "api-request-records".
+ */
+export interface ApiRequestRecord {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  client: string | ApiClient;
+  idempotencyKey: string;
+  method: string;
+  path: string;
+  responseStatus: number;
+  response:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1076,11 +1154,21 @@ export interface WebhookDelivery {
   subscription: string | WebhookSubscription;
   eventId: string;
   eventType: string;
+  payload:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   idempotencyKey: string;
   state: 'queued' | 'delivered' | 'retrying' | 'dead-letter';
   attempts: number;
   nextAttemptAt?: string | null;
   redactedResponse?: string | null;
+  lastError?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1947,6 +2035,24 @@ export interface TaxonomyRedirect {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "public-redirects".
+ */
+export interface PublicRedirect {
+  id: string;
+  site: string | Site;
+  fromPath: string;
+  toPath: string;
+  match: 'exact' | 'prefix' | 'regex';
+  statusCode: '301' | '302' | '307' | '308';
+  preserveQuery?: boolean | null;
+  enabled?: boolean | null;
+  hitCount: number;
+  lastHitAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "markdown-conversion-reports".
  */
 export interface MarkdownConversionReport {
@@ -2000,161 +2106,6 @@ export interface PreviewToken {
   expiresAt: string;
   revokedAt?: string | null;
   createdBy?: (string | null) | User;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "scheduled-publish-jobs".
- */
-export interface ScheduledPublishJob {
-  id: string;
-  article: string | ArticleFamilyContent;
-  job?: (string | null) | PayloadJob;
-  revision: string | RevisionRecord;
-  scheduledFor: string;
-  timeZone: string;
-  idempotencyKey: string;
-  status: 'pending-contract' | 'queued' | 'completed' | 'cancelled' | 'failed';
-  createdBy?: (string | null) | User;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "payload-jobs".
- */
-export interface PayloadJob {
-  id: string;
-  /**
-   * Input data provided to the job
-   */
-  input?:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-  taskStatus?:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-  completedAt?: string | null;
-  totalTried?: number | null;
-  /**
-   * If hasError is true this job will not be retried
-   */
-  hasError?: boolean | null;
-  /**
-   * If hasError is true, this is the error that caused it
-   */
-  error?:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-  /**
-   * Task execution log
-   */
-  log?:
-    | {
-        executedAt: string;
-        completedAt: string;
-        taskSlug:
-          | 'inline'
-          | 'operations-heartbeat'
-          | 'operations-forced-failure'
-          | 'editorial-publish'
-          | 'content-release-execute'
-          | 'media-import'
-          | 'media-render'
-          | 'media-transcribe'
-          | 'media-tts'
-          | 'social-publish'
-          | 'network-delivery'
-          | 'audience-email-delivery'
-          | 'audience-newsletter-dispatch'
-          | 'quality-scan'
-          | 'commerce-abandon-checkouts';
-        taskID: string;
-        input?:
-          | {
-              [k: string]: unknown;
-            }
-          | unknown[]
-          | string
-          | number
-          | boolean
-          | null;
-        output?:
-          | {
-              [k: string]: unknown;
-            }
-          | unknown[]
-          | string
-          | number
-          | boolean
-          | null;
-        state: 'failed' | 'succeeded';
-        error?:
-          | {
-              [k: string]: unknown;
-            }
-          | unknown[]
-          | string
-          | number
-          | boolean
-          | null;
-        id?: string | null;
-      }[]
-    | null;
-  taskSlug?:
-    | (
-        | 'inline'
-        | 'operations-heartbeat'
-        | 'operations-forced-failure'
-        | 'editorial-publish'
-        | 'content-release-execute'
-        | 'media-import'
-        | 'media-render'
-        | 'media-transcribe'
-        | 'media-tts'
-        | 'social-publish'
-        | 'network-delivery'
-        | 'audience-email-delivery'
-        | 'audience-newsletter-dispatch'
-        | 'quality-scan'
-        | 'commerce-abandon-checkouts'
-      )
-    | null;
-  queue?: string | null;
-  waitUntil?: string | null;
-  processing?: boolean | null;
-  /**
-   * Used for concurrency control. Jobs with the same key are subject to exclusive/supersedes rules.
-   */
-  concurrencyKey?: string | null;
-  meta?:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -2330,6 +2281,169 @@ export interface MerchantConnection {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-jobs".
+ */
+export interface PayloadJob {
+  id: string;
+  /**
+   * Input data provided to the job
+   */
+  input?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  taskStatus?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  completedAt?: string | null;
+  totalTried?: number | null;
+  /**
+   * If hasError is true this job will not be retried
+   */
+  hasError?: boolean | null;
+  /**
+   * If hasError is true, this is the error that caused it
+   */
+  error?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Task execution log
+   */
+  log?:
+    | {
+        executedAt: string;
+        completedAt: string;
+        taskSlug:
+          | 'inline'
+          | 'operations-heartbeat'
+          | 'operations-forced-failure'
+          | 'execution-outbox-dispatch'
+          | 'execution-outbox-handle'
+          | 'webhook-delivery-dispatch'
+          | 'editorial-publish'
+          | 'content-release-execute'
+          | 'media-import'
+          | 'media-render'
+          | 'media-transcribe'
+          | 'media-tts'
+          | 'social-publish'
+          | 'network-delivery'
+          | 'audience-email-delivery'
+          | 'audience-newsletter-dispatch'
+          | 'analytics-retention-cleanup'
+          | 'quality-scan'
+          | 'commerce-abandon-checkouts';
+        taskID: string;
+        input?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        output?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        state: 'failed' | 'succeeded';
+        error?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  taskSlug?:
+    | (
+        | 'inline'
+        | 'operations-heartbeat'
+        | 'operations-forced-failure'
+        | 'execution-outbox-dispatch'
+        | 'execution-outbox-handle'
+        | 'webhook-delivery-dispatch'
+        | 'editorial-publish'
+        | 'content-release-execute'
+        | 'media-import'
+        | 'media-render'
+        | 'media-transcribe'
+        | 'media-tts'
+        | 'social-publish'
+        | 'network-delivery'
+        | 'audience-email-delivery'
+        | 'audience-newsletter-dispatch'
+        | 'analytics-retention-cleanup'
+        | 'quality-scan'
+        | 'commerce-abandon-checkouts'
+      )
+    | null;
+  queue?: string | null;
+  waitUntil?: string | null;
+  processing?: boolean | null;
+  /**
+   * Used for concurrency control. Jobs with the same key are subject to exclusive/supersedes rules.
+   */
+  concurrencyKey?: string | null;
+  meta?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "scheduled-publish-jobs".
+ */
+export interface ScheduledPublishJob {
+  id: string;
+  article: string | ArticleFamilyContent;
+  job?: (string | null) | PayloadJob;
+  revision: string | RevisionRecord;
+  scheduledFor: string;
+  timeZone: string;
+  idempotencyKey: string;
+  status: 'pending-contract' | 'queued' | 'completed' | 'cancelled' | 'failed';
+  createdBy?: (string | null) | User;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "events".
  */
 export interface Event {
@@ -2353,7 +2467,56 @@ export interface Event {
   visibility: 'public' | 'unlisted' | 'members' | 'friends' | 'private';
   venueName?: string | null;
   venueRegion?: string | null;
+  venueAddress?: string | null;
   attendanceMode: 'in-person' | 'virtual' | 'hybrid';
+  /**
+   * Meeting or livestream URL; required for virtual events.
+   */
+  onlineUrl?: string | null;
+  organizerName?: string | null;
+  organizerUrl?: string | null;
+  capacity?: number | null;
+  /**
+   * External registration only; ticketing and payments are not part of Events.
+   */
+  registrationUrl?: string | null;
+  /**
+   * Optional daily, weekly, or monthly series. Expansion is limited to 250 occurrences / 366 days.
+   */
+  recurrence?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Edit one occurrence by its original ISO start instant; edit the series by changing this event. Cancelled overrides suppress only that occurrence.
+   */
+  recurrenceOverrides?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  categories?: (string | Category)[] | null;
+  relatedContent?:
+    | (
+        | {
+            relationTo: 'content';
+            value: string | Content;
+          }
+        | {
+            relationTo: 'events';
+            value: string | Event;
+          }
+      )[]
+    | null;
   heroMedia?: (string | null) | MediaAsset;
   calendarEntry?: (string | null) | CalendarEntry;
   audience?:
@@ -2685,221 +2848,6 @@ export interface TimelineMembership {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media-usages".
- */
-export interface MediaUsage {
-  id: string;
-  media: string | MediaAsset;
-  usedBy:
-    | {
-        relationTo: 'content';
-        value: string | Content;
-      }
-    | {
-        relationTo: 'albums';
-        value: string | Album;
-      }
-    | {
-        relationTo: 'discussions';
-        value: string | Discussion;
-      }
-    | {
-        relationTo: 'discussion-posts';
-        value: string | DiscussionPost;
-      }
-    | {
-        relationTo: 'events';
-        value: string | Event;
-      }
-    | {
-        relationTo: 'timelines';
-        value: string | Timeline;
-      }
-    | {
-        relationTo: 'email-messages';
-        value: string | EmailMessage;
-      };
-  usageKey: string;
-  purpose: 'hero' | 'inline' | 'cover' | 'attachment' | 'avatar' | 'thumbnail' | 'newsletter';
-  replaceGlobally?: boolean | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "discussions".
- */
-export interface Discussion {
-  id: string;
-  site: string | Site;
-  publication?: (string | null) | Publication;
-  space?: (string | null) | Space;
-  owner?: (string | null) | Member;
-  kind: 'attached' | 'thread';
-  title: string;
-  forum?: (string | null) | Forum;
-  attachedTo?:
-    | ({
-        relationTo: 'content';
-        value: string | Content;
-      } | null)
-    | ({
-        relationTo: 'media-assets';
-        value: string | MediaAsset;
-      } | null)
-    | ({
-        relationTo: 'albums';
-        value: string | Album;
-      } | null);
-  promotedContent?: (string | null) | Content;
-  canonicalPath: string;
-  status: 'open' | 'locked' | 'archived';
-  visibility: 'public' | 'unlisted' | 'members' | 'friends' | 'private';
-  moderationState: 'clear' | 'review' | 'restricted' | 'removed';
-  commentsPolicy: 'open' | 'members' | 'closed';
-  retentionMode: 'permanent' | 'expire-at' | 'manual-burn' | 'archive' | 'tombstone';
-  retentionExpiresAt?: string | null;
-  retentionHold: 'none' | 'legal' | 'moderation';
-  /**
-   * Removes expired or burned records from routes, search, feeds, and sitemaps.
-   */
-  removeFromDiscovery?: boolean | null;
-  tombstoneLabel?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "forums".
- */
-export interface Forum {
-  id: string;
-  site: string | Site;
-  publication?: (string | null) | Publication;
-  space?: (string | null) | Space;
-  section: string | ForumSection;
-  parent?: (string | null) | Forum;
-  name: string;
-  slug: string;
-  description?: string | null;
-  sortOrder?: number | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "forum-sections".
- */
-export interface ForumSection {
-  id: string;
-  site: string | Site;
-  publication?: (string | null) | Publication;
-  space?: (string | null) | Space;
-  name: string;
-  slug: string;
-  description?: string | null;
-  sortOrder?: number | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "discussion-posts".
- */
-export interface DiscussionPost {
-  id: string;
-  discussion: string | Discussion;
-  authorMember?: (string | null) | Member;
-  authorGuest?: (string | null) | Author;
-  body: string;
-  parent?: (string | null) | DiscussionPost;
-  quote?: (string | null) | DiscussionPost;
-  displayOrder: number;
-  /**
-   * Stable post URL key; do not derive it from editable text.
-   */
-  permalink: string;
-  paginationAnchor: string;
-  attachments?: (string | MediaAsset)[] | null;
-  sources?: (string | Source)[] | null;
-  status: 'draft' | 'published' | 'hidden' | 'removed';
-  visibility: 'public' | 'unlisted' | 'members' | 'friends' | 'private';
-  solution?: boolean | null;
-  helpful?: boolean | null;
-  moderationState: 'clear' | 'review' | 'restricted' | 'removed';
-  retentionMode: 'permanent' | 'expire-at' | 'manual-burn' | 'archive' | 'tombstone';
-  retentionExpiresAt?: string | null;
-  retentionHold: 'none' | 'legal' | 'moderation';
-  /**
-   * Removes expired or burned records from routes, search, feeds, and sitemaps.
-   */
-  removeFromDiscovery?: boolean | null;
-  tombstoneLabel?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "email-messages".
- */
-export interface EmailMessage {
-  id: string;
-  site: string | Site;
-  publication?: (string | null) | Publication;
-  space?: (string | null) | Space;
-  owner?: (string | null) | Member;
-  subject: string;
-  blocks:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-  kind: 'transactional' | 'bulk' | 'digest';
-  status: 'draft' | 'review' | 'scheduled' | 'queued' | 'sending' | 'sent' | 'cancelled' | 'failed';
-  scheduledFor?: string | null;
-  idempotencyKey?: string | null;
-  tracking?:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-  /**
-   * Lists/segments frozen at review; no hidden personalization.
-   */
-  audience?:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-  reviewedAt?: string | null;
-  cancelCutoffAt?: string | null;
-  translationProject?: string | null;
-  localeCompleteness?:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "books".
  */
 export interface Book {
@@ -2912,6 +2860,9 @@ export interface Book {
   slug: string;
   content?: (string | null) | Content;
   canonicalPath?: string | null;
+  description?: string | null;
+  status: 'draft' | 'scheduled' | 'published' | 'updated' | 'unavailable';
+  publishedAt?: string | null;
   seoTitle?: string | null;
   seoDescription?: string | null;
   seoCanonicalURL?: string | null;
@@ -2941,6 +2892,7 @@ export interface Book {
     | boolean
     | null;
   structuredDataVersion?: number | null;
+  visibility: 'public' | 'unlisted' | 'members' | 'private';
   isbn?: string | null;
   purchaseLinks?:
     | {
@@ -2988,7 +2940,11 @@ export interface BookChapter {
   part?: (string | null) | BookPart;
   content?: (string | null) | Content;
   title: string;
+  slug: string;
+  canonicalPath: string;
   displayOrder: number;
+  status: 'draft' | 'review' | 'scheduled' | 'published' | 'updated' | 'archived';
+  publishedAt?: string | null;
   releaseAt?: string | null;
   preview?: boolean | null;
   footnotes?:
@@ -3032,6 +2988,9 @@ export interface PodcastShow {
   slug: string;
   content?: (string | null) | Content;
   canonicalPath?: string | null;
+  description?: string | null;
+  status: 'draft' | 'scheduled' | 'published' | 'updated' | 'unavailable';
+  publishedAt?: string | null;
   seoTitle?: string | null;
   seoDescription?: string | null;
   seoCanonicalURL?: string | null;
@@ -3063,6 +3022,8 @@ export interface PodcastShow {
   structuredDataVersion?: number | null;
   rssEnabled?: boolean | null;
   externalFeedUrl?: string | null;
+  importOwnership?: ('local' | 'claimed-import') | null;
+  importSourceChecksum?: string | null;
   artwork?: (string | null) | MediaAsset;
   hosts?: (string | Author)[] | null;
   updatedAt: string;
@@ -3094,6 +3055,9 @@ export interface PodcastEpisode {
   slug: string;
   content?: (string | null) | Content;
   canonicalPath?: string | null;
+  description?: string | null;
+  status: 'draft' | 'scheduled' | 'published' | 'updated' | 'unavailable';
+  publishedAt?: string | null;
   seoTitle?: string | null;
   seoDescription?: string | null;
   seoCanonicalURL?: string | null;
@@ -3138,6 +3102,9 @@ export interface PodcastEpisode {
     | number
     | boolean
     | null;
+  enclosureBytes?: number | null;
+  enclosureMimeType?: string | null;
+  importSourceChecksum?: string | null;
   guests?: (string | Author)[] | null;
   chapters?:
     | {
@@ -3191,6 +3158,9 @@ export interface VideoChannel {
   slug: string;
   content?: (string | null) | Content;
   canonicalPath?: string | null;
+  description?: string | null;
+  status: 'draft' | 'scheduled' | 'published' | 'updated' | 'unavailable';
+  publishedAt?: string | null;
   seoTitle?: string | null;
   seoDescription?: string | null;
   seoCanonicalURL?: string | null;
@@ -3223,6 +3193,7 @@ export interface VideoChannel {
   provider: string;
   externalId: string;
   lastSyncedAt?: string | null;
+  syncClaimed?: boolean | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -3240,6 +3211,9 @@ export interface VideoPlaylist {
   slug: string;
   content?: (string | null) | Content;
   canonicalPath?: string | null;
+  description?: string | null;
+  status: 'draft' | 'scheduled' | 'published' | 'updated' | 'unavailable';
+  publishedAt?: string | null;
   seoTitle?: string | null;
   seoDescription?: string | null;
   seoCanonicalURL?: string | null;
@@ -3288,6 +3262,9 @@ export interface Video {
   slug: string;
   content?: (string | null) | Content;
   canonicalPath?: string | null;
+  description?: string | null;
+  status: 'draft' | 'scheduled' | 'published' | 'updated' | 'unavailable';
+  publishedAt?: string | null;
   seoTitle?: string | null;
   seoDescription?: string | null;
   seoCanonicalURL?: string | null;
@@ -3323,7 +3300,11 @@ export interface Video {
   externalId: string;
   providerIdentity: string;
   embedUrl?: string | null;
+  nativeMedia?: (string | null) | MediaAsset;
   thumbnail?: (string | null) | MediaAsset;
+  captions?: (string | MediaAsset)[] | null;
+  availability: 'available' | 'unavailable' | 'removed';
+  providerSourceChecksum?: string | null;
   transcript?: (string | null) | TranscriptRevision;
   chapters?:
     | {
@@ -3352,6 +3333,9 @@ export interface Interview {
   slug: string;
   content?: (string | null) | Content;
   canonicalPath?: string | null;
+  description?: string | null;
+  status: 'draft' | 'scheduled' | 'published' | 'updated' | 'unavailable';
+  publishedAt?: string | null;
   seoTitle?: string | null;
   seoDescription?: string | null;
   seoCanonicalURL?: string | null;
@@ -3412,6 +3396,9 @@ export interface Livestream {
   slug: string;
   content?: (string | null) | Content;
   canonicalPath?: string | null;
+  description?: string | null;
+  status: 'draft' | 'scheduled' | 'published' | 'updated' | 'unavailable';
+  publishedAt?: string | null;
   seoTitle?: string | null;
   seoDescription?: string | null;
   seoCanonicalURL?: string | null;
@@ -4034,6 +4021,221 @@ export interface CalendarEntryAudit {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media-usages".
+ */
+export interface MediaUsage {
+  id: string;
+  media: string | MediaAsset;
+  usedBy:
+    | {
+        relationTo: 'content';
+        value: string | Content;
+      }
+    | {
+        relationTo: 'albums';
+        value: string | Album;
+      }
+    | {
+        relationTo: 'discussions';
+        value: string | Discussion;
+      }
+    | {
+        relationTo: 'discussion-posts';
+        value: string | DiscussionPost;
+      }
+    | {
+        relationTo: 'events';
+        value: string | Event;
+      }
+    | {
+        relationTo: 'timelines';
+        value: string | Timeline;
+      }
+    | {
+        relationTo: 'email-messages';
+        value: string | EmailMessage;
+      };
+  usageKey: string;
+  purpose: 'hero' | 'inline' | 'cover' | 'attachment' | 'avatar' | 'thumbnail' | 'newsletter';
+  replaceGlobally?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "discussions".
+ */
+export interface Discussion {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  kind: 'attached' | 'thread';
+  title: string;
+  forum?: (string | null) | Forum;
+  attachedTo?:
+    | ({
+        relationTo: 'content';
+        value: string | Content;
+      } | null)
+    | ({
+        relationTo: 'media-assets';
+        value: string | MediaAsset;
+      } | null)
+    | ({
+        relationTo: 'albums';
+        value: string | Album;
+      } | null);
+  promotedContent?: (string | null) | Content;
+  canonicalPath: string;
+  status: 'open' | 'locked' | 'archived';
+  visibility: 'public' | 'unlisted' | 'members' | 'friends' | 'private';
+  moderationState: 'clear' | 'review' | 'restricted' | 'removed';
+  commentsPolicy: 'open' | 'members' | 'closed';
+  retentionMode: 'permanent' | 'expire-at' | 'manual-burn' | 'archive' | 'tombstone';
+  retentionExpiresAt?: string | null;
+  retentionHold: 'none' | 'legal' | 'moderation';
+  /**
+   * Removes expired or burned records from routes, search, feeds, and sitemaps.
+   */
+  removeFromDiscovery?: boolean | null;
+  tombstoneLabel?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "forums".
+ */
+export interface Forum {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  section: string | ForumSection;
+  parent?: (string | null) | Forum;
+  name: string;
+  slug: string;
+  description?: string | null;
+  sortOrder?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "forum-sections".
+ */
+export interface ForumSection {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  name: string;
+  slug: string;
+  description?: string | null;
+  sortOrder?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "discussion-posts".
+ */
+export interface DiscussionPost {
+  id: string;
+  discussion: string | Discussion;
+  authorMember?: (string | null) | Member;
+  authorGuest?: (string | null) | Author;
+  body: string;
+  parent?: (string | null) | DiscussionPost;
+  quote?: (string | null) | DiscussionPost;
+  displayOrder: number;
+  /**
+   * Stable post URL key; do not derive it from editable text.
+   */
+  permalink: string;
+  paginationAnchor: string;
+  attachments?: (string | MediaAsset)[] | null;
+  sources?: (string | Source)[] | null;
+  status: 'draft' | 'published' | 'hidden' | 'removed';
+  visibility: 'public' | 'unlisted' | 'members' | 'friends' | 'private';
+  solution?: boolean | null;
+  helpful?: boolean | null;
+  moderationState: 'clear' | 'review' | 'restricted' | 'removed';
+  retentionMode: 'permanent' | 'expire-at' | 'manual-burn' | 'archive' | 'tombstone';
+  retentionExpiresAt?: string | null;
+  retentionHold: 'none' | 'legal' | 'moderation';
+  /**
+   * Removes expired or burned records from routes, search, feeds, and sitemaps.
+   */
+  removeFromDiscovery?: boolean | null;
+  tombstoneLabel?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "email-messages".
+ */
+export interface EmailMessage {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  subject: string;
+  blocks:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  kind: 'transactional' | 'bulk' | 'digest';
+  status: 'draft' | 'review' | 'scheduled' | 'queued' | 'sending' | 'sent' | 'cancelled' | 'failed';
+  scheduledFor?: string | null;
+  idempotencyKey?: string | null;
+  tracking?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Lists/segments frozen at review; no hidden personalization.
+   */
+  audience?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  reviewedAt?: string | null;
+  cancelCutoffAt?: string | null;
+  translationProject?: string | null;
+  localeCompleteness?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "network-signing-keys".
  */
 export interface NetworkSigningKey {
@@ -4302,6 +4504,9 @@ export interface FormSchema {
   version: number;
   state: 'draft' | 'published' | 'retired';
   locale: string;
+  /**
+   * Supported fields: text, email, textarea, select, radio, checkbox, number, date, and hidden. File inputs are intentionally unsupported.
+   */
   schema:
     | {
         [k: string]: unknown;
@@ -5265,6 +5470,33 @@ export interface AnalyticsEvent {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-consent-records".
+ */
+export interface AnalyticsConsentRecord {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  subjectHash: string;
+  consentVersion: string;
+  action: 'grant' | 'update' | 'withdraw';
+  categories:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  occurredAt: string;
+  source: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "analytics-rollups".
  */
 export interface AnalyticsRollup {
@@ -5695,10 +5927,10 @@ export interface QualityScan {
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   policy?: (string | null) | QualityPolicy;
-  targetType: 'document' | 'content-release' | 'publication' | 'space' | 'site';
+  targetType: 'document' | 'book' | 'book-chapter' | 'content-release' | 'publication' | 'space' | 'site';
   targetId: string;
   revisionId?: string | null;
-  status: 'queued' | 'running' | 'completed' | 'failed';
+  status: 'queued' | 'running' | 'completed' | 'failed' | 'stale';
   startedAt?: string | null;
   completedAt?: string | null;
   job?: (string | null) | PayloadJob;
@@ -5731,7 +5963,7 @@ export interface QualityIssue {
   targetId: string;
   surface?: string | null;
   severity: 'informational' | 'warning' | 'publication_blocking';
-  status: 'open' | 'resolved' | 'waived' | 'uncertain';
+  status: 'open' | 'resolved' | 'ignored' | 'waived' | 'uncertain';
   workflowState: 'new' | 'assigned' | 'in_remediation' | 'ready_for_rescan';
   category: string;
   message: string;
@@ -5749,6 +5981,9 @@ export interface QualityIssue {
   resolvedAt?: string | null;
   lastSeenAt: string;
   dependencyFingerprint?: string | null;
+  repairUrl?: string | null;
+  ignoredAt?: string | null;
+  ignoredReason?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -6240,8 +6475,16 @@ export interface PayloadLockedDocument {
         value: string | PageLayout;
       } | null)
     | ({
+        relationTo: 'execution-events';
+        value: string | ExecutionEvent;
+      } | null)
+    | ({
         relationTo: 'api-clients';
         value: string | ApiClient;
+      } | null)
+    | ({
+        relationTo: 'api-request-records';
+        value: string | ApiRequestRecord;
       } | null)
     | ({
         relationTo: 'webhook-subscriptions';
@@ -6372,6 +6615,10 @@ export interface PayloadLockedDocument {
         value: string | TaxonomyRedirect;
       } | null)
     | ({
+        relationTo: 'public-redirects';
+        value: string | PublicRedirect;
+      } | null)
+    | ({
         relationTo: 'content';
         value: string | Content;
       } | null)
@@ -6392,12 +6639,12 @@ export interface PayloadLockedDocument {
         value: string | PreviewToken;
       } | null)
     | ({
-        relationTo: 'scheduled-publish-jobs';
-        value: string | ScheduledPublishJob;
-      } | null)
-    | ({
         relationTo: 'content-releases';
         value: string | ContentRelease;
+      } | null)
+    | ({
+        relationTo: 'scheduled-publish-jobs';
+        value: string | ScheduledPublishJob;
       } | null)
     | ({
         relationTo: 'events';
@@ -6418,10 +6665,6 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'albums';
         value: string | Album;
-      } | null)
-    | ({
-        relationTo: 'media-usages';
-        value: string | MediaUsage;
       } | null)
     | ({
         relationTo: 'books';
@@ -6530,6 +6773,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'calendar-entry-audits';
         value: string | CalendarEntryAudit;
+      } | null)
+    | ({
+        relationTo: 'media-usages';
+        value: string | MediaUsage;
       } | null)
     | ({
         relationTo: 'forum-sections';
@@ -6730,6 +6977,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'analytics-events';
         value: string | AnalyticsEvent;
+      } | null)
+    | ({
+        relationTo: 'analytics-consent-records';
+        value: string | AnalyticsConsentRecord;
       } | null)
     | ({
         relationTo: 'analytics-rollups';
@@ -6948,6 +7199,29 @@ export interface PageLayoutsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "execution-events_select".
+ */
+export interface ExecutionEventsSelect<T extends boolean = true> {
+  site?: T;
+  tenantId?: T;
+  actor?: T;
+  eventType?: T;
+  eventVersion?: T;
+  occurredAt?: T;
+  correlationId?: T;
+  causationId?: T;
+  idempotencyKey?: T;
+  privacyClass?: T;
+  payload?: T;
+  state?: T;
+  attempts?: T;
+  lastError?: T;
+  jobId?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "api-clients_select".
  */
 export interface ApiClientsSelect<T extends boolean = true> {
@@ -6961,6 +7235,23 @@ export interface ApiClientsSelect<T extends boolean = true> {
   expiresAt?: T;
   revokedAt?: T;
   lastUsedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "api-request-records_select".
+ */
+export interface ApiRequestRecordsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  client?: T;
+  idempotencyKey?: T;
+  method?: T;
+  path?: T;
+  responseStatus?: T;
+  response?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -6989,11 +7280,13 @@ export interface WebhookDeliveriesSelect<T extends boolean = true> {
   subscription?: T;
   eventId?: T;
   eventType?: T;
+  payload?: T;
   idempotencyKey?: T;
   state?: T;
   attempts?: T;
   nextAttemptAt?: T;
   redactedResponse?: T;
+  lastError?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -7585,6 +7878,23 @@ export interface TaxonomyRedirectsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "public-redirects_select".
+ */
+export interface PublicRedirectsSelect<T extends boolean = true> {
+  site?: T;
+  fromPath?: T;
+  toPath?: T;
+  match?: T;
+  statusCode?: T;
+  preserveQuery?: T;
+  enabled?: T;
+  hitCount?: T;
+  lastHitAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "content_select".
  */
 export interface ContentSelect<T extends boolean = true> {
@@ -7789,22 +8099,6 @@ export interface PreviewTokensSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "scheduled-publish-jobs_select".
- */
-export interface ScheduledPublishJobsSelect<T extends boolean = true> {
-  article?: T;
-  job?: T;
-  revision?: T;
-  scheduledFor?: T;
-  timeZone?: T;
-  idempotencyKey?: T;
-  status?: T;
-  createdBy?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "content-releases_select".
  */
 export interface ContentReleasesSelect<T extends boolean = true> {
@@ -7830,6 +8124,22 @@ export interface ContentReleasesSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "scheduled-publish-jobs_select".
+ */
+export interface ScheduledPublishJobsSelect<T extends boolean = true> {
+  article?: T;
+  job?: T;
+  revision?: T;
+  scheduledFor?: T;
+  timeZone?: T;
+  idempotencyKey?: T;
+  status?: T;
+  createdBy?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "events_select".
  */
 export interface EventsSelect<T extends boolean = true> {
@@ -7849,7 +8159,17 @@ export interface EventsSelect<T extends boolean = true> {
   visibility?: T;
   venueName?: T;
   venueRegion?: T;
+  venueAddress?: T;
   attendanceMode?: T;
+  onlineUrl?: T;
+  organizerName?: T;
+  organizerUrl?: T;
+  capacity?: T;
+  registrationUrl?: T;
+  recurrence?: T;
+  recurrenceOverrides?: T;
+  categories?: T;
+  relatedContent?: T;
   heroMedia?: T;
   calendarEntry?: T;
   audience?: T;
@@ -8027,19 +8347,6 @@ export interface AlbumsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "media-usages_select".
- */
-export interface MediaUsagesSelect<T extends boolean = true> {
-  media?: T;
-  usedBy?: T;
-  usageKey?: T;
-  purpose?: T;
-  replaceGlobally?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "books_select".
  */
 export interface BooksSelect<T extends boolean = true> {
@@ -8051,6 +8358,9 @@ export interface BooksSelect<T extends boolean = true> {
   slug?: T;
   content?: T;
   canonicalPath?: T;
+  description?: T;
+  status?: T;
+  publishedAt?: T;
   seoTitle?: T;
   seoDescription?: T;
   seoCanonicalURL?: T;
@@ -8064,6 +8374,7 @@ export interface BooksSelect<T extends boolean = true> {
   structuredDataSourceIdentifier?: T;
   structuredDataManual?: T;
   structuredDataVersion?: T;
+  visibility?: T;
   isbn?: T;
   purchaseLinks?: T;
   downloadLinks?: T;
@@ -8093,7 +8404,11 @@ export interface BookChaptersSelect<T extends boolean = true> {
   part?: T;
   content?: T;
   title?: T;
+  slug?: T;
+  canonicalPath?: T;
   displayOrder?: T;
+  status?: T;
+  publishedAt?: T;
   releaseAt?: T;
   preview?: T;
   footnotes?: T;
@@ -8127,6 +8442,9 @@ export interface PodcastShowsSelect<T extends boolean = true> {
   slug?: T;
   content?: T;
   canonicalPath?: T;
+  description?: T;
+  status?: T;
+  publishedAt?: T;
   seoTitle?: T;
   seoDescription?: T;
   seoCanonicalURL?: T;
@@ -8142,6 +8460,8 @@ export interface PodcastShowsSelect<T extends boolean = true> {
   structuredDataVersion?: T;
   rssEnabled?: T;
   externalFeedUrl?: T;
+  importOwnership?: T;
+  importSourceChecksum?: T;
   artwork?: T;
   hosts?: T;
   updatedAt?: T;
@@ -8171,6 +8491,9 @@ export interface PodcastEpisodesSelect<T extends boolean = true> {
   slug?: T;
   content?: T;
   canonicalPath?: T;
+  description?: T;
+  status?: T;
+  publishedAt?: T;
   seoTitle?: T;
   seoDescription?: T;
   seoCanonicalURL?: T;
@@ -8191,6 +8514,9 @@ export interface PodcastEpisodesSelect<T extends boolean = true> {
   providerIdentity?: T;
   episodeNumber?: T;
   showNotes?: T;
+  enclosureBytes?: T;
+  enclosureMimeType?: T;
+  importSourceChecksum?: T;
   guests?: T;
   chapters?: T;
   transcript?: T;
@@ -8210,6 +8536,9 @@ export interface VideoChannelsSelect<T extends boolean = true> {
   slug?: T;
   content?: T;
   canonicalPath?: T;
+  description?: T;
+  status?: T;
+  publishedAt?: T;
   seoTitle?: T;
   seoDescription?: T;
   seoCanonicalURL?: T;
@@ -8226,6 +8555,7 @@ export interface VideoChannelsSelect<T extends boolean = true> {
   provider?: T;
   externalId?: T;
   lastSyncedAt?: T;
+  syncClaimed?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -8242,6 +8572,9 @@ export interface VideoPlaylistsSelect<T extends boolean = true> {
   slug?: T;
   content?: T;
   canonicalPath?: T;
+  description?: T;
+  status?: T;
+  publishedAt?: T;
   seoTitle?: T;
   seoDescription?: T;
   seoCanonicalURL?: T;
@@ -8273,6 +8606,9 @@ export interface VideosSelect<T extends boolean = true> {
   slug?: T;
   content?: T;
   canonicalPath?: T;
+  description?: T;
+  status?: T;
+  publishedAt?: T;
   seoTitle?: T;
   seoDescription?: T;
   seoCanonicalURL?: T;
@@ -8292,7 +8628,11 @@ export interface VideosSelect<T extends boolean = true> {
   externalId?: T;
   providerIdentity?: T;
   embedUrl?: T;
+  nativeMedia?: T;
   thumbnail?: T;
+  captions?: T;
+  availability?: T;
+  providerSourceChecksum?: T;
   transcript?: T;
   chapters?: T;
   derivesFrom?: T;
@@ -8312,6 +8652,9 @@ export interface InterviewsSelect<T extends boolean = true> {
   slug?: T;
   content?: T;
   canonicalPath?: T;
+  description?: T;
+  status?: T;
+  publishedAt?: T;
   seoTitle?: T;
   seoDescription?: T;
   seoCanonicalURL?: T;
@@ -8347,6 +8690,9 @@ export interface LivestreamsSelect<T extends boolean = true> {
   slug?: T;
   content?: T;
   canonicalPath?: T;
+  description?: T;
+  status?: T;
+  publishedAt?: T;
   seoTitle?: T;
   seoDescription?: T;
   seoCanonicalURL?: T;
@@ -8640,6 +8986,19 @@ export interface CalendarEntryAuditsSelect<T extends boolean = true> {
   after?: T;
   createdAt?: T;
   updatedAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media-usages_select".
+ */
+export interface MediaUsagesSelect<T extends boolean = true> {
+  media?: T;
+  usedBy?: T;
+  usageKey?: T;
+  purpose?: T;
+  replaceGlobally?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -9531,6 +9890,24 @@ export interface AnalyticsEventsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics-consent-records_select".
+ */
+export interface AnalyticsConsentRecordsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  subjectHash?: T;
+  consentVersion?: T;
+  action?: T;
+  categories?: T;
+  occurredAt?: T;
+  source?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "analytics-rollups_select".
  */
 export interface AnalyticsRollupsSelect<T extends boolean = true> {
@@ -9879,6 +10256,9 @@ export interface QualityIssuesSelect<T extends boolean = true> {
   resolvedAt?: T;
   lastSeenAt?: T;
   dependencyFingerprint?: T;
+  repairUrl?: T;
+  ignoredAt?: T;
+  ignoredReason?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -10281,6 +10661,17 @@ export interface SiteSetting {
       qualityScanning?: boolean | null;
     };
   };
+  /**
+   * Collection is off by default. Consent is never bypassed by server-side collection.
+   */
+  privacy: {
+    analyticsEnabled?: boolean | null;
+    consentVersion: string;
+    respectGlobalPrivacyControl?: boolean | null;
+    respectDoNotTrack?: boolean | null;
+    rawEventRetentionDays: number;
+    rollupRetentionDays: number;
+  };
   ownerKind: 'organization' | 'person';
   organizationName?: string | null;
   personName?: string | null;
@@ -10491,6 +10882,16 @@ export interface SiteSettingsSelect<T extends boolean = true> {
               qualityScanning?: T;
             };
       };
+  privacy?:
+    | T
+    | {
+        analyticsEnabled?: T;
+        consentVersion?: T;
+        respectGlobalPrivacyControl?: T;
+        respectDoNotTrack?: T;
+        rawEventRetentionDays?: T;
+        rollupRetentionDays?: T;
+      };
   ownerKind?: T;
   organizationName?: T;
   personName?: T;
@@ -10585,6 +10986,32 @@ export interface TaskOperationsForcedFailure {
   input: {
     marker: string;
   };
+  output?: unknown;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskExecution-outbox-dispatch".
+ */
+export interface TaskExecutionOutboxDispatch {
+  input?: unknown;
+  output?: unknown;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskExecution-outbox-handle".
+ */
+export interface TaskExecutionOutboxHandle {
+  input: {
+    eventId: string;
+  };
+  output?: unknown;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskWebhook-delivery-dispatch".
+ */
+export interface TaskWebhookDeliveryDispatch {
+  input?: unknown;
   output?: unknown;
 }
 /**
@@ -10713,6 +11140,17 @@ export interface TaskAudienceEmailDelivery {
 export interface TaskAudienceNewsletterDispatch {
   input?: unknown;
   output?: unknown;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskAnalytics-retention-cleanup".
+ */
+export interface TaskAnalyticsRetentionCleanup {
+  input?: unknown;
+  output: {
+    deleted: number;
+    observedAt: string;
+  };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

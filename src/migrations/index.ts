@@ -27,6 +27,16 @@ import * as migration_20260830_100000_media_storage_workflow from './20260830_10
 import * as migration_20260830_110000_discoverability from './20260830_110000_discoverability'
 import * as migration_20260830_120000_discoverability_lock_relation from './20260830_120000_discoverability_lock_relation'
 import * as migration_20260830_130000_admin_auth_hardening from './20260830_130000_admin_auth_hardening'
+import * as migration_20260831_090000_phase_b_execution_foundation from './20260831_090000_phase_b_execution_foundation'
+import * as migration_20260831_100000_analytics_privacy_runtime from './20260831_100000_analytics_privacy_runtime'
+import * as migration_20260831_110000_events_workflow from './20260831_110000_events_workflow'
+import * as migration_20260831_120000_media_publishing_workflows from './20260831_120000_media_publishing_workflows'
+import * as migration_20260831_130000_books_quality_center from './20260831_130000_books_quality_center'
+import * as migration_20260831_140000_public_api_webhooks from './20260831_140000_public_api_webhooks'
+import * as migration_20260831_150000_phase_b_locked_document_relations from './20260831_150000_phase_b_locked_document_relations'
+import * as migration_20260831_160000_phase_b_book_lifecycle_reconciliation from './20260831_160000_phase_b_book_lifecycle_reconciliation'
+import * as migration_20260831_170000_phase_b_scoped_media_reconciliation from './20260831_170000_phase_b_scoped_media_reconciliation'
+import * as migration_20260831_180000_phase_b_video_captions_relation from './20260831_180000_phase_b_video_captions_relation'
 
 export const migrations = [
   {
@@ -173,5 +183,55 @@ export const migrations = [
     up: migration_20260830_130000_admin_auth_hardening.up,
     down: migration_20260830_130000_admin_auth_hardening.down,
     name: '20260830_130000_admin_auth_hardening',
+  },
+  {
+    up: migration_20260831_090000_phase_b_execution_foundation.up,
+    down: migration_20260831_090000_phase_b_execution_foundation.down,
+    name: '20260831_090000_phase_b_execution_foundation',
+  },
+  {
+    up: migration_20260831_100000_analytics_privacy_runtime.up,
+    down: migration_20260831_100000_analytics_privacy_runtime.down,
+    name: '20260831_100000_analytics_privacy_runtime',
+  },
+  {
+    up: migration_20260831_110000_events_workflow.up,
+    down: migration_20260831_110000_events_workflow.down,
+    name: '20260831_110000_events_workflow',
+  },
+  {
+    up: migration_20260831_120000_media_publishing_workflows.up,
+    down: migration_20260831_120000_media_publishing_workflows.down,
+    name: '20260831_120000_media_publishing_workflows',
+  },
+  {
+    up: migration_20260831_130000_books_quality_center.up,
+    down: migration_20260831_130000_books_quality_center.down,
+    name: '20260831_130000_books_quality_center',
+  },
+  {
+    up: migration_20260831_140000_public_api_webhooks.up,
+    down: migration_20260831_140000_public_api_webhooks.down,
+    name: '20260831_140000_public_api_webhooks',
+  },
+  {
+    up: migration_20260831_150000_phase_b_locked_document_relations.up,
+    down: migration_20260831_150000_phase_b_locked_document_relations.down,
+    name: '20260831_150000_phase_b_locked_document_relations',
+  },
+  {
+    up: migration_20260831_160000_phase_b_book_lifecycle_reconciliation.up,
+    down: migration_20260831_160000_phase_b_book_lifecycle_reconciliation.down,
+    name: '20260831_160000_phase_b_book_lifecycle_reconciliation',
+  },
+  {
+    up: migration_20260831_170000_phase_b_scoped_media_reconciliation.up,
+    down: migration_20260831_170000_phase_b_scoped_media_reconciliation.down,
+    name: '20260831_170000_phase_b_scoped_media_reconciliation',
+  },
+  {
+    up: migration_20260831_180000_phase_b_video_captions_relation.up,
+    down: migration_20260831_180000_phase_b_video_captions_relation.down,
+    name: '20260831_180000_phase_b_video_captions_relation',
   },
 ]

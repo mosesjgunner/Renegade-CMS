@@ -32,10 +32,17 @@ export async function POST(request: Request) {
     const headers = new Headers()
     headers.append(
       'set-cookie',
-      passkeySessionCookie(result.session.token, result.session.expirationSeconds, loadConfig().secureCookies),
+      passkeySessionCookie(
+        result.session.token,
+        result.session.expirationSeconds,
+        loadConfig().secureCookies,
+      ),
     )
     headers.append('set-cookie', 'renegade-setup=; Max-Age=0; Path=/; HttpOnly; SameSite=Lax')
-    return Response.json({ recoveryCodes: result.recoveryCodes, onboarding: result.onboarding }, { headers, status: 201 })
+    return Response.json(
+      { recoveryCodes: result.recoveryCodes, onboarding: result.onboarding },
+      { headers, status: 201 },
+    )
   } catch (error) {
     const message = error instanceof InstallationError ? error.message : 'Setup is unavailable.'
     const status =

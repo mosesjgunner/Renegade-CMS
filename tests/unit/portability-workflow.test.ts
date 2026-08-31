@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { createPortableManifest } from '../../src/modules/portability/contracts'
 import {
+  assertPortableSiteBoundary,
   importPortableManifest,
   portableIdentityMap,
   type PortableStore,
@@ -82,5 +83,17 @@ describe('executable portable import', () => {
         },
       }),
     ).rejects.toThrow('different portable')
+  })
+
+  it('rejects an archive that crosses the selected tenant boundary', () => {
+    const crossTenant = createPortableManifest({
+      createdAt: '2026-08-30T00:00:00Z',
+      records: [
+        { collection: 'sites', id: 'site-1', data: { name: 'One' } },
+        { collection: 'content', id: 'content-1', data: { site: 'site-2', title: 'Leaked' } },
+      ],
+      media: [],
+    })
+    expect(() => assertPortableSiteBoundary(crossTenant, 'site-1')).toThrow('tenant boundary')
   })
 })

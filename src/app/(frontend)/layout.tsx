@@ -8,6 +8,11 @@ import { PublicNavigationBar } from '@/modules/public/PublicNavigation'
 import { normalizeNavigation } from '@/modules/public/navigation'
 import config from '@payload-config'
 import { getPayload } from 'payload'
+import { ConsentManager } from '@/modules/analytics/ConsentManager'
+
+// Public navigation and branding are PostgreSQL-backed. They must be read at
+// request time so an image build never tries to contact a deployment database.
+export const dynamic = 'force-dynamic'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -36,6 +41,7 @@ export const metadata: Metadata = {
 export default async function FrontendLayout({ children }: { children: ReactNode }) {
   let siteName = 'Renegade CMS'
   let navigation = normalizeNavigation([])
+  let siteId: string | undefined
   try {
     const payload = await getPayload({ config })
     const publications = await payload.find({
@@ -49,6 +55,7 @@ export default async function FrontendLayout({ children }: { children: ReactNode
     if (publication) {
       siteName = typeof publication.name === 'string' ? publication.name : siteName
       navigation = normalizeNavigation(publication.navigation)
+      siteId = typeof publication.site === 'string' ? publication.site : (publication.site as { id?: string } | undefined)?.id
     }
   } catch {
     // The public shell remains usable before first-run setup and during recovery.
@@ -63,6 +70,7 @@ export default async function FrontendLayout({ children }: { children: ReactNode
 
         {/* Main Content Viewport */}
         <div className="flex-1">{children}</div>
+        <ConsentManager siteId={siteId} />
 
         {/* Global Footer */}
         <footer className="border-t border-stone-200 dark:border-stone-800 bg-stone-100/50 dark:bg-stone-950/50 py-12 mt-20 transition-colors">

@@ -8,11 +8,14 @@ import { buildJsonLd, buildMetadata } from '@/modules/public/seo'
 import type { Metadata } from 'next'
 import { resolveRedirect, type RedirectRule } from '@/modules/public/discovery'
 import { PublicLayout } from '@/modules/public/PublicLayout'
+import { PublicForm } from '@/modules/audience/PublicForm'
+import type { FormField } from '@/modules/audience/contracts'
+import { BookReader, isReleasedChapter, relatedId } from '@/modules/media/books'
 
 type Args = { params: Promise<{ path: string[] }> }
 type PublicRecord = PublicState & Record<string, unknown>
 
-const candidates = ['content', 'events', 'timelines', 'albums', 'discussions', 'products'] as const
+const candidates = ['content', 'books', 'events', 'timelines', 'albums', 'discussions', 'products'] as const
 
 function label(record: PublicRecord): string {
   return String(record.title ?? record.name ?? record.displayName ?? 'Publication')
@@ -123,6 +126,41 @@ export default async function CanonicalPublicPage({ params }: Args) {
   }
   if (resolution) notFound()
 
+  const formResult = await payload.find({
+    collection: 'form-definitions',
+    where: { and: [{ publicPath: { equals: path } }, { site: { equals: siteId } }] },
+    limit: 1,
+    depth: 1,
+    overrideAccess: true,
+  } as never)
+  const form = formResult.docs[0] as unknown as {
+    id: string
+    name: string
+    visibility: string
+    activeSchema?: {
+      schema?: { fields?: FormField[] }
+      consentText?: string
+      state?: string
+    }
+  }
+  if (form) {
+    const schema = form.activeSchema
+    if (form.visibility !== 'public' || schema?.state !== 'published' || !schema.schema?.fields)
+      notFound()
+    return (
+      <main className="max-w-xl mx-auto px-6 py-20">
+        <section className="surface-card p-8 space-y-6">
+          <h1 className="text-3xl font-bold">{form.name}</h1>
+          <PublicForm
+            formId={form.id}
+            fields={schema.schema.fields}
+            consentText={schema.consentText}
+          />
+        </section>
+      </main>
+    )
+  }
+
   const layoutResult = await payload.find({
     collection: 'page-layouts',
     where: { and: [{ path: { equals: path } }, { site: { equals: siteId } }] },
@@ -134,6 +172,32 @@ export default async function CanonicalPublicPage({ params }: Args) {
   if (layoutRecord) {
     if (!canRenderPublic(layoutRecord)) notFound()
     return <PublicLayout record={layoutRecord} path={path} />
+  }
+
+  const bookResult = await payload.find({
+    collection: 'books',
+    where: { and: [{ site: { equals: siteId } }, { canonicalPath: { equals: path } }] },
+    limit: 1,
+    depth: 0,
+    overrideAccess: true,
+  } as never)
+  const book = bookResult.docs[0] as unknown as PublicRecord | undefined
+  if (book && canRenderPublic(book)) {
+    const chapters = (await payload.find({ collection: 'book-chapters', where: { book: { equals: String(book.id) } }, limit: 500, depth: 0, overrideAccess: true } as never)).docs as unknown as PublicRecord[]
+    return <BookReader book={book} chapters={chapters} />
+  }
+  const chapterResult = await payload.find({
+    collection: 'book-chapters', where: { canonicalPath: { equals: path } }, limit: 1, depth: 0, overrideAccess: true,
+  } as never)
+  const chapter = chapterResult.docs[0] as unknown as PublicRecord | undefined
+  if (chapter && isReleasedChapter(chapter)) {
+    const chapterBook = (await payload.findByID({ collection: 'books', id: relatedId(chapter.book), depth: 0, overrideAccess: true } as never)) as unknown as PublicRecord
+    if (!chapterBook || relatedId(chapterBook.site) !== siteId || !canRenderPublic(chapterBook)) notFound()
+    const chapters = (await payload.find({ collection: 'book-chapters', where: { book: { equals: String(chapterBook.id) } }, limit: 500, depth: 0, overrideAccess: true } as never)).docs as unknown as PublicRecord[]
+    const articleResult = relatedId(chapter.content)
+      ? await payload.find({ collection: 'article-family-content', where: { content: { equals: relatedId(chapter.content) } }, limit: 1, depth: 0, overrideAccess: true } as never)
+      : { docs: [] }
+    return <BookReader book={chapterBook} chapter={chapter} chapters={chapters} article={(articleResult.docs[0] ?? null) as unknown as PublicRecord | null} />
   }
 
   for (const collection of candidates) {
@@ -169,6 +233,12 @@ export default async function CanonicalPublicPage({ params }: Args) {
               : null,
         startsAt: typeof record.startsAt === 'string' ? record.startsAt : null,
         endsAt: typeof record.endsAt === 'string' ? record.endsAt : null,
+        attendanceMode: record.attendanceMode as 'in-person' | 'virtual' | 'hybrid' | null,
+        locationName: typeof record.venueName === 'string' ? record.venueName : null,
+        locationAddress: typeof record.venueAddress === 'string' ? record.venueAddress : null,
+        onlineUrl: typeof record.onlineUrl === 'string' ? record.onlineUrl : null,
+        organizerName: typeof record.organizerName === 'string' ? record.organizerName : null,
+        organizerUrl: typeof record.organizerUrl === 'string' ? record.organizerUrl : null,
       },
     })
     return (
@@ -204,6 +274,18 @@ export default async function CanonicalPublicPage({ params }: Args) {
             <div className="prose dark:prose-invert max-w-none text-base sm:text-lg leading-relaxed text-stone-800 dark:text-stone-200">
               {record.description}
             </div>
+          ) : null}
+          {collection === 'events' && typeof record.startsAt === 'string' ? (
+            <section aria-label="Event details" className="border-t pt-5 space-y-2">
+              <h2>Event details</h2>
+              <p><time dateTime={record.startsAt}>Starts {new Intl.DateTimeFormat(undefined, { dateStyle: 'full', timeStyle: record.allDay ? undefined : 'short', timeZone: String(record.timeZone ?? 'UTC') }).format(new Date(record.startsAt))}</time> · {String(record.timeZone ?? 'UTC')}</p>
+              {typeof record.endsAt === 'string' ? <p><time dateTime={record.endsAt}>Ends {new Intl.DateTimeFormat(undefined, { dateStyle: 'full', timeStyle: record.allDay ? undefined : 'short', timeZone: String(record.timeZone ?? 'UTC') }).format(new Date(record.endsAt))}</time></p> : null}
+              {typeof record.venueName === 'string' ? <p>{record.venueName}{typeof record.venueAddress === 'string' ? ` — ${record.venueAddress}` : ''}</p> : null}
+              {typeof record.onlineUrl === 'string' ? <p><a href={record.onlineUrl}>Join online</a></p> : null}
+              {typeof record.organizerName === 'string' ? <p>Organizer: {record.organizerName}</p> : null}
+              {typeof record.registrationUrl === 'string' ? <p><a href={record.registrationUrl}>Register</a></p> : null}
+              <p><a href={`/events/${record.slug}/ics`}>Add to calendar (ICS)</a></p>
+            </section>
           ) : null}
         </article>
       </main>

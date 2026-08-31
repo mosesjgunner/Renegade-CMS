@@ -7,8 +7,10 @@ export type QualityFinding = Readonly<{
   remediation: string
   uncertain?: boolean
   location?: string
+  repairUrl?: string
 }>
 export const qualityDedupeKey = (input: {
+  siteId?: string
   rule: string
   targetId: string
   location?: string
@@ -26,8 +28,14 @@ export const canWaive = (input: {
     input.severity !== 'publication_blocking'
   )
 }
+
+/** An ignored finding is an operator false-positive decision, never a scan failure. */
+export const canIgnore = (input: { severity: QualitySeverity; actorRole: 'owner' | 'staff' }) =>
+  input.actorRole === 'owner' && input.severity !== 'publication_blocking'
 export function scanLocal(input: {
   targetId: string
+  title?: string
+  description?: string
   canonicalUrl?: string
   headings?: readonly number[]
   images?: readonly {
@@ -42,6 +50,19 @@ export function scanLocal(input: {
 }): QualityFinding[] {
   const findings: QualityFinding[] = []
   const now = input.now ?? new Date()
+  // Metadata is assessed when the caller provides either field. A partial scan
+  // (for example, an asset-only rescan) must not invent a content finding.
+  if (
+    (input.title !== undefined || input.description !== undefined) &&
+    (!input.title?.trim() || !input.description?.trim())
+  )
+    findings.push({
+      rule: 'metadata-description',
+      severity: 'warning',
+      message: 'Public metadata is missing a title or description.',
+      remediation: 'Add a concise public title and description.',
+      location: 'seoDescription',
+    })
   if (input.canonicalUrl && !/^https?:\/\/[^\s]+$/i.test(input.canonicalUrl))
     findings.push({
       rule: 'canonical-valid',

@@ -1,5 +1,6 @@
 import type { CollectionConfig, Field } from 'payload'
 import { ownerFields, retentionFields } from './canonical-shared'
+import { validateFormSchema } from '../modules/audience/contracts'
 
 const staffOnly = ({ req }: { req: { user?: { role?: string } | null } }) =>
   ['owner', 'administrator', 'staff'].includes(String(req.user?.role))
@@ -62,7 +63,21 @@ export const FormSchemas: CollectionConfig = {
     { name: 'version', type: 'number', required: true },
     status('state', ['draft', 'published', 'retired'], 'draft'),
     { name: 'locale', type: 'text', required: true, defaultValue: 'en' },
-    { name: 'schema', type: 'json', required: true },
+    {
+      name: 'schema',
+      type: 'json',
+      required: true,
+      validate: (value) => {
+        const fields = (value as { fields?: unknown } | undefined)?.fields
+        if (!Array.isArray(fields)) return 'A schema requires a fields array.'
+        const errors = validateFormSchema({ fields: fields as never })
+        return errors.length ? errors.join(' ') : true
+      },
+      admin: {
+        description:
+          'Supported fields: text, email, textarea, select, radio, checkbox, number, date, and hidden. File inputs are intentionally unsupported.',
+      },
+    },
     { name: 'consentText', type: 'textarea' },
     {
       name: 'consentRevision',

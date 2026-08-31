@@ -68,14 +68,35 @@ export class ConfigurationError extends Error {
 export function loadConfig(env: Record<string, string | undefined> = process.env): AppConfig {
   const invalid: string[] = []
   const nodeEnv = parseNodeEnv(env.NODE_ENV, invalid)
+  const localE2ETestMode = env.LOCAL_E2E_TEST_MODE === 'true'
   const isBuildPhase =
     process.env.NEXT_PHASE === 'phase-production-build' ||
     process.env.npm_lifecycle_event === 'build'
   const production =
-    nodeEnv === 'production' && (!isBuildPhase || (env.APP_URL?.startsWith('https://') ?? false))
-  const databaseUrl = required(env.DATABASE_URL, 'DATABASE_URL', invalid)
-  const payloadSecret = required(env.PAYLOAD_SECRET, 'PAYLOAD_SECRET', invalid)
-  const appUrl = required(env.APP_URL, 'APP_URL', invalid)
+    !localE2ETestMode &&
+    nodeEnv === 'production' &&
+    (!isBuildPhase || (env.APP_URL?.startsWith('https://') ?? false))
+  // `next build` only evaluates server modules; it never connects to the
+  // database or signs a request. Keep build-only values in code so the Docker
+  // build neither receives nor persists a deployment secret.
+  const buildDefaults = isBuildPhase
+    ? {
+        databaseUrl: 'postgresql://build:build@127.0.0.1:5432/build',
+        payloadSecret: 'next-build-value-not-used-at-runtime-0123456789',
+        appUrl: 'http://localhost:3000',
+      }
+    : undefined
+  const databaseUrl = required(
+    env.DATABASE_URL ?? buildDefaults?.databaseUrl,
+    'DATABASE_URL',
+    invalid,
+  )
+  const payloadSecret = required(
+    env.PAYLOAD_SECRET ?? buildDefaults?.payloadSecret,
+    'PAYLOAD_SECRET',
+    invalid,
+  )
+  const appUrl = required(env.APP_URL ?? buildDefaults?.appUrl, 'APP_URL', invalid)
   const enableTestRoutes = env.ENABLE_TEST_ROUTES === 'true'
   const logLevel = env.LOG_LEVEL ?? 'info'
   const proxyMode = parseChoice(
@@ -169,6 +190,8 @@ export function loadConfig(env: Record<string, string | undefined> = process.env
       const loopback = ['localhost', '127.0.0.1', '[::1]'].includes(url.hostname)
       if (production && (url.protocol !== 'https:' || loopback)) invalid.push('APP_URL')
       secureCookies = url.protocol === 'https:'
+      if (localE2ETestMode && !['localhost', '127.0.0.1', '[::1]'].includes(url.hostname))
+        invalid.push('LOCAL_E2E_TEST_MODE')
     } catch {
       invalid.push('APP_URL')
     }
@@ -202,6 +225,7 @@ export function loadConfig(env: Record<string, string | undefined> = process.env
   if (emailMode === 'smtp') {
     required(env.SMTP_HOST, 'SMTP_HOST', invalid)
     required(env.EMAIL_FROM, 'EMAIL_FROM', invalid)
+    if (env.EMAIL_FROM && !isEmailSender(env.EMAIL_FROM)) invalid.push('EMAIL_FROM')
     if (Boolean(env.SMTP_USERNAME) !== Boolean(env.SMTP_PASSWORD)) {
       invalid.push(env.SMTP_USERNAME ? 'SMTP_PASSWORD' : 'SMTP_USERNAME')
     }
@@ -351,4 +375,11 @@ function isPlaceholder(value: string): boolean {
 
 function isEmail(value: string): boolean {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)
+}
+
+/** Reject header injection and require a real mailbox while allowing a display name. */
+function isEmailSender(value: string): boolean {
+  if (/[\r\n]/.test(value)) return false
+  const mailbox = value.match(/<([^<>]+)>/)?.[1] ?? value.trim()
+  return isEmail(mailbox)
 }

@@ -48,12 +48,12 @@ export const QualityScans: CollectionConfig = {
     rel('policy', 'quality-policies'),
     select(
       'targetType',
-      ['document', 'content-release', 'publication', 'space', 'site'],
+      ['document', 'book', 'book-chapter', 'content-release', 'publication', 'space', 'site'],
       'document',
     ),
     { name: 'targetId', type: 'text', required: true },
     { name: 'revisionId', type: 'text' },
-    select('status', ['queued', 'running', 'completed', 'failed'], 'queued'),
+    select('status', ['queued', 'running', 'completed', 'failed', 'stale'], 'queued'),
     { name: 'startedAt', type: 'date' },
     { name: 'completedAt', type: 'date' },
     { name: 'job', type: 'relationship', relationTo: 'payload-jobs' as never, index: true },
@@ -72,7 +72,7 @@ export const QualityIssues: CollectionConfig = {
     { name: 'targetId', type: 'text', required: true },
     { name: 'surface', type: 'text' },
     select('severity', ['informational', 'warning', 'publication_blocking'], 'warning'),
-    select('status', ['open', 'resolved', 'waived', 'uncertain'], 'open'),
+    select('status', ['open', 'resolved', 'ignored', 'waived', 'uncertain'], 'open'),
     select('workflowState', ['new', 'assigned', 'in_remediation', 'ready_for_rescan'], 'new'),
     { name: 'category', type: 'text', required: true, defaultValue: 'content' },
     { name: 'message', type: 'textarea', required: true },
@@ -82,6 +82,9 @@ export const QualityIssues: CollectionConfig = {
     { name: 'resolvedAt', type: 'date' },
     { name: 'lastSeenAt', type: 'date', required: true },
     { name: 'dependencyFingerprint', type: 'text' },
+    { name: 'repairUrl', type: 'text' },
+    { name: 'ignoredAt', type: 'date' },
+    { name: 'ignoredReason', type: 'textarea' },
   ],
 }
 export const QualityExceptions: CollectionConfig = {

@@ -8,5 +8,8 @@ export async function POST(request: Request) {
   const runtime = loadConfig()
   const payload = await getPayload({ config })
   await revokePasskeySession(payload, runtime.payloadSecret, request.headers)
-  return Response.json({ status: 'ok' }, { headers: { 'set-cookie': clearPasskeySessionCookie(runtime.secureCookies) } })
+  return Response.json(
+    { status: 'ok' },
+    { headers: { 'set-cookie': clearPasskeySessionCookie(runtime.secureCookies) } },
+  )
 }

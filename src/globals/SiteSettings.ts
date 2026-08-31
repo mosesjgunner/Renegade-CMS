@@ -83,6 +83,20 @@ export const SiteSettings: GlobalConfig = {
       ],
     },
     {
+      name: 'privacy',
+      label: 'Privacy and first-party analytics',
+      type: 'group',
+      admin: { description: 'Collection is off by default. Consent is never bypassed by server-side collection.' },
+      fields: [
+        { name: 'analyticsEnabled', type: 'checkbox', defaultValue: false },
+        { name: 'consentVersion', type: 'text', required: true, defaultValue: '2026-08-31' },
+        { name: 'respectGlobalPrivacyControl', type: 'checkbox', defaultValue: true },
+        { name: 'respectDoNotTrack', type: 'checkbox', defaultValue: true },
+        { name: 'rawEventRetentionDays', type: 'number', required: true, defaultValue: 90, min: 1, max: 365 },
+        { name: 'rollupRetentionDays', type: 'number', required: true, defaultValue: 730, min: 1, max: 3650 },
+      ],
+    },
+    {
       name: 'ownerKind',
       type: 'select',
       required: true,

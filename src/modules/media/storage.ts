@@ -11,6 +11,8 @@ export const supportedMediaTypes = {
   'image/webp': { kind: 'image', extension: 'webp' },
   'application/pdf': { kind: 'document', extension: 'pdf' },
   'audio/mpeg': { kind: 'audio', extension: 'mp3' },
+  'video/mp4': { kind: 'video', extension: 'mp4' },
+  'text/vtt': { kind: 'document', extension: 'vtt' },
 } as const
 
 export type SupportedMimeType = keyof typeof supportedMediaTypes
@@ -79,6 +81,12 @@ export function inspectMedia(bytes: Uint8Array): MediaInspection {
     return { ...supportedMediaTypes['application/pdf'], mimeType: 'application/pdf', sha256 }
   if (ascii(bytes, 0, 'ID3') || signature(bytes, [0xff, 0xfb]))
     return { ...supportedMediaTypes['audio/mpeg'], mimeType: 'audio/mpeg', sha256 }
+  // ISO base media files place the ftyp box at byte four. We deliberately do not
+  // infer a codec: the browser receives the original, content-sniffed MP4 only.
+  if (ascii(bytes, 4, 'ftyp'))
+    return { ...supportedMediaTypes['video/mp4'], mimeType: 'video/mp4', sha256 }
+  if (new TextDecoder().decode(bytes.slice(0, 6)).startsWith('WEBVTT'))
+    return { ...supportedMediaTypes['text/vtt'], mimeType: 'text/vtt', sha256 }
   throw new Error('Unsupported or corrupt media file.')
 }
 

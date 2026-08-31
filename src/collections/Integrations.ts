@@ -63,6 +63,8 @@ export const WebhookDeliveries: CollectionConfig = {
     },
     { name: 'eventId', type: 'text', required: true, index: true },
     { name: 'eventType', type: 'text', required: true },
+    /** A privacy-safe, versioned envelope retained solely for retry and manual redelivery. */
+    { name: 'payload', type: 'json', required: true },
     { name: 'idempotencyKey', type: 'text', required: true, unique: true },
     {
       name: 'state',
@@ -74,6 +76,7 @@ export const WebhookDeliveries: CollectionConfig = {
     { name: 'attempts', type: 'number', required: true, defaultValue: 0 },
     { name: 'nextAttemptAt', type: 'date' },
     { name: 'redactedResponse', type: 'textarea' },
+    { name: 'lastError', type: 'textarea', admin: { readOnly: true } },
   ],
 }
 
@@ -86,5 +89,19 @@ export const IntegrationAuditEvents: CollectionConfig = {
     { name: 'subject', type: 'json' },
     { name: 'outcome', type: 'select', required: true, options: ['allowed', 'denied', 'failed'] },
     { name: 'occurredAt', type: 'date', required: true },
+  ],
+}
+
+/** Durable API write deduplication. Responses are intentionally public-contract shaped. */
+export const ApiRequestRecords: CollectionConfig = {
+  ...base('api-request-records', 'idempotencyKey'),
+  fields: [
+    ...scopeFields,
+    { name: 'client', type: 'relationship', relationTo: 'api-clients' as never, required: true },
+    { name: 'idempotencyKey', type: 'text', required: true, unique: true, index: true },
+    { name: 'method', type: 'text', required: true },
+    { name: 'path', type: 'text', required: true },
+    { name: 'responseStatus', type: 'number', required: true },
+    { name: 'response', type: 'json', required: true },
   ],
 }

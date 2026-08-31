@@ -35,6 +35,20 @@ export const AnalyticsEvents: CollectionConfig = {
   ],
   indexes: [{ fields: ['site', 'occurredAt'] }, { fields: ['site', 'eventType', 'occurredAt'] }],
 }
+/** Immutable evidence of a browser's versioned choices. This is separate from email consent. */
+export const AnalyticsConsentRecords: CollectionConfig = {
+  ...base('analytics-consent-records', 'occurredAt'),
+  fields: [
+    ...ownerFields(),
+    { name: 'subjectHash', type: 'text', required: true, index: true },
+    { name: 'consentVersion', type: 'text', required: true },
+    { name: 'action', type: 'select', required: true, options: ['grant', 'update', 'withdraw'] },
+    { name: 'categories', type: 'json', required: true },
+    { name: 'occurredAt', type: 'date', required: true, index: true },
+    { name: 'source', type: 'text', required: true, defaultValue: 'browser' },
+  ],
+  indexes: [{ fields: ['site', 'subjectHash', 'occurredAt'] }],
+}
 export const AnalyticsRollups: CollectionConfig = {
   ...base('analytics-rollups', 'metric'),
   fields: [
