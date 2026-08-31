@@ -1,4 +1,4 @@
-# Renegade CMS
+# Renegade Content Management Operating System
 
 Renegade Content Management Operating System is a free, self-hosted, portable publishing and personal-brand platform. A traditional CMS manages content. A CMoS orchestrates the systems surrounding the content.
 foundation: Next.js, Payload CMS, PostgreSQL, Tailwind CSS, TypeScript and Docker.
