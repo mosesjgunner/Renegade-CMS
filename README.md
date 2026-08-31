@@ -1,6 +1,7 @@
-# Renegade CMS
+# Renegade Content Management Operating System
 
-Renegade CMS is a free, self-hosted, portable publishing and personal-brand platform. This repository currently contains the Milestone 01 executable foundation: Next.js, Payload CMS, PostgreSQL, Tailwind CSS, TypeScript and Docker.
+Renegade Content Management Operating System is a free, self-hosted, portable publishing and personal-brand platform. A traditional CMS manages content. A CMoS orchestrates the systems surrounding the content.
+foundation: Next.js, Payload CMS, PostgreSQL, Tailwind CSS, TypeScript and Docker.
 
 ## Local start
 
