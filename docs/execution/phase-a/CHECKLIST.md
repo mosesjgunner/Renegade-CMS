@@ -9,6 +9,8 @@
 > `FAILED`, `VERIFIED`.
 > All cards start `NOT STARTED`. Nothing is `VERIFIED` at A-00 — capability readiness is
 > never declared from documentation; only reproduced evidence promotes a card to `VERIFIED`.
+>
+> A card owner changes no shared row; A-00 records the change when evidence is reconciled.
 
 ## Status board
 
@@ -55,3 +57,4 @@
 | `BLOCKED` | Cannot proceed — unmet dependency, unavailable infra, or contract conflict (link the remediation file). |
 | `FAILED` | A required gate or definition-of-done boundary failed and is recorded in the card's evidence file. |
 | `VERIFIED` | Definition of done met and **independently reproduced**; evidence file complete. |
+
