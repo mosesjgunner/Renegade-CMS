@@ -28,7 +28,10 @@ class MemoryStore {
     return { docs: matches }
   }
   async findByID() {
-    throw new Error('not used')
+    const args = arguments[0] as { collection: string; id: string }
+    const record = (this.records.get(args.collection) ?? []).find((value) => value.id === args.id)
+    if (!record) throw new Error('not found')
+    return record
   }
   async update(args: { collection: string; id: string; data: Record<string, unknown> }) {
     const records = this.records.get(args.collection) ?? []
@@ -58,5 +61,13 @@ describe('member identity', () => {
       expect.objectContaining({ enabled: false, supportedNamespaces: [] }),
     )
     expect(digest('token')).not.toBe('token')
+  })
+  it('rejects suspended members even if they retain an unexpired link or session', async () => {
+    const store = new MemoryStore()
+    const issued = await issueMagicLink(store as never, 'member@example.test')
+    const signedIn = await consumeMagicLink(store as never, issued.token!)
+    const member = (store.records.get('members') ?? [])[0]
+    member.status = 'disabled'
+    expect(await currentMember(store as never, signedIn?.sessionToken)).toBeNull()
   })
 })
