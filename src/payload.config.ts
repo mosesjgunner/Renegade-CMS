@@ -10,11 +10,17 @@ import {
   applyProgressiveDisclosure,
 } from './modules/admin/progressive-disclosure'
 import { registeredPayloadDomains } from './modules/payload-domains'
+import { gatePayloadRegistrations, parseEnabledModules } from './modules/module-registry'
 import { seed } from './scripts/seed'
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 const config = loadConfig()
-const domainRegistrations = registeredPayloadDomains(config)
+// Register the lean floor by default; optional modules are switched on via
+// RENEGADE_MODULES. See src/modules/module-registry.ts for the full contract.
+const domainRegistrations = gatePayloadRegistrations(registeredPayloadDomains(config), {
+  enabled: parseEnabledModules(process.env.RENEGADE_MODULES),
+  allowUnsafeCollectionCount: process.env.RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT === 'true',
+})
 const users = domainRegistrations.collections.find(({ slug }) => slug === 'users')
 
 if (!users) throw new Error('Identity domain must register the users collection')
@@ -74,5 +80,9 @@ export default buildConfig({
   },
   secret: config.payloadSecret,
   serverURL: config.appUrl,
-  typescript: { outputFile: path.resolve(dirname, 'payload-types.ts') },
+  // autoGenerate is off so a floor/default build never rewrites the committed
+  // full-set payload-types.ts to the gated subset. Types are (re)generated
+  // explicitly via `npm run generate:types`, which forces RENEGADE_MODULES=all
+  // so the checked-in types always describe every collection in the codebase.
+  typescript: { autoGenerate: false, outputFile: path.resolve(dirname, 'payload-types.ts') },
 })
