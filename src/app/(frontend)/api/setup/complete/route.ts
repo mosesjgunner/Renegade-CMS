@@ -44,9 +44,18 @@ export async function POST(request: Request) {
       { headers, status: 201 },
     )
   } catch (error) {
-    const message = error instanceof InstallationError ? error.message : 'Setup is unavailable.'
-    const status =
-      error instanceof InstallationError && error.code === 'INSTALLATION_COMPLETE' ? 410 : 400
+    const isInstallationError = error instanceof InstallationError
+    // InstallationError messages are already operator/user-safe. Any other error is
+    // unexpected (e.g. a collection ValidationError during provisioning) and must be
+    // surfaced server-side for diagnosis instead of vanishing behind the generic
+    // client response. The client still receives only the generic message so internal
+    // details are never leaked; recovery codes are created after this point and are
+    // therefore never present in a thrown error here.
+    if (!isInstallationError) {
+      console.error('[setup/complete] Unexpected installation failure:', error)
+    }
+    const message = isInstallationError ? error.message : 'Setup is unavailable.'
+    const status = isInstallationError && error.code === 'INSTALLATION_COMPLETE' ? 410 : 400
     return Response.json({ error: message }, { status })
   }
 }

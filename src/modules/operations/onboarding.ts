@@ -1,6 +1,44 @@
+import { randomUUID } from 'node:crypto'
+
 import type { Payload } from 'payload'
 
 import { previewRecipe } from '../public/page-builder'
+
+const CANONICAL_SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
+
+/**
+ * Resolves a canonicalSlug-compliant, unique `handle` for the owner profile.
+ * The site slug is already canonical, so it is the preferred handle. If another
+ * profile already owns it (and it is not this member's own profile from a
+ * re-run), a numeric suffix is appended so setup never crashes on a collision.
+ */
+async function resolveUniqueProfileHandle(
+  payload: Payload,
+  desired: string,
+  memberId: string,
+): Promise<string> {
+  const base = CANONICAL_SLUG.test(desired) ? desired : 'owner'
+  for (let attempt = 0; attempt < 50; attempt += 1) {
+    const candidate = attempt === 0 ? base : `${base}-${attempt + 1}`
+    const existing = await payload.find({
+      collection: 'profiles',
+      where: { handle: { equals: candidate } },
+      limit: 1,
+      depth: 0,
+      overrideAccess: true,
+    } as never)
+    const doc = existing.docs[0] as { member?: unknown } | undefined
+    if (!doc) return candidate
+    const ownerId =
+      doc.member && typeof doc.member === 'object'
+        ? (doc.member as { id?: string }).id
+        : (doc.member as string | undefined)
+    // A collision on this member's own profile (idempotent re-run) is fine to keep.
+    if (ownerId === memberId) return candidate
+  }
+  // Extremely unlikely; guarantee uniqueness without failing setup.
+  return `${base}-${randomUUID().slice(0, 8)}`
+}
 
 export const onboardingProfiles = ['Lean', 'Standard'] as const
 export const starterSiteTypes = [
@@ -136,6 +174,7 @@ export async function provisionOnboardingSite(
     { email: { equals: ownerEmail } },
     { displayName: input.name, email: ownerEmail, status: 'active' },
   )
+  const profileHandle = await resolveUniqueProfileHandle(payload, input.slug, member.id)
   const profile = await upsert(
     payload,
     'profiles',
@@ -143,6 +182,7 @@ export async function provisionOnboardingSite(
     {
       member: member.id,
       displayName: input.name,
+      handle: profileHandle,
       bio: input.description || undefined,
       visibility: 'public',
       fieldAudience: { email: 'private', bio: 'public' },
