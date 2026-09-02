@@ -66,7 +66,9 @@ const editorialActionOptions = [
 export const MediaAssets: CollectionConfig = {
   slug: 'media-assets',
   admin: { useAsTitle: 'title', group: 'Media' },
-  access: { create: staffOnly, delete: staffOnly, read: () => true, update: staffOnly },
+  // Metadata includes the opaque storage location. Anonymous readers must use the
+  // scoped public byte route, which independently verifies a published reference.
+  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
   fields: [
     ...ownerFields(),
     { name: 'title', type: 'text', required: true },
@@ -280,7 +282,9 @@ export const PublicRedirects: CollectionConfig = {
 export const Content: CollectionConfig = {
   slug: 'content',
   admin: { useAsTitle: 'title', group: 'Publishing' },
-  access: { create: staffOnly, delete: staffOnly, read: () => true, update: staffOnly },
+  // Public pages query through the explicit publication renderer; Payload's raw
+  // REST/GraphQL collection surface must not disclose drafts or private records.
+  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
   hooks: {
     afterChange: [
       async ({ doc, previousDoc, operation, req }) => {
