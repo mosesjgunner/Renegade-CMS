@@ -493,6 +493,15 @@ function Completion({
             ))}
           </ul>
         </section>
+        <section>
+          <h2 className="font-semibold mb-2">Production HTTPS boundary</h2>
+          <p className="text-sm text-stone-600 dark:text-stone-400">
+            Renegade listens on its private loopback port. Put Caddy, Nginx, Traefik, or an
+            equivalent reverse proxy in front of it for TLS, and in trusted proxy mode have that
+            proxy replace forwarded headers before sending requests to Renegade. Do not expose the
+            application listener directly to the internet.
+          </p>
+        </section>
         <div className="flex gap-3">
           <Link href="/admin" className="btn btn-primary text-xs">
             Open Admin Studio
