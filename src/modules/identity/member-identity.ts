@@ -3,6 +3,7 @@ import { createHash, randomBytes, timingSafeEqual } from 'node:crypto'
 export const MEMBER_SESSION_COOKIE = 'renegade-member'
 export const MAGIC_LINK_TTL_MS = 15 * 60 * 1000
 export const MEMBER_SESSION_TTL_MS = 30 * 24 * 60 * 60 * 1000
+export const MEMBER_AUTH_WINDOW_MS = 60 * 1000
 
 export type IdentityTokenPurpose = 'magic-link-sign-in' | 'identity-link' | 'wallet-nonce'
 export type IdentityStore = {
@@ -53,6 +54,15 @@ export function readMemberSession(headers: Headers): string | undefined {
     ?.split(';')
     .map((part) => part.trim().split('='))
     .find(([name]) => name === MEMBER_SESSION_COOKIE)?.[1]
+}
+
+export function normalizeHandle(value: string): string | null {
+  const handle = value.trim().toLowerCase()
+  return /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(handle) ? handle : null
+}
+
+export function memberMayAuthenticate(member: Record<string, unknown>): boolean {
+  return member.status === 'active' && !member.deletionRequestedAt
 }
 
 export async function issueMagicLink(
@@ -143,6 +153,17 @@ export async function consumeMagicLink(
     })
     memberId = member.id
     await store.create({
+      collection: 'profiles',
+      overrideAccess: true,
+      data: {
+        member: memberId,
+        displayName: 'New member',
+        handle: `member-${memberId.replace(/[^a-z0-9]/gi, '').toLowerCase().slice(-12)}`,
+        visibility: 'private',
+        preferences: {},
+      },
+    })
+    await store.create({
       collection: 'linked-identities',
       overrideAccess: true,
       data: {
@@ -153,6 +174,15 @@ export async function consumeMagicLink(
         verifiedAt: now.toISOString(),
       },
     })
+  }
+  const member = await store.findByID({
+    collection: 'members',
+    id: memberId,
+    overrideAccess: true,
+  })
+  if (!memberMayAuthenticate(member)) {
+    await audit(store, memberId, 'member.magic_link_rejected', { reason: 'member_not_active' })
+    return null
   }
   const sessionToken = opaqueToken()
   await store.create({
@@ -195,9 +225,15 @@ export async function currentMember(
     data: { lastSeenAt: now.toISOString() },
     overrideAccess: true,
   })
-  return typeof session.member === 'string'
+  const memberId = typeof session.member === 'string'
     ? session.member
     : String((session.member as { id?: string }).id)
+  const member = await store.findByID({
+    collection: 'members',
+    id: memberId,
+    overrideAccess: true,
+  })
+  return memberMayAuthenticate(member) ? memberId : null
 }
 
 export async function revokeMemberSession(
@@ -233,10 +269,32 @@ export function walletCapability(): {
     supportedNamespaces: [],
   }
 }
-async function audit(store: IdentityStore, member: string, event: string) {
+export async function changeMemberModeration(
+  store: IdentityStore,
+  input: { actorUserId: string; memberId: string; status: 'active' | 'disabled' | 'archived'; reason: string },
+  now = new Date(),
+): Promise<void> {
+  const current = await store.findByID({ collection: 'members', id: input.memberId, overrideAccess: true })
+  if (current.status === input.status) return
+  await store.update({
+    collection: 'members', id: input.memberId, overrideAccess: true,
+    data: {
+      status: input.status,
+      disabledAt: input.status === 'disabled' ? now.toISOString() : null,
+      archivedAt: input.status === 'archived' ? now.toISOString() : null,
+    },
+  })
+  await audit(store, input.memberId, `member.moderation.${input.status}`, {
+    actorUserId: input.actorUserId,
+    reason: input.reason.slice(0, 500),
+    previousStatus: current.status,
+  })
+}
+
+async function audit(store: IdentityStore, member: string, event: string, details: Record<string, unknown> = {}) {
   await store.create({
     collection: 'identity-audit-events',
     overrideAccess: true,
-    data: { member, event, details: {} },
+    data: { member, event, details },
   })
 }
