@@ -12,9 +12,12 @@ const runtimeEnv = Object.fromEntries(
 )
 const e2eEnv = {
   ...runtimeEnv,
-  APP_URL: 'http://127.0.0.1:3110',
+  // Use `localhost` (not the 127.0.0.1 literal) so browser WebAuthn accepts the
+  // origin: an IP address is an invalid RP ID, but `localhost` is allowed. It
+  // resolves to the same loopback address, so non-passkey specs are unaffected.
+  APP_URL: 'http://localhost:3110',
   PORT: '3110',
-  HOSTNAME: '127.0.0.1',
+  HOSTNAME: 'localhost',
   LOCAL_E2E_TEST_MODE: 'true',
 }
 
@@ -24,10 +27,10 @@ export default defineConfig({
   testDir: './tests/browser',
   globalSetup: './tests/browser/global-setup.ts',
   timeout: 30_000,
-  use: { baseURL: 'http://127.0.0.1:3110', browserName: 'chromium', channel: 'chrome' },
+  use: { baseURL: 'http://localhost:3110', browserName: 'chromium', channel: 'chrome' },
   webServer: {
     command: 'node .next/standalone/server.js',
-    url: 'http://127.0.0.1:3110/health/ready',
+    url: 'http://localhost:3110/health/ready',
     reuseExistingServer: false,
     timeout: 120_000,
     env: { ...process.env, ...e2eEnv },
