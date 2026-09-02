@@ -280,7 +280,11 @@ export async function verifyUpgradeMigration() {
     await client.end()
   }
   const previousDatabaseUrl = process.env.DATABASE_URL
+  const previousModules = process.env.RENEGADE_MODULES
+  const previousAllowUnsafeCollectionCount = process.env.RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT
   process.env.DATABASE_URL = url
+  process.env.RENEGADE_MODULES = ['social', 'forms'].join(',')
+  delete process.env.RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT
   try {
     const { default: config } = await import('../payload.config')
     const payload = await getPayload({ config })
@@ -298,6 +302,8 @@ export async function verifyUpgradeMigration() {
     }
   } finally {
     process.env.DATABASE_URL = previousDatabaseUrl
+    process.env.RENEGADE_MODULES = previousModules
+    process.env.RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT = previousAllowUnsafeCollectionCount
   }
 }
 
