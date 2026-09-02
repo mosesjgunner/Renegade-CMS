@@ -1,10 +1,34 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
-import { MediaWorkflowError, deleteOrphanedMedia, replaceMedia } from '@/modules/media/workflow'
+import {
+  MediaWorkflowError,
+  deleteOrphanedMedia,
+  replaceMedia,
+  updateMediaMetadata,
+} from '@/modules/media/workflow'
 import { loadConfig } from '@/modules/core/config'
 
 export const runtime = 'nodejs'
+
+export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const payload = await getPayload({ config })
+  const auth = await payload.auth({ headers: request.headers })
+  try {
+    const body = (await request.json()) as Record<string, string | undefined>
+    const media = await updateMediaMetadata(payload, auth.user as never, {
+      mediaId: (await params).id,
+      scope: { kind: 'site', siteId: String(body.siteId ?? '') },
+      title: body.title,
+      altText: body.altText,
+      caption: body.caption,
+    })
+    return NextResponse.json({ media })
+  } catch (error) {
+    const status = error instanceof MediaWorkflowError ? error.status : 400
+    return NextResponse.json({ error: error instanceof Error ? error.message : 'Metadata update failed.' }, { status })
+  }
+}
 
 export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const appConfig = loadConfig()

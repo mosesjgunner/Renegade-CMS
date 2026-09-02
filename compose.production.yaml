@@ -41,6 +41,7 @@ services:
       RENEGADE_IMAGE_TAG: ${RENEGADE_IMAGE_TAG:-local}
       DEPLOYMENT_PROFILE: ${DEPLOYMENT_PROFILE:-Standard}
       ENABLE_TEST_ROUTES: 'false'
+      LOCAL_E2E_TEST_MODE: ${LOCAL_E2E_TEST_MODE:-false}
     command: ['npm', 'run', 'db:migrate']
     depends_on:
       postgres:

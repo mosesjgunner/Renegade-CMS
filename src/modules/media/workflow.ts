@@ -7,6 +7,12 @@ import { inspectMedia, mediaObjectKey, mediaStorage } from './storage'
 type Doc = Record<string, unknown>
 const id = (value: unknown) =>
   typeof value === 'string' ? value : String((value as { id?: string } | undefined)?.id ?? '')
+const cleanText = (value: string | undefined, label: string, maxLength: number) => {
+  const cleaned = (value ?? '').replace(/[\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').trim()
+  if (cleaned.length > maxLength) throw new MediaWorkflowError(`${label} is too long.`)
+  return cleaned
+}
+const replacementLimit = 8
 
 export class MediaWorkflowError extends Error {
   constructor(
@@ -48,7 +54,10 @@ export async function uploadMedia(
   },
 ) {
   await assertMediaPermission(payload, input.user, input.scope, 'content.edit')
-  if (!input.title.trim()) throw new MediaWorkflowError('A media title is required.')
+  const title = cleanText(input.title, 'Media title', 180)
+  if (!title) throw new MediaWorkflowError('A media title is required.')
+  const altText = cleanText(input.altText, 'Alt text', 500)
+  const caption = cleanText(input.caption, 'Caption', 2_000)
   if (input.bytes.byteLength > config.storage.maxUploadBytes)
     throw new MediaWorkflowError('Media exceeds the configured upload limit.', 413)
   const inspection = inspectMedia(input.bytes)
@@ -72,7 +81,7 @@ export async function uploadMedia(
         publication: input.scope.publicationId ?? null,
         space: input.scope.spaceId ?? null,
         owner: id(input.user?.member) || null,
-        title: input.title.trim(),
+        title,
         kind: inspection.kind,
         storageLocation: key,
         storageProvider: storage.provider,
@@ -81,8 +90,8 @@ export async function uploadMedia(
         width: inspection.width,
         height: inspection.height,
         checksum: inspection.sha256,
-        altText: input.altText?.trim() || null,
-        caption: input.caption?.trim() || null,
+        altText: altText || null,
+        caption: caption || null,
         focalPoint: input.focalPoint ?? null,
         retentionMode: 'permanent',
         retentionHold: 'none',
@@ -135,10 +144,9 @@ export async function attachMediaToContent(
   const data = {
     media: input.mediaId,
     usageKey,
-    usageType: 'hero',
-    targetCollection: 'content',
-    targetId: input.contentId,
-    approved: content.status === 'published',
+    usedBy: { relationTo: 'content', value: input.contentId },
+    purpose: 'hero',
+    replaceGlobally: true,
   }
   if (usage)
     await payload.update({
@@ -172,6 +180,46 @@ export async function replaceMedia(
     data: { replaceGloballyWith: replacement.id },
   } as never)
   return replacement
+}
+
+/**
+ * Replacement is a bounded, site-scoped chain: old records remain audit evidence and all
+ * readers resolve at most eight links. A cycle, missing target, or cross-site target is invalid.
+ */
+export async function resolveMediaReplacement(payload: Payload, media: Doc): Promise<Doc | undefined> {
+  const siteId = id(media.site)
+  const seen = new Set<string>()
+  let current = media
+  for (let hops = 0; hops < replacementLimit; hops++) {
+    const currentId = id(current.id)
+    if (!currentId || seen.has(currentId)) return undefined
+    seen.add(currentId)
+    const nextId = id(current.replaceGloballyWith)
+    if (!nextId) return current
+    const next = (await payload.findByID({ collection: 'media-assets', id: nextId, depth: 0, overrideAccess: true } as never).catch(() => undefined)) as unknown as Doc | undefined
+    if (!next || id(next.site) !== siteId) return undefined
+    current = next
+  }
+  return undefined
+}
+
+export async function updateMediaMetadata(
+  payload: Payload,
+  user: Doc | null | undefined,
+  input: { scope: TeamScope; mediaId: string; title?: string; altText?: string; caption?: string },
+) {
+  await assertMediaPermission(payload, user, input.scope, 'content.edit')
+  const media = (await payload.findByID({ collection: 'media-assets', id: input.mediaId, depth: 0, overrideAccess: true } as never)) as unknown as Doc
+  if (id(media.site) !== input.scope.siteId) throw new MediaWorkflowError('Cross-site media update is not allowed.', 403)
+  const data: Record<string, string | null> = {}
+  if (input.title !== undefined) {
+    const title = cleanText(input.title, 'Media title', 180)
+    if (!title) throw new MediaWorkflowError('A media title is required.')
+    data.title = title
+  }
+  if (input.altText !== undefined) data.altText = cleanText(input.altText, 'Alt text', 500) || null
+  if (input.caption !== undefined) data.caption = cleanText(input.caption, 'Caption', 2_000) || null
+  return payload.update({ collection: 'media-assets', id: input.mediaId, data, overrideAccess: true } as never)
 }
 
 export async function deleteOrphanedMedia(
@@ -210,12 +258,15 @@ export async function deleteOrphanedMedia(
       'Referenced media cannot be deleted. Replace it or detach every use first.',
       409,
     )
-  await mediaStorage(config).remove(String(media.storageLocation))
-  await payload.delete({
-    collection: 'media-assets',
-    id: input.mediaId,
-    overrideAccess: true,
-  } as never)
+  const storage = mediaStorage(config)
+  const bytes = await storage.get(String(media.storageLocation))
+  await storage.remove(String(media.storageLocation))
+  try {
+    await payload.delete({ collection: 'media-assets', id: input.mediaId, overrideAccess: true } as never)
+  } catch {
+    if (bytes) await storage.put(String(media.storageLocation), bytes, String(media.mimeType || 'application/octet-stream')).catch(() => undefined)
+    throw new MediaWorkflowError('Media deletion could not be completed; bytes were restored for recovery.', 500)
+  }
 }
 
 export async function publicMedia(payload: Payload, mediaId: string): Promise<Doc | undefined> {
@@ -228,5 +279,6 @@ export async function publicMedia(payload: Payload, mediaId: string): Promise<Do
     payload.find({ collection: 'podcast-episodes', where: { and: [{ audio: { equals: mediaId } }, { status: { in: ['published', 'updated'] } }, { site: { equals: id(media.site) } }] }, limit: 1, depth: 0, overrideAccess: true } as never),
     payload.find({ collection: 'videos', where: { and: [{ nativeMedia: { equals: mediaId } }, { status: { in: ['published', 'updated'] } }, { site: { equals: id(media.site) } }] }, limit: 1, depth: 0, overrideAccess: true } as never),
   ])
-  return references.some((reference) => reference.docs.length) ? media : undefined
+  if (!references.some((reference) => reference.docs.length)) return undefined
+  return resolveMediaReplacement(payload, media)
 }

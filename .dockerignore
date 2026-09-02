@@ -8,5 +8,7 @@ node_modules
 media
 *.log
 coverage
+.worktrees
+.phase-a
 **/.git
 Renegade CMS
