@@ -115,12 +115,17 @@ DB / infrastructure / browser (per-card, isolated infra only):
 Each implementation agent, before writing any code, MUST:
 
 1. Read this `README.md`, `SHARED_CONTRACTS.md`, and `RESOURCE_MAP.md` in full.
-2. Confirm the **merge checkpoint / dependency** for its card in `CHECKLIST.md` is satisfied
-   (e.g. A-02/A-03/A-04 require merged A-09).
+2. Confirm the **merge checkpoint / dependency** for its card in `CHECKLIST.md` is satisfied.
+   A dependency is satisfied only by an ancestor commit that contains its implementation and
+   recorded focused proof—not by a branch name, a checklist row, or a documentation-only commit.
+   For A-09, require `evidence/A-09.md` plus a passing
+   `tests/unit/phase-a-access.test.ts` at the ancestor commit before A-02/A-03/A-04 begin.
 3. Use **only** the runtime resources assigned to its card in `RESOURCE_MAP.md` (Compose
    project name, ports, database names, media paths/volumes, migration-test database).
 4. Write evidence **only** to its own assigned file `evidence/A-XX.md` (copied from
-   `evidence/_TEMPLATE.md`). Create a bounded `remediation/A-XX-*.md` for unfinished work.
+   `evidence/_TEMPLATE.md`). Create a bounded `remediation/A-XX-*.md` for unfinished work,
+   unless the task explicitly restricts documentation writes to the evidence file; in that case,
+   record the bounded remediation in that evidence file instead.
 5. **Never** edit `CHECKLIST.md`, `EVIDENCE_INDEX.md`, or another card's evidence file. The
    coordinator updates the shared indexes during reconciliation.
 6. If code contradicts a frozen shared contract, **stop and record it** — do not create a

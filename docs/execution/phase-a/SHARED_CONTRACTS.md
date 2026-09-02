@@ -62,6 +62,10 @@ if it ever claims this). Replacement/deletion semantics (atomic rewire vs bounde
 loop-safe replacement chain; refuse deletion while referenced) are **owned by A-02** and
 **`MUST BE FROZEN BY A-02`**.
 
+A-02 may connect the canonical picker to existing `content.heroMedia` and page-builder image
+properties, but it MUST NOT redefine page-layout IR, body persistence, or page URL ownership;
+those remain A-03's C-2 responsibility.
+
 ### C-5 Local storage default + optional adapter seam
 Local filesystem storage is the **default** and is authoritative for Phase A
 (`src/modules/media/storage.ts`, `MEDIA_DIR` env, default `./media`). An adapter seam for
@@ -83,7 +87,9 @@ anonymously readable. **Known baseline gap (verified at A-00):** `Content` (slug
 `src/collections/Publishing.ts`) and `media-assets` (`src/collections/MediaPublishing.ts`)
 currently declare `access.read: () => true`, so Payload REST/GraphQL may expose draft
 content metadata and all media metadata anonymously even though public routes filter output.
-**Closing this is owned by A-09** and is a hard Phase A gate.
+**Closed by A-09 commit `57c2a39`**: raw `content` and `media-assets` reads are staff-only.
+This hard gate is satisfied only when that commit (or a successor preserving its focused proof)
+is an ancestor and `tests/unit/phase-a-access.test.ts` passes.
 
 ### C-8 Public-media eligibility
 Media bytes are public **only** through an approved published reference; unpublished /
