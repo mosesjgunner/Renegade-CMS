@@ -27,6 +27,7 @@ import * as migration_20260830_100000_media_storage_workflow from './20260830_10
 import * as migration_20260830_110000_discoverability from './20260830_110000_discoverability'
 import * as migration_20260830_120000_discoverability_lock_relation from './20260830_120000_discoverability_lock_relation'
 import * as migration_20260830_130000_admin_auth_hardening from './20260830_130000_admin_auth_hardening'
+import * as migration_20260831_200000_member_identity_foundation from './20260831_200000_member_identity_foundation'
 import * as migration_20260831_090000_phase_b_execution_foundation from './20260831_090000_phase_b_execution_foundation'
 import * as migration_20260831_100000_analytics_privacy_runtime from './20260831_100000_analytics_privacy_runtime'
 import * as migration_20260831_110000_events_workflow from './20260831_110000_events_workflow'
@@ -239,5 +240,10 @@ export const migrations = [
     up: migration_20260831_190000_phase_b_integrations_id_defaults.up,
     down: migration_20260831_190000_phase_b_integrations_id_defaults.down,
     name: '20260831_190000_phase_b_integrations_id_defaults',
+  },
+  {
+    up: migration_20260831_200000_member_identity_foundation.up,
+    down: migration_20260831_200000_member_identity_foundation.down,
+    name: '20260831_200000_member_identity_foundation',
   },
 ]

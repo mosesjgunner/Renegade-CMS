@@ -68,6 +68,7 @@ export const Members: CollectionConfig = {
     { name: 'exportRequestedAt', type: 'date' },
     { name: 'deletionRequestedAt', type: 'date' },
     { name: 'verifiedEmailAt', type: 'date' },
+    { name: 'moderationReason', type: 'textarea', admin: { readOnly: true } },
   ],
 }
 
@@ -165,9 +166,20 @@ export const Profiles: CollectionConfig = {
       index: true,
     },
     { name: 'displayName', type: 'text', required: true },
+    {
+      name: 'handle',
+      type: 'text',
+      required: true,
+      unique: true,
+      index: true,
+      validate: canonicalSlug,
+      admin: { description: 'Public handle; changes require an explicit member self-service request.' },
+    },
     { name: 'avatar', type: 'relationship', relationTo: 'media-assets' },
     { name: 'cover', type: 'relationship', relationTo: 'media-assets' },
     { name: 'bio', type: 'textarea' },
+    { name: 'links', type: 'json' },
+    { name: 'preferences', type: 'json', admin: { description: 'Private member self-service preferences.' } },
     {
       name: 'visibility',
       type: 'select',
