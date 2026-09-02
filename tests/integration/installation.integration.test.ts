@@ -54,6 +54,26 @@ describe('first-run installation state', () => {
     expect(restartedStatus).toMatchObject({ state: 'installing', ownerEmail: 'owner@example.test' })
   })
 
+  it('rejects an expired bootstrap token without changing the installation state', async () => {
+    await payload.db.pool.query(
+      `UPDATE installation_state SET bootstrap_expires_at = now() - interval '1 second'
+       WHERE singleton = true`,
+    )
+
+    await expect(
+      beginPasskeyRegistration(payload, loadConfig(), {
+        email: 'owner@example.test',
+        token,
+      }),
+    ).rejects.toMatchObject({ code: 'INSTALLATION_EXPIRED' })
+
+    const state = await payload.db.pool.query<{
+      state: string
+      registration_challenge: string | null
+    }>(`SELECT state, registration_challenge FROM installation_state WHERE singleton = true`)
+    expect(state.rows[0]).toEqual({ state: 'incomplete', registration_challenge: null })
+  })
+
   it('rotates a local recovery token but refuses to reopen a completed install', async () => {
     const consoleWarn = vi.spyOn(console, 'warn').mockImplementation(() => undefined)
     await rotateBootstrapToken(payload, loadConfig())
