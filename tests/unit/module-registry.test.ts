@@ -38,6 +38,7 @@ describe('progressive module registry', () => {
       'page-layouts',
       'content',
       'media-assets',
+      'media-usages',
       'categories',
       'public-redirects',
     ])

@@ -105,7 +105,6 @@ export const OPTIONAL_MODULES: readonly ModuleManifestEntry[] = [
     summary: 'Books, podcasts, video, graphics, photo albums, and the media processing pipeline.',
     collections: [
       'albums',
-      'media-usages',
       'books',
       'book-parts',
       'book-chapters',
