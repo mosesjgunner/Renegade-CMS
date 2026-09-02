@@ -60,6 +60,9 @@ test('a normal operator completes first-run setup, sees recovery codes once, and
   const slug = `firstrun-${randomUUID().slice(0, 8)}`
   const ownerEmail = `${slug}@owner.test`
 
+  page.on('console', (msg) => console.log('[BROWSER CONSOLE]', msg.text()))
+  page.on('pageerror', (err) => console.log('[BROWSER ERROR]', err.message))
+
   await page.goto('/setup')
   await expect(page.getByRole('heading', { name: 'Make this site yours.' })).toBeVisible()
 
@@ -67,16 +70,11 @@ test('a normal operator completes first-run setup, sees recovery codes once, and
   // controlled inputs register (guards against a client hydration race where an
   // early fill sets the DOM value before React attaches its onChange handlers).
   const continueButton = page.getByRole('button', { name: 'Continue' })
-  await expect(async () => {
-    // Clear first so each retry dispatches a real input event even if the value
-    // is unchanged - otherwise a fill that matches the current value is a no-op
-    // and React (once hydrated) never receives the change.
-    await page.getByLabel('Bootstrap token').fill('')
-    await page.getByLabel('Bootstrap token').fill(token)
-    await page.getByLabel('Owner email').fill('')
-    await page.getByLabel('Owner email').fill(ownerEmail)
-    await expect(continueButton).toBeEnabled({ timeout: 1_000 })
-  }).toPass({ timeout: 15_000 })
+  await page.getByLabel('Bootstrap token').click()
+  await page.getByLabel('Bootstrap token').fill(token)
+  await page.getByLabel('Owner email').click()
+  await page.getByLabel('Owner email').fill(ownerEmail)
+  await expect(continueButton).toBeEnabled({ timeout: 15_000 })
   await continueButton.click()
 
   // Step 2 - Site identity.

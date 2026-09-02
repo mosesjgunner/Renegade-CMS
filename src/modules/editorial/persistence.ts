@@ -3,7 +3,11 @@ import { createHash, randomBytes } from 'node:crypto'
 
 import type { Payload } from 'payload'
 
-import { createMarkdownImportReport, type RichTextDocument } from './contracts'
+import {
+  createMarkdownImportReport,
+  hashRichTextDocument,
+  type RichTextDocument,
+} from './contracts'
 import { importMarkdownToRichText } from './markdown'
 import { buildTableOfContents, estimateReadingTimeMinutes, extractPlainText } from './presentation'
 import {
@@ -60,6 +64,7 @@ export type EditorialPresentation = {
   canonicalPath: string
   status: string
   bodyText: string
+  body: Record<string, unknown>
   readingTimeMinutes: number
   tableOfContents: Array<{ id: string; level: number; text: string }>
   authors: string[]
@@ -247,6 +252,7 @@ const findOne = async (
   collection: string,
   where: Record<string, unknown>,
   depth = 0,
+  req?: any,
 ) => {
   const result = (await payload.find({
     collection,
@@ -254,6 +260,7 @@ const findOne = async (
     limit: 1,
     depth,
     overrideAccess: true,
+    req,
   } as never)) as { docs: Doc[] }
   return result.docs[0] ?? null
 }
@@ -312,6 +319,98 @@ const createRevisionRecord = async (
     },
     overrideAccess: true,
   } as never)) as Doc
+}
+
+/**
+ * Keeps the workflow index in step with edits made through the normal Content
+ * form. The Content.body Lexical value remains canonical; this is deliberately
+ * a derived revision/workflow record, not a second authoring surface.
+ */
+export async function ensureEditorialCompanion(payload: Payload, content: Doc, req?: any) {
+  if (!['article', 'page'].includes(String(content.contentType)) || !content.body) return
+  const existing = await findOne(
+    payload,
+    'article-family-content',
+    {
+      content: { equals: content.id },
+    },
+    0,
+    req,
+  )
+  const rawBody = content.body as Record<string, unknown>
+  const document: RichTextDocument = {
+    format: 'payload-lexical',
+    schemaVersion: 1,
+    document: rawBody,
+    canonicalHash: hashRichTextDocument(rawBody),
+    plainTextProjection: extractPlainText(rawBody).replace(/\s+/g, ' ').trim(),
+    unknownNodePolicy: 'preserve',
+  }
+  if (existing?.documentHash === document.canonicalHash) {
+    if (existing.lifecycle !== content.status)
+      await payload.update({
+        collection: 'article-family-content',
+        id: existing.id,
+        data: { lifecycle: content.status ?? 'draft' },
+        overrideAccess: true,
+        req,
+      } as never)
+    return
+  }
+  const sequence = Number(existing?.currentRevisionSequence ?? 0) + 1
+  const revisionId = randomBytes(16).toString('hex')
+  const integrityHash = `sha256:${createHash('sha256')
+    .update(`${content.id}:${sequence}:${document.canonicalHash}`)
+    .digest('hex')}`
+  const article = existing
+    ? existing
+    : ((await payload.create({
+        collection: 'article-family-content',
+        data: {
+          content: content.id,
+          articleKey: `content:${content.id}`,
+          lifecycle: content.status ?? 'draft',
+          document,
+          documentHash: document.canonicalHash,
+          plainTextProjection: document.plainTextProjection,
+          currentRevisionSequence: 0,
+          previewModes: ['desktop', 'mobile'],
+          workflowAudit: [],
+          acceptedMutationKeys: [],
+        },
+        overrideAccess: true,
+        req,
+      } as never)) as Doc)
+  const revision = (await payload.create({
+    collection: 'revision-records',
+    data: {
+      id: revisionId,
+      article: article.id,
+      parentRevision: existing?.currentRevision ?? null,
+      sequence,
+      document,
+      documentHash: document.canonicalHash,
+      integrityHash,
+      reason: existing ? 'edited' : 'created',
+      immutable: true,
+    },
+    overrideAccess: true,
+    req,
+  } as never)) as Doc
+  await payload.update({
+    collection: 'article-family-content',
+    id: article.id,
+    data: {
+      lifecycle: content.status ?? 'draft',
+      document,
+      documentHash: document.canonicalHash,
+      plainTextProjection: document.plainTextProjection,
+      currentRevisionSequence: sequence,
+      currentRevision: revision.id,
+    },
+    overrideAccess: true,
+    req,
+  } as never)
 }
 
 const persistWorkflow = async (
@@ -378,6 +477,7 @@ const persistWorkflow = async (
       updatedAtEditorial: workflow.article.updatedAt,
       readingTimeMinutes: estimateReadingTimeMinutes(currentRevision.document.plainTextProjection),
       tableOfContents: buildTableOfContents(currentRevision.document.document),
+      body: currentRevision.document.document,
     },
     overrideAccess: true,
   } as never)
@@ -458,6 +558,7 @@ export async function createEditorialArticle(
       canonicalPath: input.canonicalPath,
       summary: input.summary,
       excerpt: input.excerpt ?? input.summary,
+      body: document.document,
       status: 'draft',
       authors: authorLinks(input.authorIds ?? []),
       sections: input.sectionIds ?? [],
@@ -476,49 +577,78 @@ export async function createEditorialArticle(
     overrideAccess: true,
   } as never)) as Doc
 
-  const article = (await payload.create({
-    collection: 'article-family-content',
-    data: {
-      content: content.id,
-      articleKey: `content:${content.id}`,
-      lifecycle: workflow.article.status,
-      document,
-      documentHash: document.canonicalHash,
-      plainTextProjection: document.plainTextProjection,
-      currentRevisionSequence: 1,
-      previewModes: ['desktop', 'mobile'],
-      permissions: [
-        {
-          user: input.actorUserId ?? null,
-          actions: ['read', 'edit', 'request-review'],
-          grantedAt: now,
-        },
-      ].filter((entry) => entry.user),
-      sourceReferences: (input.sourceReferences ?? []).map((reference) => ({
-        sourceReferenceId: reference.sourceReferenceId,
-        source: reference.sourceId,
-        locator: reference.locator ?? null,
-        bibliographyKey: reference.bibliographyKey,
-        publicVisibility: reference.publicVisibility ?? 'public',
-      })),
-      citations: toStoredCitations(workflow.article.citations),
-      citationAttachments: [],
-      bibliography: null,
-      workflowAudit: workflow.article.audit,
-      acceptedMutationKeys: [],
-      promotionProvenance: input.promotionProvenance ?? null,
-    },
-    overrideAccess: true,
-  } as never)) as Doc
+  const existingCompanion = await findOne(
+    payload,
+    'article-family-content',
+    { content: { equals: content.id } },
+    0,
+  )
+  const articleData = {
+    content: content.id,
+    articleKey: `content:${content.id}`,
+    lifecycle: workflow.article.status,
+    document,
+    documentHash: document.canonicalHash,
+    plainTextProjection: document.plainTextProjection,
+    currentRevisionSequence: 1,
+    previewModes: ['desktop', 'mobile'],
+    permissions: [
+      {
+        user: input.actorUserId ?? null,
+        actions: ['read', 'edit', 'request-review'],
+        grantedAt: now,
+      },
+    ].filter((entry) => entry.user),
+    sourceReferences: (input.sourceReferences ?? []).map((reference) => ({
+      sourceReferenceId: reference.sourceReferenceId,
+      source: reference.sourceId,
+      locator: reference.locator ?? null,
+      bibliographyKey: reference.bibliographyKey,
+      publicVisibility: reference.publicVisibility ?? 'public',
+    })),
+    citations: toStoredCitations(workflow.article.citations),
+    citationAttachments: [],
+    bibliography: null,
+    workflowAudit: workflow.article.audit,
+    acceptedMutationKeys: [],
+    promotionProvenance: input.promotionProvenance ?? null,
+  }
+  const article = existingCompanion
+    ? ((await payload.update({
+        collection: 'article-family-content',
+        id: existingCompanion.id,
+        data: articleData,
+        overrideAccess: true,
+      } as never)) as Doc)
+    : ((await payload.create({
+        collection: 'article-family-content',
+        data: articleData,
+        overrideAccess: true,
+      } as never)) as Doc)
 
   const initialRevision = workflow.article.revisions[0]
-  const persistedInitialRevision = await createRevisionRecord(
-    payload,
-    String(article.id),
-    initialRevision,
-    importedFromMarkdown ? 'imported' : 'created',
-    input.actorUserId ?? null,
-  )
+  const existingRevision = existingCompanion
+    ? await findOne(
+        payload,
+        'revision-records',
+        {
+          and: [
+            { article: { equals: article.id } },
+            { sequence: { equals: initialRevision.sequence } },
+          ],
+        },
+        0,
+      )
+    : null
+  const persistedInitialRevision = existingRevision
+    ? existingRevision
+    : await createRevisionRecord(
+        payload,
+        String(article.id),
+        initialRevision,
+        importedFromMarkdown ? 'imported' : 'created',
+        input.actorUserId ?? null,
+      )
   await payload.update({
     collection: 'article-family-content',
     id: article.id,
@@ -709,11 +839,20 @@ export async function publishScheduledArticle(
   },
 ): Promise<boolean> {
   const bundle = await loadBundleByArticleId(payload, input.articleId)
+  const scheduledJob = await findOne(payload, 'scheduled-publish-jobs', {
+    idempotencyKey: { equals: input.idempotencyKey },
+  })
+  if (!scheduledJob || idOf(scheduledJob.article) !== input.articleId)
+    throw new Error('Scheduled publication contract was not found.')
+  const scheduledRevisionId = idOf(scheduledJob.revision)
+  if (!bundle.revisions.some((revision) => String(revision.id) === scheduledRevisionId))
+    throw new Error('Scheduled publication revision was not found.')
+  // A later draft must never replace the revision chosen at schedule time.
+  if (idOf(bundle.article.latestPublishedRevision) === scheduledRevisionId) return false
   const workflow = hydrateWorkflow(bundle)
   const published = workflow.publishScheduled(input.actor, input.idempotencyKey, input.now)
-  const currentRevisionId = workflow.article.currentRevisionId
   const latestPublishedRevisionId = published
-    ? currentRevisionId
+    ? scheduledRevisionId
     : idOf(bundle.article.latestPublishedRevision)
 
   await persistWorkflow(payload, bundle, workflow, {
@@ -722,17 +861,12 @@ export async function publishScheduledArticle(
     latestPublishedRevisionId,
   })
 
-  const scheduledJob = await findOne(payload, 'scheduled-publish-jobs', {
-    idempotencyKey: { equals: input.idempotencyKey },
-  })
-  if (scheduledJob) {
-    await payload.update({
-      collection: 'scheduled-publish-jobs',
-      id: scheduledJob.id,
-      data: { status: published ? 'completed' : scheduledJob.status },
-      overrideAccess: true,
-    } as never)
-  }
+  await payload.update({
+    collection: 'scheduled-publish-jobs',
+    id: scheduledJob.id,
+    data: { status: published ? 'completed' : scheduledJob.status },
+    overrideAccess: true,
+  } as never)
 
   return published
 }
@@ -746,6 +880,9 @@ export async function createEditorialPreviewToken(
     expiresAt: string
   },
 ): Promise<{ token: string }> {
+  if (!input.createdBy) throw new Error('Preview tokens require an authenticated creator.')
+  if (new Date(input.expiresAt).getTime() - Date.now() > 60 * 60 * 1000)
+    throw new Error('Preview tokens may not last longer than one hour.')
   const token = randomBytes(24).toString('hex')
   await payload.create({
     collection: 'preview-tokens',
@@ -805,10 +942,15 @@ export async function buildArticlePresentation(
   return {
     title: String(bundle.content.title),
     subtitle: bundle.content.subtitle ? String(bundle.content.subtitle) : null,
-    excerpt: bundle.content.excerpt ? String(bundle.content.excerpt) : null,
+    excerpt: bundle.content.summary
+      ? String(bundle.content.summary)
+      : bundle.content.excerpt
+        ? String(bundle.content.excerpt)
+        : null,
     canonicalPath: String(bundle.content.canonicalPath),
     status: String(bundle.article.lifecycle),
     bodyText: document.plainTextProjection,
+    body: document.document,
     readingTimeMinutes: estimateReadingTimeMinutes(document.plainTextProjection),
     tableOfContents: buildTableOfContents(document.document),
     authors: authorLabels(bundle.content),
@@ -863,6 +1005,7 @@ export async function resolveEditorialPreviewToken(
   payload: Payload,
   token: string,
   previewMode: 'desktop' | 'mobile' = 'desktop',
+  viewerId?: string | null,
 ) {
   const hashed = hashPreviewToken(token)
   const preview = await findOne(payload, 'preview-tokens', { tokenHash: { equals: hashed } }, 1)
@@ -870,6 +1013,8 @@ export async function resolveEditorialPreviewToken(
   if (preview.revokedAt) throw new Error('Preview token has been revoked.')
   if (new Date(String(preview.expiresAt)).getTime() <= Date.now())
     throw new Error('Preview token has expired.')
+  if (!viewerId || idOf(preview.createdBy) !== viewerId)
+    throw new Error('Preview requires the authenticated creator session.')
 
   return buildArticlePresentation(payload, {
     articleId: idOf(preview.article),
@@ -901,7 +1046,45 @@ export async function loadPublishedArticleBySlug(payload: Payload, slug: string)
     2,
   )
   if (!article) throw new Error('Editorial article metadata not found.')
-  return buildArticlePresentation(payload, { articleId: String(article.id), preview: false })
+  if (!idOf(article.latestPublishedRevision)) throw new Error('Published revision was not found.')
+  return buildArticlePresentation(payload, {
+    articleId: String(article.id),
+    revisionId: idOf(article.latestPublishedRevision),
+    preview: false,
+  })
+}
+
+/** The only public content resolver. It reads the explicitly published immutable revision. */
+export async function loadPublishedArticleByPath(
+  payload: Payload,
+  input: { siteId: string; path: string },
+) {
+  const content = await findOne(
+    payload,
+    'content',
+    {
+      and: [
+        { site: { equals: input.siteId } },
+        { canonicalPath: { equals: input.path } },
+        { contentType: { in: ['article', 'page'] } },
+      ],
+    },
+    1,
+  )
+  if (!content || String(content.status) === 'archived' || !canRenderPublic(content))
+    throw new Error('Published content was not found.')
+  const article = await findOne(
+    payload,
+    'article-family-content',
+    { content: { equals: content.id } },
+    1,
+  )
+  if (!article || !idOf(article.latestPublishedRevision))
+    throw new Error('Published revision was not found.')
+  return buildArticlePresentation(payload, {
+    articleId: String(article.id),
+    revisionId: idOf(article.latestPublishedRevision),
+  })
 }
 
 export async function promoteDiscussionPostToArticle(

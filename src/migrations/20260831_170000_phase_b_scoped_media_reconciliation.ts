@@ -19,5 +19,7 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
 }
 
 export async function down(_: MigrateDownArgs): Promise<void> {
-  throw new Error('Phase B media lifecycle fields are additive; rollback requires a reviewed data migration.')
+  throw new Error(
+    'Phase B media lifecycle fields are additive; rollback requires a reviewed data migration.',
+  )
 }

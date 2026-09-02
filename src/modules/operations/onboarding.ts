@@ -278,7 +278,7 @@ export async function provisionOnboardingSite(
   } as never)
   if (input.starterContent)
     await provisionStarterContent(payload, { input, site, publication, space, member })
-  return { site, publication, space, configuredCapabilities: enabledCapabilities }
+  return { site, publication, space, member, configuredCapabilities: enabledCapabilities }
 }
 
 async function provisionStarterContent(

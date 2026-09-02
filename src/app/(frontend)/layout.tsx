@@ -55,7 +55,10 @@ export default async function FrontendLayout({ children }: { children: ReactNode
     if (publication) {
       siteName = typeof publication.name === 'string' ? publication.name : siteName
       navigation = normalizeNavigation(publication.navigation)
-      siteId = typeof publication.site === 'string' ? publication.site : (publication.site as { id?: string } | undefined)?.id
+      siteId =
+        typeof publication.site === 'string'
+          ? publication.site
+          : (publication.site as { id?: string } | undefined)?.id
     }
   } catch {
     // The public shell remains usable before first-run setup and during recovery.

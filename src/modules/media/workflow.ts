@@ -2,13 +2,17 @@ import type { Payload } from 'payload'
 
 import type { AppConfig } from '../core/config'
 import { assertTeamPermission, type TeamScope } from '../collaboration/service'
+import { findIfRegistered } from '../public/registered-collections'
 import { inspectMedia, mediaObjectKey, mediaStorage } from './storage'
 
 type Doc = Record<string, unknown>
 const id = (value: unknown) =>
   typeof value === 'string' ? value : String((value as { id?: string } | undefined)?.id ?? '')
 const cleanText = (value: string | undefined, label: string, maxLength: number) => {
-  const cleaned = (value ?? '').replace(/[\u0000-\u001f\u007f]/g, ' ').replace(/\s+/g, ' ').trim()
+  const cleaned = (value ?? '')
+    .replace(/[\u0000-\u001f\u007f]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
   if (cleaned.length > maxLength) throw new MediaWorkflowError(`${label} is too long.`)
   return cleaned
 }
@@ -31,6 +35,7 @@ export async function assertMediaPermission(
 ) {
   if (!user || !['owner', 'staff', 'administrator'].includes(String(user.role)))
     throw new MediaWorkflowError('Staff access is required.', 403)
+  if (user.role === 'owner') return
   const memberId = id(user.member)
   if (!memberId) throw new MediaWorkflowError('A staff member identity is required.', 403)
   try {
@@ -92,7 +97,7 @@ export async function uploadMedia(
         checksum: inspection.sha256,
         altText: altText || null,
         caption: caption || null,
-        focalPoint: input.focalPoint ?? null,
+        ...(input.focalPoint ? { focalPoint: input.focalPoint } : {}),
         retentionMode: 'permanent',
         retentionHold: 'none',
         removeFromDiscovery: false,
@@ -186,7 +191,10 @@ export async function replaceMedia(
  * Replacement is a bounded, site-scoped chain: old records remain audit evidence and all
  * readers resolve at most eight links. A cycle, missing target, or cross-site target is invalid.
  */
-export async function resolveMediaReplacement(payload: Payload, media: Doc): Promise<Doc | undefined> {
+export async function resolveMediaReplacement(
+  payload: Payload,
+  media: Doc,
+): Promise<Doc | undefined> {
   const siteId = id(media.site)
   const seen = new Set<string>()
   let current = media
@@ -196,7 +204,9 @@ export async function resolveMediaReplacement(payload: Payload, media: Doc): Pro
     seen.add(currentId)
     const nextId = id(current.replaceGloballyWith)
     if (!nextId) return current
-    const next = (await payload.findByID({ collection: 'media-assets', id: nextId, depth: 0, overrideAccess: true } as never).catch(() => undefined)) as unknown as Doc | undefined
+    const next = (await payload
+      .findByID({ collection: 'media-assets', id: nextId, depth: 0, overrideAccess: true } as never)
+      .catch(() => undefined)) as unknown as Doc | undefined
     if (!next || id(next.site) !== siteId) return undefined
     current = next
   }
@@ -209,8 +219,14 @@ export async function updateMediaMetadata(
   input: { scope: TeamScope; mediaId: string; title?: string; altText?: string; caption?: string },
 ) {
   await assertMediaPermission(payload, user, input.scope, 'content.edit')
-  const media = (await payload.findByID({ collection: 'media-assets', id: input.mediaId, depth: 0, overrideAccess: true } as never)) as unknown as Doc
-  if (id(media.site) !== input.scope.siteId) throw new MediaWorkflowError('Cross-site media update is not allowed.', 403)
+  const media = (await payload.findByID({
+    collection: 'media-assets',
+    id: input.mediaId,
+    depth: 0,
+    overrideAccess: true,
+  } as never)) as unknown as Doc
+  if (id(media.site) !== input.scope.siteId)
+    throw new MediaWorkflowError('Cross-site media update is not allowed.', 403)
   const data: Record<string, string | null> = {}
   if (input.title !== undefined) {
     const title = cleanText(input.title, 'Media title', 180)
@@ -219,7 +235,12 @@ export async function updateMediaMetadata(
   }
   if (input.altText !== undefined) data.altText = cleanText(input.altText, 'Alt text', 500) || null
   if (input.caption !== undefined) data.caption = cleanText(input.caption, 'Caption', 2_000) || null
-  return payload.update({ collection: 'media-assets', id: input.mediaId, data, overrideAccess: true } as never)
+  return payload.update({
+    collection: 'media-assets',
+    id: input.mediaId,
+    data,
+    overrideAccess: true,
+  } as never)
 }
 
 export async function deleteOrphanedMedia(
@@ -262,10 +283,24 @@ export async function deleteOrphanedMedia(
   const bytes = await storage.get(String(media.storageLocation))
   await storage.remove(String(media.storageLocation))
   try {
-    await payload.delete({ collection: 'media-assets', id: input.mediaId, overrideAccess: true } as never)
+    await payload.delete({
+      collection: 'media-assets',
+      id: input.mediaId,
+      overrideAccess: true,
+    } as never)
   } catch {
-    if (bytes) await storage.put(String(media.storageLocation), bytes, String(media.mimeType || 'application/octet-stream')).catch(() => undefined)
-    throw new MediaWorkflowError('Media deletion could not be completed; bytes were restored for recovery.', 500)
+    if (bytes)
+      await storage
+        .put(
+          String(media.storageLocation),
+          bytes,
+          String(media.mimeType || 'application/octet-stream'),
+        )
+        .catch(() => undefined)
+    throw new MediaWorkflowError(
+      'Media deletion could not be completed; bytes were restored for recovery.',
+      500,
+    )
   }
 }
 
@@ -275,9 +310,45 @@ export async function publicMedia(payload: Payload, mediaId: string): Promise<Do
     .catch(() => undefined)) as unknown as Doc | undefined
   if (!media || media.removeFromDiscovery || media.retentionMode === 'tombstone') return undefined
   const references = await Promise.all([
-    payload.find({ collection: 'content', where: { and: [{ heroMedia: { equals: mediaId } }, { status: { in: ['published', 'updated'] } }, { visibility: { equals: 'public' } }, { site: { equals: id(media.site) } }] }, limit: 1, depth: 0, overrideAccess: true } as never),
-    payload.find({ collection: 'podcast-episodes', where: { and: [{ audio: { equals: mediaId } }, { status: { in: ['published', 'updated'] } }, { site: { equals: id(media.site) } }] }, limit: 1, depth: 0, overrideAccess: true } as never),
-    payload.find({ collection: 'videos', where: { and: [{ nativeMedia: { equals: mediaId } }, { status: { in: ['published', 'updated'] } }, { site: { equals: id(media.site) } }] }, limit: 1, depth: 0, overrideAccess: true } as never),
+    findIfRegistered(payload, {
+      collection: 'content',
+      where: {
+        and: [
+          { heroMedia: { equals: mediaId } },
+          { status: { in: ['published', 'updated'] } },
+          { site: { equals: id(media.site) } },
+        ],
+      },
+      limit: 1,
+      depth: 0,
+      overrideAccess: true,
+    } as never),
+    findIfRegistered(payload, {
+      collection: 'podcast-episodes',
+      where: {
+        and: [
+          { audio: { equals: mediaId } },
+          { status: { in: ['published', 'updated'] } },
+          { site: { equals: id(media.site) } },
+        ],
+      },
+      limit: 1,
+      depth: 0,
+      overrideAccess: true,
+    } as never),
+    findIfRegistered(payload, {
+      collection: 'videos',
+      where: {
+        and: [
+          { nativeMedia: { equals: mediaId } },
+          { status: { in: ['published', 'updated'] } },
+          { site: { equals: id(media.site) } },
+        ],
+      },
+      limit: 1,
+      depth: 0,
+      overrideAccess: true,
+    } as never),
   ])
   if (!references.some((reference) => reference.docs.length)) return undefined
   return resolveMediaReplacement(payload, media)

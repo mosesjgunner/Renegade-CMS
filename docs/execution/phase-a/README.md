@@ -15,16 +15,16 @@ that every capability claim is backed by reproducible, commit-bound evidence.
 
 ## 1. Baseline binding (recorded at A-00 execution)
 
-| Item | Value |
-|---|---|
-| Repository | `https://github.com/mosesjgunner/Renegade-CMS` |
-| Base branch | `main` |
-| **Base commit (SHA)** | `ae0d121652d4e6507a327f68c029c0512588bcdd` (`ae0d121`) |
-| Base commit subject | `WEB CMS FINISH PASS START` |
-| Base commit date | 2026-09-01 (author date 2026-08-31 -05:00) |
-| A-00 branch | `phase-a/a00-control-plane` |
-| A-00 execution timestamp (UTC) | 2026-09-01T01:03:00Z |
-| Host OS (A-00 run) | Linux 6.16.9+ x86_64 (Ubuntu 24.04 userland) |
+| Item                           | Value                                                  |
+| ------------------------------ | ------------------------------------------------------ |
+| Repository                     | `https://github.com/mosesjgunner/Renegade-CMS`         |
+| Base branch                    | `main`                                                 |
+| **Base commit (SHA)**          | `ae0d121652d4e6507a327f68c029c0512588bcdd` (`ae0d121`) |
+| Base commit subject            | `WEB CMS FINISH PASS START`                            |
+| Base commit date               | 2026-09-01 (author date 2026-08-31 -05:00)             |
+| A-00 branch                    | `phase-a/a00-control-plane`                            |
+| A-00 execution timestamp (UTC) | 2026-09-01T01:03:00Z                                   |
+| Host OS (A-00 run)             | Linux 6.16.9+ x86_64 (Ubuntu 24.04 userland)           |
 
 > Every implementation card MUST branch from the commit at which **A-00 is merged into
 > `main`** (or a later reconciled checkpoint commit), and MUST record its own base SHA and
@@ -32,30 +32,30 @@ that every capability claim is backed by reproducible, commit-bound evidence.
 
 ### Runtime / dependency versions
 
-| Component | Version (observed at A-00) | Source |
-|---|---|---|
-| Node.js | v22.23.2 | `node --version` (repo `engines` requires `>=20.9.0`) |
-| npm | 10.9.8 | `npm --version` (repo `engines` requires `>=10`) |
-| Payload CMS | 3.88.0 | `package.json` (`payload`, `@payloadcms/*`) |
-| Next.js | 16.3.0 | `package.json` |
-| React / React-DOM | 19.2.8 | `package.json` |
-| TypeScript | 5.9.2 | `package.json` (devDependencies) |
-| Vitest | 3.2.4 | `package.json` |
-| Playwright test runner | 1.62.1 | `@playwright/test`, confirmed via `npx playwright --version` |
-| Prettier | 3.6.2 | `package.json` |
-| ESLint | 9.35.0 | `package.json` |
-| Postgres adapter | `@payloadcms/db-postgres` 3.88.0 | `package.json` |
+| Component              | Version (observed at A-00)       | Source                                                       |
+| ---------------------- | -------------------------------- | ------------------------------------------------------------ |
+| Node.js                | v22.23.2                         | `node --version` (repo `engines` requires `>=20.9.0`)        |
+| npm                    | 10.9.8                           | `npm --version` (repo `engines` requires `>=10`)             |
+| Payload CMS            | 3.88.0                           | `package.json` (`payload`, `@payloadcms/*`)                  |
+| Next.js                | 16.3.0                           | `package.json`                                               |
+| React / React-DOM      | 19.2.8                           | `package.json`                                               |
+| TypeScript             | 5.9.2                            | `package.json` (devDependencies)                             |
+| Vitest                 | 3.2.4                            | `package.json`                                               |
+| Playwright test runner | 1.62.1                           | `@playwright/test`, confirmed via `npx playwright --version` |
+| Prettier               | 3.6.2                            | `package.json`                                               |
+| ESLint                 | 9.35.0                           | `package.json`                                               |
+| Postgres adapter       | `@payloadcms/db-postgres` 3.88.0 | `package.json`                                               |
 
 ### Tooling / infrastructure availability
 
-| Capability | Status at A-00 | Notes |
-|---|---|---|
-| Docker engine | **AVAILABLE** — daemon running | Docker 29.1.3; daemon reachable (`docker info` OK). |
-| PostgreSQL **client** | **AVAILABLE** | `psql` (PostgreSQL) 16.14. |
-| PostgreSQL **server** | **NOT RUNNING** | `pg_isready` → no response on `/var/run/postgresql:5432`. Integration/migration/DB gates require an isolated disposable server (see RESOURCE_MAP.md) and were **NOT RUN** by A-00. |
-| Chromium / Chrome browser | **AVAILABLE** | Google Chrome 151.0.7922.137 (`chromium` shim also present). |
-| Playwright browser binaries | **NOT INSTALLED** | `~/.cache/ms-playwright` empty. Cards that run the browser suite must `npx playwright install chromium` (or use the system Chrome channel) inside their isolated environment. |
-| Playwright browser gate | **NOT RUN** at A-00 | Requires isolated web server + browser install per card. |
+| Capability                  | Status at A-00                 | Notes                                                                                                                                                                              |
+| --------------------------- | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Docker engine               | **AVAILABLE** — daemon running | Docker 29.1.3; daemon reachable (`docker info` OK).                                                                                                                                |
+| PostgreSQL **client**       | **AVAILABLE**                  | `psql` (PostgreSQL) 16.14.                                                                                                                                                         |
+| PostgreSQL **server**       | **NOT RUNNING**                | `pg_isready` → no response on `/var/run/postgresql:5432`. Integration/migration/DB gates require an isolated disposable server (see RESOURCE_MAP.md) and were **NOT RUN** by A-00. |
+| Chromium / Chrome browser   | **AVAILABLE**                  | Google Chrome 151.0.7922.137 (`chromium` shim also present).                                                                                                                       |
+| Playwright browser binaries | **NOT INSTALLED**              | `~/.cache/ms-playwright` empty. Cards that run the browser suite must `npx playwright install chromium` (or use the system Chrome channel) inside their isolated environment.      |
+| Playwright browser gate     | **NOT RUN** at A-00            | Requires isolated web server + browser install per card.                                                                                                                           |
 
 ### Registered migrations
 
@@ -63,7 +63,7 @@ that every capability claim is backed by reproducible, commit-bound evidence.
 - Migrations registered in `src/migrations/index.ts`: **41** (files and registrations match)
 - Latest registered migration: `20260831_200000_member_identity_foundation`
 - **Ordering note:** the final registered entries are not in strict lexical order —
-  `20260831_200000_member_identity_foundation` is imported/registered *after*
+  `20260831_200000_member_identity_foundation` is imported/registered _after_
   the `20260831_09xxxx…20260831_19xxxx` Phase B entries. This is not a defect for A-00
   (no migrations changed), but **new Phase A migrations MUST be globally ordered and
   collision-free** relative to the whole ledger (see SHARED_CONTRACTS.md §Generated-file
@@ -71,10 +71,10 @@ that every capability claim is backed by reproducible, commit-bound evidence.
 
 ### Generated Payload artifacts (committed baseline state)
 
-| Artifact | Path | State at A-00 |
-|---|---|---|
-| Payload generated types | `src/payload-types.ts` | Present and committed (11,189 lines). Treated as reconciled baseline. |
-| Payload admin import map | `src/app/(payload)/admin/importMap.js` | Present and committed (single `CollectionCards` entry). |
+| Artifact                 | Path                                   | State at A-00                                                         |
+| ------------------------ | -------------------------------------- | --------------------------------------------------------------------- |
+| Payload generated types  | `src/payload-types.ts`                 | Present and committed (11,189 lines). Treated as reconciled baseline. |
+| Payload admin import map | `src/app/(payload)/admin/importMap.js` | Present and committed (single `CollectionCards` entry).               |
 
 A-00 did **not** run `generate:types` / `generate:importmap` and did **not** modify these
 files. They are **reconciled only at merge checkpoints** (see SHARED_CONTRACTS.md).
@@ -133,16 +133,16 @@ Each implementation agent, before writing any code, MUST:
 
 ## 3. Documents in this directory
 
-| File | Purpose |
-|---|---|
-| `README.md` | This file — baseline binding, tooling, and operating rules. |
-| `CHECKLIST.md` | The single status board for A-01…A-10 (status, dependency, branch, parallel group, merge state, evidence, remediation). Coordinator-owned. |
-| `SHARED_CONTRACTS.md` | Frozen repository-supported contracts + generated-file/migration ownership. |
-| `RESOURCE_MAP.md` | Unique isolated runtime resources per concurrent card. |
-| `EVIDENCE_INDEX.md` | Index of card evidence + A-00 baseline check results. Coordinator-owned. |
-| `evidence/_TEMPLATE.md` | Mandatory evidence template every card copies. |
-| `evidence/A-XX.md` | Per-card evidence (authored by owning card). |
-| `remediation/A-XX-*.md` | Bounded remediation items for unfinished work. |
+| File                    | Purpose                                                                                                                                    |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
+| `README.md`             | This file — baseline binding, tooling, and operating rules.                                                                                |
+| `CHECKLIST.md`          | The single status board for A-01…A-10 (status, dependency, branch, parallel group, merge state, evidence, remediation). Coordinator-owned. |
+| `SHARED_CONTRACTS.md`   | Frozen repository-supported contracts + generated-file/migration ownership.                                                                |
+| `RESOURCE_MAP.md`       | Unique isolated runtime resources per concurrent card.                                                                                     |
+| `EVIDENCE_INDEX.md`     | Index of card evidence + A-00 baseline check results. Coordinator-owned.                                                                   |
+| `evidence/_TEMPLATE.md` | Mandatory evidence template every card copies.                                                                                             |
+| `evidence/A-XX.md`      | Per-card evidence (authored by owning card).                                                                                               |
+| `remediation/A-XX-*.md` | Bounded remediation items for unfinished work.                                                                                             |
 
 ## 4. Explicit non-goals of A-00
 
@@ -160,20 +160,19 @@ proves nothing about product capability — it only makes the pass **executable*
 
 ## Existing executable surface
 
-| Purpose | Command |
-| --- | --- |
-| Formatting | `npm run format:check` |
-| Lint / types / unit | `npm run lint`; `npm run typecheck`; `npm test` |
-| Build | `npm run build` |
-| PostgreSQL integration | `npm run test:integration` |
-| Browser | `npm run build`; `npm run test:browser` |
-| Migrations | `npm run test:migrations:fresh`; `npm run test:migrations:upgrade` |
-| Generated files | `npm run generate:types`; `npm run generate:importmap` |
-| Release clean clone | `npm run verify:release` |
+| Purpose                | Command                                                            |
+| ---------------------- | ------------------------------------------------------------------ |
+| Formatting             | `npm run format:check`                                             |
+| Lint / types / unit    | `npm run lint`; `npm run typecheck`; `npm test`                    |
+| Build                  | `npm run build`                                                    |
+| PostgreSQL integration | `npm run test:integration`                                         |
+| Browser                | `npm run build`; `npm run test:browser`                            |
+| Migrations             | `npm run test:migrations:fresh`; `npm run test:migrations:upgrade` |
+| Generated files        | `npm run generate:types`; `npm run generate:importmap`             |
+| Release clean clone    | `npm run verify:release`                                           |
 
 `playwright.config.ts` currently fixes Chromium/Chrome and web server port `3110`; a concurrent card must use its allocated private browser configuration or defer browser proof to a checkpoint. The checked-in `compose.yaml` exposes PostgreSQL on `5432`; use an untracked, card-specific Compose override as specified in the Resource Map. Never attach to a shared database or `media` directory.
 
 Relevant existing test entry points include `tests/unit/config.test.ts`, `execution-foundation.test.ts`, `operations-diagnostics.test.ts`, `operational-lifecycle.test.ts`, `operational-backup.test.ts`, `public-contracts.test.ts`, `public-navigation.test.ts`, `media-contracts.test.ts`, `media-storage.test.ts`, `portability-contracts.test.ts`, and the isolated integration suites `payload-postgres`, `installation`, `operations-jobs`, `canonical-information-architecture`, `editorial-acceptance`, `media-acceptance`, `page-builder-acceptance`, and `upgrade-migration`.
 
 See [CHECKLIST.md](CHECKLIST.md), [SHARED_CONTRACTS.md](SHARED_CONTRACTS.md), [RESOURCE_MAP.md](RESOURCE_MAP.md), and [EVIDENCE_INDEX.md](EVIDENCE_INDEX.md).
-

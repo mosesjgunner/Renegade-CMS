@@ -1,4 +1,4 @@
-import type { Field } from 'payload'
+import type { CollectionBeforeChangeHook, Field } from 'payload'
 
 export const visibilityOptions = ['public', 'unlisted', 'members', 'friends', 'private']
 
@@ -51,7 +51,7 @@ export const retentionFields = (): Field[] => [
   {
     name: 'removeFromDiscovery',
     type: 'checkbox',
-    defaultValue: true,
+    defaultValue: false,
     admin: {
       description: 'Removes expired or burned records from routes, search, feeds, and sitemaps.',
     },
@@ -156,6 +156,60 @@ export const siteScopeFields = (): Field[] => [
   { name: 'publication', type: 'relationship', relationTo: 'publications', index: true },
   { name: 'space', type: 'relationship', relationTo: 'spaces', index: true },
 ]
+
+type TenantRelation = {
+  /** Field whose related record must belong to the document's site. */
+  field: string
+  collection: string
+  /** Require the relation when the supplied predicate is true. */
+  requiredWhen?: (data: Record<string, unknown>) => boolean
+}
+
+const relationID = (value: unknown): string | undefined => {
+  if (typeof value === 'string') return value
+  if (value && typeof value === 'object') {
+    if ('id' in value) return String(value.id)
+    if ('value' in value) return String(value.value)
+  }
+  return undefined
+}
+
+/**
+ * Enforces the site as the tenant boundary for canonical relationships.
+ * Payload's relationship fields are database foreign keys, but a foreign key
+ * alone cannot prevent a record in site A from pointing at one in site B.
+ */
+export const enforceSiteTenantBoundary =
+  (relations: TenantRelation[]): CollectionBeforeChangeHook =>
+  async ({ data, originalDoc, req }) => {
+    const next = (data ?? {}) as Record<string, unknown>
+    const previous = (originalDoc ?? {}) as Record<string, unknown>
+    const merged = { ...previous, ...next }
+    const siteID = relationID(merged.site)
+    if (!siteID) throw new Error('A canonical record must belong to a site.')
+
+    for (const relation of relations) {
+      const relationIDValue = relationID(merged[relation.field])
+      if (!relationIDValue) {
+        if (relation.requiredWhen?.(merged))
+          throw new Error(`${relation.field} is required for this canonical scope.`)
+        continue
+      }
+
+      const related = (await req.payload.findByID({
+        collection: relation.collection as never,
+        id: relationIDValue,
+        depth: 0,
+        overrideAccess: true,
+      })) as Record<string, unknown>
+      const relatedSiteID = relationID(related.site)
+      if (!relatedSiteID || relatedSiteID !== siteID) {
+        throw new Error(`${relation.field} must belong to the same site as this record.`)
+      }
+    }
+
+    return data
+  }
 
 export const ownerFields = (): Field[] => [
   ...siteScopeFields(),

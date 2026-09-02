@@ -38,6 +38,22 @@ describe('M04-C editorial workflow', () => {
     expect(flow.article.firstPublishedAt).toBeTruthy()
   })
 
+  it('allows a captured scheduled revision to publish after a later draft exists', () => {
+    const flow = new EditorialWorkflow({ document: doc('Scheduled'), author })
+    const scheduledRevision = flow.article.currentRevisionId
+    flow.requestReview(author)
+    flow.decideReview(editor, true)
+    flow.schedule(publisher, '2026-08-19T12:00:00Z', 'America/Chicago', 'job-2')
+    flow.saveDraft({
+      actor: author,
+      document: doc('Later private draft'),
+      baseRevisionId: scheduledRevision,
+      mutationId: 'later',
+    })
+    expect(flow.article.status).toBe('draft')
+    expect(flow.publishScheduled(publisher, 'job-2')).toBe(true)
+  })
+
   it('preserves immutable history, rejects stale autosaves, and restores by creating a revision', () => {
     const flow = new EditorialWorkflow({ document: doc('Original'), author })
     const original = flow.article.currentRevisionId

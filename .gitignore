@@ -13,3 +13,4 @@ coverage/
 .payload-upstream/
 test-results/
 playwright-report/
+media/

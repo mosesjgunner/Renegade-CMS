@@ -10,7 +10,7 @@
     "npm": ">=10"
   },
   "scripts": {
-    "build": "cross-env NODE_OPTIONS=--no-deprecation next build",
+    "build": "cross-env NODE_OPTIONS=--no-deprecation next build && node -e \"const fs = require('fs'); fs.cpSync('.next/static', '.next/standalone/.next/static', { recursive: true }); if (fs.existsSync('public')) fs.cpSync('public', '.next/standalone/public', { recursive: true });\"",
     "dev": "cross-env NODE_OPTIONS=--no-deprecation next dev",
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
     "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",

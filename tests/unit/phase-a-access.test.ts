@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import { Content, MediaAssets } from '../../src/collections/Publishing'
 
-const request = (role?: string) => ({ req: { user: role ? { role } : null } })
+const request = (role?: string) => ({ req: { user: role ? { role } : null } }) as never
 
 describe('Phase A access hardening', () => {
   it('does not expose raw content or media metadata to anonymous Payload requests', () => {

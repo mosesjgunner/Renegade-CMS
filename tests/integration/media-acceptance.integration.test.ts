@@ -175,12 +175,29 @@ describe('M10 media publication acceptance', () => {
     } as never)) as any
     const first = (await payload.create({
       collection: 'book-chapters',
-      data: { book: book.id, title: 'First', slug: `first-${suffix}`, canonicalPath: `/books/book-${suffix}/first-${suffix}`, displayOrder: 1, status: 'published', publishedAt: new Date().toISOString(), preview: true },
+      data: {
+        book: book.id,
+        title: 'First',
+        slug: `first-${suffix}`,
+        canonicalPath: `/books/book-${suffix}/first-${suffix}`,
+        displayOrder: 1,
+        status: 'published',
+        publishedAt: new Date().toISOString(),
+        preview: true,
+      },
       overrideAccess: true,
     } as never)) as any
     const second = (await payload.create({
       collection: 'book-chapters',
-      data: { book: book.id, title: 'Second', slug: `second-${suffix}`, canonicalPath: `/books/book-${suffix}/second-${suffix}`, displayOrder: 2, status: 'published', publishedAt: new Date().toISOString() },
+      data: {
+        book: book.id,
+        title: 'Second',
+        slug: `second-${suffix}`,
+        canonicalPath: `/books/book-${suffix}/second-${suffix}`,
+        displayOrder: 2,
+        status: 'published',
+        publishedAt: new Date().toISOString(),
+      },
       overrideAccess: true,
     } as never)) as any
     expect(

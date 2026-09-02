@@ -134,9 +134,19 @@ export function buildJsonLd(input: SchemaInput): {
       if (entity.endsAt) node.endDate = entity.endsAt
       if (entity.attendanceMode)
         node.eventAttendanceMode = `https://schema.org/${entity.attendanceMode === 'virtual' ? 'OnlineEventAttendanceMode' : entity.attendanceMode === 'hybrid' ? 'MixedEventAttendanceMode' : 'OfflineEventAttendanceMode'}`
-      if (entity.locationName) node.location = { '@type': 'Place', name: entity.locationName, ...(entity.locationAddress ? { address: entity.locationAddress } : {}) }
+      if (entity.locationName)
+        node.location = {
+          '@type': 'Place',
+          name: entity.locationName,
+          ...(entity.locationAddress ? { address: entity.locationAddress } : {}),
+        }
       if (entity.onlineUrl) node.location = { '@type': 'VirtualLocation', url: entity.onlineUrl }
-      if (entity.organizerName) node.organizer = { '@type': 'Organization', name: entity.organizerName, ...(entity.organizerUrl ? { url: entity.organizerUrl } : {}) }
+      if (entity.organizerName)
+        node.organizer = {
+          '@type': 'Organization',
+          name: entity.organizerName,
+          ...(entity.organizerUrl ? { url: entity.organizerUrl } : {}),
+        }
     }
     graph.push(node)
     if (entity.kind === 'timeline')

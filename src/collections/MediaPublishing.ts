@@ -15,7 +15,13 @@ const scoped = () => [
   { name: 'content', type: 'relationship' as const, relationTo: 'content' as const, index: true },
   { name: 'canonicalPath', type: 'text' as const },
   { name: 'description', type: 'textarea' as const },
-  { name: 'status', type: 'select' as const, required: true, defaultValue: 'draft', options: ['draft', 'scheduled', 'published', 'updated', 'unavailable'] },
+  {
+    name: 'status',
+    type: 'select' as const,
+    required: true,
+    defaultValue: 'draft',
+    options: ['draft', 'scheduled', 'published', 'updated', 'unavailable'],
+  },
   { name: 'publishedAt', type: 'date' as const },
   ...seoFields(),
   ...structuredDataSourceFields(),
@@ -50,36 +56,72 @@ export const BookParts = collection('book-parts', [
 ])
 export const BookChapters: CollectionConfig = {
   ...collection('book-chapters', [
-  { name: 'book', type: 'relationship', relationTo: 'books' as never, required: true, index: true },
-  { name: 'part', type: 'relationship', relationTo: 'book-parts' as never },
-  { name: 'content', type: 'relationship', relationTo: 'content' },
-  { name: 'title', type: 'text', required: true },
-  { name: 'slug', type: 'text', required: true, validate: canonicalSlug },
-  { name: 'canonicalPath', type: 'text', required: true, unique: true },
-  { name: 'displayOrder', type: 'number', required: true },
-  {
-    name: 'status',
-    type: 'select',
-    required: true,
-    defaultValue: 'draft',
-    options: ['draft', 'review', 'scheduled', 'published', 'updated', 'archived'],
-  },
-  { name: 'publishedAt', type: 'date' },
-  { name: 'releaseAt', type: 'date' },
-  { name: 'preview', type: 'checkbox', defaultValue: false },
-  { name: 'footnotes', type: 'json' },
+    {
+      name: 'book',
+      type: 'relationship',
+      relationTo: 'books' as never,
+      required: true,
+      index: true,
+    },
+    { name: 'part', type: 'relationship', relationTo: 'book-parts' as never },
+    { name: 'content', type: 'relationship', relationTo: 'content' },
+    { name: 'title', type: 'text', required: true },
+    { name: 'slug', type: 'text', required: true, validate: canonicalSlug },
+    { name: 'canonicalPath', type: 'text', required: true, unique: true },
+    { name: 'displayOrder', type: 'number', required: true },
+    {
+      name: 'status',
+      type: 'select',
+      required: true,
+      defaultValue: 'draft',
+      options: ['draft', 'review', 'scheduled', 'published', 'updated', 'archived'],
+    },
+    { name: 'publishedAt', type: 'date' },
+    { name: 'releaseAt', type: 'date' },
+    { name: 'preview', type: 'checkbox', defaultValue: false },
+    { name: 'footnotes', type: 'json' },
   ]),
   hooks: {
     afterChange: [
       async ({ doc, previousDoc, operation, req }) => {
-        if (operation !== 'update' || !previousDoc?.canonicalPath || previousDoc.canonicalPath === doc.canonicalPath)
+        if (
+          operation !== 'update' ||
+          !previousDoc?.canonicalPath ||
+          previousDoc.canonicalPath === doc.canonicalPath
+        )
           return doc
-        const book = await req.payload.findByID({ collection: 'books', id: typeof doc.book === 'string' ? doc.book : doc.book?.id, depth: 0, overrideAccess: true } as never)
+        const book = await req.payload.findByID({
+          collection: 'books',
+          id: typeof doc.book === 'string' ? doc.book : doc.book?.id,
+          depth: 0,
+          overrideAccess: true,
+        } as never)
         const scopedBook = book as unknown as { site?: string | { id?: string } }
         const site = typeof scopedBook.site === 'string' ? scopedBook.site : scopedBook.site?.id
         if (!site) return doc
-        const exists = await req.payload.find({ collection: 'public-redirects', where: { and: [{ site: { equals: site } }, { fromPath: { equals: previousDoc.canonicalPath } }] }, limit: 1, depth: 0, overrideAccess: true } as never)
-        if (!exists.docs.length) await req.payload.create({ collection: 'public-redirects', data: { site, fromPath: previousDoc.canonicalPath, toPath: doc.canonicalPath, match: 'exact', statusCode: '308', preserveQuery: true, enabled: true }, overrideAccess: true } as never)
+        const exists = await req.payload.find({
+          collection: 'public-redirects',
+          where: {
+            and: [{ site: { equals: site } }, { fromPath: { equals: previousDoc.canonicalPath } }],
+          },
+          limit: 1,
+          depth: 0,
+          overrideAccess: true,
+        } as never)
+        if (!exists.docs.length)
+          await req.payload.create({
+            collection: 'public-redirects',
+            data: {
+              site,
+              fromPath: previousDoc.canonicalPath,
+              toPath: doc.canonicalPath,
+              match: 'exact',
+              statusCode: '308',
+              preserveQuery: true,
+              enabled: true,
+            },
+            overrideAccess: true,
+          } as never)
         return doc
       },
     ],
@@ -97,7 +139,12 @@ export const PodcastShows = collection('podcast-shows', [
   ...scoped(),
   { name: 'rssEnabled', type: 'checkbox', defaultValue: false },
   { name: 'externalFeedUrl', type: 'text' },
-  { name: 'importOwnership', type: 'select', defaultValue: 'local', options: ['local', 'claimed-import'] },
+  {
+    name: 'importOwnership',
+    type: 'select',
+    defaultValue: 'local',
+    options: ['local', 'claimed-import'],
+  },
   { name: 'importSourceChecksum', type: 'text' },
   { name: 'artwork', type: 'relationship', relationTo: 'media-assets' },
   { name: 'hosts', type: 'relationship', relationTo: 'authors', hasMany: true },
@@ -158,7 +205,13 @@ export const Videos = collection('videos', [
   { name: 'nativeMedia', type: 'relationship', relationTo: 'media-assets' },
   { name: 'thumbnail', type: 'relationship', relationTo: 'media-assets' },
   { name: 'captions', type: 'relationship', relationTo: 'media-assets', hasMany: true },
-  { name: 'availability', type: 'select', required: true, defaultValue: 'available', options: ['available', 'unavailable', 'removed'] },
+  {
+    name: 'availability',
+    type: 'select',
+    required: true,
+    defaultValue: 'available',
+    options: ['available', 'unavailable', 'removed'],
+  },
   { name: 'providerSourceChecksum', type: 'text' },
   { name: 'transcript', type: 'relationship', relationTo: 'transcript-revisions' as never },
   { name: 'chapters', type: 'json' },

@@ -2,15 +2,85 @@ import type { GlobalConfig } from 'payload'
 
 import { seoFields, structuredDataSourceFields } from '../collections/canonical-shared'
 
-const ownerOnly = ({ req }: { req: { user?: { role?: string } | null } }) =>
-  req.user?.role === 'owner'
+const staffOrOwner = ({ req }: { req: { user?: { role?: string } | null } }) =>
+  ['owner', 'administrator', 'staff'].includes(String(req.user?.role))
 
 export const SiteSettings: GlobalConfig = {
   slug: 'site-settings',
   label: 'Site Settings',
   admin: { group: 'Settings' },
-  access: { read: () => true, update: ownerOnly },
+  access: { read: () => true, update: staffOrOwner },
+  hooks: {
+    beforeValidate: [
+      ({ data }) => {
+        if (!data) return data
+        if (data.siteName && !data.defaultTitle) {
+          data.defaultTitle = data.siteName
+        } else if (data.defaultTitle && !data.siteName) {
+          data.siteName = data.defaultTitle
+        }
+        if (data.siteDescription && !data.defaultDescription) {
+          data.defaultDescription = data.siteDescription
+        }
+        if (data.indexingMode === 'noindex') {
+          data.seoNoIndex = true
+        } else if (data.indexingMode === 'index') {
+          data.seoNoIndex = false
+        }
+        return data
+      },
+    ],
+  },
   fields: [
+    { name: 'siteName', type: 'text', label: 'Site Name', defaultValue: 'Renegade CMS' },
+    { name: 'siteDescription', type: 'textarea', label: 'Site Description' },
+    {
+      name: 'canonicalOrigin',
+      type: 'text',
+      label: 'Canonical Origin',
+      admin: { description: 'Canonical public origin, e.g. https://renegadeparty.org' },
+    },
+    { name: 'locale', type: 'text', defaultValue: 'en' },
+    { name: 'timezone', type: 'text', defaultValue: 'UTC' },
+    {
+      name: 'footerText',
+      type: 'textarea',
+      label: 'Footer Text',
+      admin: { description: 'Custom footer disclaimer or copyright notice.' },
+    },
+    {
+      name: 'indexingMode',
+      type: 'select',
+      defaultValue: 'index',
+      options: ['index', 'noindex'],
+      label: 'Search Engine Indexing Mode',
+      admin: { description: 'Controls whether public pages are indexable by search engines.' },
+    },
+    {
+      name: 'homepageSelection',
+      type: 'group',
+      label: 'Homepage Selection',
+      fields: [
+        {
+          name: 'mode',
+          type: 'select',
+          defaultValue: 'default',
+          options: ['default', 'page', 'layout'],
+          label: 'Homepage Type',
+        },
+        {
+          name: 'page',
+          type: 'relationship',
+          relationTo: 'content',
+          filterOptions: { contentType: { equals: 'page' } },
+        },
+        {
+          name: 'layout',
+          type: 'relationship',
+          relationTo: 'page-layouts',
+        },
+      ],
+    },
     {
       name: 'onboarding',
       label: 'Onboarding preferences',
@@ -86,14 +156,31 @@ export const SiteSettings: GlobalConfig = {
       name: 'privacy',
       label: 'Privacy and first-party analytics',
       type: 'group',
-      admin: { description: 'Collection is off by default. Consent is never bypassed by server-side collection.' },
+      admin: {
+        description:
+          'Collection is off by default. Consent is never bypassed by server-side collection.',
+      },
       fields: [
         { name: 'analyticsEnabled', type: 'checkbox', defaultValue: false },
         { name: 'consentVersion', type: 'text', required: true, defaultValue: '2026-08-31' },
         { name: 'respectGlobalPrivacyControl', type: 'checkbox', defaultValue: true },
         { name: 'respectDoNotTrack', type: 'checkbox', defaultValue: true },
-        { name: 'rawEventRetentionDays', type: 'number', required: true, defaultValue: 90, min: 1, max: 365 },
-        { name: 'rollupRetentionDays', type: 'number', required: true, defaultValue: 730, min: 1, max: 3650 },
+        {
+          name: 'rawEventRetentionDays',
+          type: 'number',
+          required: true,
+          defaultValue: 90,
+          min: 1,
+          max: 365,
+        },
+        {
+          name: 'rollupRetentionDays',
+          type: 'number',
+          required: true,
+          defaultValue: 730,
+          min: 1,
+          max: 3650,
+        },
       ],
     },
     {
@@ -106,7 +193,7 @@ export const SiteSettings: GlobalConfig = {
     { name: 'organizationName', type: 'text' },
     { name: 'personName', type: 'text' },
     { name: 'legalName', type: 'text' },
-    { name: 'defaultTitle', type: 'text', required: true },
+    { name: 'defaultTitle', type: 'text', defaultValue: 'Renegade CMS' },
     { name: 'defaultDescription', type: 'textarea' },
     { name: 'logo', type: 'relationship', relationTo: 'media-assets' },
     { name: 'favicon', type: 'relationship', relationTo: 'media-assets' },

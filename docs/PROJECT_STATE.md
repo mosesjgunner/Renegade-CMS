@@ -1,5 +1,14 @@
 # Project state
 
+## Publishing Pass PUB-02 — canonical Posts and Pages
+
+- `content` is now the sole publisher-facing record for both Posts (`article`) and Pages (`page`): it owns title, scoped URL identity, taxonomy, authors, hero/related references, lifecycle, and the canonical Payload Lexical `body`.
+- `/admin/posts` and `/admin/pages` are task-oriented filtered views of that same collection. They intentionally do not expose `article-family-content`, revision records, or Page Layouts as authoring destinations.
+- A Lexical body supports the default accessible heading, paragraph, link, list, and quote nodes plus registered safe relationship references to media/content. Raw HTML is not the canonical body format.
+- Paths derive from title/slug (`/articles/{slug}` for posts, hierarchical `/parent/child` paths for pages), permit an explicit override, reject reserved paths, enforce same-site parentage, and are unique per site. The migration backfills canonical `content.body` from existing editorial records before replacing global-path uniqueness with site/path uniqueness.
+- `article-family-content` remains a derived workflow/revision index. Normal Content-form body saves automatically append immutable revision evidence; restores continue to create a new draft revision rather than altering history. Page Layouts remain visual presentation projections only.
+- Migration: `20260902_000000_pub_02_content_publishing_pass`. Payload types/import map were regenerated after reconciliation. PUB-03 public rendering remains out of scope.
+
 ## Second Pass Prompt 10 — Calendar Center and Graphics Studio
 
 - Added the `/calendar` orchestration surface with Month, Week and Agenda controls, scoped/My Calendar filters, timezone presentation, status/type indicators, unscheduled and conflict affordances, canonical edit links, and optimistic drag feedback.

@@ -1,6 +1,6 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
-import { notFound } from 'next/navigation'
+import { notFound, permanentRedirect, redirect } from 'next/navigation'
 import type { Metadata } from 'next'
 
 import { EditorialArticleView } from '@/modules/editorial/ArticleView'
@@ -42,7 +42,50 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
 export default async function ArticlePage({ params }: Args) {
   const { slug } = await params
   const payload = await getPayload({ config })
-
-  const article = await loadPublishedArticleBySlug(payload, slug).catch(() => notFound())
-  return <EditorialArticleView article={article} />
+  let article
+  try {
+    article = await loadPublishedArticleBySlug(payload, slug)
+  } catch {
+    const currentPath = `/articles/${slug}`
+    const redirects = await payload
+      .find({
+        collection: 'public-redirects',
+        limit: 1000,
+        depth: 0,
+        overrideAccess: true,
+      } as never)
+      .catch(() => ({ docs: [] }))
+    const matching = (
+      redirects.docs as unknown as Array<{
+        enabled?: boolean
+        fromPath?: string
+        toPath: string
+        statusCode?: number | string
+      }>
+    ).find((r) => r.enabled !== false && r.fromPath === currentPath)
+    if (matching) {
+      if (Number(matching.statusCode) === 301 || Number(matching.statusCode) === 308) {
+        permanentRedirect(matching.toPath)
+      }
+      redirect(matching.toPath)
+    }
+    notFound()
+  }
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    name: article.title,
+    headline: article.title,
+    description: article.excerpt ?? article.subtitle ?? undefined,
+    url: `${process.env.APP_URL ?? 'http://localhost:3000'}${article.canonicalPath}`,
+  }
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <EditorialArticleView article={article} />
+    </>
+  )
 }

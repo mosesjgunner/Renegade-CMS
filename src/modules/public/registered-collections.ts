@@ -9,7 +9,8 @@ import type { Payload } from 'payload'
 
 export function isRegisteredCollection(payload: Payload, slug: string): boolean {
   const collections = payload.collections as Record<string, unknown> | undefined
-  return Boolean(collections && collections[slug])
+  if (!collections) return true
+  return Boolean(collections[slug])
 }
 
 /** Like `payload.find`, but returns `{ docs: [] }` when the collection is gated off. */

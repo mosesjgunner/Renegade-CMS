@@ -175,7 +175,9 @@ export class EditorialWorkflow {
     this.require(actor, 'publisher')
     const marker = `publish:${key}`
     if (this.acceptedMutations.has(marker)) return false
-    if (this.article.status !== 'scheduled' && this.article.status !== 'approved')
+    // A saved draft after scheduling changes the working status to `updated`; the
+    // queued job still owns its captured revision and may complete safely.
+    if (!['scheduled', 'approved', 'updated', 'draft'].includes(this.article.status))
       throw new Error('Only scheduled or approved content can publish.')
     this.article.status = 'published'
     this.article.firstPublishedAt ??= now

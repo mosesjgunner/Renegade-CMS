@@ -27,5 +27,7 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
   `)
 }
 export async function down({ db }: MigrateDownArgs): Promise<void> {
-  await db.execute(`DROP TABLE IF EXISTS "events_rels" CASCADE; ALTER TABLE "events" DROP COLUMN IF EXISTS "venue_address", DROP COLUMN IF EXISTS "online_url", DROP COLUMN IF EXISTS "organizer_name", DROP COLUMN IF EXISTS "organizer_url", DROP COLUMN IF EXISTS "capacity", DROP COLUMN IF EXISTS "registration_url", DROP COLUMN IF EXISTS "recurrence", DROP COLUMN IF EXISTS "recurrence_overrides";`)
+  await db.execute(
+    `DROP TABLE IF EXISTS "events_rels" CASCADE; ALTER TABLE "events" DROP COLUMN IF EXISTS "venue_address", DROP COLUMN IF EXISTS "online_url", DROP COLUMN IF EXISTS "organizer_name", DROP COLUMN IF EXISTS "organizer_url", DROP COLUMN IF EXISTS "capacity", DROP COLUMN IF EXISTS "registration_url", DROP COLUMN IF EXISTS "recurrence", DROP COLUMN IF EXISTS "recurrence_overrides";`,
+  )
 }

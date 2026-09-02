@@ -14,18 +14,18 @@
 
 ## Status board
 
-| ID | Card | Status | Depends on | Branch | Parallel group | Merge state | Evidence file | Remediation |
-|---|---|---|---|---|---|---|---|---|
-| A-01 | Clean install, setup, and first login | NOT STARTED | A-00 (merged) | `phase-a/a01-install-login` | Group 0 (with A-09 only) | Not merged | `evidence/A-01.md` | `remediation/A-01-*.md` (as needed) |
-| A-02 | Real media library workflow | NOT STARTED | A-09 (merged) | `phase-a/a02-media-workflow` | Group 1 (with A-03/A-04) | Not merged | `evidence/A-02.md` | `remediation/A-02-*.md` |
-| A-03 | Normal page/post authoring & rendering | NOT STARTED | A-09 (merged) | `phase-a/a03-author-render` | Group 1 (with A-02/A-04) | Not merged | `evidence/A-03.md` | `remediation/A-03-*.md` |
-| A-04 | Menu management & site chrome | NOT STARTED | A-09 (merged) | `phase-a/a04-navigation-chrome` | Group 1 (with A-02/A-03) | Not merged | `evidence/A-04.md` | `remediation/A-04-*.md` |
-| A-05 | Search, redirects, and 404 behavior | NOT STARTED | A-03 body/URL contract frozen | `phase-a/a05-discovery` | Group 1 (after A-03 freeze) | Not merged | `evidence/A-05.md` | `remediation/A-05-*.md` |
-| A-06 | SEO correctness engine & crawler proof | NOT STARTED | A-02, A-03, A-04, A-05 reconciled (Checkpoint 1) | `phase-a/a06-seo-crawlers` | Group 2 (with A-08) | Not merged | `evidence/A-06.md` | `remediation/A-06-*.md` |
-| A-07 | Publisher-first admin UX | NOT STARTED | A-02…A-06 merged | `phase-a/a07-publisher-admin` | Serial (alone) | Not merged | `evidence/A-07.md` | `remediation/A-07-*.md` |
-| A-08 | Backup/export/import & restored-site proof | NOT STARTED | A-02, A-03 merged (Checkpoint 1) | `phase-a/a08-backup-restore` | Group 2 (with A-06) | Not merged | `evidence/A-08.md` | `remediation/A-08-*.md` |
-| A-09 | Draft/private/admin access hardening | VERIFIED | A-00 (merged) | `phase-a/a09` | Group 0 (with A-01 only) | Merged to `main` (`d68d8bc`) | `evidence/A-09.md` | None |
-| A-10 | Final Phase A proof gate | NOT STARTED | A-01…A-09 merged | `phase-a/a10-proof-gate` | Serial (alone, clean clone) | Not merged | `evidence/A-10.md` | `remediation/A-10-*.md` |
+| ID   | Card                                       | Status      | Depends on                                       | Branch                          | Parallel group              | Merge state                  | Evidence file      | Remediation                         |
+| ---- | ------------------------------------------ | ----------- | ------------------------------------------------ | ------------------------------- | --------------------------- | ---------------------------- | ------------------ | ----------------------------------- |
+| A-01 | Clean install, setup, and first login      | NOT STARTED | A-00 (merged)                                    | `phase-a/a01-install-login`     | Group 0 (with A-09 only)    | Not merged                   | `evidence/A-01.md` | `remediation/A-01-*.md` (as needed) |
+| A-02 | Real media library workflow                | NOT STARTED | A-09 (merged)                                    | `phase-a/a02-media-workflow`    | Group 1 (with A-03/A-04)    | Not merged                   | `evidence/A-02.md` | `remediation/A-02-*.md`             |
+| A-03 | Normal page/post authoring & rendering     | NOT STARTED | A-09 (merged)                                    | `phase-a/a03-author-render`     | Group 1 (with A-02/A-04)    | Not merged                   | `evidence/A-03.md` | `remediation/A-03-*.md`             |
+| A-04 | Menu management & site chrome              | NOT STARTED | A-09 (merged)                                    | `phase-a/a04-navigation-chrome` | Group 1 (with A-02/A-03)    | Not merged                   | `evidence/A-04.md` | `remediation/A-04-*.md`             |
+| A-05 | Search, redirects, and 404 behavior        | NOT STARTED | A-03 body/URL contract frozen                    | `phase-a/a05-discovery`         | Group 1 (after A-03 freeze) | Not merged                   | `evidence/A-05.md` | `remediation/A-05-*.md`             |
+| A-06 | SEO correctness engine & crawler proof     | NOT STARTED | A-02, A-03, A-04, A-05 reconciled (Checkpoint 1) | `phase-a/a06-seo-crawlers`      | Group 2 (with A-08)         | Not merged                   | `evidence/A-06.md` | `remediation/A-06-*.md`             |
+| A-07 | Publisher-first admin UX                   | NOT STARTED | A-02…A-06 merged                                 | `phase-a/a07-publisher-admin`   | Serial (alone)              | Not merged                   | `evidence/A-07.md` | `remediation/A-07-*.md`             |
+| A-08 | Backup/export/import & restored-site proof | NOT STARTED | A-02, A-03 merged (Checkpoint 1)                 | `phase-a/a08-backup-restore`    | Group 2 (with A-06)         | Not merged                   | `evidence/A-08.md` | `remediation/A-08-*.md`             |
+| A-09 | Draft/private/admin access hardening       | VERIFIED    | A-00 (merged)                                    | `phase-a/a09`                   | Group 0 (with A-01 only)    | Merged to `main` (`d68d8bc`) | `evidence/A-09.md` | None                                |
+| A-10 | Final Phase A proof gate                   | NOT STARTED | A-01…A-09 merged                                 | `phase-a/a10-proof-gate`        | Serial (alone, clean clone) | Not merged                   | `evidence/A-10.md` | `remediation/A-10-*.md`             |
 
 ## Dependency / parallel summary
 
@@ -50,11 +50,10 @@
 
 ## Status legend
 
-| Status | Meaning |
-|---|---|
-| `NOT STARTED` | No work begun on this card. |
-| `IN PROGRESS` | An agent is actively implementing on the card branch. |
-| `BLOCKED` | Cannot proceed — unmet dependency, unavailable infra, or contract conflict (link the remediation file). |
-| `FAILED` | A required gate or definition-of-done boundary failed and is recorded in the card's evidence file. |
-| `VERIFIED` | Definition of done met and **independently reproduced**; evidence file complete. |
-
+| Status        | Meaning                                                                                                 |
+| ------------- | ------------------------------------------------------------------------------------------------------- |
+| `NOT STARTED` | No work begun on this card.                                                                             |
+| `IN PROGRESS` | An agent is actively implementing on the card branch.                                                   |
+| `BLOCKED`     | Cannot proceed — unmet dependency, unavailable infra, or contract conflict (link the remediation file). |
+| `FAILED`      | A required gate or definition-of-done boundary failed and is recorded in the card's evidence file.      |
+| `VERIFIED`    | Definition of done met and **independently reproduced**; evidence file complete.                        |

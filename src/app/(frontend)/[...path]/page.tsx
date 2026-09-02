@@ -11,9 +11,14 @@ import { PublicLayout } from '@/modules/public/PublicLayout'
 import { PublicForm } from '@/modules/audience/PublicForm'
 import type { FormField } from '@/modules/audience/contracts'
 import { BookReader, isReleasedChapter, relatedId } from '@/modules/media/books'
+import { EditorialArticleView } from '@/modules/editorial/ArticleView'
+import { loadPublishedArticleByPath } from '@/modules/editorial/persistence'
 import { findIfRegistered, registeredOnly } from '@/modules/public/registered-collections'
 
-type Args = { params: Promise<{ path: string[] }> }
+type Args = {
+  params: Promise<{ path: string[] }>
+  searchParams?: Promise<Record<string, string | string[] | undefined>>
+}
 type PublicRecord = PublicState & Record<string, unknown>
 
 const candidates = [
@@ -58,6 +63,25 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
       typeof publication?.site === 'string'
         ? publication.site
         : String((publication?.site as { id?: unknown } | undefined)?.id ?? '')
+    const layoutFound = await payload.find({
+      collection: 'page-layouts',
+      where: { and: [{ path: { equals: path } }, { site: { equals: siteId } }] },
+      limit: 1,
+      depth: 0,
+      overrideAccess: true,
+    } as never)
+    const layout = layoutFound.docs[0] as unknown as PublicRecord | undefined
+    if (layout && canRenderPublic(layout)) {
+      return buildMetadata({
+        ...layout,
+        title:
+          label(layout) !== 'Publication'
+            ? label(layout)
+            : path.slice(1).replace(/-/g, ' ') || 'Home',
+        canonicalPath: path,
+        siteUrl: process.env.APP_URL ?? 'http://localhost:3000',
+      })
+    }
     for (const collection of registeredOnly(payload, candidates)) {
       const found = await payload.find({
         collection,
@@ -87,8 +111,17 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
   return { robots: { index: false, follow: false } }
 }
 
-export default async function CanonicalPublicPage({ params }: Args) {
+export default async function CanonicalPublicPage({ params, searchParams }: Args) {
   const path = `/${(await params).path.join('/')}`
+  const query = new URLSearchParams(
+    Object.entries((await searchParams) ?? {}).flatMap(([key, value]) =>
+      Array.isArray(value)
+        ? value.map((entry) => [key, entry])
+        : value === undefined
+          ? []
+          : [[key, value]],
+    ),
+  ).toString()
   const payload = await getPayload({ config })
 
   const publications = await payload.find({
@@ -127,8 +160,28 @@ export default async function CanonicalPublicPage({ params }: Args) {
     })),
     siteId,
     path,
+    query ? `?${query}` : '',
   )
   if (resolution && 'target' in resolution) {
+    // Best-effort telemetry must not make a redirect unavailable.
+    await Promise.all(
+      resolution.ruleIds.map((id) =>
+        payload.update({
+          collection: 'public-redirects',
+          id,
+          data: {
+            hitCount:
+              Number(
+                (redirects.docs as Array<{ id: unknown; hitCount?: unknown }>).find(
+                  (rule) => String(rule.id) === id,
+                )?.hitCount ?? 0,
+              ) + 1,
+            lastHitAt: new Date().toISOString(),
+          },
+          overrideAccess: true,
+        } as never),
+      ),
+    ).catch(() => undefined)
     if (resolution.statusCode === 301 || resolution.statusCode === 308)
       permanentRedirect(resolution.target)
     redirect(resolution.target)
@@ -181,6 +234,13 @@ export default async function CanonicalPublicPage({ params }: Args) {
   if (layoutRecord) {
     if (!canRenderPublic(layoutRecord)) notFound()
     return <PublicLayout record={layoutRecord} path={path} />
+  }
+
+  try {
+    const editorial = await loadPublishedArticleByPath(payload, { siteId, path })
+    return <EditorialArticleView article={editorial} />
+  } catch {
+    // Continue to non-editorial canonical collections below.
   }
 
   const bookResult = await findIfRegistered(payload, {
@@ -261,6 +321,22 @@ export default async function CanonicalPublicPage({ params }: Args) {
     if (!canRenderPublic(record)) notFound()
 
     const name = label(record)
+    let articleBody: string | null = null
+    if (collection === 'content') {
+      const articleResult = await payload.find({
+        collection: 'article-family-content',
+        where: { content: { equals: String(record.id) } },
+        limit: 1,
+        depth: 0,
+        overrideAccess: true,
+      } as never)
+      const projection = (
+        articleResult.docs[0] as unknown as { plainTextProjection?: string } | undefined
+      )?.plainTextProjection
+      if (typeof projection === 'string' && projection) {
+        articleBody = projection
+      }
+    }
     const jsonLd = buildJsonLd({
       siteUrl: process.env.APP_URL ?? 'http://localhost:3000',
       path,
@@ -318,7 +394,11 @@ export default async function CanonicalPublicPage({ params }: Args) {
               {record.summary}
             </p>
           ) : null}
-          {typeof record.description === 'string' ? (
+          {articleBody ? (
+            <div className="prose dark:prose-invert max-w-none text-base sm:text-lg leading-relaxed text-stone-800 dark:text-stone-200 whitespace-pre-line">
+              {articleBody}
+            </div>
+          ) : typeof record.description === 'string' ? (
             <div className="prose dark:prose-invert max-w-none text-base sm:text-lg leading-relaxed text-stone-800 dark:text-stone-200">
               {record.description}
             </div>

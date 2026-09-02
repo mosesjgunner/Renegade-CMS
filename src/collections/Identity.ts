@@ -3,6 +3,7 @@ import type { CollectionConfig } from 'payload'
 import {
   canonicalSlug,
   capabilityFields,
+  enforceSiteTenantBoundary,
   moderationStateOptions,
   publicationStatusOptions,
   visibilityOptions,
@@ -15,7 +16,9 @@ export const Brands: CollectionConfig = {
   slug: 'brands',
   admin: { useAsTitle: 'name', group: 'Publishing' },
   access: { create: staffOnly, delete: staffOnly, read: () => true, update: staffOnly },
+  hooks: { beforeChange: [enforceSiteTenantBoundary([])] },
   fields: [
+    { name: 'site', type: 'relationship', relationTo: 'sites', required: true, index: true },
     { name: 'name', type: 'text', required: true },
     { name: 'legalName', type: 'text' },
     {
@@ -173,13 +176,19 @@ export const Profiles: CollectionConfig = {
       unique: true,
       index: true,
       validate: canonicalSlug,
-      admin: { description: 'Public handle; changes require an explicit member self-service request.' },
+      admin: {
+        description: 'Public handle; changes require an explicit member self-service request.',
+      },
     },
     { name: 'avatar', type: 'relationship', relationTo: 'media-assets' },
     { name: 'cover', type: 'relationship', relationTo: 'media-assets' },
     { name: 'bio', type: 'textarea' },
     { name: 'links', type: 'json' },
-    { name: 'preferences', type: 'json', admin: { description: 'Private member self-service preferences.' } },
+    {
+      name: 'preferences',
+      type: 'json',
+      admin: { description: 'Private member self-service preferences.' },
+    },
     {
       name: 'visibility',
       type: 'select',
@@ -200,14 +209,15 @@ export const Spaces: CollectionConfig = {
   slug: 'spaces',
   admin: { useAsTitle: 'handle', group: 'Community' },
   access: { create: staffOnly, delete: staffOnly, read: () => true, update: staffOnly },
+  hooks: { beforeChange: [enforceSiteTenantBoundary([])] },
   fields: [
+    { name: 'site', type: 'relationship', relationTo: 'sites', required: true, index: true },
     { name: 'member', type: 'relationship', relationTo: 'members', required: true, index: true },
     { name: 'profile', type: 'relationship', relationTo: 'profiles' },
     {
       name: 'handle',
       type: 'text',
       required: true,
-      unique: true,
       index: true,
       validate: canonicalSlug,
     },
@@ -215,7 +225,6 @@ export const Spaces: CollectionConfig = {
       name: 'canonicalPath',
       type: 'text',
       required: true,
-      unique: true,
       defaultValue: '/members/',
     },
     { name: 'displayName', type: 'text', required: true },
@@ -249,12 +258,31 @@ export const Spaces: CollectionConfig = {
       options: ['none', 'pending', 'completed'],
     },
   ],
+  indexes: [
+    { fields: ['site', 'handle'], unique: true },
+    { fields: ['site', 'canonicalPath'], unique: true },
+  ],
 }
 
 export const Authors: CollectionConfig = {
   slug: 'authors',
   admin: { useAsTitle: 'displayName', group: 'Publishing' },
   access: { create: staffOnly, delete: staffOnly, read: () => true, update: staffOnly },
+  hooks: {
+    beforeDelete: [
+      async ({ id, req }) => {
+        const references = await req.payload.find({
+          collection: 'content',
+          where: { 'authors.author': { equals: id } },
+          depth: 0,
+          limit: 1,
+          overrideAccess: true,
+        } as never)
+        if (references.docs.length)
+          throw new Error('This author is assigned to content and cannot be deleted.')
+      },
+    ],
+  },
   fields: [
     { name: 'displayName', type: 'text', required: true },
     {
@@ -277,6 +305,14 @@ export const Publications: CollectionConfig = {
   slug: 'publications',
   admin: { useAsTitle: 'name', group: 'Publishing' },
   access: { create: staffOnly, delete: staffOnly, read: () => true, update: staffOnly },
+  hooks: {
+    beforeChange: [
+      enforceSiteTenantBoundary([
+        { field: 'brand', collection: 'brands' },
+        { field: 'space', collection: 'spaces' },
+      ]),
+    ],
+  },
   fields: [
     { name: 'site', type: 'relationship', relationTo: 'sites', required: true, index: true },
     { name: 'owner', type: 'relationship', relationTo: 'members', index: true },

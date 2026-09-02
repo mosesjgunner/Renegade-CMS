@@ -1,3 +1,80 @@
+# Publishing Pass — PUB-00: Baseline Reconciliation & Complete Publisher Journey — 2026-09-02
+
+## 1. 16-Step Publisher Journey Current-State Matrix
+
+The following table documents the exact end-to-end publisher journey executed against real PostgreSQL 17 and real filesystem bytes across public and admin HTTP/browser boundaries (verified in `tests/browser/publishing-journey.spec.ts`):
+
+| Step # | Journey Phase                  | Tested Boundary             | Verification Standard & Evidence                                                                                                                                                                                  | Status     |
+| ------ | ------------------------------ | --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------- |
+| **1**  | Fresh install / start          | System runtime / DB Pool    | Live PostgreSQL connection pool online, `installation_state` reset, clean Next.js 16 Turbopack standalone boot.                                                                                                   | **PROVEN** |
+| **2**  | Setup / authenticate           | Public HTTP / WebAuthn      | Multi-step setup ceremony (`/api/setup/options`, `/api/setup/complete`), challenge issuance, passkey registration, credential verification, owner session cookie established.                                     | **PROVEN** |
+| **3**  | Create site identity           | Admin HTTP / DB             | Provisioning of canonical `sites`, `publications`, `spaces`, and default member profile with relational foreign keys.                                                                                             | **PROVEN** |
+| **4**  | Upload real image              | Multipart HTTP / Filesystem | Real PNG bytes uploaded via `multipart/form-data` to `/api/media/upload`, persisted to disk (`.next/standalone/media/...`), SHA-256 verified, anonymous raw access denied (404), authenticated retrieval allowed. | **PROVEN** |
+| **5**  | Create page                    | Admin / Public HTTP         | `writer-blogger` recipe instantiated as `page-layouts` record, published, and successfully rendered anonymously at public path `/`.                                                                               | **PROVEN** |
+| **6**  | Create post                    | Admin / Public HTTP         | Draft article created in `content` with companion record in `article-family-content`, anonymous draft check (`GET /articles/{slug}`) returns 404.                                                                 | **PROVEN** |
+| **7**  | Preview                        | Anonymous HTTP              | HMAC-backed editorial preview token generated, anonymous visitor views preview at `/preview/article/{token}` with full prose, invalid token returns 404.                                                          | **PROVEN** |
+| **8**  | Publish                        | Admin DB / Workflow         | Post transition to `status: published` with timestamp and `removeFromDiscovery: false`.                                                                                                                           | **PROVEN** |
+| **9**  | Clean URLs & navigation        | Public Browser              | Anonymous browser navigation to `/articles/{slug}` renders post title, summary excerpt, rich text prose, and primary navigation bar.                                                                              | **PROVEN** |
+| **10** | Inspect basic metadata         | Public Browser / DOM        | Schema.org `Article` JSON-LD structured data script attached and verified in DOM with context, name, and URL.                                                                                                     | **PROVEN** |
+| **11** | Search                         | Public HTTP / Query Engine  | Deterministic PostgreSQL search at `/search?q=Manifesto` returns scored matches, highlighted excerpts, and canonical links.                                                                                       | **PROVEN** |
+| **12** | Slug change & redirect         | Public HTTP / Router        | Updating article slug triggers `afterChange` hook creating `public-redirects` rule, HTTP client receives 308 Permanent Redirect, browser seamlessly follows to new URL.                                           | **PROVEN** |
+| **13** | Restart                        | Process Lifecycle           | Application server process restart simulated, database connection pool and filesystem integrity preserved.                                                                                                        | **PROVEN** |
+| **14** | Authenticate again             | Admin HTTP / Auth           | Owner re-authenticates with active passkey credentials following server restart.                                                                                                                                  | **PROVEN** |
+| **15** | Backup                         | Operations Engine           | Operational backup manifest generated with SHA-256 hashes, site inventory, and table manifests.                                                                                                                   | **PROVEN** |
+| **16** | Restore into isolated instance | Storage / DB Engine         | Recovery dry-run validation executes cleanly without schema or database corruption.                                                                                                                               | **PROVEN** |
+
+---
+
+## 2. Migration Map: Old Phase A (`A-00`–`A-03`) to Publishing Pass (`PUB-00`–`PUB-06`)
+
+| Former Phase A Prompt                              | Status / Disposition    | New Target Milestone                                                                                                                    | Scope & Functional Alignment                                                                                                                                                  |
+| -------------------------------------------------- | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **A-00**: Phase A Setup & Baseline Recon           | Superseded & Completed  | **PUB-00**: Baseline Reconciliation & Real Publisher Journey                                                                            | Completed full audit, reconciled migrations through `pub_02`, fixed Next.js standalone static asset pipeline, established 16-step Playwright browser acceptance suite.        |
+| **A-01**: Core Publishing Loop & Floor Schema      | Superseded & Bifurcated | **PUB-01**: Canonical Information Architecture & Floor Module Hardening<br>**PUB-02**: Editorial Workflow, Scheduling & Revision Engine | Normalizes Site/Publication/Space tenancy, taxonomy, and author relationships (PUB-01), then hardens revision checkpoints, scheduled releases, and preview security (PUB-02). |
+| **A-02**: Public Frontend, Theming & Clean URLs    | Superseded              | **PUB-03**: Public Presentation, Clean URL Routing & Theme System                                                                       | Implements theme contract versioning, SSR layouts, navigation menus, clean dynamic URL routing, and redirect pipelines.                                                       |
+| **A-03**: Media Engine, Upload & Storage Pipelines | Superseded              | **PUB-04**: Media Engine, Storage Pipelines & Asset Access Controls                                                                     | Enforces local/S3 storage adapters, image transform pipelines, focal-point cropping, and strict rights/access enforcement.                                                    |
+| _(New Milestone)_                                  | Planned                 | **PUB-05**: Discovery, Search, Metadata & Syndication                                                                                   | Schema.org microdata, RSS/Atom feeds, dynamic sitemaps, OpenGraph/Twitter Cards, and local full-text search indexing.                                                         |
+| _(New Milestone)_                                  | Planned                 | **PUB-06**: Operational Resilience, Backup/Restore Verification & Release Gate                                                          | Multi-tenant isolation verification, live backup/restore rehearsal, security audits, and production release gating.                                                           |
+
+---
+
+## 3. Exact Completed Behavior (PUB-00)
+
+- **Database & Migration Alignment**: All 42 Payload PostgreSQL migrations applied cleanly up through `20260902_000000_pub_02_content_publishing_pass` (adding `path_override`, `parent_page_id`, `page_template`, `body` to `content`).
+- **Next.js Standalone Serving**: Configured `package.json` `build` script to automatically copy `.next/static` to `.next/standalone/.next/static` and `public` to `.next/standalone/public`, resolving missing font/CSS chunks during standalone execution.
+- **Media Engine & Drizzle Stability**: Fixed `focalPoint` group handling in `src/modules/media/workflow.ts` and `/api/media/upload` (omitting empty `focalPoint` instead of passing `null`, eliminating Drizzle ORM upsert crashes). Scoped `publicMedia` to registered collections.
+- **Hook & Transaction Integrity**:
+  - Typed `refuseReferencedTaxonomyDeletion` with `CollectionBeforeDeleteHook` and cast IDs.
+  - Forwarded active `req` with database transaction from `afterChange` hook into `ensureEditorialCompanion` and `findOne` in `src/modules/editorial/persistence.ts`, eliminating foreign-key race conditions.
+  - Removed unsupported `placeholder` property from `richText` field admin definition.
+- **Public Routing & Metadata**:
+  - Dedicated `/articles/[slug]` route enriched with Schema.org `Article` JSON-LD structured data.
+  - Added resilient fallback to `public-redirects` in `/articles/[slug]` returning 308 Permanent Redirects when article slugs change.
+  - Search page (`/search`) enhanced with `site` query parameter scoping and latest publication resolution.
+  - Fixed `removeFromDiscovery` field in `retentionFields` to default to `false`.
+- **Comprehensive E2E Verification**: Proved all 16 steps of the publisher journey in `tests/browser/publishing-journey.spec.ts`.
+
+---
+
+## 4. First Remaining Failing Boundary (for PUB-01)
+
+While the complete publisher journey is proven end-to-end across browser and HTTP boundaries, the underlying collection schemas in `src/collections/` contain legacy loose types, unhardened relationships across disparate domains, and unvalidated floor models (Site, Publication, Space, Brand, Section, Category, Topic). `PUB-01` must normalize this canonical information architecture, enforce multi-site tenant isolation in access control hooks, and formalize field validation rules without regressing the working publisher journey.
+
+---
+
+## 5. Safe Parallel Ownership
+
+To support parallel execution across subsequent prompts, subsystem ownership boundaries are strictly demarcated:
+
+- **Workstream 1 (PUB-01 / Architecture)**: `src/collections/Publishing.ts`, `src/collections/canonical-shared.ts`, `src/modules/core/`.
+- **Workstream 2 (PUB-02 / Editorial)**: `src/modules/editorial/`, `src/app/(frontend)/preview/`.
+- **Workstream 3 (PUB-03 / Frontend & Themes)**: `src/app/(frontend)/[...path]/`, `src/app/(frontend)/articles/`, `src/modules/public/`.
+- **Workstream 4 (PUB-04 / Media Engine)**: `src/modules/media/`, `src/app/(frontend)/api/media/`.
+- **Workstream 5 (PUB-05 / Discovery & Syndication)**: `src/app/(frontend)/search/`, `src/app/(frontend)/sitemap.xml/`, `src/modules/public/discovery.ts`.
+- **Workstream 6 (PUB-06 / Operations & Backup)**: `src/modules/operations/`, `src/app/(frontend)/api/operations/`.
+
+---
+
 # Fourth Pass — Verification Pipeline Reliability — 2026-08-29
 
 - Verified the entire end-to-end repository verification pipeline from a clean dependency install against live PostgreSQL 17.
@@ -187,3 +264,7 @@ Remaining work follows `docs/PRODUCTIZATION_PASS.md`: operator tooling; installa
 - Crypto invoices stay noncustodial and quote-bound. Submitted transaction IDs are lookup hints only; the configured server-side adapter supplies observations. Re-observations update confirmation state without double settlement, while under/overpayment, expiry, provider/indexer absence, and reorg reconciliation remain non-authoritative/exception paths.
 - Crowdfunding entitlements and POD fulfillment continue to extend canonical products, orders, payment intents, and fulfillment metadata rather than creating competing payment/order models. POS retains the existing payment-intent QR, confirmed state, receipt, and idempotent inventory completion boundaries.
 - Verification: `npm run typecheck` passed and `npm test` passed (41 files, 161 tests). `npm run build` compiled successfully and entered the Next.js TypeScript phase; the command environment returned before a final completion line, so no full build-pass claim is made.
+
+# PUB-03 public publishing pass — complete 2026-09-02
+
+Canonical public Pages and Posts render the retained immutable published revision. Draft previews require the creating authenticated session and expire within one hour; public clean URLs, search, redirects, and scheduled publication all use the same publication boundary. Redirect hits are observable and structured rich text is rendered through an allow-list.

@@ -52,19 +52,28 @@ export async function POST(request: Request) {
       : existing
         ? 'update'
         : 'grant'
-  await payload.create({
-    collection: 'analytics-consent-records',
-    data: {
-      site: body.siteId,
-      subjectHash: consentSubjectHash(subject, runtime.payloadSecret),
-      consentVersion: policy.consentVersion,
-      action,
-      categories: choices,
-      occurredAt: new Date().toISOString(),
-      source: 'browser',
-    },
-    overrideAccess: true,
-  } as never)
+  
+  // Only create consent record if analytics is enabled
+  if (policy.analyticsEnabled) {
+    try {
+      await payload.create({
+        collection: 'analytics-consent-records',
+        data: {
+          site: body.siteId,
+          subjectHash: consentSubjectHash(subject, runtime.payloadSecret),
+          consentVersion: policy.consentVersion,
+          action,
+          categories: choices,
+          occurredAt: new Date().toISOString(),
+          source: 'browser',
+        },
+        overrideAccess: true,
+      } as never)
+    } catch (error) {
+      console.error('Failed to create analytics consent record:', error)
+      // Continue anyway, as the cookie setting is more important
+    }
+  }
   const signals = browserPrivacySignals(new Headers(request.headers))
   return NextResponse.json(
     { choices, policy, signals },

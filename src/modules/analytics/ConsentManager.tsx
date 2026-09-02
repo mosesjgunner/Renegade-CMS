@@ -52,24 +52,65 @@ export function ConsentManager({ siteId }: { siteId?: string }) {
     (typeof navigator !== 'undefined' &&
       Boolean((navigator as Navigator & { globalPrivacyControl?: boolean }).globalPrivacyControl))
   const isDnt =
-    Boolean(signals.doNotTrack) || (typeof navigator !== 'undefined' && navigator.doNotTrack === '1')
+    Boolean(signals.doNotTrack) ||
+    (typeof navigator !== 'undefined' && navigator.doNotTrack === '1')
   const save = async (next: Choices) => {
-    if (!siteId) return
-    const response = await fetch('/api/analytics/consent', {
-      method: 'POST',
-      credentials: 'same-origin',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ siteId, choices: next }),
-    })
-    if (!response.ok) return
-    const data = await response.json().catch(() => ({}))
-    setChoices(next)
-    setDraft(next)
-    setEditing(false)
-    if (data.signals) setSignals(data.signals)
-    if (!next.analytics) {
-      cookie('renegade-aid', '')
-      cookie('renegade-sid', '')
+    console.log('Saving consent choices:', next);
+    if (!siteId) {
+      console.log('No siteId, returning early');
+      // Even without siteId, we should still update the UI
+      setChoices(next)
+      setDraft(next)
+      setEditing(false)
+      if (!next.analytics) {
+        cookie('renegade-aid', '')
+        cookie('renegade-sid', '')
+      }
+      return;
+    }
+    try {
+      const response = await fetch('/api/analytics/consent', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ siteId, choices: next }),
+      })
+      console.log('Consent API response:', response);
+      if (!response.ok) {
+        console.error('Failed to save consent choices:', response.statusText);
+        // Still update the UI even if the API call fails
+        setChoices(next)
+        setDraft(next)
+        setEditing(false)
+        if (!next.analytics) {
+          cookie('renegade-aid', '')
+          cookie('renegade-sid', '')
+        }
+        return;
+      }
+      const data = await response.json().catch((error) => {
+        console.error('Failed to parse consent response:', error);
+        return {};
+      });
+      console.log('Consent data received:', data);
+      setChoices(next)
+      setDraft(next)
+      setEditing(false)
+      if (data.signals) setSignals(data.signals)
+      if (!next.analytics) {
+        cookie('renegade-aid', '')
+        cookie('renegade-sid', '')
+      }
+    } catch (error) {
+      console.error('Failed to save consent choices:', error);
+      // Still update the UI even if the API call fails
+      setChoices(next)
+      setDraft(next)
+      setEditing(false)
+      if (!next.analytics) {
+        cookie('renegade-aid', '')
+        cookie('renegade-sid', '')
+      }
     }
   }
   useEffect(() => {
@@ -111,7 +152,7 @@ export function ConsentManager({ siteId }: { siteId?: string }) {
           setDraft(choices)
           setEditing(true)
         }}
-        className="fixed bottom-3 left-3 z-50 text-xs underline"
+        className="fixed bottom-3 left-3 z-[9999] text-xs underline"
       >
         Privacy choices
       </button>
@@ -120,7 +161,7 @@ export function ConsentManager({ siteId }: { siteId?: string }) {
   return (
     <section
       aria-label="Privacy choices"
-      className="fixed inset-x-3 bottom-3 z-50 mx-auto max-w-xl rounded-lg border bg-white p-4 shadow-xl dark:bg-stone-950"
+      className="fixed inset-x-3 bottom-3 z-[9999] mx-auto max-w-xl rounded-lg border bg-white p-4 shadow-xl dark:bg-stone-950"
     >
       <p className="font-semibold">Your privacy choices</p>
       <p className="mt-1 text-sm">
@@ -138,17 +179,19 @@ export function ConsentManager({ siteId }: { siteId?: string }) {
         </label>
       ))}
       <div className="mt-4 flex gap-3">
-        <button type="button" onClick={() => void save(empty)}>
+        <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); void save(empty); }}>
           Reject non-essential
         </button>
-        <button type="button" onClick={() => void save(current)}>
+        <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); void save(current); }}>
           Save choices
         </button>
         <button
           type="button"
-          onClick={() =>
-            void save({ necessary: true, analytics: true, personalization: true, marketing: true })
-          }
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            void save({ necessary: true, analytics: true, personalization: true, marketing: true });
+          }}
         >
           Accept all
         </button>

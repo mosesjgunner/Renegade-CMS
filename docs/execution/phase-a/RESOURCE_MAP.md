@@ -16,18 +16,18 @@ Every card gets an exclusive mutable runtime namespace. `media path` is relative
 
 ## Per-card resource allocation
 
-| Card | Compose project name | Web app port | Playwright server port | App database | Migration-test database | Postgres host port | Media path | Media volume | Evidence file |
-|---|---|---|---|---|---|---|---|---|---|
-| A-01 | `renegade_a01` | 3101 | 3201 | `renegade_a01` | `renegade_mig_a01` | 5433 | `.phase-a/a01/media` | `renegade_a01_media` | `evidence/A-01.md` |
-| A-02 | `renegade_a02` | 3102 | 3202 | `renegade_a02` | `renegade_mig_a02` | 5434 | `.phase-a/a02/media` | `renegade_a02_media` | `evidence/A-02.md` |
-| A-03 | `renegade_a03` | 3103 | 3203 | `renegade_a03` | `renegade_mig_a03` | 5435 | `.phase-a/a03/media` | `renegade_a03_media` | `evidence/A-03.md` |
-| A-04 | `renegade_a04` | 3104 | 3204 | `renegade_a04` | `renegade_mig_a04` | 5436 | `.phase-a/a04/media` | `renegade_a04_media` | `evidence/A-04.md` |
-| A-05 | `renegade_a05` | 3105 | 3205 | `renegade_a05` | `renegade_mig_a05` | 5437 | `.phase-a/a05/media` | `renegade_a05_media` | `evidence/A-05.md` |
-| A-06 | `renegade_a06` | 3106 | 3206 | `renegade_a06` | `renegade_mig_a06` | 5438 | `.phase-a/a06/media` | `renegade_a06_media` | `evidence/A-06.md` |
-| A-07 | `renegade_a07` | 3107 | 3207 | `renegade_a07` | `renegade_mig_a07` | 5439 | `.phase-a/a07/media` | `renegade_a07_media` | `evidence/A-07.md` |
-| A-08 | `renegade_a08` | 3108 | 3208 | `renegade_a08` | `renegade_mig_a08` | 5440 | `.phase-a/a08/media` | `renegade_a08_media` | `evidence/A-08.md` |
-| A-09 | `renegade_a09` | 3109 | 3209 | `renegade_a09` | `renegade_mig_a09` | 5441 | `.phase-a/a09/media` | `renegade_a09_media` | `evidence/A-09.md` |
-| A-10 | `renegade_a10` | 3120 | 3220 | `renegade_a10` | `renegade_mig_a10` | 5450 | `.phase-a/a10/media` | `renegade_a10_media` | `evidence/A-10.md` |
+| Card | Compose project name | Web app port | Playwright server port | App database   | Migration-test database | Postgres host port | Media path           | Media volume         | Evidence file      |
+| ---- | -------------------- | ------------ | ---------------------- | -------------- | ----------------------- | ------------------ | -------------------- | -------------------- | ------------------ |
+| A-01 | `renegade_a01`       | 3101         | 3201                   | `renegade_a01` | `renegade_mig_a01`      | 5433               | `.phase-a/a01/media` | `renegade_a01_media` | `evidence/A-01.md` |
+| A-02 | `renegade_a02`       | 3102         | 3202                   | `renegade_a02` | `renegade_mig_a02`      | 5434               | `.phase-a/a02/media` | `renegade_a02_media` | `evidence/A-02.md` |
+| A-03 | `renegade_a03`       | 3103         | 3203                   | `renegade_a03` | `renegade_mig_a03`      | 5435               | `.phase-a/a03/media` | `renegade_a03_media` | `evidence/A-03.md` |
+| A-04 | `renegade_a04`       | 3104         | 3204                   | `renegade_a04` | `renegade_mig_a04`      | 5436               | `.phase-a/a04/media` | `renegade_a04_media` | `evidence/A-04.md` |
+| A-05 | `renegade_a05`       | 3105         | 3205                   | `renegade_a05` | `renegade_mig_a05`      | 5437               | `.phase-a/a05/media` | `renegade_a05_media` | `evidence/A-05.md` |
+| A-06 | `renegade_a06`       | 3106         | 3206                   | `renegade_a06` | `renegade_mig_a06`      | 5438               | `.phase-a/a06/media` | `renegade_a06_media` | `evidence/A-06.md` |
+| A-07 | `renegade_a07`       | 3107         | 3207                   | `renegade_a07` | `renegade_mig_a07`      | 5439               | `.phase-a/a07/media` | `renegade_a07_media` | `evidence/A-07.md` |
+| A-08 | `renegade_a08`       | 3108         | 3208                   | `renegade_a08` | `renegade_mig_a08`      | 5440               | `.phase-a/a08/media` | `renegade_a08_media` | `evidence/A-08.md` |
+| A-09 | `renegade_a09`       | 3109         | 3209                   | `renegade_a09` | `renegade_mig_a09`      | 5441               | `.phase-a/a09/media` | `renegade_a09_media` | `evidence/A-09.md` |
+| A-10 | `renegade_a10`       | 3120         | 3220                   | `renegade_a10` | `renegade_mig_a10`      | 5450               | `.phase-a/a10/media` | `renegade_a10_media` | `evidence/A-10.md` |
 
 > A-08 (backup/restore) additionally needs a **disposable restore target** distinct from its
 > source. Use Compose project `renegade_a08_restore`, database `renegade_a08_restore`,
@@ -47,7 +47,7 @@ Every card gets an exclusive mutable runtime namespace. `media path` is relative
   two cards write the same directory). For Compose, use the named volume `<media volume>`.
 - **Migration-test DB:** the fresh/upgrade migration scripts
   (`test:migrations:fresh` / `test:migrations:upgrade`) must target `<migration-test
-  database>`, never the app database.
+database>`, never the app database.
 - **Web/Playwright ports:** run the app under test on `<web app port>`; point Playwright's
   `webServer`/`baseURL` at `<playwright server port>` (override `playwright.config.ts`'s
   default `3110` for the card run). Never bind `3110` or `5432` during a concurrent card.
@@ -58,10 +58,10 @@ For an isolated Compose run, each card creates an untracked override that maps o
 
 ## Evidence filename ownership (unique, one writer)
 
-| Card | Sole writable evidence file | Remediation namespace |
-|---|---|---|
-| A-01…A-10 | `evidence/A-01.md` … `evidence/A-10.md` | `remediation/A-01-*.md` … `remediation/A-10-*.md` |
-| Coordinator only | `CHECKLIST.md`, `EVIDENCE_INDEX.md`, `evidence/BASELINE.md` (if used) | — |
+| Card             | Sole writable evidence file                                           | Remediation namespace                             |
+| ---------------- | --------------------------------------------------------------------- | ------------------------------------------------- |
+| A-01…A-10        | `evidence/A-01.md` … `evidence/A-10.md`                               | `remediation/A-01-*.md` … `remediation/A-10-*.md` |
+| Coordinator only | `CHECKLIST.md`, `EVIDENCE_INDEX.md`, `evidence/BASELINE.md` (if used) | —                                                 |
 
 A card writing outside its assigned evidence/remediation namespace, or editing the checklist
 or another card's evidence, is a **coordination violation** and its run is invalid.
@@ -73,4 +73,3 @@ or another card's evidence, is a **coordination violation** and its run is inval
    card only.
 3. Never point at `5432`, `3110`, the repo default `./media`, or a production database.
 4. Tear down your Docker project (`docker compose -p <project> down -v`) after the run.
-

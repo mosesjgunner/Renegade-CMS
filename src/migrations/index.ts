@@ -39,6 +39,9 @@ import * as migration_20260831_160000_phase_b_book_lifecycle_reconciliation from
 import * as migration_20260831_170000_phase_b_scoped_media_reconciliation from './20260831_170000_phase_b_scoped_media_reconciliation'
 import * as migration_20260831_180000_phase_b_video_captions_relation from './20260831_180000_phase_b_video_captions_relation'
 import * as migration_20260831_190000_phase_b_integrations_id_defaults from './20260831_190000_phase_b_integrations_id_defaults'
+import * as migration_20260902_000000_pub_02_content_publishing_pass from './20260902_000000_pub_02_content_publishing_pass'
+import * as migration_20260902_010000_pub_01_canonical_tenant_isolation from './20260902_010000_pub_01_canonical_tenant_isolation'
+import * as migration_20260902_020000_pub_04_publishing_floor from './20260902_020000_pub_04_publishing_floor'
 
 export const migrations = [
   {
@@ -245,5 +248,20 @@ export const migrations = [
     up: migration_20260831_200000_member_identity_foundation.up,
     down: migration_20260831_200000_member_identity_foundation.down,
     name: '20260831_200000_member_identity_foundation',
+  },
+  {
+    up: migration_20260902_000000_pub_02_content_publishing_pass.up,
+    down: migration_20260902_000000_pub_02_content_publishing_pass.down,
+    name: '20260902_000000_pub_02_content_publishing_pass',
+  },
+  {
+    up: migration_20260902_010000_pub_01_canonical_tenant_isolation.up,
+    down: migration_20260902_010000_pub_01_canonical_tenant_isolation.down,
+    name: '20260902_010000_pub_01_canonical_tenant_isolation',
+  },
+  {
+    up: migration_20260902_020000_pub_04_publishing_floor.up,
+    down: migration_20260902_020000_pub_04_publishing_floor.down,
+    name: '20260902_020000_pub_04_publishing_floor',
   },
 ]

@@ -4,7 +4,10 @@ import { analyticsRetention, normalizeEvent, type FirstPartyEvent } from './cont
 
 /** Canonical first-party analytics writer. Callers never create parallel event stores. */
 export interface AnalyticsEventStore {
-  record(event: FirstPartyEvent, rawRetentionDays?: number): Promise<{ event: FirstPartyEvent; deduplicated: boolean }>
+  record(
+    event: FirstPartyEvent,
+    rawRetentionDays?: number,
+  ): Promise<{ event: FirstPartyEvent; deduplicated: boolean }>
 }
 
 type AnalyticsPayload = Pick<Payload, 'create' | 'find'>
@@ -41,7 +44,9 @@ export class PayloadAnalyticsEventStore implements AnalyticsEventStore {
         properties: normalized.properties,
         trusted: normalized.trusted,
         retentionMode: 'expire-at',
-        retentionExpiresAt: new Date(new Date(normalized.receivedAt).getTime() + rawRetentionDays * 86_400_000).toISOString(),
+        retentionExpiresAt: new Date(
+          new Date(normalized.receivedAt).getTime() + rawRetentionDays * 86_400_000,
+        ).toISOString(),
       },
       overrideAccess: true,
     } as never)

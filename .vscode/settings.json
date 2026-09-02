@@ -1,5 +1,8 @@
 {
   "chat.tools.terminal.autoApprove": {
     "npm exec": true
-  }
+  },
+  "qwen-code.provider": "api-key",
+  "qwen-code.apiKey": "Xo9js6Ch6xSAznejXB8f4XJDJgJWvgVz",
+  "qwen-code.codingPlanRegion": "global"
 }

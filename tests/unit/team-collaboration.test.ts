@@ -127,6 +127,7 @@ describe('Prompt 16 team collaboration', () => {
       scope,
       role: 'author',
       expiresAt: new Date('2026-09-02T00:00:00Z'),
+      now: new Date('2026-09-01T00:00:00Z'),
     })
     await revokeTeamInvitation(store, {
       actorMemberId: 'owner',
@@ -137,6 +138,7 @@ describe('Prompt 16 team collaboration', () => {
         token: revoked.token,
         memberId: 'b',
         verifiedEmail: 'b@example.test',
+        now: new Date('2026-09-01T01:00:00Z'),
       }),
     ).rejects.toThrow('unavailable')
   })

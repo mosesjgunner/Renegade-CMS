@@ -23,42 +23,44 @@ test('event creation, publication, discovery, ICS, cancellation, and unpublish r
     limit: 1,
     overrideAccess: true,
   } as never)
-  const event = (prior.docs[0]
-    ? await payload.update({
-        collection: 'events',
-        id: prior.docs[0].id,
-        data: {
-          status: 'published',
-          visibility: 'public',
-          removeFromDiscovery: false,
-          startsAt: '2027-03-07T15:00:00.000Z',
-          endsAt: '2027-03-07T16:00:00.000Z',
-          timeZone: 'America/Chicago',
-          recurrence: { frequency: 'weekly', count: 3 },
-        },
-        overrideAccess: true,
-      } as never)
-    : await payload.create({
-        collection: 'events',
-        data: {
-          site,
-          publication: publication.id,
-          title: 'Events E2E DST',
-          slug,
-          canonicalPath: `/events/${slug}`,
-          summary: 'Public recurring event',
-          status: 'published',
-          visibility: 'public',
-          removeFromDiscovery: false,
-          startsAt: '2027-03-07T15:00:00.000Z',
-          endsAt: '2027-03-07T16:00:00.000Z',
-          timeZone: 'America/Chicago',
-          attendanceMode: 'virtual',
-          onlineUrl: 'https://meet.example.test/events',
-          recurrence: { frequency: 'weekly', count: 3 },
-        },
-        overrideAccess: true,
-      } as never)) as { id: string }
+  const event = (
+    prior.docs[0]
+      ? await payload.update({
+          collection: 'events',
+          id: prior.docs[0].id,
+          data: {
+            status: 'published',
+            visibility: 'public',
+            removeFromDiscovery: false,
+            startsAt: '2027-03-07T15:00:00.000Z',
+            endsAt: '2027-03-07T16:00:00.000Z',
+            timeZone: 'America/Chicago',
+            recurrence: { frequency: 'weekly', count: 3 },
+          },
+          overrideAccess: true,
+        } as never)
+      : await payload.create({
+          collection: 'events',
+          data: {
+            site,
+            publication: publication.id,
+            title: 'Events E2E DST',
+            slug,
+            canonicalPath: `/events/${slug}`,
+            summary: 'Public recurring event',
+            status: 'published',
+            visibility: 'public',
+            removeFromDiscovery: false,
+            startsAt: '2027-03-07T15:00:00.000Z',
+            endsAt: '2027-03-07T16:00:00.000Z',
+            timeZone: 'America/Chicago',
+            attendanceMode: 'virtual',
+            onlineUrl: 'https://meet.example.test/events',
+            recurrence: { frequency: 'weekly', count: 3 },
+          },
+          overrideAccess: true,
+        } as never)
+  ) as { id: string }
   await page.goto('/events?from=2027-03-01&to=2027-03-31')
   await expect(page.getByRole('link', { name: 'Events E2E DST' })).toHaveCount(3)
   const feed = await request.get('/events/feed.ics')

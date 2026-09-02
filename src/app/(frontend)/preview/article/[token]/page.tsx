@@ -1,6 +1,7 @@
 import config from '@payload-config'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
+import { headers } from 'next/headers'
 import { getPayload } from 'payload'
 
 import { EditorialArticleView } from '@/modules/editorial/ArticleView'
@@ -21,9 +22,13 @@ export default async function ArticlePreviewPage({ params, searchParams }: Args)
   const query = await searchParams
   const previewMode = query.viewport === 'mobile' ? 'mobile' : 'desktop'
   const payload = await getPayload({ config })
+  const auth = await payload.auth({ headers: await headers() })
 
-  const article = await resolveEditorialPreviewToken(payload, token, previewMode).catch(() =>
-    notFound(),
-  )
+  const article = await resolveEditorialPreviewToken(
+    payload,
+    token,
+    previewMode,
+    String(auth.user?.id ?? ''),
+  ).catch(() => notFound())
   return <EditorialArticleView article={article} />
 }

@@ -17,10 +17,7 @@ import {
   normalizeConsentChoices,
   type PrivacyPolicy,
 } from '../../src/modules/analytics/contracts'
-import {
-  consentSetCookie,
-  readConsent,
-} from '../../src/modules/analytics/privacy'
+import { consentSetCookie, readConsent } from '../../src/modules/analytics/privacy'
 import { PayloadAnalyticsEventStore } from '../../src/modules/analytics/service'
 import { podcastRss } from '../../src/modules/media/publishing'
 import { eventIcs, type EventOccurrence } from '../../src/modules/events/contracts'
@@ -241,7 +238,8 @@ describe('Phase B Publisher Final Acceptance Integration', () => {
     const remediatedFindings = scanLocal({
       targetId: 'content-1',
       title: 'A Fully Compliant Quality Center Title With Sufficient Detail',
-      description: 'Comprehensive description satisfying public discovery and search engine guidelines.',
+      description:
+        'Comprehensive description satisfying public discovery and search engine guidelines.',
       headings: [1, 2, 3],
       canonicalUrl: 'https://example.test/articles/compliant-article',
     })

@@ -1,15 +1,19 @@
-import type { Payload, SanitizedConfig } from 'payload'
+import type { Payload, SanitizedConfig, Where } from 'payload'
 import { getPayload } from 'payload'
+import { isRegisteredCollection } from '../modules/public/registered-collections'
 
 type Collection = Parameters<Payload['find']>[0]['collection']
 
 type UpsertArgs = {
   collection: Collection
   data: Record<string, unknown>
-  where: Record<string, { equals: unknown }>
+  where: Where
 }
 
 async function upsert(payload: Payload, { collection, data, where }: UpsertArgs) {
+  if (!isRegisteredCollection(payload, String(collection))) {
+    return { id: 'seed-unregistered' }
+  }
   const existing = await payload.find({
     collection,
     where,
@@ -57,8 +61,9 @@ export async function seed(payload: Payload): Promise<void> {
 
   const brand = await upsert(payload, {
     collection: 'brands',
-    where: { name: { equals: 'Civic Demo Studio' } },
+    where: { and: [{ site: { equals: site.id } }, { name: { equals: 'Civic Demo Studio' } }] },
     data: {
+      site: site.id,
       name: 'Civic Demo Studio',
       legalName: 'Civic Demo Studio',
       kind: 'organization',
@@ -76,7 +81,7 @@ export async function seed(payload: Payload): Promise<void> {
 
   const mainPublication = await upsert(payload, {
     collection: 'publications',
-    where: { slug: { equals: 'main' } },
+    where: { and: [{ site: { equals: site.id } }, { slug: { equals: 'main' } }] },
     data: {
       site: site.id,
       name: 'Main Demo Publication',
@@ -101,6 +106,12 @@ export async function seed(payload: Payload): Promise<void> {
     data: { displayName: 'River Morgan', email: 'river@example.test', status: 'active' },
   })
 
+  await upsert(payload, {
+    collection: 'users',
+    where: { email: { equals: 'river@example.test' } },
+    data: { email: 'river@example.test', role: 'staff', member: member.id },
+  })
+
   const profile = await upsert(payload, {
     collection: 'profiles',
     where: { member: { equals: member.id } },
@@ -115,8 +126,9 @@ export async function seed(payload: Payload): Promise<void> {
 
   const space = await upsert(payload, {
     collection: 'spaces',
-    where: { handle: { equals: 'river-morgan' } },
+    where: { and: [{ site: { equals: site.id } }, { handle: { equals: 'river-morgan' } }] },
     data: {
+      site: site.id,
       member: member.id,
       profile: profile.id,
       handle: 'river-morgan',
@@ -176,7 +188,7 @@ export async function seed(payload: Payload): Promise<void> {
 
   await upsert(payload, {
     collection: 'brands',
-    where: { name: { equals: 'Civic Demo Studio' } },
+    where: { and: [{ site: { equals: site.id } }, { name: { equals: 'Civic Demo Studio' } }] },
     data: { primaryAuthor: memberAuthor.id },
   })
 
@@ -295,7 +307,9 @@ export async function seed(payload: Payload): Promise<void> {
 
   const article = await upsert(payload, {
     collection: 'content',
-    where: { canonicalPath: { equals: '/notes/demo-field-report' } },
+    where: {
+      and: [{ site: { equals: site.id } }, { slug: { equals: 'demo-field-report' } }],
+    },
     data: {
       site: site.id,
       publication: mainPublication.id,
@@ -303,6 +317,7 @@ export async function seed(payload: Payload): Promise<void> {
       contentType: 'article',
       title: 'Demo Field Report',
       slug: 'demo-field-report',
+      pathOverride: true,
       canonicalPath: '/notes/demo-field-report',
       summary: 'Neutral seeded article used for canonical IA tests.',
       status: 'published',

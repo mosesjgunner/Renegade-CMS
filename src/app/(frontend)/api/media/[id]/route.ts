@@ -26,7 +26,10 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     return NextResponse.json({ media })
   } catch (error) {
     const status = error instanceof MediaWorkflowError ? error.status : 400
-    return NextResponse.json({ error: error instanceof Error ? error.message : 'Metadata update failed.' }, { status })
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : 'Metadata update failed.' },
+      { status },
+    )
   }
 }
 

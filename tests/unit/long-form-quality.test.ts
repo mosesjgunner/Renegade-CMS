@@ -1,7 +1,12 @@
 import { describe, expect, it } from 'vitest'
 
 import { bookNavigation } from '../../src/modules/media/contracts'
-import { canIgnore, externalLinkFinding, qualityDedupeKey, scanLocal } from '../../src/modules/quality/contracts'
+import {
+  canIgnore,
+  externalLinkFinding,
+  qualityDedupeKey,
+  scanLocal,
+} from '../../src/modules/quality/contracts'
 
 describe('long-form and Quality Center contracts', () => {
   it('orders released chapters deterministically for previous/next navigation', () => {
@@ -24,10 +29,19 @@ describe('long-form and Quality Center contracts', () => {
       internalLinks: [{ href: '/stale-draft', exists: true, visible: false }],
       translationStatus: 'stale',
     })
-    expect(findings.map((finding) => finding.rule)).toEqual(expect.arrayContaining([
-      'canonical-valid', 'metadata-description', 'heading-hierarchy', 'media-alt-text', 'internal-link', 'translation-current',
-    ]))
-    expect(qualityDedupeKey({ siteId: 'tenant-a', rule: 'media-alt-text', targetId: 'document-a' })).not.toBe(
+    expect(findings.map((finding) => finding.rule)).toEqual(
+      expect.arrayContaining([
+        'canonical-valid',
+        'metadata-description',
+        'heading-hierarchy',
+        'media-alt-text',
+        'internal-link',
+        'translation-current',
+      ]),
+    )
+    expect(
+      qualityDedupeKey({ siteId: 'tenant-a', rule: 'media-alt-text', targetId: 'document-a' }),
+    ).not.toBe(
       qualityDedupeKey({ siteId: 'tenant-b', rule: 'media-alt-text', targetId: 'document-a' }),
     )
   })

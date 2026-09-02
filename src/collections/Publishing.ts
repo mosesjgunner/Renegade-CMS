@@ -1,8 +1,14 @@
-import type { CollectionConfig } from 'payload'
+import type { CollectionBeforeDeleteHook, CollectionConfig } from 'payload'
 import { assertEvent } from '../modules/events/contracts'
+import {
+  assertEditorialPathAvailable,
+  deriveEditorialPath,
+} from '../modules/editorial/publishing-pass'
+import { ensureEditorialCompanion } from '../modules/editorial/persistence'
 
 import {
   canonicalSlug,
+  enforceSiteTenantBoundary,
   importExportHookFields,
   knowledgeGraphProjectionFields,
   milestoneSixPresentationHookFields,
@@ -42,6 +48,16 @@ const taxonomyScope = [
   },
 ]
 
+const enforceTaxonomyTenantBoundary = enforceSiteTenantBoundary([
+  {
+    field: 'publication',
+    collection: 'publications',
+    requiredWhen: (data) => data.scope === 'publication',
+  },
+  { field: 'section', collection: 'sections' },
+  { field: 'parent', collection: 'categories' },
+])
+
 const editorialLifecycleOptions = [
   'draft',
   'review',
@@ -62,6 +78,21 @@ const editorialActionOptions = [
   'schedule',
   'publish',
 ] as const
+
+/** Taxonomy is archival identity; refuse deletion while an editorial record still uses it. */
+const refuseReferencedTaxonomyDeletion =
+  (field: string): CollectionBeforeDeleteHook =>
+  async ({ id, req }) => {
+    const references = await req.payload.find({
+      collection: 'content',
+      where: { [field]: { contains: String(id) } },
+      depth: 0,
+      limit: 1,
+      overrideAccess: true,
+    } as never)
+    if (references.docs.length)
+      throw new Error(`This taxonomy term is assigned to content and cannot be deleted.`)
+  }
 
 export const MediaAssets: CollectionConfig = {
   slug: 'media-assets',
@@ -132,6 +163,7 @@ export const Sections: CollectionConfig = {
   slug: 'sections',
   admin: { useAsTitle: 'name', group: 'Taxonomy' },
   access: { create: staffOnly, delete: staffOnly, read: () => true, update: staffOnly },
+  hooks: { beforeChange: [enforceTaxonomyTenantBoundary] },
   fields: [
     ...taxonomyScope,
     { name: 'name', type: 'text', required: true },
@@ -147,7 +179,9 @@ export const Categories: CollectionConfig = {
   admin: { useAsTitle: 'name', group: 'Taxonomy' },
   access: { create: staffOnly, delete: staffOnly, read: () => true, update: staffOnly },
   hooks: {
+    beforeDelete: [refuseReferencedTaxonomyDeletion('categories')],
     beforeChange: [
+      enforceTaxonomyTenantBoundary,
       async ({ data, originalDoc, req }) => {
         const parentId = typeof data?.parent === 'string' ? data.parent : data?.parent?.id
         if (!parentId) return data
@@ -187,6 +221,10 @@ const simpleTaxonomy = (slug: string, label: string): CollectionConfig => ({
   slug,
   admin: { useAsTitle: 'name', group: 'Taxonomy' },
   access: { create: staffOnly, delete: staffOnly, read: () => true, update: staffOnly },
+  hooks: {
+    beforeChange: [enforceTaxonomyTenantBoundary],
+    beforeDelete: [refuseReferencedTaxonomyDeletion(slug)],
+  },
   fields: [
     ...taxonomyScope,
     { name: 'name', type: 'text', required: true },
@@ -281,13 +319,36 @@ export const PublicRedirects: CollectionConfig = {
 
 export const Content: CollectionConfig = {
   slug: 'content',
-  admin: { useAsTitle: 'title', group: 'Publishing' },
+  labels: { singular: 'Post or Page', plural: 'All content' },
+  admin: {
+    useAsTitle: 'title',
+    group: 'Publishing',
+    defaultColumns: ['title', 'contentType', 'status', 'canonicalPath', 'updatedAt'],
+    description:
+      'Posts and Pages share one editorial record. Use the Posts and Pages links for focused work.',
+  },
   // Public pages query through the explicit publication renderer; Payload's raw
   // REST/GraphQL collection surface must not disclose drafts or private records.
   access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
   hooks: {
+    beforeValidate: [
+      async ({ data, originalDoc, req }) => {
+        const resolved = await deriveEditorialPath({
+          data: (data ?? {}) as Record<string, unknown>,
+          originalDoc: originalDoc as Record<string, unknown> | null,
+          payload: req.payload as never,
+        })
+        await assertEditorialPathAvailable({
+          data: resolved,
+          originalDoc: originalDoc as Record<string, unknown> | null,
+          payload: req.payload as never,
+        })
+        return resolved
+      },
+    ],
     afterChange: [
       async ({ doc, previousDoc, operation, req }) => {
+        await ensureEditorialCompanion(req.payload, doc as Record<string, unknown>, req)
         if (operation !== 'update') return doc
         const fromPath =
           typeof previousDoc?.canonicalPath === 'string' ? previousDoc.canonicalPath : ''
@@ -329,8 +390,47 @@ export const Content: CollectionConfig = {
       options: ['article', 'page', 'book', 'podcast', 'video', 'product', 'event', 'campaign'],
     },
     { name: 'title', type: 'text', required: true },
-    { name: 'slug', type: 'text', required: true, validate: canonicalSlug },
-    { name: 'canonicalPath', type: 'text', required: true, unique: true },
+    {
+      name: 'slug',
+      type: 'text',
+      required: true,
+      validate: canonicalSlug,
+      admin: { description: 'Generated from the title until you choose a different URL slug.' },
+    },
+    {
+      name: 'pathOverride',
+      type: 'checkbox',
+      defaultValue: false,
+      admin: {
+        description: 'Keep a manually chosen canonical path instead of deriving it from the slug.',
+      },
+    },
+    { name: 'canonicalPath', type: 'text', required: true, admin: { readOnly: true } },
+    {
+      name: 'parentPage',
+      type: 'relationship',
+      relationTo: 'content',
+      admin: {
+        condition: (_, siblingData) => siblingData.contentType === 'page',
+        description: 'Optional parent Page. Its path becomes the prefix for this page.',
+      },
+      filterOptions: { contentType: { equals: 'page' } },
+    },
+    {
+      name: 'pageTemplate',
+      type: 'select',
+      defaultValue: 'standard',
+      options: ['standard', 'landing', 'about', 'contact', 'legal'],
+      admin: { condition: (_, siblingData) => siblingData.contentType === 'page' },
+    },
+    {
+      name: 'body',
+      type: 'richText',
+      admin: {
+        description:
+          'Structured, accessible prose. Use the editor controls for headings, links, lists, quotes, and safe inline references—not raw HTML or JSON.',
+      },
+    },
     { name: 'summary', type: 'textarea' },
     {
       name: 'status',
@@ -677,10 +777,12 @@ export const Events: CollectionConfig = {
   admin: { useAsTitle: 'title', group: 'Calendar' },
   access: { create: staffOnly, delete: staffOnly, read: () => true, update: staffOnly },
   hooks: {
-    beforeValidate: [({ data }) => {
-      if (data) assertEvent(data as Parameters<typeof assertEvent>[0])
-      return data
-    }],
+    beforeValidate: [
+      ({ data }) => {
+        if (data) assertEvent(data as Parameters<typeof assertEvent>[0])
+        return data
+      },
+    ],
   },
   fields: [
     ...ownerFields(),
@@ -722,21 +824,44 @@ export const Events: CollectionConfig = {
       defaultValue: 'in-person',
       options: ['in-person', 'virtual', 'hybrid'],
     },
-    { name: 'onlineUrl', type: 'text', admin: { description: 'Meeting or livestream URL; required for virtual events.' } },
+    {
+      name: 'onlineUrl',
+      type: 'text',
+      admin: { description: 'Meeting or livestream URL; required for virtual events.' },
+    },
     { name: 'organizerName', type: 'text' },
     { name: 'organizerUrl', type: 'text' },
     { name: 'capacity', type: 'number', min: 1 },
-    { name: 'registrationUrl', type: 'text', admin: { description: 'External registration only; ticketing and payments are not part of Events.' } },
     {
-      name: 'recurrence', type: 'json',
-      admin: { description: 'Optional daily, weekly, or monthly series. Expansion is limited to 250 occurrences / 366 days.' },
+      name: 'registrationUrl',
+      type: 'text',
+      admin: {
+        description: 'External registration only; ticketing and payments are not part of Events.',
+      },
     },
     {
-      name: 'recurrenceOverrides', type: 'json',
-      admin: { description: 'Edit one occurrence by its original ISO start instant; edit the series by changing this event. Cancelled overrides suppress only that occurrence.' },
+      name: 'recurrence',
+      type: 'json',
+      admin: {
+        description:
+          'Optional daily, weekly, or monthly series. Expansion is limited to 250 occurrences / 366 days.',
+      },
+    },
+    {
+      name: 'recurrenceOverrides',
+      type: 'json',
+      admin: {
+        description:
+          'Edit one occurrence by its original ISO start instant; edit the series by changing this event. Cancelled overrides suppress only that occurrence.',
+      },
     },
     { name: 'categories', type: 'relationship', relationTo: 'categories', hasMany: true },
-    { name: 'relatedContent', type: 'relationship', relationTo: ['content', 'events'], hasMany: true },
+    {
+      name: 'relatedContent',
+      type: 'relationship',
+      relationTo: ['content', 'events'],
+      hasMany: true,
+    },
     { name: 'heroMedia', type: 'relationship', relationTo: 'media-assets' },
     { name: 'calendarEntry', type: 'relationship', relationTo: 'calendar-entries', index: true },
     { name: 'audience', type: 'json' },

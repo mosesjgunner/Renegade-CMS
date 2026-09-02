@@ -14,7 +14,9 @@ describe('A-02 replacement semantics', () => {
   it('resolves a bounded, same-site replacement chain while retaining the original identity', async () => {
     const records: Record<string, any> = { old: asset('old', 'new'), new: asset('new') }
     const payload = { findByID: async ({ id }: any) => records[id] }
-    await expect(resolveMediaReplacement(payload as never, records.old)).resolves.toEqual(records.new)
+    await expect(resolveMediaReplacement(payload as never, records.old)).resolves.toEqual(
+      records.new,
+    )
   })
 
   it('refuses replacement cycles and cross-site targets', async () => {
@@ -22,15 +24,24 @@ describe('A-02 replacement semantics', () => {
     const crossSite = { ...asset('other'), site: 'site-b' }
     const payload = { findByID: async ({ id }: any) => (id === 'other' ? crossSite : loop[id]) }
     await expect(resolveMediaReplacement(payload as never, loop.one)).resolves.toBeUndefined()
-    await expect(resolveMediaReplacement(payload as never, asset('old', 'other'))).resolves.toBeUndefined()
+    await expect(
+      resolveMediaReplacement(payload as never, asset('old', 'other')),
+    ).resolves.toBeUndefined()
   })
 
   it('makes a published canonical use serve its replacement, but never makes an orphan public', async () => {
-    const records: Record<string, any> = { old: asset('old', 'new'), new: asset('new'), orphan: asset('orphan') }
+    const records: Record<string, any> = {
+      old: asset('old', 'new'),
+      new: asset('new'),
+      orphan: asset('orphan'),
+    }
     const payload = {
       findByID: async ({ id }: any) => records[id],
       find: async ({ collection, where }: any) => ({
-        docs: collection === 'content' && where.and?.[0]?.heroMedia?.equals === 'old' ? [{ id: 'post' }] : [],
+        docs:
+          collection === 'content' && where.and?.[0]?.heroMedia?.equals === 'old'
+            ? [{ id: 'post' }]
+            : [],
       }),
     }
     await expect(publicMedia(payload as never, 'old')).resolves.toEqual(records.new)

@@ -1,5 +1,6 @@
 import type { EditorialPresentation } from './persistence'
 import Image from 'next/image'
+import { SafeRichText } from './RichText'
 
 export function EditorialArticleView({ article }: { article: EditorialPresentation }) {
   return (
@@ -16,7 +17,7 @@ export function EditorialArticleView({ article }: { article: EditorialPresentati
               Preview Mode: {article.previewMode ?? 'draft'}
             </span>
           ) : (
-            <span className="badge badge-neutral">Published Article</span>
+            <span className="badge badge-neutral">Published</span>
           )}
           <span className="badge badge-info">⏱️ {article.readingTimeMinutes} min read</span>
         </div>
@@ -108,8 +109,12 @@ export function EditorialArticleView({ article }: { article: EditorialPresentati
       ) : null}
 
       {/* Article Body */}
-      <article className="prose dark:prose-invert max-w-none text-base sm:text-lg leading-8 text-stone-800 dark:text-stone-200 font-sans space-y-6">
-        <p className="whitespace-pre-line leading-relaxed">{article.bodyText}</p>
+      <article className="text-base sm:text-lg leading-8 text-stone-800 dark:text-stone-200 font-sans">
+        {article.bodyText ? (
+          <SafeRichText document={article.body} />
+        ) : (
+          <p>This content has no body yet.</p>
+        )}
       </article>
 
       {/* Taxonomy Tags */}

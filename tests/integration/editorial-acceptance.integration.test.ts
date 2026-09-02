@@ -55,6 +55,7 @@ describe('M04-C editorial acceptance', () => {
     const publication = await findOne('publications', { slug: { equals: 'main' } })
     const site = await findOne('sites', { slug: { equals: 'demo-publication' } })
     const author = await findOne('authors', { slug: { equals: 'river-morgan' } })
+    const previewUser = await findOne('users', { email: { equals: 'river@example.test' } })
     const section = await findOne('sections', { slug: { equals: 'notes' } })
     const category = await findOne('categories', { slug: { equals: 'field-reports' } })
     const tag = await findOne('tags', { slug: { equals: 'demo' } })
@@ -124,9 +125,15 @@ describe('M04-C editorial acceptance', () => {
     const originalRevisionId = idOf(created.article.currentRevision)
     const firstPreview = await createEditorialPreviewToken(payload, {
       articleId,
-      expiresAt: '2099-08-19T01:00:00.000Z',
+      createdBy: previewUser.id,
+      expiresAt: new Date(Date.now() + 30 * 60 * 1000).toISOString(),
     })
-    const preview = await resolveEditorialPreviewToken(payload, firstPreview.token, 'mobile')
+    const preview = await resolveEditorialPreviewToken(
+      payload,
+      firstPreview.token,
+      'mobile',
+      previewUser.id,
+    )
 
     expect(preview.preview).toBe(true)
     expect(preview.previewMode).toBe('mobile')
@@ -246,9 +253,15 @@ describe('M04-C editorial acceptance', () => {
 
     const secondPreview = await createEditorialPreviewToken(payload, {
       articleId,
-      expiresAt: '2099-08-20T01:00:00.000Z',
+      createdBy: previewUser.id,
+      expiresAt: new Date(Date.now() + 30 * 60 * 1000).toISOString(),
     })
-    const previewAfterEmbargo = await resolveEditorialPreviewToken(payload, secondPreview.token)
+    const previewAfterEmbargo = await resolveEditorialPreviewToken(
+      payload,
+      secondPreview.token,
+      'desktop',
+      previewUser.id,
+    )
     expect(previewAfterEmbargo.bodyText).toContain(
       'Embargoed update that must stay out of public view.',
     )

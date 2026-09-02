@@ -9,5 +9,6 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 <!-- END:nextjs-agent-rules -->
 
 # Autonomous Execution & Approvals
+
 - Do not stop to ask clarifying questions or confirmation prompts; make executive decisions and proceed directly.
 - Execute all git commands, file edits, and terminal actions automatically without asking for user approval.

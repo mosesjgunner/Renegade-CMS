@@ -1,5 +1,5 @@
 import { postgresAdapter } from '@payloadcms/db-postgres'
-import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import { lexicalEditor, RelationshipFeature } from '@payloadcms/richtext-lexical'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { buildConfig } from 'payload'
@@ -30,10 +30,12 @@ export default buildConfig({
     user: users.slug,
     importMap: { baseDir: dirname },
     components: {
-      beforeNavLinks: ['./modules/admin/CapabilityCenterLink'],
+      beforeNavLinks: ['./modules/admin/PublishingLinks', './modules/admin/CapabilityCenterLink'],
       views: {
         capabilities: { Component: './modules/admin/CapabilityCenter', path: '/capabilities' },
         security: { Component: './modules/admin/SecurityCenter', path: '/security' },
+        posts: { Component: './modules/admin/PublishingCenter', path: '/posts' },
+        pages: { Component: './modules/admin/PublishingCenter', path: '/pages' },
       },
     },
   },
@@ -54,7 +56,14 @@ export default buildConfig({
   }),
   cors: [config.appUrl],
   csrf: [config.appUrl],
-  editor: lexicalEditor(),
+  editor: lexicalEditor({
+    // Default Lexical supplies headings, paragraphs, links, lists and quotes.
+    // This explicit allow-list is the safe inline-reference contract for PUB-02.
+    features: ({ defaultFeatures }) => [
+      ...defaultFeatures,
+      RelationshipFeature({ enabledCollections: ['media-assets', 'content'] }),
+    ],
+  }),
   endpoints: [],
   jobs: {
     access: {

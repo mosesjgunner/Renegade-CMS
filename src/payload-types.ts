@@ -495,6 +495,7 @@ export interface Member {
   exportRequestedAt?: string | null;
   deletionRequestedAt?: string | null;
   verifiedEmailAt?: string | null;
+  moderationReason?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -670,6 +671,7 @@ export interface Publication {
  */
 export interface Space {
   id: string;
+  site: string | Site;
   member: string | Member;
   profile?: (string | null) | Profile;
   handle: string;
@@ -740,9 +742,34 @@ export interface Profile {
   id: string;
   member: string | Member;
   displayName: string;
+  /**
+   * Public handle; changes require an explicit member self-service request.
+   */
+  handle: string;
   avatar?: (string | null) | MediaAsset;
   cover?: (string | null) | MediaAsset;
   bio?: string | null;
+  links?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Private member self-service preferences.
+   */
+  preferences?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   visibility: 'public' | 'unlisted' | 'members' | 'friends' | 'private';
   /**
    * Audience per public profile field.
@@ -895,6 +922,7 @@ export interface Album {
  */
 export interface Brand {
   id: string;
+  site: string | Site;
   name: string;
   legalName?: string | null;
   kind: 'organization' | 'personal';
@@ -1335,6 +1363,8 @@ export interface Relationship {
   createdAt: string;
 }
 /**
+ * Posts and Pages share one editorial record. Use the Posts and Pages links for focused work.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "content".
  */
@@ -1346,8 +1376,38 @@ export interface Content {
   owner?: (string | null) | Member;
   contentType: 'article' | 'page' | 'book' | 'podcast' | 'video' | 'product' | 'event' | 'campaign';
   title: string;
+  /**
+   * Generated from the title until you choose a different URL slug.
+   */
   slug: string;
+  /**
+   * Keep a manually chosen canonical path instead of deriving it from the slug.
+   */
+  pathOverride?: boolean | null;
   canonicalPath: string;
+  /**
+   * Optional parent Page. Its path becomes the prefix for this page.
+   */
+  parentPage?: (string | null) | Content;
+  pageTemplate?: ('standard' | 'landing' | 'about' | 'contact' | 'legal') | null;
+  /**
+   * Structured, accessible prose. Use the editor controls for headings, links, lists, quotes, and safe inline references—not raw HTML or JSON.
+   */
+  body?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   summary?: string | null;
   status: 'draft' | 'review' | 'approved' | 'scheduled' | 'published' | 'updated' | 'archived' | 'rejected';
   publishedAt?: string | null;
@@ -7311,6 +7371,7 @@ export interface IntegrationAuditEventsSelect<T extends boolean = true> {
  * via the `definition` "brands_select".
  */
 export interface BrandsSelect<T extends boolean = true> {
+  site?: T;
   name?: T;
   legalName?: T;
   kind?: T;
@@ -7351,6 +7412,7 @@ export interface MembersSelect<T extends boolean = true> {
   exportRequestedAt?: T;
   deletionRequestedAt?: T;
   verifiedEmailAt?: T;
+  moderationReason?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -7430,9 +7492,12 @@ export interface IdentityAuditEventsSelect<T extends boolean = true> {
 export interface ProfilesSelect<T extends boolean = true> {
   member?: T;
   displayName?: T;
+  handle?: T;
   avatar?: T;
   cover?: T;
   bio?: T;
+  links?: T;
+  preferences?: T;
   visibility?: T;
   fieldAudience?: T;
   layoutTheme?: T;
@@ -7444,6 +7509,7 @@ export interface ProfilesSelect<T extends boolean = true> {
  * via the `definition` "spaces_select".
  */
 export interface SpacesSelect<T extends boolean = true> {
+  site?: T;
   member?: T;
   profile?: T;
   handle?: T;
@@ -7905,7 +7971,11 @@ export interface ContentSelect<T extends boolean = true> {
   contentType?: T;
   title?: T;
   slug?: T;
+  pathOverride?: T;
   canonicalPath?: T;
+  parentPage?: T;
+  pageTemplate?: T;
+  body?: T;
   summary?: T;
   status?: T;
   publishedAt?: T;

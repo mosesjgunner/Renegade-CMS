@@ -5,7 +5,13 @@ import { OPERATIONS_QUEUE } from '../operations/tasks'
 import { canIgnore, canWaive, qualityDedupeKey, scanLocal, type QualityFinding } from './contracts'
 
 type Doc = Record<string, unknown>
-type QualityScanSummary = { created: number; updated: number; reopened: number; resolved: number; findings: number }
+type QualityScanSummary = {
+  created: number
+  updated: number
+  reopened: number
+  resolved: number
+  findings: number
+}
 type ScanTargetType =
   | 'document'
   | 'book'
@@ -58,15 +64,45 @@ async function findOne(payload: Payload, collection: string, where: Record<strin
 }
 
 async function targetSiteId(payload: Payload, targetType: ScanTargetType, targetId: string) {
-  if (targetType === 'book') return idOf((await payload.findByID({ collection: 'books' as never, id: targetId, depth: 0, overrideAccess: true } as never) as unknown as Doc).site)
+  if (targetType === 'book')
+    return idOf(
+      (
+        (await payload.findByID({
+          collection: 'books' as never,
+          id: targetId,
+          depth: 0,
+          overrideAccess: true,
+        } as never)) as unknown as Doc
+      ).site,
+    )
   if (targetType === 'book-chapter') {
-    const chapter = await payload.findByID({ collection: 'book-chapters' as never, id: targetId, depth: 0, overrideAccess: true } as never) as unknown as Doc
-    const book = await payload.findByID({ collection: 'books' as never, id: idOf(chapter.book), depth: 0, overrideAccess: true } as never) as unknown as Doc
+    const chapter = (await payload.findByID({
+      collection: 'book-chapters' as never,
+      id: targetId,
+      depth: 0,
+      overrideAccess: true,
+    } as never)) as unknown as Doc
+    const book = (await payload.findByID({
+      collection: 'books' as never,
+      id: idOf(chapter.book),
+      depth: 0,
+      overrideAccess: true,
+    } as never)) as unknown as Doc
     return idOf(book.site)
   }
   if (targetType === 'document') {
-    const article = await payload.findByID({ collection: 'article-family-content' as never, id: targetId, depth: 0, overrideAccess: true } as never) as unknown as Doc
-    const content = await payload.findByID({ collection: 'content' as never, id: idOf(article.content), depth: 0, overrideAccess: true } as never) as unknown as Doc
+    const article = (await payload.findByID({
+      collection: 'article-family-content' as never,
+      id: targetId,
+      depth: 0,
+      overrideAccess: true,
+    } as never)) as unknown as Doc
+    const content = (await payload.findByID({
+      collection: 'content' as never,
+      id: idOf(article.content),
+      depth: 0,
+      overrideAccess: true,
+    } as never)) as unknown as Doc
     return idOf(content.site)
   }
   return ''
@@ -85,16 +121,50 @@ export async function produceLocalFindings(
   input: { targetType: ScanTargetType; targetId: string },
 ) {
   if (input.targetType === 'book') {
-    const book = (await payload.findByID({ collection: 'books' as never, id: input.targetId, depth: 0, overrideAccess: true } as never)) as unknown as Doc | null
+    const book = (await payload.findByID({
+      collection: 'books' as never,
+      id: input.targetId,
+      depth: 0,
+      overrideAccess: true,
+    } as never)) as unknown as Doc | null
     if (!book) return []
-    const samePath = await payload.find({ collection: 'books' as never, where: { and: [{ site: { equals: idOf(book.site) } }, { canonicalPath: { equals: book.canonicalPath } }] }, limit: 2, depth: 0, overrideAccess: true } as never)
-    const findings = scanLocal({ targetId: input.targetId, title: typeof book.title === 'string' ? book.title : undefined, description: typeof book.description === 'string' ? book.description : undefined, canonicalUrl: typeof book.seoCanonicalURL === 'string' ? book.seoCanonicalURL : undefined })
-    if (docs(samePath).length > 1) findings.push({ rule: 'canonical-duplicate', severity: 'publication_blocking', message: 'Another book in this site uses the same canonical path.', remediation: 'Choose one canonical path and redirect the duplicate.', location: 'canonicalPath' })
+    const samePath = await payload.find({
+      collection: 'books' as never,
+      where: {
+        and: [
+          { site: { equals: idOf(book.site) } },
+          { canonicalPath: { equals: book.canonicalPath } },
+        ],
+      },
+      limit: 2,
+      depth: 0,
+      overrideAccess: true,
+    } as never)
+    const findings = scanLocal({
+      targetId: input.targetId,
+      title: typeof book.title === 'string' ? book.title : undefined,
+      description: typeof book.description === 'string' ? book.description : undefined,
+      canonicalUrl: typeof book.seoCanonicalURL === 'string' ? book.seoCanonicalURL : undefined,
+    })
+    if (docs(samePath).length > 1)
+      findings.push({
+        rule: 'canonical-duplicate',
+        severity: 'publication_blocking',
+        message: 'Another book in this site uses the same canonical path.',
+        remediation: 'Choose one canonical path and redirect the duplicate.',
+        location: 'canonicalPath',
+      })
     return findings
   }
-  const chapter = input.targetType === 'book-chapter'
-    ? ((await payload.findByID({ collection: 'book-chapters' as never, id: input.targetId, depth: 0, overrideAccess: true } as never)) as unknown as Doc | null)
-    : null
+  const chapter =
+    input.targetType === 'book-chapter'
+      ? ((await payload.findByID({
+          collection: 'book-chapters' as never,
+          id: input.targetId,
+          depth: 0,
+          overrideAccess: true,
+        } as never)) as unknown as Doc | null)
+      : null
   const articleId = input.targetType === 'document' ? input.targetId : idOf(chapter?.content)
   if (!articleId) return [] as QualityFinding[]
   const article = (await payload.findByID({
@@ -135,15 +205,34 @@ export async function produceLocalFindings(
     typeof article.document === 'object' && article.document !== null
       ? (article.document as Record<string, unknown>)
       : {}
-  const internalLinks = await Promise.all(linksFrom(docObj).map(async (href) => {
-    const result = await payload.find({ collection: 'content' as never, where: { canonicalPath: { equals: href } }, limit: 1, depth: 0, overrideAccess: true } as never)
-    const target = docs(result)[0]
-    return { href, exists: Boolean(target), visible: Boolean(target?.status && ['published', 'updated'].includes(String(target.status))) }
-  }))
+  const internalLinks = await Promise.all(
+    linksFrom(docObj).map(async (href) => {
+      const result = await payload.find({
+        collection: 'content' as never,
+        where: { canonicalPath: { equals: href } },
+        limit: 1,
+        depth: 0,
+        overrideAccess: true,
+      } as never)
+      const target = docs(result)[0]
+      return {
+        href,
+        exists: Boolean(target),
+        visible: Boolean(
+          target?.status && ['published', 'updated'].includes(String(target.status)),
+        ),
+      }
+    }),
+  )
   return scanLocal({
     targetId: input.targetId,
     title: typeof content?.title === 'string' ? content.title : undefined,
-    description: typeof content?.seoDescription === 'string' ? content.seoDescription : typeof content?.summary === 'string' ? content.summary : undefined,
+    description:
+      typeof content?.seoDescription === 'string'
+        ? content.seoDescription
+        : typeof content?.summary === 'string'
+          ? content.summary
+          : undefined,
     canonicalUrl:
       typeof content?.seoCanonicalURL === 'string' ? content.seoCanonicalURL : undefined,
     headings: buildTableOfContents(docObj).map((heading) => heading.level),
@@ -204,7 +293,9 @@ export async function persistQualityFindings(
       message: finding.message,
       remediation: { text: finding.remediation, location: finding.location },
       dependencyFingerprint: finding.location,
-      repairUrl: finding.repairUrl ?? `/admin/collections/${input.scan.targetType === 'book-chapter' ? 'book-chapters' : 'article-family-content'}/${scanTargetId}`,
+      repairUrl:
+        finding.repairUrl ??
+        `/admin/collections/${input.scan.targetType === 'book-chapter' ? 'book-chapters' : 'article-family-content'}/${scanTargetId}`,
       lastSeenAt: now.toISOString(),
     }
     if (!existing) {
@@ -275,7 +366,10 @@ export async function persistQualityFindings(
   return { created, updated, reopened, resolved, findings: input.findings.length }
 }
 
-export async function executeQualityScan(payload: Payload, input: { scanId: string; now?: Date }): Promise<QualityScanSummary> {
+export async function executeQualityScan(
+  payload: Payload,
+  input: { scanId: string; now?: Date },
+): Promise<QualityScanSummary> {
   const scan = (await payload.findByID({
     collection: 'quality-scans' as never,
     id: input.scanId,
@@ -351,8 +445,32 @@ export async function queueQualityScan(
 
 /** A worker can call this before polling to make abandoned scan jobs visible and rescanable. */
 export async function markStaleQualityScans(payload: Payload, input: { olderThan: Date }) {
-  const result = await payload.find({ collection: 'quality-scans' as never, where: { and: [{ status: { equals: 'running' } }, { startedAt: { less_than: input.olderThan.toISOString() } }] }, limit: 500, depth: 0, overrideAccess: true } as never)
-  await Promise.all((result.docs as unknown as Doc[]).map((scan) => payload.update({ collection: 'quality-scans' as never, id: String(scan.id), data: { status: 'stale', completedAt: input.olderThan.toISOString(), summary: { error: 'Scan exceeded its worker lease; rescan required.' } }, overrideAccess: true } as never)))
+  const result = await payload.find({
+    collection: 'quality-scans' as never,
+    where: {
+      and: [
+        { status: { equals: 'running' } },
+        { startedAt: { less_than: input.olderThan.toISOString() } },
+      ],
+    },
+    limit: 500,
+    depth: 0,
+    overrideAccess: true,
+  } as never)
+  await Promise.all(
+    (result.docs as unknown as Doc[]).map((scan) =>
+      payload.update({
+        collection: 'quality-scans' as never,
+        id: String(scan.id),
+        data: {
+          status: 'stale',
+          completedAt: input.olderThan.toISOString(),
+          summary: { error: 'Scan exceeded its worker lease; rescan required.' },
+        },
+        overrideAccess: true,
+      } as never),
+    ),
+  )
   return result.docs.length
 }
 
@@ -361,10 +479,25 @@ export async function ignoreQualityIssue(
   input: { issueId: string; actorRole: 'owner' | 'staff'; reason: string; now?: Date },
 ) {
   if (!input.reason.trim()) throw new Error('Ignoring a finding requires a false-positive reason.')
-  const issue = (await payload.findByID({ collection: 'quality-issues' as never, id: input.issueId, depth: 0, overrideAccess: true } as never)) as unknown as Doc
+  const issue = (await payload.findByID({
+    collection: 'quality-issues' as never,
+    id: input.issueId,
+    depth: 0,
+    overrideAccess: true,
+  } as never)) as unknown as Doc
   const severity = issue.severity as 'informational' | 'warning' | 'publication_blocking'
-  if (!canIgnore({ severity, actorRole: input.actorRole })) throw new Error('This quality issue cannot be ignored.')
-  return payload.update({ collection: 'quality-issues' as never, id: input.issueId, data: { status: 'ignored', ignoredAt: (input.now ?? new Date()).toISOString(), ignoredReason: input.reason }, overrideAccess: true } as never)
+  if (!canIgnore({ severity, actorRole: input.actorRole }))
+    throw new Error('This quality issue cannot be ignored.')
+  return payload.update({
+    collection: 'quality-issues' as never,
+    id: input.issueId,
+    data: {
+      status: 'ignored',
+      ignoredAt: (input.now ?? new Date()).toISOString(),
+      ignoredReason: input.reason,
+    },
+    overrideAccess: true,
+  } as never)
 }
 
 /** Waivers require an owner and retain a separate authorization record. */

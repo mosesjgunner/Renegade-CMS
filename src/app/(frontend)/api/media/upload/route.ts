@@ -32,7 +32,7 @@ export async function POST(request: Request) {
       altText: String(form.get('altText') ?? '') || undefined,
       caption: String(form.get('caption') ?? '') || undefined,
       focalPoint:
-        form.get('focalX') !== null || form.get('focalY') !== null
+        form.get('focalX') !== null && form.get('focalY') !== null
           ? { x: Number(form.get('focalX')), y: Number(form.get('focalY')) }
           : undefined,
       bytes: new Uint8Array(await file.arrayBuffer()),

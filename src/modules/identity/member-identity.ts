@@ -158,7 +158,10 @@ export async function consumeMagicLink(
       data: {
         member: memberId,
         displayName: 'New member',
-        handle: `member-${memberId.replace(/[^a-z0-9]/gi, '').toLowerCase().slice(-12)}`,
+        handle: `member-${memberId
+          .replace(/[^a-z0-9]/gi, '')
+          .toLowerCase()
+          .slice(-12)}`,
         visibility: 'private',
         preferences: {},
       },
@@ -225,9 +228,10 @@ export async function currentMember(
     data: { lastSeenAt: now.toISOString() },
     overrideAccess: true,
   })
-  const memberId = typeof session.member === 'string'
-    ? session.member
-    : String((session.member as { id?: string }).id)
+  const memberId =
+    typeof session.member === 'string'
+      ? session.member
+      : String((session.member as { id?: string }).id)
   const member = await store.findByID({
     collection: 'members',
     id: memberId,
@@ -271,13 +275,24 @@ export function walletCapability(): {
 }
 export async function changeMemberModeration(
   store: IdentityStore,
-  input: { actorUserId: string; memberId: string; status: 'active' | 'disabled' | 'archived'; reason: string },
+  input: {
+    actorUserId: string
+    memberId: string
+    status: 'active' | 'disabled' | 'archived'
+    reason: string
+  },
   now = new Date(),
 ): Promise<void> {
-  const current = await store.findByID({ collection: 'members', id: input.memberId, overrideAccess: true })
+  const current = await store.findByID({
+    collection: 'members',
+    id: input.memberId,
+    overrideAccess: true,
+  })
   if (current.status === input.status) return
   await store.update({
-    collection: 'members', id: input.memberId, overrideAccess: true,
+    collection: 'members',
+    id: input.memberId,
+    overrideAccess: true,
     data: {
       status: input.status,
       disabledAt: input.status === 'disabled' ? now.toISOString() : null,
@@ -291,7 +306,12 @@ export async function changeMemberModeration(
   })
 }
 
-async function audit(store: IdentityStore, member: string, event: string, details: Record<string, unknown> = {}) {
+async function audit(
+  store: IdentityStore,
+  member: string,
+  event: string,
+  details: Record<string, unknown> = {},
+) {
   await store.create({
     collection: 'identity-audit-events',
     overrideAccess: true,

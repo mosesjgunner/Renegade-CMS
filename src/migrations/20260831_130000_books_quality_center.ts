@@ -27,5 +27,7 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
 }
 
 export async function down(_: MigrateDownArgs): Promise<void> {
-  throw new Error('20260831_130000_books_quality_center is additive; rollback requires a reviewed data migration.')
+  throw new Error(
+    '20260831_130000_books_quality_center is additive; rollback requires a reviewed data migration.',
+  )
 }

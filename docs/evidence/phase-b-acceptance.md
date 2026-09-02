@@ -8,21 +8,22 @@ Phase B Final Acceptance is fully met. All code-level, database-level, browser E
 
 ## 1. Complete Verification Matrix
 
-| Gate / Command | Status | Output Evidence / Terminal Result |
-| :--- | :--- | :--- |
-| `npm run generate:types` | **PASSED** | Compiles TypeScript types for all Collections and Globals without error. |
-| `npm run lint` | **PASSED** | `eslint . --max-warnings=0` exited 0 (0 problems, 0 errors, 0 warnings). |
-| `npm run typecheck` | **PASSED** | `tsc --noEmit` exited 0 with 0 errors across all source and test files. |
-| `npm test` | **PASSED** | **58 files / 224 tests passed** in Vitest unit suite. |
-| `npm run build` | **PASSED** | Next.js standalone build emitted `.next/standalone/server.js` with 28/28 prerendered static pages and dynamic route optimization. |
-| `npm run test:browser` | **PASSED** | **4 / 4 tests passed** in Playwright across Chrome/Chromium (`analytics-consent.spec.ts` & `events-workflow.spec.ts`). |
-| `npm run test:integration` | **PASSED** | **13 files / 35 tests passed** in PostgreSQL integration suite (`--no-file-parallelism`). |
+| Gate / Command             | Status     | Output Evidence / Terminal Result                                                                                                 |
+| :------------------------- | :--------- | :-------------------------------------------------------------------------------------------------------------------------------- |
+| `npm run generate:types`   | **PASSED** | Compiles TypeScript types for all Collections and Globals without error.                                                          |
+| `npm run lint`             | **PASSED** | `eslint . --max-warnings=0` exited 0 (0 problems, 0 errors, 0 warnings).                                                          |
+| `npm run typecheck`        | **PASSED** | `tsc --noEmit` exited 0 with 0 errors across all source and test files.                                                           |
+| `npm test`                 | **PASSED** | **58 files / 224 tests passed** in Vitest unit suite.                                                                             |
+| `npm run build`            | **PASSED** | Next.js standalone build emitted `.next/standalone/server.js` with 28/28 prerendered static pages and dynamic route optimization. |
+| `npm run test:browser`     | **PASSED** | **4 / 4 tests passed** in Playwright across Chrome/Chromium (`analytics-consent.spec.ts` & `events-workflow.spec.ts`).            |
+| `npm run test:integration` | **PASSED** | **13 files / 35 tests passed** in PostgreSQL integration suite (`--no-file-parallelism`).                                         |
 
 ---
 
 ## 2. Browser E2E & Feed/Metadata Evidence
 
 The standalone production Next.js server was tested on port 3110 with `LOCAL_E2E_TEST_MODE=true` (restricted to loopback origins `127.0.0.1` / `localhost`):
+
 1. **First Visit Zero-Tracking**: First visit to public `/events` route makes zero `/api/analytics/collect` network calls, sets no identifier cookies (`renegade-aid`, `renegade-sid`), and writes zero keys to `localStorage` or `sessionStorage`.
 2. **Consent Lifecycle & Cookies**:
    - Rejecting non-essential sets signed HttpOnly `renegade-consent` cookie while keeping analytics suppressed.
@@ -41,6 +42,7 @@ The standalone production Next.js server was tested on port 3110 with `LOCAL_E2E
 ## 3. Persisted HTTP Publisher Integration Acceptance
 
 Verified in `tests/integration/phase-b-publisher-acceptance.integration.test.ts`:
+
 1. **Consent & Suppression Lifecycle**:
    - Consented form submission records `form_submit` event to PostgreSQL `analytics-events` collection with hashed anonymous/session identifiers and expiration retention date.
    - Withdrawal of consent or active GPC/DNT privacy signals blocks recording.
@@ -66,6 +68,7 @@ Verified in `tests/integration/phase-b-publisher-acceptance.integration.test.ts`
 ## 4. Separation of Local vs. Provider-Required Behaviors
 
 ### Locally Verified (Deterministic / Self-Contained)
+
 - Complete PostgreSQL 17 database schema, migrations (`20260812_010209` through `20260831_190000`), and reconciliation.
 - Next.js standalone application build and production server execution.
 - Privacy consent manager, HMAC cookie verification, audit log persistence, and analytics ingestion with SHA-256 identity hashing.
@@ -77,6 +80,7 @@ Verified in `tests/integration/phase-b-publisher-acceptance.integration.test.ts`
 - Webhook signature generation, verification, replay rejection, bounded retry, and operator redelivery.
 
 ### Provider-Required in Production Deployment
+
 - **SMTP Provider**: Real outbound email dispatch for subscriber confirmation and magic links (local tests use console/mock transport).
 - **Media Transcoder / Hosted Storage**: Byte storage on S3/R2 and automated FFmpeg/Whisper transcode/transcription jobs (local tests verify metadata, provenance, and storage contracts).
 - **Public HTTPS Webhook Destination**: Real external server receiver for production webhook deliveries (local tests use mock/loopback receivers).
