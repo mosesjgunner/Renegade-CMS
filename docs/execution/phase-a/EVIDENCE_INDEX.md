@@ -17,7 +17,7 @@ A-00 execution: 2026-09-01T01:03:00Z on Linux 6.16.9+ x86_64, Node v22.23.2, npm
 | A-06 | `evidence/A-06.md` | Not yet authored | — |
 | A-07 | `evidence/A-07.md` | Not yet authored | — |
 | A-08 | `evidence/A-08.md` | Not yet authored | — |
-| A-09 | `evidence/A-09.md` | Not yet authored | — |
+| A-09 | `evidence/A-09.md` | Authored and focused proof passed | VERIFIED (C-7 prerequisite) |
 | A-10 | `evidence/A-10.md` | Not yet authored | — |
 
 ---
