@@ -16,8 +16,8 @@
 ## Exact reproduction
 
 | Exact command | Exit code | Test count / result |
-| --- | ---: | --- |
-|  |  |  |
+| ------------- | --------: | ------------------- |
+|               |           |                     |
 
 ## Proof and boundaries
 

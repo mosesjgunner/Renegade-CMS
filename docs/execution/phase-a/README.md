@@ -7,15 +7,15 @@ claim is authorized by these documents.
 
 ## Baseline binding
 
-| Item | Observed value |
-| --- | --- |
-| Repository | `https://github.com/mosesjgunner/Renegade-CMS` |
-| Exact base commit | `3375297ed9403631f900c37be49efdec9ad3e8a6` (`Tests and Fixes`) |
-| A-00 branch / worktree | `phase-a/a00-control-plane` / `C:\Projects\Renegade CMS\.worktrees\a00-control-plane` |
-| Node / npm | `v24.14.1` / `11.1.0` (engines: Node `>=20.9.0`, npm `>=10`) |
-| Runtime/dependencies | Next `16.3.0`, React/DOM `19.2.8`, Payload and `@payloadcms/*` `3.88.0`, `@payloadcms/db-postgres` `3.88.0`, TypeScript `5.9.2`, Vitest `3.2.4`, Playwright `1.62.1` |
-| Generated Payload types | `src/payload-types.ts`, tracked, 11,186 lines, SHA-256 `AA0CFFD928338456AE12A53C2D7F92AA9E079842DE882200F565593AC256E3F3` |
-| Generated admin import map | `src/app/(payload)/admin/importMap.js`, tracked, `CollectionCards` entry, SHA-256 `1C2F046C940EB33E3587891344FBB2B7ACE35198E076DEA8E1226A77B7C94662` |
+| Item                       | Observed value                                                                                                                                                       |
+| -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Repository                 | `https://github.com/mosesjgunner/Renegade-CMS`                                                                                                                       |
+| Exact base commit          | `3375297ed9403631f900c37be49efdec9ad3e8a6` (`Tests and Fixes`)                                                                                                       |
+| A-00 branch / worktree     | `phase-a/a00-control-plane` / `C:\Projects\Renegade CMS\.worktrees\a00-control-plane`                                                                                |
+| Node / npm                 | `v24.14.1` / `11.1.0` (engines: Node `>=20.9.0`, npm `>=10`)                                                                                                         |
+| Runtime/dependencies       | Next `16.3.0`, React/DOM `19.2.8`, Payload and `@payloadcms/*` `3.88.0`, `@payloadcms/db-postgres` `3.88.0`, TypeScript `5.9.2`, Vitest `3.2.4`, Playwright `1.62.1` |
+| Generated Payload types    | `src/payload-types.ts`, tracked, 11,190 lines; reconciliation-owned generated artifact                                                                               |
+| Generated admin import map | `src/app/(payload)/admin/importMap.js`, tracked, `CollectionCards` entry, SHA-256 `1C2F046C940EB33E3587891344FBB2B7ACE35198E076DEA8E1226A77B7C94662`                 |
 
 ## Registered migration ledger
 
@@ -86,7 +86,7 @@ public-navigation. Baseline results and infrastructure gates are in `EVIDENCE_IN
 The current checked-in Playwright configuration fixes `3110`; concurrent browser work must
 use a card-private configuration and its Resource Map port. Docker Compose is installed but
 the Docker daemon was unavailable during A-00; no PostgreSQL service, isolated Compose
-runtime, or browser gate was started. Chrome is installed; Playwright CLI is available.
+runtime, or browser gate was started. Playwright CLI and its Chromium browser are available.
 Unrun infrastructure checks are **NOT RUN**, never passed.
 
 ## Card operating rules
@@ -96,3 +96,24 @@ the dependency/checkpoint in `CHECKLIST.md`; use only that card's resource row; 
 only its assigned evidence file copied from `evidence/_TEMPLATE.md`. The coordinator alone
 updates the checklist, resource map, and evidence index during reconciliation. See the four
 linked control-plane documents for the complete operating contract.
+
+## First parallel starts: A-09 and A-01
+
+After A-00 is merged, open separate terminals at the assigned worktrees and set only the
+reserved resource variables before beginning the card work:
+
+```powershell
+# A-09 — C:\\Projects\\Renegade CMS\\.worktrees\\a09
+$env:COMPOSE_PROJECT_NAME = 'renegade-phase-a09'
+$env:DATABASE_URL = 'postgresql://renegade:renegade_dev_only@localhost:5441/renegade_phase_a09'
+$env:MEDIA_DIR = '.phase-a-runtime/a09/media'
+$env:PORT = '3109'
+```
+
+```powershell
+# A-01 — C:\\Projects\\Renegade CMS\\.worktrees\\a01
+$env:COMPOSE_PROJECT_NAME = 'renegade-phase-a01'
+$env:DATABASE_URL = 'postgresql://renegade:renegade_dev_only@localhost:5433/renegade_phase_a01'
+$env:MEDIA_DIR = '.phase-a-runtime/a01/media'
+$env:PORT = '3101'
+```
