@@ -7,6 +7,8 @@ decision, it is marked **`MUST BE FROZEN BY A-XX`**; no card may invent a contra
 contract. If code contradicts a frozen contract, the card **stops and records it** rather
 than building a competing architecture.
 
+These are the existing repository contracts frozen for Phase A coordination. A statement marked **MUST BE FROZEN BY A-XX** is intentionally unresolved; no card may fill it by implication.
+
 Repository evidence used to freeze these contracts (verified at A-00):
 - Collections: `src/collections/*.ts` (slugs enumerated below).
 - Global: `src/globals/SiteSettings.ts` (slug `site-settings`).
@@ -168,3 +170,6 @@ staff auth, permanent installation lock, and recovery codes are preserved (A-01)
 | Media replacement/deletion semantics (atomic rewire vs chain) | A-02 | `MUST BE FROZEN BY A-02` |
 | Resolved SEO field surface (override/fallback/default display) | A-06 | `MUST BE FROZEN BY A-06` |
 | Search public-body projection shape | A-05 (from A-03 body contract) | `MUST BE FROZEN BY A-05` |
+
+The incoming branch's simplified contract list is consistent with this control-plane version, but the repo-bound details above are the authoritative Phase A freeze for current execution.
+

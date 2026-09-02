@@ -144,3 +144,31 @@ Each implementation agent, before writing any code, MUST:
 Implementation; schema/migration changes; test fixes; external services; a second
 architecture; Phase B work; or declaring capability readiness from documentation. A-00
 proves nothing about product capability — it only makes the pass **executable**.
+
+## Operating rules
+
+- Each card begins from the base SHA named above, uses its Resource Map row, and writes only its assigned evidence file.
+- Cards do not edit `CHECKLIST.md`, `EVIDENCE_INDEX.md`, `RESOURCE_MAP.md`, or `SHARED_CONTRACTS.md`; A-00 reconciles those shared files at checkpoints.
+- Schema cards report whether regeneration is required. The checkpoint coordinator runs `npm run generate:types` and `npm run generate:importmap`, reviews the resulting tracked files, and records the result.
+- New migrations are append-only, globally time-ordered names in `src/migrations/`, registered once in `src/migrations/index.ts`, and may never reuse a registered name. Reserve a final name with the coordinator before creating it.
+- A card is not ready merely because its documentation says so. Its evidence must contain an explicit definition-of-done verdict.
+
+## Existing executable surface
+
+| Purpose | Command |
+| --- | --- |
+| Formatting | `npm run format:check` |
+| Lint / types / unit | `npm run lint`; `npm run typecheck`; `npm test` |
+| Build | `npm run build` |
+| PostgreSQL integration | `npm run test:integration` |
+| Browser | `npm run build`; `npm run test:browser` |
+| Migrations | `npm run test:migrations:fresh`; `npm run test:migrations:upgrade` |
+| Generated files | `npm run generate:types`; `npm run generate:importmap` |
+| Release clean clone | `npm run verify:release` |
+
+`playwright.config.ts` currently fixes Chromium/Chrome and web server port `3110`; a concurrent card must use its allocated private browser configuration or defer browser proof to a checkpoint. The checked-in `compose.yaml` exposes PostgreSQL on `5432`; use an untracked, card-specific Compose override as specified in the Resource Map. Never attach to a shared database or `media` directory.
+
+Relevant existing test entry points include `tests/unit/config.test.ts`, `execution-foundation.test.ts`, `operations-diagnostics.test.ts`, `operational-lifecycle.test.ts`, `operational-backup.test.ts`, `public-contracts.test.ts`, `public-navigation.test.ts`, `media-contracts.test.ts`, `media-storage.test.ts`, `portability-contracts.test.ts`, and the isolated integration suites `payload-postgres`, `installation`, `operations-jobs`, `canonical-information-architecture`, `editorial-acceptance`, `media-acceptance`, `page-builder-acceptance`, and `upgrade-migration`.
+
+See [CHECKLIST.md](CHECKLIST.md), [SHARED_CONTRACTS.md](SHARED_CONTRACTS.md), [RESOURCE_MAP.md](RESOURCE_MAP.md), and [EVIDENCE_INDEX.md](EVIDENCE_INDEX.md).
+

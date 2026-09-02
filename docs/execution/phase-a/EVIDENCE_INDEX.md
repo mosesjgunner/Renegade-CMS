@@ -69,3 +69,51 @@ were **NOT RUN** (never "passed"):
 > A-00 makes **no capability claim**. Passing static gates (build/unit) and unrun
 > DB/browser gates prove only that the pass is executable; they do not certify any Phase A
 > product capability. Capability is proven only by the cards' reproduced evidence and A-10.
+
+## Baseline gates
+
+| Check | Result | Notes |
+| --- | --- | --- |
+| `npm ci` | **PASS** | Clean install from `package-lock.json` at `ae0d121` (`main`). |
+| `npm run format:check` | **FAILED (pre-existing)** | Prettier reports code-style issues in 41 files. |
+| `npm run lint` | **FAILED (pre-existing)** | ESLint: 1 error in `tests/unit/member-identity.test.ts` (`prefer-rest-params`). |
+| `npm run typecheck` | **FAILED (pre-existing)** | `tsc --noEmit` has 1 error in `src/app/(frontend)/api/realtime/drafts/[articleId]/checkpoint/route.ts`. |
+| `npm test` | **PASS** | `vitest run tests/unit` passed: 58 files / 225 tests. |
+| `npm run build` | **PASS** | `next build` completed. |
+| Docker gate | **NOT RUN** | Requires isolated runtime; no isolated PostgreSQL instance was started at A-00. |
+| PostgreSQL gate | **NOT RUN** | Requires isolated database; no server was running. |
+| Chromium/browser gate | **NOT RUN** | Playwright browser binaries were not installed at A-00. |
+
+## Evidence template
+
+Copy this template only into the assigned evidence file; do not create another card’s file.
+
+```md
+# A-XX evidence
+
+- Card / owner:
+- Base SHA:
+- Final SHA:
+- Definition-of-done verdict: VERIFIED | FAILED | BLOCKED (state why)
+
+## Change record
+- Changed files:
+- Migrations: none | names, registration position, fresh/upgrade result
+- Generated-file effects: none | regeneration required/reconciled artifact and checkpoint
+- Security effects:
+
+## Reproduction
+| Command | Exit code | Test count / result |
+| --- | ---: | --- |
+| exact command |  |  |
+
+## Proof
+- Browser/API/manual proof (request, response/assertion, screenshots if applicable):
+- Traces/logs/artifacts (paths; redact credentials):
+- Failed boundaries and negative cases:
+- Limitations / checks not run:
+
+## Remediation
+- None, or link `../remediation/A-XX.md` with owner and next action.
+```
+

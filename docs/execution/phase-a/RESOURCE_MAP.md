@@ -12,6 +12,8 @@ during reconciliation. The Phase A default Playwright base URL is `http://127.0.
 (`playwright.config.ts`) and the default dev DB port is `5432` — **all per-card resources
 below deliberately avoid `3110` and `5432`.**
 
+Every card gets an exclusive mutable runtime namespace. `media path` is relative to its card worktree. The migration test database is separate even from the card database. Do not use the checked-in default `renegade-cms` Compose project, port `5432`, database `renegade`, or `media/` path while another card runs.
+
 ## Per-card resource allocation
 
 | Card | Compose project name | Web app port | Playwright server port | App database | Migration-test database | Postgres host port | Media path | Media volume | Evidence file |
@@ -52,6 +54,8 @@ below deliberately avoid `3110` and `5432`.**
 - **Docker isolation:** always pass `-p <compose project>` (COMPOSE_PROJECT_NAME) so
   networks/volumes/containers are namespaced per card and teardown is clean.
 
+For an isolated Compose run, each card creates an untracked override that maps only its allocated host port and sets only its allocated database and volume, then invokes `docker compose -p <project> -f compose.yaml -f <override> ...`. The override is runtime evidence, not a repository configuration change. Browser proof must use an allocated Playwright configuration/port rather than the checked-in shared `3110` configuration.
+
 ## Evidence filename ownership (unique, one writer)
 
 | Card | Sole writable evidence file | Remediation namespace |
@@ -69,3 +73,4 @@ or another card's evidence, is a **coordination violation** and its run is inval
    card only.
 3. Never point at `5432`, `3110`, the repo default `./media`, or a production database.
 4. Tear down your Docker project (`docker compose -p <project> down -v`) after the run.
+
