@@ -4,7 +4,7 @@ import { getPayload, type Payload } from 'payload'
 import { migrations } from '../migrations'
 
 /** Advance this name, and only this name, when the supported upgrade baseline moves. */
-export const UPGRADE_BASELINE = '20260825_180000_calendar_graphics'
+export const UPGRADE_BASELINE = '20260831_200000_member_identity_foundation'
 const baselineIndex = migrations.findIndex(({ name }) => name === UPGRADE_BASELINE)
 const ids = {
   site: '10000000-0000-4000-8000-000000000001',
