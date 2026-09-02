@@ -1,23 +1,26 @@
 # Phase A control plane (A-00)
 
-This directory is the commit-bound execution and evidence system for approved Phase A cards. It is coordination only: it neither grants capability readiness nor changes an application contract.
+This is the commit-bound execution and evidence system for approved A-01 through A-10.
+It is coordination and baseline work only: no implementation, schema/migration change,
+test repair, external service, second architecture, Phase B work, or capability-readiness
+claim is authorized by these documents.
 
-## Baseline
+## Baseline binding
 
-| Item | Value |
+| Item | Observed value |
 | --- | --- |
-| Base commit | `3375297ed9403631f900c37be49efdec9ad3e8a6` (`2026-08-31T17:57:15-05:00`, `Tests and Fixes`) |
-| Control-plane branch | `phase-a/a00-control-plane` |
-| Worktree | `C:\Projects\Renegade CMS-phase-a-a00-control-plane` |
-| Node / npm | `v24.14.1` / `11.1.0` (required: Node `>=20.9.0`, npm `>=10`) |
-| Application/runtime | Next.js `16.3.0`, React `19.2.8`, Payload `3.88.0`, `@payloadcms/db-postgres` `3.88.0`, PostgreSQL image `17.6-alpine` |
-| Test/runtime tools | TypeScript `5.9.2`, Vitest `3.2.4`, Playwright `1.62.1`, Docker `29.3.1`, Compose `v5.1.0` |
-
-The base has tracked generated Payload files: `src/payload-types.ts` (SHA-256 `AA0CFFD928338456AE12A53C2D7F92AA9E079842DE882200F565593AC256E3F3`) and `src/app/(payload)/admin/importMap.js` (SHA-256 `1C2F046C940EB33E3587891344FBB2B7ACE35198E076DEA8E1226A77B7C94662`). Both are present and tracked at baseline. Their reconciliation is a merge-checkpoint responsibility, not work individual cards perform independently.
+| Repository | `https://github.com/mosesjgunner/Renegade-CMS` |
+| Exact base commit | `3375297ed9403631f900c37be49efdec9ad3e8a6` (`Tests and Fixes`) |
+| A-00 branch / worktree | `phase-a/a00-control-plane` / `C:\Projects\Renegade CMS\.worktrees\a00-control-plane` |
+| Node / npm | `v24.14.1` / `11.1.0` (engines: Node `>=20.9.0`, npm `>=10`) |
+| Runtime/dependencies | Next `16.3.0`, React/DOM `19.2.8`, Payload and `@payloadcms/*` `3.88.0`, `@payloadcms/db-postgres` `3.88.0`, TypeScript `5.9.2`, Vitest `3.2.4`, Playwright `1.62.1` |
+| Generated Payload types | `src/payload-types.ts`, tracked, 11,186 lines, SHA-256 `AA0CFFD928338456AE12A53C2D7F92AA9E079842DE882200F565593AC256E3F3` |
+| Generated admin import map | `src/app/(payload)/admin/importMap.js`, tracked, `CollectionCards` entry, SHA-256 `1C2F046C940EB33E3587891344FBB2B7ACE35198E076DEA8E1226A77B7C94662` |
 
 ## Registered migration ledger
 
-`src/migrations/index.ts` registers these 39 migrations, in this order:
+At the bound commit, 40 migration files (excluding `index.ts`) are registered once in
+`src/migrations/index.ts`, in this exact order:
 
 ```text
 20260812_010209_initial_foundation
@@ -59,31 +62,37 @@ The base has tracked generated Payload files: `src/payload-types.ts` (SHA-256 `A
 20260831_160000_phase_b_book_lifecycle_reconciliation
 20260831_170000_phase_b_scoped_media_reconciliation
 20260831_180000_phase_b_video_captions_relation
+20260831_190000_phase_b_integrations_id_defaults
 ```
 
-## Operating rules
+New migration names are globally unique and time-ordered across this whole ledger; reserve
+the final name with the coordinator. Schema cards report a regeneration requirement, but
+only checkpoint reconciliation runs `npm run generate:types` and `npm run generate:importmap`,
+reviews tracked output, and records it in evidence.
 
-- Each card begins from the base SHA named above, uses its Resource Map row, and writes only its assigned evidence file.
-- Cards do not edit `CHECKLIST.md`, `EVIDENCE_INDEX.md`, `RESOURCE_MAP.md`, or `SHARED_CONTRACTS.md`; A-00 reconciles those shared files at checkpoints.
-- Schema cards report whether regeneration is required. The checkpoint coordinator runs `npm run generate:types` and `npm run generate:importmap`, reviews the resulting tracked files, and records the result.
-- New migrations are append-only, globally time-ordered names in `src/migrations/`, registered once in `src/migrations/index.ts`, and may never reuse a registered name. Reserve a final name with the coordinator before creating it.
-- A card is not ready merely because its documentation says so. Its evidence must contain an explicit definition-of-done verdict.
+## Verification surface and availability
 
-## Existing executable surface
+Available commands: `npm ci`, `npm run format:check`, `npm run lint`, `npm run typecheck`,
+`npm test`, `npm run build`, `npm run test:integration`, `npm run test:browser`,
+`npm run test:migrations:fresh`, `npm run test:migrations:upgrade`, `npm run test:smoke`,
+`npm run db:migrate`, `npm run db:status`, and `npm run verify:release`.
 
-| Purpose | Command |
-| --- | --- |
-| Formatting | `npm run format:check` |
-| Lint / types / unit | `npm run lint`; `npm run typecheck`; `npm test` |
-| Build | `npm run build` |
-| PostgreSQL integration | `npm run test:integration` |
-| Browser | `npm run build`; `npm run test:browser` |
-| Migrations | `npm run test:migrations:fresh`; `npm run test:migrations:upgrade` |
-| Generated files | `npm run generate:types`; `npm run generate:importmap` |
-| Release clean clone | `npm run verify:release` |
+Relevant baseline tests: 58 unit files, 14 integration files, two browser specs plus
+`global-setup.ts`, and `tests/smoke/stack.smoke.ts`; important Phase A-adjacent suites
+include installation, payload-postgres, canonical-information-architecture, editorial,
+media, page-builder, discoverability, operational-backup, public-contracts, and
+public-navigation. Baseline results and infrastructure gates are in `EVIDENCE_INDEX.md`.
 
-`playwright.config.ts` currently fixes Chromium/Chrome and web server port `3110`; a concurrent card must use its allocated private browser configuration or defer browser proof to a checkpoint. The checked-in `compose.yaml` exposes PostgreSQL on `5432`; use an untracked, card-specific Compose override as specified in the Resource Map. Never attach to a shared database or `media` directory.
+The current checked-in Playwright configuration fixes `3110`; concurrent browser work must
+use a card-private configuration and its Resource Map port. Docker Compose is installed but
+the Docker daemon was unavailable during A-00; no PostgreSQL service, isolated Compose
+runtime, or browser gate was started. Chrome is installed; Playwright CLI is available.
+Unrun infrastructure checks are **NOT RUN**, never passed.
 
-Relevant existing test entry points include `tests/unit/config.test.ts`, `execution-foundation.test.ts`, `operations-diagnostics.test.ts`, `operational-lifecycle.test.ts`, `operational-backup.test.ts`, `public-contracts.test.ts`, `public-navigation.test.ts`, `media-contracts.test.ts`, `media-storage.test.ts`, `portability-contracts.test.ts`, and the isolated integration suites `payload-postgres`, `installation`, `operations-jobs`, `canonical-information-architecture`, `editorial-acceptance`, `media-acceptance`, `page-builder-acceptance`, and `upgrade-migration`.
+## Card operating rules
 
-See [CHECKLIST.md](CHECKLIST.md), [SHARED_CONTRACTS.md](SHARED_CONTRACTS.md), [RESOURCE_MAP.md](RESOURCE_MAP.md), and [EVIDENCE_INDEX.md](EVIDENCE_INDEX.md).
+Before implementation, read this file, `SHARED_CONTRACTS.md`, and `RESOURCE_MAP.md`; confirm
+the dependency/checkpoint in `CHECKLIST.md`; use only that card's resource row; and write
+only its assigned evidence file copied from `evidence/_TEMPLATE.md`. The coordinator alone
+updates the checklist, resource map, and evidence index during reconciliation. See the four
+linked control-plane documents for the complete operating contract.

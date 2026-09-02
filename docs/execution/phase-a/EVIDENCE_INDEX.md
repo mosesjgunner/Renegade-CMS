@@ -1,24 +1,28 @@
-# Phase A evidence index
+# Phase A evidence index (coordinator-owned)
 
-Only the coordinator updates this index. A card owner writes exactly the corresponding file under `evidence/`; a missing file is **NOT RUN**, not a pass.
+Only the coordinator updates this index. A missing assigned card evidence file means
+**NOT RUN**, not a pass. Results below are bound to `3375297ed9403631f900c37be49efdec9ad3e8a6`.
 
-## Baseline gates
+## A-00 nondestructive baseline gates
 
-| Check | Result | Notes |
+| Check | Exit / state | Result |
 | --- | --- | --- |
-| `npm ci` | FAILED | First attempt left an incomplete `node_modules`; retry exited `1` with Windows `ENOTEMPTY` removing `node_modules/date-fns/_lib`. No clean dependency installation was achieved. |
-| `npm run format:check` | FAILED | Exit `1`: `prettier` was not available in the incomplete installation. |
-| `npm run lint` | FAILED | Exit `1`: `eslint` was not available in the incomplete installation. |
-| `npm run typecheck` | FAILED | Exit `1`: `tsc` was not available in the incomplete installation. |
-| `npm test` | FAILED | Exit `1`: `vitest` was not available in the incomplete installation; no test count. |
-| `npm run build` | FAILED | Exit `1`: `cross-env` was not available in the incomplete installation. |
-| Docker gate | NOT RUN | Docker daemon `29.3.1` and Compose `v5.1.0` are available; no isolated runtime was started. |
-| PostgreSQL gate | NOT RUN | `psql` is unavailable. PostgreSQL can only be assessed through a card-specific Docker service. |
-| Chromium/browser gate | NOT RUN | Chrome exists at `C:\Program Files\Google\Chrome\Application\chrome.exe`; Playwright CLI reports `1.62.1`; no isolated server/browser proof was run. |
+| `npm ci` | `-4051` | FAILED — Windows `ENOTEMPTY` removing `node_modules/@esbuild/win32-x64`; no clean dependency install. |
+| `npm run format:check` | `1` | FAILED — `prettier` unavailable after incomplete install. |
+| `npm run lint` | `1` | FAILED — `eslint` unavailable after incomplete install. |
+| `npm run typecheck` | `1` | FAILED — `tsc` unavailable after incomplete install. |
+| `npm test` | `1` | FAILED — `vitest` unavailable; no test count. |
+| `npm run build` | `1` | FAILED — `cross-env` unavailable. |
+| Docker / isolated Compose | NOT RUN | Docker Compose `v5.1.0` installed; daemon connection failed (`dockerDesktopLinuxEngine` pipe missing). No infrastructure was started. |
+| PostgreSQL | NOT RUN | `psql` unavailable and no isolated server started. |
+| Chromium / Playwright gate | NOT RUN | Chrome installed; `npx playwright --version` returned `1.62.1`; no isolated web server or browser proof. |
 
-## Card evidence
+These are baseline environment outcomes, not defects to repair in A-00 and not capability
+claims. Cards must report their own commands, exit codes, and counts.
 
-| Card | Assigned file | Reconciled status |
+## Card evidence allocation
+
+| Card | Assigned evidence | Reconciled status |
 | --- | --- | --- |
 | A-01 | `evidence/A-01.md` | NOT RUN |
 | A-02 | `evidence/A-02.md` | NOT RUN |
@@ -31,35 +35,5 @@ Only the coordinator updates this index. A card owner writes exactly the corresp
 | A-09 | `evidence/A-09.md` | NOT RUN |
 | A-10 | `evidence/A-10.md` | NOT RUN |
 
-## Evidence template
-
-Copy this template only into the assigned evidence file; do not create another card’s file.
-
-```md
-# A-XX evidence
-
-- Card / owner:
-- Base SHA:
-- Final SHA:
-- Definition-of-done verdict: VERIFIED | FAILED | BLOCKED (state why)
-
-## Change record
-- Changed files:
-- Migrations: none | names, registration position, fresh/upgrade result
-- Generated-file effects: none | regeneration required/reconciled artifact and checkpoint
-- Security effects:
-
-## Reproduction
-| Command | Exit code | Test count / result |
-| --- | ---: | --- |
-| exact command |  |  |
-
-## Proof
-- Browser/API/manual proof (request, response/assertion, screenshots if applicable):
-- Traces/logs/artifacts (paths; redact credentials):
-- Failed boundaries and negative cases:
-- Limitations / checks not run:
-
-## Remediation
-- None, or link `../remediation/A-XX.md` with owner and next action.
-```
+The required template is `evidence/_TEMPLATE.md`. Remediation records use
+`remediation/A-XX-*.md` and are linked from the checklist/evidence when needed.
