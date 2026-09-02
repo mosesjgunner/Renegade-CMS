@@ -24,7 +24,7 @@
 | A-06 | SEO correctness engine & crawler proof | NOT STARTED | A-02, A-03, A-04, A-05 reconciled (Checkpoint 1) | `phase-a/a06-seo-crawlers` | Group 2 (with A-08) | Not merged | `evidence/A-06.md` | `remediation/A-06-*.md` |
 | A-07 | Publisher-first admin UX | NOT STARTED | A-02…A-06 merged | `phase-a/a07-publisher-admin` | Serial (alone) | Not merged | `evidence/A-07.md` | `remediation/A-07-*.md` |
 | A-08 | Backup/export/import & restored-site proof | NOT STARTED | A-02, A-03 merged (Checkpoint 1) | `phase-a/a08-backup-restore` | Group 2 (with A-06) | Not merged | `evidence/A-08.md` | `remediation/A-08-*.md` |
-| A-09 | Draft/private/admin access hardening | NOT STARTED | A-00 (merged) | `phase-a/a09-access-hardening` | Group 0 (with A-01 only) | Not merged — **merge first** | `evidence/A-09.md` | `remediation/A-09-*.md` |
+| A-09 | Draft/private/admin access hardening | VERIFIED | A-00 (merged) | `phase-a/a09` | Group 0 (with A-01 only) | Merged to `main` (`d68d8bc`) | `evidence/A-09.md` | None |
 | A-10 | Final Phase A proof gate | NOT STARTED | A-01…A-09 merged | `phase-a/a10-proof-gate` | Serial (alone, clean clone) | Not merged | `evidence/A-10.md` | `remediation/A-10-*.md` |
 
 ## Dependency / parallel summary
