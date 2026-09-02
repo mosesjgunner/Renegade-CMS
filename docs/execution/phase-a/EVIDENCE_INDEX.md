@@ -3,9 +3,11 @@
 Bound to base commit `ae0d121652d4e6507a327f68c029c0512588bcdd` (`main`).
 A-00 execution: 2026-09-01T01:03:00Z on Linux 6.16.9+ x86_64, Node v22.23.2, npm 10.9.8.
 
+
 > Only the coordinator updates this file. Implementation cards write `evidence/A-XX.md`.
 
 ## Card evidence status
+
 
 | Card | Evidence file | State | Verdict |
 |---|---|---|---|
@@ -23,6 +25,7 @@ A-00 execution: 2026-09-01T01:03:00Z on Linux 6.16.9+ x86_64, Node v22.23.2, npm
 ---
 
 ## A-00 baseline check results (nondestructive, on base commit)
+
 
 All commands run from a clean `npm ci` at `ae0d121`. Exit codes are exact and recorded
 honestly. These results are the **baseline the implementation cards inherit** — several

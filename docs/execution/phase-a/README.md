@@ -26,6 +26,7 @@ that every capability claim is backed by reproducible, commit-bound evidence.
 | A-00 execution timestamp (UTC) | 2026-09-01T01:03:00Z |
 | Host OS (A-00 run) | Linux 6.16.9+ x86_64 (Ubuntu 24.04 userland) |
 
+
 > Every implementation card MUST branch from the commit at which **A-00 is merged into
 > `main`** (or a later reconciled checkpoint commit), and MUST record its own base SHA and
 > final SHA in its evidence file. Do not branch from an unmerged A-00.
@@ -103,6 +104,7 @@ DB / infrastructure / browser (per-card, isolated infra only):
   `global-setup.ts`. **NOT RUN at A-00**.
 - `tests/smoke/stack.smoke.ts`, `tests/helpers/**`.
 
+
 > The Phase A card prompts reference additional spec files (e.g.
 > `tests/browser/phase-a-*.spec.ts`, `tests/unit/phase-a-*.test.ts`,
 > `tests/integration/phase-a-*.integration.test.ts`). These **do not yet exist** at the
@@ -144,3 +146,4 @@ Each implementation agent, before writing any code, MUST:
 Implementation; schema/migration changes; test fixes; external services; a second
 architecture; Phase B work; or declaring capability readiness from documentation. A-00
 proves nothing about product capability — it only makes the pass **executable**.
+

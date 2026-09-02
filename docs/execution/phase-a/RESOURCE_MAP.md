@@ -69,3 +69,4 @@ or another card's evidence, is a **coordination violation** and its run is inval
    card only.
 3. Never point at `5432`, `3110`, the repo default `./media`, or a production database.
 4. Tear down your Docker project (`docker compose -p <project> down -v`) after the run.
+

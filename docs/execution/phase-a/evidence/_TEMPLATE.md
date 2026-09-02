@@ -35,6 +35,7 @@
 | `<card Playwright spec>` (isolated browser) | | |
 | `<other required commands>` | | |
 
+
 > Record `NOT RUN` (with reason) for anything not executed. Never mark an unrun gate as
 > passed.
 

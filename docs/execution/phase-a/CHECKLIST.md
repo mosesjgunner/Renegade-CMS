@@ -10,6 +10,7 @@
 > All cards start `NOT STARTED`. Nothing is `VERIFIED` at A-00 — capability readiness is
 > never declared from documentation; only reproduced evidence promotes a card to `VERIFIED`.
 
+
 ## Status board
 
 | ID | Card | Status | Depends on | Branch | Parallel group | Merge state | Evidence file | Remediation |
