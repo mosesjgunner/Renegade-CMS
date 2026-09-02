@@ -76,6 +76,7 @@ async function createHistoricalFixture(payload: Payload) {
     id: ids.profile,
     member: ids.member,
     displayName: 'Upgrade Sentinel Member',
+    handle: 'upgrade-sentinel',
     visibility: 'public',
   })
   await sentinel('space', 'spaces', {

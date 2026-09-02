@@ -107,6 +107,7 @@ export async function seed(payload: Payload): Promise<void> {
     data: {
       member: member.id,
       displayName: 'River Morgan',
+      handle: 'river-morgan',
       bio: 'A demo member profile used for ownership and authorship tests.',
       visibility: 'public',
       fieldAudience: { email: 'private', bio: 'public' },
