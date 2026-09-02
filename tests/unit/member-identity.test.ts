@@ -27,8 +27,7 @@ class MemoryStore {
     const matches = tokenHash ? all.filter((record) => record.tokenHash === tokenHash) : all
     return { docs: matches }
   }
-  async findByID() {
-    const args = arguments[0] as { collection: string; id: string }
+  async findByID(args: { collection: string; id: string }) {
     const record = (this.records.get(args.collection) ?? []).find((value) => value.id === args.id)
     if (!record) throw new Error('not found')
     return record

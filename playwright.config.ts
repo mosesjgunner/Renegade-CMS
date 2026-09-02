@@ -1,8 +1,9 @@
 import { defineConfig, devices } from '@playwright/test'
-import { readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 
+const rawEnv = existsSync('.env') ? readFileSync('.env', 'utf8') : ''
 const runtimeEnv = Object.fromEntries(
-  readFileSync('.env', 'utf8')
+  rawEnv
     .split(/\r?\n/)
     .filter((line) => line && !line.startsWith('#'))
     .map((line) => {
@@ -25,15 +26,23 @@ Object.assign(process.env, e2eEnv)
 
 export default defineConfig({
   testDir: './tests/browser',
-  globalSetup: './tests/browser/global-setup.ts',
+  globalSetup: process.env.A01_SETUP_TOKEN ? undefined : './tests/browser/global-setup.ts',
   timeout: 30_000,
-  use: { baseURL: 'http://localhost:3110', browserName: 'chromium', channel: 'chrome' },
-  webServer: {
-    command: 'node .next/standalone/server.js',
-    url: 'http://localhost:3110/health/ready',
-    reuseExistingServer: false,
-    timeout: 120_000,
-    env: { ...process.env, ...e2eEnv },
+  use: {
+    baseURL:
+      process.env.PLAYWRIGHT_BASE_URL ??
+      (process.env.A01_SETUP_TOKEN ? 'http://localhost:3201' : 'http://localhost:3110'),
+    browserName: 'chromium',
+    channel: 'chrome',
   },
+  webServer: process.env.A01_SETUP_TOKEN
+    ? undefined
+    : {
+        command: 'node .next/standalone/server.js',
+        url: 'http://localhost:3110/health/ready',
+        reuseExistingServer: false,
+        timeout: 120_000,
+        env: { ...process.env, ...e2eEnv },
+      },
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
 })
