@@ -7,6 +7,8 @@ import { EditorialArticleView } from '@/modules/editorial/ArticleView'
 import { loadPublishedArticleBySlug } from '@/modules/editorial/persistence'
 import { buildMetadata } from '@/modules/public/seo'
 
+import { resolveSiteSettings } from '@/modules/core/site-settings'
+
 type Args = {
   params: Promise<{ slug: string }>
 }
@@ -17,6 +19,7 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
   const { slug } = await params
   try {
     const payload = await getPayload({ config })
+    const settings = await resolveSiteSettings(payload)
     const result = await payload.find({
       collection: 'content',
       where: { and: [{ slug: { equals: slug } }, { contentType: { equals: 'article' } }] },
@@ -31,7 +34,8 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
         title: String(item.title ?? ''),
         description: typeof item.summary === 'string' ? item.summary : null,
         canonicalPath: String(item.canonicalPath ?? `/articles/${slug}`),
-        siteUrl: process.env.APP_URL ?? 'http://localhost:3000',
+        siteUrl: settings.canonicalOrigin,
+        siteNoIndex: settings.indexingMode === 'noindex',
       })
   } catch {
     /* recovery safe fallback */
@@ -71,13 +75,22 @@ export default async function ArticlePage({ params }: Args) {
     }
     notFound()
   }
+  const settings = await resolveSiteSettings(payload)
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'Article',
     name: article.title,
     headline: article.title,
     description: article.excerpt ?? article.subtitle ?? undefined,
-    url: `${process.env.APP_URL ?? 'http://localhost:3000'}${article.canonicalPath}`,
+    url: `${settings.canonicalOrigin}${article.canonicalPath}`,
+    datePublished: article.firstPublishedAt ?? undefined,
+    dateModified: article.updatedAt ?? undefined,
+    author: article.authors.map((name) => ({ '@type': 'Person', name })),
+    publisher: {
+      '@type': 'Organization',
+      name: settings.siteName,
+      logo: settings.logoUrl ? `${settings.canonicalOrigin}${settings.logoUrl}` : undefined,
+    },
   }
   return (
     <>

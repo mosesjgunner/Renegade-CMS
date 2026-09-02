@@ -4,6 +4,8 @@ import { seoFields, structuredDataSourceFields } from '../collections/canonical-
 
 const staffOrOwner = ({ req }: { req: { user?: { role?: string } | null } }) =>
   ['owner', 'administrator', 'staff'].includes(String(req.user?.role))
+const ownerOnly = ({ req }: { req: { user?: { role?: string } | null } }) =>
+  req.user?.role === 'owner'
 
 export const SiteSettings: GlobalConfig = {
   slug: 'site-settings',

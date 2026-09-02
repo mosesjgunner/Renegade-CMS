@@ -41,7 +41,7 @@ function Inline({ node }: { node: Node }): ReactNode {
 export function SafeRichText({ document }: { document: Record<string, unknown> }) {
   const root = (document.root ?? document) as Node
   return (
-    <div className="prose dark:prose-invert max-w-none">
+    <div className="prose dark:prose-invert max-w-none" role="article" aria-live="polite">
       {nodes(root.children).map((node, index) => {
         const key = String(node.__key ?? index)
         const children = nodes(node.children).map((child, childIndex) => (
@@ -52,7 +52,11 @@ export function SafeRichText({ document }: { document: Record<string, unknown> }
             ? text(node.tag)
             : 'h2'
           const Heading = tag as 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6'
-          return <Heading key={key}>{children}</Heading>
+          return (
+            <Heading key={key} tabIndex={-1}>
+              {children}
+            </Heading>
+          )
         }
         if (node.type === 'quote') return <blockquote key={key}>{children}</blockquote>
         if (node.type === 'list') {

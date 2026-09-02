@@ -63,12 +63,14 @@ export default async function globalSetup() {
       overrideAccess: true,
     } as never)
     for (const pub of otherPublications.docs) {
-      await payload.update({
-        collection: 'publications',
-        id: pub.id,
-        data: { status: 'draft' },
-        overrideAccess: true,
-      } as never)
+      await payload
+        .update({
+          collection: 'publications',
+          id: pub.id,
+          data: { status: 'draft' },
+          overrideAccess: true,
+        } as never)
+        .catch(() => undefined)
     }
 
     await payload.updateGlobal({

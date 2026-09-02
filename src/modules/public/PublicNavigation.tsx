@@ -52,17 +52,26 @@ function Menu({ items, mobile = false }: { items: PublicMenuItem[]; mobile?: boo
 
 export function PublicNavigationBar({
   siteName,
+  logoUrl,
   navigation,
 }: {
   siteName: string
+  logoUrl?: string | null
   navigation: PublicNavigation
 }) {
   const [open, setOpen] = useState(false)
   return (
     <header className="sticky top-0 z-50 border-b border-stone-200 bg-white/95 backdrop-blur dark:border-stone-800 dark:bg-stone-950/95">
       <div className="mx-auto flex min-h-16 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6">
-        <Link href="/" className="font-bold tracking-tight text-stone-950 dark:text-white">
-          {siteName}
+        <Link
+          href="/"
+          className="flex items-center gap-2 font-bold tracking-tight text-stone-950 dark:text-white"
+        >
+          {logoUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={logoUrl} alt={siteName} className="h-8 w-auto max-w-[140px] object-contain" />
+          ) : null}
+          <span>{siteName}</span>
         </Link>
         <nav aria-label="Primary navigation" className="hidden md:block">
           <Menu items={navigation.primary} />

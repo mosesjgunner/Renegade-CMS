@@ -9,6 +9,7 @@ export const supportedMediaTypes = {
   'image/jpeg': { kind: 'image', extension: 'jpg' },
   'image/gif': { kind: 'image', extension: 'gif' },
   'image/webp': { kind: 'image', extension: 'webp' },
+  'image/svg+xml': { kind: 'image', extension: 'svg' },
   'application/pdf': { kind: 'document', extension: 'pdf' },
   'audio/mpeg': { kind: 'audio', extension: 'mp3' },
   'video/mp4': { kind: 'video', extension: 'mp4' },
@@ -87,7 +88,52 @@ export function inspectMedia(bytes: Uint8Array): MediaInspection {
     return { ...supportedMediaTypes['video/mp4'], mimeType: 'video/mp4', sha256 }
   if (new TextDecoder().decode(bytes.slice(0, 6)).startsWith('WEBVTT'))
     return { ...supportedMediaTypes['text/vtt'], mimeType: 'text/vtt', sha256 }
+  const svg = inspectSvg(bytes)
+  if (svg) {
+    return {
+      ...supportedMediaTypes['image/svg+xml'],
+      mimeType: 'image/svg+xml',
+      ...svg,
+      sha256,
+    }
+  }
   throw new Error('Unsupported or corrupt media file.')
+}
+
+function inspectSvg(bytes: Uint8Array): { width?: number; height?: number } | null {
+  if (bytes.length > 5 * 1024 * 1024) return null
+  const text = new TextDecoder('utf-8', { fatal: false }).decode(bytes)
+  const trimmed = text.trim()
+  if (!trimmed.startsWith('<svg') && !trimmed.startsWith('<?xml') && !trimmed.startsWith('<!--'))
+    return null
+  if (!/<svg[\s>]/i.test(trimmed)) return null
+
+  const lower = trimmed.toLowerCase()
+  const unsafePatterns = [
+    /<script[\s>]/i,
+    /<\/script>/i,
+    /javascript:/i,
+    /<foreignobject[\s>]/i,
+    /<iframe[\s>]/i,
+    /<object[\s>]/i,
+    /<embed[\s>]/i,
+    /\son\w+\s*=/i,
+    /xlink:href\s*=\s*["']\s*data:/i,
+    /href\s*=\s*["']\s*data:/i,
+    /<!entity/i,
+  ]
+  for (const pattern of unsafePatterns) {
+    if (pattern.test(lower)) {
+      throw new Error('SVG contains unsafe elements or scripts.')
+    }
+  }
+
+  const widthMatch = text.match(/\bwidth=["']([0-9.]+)(?:px)?["']/i)
+  const heightMatch = text.match(/\bheight=["']([0-9.]+)(?:px)?["']/i)
+  const width = widthMatch ? Math.round(parseFloat(widthMatch[1]!)) : undefined
+  const height = heightMatch ? Math.round(parseFloat(heightMatch[1]!)) : undefined
+
+  return { width, height }
 }
 
 export function mediaObjectKey(siteId: string, extension: string) {

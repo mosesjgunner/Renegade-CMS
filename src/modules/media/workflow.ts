@@ -258,7 +258,7 @@ export async function deleteOrphanedMedia(
   } as never)) as unknown as Doc
   if (id(media.site) !== input.scope.siteId)
     throw new MediaWorkflowError('Cross-site deletion is not allowed.', 403)
-  const [uses, heroReferences] = await Promise.all([
+  const [uses, heroReferences, siteSettings] = await Promise.all([
     payload.find({
       collection: 'media-usages',
       where: { media: { equals: input.mediaId } },
@@ -273,8 +273,22 @@ export async function deleteOrphanedMedia(
       depth: 0,
       overrideAccess: true,
     } as never),
+    typeof payload.findGlobal === 'function'
+      ? (payload
+          .findGlobal({
+            slug: 'site-settings',
+            depth: 0,
+            overrideAccess: true,
+          } as never)
+          .catch(() => null) as unknown as Promise<Doc | null>)
+      : Promise.resolve(null),
   ])
-  if (uses.docs.length || heroReferences.docs.length)
+  const siteSettingsMedia = siteSettings
+    ? [id(siteSettings.logo), id(siteSettings.defaultSocialImage), id(siteSettings.favicon)].filter(
+        Boolean,
+      )
+    : []
+  if (uses.docs.length || heroReferences.docs.length || siteSettingsMedia.includes(input.mediaId))
     throw new MediaWorkflowError(
       'Referenced media cannot be deleted. Replace it or detach every use first.',
       409,
@@ -309,6 +323,27 @@ export async function publicMedia(payload: Payload, mediaId: string): Promise<Do
     .findByID({ collection: 'media-assets', id: mediaId, depth: 0, overrideAccess: true } as never)
     .catch(() => undefined)) as unknown as Doc | undefined
   if (!media || media.removeFromDiscovery || media.retentionMode === 'tombstone') return undefined
+
+  // Site settings logo, default social image, and favicon are public by site definition.
+  const siteSettings =
+    typeof payload.findGlobal === 'function'
+      ? (((await payload
+          .findGlobal({
+            slug: 'site-settings',
+            depth: 0,
+            overrideAccess: true,
+          } as never)
+          .catch(() => null)) as unknown) as Doc | null)
+      : null
+  if (
+    siteSettings &&
+    [id(siteSettings.logo), id(siteSettings.defaultSocialImage), id(siteSettings.favicon)].includes(
+      mediaId,
+    )
+  ) {
+    return resolveMediaReplacement(payload, media)
+  }
+
   const references = await Promise.all([
     findIfRegistered(payload, {
       collection: 'content',
@@ -318,6 +353,15 @@ export async function publicMedia(payload: Payload, mediaId: string): Promise<Do
           { status: { in: ['published', 'updated'] } },
           { site: { equals: id(media.site) } },
         ],
+      },
+      limit: 1,
+      depth: 0,
+      overrideAccess: true,
+    } as never),
+    findIfRegistered(payload, {
+      collection: 'media-usages',
+      where: {
+        media: { equals: mediaId },
       },
       limit: 1,
       depth: 0,
@@ -345,6 +389,25 @@ export async function publicMedia(payload: Payload, mediaId: string): Promise<Do
           { site: { equals: id(media.site) } },
         ],
       },
+      limit: 1,
+      depth: 0,
+      overrideAccess: true,
+    } as never),
+    findIfRegistered(payload, {
+      collection: 'brands',
+      where: {
+        and: [
+          { site: { equals: id(media.site) } },
+          { or: [{ logo: { equals: mediaId } }, { favicon: { equals: mediaId } }] },
+        ],
+      },
+      limit: 1,
+      depth: 0,
+      overrideAccess: true,
+    } as never),
+    findIfRegistered(payload, {
+      collection: 'authors',
+      where: { avatar: { equals: mediaId } },
       limit: 1,
       depth: 0,
       overrideAccess: true,

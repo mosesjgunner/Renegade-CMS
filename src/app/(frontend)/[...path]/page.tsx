@@ -14,6 +14,7 @@ import { BookReader, isReleasedChapter, relatedId } from '@/modules/media/books'
 import { EditorialArticleView } from '@/modules/editorial/ArticleView'
 import { loadPublishedArticleByPath } from '@/modules/editorial/persistence'
 import { findIfRegistered, registeredOnly } from '@/modules/public/registered-collections'
+import { resolveSiteSettings } from '@/modules/core/site-settings'
 
 type Args = {
   params: Promise<{ path: string[] }>
@@ -51,6 +52,7 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
   const path = `/${(await params).path.join('/')}`
   try {
     const payload = await getPayload({ config })
+    const settings = await resolveSiteSettings(payload)
     const publications = await payload.find({
       collection: 'publications',
       where: { and: [{ status: { equals: 'active' } }, { visibility: { equals: 'public' } }] },
@@ -79,7 +81,8 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
             ? label(layout)
             : path.slice(1).replace(/-/g, ' ') || 'Home',
         canonicalPath: path,
-        siteUrl: process.env.APP_URL ?? 'http://localhost:3000',
+        siteUrl: settings.canonicalOrigin,
+        siteNoIndex: settings.indexingMode === 'noindex',
       })
     }
     for (const collection of registeredOnly(payload, candidates)) {
@@ -102,7 +105,8 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
                 ? record.description
                 : null,
           canonicalPath: path,
-          siteUrl: process.env.APP_URL ?? 'http://localhost:3000',
+          siteUrl: settings.canonicalOrigin,
+          siteNoIndex: settings.indexingMode === 'noindex',
         })
     }
   } catch {
@@ -182,6 +186,26 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
         } as never),
       ),
     ).catch(() => undefined)
+
+    // Add additional redirect metadata for analytics
+    try {
+      const reqHeaders = await (await import('next/headers')).headers()
+      const userAgent = reqHeaders.get('user-agent') ?? 'unknown'
+      const referer = reqHeaders.get('referer') ?? 'direct'
+
+      // Log redirect event for analytics (in a real implementation, this would go to an analytics service)
+      console.log('Redirect event:', {
+        from: path,
+        to: resolution.target,
+        statusCode: resolution.statusCode,
+        userAgent,
+        referer,
+        timestamp: new Date().toISOString(),
+      })
+    } catch {
+      // Ignore analytics logging errors
+    }
+
     if (resolution.statusCode === 301 || resolution.statusCode === 308)
       permanentRedirect(resolution.target)
     redirect(resolution.target)
@@ -236,11 +260,14 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
     return <PublicLayout record={layoutRecord} path={path} />
   }
 
+  let editorialArticle: Awaited<ReturnType<typeof loadPublishedArticleByPath>> | undefined
   try {
-    const editorial = await loadPublishedArticleByPath(payload, { siteId, path })
-    return <EditorialArticleView article={editorial} />
+    editorialArticle = await loadPublishedArticleByPath(payload, { siteId, path })
   } catch {
     // Continue to non-editorial canonical collections below.
+  }
+  if (editorialArticle) {
+    return <EditorialArticleView article={editorialArticle} />
   }
 
   const bookResult = await findIfRegistered(payload, {

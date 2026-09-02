@@ -10706,6 +10706,27 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
  */
 export interface SiteSetting {
   id: string;
+  siteName?: string | null;
+  siteDescription?: string | null;
+  /**
+   * Canonical public origin, e.g. https://renegadeparty.org
+   */
+  canonicalOrigin?: string | null;
+  locale?: string | null;
+  timezone?: string | null;
+  /**
+   * Custom footer disclaimer or copyright notice.
+   */
+  footerText?: string | null;
+  /**
+   * Controls whether public pages are indexable by search engines.
+   */
+  indexingMode?: ('index' | 'noindex') | null;
+  homepageSelection?: {
+    mode?: ('default' | 'page' | 'layout') | null;
+    page?: (string | null) | Content;
+    layout?: (string | null) | PageLayout;
+  };
   /**
    * Non-secret first-run choices. Provider credentials remain in their provider configuration.
    */
@@ -10746,7 +10767,7 @@ export interface SiteSetting {
   organizationName?: string | null;
   personName?: string | null;
   legalName?: string | null;
-  defaultTitle: string;
+  defaultTitle?: string | null;
   defaultDescription?: string | null;
   logo?: (string | null) | MediaAsset;
   favicon?: (string | null) | MediaAsset;
@@ -10927,6 +10948,20 @@ export interface PayloadJobsStat {
  * via the `definition` "site-settings_select".
  */
 export interface SiteSettingsSelect<T extends boolean = true> {
+  siteName?: T;
+  siteDescription?: T;
+  canonicalOrigin?: T;
+  locale?: T;
+  timezone?: T;
+  footerText?: T;
+  indexingMode?: T;
+  homepageSelection?:
+    | T
+    | {
+        mode?: T;
+        page?: T;
+        layout?: T;
+      };
   onboarding?:
     | T
     | {

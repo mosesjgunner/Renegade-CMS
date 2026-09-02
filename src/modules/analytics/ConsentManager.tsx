@@ -55,9 +55,9 @@ export function ConsentManager({ siteId }: { siteId?: string }) {
     Boolean(signals.doNotTrack) ||
     (typeof navigator !== 'undefined' && navigator.doNotTrack === '1')
   const save = async (next: Choices) => {
-    console.log('Saving consent choices:', next);
+    console.log('Saving consent choices:', next)
     if (!siteId) {
-      console.log('No siteId, returning early');
+      console.log('No siteId, returning early')
       // Even without siteId, we should still update the UI
       setChoices(next)
       setDraft(next)
@@ -66,7 +66,7 @@ export function ConsentManager({ siteId }: { siteId?: string }) {
         cookie('renegade-aid', '')
         cookie('renegade-sid', '')
       }
-      return;
+      return
     }
     try {
       const response = await fetch('/api/analytics/consent', {
@@ -75,9 +75,9 @@ export function ConsentManager({ siteId }: { siteId?: string }) {
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ siteId, choices: next }),
       })
-      console.log('Consent API response:', response);
+      console.log('Consent API response:', response)
       if (!response.ok) {
-        console.error('Failed to save consent choices:', response.statusText);
+        console.error('Failed to save consent choices:', response.statusText)
         // Still update the UI even if the API call fails
         setChoices(next)
         setDraft(next)
@@ -86,13 +86,13 @@ export function ConsentManager({ siteId }: { siteId?: string }) {
           cookie('renegade-aid', '')
           cookie('renegade-sid', '')
         }
-        return;
+        return
       }
       const data = await response.json().catch((error) => {
-        console.error('Failed to parse consent response:', error);
-        return {};
-      });
-      console.log('Consent data received:', data);
+        console.error('Failed to parse consent response:', error)
+        return {}
+      })
+      console.log('Consent data received:', data)
       setChoices(next)
       setDraft(next)
       setEditing(false)
@@ -102,7 +102,7 @@ export function ConsentManager({ siteId }: { siteId?: string }) {
         cookie('renegade-sid', '')
       }
     } catch (error) {
-      console.error('Failed to save consent choices:', error);
+      console.error('Failed to save consent choices:', error)
       // Still update the UI even if the API call fails
       setChoices(next)
       setDraft(next)
@@ -179,18 +179,32 @@ export function ConsentManager({ siteId }: { siteId?: string }) {
         </label>
       ))}
       <div className="mt-4 flex gap-3">
-        <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); void save(empty); }}>
+        <button
+          type="button"
+          onClick={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            void save(empty)
+          }}
+        >
           Reject non-essential
         </button>
-        <button type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); void save(current); }}>
+        <button
+          type="button"
+          onClick={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            void save(current)
+          }}
+        >
           Save choices
         </button>
         <button
           type="button"
           onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            void save({ necessary: true, analytics: true, personalization: true, marketing: true });
+            e.preventDefault()
+            e.stopPropagation()
+            void save({ necessary: true, analytics: true, personalization: true, marketing: true })
           }}
         >
           Accept all

@@ -8,12 +8,20 @@ export default function PublicNotFound() {
       <p className="mt-4 text-stone-600 dark:text-stone-300">
         It may be unpublished, scheduled, or no longer available.
       </p>
-      <Link
-        href="/"
-        className="mt-8 inline-block rounded bg-red-700 px-4 py-2 font-semibold text-white"
-      >
-        Return home
-      </Link>
+      <div className="mt-8 flex justify-center items-center gap-4">
+        <Link
+          href="/"
+          className="rounded-md bg-stone-900 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-stone-800 dark:bg-stone-100 dark:text-stone-900 dark:hover:bg-white transition"
+        >
+          Return home
+        </Link>
+        <Link
+          href="/search"
+          className="rounded-md border border-stone-300 bg-white px-4 py-2 text-sm font-semibold text-stone-700 shadow-sm hover:bg-stone-50 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-200 dark:hover:bg-stone-800 transition"
+        >
+          Search site
+        </Link>
+      </div>
     </main>
   )
 }

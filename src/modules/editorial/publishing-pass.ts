@@ -65,7 +65,8 @@ export async function deriveEditorialPath(input: {
   // explicit checkbox. Preserve that intent during upserts/migration.
   if (data.canonicalPath && !original) data.pathOverride = true
   const isOverride =
-    data.pathOverride === true || (data.pathOverride === undefined && Boolean(original?.pathOverride))
+    data.pathOverride === true ||
+    (data.pathOverride === undefined && Boolean(original?.pathOverride))
   const targetPath = data.canonicalPath ?? original?.canonicalPath
   if (isOverride && targetPath) {
     assertEditorialPath(String(targetPath))

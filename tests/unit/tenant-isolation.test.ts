@@ -18,9 +18,13 @@ describe('PUB-01 tenant isolation', () => {
 
   it('puts every canonical branch below Site and guards its cross-record links', () => {
     const siteField = (collection: { fields?: unknown[] }) =>
-      collection.fields?.find(
-        (field): field is { name: string } =>
-          Boolean(field && typeof field === 'object' && 'name' in field && (field as { name?: unknown }).name === 'site'),
+      collection.fields?.find((field): field is { name: string } =>
+        Boolean(
+          field &&
+            typeof field === 'object' &&
+            'name' in field &&
+            (field as { name?: unknown }).name === 'site',
+        ),
       )
 
     expect(siteField(Spaces)).toMatchObject({ required: true, relationTo: 'sites' })

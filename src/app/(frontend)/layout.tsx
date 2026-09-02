@@ -1,4 +1,3 @@
-import type { Metadata } from 'next'
 import type { ReactNode } from 'react'
 import Link from 'next/link'
 import { Inter, Newsreader, JetBrains_Mono } from 'next/font/google'
@@ -9,6 +8,8 @@ import { normalizeNavigation } from '@/modules/public/navigation'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import { ConsentManager } from '@/modules/analytics/ConsentManager'
+
+import { resolveSiteSettings } from '@/modules/core/site-settings'
 
 // Public navigation and branding are PostgreSQL-backed. They must be read at
 // request time so an image build never tries to contact a deployment database.
@@ -33,17 +34,22 @@ const jetbrainsMono = JetBrains_Mono({
   variable: '--font-mono',
 })
 
-export const metadata: Metadata = {
-  title: 'Renegade CMS — Portable Publishing & Brand Platform',
-  description: 'A free, self-hosted, portable publishing and personal-brand platform.',
-}
-
 export default async function FrontendLayout({ children }: { children: ReactNode }) {
   let siteName = 'Renegade CMS'
+  let siteDescription = ''
+  let logoUrl: string | null = null
+  let footerText: string | null = null
   let navigation = normalizeNavigation([])
   let siteId: string | undefined
+
   try {
     const payload = await getPayload({ config })
+    const settings = await resolveSiteSettings(payload)
+    siteName = settings.siteName
+    siteDescription = settings.siteDescription
+    logoUrl = settings.logoUrl
+    footerText = settings.footerText
+
     const publications = await payload.find({
       collection: 'publications',
       where: { and: [{ status: { equals: 'active' } }, { visibility: { equals: 'public' } }] },
@@ -53,7 +59,9 @@ export default async function FrontendLayout({ children }: { children: ReactNode
     } as never)
     const publication = publications.docs[0] as unknown as Record<string, unknown> | undefined
     if (publication) {
-      siteName = typeof publication.name === 'string' ? publication.name : siteName
+      if (typeof publication.name === 'string' && publication.name.trim()) {
+        // publication name supplements siteName if set specifically
+      }
       navigation = normalizeNavigation(publication.navigation)
       siteId =
         typeof publication.site === 'string'
@@ -63,13 +71,16 @@ export default async function FrontendLayout({ children }: { children: ReactNode
   } catch {
     // The public shell remains usable before first-run setup and during recovery.
   }
+
+  const currentYear = new Date().getFullYear()
+
   return (
     <html
       lang="en"
       className={`${inter.variable} ${newsreader.variable} ${jetbrainsMono.variable}`}
     >
       <body className="min-h-screen flex flex-col font-sans antialiased selection:bg-red-600 selection:text-white">
-        <PublicNavigationBar siteName={siteName} navigation={navigation} />
+        <PublicNavigationBar siteName={siteName} logoUrl={logoUrl} navigation={navigation} />
 
         {/* Main Content Viewport */}
         <div className="flex-1">{children}</div>
@@ -82,13 +93,25 @@ export default async function FrontendLayout({ children }: { children: ReactNode
               <p className="text-sm font-semibold tracking-tight text-stone-900 dark:text-stone-100">
                 {siteName}
               </p>
-              <p className="text-xs text-stone-500 dark:text-stone-400">
-                Free, portable publishing and personal-brand platform under AGPL-3.0.
-              </p>
+              {footerText ? (
+                <p className="text-xs text-stone-500 dark:text-stone-400">{footerText}</p>
+              ) : siteDescription ? (
+                <p className="text-xs text-stone-500 dark:text-stone-400">{siteDescription}</p>
+              ) : (
+                <p className="text-xs text-stone-500 dark:text-stone-400">
+                  © {currentYear} {siteName}. All rights reserved.
+                </p>
+              )}
             </div>
             <div className="flex flex-wrap items-center justify-center gap-6 text-xs font-medium text-stone-600 dark:text-stone-400">
               <Link href="/" className="hover:text-red-600 transition-colors">
                 Home
+              </Link>
+              <Link href="/articles" className="hover:text-red-600 transition-colors">
+                Articles
+              </Link>
+              <Link href="/search" className="hover:text-red-600 transition-colors">
+                Search
               </Link>
               {navigation.footer.map((item) =>
                 item.href.startsWith('/') ? (
@@ -111,9 +134,6 @@ export default async function FrontendLayout({ children }: { children: ReactNode
                   </a>
                 ),
               )}
-              <Link href="/admin" className="hover:text-red-600 transition-colors">
-                Payload Studio
-              </Link>
             </div>
           </div>
         </footer>

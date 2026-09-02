@@ -6,6 +6,7 @@ export default function PublishingLinks() {
     <>
       <Link href="/admin/posts">Posts</Link>
       <Link href="/admin/pages">Pages</Link>
+      <Link href="/admin/navigation">Navigation</Link>
     </>
   )
 }

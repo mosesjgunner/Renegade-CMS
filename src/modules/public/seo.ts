@@ -15,17 +15,19 @@ export type SEOInput = SEOFields & {
   locale?: string
   alternates?: Record<string, string>
   socialImage?: string | null
+  siteNoIndex?: boolean | null
 }
 
 export function buildMetadata(input: SEOInput): Metadata {
   const title = input.seoTitle || input.title
   const description = input.seoDescription || input.description || undefined
   const canonical = input.seoCanonicalURL || new URL(input.canonicalPath, input.siteUrl).toString()
+  const noIndex = Boolean(input.seoNoIndex || input.siteNoIndex)
   return {
     title,
     description,
     alternates: { canonical, languages: input.alternates },
-    robots: input.seoNoIndex ? { index: false, follow: false } : { index: true, follow: true },
+    robots: noIndex ? { index: false, follow: false } : { index: true, follow: true },
     openGraph: {
       title,
       description,
@@ -127,8 +129,10 @@ export function buildJsonLd(input: SchemaInput): {
       ...(entity.datePublished ? { datePublished: entity.datePublished } : {}),
       ...(entity.dateModified ? { dateModified: entity.dateModified } : {}),
     }
-    if (entity.kind === 'article' && entity.author)
-      node.author = { '@type': 'Person', name: entity.author }
+    if (entity.kind === 'article') {
+      node.headline = entity.name
+      if (entity.author) node.author = { '@type': 'Person', name: entity.author }
+    }
     if (entity.kind === 'event' && entity.startsAt) {
       node.startDate = entity.startsAt
       if (entity.endsAt) node.endDate = entity.endsAt

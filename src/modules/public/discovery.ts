@@ -8,6 +8,7 @@ export type SearchDocument = PublicState & {
   summary?: string | null
   excerpt?: string | null
   body?: string | null
+  taxonomy?: string | null
   updatedAt?: string | null
 }
 
@@ -20,17 +21,42 @@ const words = (value: string) => value.toLocaleLowerCase().trim().split(/\s+/).f
 const plain = (value: string | null | undefined) => (value ?? '').replace(/\s+/g, ' ').trim()
 
 export function highlightExcerpt(
-  value: string | null | undefined,
+  document: Pick<SearchDocument, 'summary' | 'excerpt' | 'body'> | string | null | undefined,
   query: string,
   limit = 220,
 ): string {
-  const text = plain(value)
+  let text = ''
+  const q = query.trim().toLocaleLowerCase()
   const term = words(query)[0]
+
+  if (typeof document === 'string' || !document) {
+    text = plain(typeof document === 'string' ? document : '')
+  } else {
+    // Pick whichever field contains the search query or term first
+    const fields = [document.body, document.excerpt, document.summary].filter(Boolean) as string[]
+    const matchingField = fields.find((f) => {
+      const lower = f.toLocaleLowerCase()
+      return (q && lower.includes(q)) || (term && lower.includes(term))
+    })
+    text = plain(matchingField ?? document.excerpt ?? document.summary ?? document.body ?? '')
+  }
+
   if (!term || !text) return text.slice(0, limit)
-  const index = text.toLocaleLowerCase().indexOf(term)
-  const start = Math.max(0, index - Math.floor(limit / 3))
+
+  const matchTerm = q && text.toLocaleLowerCase().includes(q) ? query.trim() : term
+  const index = text.toLocaleLowerCase().indexOf(matchTerm.toLocaleLowerCase())
+  const start = index >= 0 ? Math.max(0, index - Math.floor(limit / 3)) : 0
   const excerpt = text.slice(start, start + limit)
-  return `${start ? '…' : ''}${excerpt.replace(new RegExp(`(${term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'ig'), '<mark>$1</mark>')}${start + limit < text.length ? '…' : ''}`
+
+  const escaped = excerpt
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+
+  const regexTerm = matchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+  const highlighted = escaped.replace(new RegExp(`(${regexTerm})`, 'ig'), '<mark>$1</mark>')
+  return `${start ? '…' : ''}${highlighted}${start + limit < text.length ? '…' : ''}`
 }
 
 /** Local, deterministic search. PostgreSQL/Payload remains the source of truth; no queue or service is required. */
@@ -42,25 +68,43 @@ export function queryLocalSearch(input: {
   pageSize?: number
   now?: Date
 }): { hits: SearchHit[]; total: number; page: number; pageCount: number } {
-  const terms = words(input.query)
+  const query = input.query.trim()
+  const terms = words(query)
   const pageSize = Math.max(1, Math.min(input.pageSize ?? 10, 50))
   const page = Math.max(1, input.page ?? 1)
   if (!terms.length) return { hits: [], total: 0, page, pageCount: 0 }
+
+  const phrase = query.toLocaleLowerCase()
+
   const scored = input.documents
     .filter(
       (document) => document.siteId === input.siteId && canDiscoverPublic(document, input.now),
     )
     .map((document) => {
       const title = document.title.toLocaleLowerCase()
-      const text =
-        `${plain(document.summary)} ${plain(document.excerpt)} ${plain(document.body)}`.toLocaleLowerCase()
-      const score = terms.reduce(
-        (total, term) =>
-          total +
-          (title === term ? 100 : title.startsWith(term) ? 30 : title.includes(term) ? 15 : 0) +
-          (text.includes(term) ? 3 : 0),
-        0,
-      )
+      const bodyText = plain(document.body).toLocaleLowerCase()
+      const summaryText = plain(document.summary).toLocaleLowerCase()
+      const excerptText = plain(document.excerpt).toLocaleLowerCase()
+      const taxText = plain(document.taxonomy).toLocaleLowerCase()
+      const allText = `${summaryText} ${excerptText} ${bodyText} ${taxText}`
+
+      let score = 0
+      // Full phrase bonus
+      if (title === phrase) score += 200
+      else if (title.includes(phrase)) score += 50
+      if (allText.includes(phrase)) score += 25
+
+      // Per-term scoring
+      for (const term of terms) {
+        if (title === term) score += 100
+        else if (title.startsWith(term)) score += 30
+        else if (title.includes(term)) score += 15
+
+        if (taxText.includes(term)) score += 10
+        if (summaryText.includes(term) || excerptText.includes(term)) score += 5
+        if (bodyText.includes(term)) score += 3
+      }
+
       return { document, score }
     })
     .filter(({ score }) => score > 0)
@@ -79,7 +123,7 @@ export function queryLocalSearch(input: {
       path: document.path,
       title: document.title,
       score,
-      excerpt: highlightExcerpt(document.excerpt ?? document.summary ?? document.body, input.query),
+      excerpt: highlightExcerpt(document, query),
     })),
     total,
     page,

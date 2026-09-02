@@ -482,6 +482,26 @@ const persistWorkflow = async (
     overrideAccess: true,
   } as never)
 
+  // Revalidate the published path when content status changes
+  if (['published', 'updated', 'archived'].includes(workflow.article.status)) {
+    try {
+      const { revalidatePath } = await import('next/cache')
+      revalidatePath(bundle.content.canonicalPath, 'page')
+
+      // Also revalidate the homepage if this is a featured content
+      if (bundle.content.featured) {
+        revalidatePath('/', 'page')
+      }
+
+      // Revalidate any related taxonomy pages
+      if (bundle.content.categories || bundle.content.tags) {
+        revalidatePath('/topics', 'page')
+      }
+    } catch (error) {
+      console.warn('Failed to revalidate paths:', error)
+    }
+  }
+
   return loadBundleByArticleId(payload, String(bundle.article.id))
 }
 

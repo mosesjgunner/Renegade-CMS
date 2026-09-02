@@ -52,7 +52,7 @@ export async function POST(request: Request) {
       : existing
         ? 'update'
         : 'grant'
-  
+
   // Only create consent record if analytics is enabled
   if (policy.analyticsEnabled) {
     try {

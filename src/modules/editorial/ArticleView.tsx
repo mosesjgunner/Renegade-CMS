@@ -8,6 +8,7 @@ export function EditorialArticleView({ article }: { article: EditorialPresentati
       className="mx-auto flex min-h-screen max-w-4xl flex-col gap-10 px-4 sm:px-6 lg:px-8 py-12 md:py-16"
       data-preview={article.preview ? 'true' : 'false'}
       data-preview-mode={article.previewMode}
+      aria-labelledby="article-title"
     >
       {/* Header & Meta */}
       <header className="space-y-6 border-b border-stone-200 dark:border-stone-800 pb-8">
@@ -22,7 +23,10 @@ export function EditorialArticleView({ article }: { article: EditorialPresentati
           <span className="badge badge-info">⏱️ {article.readingTimeMinutes} min read</span>
         </div>
 
-        <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-stone-950 dark:text-stone-50 font-display leading-[1.15]">
+        <h1
+          id="article-title"
+          className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-stone-950 dark:text-stone-50 font-display leading-[1.15]"
+        >
           {article.title}
         </h1>
 
@@ -85,10 +89,10 @@ export function EditorialArticleView({ article }: { article: EditorialPresentati
           className="surface-card p-6 border-stone-200 dark:border-stone-800"
         >
           <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-stone-500 dark:text-stone-400">
-            <span>📑</span>
-            <h2>Table of Contents</h2>
+            <span aria-hidden="true">📑</span>
+            <h2 id="table-of-contents-heading">Table of Contents</h2>
           </div>
-          <ol className="mt-4 space-y-2 text-sm">
+          <ol className="mt-4 space-y-2 text-sm" aria-labelledby="table-of-contents-heading">
             {article.tableOfContents.map((entry) => (
               <li
                 key={entry.id}
