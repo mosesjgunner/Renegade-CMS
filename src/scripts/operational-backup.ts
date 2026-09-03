@@ -6,6 +6,7 @@ import {
   createOperationalBackupManifest,
   verifyOperationalBackup,
 } from '../modules/operations/backup'
+import { assertOperationalEnv } from './operational-env'
 
 const args = process.argv.slice(2)
 const value = (name: string, fallback?: string) =>
@@ -23,6 +24,7 @@ const backupRoot = path.resolve(
   `renegade-backup-${new Date().toISOString().replace(/[:.]/g, '-')}`,
 )
 const composeArgs = ['compose', '--env-file', envFile, '-f', compose]
+await assertOperationalEnv(envFile)
 
 function run(command: string, commandArgs: string[], outputFile?: string, inputFile?: string) {
   return new Promise<void>((resolve, reject) => {

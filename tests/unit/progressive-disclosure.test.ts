@@ -5,6 +5,7 @@ import {
   capabilityPresentationState,
   operationalOverview,
 } from '../../src/modules/admin/progressive-disclosure'
+import { Content } from '../../src/collections/Publishing'
 
 describe('progressive disclosure admin presentation', () => {
   it('keeps core navigation visible while hiding optional collection clutter without unregistering it', () => {
@@ -39,5 +40,27 @@ describe('progressive disclosure admin presentation', () => {
       ]),
     )
     expect(JSON.stringify(overview)).not.toContain('secret')
+  })
+
+  it('keeps ordinary editor work in publisher field groups and technical fields in Advanced', () => {
+    const tabs = Content.fields?.[0] as {
+      type?: string
+      tabs?: Array<{ label: string; fields: Array<{ name?: string }> }>
+    }
+    expect(tabs.type).toBe('tabs')
+    expect(tabs.tabs?.map((tab) => tab.label)).toEqual([
+      'Writing',
+      'Presentation',
+      'Media',
+      'Publish',
+      'SEO',
+      'Advanced',
+    ])
+    expect(
+      tabs.tabs?.find((tab) => tab.label === 'Writing')?.fields.map((field) => field.name),
+    ).toContain('body')
+    expect(
+      tabs.tabs?.find((tab) => tab.label === 'Advanced')?.fields.map((field) => field.name),
+    ).toContain('auditMetadata')
   })
 })

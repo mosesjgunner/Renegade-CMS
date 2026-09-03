@@ -276,20 +276,24 @@ Canonical public Pages and Posts render the retained immutable published revisio
 Supplies the complete cross-surface floor required for a credible working CMS demonstration (tested and verified against real PostgreSQL 17, local filesystem bytes, Next.js 16 standalone production runtime, and Chromium browser automation):
 
 ### 1. Site Settings & Admin Controls
+
 - Canonical `SiteSettings` global schema enhanced with `siteName`, `siteDescription`, `canonicalOrigin`, `locale`, `timezone`, `logoMediaId`, `defaultSocialImageMediaId`, `footerText`, `homepageSelection` (`mode: 'default' | 'page' | 'layout'`, `pageId`, `layoutId`), and `indexingMode: 'index' | 'noindex'`.
 - Access controls ensure administrative modifications are protected, while public runtime resolver `resolveSiteSettings(payload, siteId)` supplies dynamic defaults and tenant fallback values.
 
 ### 2. Accessible Multi-Zone Navigation
+
 - Primary, secondary/mobile, and footer navigation menus configurable per publication with internal canonical paths or external URLs, explicit ordering, and strict validation limiting nesting to at most 1 level.
 - Safe link protocols enforced (`http`, `https`, `/`), active states accurately computed against the current pathname, and immediate Next.js cache revalidation triggered on navigation updates.
 - Admin Navigation Center integrated at `/admin` (`/api/admin/navigation`).
 
 ### 3. Clean Starter Presentation
+
 - Clean first-party presentation free from CMS promotional copy, AGPL notices, or external template badges.
 - Dedicated `/articles` archive with date-ordered pagination, article summaries, full-text links, and responsive grid layouts.
 - Dedicated `/search` interface and branded `/not-found` 404 handler matching site identity.
 
 ### 4. Media Storage Engine & Identity
+
 - Real local disk byte upload supporting PNG, JPEG, WebP, safe sanitized SVG, and PDF with stable identity and automatic SHA-256 hash generation.
 - Safe SVG security policy strictly enforces XML sanitation, rejecting scripts, event handlers (`onload=`), and `<foreignObject>`.
 - Media library browser/picker supporting hero images, inline content images, site logos, and social share cards.
@@ -297,16 +301,19 @@ Supplies the complete cross-surface floor required for a credible working CMS de
 - Referenced media deletion refusal (HTTP 409 Conflict) and anonymous raw media protection (HTTP 404).
 
 ### 5. Basic SEO, Sitemaps & Crawlers
+
 - Fallback metadata inheritance (`title`, `description`, `canonical`, Open Graph, Twitter cards).
 - Valid Schema.org minimal JSON-LD (`WebSite` and `Article` nodes) reflecting dynamic site settings and article author/publisher data.
 - Standard Next.js metadata routes (`robots.ts` and `sitemap.ts`) honoring `indexingMode: 'noindex'` by emitting `disallow: /` and empty sitemaps, or enumerating canonical published articles when indexed.
 
 ### 6. Local Public Search
+
 - Local search engine (`queryLocalSearch`) over current published Post and Page titles, excerpts, taxonomy keywords, and body prose projections.
 - Deterministic score calculation and safe `<mark>` highlighting with complete HTML entity escaping.
 - Draft, private, future-scheduled, and archived records strictly excluded from discovery.
 
 ### 7. Comprehensive Verification Suite
+
 - **Unit Tests**: 64 test suites (257 tests) passing 100% in Vitest (`tests/unit/pub-04-publishing-floor.test.ts`).
 - **Integration Tests**: 5/5 tests passing against live PostgreSQL (`tests/integration/pub-04-publishing-floor.integration.test.ts`).
 - **Regression Acceptance**: 2/2 tests passing in `tests/integration/editorial-acceptance.integration.test.ts`.
@@ -314,3 +321,12 @@ Supplies the complete cross-surface floor required for a credible working CMS de
 - **Production Build**: 100% clean Next.js 16 standalone build (`npm run build`) with zero compilation errors.
 - **Code Quality**: `npm run typecheck` (0 errors), `npm run lint` (0 errors, 0 warnings), and `npm run format:check` (100% compliant).
 
+---
+
+# Publishing Pass — PUB-05: Publisher Operations & Recovery — 2026-09-02
+
+- The default admin entry points now form a normal publisher navigation: Dashboard, Posts, Pages, Media, Menus, Site Settings, Redirects, and View Site. Infrastructure records remain registered but are progressively hidden; owner-only Capability Center remains the route to optional and operational surfaces.
+- Dashboard is task-oriented: it offers write/create/media/menu actions, setup progress, recent drafts, scheduled and published work, direct public View links, and an explicit owner route for actionable operational failures.
+- Operational restore validates manifest checksums and validates the native PostgreSQL and media archive formats before it starts the isolated Compose target. `restore:rehearsal` resets only the restore project volumes, restores, waits for readiness, and compares anonymous public HTML plus media SHA-256 values between source and restored sites.
+- `docs/OPERATIONAL_BACKUP.md` is the canonical command procedure for the backup, isolated recovery, and rehearsal path. It documents the Lean and Standard deployment profiles in conjunction with `docs/PRODUCTION_DEPLOYMENT.md`; no secret material is included in either archive format.
+- Operational npm commands terminate the TypeScript runner argument list before forwarding flags, so Node 24 does not consume `--env-file`. `restore:prepare-env` generates a non-overwriting, restore-only `.env.restore`; backup and restore preflight missing or placeholder environment values before invoking Compose.

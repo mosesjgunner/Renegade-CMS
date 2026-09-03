@@ -16,7 +16,13 @@ Keep the resulting directory off the VPS according to your retention policy. If 
 
 ## Isolated restore rehearsal
 
-Copy `.env.production.example` to `.env.restore`, set fresh secrets and an isolated URL/port, then build or obtain the same image tag. `compose.restore.yaml` has distinct volumes and binds web to port 3300 by default.
+Build or obtain the same image tag, then create isolated restore credentials (the command refuses to overwrite an existing file). `compose.restore.yaml` has distinct volumes and binds web to port 3300 by default.
+
+```powershell
+npm run restore:prepare-env -- --env-file .env.restore --app-url http://127.0.0.1:3300 --image-tag local --app-version 0.1.0
+```
+
+This generates fresh restore-only PostgreSQL and Payload secrets; it never copies production secrets. Both backup and restore now preflight their environment file and name missing or placeholder variables before Compose is invoked.
 
 ```powershell
 npm run restore:operational -- --archive D:\renegade-backups\renegade-backup-... --target-version 0.1.0 --isolated --authorize-restore --env-file .env.restore
@@ -25,6 +31,14 @@ npm run restore:operational -- --archive D:\renegade-backups\renegade-backup-...
 Restore refuses any Compose filename not containing `restore`, requires both explicit acknowledgements, verifies every manifest checksum before touching the target, and refuses a database or media target that is not empty. It runs native `pg_restore`, restores media, runs forward Payload migrations, boots web and worker, waits for Compose health, then checks `/health/ready`.
 
 For a rehearsal, seed fixture data and one uploaded/generated file, run backup, remove the isolated volumes, restore, then confirm the fixture through the application and inspect the media file. Test corruption by altering either component or removing an entry from `manifest.json`: restore must fail before mutation.
+
+The repeatable rehearsal command performs that fresh-volume reset, restore, readiness check, and anonymous byte comparison. Supply one published path that exercises content, navigation, redirect, and metadata, plus one public media byte path:
+
+```powershell
+npm run restore:rehearsal -- --archive D:\renegade-backups\renegade-backup-... --target-version 0.1.0 --env-file .env.restore --source-url https://cms.example.test --restored-url http://127.0.0.1:3300 --public-path /a-published-post --media-path /api/media/<asset-id>
+```
+
+It destroys only the named `renegade-cms-restore` Compose volumes before the run, then requires identical anonymous HTML and media SHA-256 values. The public fixture should include the navigation and a redirect target so the one request proves rendered content, metadata, navigation, and redirect behavior together. Restore now also runs `pg_restore -l` and `tar -tzf` against the archive before Compose creates a target volume; checksums alone are not treated as archive-format proof.
 
 ## Lifecycle commands
 

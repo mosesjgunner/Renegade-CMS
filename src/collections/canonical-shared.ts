@@ -64,10 +64,26 @@ export const retentionFields = (): Field[] => [
 ]
 
 export const seoFields = (): Field[] => [
-  { name: 'seoTitle', type: 'text' },
-  { name: 'seoDescription', type: 'textarea' },
-  { name: 'seoCanonicalURL', type: 'text' },
-  { name: 'seoImageAlt', type: 'text' },
+  {
+    name: 'seoTitle',
+    type: 'text',
+    admin: { description: 'Leave blank to use the resolved title from this content.' },
+  },
+  {
+    name: 'seoDescription',
+    type: 'textarea',
+    admin: { description: 'Leave blank to use the resolved summary or Site Settings description.' },
+  },
+  {
+    name: 'seoCanonicalURL',
+    type: 'text',
+    admin: { description: 'Leave blank to use this content’s resolved canonical path.' },
+  },
+  {
+    name: 'seoImageAlt',
+    type: 'text',
+    admin: { description: 'Leave blank to use the selected media’s resolved alt text.' },
+  },
   { name: 'seoKeywords', type: 'json' },
   { name: 'seoFocusKeyphrase', type: 'text' },
   { name: 'seoNoIndex', type: 'checkbox', defaultValue: false },

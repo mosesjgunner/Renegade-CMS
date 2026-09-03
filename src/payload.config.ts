@@ -32,6 +32,7 @@ export default buildConfig({
     components: {
       beforeNavLinks: ['./modules/admin/PublishingLinks', './modules/admin/CapabilityCenterLink'],
       views: {
+        dashboard: { Component: './modules/admin/PublisherDashboard', path: '/' },
         capabilities: { Component: './modules/admin/CapabilityCenter', path: '/capabilities' },
         security: { Component: './modules/admin/SecurityCenter', path: '/security' },
         posts: { Component: './modules/admin/PublishingCenter', path: '/posts' },

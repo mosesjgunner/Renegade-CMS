@@ -1,4 +1,4 @@
-import type { CollectionBeforeDeleteHook, CollectionConfig } from 'payload'
+import type { CollectionBeforeDeleteHook, CollectionConfig, Field } from 'payload'
 import { assertEvent } from '../modules/events/contracts'
 import {
   assertEditorialPathAvailable,
@@ -78,6 +78,98 @@ const editorialActionOptions = [
   'schedule',
   'publish',
 ] as const
+
+/**
+ * Payload tabs are presentation-only: this keeps the existing persisted field
+ * names and migration shape while giving a publisher one predictable set of
+ * task groups. Everything not used in ordinary authoring remains available
+ * under Advanced instead of being silently removed from the product.
+ */
+const publisherFieldGroups = (fields: Field[]): Field[] => {
+  const groups: Array<{ label: string; names: readonly string[]; fields: Field[] }> = [
+    {
+      label: 'Writing',
+      names: [
+        'site',
+        'publication',
+        'space',
+        'owner',
+        'contentType',
+        'title',
+        'subtitle',
+        'body',
+        'summary',
+        'excerpt',
+        'authors',
+        'sections',
+        'categories',
+        'topics',
+        'tags',
+        'series',
+      ],
+      fields: [],
+    },
+    {
+      label: 'Presentation',
+      names: [
+        'slug',
+        'pathOverride',
+        'canonicalPath',
+        'parentPage',
+        'pageTemplate',
+        'featured',
+        'pinned',
+        'readingTimeMinutes',
+        'tableOfContents',
+        'relatedContent',
+        'correctionNotices',
+        'changeNotes',
+      ],
+      fields: [],
+    },
+    { label: 'Media', names: ['heroMedia'], fields: [] },
+    {
+      label: 'Publish',
+      names: [
+        'status',
+        'publishedAt',
+        'updatedAtEditorial',
+        'commentsPolicy',
+        'publicChangeHistoryPolicy',
+      ],
+      fields: [],
+    },
+    {
+      label: 'SEO',
+      names: [
+        'seoTitle',
+        'seoDescription',
+        'seoCanonicalURL',
+        'seoImageAlt',
+        'seoFocusKeyphrase',
+        'seoNoIndex',
+      ],
+      fields: [],
+    },
+    { label: 'Advanced', names: [], fields: [] },
+  ]
+  for (const field of fields) {
+    const name = 'name' in field ? field.name : undefined
+    const group = groups.find((candidate) => name && candidate.names.includes(name)) ?? groups[5]!
+    group.fields.push(field)
+  }
+  return [
+    {
+      type: 'tabs',
+      tabs: groups
+        .filter((group) => group.fields.length)
+        .map(({ label, fields: tabFields }) => ({
+          label,
+          fields: tabFields,
+        })),
+    },
+  ] as Field[]
+}
 
 /** Taxonomy is archival identity; refuse deletion while an editorial record still uses it. */
 const refuseReferencedTaxonomyDeletion =
@@ -381,7 +473,7 @@ export const Content: CollectionConfig = {
       },
     ],
   },
-  fields: [
+  fields: publisherFieldGroups([
     ...ownerFields(),
     {
       name: 'contentType',
@@ -518,7 +610,7 @@ export const Content: CollectionConfig = {
       options: ['hidden', 'summary', 'full'],
     },
     ...retentionFields(),
-  ],
+  ]),
   indexes: [{ fields: ['publication', 'slug'], unique: true }],
 }
 

@@ -3,6 +3,7 @@ import { createReadStream } from 'node:fs'
 import path from 'node:path'
 import { assertRestoreSafety, verifyOperationalBackup } from '../modules/operations/backup'
 import { assertRestoreVersionCompatibility } from '../modules/operations/lifecycle'
+import { assertOperationalEnv } from './operational-env'
 
 const args = process.argv.slice(2)
 const value = (name: string, fallback?: string) =>
@@ -22,6 +23,7 @@ assertRestoreSafety({
 })
 const root = path.resolve(archive)
 const composeArgs = ['compose', '--env-file', envFile, '-f', compose]
+await assertOperationalEnv(envFile)
 function run(commandArgs: string[], inputFile?: string) {
   return new Promise<void>((resolve, reject) => {
     const child = spawn('docker', commandArgs, {
@@ -55,6 +57,22 @@ assertRestoreVersionCompatibility({
   archiveVersion: manifest.renegade.version,
   targetVersion,
 })
+// Validate both archive formats before Compose creates a target volume or starts
+// PostgreSQL. Checksums catch accidental corruption; these readers also catch a
+// deliberately malformed archive whose manifest was regenerated incorrectly.
+const images = (await capture([...composeArgs, 'config', '--images']))
+  .split(/\r?\n/)
+  .filter(Boolean)
+const appImage = images.find((image) => !image.startsWith('postgres:'))
+if (!appImage) throw new Error('Restore could not determine the isolated application image.')
+await run(
+  ['run', '--rm', '-i', 'postgres:17.6-alpine', 'pg_restore', '-l'],
+  path.join(root, 'database.dump'),
+)
+await run(
+  ['run', '--rm', '-i', '--entrypoint', 'tar', appImage, '-tzf', '-'],
+  path.join(root, 'media.tar.gz'),
+)
 const running = await capture([...composeArgs, 'ps', '--status', 'running', '--services'])
 if (
   running
