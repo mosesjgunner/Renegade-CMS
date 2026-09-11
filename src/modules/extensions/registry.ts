@@ -1,3 +1,4 @@
+import { safeExecutionError } from '../execution/contracts'
 import { satisfies, valid, validRange } from 'semver'
 
 import type { Capability, Iso8601Instant } from '../core/contracts'
@@ -101,7 +102,7 @@ export class CapabilityRegistry {
   }
 }
 export function redactDiagnostic(error: unknown): string {
-  return String(error).replace(/(bearer|token|secret|password)[=: ]+[^\s,]+/gi, '$1=[REDACTED]')
+  return safeExecutionError(error)
 }
 export async function testConnection(
   adapter: ProviderAdapter,

@@ -1,7 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
 const operator = ({ req }: { req: { user?: { role?: string } | null } }) =>
-  ['owner', 'administrator', 'staff'].includes(String(req.user?.role))
+  req.user?.role === 'owner'
 
 /**
  * The durable, privacy-safe handoff between a committed product mutation and
@@ -10,8 +10,8 @@ const operator = ({ req }: { req: { user?: { role?: string } | null } }) =>
  */
 export const ExecutionEvents: CollectionConfig = {
   slug: 'execution-events',
-  admin: { useAsTitle: 'eventType', group: 'System', hidden: true },
-  access: { create: operator, delete: () => false, read: operator, update: operator },
+  admin: { useAsTitle: 'eventType', group: 'System', hidden: false },
+  access: { create: () => false, delete: () => false, read: operator, update: () => false },
   fields: [
     { name: 'site', type: 'relationship', relationTo: 'sites', required: true, index: true },
     { name: 'tenantId', type: 'text', required: true, index: true },

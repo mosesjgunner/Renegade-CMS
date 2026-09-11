@@ -41,6 +41,11 @@ const assertSafePayload = (payload: Record<string, unknown>) => {
   const visit = (value: unknown, key = ''): void => {
     if (sensitiveKey.test(key))
       throw new Error(`Execution payload may not include personal data or secrets (${key}).`)
+    if (
+      typeof value === 'string' &&
+      (redact(value) !== value || /[^\s@]+@[^\s@]+\.[^\s@]+/.test(value))
+    )
+      throw new Error('Execution payload may not include personal data or secrets.')
     if (Array.isArray(value)) value.forEach((item) => visit(item))
     else if (value && typeof value === 'object')
       Object.entries(value).forEach(([childKey, child]) => visit(child, childKey))
@@ -54,6 +59,16 @@ export function createExecutionEvent(
 ): ExecutionEvent {
   if (!input.siteId || !input.tenantId || !input.actor || !input.eventType || !input.idempotencyKey)
     throw new Error('Execution events require site, tenant, actor, type, and idempotency scope.')
+  if (
+    !/^[a-z][a-z0-9_-]*(\.[a-z][a-z0-9_-]*)+$/.test(input.eventType) ||
+    !Number.isInteger(input.eventVersion ?? 1) ||
+    (input.eventVersion ?? 1) < 1 ||
+    !['user', 'service', 'system'].includes(input.actor.kind) ||
+    (input.actor.id !== null && typeof input.actor.id !== 'string') ||
+    !['public', 'internal', 'restricted'].includes(input.privacyClass) ||
+    (input.occurredAt !== undefined && !Number.isFinite(Date.parse(input.occurredAt)))
+  )
+    throw new Error('Invalid execution event envelope.')
   assertSafePayload(input.payload)
   return {
     ...input,
@@ -82,5 +97,7 @@ export const safeExecutionError = (error: unknown) => {
     error instanceof Error ? error.message : String(error),
     configuredSecretValues(),
   )
-  return typeof value === 'string' ? value.slice(0, 500) : 'Execution failed.'
+  return typeof value === 'string'
+    ? value.replace(/[^\s@]+@[^\s@]+\.[^\s@]+/g, '[REDACTED_EMAIL]').slice(0, 500)
+    : 'Execution failed.'
 }

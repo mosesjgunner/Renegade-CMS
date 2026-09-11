@@ -1,12 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any -- Payload task request types are collection-polymorphic. */
 import type { TaskConfig } from 'payload'
+import { redact } from '../core/logging'
 import {
   ExecutionError,
   EXECUTION_QUEUE,
   safeExecutionError,
   type ExecutionEvent,
 } from '../execution/contracts'
-import { executionHandlerFor } from '../execution/service'
+import { executionEventFromRecord, executionHandlerFor } from '../execution/service'
 import { deliverWebhook, enqueueWebhookDeliveries } from '../integrations/webhooks'
 
 export const OPERATIONS_QUEUE = 'operations'
@@ -76,24 +77,36 @@ export const executionOutboxDispatchTask = {
   handler: async ({ req }: { req: any }) => {
     const events = await req.payload.find({
       collection: 'execution-events' as never,
-      where: { state: { in: ['ready', 'retrying'] } },
+      where: { state: { equals: 'ready' } },
       limit: 100,
       sort: 'createdAt',
       depth: 0,
       overrideAccess: true,
     } as never)
     for (const event of events.docs as unknown as ExecutionEvent[]) {
-      const job = await req.payload.jobs.queue({
-        task: 'execution-outbox-handle',
-        input: { eventId: event.id },
-        queue: EXECUTION_QUEUE,
-      })
-      await req.payload.update({
-        collection: 'execution-events' as never,
-        id: event.id,
-        data: { state: 'dispatched', jobId: job.id } as never,
-        overrideAccess: true,
-      } as never)
+      const transactionID = await req.payload.db.beginTransaction()
+      if (!transactionID) throw new Error('Outbox dispatch requires database transactions.')
+      const transactionReq = { ...req, transactionID }
+      try {
+        const job = await req.payload.jobs.queue({
+          task: 'execution-outbox-handle',
+          input: { eventId: event.id },
+          queue: EXECUTION_QUEUE,
+          req: transactionReq,
+        })
+        // Conditional update cannot overwrite a concurrent cancellation.
+        await req.payload.update({
+          collection: 'execution-events',
+          where: { and: [{ id: { equals: event.id } }, { state: { equals: 'ready' } }] },
+          data: { state: 'dispatched', jobId: job.id },
+          overrideAccess: true,
+          req: transactionReq,
+        })
+        await req.payload.db.commitTransaction(transactionID)
+      } catch (error) {
+        await req.payload.db.rollbackTransaction(transactionID)
+        throw new Error(safeExecutionError(error))
+      }
     }
     return { output: {} }
   },
@@ -107,18 +120,37 @@ export const executionOutboxHandleTask = {
   retries: { attempts: 2, backoff: { delay: 250, type: 'exponential' } },
   concurrency: ({ input }: { input: { eventId: string } }) => `execution.event:${input.eventId}`,
   handler: async ({ input, req }: { input: { eventId: string }; req: any }) => {
-    const event = (await req.payload.findByID({
+    const record = (await req.payload.findByID({
       collection: 'execution-events' as never,
       id: input.eventId,
       depth: 0,
       overrideAccess: true,
     } as never)) as unknown as ExecutionEvent & { state: string; attempts: number }
+    const event = {
+      ...record,
+      ...executionEventFromRecord(record as unknown as Record<string, unknown>),
+    }
     if (event.state === 'processed' || event.state === 'cancelled' || event.state === 'dead-letter')
       return { output: {} }
+    const audit = (state: string) =>
+      req.payload.logger?.info(
+        redact({
+          event: 'execution.outcome',
+          eventId: event.id,
+          siteId: event.siteId,
+          tenantId: event.tenantId,
+          correlationId: event.correlationId,
+          eventType: event.eventType,
+          state,
+          attempt: Number(event.attempts ?? 0) + 1,
+        }),
+      )
     try {
       await enqueueWebhookDeliveries(req.payload, event)
-      const handler = executionHandlerFor(event.eventType)
+      const handler = executionHandlerFor(event.eventType, event.eventVersion)
       if (handler) await handler(event)
+      else if (event.privacyClass !== 'public')
+        throw new ExecutionError('No execution handler registered.', 'handler_missing', false)
       await req.payload.update({
         collection: 'execution-events' as never,
         id: event.id,
@@ -129,8 +161,11 @@ export const executionOutboxHandleTask = {
         } as never,
         overrideAccess: true,
       } as never)
+      audit('processed')
     } catch (error) {
-      const retryable = error instanceof ExecutionError ? error.retryable : true
+      const retryable =
+        (error instanceof ExecutionError ? error.retryable : true) &&
+        Number(event.attempts ?? 0) + 1 < 3
       await req.payload.update({
         collection: 'execution-events' as never,
         id: event.id,
@@ -141,7 +176,9 @@ export const executionOutboxHandleTask = {
         } as never,
         overrideAccess: true,
       } as never)
-      if (retryable) throw error
+      audit(retryable ? 'retrying' : 'dead-letter')
+      // Payload persists thrown errors in its job log: never rethrow provider objects.
+      if (retryable) throw new ExecutionError(safeExecutionError(error), 'execution_retry', true)
     }
     return { output: {} }
   },

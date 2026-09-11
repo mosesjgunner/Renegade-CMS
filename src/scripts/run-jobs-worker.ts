@@ -1,5 +1,6 @@
 import { writeFile } from 'node:fs/promises'
 
+import { safeExecutionError } from '../modules/execution/contracts'
 import config from '../payload.config'
 import { getPayload } from 'payload'
 
@@ -36,7 +37,10 @@ async function cycle(): Promise<void> {
       JSON.stringify({ observedAt: new Date().toISOString(), pid: process.pid }),
     )
   } catch (error) {
-    payload.logger.error({ err: error, event: 'operations.worker.cycle_failed' })
+    payload.logger.error({
+      error: safeExecutionError(error),
+      event: 'operations.worker.cycle_failed',
+    })
   } finally {
     if (!stopping) timer = setTimeout(cycle, pollInterval)
   }
