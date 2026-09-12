@@ -1,4 +1,5 @@
 import * as pre01Snapshots from './20260912_020000_pre_01_presentation_snapshots'
+import * as pre03VisualEditor from './20260912_030000_pre_03_visual_editor'
 import * as pre01 from './20260912_010000_pre_01_theme_lifecycle'
 import * as pre00 from './20260912_000000_pre_00_theme_selection'
 import * as migration_20260812_010209_initial_foundation from './20260812_010209_initial_foundation'
@@ -273,5 +274,10 @@ export const migrations = [
     up: pre01Snapshots.up,
     down: pre01Snapshots.down,
     name: '20260912_020000_pre_01_presentation_snapshots',
+  },
+  {
+    up: pre03VisualEditor.up,
+    down: pre03VisualEditor.down,
+    name: '20260912_030000_pre_03_visual_editor',
   },
 ]

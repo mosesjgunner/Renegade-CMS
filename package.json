@@ -31,6 +31,7 @@
     "test:migrations:upgrade": "tsx src/scripts/verify-upgrade-migration.ts",
     "test:smoke": "tsx tests/smoke/stack.smoke.ts",
     "verify:release:checks": "tsx src/scripts/verify-release.ts",
+    "verify:presentation-bundles": "node scripts/verify-presentation-bundles.mjs",
     "verify:release": "node scripts/verify-clean-clone.mjs",
     "verify": "npm run verify:release",
     "jobs:worker": "tsx src/scripts/run-jobs-worker.ts",

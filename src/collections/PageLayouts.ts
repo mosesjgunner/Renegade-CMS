@@ -1,5 +1,6 @@
 import { snapshotLayout } from '../modules/presentation/snapshots'
 import { themes } from '../modules/presentation/registry'
+import { validateLayout, type PageLayout } from '../modules/public/page-builder'
 import type { CollectionConfig } from 'payload'
 
 import { retentionFields, siteScopeFields, visibilityOptions } from './canonical-shared'
@@ -21,6 +22,32 @@ export const PageLayouts: CollectionConfig = {
   hooks: {
     beforeChange: [
       ({ data, originalDoc, context }) => {
+        const merged = { ...originalDoc, ...data }
+        const site =
+          typeof merged.site === 'string'
+            ? merged.site
+            : String((merged.site as { id?: unknown } | undefined)?.id ?? '')
+        const checked = validateLayout({
+          version: Number(merged.layoutVersion ?? 1) as 1,
+          id: String(merged.id ?? 'new-layout'),
+          siteId: site,
+          path: String(merged.path ?? ''),
+          status: merged.status === 'published' ? 'published' : 'draft',
+          themeId: String(merged.themeId ?? 'neutral-starter'),
+          surface: merged.surface === 'global' ? 'global' : 'page',
+          slot: merged.slot === 'header' || merged.slot === 'footer' ? merged.slot : 'main',
+          blocks: Array.isArray(merged.blocks) ? merged.blocks : [],
+          unknownBlocks: Array.isArray(merged.unknownBlocks) ? merged.unknownBlocks : [],
+          revision: Number(merged.revision ?? 1),
+          publishedRevision:
+            typeof merged.publishedRevision === 'number' ? merged.publishedRevision : undefined,
+        } as PageLayout)
+        const fatal = checked.errors.filter(
+          (error) => !error.startsWith('Unavailable component preserved:'),
+        )
+        if (fatal.length) throw new Error(`Invalid presentation document: ${fatal.join(' ')}`)
+        data.blocks = checked.layout.blocks
+        data.unknownBlocks = checked.layout.unknownBlocks
         const publish =
           context.publishPresentation === true ||
           (context.publishPresentation !== false &&
@@ -68,6 +95,27 @@ export const PageLayouts: CollectionConfig = {
       required: true,
       defaultValue: 'neutral-starter',
       options: Object.values(themes).map(({ id, label }) => ({ label, value: id })),
+    },
+    {
+      name: 'surface',
+      type: 'select',
+      required: true,
+      defaultValue: 'page',
+      options: [
+        { label: 'Flexible page', value: 'page' },
+        { label: 'Global region', value: 'global' },
+      ],
+    },
+    {
+      name: 'slot',
+      type: 'select',
+      required: true,
+      defaultValue: 'main',
+      options: [
+        { label: 'Main content', value: 'main' },
+        { label: 'Global header', value: 'header' },
+        { label: 'Global footer', value: 'footer' },
+      ],
     },
     { name: 'layoutVersion', type: 'number', required: true, defaultValue: 1 },
     {

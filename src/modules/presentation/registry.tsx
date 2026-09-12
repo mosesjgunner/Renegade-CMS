@@ -59,6 +59,22 @@ const makeTheme = (legacy: (typeof legacyThemes)[string]): ThemeManifest => ({
                 ? ['publisher.editorial']
                 : Object.keys(starterComponents),
           },
+          ...(surface === 'layout'
+            ? {
+                header: {
+                  required: false,
+                  allowedComponents: ['publisher.cta', 'publisher.rich-content'],
+                },
+                footer: {
+                  required: false,
+                  allowedComponents: [
+                    'publisher.rich-content',
+                    'publisher.cta',
+                    'publisher.newsletter-cta',
+                  ],
+                },
+              }
+            : {}),
         },
         render: (slots) => <Fragment>{slots.main}</Fragment>,
       },

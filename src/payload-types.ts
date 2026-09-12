@@ -517,13 +517,26 @@ export interface Site {
  * via the `definition` "page-layouts".
  */
 export interface PageLayout {
-  publishedPresentation?: unknown;
   id: string;
+  /**
+   * Complete immutable public presentation; replaced only by explicit publication.
+   */
+  publishedPresentation?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   site: string | Site;
   publication?: (string | null) | Publication;
   space?: (string | null) | Space;
   path: string;
   themeId: 'neutral-starter' | 'renegade-party';
+  surface: 'page' | 'global';
+  slot: 'main' | 'header' | 'footer';
   layoutVersion: number;
   status: 'draft' | 'published';
   visibility: 'public' | 'unlisted' | 'members' | 'friends' | 'private';
@@ -1378,20 +1391,6 @@ export interface Content {
   contentType: 'article' | 'page' | 'book' | 'podcast' | 'video' | 'product' | 'event' | 'campaign';
   title: string;
   /**
-   * Generated from the title until you choose a different URL slug.
-   */
-  slug: string;
-  /**
-   * Keep a manually chosen canonical path instead of deriving it from the slug.
-   */
-  pathOverride?: boolean | null;
-  canonicalPath: string;
-  /**
-   * Optional parent Page. Its path becomes the prefix for this page.
-   */
-  parentPage?: (string | null) | Content;
-  pageTemplate?: ('standard' | 'landing' | 'about' | 'contact' | 'legal') | null;
-  /**
    * Structured, accessible prose. Use the editor controls for headings, links, lists, quotes, and safe inline references—not raw HTML or JSON.
    */
   body?: {
@@ -1410,9 +1409,6 @@ export interface Content {
     [k: string]: unknown;
   } | null;
   summary?: string | null;
-  status: 'draft' | 'review' | 'approved' | 'scheduled' | 'published' | 'updated' | 'archived' | 'rejected';
-  publishedAt?: string | null;
-  updatedAtEditorial?: string | null;
   subtitle?: string | null;
   excerpt?: string | null;
   authors?:
@@ -1428,7 +1424,20 @@ export interface Content {
   topics?: (string | Topic)[] | null;
   tags?: (string | Tag)[] | null;
   series?: (string | Series)[] | null;
-  heroMedia?: (string | null) | MediaAsset;
+  /**
+   * Generated from the title until you choose a different URL slug.
+   */
+  slug: string;
+  /**
+   * Keep a manually chosen canonical path instead of deriving it from the slug.
+   */
+  pathOverride?: boolean | null;
+  canonicalPath: string;
+  /**
+   * Optional parent Page. Its path becomes the prefix for this page.
+   */
+  parentPage?: (string | null) | Content;
+  pageTemplate?: ('standard' | 'landing' | 'about' | 'contact' | 'legal') | null;
   featured?: boolean | null;
   pinned?: boolean | null;
   readingTimeMinutes?: number | null;
@@ -1457,10 +1466,30 @@ export interface Content {
         id?: string | null;
       }[]
     | null;
+  heroMedia?: (string | null) | MediaAsset;
+  status: 'draft' | 'review' | 'approved' | 'scheduled' | 'published' | 'updated' | 'archived' | 'rejected';
+  publishedAt?: string | null;
+  updatedAtEditorial?: string | null;
+  commentsPolicy: 'open' | 'members' | 'closed';
+  publicChangeHistoryPolicy: 'hidden' | 'summary' | 'full';
+  /**
+   * Leave blank to use the resolved title from this content.
+   */
   seoTitle?: string | null;
+  /**
+   * Leave blank to use the resolved summary or Site Settings description.
+   */
   seoDescription?: string | null;
+  /**
+   * Leave blank to use this content’s resolved canonical path.
+   */
   seoCanonicalURL?: string | null;
+  /**
+   * Leave blank to use the selected media’s resolved alt text.
+   */
   seoImageAlt?: string | null;
+  seoFocusKeyphrase?: string | null;
+  seoNoIndex?: boolean | null;
   seoKeywords?:
     | {
         [k: string]: unknown;
@@ -1470,8 +1499,6 @@ export interface Content {
     | number
     | boolean
     | null;
-  seoFocusKeyphrase?: string | null;
-  seoNoIndex?: boolean | null;
   relationships?: (string | Relationship)[] | null;
   seoOverride?:
     | {
@@ -1532,7 +1559,6 @@ export interface Content {
     | number
     | boolean
     | null;
-  commentsPolicy: 'open' | 'members' | 'closed';
   revisionCompatibility?:
     | {
         [k: string]: unknown;
@@ -1551,7 +1577,6 @@ export interface Content {
     | number
     | boolean
     | null;
-  publicChangeHistoryPolicy: 'hidden' | 'summary' | 'full';
   retentionMode: 'permanent' | 'expire-at' | 'manual-burn' | 'archive' | 'tombstone';
   retentionExpiresAt?: string | null;
   retentionHold: 'none' | 'legal' | 'moderation';
@@ -2589,9 +2614,21 @@ export interface Event {
     | number
     | boolean
     | null;
+  /**
+   * Leave blank to use the resolved title from this content.
+   */
   seoTitle?: string | null;
+  /**
+   * Leave blank to use the resolved summary or Site Settings description.
+   */
   seoDescription?: string | null;
+  /**
+   * Leave blank to use this content’s resolved canonical path.
+   */
   seoCanonicalURL?: string | null;
+  /**
+   * Leave blank to use the selected media’s resolved alt text.
+   */
   seoImageAlt?: string | null;
   seoKeywords?:
     | {
@@ -2806,9 +2843,21 @@ export interface Timeline {
     | number
     | boolean
     | null;
+  /**
+   * Leave blank to use the resolved title from this content.
+   */
   seoTitle?: string | null;
+  /**
+   * Leave blank to use the resolved summary or Site Settings description.
+   */
   seoDescription?: string | null;
+  /**
+   * Leave blank to use this content’s resolved canonical path.
+   */
   seoCanonicalURL?: string | null;
+  /**
+   * Leave blank to use the selected media’s resolved alt text.
+   */
   seoImageAlt?: string | null;
   seoKeywords?:
     | {
@@ -2924,9 +2973,21 @@ export interface Book {
   description?: string | null;
   status: 'draft' | 'scheduled' | 'published' | 'updated' | 'unavailable';
   publishedAt?: string | null;
+  /**
+   * Leave blank to use the resolved title from this content.
+   */
   seoTitle?: string | null;
+  /**
+   * Leave blank to use the resolved summary or Site Settings description.
+   */
   seoDescription?: string | null;
+  /**
+   * Leave blank to use this content’s resolved canonical path.
+   */
   seoCanonicalURL?: string | null;
+  /**
+   * Leave blank to use the selected media’s resolved alt text.
+   */
   seoImageAlt?: string | null;
   seoKeywords?:
     | {
@@ -3052,9 +3113,21 @@ export interface PodcastShow {
   description?: string | null;
   status: 'draft' | 'scheduled' | 'published' | 'updated' | 'unavailable';
   publishedAt?: string | null;
+  /**
+   * Leave blank to use the resolved title from this content.
+   */
   seoTitle?: string | null;
+  /**
+   * Leave blank to use the resolved summary or Site Settings description.
+   */
   seoDescription?: string | null;
+  /**
+   * Leave blank to use this content’s resolved canonical path.
+   */
   seoCanonicalURL?: string | null;
+  /**
+   * Leave blank to use the selected media’s resolved alt text.
+   */
   seoImageAlt?: string | null;
   seoKeywords?:
     | {
@@ -3119,9 +3192,21 @@ export interface PodcastEpisode {
   description?: string | null;
   status: 'draft' | 'scheduled' | 'published' | 'updated' | 'unavailable';
   publishedAt?: string | null;
+  /**
+   * Leave blank to use the resolved title from this content.
+   */
   seoTitle?: string | null;
+  /**
+   * Leave blank to use the resolved summary or Site Settings description.
+   */
   seoDescription?: string | null;
+  /**
+   * Leave blank to use this content’s resolved canonical path.
+   */
   seoCanonicalURL?: string | null;
+  /**
+   * Leave blank to use the selected media’s resolved alt text.
+   */
   seoImageAlt?: string | null;
   seoKeywords?:
     | {
@@ -3222,9 +3307,21 @@ export interface VideoChannel {
   description?: string | null;
   status: 'draft' | 'scheduled' | 'published' | 'updated' | 'unavailable';
   publishedAt?: string | null;
+  /**
+   * Leave blank to use the resolved title from this content.
+   */
   seoTitle?: string | null;
+  /**
+   * Leave blank to use the resolved summary or Site Settings description.
+   */
   seoDescription?: string | null;
+  /**
+   * Leave blank to use this content’s resolved canonical path.
+   */
   seoCanonicalURL?: string | null;
+  /**
+   * Leave blank to use the selected media’s resolved alt text.
+   */
   seoImageAlt?: string | null;
   seoKeywords?:
     | {
@@ -3275,9 +3372,21 @@ export interface VideoPlaylist {
   description?: string | null;
   status: 'draft' | 'scheduled' | 'published' | 'updated' | 'unavailable';
   publishedAt?: string | null;
+  /**
+   * Leave blank to use the resolved title from this content.
+   */
   seoTitle?: string | null;
+  /**
+   * Leave blank to use the resolved summary or Site Settings description.
+   */
   seoDescription?: string | null;
+  /**
+   * Leave blank to use this content’s resolved canonical path.
+   */
   seoCanonicalURL?: string | null;
+  /**
+   * Leave blank to use the selected media’s resolved alt text.
+   */
   seoImageAlt?: string | null;
   seoKeywords?:
     | {
@@ -3326,9 +3435,21 @@ export interface Video {
   description?: string | null;
   status: 'draft' | 'scheduled' | 'published' | 'updated' | 'unavailable';
   publishedAt?: string | null;
+  /**
+   * Leave blank to use the resolved title from this content.
+   */
   seoTitle?: string | null;
+  /**
+   * Leave blank to use the resolved summary or Site Settings description.
+   */
   seoDescription?: string | null;
+  /**
+   * Leave blank to use this content’s resolved canonical path.
+   */
   seoCanonicalURL?: string | null;
+  /**
+   * Leave blank to use the selected media’s resolved alt text.
+   */
   seoImageAlt?: string | null;
   seoKeywords?:
     | {
@@ -3397,9 +3518,21 @@ export interface Interview {
   description?: string | null;
   status: 'draft' | 'scheduled' | 'published' | 'updated' | 'unavailable';
   publishedAt?: string | null;
+  /**
+   * Leave blank to use the resolved title from this content.
+   */
   seoTitle?: string | null;
+  /**
+   * Leave blank to use the resolved summary or Site Settings description.
+   */
   seoDescription?: string | null;
+  /**
+   * Leave blank to use this content’s resolved canonical path.
+   */
   seoCanonicalURL?: string | null;
+  /**
+   * Leave blank to use the selected media’s resolved alt text.
+   */
   seoImageAlt?: string | null;
   seoKeywords?:
     | {
@@ -3460,9 +3593,21 @@ export interface Livestream {
   description?: string | null;
   status: 'draft' | 'scheduled' | 'published' | 'updated' | 'unavailable';
   publishedAt?: string | null;
+  /**
+   * Leave blank to use the resolved title from this content.
+   */
   seoTitle?: string | null;
+  /**
+   * Leave blank to use the resolved summary or Site Settings description.
+   */
   seoDescription?: string | null;
+  /**
+   * Leave blank to use this content’s resolved canonical path.
+   */
   seoCanonicalURL?: string | null;
+  /**
+   * Leave blank to use the selected media’s resolved alt text.
+   */
   seoImageAlt?: string | null;
   seoKeywords?:
     | {
@@ -7243,6 +7388,8 @@ export interface PageLayoutsSelect<T extends boolean = true> {
   space?: T;
   path?: T;
   themeId?: T;
+  surface?: T;
+  slot?: T;
   layoutVersion?: T;
   status?: T;
   visibility?: T;
@@ -7972,16 +8119,8 @@ export interface ContentSelect<T extends boolean = true> {
   owner?: T;
   contentType?: T;
   title?: T;
-  slug?: T;
-  pathOverride?: T;
-  canonicalPath?: T;
-  parentPage?: T;
-  pageTemplate?: T;
   body?: T;
   summary?: T;
-  status?: T;
-  publishedAt?: T;
-  updatedAtEditorial?: T;
   subtitle?: T;
   excerpt?: T;
   authors?:
@@ -7997,7 +8136,11 @@ export interface ContentSelect<T extends boolean = true> {
   topics?: T;
   tags?: T;
   series?: T;
-  heroMedia?: T;
+  slug?: T;
+  pathOverride?: T;
+  canonicalPath?: T;
+  parentPage?: T;
+  pageTemplate?: T;
   featured?: T;
   pinned?: T;
   readingTimeMinutes?: T;
@@ -8018,13 +8161,19 @@ export interface ContentSelect<T extends boolean = true> {
         issuedAt?: T;
         id?: T;
       };
+  heroMedia?: T;
+  status?: T;
+  publishedAt?: T;
+  updatedAtEditorial?: T;
+  commentsPolicy?: T;
+  publicChangeHistoryPolicy?: T;
   seoTitle?: T;
   seoDescription?: T;
   seoCanonicalURL?: T;
   seoImageAlt?: T;
-  seoKeywords?: T;
   seoFocusKeyphrase?: T;
   seoNoIndex?: T;
+  seoKeywords?: T;
   relationships?: T;
   seoOverride?: T;
   socialOverride?: T;
@@ -8042,10 +8191,8 @@ export interface ContentSelect<T extends boolean = true> {
   importSourceChecksum?: T;
   exportFormatVersion?: T;
   exportOwnership?: T;
-  commentsPolicy?: T;
   revisionCompatibility?: T;
   auditMetadata?: T;
-  publicChangeHistoryPolicy?: T;
   retentionMode?: T;
   retentionExpiresAt?: T;
   retentionHold?: T;
@@ -10707,8 +10854,8 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
  * via the `definition` "site-settings".
  */
 export interface SiteSetting {
-  themeId?: ('neutral-starter' | 'renegade-party') | null;
   id: string;
+  themeId?: ('neutral-starter' | 'renegade-party') | null;
   siteName?: string | null;
   siteDescription?: string | null;
   /**
@@ -10843,9 +10990,21 @@ export interface SiteSetting {
     | boolean
     | null;
   inheritancePolicy: 'site-publication-brand' | 'site-brand-publication' | 'explicit-only';
+  /**
+   * Leave blank to use the resolved title from this content.
+   */
   seoTitle?: string | null;
+  /**
+   * Leave blank to use the resolved summary or Site Settings description.
+   */
   seoDescription?: string | null;
+  /**
+   * Leave blank to use this content’s resolved canonical path.
+   */
   seoCanonicalURL?: string | null;
+  /**
+   * Leave blank to use the selected media’s resolved alt text.
+   */
   seoImageAlt?: string | null;
   seoKeywords?:
     | {

@@ -27,10 +27,12 @@ export function snapshotLayout(record: Record<string, unknown>): PublishedPresen
       template: { id: 'layout', version: '1.0.0' },
       surface: 'layout',
       slots: {
-        main: structuredClone([
-          ...(Array.isArray(record.blocks) ? record.blocks : []),
-          ...(Array.isArray(record.unknownBlocks) ? record.unknownBlocks : []),
-        ]) as LayoutBlock[],
+        main: [],
+        [record.slot === 'header' || record.slot === 'footer' ? record.slot : 'main']:
+          structuredClone([
+            ...(Array.isArray(record.blocks) ? record.blocks : []),
+            ...(Array.isArray(record.unknownBlocks) ? record.unknownBlocks : []),
+          ]) as LayoutBlock[],
       },
     },
   }

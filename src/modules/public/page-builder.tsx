@@ -6,7 +6,7 @@
 import type { ReactNode } from 'react'
 import { renderPresentation } from '../presentation/document'
 
-import { canRenderPublic, resolveTheme, type ThemeId } from './contracts'
+import { canRenderPublic, resolveTheme, themes, type ThemeId } from './contracts'
 
 export const PAGE_LAYOUT_VERSION = 1 as const
 export const BUILDER_COMPATIBILITY_VERSION = 1 as const
@@ -42,6 +42,7 @@ export type LayoutBlock = {
   hidden?: boolean
   placeholder?: GraphicPlaceholder
 }
+export type LayoutSurface = 'page' | 'global'
 export type PageLayout = {
   version: typeof PAGE_LAYOUT_VERSION
   id: string
@@ -50,11 +51,29 @@ export type PageLayout = {
   path: string
   status: 'draft' | 'published'
   themeId: ThemeId
+  /** Page layouts edit main; global documents edit one approved shell region. */
+  surface?: LayoutSurface
+  slot?: 'main' | 'header' | 'footer'
   blocks: LayoutBlock[]
   unknownBlocks?: LayoutBlock[]
   revision: number
   publishedRevision?: number
 }
+
+export type ReferenceValue = { id: string; siteId: string; label: string; href?: string }
+export type ContentQueryValue = {
+  collection: 'content' | 'events' | 'albums' | 'discussions'
+  limit: number
+  sort: 'newest' | 'oldest' | 'title'
+  tag?: string
+}
+export type PresentationField =
+  | { type: 'text' | 'long-text'; label: string; maxLength?: number }
+  | { type: 'link'; label: string }
+  | { type: 'media'; label: string }
+  | { type: 'content-query'; label: string }
+  | { type: 'boolean' | 'number'; label: string; min?: number; max?: number }
+  | { type: 'select' | 'alignment' | 'token'; label: string; options: string[] }
 
 export type ComponentDefinition = {
   id: string
@@ -63,10 +82,7 @@ export type ComponentDefinition = {
   category: string
   permissions: BuilderPermission[]
   capabilities: string[]
-  fields: Record<
-    string,
-    'text' | 'rich-text' | 'media' | 'reference' | 'boolean' | 'number' | 'select'
-  >
+  fields: Record<string, PresentationField>
   validate: (props: Record<string, unknown>) => string[]
   render: (props: Record<string, unknown>) => ReactNode
   fallback: (block: LayoutBlock) => ReactNode
@@ -89,19 +105,120 @@ export function registerDeveloperComponent(
 
 export function validateLayout(input: PageLayout): { layout: PageLayout; errors: string[] } {
   const errors: string[] = []
-  if (input.version > PAGE_LAYOUT_VERSION) errors.push('Layout is newer than this renderer.')
+  if (JSON.stringify(input).length > 256_000) errors.push('Layout exceeds the 256 KB limit.')
+  if (!Number.isInteger(input.revision) || input.revision < 1) errors.push('Invalid revision.')
+  if (input.blocks.length > 100) errors.push('Layouts may contain at most 100 components.')
+  if (input.version !== PAGE_LAYOUT_VERSION) errors.push('Unsupported layout schema version.')
+  if (!Object.hasOwn(themes, input.themeId)) errors.push('Unknown theme id.')
+  const theme = resolveTheme(input.themeId)
+  const slot = input.slot ?? 'main'
+  if ((input.surface ?? 'page') === 'global' && slot === 'main')
+    errors.push('Global layouts must target header or footer.')
+  if ((input.surface ?? 'page') === 'page' && slot !== 'main')
+    errors.push('Pages may only edit the main template slot.')
+  const template = theme.templateRegistry.layout
+  const allowed = new Set(template.slots[slot]?.allowedComponents ?? [])
   const unknownBlocks: LayoutBlock[] = [...(input.unknownBlocks ?? [])]
+  const ids = new Set<string>()
   const blocks = input.blocks.flatMap((block) => {
-    const definition = resolveTheme(input.themeId).componentRegistry[block.component]
+    if (!/^[a-zA-Z0-9][a-zA-Z0-9_-]{0,79}$/.test(block.id) || ids.has(block.id)) {
+      errors.push(`Invalid or duplicate component id: ${block.id}`)
+      return []
+    }
+    ids.add(block.id)
+    const definition = theme.componentRegistry[block.component]
     if (!definition || definition.version !== block.componentVersion) {
       unknownBlocks.push(block)
       errors.push(`Unavailable component preserved: ${block.component}@${block.componentVersion}`)
       return []
     }
+    if (!allowed.has(block.component)) {
+      errors.push(`${block.id}: ${block.component} is not allowed in ${slot}.`)
+      return []
+    }
+    const propErrors = validateComponentProps(definition, block.props, input.siteId)
+    errors.push(...propErrors.map((error) => `${block.id}: ${error}`))
     errors.push(...definition.validate(block.props).map((error) => `${block.id}: ${error}`))
     return [block]
   })
   return { layout: { ...input, blocks, unknownBlocks }, errors }
+}
+
+const unsafeKey = /^(?:__proto__|prototype|constructor)$/
+const unsafeMarkup = /<\/?(?:script|style|iframe|object|embed|link|meta)\b|\son\w+\s*=|javascript:/i
+
+function unsafeJson(value: unknown, depth = 0): boolean {
+  if (depth > 8) return true
+  if (typeof value === 'string') return value.length > 10_000 || unsafeMarkup.test(value)
+  if (!value || typeof value !== 'object') return false
+  if (Array.isArray(value))
+    return value.length > 100 || value.some((item) => unsafeJson(item, depth + 1))
+  return Object.entries(value).some(
+    ([key, child]) => unsafeKey.test(key) || unsafeJson(child, depth + 1),
+  )
+}
+
+function validateComponentProps(
+  definition: ComponentDefinition,
+  props: Record<string, unknown>,
+  siteId: string,
+): string[] {
+  const errors: string[] = []
+  if (!props || typeof props !== 'object' || Array.isArray(props))
+    return ['props must be an object']
+  if (unsafeJson(props)) errors.push('props contain unsafe markup or invalid nesting')
+  for (const [name, value] of Object.entries(props)) {
+    if (unsafeKey.test(name) || !Object.hasOwn(definition.fields, name)) {
+      errors.push(`unknown property ${name}`)
+      continue
+    }
+    const field = definition.fields[name]
+    const maxLength = 'maxLength' in field ? (field.maxLength ?? 4000) : 4000
+    if (typeof value === 'string' && (value.length > maxLength || unsafeMarkup.test(value)))
+      errors.push(`${name} contains unsafe or oversized text`)
+    if (field.type === 'text' || field.type === 'long-text') {
+      if (typeof value !== 'string') errors.push(`${name} must be text`)
+    } else if (field.type === 'boolean') {
+      if (typeof value !== 'boolean') errors.push(`${name} must be true or false`)
+    } else if (field.type === 'number') {
+      if (typeof value !== 'number' || !Number.isFinite(value))
+        errors.push(`${name} must be a number`)
+      if (typeof value === 'number' && field.min !== undefined && value < field.min)
+        errors.push(`${name} is too small`)
+      if (typeof value === 'number' && field.max !== undefined && value > field.max)
+        errors.push(`${name} is too large`)
+    } else if (field.type === 'select' || field.type === 'alignment' || field.type === 'token') {
+      if (typeof value !== 'string' || !field.options.includes(value))
+        errors.push(`${name} is not theme-approved`)
+    } else if (field.type === 'media' || field.type === 'link') {
+      const reference = value as Partial<ReferenceValue> | null
+      if (
+        !reference ||
+        typeof reference !== 'object' ||
+        reference.siteId !== siteId ||
+        !reference.id ||
+        !reference.label
+      )
+        errors.push(`${name} must be selected from this site's ${field.type} chooser`)
+      if (field.type === 'link' && reference?.href && !/^\/(?!\/)/.test(reference.href))
+        errors.push(`${name} must use an internal path`)
+      if (field.type === 'media' && reference?.href && !/^\/(?!\/)/.test(reference.href))
+        errors.push(`${name} must use a canonical media path`)
+    } else if (field.type === 'content-query') {
+      const query = value as Partial<ContentQueryValue> | null
+      if (
+        !query ||
+        typeof query !== 'object' ||
+        !['content', 'events', 'albums', 'discussions'].includes(String(query.collection)) ||
+        !Number.isInteger(query.limit) ||
+        Number(query.limit) < 1 ||
+        Number(query.limit) > 24 ||
+        !['newest', 'oldest', 'title'].includes(String(query.sort))
+      )
+        errors.push(`${name} must be a bounded content query`)
+    }
+  }
+  return errors
 }
 
 export function migrateLayout(layout: PageLayout): PageLayout {
@@ -143,7 +260,15 @@ export function applyLayoutAction(
   if (action.type === 'replace-placeholder' && index >= 0)
     blocks[index] = {
       ...blocks[index],
-      props: { ...blocks[index].props, mediaId: action.mediaId },
+      props: {
+        ...blocks[index].props,
+        media: {
+          id: action.mediaId,
+          siteId: layout.siteId,
+          label: 'Selected media',
+          href: `/api/media-assets/file/${encodeURIComponent(action.mediaId)}`,
+        },
+      },
       placeholder: undefined,
     }
   return { ...layout, blocks, revision: layout.revision + 1 }
@@ -172,7 +297,8 @@ export function renderLayout(
       template: { id: 'layout', version: '1.0.0' },
       surface: 'layout',
       slots: {
-        main: [...layout.blocks, ...(layout.unknownBlocks ?? [])].filter(
+        main: [],
+        [layout.slot ?? 'main']: [...layout.blocks, ...(layout.unknownBlocks ?? [])].filter(
           (block) => block.visible?.[viewport] !== false,
         ),
       },

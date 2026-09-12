@@ -2,10 +2,10 @@
 
 import { resolveTheme } from './contracts'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import Link from 'next/link'
 
-import { PuckPageEditor } from './PuckPageEditor'
+import { VisualEditor } from '../presentation/VisualEditor'
 import { type PageLayout } from './page-builder'
 
 function toLayout(row: Record<string, unknown>): PageLayout {
@@ -17,6 +17,8 @@ function toLayout(row: Record<string, unknown>): PageLayout {
     path: String(row.path),
     status: row.status === 'published' ? 'published' : 'draft',
     themeId: resolveTheme(String(row.themeId ?? '')).id,
+    surface: row.surface === 'global' ? 'global' : 'page',
+    slot: row.slot === 'header' || row.slot === 'footer' ? row.slot : 'main',
     blocks: Array.isArray(row.blocks) ? (row.blocks as PageLayout['blocks']) : [],
     unknownBlocks: Array.isArray(row.unknownBlocks)
       ? (row.unknownBlocks as PageLayout['blocks'])
@@ -31,6 +33,9 @@ export function BuilderShell({ layoutId }: { layoutId: string }) {
   const [layout, setLayout] = useState<PageLayout | null>(null)
   const [message, setMessage] = useState('Loading draft canvas…')
   const [busy, setBusy] = useState(false)
+  const [dirty, setDirty] = useState(false)
+  const [conflict, setConflict] = useState<PageLayout | null>(null)
+  const [serverRevision, setServerRevision] = useState(0)
 
   useEffect(() => {
     void fetch(`/api/page-layouts/${layoutId}`)
@@ -38,33 +43,61 @@ export function BuilderShell({ layoutId }: { layoutId: string }) {
       .then(toLayout)
       .then((loaded) => {
         setLayout(loaded)
+        setServerRevision(loaded.revision)
+        setDirty(false)
         setMessage('Draft changes stay private until explicitly published.')
       })
       .catch(() => setMessage('You do not have access to this layout or it is unavailable.'))
   }, [layoutId])
 
-  const save = async (next: PageLayout, publish = false) => {
-    setBusy(true)
-    setLayout(next)
-    try {
-      const response = await fetch(`/api/layouts/${next.id}`, {
-        method: 'PATCH',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ layout: next, publish }),
-      })
-      setMessage(
-        response.ok
-          ? publish
-            ? '🎉 Published successfully! Live for all visitors.'
-            : '💾 Draft saved locally to database.'
-          : 'Could not save this layout. Verify permissions.',
-      )
-    } catch {
-      setMessage('Network error while saving layout.')
-    } finally {
-      setBusy(false)
-    }
-  }
+  const save = useCallback(
+    async (next: PageLayout, publish = false) => {
+      setBusy(true)
+      setLayout(next)
+      try {
+        const response = await fetch(`/api/layouts/${next.id}`, {
+          method: 'PATCH',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ layout: next, publish, expectedRevision: serverRevision }),
+        })
+        const body = (await response.json()) as {
+          layout?: Record<string, unknown>
+          current?: Record<string, unknown>
+          error?: string
+        }
+        if (response.status === 409 && body.current) {
+          window.sessionStorage.setItem(`renegade-layout-recovery:${next.id}`, JSON.stringify(next))
+          setConflict(toLayout(body.current))
+          setMessage('A newer server draft exists. Your local work is preserved for recovery.')
+          return
+        }
+        if (response.ok && body.layout) {
+          const saved = toLayout(body.layout)
+          setLayout(saved)
+          setServerRevision(saved.revision)
+          setDirty(false)
+        }
+        setMessage(
+          response.ok
+            ? publish
+              ? '🎉 Published successfully! Live for all visitors.'
+              : '💾 Draft saved locally to database.'
+            : 'Could not save this layout. Verify permissions.',
+        )
+      } catch {
+        setMessage('Network error while saving layout.')
+      } finally {
+        setBusy(false)
+      }
+    },
+    [serverRevision],
+  )
+
+  useEffect(() => {
+    if (!layout || !dirty || busy || conflict) return
+    const timer = window.setTimeout(() => void save(layout, false), 1200)
+    return () => window.clearTimeout(timer)
+  }, [layout, dirty, busy, conflict, save])
 
   if (!layout) {
     return (
@@ -110,6 +143,31 @@ export function BuilderShell({ layoutId }: { layoutId: string }) {
         </div>
 
         <div className="flex items-center gap-3">
+          <label className="text-xs">
+            Theme{' '}
+            <select
+              aria-label="Compatible theme"
+              value={layout.themeId}
+              onChange={(event) => {
+                setLayout({
+                  ...layout,
+                  themeId: resolveTheme(event.target.value).id,
+                  revision: layout.revision + 1,
+                })
+                setDirty(true)
+              }}
+            >
+              <option value="neutral-starter">Neutral Starter</option>
+              <option value="renegade-party">Renegade Party</option>
+            </select>
+          </label>
+          <Link
+            href={`/builder/${layout.id}/preview`}
+            target="_blank"
+            className="btn btn-secondary text-xs px-3.5 py-1.5"
+          >
+            Authenticated Preview
+          </Link>
           <span className="text-xs text-stone-600 dark:text-stone-400 hidden sm:inline-block font-mono">
             {message}
           </span>
@@ -132,12 +190,47 @@ export function BuilderShell({ layoutId }: { layoutId: string }) {
         </div>
       </div>
 
+      {conflict ? (
+        <div
+          role="alert"
+          className="border-b border-amber-300 bg-amber-50 px-6 py-3 text-sm text-amber-950"
+        >
+          Save conflict: server revision {conflict.revision} is newer. Your draft is stored in this
+          browser session.{' '}
+          <button
+            type="button"
+            className="underline"
+            onClick={() => {
+              setLayout(conflict)
+              setServerRevision(conflict.revision)
+              setConflict(null)
+              setDirty(false)
+            }}
+          >
+            Reload server version
+          </button>
+        </div>
+      ) : null}
+      {(layout.unknownBlocks?.length ?? 0) > 0 ? (
+        <div
+          role="status"
+          className="border-b border-rose-300 bg-rose-50 px-6 py-3 text-sm text-rose-950"
+        >
+          Repair required: {layout.unknownBlocks?.length} section(s) use removed or incompatible
+          components. Their data is preserved and public rendering uses a safe unavailable-section
+          fallback.
+        </div>
+      ) : null}
+
       {/* Puck Editor Canvas Container */}
       <div className="flex-1">
-        <PuckPageEditor
+        <VisualEditor
           layout={layout}
-          permissions={['layout:edit', 'layout:publish']}
-          onDraft={(next) => void save(next)}
+          onChange={(next) => {
+            setLayout(next)
+            setDirty(true)
+            setMessage('Unsaved changes — autosaving…')
+          }}
           onPublish={(next) => void save(next, true)}
         />
       </div>

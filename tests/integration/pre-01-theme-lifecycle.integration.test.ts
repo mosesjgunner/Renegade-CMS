@@ -125,7 +125,7 @@ describe('PRE-01 durable lifecycle', () => {
   }, 120000)
   it('publishes a complete layout snapshot and keeps later draft edits private', async () => {
     const layout = installRecipe(undefined, 'writer-blogger', site)
-    const created = await payload.create({
+    const created = (await payload.create({
       collection: 'page-layouts',
       overrideAccess: true,
       data: {
@@ -143,17 +143,17 @@ describe('PRE-01 durable lifecycle', () => {
         publishedRevision: 1,
         revisionHistory: [],
       },
-    })
+    } as never)) as unknown as Record<string, unknown>
     try {
       const publicBefore = renderToStaticMarkup(
         createElement(PublicLayout, {
-          record: created as unknown as Record<string, unknown>,
+          record: created,
           path: '/pre-01-snapshot',
         }),
       )
-      const edited = await payload.update({
+      const edited = (await payload.update({
         collection: 'page-layouts',
-        id: created.id,
+        id: created.id as string,
         overrideAccess: true,
         context: { publishPresentation: false },
         data: {
@@ -163,41 +163,45 @@ describe('PRE-01 durable lifecycle', () => {
             props: { ...block.props, title: 'UNPUBLISHED THEME DRAFT' },
           })),
         },
-      })
+      } as never)) as unknown as Record<string, unknown>
       expect(edited.publishedPresentation).toEqual(created.publishedPresentation)
       expect(
         renderToStaticMarkup(
           createElement(PublicLayout, {
-            record: edited as unknown as Record<string, unknown>,
+            record: edited,
             path: '/pre-01-snapshot',
           }),
         ),
       ).toBe(publicBefore)
-      const anonymous = await payload.findByID({
+      const anonymous = (await payload.findByID({
         collection: 'page-layouts',
-        id: created.id,
+        id: created.id as string,
         overrideAccess: false,
-      })
+      } as never)) as unknown as Record<string, unknown>
       expect(anonymous.blocks).toBeUndefined()
       expect(anonymous.revisionHistory).toBeUndefined()
-      const published = await payload.update({
+      const published = (await payload.update({
         collection: 'page-layouts',
-        id: created.id,
+        id: created.id as string,
         overrideAccess: true,
         context: { publishPresentation: true },
         data: { publishedRevision: 2 },
-      })
+      } as never)) as unknown as Record<string, unknown>
       expect(published.publishedPresentation).not.toEqual(created.publishedPresentation)
       expect(
         renderToStaticMarkup(
           createElement(PublicLayout, {
-            record: published as unknown as Record<string, unknown>,
+            record: published,
             path: '/pre-01-snapshot',
           }),
         ),
       ).toContain('UNPUBLISHED THEME DRAFT')
     } finally {
-      await payload.delete({ collection: 'page-layouts', id: created.id, overrideAccess: true })
+      await payload.delete({
+        collection: 'page-layouts',
+        id: created.id as string,
+        overrideAccess: true,
+      })
     }
   })
 })
