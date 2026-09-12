@@ -1,3 +1,11 @@
+## Presentation Pass PRE-03 — Controlled Visual Editor Implemented & Verified — 2026-09-12
+
+Delivered a registry-driven Puck editor behind the `VisualEditor` adapter with categorized template/slot palettes; accessible add/select/reorder/duplicate/configure/remove and session undo/redo; typed text, link, canonical media, bounded query, variant, alignment, and theme-token fields; autosave and optimistic-conflict recovery; authenticated exact draft preview; immutable publication snapshots; compatible theme switching; restricted global header/footer composition; and an article-template boundary that keeps canonical Post bodies outside the canvas.
+
+Both collection hooks and the PATCH boundary validate the explicit layout schema/version/component IDs, size/count/nesting limits, slot allow-lists, safe props, canonical site-scoped references, and approved tokens. Removed or incompatible stored components are preserved in `unknownBlocks`, render with a safe fallback, and surface an actionable repair state; newly injected unknown components are rejected. Puck CSS/code is editor-route-only.
+
+Verification: focused presentation 30/30; full unit 67 files / 285 tests; full integration 16 files / 46 tests (44/46 initial sweep, both environment/baseline failures repaired and 4/4 affected tests rerun); dedicated Chrome acceptance passed; canonical Next.js standalone build passed; `verify:presentation-bundles` passed. Migration `20260912_030000_pre_03_visual_editor` applied. See `docs/presentation/PRE-03-VISUAL-EDITOR.md`.
+
 ## Presentation Pass PRE-01 — Local Theme Lifecycle Implemented & Verified — 2026-09-12
 
 Implemented and verified the end-to-end theme lifecycle from PRE-00 contracts across local package discovery, registered renderer resolution, typed design tokens, authenticated preview, atomic transactional activation, rollback, and process persistence:

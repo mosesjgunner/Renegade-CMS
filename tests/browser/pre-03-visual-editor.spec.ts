@@ -114,6 +114,7 @@ test('PRE-03: controlled editor preview, publish, conflict recovery, theme switc
     await page.goto(`/builder/${created.id}`)
     await expect(page.getByText('Renegade visual editor')).toBeVisible()
     await expect(page.getByText('Hero', { exact: true }).first()).toBeVisible()
+    await page.getByRole('button', { name: 'Content', exact: true }).click()
     await expect(page.getByText('Feature grid', { exact: true }).first()).toBeVisible()
     await expect(page.getByRole('button', { name: /undo/i })).toBeVisible()
     await expect(page.getByRole('button', { name: /redo/i })).toBeVisible()

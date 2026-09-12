@@ -12,6 +12,18 @@ The registered repository is `src/modules/payload-domains.ts`: Operations, Ident
 
 ## Executed evidence
 
+- **Presentation Pass PRE-03 on 2026-09-12 (PASSED / VERIFIED)**:
+  - Controlled visual editor implemented with `@puckeditor/core` adapter behind `VisualEditor.tsx`.
+  - Categorized component palette generated from active theme registry and slot allow-lists.
+  - Keyboard-accessible add, select, reorder, duplicate, configure, remove, and session undo/redo.
+  - Typed property editors for text, links, canonical media picker, bounded queries, variants, alignment, and theme tokens.
+  - Server-validated serialized documents rejecting unknown components, script/style/iframe tags, oversized payloads, invalid nesting, and cross-site references.
+  - Draft autosave, exact authenticated draft preview (`/builder/[id]/preview`), immutable publication snapshot, last-public-version preservation, and stale-write conflict recovery (HTTP 409).
+  - Production bundle isolation: editor modules and Puck CSS excluded from public frontend route bundle (`npm run verify:presentation-bundles`).
+  - Article template canonical isolation: canonical Post editorial body preserved outside visual canvas.
+  - Fallback repair state for removed/incompatible components via `unknownBlocks`.
+  - Browser E2E acceptance test (`tests/browser/pre-03-visual-editor.spec.ts`) passed in Playwright against Next.js 16 standalone build.
+
 - **Publishing Pass Gate PUB-06 on 2026-09-11 (PASSED / VERIFIED)**:
   - Complete 21-step RenegadeParty.org demo journey exercised in Playwright browser suite (`tests/browser/pub-06-renegadeparty-journey.spec.ts`).
   - Journey path: install → retrieve one-time setup token → enroll passkey → enter admin → configure site → upload real images → create/edit Page and Post → preview → publish → schedule → inspect public routes/source → search unique body phrase → change slug and verify redirect → verify private/draft/API protection → restart web/worker → log in from clean session → fetch persistent media → backup → restore into fresh isolated instance → re-fetch byte-identical site/media → portable export/import into another site.

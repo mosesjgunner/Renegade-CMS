@@ -1,5 +1,5 @@
 import type { EditorialPresentation } from '../../editorial/persistence'
-import Image from 'next/image'
+import Image from 'next/image.js'
 import { SafeRichText } from '../../editorial/RichText'
 
 export function StarterArticleView({ article }: { article: EditorialPresentation }) {
