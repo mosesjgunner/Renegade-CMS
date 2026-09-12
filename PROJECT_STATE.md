@@ -1,3 +1,17 @@
+## Presentation Pass PRE-05 — Legacy-Site Migration & Presentation Reconstruction Implemented & Verified — 2026-09-12
+
+Implemented a safe, repeatable legacy-site migration path for WordPress WXR exports and normalized legacy site packages that reconstructs presentation alongside content without executing arbitrary WordPress PHP, plugins, shortcodes, scripts, or untrusted CSS:
+
+- **Staged Pipeline**: 8-stage resumable and idempotent lifecycle: Inspect → Parse & Normalize → Map → Dry-Run Preflight → Execute Import into Isolated Site or Target → Verify Reconciliation → Deliberate Activation → Rollback / Clean Delete.
+- **Content & Taxonomy Normalization**: Full parsing of WXR posts, pages, authors (mapped to unique sanitized slugs `canonicalSlug`), nested categories hierarchy, tags, dates, slugs, excerpts, featured and inline media rewiring, menus, and Yoast / RankMath SEO metadata. Gutenberg blocks parsed into clean blocks; classic paragraphs handled via fallback.
+- **Safe Media Acquisition**: Remote downloads gated by explicit operator permission (`remoteMediaDownloadAllowed`), strict SSRF defense via `assertSafeOutboundUrl` blocking private networks, loopback, and cloud metadata endpoints, SHA-256 deduplication, and magic-byte MIME validation (`inspectMedia`).
+- **URL Inventory & Redirect Plan**: Complete inventory of legacy permalinks, canonical mapping, collision detection, and circular redirect loop prevention producing validated 308 permanent redirects.
+- **Presentation Reconstruction**: Derives design tokens (typography, color, spacing), header/footer globals with navigation menus, and Page/Post/Archive templates using registered Renegade starter components (`publisher.hero`, `publisher.rich-content`, `publisher.article-list`, `publisher.feature-grid`, `publisher.cta`). Reconstructed layouts remain strictly in `draft` status until deliberate activation.
+- **Quarantined Artifact Boundary**: Explicit preservation of unsupported shortcodes, plugin blocks (WooCommerce, forms), scripts, styles, dynamic PHP, comments, memberships, and commerce in `legacy_migration_quarantine` table with audit rationale; zero arbitrary PHP/script execution.
+- **Administrative Review Interface (`/admin/migration?runId=...`)**: Side-by-side reconciliation table, acceptance checklist, presentation token/template viewer, redirects viewer, quarantine inspector, and deliberate activation button.
+- **Rollback and Idempotency**: Complete cascade deletion of created sites and dependent records using `session_replication_role = 'replica'`.
+- **Full Verification**: 69 unit test files (312 tests), 18 integration test files (52 tests), browser spec (`tests/browser/pre-05-legacy-migration.spec.ts`), Next.js 16 standalone production build, `verify:presentation-bundles`, and ESLint/Prettier passing with 0 warnings/errors. Database migration `20260912_050000_pre_05_legacy_site_migration` applied. See `docs/presentation/PRE-05-LEGACY-MIGRATION.md`.
+
 ## Presentation Pass PRE-04 — Reusable Visual Composition Implemented & Verified — 2026-09-12
 
 Expanded the visual editor into site-scale reusable visual composition within safe theme contracts:

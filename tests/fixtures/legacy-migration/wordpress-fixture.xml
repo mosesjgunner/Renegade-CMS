@@ -1,0 +1,324 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0"
+	xmlns:excerpt="http://wordpress.org/export/1.2/excerpt/"
+	xmlns:content="http://purl.org/rss/1.0/modules/content/"
+	xmlns:wfw="http://wellformedweb.org/CommentAPI/"
+	xmlns:dc="http://purl.org/dc/elements/1.1/"
+	xmlns:wp="http://wordpress.org/export/1.2/"
+>
+<channel>
+	<title><![CDATA[The Renegade Tribune]]></title>
+	<link>https://renegadetribune.example</link>
+	<description><![CDATA[Independent Investigative Journalism &amp; Civic Freedom]]></description>
+	<pubDate>Mon, 01 Sep 2026 12:00:00 +0000</pubDate>
+	<language>en-US</language>
+	<wp:wxr_version>1.2</wp:wxr_version>
+	<wp:base_site_url>https://renegadetribune.example</wp:base_site_url>
+	<wp:base_blog_url>https://renegadetribune.example</wp:base_blog_url>
+
+	<wp:author>
+		<wp:author_id>1</wp:author_id>
+		<wp:author_login><![CDATA[chief_editor]]></wp:author_login>
+		<wp:author_email><![CDATA[editor@renegadetribune.example]]></wp:author_email>
+		<wp:author_display_name><![CDATA[Marcus Vance]]></wp:author_display_name>
+		<wp:author_first_name><![CDATA[Marcus]]></wp:author_first_name>
+		<wp:author_last_name><![CDATA[Vance]]></wp:author_last_name>
+	</wp:author>
+	<wp:author>
+		<wp:author_id>2</wp:author_id>
+		<wp:author_login><![CDATA[sarah_scribe]]></wp:author_login>
+		<wp:author_email><![CDATA[sarah@renegadetribune.example]]></wp:author_email>
+		<wp:author_display_name><![CDATA[Sarah Scribe]]></wp:author_display_name>
+		<wp:author_first_name><![CDATA[Sarah]]></wp:author_first_name>
+		<wp:author_last_name><![CDATA[Scribe]]></wp:author_last_name>
+	</wp:author>
+
+	<wp:category>
+		<wp:term_id>10</wp:term_id>
+		<wp:category_nicename><![CDATA[news]]></wp:category_nicename>
+		<wp:category_parent><![CDATA[]]></wp:category_parent>
+		<wp:cat_name><![CDATA[News]]></wp:cat_name>
+		<wp:category_description><![CDATA[Global and local news coverage]]></wp:category_description>
+	</wp:category>
+	<wp:category>
+		<wp:term_id>11</wp:term_id>
+		<wp:category_nicename><![CDATA[investigative]]></wp:category_nicename>
+		<wp:category_parent><![CDATA[news]]></wp:category_parent>
+		<wp:cat_name><![CDATA[Investigative]]></wp:cat_name>
+		<wp:category_description><![CDATA[In-depth investigative reports]]></wp:category_description>
+	</wp:category>
+	<wp:category>
+		<wp:term_id>12</wp:term_id>
+		<wp:category_nicename><![CDATA[opinion]]></wp:category_nicename>
+		<wp:category_parent><![CDATA[]]></wp:category_parent>
+		<wp:cat_name><![CDATA[Opinion]]></wp:cat_name>
+	</wp:category>
+
+	<wp:tag>
+		<wp:term_id>20</wp:term_id>
+		<wp:tag_slug><![CDATA[freedom]]></wp:tag_slug>
+		<wp:tag_name><![CDATA[Freedom]]></wp:tag_name>
+	</wp:tag>
+	<wp:tag>
+		<wp:term_id>21</wp:term_id>
+		<wp:tag_slug><![CDATA[tech]]></wp:tag_slug>
+		<wp:tag_name><![CDATA[Tech]]></wp:tag_name>
+	</wp:tag>
+	<wp:tag>
+		<wp:term_id>22</wp:term_id>
+		<wp:tag_slug><![CDATA[journalism]]></wp:tag_slug>
+		<wp:tag_name><![CDATA[Journalism]]></wp:tag_name>
+	</wp:tag>
+
+	<!-- Media Attachment 1: Hero Image -->
+	<item>
+		<title><![CDATA[Tribune Hero Graphic]]></title>
+		<link>https://renegadetribune.example/wp-content/uploads/2026/08/tribune-hero.png</link>
+		<pubDate>Mon, 10 Aug 2026 10:00:00 +0000</pubDate>
+		<dc:creator><![CDATA[chief_editor]]></dc:creator>
+		<wp:post_id>101</wp:post_id>
+		<wp:post_date_gmt><![CDATA[2026-08-10 10:00:00]]></wp:post_date_gmt>
+		<wp:post_type><![CDATA[attachment]]></wp:post_type>
+		<wp:attachment_url><![CDATA[https://renegadetribune.example/wp-content/uploads/2026/08/tribune-hero.png]]></wp:attachment_url>
+		<wp:postmeta>
+			<wp:meta_key><![CDATA[_wp_attachment_image_alt]]></wp:meta_key>
+			<wp:meta_value><![CDATA[The Renegade Tribune Hero Banner]]></wp:meta_value>
+		</wp:postmeta>
+	</item>
+
+	<!-- Navigation Menu Items -->
+	<item>
+		<title><![CDATA[Home]]></title>
+		<link>https://renegadetribune.example/</link>
+		<wp:post_id>201</wp:post_id>
+		<wp:post_type><![CDATA[nav_menu_item]]></wp:post_type>
+		<wp:menu_order>1</wp:menu_order>
+		<wp:postmeta>
+			<wp:meta_key><![CDATA[_menu_item_url]]></wp:meta_key>
+			<wp:meta_value><![CDATA[/]]></wp:meta_value>
+		</wp:postmeta>
+	</item>
+	<item>
+		<title><![CDATA[News]]></title>
+		<link>https://renegadetribune.example/topics/news</link>
+		<wp:post_id>202</wp:post_id>
+		<wp:post_type><![CDATA[nav_menu_item]]></wp:post_type>
+		<wp:menu_order>2</wp:menu_order>
+		<wp:postmeta>
+			<wp:meta_key><![CDATA[_menu_item_url]]></wp:meta_key>
+			<wp:meta_value><![CDATA[/topics/news]]></wp:meta_value>
+		</wp:postmeta>
+	</item>
+	<item>
+		<title><![CDATA[About Us]]></title>
+		<link>https://renegadetribune.example/about-us/</link>
+		<wp:post_id>203</wp:post_id>
+		<wp:post_type><![CDATA[nav_menu_item]]></wp:post_type>
+		<wp:menu_order>3</wp:menu_order>
+		<wp:postmeta>
+			<wp:meta_key><![CDATA[_menu_item_url]]></wp:meta_key>
+			<wp:meta_value><![CDATA[/about-us]]></wp:meta_value>
+		</wp:postmeta>
+	</item>
+	<item>
+		<title><![CDATA[Contact]]></title>
+		<link>https://renegadetribune.example/contact/</link>
+		<wp:post_id>204</wp:post_id>
+		<wp:post_type><![CDATA[nav_menu_item]]></wp:post_type>
+		<wp:menu_order>4</wp:menu_order>
+		<wp:postmeta>
+			<wp:meta_key><![CDATA[_menu_item_url]]></wp:meta_key>
+			<wp:meta_value><![CDATA[/contact]]></wp:meta_value>
+		</wp:postmeta>
+	</item>
+
+	<!-- Page 1: Homepage -->
+	<item>
+		<title><![CDATA[Home]]></title>
+		<link>https://renegadetribune.example/</link>
+		<pubDate>Fri, 01 Aug 2026 08:00:00 +0000</pubDate>
+		<dc:creator><![CDATA[chief_editor]]></dc:creator>
+		<wp:post_id>301</wp:post_id>
+		<wp:post_date_gmt><![CDATA[2026-08-01 08:00:00]]></wp:post_date_gmt>
+		<wp:post_name><![CDATA[home]]></wp:post_name>
+		<wp:status><![CDATA[publish]]></wp:status>
+		<wp:post_type><![CDATA[page]]></wp:post_type>
+		<excerpt:encoded><![CDATA[Welcome to The Renegade Tribune. Uncensored, independent reporting for the modern era.]]></excerpt:encoded>
+		<content:encoded><![CDATA[<!-- wp:heading {"level":1} -->
+<h1>Uncompromising Independent Journalism</h1>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>We believe in verifiable facts, cryptographic evidence, and uncompromised reporting. Explore our in-depth stories below.</p>
+<!-- /wp:paragraph -->]]></content:encoded>
+		<wp:postmeta>
+			<wp:meta_key><![CDATA[_yoast_wpseo_title]]></wp:meta_key>
+			<wp:meta_value><![CDATA[Home | The Renegade Tribune]]></wp:meta_value>
+		</wp:postmeta>
+		<wp:postmeta>
+			<wp:meta_key><![CDATA[_yoast_wpseo_metadesc]]></wp:meta_key>
+			<wp:meta_value><![CDATA[Independent investigative journalism and uncensored analysis.]]></wp:meta_value>
+		</wp:postmeta>
+	</item>
+
+	<!-- Page 2: About Us -->
+	<item>
+		<title><![CDATA[About Our Newsroom]]></title>
+		<link>https://renegadetribune.example/about-us/</link>
+		<pubDate>Fri, 01 Aug 2026 09:00:00 +0000</pubDate>
+		<dc:creator><![CDATA[chief_editor]]></dc:creator>
+		<wp:post_id>302</wp:post_id>
+		<wp:post_date_gmt><![CDATA[2026-08-01 09:00:00]]></wp:post_date_gmt>
+		<wp:post_name><![CDATA[about-us]]></wp:post_name>
+		<wp:status><![CDATA[publish]]></wp:status>
+		<wp:post_type><![CDATA[page]]></wp:post_type>
+		<excerpt:encoded><![CDATA[Learn about our mission and journalistic standards.]]></excerpt:encoded>
+		<content:encoded><![CDATA[<!-- wp:paragraph -->
+<p>The Renegade Tribune was founded on the principle that freedom of the press belongs to those who exercise it responsibly and courageously.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:quote -->
+<blockquote class="wp-block-quote"><p>Our allegiance is to truth and our readers alone.</p></blockquote>
+<!-- /wp:quote -->]]></content:encoded>
+		<wp:postmeta>
+			<wp:meta_key><![CDATA[_yoast_wpseo_title]]></wp:meta_key>
+			<wp:meta_value><![CDATA[About Us - The Renegade Tribune]]></wp:meta_value>
+		</wp:postmeta>
+		<wp:postmeta>
+			<wp:meta_key><![CDATA[_yoast_wpseo_metadesc]]></wp:meta_key>
+			<wp:meta_value><![CDATA[Learn about the team behind The Renegade Tribune.]]></wp:meta_value>
+		</wp:postmeta>
+	</item>
+
+	<!-- Page 3: Contact Us with Shortcode (Unsupported) -->
+	<item>
+		<title><![CDATA[Contact Us]]></title>
+		<link>https://renegadetribune.example/contact/</link>
+		<pubDate>Fri, 01 Aug 2026 10:00:00 +0000</pubDate>
+		<dc:creator><![CDATA[sarah_scribe]]></dc:creator>
+		<wp:post_id>303</wp:post_id>
+		<wp:post_date_gmt><![CDATA[2026-08-01 10:00:00]]></wp:post_date_gmt>
+		<wp:post_name><![CDATA[contact]]></wp:post_name>
+		<wp:status><![CDATA[publish]]></wp:status>
+		<wp:post_type><![CDATA[page]]></wp:post_type>
+		<excerpt:encoded><![CDATA[Get in touch with our editorial desk securely.]]></excerpt:encoded>
+		<content:encoded><![CDATA[<!-- wp:paragraph -->
+<p>Please reach out via our secure form below.</p>
+<!-- /wp:paragraph -->
+[contact-form-7 id="45" title="Contact form 1"]]]></content:encoded>
+	</item>
+
+	<!-- Post 1: Investigating Algorithmic Censorship (with Comments & Featured Image) -->
+	<item>
+		<title><![CDATA[Investigating Algorithmic Censorship]]></title>
+		<link>https://renegadetribune.example/2026/08/investigating-algorithmic-censorship/</link>
+		<pubDate>Sun, 15 Aug 2026 14:00:00 +0000</pubDate>
+		<dc:creator><![CDATA[chief_editor]]></dc:creator>
+		<wp:post_id>401</wp:post_id>
+		<wp:post_date_gmt><![CDATA[2026-08-15 14:00:00]]></wp:post_date_gmt>
+		<wp:post_name><![CDATA[investigating-algorithmic-censorship]]></wp:post_name>
+		<wp:status><![CDATA[publish]]></wp:status>
+		<wp:post_type><![CDATA[post]]></wp:post_type>
+		<category domain="category" nicename="news"><![CDATA[News]]></category>
+		<category domain="category" nicename="investigative"><![CDATA[Investigative]]></category>
+		<category domain="post_tag" nicename="freedom"><![CDATA[Freedom]]></category>
+		<category domain="post_tag" nicename="tech"><![CDATA[Tech]]></category>
+		<excerpt:encoded><![CDATA[How major content networks silently deprioritize independent publications.]]></excerpt:encoded>
+		<content:encoded><![CDATA[<!-- wp:paragraph -->
+<p>An extensive examination of opaque algorithmic moderation pipelines reveals widespread downranking of non-corporate news outlets.</p>
+<!-- /wp:paragraph -->
+
+<!-- wp:heading {"level":2} -->
+<h2>The Mechanism of Shadow Visibility</h2>
+<!-- /wp:heading -->
+
+<!-- wp:paragraph -->
+<p>Internal documentation shows that specific civic phrases trigger automatic safety flags without human oversight.</p>
+<!-- /wp:paragraph -->
+
+<p><img src="https://renegadetribune.example/wp-content/uploads/2026/08/tribune-hero.png" alt="Algorithm Flow" /></p>
+]]></content:encoded>
+		<wp:postmeta>
+			<wp:meta_key><![CDATA[_thumbnail_id]]></wp:meta_key>
+			<wp:meta_value><![CDATA[101]]></wp:meta_value>
+		</wp:postmeta>
+		<wp:postmeta>
+			<wp:meta_key><![CDATA[_yoast_wpseo_title]]></wp:meta_key>
+			<wp:meta_value><![CDATA[Investigating Algorithmic Censorship | Special Report]]></wp:meta_value>
+		</wp:postmeta>
+		<wp:postmeta>
+			<wp:meta_key><![CDATA[_yoast_wpseo_metadesc]]></wp:meta_key>
+			<wp:meta_value><![CDATA[Inside the automated systems altering public discourse.]]></wp:meta_value>
+		</wp:postmeta>
+		<wp:comment>
+			<wp:comment_id>1</wp:comment_id>
+			<wp:comment_author><![CDATA[Reader1]]></wp:comment_author>
+			<wp:comment_content><![CDATA[Eye-opening piece. Thank you for investigating.]]></wp:comment_content>
+			<wp:comment_approved><![CDATA[1]]></wp:comment_approved>
+		</wp:comment>
+	</item>
+
+	<!-- Post 2: The Sovereignty of Open Formats (with Script & Style to Quarantine) -->
+	<item>
+		<title><![CDATA[The Sovereignty of Open Formats]]></title>
+		<link>https://renegadetribune.example/2026/08/sovereignty-open-formats/</link>
+		<pubDate>Wed, 18 Aug 2026 16:30:00 +0000</pubDate>
+		<dc:creator><![CDATA[sarah_scribe]]></dc:creator>
+		<wp:post_id>402</wp:post_id>
+		<wp:post_date_gmt><![CDATA[2026-08-18 16:30:00]]></wp:post_date_gmt>
+		<wp:post_name><![CDATA[sovereignty-open-formats]]></wp:post_name>
+		<wp:status><![CDATA[publish]]></wp:status>
+		<wp:post_type><![CDATA[post]]></wp:post_type>
+		<category domain="category" nicename="opinion"><![CDATA[Opinion]]></category>
+		<category domain="post_tag" nicename="freedom"><![CDATA[Freedom]]></category>
+		<excerpt:encoded><![CDATA[Why publishers must own their data without proprietary lock-in.]]></excerpt:encoded>
+		<content:encoded><![CDATA[<!-- wp:paragraph -->
+<p>When platforms dictate how knowledge is stored, they dictate how long it survives.</p>
+<!-- /wp:paragraph -->
+<script>console.log("Unsafe third-party tracker payload");</script>
+<style>.unsafe-inline-override { color: red !important; }</style>
+[gallery ids="101,102"]
+<!-- wp:paragraph -->
+<p>Self-hosting and portable open schemas provide the only true defense against platform obsolescence.</p>
+<!-- /wp:paragraph -->]]></content:encoded>
+	</item>
+
+	<!-- Post 3: Commerce and Digital Independence (with WooCommerce Block & PHP to Quarantine) -->
+	<item>
+		<title><![CDATA[Commerce and Digital Independence]]></title>
+		<link>https://renegadetribune.example/2026/08/commerce-digital-independence/</link>
+		<pubDate>Thu, 20 Aug 2026 11:00:00 +0000</pubDate>
+		<dc:creator><![CDATA[chief_editor]]></dc:creator>
+		<wp:post_id>403</wp:post_id>
+		<wp:post_date_gmt><![CDATA[2026-08-20 11:00:00]]></wp:post_date_gmt>
+		<wp:post_name><![CDATA[commerce-digital-independence]]></wp:post_name>
+		<wp:status><![CDATA[draft]]></wp:status>
+		<wp:post_type><![CDATA[post]]></wp:post_type>
+		<category domain="category" nicename="opinion"><![CDATA[Opinion]]></category>
+		<excerpt:encoded><![CDATA[Building sustainable models for creator monetization.]]></excerpt:encoded>
+		<content:encoded><![CDATA[<!-- wp:paragraph -->
+<p>Independent media requires direct reader-supported revenue streams.</p>
+<!-- /wp:paragraph -->
+<!-- wp:woocommerce/cart /-->
+[woocommerce_cart]
+<?php echo "Legacy PHP query execution"; ?>
+<!-- wp:paragraph -->
+<p>By moving beyond ad brokers, publications regain full editorial integrity.</p>
+<!-- /wp:paragraph -->]]></content:encoded>
+	</item>
+
+	<!-- Custom Post Type Item to Quarantine -->
+	<item>
+		<title><![CDATA[Archive Investigation Docket #42]]></title>
+		<link>https://renegadetribune.example/dockets/docket-42/</link>
+		<pubDate>Mon, 24 Aug 2026 09:00:00 +0000</pubDate>
+		<dc:creator><![CDATA[chief_editor]]></dc:creator>
+		<wp:post_id>501</wp:post_id>
+		<wp:post_date_gmt><![CDATA[2026-08-24 09:00:00]]></wp:post_date_gmt>
+		<wp:post_name><![CDATA[docket-42]]></wp:post_name>
+		<wp:status><![CDATA[publish]]></wp:status>
+		<wp:post_type><![CDATA[portfolio_docket]]></wp:post_type>
+		<content:encoded><![CDATA[<p>Classified docket evidence repository.</p>]]></content:encoded>
+	</item>
+</channel>
+</rss>

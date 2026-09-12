@@ -12,6 +12,19 @@ The registered repository is `src/modules/payload-domains.ts`: Operations, Ident
 
 ## Executed evidence
 
+- **Presentation Pass PRE-05 on 2026-09-12 (PASSED / VERIFIED)**:
+  - Safe, repeatable legacy-site migration path for WordPress WXR and normalized packages with presentation reconstruction.
+  - 8-Stage Pipeline: Inspect → Parse & Normalize → Map → Dry-Run Preflight → Import into Isolated Site or Target → Verify Reconciliation → Deliberate Activation → Rollback / Delete Site. Every stage is resumable, idempotent, and produces an audit report.
+  - Complete Content Import: posts, pages, authors mapped to unique sanitized slugs (`canonicalSlug`), nested categories hierarchy, tags, dates, slugs, excerpts, featured and inline media rewiring, menus, and Yoast / RankMath SEO metadata.
+  - Safe Media Acquisition: Remote downloads gated by operator permission, SSRF defense blocking private networks and loopback via `assertSafeOutboundUrl`, SHA-256 deduplication, and magic-byte MIME validation.
+  - URL Inventory & Redirect Plan: Canonical routing with validated 308 redirects, collision detection, and cycle/loop prevention before mutation.
+  - Presentation Reconstruction: Derives design tokens (typography, color, spacing), header/footer globals with menus, and Page/Post/Archive templates using registered Renegade starter components (`publisher.*`). Strictly draft status on initial import.
+  - Quarantined Artifact Boundary: Explicit preservation of unsupported shortcodes, plugin blocks (WooCommerce, forms), scripts, styles, dynamic PHP, comments, memberships, and commerce in `legacy_migration_quarantine` table with audit rationale; zero arbitrary PHP/script execution.
+  - Administrative Review Interface (`/admin/migration?runId=...`): Side-by-side reconciliation table, acceptance checklist, presentation viewer, redirects viewer, quarantine inspector, and deliberate activation button.
+  - Rollback and Idempotency: Complete cascade deletion of created sites and dependent records using `session_replication_role = 'replica'`.
+  - Full automated verification: 69 unit test files (312 tests), 18 integration test files (52 tests), and browser test passed.
+  - Database migration `20260912_050000_pre_05_legacy_site_migration` applied to PostgreSQL.
+
 - **Presentation Pass PRE-04 on 2026-09-12 (PASSED / VERIFIED)**:
   - Reusable Page Templates implemented with creation, naming, preview, duplication, versioning, retirement, and page usage tracking.
   - Template inheritance modes: `inherited`, `explicit`, and `detached`. Guaranteed that template changes never surprise-update published pages (only drafts synchronize; published snapshots remain immutable until deliberate publication).

@@ -1,0 +1,35 @@
+{
+  "themeId": "neutral-starter",
+  "tokens": {
+    "canvas": "#ffffff",
+    "surface": "#f8fafc",
+    "ink": "#0f172a",
+    "brand": "#1e40af",
+    "accent": "#3b82f6",
+    "fontFamily": "Inter, sans-serif",
+    "borderRadius": "8px",
+    "spacing": "normal"
+  },
+  "header": {
+    "siteTitle": "The Renegade Tribune",
+    "logoUrl": "https://renegadetribune.example/wp-content/uploads/2026/08/tribune-hero.png",
+    "navigationMenuName": "Main Navigation"
+  },
+  "footer": {
+    "copyrightText": "© 2026 The Renegade Tribune. All rights reserved.",
+    "columns": [
+      {
+        "title": "Sections",
+        "links": [
+          { "label": "News", "href": "/topics/news" },
+          { "label": "About Us", "href": "/about-us" },
+          { "label": "Contact", "href": "/contact" }
+        ]
+      }
+    ]
+  },
+  "templateMapping": {
+    "defaultPostTemplate": "Migrated Post Template",
+    "defaultPageTemplate": "Migrated Page Template"
+  }
+}
