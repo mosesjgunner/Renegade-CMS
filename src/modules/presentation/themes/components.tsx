@@ -52,6 +52,8 @@ const simple = (
         <img
           src={String((props.media as { href?: string }).href ?? '')}
           alt={String((props.media as { label?: string }).label ?? '')}
+          className="max-w-full h-auto rounded-lg"
+          loading="lazy"
         />
       ) : null}
     </section>

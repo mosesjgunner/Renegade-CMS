@@ -1,3 +1,25 @@
+## Presentation Pass PRE-06 — Presentation Pass Release Gate Executed & Verified — 2026-09-12
+
+Executed and verified the full Renegade CMoS Presentation Pass gate PRE-06 across a clean candidate standalone environment (`node .next/standalone/server.js`) on PostgreSQL 17 using the preserved PUB-06 `renegadeparty-demo` (`siteId: 00000000-0000-0000-0000-000000000001`):
+
+- **12-Item Mandatory Demo Flow Verified**:
+  1. _Theme Discovery & Packaging_: Installed and loaded `renegade-party` and `neutral-starter` packages from `theme-packages/` into PostgreSQL with validated manifests, token defaults, and SHA-256 asset declarations.
+  2. _Isolated Authenticated Preview_: Rendered `/` with `?__theme_preview=neutral-starter&__preview_token=...` proving scoped neutral styling while anonymous requests concurrently loaded `renegade-party` without leaking preview state.
+  3. _Validated Design Token Customization_: Modified `color.accent` and typography scales; verified token application while refusing dangerous or invalid CSS values pre-mutation.
+  4. _Visual Composition (Campaign Page)_: Created and published `/campaign-2026` via Studio Visual Editor using registered components (`publisher.hero`, `publisher.rich-content`, `publisher.cta`), canonical media picker (`/media/906145b9-21b4-4e89-bca8-f42a0730bc93`), and internal links.
+  5. _Reusable Composition_: Created and reused `Campaign Landing Template`, `hero-action-pattern`, and global `announcement` region across multiple pages.
+  6. _Server-Rendered Public Output_: Verified anonymous GET to `/campaign-2026` returns HTTP 200 with server-rendered HTML and call-to-action button, with 0 editor scripts in public markup.
+  7. _Draft Isolation_: Created unpublished draft layout revision 2; verified anonymous public visitors continue receiving published revision 1 with zero layout disruption.
+  8. _Atomic Alternate Theme Switch_: Activated `neutral-starter` atomically; verified canonical content IDs (`truthId`), editorial bodies, canonical URLs (`/articles/decentralized-truth`), 308 redirects, SEO metadata, search queries, and media assets remained invariant.
+  9. _Process Restart & Persistence_: Restarted standalone server; verified persistent theme configuration, layouts, and tokens in PostgreSQL.
+  10. _Theme Upgrade & Rollback_: Executed declarative token upgrade from `1.0.0` to `1.1.0` and clean atomic rollback to `1.0.0`.
+  11. _Legacy Site Migration Pipeline_: Processed WordPress WXR fixture through 8 stages, inspected side-by-side reconciliation, verified quarantine of 6 unsupported scripts/PHP elements, activated site, and executed clean rollback cascade.
+  12. _Pre-Mutation Refusal_: Verified fatal rejection of unregistered blocks, script injections (`<script>alert("xss")</script>`), and invalid token inputs.
+- **Accessibility Audit (WCAG 2.1 Level AA)**: Executed automated `axe-core 4.13` audit across 7 presentation templates (`/`, `/platform`, `/articles/decentralized-truth`, `/articles`, `/search?q=Decentralized`, `/pre-06-not-found-check`, `/campaign-2026`), recording 148 passing checks and 0 critical violations (`docs/presentation/evidence/a11y-audit.json`).
+- **Responsive Visual Inspection**: Captured 8 responsive screenshots across Desktop (1280px), Tablet (768px), and Mobile (375px) in `docs/presentation/evidence/screenshots/`; verified fluid typography, collapsible navigation menus, and media layout containment.
+- **Performance Baseline**: Recorded TTFBs (138ms home, 184ms campaign), verified 0 editor code in public frontend bundle (`verify:presentation-bundles`), and verified layout containment (`docs/presentation/evidence/performance-baseline.json`).
+- **Full Verification**: 70 unit test files (325 tests passed), 4 PRE integration files (12 tests passed), Playwright browser suite passed, `npm run format:check` passed, `npm run lint` passed (0 warnings), `npm run typecheck` passed (0 errors), `npm run verify:presentation-bundles` passed. See `docs/presentation/PRE-06-PRESENTATION-PASS-GATE.md`. Canonical readiness updated to `Presentation Pass VERIFIED` in `docs/release/FEATURE_READINESS.md`.
+
 ## Presentation Pass PRE-05 — Legacy-Site Migration & Presentation Reconstruction Implemented & Verified — 2026-09-12
 
 Implemented a safe, repeatable legacy-site migration path for WordPress WXR exports and normalized legacy site packages that reconstructs presentation alongside content without executing arbitrary WordPress PHP, plugins, shortcodes, scripts, or untrusted CSS:
