@@ -49,7 +49,8 @@ await run('docker', [
   '--volumes',
   '--remove-orphans',
 ])
-await run('npm', [
+const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm'
+await run(npm, [
   'run',
   'restore:operational',
   '--',

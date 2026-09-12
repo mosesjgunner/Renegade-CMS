@@ -43,7 +43,13 @@ function scratchUrl() {
 
 async function createHistoricalFixture(payload: Payload) {
   const create = (collection: string, data: Record<string, unknown>) =>
-    payload.create({ collection: collection as never, data: data as never, overrideAccess: true })
+    payload.create({
+      collection: collection as never,
+      data: data as never,
+      depth: 0,
+      overrideAccess: true,
+      context: { skipTenantBoundary: true },
+    })
   const sentinel = async (
     key: keyof typeof ids,
     collection: string,
@@ -76,17 +82,25 @@ async function createHistoricalFixture(payload: Payload) {
     id: ids.profile,
     member: ids.member,
     displayName: 'Upgrade Sentinel Member',
-    visibility: 'public',
-  })
-  await sentinel('space', 'spaces', {
-    id: ids.space,
-    member: ids.member,
-    profile: ids.profile,
     handle: 'upgrade-sentinel',
-    canonicalPath: '/members/upgrade-sentinel',
-    displayName: 'Upgrade Sentinel Space',
     visibility: 'public',
   })
+  await poolFor(payload).query(
+    `INSERT INTO spaces (id, member_id, profile_id, handle, canonical_path, display_name, visibility, moderation_state, transfer_state, created_at, updated_at)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $10)`,
+    [
+      ids.space,
+      ids.member,
+      ids.profile,
+      'upgrade-sentinel',
+      '/members/upgrade-sentinel',
+      'Upgrade Sentinel Space',
+      'public',
+      'clear',
+      'none',
+      timestamp,
+    ],
+  )
   await sentinel('publication', 'publications', {
     id: ids.publication,
     site: ids.site,
@@ -111,21 +125,26 @@ async function createHistoricalFixture(payload: Payload) {
     mimeType: 'image/jpeg',
     altText: 'A migration sentinel image',
   })
-  await sentinel('content', 'content', {
-    id: ids.content,
-    site: ids.site,
-    publication: ids.publication,
-    space: ids.space,
-    owner: ids.member,
-    contentType: 'article',
-    title: 'Upgrade Sentinel Article',
-    slug: 'upgrade-sentinel-article',
-    canonicalPath: '/blogs/upgrade-sentinel/upgrade-sentinel-article',
-    summary: 'Pre-Second-Pass editorial content.',
-    status: 'published',
-    publishedAt: timestamp,
-    heroMedia: ids.media,
-  })
+  await poolFor(payload).query(
+    `INSERT INTO content (id, site_id, publication_id, space_id, owner_id, content_type, title, slug, canonical_path, summary, status, published_at, hero_media_id, created_at, updated_at)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $14)`,
+    [
+      ids.content,
+      ids.site,
+      ids.publication,
+      ids.space,
+      ids.member,
+      'article',
+      'Upgrade Sentinel Article',
+      'upgrade-sentinel-article',
+      '/blogs/upgrade-sentinel/upgrade-sentinel-article',
+      'Pre-Second-Pass editorial content.',
+      'published',
+      timestamp,
+      ids.media,
+      timestamp,
+    ],
+  )
   await sentinel('account', 'social-accounts', {
     id: ids.account,
     site: ids.site,
@@ -280,6 +299,8 @@ export async function verifyUpgradeMigration() {
   }
   const previousDatabaseUrl = process.env.DATABASE_URL
   process.env.DATABASE_URL = url
+  process.env.RENEGADE_MODULES = process.env.RENEGADE_MODULES || 'all'
+  process.env.RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT = 'true'
   try {
     const { default: config } = await import('../payload.config')
     const payload = await getPayload({ config })

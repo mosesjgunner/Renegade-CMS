@@ -1,4 +1,4 @@
-﻿name: renegade-cms-restore
+name: renegade-cms-restore
 
 # Isolated recovery target; use a separate .env.restore with fresh credentials.
 services:
@@ -30,6 +30,9 @@ services:
       BUILD_SHA: ${BUILD_SHA:-unknown}
       RENEGADE_IMAGE_TAG: ${RENEGADE_IMAGE_TAG:-local}
       ENABLE_TEST_ROUTES: 'false'
+      RENEGADE_MODULES: ${RENEGADE_MODULES:-all}
+      RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT: ${RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT:-true}
+      LOCAL_E2E_TEST_MODE: ${LOCAL_E2E_TEST_MODE:-true}
     command: ['npm', 'run', 'db:migrate']
     volumes: [renegade_restore_media:/app/media]
     depends_on:

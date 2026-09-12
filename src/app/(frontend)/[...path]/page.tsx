@@ -56,6 +56,7 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
     const publications = await payload.find({
       collection: 'publications',
       where: { and: [{ status: { equals: 'active' } }, { visibility: { equals: 'public' } }] },
+      sort: '-createdAt',
       limit: 1,
       depth: 0,
       overrideAccess: true,
@@ -131,6 +132,7 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
   const publications = await payload.find({
     collection: 'publications',
     where: { and: [{ status: { equals: 'active' } }, { visibility: { equals: 'public' } }] },
+    sort: '-createdAt',
     limit: 1,
     depth: 0,
     overrideAccess: true,

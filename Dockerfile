@@ -18,7 +18,7 @@ LABEL org.opencontainers.image.version=$APP_VERSION \
 ENV NODE_ENV=production PORT=3000 HOSTNAME=0.0.0.0
 ENV APP_VERSION=$APP_VERSION BUILD_SHA=$BUILD_SHA
 RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 nextjs
-RUN mkdir -p /app/media /tmp/renegade-worker && chown -R nextjs:nodejs /app
+RUN mkdir -p /app/media /tmp/renegade-worker && chown -R nextjs:nodejs /app /tmp/renegade-worker
 # The web server uses Next's standalone output. Payload's migration and worker
 # CLIs also require the application source and their runtime dependencies; they
 # are deliberately included instead of assuming standalone contains them.

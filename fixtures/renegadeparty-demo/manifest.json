@@ -1,0 +1,125 @@
+{
+  "site": {
+    "name": "Renegade Party",
+    "slug": "renegadeparty",
+    "description": "Autonomous publishing and grassroots governance for the Renegade movement.",
+    "canonicalOrigin": "http://localhost:3110",
+    "timezone": "America/Chicago",
+    "locale": "en",
+    "footerText": "© 2026 Renegade Party. Published autonomously with Renegade CMS."
+  },
+  "assets": [
+    {
+      "filename": "logo.png",
+      "path": "fixtures/renegadeparty-demo/assets/logo.png",
+      "mimeType": "image/png",
+      "title": "Renegade Party Logo",
+      "altText": "Renegade Party official seal and crest"
+    },
+    {
+      "filename": "social-default.png",
+      "path": "fixtures/renegadeparty-demo/assets/social-default.png",
+      "mimeType": "image/png",
+      "title": "Renegade Party Social Card",
+      "altText": "Renegade Party autonomous publishing card"
+    },
+    {
+      "filename": "hero-liberty.png",
+      "path": "fixtures/renegadeparty-demo/assets/hero-liberty.png",
+      "mimeType": "image/png",
+      "title": "Liberty Bell Banner",
+      "altText": "Historic Liberty Bell with Renegade banner"
+    },
+    {
+      "filename": "inline-assembly.png",
+      "path": "fixtures/renegadeparty-demo/assets/inline-assembly.png",
+      "mimeType": "image/png",
+      "title": "National Assembly Structure",
+      "altText": "Organizational diagram of the Renegade National Assembly"
+    }
+  ],
+  "navigation": {
+    "primary": [
+      { "label": "Platform", "href": "/platform", "children": [] },
+      { "label": "Principles", "href": "/principles", "children": [] },
+      { "label": "Articles", "href": "/articles", "children": [] }
+    ],
+    "secondary": [],
+    "footer": [
+      { "label": "Platform", "href": "/platform", "children": [] },
+      { "label": "Principles", "href": "/principles", "children": [] },
+      { "label": "Articles", "href": "/articles", "children": [] }
+    ]
+  },
+  "pages": [
+    {
+      "slug": "platform",
+      "canonicalPath": "/platform",
+      "title": "The Renegade Platform",
+      "summary": "Our comprehensive policy platform for individual liberty and decentralized public administration.",
+      "status": "published"
+    },
+    {
+      "slug": "principles",
+      "canonicalPath": "/principles",
+      "title": "Core Principles of Autonomous Governance",
+      "summary": "The immutable values and architectural commitments guiding our civic movement.",
+      "status": "published"
+    }
+  ],
+  "posts": [
+    {
+      "slug": "renegade-declaration",
+      "canonicalPath": "/articles/renegade-declaration",
+      "initialSlug": "initial-declaration",
+      "initialCanonicalPath": "/articles/initial-declaration",
+      "title": "The Renegade Declaration",
+      "summary": "The founding charter of the Renegade Party, establishing our commitment to decentralized governance.",
+      "status": "published",
+      "category": "Manifestos",
+      "tag": "Independence",
+      "topic": "Governance"
+    },
+    {
+      "slug": "decentralized-truth",
+      "canonicalPath": "/articles/decentralized-truth",
+      "title": "Decentralized Truth in Governance",
+      "summary": "Why verifiable records and decentralized architecture are essential for public integrity.",
+      "uniquePhrase": "Decentralized truth cannot be silenced by centralized gatekeepers",
+      "status": "published-with-draft-revision",
+      "category": "Decentralization",
+      "tag": "Transparency",
+      "topic": "Truth"
+    },
+    {
+      "slug": "2027-national-assembly",
+      "canonicalPath": "/articles/2027-national-assembly",
+      "title": "2027 National Assembly Agenda",
+      "summary": "Delegates convene to establish operational standards and legislative priorities.",
+      "status": "scheduled",
+      "category": "Events",
+      "tag": "Assembly",
+      "topic": "Civic Action"
+    },
+    {
+      "slug": "grassroots-strategy-memo",
+      "canonicalPath": "/articles/grassroots-strategy-memo",
+      "title": "Grassroots Organizing Strategy Memo",
+      "summary": "Internal guidance for chapter coordinators on local assembly mobilization.",
+      "status": "draft",
+      "category": "Strategy",
+      "tag": "Grassroots",
+      "topic": "Organization"
+    },
+    {
+      "slug": "archived-legacy-resolution",
+      "canonicalPath": "/articles/archived-legacy-resolution",
+      "title": "Archived Resolution on Legacy Systems",
+      "summary": "Superseded consensus document archived for historical provenance.",
+      "status": "archived",
+      "category": "Resolutions",
+      "tag": "Legacy",
+      "topic": "History"
+    }
+  ]
+}

@@ -19,6 +19,8 @@ const e2eEnv = {
   PORT: '3110',
   HOSTNAME: 'localhost',
   LOCAL_E2E_TEST_MODE: 'true',
+  RENEGADE_MODULES: 'all',
+  RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT: 'true',
 }
 
 Object.assign(process.env, e2eEnv)
@@ -27,6 +29,7 @@ export default defineConfig({
   testDir: './tests/browser',
   globalSetup: './tests/browser/global-setup.ts',
   timeout: 30_000,
+  workers: 1,
   use: { baseURL: 'http://localhost:3110', browserName: 'chromium', channel: 'chrome' },
   webServer: {
     command: 'node .next/standalone/server.js',

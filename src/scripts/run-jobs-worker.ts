@@ -1,4 +1,5 @@
-import { writeFile } from 'node:fs/promises'
+import { mkdir, writeFile } from 'node:fs/promises'
+import path from 'node:path'
 
 import config from '../payload.config'
 import { getPayload } from 'payload'
@@ -31,6 +32,7 @@ async function cycle(): Promise<void> {
         id: entry.id,
         overrideAccess: true,
       } as never)
+    await mkdir(path.dirname(heartbeatFile), { recursive: true }).catch(() => undefined)
     await writeFile(
       heartbeatFile,
       JSON.stringify({ observedAt: new Date().toISOString(), pid: process.pid }),

@@ -38,6 +38,7 @@ export default async function ArticlesArchivePage({ searchParams }: Args) {
   const publications = await payload.find({
     collection: 'publications',
     where: { and: [{ status: { equals: 'active' } }, { visibility: { equals: 'public' } }] },
+    sort: '-createdAt',
     limit: 1,
     depth: 0,
     overrideAccess: true,
@@ -54,7 +55,7 @@ export default async function ArticlesArchivePage({ searchParams }: Args) {
       and: [
         ...(siteId ? [{ site: { equals: siteId } }] : []),
         { contentType: { equals: 'article' } },
-        { status: { equals: 'published' } },
+        { status: { in: ['published', 'updated'] } },
       ],
     } as never,
     page: currentPage,

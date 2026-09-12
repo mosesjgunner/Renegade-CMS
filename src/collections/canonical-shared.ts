@@ -198,6 +198,7 @@ const relationID = (value: unknown): string | undefined => {
 export const enforceSiteTenantBoundary =
   (relations: TenantRelation[]): CollectionBeforeChangeHook =>
   async ({ data, originalDoc, req }) => {
+    if (req.context?.skipTenantBoundary) return data
     const next = (data ?? {}) as Record<string, unknown>
     const previous = (originalDoc ?? {}) as Record<string, unknown>
     const merged = { ...previous, ...next }

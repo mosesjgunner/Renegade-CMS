@@ -347,14 +347,28 @@ export async function ensureEditorialCompanion(payload: Payload, content: Doc, r
     unknownNodePolicy: 'preserve',
   }
   if (existing?.documentHash === document.canonicalHash) {
-    if (existing.lifecycle !== content.status)
+    const isPublishing =
+      content.status === 'published' &&
+      (!existing.latestPublishedRevision || existing.lifecycle !== 'published')
+    if (existing.lifecycle !== content.status || isPublishing) {
       await payload.update({
         collection: 'article-family-content',
         id: existing.id,
-        data: { lifecycle: content.status ?? 'draft' },
+        data: {
+          lifecycle: content.status ?? 'draft',
+          ...(content.status === 'published'
+            ? {
+                latestPublishedRevision:
+                  existing.latestPublishedRevision ?? existing.currentRevision,
+                firstPublishedAt:
+                  existing.firstPublishedAt ?? content.publishedAt ?? new Date().toISOString(),
+              }
+            : {}),
+        },
         overrideAccess: true,
         req,
       } as never)
+    }
     return
   }
   const sequence = Number(existing?.currentRevisionSequence ?? 0) + 1
@@ -407,6 +421,13 @@ export async function ensureEditorialCompanion(payload: Payload, content: Doc, r
       plainTextProjection: document.plainTextProjection,
       currentRevisionSequence: sequence,
       currentRevision: revision.id,
+      ...(content.status === 'published'
+        ? {
+            latestPublishedRevision: revision.id,
+            firstPublishedAt:
+              article.firstPublishedAt ?? content.publishedAt ?? new Date().toISOString(),
+          }
+        : {}),
     },
     overrideAccess: true,
     req,
@@ -485,7 +506,9 @@ const persistWorkflow = async (
   // Revalidate the published path when content status changes
   if (['published', 'updated', 'archived'].includes(workflow.article.status)) {
     try {
-      const { revalidatePath } = await import('next/cache')
+      const { revalidatePath } = await import('next/cache.js').catch(
+        () => import('next/cache') as never,
+      )
       revalidatePath(bundle.content.canonicalPath, 'page')
 
       // Also revalidate the homepage if this is a featured content

@@ -193,6 +193,7 @@ export async function provisionOnboardingSite(
     'spaces',
     { handle: { equals: input.slug } },
     {
+      site: site.id,
       member: member.id,
       profile: profile.id,
       handle: input.slug,
@@ -210,6 +211,7 @@ export async function provisionOnboardingSite(
     'brands',
     { name: { equals: input.name } },
     {
+      site: site.id,
       name: input.name,
       kind: 'organization',
       description: input.description || undefined,
