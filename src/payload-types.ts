@@ -533,10 +533,22 @@ export interface PageLayout {
   site: string | Site;
   publication?: (string | null) | Publication;
   space?: (string | null) | Space;
+  /**
+   * Human-readable title or template/pattern name
+   */
+  name?: string | null;
   path: string;
   themeId: 'neutral-starter' | 'renegade-party';
-  surface: 'page' | 'global';
-  slot: 'main' | 'header' | 'footer';
+  surface: 'page' | 'global' | 'template' | 'pattern';
+  slot: 'main' | 'header' | 'footer' | 'announcement' | 'cta';
+  /**
+   * Source template ID if created from a template
+   */
+  templateId?: string | null;
+  templateVersion?: number | null;
+  templateMode?: ('inherited' | 'explicit' | 'detached') | null;
+  isRetired?: boolean | null;
+  category?: string | null;
   layoutVersion: number;
   status: 'draft' | 'published';
   visibility: 'public' | 'unlisted' | 'members' | 'friends' | 'private';
@@ -7386,10 +7398,16 @@ export interface PageLayoutsSelect<T extends boolean = true> {
   site?: T;
   publication?: T;
   space?: T;
+  name?: T;
   path?: T;
   themeId?: T;
   surface?: T;
   slot?: T;
+  templateId?: T;
+  templateVersion?: T;
+  templateMode?: T;
+  isRetired?: T;
+  category?: T;
   layoutVersion?: T;
   status?: T;
   visibility?: T;
