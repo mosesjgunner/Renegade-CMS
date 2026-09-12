@@ -1,8 +1,17 @@
 import type { Data } from '@puckeditor/core'
-import type { VisualEditor } from './contracts'
+import type { ThemeSlot, VisualEditor } from './contracts'
 import { resolveTemplate, resolveTheme } from './registry'
 
 export type PaletteCategory = { id: string; label: string; components: string[] }
+
+function resolveActiveSlot(slots: Record<string, unknown>): ThemeSlot {
+  if (slots.main) return 'main'
+  if (slots.header) return 'header'
+  if (slots.footer) return 'footer'
+  if (slots.announcement) return 'announcement'
+  if (slots.cta) return 'cta'
+  return (Object.keys(slots)[0] as ThemeSlot) ?? 'main'
+}
 
 /** The palette is derived from the selected theme, template and slot; the client cannot expand it. */
 export function paletteFor(
@@ -10,7 +19,7 @@ export function paletteFor(
 ): PaletteCategory[] {
   const theme = resolveTheme(document.theme.id)
   const template = resolveTemplate(theme, document.surface, document.template.id)
-  const slot = document.slots.main ? 'main' : document.slots.header ? 'header' : 'footer'
+  const slot = resolveActiveSlot(document.slots)
   const allowed = new Set(template.slots[slot]?.allowedComponents ?? [])
   const grouped = new Map<string, string[]>()
   for (const component of Object.values(theme.componentRegistry)) {
@@ -31,7 +40,7 @@ export const puckVisualEditor: VisualEditor<Data> = {
   id: 'puck',
   version: '1.0.0',
   toEditor(document) {
-    const slot = document.slots.main ? 'main' : document.slots.header ? 'header' : 'footer'
+    const slot = resolveActiveSlot(document.slots)
     return {
       content: (document.slots[slot] ?? []).map((block) => ({
         type: block.component,
@@ -42,7 +51,7 @@ export const puckVisualEditor: VisualEditor<Data> = {
   },
   fromEditor(original, data) {
     const document = structuredClone(original)
-    const slot = document.slots.main ? 'main' : document.slots.header ? 'header' : 'footer'
+    const slot = resolveActiveSlot(document.slots)
     const ids = new Set<string>()
     document.slots[slot] = data.content.map((item) => {
       const id = String(item.props.id)

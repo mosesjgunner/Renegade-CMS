@@ -7,6 +7,13 @@ const common = {
   title: { type: 'text', label: 'Heading', maxLength: 160 },
   alignment: { type: 'alignment', label: 'Alignment', options: ['left', 'center', 'right'] },
   spacing: { type: 'token', label: 'Theme spacing', options: ['compact', 'normal', 'relaxed'] },
+  width: { type: 'select', label: 'Section width', options: ['standard', 'wide', 'full'] },
+  background: {
+    type: 'token',
+    label: 'Background token',
+    options: ['canvas', 'surface', 'muted', 'brand', 'accent'],
+  },
+  emphasis: { type: 'select', label: 'Visual emphasis', options: ['subtle', 'normal', 'bold'] },
 } satisfies Record<string, PresentationField>
 
 const simple = (
@@ -28,6 +35,9 @@ const simple = (
       data-block={label}
       data-align={text(props, 'alignment', 'left')}
       data-spacing={text(props, 'spacing', 'normal')}
+      data-width={text(props, 'width', 'standard')}
+      data-bg={text(props, 'background', 'canvas')}
+      data-emphasis={text(props, 'emphasis', 'normal')}
     >
       <h2>{text(props, 'title', label)}</h2>
       {typeof props.body === 'string' ? <p>{props.body}</p> : null}
@@ -122,3 +132,41 @@ starterComponents['publisher.custom-embed'] = simple(
   'Advanced',
   { ...common, link, variant },
 )
+
+starterComponents['publisher.pattern'] = {
+  id: 'publisher.pattern',
+  version: 1,
+  label: 'Reusable pattern',
+  category: 'Patterns',
+  permissions: ['layout:edit'],
+  capabilities: [],
+  fields: {
+    patternId: { type: 'text', label: 'Pattern reference' },
+    patternName: { type: 'text', label: 'Pattern name' },
+    patternVersion: { type: 'number', label: 'Pattern version' },
+    mode: { type: 'select', label: 'Pattern mode', options: ['linked', 'snapshot'] },
+  },
+  validate: (props) => {
+    if (!props.patternId) return ['Pattern reference is required']
+    return []
+  },
+  render: (props) => (
+    <div
+      data-pattern-instance={String(props.patternId ?? '')}
+      data-pattern-name={String(props.patternName ?? '')}
+      data-pattern-mode={String(props.mode ?? 'linked')}
+      className="pattern-instance border border-dashed border-stone-300 dark:border-stone-700 p-4 rounded-xl my-2"
+    >
+      <div className="flex items-center gap-2 mb-2 text-xs font-mono text-stone-500">
+        <span className="badge badge-brand">
+          Pattern: {String(props.patternName || props.patternId)}
+        </span>
+        <span>v{String(props.patternVersion ?? 1)}</span>
+        <span className="capitalize">({String(props.mode ?? 'linked')})</span>
+      </div>
+    </div>
+  ),
+  fallback: () => (
+    <div data-unavailable-component="publisher.pattern">Linked pattern unavailable</div>
+  ),
+}

@@ -1,3 +1,19 @@
+## Presentation Pass PRE-04 — Reusable Visual Composition Implemented & Verified — 2026-09-12
+
+Expanded the visual editor into site-scale reusable visual composition within safe theme contracts:
+
+- **Reusable Page Templates**: Created, named, previewed, duplicated, versioned, and retired templates (`surface: 'template'`, `slot: 'main'`). Implemented three inheritance modes: `inherited`, `explicit`, and `detached`. Guaranteed that future template changes NEVER surprise-update published pages (only drafts synchronize; published presentation snapshots remain strictly immutable until deliberate publication).
+- **Reusable Patterns & Sections**: Saved registered component trees with theme and version metadata. Insertion provides an explicit, visible choice between a documented snapshot (independent cloned blocks) and a linked instance (`publisher.pattern` reference block).
+- **Versioned Global Regions**: Full support for outer shell slots (`header`, `footer`, `announcement`, `cta`) with draft preview, full revision audit history, and one-click rollback (`/api/layouts/:id/rollback`).
+- **Theme-Approved Per-Instance Style Controls**: Constrained style controls using theme tokens and variants (spacing, width, alignment, background, emphasis, responsive visibility rules) with accessible limits. Arbitrary CSS properties (style/css/className) and dangerous markup (<script>/<style>/javascript:) are strictly rejected by schema and collection hooks.
+- **Unified Studio Navigator**: Replaced implementation collection exposure with an integrated Studio Navigator (Canvas, Pages, Templates, Globals, Patterns) directly inside the visual editor shell.
+- **Responsive Preview Presets**: Presets for Desktop (1280px), Tablet (768px), and Mobile (375px) with exact draft preview URLs (`/builder/:id/preview?viewport=...`).
+- **Relationship-Aware Deletion Safeguards**: Blocked deletion of templates referenced by active pages and patterns linked into layouts with actionable guidance to retire or detach.
+- **Presentation Document Export & Import**: Packaged presentation documents (`renegade-presentation-package` v1) with upfront pre-mutation cross-theme incompatibility detection.
+- **Mini-Site End-to-End Verification**: Multi-page Renegade Party mini-site exercised in unit, integration, and Playwright browser suites (`tests/browser/pre-04-reusable-composition.spec.ts`).
+
+Verification: Unit suite 68 files / 302 tests passed; PostgreSQL integration suite 17 files / 51 tests passed; Playwright browser test passed; Next.js standalone build passed; `verify:presentation-bundles` passed; ESLint and Prettier check passed with 0 warnings/errors. Additive migration `20260912_040000_pre_04_reusable_composition` applied. See `docs/presentation/PRE-04-REUSABLE-COMPOSITION.md`.
+
 ## Presentation Pass PRE-03 — Controlled Visual Editor Implemented & Verified — 2026-09-12
 
 Delivered a registry-driven Puck editor behind the `VisualEditor` adapter with categorized template/slot palettes; accessible add/select/reorder/duplicate/configure/remove and session undo/redo; typed text, link, canonical media, bounded query, variant, alignment, and theme-token fields; autosave and optimistic-conflict recovery; authenticated exact draft preview; immutable publication snapshots; compatible theme switching; restricted global header/footer composition; and an article-template boundary that keeps canonical Post bodies outside the canvas.

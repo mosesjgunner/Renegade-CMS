@@ -4,6 +4,7 @@ import { NextResponse } from 'next/server'
 
 import { publishLayout, validateLayout, type PageLayout } from '@/modules/public/page-builder'
 import { resolveTheme } from '@/modules/presentation/registry'
+import { checkLayoutDeletionSafeguards } from '@/modules/presentation/composition'
 
 type Args = { params: Promise<{ id: string }> }
 const staff = (user: { role?: string } | null | undefined) =>
@@ -58,10 +59,24 @@ export async function PATCH(request: Request, { params }: Args) {
     ...body.layout,
     id,
     siteId: existingSite,
+    name: body.layout.name ?? (typeof stored.name === 'string' ? stored.name : undefined),
     path: String(existing.path),
     status: existing.status === 'published' ? 'published' : 'draft',
-    surface: stored.surface === 'global' ? 'global' : 'page',
-    slot: stored.slot === 'header' || stored.slot === 'footer' ? stored.slot : 'main',
+    surface: (stored.surface as PageLayout['surface']) ?? 'page',
+    slot: (stored.slot as PageLayout['slot']) ?? 'main',
+    templateId:
+      body.layout.templateId ??
+      (typeof stored.templateId === 'string' ? stored.templateId : undefined),
+    templateVersion:
+      typeof body.layout.templateVersion === 'number'
+        ? body.layout.templateVersion
+        : typeof stored.templateVersion === 'number'
+          ? stored.templateVersion
+          : undefined,
+    templateMode: body.layout.templateMode ?? (stored.templateMode as PageLayout['templateMode']),
+    isRetired: body.layout.isRetired ?? stored.isRetired === true,
+    category:
+      body.layout.category ?? (typeof stored.category === 'string' ? stored.category : undefined),
     revision: Number(existing.revision) + 1,
     publishedRevision:
       typeof existing.publishedRevision === 'number' ? existing.publishedRevision : undefined,
@@ -129,9 +144,15 @@ export async function PATCH(request: Request, { params }: Args) {
     req,
     context: { publishPresentation: body.publish === true },
     data: {
+      name: layout.name,
       themeId: layout.themeId,
       surface: layout.surface ?? 'page',
       slot: layout.slot ?? 'main',
+      templateId: layout.templateId,
+      templateVersion: layout.templateVersion,
+      templateMode: layout.templateMode,
+      isRetired: layout.isRetired === true,
+      category: layout.category,
       layoutVersion: layout.version,
       status: body.publish ? 'published' : existing.status,
       blocks: layout.blocks,
@@ -145,4 +166,26 @@ export async function PATCH(request: Request, { params }: Args) {
     },
   } as never)
   return NextResponse.json({ layout: updated, warnings: checked.errors })
+}
+
+export async function DELETE(request: Request, { params }: Args) {
+  const payload = await getPayload({ config })
+  const auth = await payload.auth({ headers: request.headers })
+  if (!staff(auth.user))
+    return NextResponse.json({ error: 'Layout deletion requires staff access.' }, { status: 403 })
+  const id = (await params).id
+  const safeguard = await checkLayoutDeletionSafeguards(payload, id)
+  if (!safeguard.safe) {
+    return NextResponse.json(
+      { error: safeguard.reason, referencingPages: safeguard.referencingPages },
+      { status: 409 },
+    )
+  }
+  const req = await createLocalReq({ user: auth.user ?? undefined }, payload)
+  await payload.delete({
+    collection: 'page-layouts',
+    id,
+    req,
+  })
+  return NextResponse.json({ success: true, id })
 }

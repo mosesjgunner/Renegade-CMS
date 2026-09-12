@@ -58,7 +58,7 @@ describe('PRE-03 controlled visual editor', () => {
       paletteFor(global)
         .flatMap((category) => category.components)
         .sort(),
-    ).toEqual(['publisher.cta', 'publisher.rich-content'])
+    ).toEqual(['publisher.cta', 'publisher.pattern', 'publisher.rich-content'])
   })
 
   it('round-trips reorder, duplicate, configure and remove operations without touching other slots', () => {

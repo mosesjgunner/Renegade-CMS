@@ -42,18 +42,27 @@ export type LayoutBlock = {
   hidden?: boolean
   placeholder?: GraphicPlaceholder
 }
-export type LayoutSurface = 'page' | 'global'
+export type LayoutSurface = 'page' | 'global' | 'template' | 'pattern'
+export type LayoutSlot = 'main' | 'header' | 'footer' | 'announcement' | 'cta'
+export type TemplateInheritanceMode = 'inherited' | 'explicit' | 'detached'
+
 export type PageLayout = {
   version: typeof PAGE_LAYOUT_VERSION
   id: string
   siteId: string
   spaceId?: string
+  name?: string
   path: string
   status: 'draft' | 'published'
   themeId: ThemeId
-  /** Page layouts edit main; global documents edit one approved shell region. */
+  /** Page layouts edit main; global documents edit one approved shell region; templates edit main; patterns may target any slot. */
   surface?: LayoutSurface
-  slot?: 'main' | 'header' | 'footer'
+  slot?: LayoutSlot
+  templateId?: string
+  templateVersion?: number
+  templateMode?: TemplateInheritanceMode
+  isRetired?: boolean
+  category?: string
   blocks: LayoutBlock[]
   unknownBlocks?: LayoutBlock[]
   revision: number
@@ -112,12 +121,25 @@ export function validateLayout(input: PageLayout): { layout: PageLayout; errors:
   if (!Object.hasOwn(themes, input.themeId)) errors.push('Unknown theme id.')
   const theme = resolveTheme(input.themeId)
   const slot = input.slot ?? 'main'
-  if ((input.surface ?? 'page') === 'global' && slot === 'main')
-    errors.push('Global layouts must target header or footer.')
-  if ((input.surface ?? 'page') === 'page' && slot !== 'main')
-    errors.push('Pages may only edit the main template slot.')
+  const surface = input.surface ?? 'page'
+  if (
+    surface === 'global' &&
+    slot !== 'header' &&
+    slot !== 'footer' &&
+    slot !== 'announcement' &&
+    slot !== 'cta'
+  )
+    errors.push('Global layouts must target header, footer, announcement, or cta.')
+  if ((surface === 'page' || surface === 'template') && slot !== 'main')
+    errors.push('Pages and templates may only edit the main template slot.')
+  if (input.templateMode && !['inherited', 'explicit', 'detached'].includes(input.templateMode))
+    errors.push('Invalid template inheritance mode.')
   const template = theme.templateRegistry.layout
-  const allowed = new Set(template.slots[slot]?.allowedComponents ?? [])
+  const allowed = new Set(
+    surface === 'pattern'
+      ? Object.keys(theme.componentRegistry)
+      : (template.slots[slot]?.allowedComponents ?? []),
+  )
   const unknownBlocks: LayoutBlock[] = [...(input.unknownBlocks ?? [])]
   const ids = new Set<string>()
   const blocks = input.blocks.flatMap((block) => {
@@ -126,6 +148,24 @@ export function validateLayout(input: PageLayout): { layout: PageLayout; errors:
       return []
     }
     ids.add(block.id)
+    if (block.visible !== undefined) {
+      if (
+        typeof block.visible !== 'object' ||
+        block.visible === null ||
+        Array.isArray(block.visible)
+      ) {
+        errors.push(`${block.id}: visible must be an object`)
+      } else {
+        const { desktop, tablet, mobile, ...rest } = block.visible as Record<string, unknown>
+        if (Object.keys(rest).length > 0) errors.push(`${block.id}: unknown visibility rule`)
+        if (desktop !== undefined && typeof desktop !== 'boolean')
+          errors.push(`${block.id}: desktop visibility must be boolean`)
+        if (tablet !== undefined && typeof tablet !== 'boolean')
+          errors.push(`${block.id}: tablet visibility must be boolean`)
+        if (mobile !== undefined && typeof mobile !== 'boolean')
+          errors.push(`${block.id}: mobile visibility must be boolean`)
+      }
+    }
     const definition = theme.componentRegistry[block.component]
     if (!definition || definition.version !== block.componentVersion) {
       unknownBlocks.push(block)

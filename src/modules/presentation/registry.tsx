@@ -63,7 +63,11 @@ const makeTheme = (legacy: (typeof legacyThemes)[string]): ThemeManifest => ({
             ? {
                 header: {
                   required: false,
-                  allowedComponents: ['publisher.cta', 'publisher.rich-content'],
+                  allowedComponents: [
+                    'publisher.cta',
+                    'publisher.rich-content',
+                    'publisher.pattern',
+                  ],
                 },
                 footer: {
                   required: false,
@@ -71,6 +75,24 @@ const makeTheme = (legacy: (typeof legacyThemes)[string]): ThemeManifest => ({
                     'publisher.rich-content',
                     'publisher.cta',
                     'publisher.newsletter-cta',
+                    'publisher.pattern',
+                  ],
+                },
+                announcement: {
+                  required: false,
+                  allowedComponents: [
+                    'publisher.cta',
+                    'publisher.rich-content',
+                    'publisher.pattern',
+                  ],
+                },
+                cta: {
+                  required: false,
+                  allowedComponents: [
+                    'publisher.cta',
+                    'publisher.rich-content',
+                    'publisher.newsletter-cta',
+                    'publisher.pattern',
                   ],
                 },
               }

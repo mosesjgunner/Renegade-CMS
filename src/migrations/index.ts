@@ -1,3 +1,4 @@
+import * as pre04ReusableComposition from './20260912_040000_pre_04_reusable_composition'
 import * as pre01Snapshots from './20260912_020000_pre_01_presentation_snapshots'
 import * as pre03VisualEditor from './20260912_030000_pre_03_visual_editor'
 import * as pre01 from './20260912_010000_pre_01_theme_lifecycle'
@@ -279,5 +280,10 @@ export const migrations = [
     up: pre03VisualEditor.up,
     down: pre03VisualEditor.down,
     name: '20260912_030000_pre_03_visual_editor',
+  },
+  {
+    up: pre04ReusableComposition.up,
+    down: pre04ReusableComposition.down,
+    name: '20260912_040000_pre_04_reusable_composition',
   },
 ]

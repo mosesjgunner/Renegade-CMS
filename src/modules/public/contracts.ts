@@ -11,6 +11,7 @@ export type ThemeSlot =
   | 'aside'
   | 'related-content'
   | 'footer'
+  | 'cta'
 
 export type ThemeTokens = {
   color: Record<'canvas' | 'surface' | 'ink' | 'muted' | 'accent' | 'focus', string>

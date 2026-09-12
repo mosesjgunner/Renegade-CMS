@@ -2,6 +2,8 @@ import type { ReactNode } from 'react'
 import type { LegacyThemeManifest, ThemeSlot } from '../public/contracts'
 import type { ComponentDefinition, LayoutBlock } from '../public/page-builder'
 
+export type { ThemeSlot } from '../public/contracts'
+
 export const RENEGADE_PRESENTATION_VERSION = '1.0.0'
 export type Surface = 'page' | 'article' | 'home' | 'archive' | 'search' | '404' | 'layout'
 export type Template = {

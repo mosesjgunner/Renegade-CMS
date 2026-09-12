@@ -12,6 +12,19 @@ The registered repository is `src/modules/payload-domains.ts`: Operations, Ident
 
 ## Executed evidence
 
+- **Presentation Pass PRE-04 on 2026-09-12 (PASSED / VERIFIED)**:
+  - Reusable Page Templates implemented with creation, naming, preview, duplication, versioning, retirement, and page usage tracking.
+  - Template inheritance modes: `inherited`, `explicit`, and `detached`. Guaranteed that template changes never surprise-update published pages (only drafts synchronize; published snapshots remain immutable until deliberate publication).
+  - Reusable Patterns & Sections: saved registered component trees with theme/version compatibility metadata, with visible choice between documented snapshot and linked instance (`publisher.pattern`).
+  - Versioned Global Regions: support for `header`, `footer`, `announcement`, and `cta` slots with draft preview, full revision history audit, and single-click rollback (`/api/layouts/:id/rollback`).
+  - Theme-approved per-instance style controls using constrained tokens/variants (spacing, width, alignment, background, emphasis, responsive visibility rules) with accessible limits; arbitrary CSS properties and unsafe markup strictly rejected.
+  - Unified Studio Navigator in visual editor: Pages, Templates, Globals, Patterns, and Canvas without exposing raw implementation collections.
+  - Responsive preview presets (`desktop` 1280px, `tablet` 768px, `mobile` 375px) via `/builder/[id]/preview?viewport=...`.
+  - Relationship-aware deletion safeguards preventing deletion of templates referenced by active pages or patterns linked into layouts.
+  - Presentation document export/import (`renegade-presentation-package` v1) with pre-mutation cross-theme incompatibility detection.
+  - Full automated verification: 68 unit files (302 tests), 17 integration files (51 tests), and Playwright browser E2E test (`tests/browser/pre-04-reusable-composition.spec.ts`) passed.
+  - Migration `20260912_040000_pre_04_reusable_composition` applied to PostgreSQL.
+
 - **Presentation Pass PRE-03 on 2026-09-12 (PASSED / VERIFIED)**:
   - Controlled visual editor implemented with `@puckeditor/core` adapter behind `VisualEditor.tsx`.
   - Categorized component palette generated from active theme registry and slot allow-lists.
