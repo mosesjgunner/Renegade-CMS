@@ -55,7 +55,10 @@ export default async function SearchPage({
   const result = await payload.find({
     collection: 'content',
     where: {
-      and: [...(siteId ? [{ site: { equals: siteId } }] : []), { status: { equals: 'published' } }],
+      and: [
+        ...(siteId ? [{ site: { equals: siteId } }] : []),
+        { status: { in: ['published', 'updated'] } },
+      ],
     } as never,
     limit: 1000,
     depth: 1,

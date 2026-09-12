@@ -132,6 +132,4 @@ test('a normal operator completes first-run setup, sees recovery codes once, and
   await page.goto('/setup')
   await expect(page.getByRole('heading', { name: 'Setup Complete' })).toBeVisible()
   await expect(page.getByRole('heading', { name: 'Make this site yours.' })).toHaveCount(0)
-
-  await payload.db.destroy?.()
 })

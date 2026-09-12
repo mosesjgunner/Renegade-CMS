@@ -35,9 +35,10 @@ export async function seed(payload: Payload): Promise<void> {
   await payload.updateGlobal({
     slug: 'site-settings',
     data: {
+      siteName: 'Demo Publication',
       ownerKind: 'organization',
-      organizationName: 'Civic Demo Studio',
-      defaultTitle: 'Civic Demo Studio',
+      organizationName: 'Demo Publication',
+      defaultTitle: 'Demo Publication',
       defaultDescription: 'A neutral fixture proving the portable publishing foundation.',
       sameAs: ['https://example.test/civic-demo'],
       robotsDefaults: { index: true, follow: true },
@@ -118,6 +119,7 @@ export async function seed(payload: Payload): Promise<void> {
     data: {
       member: member.id,
       displayName: 'River Morgan',
+      handle: 'river-morgan',
       bio: 'A demo member profile used for ownership and authorship tests.',
       visibility: 'public',
       fieldAudience: { email: 'private', bio: 'public' },

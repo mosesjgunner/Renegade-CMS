@@ -25,8 +25,8 @@
     "lint": "eslint . --max-warnings=0",
     "typecheck": "tsc --noEmit",
     "test": "vitest run tests/unit",
-    "test:integration": "vitest run tests/integration --no-file-parallelism",
-    "test:browser": "playwright test",
+    "test:integration": "cross-env RENEGADE_MODULES=all RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT=true vitest run tests/integration --no-file-parallelism",
+    "test:browser": "cross-env RENEGADE_MODULES=all RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT=true playwright test",
     "test:migrations:fresh": "tsx src/scripts/verify-fresh-migration.ts",
     "test:migrations:upgrade": "tsx src/scripts/verify-upgrade-migration.ts",
     "test:smoke": "tsx tests/smoke/stack.smoke.ts",
@@ -43,7 +43,7 @@
     "maintenance:operational": "tsx src/scripts/operational-maintenance.ts --",
     "upgrade:operational": "tsx src/scripts/operational-upgrade.ts --",
     "rollback:operational": "tsx src/scripts/operational-rollback.ts --",
-    "portability": "tsx src/scripts/portability.ts"
+    "portability": "tsx --env-file=.env src/scripts/portability.ts"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "3.88.0",

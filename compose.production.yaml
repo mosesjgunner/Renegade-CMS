@@ -8,6 +8,8 @@ services:
       POSTGRES_DB: renegade
       POSTGRES_USER: renegade
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env.production}
+    ports:
+      - '${POSTGRES_BIND:-127.0.0.1:5432}:5432'
     volumes:
       - renegade_postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -42,6 +44,8 @@ services:
       DEPLOYMENT_PROFILE: ${DEPLOYMENT_PROFILE:-Standard}
       ENABLE_TEST_ROUTES: 'false'
       LOCAL_E2E_TEST_MODE: ${LOCAL_E2E_TEST_MODE:-false}
+      RENEGADE_MODULES: ${RENEGADE_MODULES:-all}
+      RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT: ${RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT:-true}
     command: ['npm', 'run', 'db:migrate']
     depends_on:
       postgres:

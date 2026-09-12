@@ -52,9 +52,12 @@ afterAll(async () => {
 
 describe('canonical information architecture integration', () => {
   it('keeps main publication, member space, and member blog ownership isolated', async () => {
+    const site = await findOne('sites', { slug: { equals: 'demo-publication' } })
     const member = await findOne('members', { email: { equals: 'river@example.test' } })
     const space = await findOne('spaces', { handle: { equals: 'river-morgan' } })
-    const main = await findOne('publications', { slug: { equals: 'main' } })
+    const main = await findOne('publications', {
+      and: [{ site: { equals: site.id } }, { slug: { equals: 'main' } }],
+    })
     const blog = await findOne('publications', { slug: { equals: 'river-morgan' } })
 
     expect(main.owner).toBeNull()
@@ -118,8 +121,11 @@ describe('canonical information architecture integration', () => {
   })
 
   it('enforces relationship uniqueness and active block precedence', async () => {
+    const site = await findOne('sites', { slug: { equals: 'demo-publication' } })
     const member = await findOne('members', { email: { equals: 'river@example.test' } })
-    const publication = await findOne('publications', { slug: { equals: 'main' } })
+    const publication = await findOne('publications', {
+      and: [{ site: { equals: site.id } }, { slug: { equals: 'main' } }],
+    })
     const other = await create({
       collection: 'members',
       data: {

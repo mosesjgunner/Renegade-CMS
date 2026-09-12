@@ -13,6 +13,7 @@ import { createOperationalBackupManifest } from '@/modules/operations/backup'
 test('complete 16-step publisher journey through public and admin HTTP/browser boundaries', async ({
   page,
   context,
+  playwright,
 }) => {
   test.setTimeout(90_000)
 
@@ -115,11 +116,11 @@ test('complete 16-step publisher journey through public and admin HTTP/browser b
   // --------------------------------------------------------------------------
   // STEP 4: Upload a real image (multipart/form-data via HTTP boundary)
   // --------------------------------------------------------------------------
-  // Valid minimal 2x3 PNG image bytes conforming to inspectMedia signature
-  const realPngBytes = Buffer.from([
-    0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 0, 0x49, 0x48, 0x44, 0x52, 0, 0, 0, 2,
-    0, 0, 0, 3,
-  ])
+  // Valid minimal 1x1 PNG image conforming to inspectMedia signature and sharp decoding
+  const realPngBytes = Buffer.from(
+    '89504e470d0a1a0a0000000d49484452000000010000000108060000001f15c4890000000a49444154789c63000100000500010d0a2db40000000049454e44ae426082',
+    'hex',
+  )
 
   const uploadResponse = await page.request.post('/api/media/upload', {
     headers: { cookie: cookieHeader },
@@ -157,8 +158,10 @@ test('complete 16-step publisher journey through public and admin HTTP/browser b
   expect(existsSync(assetPath!)).toBe(true)
 
   // Anonymous draft/private check: raw media asset is not public without public usage
-  const anonMediaResponse = await page.request.get(`/media/${mediaAssetId}`)
+  const anonRequest = await playwright.request.newContext({ baseURL: 'http://localhost:3110' })
+  const anonMediaResponse = await anonRequest.get(`/media/${mediaAssetId}`)
   expect(anonMediaResponse.status()).toBe(404)
+  await anonRequest.dispose()
 
   // --------------------------------------------------------------------------
   // STEP 5: Create page (Page Layout HTTP API)
@@ -245,8 +248,20 @@ test('complete 16-step publisher journey through public and admin HTTP/browser b
   // --------------------------------------------------------------------------
   // STEP 7: Preview draft article
   // --------------------------------------------------------------------------
+  const userDoc = (
+    await payload.find({
+      collection: 'users',
+      where: { email: { equals: ownerEmail } },
+      limit: 1,
+      depth: 0,
+      overrideAccess: true,
+    } as never)
+  ).docs[0] as { id: string } | undefined
+  expect(userDoc?.id).toBeTruthy()
+
   const previewTokenResult = await createEditorialPreviewToken(payload, {
     articleId: String(articleContentDoc.id),
+    createdBy: String(userDoc!.id),
     expiresAt: new Date(Date.now() + 30 * 60 * 1000).toISOString(),
   })
   const previewToken = previewTokenResult.token
