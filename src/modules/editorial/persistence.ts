@@ -58,6 +58,7 @@ export type EditorialArticleInput = {
 }
 
 export type EditorialPresentation = {
+  contentType?: string
   title: string
   subtitle: string | null
   excerpt: string | null
@@ -983,6 +984,7 @@ export async function buildArticlePresentation(
     : undefined
 
   return {
+    contentType: String(bundle.content.contentType),
     title: String(bundle.content.title),
     subtitle: bundle.content.subtitle ? String(bundle.content.subtitle) : null,
     excerpt: bundle.content.summary

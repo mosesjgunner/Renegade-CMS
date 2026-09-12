@@ -1,3 +1,38 @@
+## Presentation Pass PRE-01 — Local Theme Lifecycle Implemented & Verified — 2026-09-12
+
+Implemented and verified the end-to-end theme lifecycle from PRE-00 contracts across local package discovery, registered renderer resolution, typed design tokens, authenticated preview, atomic transactional activation, rollback, and process persistence:
+
+- **Local Package Boundary (`theme-packages/<id>-<semver>/theme.json`)**:
+  - Validated by `src/modules/presentation/packages.ts` against schema requirements: unique `id`, semantic `version`, compatibility range `renegade`, registered `renderer`, token schema/defaults, declared inert assets with SHA-256 integrity, and declarative idempotent `migrations`.
+  - Rejects unknown fields, path traversal (`../escape`), invalid semver (`latest`), undeclared assets, symlinks, arbitrary imports, and executable JS/CSS configuration.
+  - Retains incompatible packages in discovery with actionable operator errors (`compatible: false`) without offering activation. Verified against malicious fixtures in `tests/fixtures/themes/malicious.json`.
+- **Registered Presentation Renders & Scoped Tokens**:
+  - Packages resolve only registered executable renderers (`neutral-starter`, `renegade-party`) from `src/modules/presentation/registry.tsx`. Arbitrary filesystem imports and dynamic evaluation remain strictly forbidden.
+  - Typed design tokens (`src/modules/presentation/tokens.ts`) for canvas, surface, ink, accent, focus, typography, spacing, radii, border, card shadows, content widths, and motion duration. Contrast enforcement guarantees WCAG compliance (4.5:1 text/accent, 3:1 focus against canvas/surface).
+  - Emits scoped CSS variables (`--presentation-*`) on `body[data-theme]` without contaminating admin or leaking across sites.
+- **Draft Settings & Authenticated Preview Sessions**:
+  - Draft configurations saved to `presentation_theme_state` (PostgreSQL jsonb) without modifying anonymous output or canonical content revisions.
+  - Preview sessions issue opaque cryptographically random tokens stored as SHA-256 hashes in `presentation_theme_previews`, bound to owner ID and site ID with 15-minute expiration, delivered in HttpOnly SameSite Strict cookie `presentation-preview`.
+  - Unauthenticated visitors or stolen preview cookies cannot activate preview. Ending preview revokes stored token and prevents replay.
+- **Atomic Activation, Preflight Validation & Rollback**:
+  - Multi-step preflight renders public sample routes (`/`, `/articles`, `/search`, canonical paths) with preview probe before committing.
+  - Uses PostgreSQL row locks (`SELECT ... FOR UPDATE`), atomic revision increment, and rollback tracking. Commits active state, records audit log in `presentation_theme_audit`, revokes previews, and calls `revalidatePath('/', 'layout')` within a single atomic transaction.
+  - Public HTTP resolution automatically falls back and rolls back to previous compatible configuration if an active package is deleted, corrupted, or tampered on disk.
+- **Declarative Presentation Migrations**:
+  - Versioned declarative `defaults` migrations merge package token updates into existing selections while preserving operator token overrides. Idempotent and restricted strictly to presentation metadata. Never alters canonical content or rich-text bodies.
+- **Capability Center Admin UI (`/admin/capabilities`)**:
+  - `src/modules/admin/ThemeCenter.tsx` provides site selection, installed package inventory, compatibility badges, capability indicators, token overrides editor, preview launch/teardown, activation, and rollback controls with inline actionable status messages.
+- **Multisite Isolation**:
+  - State, previews, and audits are strictly partitioned by `site_id`.
+- **Verification Evidence**:
+  - Unit tests: 66 files / 281 tests passed (`tests/unit/pre-01-themes.test.ts`, `tests/unit/pre-00-presentation.test.tsx`).
+  - Integration tests: 16 files / 46 tests passed (`tests/integration/pre-01-theme-lifecycle.integration.test.ts`).
+  - Smoke tests:
+    - `tests/smoke/presentation.smoke.mjs`: verified 6 surfaces (home, Page, Post, archive, search, 404) with manifest headers and canonical revision text.
+    - `tests/smoke/theme-lifecycle.smoke.mjs`: verified anonymous denial, draft isolation, authenticated owner preview with token variables, cookie revocation, atomic activation, rollback, and revision fingerprint preservation.
+    - `tests/smoke/theme-restart.smoke.mjs`: restarted standalone web and worker processes twice, verified readiness (`/health/ready` and worker heartbeat), proved active theme and stored state persist across restarts (`docs/presentation/pre-01-restart-evidence.json`).
+  - Production build: `npm run build` compiled cleanly with Next.js standalone and asset synchronization. Lint and format checks clean.
+
 # Project state
 
 ## Publishing Pass PUB-02 — canonical Posts and Pages

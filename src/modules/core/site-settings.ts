@@ -1,6 +1,12 @@
+import { requestTheme } from '../presentation/request-theme'
+import type { Configuration } from '../presentation/lifecycle'
+import { DEFAULT_SITE_NAME } from '../presentation/themes/identity'
+import { resolveTheme } from '../presentation/registry'
 import type { Payload } from 'payload'
 
 export type ResolvedSiteSettings = {
+  themeId?: string
+  themeConfiguration?: Configuration | null
   siteName: string
   siteDescription: string
   canonicalOrigin: string
@@ -42,7 +48,7 @@ export async function resolveSiteSettings(payload: Payload): Promise<ResolvedSit
         settings?.defaultTitle ||
         settings?.organizationName ||
         settings?.personName ||
-        'Renegade CMS',
+        DEFAULT_SITE_NAME,
     ).trim()
 
     const siteDescription = String(
@@ -75,7 +81,12 @@ export async function resolveSiteSettings(payload: Payload): Promise<ResolvedSit
     const homepagePageId = idOf(hp.page)
     const homepageLayoutId = idOf(hp.layout)
 
+    const themeConfiguration = await requestTheme(payload)
     return {
+      themeConfiguration,
+      themeId:
+        themeConfiguration?.renderer ??
+        resolveTheme(typeof settings?.themeId === 'string' ? settings.themeId : undefined).id,
       siteName,
       siteDescription,
       canonicalOrigin: canonicalOrigin || fallbackOrigin,
@@ -95,7 +106,7 @@ export async function resolveSiteSettings(payload: Payload): Promise<ResolvedSit
     }
   } catch {
     return {
-      siteName: 'Renegade CMS',
+      siteName: DEFAULT_SITE_NAME,
       siteDescription: '',
       canonicalOrigin: fallbackOrigin,
       locale: 'en',

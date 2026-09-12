@@ -269,7 +269,8 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
     // Continue to non-editorial canonical collections below.
   }
   if (editorialArticle) {
-    return <EditorialArticleView article={editorialArticle} />
+    const settings = await resolveSiteSettings(payload)
+    return <EditorialArticleView themeId={settings.themeId} article={editorialArticle} />
   }
 
   const bookResult = await findIfRegistered(payload, {
@@ -369,7 +370,7 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
     const jsonLd = buildJsonLd({
       siteUrl: process.env.APP_URL ?? 'http://localhost:3000',
       path,
-      site: { ownerKind: 'organization', name: 'Renegade CMS' },
+      site: { ownerKind: 'organization', name: (await resolveSiteSettings(payload)).siteName },
       breadcrumb: [
         { name: 'Home', path: '/' },
         { name, path },

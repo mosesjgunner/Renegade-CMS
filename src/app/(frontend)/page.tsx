@@ -1,3 +1,4 @@
+import { PresentationSurface } from '@/modules/presentation/Surface'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import Link from 'next/link'
@@ -87,7 +88,7 @@ export default async function HomePage() {
       // Fall through if selected page is unpublished or not found
     }
     if (editorial) {
-      return <EditorialArticleView article={editorial} />
+      return <EditorialArticleView themeId={settings.themeId} article={editorial} />
     }
   }
 
@@ -120,7 +121,7 @@ export default async function HomePage() {
       // No root content article
     }
     if (rootPage) {
-      return <EditorialArticleView article={rootPage} />
+      return <EditorialArticleView themeId={settings.themeId} article={rootPage} />
     }
 
     const layouts = await payload.find({
@@ -166,119 +167,121 @@ export default async function HomePage() {
   }
 
   return (
-    <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
-      <main className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-12 md:py-20">
-        {/* Starter Hero */}
-        <section className="text-center py-12 md:py-16 border-b border-stone-200 dark:border-stone-800">
-          <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-stone-950 dark:text-white font-display">
-            {settings.siteName}
-          </h1>
-          {settings.siteDescription ? (
-            <p className="mt-4 max-w-2xl mx-auto text-lg sm:text-xl text-stone-600 dark:text-stone-300">
-              {settings.siteDescription}
-            </p>
-          ) : null}
-          <div className="mt-8 flex items-center justify-center gap-4">
-            <Link
-              href="/articles"
-              className="rounded-md bg-stone-900 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-stone-800 dark:bg-stone-100 dark:text-stone-900 dark:hover:bg-white transition"
-            >
-              Browse Articles
-            </Link>
-            <Link
-              href="/search"
-              className="rounded-md border border-stone-300 bg-white px-5 py-2.5 text-sm font-semibold text-stone-700 shadow-sm hover:bg-stone-50 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-200 dark:hover:bg-stone-800 transition"
-            >
-              Search
-            </Link>
-          </div>
-        </section>
-
-        {/* Recent Articles */}
-        <section className="py-12">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl font-bold tracking-tight text-stone-900 dark:text-white">
-              Recent Dispatches
-            </h2>
-            <Link
-              href="/articles"
-              className="text-sm font-semibold text-red-600 hover:underline dark:text-red-400"
-            >
-              View all →
-            </Link>
-          </div>
-
-          {recentArticles.docs.length === 0 ? (
-            <div className="rounded-lg border border-dashed border-stone-300 p-12 text-center dark:border-stone-700">
-              <p className="text-sm text-stone-500 dark:text-stone-400">
-                No articles published yet. Publish your first post in the admin center.
+    <PresentationSurface themeId={settings.themeId} surface="home">
+      <>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+        <main className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-12 md:py-20">
+          {/* Starter Hero */}
+          <section className="text-center py-12 md:py-16 border-b border-stone-200 dark:border-stone-800">
+            <h1 className="text-4xl sm:text-6xl font-black tracking-tight text-stone-950 dark:text-white font-display">
+              {settings.siteName}
+            </h1>
+            {settings.siteDescription ? (
+              <p className="mt-4 max-w-2xl mx-auto text-lg sm:text-xl text-stone-600 dark:text-stone-300">
+                {settings.siteDescription}
               </p>
+            ) : null}
+            <div className="mt-8 flex items-center justify-center gap-4">
+              <Link
+                href="/articles"
+                className="rounded-md bg-stone-900 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-stone-800 dark:bg-stone-100 dark:text-stone-900 dark:hover:bg-white transition"
+              >
+                Browse Articles
+              </Link>
+              <Link
+                href="/search"
+                className="rounded-md border border-stone-300 bg-white px-5 py-2.5 text-sm font-semibold text-stone-700 shadow-sm hover:bg-stone-50 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-200 dark:hover:bg-stone-800 transition"
+              >
+                Search
+              </Link>
             </div>
-          ) : (
-            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-              {recentArticles.docs.map((articleDoc) => {
-                const article = articleDoc as unknown as Record<string, unknown>
-                const publishedDate =
-                  typeof article.publishedAt === 'string' ? article.publishedAt : null
-                const slug = String(article.slug ?? '')
-                const title = String(article.title ?? '')
-                const summary =
-                  typeof article.summary === 'string'
-                    ? article.summary
-                    : typeof article.excerpt === 'string'
-                      ? article.excerpt
-                      : null
-                return (
-                  <article
-                    key={String(article.id)}
-                    className="flex flex-col justify-between rounded-lg border border-stone-200 bg-white p-6 shadow-sm transition hover:shadow-md dark:border-stone-800 dark:bg-stone-900"
-                  >
-                    <div>
-                      {publishedDate ? (
-                        <time
-                          dateTime={publishedDate}
-                          className="text-xs text-stone-500 dark:text-stone-400"
-                        >
-                          {new Date(publishedDate).toLocaleDateString(undefined, {
-                            year: 'numeric',
-                            month: 'short',
-                            day: 'numeric',
-                          })}
-                        </time>
-                      ) : null}
-                      <h3 className="mt-2 text-xl font-bold tracking-tight text-stone-900 dark:text-white line-clamp-2">
+          </section>
+
+          {/* Recent Articles */}
+          <section className="py-12">
+            <div className="flex items-center justify-between mb-8">
+              <h2 className="text-2xl font-bold tracking-tight text-stone-900 dark:text-white">
+                Recent Dispatches
+              </h2>
+              <Link
+                href="/articles"
+                className="text-sm font-semibold text-red-600 hover:underline dark:text-red-400"
+              >
+                View all →
+              </Link>
+            </div>
+
+            {recentArticles.docs.length === 0 ? (
+              <div className="rounded-lg border border-dashed border-stone-300 p-12 text-center dark:border-stone-700">
+                <p className="text-sm text-stone-500 dark:text-stone-400">
+                  No articles published yet. Publish your first post in the admin center.
+                </p>
+              </div>
+            ) : (
+              <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+                {recentArticles.docs.map((articleDoc) => {
+                  const article = articleDoc as unknown as Record<string, unknown>
+                  const publishedDate =
+                    typeof article.publishedAt === 'string' ? article.publishedAt : null
+                  const slug = String(article.slug ?? '')
+                  const title = String(article.title ?? '')
+                  const summary =
+                    typeof article.summary === 'string'
+                      ? article.summary
+                      : typeof article.excerpt === 'string'
+                        ? article.excerpt
+                        : null
+                  return (
+                    <article
+                      key={String(article.id)}
+                      className="flex flex-col justify-between rounded-lg border border-stone-200 bg-white p-6 shadow-sm transition hover:shadow-md dark:border-stone-800 dark:bg-stone-900"
+                    >
+                      <div>
+                        {publishedDate ? (
+                          <time
+                            dateTime={publishedDate}
+                            className="text-xs text-stone-500 dark:text-stone-400"
+                          >
+                            {new Date(publishedDate).toLocaleDateString(undefined, {
+                              year: 'numeric',
+                              month: 'short',
+                              day: 'numeric',
+                            })}
+                          </time>
+                        ) : null}
+                        <h3 className="mt-2 text-xl font-bold tracking-tight text-stone-900 dark:text-white line-clamp-2">
+                          <Link
+                            href={`/articles/${slug}`}
+                            className="hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                          >
+                            {title}
+                          </Link>
+                        </h3>
+                        {summary ? (
+                          <p className="mt-3 text-sm text-stone-600 dark:text-stone-400 line-clamp-3">
+                            {summary}
+                          </p>
+                        ) : null}
+                      </div>
+                      <div className="mt-6 pt-4 border-t border-stone-100 dark:border-stone-800">
                         <Link
                           href={`/articles/${slug}`}
-                          className="hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                          className="text-xs font-semibold text-red-600 hover:underline dark:text-red-400"
                         >
-                          {title}
+                          Read story →
                         </Link>
-                      </h3>
-                      {summary ? (
-                        <p className="mt-3 text-sm text-stone-600 dark:text-stone-400 line-clamp-3">
-                          {summary}
-                        </p>
-                      ) : null}
-                    </div>
-                    <div className="mt-6 pt-4 border-t border-stone-100 dark:border-stone-800">
-                      <Link
-                        href={`/articles/${slug}`}
-                        className="text-xs font-semibold text-red-600 hover:underline dark:text-red-400"
-                      >
-                        Read story →
-                      </Link>
-                    </div>
-                  </article>
-                )
-              })}
-            </div>
-          )}
-        </section>
-      </main>
-    </>
+                      </div>
+                    </article>
+                  )
+                })}
+              </div>
+            )}
+          </section>
+        </main>
+      </>
+    </PresentationSurface>
   )
 }

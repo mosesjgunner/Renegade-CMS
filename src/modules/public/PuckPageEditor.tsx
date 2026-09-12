@@ -1,49 +1,34 @@
 'use client'
 
 import { Puck, type Config, type Data } from '@puckeditor/core'
+import { puckVisualEditor } from '../presentation/puck-adapter'
+import type { PresentationDocument } from '../presentation/contracts'
+import { resolveTheme } from '../presentation/registry'
 
 import {
-  applyLayoutAction,
   componentRegistry,
   type BuilderPermission,
   type PageLayout,
   publishLayout,
 } from './page-builder'
 
-type PuckBlock = { type: string; props: Record<string, unknown> }
-
-// Puck is intentionally an interaction adapter. This conversion is the only
-// Puck-shaped data in the application, so replacing the canvas never migrates
-// stored layouts or public rendering.
-export function toPuckData(layout: PageLayout): Data {
+function presentation(layout: PageLayout): PresentationDocument {
+  const theme = resolveTheme(layout.themeId)
   return {
-    content: layout.blocks.map((block) => ({
-      type: block.component,
-      props: { ...block.props, _layoutBlockId: block.id },
-    })),
-    root: { props: {} },
-  } as unknown as Data
-}
-
-export function fromPuckData(layout: PageLayout, data: Data): PageLayout {
-  const content = (data as unknown as { content?: PuckBlock[] }).content ?? []
-  let next: PageLayout = { ...layout, blocks: [] }
-  for (const [index, block] of content.entries()) {
-    const id =
-      typeof block.props._layoutBlockId === 'string'
-        ? block.props._layoutBlockId
-        : `puck-${index + 1}`
-    const props = { ...block.props }
-    delete props._layoutBlockId
-    const definition = componentRegistry[block.type]
-    if (!definition) continue
-    next = applyLayoutAction(next, {
-      type: 'undo-delete',
-      at: next.blocks.length,
-      block: { id, component: definition.id, componentVersion: definition.version, props },
-    })
+    version: 1,
+    siteId: layout.siteId,
+    theme: { id: theme.id, version: theme.version },
+    template: { id: 'layout', version: '1.0.0' },
+    surface: 'layout',
+    slots: { main: layout.blocks },
   }
-  return next
+}
+export function toPuckData(layout: PageLayout): Data {
+  return puckVisualEditor.toEditor(presentation(layout))
+}
+export function fromPuckData(layout: PageLayout, data: Data): PageLayout {
+  const document = puckVisualEditor.fromEditor(presentation(layout), data)
+  return { ...layout, blocks: document.slots.main ?? [], revision: layout.revision + 1 }
 }
 
 const puckConfig = {

@@ -1,5 +1,7 @@
 'use client'
 
+import { resolveTheme } from './contracts'
+
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 
@@ -8,13 +10,13 @@ import { type PageLayout } from './page-builder'
 
 function toLayout(row: Record<string, unknown>): PageLayout {
   return {
-    version: 1,
+    version: Number(row.layoutVersion ?? 1) as PageLayout['version'],
     id: String(row.id),
     siteId: typeof row.site === 'string' ? row.site : '',
     spaceId: typeof row.space === 'string' ? row.space : undefined,
     path: String(row.path),
     status: row.status === 'published' ? 'published' : 'draft',
-    themeId: row.themeId === 'renegade-party' ? 'renegade-party' : 'neutral-starter',
+    themeId: resolveTheme(String(row.themeId ?? '')).id,
     blocks: Array.isArray(row.blocks) ? (row.blocks as PageLayout['blocks']) : [],
     unknownBlocks: Array.isArray(row.unknownBlocks)
       ? (row.unknownBlocks as PageLayout['blocks'])

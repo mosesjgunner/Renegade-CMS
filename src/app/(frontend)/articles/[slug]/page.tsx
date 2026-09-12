@@ -98,7 +98,7 @@ export default async function ArticlePage({ params }: Args) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <EditorialArticleView article={article} />
+      <EditorialArticleView themeId={settings.themeId} article={article} />
     </>
   )
 }

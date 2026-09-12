@@ -1,3 +1,5 @@
+import { DEFAULT_SITE_NAME } from '../modules/presentation/themes/identity'
+import { themes } from '../modules/presentation/registry'
 import type { GlobalConfig } from 'payload'
 
 import { seoFields, structuredDataSourceFields } from '../collections/canonical-shared'
@@ -13,6 +15,17 @@ export const SiteSettings: GlobalConfig = {
   admin: { group: 'Settings' },
   access: { read: () => true, update: staffOrOwner },
   hooks: {
+    afterChange: [
+      async ({ doc }) => {
+        try {
+          const { revalidatePath } = await import('next/cache.js')
+          revalidatePath('/', 'layout')
+        } catch {
+          // CLI writes have no Next cache; public routes also read settings dynamically.
+        }
+        return doc
+      },
+    ],
     beforeValidate: [
       ({ data }) => {
         if (!data) return data
@@ -34,7 +47,13 @@ export const SiteSettings: GlobalConfig = {
     ],
   },
   fields: [
-    { name: 'siteName', type: 'text', label: 'Site Name', defaultValue: 'Renegade CMS' },
+    {
+      name: 'themeId',
+      type: 'select',
+      defaultValue: 'neutral-starter',
+      options: Object.values(themes).map(({ id, label }) => ({ label, value: id })),
+    },
+    { name: 'siteName', type: 'text', label: 'Site Name', defaultValue: DEFAULT_SITE_NAME },
     { name: 'siteDescription', type: 'textarea', label: 'Site Description' },
     {
       name: 'canonicalOrigin',
@@ -195,7 +214,7 @@ export const SiteSettings: GlobalConfig = {
     { name: 'organizationName', type: 'text' },
     { name: 'personName', type: 'text' },
     { name: 'legalName', type: 'text' },
-    { name: 'defaultTitle', type: 'text', defaultValue: 'Renegade CMS' },
+    { name: 'defaultTitle', type: 'text', defaultValue: DEFAULT_SITE_NAME },
     { name: 'defaultDescription', type: 'textarea' },
     { name: 'logo', type: 'relationship', relationTo: 'media-assets' },
     { name: 'favicon', type: 'relationship', relationTo: 'media-assets' },

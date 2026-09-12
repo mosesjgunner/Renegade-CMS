@@ -4,6 +4,7 @@
  * format. Canonical content continues to live in Payload collections.
  */
 import type { ReactNode } from 'react'
+import { renderPresentation } from '../presentation/document'
 
 import { canRenderPublic, resolveTheme, type ThemeId } from './contracts'
 
@@ -71,84 +72,8 @@ export type ComponentDefinition = {
   fallback: (block: LayoutBlock) => ReactNode
 }
 
-const text = (props: Record<string, unknown>, key: string, fallback: string) =>
-  typeof props[key] === 'string' && props[key].trim() ? String(props[key]) : fallback
-const simple = (
-  label: string,
-  category: string,
-  fields: ComponentDefinition['fields'],
-): ComponentDefinition => ({
-  id: `publisher.${label.toLowerCase().replaceAll(/[^a-z0-9]+/g, '-')}`,
-  version: 1,
-  label,
-  category,
-  permissions: ['layout:edit'],
-  capabilities: [],
-  fields,
-  validate: (props) =>
-    fields.title && typeof props.title !== 'string' ? ['title must be text'] : [],
-  render: (props) => (
-    <section data-block={label}>
-      <h2>{text(props, 'title', label)}</h2>
-      {typeof props.body === 'string' ? <p>{props.body}</p> : null}
-    </section>
-  ),
-  fallback: (block) => (
-    <section data-unavailable-component={block.component}>This section is unavailable.</section>
-  ),
-})
-
-const blockSpecs: Array<[string, string, ComponentDefinition['fields']]> = [
-  ['Hero', 'intro', { title: 'text', body: 'rich-text', image: 'media', cta: 'text' }],
-  ['Featured article', 'content', { title: 'text', article: 'reference' }],
-  ['Article grid', 'content', { title: 'text', query: 'reference' }],
-  ['Article list', 'content', { title: 'text', query: 'reference' }],
-  ['Profile card', 'people', { title: 'text', profile: 'reference' }],
-  ['Profile grid', 'people', { title: 'text', query: 'reference' }],
-  ['Profile bio', 'people', { title: 'text', profile: 'reference' }],
-  ['Profile status and links', 'people', { title: 'text', profile: 'reference' }],
-  ['Friend and buddy list', 'community', { title: 'text', profile: 'reference' }],
-  ['Personal-post feed', 'community', { title: 'text', query: 'reference' }],
-  ['Album and gallery', 'media', { title: 'text', album: 'reference' }],
-  ['Portfolio and project', 'media', { title: 'text', project: 'reference' }],
-  ['Author card', 'people', { title: 'text', author: 'reference' }],
-  ['Author grid', 'people', { title: 'text', query: 'reference' }],
-  ['Pull quote', 'editorial', { title: 'text', body: 'rich-text' }],
-  ['Quote card', 'editorial', { title: 'text', body: 'rich-text' }],
-  ['Newsletter CTA', 'action', { title: 'text', body: 'rich-text', cta: 'text' }],
-  ['CTA', 'action', { title: 'text', body: 'rich-text', cta: 'text' }],
-  ['Donation', 'action', { title: 'text', body: 'rich-text', cta: 'text' }],
-  ['Image', 'media', { title: 'text', image: 'media' }],
-  ['Video', 'media', { title: 'text', video: 'media' }],
-  ['Audio', 'media', { title: 'text', audio: 'media' }],
-  ['Book card', 'media', { title: 'text', book: 'reference' }],
-  ['Podcast card', 'media', { title: 'text', podcast: 'reference' }],
-  ['Video card', 'media', { title: 'text', video: 'reference' }],
-  ['Forum activity', 'community', { title: 'text', query: 'reference' }],
-  ['Featured discussion', 'community', { title: 'text', discussion: 'reference' }],
-  ['Unanswered and solved threads', 'community', { title: 'text', query: 'reference' }],
-  ['Event card', 'events', { title: 'text', event: 'reference' }],
-  ['Event list', 'events', { title: 'text', query: 'reference' }],
-  [
-    'Timeline',
-    'events',
-    { title: 'text', timeline: 'reference', events: 'reference', mode: 'select' },
-  ],
-  ['Chart and stat', 'data', { title: 'text', data: 'reference' }],
-  ['Comparison table', 'data', { title: 'text', data: 'reference' }],
-  ['FAQ', 'editorial', { title: 'text', body: 'rich-text' }],
-  ['Source and evidence box', 'editorial', { title: 'text', source: 'reference' }],
-  ['Team', 'people', { title: 'text', query: 'reference' }],
-  ['Contact form placeholder', 'action', { title: 'text', body: 'rich-text' }],
-  ['Custom embed', 'advanced', { title: 'text', url: 'text' }],
-]
-
-export const componentRegistry: Record<string, ComponentDefinition> = Object.fromEntries(
-  blockSpecs.map(([label, category, fields]) => {
-    const definition = simple(label, category, fields)
-    return [definition.id, definition]
-  }),
-)
+export { starterComponents as componentRegistry } from '../presentation/themes/components'
+import { starterComponents as componentRegistry } from '../presentation/themes/components'
 
 // Custom React registrations are trusted, deploy-time code only. A browser/user cannot register one.
 export function registerDeveloperComponent(
@@ -159,7 +84,7 @@ export function registerDeveloperComponent(
     throw new Error('Developer registration permission is required.')
   if (!definition.id.includes('.') || definition.version < 1)
     throw new Error('Component requires a stable namespaced id and version.')
-  componentRegistry[definition.id] = definition
+  return Object.freeze({ ...componentRegistry, [definition.id]: definition })
 }
 
 export function validateLayout(input: PageLayout): { layout: PageLayout; errors: string[] } {
@@ -167,7 +92,7 @@ export function validateLayout(input: PageLayout): { layout: PageLayout; errors:
   if (input.version > PAGE_LAYOUT_VERSION) errors.push('Layout is newer than this renderer.')
   const unknownBlocks: LayoutBlock[] = [...(input.unknownBlocks ?? [])]
   const blocks = input.blocks.flatMap((block) => {
-    const definition = componentRegistry[block.component]
+    const definition = resolveTheme(input.themeId).componentRegistry[block.component]
     if (!definition || definition.version !== block.componentVersion) {
       unknownBlocks.push(block)
       errors.push(`Unavailable component preserved: ${block.component}@${block.componentVersion}`)
@@ -180,7 +105,9 @@ export function validateLayout(input: PageLayout): { layout: PageLayout; errors:
 }
 
 export function migrateLayout(layout: PageLayout): PageLayout {
-  const { layout: migrated } = validateLayout({ ...layout, version: PAGE_LAYOUT_VERSION })
+  if (layout.version !== PAGE_LAYOUT_VERSION)
+    throw new Error('Unsupported layout version; original preserved.')
+  const { layout: migrated } = validateLayout(layout)
   return migrated
 }
 export function applyLayoutAction(
@@ -234,40 +161,24 @@ export function renderLayout(
   layout: PageLayout,
   viewport: keyof Required<ResponsiveVisibility> = 'desktop',
 ): ReactNode {
-  const { layout: safe } = validateLayout(layout)
-  resolveTheme(safe.themeId)
-  const rendered = safe.blocks
-    .filter((block) => !block.hidden && block.visible?.[viewport] !== false)
-    .map((block) => {
-      const definition = componentRegistry[block.component]
-      // A saved legacy block must never make a public page fail closed. The
-      // original JSON remains in unknownBlocks for an editor to recover.
-      return definition ? (
-        definition.render(block.props)
-      ) : (
-        <section
-          key={block.id}
-          data-unavailable-component={block.component}
-          role="status"
-          aria-label="Unavailable page section"
-        >
-          This section is unavailable.
-        </section>
-      )
-    })
-  return [
-    ...rendered,
-    ...(safe.unknownBlocks ?? []).map((block) => (
-      <section
-        key={`unavailable:${block.id}`}
-        data-unavailable-component={block.component}
-        role="status"
-        aria-label="Unavailable page section"
-      >
-        This section is unavailable.
-      </section>
-    )),
-  ]
+  if (layout.version !== PAGE_LAYOUT_VERSION)
+    throw new Error('Unsupported layout version; original preserved.')
+  const theme = resolveTheme(layout.themeId)
+  return renderPresentation(
+    {
+      version: 1,
+      siteId: layout.siteId,
+      theme: { id: theme.id, version: theme.version },
+      template: { id: 'layout', version: '1.0.0' },
+      surface: 'layout',
+      slots: {
+        main: [...layout.blocks, ...(layout.unknownBlocks ?? [])].filter(
+          (block) => block.visible?.[viewport] !== false,
+        ),
+      },
+    },
+    theme,
+  )
 }
 
 export function canRenderLayout(layout: PageLayout, state: Parameters<typeof canRenderPublic>[0]) {

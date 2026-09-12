@@ -1,0 +1,10 @@
+{
+  "id": "renegade-party",
+  "version": "1.0.0",
+  "label": "Renegade Party",
+  "renegade": "^1.0.0",
+  "renderer": "renegade-party",
+  "tokens": {},
+  "assets": [],
+  "migrations": []
+}

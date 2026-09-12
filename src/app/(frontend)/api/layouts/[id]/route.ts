@@ -26,7 +26,7 @@ export async function PATCH(request: Request, { params }: Args) {
     id,
     depth: 0,
     req,
-  } as never)
+  })
   const history = Array.isArray(
     (existing as unknown as { revisionHistory?: unknown[] }).revisionHistory,
   )
@@ -36,10 +36,11 @@ export async function PATCH(request: Request, { params }: Args) {
     collection: 'page-layouts',
     id,
     req,
+    context: { publishPresentation: body.publish === true },
     data: {
       themeId: layout.themeId,
       layoutVersion: layout.version,
-      status: layout.status,
+      status: body.publish ? 'published' : existing.status,
       blocks: layout.blocks,
       unknownBlocks: layout.unknownBlocks ?? [],
       revision: layout.revision,

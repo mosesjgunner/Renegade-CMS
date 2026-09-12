@@ -1,7 +1,8 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
+import { DEFAULT_SITE_NAME } from '@/modules/presentation/themes/identity'
 
 import { socialHash, socialIdempotencyKey, validateVariant } from '@/modules/social/contracts'
 
@@ -68,9 +69,29 @@ const networks: NetworkConfig[] = [
 ]
 
 export default function SocialStudioPage() {
-  const [text, setText] = useState(
-    'Renegade CMS empowers independent creators to own their publication, media, and audience directly.',
-  )
+  const [identity, setIdentity] = useState({ name: DEFAULT_SITE_NAME, host: '' })
+  useEffect(() => {
+    let active = true
+    void fetch('/api/globals/site-settings')
+      .then((response) => (response.ok ? response.json() : null))
+      .then((settings) => {
+        if (!active || !settings) return
+        let host = ''
+        try {
+          host = new URL(settings.canonicalOrigin).hostname
+        } catch {
+          /* no configured origin */
+        }
+        setIdentity({ name: settings.siteName || DEFAULT_SITE_NAME, host })
+      })
+      .catch(() => {
+        /* neutral preview remains available */
+      })
+    return () => {
+      active = false
+    }
+  }, [])
+  const [text, setText] = useState('')
   const [selectedNetwork, setSelectedNetwork] = useState<string>('Bluesky')
   const [scheduledFor, setScheduledFor] = useState('')
   const [status, setStatus] = useState<string>('Draft — compose and review before dispatch.')
@@ -287,13 +308,13 @@ export default function SocialStudioPage() {
             <div className="p-5 rounded-2xl bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 space-y-3 shadow-inner">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-red-600 to-rose-600 flex items-center justify-center text-white font-bold text-sm">
-                  R
+                  {identity.name.slice(0, 1)}
                 </div>
                 <div>
                   <p className="text-sm font-bold text-stone-900 dark:text-stone-100 leading-tight">
-                    Renegade Publisher
+                    {identity.name}
                   </p>
-                  <p className="text-xs text-stone-500 font-mono">@renegadeparty.org</p>
+                  <p className="text-xs text-stone-500 font-mono">{identity.host}</p>
                 </div>
               </div>
 
@@ -305,7 +326,7 @@ export default function SocialStudioPage() {
                 <span>
                   {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </span>
-                <span>Renegade Dispatch Protocol</span>
+                <span>Draft preview</span>
               </div>
             </div>
 

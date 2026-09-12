@@ -1,3 +1,4 @@
+import { renderToStaticMarkup } from 'react-dom/server'
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { randomUUID } from 'node:crypto'
 
@@ -64,7 +65,7 @@ describe('visual builder acceptance', () => {
     } as never)
     expect(anonymousDraft.docs).toHaveLength(0)
     const preview = renderLayout(layout, 'mobile')
-    expect(Array.isArray(preview)).toBe(true)
+    expect(renderToStaticMarkup(preview)).toContain('Make this space yours')
     const published = publishLayout(layout, ['layout:edit', 'layout:publish'])
     await payload.update({
       collection: 'page-layouts',

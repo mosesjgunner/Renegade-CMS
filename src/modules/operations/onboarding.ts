@@ -1,3 +1,4 @@
+import { themes } from '../presentation/registry'
 import { randomUUID } from 'node:crypto'
 
 import type { Payload } from 'payload'
@@ -64,7 +65,7 @@ export type OnboardingInput = {
   primaryUrl: string
   locale: string
   timezone: string
-  themeId: 'neutral-starter' | 'renegade-party'
+  themeId: string
   starterType: (typeof starterSiteTypes)[number]
   featureProfile: (typeof onboardingProfiles)[number]
   optionalConnections: (typeof optionalConnectionKeys)[number][]
@@ -107,8 +108,7 @@ export function validateOnboardingInput(input: OnboardingInput): OnboardingInput
     throw new Error('Choose a supported feature profile.')
   if (!starterSiteTypes.includes(input.starterType))
     throw new Error('Choose a supported starter site type.')
-  if (!['neutral-starter', 'renegade-party'].includes(input.themeId))
-    throw new Error('Choose an existing theme.')
+  if (!Object.hasOwn(themes, input.themeId)) throw new Error('Choose an existing theme.')
   if (!input.locale.trim() || !input.timezone.trim())
     throw new Error('Locale and timezone are required.')
   const optionalConnections = [...new Set(input.optionalConnections)].filter(
@@ -252,6 +252,7 @@ export async function provisionOnboardingSite(
     slug: 'site-settings',
     overrideAccess: true,
     data: {
+      themeId: input.themeId,
       ownerKind: 'organization',
       organizationName: input.name,
       defaultTitle: input.name,

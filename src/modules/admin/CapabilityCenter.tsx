@@ -1,3 +1,4 @@
+import ThemeCenter from './ThemeCenter'
 import Link from 'next/link'
 import type { AdminViewServerProps } from 'payload'
 
@@ -70,6 +71,7 @@ export default async function CapabilityCenter({ initPageResult }: AdminViewServ
     return (
       <main className="gutter--left gutter--right">
         <h1>Capability Center</h1>
+        <ThemeCenter />
         <p>Owner access is required.</p>
       </main>
     )
@@ -123,6 +125,7 @@ export default async function CapabilityCenter({ initPageResult }: AdminViewServ
   return (
     <main className="gutter--left gutter--right" style={{ maxWidth: 1180, margin: '0 auto' }}>
       <h1>Capability Center</h1>
+      <ThemeCenter />
       <p>
         Core publishing stays focused. Optional systems remain installed and can be enabled here
         without removing their records.

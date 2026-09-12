@@ -517,6 +517,7 @@ export interface Site {
  * via the `definition` "page-layouts".
  */
 export interface PageLayout {
+  publishedPresentation?: unknown;
   id: string;
   site: string | Site;
   publication?: (string | null) | Publication;
@@ -7236,6 +7237,7 @@ export interface SitesSelect<T extends boolean = true> {
  * via the `definition` "page-layouts_select".
  */
 export interface PageLayoutsSelect<T extends boolean = true> {
+  publishedPresentation?: T;
   site?: T;
   publication?: T;
   space?: T;
@@ -10705,6 +10707,7 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
  * via the `definition` "site-settings".
  */
 export interface SiteSetting {
+  themeId?: ('neutral-starter' | 'renegade-party') | null;
   id: string;
   siteName?: string | null;
   siteDescription?: string | null;
@@ -10948,6 +10951,7 @@ export interface PayloadJobsStat {
  * via the `definition` "site-settings_select".
  */
 export interface SiteSettingsSelect<T extends boolean = true> {
+  themeId?: T;
   siteName?: T;
   siteDescription?: T;
   canonicalOrigin?: T;

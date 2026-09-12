@@ -1,3 +1,6 @@
+import * as pre01Snapshots from './20260912_020000_pre_01_presentation_snapshots'
+import * as pre01 from './20260912_010000_pre_01_theme_lifecycle'
+import * as pre00 from './20260912_000000_pre_00_theme_selection'
 import * as migration_20260812_010209_initial_foundation from './20260812_010209_initial_foundation'
 import * as migration_20260812_034055_m02_operations_jobs from './20260812_034055_m02_operations_jobs'
 import * as migration_20260812_080000_m02_first_run_installation from './20260812_080000_m02_first_run_installation'
@@ -263,5 +266,12 @@ export const migrations = [
     up: migration_20260902_020000_pub_04_publishing_floor.up,
     down: migration_20260902_020000_pub_04_publishing_floor.down,
     name: '20260902_020000_pub_04_publishing_floor',
+  },
+  { up: pre00.up, down: pre00.down, name: '20260912_000000_pre_00_theme_selection' },
+  { up: pre01.up, down: pre01.down, name: '20260912_010000_pre_01_theme_lifecycle' },
+  {
+    up: pre01Snapshots.up,
+    down: pre01Snapshots.down,
+    name: '20260912_020000_pre_01_presentation_snapshots',
   },
 ]
