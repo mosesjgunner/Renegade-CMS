@@ -4,17 +4,37 @@ import type { LayoutBlock, PageLayout } from '../../public/page-builder'
 import type { MigrationReport, QuarantineRecord } from './types'
 
 export interface LegacyMigrationStore {
-  createSite(data: { name: string; slug: string; description?: string }): Promise<{ id: string; slug: string }>
+  createSite(data: {
+    name: string
+    slug: string
+    description?: string
+  }): Promise<{ id: string; slug: string }>
   findSite(siteIdOrSlug: string): Promise<{ id: string; slug: string; name: string } | null>
   deleteSite(siteId: string): Promise<void>
 
-  createAuthor(data: { siteId: string; displayName: string; slug: string; email?: string }): Promise<{ id: string }>
+  createAuthor(data: {
+    siteId: string
+    displayName: string
+    slug: string
+    email?: string
+  }): Promise<{ id: string }>
   findAuthor(siteId: string, slug: string): Promise<{ id: string } | null>
 
-  createCategory(data: { siteId: string; name: string; slug: string; parentId?: string; description?: string }): Promise<{ id: string }>
+  createCategory(data: {
+    siteId: string
+    name: string
+    slug: string
+    parentId?: string
+    description?: string
+  }): Promise<{ id: string }>
   findCategory(siteId: string, slug: string): Promise<{ id: string } | null>
 
-  createTag(data: { siteId: string; name: string; slug: string; description?: string }): Promise<{ id: string }>
+  createTag(data: {
+    siteId: string
+    name: string
+    slug: string
+    description?: string
+  }): Promise<{ id: string }>
   findTag(siteId: string, slug: string): Promise<{ id: string } | null>
 
   createMedia(data: {
@@ -84,16 +104,26 @@ export interface LegacyMigrationStore {
 export class MemoryLegacyMigrationStore implements LegacyMigrationStore {
   sites = new Map<string, { id: string; slug: string; name: string }>()
   authors = new Map<string, { id: string; siteId: string; displayName: string; slug: string }>()
-  categories = new Map<string, { id: string; siteId: string; name: string; slug: string; parentId?: string }>()
+  categories = new Map<
+    string,
+    { id: string; siteId: string; name: string; slug: string; parentId?: string }
+  >()
   tags = new Map<string, { id: string; siteId: string; name: string; slug: string }>()
-  media = new Map<string, { id: string; siteId: string; url: string; sha256: string; fileName: string }>()
+  media = new Map<
+    string,
+    { id: string; siteId: string; url: string; sha256: string; fileName: string }
+  >()
   content = new Map<string, Record<string, unknown>>()
   redirects = new Map<string, Record<string, unknown>>()
   layouts = new Map<string, Record<string, unknown>>()
   runs = new Map<string, MigrationReport>()
   quarantine = new Map<string, QuarantineRecord[]>()
 
-  async createSite(data: { name: string; slug: string; description?: string }): Promise<{ id: string; slug: string }> {
+  async createSite(data: {
+    name: string
+    slug: string
+    description?: string
+  }): Promise<{ id: string; slug: string }> {
     const id = `site-${randomUUID().slice(0, 8)}`
     const site = { id, slug: data.slug, name: data.name }
     this.sites.set(id, site)
@@ -113,7 +143,11 @@ export class MemoryLegacyMigrationStore implements LegacyMigrationStore {
     }
   }
 
-  async createAuthor(data: { siteId: string; displayName: string; slug: string }): Promise<{ id: string }> {
+  async createAuthor(data: {
+    siteId: string
+    displayName: string
+    slug: string
+  }): Promise<{ id: string }> {
     const id = `auth-${randomUUID().slice(0, 8)}`
     this.authors.set(`${data.siteId}:${data.slug}`, { id, ...data })
     return { id }
@@ -124,7 +158,12 @@ export class MemoryLegacyMigrationStore implements LegacyMigrationStore {
     return found ? { id: found.id } : null
   }
 
-  async createCategory(data: { siteId: string; name: string; slug: string; parentId?: string }): Promise<{ id: string }> {
+  async createCategory(data: {
+    siteId: string
+    name: string
+    slug: string
+    parentId?: string
+  }): Promise<{ id: string }> {
     const id = `cat-${randomUUID().slice(0, 8)}`
     this.categories.set(`${data.siteId}:${data.slug}`, { id, ...data })
     return { id }
@@ -155,11 +194,20 @@ export class MemoryLegacyMigrationStore implements LegacyMigrationStore {
   }): Promise<{ id: string; url: string }> {
     const id = `media-${randomUUID().slice(0, 8)}`
     const url = `/media/${id}`
-    this.media.set(id, { id, siteId: data.siteId, url, sha256: data.sha256, fileName: data.fileName })
+    this.media.set(id, {
+      id,
+      siteId: data.siteId,
+      url,
+      sha256: data.sha256,
+      fileName: data.fileName,
+    })
     return { id, url }
   }
 
-  async findMediaBySha256(siteId: string, sha256: string): Promise<{ id: string; url: string } | null> {
+  async findMediaBySha256(
+    siteId: string,
+    sha256: string,
+  ): Promise<{ id: string; url: string } | null> {
     for (const m of this.media.values()) {
       if (m.siteId === siteId && m.sha256 === sha256) return { id: m.id, url: m.url }
     }
@@ -225,7 +273,11 @@ export class MemoryLegacyMigrationStore implements LegacyMigrationStore {
 export class PayloadLegacyMigrationStore implements LegacyMigrationStore {
   constructor(private payload: Payload) {}
 
-  async createSite(data: { name: string; slug: string; description?: string }): Promise<{ id: string; slug: string }> {
+  async createSite(data: {
+    name: string
+    slug: string
+    description?: string
+  }): Promise<{ id: string; slug: string }> {
     const created = (await this.payload.create({
       collection: 'sites',
       overrideAccess: true,
@@ -267,36 +319,56 @@ export class PayloadLegacyMigrationStore implements LegacyMigrationStore {
   }
 
   async deleteSite(siteId: string): Promise<void> {
-    const db = (this.payload.db as unknown as { pool?: { query: (q: string, p?: unknown[]) => Promise<unknown> } }).pool
+    const db = (
+      this.payload.db as unknown as {
+        pool?: { query: (q: string, p?: unknown[]) => Promise<unknown> }
+      }
+    ).pool
     if (db) {
       try {
         await db.query("SET session_replication_role = 'replica'").catch(() => {})
         try {
-          await db.query(
-            `DELETE FROM revision_records WHERE article_id IN (SELECT id FROM article_family_content WHERE content_id IN (SELECT id FROM content WHERE site_id = $1))`,
-            [siteId],
-          ).catch(() => {})
-          await db.query(
-            `DELETE FROM article_family_content WHERE content_id IN (SELECT id FROM content WHERE site_id = $1)`,
-            [siteId],
-          ).catch(() => {})
-          await db.query(
-            `DELETE FROM content_authors WHERE _parent_id IN (SELECT id FROM content WHERE site_id = $1)`,
-            [siteId],
-          ).catch(() => {})
-          await db.query(
-            `DELETE FROM content_rels WHERE parent_id IN (SELECT id FROM content WHERE site_id = $1)`,
-            [siteId],
-          ).catch(() => {})
+          await db
+            .query(
+              `DELETE FROM revision_records WHERE article_id IN (SELECT id FROM article_family_content WHERE content_id IN (SELECT id FROM content WHERE site_id = $1))`,
+              [siteId],
+            )
+            .catch(() => {})
+          await db
+            .query(
+              `DELETE FROM article_family_content WHERE content_id IN (SELECT id FROM content WHERE site_id = $1)`,
+              [siteId],
+            )
+            .catch(() => {})
+          await db
+            .query(
+              `DELETE FROM content_authors WHERE _parent_id IN (SELECT id FROM content WHERE site_id = $1)`,
+              [siteId],
+            )
+            .catch(() => {})
+          await db
+            .query(
+              `DELETE FROM content_rels WHERE parent_id IN (SELECT id FROM content WHERE site_id = $1)`,
+              [siteId],
+            )
+            .catch(() => {})
           await db.query(`DELETE FROM content WHERE site_id = $1`, [siteId]).catch(() => {})
           await db.query(`DELETE FROM media_assets WHERE site_id = $1`, [siteId]).catch(() => {})
-          await db.query(`DELETE FROM public_redirects WHERE site_id = $1`, [siteId]).catch(() => {})
+          await db
+            .query(`DELETE FROM public_redirects WHERE site_id = $1`, [siteId])
+            .catch(() => {})
           await db.query(`DELETE FROM page_layouts WHERE site_id = $1`, [siteId]).catch(() => {})
-          await db.query(`UPDATE categories SET parent_id = NULL WHERE site_id = $1`, [siteId]).catch(() => {})
+          await db
+            .query(`UPDATE categories SET parent_id = NULL WHERE site_id = $1`, [siteId])
+            .catch(() => {})
           await db.query(`DELETE FROM categories WHERE site_id = $1`, [siteId]).catch(() => {})
           await db.query(`DELETE FROM tags WHERE site_id = $1`, [siteId]).catch(() => {})
-          await db.query(`DELETE FROM legacy_migration_quarantine WHERE site_id = $1`, [siteId]).catch(() => {})
-          await db.query(`DELETE FROM legacy_migration_runs WHERE site_id = $1`, [siteId]).catch(() => {})
+          await db
+            .query(`DELETE FROM legacy_migration_quarantine WHERE site_id = $1`, [siteId])
+            .catch(() => {})
+          await db
+            .query(`DELETE FROM legacy_migration_runs WHERE site_id = $1`, [siteId])
+            .catch(() => {})
           await db.query(`DELETE FROM sites WHERE id = $1`, [siteId]).catch(() => {})
         } finally {
           await db.query("SET session_replication_role = 'origin'").catch(() => {})
@@ -314,7 +386,12 @@ export class PayloadLegacyMigrationStore implements LegacyMigrationStore {
     })
   }
 
-  async createAuthor(data: { siteId: string; displayName: string; slug: string; email?: string }): Promise<{ id: string }> {
+  async createAuthor(data: {
+    siteId: string
+    displayName: string
+    slug: string
+    email?: string
+  }): Promise<{ id: string }> {
     const created = await this.payload.create({
       collection: 'authors',
       overrideAccess: true,
@@ -336,7 +413,13 @@ export class PayloadLegacyMigrationStore implements LegacyMigrationStore {
     return res.docs[0] ? { id: String(res.docs[0].id) } : null
   }
 
-  async createCategory(data: { siteId: string; name: string; slug: string; parentId?: string; description?: string }): Promise<{ id: string }> {
+  async createCategory(data: {
+    siteId: string
+    name: string
+    slug: string
+    parentId?: string
+    description?: string
+  }): Promise<{ id: string }> {
     const canonicalPath = `/topics/${data.slug}`
     const created = await this.payload.create({
       collection: 'categories',
@@ -366,7 +449,12 @@ export class PayloadLegacyMigrationStore implements LegacyMigrationStore {
     return res.docs[0] ? { id: String(res.docs[0].id) } : null
   }
 
-  async createTag(data: { siteId: string; name: string; slug: string; description?: string }): Promise<{ id: string }> {
+  async createTag(data: {
+    siteId: string
+    name: string
+    slug: string
+    description?: string
+  }): Promise<{ id: string }> {
     const created = await this.payload.create({
       collection: 'tags',
       overrideAccess: true,
@@ -428,7 +516,10 @@ export class PayloadLegacyMigrationStore implements LegacyMigrationStore {
     return { id, url: `/media/${id}` }
   }
 
-  async findMediaBySha256(siteId: string, sha256: string): Promise<{ id: string; url: string } | null> {
+  async findMediaBySha256(
+    siteId: string,
+    sha256: string,
+  ): Promise<{ id: string; url: string } | null> {
     const res = await this.payload.find({
       collection: 'media-assets',
       where: {
@@ -587,10 +678,18 @@ export class PayloadLegacyMigrationStore implements LegacyMigrationStore {
   async deleteEntity(collection: string, id: string): Promise<void> {
     try {
       if (collection === 'content') {
-        const db = (this.payload.db as unknown as { pool?: { query: (q: string, p: unknown[]) => Promise<unknown> } }).pool
+        const db = (
+          this.payload.db as unknown as {
+            pool?: { query: (q: string, p: unknown[]) => Promise<unknown> }
+          }
+        ).pool
         if (db) {
-          await db.query(`DELETE FROM "revision_records" WHERE "article_id" = $1;`, [id]).catch(() => {})
-          await db.query(`DELETE FROM "article_family_content" WHERE "content_id" = $1;`, [id]).catch(() => {})
+          await db
+            .query(`DELETE FROM "revision_records" WHERE "article_id" = $1;`, [id])
+            .catch(() => {})
+          await db
+            .query(`DELETE FROM "article_family_content" WHERE "content_id" = $1;`, [id])
+            .catch(() => {})
         }
       }
       await this.payload.delete({
@@ -605,10 +704,16 @@ export class PayloadLegacyMigrationStore implements LegacyMigrationStore {
 
   async saveMigrationRun(report: MigrationReport): Promise<void> {
     try {
-      const db = (this.payload.db as unknown as { pool?: { query: (q: string, p: unknown[]) => Promise<unknown> } }).pool
+      const db = (
+        this.payload.db as unknown as {
+          pool?: { query: (q: string, p: unknown[]) => Promise<unknown> }
+        }
+      ).pool
       if (db) {
         const siteIdParam =
-          report.siteId && /^[0-9a-fA-F-]{36}$/.test(report.siteId) && report.stage !== 'rolled-back'
+          report.siteId &&
+          /^[0-9a-fA-F-]{36}$/.test(report.siteId) &&
+          report.stage !== 'rolled-back'
             ? report.siteId
             : null
         await db.query(
@@ -645,9 +750,17 @@ export class PayloadLegacyMigrationStore implements LegacyMigrationStore {
 
   async getMigrationRun(runId: string): Promise<MigrationReport | null> {
     try {
-      const db = (this.payload.db as unknown as { pool?: { query: (q: string, p: unknown[]) => Promise<{ rows: Array<{ report: unknown }> }> } }).pool
+      const db = (
+        this.payload.db as unknown as {
+          pool?: {
+            query: (q: string, p: unknown[]) => Promise<{ rows: Array<{ report: unknown }> }>
+          }
+        }
+      ).pool
       if (db) {
-        const res = await db.query(`SELECT report FROM legacy_migration_runs WHERE run_id = $1;`, [runId])
+        const res = await db.query(`SELECT report FROM legacy_migration_runs WHERE run_id = $1;`, [
+          runId,
+        ])
         if (res.rows.length > 0) {
           return res.rows[0].report as MigrationReport
         }
@@ -660,7 +773,11 @@ export class PayloadLegacyMigrationStore implements LegacyMigrationStore {
 
   async saveQuarantineRecords(records: QuarantineRecord[]): Promise<void> {
     try {
-      const db = (this.payload.db as unknown as { pool?: { query: (q: string, p: unknown[]) => Promise<unknown> } }).pool
+      const db = (
+        this.payload.db as unknown as {
+          pool?: { query: (q: string, p: unknown[]) => Promise<unknown> }
+        }
+      ).pool
       if (db && records.length > 0) {
         for (const r of records) {
           const siteIdParam = r.siteId && /^[0-9a-fA-F-]{36}$/.test(r.siteId) ? r.siteId : null
@@ -692,9 +809,17 @@ export class PayloadLegacyMigrationStore implements LegacyMigrationStore {
 
   async getQuarantineRecords(runId: string): Promise<QuarantineRecord[]> {
     try {
-      const db = (this.payload.db as unknown as { pool?: { query: (q: string, p: unknown[]) => Promise<{ rows: Array<Record<string, unknown>> }> } }).pool
+      const db = (
+        this.payload.db as unknown as {
+          pool?: {
+            query: (q: string, p: unknown[]) => Promise<{ rows: Array<Record<string, unknown>> }>
+          }
+        }
+      ).pool
       if (db) {
-        const res = await db.query(`SELECT * FROM legacy_migration_quarantine WHERE run_id = $1;`, [runId])
+        const res = await db.query(`SELECT * FROM legacy_migration_quarantine WHERE run_id = $1;`, [
+          runId,
+        ])
         return res.rows.map((row) => ({
           id: String(row.id),
           runId: String(row.run_id ?? row.runId),

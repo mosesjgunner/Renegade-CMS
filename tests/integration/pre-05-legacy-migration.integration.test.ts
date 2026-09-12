@@ -11,9 +11,7 @@ import {
   activateLegacyMigration,
   rollbackLegacyMigration,
 } from '../../src/modules/portability/legacy-migration/pipeline'
-import {
-  PayloadLegacyMigrationStore,
-} from '../../src/modules/portability/legacy-migration/store'
+import { PayloadLegacyMigrationStore } from '../../src/modules/portability/legacy-migration/store'
 import type {
   LegacySitePackage,
   LegacyThemeMapping,
@@ -107,7 +105,9 @@ describe('PRE-05 Legacy Site Migration Integration Tests', () => {
       overrideAccess: true,
     })
     expect(authorsResult.docs.length).toBeGreaterThanOrEqual(2)
-    const editor = authorsResult.docs.find((a) => (a as unknown as { displayName?: string }).displayName === 'Marcus Vance')
+    const editor = authorsResult.docs.find(
+      (a) => (a as unknown as { displayName?: string }).displayName === 'Marcus Vance',
+    )
     expect(editor).toBeDefined()
 
     // Verify categories and tags created
@@ -149,7 +149,9 @@ describe('PRE-05 Legacy Site Migration Integration Tests', () => {
     })
     expect(redirectsResult.docs.length).toBeGreaterThanOrEqual(1)
     const postRedirect = redirectsResult.docs.find(
-      (r) => (r as unknown as { fromPath?: string }).fromPath === '/2026/08/investigating-algorithmic-censorship',
+      (r) =>
+        (r as unknown as { fromPath?: string }).fromPath ===
+        '/2026/08/investigating-algorithmic-censorship',
     ) as unknown as Record<string, unknown> | undefined
     expect(postRedirect).toBeDefined()
     expect(postRedirect?.toPath).toBe('/articles/investigating-algorithmic-censorship')

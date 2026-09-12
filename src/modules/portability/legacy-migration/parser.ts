@@ -16,7 +16,13 @@ function extractCDataOrText(raw: string): string {
   if (!raw) return ''
   const cdataMatch = raw.match(/<!\[CDATA\[([\s\S]*?)\]\]>/)
   if (cdataMatch) return cdataMatch[1]
-  return raw.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#039;/g, "'").trim()
+  return raw
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#039;/g, "'")
+    .trim()
 }
 
 function extractTag(xml: string, tag: string): string {
@@ -67,8 +73,12 @@ function extractSeo(meta: Record<string, string>, titleFallback: string): Extrac
     meta['_seopress_titles_canonical'] ||
     undefined
 
-  const ogTitle = meta['_yoast_wpseo_opengraph-title'] || meta['rank_math_facebook_title'] || undefined
-  const ogDescription = meta['_yoast_wpseo_opengraph-description'] || meta['rank_math_facebook_description'] || undefined
+  const ogTitle =
+    meta['_yoast_wpseo_opengraph-title'] || meta['rank_math_facebook_title'] || undefined
+  const ogDescription =
+    meta['_yoast_wpseo_opengraph-description'] ||
+    meta['rank_math_facebook_description'] ||
+    undefined
   const noindex =
     meta['_yoast_wpseo_meta-robots-noindex'] === '1' ||
     meta['rank_math_robots']?.includes('noindex') ||
@@ -106,7 +116,8 @@ export function parseContentAndArtifacts(
       name: 'inline-php',
       rawSource: phpMatch[0],
       location,
-      reason: 'Arbitrary PHP execution is disallowed in Renegade CMS for security; preserved in quarantine.',
+      reason:
+        'Arbitrary PHP execution is disallowed in Renegade CMS for security; preserved in quarantine.',
     })
   }
   text = text.replace(phpRegex, '<!-- QUARANTINED_PHP: Arbitrary PHP code -->')
@@ -121,7 +132,8 @@ export function parseContentAndArtifacts(
       name: 'inline-script',
       rawSource: scriptMatch[0],
       location,
-      reason: 'Raw client-side script tags are rejected by Renegade presentation boundary; preserved in quarantine.',
+      reason:
+        'Raw client-side script tags are rejected by Renegade presentation boundary; preserved in quarantine.',
     })
   }
   text = text.replace(scriptRegex, '<!-- QUARANTINED_SCRIPT: Client-side JavaScript -->')
@@ -136,13 +148,15 @@ export function parseContentAndArtifacts(
       name: 'inline-style',
       rawSource: styleMatch[0],
       location,
-      reason: 'Untrusted CSS stylesheets are disallowed to protect theme token integrity; preserved in quarantine.',
+      reason:
+        'Untrusted CSS stylesheets are disallowed to protect theme token integrity; preserved in quarantine.',
     })
   }
   text = text.replace(styleRegex, '<!-- QUARANTINED_STYLE: Untrusted CSS stylesheet -->')
 
   // 4. Detect and quarantine plugin blocks (e.g. wp:woocommerce, wp:elementor, wp:gravityforms, wp:wpforms)
-  const pluginBlockRegex = /<!--\s+wp:([a-zA-Z0-9_\-]+)\/([a-zA-Z0-9_\-]+)(\s+[^>]*?)?\s*(?:\/-->|-->([\s\S]*?)<!--\s+\/wp:\1\/\2\s+-->)/gi
+  const pluginBlockRegex =
+    /<!--\s+wp:([a-zA-Z0-9_\-]+)\/([a-zA-Z0-9_\-]+)(\s+[^>]*?)?\s*(?:\/-->|-->([\s\S]*?)<!--\s+\/wp:\1\/\2\s+-->)/gi
   let pbMatch: RegExpExecArray | null
   while ((pbMatch = pluginBlockRegex.exec(rawContent)) !== null) {
     const pluginNamespace = pbMatch[1].toLowerCase()
@@ -151,7 +165,11 @@ export function parseContentAndArtifacts(
     if (pluginNamespace !== 'core') {
       unsupported.push({
         id: randomUUID(),
-        kind: pluginNamespace.includes('form') ? 'form' : pluginNamespace.includes('commerce') || pluginNamespace.includes('woocommerce') ? 'commerce' : 'plugin-block',
+        kind: pluginNamespace.includes('form')
+          ? 'form'
+          : pluginNamespace.includes('commerce') || pluginNamespace.includes('woocommerce')
+            ? 'commerce'
+            : 'plugin-block',
         name: `${pluginNamespace}/${blockName}`,
         rawSource: pbMatch[0],
         location,
@@ -172,7 +190,11 @@ export function parseContentAndArtifacts(
     // Exclude basic markdown-like or non-plugin shortcodes if any, but in WP all bracket codes are shortcodes
     unsupported.push({
       id: randomUUID(),
-      kind: codeName.includes('form') ? 'form' : codeName.includes('cart') || codeName.includes('shop') ? 'commerce' : 'shortcode',
+      kind: codeName.includes('form')
+        ? 'form'
+        : codeName.includes('cart') || codeName.includes('shop')
+          ? 'commerce'
+          : 'shortcode',
       name: codeName,
       rawSource: scMatch[0],
       location,
@@ -183,7 +205,8 @@ export function parseContentAndArtifacts(
 
   // 6. Parse structured Gutenberg blocks into clean content blocks
   const parsedBlocks: ParsedContentBlock[] = []
-  const blockRegex = /<!--\s+wp:([a-zA-Z0-9_\-]+)(?:\s+(\{[\s\S]*?\}))?\s*-->([\s\S]*?)<!--\s+\/wp:\1\s+-->/gi
+  const blockRegex =
+    /<!--\s+wp:([a-zA-Z0-9_\-]+)(?:\s+(\{[\s\S]*?\}))?\s*-->([\s\S]*?)<!--\s+\/wp:\1\s+-->/gi
   let blockMatch: RegExpExecArray | null
 
   while ((blockMatch = blockRegex.exec(text)) !== null) {
@@ -249,7 +272,14 @@ function safeParseJson(str: string): Record<string, unknown> {
 }
 
 function stripTags(html: string): string {
-  return html.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').trim()
+  return html
+    .replace(/<[^>]*>/g, '')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .trim()
 }
 
 /** Parse full WordPress WXR XML into NormalizedWxr */
@@ -319,9 +349,17 @@ export function parseWxr(xml: string): NormalizedWxr {
     const id = extractTag(ib, 'wp:post_id') || randomUUID()
     const postType = extractTag(ib, 'wp:post_type') || 'post'
     const title = extractTag(ib, 'title')
-    const slug = extractTag(ib, 'wp:post_name') || title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '')
+    const slug =
+      extractTag(ib, 'wp:post_name') ||
+      title
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)/g, '')
     const link = extractTag(ib, 'link')
-    const publishedAt = extractTag(ib, 'wp:post_date_gmt') || extractTag(ib, 'wp:post_date') || new Date().toISOString()
+    const publishedAt =
+      extractTag(ib, 'wp:post_date_gmt') ||
+      extractTag(ib, 'wp:post_date') ||
+      new Date().toISOString()
     const status = (extractTag(ib, 'wp:status') || 'publish') as NormalizedItem['status']
     const authorLogin = extractTag(ib, 'dc:creator') || authors[0]?.login || 'admin'
     const excerpt = extractTag(ib, 'excerpt:encoded') || ''
@@ -340,7 +378,8 @@ export function parseWxr(xml: string): NormalizedWxr {
         name: 'wordpress-comments',
         rawSource: `${commentBlocks.length} comments attached to post ${id}`,
         location: `Item: ${title || slug}`,
-        reason: 'WordPress user comments are not auto-imported into editorial content; comments preserved in quarantine.',
+        reason:
+          'WordPress user comments are not auto-imported into editorial content; comments preserved in quarantine.',
       })
     }
 
@@ -387,7 +426,9 @@ export function parseWxr(xml: string): NormalizedWxr {
     // Parse categories and tags associated with item
     const itemCategories: string[] = []
     const itemTags: string[] = []
-    const catMatches = ib.matchAll(/<category\s+domain=["']([^"']+)["']\s+nicename=["']([^"']+)["'][^>]*>([\s\S]*?)<\/category>/gi)
+    const catMatches = ib.matchAll(
+      /<category\s+domain=["']([^"']+)["']\s+nicename=["']([^"']+)["'][^>]*>([\s\S]*?)<\/category>/gi,
+    )
     for (const match of catMatches) {
       const domain = match[1]
       const nicename = match[2]
@@ -399,10 +440,11 @@ export function parseWxr(xml: string): NormalizedWxr {
     const seo = extractSeo(meta, title)
 
     // Parse content and detect unsupported elements
-    const { cleanContent, parsedBlocks, unsupported: contentUnsupported } = parseContentAndArtifacts(
-      rawContent,
-      `Item: ${title || slug} (ID: ${id})`,
-    )
+    const {
+      cleanContent,
+      parsedBlocks,
+      unsupported: contentUnsupported,
+    } = parseContentAndArtifacts(rawContent, `Item: ${title || slug} (ID: ${id})`)
 
     items.push({
       id,

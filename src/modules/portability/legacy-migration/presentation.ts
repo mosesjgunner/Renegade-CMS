@@ -9,7 +9,12 @@ import type {
 } from './types'
 
 /** Extract hex colors from raw CSS or HTML */
-function extractColorsFromText(text?: string): { brand?: string; canvas?: string; surface?: string; ink?: string } {
+function extractColorsFromText(text?: string): {
+  brand?: string
+  canvas?: string
+  surface?: string
+  ink?: string
+} {
   if (!text) return {}
   const hexMatches = text.match(/#([0-9a-fA-F]{3,8})\b/g)
   if (!hexMatches || hexMatches.length === 0) return {}
@@ -94,14 +99,18 @@ export function reconstructPresentation(
         width: 'standard',
         background: 'canvas',
         emphasis: 'normal',
-        link: navigationLinks[0] ? { label: navigationLinks[0].label, href: navigationLinks[0].href } : undefined,
+        link: navigationLinks[0]
+          ? { label: navigationLinks[0].label, href: navigationLinks[0].href }
+          : undefined,
       },
       visible: { desktop: true, tablet: true, mobile: true },
     },
   ]
 
   // 3. Derive Footer Global
-  const copyright = themeMapping?.footer?.copyrightText || `© ${new Date().getFullYear()} ${siteInfo.title}. All rights reserved.`
+  const copyright =
+    themeMapping?.footer?.copyrightText ||
+    `© ${new Date().getFullYear()} ${siteInfo.title}. All rights reserved.`
   const footerColumns = themeMapping?.footer?.columns || [
     {
       title: 'Navigation',

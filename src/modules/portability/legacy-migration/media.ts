@@ -3,7 +3,10 @@ import { inspectMedia } from '../../media/storage'
 import type { NormalizedMedia } from './types'
 
 export type MediaAcquisitionResult = {
-  acquiredMedia: Map<string, { mediaId: string; sha256: string; fileName: string; mimeType: string }>
+  acquiredMedia: Map<
+    string,
+    { mediaId: string; sha256: string; fileName: string; mimeType: string }
+  >
   urlRewireMap: Map<string, string> // sourceUrl -> /media/:mediaId
   idRewireMap: Map<string, string> // sourceAttachmentId -> mediaId
   warnings: Array<{ code: string; message: string; sourceId?: string }>
@@ -45,7 +48,10 @@ export async function acquireLegacyMedia(
     fetcher?: typeof fetch
   },
 ): Promise<MediaAcquisitionResult> {
-  const acquiredMedia = new Map<string, { mediaId: string; sha256: string; fileName: string; mimeType: string }>()
+  const acquiredMedia = new Map<
+    string,
+    { mediaId: string; sha256: string; fileName: string; mimeType: string }
+  >()
   const urlRewireMap = new Map<string, string>()
   const idRewireMap = new Map<string, string>()
   const warnings: Array<{ code: string; message: string; sourceId?: string }> = []
@@ -62,7 +68,8 @@ export async function acquireLegacyMedia(
     const localMatch =
       options.localMediaFiles?.[item.sourceUrl] ||
       options.localMediaFiles?.[item.fileName] ||
-      (options.localMediaFiles && Object.entries(options.localMediaFiles).find(([k]) => item.sourceUrl.endsWith(k))?.[1])
+      (options.localMediaFiles &&
+        Object.entries(options.localMediaFiles).find(([k]) => item.sourceUrl.endsWith(k))?.[1])
 
     if (localMatch) {
       bytes = new Uint8Array(localMatch.buffer)
@@ -92,10 +99,14 @@ export async function acquireLegacyMedia(
 
       // 4. Download safely with bounded size and timeout
       try {
-        const response = await safeFetch(item.sourceUrl, {}, {
-          fetcher: options.fetcher,
-          maxBytes: 25 * 1024 * 1024, // 25MB maximum per asset
-        })
+        const response = await safeFetch(
+          item.sourceUrl,
+          {},
+          {
+            fetcher: options.fetcher,
+            maxBytes: 25 * 1024 * 1024, // 25MB maximum per asset
+          },
+        )
         if (!response.ok) {
           warnings.push({
             code: 'MEDIA_DOWNLOAD_HTTP_ERROR',

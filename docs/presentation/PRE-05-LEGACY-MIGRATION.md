@@ -22,12 +22,14 @@ flowchart LR
 ```
 
 ### Stage 1: Inspect
+
 - Ingests legacy export package (WXR XML, theme mapping, or captured assets).
 - Validates XML structure, calculates SHA-256 source checksum (`sourceWxr`).
 - Extracts entity counts: posts, pages, authors, categories, tags, media items, menus.
 - Pre-scans for unsupported artifacts and potential security violations before mutation.
 
 ### Stage 2: Parse & Normalize
+
 - Parses WXR elements into typed `NormalizedWxr` data structures.
 - Parses Gutenberg blocks (`<!-- wp:paragraph -->`, `<!-- wp:heading -->`, `<!-- wp:list -->`, `<!-- wp:quote -->`, `<!-- wp:image -->`) into clean block projections.
 - Falls back to classic HTML paragraph splitting for legacy non-block content.
@@ -35,6 +37,7 @@ flowchart LR
 - Detects nested category parent-child hierarchies and tag associations.
 
 ### Stage 3: Map
+
 - **Authors**: Maps legacy user logins to Renegade author personas using hyphenated alphanumeric slugs (`canonicalSlug`).
 - **Taxonomy**: Maps categories and tags into site-scoped Renegade collections, preserving nested category relationships.
 - **Media**: Normalizes media attachment records with URLs, titles, alt text, and mime types.
@@ -42,6 +45,7 @@ flowchart LR
 - **Presentation**: Derives design tokens (typography, color palettes, spacing), header/footer globals with navigation menus, and page/post/archive templates from safe theme mappings or captured HTML using only registered Renegade starter components (`publisher.hero`, `publisher.rich-content`, `publisher.article-list`, `publisher.feature-grid`, `publisher.cta`).
 
 ### Stage 4: Dry-Run / Preflight
+
 - Simulates the entire import in-memory without database mutations.
 - Produces a comprehensive `MigrationReport` containing:
   - Source entity counts vs. projected created entities.
@@ -51,6 +55,7 @@ flowchart LR
   - Acceptance checklist results.
 
 ### Stage 5: Execute Import
+
 - Imports content, taxonomy, media, redirects, and layouts into an isolated site or approved target.
 - **Strict Draft Status**: All reconstructed page layouts and templates are created in `draft` status.
 - **Safe Media Acquisition**:
@@ -61,6 +66,7 @@ flowchart LR
 - **Persistence**: Migration runs are durably recorded in `legacy_migration_runs` table; quarantined records are stored in `legacy_migration_quarantine`.
 
 ### Stage 6: Verify Reconciliation
+
 - Audits database state against the original source checksum and counts:
   - Verifies content record counts match legacy post/page counts.
   - Verifies redirect graph is acyclic and collision-free.
@@ -69,12 +75,14 @@ flowchart LR
 - Transitions run status to `verified`.
 
 ### Stage 7: Deliberate Human Activation
+
 - **Human Approval Gate**: Live activation requires explicit operator confirmation.
 - Publishes draft page layouts and templates.
 - Enables public 308 redirects for legacy inbound paths.
 - Records `activatedAt` and `activatedBy` operator metadata.
 
 ### Stage 8: Rollback & Clean Deletion
+
 - If rejected or cancelled, single-click rollback reverses all changes in reverse dependency order:
   1. Deletes page layouts and templates.
   2. Deletes public redirects.
@@ -88,31 +96,32 @@ flowchart LR
 
 ## Supported Artifacts vs. Quarantine Boundary
 
-| Legacy Artifact | Support Status | Renegade Representation / Handling |
-| :--- | :--- | :--- |
-| **Posts & Pages** | Supported | `content` collection (`article` or `page`), Lexical document body |
-| **Authors & Bios** | Supported | `authors` collection with sanitized alphanumeric hyphenated slugs |
-| **Categories & Tags** | Supported | `categories` (with nested parent-child trees) and `tags` collections |
-| **Publish & Draft Dates** | Supported | Preserved in `publishedAt` and content lifecycle status |
-| **Slugs & Permalinks** | Supported | Canonical Renegade paths + validated 308 permanent redirects |
-| **Featured Media** | Supported | Uploaded to `media-assets`, rewired to content `featuredMedia` |
-| **Inline Media** | Supported | Uploaded to `media-assets`, img `src` rewired in Lexical body |
-| **Navigation Menus** | Supported | Reconstructed into `header` global region with navigation links |
-| **Gutenberg Core Blocks** | Supported | Mapped to registered `publisher.*` blocks (hero, rich-content, list) |
-| **Yoast / RankMath SEO** | Supported | Extracted to top-level canonical `seoTitle` and `seoDescription` |
-| **Shortcodes** (`[form]`, etc.) | **Quarantined** | Preserved in `legacy_migration_quarantine`; replaced with HTML comments |
-| **Plugin Blocks** (WooCommerce) | **Quarantined** | Quarantined; source markup preserved for manual editor review |
-| **Executable Scripts** (`<script>`) | **Quarantined** | Stripped from body, logged to quarantine with security warning |
-| **Arbitrary Styles** (`<style>`) | **Quarantined** | Stripped from body, logged to quarantine; design tokens used instead |
-| **Dynamic PHP Code** | **Quarantined** | Stripped from body, logged to quarantine; PHP execution is disabled |
-| **Comments** | **Quarantined** | Logged to quarantine store; WordPress comment engines not run |
-| **Memberships / Commerce** | **Quarantined** | Logged to quarantine store for mapping to Renegade Commerce/Members |
+| Legacy Artifact                     | Support Status  | Renegade Representation / Handling                                      |
+| :---------------------------------- | :-------------- | :---------------------------------------------------------------------- |
+| **Posts & Pages**                   | Supported       | `content` collection (`article` or `page`), Lexical document body       |
+| **Authors & Bios**                  | Supported       | `authors` collection with sanitized alphanumeric hyphenated slugs       |
+| **Categories & Tags**               | Supported       | `categories` (with nested parent-child trees) and `tags` collections    |
+| **Publish & Draft Dates**           | Supported       | Preserved in `publishedAt` and content lifecycle status                 |
+| **Slugs & Permalinks**              | Supported       | Canonical Renegade paths + validated 308 permanent redirects            |
+| **Featured Media**                  | Supported       | Uploaded to `media-assets`, rewired to content `featuredMedia`          |
+| **Inline Media**                    | Supported       | Uploaded to `media-assets`, img `src` rewired in Lexical body           |
+| **Navigation Menus**                | Supported       | Reconstructed into `header` global region with navigation links         |
+| **Gutenberg Core Blocks**           | Supported       | Mapped to registered `publisher.*` blocks (hero, rich-content, list)    |
+| **Yoast / RankMath SEO**            | Supported       | Extracted to top-level canonical `seoTitle` and `seoDescription`        |
+| **Shortcodes** (`[form]`, etc.)     | **Quarantined** | Preserved in `legacy_migration_quarantine`; replaced with HTML comments |
+| **Plugin Blocks** (WooCommerce)     | **Quarantined** | Quarantined; source markup preserved for manual editor review           |
+| **Executable Scripts** (`<script>`) | **Quarantined** | Stripped from body, logged to quarantine with security warning          |
+| **Arbitrary Styles** (`<style>`)    | **Quarantined** | Stripped from body, logged to quarantine; design tokens used instead    |
+| **Dynamic PHP Code**                | **Quarantined** | Stripped from body, logged to quarantine; PHP execution is disabled     |
+| **Comments**                        | **Quarantined** | Logged to quarantine store; WordPress comment engines not run           |
+| **Memberships / Commerce**          | **Quarantined** | Logged to quarantine store for mapping to Renegade Commerce/Members     |
 
 ---
 
 ## Administrative Review Interface
 
 Located at `/admin/migration?runId=:runId`:
+
 - **Run Header**: Displays Run ID, created timestamps, and live stage badge.
 - **Acceptance Checklist**: Four green/red indicators showing reconciliation status.
 - **Metrics Overview**: High-level counters for content records, taxonomy terms, media, and quarantined items.
@@ -127,6 +136,7 @@ Located at `/admin/migration?runId=:runId`:
 ## Verification & Quality Gates
 
 The implementation is verified by:
+
 1. **Unit Tests** (`tests/unit/pre-05-legacy-migration.test.ts`):
    - WXR XML parsing and metadata extraction.
    - Gutenberg block mapping and classic paragraph fallback.

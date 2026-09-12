@@ -114,7 +114,9 @@ test('PRE-05: Legacy Site Migration & Presentation Reconstruction review UI, sid
     await expect(page.getByText('Quarantined Artifacts Viewer')).toBeVisible()
     await expect(page.getByText('wpforms', { exact: false }).first()).toBeVisible()
     await expect(page.getByText('woocommerce', { exact: false }).first()).toBeVisible()
-    await expect(page.getByText('Arbitrary PHP code execution is disabled', { exact: false })).toBeVisible()
+    await expect(
+      page.getByText('Arbitrary PHP code execution is disabled', { exact: false }),
+    ).toBeVisible()
 
     // 11. Trigger "Verify Reconciliation"
     const verifyBtn = page.getByRole('button', { name: /verify reconciliation/i })
@@ -135,6 +137,8 @@ test('PRE-05: Legacy Site Migration & Presentation Reconstruction review UI, sid
   } finally {
     // 13. Rollback and cleanup created site and admin session
     await rollbackLegacyMigration(runId, store, 'lead-editor@renegade.dev').catch(() => {})
-    await payload.db.pool.query('DELETE FROM admin_sessions WHERE id = $1', [session.sessionId]).catch(() => {})
+    await payload.db.pool
+      .query('DELETE FROM admin_sessions WHERE id = $1', [session.sessionId])
+      .catch(() => {})
   }
 })

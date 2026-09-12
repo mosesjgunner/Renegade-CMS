@@ -7,10 +7,7 @@ import { PayloadLegacyMigrationStore } from '@/modules/portability/legacy-migrat
 const staff = (user: { role?: string } | null | undefined) =>
   user?.role === 'owner' || user?.role === 'administrator' || user?.role === 'staff'
 
-export async function GET(
-  request: Request,
-  { params }: { params: Promise<{ runId: string }> },
-) {
+export async function GET(request: Request, { params }: { params: Promise<{ runId: string }> }) {
   const payload = await getPayload({ config })
   const auth = await payload.auth({ headers: request.headers })
   if (!staff(auth.user)) {

@@ -12,7 +12,9 @@ export default function LegacyMigrationReview({
   const [loading, setLoading] = useState(false)
   const [actionMessage, setActionMessage] = useState<string | null>(null)
   const [wxrInput, setWxrInput] = useState('')
-  const [activeTab, setActiveTab] = useState<'content' | 'presentation' | 'redirects' | 'quarantine'>('content')
+  const [activeTab, setActiveTab] = useState<
+    'content' | 'presentation' | 'redirects' | 'quarantine'
+  >('content')
 
   const handleInspect = async (wxrText: string) => {
     setLoading(true)
@@ -25,7 +27,9 @@ export default function LegacyMigrationReview({
       })
       const data = await res.json()
       if (res.ok) {
-        setActionMessage(`Inspection passed: ${data.summary.posts} posts, ${data.summary.pages} pages, ${data.summary.unsupported} unsupported items detected.`)
+        setActionMessage(
+          `Inspection passed: ${data.summary.posts} posts, ${data.summary.pages} pages, ${data.summary.unsupported} unsupported items detected.`,
+        )
       } else {
         setActionMessage(`Inspection error: ${data.errors?.join(', ') || data.error}`)
       }
@@ -77,7 +81,9 @@ export default function LegacyMigrationReview({
       const data = await res.json()
       if (res.ok) {
         setReport(data)
-        setActionMessage(`Migration executed into site ${data.siteId}. Stage: ${data.stage}. Deliberate activation required.`)
+        setActionMessage(
+          `Migration executed into site ${data.siteId}. Stage: ${data.stage}. Deliberate activation required.`,
+        )
       } else {
         setActionMessage(`Execution error: ${data.error || 'Failed'}`)
       }
@@ -90,7 +96,12 @@ export default function LegacyMigrationReview({
 
   const handleActivate = async () => {
     if (!report?.runId) return
-    if (!confirm('Activate migration? This will publish draft layouts and enable public redirects for this site.')) return
+    if (
+      !confirm(
+        'Activate migration? This will publish draft layouts and enable public redirects for this site.',
+      )
+    )
+      return
     setLoading(true)
     setActionMessage(null)
     try {
@@ -100,7 +111,9 @@ export default function LegacyMigrationReview({
       const data = await res.json()
       if (res.ok) {
         setReport(data)
-        setActionMessage(`Site migration ${report.runId} successfully activated! Public routes and redirects are now live.`)
+        setActionMessage(
+          `Site migration ${report.runId} successfully activated! Public routes and redirects are now live.`,
+        )
       } else {
         setActionMessage(`Activation error: ${data.error || 'Failed'}`)
       }
@@ -113,7 +126,12 @@ export default function LegacyMigrationReview({
 
   const handleRollback = async () => {
     if (!report?.runId) return
-    if (!confirm('Rollback migration? This will cleanly delete all content, layouts, redirects, and media created by this run.')) return
+    if (
+      !confirm(
+        'Rollback migration? This will cleanly delete all content, layouts, redirects, and media created by this run.',
+      )
+    )
+      return
     setLoading(true)
     setActionMessage(null)
     try {
@@ -123,7 +141,9 @@ export default function LegacyMigrationReview({
       const data = await res.json()
       if (res.ok) {
         setReport(data)
-        setActionMessage(`Migration ${report.runId} rolled back cleanly. Created site and records removed.`)
+        setActionMessage(
+          `Migration ${report.runId} rolled back cleanly. Created site and records removed.`,
+        )
       } else {
         setActionMessage(`Rollback error: ${data.error || 'Failed'}`)
       }
@@ -135,16 +155,21 @@ export default function LegacyMigrationReview({
   }
 
   return (
-    <div style={{ padding: '24px', maxWidth: '1400px', margin: '0 auto', fontFamily: 'sans-serif' }}>
+    <div
+      style={{ padding: '24px', maxWidth: '1400px', margin: '0 auto', fontFamily: 'sans-serif' }}
+    >
       {/* Header */}
-      <header style={{ borderBottom: '1px solid #e2e8f0', paddingBottom: '16px', marginBottom: '24px' }}>
+      <header
+        style={{ borderBottom: '1px solid #e2e8f0', paddingBottom: '16px', marginBottom: '24px' }}
+      >
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
             <h1 style={{ fontSize: '24px', fontWeight: 700, margin: 0, color: '#0f172a' }}>
               Legacy Site Migration &amp; Presentation Reconstruction (PRE-05)
             </h1>
             <p style={{ color: '#64748b', fontSize: '14px', margin: '4px 0 0 0' }}>
-              Safe, repeatable WordPress migration with presentation reconstruction, URL redirect planning, and quarantine safety.
+              Safe, repeatable WordPress migration with presentation reconstruction, URL redirect
+              planning, and quarantine safety.
             </p>
           </div>
           {report && (
@@ -255,8 +280,9 @@ export default function LegacyMigrationReview({
             Import Legacy WordPress Export (WXR)
           </h2>
           <p style={{ fontSize: '14px', color: '#64748b', marginBottom: '12px' }}>
-            Paste the XML content of a WordPress eXtended RSS (WXR) export or upload a file. The pipeline will inspect,
-            normalize, map, dry-run preflight, and import safely into an isolated site.
+            Paste the XML content of a WordPress eXtended RSS (WXR) export or upload a file. The
+            pipeline will inspect, normalize, map, dry-run preflight, and import safely into an
+            isolated site.
           </p>
           <textarea
             data-testid="wxr-input-textarea"
@@ -335,41 +361,97 @@ export default function LegacyMigrationReview({
             marginBottom: '24px',
           }}
         >
-          <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-            <div style={{ color: '#64748b', fontSize: '12px', fontWeight: 600 }}>CONTENT RECORDS</div>
-            <div data-testid="metric-content" style={{ fontSize: '24px', fontWeight: 700, color: '#0f172a' }}>
-              {report.reconciliation.created.content} / {report.sourceSummary.posts + report.sourceSummary.pages}
+          <div
+            style={{
+              background: '#f8fafc',
+              padding: '16px',
+              borderRadius: '8px',
+              border: '1px solid #e2e8f0',
+            }}
+          >
+            <div style={{ color: '#64748b', fontSize: '12px', fontWeight: 600 }}>
+              CONTENT RECORDS
+            </div>
+            <div
+              data-testid="metric-content"
+              style={{ fontSize: '24px', fontWeight: 700, color: '#0f172a' }}
+            >
+              {report.reconciliation.created.content} /{' '}
+              {report.sourceSummary.posts + report.sourceSummary.pages}
             </div>
             <div style={{ fontSize: '11px', color: '#94a3b8' }}>
               {report.sourceSummary.posts} Posts, {report.sourceSummary.pages} Pages
             </div>
           </div>
-          <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+          <div
+            style={{
+              background: '#f8fafc',
+              padding: '16px',
+              borderRadius: '8px',
+              border: '1px solid #e2e8f0',
+            }}
+          >
             <div style={{ color: '#64748b', fontSize: '12px', fontWeight: 600 }}>MEDIA ASSETS</div>
-            <div data-testid="metric-media" style={{ fontSize: '24px', fontWeight: 700, color: '#0f172a' }}>
+            <div
+              data-testid="metric-media"
+              style={{ fontSize: '24px', fontWeight: 700, color: '#0f172a' }}
+            >
               {report.reconciliation.created.media} / {report.sourceSummary.media}
             </div>
             <div style={{ fontSize: '11px', color: '#94a3b8' }}>Deduplicated with SHA-256</div>
           </div>
-          <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+          <div
+            style={{
+              background: '#f8fafc',
+              padding: '16px',
+              borderRadius: '8px',
+              border: '1px solid #e2e8f0',
+            }}
+          >
             <div style={{ color: '#64748b', fontSize: '12px', fontWeight: 600 }}>URL REDIRECTS</div>
-            <div data-testid="metric-redirects" style={{ fontSize: '24px', fontWeight: 700, color: '#0f172a' }}>
+            <div
+              data-testid="metric-redirects"
+              style={{ fontSize: '24px', fontWeight: 700, color: '#0f172a' }}
+            >
               {report.reconciliation.created.redirects}
             </div>
             <div style={{ fontSize: '11px', color: '#16a34a' }}>0 Loops, 0 Collisions</div>
           </div>
-          <div style={{ background: '#f8fafc', padding: '16px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
+          <div
+            style={{
+              background: '#f8fafc',
+              padding: '16px',
+              borderRadius: '8px',
+              border: '1px solid #e2e8f0',
+            }}
+          >
             <div style={{ color: '#64748b', fontSize: '12px', fontWeight: 600 }}>PRESENTATION</div>
-            <div data-testid="metric-presentation" style={{ fontSize: '24px', fontWeight: 700, color: '#0f172a' }}>
+            <div
+              data-testid="metric-presentation"
+              style={{ fontSize: '24px', fontWeight: 700, color: '#0f172a' }}
+            >
               {report.reconciliation.created.layouts} Layouts
             </div>
             <div style={{ fontSize: '11px', color: '#94a3b8' }}>
-              {report.reconciliation.created.templates} Templates, {report.reconciliation.created.patterns} Patterns
+              {report.reconciliation.created.templates} Templates,{' '}
+              {report.reconciliation.created.patterns} Patterns
             </div>
           </div>
-          <div style={{ background: '#fffbeb', padding: '16px', borderRadius: '8px', border: '1px solid #fef3c7' }}>
-            <div style={{ color: '#b45309', fontSize: '12px', fontWeight: 600 }}>QUARANTINED ARTIFACTS</div>
-            <div data-testid="metric-quarantine" style={{ fontSize: '24px', fontWeight: 700, color: '#92400e' }}>
+          <div
+            style={{
+              background: '#fffbeb',
+              padding: '16px',
+              borderRadius: '8px',
+              border: '1px solid #fef3c7',
+            }}
+          >
+            <div style={{ color: '#b45309', fontSize: '12px', fontWeight: 600 }}>
+              QUARANTINED ARTIFACTS
+            </div>
+            <div
+              data-testid="metric-quarantine"
+              style={{ fontSize: '24px', fontWeight: 700, color: '#92400e' }}
+            >
               {report.quarantine.length}
             </div>
             <div style={{ fontSize: '11px', color: '#b45309' }}>Zero Arbitrary Code Execution</div>
@@ -392,39 +474,74 @@ export default function LegacyMigrationReview({
           <div style={{ fontWeight: 600, fontSize: '14px', marginBottom: '8px', color: '#0f172a' }}>
             Acceptance Checklist
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '8px', fontSize: '13px' }}>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))',
+              gap: '8px',
+              fontSize: '13px',
+            }}
+          >
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ color: report.acceptanceChecklist.contentCountsMatch ? '#16a34a' : '#dc2626' }}>
+              <span
+                style={{
+                  color: report.acceptanceChecklist.contentCountsMatch ? '#16a34a' : '#dc2626',
+                }}
+              >
                 {report.acceptanceChecklist.contentCountsMatch ? '✓' : '✗'}
               </span>
               <span>Content counts match source</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ color: report.acceptanceChecklist.mediaChecksumsVerified ? '#16a34a' : '#dc2626' }}>
+              <span
+                style={{
+                  color: report.acceptanceChecklist.mediaChecksumsVerified ? '#16a34a' : '#dc2626',
+                }}
+              >
                 {report.acceptanceChecklist.mediaChecksumsVerified ? '✓' : '✗'}
               </span>
               <span>Media byte checksums verified</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ color: report.acceptanceChecklist.urlsAndRedirectsLoopFree ? '#16a34a' : '#dc2626' }}>
+              <span
+                style={{
+                  color: report.acceptanceChecklist.urlsAndRedirectsLoopFree
+                    ? '#16a34a'
+                    : '#dc2626',
+                }}
+              >
                 {report.acceptanceChecklist.urlsAndRedirectsLoopFree ? '✓' : '✗'}
               </span>
               <span>URLs &amp; redirects loop-free</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ color: report.acceptanceChecklist.themeSafeNoArbitraryExec ? '#16a34a' : '#dc2626' }}>
+              <span
+                style={{
+                  color: report.acceptanceChecklist.themeSafeNoArbitraryExec
+                    ? '#16a34a'
+                    : '#dc2626',
+                }}
+              >
                 {report.acceptanceChecklist.themeSafeNoArbitraryExec ? '✓' : '✗'}
               </span>
               <span>Theme safety (0 PHP/JS/CSS injections)</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ color: report.acceptanceChecklist.unsupportedQuarantined ? '#16a34a' : '#dc2626' }}>
+              <span
+                style={{
+                  color: report.acceptanceChecklist.unsupportedQuarantined ? '#16a34a' : '#dc2626',
+                }}
+              >
                 {report.acceptanceChecklist.unsupportedQuarantined ? '✓' : '✗'}
               </span>
               <span>Unsupported elements quarantined</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span style={{ color: report.acceptanceChecklist.idempotencyVerified ? '#16a34a' : '#dc2626' }}>
+              <span
+                style={{
+                  color: report.acceptanceChecklist.idempotencyVerified ? '#16a34a' : '#dc2626',
+                }}
+              >
                 {report.acceptanceChecklist.idempotencyVerified ? '✓' : '✗'}
               </span>
               <span>Resumable &amp; idempotent</span>
@@ -466,10 +583,26 @@ export default function LegacyMigrationReview({
 
       {/* Content Tab: Side-by-Side Review Table */}
       {report && activeTab === 'content' && (
-        <div style={{ overflowX: 'auto', background: '#fff', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-          <table data-testid="side-by-side-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+        <div
+          style={{
+            overflowX: 'auto',
+            background: '#fff',
+            borderRadius: '8px',
+            border: '1px solid #e2e8f0',
+          }}
+        >
+          <table
+            data-testid="side-by-side-table"
+            style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}
+          >
             <thead>
-              <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', textAlign: 'left' }}>
+              <tr
+                style={{
+                  background: '#f8fafc',
+                  borderBottom: '1px solid #e2e8f0',
+                  textAlign: 'left',
+                }}
+              >
                 <th style={{ padding: '12px' }}>Legacy Source</th>
                 <th style={{ padding: '12px' }}>Renegade Canonical</th>
                 <th style={{ padding: '12px' }}>Status</th>
@@ -483,8 +616,15 @@ export default function LegacyMigrationReview({
                   <td style={{ padding: '12px' }}>
                     <div style={{ fontWeight: 600, color: '#0f172a' }}>{item.sourceTitle}</div>
                     <div style={{ fontSize: '11px', color: '#64748b' }}>
-                      <span style={{ textTransform: 'uppercase', marginRight: '6px' }}>{item.sourceType}</span>
-                      <a href={item.sourceUrl} target="_blank" rel="noreferrer" style={{ color: '#2563eb' }}>
+                      <span style={{ textTransform: 'uppercase', marginRight: '6px' }}>
+                        {item.sourceType}
+                      </span>
+                      <a
+                        href={item.sourceUrl}
+                        target="_blank"
+                        rel="noreferrer"
+                        style={{ color: '#2563eb' }}
+                      >
                         {item.sourceUrl}
                       </a>
                     </div>
@@ -570,12 +710,29 @@ export default function LegacyMigrationReview({
       {/* Presentation Tab */}
       {report && activeTab === 'presentation' && (
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
-          <div style={{ background: '#fff', padding: '16px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-            <h3 style={{ fontSize: '16px', fontWeight: 600, marginTop: 0 }}>Derived Theme Tokens</h3>
+          <div
+            style={{
+              background: '#fff',
+              padding: '16px',
+              borderRadius: '8px',
+              border: '1px solid #e2e8f0',
+            }}
+          >
+            <h3 style={{ fontSize: '16px', fontWeight: 600, marginTop: 0 }}>
+              Derived Theme Tokens
+            </h3>
             <p style={{ fontSize: '12px', color: '#64748b' }}>
-              Extracted from theme export mapping and representative public HTML. No arbitrary CSS properties injected.
+              Extracted from theme export mapping and representative public HTML. No arbitrary CSS
+              properties injected.
             </p>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px', fontSize: '13px' }}>
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(2, 1fr)',
+                gap: '8px',
+                fontSize: '13px',
+              }}
+            >
               <div style={{ padding: '8px', background: '#f8fafc', borderRadius: '4px' }}>
                 <span style={{ fontWeight: 600 }}>Brand:</span> #1e40af
               </div>
@@ -597,8 +754,17 @@ export default function LegacyMigrationReview({
             </div>
           </div>
 
-          <div style={{ background: '#fff', padding: '16px', borderRadius: '8px', border: '1px solid #e2e8f0' }}>
-            <h3 style={{ fontSize: '16px', fontWeight: 600, marginTop: 0 }}>Reconstructed Structure</h3>
+          <div
+            style={{
+              background: '#fff',
+              padding: '16px',
+              borderRadius: '8px',
+              border: '1px solid #e2e8f0',
+            }}
+          >
+            <h3 style={{ fontSize: '16px', fontWeight: 600, marginTop: 0 }}>
+              Reconstructed Structure
+            </h3>
             <ul style={{ fontSize: '13px', lineHeight: '1.8', margin: 0, paddingLeft: '20px' }}>
               <li>
                 <strong>Header Global:</strong> Site branding + primary navigation menu
@@ -622,10 +788,26 @@ export default function LegacyMigrationReview({
 
       {/* Redirects Tab */}
       {report && activeTab === 'redirects' && (
-        <div style={{ background: '#fff', borderRadius: '8px', border: '1px solid #e2e8f0', overflowX: 'auto' }}>
-          <table data-testid="redirects-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+        <div
+          style={{
+            background: '#fff',
+            borderRadius: '8px',
+            border: '1px solid #e2e8f0',
+            overflowX: 'auto',
+          }}
+        >
+          <table
+            data-testid="redirects-table"
+            style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}
+          >
             <thead>
-              <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', textAlign: 'left' }}>
+              <tr
+                style={{
+                  background: '#f8fafc',
+                  borderBottom: '1px solid #e2e8f0',
+                  textAlign: 'left',
+                }}
+              >
                 <th style={{ padding: '12px' }}>Legacy Path</th>
                 <th style={{ padding: '12px' }}>Target Path</th>
                 <th style={{ padding: '12px' }}>Status</th>
@@ -661,10 +843,26 @@ export default function LegacyMigrationReview({
 
       {/* Quarantine Tab */}
       {report && activeTab === 'quarantine' && (
-        <div style={{ background: '#fff', borderRadius: '8px', border: '1px solid #e2e8f0', overflowX: 'auto' }}>
-          <table data-testid="quarantine-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
+        <div
+          style={{
+            background: '#fff',
+            borderRadius: '8px',
+            border: '1px solid #e2e8f0',
+            overflowX: 'auto',
+          }}
+        >
+          <table
+            data-testid="quarantine-table"
+            style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}
+          >
             <thead>
-              <tr style={{ background: '#f8fafc', borderBottom: '1px solid #e2e8f0', textAlign: 'left' }}>
+              <tr
+                style={{
+                  background: '#f8fafc',
+                  borderBottom: '1px solid #e2e8f0',
+                  textAlign: 'left',
+                }}
+              >
                 <th style={{ padding: '12px' }}>Type</th>
                 <th style={{ padding: '12px' }}>Name</th>
                 <th style={{ padding: '12px' }}>Location</th>
@@ -692,7 +890,17 @@ export default function LegacyMigrationReview({
                   <td style={{ padding: '12px', fontWeight: 600 }}>{q.name}</td>
                   <td style={{ padding: '12px', color: '#64748b' }}>{q.location}</td>
                   <td style={{ padding: '12px', color: '#475569' }}>{q.reason}</td>
-                  <td style={{ padding: '12px', fontFamily: 'monospace', fontSize: '11px', maxWidth: '300px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                  <td
+                    style={{
+                      padding: '12px',
+                      fontFamily: 'monospace',
+                      fontSize: '11px',
+                      maxWidth: '300px',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
                     {q.rawSource}
                   </td>
                 </tr>

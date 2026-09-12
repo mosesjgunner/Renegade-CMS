@@ -33,7 +33,16 @@ export function inspectLegacySite(pkg: LegacySitePackage): {
     return {
       valid: false,
       sourceChecksum: '',
-      summary: { posts: 0, pages: 0, authors: 0, categories: 0, tags: 0, menus: 0, media: 0, unsupported: 0 },
+      summary: {
+        posts: 0,
+        pages: 0,
+        authors: 0,
+        categories: 0,
+        tags: 0,
+        menus: 0,
+        media: 0,
+        unsupported: 0,
+      },
       detectedUnsupportedCount: 0,
       warnings: [],
       errors: ['Legacy package does not contain valid WXR XML content.'],
@@ -49,7 +58,16 @@ export function inspectLegacySite(pkg: LegacySitePackage): {
     return {
       valid: false,
       sourceChecksum,
-      summary: { posts: 0, pages: 0, authors: 0, categories: 0, tags: 0, menus: 0, media: 0, unsupported: 0 },
+      summary: {
+        posts: 0,
+        pages: 0,
+        authors: 0,
+        categories: 0,
+        tags: 0,
+        menus: 0,
+        media: 0,
+        unsupported: 0,
+      },
       detectedUnsupportedCount: 0,
       warnings: [],
       errors: [`Failed to parse WXR XML: ${err instanceof Error ? err.message : String(err)}`],
@@ -150,10 +168,8 @@ export async function dryRunPreflight(
   store: LegacyMigrationStore,
   options: LegacyMigrationOptions,
 ): Promise<MigrationReport> {
-  const { normalized, sourceChecksum, urlPlan, presentation, quarantineRecords, runId } = planLegacyMigration(
-    pkg,
-    options,
-  )
+  const { normalized, sourceChecksum, urlPlan, presentation, quarantineRecords, runId } =
+    planLegacyMigration(pkg, options)
 
   const warnings: Array<{ code: string; message: string; sourceId?: string }> = []
   const errors: Array<{ code: string; message: string; sourceId?: string }> = []
@@ -162,11 +178,17 @@ export async function dryRunPreflight(
   let targetSiteId = options.targetSiteId ?? ''
   if (options.targetSiteMode === 'existing-site') {
     if (!options.targetSiteId) {
-      errors.push({ code: 'TARGET_SITE_REQUIRED', message: 'Target site ID is required in existing-site mode.' })
+      errors.push({
+        code: 'TARGET_SITE_REQUIRED',
+        message: 'Target site ID is required in existing-site mode.',
+      })
     } else {
       const site = await store.findSite(options.targetSiteId)
       if (!site) {
-        errors.push({ code: 'TARGET_SITE_NOT_FOUND', message: `Site ${options.targetSiteId} was not found.` })
+        errors.push({
+          code: 'TARGET_SITE_NOT_FOUND',
+          message: `Site ${options.targetSiteId} was not found.`,
+        })
       }
     }
   } else {
@@ -174,7 +196,10 @@ export async function dryRunPreflight(
     const slug = options.newSiteSlug || 'migrated-site'
     const existing = await store.findSite(slug)
     if (existing) {
-      warnings.push({ code: 'SLUG_COLLISION_WARNING', message: `Site slug '${slug}' already exists; preflight indicates a unique suffix will be appended.` })
+      warnings.push({
+        code: 'SLUG_COLLISION_WARNING',
+        message: `Site slug '${slug}' already exists; preflight indicates a unique suffix will be appended.`,
+      })
     }
   }
 
@@ -201,7 +226,12 @@ export async function dryRunPreflight(
       renegadeStatus: 'draft',
       previewUrl: `/builder/preview?path=${encodeURIComponent(canonicalPath)}`,
       repairUrl: `/builder?path=${encodeURIComponent(canonicalPath)}`,
-      status: item.unsupported.length > 0 ? 'quarantined' : redirect?.status === 'needs-redirect' ? 'redirect-only' : 'migrated',
+      status:
+        item.unsupported.length > 0
+          ? 'quarantined'
+          : redirect?.status === 'needs-redirect'
+            ? 'redirect-only'
+            : 'migrated',
       warnings: item.unsupported.map((u) => `Quarantined: ${u.kind} (${u.name})`),
     })
   }
@@ -287,17 +317,16 @@ export async function executeLegacyMigration(
   options: LegacyMigrationOptions,
   existingRunId?: string,
 ): Promise<MigrationReport> {
-  const { normalized, sourceChecksum, urlPlan, presentation, quarantineRecords, runId } = planLegacyMigration(
-    pkg,
-    options,
-  )
+  const { normalized, sourceChecksum, urlPlan, presentation, quarantineRecords, runId } =
+    planLegacyMigration(pkg, options)
   const actualRunId = existingRunId || runId
 
   // Check for existing checkpoint
   const existingReport = await store.getMigrationRun(actualRunId)
   const completedSet = new Set<string>(existingReport?.resumableCheckpoint.completedSourceIds ?? [])
 
-  const warnings: Array<{ code: string; message: string; sourceId?: string }> = existingReport?.warnings ? [...existingReport.warnings] : []
+  const warnings: Array<{ code: string; message: string; sourceId?: string }> =
+    existingReport?.warnings ? [...existingReport.warnings] : []
   const errors: Array<{ code: string; message: string; sourceId?: string }> = []
 
   const createdEntityIds = existingReport?.createdEntityIds ?? {
@@ -318,7 +347,13 @@ export async function executeLegacyMigration(
     siteId = existingReport.siteId
   } else {
     // Create new isolated site
-    const baseSlug = options.newSiteSlug || normalized.site.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'migrated-site'
+    const baseSlug =
+      options.newSiteSlug ||
+      normalized.site.title
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)/g, '') ||
+      'migrated-site'
     let slug = baseSlug
     let counter = 1
     while (await store.findSite(slug)) {
@@ -336,7 +371,11 @@ export async function executeLegacyMigration(
   // 2. Authors
   const authorIdMap = new Map<string, string>() // login -> authorId
   for (const author of normalized.authors) {
-    const authorSlug = author.login.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '') || 'author'
+    const authorSlug =
+      author.login
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/(^-|-$)/g, '') || 'author'
     if (completedSet.has(`author:${author.login}`)) continue
     try {
       const existing = await store.findAuthor(siteId, authorSlug)
@@ -452,11 +491,15 @@ export async function executeLegacyMigration(
         const authorIds = authorId ? [authorId] : []
 
         // Resolve categories & tags
-        const categoryIds = item.categories.map((c) => categoryIdMap.get(c)).filter(Boolean) as string[]
+        const categoryIds = item.categories
+          .map((c) => categoryIdMap.get(c))
+          .filter(Boolean) as string[]
         const tagIds = item.tags.map((t) => tagIdMap.get(t)).filter(Boolean) as string[]
 
         // Featured image
-        const featuredMediaId = item.featuredMediaId ? mediaResult.idRewireMap.get(item.featuredMediaId) : undefined
+        const featuredMediaId = item.featuredMediaId
+          ? mediaResult.idRewireMap.get(item.featuredMediaId)
+          : undefined
 
         const created = await store.createContent({
           siteId,
@@ -500,7 +543,12 @@ export async function executeLegacyMigration(
       renegadeStatus: 'draft',
       previewUrl: `/builder/preview?path=${encodeURIComponent(canonicalPath)}`,
       repairUrl: `/builder?path=${encodeURIComponent(canonicalPath)}`,
-      status: item.unsupported.length > 0 ? 'quarantined' : redirectItem?.status === 'needs-redirect' ? 'redirect-only' : 'migrated',
+      status:
+        item.unsupported.length > 0
+          ? 'quarantined'
+          : redirectItem?.status === 'needs-redirect'
+            ? 'redirect-only'
+            : 'migrated',
       warnings: item.unsupported.map((u) => `Quarantined: ${u.kind} (${u.name})`),
     })
   }
@@ -546,7 +594,10 @@ export async function executeLegacyMigration(
       createdEntityIds.layoutIds.push(createdHeader.id)
       completedSet.add('layout:header')
     } catch (err) {
-      warnings.push({ code: 'HEADER_GLOBAL_FAILED', message: `Header layout failed: ${err instanceof Error ? err.message : String(err)}` })
+      warnings.push({
+        code: 'HEADER_GLOBAL_FAILED',
+        message: `Header layout failed: ${err instanceof Error ? err.message : String(err)}`,
+      })
     }
   }
 
@@ -566,7 +617,10 @@ export async function executeLegacyMigration(
       createdEntityIds.layoutIds.push(createdFooter.id)
       completedSet.add('layout:footer')
     } catch (err) {
-      warnings.push({ code: 'FOOTER_GLOBAL_FAILED', message: `Footer layout failed: ${err instanceof Error ? err.message : String(err)}` })
+      warnings.push({
+        code: 'FOOTER_GLOBAL_FAILED',
+        message: `Footer layout failed: ${err instanceof Error ? err.message : String(err)}`,
+      })
     }
   }
 
@@ -590,7 +644,10 @@ export async function executeLegacyMigration(
       createdEntityIds.layoutIds.push(createdTpl.id)
       completedSet.add(tplKey)
     } catch (err) {
-      warnings.push({ code: 'TEMPLATE_CREATION_FAILED', message: `Template ${tpl.name} failed: ${err instanceof Error ? err.message : String(err)}` })
+      warnings.push({
+        code: 'TEMPLATE_CREATION_FAILED',
+        message: `Template ${tpl.name} failed: ${err instanceof Error ? err.message : String(err)}`,
+      })
     }
   }
 
@@ -612,7 +669,10 @@ export async function executeLegacyMigration(
       createdEntityIds.layoutIds.push(createdPat.id)
       completedSet.add(patKey)
     } catch (err) {
-      warnings.push({ code: 'PATTERN_CREATION_FAILED', message: `Pattern ${pat.name} failed: ${err instanceof Error ? err.message : String(err)}` })
+      warnings.push({
+        code: 'PATTERN_CREATION_FAILED',
+        message: `Pattern ${pat.name} failed: ${err instanceof Error ? err.message : String(err)}`,
+      })
     }
   }
 
@@ -637,7 +697,10 @@ export async function executeLegacyMigration(
       createdEntityIds.layoutIds.push(createdPageLayout.id)
       completedSet.add(pageKey)
     } catch (err) {
-      warnings.push({ code: 'PAGE_LAYOUT_FAILED', message: `Page layout for ${page.path} failed: ${err instanceof Error ? err.message : String(err)}` })
+      warnings.push({
+        code: 'PAGE_LAYOUT_FAILED',
+        message: `Page layout for ${page.path} failed: ${err instanceof Error ? err.message : String(err)}`,
+      })
     }
   }
 
@@ -755,8 +818,11 @@ export async function verifyLegacyMigration(
   )
 
   report.acceptanceChecklist = {
-    contentCountsMatch: report.reconciliation.created.content === report.sourceSummary.posts + report.sourceSummary.pages,
-    mediaChecksumsVerified: Object.keys(report.checksums.media).length > 0 || report.sourceSummary.media === 0,
+    contentCountsMatch:
+      report.reconciliation.created.content ===
+      report.sourceSummary.posts + report.sourceSummary.pages,
+    mediaChecksumsVerified:
+      Object.keys(report.checksums.media).length > 0 || report.sourceSummary.media === 0,
     urlsAndRedirectsLoopFree: !urlCheck.hasLoops && !urlCheck.hasCollisions,
     renderedTemplatesValid: report.reconciliation.created.templates > 0,
     themeSafeNoArbitraryExec: true,

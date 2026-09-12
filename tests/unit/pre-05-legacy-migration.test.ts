@@ -1,27 +1,13 @@
 import { describe, it, expect } from 'vitest'
 import { readFile } from 'node:fs/promises'
 import path from 'node:path'
-import {
-  parseWxr,
-} from '../../src/modules/portability/legacy-migration/parser'
-import {
-  assertSafeOutboundUrl,
-} from '../../src/modules/core/external-boundary'
-import {
-  inspectMedia,
-} from '../../src/modules/media/storage'
-import {
-  rewireMediaUrls,
-} from '../../src/modules/portability/legacy-migration/media'
-import {
-  buildUrlAndRedirectPlan,
-} from '../../src/modules/portability/legacy-migration/urls'
-import {
-  reconstructPresentation,
-} from '../../src/modules/portability/legacy-migration/presentation'
-import {
-  MemoryLegacyMigrationStore,
-} from '../../src/modules/portability/legacy-migration/store'
+import { parseWxr } from '../../src/modules/portability/legacy-migration/parser'
+import { assertSafeOutboundUrl } from '../../src/modules/core/external-boundary'
+import { inspectMedia } from '../../src/modules/media/storage'
+import { rewireMediaUrls } from '../../src/modules/portability/legacy-migration/media'
+import { buildUrlAndRedirectPlan } from '../../src/modules/portability/legacy-migration/urls'
+import { reconstructPresentation } from '../../src/modules/portability/legacy-migration/presentation'
+import { MemoryLegacyMigrationStore } from '../../src/modules/portability/legacy-migration/store'
 import {
   inspectLegacySite,
   dryRunPreflight,
@@ -94,8 +80,12 @@ describe('PRE-05 Legacy Site Migration Unit Tests', () => {
       const censorshipPost = posts.find((p) => p.slug === 'investigating-algorithmic-censorship')
       expect(censorshipPost).toBeDefined()
       expect(censorshipPost?.status).toBe('publish')
-      expect(censorshipPost?.seo?.metaTitle).toBe('Investigating Algorithmic Censorship | Special Report')
-      expect(censorshipPost?.seo?.metaDescription).toContain('automated systems altering public discourse')
+      expect(censorshipPost?.seo?.metaTitle).toBe(
+        'Investigating Algorithmic Censorship | Special Report',
+      )
+      expect(censorshipPost?.seo?.metaDescription).toContain(
+        'automated systems altering public discourse',
+      )
       expect(censorshipPost?.categories).toContain('news')
       expect(censorshipPost?.tags).toContain('freedom')
       expect(censorshipPost?.featuredMediaId).toBe('101')
@@ -111,7 +101,9 @@ describe('PRE-05 Legacy Site Migration Unit Tests', () => {
       const normalized = parseWxr(wxrXml)
       const homePage = normalized.items.find((i) => i.slug === 'home')
       expect(homePage?.seo?.metaTitle).toBe('Home | The Renegade Tribune')
-      expect(homePage?.seo?.metaDescription).toBe('Independent investigative journalism and uncensored analysis.')
+      expect(homePage?.seo?.metaDescription).toBe(
+        'Independent investigative journalism and uncensored analysis.',
+      )
     })
   })
 
@@ -148,7 +140,9 @@ describe('PRE-05 Legacy Site Migration Unit Tests', () => {
       expect(shortcodeItem?.rawSource).toContain('[gallery')
 
       // 5. Plugin block (WooCommerce)
-      const pluginItem = allUnsupported.find((u) => u.kind === 'commerce' || u.kind === 'plugin-block')
+      const pluginItem = allUnsupported.find(
+        (u) => u.kind === 'commerce' || u.kind === 'plugin-block',
+      )
       expect(pluginItem).toBeDefined()
       expect(pluginItem?.rawSource).toContain('wp:woocommerce/cart')
 
@@ -190,12 +184,35 @@ describe('PRE-05 Legacy Site Migration Unit Tests', () => {
     it('validates MIME types and magic bytes, rejecting masquerading executables or HTML', () => {
       // Valid PNG header: 89 50 4E 47 with 16-byte IHDR
       const validPng = new Uint8Array([
-        0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, // PNG magic
-        0x00, 0x00, 0x00, 0x0d, // IHDR chunk length 13
-        0x49, 0x48, 0x44, 0x52, // IHDR
-        0x00, 0x00, 0x01, 0x00, // width 256
-        0x00, 0x00, 0x01, 0x00, // height 256
-        0x08, 0x06, 0x00, 0x00, 0x00,
+        0x89,
+        0x50,
+        0x4e,
+        0x47,
+        0x0d,
+        0x0a,
+        0x1a,
+        0x0a, // PNG magic
+        0x00,
+        0x00,
+        0x00,
+        0x0d, // IHDR chunk length 13
+        0x49,
+        0x48,
+        0x44,
+        0x52, // IHDR
+        0x00,
+        0x00,
+        0x01,
+        0x00, // width 256
+        0x00,
+        0x00,
+        0x01,
+        0x00, // height 256
+        0x08,
+        0x06,
+        0x00,
+        0x00,
+        0x00,
       ])
       const pngResult = inspectMedia(validPng)
       expect(pngResult.mimeType).toBe('image/png')
@@ -204,7 +221,9 @@ describe('PRE-05 Legacy Site Migration Unit Tests', () => {
       expect(pngResult.sha256).toBeDefined()
 
       // Disguised HTML: 3C 21 44 4F (<!DO)
-      const fakeImage = new TextEncoder().encode('<!DOCTYPE html><html><script>alert(1)</script></html>')
+      const fakeImage = new TextEncoder().encode(
+        '<!DOCTYPE html><html><script>alert(1)</script></html>',
+      )
       expect(() => inspectMedia(fakeImage)).toThrow()
 
       // Disguised Executable: 4D 5A (MZ)
@@ -214,10 +233,14 @@ describe('PRE-05 Legacy Site Migration Unit Tests', () => {
 
     it('rewires legacy media URLs to renegade media paths across blocks and HTML', () => {
       const urlMapping = new Map([
-        ['https://renegadetribune.example/wp-content/uploads/2026/08/tribune-hero.png', '/media/asset-101.png'],
+        [
+          'https://renegadetribune.example/wp-content/uploads/2026/08/tribune-hero.png',
+          '/media/asset-101.png',
+        ],
       ])
 
-      const rawHtml = '<p>Check this image: <img src="https://renegadetribune.example/wp-content/uploads/2026/08/tribune-hero.png" alt="Hero" /></p>'
+      const rawHtml =
+        '<p>Check this image: <img src="https://renegadetribune.example/wp-content/uploads/2026/08/tribune-hero.png" alt="Hero" /></p>'
       const rewired = rewireMediaUrls(rawHtml, urlMapping)
       expect(rewired).toContain('src="/media/asset-101.png"')
       expect(rewired).not.toContain('https://renegadetribune.example')
@@ -248,7 +271,9 @@ describe('PRE-05 Legacy Site Migration Unit Tests', () => {
       expect(aboutPlan?.status).toBe('compatible-direct')
 
       // Post: legacy path '/2026/08/investigating-algorithmic-censorship' -> '/articles/investigating-algorithmic-censorship'
-      const postPlan = planResult.plan.find((p) => p.canonicalPath === '/articles/investigating-algorithmic-censorship')
+      const postPlan = planResult.plan.find(
+        (p) => p.canonicalPath === '/articles/investigating-algorithmic-censorship',
+      )
       expect(postPlan).toBeDefined()
       expect(postPlan?.status).toBe('needs-redirect')
       expect(postPlan?.statusCode).toBe(308)
@@ -343,7 +368,11 @@ describe('PRE-05 Legacy Site Migration Unit Tests', () => {
       expect(presentation.pages.length).toBeGreaterThanOrEqual(3)
       for (const layout of presentation.pages) {
         expect(layout.templateMode).toBe('inherited')
-        expect(layout.blocks.every((b) => b.component.startsWith('publisher.') || b.component === 'prose')).toBe(true)
+        expect(
+          layout.blocks.every(
+            (b) => b.component.startsWith('publisher.') || b.component === 'prose',
+          ),
+        ).toBe(true)
       }
     })
   })
