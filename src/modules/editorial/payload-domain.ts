@@ -6,7 +6,9 @@ import {
   Events,
   MarkdownConversionReports,
   MediaAssets,
+  MediaBlobs,
   MediaUsages,
+  MediaVariants,
   PreviewTokens,
   PublicRedirects,
   RevisionRecords,
@@ -34,6 +36,8 @@ export const editorialDomain: DomainDefinition = {
   id: 'editorial',
   collections: [
     MediaAssets,
+    MediaBlobs,
+    MediaVariants,
     Sections,
     Categories,
     Topics,

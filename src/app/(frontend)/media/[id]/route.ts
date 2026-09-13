@@ -3,7 +3,7 @@ import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
 
 import { mediaStorage } from '@/modules/media/storage'
-import { publicMedia } from '@/modules/media/workflow'
+import { mediaStorageKey, publicMedia } from '@/modules/media/workflow'
 import { loadConfig } from '@/modules/core/config'
 
 export const runtime = 'nodejs'
@@ -22,7 +22,9 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     }
   }
   if (!media) return new NextResponse('Not found', { status: 404 })
-  const bytes = await mediaStorage(appConfig).get(String(media.storageLocation))
+  const key = await mediaStorageKey(payload, media)
+  if (!key) return new NextResponse('Not found', { status: 404 })
+  const bytes = await mediaStorage(appConfig).get(key)
   if (!bytes) return new NextResponse('Not found', { status: 404 })
   const mimeType = String(media.mimeType || 'application/octet-stream')
   const headers: Record<string, string> = {

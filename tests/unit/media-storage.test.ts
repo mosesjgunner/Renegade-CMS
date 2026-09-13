@@ -29,6 +29,11 @@ describe('media storage', () => {
     const mediaDir = await mkdtemp(path.join(os.tmpdir(), 'renegade-media-'))
     const key = mediaObjectKey('site-123', 'png')
     const storage = localMediaStorage(mediaDir)
+    expect(storage.capabilities).toEqual({
+      atomicWrite: true,
+      privateObjects: true,
+      checksumAddressed: true,
+    })
     await storage.put(key, png, 'image/png')
     expect(Array.from((await storage.get(key)) ?? [])).toEqual(Array.from(png))
     await expect(storage.get('../outside.png')).rejects.toThrow('Unsafe')

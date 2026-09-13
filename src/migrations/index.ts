@@ -1,4 +1,5 @@
 import * as pre05LegacySiteMigration from './20260912_050000_pre_05_legacy_site_migration'
+import * as med00 from './20260912_060000_med_00_media_contract'
 import * as pre04ReusableComposition from './20260912_040000_pre_04_reusable_composition'
 import * as pre01Snapshots from './20260912_020000_pre_01_presentation_snapshots'
 import * as pre03VisualEditor from './20260912_030000_pre_03_visual_editor'
@@ -292,4 +293,5 @@ export const migrations = [
     down: pre05LegacySiteMigration.down,
     name: '20260912_050000_pre_05_legacy_site_migration',
   },
+  { up: med00.up, down: med00.down, name: '20260912_060000_med_00_media_contract' },
 ]

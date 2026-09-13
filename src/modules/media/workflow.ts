@@ -55,6 +55,7 @@ export async function uploadMedia(
     altText?: string
     caption?: string
     focalPoint?: { x: number; y: number }
+    originalFilename?: string
     bytes: Uint8Array
   },
 ) {
@@ -76,7 +77,49 @@ export async function uploadMedia(
     throw new MediaWorkflowError('Focal point coordinates must be between 0 and 1.')
   const key = mediaObjectKey(input.scope.siteId, inspection.extension)
   const storage = mediaStorage(config)
-  await storage.put(key, input.bytes, inspection.mimeType)
+  // A blob is the physical object; an asset is the editorial identity. Dedup is
+  // deliberately site-scoped so one tenant cannot infer another tenant's files.
+  const known = await payload.find({
+    collection: 'media-blobs',
+    where: { and: [{ site: { equals: input.scope.siteId } }, { checksum: { equals: inspection.sha256 } }] },
+    limit: 1,
+    depth: 0,
+    overrideAccess: true,
+  } as never).catch(() => ({ docs: [] as Doc[] }))
+  let blob = (known.docs as unknown as Doc[])[0]
+  let wroteObject = false
+  if (!blob) {
+    await storage.put(key, input.bytes, inspection.mimeType)
+    wroteObject = true
+    try {
+      blob = (await payload.create({
+        collection: 'media-blobs',
+        overrideAccess: true,
+        data: {
+          site: input.scope.siteId,
+          publication: input.scope.publicationId ?? null,
+          space: input.scope.spaceId ?? null,
+          checksum: inspection.sha256,
+          storageKey: key,
+          storageProvider: storage.provider,
+          mimeType: inspection.mimeType,
+          sizeBytes: input.bytes.byteLength,
+          state: 'ready',
+        },
+      } as never)) as unknown as Doc
+    } catch (error) {
+      await storage.remove(key).catch(() => undefined)
+      // A concurrent upload may have won the per-site checksum race.
+      const concurrent = await payload.find({
+        collection: 'media-blobs',
+        where: { and: [{ site: { equals: input.scope.siteId } }, { checksum: { equals: inspection.sha256 } }] },
+        limit: 1, depth: 0, overrideAccess: true,
+      } as never).catch(() => ({ docs: [] as Doc[] }))
+      blob = (concurrent.docs as unknown as Doc[])[0]
+      if (!blob) throw error
+      wroteObject = false
+    }
+  }
   try {
     return await payload.create({
       collection: 'media-assets',
@@ -88,8 +131,10 @@ export async function uploadMedia(
         owner: id(input.user?.member) || null,
         title,
         kind: inspection.kind,
-        storageLocation: key,
+        storageLocation: String(blob.storageKey),
         storageProvider: storage.provider,
+        originalBlob: blob.id,
+        originalFilename: cleanText(input.originalFilename, 'Original filename', 255) || null,
         mimeType: inspection.mimeType,
         sizeBytes: input.bytes.byteLength,
         width: inspection.width,
@@ -101,10 +146,16 @@ export async function uploadMedia(
         retentionMode: 'permanent',
         retentionHold: 'none',
         removeFromDiscovery: false,
+        processingState: 'ready',
+        publicPolicy: 'published-use',
       },
     } as never)
   } catch (error) {
-    await storage.remove(key).catch(() => undefined)
+    if (wroteObject) {
+      await storage.remove(key).catch(() => undefined)
+      if (payload.delete)
+        await payload.delete({ collection: 'media-blobs', id: blob.id, overrideAccess: true } as never).catch(() => undefined)
+    }
     throw error
   }
 }
@@ -147,11 +198,13 @@ export async function attachMediaToContent(
   } as never)
   const usage = (existing.docs as unknown as Doc[])[0]
   const data = {
+    site: input.scope.siteId,
     media: input.mediaId,
     usageKey,
     usedBy: { relationTo: 'content', value: input.contentId },
     purpose: 'hero',
     replaceGlobally: true,
+    approvedForPublic: true,
   }
   if (usage)
     await payload.update({
@@ -294,23 +347,33 @@ export async function deleteOrphanedMedia(
       409,
     )
   const storage = mediaStorage(config)
-  const bytes = await storage.get(String(media.storageLocation))
-  await storage.remove(String(media.storageLocation))
+  const blob = await resolveMediaBlob(payload, media)
+  const storageKey = String(blob?.storageKey ?? media.storageLocation ?? '')
+  if (!storageKey) throw new MediaWorkflowError('Media has no stored object.', 409)
+  const siblingAssets = blob?.id
+    ? await payload.find({ collection: 'media-assets', where: { originalBlob: { equals: blob.id } }, limit: 2, depth: 0, overrideAccess: true } as never)
+    : { docs: [media] }
+  if (siblingAssets.docs.length > 1)
+    throw new MediaWorkflowError('This media shares a blob with another asset and cannot be deleted.', 409)
+  const bytes = await storage.get(storageKey)
+  await storage.remove(storageKey)
   try {
     await payload.delete({
       collection: 'media-assets',
       id: input.mediaId,
       overrideAccess: true,
     } as never)
+    if (blob?.id)
+      await payload.delete({ collection: 'media-blobs', id: blob.id, overrideAccess: true } as never)
   } catch {
     if (bytes)
       await storage
         .put(
-          String(media.storageLocation),
+          storageKey,
           bytes,
           String(media.mimeType || 'application/octet-stream'),
         )
-        .catch(() => undefined)
+      .catch(() => undefined)
     throw new MediaWorkflowError(
       'Media deletion could not be completed; bytes were restored for recovery.',
       500,
@@ -322,7 +385,7 @@ export async function publicMedia(payload: Payload, mediaId: string): Promise<Do
   const media = (await payload
     .findByID({ collection: 'media-assets', id: mediaId, depth: 0, overrideAccess: true } as never)
     .catch(() => undefined)) as unknown as Doc | undefined
-  if (!media || media.removeFromDiscovery || media.retentionMode === 'tombstone') return undefined
+  if (!media || media.removeFromDiscovery || media.retentionMode === 'tombstone' || media.processingState === 'quarantined' || media.processingState === 'failed' || media.publicPolicy === 'private') return undefined
 
   // Site settings logo, default social image, and favicon are public by site definition.
   const siteSettings =
@@ -361,7 +424,11 @@ export async function publicMedia(payload: Payload, mediaId: string): Promise<Do
     findIfRegistered(payload, {
       collection: 'media-usages',
       where: {
-        media: { equals: mediaId },
+        and: [
+          { media: { equals: mediaId } },
+          { site: { equals: id(media.site) } },
+          { approvedForPublic: { equals: true } },
+        ],
       },
       limit: 1,
       depth: 0,
@@ -415,4 +482,19 @@ export async function publicMedia(payload: Payload, mediaId: string): Promise<Do
   ])
   if (!references.some((reference) => reference.docs.length)) return undefined
   return resolveMediaReplacement(payload, media)
+}
+
+/** Resolves MED-00 blobs while retaining read-only compatibility for pre-MED records. */
+export async function resolveMediaBlob(payload: Payload, media: Doc): Promise<Doc | undefined> {
+  const blobId = id(media.originalBlob)
+  if (!blobId) return undefined
+  const blob = (await payload.findByID({ collection: 'media-blobs', id: blobId, depth: 0, overrideAccess: true } as never)
+    .catch(() => undefined)) as unknown as Doc | undefined
+  if (!blob || blob.state !== 'ready' || id(blob.site) !== id(media.site)) return undefined
+  return blob
+}
+
+export async function mediaStorageKey(payload: Payload, media: Doc): Promise<string | undefined> {
+  const blob = await resolveMediaBlob(payload, media)
+  return blob ? String(blob.storageKey) : typeof media.storageLocation === 'string' && !media.storageLocation.startsWith('local://') ? media.storageLocation : undefined
 }

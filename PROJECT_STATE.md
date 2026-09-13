@@ -249,6 +249,21 @@ Stop after Prompt 15.
 - Focused coverage added for canonical catalog/default-disabled behavior, credential-required vs degraded providers, disabled states, Lean/Standard worker behavior, and version/profile metadata. Unit suite passed (61 files, 229 tests) after this implementation; lint and typecheck passed. Repository-wide Prettier check did not complete in the available command window (it emitted only Checking formatting...); modified files were formatted directly.
 - Remaining limitation: provider/networking/collaboration implementations are still intentionally absent; the control plane reports their readiness contracts without activating them. Integration tests were run but all 12 database-dependent cases were skipped because PostgreSQL test infrastructure was unavailable. The production build was invoked and reached Next.js startup/configuration, but the command environment did not return a completion result, so no build-pass claim is made.
 
+# Media Pass MED-00 — Canonical Asset and Real-byte Delivery Contract — 2026-09-12
+
+`media-assets` is now the durable editorial identity; private `media-blobs`
+own the site-scoped, SHA-256-addressed local/S3-compatible objects; and
+`media-variants` retain generated-object provenance. Browser delivery remains
+`/media/:assetId`, independent of storage keys. Upload byte-sniffing, metadata
+compensation, same-site deduplication, approved-published-use delivery,
+replacement chains, shared-blob deletion refusal, and local storage as the
+zero-provider default are implemented. Metadata-only `local://` fixtures are
+not publicly deliverable. Migration `20260912_060000_med_00_media_contract`
+was applied to local PostgreSQL; ADR-0007 records the contract.
+
+Focused contract/domain/storage tests pass; local health is ready with migrations
+applied. The next media prompt is MED-01.
+
 # Project state
 
 ## Fourth Pass readiness audit - 2026-08-30

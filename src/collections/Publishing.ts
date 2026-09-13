@@ -201,14 +201,12 @@ export const MediaAssets: CollectionConfig = {
       required: true,
       options: ['image', 'audio', 'video', 'document', 'cover', 'thumbnail', 'graphic'],
     },
-    {
-      name: 'storageLocation',
-      type: 'text',
-      required: true,
-      unique: true,
-      admin: { description: 'Local storage first; provider location is an implementation detail.' },
-    },
+    // Kept for old exports and assets created before MED-00. New assets resolve
+    // their bytes through originalBlob; this is never a public URL.
+    { name: 'storageLocation', type: 'text', admin: { readOnly: true } },
     { name: 'storageProvider', type: 'text', required: true, defaultValue: 'local' },
+    { name: 'originalBlob', type: 'relationship', relationTo: 'media-blobs', index: true },
+    { name: 'originalFilename', type: 'text' },
     { name: 'mimeType', type: 'text' },
     { name: 'sizeBytes', type: 'number', min: 0 },
     { name: 'checksum', type: 'text', admin: { readOnly: true } },
@@ -228,6 +226,25 @@ export const MediaAssets: CollectionConfig = {
     { name: 'caption', type: 'textarea' },
     { name: 'credits', type: 'text' },
     { name: 'license', type: 'text' },
+    { name: 'rightsSourceUrl', type: 'text' },
+    { name: 'rightsExpiresAt', type: 'date' },
+    {
+      name: 'processingState',
+      type: 'select',
+      required: true,
+      defaultValue: 'ready',
+      options: ['pending', 'processing', 'ready', 'failed', 'quarantined'],
+    },
+    {
+      name: 'publicPolicy',
+      type: 'select',
+      required: true,
+      defaultValue: 'published-use',
+      options: ['private', 'published-use', 'site-identity'],
+      admin: {
+        description: 'Public delivery is derived from this policy and an approved published use.',
+      },
+    },
     { name: 'tags', type: 'relationship', relationTo: 'tags', hasMany: true },
     { name: 'collections', type: 'relationship', relationTo: 'albums', hasMany: true },
     {
@@ -248,6 +265,64 @@ export const MediaAssets: CollectionConfig = {
       options: ['pending', 'approved', 'restricted', 'expired'],
     },
     ...retentionFields(),
+  ],
+}
+
+/** Physical, deduplicated bytes. These records are never addressed by public routes. */
+export const MediaBlobs: CollectionConfig = {
+  slug: 'media-blobs',
+  admin: { useAsTitle: 'checksum', group: 'Media', hidden: true },
+  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
+  fields: [
+    ...siteScopeFields(),
+    { name: 'checksum', type: 'text', required: true, index: true },
+    { name: 'storageKey', type: 'text', required: true, unique: true },
+    { name: 'storageProvider', type: 'text', required: true },
+    { name: 'mimeType', type: 'text', required: true },
+    { name: 'sizeBytes', type: 'number', required: true, min: 0 },
+    {
+      name: 'state',
+      type: 'select',
+      required: true,
+      defaultValue: 'ready',
+      options: ['writing', 'ready', 'failed', 'deleted'],
+    },
+  ],
+  indexes: [{ fields: ['site', 'checksum'], unique: true }],
+}
+
+/** Generated representations retain their own object identity and provenance. */
+export const MediaVariants: CollectionConfig = {
+  slug: 'media-variants',
+  admin: { useAsTitle: 'label', group: 'Media' },
+  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
+  fields: [
+    ...siteScopeFields(),
+    {
+      name: 'asset',
+      type: 'relationship',
+      relationTo: 'media-assets',
+      required: true,
+      index: true,
+    },
+    { name: 'blob', type: 'relationship', relationTo: 'media-blobs', required: true, index: true },
+    { name: 'label', type: 'text', required: true },
+    {
+      name: 'kind',
+      type: 'select',
+      required: true,
+      options: ['thumbnail', 'poster', 'transcode', 'caption', 'social', 'other'],
+    },
+    { name: 'width', type: 'number', min: 0 },
+    { name: 'height', type: 'number', min: 0 },
+    { name: 'durationSeconds', type: 'number', min: 0 },
+    {
+      name: 'processingState',
+      type: 'select',
+      required: true,
+      defaultValue: 'ready',
+      options: ['pending', 'processing', 'ready', 'failed'],
+    },
   ],
 }
 
@@ -1169,6 +1244,7 @@ export const MediaUsages: CollectionConfig = {
   admin: { useAsTitle: 'usageKey', group: 'Media' },
   access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
   fields: [
+    { name: 'site', type: 'relationship', relationTo: 'sites', required: true, index: true },
     {
       name: 'media',
       type: 'relationship',
@@ -1187,6 +1263,11 @@ export const MediaUsages: CollectionConfig = {
         'events',
         'timelines',
         'email-messages',
+        'page-layouts',
+        'graphic-documents',
+        'podcast-episodes',
+        'videos',
+        'social-network-variants',
       ] as never,
       required: true,
       index: true,
@@ -1196,8 +1277,23 @@ export const MediaUsages: CollectionConfig = {
       name: 'purpose',
       type: 'select',
       required: true,
-      options: ['hero', 'inline', 'cover', 'attachment', 'avatar', 'thumbnail', 'newsletter'],
+      options: [
+        'hero',
+        'inline',
+        'cover',
+        'attachment',
+        'avatar',
+        'thumbnail',
+        'newsletter',
+        'layout',
+        'theme',
+        'seo',
+        'podcast',
+        'video',
+        'distribution',
+      ],
     },
+    { name: 'approvedForPublic', type: 'checkbox', defaultValue: false },
     { name: 'replaceGlobally', type: 'checkbox', defaultValue: false },
   ],
 }

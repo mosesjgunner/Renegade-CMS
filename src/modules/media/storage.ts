@@ -151,6 +151,7 @@ function localPath(mediaDir: string, key: string) {
 
 export type MediaStorage = {
   provider: 'local' | 's3'
+  capabilities: Readonly<{ atomicWrite: boolean; privateObjects: boolean; checksumAddressed: boolean }>
   put(key: string, bytes: Uint8Array, mimeType: string): Promise<void>
   get(key: string): Promise<Uint8Array | undefined>
   remove(key: string): Promise<void>
@@ -159,6 +160,7 @@ export type MediaStorage = {
 export function localMediaStorage(mediaDir: string): MediaStorage {
   return {
     provider: 'local',
+    capabilities: { atomicWrite: true, privateObjects: true, checksumAddressed: true },
     async put(key, bytes) {
       const target = localPath(mediaDir, key)
       await mkdir(path.dirname(target), { recursive: true })
@@ -239,6 +241,7 @@ export function s3MediaStorage(config: NonNullable<AppConfig['storage']['s3']>):
   }
   return {
     provider: 's3',
+    capabilities: { atomicWrite: true, privateObjects: true, checksumAddressed: true },
     put: (key, bytes, mimeType) => request('PUT', key, bytes, mimeType).then(() => undefined),
     get: (key) => request('GET', key),
     remove: (key) => request('DELETE', key).then(() => undefined),

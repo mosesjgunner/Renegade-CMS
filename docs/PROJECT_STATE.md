@@ -1,3 +1,19 @@
+## Media Pass MED-00 — Canonical Asset and Real-byte Delivery Contract — 2026-09-12
+
+Implemented the canonical `media-assets` / `media-blobs` / `media-variants`
+boundary. Assets preserve editorial identity and stable `/media/:id` URLs;
+private blobs own opaque local or S3-compatible storage keys and site-scoped
+SHA-256 deduplication; variants retain generated-object provenance. Uploads
+sniff bytes, record accessible and rights metadata, compensate failed metadata
+transactions, and default to private delivery. Anonymous delivery now requires
+an approved same-site published use (or explicit site identity policy), and
+legacy `local://` metadata fixtures cannot be served as bytes. Replacement,
+shared-blob deletion refusal, and local/S3 adapter capabilities are explicit.
+
+Migration: `20260912_060000_med_00_media_contract`. Contract tests cover byte
+deduplication, MIME spoofing, traversal protection, tenant isolation, public
+eligibility, replacement cycles, and transaction cleanup. See ADR-0007.
+
 ## Presentation Pass PRE-03 — Controlled Visual Editor Implemented & Verified — 2026-09-12
 
 Delivered a registry-driven Puck editor behind the `VisualEditor` adapter with categorized template/slot palettes; accessible add/select/reorder/duplicate/configure/remove and session undo/redo; typed text, link, canonical media, bounded query, variant, alignment, and theme-token fields; autosave and optimistic-conflict recovery; authenticated exact draft preview; immutable publication snapshots; compatible theme switching; restricted global header/footer composition; and an article-template boundary that keeps canonical Post bodies outside the canvas.
