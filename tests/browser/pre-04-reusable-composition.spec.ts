@@ -207,7 +207,7 @@ test('PRE-04: multi-page Renegade Party mini-site, pattern reuse, template inher
         surface: 'global',
         slot: 'announcement',
         layoutVersion: 1,
-        status: 'draft',
+        status: 'published',
         visibility: 'public',
         blocks: [
           {
@@ -223,6 +223,7 @@ test('PRE-04: multi-page Renegade Party mini-site, pattern reuse, template inher
         ],
         unknownBlocks: [],
         revision: 1,
+        publishedRevision: 1,
         revisionHistory: [
           {
             revision: 1,
@@ -244,6 +245,34 @@ test('PRE-04: multi-page Renegade Party mini-site, pattern reuse, template inher
         ],
       },
     } as never)) as unknown as { id: string | number }
+
+    // Editing the stored draft after publication must not leak through the shell.
+    await payload.update({
+      collection: 'page-layouts',
+      id: globalRegion.id,
+      overrideAccess: true,
+      data: {
+        revision: 2,
+        blocks: [
+          {
+            id: `ann-${suffix}`,
+            component: 'publisher.rich-content',
+            componentVersion: 1,
+            props: {
+              title: 'UNPUBLISHED GLOBAL DRAFT',
+              body: 'This must stay private.',
+              alignment: 'center',
+            },
+          },
+        ],
+      },
+    } as never)
+
+    // A global region is more than a stored PageLayout: only its published
+    // snapshot may reach the anonymous public shell.
+    const pageWithGlobal = await anonymous.get(page1Path)
+    await expect(pageWithGlobal.text()).resolves.toContain('Global Announcement Revision 1')
+    await expect(pageWithGlobal.text()).resolves.not.toContain('UNPUBLISHED GLOBAL DRAFT')
 
     // Rollback global region test
     const rolledBack = await rollbackLayout(payload, {

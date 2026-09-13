@@ -176,9 +176,13 @@ describe('PRE-05 Legacy Site Migration Unit Tests', () => {
         await expect(assertSafeOutboundUrl(target)).rejects.toThrow()
       }
 
-      // Public URL should pass and return parsed URL
-      const publicUrl = await assertSafeOutboundUrl('https://images.unsplash.com/photo-1500')
-      expect(publicUrl.hostname).toBe('images.unsplash.com')
+      // A deterministic public DNS answer proves the allow path without making
+      // this security test depend on an external resolver or image host.
+      const publicUrl = await assertSafeOutboundUrl(
+        'https://media.example.test/photo-1500',
+        async () => [{ address: '93.184.216.34' }],
+      )
+      expect(publicUrl.hostname).toBe('media.example.test')
     })
 
     it('validates MIME types and magic bytes, rejecting masquerading executables or HTML', () => {

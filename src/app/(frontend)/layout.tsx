@@ -5,6 +5,8 @@ import { Inter, Newsreader, JetBrains_Mono } from 'next/font/google'
 
 import './styles.css'
 import { resolveTheme } from '@/modules/presentation/registry'
+import { renderPresentation } from '@/modules/presentation/document'
+import type { PresentationDocument } from '@/modules/presentation/contracts'
 import { shellRegistry, themeStyle } from '@/modules/presentation/runtime'
 import { DEFAULT_SITE_NAME } from '@/modules/presentation/themes/identity'
 import { normalizeNavigation } from '@/modules/public/navigation'
@@ -13,6 +15,7 @@ import { getPayload } from 'payload'
 import { ConsentManager } from '@/modules/analytics/ConsentManager'
 
 import { resolveSiteSettings } from '@/modules/core/site-settings'
+import { canRenderPublic } from '@/modules/public/contracts'
 
 // Public navigation and branding are PostgreSQL-backed. They must be read at
 // request time so an image build never tries to contact a deployment database.
@@ -46,6 +49,7 @@ export default async function FrontendLayout({ children }: { children: ReactNode
   let footerText: string | null = null
   let navigation = normalizeNavigation([])
   let siteId: string | undefined
+  const globalRegions: Partial<Record<'header' | 'announcement' | 'cta' | 'footer', ReactNode>> = {}
 
   try {
     const payload = await getPayload({ config })
@@ -61,6 +65,7 @@ export default async function FrontendLayout({ children }: { children: ReactNode
       collection: 'publications',
       where: { and: [{ status: { equals: 'active' } }, { visibility: { equals: 'public' } }] },
       depth: 1,
+      sort: '-createdAt',
       limit: 1,
       overrideAccess: true,
     } as never)
@@ -74,6 +79,54 @@ export default async function FrontendLayout({ children }: { children: ReactNode
         typeof publication.site === 'string'
           ? publication.site
           : (publication.site as { id?: string } | undefined)?.id
+    }
+
+    if (siteId) {
+      const regions = await payload.find({
+        collection: 'page-layouts',
+        where: {
+          and: [
+            { site: { equals: siteId } },
+            { surface: { equals: 'global' } },
+            { status: { equals: 'published' } },
+            { visibility: { equals: 'public' } },
+          ],
+        },
+        sort: '-updatedAt',
+        limit: 100,
+        depth: 0,
+        overrideAccess: true,
+      } as never)
+      for (const rawRegion of regions.docs as Array<Record<string, unknown>>) {
+        if (!canRenderPublic(rawRegion)) continue
+        const slot = rawRegion.slot
+        if (slot !== 'header' && slot !== 'announcement' && slot !== 'cta' && slot !== 'footer')
+          continue
+        // A region can only be public from its immutable published snapshot. This
+        // deliberately ignores current draft blocks and incompatible theme pins.
+        const snapshot = rawRegion.publishedPresentation as
+          | { version?: unknown; document?: PresentationDocument }
+          | undefined
+        const document = snapshot?.document
+        if (
+          snapshot?.version !== 1 ||
+          !document ||
+          document.version !== 1 ||
+          document.siteId !== siteId ||
+          document.theme.version !== resolveTheme(document.theme.id).version
+        )
+          continue
+        const blocks = document.slots[slot] ?? []
+        // The layout template renders its main slot. Re-homing this one already
+        // validated global slot makes the region renderable without giving a
+        // region document authority over page content or the shell itself.
+        const regionDocument: PresentationDocument = {
+          ...document,
+          slots: { main: blocks },
+        }
+        if (!globalRegions[slot])
+          globalRegions[slot] = renderPresentation(regionDocument, resolveTheme(document.theme.id))
+      }
     }
   } catch {
     // The public shell remains usable before first-run setup and during recovery.
@@ -95,6 +148,10 @@ export default async function FrontendLayout({ children }: { children: ReactNode
         className="min-h-screen flex flex-col font-sans antialiased selection:bg-red-600 selection:text-white"
       >
         <StarterShell
+          globalHeader={globalRegions.header}
+          globalAnnouncement={globalRegions.announcement}
+          globalCta={globalRegions.cta}
+          globalFooter={globalRegions.footer}
           consent={<ConsentManager siteId={siteId} />}
           siteName={siteName}
           siteDescription={siteDescription}

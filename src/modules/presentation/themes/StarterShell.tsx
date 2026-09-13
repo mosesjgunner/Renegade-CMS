@@ -5,6 +5,11 @@ import type { normalizeNavigation } from '../../public/navigation'
 
 export type ShellProps = {
   children: ReactNode
+  /** Published, snapshot-backed regions supplied by the public runtime. */
+  globalHeader?: ReactNode
+  globalAnnouncement?: ReactNode
+  globalCta?: ReactNode
+  globalFooter?: ReactNode
   consent?: ReactNode
   siteName: string
   siteDescription: string
@@ -15,6 +20,10 @@ export type ShellProps = {
 }
 export function StarterShell({
   children,
+  globalHeader,
+  globalAnnouncement,
+  globalCta,
+  globalFooter,
   consent,
   siteName,
   siteDescription,
@@ -26,10 +35,14 @@ export function StarterShell({
   return (
     <>
       <PublicNavigationBar siteName={siteName} logoUrl={logoUrl} navigation={navigation} />
+      {globalHeader}
+      {globalAnnouncement}
 
       {/* Main Content Viewport */}
       <div className="flex-1">{children}</div>
+      {globalCta}
       {consent}
+      {globalFooter}
 
       {/* Global Footer */}
       <footer className="border-t border-stone-200 dark:border-stone-800 bg-stone-100/50 dark:bg-stone-950/50 py-12 mt-20 transition-colors">
