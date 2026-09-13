@@ -151,7 +151,11 @@ function localPath(mediaDir: string, key: string) {
 
 export type MediaStorage = {
   provider: 'local' | 's3'
-  capabilities: Readonly<{ atomicWrite: boolean; privateObjects: boolean; checksumAddressed: boolean }>
+  capabilities: Readonly<{
+    atomicWrite: boolean
+    privateObjects: boolean
+    checksumAddressed: boolean
+  }>
   put(key: string, bytes: Uint8Array, mimeType: string): Promise<void>
   get(key: string): Promise<Uint8Array | undefined>
   remove(key: string): Promise<void>

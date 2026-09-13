@@ -429,9 +429,9 @@ test.describe('PRE-06 Presentation Pass Gate — Complete Browser & E2E Validati
       overrideAccess: true,
     } as never)
     expect(postSwitchTruth.docs[0]?.id).toBe(truthId)
-    expect(
-      (postSwitchTruth.docs[0] as { title?: string })?.title,
-    ).toBe((preSwitchTruth.docs[0] as { title?: string })?.title)
+    expect((postSwitchTruth.docs[0] as { title?: string })?.title).toBe(
+      (preSwitchTruth.docs[0] as { title?: string })?.title,
+    )
 
     // 2. Public route returns 200 with new active theme
     await anonPage.setViewportSize({ width: 1280, height: 800 })

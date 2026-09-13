@@ -15,13 +15,11 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   const payload = await getPayload({ config })
   const auth = await payload.auth({ headers: request.headers })
   try {
-    const body = (await request.json()) as Record<string, string | undefined>
+    const body = (await request.json()) as Record<string, unknown>
     const media = await updateMediaMetadata(payload, auth.user as never, {
       mediaId: (await params).id,
       scope: { kind: 'site', siteId: String(body.siteId ?? '') },
-      title: body.title,
-      altText: body.altText,
-      caption: body.caption,
+      ...body,
     })
     return NextResponse.json({ media })
   } catch (error) {

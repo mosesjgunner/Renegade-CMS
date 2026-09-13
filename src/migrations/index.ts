@@ -1,5 +1,8 @@
 import * as pre05LegacySiteMigration from './20260912_050000_pre_05_legacy_site_migration'
 import * as med00 from './20260912_060000_med_00_media_contract'
+import * as med01UploadSessions from './20260912_070000_med_01_upload_sessions'
+import * as med02DamGovernance from './20260913_080000_med_02_dam_governance'
+import * as med03ImageVariants from './20260913_090000_med_03_image_variants'
 import * as pre04ReusableComposition from './20260912_040000_pre_04_reusable_composition'
 import * as pre01Snapshots from './20260912_020000_pre_01_presentation_snapshots'
 import * as pre03VisualEditor from './20260912_030000_pre_03_visual_editor'
@@ -294,4 +297,19 @@ export const migrations = [
     name: '20260912_050000_pre_05_legacy_site_migration',
   },
   { up: med00.up, down: med00.down, name: '20260912_060000_med_00_media_contract' },
+  {
+    up: med01UploadSessions.up,
+    down: med01UploadSessions.down,
+    name: '20260912_070000_med_01_upload_sessions',
+  },
+  {
+    up: med02DamGovernance.up,
+    down: med02DamGovernance.down,
+    name: '20260913_080000_med_02_dam_governance',
+  },
+  {
+    up: med03ImageVariants.up,
+    down: med03ImageVariants.down,
+    name: '20260913_090000_med_03_image_variants',
+  },
 ]

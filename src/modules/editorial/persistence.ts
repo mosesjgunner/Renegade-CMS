@@ -18,6 +18,7 @@ import {
 } from './workflow'
 import { OPERATIONS_QUEUE } from '../operations/tasks'
 import { canRenderPublic } from '../public/contracts'
+import { assertMediaIdsPublishable } from '../media/workflow'
 
 type Doc = Record<string, any>
 
@@ -883,6 +884,8 @@ export async function publishScheduledArticle(
   },
 ): Promise<boolean> {
   const bundle = await loadBundleByArticleId(payload, input.articleId)
+  const heroMediaId = idOf(bundle.content.heroMedia)
+  if (heroMediaId) await assertMediaIdsPublishable(payload, [heroMediaId])
   const scheduledJob = await findOne(payload, 'scheduled-publish-jobs', {
     idempotencyKey: { equals: input.idempotencyKey },
   })

@@ -7,7 +7,7 @@ export default function PublishingLinks() {
       <Link href="/admin">Dashboard</Link>
       <Link href="/admin/posts">Posts</Link>
       <Link href="/admin/pages">Pages</Link>
-      <Link href="/admin/collections/media-assets">Media</Link>
+      <Link href="/admin/media-library">Media</Link>
       <Link href="/admin/navigation">Menus</Link>
       <Link href="/admin/globals/site-settings">Site Settings</Link>
       <Link href="/admin/collections/public-redirects">Redirects</Link>

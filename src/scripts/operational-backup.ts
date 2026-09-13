@@ -1,4 +1,4 @@
-﻿import { mkdir, rm, writeFile } from 'node:fs/promises'
+import { mkdir, rm, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { spawn } from 'node:child_process'
 import { createReadStream, createWriteStream } from 'node:fs'
@@ -100,6 +100,8 @@ try {
       'renegade-web',
       '-C',
       '/app/media',
+      '--exclude=./.upload-sessions',
+      '--exclude=.upload-sessions',
       '-czf',
       '-',
       '.',

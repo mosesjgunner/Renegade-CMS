@@ -30,7 +30,11 @@ export default defineConfig({
   globalSetup: './tests/browser/global-setup.ts',
   timeout: 30_000,
   workers: 1,
-  use: { baseURL: 'http://localhost:3110', browserName: 'chromium', channel: 'chrome' },
+  use: {
+    baseURL: 'http://localhost:3110',
+    browserName: 'chromium',
+    ...(process.env.PLAYWRIGHT_CHANNEL ? { channel: process.env.PLAYWRIGHT_CHANNEL } : {}),
+  },
   webServer: {
     command: 'node .next/standalone/server.js',
     url: 'http://localhost:3110/health/ready',

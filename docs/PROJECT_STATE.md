@@ -1,3 +1,26 @@
+## Media Pass MED-03 — Versioned image variant processing implemented — 2026-09-13
+
+- The `media` queue owns bounded, idempotent image processing. Approved recipe names resolve immutable checksum- and recipe-version-addressed output; browser delivery is responsive AVIF/WebP/JPEG with ETags and immutable cache control.
+- Originals remain private, generated metadata is stripped, unsafe SVG is refused, animated originals are preserved without silent flattening, focal/crop data is non-destructive, and prior ready output is held for rollback-safe regeneration/GC.
+- Status: implementation and focused real-Sharp fixtures are in place. PostgreSQL worker restart, public browser, S3, backup/restore and full release gates still require live evidence before a VERIFIED claim.
+
+## Media Pass MED-01 — Durable Resumable Upload Foundation Verified & Complete — 2026-09-13
+
+Verified and completed the MED-01 durable upload foundation across live PostgreSQL integration, S3 storage adapter, operational backup/restore, and full Playwright browser tests:
+
+- **Durable Resumable Upload Sessions (`media-upload-sessions`)**: Private, site/owner-scoped sessions with chunk staging under `.upload-sessions/<sessionId>/<index>.part`, byte offset verification, idempotent retry handling, chunk integrity mismatch detection (409 Conflict), magic-byte MIME sniffing, SHA-256 validation, and automatic staging directory deletion upon finalization into canonical `media-assets` and `media-blobs`.
+- **Fault-Tolerant Finalization & Cleanup**: Interrupted finalization recovery (`state: 'finalizing'`) automatically recovers and commits canonical assets; completed sessions are idempotently refinalized; active cancellation purges staging chunks; and scheduled worker task `cleanupExpiredUploadSessions` purges expired sessions.
+- **S3-Compatible Storage Adapter**: Verified with AWS SigV4 signed canonical requests, PUT, GET (200 & 404), DELETE, and full `uploadMedia`/`deleteOrphanedMedia` workflows when `STORAGE_DRIVER=s3`.
+- **Operational Backup & Restore**: Operational backup script excludes ephemeral `.upload-sessions` staging directories while capturing canonical media (`media.tar.gz`). Verified checksum validation, tamper detection, empty target enforcement, and restore safety isolation.
+- **Publisher Media Library & Browser Verification**: Verified `/admin/media-library` with `MediaUploader` chunk staging and progress, `MediaPicker` selection, metadata management (Title, Alt text, Caption), "Save metadata", canonical URL display (`/media/:id` with 0 storage path leakage), and orphaned asset deletion.
+- **Verification Evidence**:
+  - Live PostgreSQL integration: `tests/integration/med-01-upload-sessions.integration.test.ts` (1/1 PASS)
+  - S3-compatible storage driver: `tests/unit/med-01-s3-storage.test.ts` (5/5 PASS)
+  - Backup/restore media verification: `tests/unit/med-01-backup-media.test.ts` (5/5 PASS)
+  - Playwright browser suite: `tests/browser/med-01-media-library.spec.ts` (1/1 PASS)
+  - Full test suite: 75 unit test files (344/344 PASS), `media-acceptance.integration.test.ts` (1/1 PASS)
+  - Toolchain quality: `npm run typecheck` (0 errors), `npm run lint` (0 warnings), `npm run format:check` (clean), `npm run build` (standalone build verified)
+
 ## Media Pass MED-00 — Canonical Asset and Real-byte Delivery Contract — 2026-09-12
 
 Implemented the canonical `media-assets` / `media-blobs` / `media-variants`

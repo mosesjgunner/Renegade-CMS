@@ -97,7 +97,7 @@ export default async function FrontendLayout({ children }: { children: ReactNode
         depth: 0,
         overrideAccess: true,
       } as never)
-      for (const rawRegion of regions.docs as Array<Record<string, unknown>>) {
+      for (const rawRegion of regions.docs as unknown as Array<Record<string, unknown>>) {
         if (!canRenderPublic(rawRegion)) continue
         const slot = rawRegion.slot
         if (slot !== 'header' && slot !== 'announcement' && slot !== 'cta' && slot !== 'footer')

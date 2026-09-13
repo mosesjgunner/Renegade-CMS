@@ -1,3 +1,35 @@
+## Media Pass MED-02 — Practical DAM Foundation Implemented — 2026-09-13
+
+- Extended canonical `media-assets` with everyday title/alt/caption/credit metadata plus optional source, copyright, licence, restrictions, consent/release references, embargo/expiry, tags/collections, and private custom metadata.
+- Added `media-asset-versions` and an explicit replacement choice: create-only, selected usage rewiring, or all usages. The replacement preview returns the target/field/slot/lifecycle impact before mutation; replacement audit preserves both identities.
+- Extended `media-usages` with target/revision/field/slot/publication/channel/lifecycle/reconciliation fields and added the staff-only governance queue for missing alt/credit, expiry, orphans, failures, exact checksum duplicates, and high-impact replacements.
+- Release policy fails closed for pending, expired, or embargoed assets. Existing public byte delivery is withdrawn when rights are no longer valid; remediation remains visible in the governance queue. Exact checksums may identify duplicate candidates but never cause automatic merges.
+- Focused verification: `tests/unit/med-02-dam-governance.test.ts` (2/2 PASS); `npm run typecheck` completed with 0 errors. Full browser, PostgreSQL migration, distribution, and release-suite proof remains required before MED-02 can be marked complete.
+
+## Media Pass MED-03 — Versioned Image Variants Implemented; live release proof pending — 2026-09-13
+
+- Added a worker-owned, idempotent rendition queue for approved thumbnail, inline, hero, Open Graph, and named aspect-ratio recipes. Generated outputs are checksum/recipe-version addressed; public rendering uses versioned AVIF/WebP/JPEG `<picture>` delivery with correct dimensions, ETags, immutable cache headers, and no web-process transforms.
+- Preserved private originals; safely extract/normalize image metadata during worker processing, store focal/crop/color metadata, strip output metadata, reject malicious SVG, preserve animated originals under an explicit no-silent-transcode policy, and retain last-known-good blobs across recipe regeneration.
+- Media Library now exposes original-versus-variant inspection, focal crop preview, status/error/savings, worker queue regeneration, and permission-gated download. GC protects originals, live variants, rollback blobs, and public uses; orphan deletion cancels processing.
+- Focused Sharp fixture/unit proof is required with a real PostgreSQL+worker restart/browser pass before this may be marked VERIFIED. See `docs/operations/media-storage.md` for Lean/Standard worker resources.
+
+## Media Pass MED-01 — Durable Resumable Upload Foundation Verified & Complete — 2026-09-13
+
+Verified and completed the MED-01 durable upload foundation across live PostgreSQL integration, S3 storage adapter, operational backup/restore, and full Playwright browser tests:
+
+- **Durable Resumable Upload Sessions (`media-upload-sessions`)**: Private, site/owner-scoped sessions with chunk staging under `.upload-sessions/<sessionId>/<index>.part`, byte offset verification, idempotent retry handling, chunk integrity mismatch detection (409 Conflict), magic-byte MIME sniffing, SHA-256 validation, and automatic staging directory deletion upon finalization into canonical `media-assets` and `media-blobs`.
+- **Fault-Tolerant Finalization & Cleanup**: Interrupted finalization recovery (`state: 'finalizing'`) automatically recovers and commits canonical assets; completed sessions are idempotently refinalized; active cancellation purges staging chunks; and scheduled worker task `cleanupExpiredUploadSessions` purges expired sessions.
+- **S3-Compatible Storage Adapter**: Verified with AWS SigV4 signed canonical requests, PUT, GET (200 & 404), DELETE, and full `uploadMedia`/`deleteOrphanedMedia` workflows when `STORAGE_DRIVER=s3`.
+- **Operational Backup & Restore**: Operational backup script excludes ephemeral `.upload-sessions` staging directories while capturing canonical media (`media.tar.gz`). Verified checksum validation, tamper detection, empty target enforcement, and restore safety isolation.
+- **Publisher Media Library & Browser Verification**: Verified `/admin/media-library` with `MediaUploader` chunk staging and progress, `MediaPicker` selection, metadata management (Title, Alt text, Caption), "Save metadata", canonical URL display (`/media/:id` with 0 storage path leakage), and orphaned asset deletion.
+- **Verification Evidence**:
+  - Live PostgreSQL integration: `tests/integration/med-01-upload-sessions.integration.test.ts` (1/1 PASS)
+  - S3-compatible storage driver: `tests/unit/med-01-s3-storage.test.ts` (5/5 PASS)
+  - Backup/restore media verification: `tests/unit/med-01-backup-media.test.ts` (5/5 PASS)
+  - Playwright browser suite: `tests/browser/med-01-media-library.spec.ts` (1/1 PASS)
+  - Full test suite: 75 unit test files (344/344 PASS), `media-acceptance.integration.test.ts` (1/1 PASS)
+  - Toolchain quality: `npm run typecheck` (0 errors), `npm run lint` (0 warnings), `npm run format:check` (clean), `npm run build` (standalone build verified)
+
 ## Presentation Pass PRE-06 — Presentation Pass Release Gate Executed & Verified — 2026-09-12
 
 Executed and verified the full Renegade CMoS Presentation Pass gate PRE-06 across a clean candidate standalone environment (`node .next/standalone/server.js`) on PostgreSQL 17 using the preserved PUB-06 `renegadeparty-demo` (`siteId: 00000000-0000-0000-0000-000000000001`):

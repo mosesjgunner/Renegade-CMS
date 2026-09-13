@@ -41,11 +41,60 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
     UPDATE "media_usages" usage SET "site_id" = asset."site_id"
       FROM "media_assets" asset WHERE usage."media_id" = asset."id" AND usage."site_id" IS NULL;
     CREATE INDEX IF NOT EXISTS "media_usages_site_idx" ON "media_usages"("site_id");
+
+    ALTER TABLE "payload_locked_documents_rels" ADD COLUMN IF NOT EXISTS "media_blobs_id" uuid;
+    DO $$ BEGIN ALTER TABLE "payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_media_blobs_fk" FOREIGN KEY ("media_blobs_id") REFERENCES "media_blobs"("id") ON DELETE CASCADE; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+    CREATE INDEX IF NOT EXISTS "payload_locked_documents_rels_media_blobs_id_idx" ON "payload_locked_documents_rels" ("media_blobs_id");
+
+    ALTER TABLE "payload_locked_documents_rels" ADD COLUMN IF NOT EXISTS "media_variants_id" uuid;
+    DO $$ BEGIN ALTER TABLE "payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_media_variants_fk" FOREIGN KEY ("media_variants_id") REFERENCES "media_variants"("id") ON DELETE CASCADE; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+    CREATE INDEX IF NOT EXISTS "payload_locked_documents_rels_media_variants_id_idx" ON "payload_locked_documents_rels" ("media_variants_id");
+
+    ALTER TABLE "media_usages_rels" ADD COLUMN IF NOT EXISTS "page_layouts_id" uuid;
+    DO $$ BEGIN ALTER TABLE "media_usages_rels" ADD CONSTRAINT "media_usages_rels_page_layouts_fk" FOREIGN KEY ("page_layouts_id") REFERENCES "page_layouts"("id") ON DELETE CASCADE; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+    CREATE INDEX IF NOT EXISTS "media_usages_rels_page_layouts_id_idx" ON "media_usages_rels" ("page_layouts_id");
+
+    ALTER TABLE "media_usages_rels" ADD COLUMN IF NOT EXISTS "graphic_documents_id" uuid;
+    DO $$ BEGIN ALTER TABLE "media_usages_rels" ADD CONSTRAINT "media_usages_rels_graphic_documents_fk" FOREIGN KEY ("graphic_documents_id") REFERENCES "graphic_documents"("id") ON DELETE CASCADE; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+    CREATE INDEX IF NOT EXISTS "media_usages_rels_graphic_documents_id_idx" ON "media_usages_rels" ("graphic_documents_id");
+
+    ALTER TABLE "media_usages_rels" ADD COLUMN IF NOT EXISTS "podcast_episodes_id" uuid;
+    DO $$ BEGIN ALTER TABLE "media_usages_rels" ADD CONSTRAINT "media_usages_rels_podcast_episodes_fk" FOREIGN KEY ("podcast_episodes_id") REFERENCES "podcast_episodes"("id") ON DELETE CASCADE; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+    CREATE INDEX IF NOT EXISTS "media_usages_rels_podcast_episodes_id_idx" ON "media_usages_rels" ("podcast_episodes_id");
+
+    ALTER TABLE "media_usages_rels" ADD COLUMN IF NOT EXISTS "videos_id" uuid;
+    DO $$ BEGIN ALTER TABLE "media_usages_rels" ADD CONSTRAINT "media_usages_rels_videos_fk" FOREIGN KEY ("videos_id") REFERENCES "videos"("id") ON DELETE CASCADE; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+    CREATE INDEX IF NOT EXISTS "media_usages_rels_videos_id_idx" ON "media_usages_rels" ("videos_id");
+
+    ALTER TABLE "media_usages_rels" ADD COLUMN IF NOT EXISTS "social_network_variants_id" uuid;
+    DO $$ BEGIN ALTER TABLE "media_usages_rels" ADD CONSTRAINT "media_usages_rels_social_network_variants_fk" FOREIGN KEY ("social_network_variants_id") REFERENCES "social_network_variants"("id") ON DELETE CASCADE; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+    CREATE INDEX IF NOT EXISTS "media_usages_rels_social_network_variants_id_idx" ON "media_usages_rels" ("social_network_variants_id");
   `)
 }
 
 export async function down({ db }: MigrateDownArgs): Promise<void> {
   await db.execute(sql`
+    ALTER TABLE "media_usages_rels" DROP CONSTRAINT IF EXISTS "media_usages_rels_social_network_variants_fk";
+    DROP INDEX IF EXISTS "media_usages_rels_social_network_variants_id_idx";
+    ALTER TABLE "media_usages_rels" DROP COLUMN IF EXISTS "social_network_variants_id";
+    ALTER TABLE "media_usages_rels" DROP CONSTRAINT IF EXISTS "media_usages_rels_videos_fk";
+    DROP INDEX IF EXISTS "media_usages_rels_videos_id_idx";
+    ALTER TABLE "media_usages_rels" DROP COLUMN IF EXISTS "videos_id";
+    ALTER TABLE "media_usages_rels" DROP CONSTRAINT IF EXISTS "media_usages_rels_podcast_episodes_fk";
+    DROP INDEX IF EXISTS "media_usages_rels_podcast_episodes_id_idx";
+    ALTER TABLE "media_usages_rels" DROP COLUMN IF EXISTS "podcast_episodes_id";
+    ALTER TABLE "media_usages_rels" DROP CONSTRAINT IF EXISTS "media_usages_rels_graphic_documents_fk";
+    DROP INDEX IF EXISTS "media_usages_rels_graphic_documents_id_idx";
+    ALTER TABLE "media_usages_rels" DROP COLUMN IF EXISTS "graphic_documents_id";
+    ALTER TABLE "media_usages_rels" DROP CONSTRAINT IF EXISTS "media_usages_rels_page_layouts_fk";
+    DROP INDEX IF EXISTS "media_usages_rels_page_layouts_id_idx";
+    ALTER TABLE "media_usages_rels" DROP COLUMN IF EXISTS "page_layouts_id";
+    ALTER TABLE "payload_locked_documents_rels" DROP CONSTRAINT IF EXISTS "payload_locked_documents_rels_media_variants_fk";
+    DROP INDEX IF EXISTS "payload_locked_documents_rels_media_variants_id_idx";
+    ALTER TABLE "payload_locked_documents_rels" DROP COLUMN IF EXISTS "media_variants_id";
+    ALTER TABLE "payload_locked_documents_rels" DROP CONSTRAINT IF EXISTS "payload_locked_documents_rels_media_blobs_fk";
+    DROP INDEX IF EXISTS "payload_locked_documents_rels_media_blobs_id_idx";
+    ALTER TABLE "payload_locked_documents_rels" DROP COLUMN IF EXISTS "media_blobs_id";
     ALTER TABLE "media_usages" DROP COLUMN IF EXISTS "approved_for_public";
     ALTER TABLE "media_usages" DROP COLUMN IF EXISTS "site_id";
     ALTER TABLE "media_assets" DROP COLUMN IF EXISTS "public_policy";

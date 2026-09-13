@@ -223,11 +223,58 @@ export const MediaAssets: CollectionConfig = {
         { name: 'y', type: 'number', min: 0, max: 1 },
       ],
     },
+    { name: 'aspectRatio', type: 'number' },
+    { name: 'dominantColor', type: 'text' },
+    { name: 'colorPalette', type: 'json' },
+    { name: 'cropSettings', type: 'json' },
     { name: 'caption', type: 'textarea' },
-    { name: 'credits', type: 'text' },
+    // The first three fields are the everyday publisher contract. Rights and
+    // release evidence stay available, but do not interrupt ordinary uploads.
+    { name: 'description', type: 'textarea' },
+    { name: 'creatorCredit', type: 'text' },
+    { name: 'credits', type: 'text', admin: { hidden: true } }, // legacy export alias
+    { name: 'source', type: 'text' },
+    { name: 'copyrightOwner', type: 'text' },
     { name: 'license', type: 'text' },
+    {
+      name: 'licenseType',
+      type: 'select',
+      options: ['owned', 'licensed', 'creative-commons', 'public-domain', 'unknown'],
+    },
+    { name: 'licenseUrl', type: 'text' },
     { name: 'rightsSourceUrl', type: 'text' },
     { name: 'rightsExpiresAt', type: 'date' },
+    { name: 'embargoUntil', type: 'date' },
+    { name: 'usageRestrictions', type: 'textarea' },
+    {
+      name: 'consentReference',
+      type: 'text',
+      admin: { condition: (_, siblingData) => Boolean(siblingData?.governanceEnabled) },
+    },
+    {
+      name: 'modelReleaseReference',
+      type: 'text',
+      admin: { condition: (_, siblingData) => Boolean(siblingData?.governanceEnabled) },
+    },
+    {
+      name: 'propertyReleaseReference',
+      type: 'text',
+      admin: { condition: (_, siblingData) => Boolean(siblingData?.governanceEnabled) },
+    },
+    {
+      name: 'governanceEnabled',
+      type: 'checkbox',
+      defaultValue: false,
+      admin: { description: 'Show consent and release evidence for this governed asset.' },
+    },
+    {
+      name: 'customMetadata',
+      type: 'json',
+      admin: {
+        description:
+          'Site-approved extension metadata. Values are retained without becoming public fields.',
+      },
+    },
     {
       name: 'processingState',
       type: 'select',
@@ -265,6 +312,65 @@ export const MediaAssets: CollectionConfig = {
       options: ['pending', 'approved', 'restricted', 'expired'],
     },
     ...retentionFields(),
+  ],
+}
+
+/** Immutable replacement evidence; an asset identity is never overwritten by bytes. */
+export const MediaAssetVersions: CollectionConfig = {
+  slug: 'media-asset-versions',
+  admin: { useAsTitle: 'versionLabel', group: 'Media', hidden: true },
+  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
+  fields: [
+    ...siteScopeFields(),
+    {
+      name: 'asset',
+      type: 'relationship',
+      relationTo: 'media-assets',
+      required: true,
+      index: true,
+    },
+    {
+      name: 'replacesAsset',
+      type: 'relationship',
+      relationTo: 'media-assets',
+      required: true,
+      index: true,
+    },
+    { name: 'versionLabel', type: 'text', required: true },
+    {
+      name: 'mode',
+      type: 'select',
+      required: true,
+      options: ['new-asset', 'selected-usages', 'all-usages'],
+    },
+    { name: 'replacedUsageIds', type: 'json' },
+    { name: 'impactCount', type: 'number', required: true, min: 0 },
+    { name: 'reason', type: 'textarea' },
+  ],
+}
+
+/** A durable, staff-only remediation record for a public asset whose governance changed. */
+export const MediaGovernanceIncidents: CollectionConfig = {
+  slug: 'media-governance-incidents',
+  admin: { useAsTitle: 'summary', group: 'Media' },
+  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
+  fields: [
+    ...siteScopeFields(),
+    { name: 'asset', type: 'relationship', relationTo: 'media-assets', required: true, index: true },
+    { name: 'summary', type: 'text', required: true },
+    { name: 'reason', type: 'textarea', required: true },
+    {
+      name: 'status',
+      type: 'select',
+      required: true,
+      defaultValue: 'open',
+      options: ['open', 'investigating', 'remediated', 'dismissed'],
+    },
+    { name: 'affectedUsageIds', type: 'json', required: true, defaultValue: [] },
+    { name: 'openedAt', type: 'date', required: true },
+    { name: 'resolvedAt', type: 'date' },
+    { name: 'resolution', type: 'textarea' },
+    { name: 'audit', type: 'json', required: true, defaultValue: [] },
   ],
 }
 
@@ -323,6 +429,50 @@ export const MediaVariants: CollectionConfig = {
       defaultValue: 'ready',
       options: ['pending', 'processing', 'ready', 'failed'],
     },
+    { name: 'format', type: 'text' },
+    { name: 'recipeKey', type: 'text' },
+    { name: 'recipeVersion', type: 'number', defaultValue: 1 },
+    {
+      name: 'previousBlob',
+      type: 'relationship',
+      relationTo: 'media-blobs',
+      index: true,
+      admin: { description: 'Last known-good output retained for a one-step recipe rollback.' },
+    },
+    { name: 'crop', type: 'json' },
+    { name: 'errorMessage', type: 'text' },
+    { name: 'sizeBytes', type: 'number', min: 0 },
+    { name: 'lastAccessedAt', type: 'date' },
+  ],
+}
+
+/** Durable, private upload intent. Bytes live in the storage staging area until finalization. */
+export const MediaUploadSessions: CollectionConfig = {
+  slug: 'media-upload-sessions',
+  admin: { useAsTitle: 'filename', group: 'Media', hidden: true },
+  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
+  fields: [
+    ...siteScopeFields(),
+    { name: 'owner', type: 'relationship', relationTo: 'members', required: true, index: true },
+    { name: 'filename', type: 'text', required: true },
+    { name: 'title', type: 'text', required: true },
+    { name: 'altText', type: 'text' },
+    { name: 'caption', type: 'textarea' },
+    { name: 'expectedSize', type: 'number', required: true, min: 1 },
+    { name: 'expectedChecksum', type: 'text' },
+    { name: 'chunkSize', type: 'number', required: true, min: 1 },
+    { name: 'receivedBytes', type: 'number', required: true, defaultValue: 0, min: 0 },
+    { name: 'receivedChunks', type: 'json', required: true, defaultValue: [] },
+    {
+      name: 'state',
+      type: 'select',
+      required: true,
+      defaultValue: 'open',
+      options: ['open', 'finalizing', 'completed', 'cancelled', 'failed', 'expired'],
+    },
+    { name: 'asset', type: 'relationship', relationTo: 'media-assets' },
+    { name: 'expiresAt', type: 'date', required: true, index: true },
+    { name: 'failureReason', type: 'text' },
   ],
 }
 
@@ -1273,6 +1423,21 @@ export const MediaUsages: CollectionConfig = {
       index: true,
     },
     { name: 'usageKey', type: 'text', required: true, unique: true, index: true },
+    { name: 'targetType', type: 'text', required: true, defaultValue: 'content' },
+    { name: 'targetId', type: 'text', required: true },
+    { name: 'targetRevision', type: 'text' },
+    { name: 'field', type: 'text' },
+    { name: 'slot', type: 'text' },
+    { name: 'publication', type: 'relationship', relationTo: 'publications', index: true },
+    { name: 'channel', type: 'text' },
+    {
+      name: 'lifecycle',
+      type: 'select',
+      required: true,
+      defaultValue: 'draft',
+      options: ['draft', 'scheduled', 'public'],
+    },
+    { name: 'lastReconciledAt', type: 'date' },
     {
       name: 'purpose',
       type: 'select',

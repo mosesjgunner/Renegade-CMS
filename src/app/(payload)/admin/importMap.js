@@ -28,6 +28,7 @@ import { default as default_3b4e427f915b118814e3c59e0f2d3df8 } from '../../../mo
 import { default as default_0fd01bf67ceb7252ce62502db9f5efed } from '../../../modules/admin/SecurityCenter'
 import { default as default_1b612582b29e59ed900919e4be5e042e } from '../../../modules/admin/PublishingCenter'
 import { default as default_dbda5750261f4922f3ed1a8fb807bbf7 } from '../../../modules/admin/NavigationCenter'
+import { default as default_a5090419c79b8bec522e497f5c0c6ffe } from '../../../modules/admin/MediaLibrary'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
 /** @type import('payload').ImportMap */
@@ -62,5 +63,6 @@ export const importMap = {
   "./modules/admin/SecurityCenter#default": default_0fd01bf67ceb7252ce62502db9f5efed,
   "./modules/admin/PublishingCenter#default": default_1b612582b29e59ed900919e4be5e042e,
   "./modules/admin/NavigationCenter#default": default_dbda5750261f4922f3ed1a8fb807bbf7,
+  "./modules/admin/MediaLibrary#default": default_a5090419c79b8bec522e497f5c0c6ffe,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }

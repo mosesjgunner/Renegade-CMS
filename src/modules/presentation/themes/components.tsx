@@ -1,4 +1,5 @@
 import type { ComponentDefinition, PresentationField } from '../../public/page-builder'
+import { ResponsiveMedia } from '../../media/responsive'
 
 const text = (props: Record<string, unknown>, key: string, fallback: string) =>
   typeof props[key] === 'string' && props[key].trim() ? String(props[key]) : fallback
@@ -46,16 +47,37 @@ const simple = (
           {String((props.link as { label?: string }).label ?? 'Learn more')}
         </a>
       ) : null}
-      {props.media && typeof props.media === 'object' ? (
-        // Canonical media URLs are chosen by the server-backed picker, never typed as identifiers.
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={String((props.media as { href?: string }).href ?? '')}
-          alt={String((props.media as { label?: string }).label ?? '')}
-          className="max-w-full h-auto rounded-lg"
-          loading="lazy"
-        />
-      ) : null}
+      {props.media && typeof props.media === 'object'
+        ? (() => {
+            const href = String((props.media as { href?: string }).href ?? '')
+            const label = String((props.media as { label?: string }).label ?? '')
+            const mediaMatch = href.match(/\/media\/([a-f0-9-]+)/i)
+            const mediaId = mediaMatch ? mediaMatch[1] : null
+            const namedVariant = id === 'publisher.hero' ? 'hero' : 'inline'
+            const isPriority = id === 'publisher.hero'
+
+            if (mediaId) {
+              return (
+                <ResponsiveMedia
+                  media={{ id: mediaId, altText: label }}
+                  variant={namedVariant}
+                  priority={isPriority}
+                  className="max-w-full h-auto rounded-lg"
+                />
+              )
+            }
+
+            // eslint-disable-next-line @next/next/no-img-element
+            return (
+              <img
+                src={href}
+                alt={label}
+                className="max-w-full h-auto rounded-lg"
+                loading={isPriority ? 'eager' : 'lazy'}
+              />
+            )
+          })()
+        : null}
     </section>
   ),
   fallback: (block) => (
