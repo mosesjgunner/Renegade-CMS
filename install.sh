@@ -5,7 +5,6 @@ set -Eeuo pipefail
 root="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
 cd "$root"
 config_file="$root/.env.production"
-compose=(docker compose --env-file "$config_file" -f compose.production.yaml)
 non_interactive=false
 app_url="${APP_URL:-}"
 proxy_mode="${PROXY_MODE:-trusted}"
@@ -13,10 +12,14 @@ proxy_hops="${TRUSTED_PROXY_HOPS:-1}"
 profile="${DEPLOYMENT_PROFILE:-}"
 web_bind="${RENEGADE_WEB_BIND:-127.0.0.1:3000}"
 owner_email="${OWNER_EMAIL:-}"
+instance="${RENEGADE_INSTANCE:-}"
+instance_supplied=false
+existing_config=false
 
 usage() {
   cat <<'EOF'
-Usage: ./install.sh [--non-interactive] --app-url https://cms.example.com [options]
+Usage: ./install.sh [--non-interactive] --instance <slug> --app-url https://cms.example.com [options]
+  --instance <slug>              Docker Compose project identity (required for new installs)
   --proxy-mode trusted|direct     Default: trusted
   --trusted-proxy-hops 1|2|3     Default: 1
   --profile Lean|Standard         Default: selected from RAM
@@ -36,6 +39,7 @@ while (($#)); do
     --profile) profile="${2:?missing value}"; shift ;;
     --web-bind) web_bind="${2:?missing value}"; shift ;;
     --owner-email) owner_email="${2:?missing value}"; shift ;;
+    --instance) instance="${2:?missing value}"; instance_supplied=true; shift ;;
     --help|-h) usage; exit 0 ;;
     *) fail "unknown argument: $1" ;;
   esac
@@ -69,7 +73,21 @@ if [[ -f "$config_file" ]]; then
   profile="$(read_config DEPLOYMENT_PROFILE)"
   web_bind="$(read_config RENEGADE_WEB_BIND)"
   owner_email="$(read_config OWNER_EMAIL)"
+  configured_instance="$(read_config RENEGADE_INSTANCE)"
+  # Older installer-managed environments used the fixed renegade-cms project.
+  # Keep that identity so their existing named volumes remain attached.
+  configured_instance="${configured_instance:-renegade-cms}"
+  if $instance_supplied && [[ "$instance" != "$configured_instance" ]]; then
+    fail "--instance '$instance' does not match this installation's persisted instance '$configured_instance'."
+  fi
+  instance="$configured_instance"
 fi
+
+if ! $existing_config && [[ -z "$instance" ]]; then
+  fail '--instance is required for a new installation.'
+fi
+[[ "$instance" =~ ^[a-z0-9][a-z0-9_-]{0,62}$ ]] || fail 'instance must be 1-63 lowercase letters, digits, hyphens, or underscores and start with a letter or digit.'
+compose=(docker compose --project-name "$instance" --env-file "$config_file" -f compose.production.yaml)
 
 if ! $non_interactive && ! $existing_config; then
   app_url="$(ask 'Public HTTPS URL' "${app_url:-https://cms.example.com}")"
@@ -116,6 +134,7 @@ else
     echo "PROXY_MODE=$proxy_mode"
     echo "TRUSTED_PROXY_HOPS=$proxy_hops"
     echo "RENEGADE_WEB_BIND=$web_bind"
+    echo "RENEGADE_INSTANCE=$instance"
     echo "DEPLOYMENT_PROFILE=$profile"
     echo 'STORAGE_DRIVER=local'; echo 'MEDIA_DIR=/app/media'; echo 'EMAIL_MODE=disabled'
     echo 'LOG_LEVEL=info'; echo 'ENABLE_TEST_ROUTES=false'
@@ -136,5 +155,5 @@ echo
 echo 'Renegade CMS is ready.'
 echo "Setup URL: ${app_url%/}/setup"
 echo 'Open the setup URL, then retrieve the one-time bootstrap token locally with:'
-echo '  docker compose --env-file .env.production -f compose.production.yaml logs renegade-web'
+echo "  docker compose --project-name $instance --env-file .env.production -f compose.production.yaml logs renegade-web"
 echo 'Use a reverse proxy (Caddy, Nginx, Traefik, or equivalent) for TLS and forward it only to the loopback listener. In trusted mode it must overwrite forwarded headers.'

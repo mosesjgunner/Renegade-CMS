@@ -4,6 +4,7 @@ import path from 'node:path'
 import { assertRestoreSafety, verifyOperationalBackup } from '../modules/operations/backup'
 import { assertRestoreVersionCompatibility } from '../modules/operations/lifecycle'
 import { assertOperationalEnv } from './operational-env'
+import { projectNameFromEnvFile } from './operational-compose'
 
 const args = process.argv.slice(2)
 const value = (name: string, fallback?: string) =>
@@ -22,7 +23,15 @@ assertRestoreSafety({
   composeFile: compose,
 })
 const root = path.resolve(archive)
-const composeArgs = ['compose', '--env-file', envFile, '-f', compose]
+const composeArgs = [
+  'compose',
+  '--project-name',
+  projectNameFromEnvFile(envFile, 'RENEGADE_RESTORE_INSTANCE', 'renegade-cms-restore'),
+  '--env-file',
+  envFile,
+  '-f',
+  compose,
+]
 await assertOperationalEnv(envFile)
 function run(commandArgs: string[], inputFile?: string) {
   return new Promise<void>((resolve, reject) => {

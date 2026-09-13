@@ -9,6 +9,7 @@ import {
 } from '../../src/modules/operations/production-installer'
 
 const input = {
+  instance: 'renegadeparty',
   appUrl: 'https://cms.example.test',
   proxyMode: 'trusted',
   trustedProxyHops: '1',
@@ -34,9 +35,15 @@ describe('production installer decisions', () => {
   it('generates a complete managed configuration without substituting secrets', () => {
     const config = renderProductionConfig(input, secrets)
     expect(config).toContain('DEPLOYMENT_PROFILE=Lean')
+    expect(config).toContain('RENEGADE_INSTANCE=renegadeparty')
     expect(config).toContain('ENABLE_TEST_ROUTES=false')
     expect(hasInstallerManagedConfig(config)).toBe(true)
     expect(hasUnsafeProductionConfig(config)).toBe(false)
+  })
+  it('refuses an unsafe Compose project identity', () => {
+    expect(() => validateProductionInstallInput({ ...input, instance: 'Renegade Party' })).toThrow(
+      ProductionInstallError,
+    )
   })
   it('detects an existing installer-managed configuration for a restart without treating it as new', () => {
     expect(hasInstallerManagedConfig(renderProductionConfig(input, secrets))).toBe(true)
