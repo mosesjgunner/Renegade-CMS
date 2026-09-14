@@ -213,6 +213,8 @@ export const MediaAssets: CollectionConfig = {
     { name: 'width', type: 'number', min: 0 },
     { name: 'height', type: 'number', min: 0 },
     { name: 'durationSeconds', type: 'number', min: 0 },
+    { name: 'audioMetadata', type: 'json', admin: { readOnly: true } },
+    { name: 'videoMetadata', type: 'json', admin: { readOnly: true } },
     { name: 'altText', type: 'text' },
     {
       name: 'focalPoint',
@@ -356,7 +358,13 @@ export const MediaGovernanceIncidents: CollectionConfig = {
   access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
   fields: [
     ...siteScopeFields(),
-    { name: 'asset', type: 'relationship', relationTo: 'media-assets', required: true, index: true },
+    {
+      name: 'asset',
+      type: 'relationship',
+      relationTo: 'media-assets',
+      required: true,
+      index: true,
+    },
     { name: 'summary', type: 'text', required: true },
     { name: 'reason', type: 'textarea', required: true },
     {

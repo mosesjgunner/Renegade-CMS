@@ -8,6 +8,7 @@ const eslintConfig = [
       '.worktrees/**',
       '.phase-a/**',
       '.payload-upstream/**',
+      'docs/media/evidence/**',
       'src/payload-types.ts',
       'src/app/(payload)/admin/importMap.js',
     ],

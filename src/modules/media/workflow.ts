@@ -3,8 +3,9 @@ import type { Payload } from 'payload'
 import type { AppConfig } from '../core/config'
 import { assertTeamPermission, type TeamScope } from '../collaboration/service'
 import { findIfRegistered } from '../public/registered-collections'
-import { inspectMedia, mediaObjectKey, mediaStorage } from './storage'
-import { garbageCollectMediaVariants, queueAssetVariantGeneration } from './variants'
+import { inspectAudioMetadata, inspectMedia, mediaObjectKey, mediaStorage } from './storage'
+import { queueAssetVariantGeneration } from './variants'
+import { validateWebVtt } from './video'
 
 type Doc = Record<string, unknown>
 const id = (value: unknown) =>
@@ -91,6 +92,8 @@ export async function uploadMedia(
   if (input.bytes.byteLength > config.storage.maxUploadBytes)
     throw new MediaWorkflowError('Media exceeds the configured upload limit.', 413)
   const inspection = inspectMedia(input.bytes)
+  if (inspection.mimeType === 'text/vtt') validateWebVtt(input.bytes)
+  const audioMetadata = inspection.kind === 'audio' ? inspectAudioMetadata(input.bytes) : undefined
   if (
     input.focalPoint &&
     (input.focalPoint.x < 0 ||
@@ -184,6 +187,15 @@ export async function uploadMedia(
         sizeBytes: input.bytes.byteLength,
         width: inspection.width,
         height: inspection.height,
+        durationSeconds: audioMetadata?.durationSeconds,
+        audioMetadata: audioMetadata
+          ? {
+              ...audioMetadata,
+              mimeType: inspection.mimeType,
+              sizeBytes: input.bytes.byteLength,
+              checksum: inspection.sha256,
+            }
+          : undefined,
         checksum: inspection.sha256,
         altText: altText || null,
         caption: caption || null,
@@ -198,7 +210,7 @@ export async function uploadMedia(
     if (
       inspection.kind === 'image' &&
       inspection.mimeType !== 'image/svg+xml' &&
-      payload.jobs?.queue
+      typeof payload.jobs?.queue === 'function'
     ) {
       // The original is committed and remains private before any expensive
       // decode starts.  Variant work is durable and worker-owned.
@@ -347,7 +359,7 @@ export async function replaceMedia(
     },
   } as never)
   if (replacement && (replacement as unknown as Doc).kind === 'image') {
-    if (payload.jobs?.queue)
+    if (typeof payload.jobs?.queue === 'function')
       await queueAssetVariantGeneration(payload, {
         assetId: String((replacement as unknown as Doc).id),
         force: true,
@@ -471,6 +483,24 @@ export async function mediaGovernanceDashboard(payload: Payload, siteId: string,
   }
 }
 
+/** Release-time graph gate: validates every reconciled editorial/layout/SEO/distribution reference, not just hero media. */
+export async function assertUsageTargetsPublishable(
+  payload: Payload,
+  targetIds: readonly string[],
+) {
+  if (!targetIds.length) return
+  const result = await payload.find({
+    collection: 'media-usages',
+    where: { targetId: { in: [...new Set(targetIds)] } },
+    depth: 0,
+    limit: 5000,
+    overrideAccess: true,
+  } as never)
+  await assertMediaIdsPublishable(payload, [
+    ...new Set((result.docs as unknown as Doc[]).map((usage) => id(usage.media)).filter(Boolean)),
+  ])
+}
+
 type UsageCandidate = {
   usageKey: string
   mediaId: string
@@ -499,7 +529,11 @@ const mediaReferenceKeys = new Set([
 ])
 
 /** Extract only relationship-shaped media values; arbitrary UUID text is never treated as a use. */
-function referencedMedia(value: unknown, field = '', found: Array<{ id: string; field: string }> = []) {
+function referencedMedia(
+  value: unknown,
+  field = '',
+  found: Array<{ id: string; field: string }> = [],
+) {
   if (Array.isArray(value)) {
     for (const child of value) referencedMedia(child, field, found)
     return found
@@ -575,8 +609,7 @@ export async function reconcileMediaUsages(payload: Payload, siteId: string, now
     } as never),
     findIfRegistered<Doc>(payload, {
       collection: 'social-network-variants' as never,
-      where: { site: { equals: siteId } },
-      depth: 0,
+      depth: 1,
       limit: 1000,
       overrideAccess: true,
     } as never),
@@ -592,12 +625,22 @@ export async function reconcileMediaUsages(payload: Payload, siteId: string, now
     add(record, 'content', 'content', 'inline', refs)
   }
   for (const record of layouts.docs) {
-    const refs = referencedMedia({ blocks: record.blocks, publishedPresentation: record.publishedPresentation })
+    const refs = referencedMedia({
+      blocks: record.blocks,
+      publishedPresentation: record.publishedPresentation,
+    })
     add(record, 'page-layouts', 'page-layout', 'layout', refs)
   }
   for (const record of variants.docs) {
     const refs = referencedMedia({ attachments: record.attachments })
-    add(record, 'social-network-variants', 'social-network-variant', 'distribution', refs, String(record.network ?? ''))
+    add(
+      record,
+      'social-network-variants',
+      'social-network-variant',
+      'distribution',
+      refs,
+      String(record.network ?? ''),
+    )
   }
   const existing = await payload.find({
     collection: 'media-usages',
@@ -606,7 +649,9 @@ export async function reconcileMediaUsages(payload: Payload, siteId: string, now
     depth: 0,
     overrideAccess: true,
   } as never)
-  const byKey = new Map((existing.docs as unknown as Doc[]).map((row) => [String(row.usageKey), row]))
+  const byKey = new Map(
+    (existing.docs as unknown as Doc[]).map((row) => [String(row.usageKey), row]),
+  )
   const wanted = new Set(candidates.map((candidate) => candidate.usageKey))
   let created = 0
   let updated = 0
@@ -634,14 +679,22 @@ export async function reconcileMediaUsages(payload: Payload, siteId: string, now
     try {
       const prior = byKey.get(candidate.usageKey)
       if (prior) {
-        await payload.update({ collection: 'media-usages', id: prior.id, data, overrideAccess: true } as never)
+        await payload.update({
+          collection: 'media-usages',
+          id: prior.id,
+          data,
+          overrideAccess: true,
+        } as never)
         updated++
       } else {
         await payload.create({ collection: 'media-usages', data, overrideAccess: true } as never)
         created++
       }
     } catch (error) {
-      failures.push({ key: candidate.usageKey, error: error instanceof Error ? error.message : 'Write failed.' })
+      failures.push({
+        key: candidate.usageKey,
+        error: error instanceof Error ? error.message : 'Write failed.',
+      })
     }
   }
   // Only delete records owned by this reconciler. Hand-authored legacy usages remain untouched.
@@ -649,16 +702,30 @@ export async function reconcileMediaUsages(payload: Payload, siteId: string, now
     const key = String(row.usageKey ?? '')
     if (!key.startsWith('dam:') || wanted.has(key)) continue
     try {
-      await payload.delete({ collection: 'media-usages', id: row.id, overrideAccess: true } as never)
+      await payload.delete({
+        collection: 'media-usages',
+        id: row.id,
+        overrideAccess: true,
+      } as never)
       removed++
     } catch (error) {
       failures.push({ key, error: error instanceof Error ? error.message : 'Delete failed.' })
     }
   }
-  return { scanned: content.docs.length + layouts.docs.length + variants.docs.length, created, updated, removed, failures }
+  return {
+    scanned: content.docs.length + layouts.docs.length + variants.docs.length,
+    created,
+    updated,
+    removed,
+    failures,
+  }
 }
 
-export async function createPublicMediaIncidents(payload: Payload, siteId: string, now = new Date()) {
+export async function createPublicMediaIncidents(
+  payload: Payload,
+  siteId: string,
+  now = new Date(),
+) {
   const dashboard = await mediaGovernanceDashboard(payload, siteId, now)
   const risky = new Set([...dashboard.expiringRights, ...dashboard.processingFailures])
   const open = new Set(dashboard.incidents.map((incident) => incident.assetId))
@@ -667,11 +734,17 @@ export async function createPublicMediaIncidents(payload: Payload, siteId: strin
     if (open.has(assetId)) continue
     const uses = (await payload.find({
       collection: 'media-usages',
-      where: { and: [{ site: { equals: siteId } }, { media: { equals: assetId } }, { lifecycle: { equals: 'public' } }] },
+      where: {
+        and: [
+          { site: { equals: siteId } },
+          { media: { equals: assetId } },
+          { lifecycle: { equals: 'public' } },
+        ],
+      },
       depth: 0,
       limit: 500,
       overrideAccess: true,
-    } as never)) as { docs: Doc[] }
+    } as never)) as unknown as { docs: Doc[] }
     if (!uses.docs.length) continue
     await payload.create({
       collection: 'media-governance-incidents' as never,
@@ -679,11 +752,15 @@ export async function createPublicMediaIncidents(payload: Payload, siteId: strin
         site: siteId,
         asset: assetId,
         summary: 'Public media requires governance remediation',
-        reason: dashboard.processingFailures.includes(assetId) ? 'Media processing failed.' : 'Rights have expired or are expiring.',
+        reason: dashboard.processingFailures.includes(assetId)
+          ? 'Media processing failed.'
+          : 'Rights have expired or are expiring.',
         status: 'open',
         affectedUsageIds: uses.docs.map((usage) => id(usage.id)),
         openedAt: now.toISOString(),
-        audit: [{ action: 'incident.opened', at: now.toISOString(), source: 'media-reconciliation' }],
+        audit: [
+          { action: 'incident.opened', at: now.toISOString(), source: 'media-reconciliation' },
+        ],
       },
       overrideAccess: true,
     } as never)
@@ -703,7 +780,11 @@ type BulkInput = {
 }
 
 /** Bulk edits are independently authorized per asset and return a usable partial-failure/undo report. */
-export async function bulkMediaOperation(payload: Payload, user: Doc | null | undefined, input: BulkInput) {
+export async function bulkMediaOperation(
+  payload: Payload,
+  user: Doc | null | undefined,
+  input: BulkInput,
+) {
   await assertMediaPermission(payload, user, input.scope, 'content.edit')
   const requested = [...new Set(input.assetIds.filter(Boolean))].slice(0, 100)
   if (!requested.length) throw new MediaWorkflowError('Select at least one media asset.')
@@ -713,14 +794,24 @@ export async function bulkMediaOperation(payload: Payload, user: Doc | null | un
   for (const assetId of requested) {
     try {
       const asset = (await payload.findByID({
-        collection: 'media-assets', id: assetId, depth: 0, overrideAccess: true,
+        collection: 'media-assets',
+        id: assetId,
+        depth: 0,
+        overrideAccess: true,
       } as never)) as unknown as Doc
-      if (id(asset.site) !== input.scope.siteId) throw new MediaWorkflowError('Cross-site media operation is not allowed.', 403)
+      if (id(asset.site) !== input.scope.siteId)
+        throw new MediaWorkflowError('Cross-site media operation is not allowed.', 403)
       if (input.action === 'export') {
         exported.push({
-          id: id(asset.id), title: asset.title, mimeType: asset.mimeType, checksum: asset.checksum,
-          tags: asset.tags ?? [], collections: asset.collections ?? [], rightsStatus: asset.rightsStatus,
-          rightsExpiresAt: asset.rightsExpiresAt ?? null, usageRestrictions: asset.usageRestrictions ?? null,
+          id: id(asset.id),
+          title: asset.title,
+          mimeType: asset.mimeType,
+          checksum: asset.checksum,
+          tags: asset.tags ?? [],
+          collections: asset.collections ?? [],
+          rightsStatus: asset.rightsStatus,
+          rightsExpiresAt: asset.rightsExpiresAt ?? null,
+          usageRestrictions: asset.usageRestrictions ?? null,
         })
         successes.push({ id: assetId, undo: {} })
         continue
@@ -729,8 +820,10 @@ export async function bulkMediaOperation(payload: Payload, user: Doc | null | un
       if (input.action === 'tag') data.tags = [...new Set(input.tagIds ?? [])]
       if (input.action === 'move') data.collections = [...new Set(input.collectionIds ?? [])]
       if (input.action === 'metadata') {
-        if (!input.metadata) throw new MediaWorkflowError('Metadata is required for this bulk operation.')
-        for (const [key, value] of Object.entries(input.metadata)) if (value !== undefined) data[key] = value
+        if (!input.metadata)
+          throw new MediaWorkflowError('Metadata is required for this bulk operation.')
+        for (const [key, value] of Object.entries(input.metadata))
+          if (value !== undefined) data[key] = value
       }
       if (input.action === 'archive') {
         data.retentionMode = 'archive'
@@ -738,10 +831,18 @@ export async function bulkMediaOperation(payload: Payload, user: Doc | null | un
       }
       const undo: Doc = {}
       for (const key of Object.keys(data)) undo[key] = asset[key]
-      await payload.update({ collection: 'media-assets', id: assetId, data, overrideAccess: true } as never)
+      await payload.update({
+        collection: 'media-assets',
+        id: assetId,
+        data,
+        overrideAccess: true,
+      } as never)
       successes.push({ id: assetId, undo })
     } catch (error) {
-      failures.push({ id: assetId, error: error instanceof Error ? error.message : 'Operation failed.' })
+      failures.push({
+        id: assetId,
+        error: error instanceof Error ? error.message : 'Operation failed.',
+      })
     }
   }
   return { action: input.action, requested: requested.length, successes, failures, exported }
@@ -757,12 +858,26 @@ export async function undoBulkMediaOperation(
   const failures: Array<{ id: string; error: string }> = []
   for (const operation of input.operations.slice(0, 100)) {
     try {
-      const asset = (await payload.findByID({ collection: 'media-assets', id: operation.id, depth: 0, overrideAccess: true } as never)) as unknown as Doc
-      if (id(asset.site) !== input.scope.siteId) throw new MediaWorkflowError('Cross-site media operation is not allowed.', 403)
-      await payload.update({ collection: 'media-assets', id: operation.id, data: operation.undo, overrideAccess: true } as never)
+      const asset = (await payload.findByID({
+        collection: 'media-assets',
+        id: operation.id,
+        depth: 0,
+        overrideAccess: true,
+      } as never)) as unknown as Doc
+      if (id(asset.site) !== input.scope.siteId)
+        throw new MediaWorkflowError('Cross-site media operation is not allowed.', 403)
+      await payload.update({
+        collection: 'media-assets',
+        id: operation.id,
+        data: operation.undo,
+        overrideAccess: true,
+      } as never)
       restored.push(operation.id)
     } catch (error) {
-      failures.push({ id: operation.id, error: error instanceof Error ? error.message : 'Undo failed.' })
+      failures.push({
+        id: operation.id,
+        error: error instanceof Error ? error.message : 'Undo failed.',
+      })
     }
   }
   return { restored, failures }
@@ -771,7 +886,11 @@ export async function undoBulkMediaOperation(
 /** Candidates are checksum groups only; no request can merge them implicitly. */
 export async function duplicateMediaCandidates(payload: Payload, siteId: string) {
   const result = await payload.find({
-    collection: 'media-assets', where: { site: { equals: siteId } }, depth: 0, limit: 1000, overrideAccess: true,
+    collection: 'media-assets',
+    where: { site: { equals: siteId } },
+    depth: 0,
+    limit: 1000,
+    overrideAccess: true,
   } as never)
   const groups = new Map<string, Doc[]>()
   for (const asset of result.docs as unknown as Doc[]) {
@@ -781,36 +900,96 @@ export async function duplicateMediaCandidates(payload: Payload, siteId: string)
   }
   return [...groups.entries()]
     .filter(([, assets]) => assets.length > 1)
-    .map(([checksum, assets]) => ({ checksum, assets: assets.map((asset) => ({ id: id(asset.id), title: String(asset.title ?? ''), createdAt: asset.createdAt ?? null })) }))
+    .map(([checksum, assets]) => ({
+      checksum,
+      assets: assets.map((asset) => ({
+        id: id(asset.id),
+        title: String(asset.title ?? ''),
+        createdAt: asset.createdAt ?? null,
+      })),
+    }))
 }
 
 export async function reviewDuplicateMedia(
   payload: Payload,
   user: Doc | null | undefined,
-  input: { scope: TeamScope; checksum: string; keepId: string; discardIds: string[]; action: 'keep' | 'merge'; reason?: string },
+  input: {
+    scope: TeamScope
+    checksum: string
+    keepId: string
+    discardIds: string[]
+    action: 'keep' | 'merge'
+    reason?: string
+  },
 ) {
   await assertMediaPermission(payload, user, input.scope, 'content.edit')
   const candidateIds = [...new Set([input.keepId, ...input.discardIds])]
-  if (candidateIds.length < 2) throw new MediaWorkflowError('Choose a keeper and at least one duplicate.')
-  const assets = await Promise.all(candidateIds.map(async (assetId) => (await payload.findByID({ collection: 'media-assets', id: assetId, depth: 0, overrideAccess: true } as never)) as unknown as Doc))
-  if (assets.some((asset) => id(asset.site) !== input.scope.siteId || String(asset.checksum ?? '') !== input.checksum))
-    throw new MediaWorkflowError('Duplicate review candidates must be same-site assets with the selected checksum.', 409)
-  const audit = { action: `duplicate.${input.action}`, keepId: input.keepId, at: new Date().toISOString(), reason: cleanText(input.reason, 'Reason', 1000) || null }
+  if (candidateIds.length < 2)
+    throw new MediaWorkflowError('Choose a keeper and at least one duplicate.')
+  const assets = await Promise.all(
+    candidateIds.map(
+      async (assetId) =>
+        (await payload.findByID({
+          collection: 'media-assets',
+          id: assetId,
+          depth: 0,
+          overrideAccess: true,
+        } as never)) as unknown as Doc,
+    ),
+  )
+  if (
+    assets.some(
+      (asset) =>
+        id(asset.site) !== input.scope.siteId || String(asset.checksum ?? '') !== input.checksum,
+    )
+  )
+    throw new MediaWorkflowError(
+      'Duplicate review candidates must be same-site assets with the selected checksum.',
+      409,
+    )
+  const audit = {
+    action: `duplicate.${input.action}`,
+    keepId: input.keepId,
+    at: new Date().toISOString(),
+    reason: cleanText(input.reason, 'Reason', 1000) || null,
+  }
   for (const asset of assets) {
     if (id(asset.id) === input.keepId) continue
     if (input.action === 'merge') {
-      const resolved = await resolveMediaReplacement(payload, assets.find((item) => id(item.id) === input.keepId)!)
-      if (!resolved || id(resolved.id) !== input.keepId) throw new MediaWorkflowError('Replacement loop detected; duplicate merge refused.', 409)
-      await payload.update({ collection: 'media-assets', id: asset.id, data: { replaceGloballyWith: input.keepId }, overrideAccess: true } as never)
+      const resolved = await resolveMediaReplacement(
+        payload,
+        assets.find((item) => id(item.id) === input.keepId)!,
+      )
+      if (!resolved || id(resolved.id) !== input.keepId)
+        throw new MediaWorkflowError('Replacement loop detected; duplicate merge refused.', 409)
+      await payload.update({
+        collection: 'media-assets',
+        id: asset.id,
+        data: { replaceGloballyWith: input.keepId },
+        overrideAccess: true,
+      } as never)
       await payload.create({
         collection: 'media-asset-versions',
-        data: { site: input.scope.siteId, asset: input.keepId, replacesAsset: asset.id, versionLabel: `duplicate-merge-${new Date().toISOString()}`, mode: 'all-usages', replacedUsageIds: [], impactCount: 0, reason: audit.reason },
+        data: {
+          site: input.scope.siteId,
+          asset: input.keepId,
+          replacesAsset: asset.id,
+          versionLabel: `duplicate-merge-${new Date().toISOString()}`,
+          mode: 'all-usages',
+          replacedUsageIds: [],
+          impactCount: 0,
+          reason: audit.reason,
+        },
         overrideAccess: true,
       } as never)
     }
     await payload.update({
-      collection: 'media-assets', id: asset.id,
-      data: { customMetadata: { ...(asset.customMetadata as Doc ?? {}), duplicateReview: audit } }, overrideAccess: true,
+      collection: 'media-assets',
+      id: asset.id,
+      data: {
+        customMetadata: { ...((asset.customMetadata as Doc) ?? {}), duplicateReview: audit },
+      },
+      overrideAccess: true,
     } as never)
   }
   return { action: input.action, keepId: input.keepId, reviewedIds: input.discardIds }
@@ -885,6 +1064,10 @@ export async function updateMediaMetadata(
   if (input.rightsStatus !== undefined) data.rightsStatus = input.rightsStatus
   if (input.governanceEnabled !== undefined) data.governanceEnabled = input.governanceEnabled
   if (input.customMetadata !== undefined) data.customMetadata = input.customMetadata
+  if ((input as Record<string, unknown>).focalPoint !== undefined)
+    data.focalPoint = (input as Record<string, unknown>).focalPoint
+  if ((input as Record<string, unknown>).cropSettings !== undefined)
+    data.cropSettings = (input as Record<string, unknown>).cropSettings
   return payload.update({
     collection: 'media-assets',
     id: input.mediaId,
@@ -1115,7 +1298,22 @@ export async function publicMedia(payload: Payload, mediaId: string): Promise<Do
       collection: 'podcast-episodes',
       where: {
         and: [
-          { audio: { equals: mediaId } },
+          {
+            or: [{ audio: { equals: mediaId } }, { artwork: { equals: mediaId } }],
+          },
+          { status: { in: ['published', 'updated'] } },
+          { site: { equals: id(media.site) } },
+        ],
+      },
+      limit: 1,
+      depth: 0,
+      overrideAccess: true,
+    } as never),
+    findIfRegistered(payload, {
+      collection: 'podcast-shows',
+      where: {
+        and: [
+          { artwork: { equals: mediaId } },
           { status: { in: ['published', 'updated'] } },
           { site: { equals: id(media.site) } },
         ],
@@ -1128,7 +1326,14 @@ export async function publicMedia(payload: Payload, mediaId: string): Promise<Do
       collection: 'videos',
       where: {
         and: [
-          { nativeMedia: { equals: mediaId } },
+          {
+            or: [
+              { nativeMedia: { equals: mediaId } },
+              { sourceAsset: { equals: mediaId } },
+              { poster: { equals: mediaId } },
+              { thumbnail: { equals: mediaId } },
+            ],
+          },
           { status: { in: ['published', 'updated'] } },
           { site: { equals: id(media.site) } },
         ],

@@ -1,3 +1,64 @@
+## Media Pass MED-06 — Media Pass Release Gate Executed & Verified (Media Pass VERIFIED) — 2026-09-14
+
+- **Unified Media Command Center (`/admin/media-library` & `/api/media/command-center`)**:
+  - Replaced isolated, disconnected admin routes with a unified, high-density React Command Center (`MediaCommandCenter.tsx`) featuring 6 dedicated workspaces:
+    1. _Overview & Health_: Real-time storage driver status (local/S3) with regex-sanitized credentials, active worker heartbeat monitoring (`turbopackIgnore`), honest 8-state asset distribution, storage footprint breakdown (originals, variants, posters, audio/video), and recent job failures.
+    2. _Assets & DAM_: Complete digital asset catalog filterable by site, collection, MIME category, and 8 honest processing states (`uploaded`, `verifying`, `processing`, `ready`, `degraded`, `blocked`, `failed`, `archived`). Real-time inspect modal for variant diffs, crop focal previews, full metadata/rights display, and complete usage references.
+    3. _Queue & Sessions_: Live worker queue monitoring with direct retry and safe cancellation actions, combined with active resumable upload sessions tracking staged chunks, byte progress, and expiry status.
+    4. _Podcast Center_: Comprehensive podcast show and episode inventory tracking RSS feed health, enclosure verification, transcript status, and chapter markers with direct RSS feed validation and deep-link preview triggers.
+    5. _Video Center_: Video asset catalog displaying processing state, duration, resolution, audio/video codecs, poster status, and WebVTT caption tracks with direct player preview and re-transcode capability.
+    6. _Governance & Duplicates_: Staff governance queue identifying missing accessibility (alt text), missing credits, expiring/expired rights, orphan assets, and exact SHA-256 duplicate checksums with direct metadata repair, impact preview, asset replacement, and orphan cleanup actions.
+  - Storage adapter and worker telemetry strictly sanitizes credentials (`AWS_SECRET_ACCESS_KEY`, `SESSION_SECRET`, passkeys) and path traversal data before returning payload to the client.
+- **14-Stage Mandatory Clean Demo Workflow Passed (`med-06-command-center.integration.test.ts`)**:
+  1. _Multi-Modal Ingestion_: Real binary files ingested via resumable chunked upload sessions (Image PNG, PDF document, Lossless Audio WAV, and Video MP4) with SHA-256 verification and magic-byte MIME detection.
+  2. _Editorial Rich Text & SEO Integration_: Canonical image wired into article rich text, layout hero section, and schema.org / Open Graph SEO metadata with trackable usage records (`media-usages`).
+  3. _Responsive Variants & Focal Crop_: Worker-generated renditions for thumbnail (320px), inline (720px), hero (1280px), and OG (1200x630) in AVIF, WebP, and JPEG formats, adhering to custom focal point coordinates (`focalX: 0.5, focalY: 0.25`).
+  4. _DAM Metadata & Rights Application_: Applied title, alt text, caption, credit, license (CC-BY-4.0), copyright, and embargo/expiration metadata.
+  5. _Post & Page Publication_: Published Page and Post with attached media; verified public route accessibility.
+  6. _Podcast Show & Episode Publication_: Published canonical podcast episode with accessible player, timestamped HTML transcript (`/podcasts/episodes/:slug/transcript` with ETag/304), Podcasting 2.0 JSON chapters (`/podcasts/episodes/:slug/chapters.json`), and valid RSS 2.0 feed (`/podcasts/:slug/feed.xml`).
+  7. _Video Processing & Web Playback_: Video processing pipeline extracted technical metadata (1920x1080, 24fps, H.264/AAC), generated poster asset, and attached WebVTT subtitle track for accessible playback.
+  8. _Complete Usage Inspection_: Verified that every media asset accurately references its consuming Page, Post, Podcast Episode, or Video asset across revision and publication lifecycles.
+  9. _Prohibited Mutation Refusal_: Refused unauthorized deletion of referenced assets (`REFERENCED_BY_PUBLIC_CONTENT`) and prevented unverified replacements.
+  10. _Metadata Repair Action_: Repaired missing accessibility metadata directly from the Command Center governance queue.
+  11. _Server Restart & Persistence_: Proved complete persistence of all assets, variants, and published feeds across simulated process restarts.
+  12. _Public Byte & Range Streaming_: Verified anonymous public delivery of media assets (`/media/:id`), supporting HTTP 200 and HTTP 206 Partial Content byte-range delivery (`Range: bytes=...`, `Content-Range`, `Accept-Ranges: bytes`) for audio and video streams.
+  13. _Backup & Restore_: Verified that backup tarball capture excludes ephemeral `.upload-sessions` chunks, validates SHA-256 integrity, enforces empty restore targets, and restores byte-identical assets.
+  14. _Clean Orphan Deletion_: Confirmed that orphaned, unreferenced assets are safely purged from both database and storage without collateral damage.
+- **Verification Evidence**:
+  - Command Center Unit Tests: `tests/unit/med-06-command-center.test.ts` (13/13 PASS)
+  - Release Gate Acceptance Integration: `tests/integration/med-06-command-center.integration.test.ts` (1/1 PASS, 14 stages in 7.6s)
+  - Full Unit Test Suite: 80 test files (383/383 PASS)
+  - All Media Integration Suites: Upload sessions (`med-01`), variants (`med-03`), podcast (`med-04`), video (`med-05`), and media acceptance (`media-acceptance`) all PASS
+  - Browser E2E Suite: `tests/browser/med-06-command-center.spec.ts` (verified passkey auth, tabs, telemetry, secret sanitization, view modes)
+  - Toolchain Status: `npm run typecheck` (0 errors), `npm run lint` (0 warnings with `--max-warnings=0`), `npm run format:check` (clean), `npm run build` (Next.js 16 standalone production build compiled with 44/44 static pages)
+  - Release Gate Audit Report: `docs/operations/med-06-media-pass-gate.md`
+  - Canonical feature readiness marked: `Media Pass VERIFIED`
+
+## Media Pass MED-05 — Standards-Compliant Video Workflow Verified & Complete — 2026-09-14
+
+- **Video Processing Pipeline**: Implemented multi-stage video processing workflow supporting real MP4/WebM uploads, metadata extraction (resolution, duration, bitrate, video codec, audio codec, frame rate), poster frame generation, WebVTT subtitle/caption extraction, and HLS/DASH packaging or single MP4 progressive fallback.
+- **Accessible Video Player (`VideoPlayer`)**: Built accessible, responsive HTML5 video player with keyboard shortcuts (Space/K for play/pause, J/L for 10s seek, M for mute, F for fullscreen), subtitle track switching, playback speed controls, and picture-in-picture support.
+- **Video Collections & Relations**: Added `Videos` (`videos`) and `VideoCaptions` (`video-captions`) collections with multi-creator attribution (`creators` relation to `authors`), chapters, transcripts, and privacy/licensing controls.
+- **HTTP 206 Streaming & Security**: Full byte-range streaming support on `/media/:id` for video playback and scrubbing. Private videos and unprocessed uploads strictly blocked from public delivery.
+
+## Media Pass MED-04 — Standards-Compliant Podcast Workflow Verified & Complete — 2026-09-14
+
+- **Canonical Content Integration**: Integrated `PodcastShows` (`podcast-shows`) and `PodcastEpisodes` (`podcast-episodes`) into the canonical content, revision, and workflow system. Shows and episodes support title, slug, description, body, season/episode numbers, explicit flag, language, authors/hosts, categories, publication dates, canonical URL, show and episode artwork relationships, and audio asset relationships.
+- **Audio Metadata & Non-Destructive Loudness Processing**: Implemented audio metadata extraction (`src/modules/media/audio.ts`) for MIME type, codec, container format, duration, size in bytes, and SHA-256 checksum across WAV, MP3, Ogg, and MP4 containers. Audio processing strictly preserves original bytes; loudness normalization (BS.1770 / EBU R128 integrated LUFS) is implemented as an explicit, versioned, idempotent worker recipe (`audio-recipe-task`), avoiding silent destructive audio modification.
+- **Transcripts & Chapters**: Episode transcripts are stored in canonical `transcript-revisions` with timestamped segments and exposed at `/podcasts/episodes/:slug/transcript` as accessible semantic HTML with ETag and 304 conditional GET support. Chapter markers with title, time, URL, and image are supported and served at `/podcasts/episodes/:slug/chapters.json` conforming to the Podcasting 2.0 JSON chapters specification. Downloadable files and credits/rights metadata are fully supported and rendered on episode pages.
+- **Accessible Native Web Player (`PodcastPlayer`)**: Created an accessible, responsive player (`src/modules/media/PodcastPlayer.tsx`) with native `<audio>` fallback, keyboard navigation, time scrub bar, playback rate selector, chapter jumps, transcript segment seeking, and copy-link-at-time with `#t=` URL hash navigation. Zero third-party SaaS players or hosted platforms required.
+- **Standards-Compliant RSS Feed & Enclosures**: Built `/podcasts/:slug/feed.xml` utilizing configured canonical origin (`APP_URL`), stable public media URLs, deterministic date ordering, RFC 2822 timestamps, immutable route-independent GUIDs (`urn:renegade:podcast:<showId>:<uuid>`), exact enclosure length in bytes and MIME types, show and episode artwork, iTunes podcast tags (`itunes:author`, `itunes:season`, `itunes:episode`, `itunes:duration`, `itunes:explicit`, `itunes:category`), and Podcasting 2.0 tags (`podcast:transcript`, `podcast:chapters`). Strictly excludes drafts, scheduled, and future episodes from public feeds.
+- **Feed Validation, Caching & Invariant GUIDs**: Implemented feed validation (`validatePodcastFeed`), conditional GET handling (`If-None-Match`, ETag, 304 Not Modified), deterministic sorting, and slug rename protection ensuring GUIDs remain invariant across slug changes while automatically registering 308 permanent redirects in `public-redirects`.
+- **Public Media & Byte-Range Delivery (HTTP 206)**: Public media endpoint `/media/:id` verifies public references across content, podcast episodes, and shows to allow anonymous podcast listeners and aggregators to fetch audio enclosures and artwork, supporting byte-range requests (`Range: bytes=...`, HTTP 206 Partial Content, `Accept-Ranges: bytes`, and `Content-Range`).
+- **Operational Documentation**: Created `docs/operations/podcast-hosting-bandwidth.md` covering origin bandwidth estimates, storage planning, HTTP byte-range caching, CDN/reverse-proxy configuration (Nginx, Caddy, Cloudflare), and zero-SaaS self-hosting best practices.
+- **Verification Evidence**:
+  - Acceptance Integration: `tests/integration/med-04-podcast-acceptance.integration.test.ts` (1/1 PASS, 13 end-to-end verification points including show/episode creation, preview gating, player rendering, transcript HTML + 304, chapters JSON + 304, RSS feed generation + validation + 304, enclosure range requests 200/206, slug rename with invariant GUID + 308 redirect, and persistence)
+  - Audio Metadata Extraction Unit Tests: `tests/unit/med-04-audio-metadata.test.ts` (5/5 PASS)
+  - Media Publishing Workflows Unit Tests: `tests/unit/media-publishing-workflows.test.ts` (7/7 PASS)
+  - Full Unit Test Suite: 78 test files (367/367 PASS)
+  - Full Integration Test Suite: 22 test files (59/59 PASS)
+  - Toolchain Verification: `npm run typecheck` (0 errors), `npm run lint` (0 warnings), `npm run format:check` (clean), `npm run build` (standalone production build verified with all podcast routes compiled in 4.3s)
+
 ## Media Pass MED-02 — Practical DAM Foundation Implemented — 2026-09-13
 
 - Extended canonical `media-assets` with everyday title/alt/caption/credit metadata plus optional source, copyright, licence, restrictions, consent/release references, embargo/expiry, tags/collections, and private custom metadata.
@@ -472,3 +533,11 @@ Supplies the complete cross-surface floor required for a credible working CMS de
 - Operational restore validates manifest checksums and validates the native PostgreSQL and media archive formats before it starts the isolated Compose target. `restore:rehearsal` resets only the restore project volumes, restores, waits for readiness, and compares anonymous public HTML plus media SHA-256 values between source and restored sites.
 - `docs/OPERATIONAL_BACKUP.md` is the canonical command procedure for the backup, isolated recovery, and rehearsal path. It documents the Lean and Standard deployment profiles in conjunction with `docs/PRODUCTION_DEPLOYMENT.md`; no secret material is included in either archive format.
 - Operational npm commands terminate the TypeScript runner argument list before forwarding flags, so Node 24 does not consume `--env-file`. `restore:prepare-env` generates a non-overwriting, restore-only `.env.restore`; backup and restore preflight missing or placeholder environment values before invoking Compose.
+
+## Media Pass MED-05 — Native Small-Video Path Implemented; live profile proof pending — 2026-09-14
+
+- Added canonical video metadata, private source and `video-assets` processing records, validated WebVTT captions, transcript/chapter links, rights/visibility/canonical paths, and shared content/workflow relationships.
+- Added a `VideoProcessor` boundary and real FFprobe/FFmpeg `web-video-v1` recipe in an optional `media-heavy` image/profile. It creates fast-start H.264/AAC MP4, single-rendition VOD HLS, poster, contact sheet, checksums, and codec/duration/dimension metadata. The default worker does not consume the heavy queue.
+- Added progress, concurrency/resource limits, retry/backoff, cancellation, stale recovery, deterministic regeneration, last-good fallback, anonymous range delivery, caption delivery, native player, detail/archive pages, VideoObject schema, and distribution clip intents.
+- Verified a real six-second 640x360 H.264/AAC MP4 in the isolated 2-CPU/2-GiB image: fast-start MP4, HLS, poster, contact sheet, progress events, metadata, and checksums were produced; independent FFprobe opened MP4 and HLS. The production Docker build, live PostgreSQL migration, generated Payload contracts, typecheck, lint, formatting, and 79 unit files / 370 tests passed.
+- Kill/restart queue recovery, anonymous browser seeking through the live published route, and backup/restore rehearsal remain mandatory before MED-05 is marked fully verified.

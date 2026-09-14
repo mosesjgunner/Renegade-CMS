@@ -158,6 +158,7 @@ describe('MED-03 image variant lifecycle & governance integration', () => {
 
     const thumbVar = variantsInDb.find((v) => v.recipeKey === 'thumbnail' && v.format === 'webp')
     expect(thumbVar).toBeDefined()
+    if (!thumbVar) throw new Error('thumbVar missing')
     expect(thumbVar.processingState).toBe('ready')
     expect(thumbVar.width).toBe(standardRecipes.thumbnail?.width)
     expect(thumbVar.height).toBe(standardRecipes.thumbnail?.height)
@@ -184,7 +185,7 @@ describe('MED-03 image variant lifecycle & governance integration', () => {
     const pool = (payload.db as any).pool
     const passkey = await createPasskeySession(
       { id: adminUser.id, email: adminUser.email },
-      appConfig.payloadSecret,
+      loadConfig().payloadSecret,
       async (sid, expiresAt) => {
         await pool.query(
           `INSERT INTO "admin_sessions" ("id", "user_id", "expires_at", "created_at", "last_seen_at") VALUES ($1, $2, $3, now(), now())`,
@@ -200,23 +201,44 @@ describe('MED-03 image variant lifecycle & governance integration', () => {
       },
     })
     const inspectRes = await variantApiGet(inspectReq, { params: Promise.resolve({ id: assetId }) })
-    if (inspectRes.status !== 200) {
-      const errText = await inspectRes.text()
-      console.error('INSPECT_API_ERROR_BODY:', inspectRes.status, errText)
-    }
     expect(inspectRes.status).toBe(200)
     const inspectData = await inspectRes.json()
 
-    expect(inspectData.asset.id).toBe(assetId)
-    expect(inspectData.asset.width).toBe(1200)
-    expect(inspectData.asset.height).toBe(800)
-    expect(inspectData.asset.originalSizeBytes).toBe(imageBytes.length)
+    expect(inspectData.original.id).toBe(assetId)
+    expect(inspectData.original.width).toBe(1200)
+    expect(inspectData.original.height).toBe(800)
+    expect(inspectData.original.sizeBytes).toBe(imageBytes.length)
     expect(inspectData.summary.totalVariants).toBeGreaterThanOrEqual(4)
     expect(inspectData.summary.readyVariants).toBeGreaterThanOrEqual(4)
-    expect(inspectData.summary.bytesSaved).toBeGreaterThan(0)
-    expect(inspectData.summary.percentSaved).toBeGreaterThan(0)
+    expect(inspectData.summary.totalSavingsBytes).toBeGreaterThan(0)
+    expect(inspectData.summary.averagePercentSaved).toBeGreaterThan(0)
 
     // 6. Test Public Delivery Route (GET /media/:id?variant=thumbnail&format=webp)
+    // First verify unapproved asset is not exposed publicly without auth (DAM protection)
+    const unapprovedReq = new Request(
+      `http://localhost:3000/media/${assetId}?variant=thumbnail&format=webp`,
+    )
+    const unapprovedRes = await mediaGet(unapprovedReq, {
+      params: Promise.resolve({ id: assetId }),
+    })
+    expect(unapprovedRes.status).toBe(404)
+
+    // Attach to published article to grant public access
+    const articles = await payload.find({
+      collection: 'content',
+      where: { and: [{ site: { equals: site.id } }, { status: { equals: 'published' } }] },
+      limit: 1,
+      overrideAccess: true,
+    })
+    expect(articles.docs.length).toBeGreaterThan(0)
+    const article = articles.docs[0] as any
+
+    await attachMediaToContent(payload, user, {
+      scope: { kind: 'site', siteId: site.id },
+      mediaId: assetId,
+      contentId: article.id,
+    })
+
     const deliveryReq = new Request(
       `http://localhost:3000/media/${assetId}?variant=thumbnail&format=webp`,
     )
@@ -260,20 +282,21 @@ describe('MED-03 image variant lifecycle & governance integration', () => {
       }),
     })
     const updateRes = await variantApiPost(updateReq, { params: Promise.resolve({ id: assetId }) })
-    expect(updateRes.status).toBe(200)
     const updateData = await updateRes.json()
-    expect(updateData.focalPoint).toEqual({ x: 0.8, y: 0.2 })
-    expect(updateData.cropSettings).toEqual({ x: 0.1, y: 0.1, width: 0.8, height: 0.8 })
+    expect(updateRes.status).toBe(202)
+    expect(updateData.message).toContain('queued')
+
+    // Verify asset has updated crop & focal point in PostgreSQL
+    const updatedAsset = (await payload.findByID({
+      collection: 'media-assets',
+      id: assetId,
+      depth: 0,
+      overrideAccess: true,
+    } as never)) as Record<string, any>
+    expect(updatedAsset.focalPoint).toEqual({ x: 0.8, y: 0.2 })
+    expect(updatedAsset.cropSettings).toEqual({ x: 0.1, y: 0.1, width: 0.8, height: 0.8 })
 
     // 8. Test Garbage Collection Safety:
-    // Attach asset to story to guarantee reference tracking
-    await attachMediaToContent(payload, {
-      assetId,
-      collection: 'stories',
-      documentId: 'story-demo-1',
-      fieldPath: 'coverImage',
-    })
-
     // Run GC: active variants and referenced originals must NOT be deleted
     const gcResult = await garbageCollectMediaVariants(payload, appConfig, {
       siteId: site.id,

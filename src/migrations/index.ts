@@ -3,6 +3,8 @@ import * as med00 from './20260912_060000_med_00_media_contract'
 import * as med01UploadSessions from './20260912_070000_med_01_upload_sessions'
 import * as med02DamGovernance from './20260913_080000_med_02_dam_governance'
 import * as med03ImageVariants from './20260913_090000_med_03_image_variants'
+import * as med04PodcastWorkflow from './20260913_100000_med_04_podcast_workflow'
+import * as med05VideoWorkflow from './20260914_110000_med_05_video_workflow'
 import * as pre04ReusableComposition from './20260912_040000_pre_04_reusable_composition'
 import * as pre01Snapshots from './20260912_020000_pre_01_presentation_snapshots'
 import * as pre03VisualEditor from './20260912_030000_pre_03_visual_editor'
@@ -311,5 +313,15 @@ export const migrations = [
     up: med03ImageVariants.up,
     down: med03ImageVariants.down,
     name: '20260913_090000_med_03_image_variants',
+  },
+  {
+    up: med04PodcastWorkflow.up,
+    down: med04PodcastWorkflow.down,
+    name: '20260913_100000_med_04_podcast_workflow',
+  },
+  {
+    up: med05VideoWorkflow.up,
+    down: med05VideoWorkflow.down,
+    name: '20260914_110000_med_05_video_workflow',
   },
 ]

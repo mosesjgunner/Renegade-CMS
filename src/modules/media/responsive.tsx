@@ -1,5 +1,5 @@
 import React from 'react'
-import { mediaVariantUrl, standardRecipes, type VariantFormat } from './variants'
+import { mediaVariantUrl, standardRecipes, type VariantFormat } from './variant-contracts'
 
 export type ResponsiveMediaInput = {
   id: string
@@ -53,7 +53,7 @@ export function getResponsiveImageAttrs(
     !isString && mediaInput.width && mediaInput.height
       ? mediaInput.width / mediaInput.height
       : 16 / 9
-  let height =
+  const height =
     recipe.fit === 'inside' && recipe.height
       ? Math.min(recipe.height, Math.round(width / sourceAspect))
       : recipe.height || Math.round(width / sourceAspect)
@@ -113,7 +113,6 @@ export function ResponsiveMedia({
       {attrs.sources.map((source) => (
         <source key={source.type} type={source.type} srcSet={source.srcSet} sizes={attrs.sizes} />
       ))}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src={attrs.src}
         srcSet={attrs.srcSet}

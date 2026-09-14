@@ -6,155 +6,29 @@ import type { AppConfig } from '../core/config'
 import { mediaStorage, type SupportedMimeType } from './storage'
 import { MediaWorkflowError } from './workflow'
 
-export type VariantFit = 'cover' | 'contain' | 'inside'
-export type VariantFormat = 'webp' | 'avif' | 'jpeg' | 'png'
+import {
+  type VariantFit,
+  type VariantFormat,
+  type VariantRecipe,
+  type FocalPoint,
+  type CropRectangle,
+  type ExtractedMetadata,
+  type VariantGenerationResult,
+  standardRecipes,
+  formatMimeTypes,
+  mediaVariantUrl,
+} from './variant-contracts'
 
-export type VariantRecipe = {
-  readonly key: string
-  readonly label: string
-  readonly kind: 'thumbnail' | 'poster' | 'transcode' | 'caption' | 'social' | 'other'
-  readonly version: number
-  readonly width: number
-  readonly height?: number
-  readonly aspectRatio?: { width: number; height: number }
-  readonly fit: VariantFit
-  readonly formats: readonly VariantFormat[]
-  readonly quality: number
-  readonly priority?: 'eager' | 'lazy'
+export type {
+  VariantFit,
+  VariantFormat,
+  VariantRecipe,
+  FocalPoint,
+  CropRectangle,
+  ExtractedMetadata,
+  VariantGenerationResult,
 }
-
-export type FocalPoint = { x: number; y: number }
-export type CropRectangle = { x: number; y: number; width: number; height: number }
-
-export type ExtractedMetadata = {
-  width: number
-  height: number
-  aspectRatio: number
-  format: string
-  mimeType: SupportedMimeType
-  orientation?: number
-  dominantColor?: string
-  colorPalette?: Array<{ r: number; g: number; b: number }>
-  hasAlpha?: boolean
-  channels?: number
-  artist?: string
-  copyright?: string
-}
-
-export type VariantGenerationResult = {
-  recipeKey: string
-  label: string
-  format: VariantFormat
-  mimeType: string
-  width: number
-  height: number
-  sizeBytes: number
-  checksum: string
-  storageKey: string
-  bytesSaved: number
-  percentSaved: number
-}
-
-/** Standard approved recipe catalog for Renegade CMoS. */
-export const standardRecipes: Record<string, VariantRecipe> = {
-  thumbnail: {
-    key: 'thumbnail',
-    label: 'Thumbnail',
-    kind: 'thumbnail',
-    version: 1,
-    width: 400,
-    height: 300,
-    aspectRatio: { width: 4, height: 3 },
-    fit: 'cover',
-    formats: ['webp', 'avif', 'jpeg'],
-    quality: 80,
-    priority: 'lazy',
-  },
-  inline: {
-    key: 'inline',
-    label: 'Inline Content',
-    kind: 'other',
-    version: 1,
-    width: 960,
-    height: 640,
-    fit: 'inside',
-    formats: ['webp', 'avif', 'jpeg'],
-    quality: 82,
-    priority: 'lazy',
-  },
-  hero: {
-    key: 'hero',
-    label: 'Hero',
-    kind: 'other',
-    version: 1,
-    width: 1600,
-    height: 900,
-    aspectRatio: { width: 16, height: 9 },
-    fit: 'cover',
-    formats: ['webp', 'avif', 'jpeg'],
-    quality: 85,
-    priority: 'eager',
-  },
-  og: {
-    key: 'og',
-    label: 'Open Graph & Social',
-    kind: 'social',
-    version: 1,
-    width: 1200,
-    height: 630,
-    aspectRatio: { width: 1200, height: 630 },
-    fit: 'cover',
-    formats: ['jpeg', 'webp'],
-    quality: 85,
-    priority: 'eager',
-  },
-  square: {
-    key: 'square',
-    label: 'Square (1:1)',
-    kind: 'other',
-    version: 1,
-    width: 800,
-    height: 800,
-    aspectRatio: { width: 1, height: 1 },
-    fit: 'cover',
-    formats: ['webp', 'avif', 'jpeg'],
-    quality: 82,
-    priority: 'lazy',
-  },
-  portrait: {
-    key: 'portrait',
-    label: 'Portrait (3:4)',
-    kind: 'other',
-    version: 1,
-    width: 800,
-    height: 1067,
-    aspectRatio: { width: 3, height: 4 },
-    fit: 'cover',
-    formats: ['webp', 'avif', 'jpeg'],
-    quality: 82,
-    priority: 'lazy',
-  },
-  wide: {
-    key: 'wide',
-    label: 'Wide (16:9)',
-    kind: 'other',
-    version: 1,
-    width: 1280,
-    height: 720,
-    aspectRatio: { width: 16, height: 9 },
-    fit: 'cover',
-    formats: ['webp', 'avif', 'jpeg'],
-    quality: 82,
-    priority: 'lazy',
-  },
-}
-
-export const formatMimeTypes: Record<VariantFormat, string> = {
-  webp: 'image/webp',
-  avif: 'image/avif',
-  jpeg: 'image/jpeg',
-  png: 'image/png',
-}
+export { standardRecipes, formatMimeTypes, mediaVariantUrl }
 
 /**
  * A recipe is part of the identity of a rendition.  Keep this deliberately
@@ -188,12 +62,6 @@ export function variantObjectKey(
   const digest = checksum.replace(/^sha256:/, '')
   if (!/^[a-f0-9]{64}$/i.test(digest)) throw new Error('Invalid variant checksum.')
   return `${siteId}/variants/${digest}/${recipe.key}-v${recipe.version}-${recipeFingerprint(recipe)}.${format}`
-}
-
-export function mediaVariantUrl(assetId: string, recipeKey: string, format: VariantFormat): string {
-  const recipe = standardRecipes[recipeKey]
-  if (!recipe) throw new Error('Unregistered variant recipe.')
-  return `/media/${assetId}?variant=${encodeURIComponent(recipeKey)}&format=${format}&v=${recipe.version}`
 }
 
 const clamp = (val: number, min: number, max: number) => Math.max(min, Math.min(max, val))
@@ -343,8 +211,8 @@ export async function extractSafeMediaMetadata(
       colorPalette,
       hasAlpha: metadata.hasAlpha,
       channels: metadata.channels,
-      artist: metadata.artist,
-      copyright: metadata.copyright,
+      artist: (metadata as unknown as Record<string, unknown>).artist as string | undefined,
+      copyright: (metadata as unknown as Record<string, unknown>).copyright as string | undefined,
     }
   } catch (error) {
     if (error instanceof MediaWorkflowError) throw error
@@ -519,58 +387,52 @@ export async function queueAssetVariantGeneration(
     .map((key) => recipeFingerprint(standardRecipes[key]!))
     .join(',')
   const idempotencyKey = `variants:${input.assetId}:${String(asset.checksum || 'unknown')}:${recipeContract}`
-  const existing = await payload
-    .find({
-      collection: 'media-jobs' as never,
-      where: { idempotencyKey: { equals: idempotencyKey } },
-      limit: 1,
-      depth: 0,
-      overrideAccess: true,
-    } as never)
-    .catch(() => ({ docs: [] }))
-  let job = existing.docs[0] as unknown as Record<string, unknown> | undefined
-  let enqueue = false
 
-  if (!job) {
-    job = (await payload.create({
-      collection: 'media-jobs' as never,
-      overrideAccess: true,
-      data: {
-        title: `Image variants for ${String(asset.title || input.assetId)}`,
-        kind: 'derivative',
-        status: 'queued',
-        progress: 0,
-        idempotencyKey,
-        input: { assetId: input.assetId, recipeKeys: requestedKeys, recipeContract },
-      },
-    } as never)) as unknown as Record<string, unknown>
-    enqueue = true
-  } else if (input.force || ['failed', 'cancelled'].includes(String(job.status))) {
-    job = (await payload.update({
-      collection: 'media-jobs' as never,
-      id: String(job.id),
-      overrideAccess: true,
-      data: { status: 'queued', progress: 0, failure: null },
-    } as never)) as unknown as Record<string, unknown>
-    enqueue = true
+  if (!payload.jobs?.queue) {
+    throw new MediaWorkflowError('The media worker queue is unavailable.', 503)
   }
 
-  // A queued/running/completed job with the same exact contract is the
-  // idempotent answer.  `force` deliberately enqueues one recovery attempt.
-  if (enqueue) {
-    await payload.jobs.queue({
-      task: 'media-variant-generate',
-      queue: 'media',
-      input: {
-        mediaJobId: String(job.id),
-        mediaAssetId: input.assetId,
+  if (!input.force) {
+    const existing = await payload
+      .find({
+        collection: 'payload-jobs' as never,
+        where: {
+          and: [
+            { taskSlug: { equals: 'media-variant-generate' } },
+            { 'input.idempotencyKey': { equals: idempotencyKey } },
+          ],
+        },
+        limit: 1,
+        depth: 0,
+        overrideAccess: true,
+      } as never)
+      .catch(() => ({ docs: [] as Record<string, unknown>[] }))
+
+    const job = existing.docs[0] as unknown as Record<string, unknown> | undefined
+    if (job) {
+      return {
+        id: String(job.id),
+        status: String(job.processingStatus || 'queued'),
         idempotencyKey,
-        recipeKeys: requestedKeys,
-      },
-    } as never)
+      }
+    }
   }
 
-  return { id: String(job.id), status: String(job.status), idempotencyKey }
+  const queued = (await payload.jobs.queue({
+    task: 'media-variant-generate',
+    queue: 'media',
+    input: {
+      mediaAssetId: input.assetId,
+      idempotencyKey,
+      recipeKeys: requestedKeys,
+    },
+  } as never)) as unknown as { id: string | number; processingStatus?: string }
+
+  return {
+    id: String(queued.id),
+    status: String(queued.processingStatus || 'queued'),
+    idempotencyKey,
+  }
 }
 
 /**
@@ -712,6 +574,16 @@ export async function processAssetVariants(
               state: 'ready',
             },
           } as never)) as unknown as Record<string, unknown>
+        } else {
+          // Self-healing storage resilience: verify physical object exists
+          const existingBytes = await storage.get(String(variantBlob.storageKey))
+          if (!existingBytes) {
+            await storage
+              .put(String(variantBlob.storageKey), generated.bytes, generated.mimeType)
+              .catch((error: unknown) => {
+                if ((error as { code?: string }).code !== 'EEXIST') throw error
+              })
+          }
         }
 
         // Check if variant record already exists for this asset, recipeKey, and format
@@ -913,6 +785,20 @@ export async function garbageCollectMediaVariants(
       (doc.originalBlob as { id?: string })?.id ?? doc.originalBlob ?? '',
     )
     if (originalBlobId) protectedBlobIds.add(originalBlobId)
+  }
+
+  // Explicitly referenced usages protect their underlying asset blobs
+  for (const usage of usages.docs as unknown as Record<string, unknown>[]) {
+    const mediaId = String((usage.media as { id?: string })?.id ?? usage.media ?? '')
+    const matchedAsset = (assets.docs as unknown as Record<string, unknown>[]).find(
+      (a) => String(a.id) === mediaId,
+    )
+    if (matchedAsset) {
+      const origBlobId = String(
+        (matchedAsset.originalBlob as { id?: string })?.id ?? matchedAsset.originalBlob ?? '',
+      )
+      if (origBlobId) protectedBlobIds.add(origBlobId)
+    }
   }
 
   // Active variants are protected

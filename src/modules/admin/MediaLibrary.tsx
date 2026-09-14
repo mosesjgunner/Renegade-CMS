@@ -1,16 +1,21 @@
 import type { AdminViewServerProps } from 'payload'
+import { MediaCommandCenter } from './MediaCommandCenter'
 import { MediaLibraryClient } from './MediaLibraryClient'
 
 export default async function MediaLibrary({ initPageResult, searchParams }: AdminViewServerProps) {
   const user = initPageResult.req.user as { site?: { id?: string } } | undefined
   // Site selection is deliberately explicit; a staff user without a scoped site cannot upload into an accidental tenant.
   let siteId = String(user?.site?.id ?? '')
+  let isLegacyView = false
 
-  if (!siteId && searchParams) {
+  if (searchParams) {
     const resolvedParams = (await searchParams) as Record<string, string | string[] | undefined>
     const paramSite = resolvedParams?.siteId
     if (typeof paramSite === 'string') {
       siteId = paramSite
+    }
+    if (resolvedParams?.view === 'legacy') {
+      isLegacyView = true
     }
   }
 
@@ -33,14 +38,14 @@ export default async function MediaLibrary({ initPageResult, searchParams }: Adm
 
   return (
     <main>
-      <h1>Media Library</h1>
-      <p>
-        Upload, organize, and select canonical media assets. Storage locations are never displayed.
-      </p>
       {siteId ? (
-        <MediaLibraryClient siteId={siteId} />
+        isLegacyView ? (
+          <MediaLibraryClient siteId={siteId} />
+        ) : (
+          <MediaCommandCenter siteId={siteId} />
+        )
       ) : (
-        <p role="alert">Select a site from your publisher context before uploading media.</p>
+        <p role="alert">Select a site from your publisher context before managing media.</p>
       )}
     </main>
   )

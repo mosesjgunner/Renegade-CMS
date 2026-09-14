@@ -2,6 +2,8 @@ import type { TaskConfig } from 'payload'
 
 import { loadConfig } from '../core/config'
 import { processAssetVariants } from './variants'
+import { createPublicMediaIncidents, reconcileMediaUsages } from './workflow'
+import { processVideoAsset } from './video-workflow'
 
 type MediaTask = {
   input: {
@@ -11,6 +13,10 @@ type MediaTask = {
     recipeKeys?: string[]
   }
   output: { mediaJobId?: string; mediaAssetId?: string; completed: boolean; count?: number }
+}
+type ReconciliationTask = {
+  input: { siteId: string }
+  output: { created: number; updated: number; removed: number; incidents: number }
 }
 
 const task = (slug: string, label: string): TaskConfig<MediaTask> => ({
@@ -142,4 +148,101 @@ export const mediaTasks = [
   task('media-variant-generate', 'Generate media variants'),
   task('media-transcribe', 'Media transcription'),
   task('media-tts', 'Text-to-speech generation'),
+  {
+    slug: 'video-process',
+    label: 'Process native video',
+    inputSchema: [
+      { name: 'videoAssetId', type: 'text', required: true },
+      { name: 'idempotencyKey', type: 'text', required: true },
+    ],
+    outputSchema: [
+      { name: 'completed', type: 'checkbox', required: true },
+      { name: 'count', type: 'number' },
+    ],
+    retries: { attempts: 4, backoff: { delay: 10_000, type: 'exponential' } },
+    concurrency: () => 'media.video-process:global',
+    handler: async ({
+      input,
+      req,
+    }: {
+      input: { videoAssetId: string }
+      req: { payload: import('payload').Payload }
+    }) => ({ output: await processVideoAsset(req.payload, loadConfig(), input.videoAssetId) }),
+  } as unknown as TaskConfig<MediaTask>,
+  {
+    slug: 'media-usage-reconcile',
+    label: 'Reconcile media usage graph',
+    inputSchema: [{ name: 'siteId', type: 'text', required: true }],
+    outputSchema: [
+      { name: 'created', type: 'number', required: true },
+      { name: 'updated', type: 'number', required: true },
+      { name: 'removed', type: 'number', required: true },
+      { name: 'incidents', type: 'number', required: true },
+    ],
+    retries: { attempts: 3, backoff: { delay: 1_000, type: 'exponential' } },
+    concurrency: ({ input }: { input: { siteId: string } }) =>
+      `media.usage-reconcile:${input.siteId}`,
+    handler: async ({
+      input,
+      req,
+    }: {
+      input: { siteId: string }
+      req: { payload: import('payload').Payload }
+    }) => {
+      const reconciliation = await reconcileMediaUsages(req.payload, input.siteId)
+      const incidents = await createPublicMediaIncidents(req.payload, input.siteId)
+      if (reconciliation.failures.length)
+        throw new Error(
+          `Usage reconciliation left ${reconciliation.failures.length} rows unresolved.`,
+        )
+      return {
+        output: {
+          created: reconciliation.created,
+          updated: reconciliation.updated,
+          removed: reconciliation.removed,
+          incidents: incidents.created,
+        },
+      }
+    },
+  } as TaskConfig<ReconciliationTask>,
+  {
+    slug: 'audio-recipe-task',
+    label: 'Process audio recipe and loudness',
+    inputSchema: [
+      { name: 'mediaAssetId', type: 'text', required: true },
+      { name: 'recipeKey', type: 'text' },
+      { name: 'idempotencyKey', type: 'text', required: true },
+    ],
+    outputSchema: [
+      { name: 'mediaAssetId', type: 'text', required: true },
+      { name: 'completed', type: 'checkbox', required: true },
+      { name: 'loudness', type: 'json' },
+    ],
+    retries: { attempts: 3, backoff: { delay: 1_000, type: 'exponential' } },
+    concurrency: ({ input }: { input: { mediaAssetId: string } }) =>
+      `media.audio-recipe:${input.mediaAssetId}`,
+    handler: async ({
+      input,
+      req,
+    }: {
+      input: { mediaAssetId: string; recipeKey?: string; idempotencyKey: string }
+      req: { payload: import('payload').Payload }
+    }) => {
+      const config = loadConfig()
+      const { processAudioRecipe } = await import('./audio')
+      const metadata = await processAudioRecipe(
+        req.payload,
+        config,
+        input.mediaAssetId,
+        input.recipeKey || 'podcast-standard-lufs16',
+      )
+      return {
+        output: {
+          mediaAssetId: input.mediaAssetId,
+          completed: true,
+          loudness: metadata.loudness,
+        },
+      }
+    },
+  } as unknown as TaskConfig<MediaTask>,
 ]

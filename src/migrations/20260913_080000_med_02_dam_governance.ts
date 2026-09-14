@@ -60,6 +60,9 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
     ALTER TABLE "payload_locked_documents_rels" ADD COLUMN IF NOT EXISTS "media_asset_versions_id" uuid;
     DO $$ BEGIN ALTER TABLE "payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_media_asset_versions_fk" FOREIGN KEY ("media_asset_versions_id") REFERENCES "media_asset_versions"("id") ON DELETE CASCADE; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
     CREATE INDEX IF NOT EXISTS "payload_locked_documents_rels_media_asset_versions_id_idx" ON "payload_locked_documents_rels" ("media_asset_versions_id");
+    ALTER TABLE "payload_locked_documents_rels" ADD COLUMN IF NOT EXISTS "media_governance_incidents_id" uuid;
+    DO $$ BEGIN ALTER TABLE "payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_media_governance_incidents_fk" FOREIGN KEY ("media_governance_incidents_id") REFERENCES "media_governance_incidents"("id") ON DELETE CASCADE; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+    CREATE INDEX IF NOT EXISTS "payload_locked_documents_rels_media_governance_incidents_id_idx" ON "payload_locked_documents_rels" ("media_governance_incidents_id");
 
     ALTER TABLE "payload_locked_documents_rels" ADD COLUMN IF NOT EXISTS "media_governance_incidents_id" uuid;
     DO $$ BEGIN ALTER TABLE "payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_media_governance_incidents_fk" FOREIGN KEY ("media_governance_incidents_id") REFERENCES "media_governance_incidents"("id") ON DELETE CASCADE; EXCEPTION WHEN duplicate_object THEN NULL; END $$;
@@ -72,6 +75,9 @@ export async function down({ db }: MigrateDownArgs): Promise<void> {
     DROP INDEX IF EXISTS "payload_locked_documents_rels_media_governance_incidents_id_idx";
     ALTER TABLE "payload_locked_documents_rels" DROP COLUMN IF EXISTS "media_governance_incidents_id";
 
+    ALTER TABLE "payload_locked_documents_rels" DROP CONSTRAINT IF EXISTS "payload_locked_documents_rels_media_governance_incidents_fk";
+    DROP INDEX IF EXISTS "payload_locked_documents_rels_media_governance_incidents_id_idx";
+    ALTER TABLE "payload_locked_documents_rels" DROP COLUMN IF EXISTS "media_governance_incidents_id";
     ALTER TABLE "payload_locked_documents_rels" DROP CONSTRAINT IF EXISTS "payload_locked_documents_rels_media_asset_versions_fk";
     DROP INDEX IF EXISTS "payload_locked_documents_rels_media_asset_versions_id_idx";
     ALTER TABLE "payload_locked_documents_rels" DROP COLUMN IF EXISTS "media_asset_versions_id";

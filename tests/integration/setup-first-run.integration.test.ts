@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { randomUUID } from 'node:crypto'
-import { afterAll, describe, expect, it } from 'vitest'
+import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { getPayload, type Payload } from 'payload'
 
 import config from '../../src/payload.config'
@@ -28,6 +28,10 @@ async function getPayloadInstance(): Promise<Payload> {
   if (!payload) payload = await getPayload({ config })
   return payload
 }
+
+beforeAll(async () => {
+  await getPayloadInstance()
+}, 60_000)
 
 function onboardingInput(slug: string, name: string): OnboardingInput {
   return {

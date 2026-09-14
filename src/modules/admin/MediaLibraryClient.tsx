@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { MediaPicker, type PickableMedia } from '../media/MediaPicker'
 import { MediaUploader } from '../media/MediaUploader'
+import { MediaGovernancePanel } from './MediaGovernancePanel'
 
 type VariantData = {
   id: string
@@ -52,15 +53,22 @@ export function MediaLibraryClient({ siteId }: { siteId: string }) {
   const [inspection, setInspection] = useState<VariantsInspection | null>(null)
   const [focalPoint, setFocalPoint] = useState<{ x: number; y: number }>({ x: 0.5, y: 0.5 })
   const [isRegenerating, setIsRegenerating] = useState(false)
+  const [replacementImpact, setReplacementImpact] = useState<
+    Array<{
+      id: string
+      targetType: string
+      targetId: string
+      field: string
+      slot: string
+      lifecycle: string
+    }>
+  >([])
 
   const refresh = () => setRefreshKey((value) => value + 1)
 
   // Load variant inspection whenever selected media changes
   useEffect(() => {
-    if (!selected) {
-      setInspection(null)
-      return
-    }
+    if (!selected) return
 
     let active = true
     fetch(`/api/media/${selected.id}/variants?siteId=${encodeURIComponent(siteId)}`)
@@ -116,6 +124,37 @@ export function MediaLibraryClient({ siteId }: { siteId: string }) {
     setMessage(response.ok ? 'Media deleted.' : body.error || 'Deletion failed.')
     if (response.ok) {
       setSelected(undefined)
+      setInspection(null)
+      refresh()
+    }
+  }
+
+  const previewReplacement = async () => {
+    if (!selected) return
+    const response = await fetch(`/api/media/${selected.id}`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ siteId }),
+    })
+    const body = await response.json()
+    if (!response.ok) return setMessage(body.error || 'Replacement preview failed.')
+    setReplacementImpact(body.impact.usages)
+    setMessage(`${body.impact.affected} usages will be affected by a global replacement.`)
+  }
+
+  const replace = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    if (!selected) return
+    const form = new FormData(event.currentTarget)
+    const response = await fetch(`/api/media/${selected.id}`, { method: 'PUT', body: form })
+    const body = await response.json()
+    setMessage(
+      response.ok
+        ? 'Replacement created with immutable audit evidence.'
+        : body.error || 'Replacement failed.',
+    )
+    if (response.ok) {
+      setReplacementImpact([])
       refresh()
     }
   }
@@ -136,7 +175,7 @@ export function MediaLibraryClient({ siteId }: { siteId: string }) {
       })
       const body = await response.json()
       if (response.ok) {
-        setMessage(`Variant processing queued (${body.job?.id || 'worker job'}).`)
+        setMessage(`Regeneration queued (${body.job?.id || 'worker job'}).`)
         refresh()
       } else {
         setMessage(body.error || 'Regeneration failed.')
@@ -145,6 +184,29 @@ export function MediaLibraryClient({ siteId }: { siteId: string }) {
       setMessage('Failed to trigger variant regeneration.')
     } finally {
       setIsRegenerating(false)
+    }
+  }
+
+  const saveFocalPoint = async () => {
+    if (!selected) return
+    try {
+      const response = await fetch(`/api/media/${selected.id}/variants`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          siteId,
+          focalPoint,
+        }),
+      })
+      if (response.ok) {
+        setMessage('Focal point updated.')
+        refresh()
+      } else {
+        const body = await response.json().catch(() => ({}))
+        setMessage(body.error || 'Failed to update focal point.')
+      }
+    } catch {
+      setMessage('Failed to update focal point.')
     }
   }
 
@@ -181,6 +243,11 @@ export function MediaLibraryClient({ siteId }: { siteId: string }) {
         selectedId={selected?.id}
         refreshKey={refreshKey}
         onSelect={setSelected}
+      />
+      <MediaGovernancePanel
+        key={selected?.id ?? 'governance'}
+        siteId={siteId}
+        selectedId={selected?.id}
       />
       {selected && (
         <section aria-label="Selected media management">
@@ -223,6 +290,55 @@ export function MediaLibraryClient({ siteId }: { siteId: string }) {
             <button type="submit">Save metadata</button>
           </form>
 
+          <details style={{ marginTop: '1rem' }}>
+            <summary>Replace this asset</summary>
+            <p>
+              Preview shows every known use before you choose a new asset only, selected rewiring,
+              or an explicit global replacement. Cross-site targets and loops are refused.
+            </p>
+            <button type="button" onClick={previewReplacement}>
+              Preview impact
+            </button>
+            {replacementImpact.length > 0 && (
+              <ul aria-label="Replacement impact">
+                {replacementImpact.map((usage) => (
+                  <li key={usage.id}>
+                    {usage.targetType} {usage.targetId} — {usage.field || usage.slot} (
+                    {usage.lifecycle})
+                  </li>
+                ))}
+              </ul>
+            )}
+            <form onSubmit={replace}>
+              <input type="hidden" name="siteId" value={siteId} />
+              <label>
+                Replacement file <input name="file" type="file" required />
+              </label>
+              <label>
+                Replacement name{' '}
+                <input name="title" required defaultValue={`${selected.title} replacement`} />
+              </label>
+              <label>
+                Replacement alt <input name="altText" defaultValue={selected.altText} />
+              </label>
+              <label>
+                Choice{' '}
+                <select name="mode">
+                  <option value="new-asset">New asset only</option>
+                  <option value="selected-usages">Selected usages</option>
+                  <option value="all-usages">All usages</option>
+                </select>
+              </label>
+              <label>
+                Selected usage IDs (comma separated) <input name="usageIds" />
+              </label>
+              <label>
+                Reason <input name="reason" />
+              </label>
+              <button type="submit">Create replacement</button>
+            </form>
+          </details>
+
           {/* MED-03: Variant Inspection and Controls */}
           {inspection && (
             <div
@@ -233,7 +349,7 @@ export function MediaLibraryClient({ siteId }: { siteId: string }) {
                 borderRadius: '8px',
               }}
             >
-              <h3>Image Variants & Focal Crop</h3>
+              <h3 style={{ marginTop: 0 }}>Generated Variants & Optimization</h3>
 
               <div
                 style={{
@@ -249,6 +365,7 @@ export function MediaLibraryClient({ siteId }: { siteId: string }) {
                     Focal Point & Crop Preview
                   </p>
                   <div
+                    aria-label="Focal point preview"
                     onClick={handleFocalPointClick}
                     style={{
                       position: 'relative',
@@ -293,6 +410,18 @@ export function MediaLibraryClient({ siteId }: { siteId: string }) {
                   <p style={{ fontSize: '0.8rem', color: '#666', marginTop: '0.25rem' }}>
                     Focal point: X: {focalPoint.x}, Y: {focalPoint.y}
                   </p>
+                  <button
+                    type="button"
+                    onClick={saveFocalPoint}
+                    style={{
+                      marginTop: '0.25rem',
+                      padding: '0.35rem 0.75rem',
+                      fontSize: '0.85rem',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    Save Focal Point
+                  </button>
                 </div>
 
                 {/* Original metadata & savings summary */}
@@ -340,7 +469,7 @@ export function MediaLibraryClient({ siteId }: { siteId: string }) {
                   >
                     <strong>File Savings:</strong>{' '}
                     {inspection.summary.totalSavingsBytes > 0
-                      ? `${formatBytes(inspection.summary.totalSavingsBytes)} saved (${inspection.summary.averagePercentSaved}% avg reduction)`
+                      ? `Saved ${inspection.summary.averagePercentSaved}% (${formatBytes(inspection.summary.totalSavingsBytes)} reduction)`
                       : 'Variants processing'}
                   </div>
 
@@ -351,7 +480,7 @@ export function MediaLibraryClient({ siteId }: { siteId: string }) {
                       disabled={isRegenerating}
                       style={{ padding: '0.4rem 0.8rem', cursor: 'pointer' }}
                     >
-                      {isRegenerating ? 'Regenerating...' : 'Regenerate variants'}
+                      {isRegenerating ? 'Regenerating...' : 'Regenerate Variants'}
                     </button>
                     {inspection.original.canDownload && (
                       <a
@@ -398,7 +527,9 @@ export function MediaLibraryClient({ siteId }: { siteId: string }) {
                 <tbody>
                   {inspection.variants.map((variant) => (
                     <tr key={variant.id} style={{ borderBottom: '1px solid #eee' }}>
-                      <td style={{ padding: '0.4rem' }}>{variant.label}</td>
+                      <td style={{ padding: '0.4rem' }}>
+                        {variant.label} ({variant.format.toUpperCase()})
+                      </td>
                       <td style={{ padding: '0.4rem', textTransform: 'uppercase' }}>
                         {variant.format}
                       </td>

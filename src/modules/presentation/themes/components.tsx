@@ -67,8 +67,8 @@ const simple = (
               )
             }
 
-            // eslint-disable-next-line @next/next/no-img-element
             return (
+              // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={href}
                 alt={label}

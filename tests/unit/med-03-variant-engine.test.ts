@@ -8,7 +8,6 @@ import {
   calculateCropBox,
   checkRuntimeFormatSupport,
   extractSafeMediaMetadata,
-  formatMimeTypes,
   garbageCollectMediaVariants,
   generateVariantBytes,
   processAssetVariants,
@@ -241,21 +240,23 @@ describe('MED-03 image variant engine & contracts', () => {
     const queued: any[] = []
     const payload = {
       findByID: async () => ({ id: 'asset-queue', title: 'Queue fixture', checksum: 'sha256:abc' }),
-      find: async ({ collection, where }: any) =>
-        collection === 'media-jobs'
-          ? { docs: jobs.filter((job) => job.idempotencyKey === where.idempotencyKey.equals) }
-          : { docs: [] },
-      create: async ({ data }: any) => {
-        const job = { id: `job-${jobs.length + 1}`, ...data }
-        jobs.push(job)
-        return job
+      find: async ({ collection, where }: any) => {
+        if (collection === 'payload-jobs') {
+          const key = where?.and?.find((c: any) => c['input.idempotencyKey'])?.[
+            'input.idempotencyKey'
+          ]?.equals
+          return { docs: queued.filter((q) => q.input?.idempotencyKey === key) }
+        }
+        return { docs: [] }
       },
-      update: async ({ id, data }: any) => {
-        const job = jobs.find((candidate) => candidate.id === id)
-        Object.assign(job, data)
-        return job
+      jobs: {
+        queue: async (input: any) => {
+          const item = { id: `job-${queued.length + 1}`, ...input }
+          jobs.push(item)
+          queued.push(item)
+          return item
+        },
       },
-      jobs: { queue: async (input: any) => queued.push(input) },
     }
 
     const first = await queueAssetVariantGeneration(payload as never, {
@@ -312,7 +313,7 @@ describe('MED-03 image variant engine & contracts', () => {
         }
         return null
       },
-      find: async ({ collection, where }: any) => {
+      find: async ({ collection }: any) => {
         if (collection === 'media-blobs') {
           return { docs: storedBlobs }
         }
@@ -378,7 +379,7 @@ describe('MED-03 image variant engine & contracts', () => {
     let deletedBlobId = ''
 
     const mockPayload = {
-      find: async ({ collection, where }: any) => {
+      find: async ({ collection }: any) => {
         if (collection === 'media-assets') {
           return { docs: [{ id: 'asset-1', originalBlob: 'blob-original' }] }
         }

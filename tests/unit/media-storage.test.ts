@@ -5,7 +5,12 @@ import path from 'node:path'
 import { describe, expect, it } from 'vitest'
 
 import { loadConfig } from '../../src/modules/core/config'
-import { inspectMedia, localMediaStorage, mediaObjectKey } from '../../src/modules/media/storage'
+import {
+  inspectAudioMetadata,
+  inspectMedia,
+  localMediaStorage,
+  mediaObjectKey,
+} from '../../src/modules/media/storage'
 import {
   MediaWorkflowError,
   attachMediaToContent,
@@ -23,6 +28,39 @@ describe('media storage', () => {
     expect(() => inspectMedia(new TextEncoder().encode('<script>alert(1)</script>'))).toThrow(
       'Unsupported',
     )
+  })
+
+  it('records audio container facts without rewriting the original', () => {
+    const wav = Uint8Array.from([
+      ...new TextEncoder().encode('RIFF'),
+      0,
+      0,
+      0,
+      0,
+      ...new TextEncoder().encode('WAVEfmt '),
+      16,
+      0,
+      0,
+      0,
+      1,
+      0,
+      1,
+      0,
+      0x44,
+      0xac,
+      0,
+      0,
+      0x88,
+      0x58,
+      1,
+      0,
+      2,
+      0,
+      16,
+      0,
+    ])
+    expect(inspectMedia(wav)).toMatchObject({ mimeType: 'audio/wav', kind: 'audio' })
+    expect(inspectAudioMetadata(wav)).toMatchObject({ container: 'wav', codec: 'PCM' })
   })
 
   it('writes opaque site-scoped local paths and prevents traversal', async () => {

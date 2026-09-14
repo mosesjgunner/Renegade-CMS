@@ -3,6 +3,9 @@ import { type MigrateDownArgs, type MigrateUpArgs, sql } from '@payloadcms/db-po
 /** MED-03: image variant engine, metadata extraction, focal-point crop, and modern format support. */
 export async function up({ db }: MigrateUpArgs): Promise<void> {
   await db.execute(sql`
+    ALTER TYPE "public"."enum_payload_jobs_log_task_slug" ADD VALUE IF NOT EXISTS 'media-variant-generate';
+    ALTER TYPE "public"."enum_payload_jobs_task_slug" ADD VALUE IF NOT EXISTS 'media-variant-generate';
+
     ALTER TABLE "media_variants"
       ADD COLUMN IF NOT EXISTS "format" varchar,
       ADD COLUMN IF NOT EXISTS "recipe_key" varchar,
@@ -26,7 +29,26 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
       ADD COLUMN IF NOT EXISTS "dominant_color" varchar,
       ADD COLUMN IF NOT EXISTS "color_palette" jsonb,
       ADD COLUMN IF NOT EXISTS "crop_settings" jsonb,
-      ADD COLUMN IF NOT EXISTS "aspect_ratio" numeric;
+      ADD COLUMN IF NOT EXISTS "aspect_ratio" numeric,
+      ADD COLUMN IF NOT EXISTS "audio_metadata" jsonb;
+
+    ALTER TABLE "podcast_episodes_rels"
+      ADD COLUMN IF NOT EXISTS "media_assets_id" uuid;
+
+    ALTER TABLE "podcast_shows_rels"
+      ADD COLUMN IF NOT EXISTS "categories_id" uuid;
+
+    ALTER TABLE "podcast_shows"
+      ADD COLUMN IF NOT EXISTS "language" varchar DEFAULT 'en',
+      ADD COLUMN IF NOT EXISTS "explicit" boolean DEFAULT false;
+
+    ALTER TABLE "podcast_episodes"
+      ADD COLUMN IF NOT EXISTS "artwork_id" uuid,
+      ADD COLUMN IF NOT EXISTS "explicit" boolean DEFAULT false,
+      ADD COLUMN IF NOT EXISTS "language" varchar,
+      ADD COLUMN IF NOT EXISTS "guid" varchar,
+      ADD COLUMN IF NOT EXISTS "credits" varchar,
+      ADD COLUMN IF NOT EXISTS "rights" jsonb;
   `)
 }
 

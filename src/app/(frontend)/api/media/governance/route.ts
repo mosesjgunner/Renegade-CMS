@@ -49,24 +49,41 @@ export async function POST(request: Request) {
     const action = String(body.action ?? '')
     await assertMediaPermission(payload, auth.user as never, scope, 'content.edit')
     if (action === 'bulk')
-      return NextResponse.json({ report: await bulkMediaOperation(payload, auth.user as never, {
-        scope, action: body.operation as never, assetIds: Array.isArray(body.assetIds) ? body.assetIds.map(String) : [],
-        tagIds: Array.isArray(body.tagIds) ? body.tagIds.map(String) : undefined,
-        collectionIds: Array.isArray(body.collectionIds) ? body.collectionIds.map(String) : undefined,
-        metadata: typeof body.metadata === 'object' && body.metadata ? body.metadata as never : undefined,
-      }) })
+      return NextResponse.json({
+        report: await bulkMediaOperation(payload, auth.user as never, {
+          scope,
+          action: body.operation as never,
+          assetIds: Array.isArray(body.assetIds) ? body.assetIds.map(String) : [],
+          tagIds: Array.isArray(body.tagIds) ? body.tagIds.map(String) : undefined,
+          collectionIds: Array.isArray(body.collectionIds)
+            ? body.collectionIds.map(String)
+            : undefined,
+          metadata:
+            typeof body.metadata === 'object' && body.metadata
+              ? (body.metadata as never)
+              : undefined,
+        }),
+      })
     if (action === 'undo')
-      return NextResponse.json({ report: await undoBulkMediaOperation(payload, auth.user as never, {
-        scope, operations: Array.isArray(body.operations) ? body.operations as never : [],
-      }) })
+      return NextResponse.json({
+        report: await undoBulkMediaOperation(payload, auth.user as never, {
+          scope,
+          operations: Array.isArray(body.operations) ? (body.operations as never) : [],
+        }),
+      })
     if (action === 'duplicates')
       return NextResponse.json({ candidates: await duplicateMediaCandidates(payload, siteId) })
     if (action === 'review-duplicate')
-      return NextResponse.json({ review: await reviewDuplicateMedia(payload, auth.user as never, {
-        scope, checksum: String(body.checksum ?? ''), keepId: String(body.keepId ?? ''),
-        discardIds: Array.isArray(body.discardIds) ? body.discardIds.map(String) : [],
-        action: body.reviewAction === 'merge' ? 'merge' : 'keep', reason: typeof body.reason === 'string' ? body.reason : undefined,
-      }) })
+      return NextResponse.json({
+        review: await reviewDuplicateMedia(payload, auth.user as never, {
+          scope,
+          checksum: String(body.checksum ?? ''),
+          keepId: String(body.keepId ?? ''),
+          discardIds: Array.isArray(body.discardIds) ? body.discardIds.map(String) : [],
+          action: body.reviewAction === 'merge' ? 'merge' : 'keep',
+          reason: typeof body.reason === 'string' ? body.reason : undefined,
+        }),
+      })
     if (action === 'reconcile') {
       const reconciliation = await reconcileMediaUsages(payload, siteId)
       const incidents = await createPublicMediaIncidents(payload, siteId)

@@ -2,9 +2,10 @@ import Link from 'next/link'
 import type { AdminViewServerProps } from 'payload'
 
 export default async function PublishingCenter({ initPageResult, params }: AdminViewServerProps) {
-  const kind = params?.segments?.[0] === 'pages' ? 'page' : 'article'
-  const label = kind === 'page' ? 'Pages' : 'Posts'
-  const noun = kind === 'page' ? 'Page' : 'Post'
+  const seg = params?.segments?.[0]
+  const kind = seg === 'pages' ? 'page' : seg === 'podcasts' ? 'podcast' : 'article'
+  const label = kind === 'page' ? 'Pages' : kind === 'podcast' ? 'Podcasts' : 'Posts'
+  const noun = kind === 'page' ? 'Page' : kind === 'podcast' ? 'Podcast' : 'Post'
   const result = await initPageResult.req.payload.find({
     collection: 'content',
     where: { contentType: { equals: kind } },
@@ -18,10 +19,19 @@ export default async function PublishingCenter({ initPageResult, params }: Admin
       <p>
         {kind === 'page'
           ? 'Create durable site pages with a hierarchy and template intent.'
-          : 'Write and prepare publication posts with authors, taxonomy, media, and a release date.'}
+          : kind === 'podcast'
+            ? 'Publish podcast shows and episodes integrated with the canonical workflow system.'
+            : 'Write and prepare publication posts with authors, taxonomy, media, and a release date.'}
       </p>
       <p>
-        <Link href={`/admin/collections/content/create?contentType=${kind}`}>Create {noun}</Link>
+        {kind === 'podcast' ? (
+          <span className="space-x-3">
+            <Link href="/admin/collections/podcast-shows/create">Create Podcast Show</Link> ·{' '}
+            <Link href="/admin/collections/podcast-episodes/create">Create Episode</Link>
+          </span>
+        ) : (
+          <Link href={`/admin/collections/content/create?contentType=${kind}`}>Create {noun}</Link>
+        )}
       </p>
       {result.docs.length ? (
         <ul>

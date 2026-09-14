@@ -8,7 +8,9 @@ import { UPGRADE_BASELINE } from '../../src/scripts/verify-upgrade-migration'
 describe('previous-release upgrade acceptance', () => {
   it('keeps an explicit, advanceable pre-Second-Pass upgrade boundary', () => {
     expect(migrations.findIndex(({ name }) => name === UPGRADE_BASELINE)).toBeGreaterThanOrEqual(0)
-    expect(migrations.at(-1)?.name).toBe('20260912_050000_pre_05_legacy_site_migration')
+    expect(
+      migrations.findIndex(({ name }) => name === '20260912_050000_pre_05_legacy_site_migration'),
+    ).toBeGreaterThanOrEqual(0)
     if (process.env.UPGRADE_MIGRATION_DATABASE_URL) {
       const tsxCLI = path.resolve('node_modules/tsx/dist/cli.mjs')
       const script = path.resolve('src/scripts/verify-upgrade-migration.ts')
