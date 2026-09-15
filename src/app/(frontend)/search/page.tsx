@@ -4,29 +4,21 @@ import config from '@payload-config'
 import { getPayload } from 'payload'
 import type { Metadata } from 'next'
 
-import { queryLocalSearch, type SearchDocument } from '@/modules/public/discovery'
-import { loadPublishedArticleByPath } from '@/modules/editorial/persistence'
+import {
+  queryLocalSearch,
+  resolveDiscoveryDocument,
+  discoveryToMetadata,
+  getAllSearchDocuments,
+  serializeJsonLd,
+} from '@/modules/public/discovery'
 import { resolveSiteSettings } from '@/modules/core/site-settings'
 
 export const dynamic = 'force-dynamic'
 
 export async function generateMetadata(): Promise<Metadata> {
   const payload = await getPayload({ config })
-  const settings = await resolveSiteSettings(payload)
-  return {
-    title: `Search — ${settings.siteName}`,
-    robots: { index: false, follow: true },
-  }
-}
-
-function extractLexicalText(node: unknown): string {
-  if (!node || typeof node !== 'object') return ''
-  const obj = node as Record<string, unknown>
-  let text = typeof obj.text === 'string' ? obj.text : ''
-  if (Array.isArray(obj.children)) {
-    text += ' ' + obj.children.map(extractLexicalText).join(' ')
-  }
-  return text.trim()
+  const doc = await resolveDiscoveryDocument(payload, { path: '/search' })
+  return discoveryToMetadata(doc)
 }
 
 export default async function SearchPage({
@@ -53,84 +45,8 @@ export default async function SearchPage({
     site ??
     (typeof publication?.site === 'string' ? publication.site : String(publication?.site?.id ?? ''))
 
-  const result = await payload.find({
-    collection: 'content',
-    where: {
-      and: [
-        ...(siteId ? [{ site: { equals: siteId } }] : []),
-        { status: { in: ['published', 'updated'] } },
-      ],
-    } as never,
-    limit: 1000,
-    depth: 1,
-    overrideAccess: true,
-  })
-
-  const documents: SearchDocument[] = await Promise.all(
-    (result.docs as unknown as Array<Record<string, unknown>>).map(async (item) => {
-      let bodyText = ''
-      let firstPublishedAt: string | undefined =
-        typeof item.publishedAt === 'string' ? item.publishedAt : undefined
-      let updatedAt: string | undefined =
-        typeof item.updatedAt === 'string' ? item.updatedAt : undefined
-      let title = String(item.title ?? '')
-      let summary =
-        typeof item.summary === 'string'
-          ? item.summary
-          : typeof item.excerpt === 'string'
-            ? item.excerpt
-            : null
-      let canonicalPath = String(item.canonicalPath ?? `/${item.slug ?? ''}`)
-
-      try {
-        const view = await loadPublishedArticleByPath(payload, {
-          siteId,
-          path: canonicalPath,
-        })
-        bodyText = view.bodyText ?? ''
-        firstPublishedAt = view.firstPublishedAt ?? firstPublishedAt
-        updatedAt = view.updatedAt ?? updatedAt
-        title = view.title ?? title
-        summary = view.excerpt ?? summary
-        canonicalPath = view.canonicalPath ?? canonicalPath
-      } catch {
-        if (item.body) {
-          bodyText = extractLexicalText(item.body)
-        }
-      }
-
-      // Collect taxonomy names for search indexing
-      const taxonomyTerms: string[] = []
-      const addTax = (val: unknown) => {
-        if (Array.isArray(val)) {
-          val.forEach(addTax)
-        } else if (val && typeof val === 'object') {
-          const name =
-            (val as { name?: string; title?: string }).name || (val as { title?: string }).title
-          if (name) taxonomyTerms.push(String(name))
-        }
-      }
-      addTax(item.section)
-      addTax(item.categories)
-      addTax(item.tags)
-      addTax(item.topics)
-
-      return {
-        id: String(item.id),
-        siteId,
-        path: canonicalPath,
-        title,
-        summary,
-        body: bodyText,
-        taxonomy: taxonomyTerms.join(' '),
-        status: 'published',
-        visibility: 'public' as const,
-        removeFromDiscovery: item.removeFromDiscovery === true,
-        publishedAt: firstPublishedAt,
-        updatedAt,
-      }
-    }),
-  )
+  const doc = await resolveDiscoveryDocument(payload, { path: '/search', siteId })
+  const documents = await getAllSearchDocuments(payload, siteId)
 
   const currentPage = Math.max(1, Number(page) || 1)
   const pageSize = 10
@@ -145,6 +61,10 @@ export default async function SearchPage({
 
   return (
     <PresentationSurface themeId={settings.themeId} surface="search">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(doc.schema.jsonLd) }}
+      />
       <main className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 py-12 md:py-16">
         <header className="mb-8 border-b border-stone-200 dark:border-stone-800 pb-6">
           <h1 className="text-3xl font-black tracking-tight text-stone-950 dark:text-white">

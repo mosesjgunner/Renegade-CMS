@@ -10,42 +10,18 @@ import { resolveSiteSettings } from '@/modules/core/site-settings'
 import { loadPublishedArticleByPath } from '@/modules/editorial/persistence'
 import { EditorialArticleView } from '@/modules/editorial/ArticleView'
 
+import {
+  resolveDiscoveryDocument,
+  discoveryToMetadata,
+  serializeJsonLd,
+} from '@/modules/public/discovery'
+
 export const dynamic = 'force-dynamic'
 
 export async function generateMetadata(): Promise<Metadata> {
   const payload = await getPayload({ config })
-  const settings = await resolveSiteSettings(payload)
-
-  const isIndexable = settings.indexingMode !== 'noindex'
-
-  return {
-    title: settings.siteName,
-    description: settings.siteDescription || undefined,
-    alternates: {
-      canonical: `${settings.canonicalOrigin}/`,
-    },
-    openGraph: {
-      title: settings.siteName,
-      description: settings.siteDescription || undefined,
-      url: `${settings.canonicalOrigin}/`,
-      siteName: settings.siteName,
-      images: settings.defaultSocialImageUrl
-        ? [{ url: `${settings.canonicalOrigin}${settings.defaultSocialImageUrl}` }]
-        : [],
-    },
-    twitter: {
-      card: settings.defaultSocialImageUrl ? 'summary_large_image' : 'summary',
-      title: settings.siteName,
-      description: settings.siteDescription || undefined,
-      images: settings.defaultSocialImageUrl
-        ? [`${settings.canonicalOrigin}${settings.defaultSocialImageUrl}`]
-        : [],
-    },
-    robots: {
-      index: isIndexable,
-      follow: isIndexable,
-    },
-  }
+  const doc = await resolveDiscoveryDocument(payload, { path: '/' })
+  return discoveryToMetadata(doc)
 }
 
 export default async function HomePage() {
@@ -153,25 +129,14 @@ export default async function HomePage() {
     overrideAccess: true,
   })
 
-  const jsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'WebSite',
-    name: settings.siteName,
-    description: settings.siteDescription,
-    url: `${settings.canonicalOrigin}/`,
-    potentialAction: {
-      '@type': 'SearchAction',
-      target: `${settings.canonicalOrigin}/search?q={search_term_string}`,
-      'query-input': 'required name=search_term_string',
-    },
-  }
+  const discoveryDoc = await resolveDiscoveryDocument(payload, { path: '/' })
 
   return (
     <PresentationSurface themeId={settings.themeId} surface="home">
       <>
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(discoveryDoc.schema.jsonLd) }}
         />
         <main className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-12 md:py-20">
           {/* Starter Hero */}

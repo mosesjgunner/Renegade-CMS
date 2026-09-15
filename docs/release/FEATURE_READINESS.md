@@ -1,8 +1,8 @@
 # Renegade CMS feature readiness
 
 Date: 2026-09-14  
-Status: Media Pass VERIFIED (Publishing Pass VERIFIED, Presentation Pass VERIFIED, Media Pass VERIFIED)  
-Method: Media Pass (MED-00 through MED-06) Release Gate Audit
+Status: Discovery Pass DISC-01 IMPLEMENTED / RELEASE GATE PARTIAL (Publishing Pass VERIFIED, Presentation Pass VERIFIED, Media Pass VERIFIED, Discovery Pass DISC-00 VERIFIED)  
+Method: Discovery Pass (DISC-01) Publisher Workflow, Raw Metadata & Canonical Safety Audit
 
 ## How to read this inventory
 
@@ -11,6 +11,20 @@ This is the release source of truth for public feature claims. A Payload collect
 The registered repository is `src/modules/payload-domains.ts`: Operations, Identity, Core, Integrations, Editorial, Releases, Media, Social, Network, Audience, Analytics, Experiences, Quality, and Commerce. It is the inventory boundary; historical ideas outside it are not release features.
 
 ## Executed evidence
+
+- **Discovery Pass Gate DISC-00 on 2026-09-14 (PASSED / VERIFIED)**:
+  - Canonical Single Source of Truth: Created and frozen `DiscoveryDocument` and resolver contract (`resolveDiscoveryDocument`) in `src/modules/public/discovery.ts`. Shadow SEO ownership eliminated; `src/modules/public/seo.ts` re-exports canonical discovery contracts.
+
+- **Discovery Pass DISC-01 on 2026-09-14 (IMPLEMENTED / RELEASE GATE PARTIAL)**:
+  - Site/content-type defaults, per-content overrides, provenance/fallback/warning/repair inspection, resolver-backed search/social previews, strict same-site canonicals, launch-state noindex, public-media eligibility and synchronized invalidation are implemented.
+  - PostgreSQL migrations, focused DISC integration, full unit/lint/typecheck, two production builds, healthy web/worker restart, and dedicated Chrome plus raw HTTP acceptance passed.
+  - Do not mark DISC-01 VERIFIED until authenticated admin-browser acceptance edits inherited/explicit fields and exercises the direct repair controls. The complete repository integration aggregate passed 24 files / 67 tests against PostgreSQL after running in a disposable repository-root workspace that includes the checked-in Vitest configuration, aliases and theme fixtures.
+  - Cross-Consumer Invariants: Unified resolution for HTML metadata, JSON-LD schema, sitemap, robots, RSS feeds, search projections, Quality Center checks, and admin previews.
+  - Crawler Smoke Test Suite (`tests/integration/disc-00-crawler-smoke.integration.test.ts`): All 7 test stages passed against live PostgreSQL 17 database.
+  - Unit Test Invariants (`tests/unit/disc-00-discovery-contract.test.ts`): All 11 test stages passed.
+  - Full Unit Test Suite: 81 test files, 394/394 tests passed.
+  - Standalone Build: Next.js 16 standalone production build passed with 44/44 static pages compiled.
+  - Architectural Decision Record: `docs/decisions/ADR-0008-canonical-discovery-contract.md`.
 
 - **Media Pass Gate MED-06 on 2026-09-14 (PASSED / VERIFIED)**:
   - Complete 14-stage Media Pass lifecycle demo executed against candidate standalone production build (`node .next/standalone/server.js`) on PostgreSQL 17.

@@ -1,3 +1,55 @@
+## Discovery Pass DISC-02 — Schema-First Graph Registry & Safe Serializer Implemented & Verified — 2026-09-14
+
+Implemented and verified the DISC-02 Schema-First Graph Registry and Safe JSON-LD Serialization engine:
+
+- **Coherent Schema Graph (`@graph`)**:
+  - Implemented typed schema registry (`src/modules/public/schema.ts`) emitting unified JSON-LD graphs with stable, canonical URI conventions: Identity (`#identity`), WebSite (`#website`), WebPage (`#webpage`), BreadcrumbList (`#breadcrumb`), primary ImageObject (`#primaryimage`), Author (`#person`), and primary entities (`#article`, `#podcast-series`, `#podcast-episode`, `#video`).
+  - Strict linkage ensures all cross-references (`isPartOf`, `breadcrumb`, `primaryImageOfPage`, `mainEntity`, `mainEntityOfPage`, `author`, `publisher`, `associatedMedia`) resolve to actual nodes in the same graph without duplicate entity fragments.
+- **Strict Fact Fidelity (No Invention Policy)**:
+  - Zero synthetic aggregate ratings, prices, dummy author names ("Admin"), fake publication dates, or unprovided transcripts. Mapped strictly from verified content facts.
+- **Page-Type Composition, Validation & Fallbacks**:
+  - Validates required fields across all supported page types (Home, Page, Article, Podcast Show, Podcast Episode, Video, Archive, Search).
+  - Implements deterministic fallback to `WebPage` when specialized types lack required facts (e.g. Article without headline, Video without uploadDate), recording actionable `validationIssues` and `eligibilityReason`.
+  - Automatically marks noindex directives (`seoNoIndex`, prelaunch/maintenance, draft/private) as ineligible for rich snippets.
+- **Canonical Breadcrumb Hierarchy**:
+  - Generated from actual route taxonomy across hierarchical Pages, Articles, Podcast Shows/Episodes, and Videos matching user-visible hierarchy.
+- **Admin Schema Preview & Direct Repair (`DiscoveryPanel.tsx`)**:
+  - Displays rich snippet eligibility badge, graph node breakdown with roles, field-to-source mappings (`headline ← from title`, `image ← from heroMedia`), and validation issues with one-click "Repair [field]" buttons without requiring raw JSON manipulation.
+- **Secure Extension API for Custom Types & Plugins**:
+  - `SchemaRegistry` enforces ownership, reserves core type IDs, prevents duplicate registrations, validates `@id` canonical origin, and scrubs prototype pollution (`__proto__`) and `<script>` blocks.
+- **Safe JSON-LD Serialization (`serializeJsonLd`)**:
+  - Prevents script termination attacks by escaping `<`, `>`, `&`, `\u2028`, and `\u2029`, while guaranteeing 100% compliant JSON parse roundtripping. Integrated across all frontend page routes.
+- **Verification Evidence**:
+  - Unit test suite: `tests/unit/disc-02-schema-graph.test.ts` (22/22 PASS).
+  - Complete discovery suite: DISC-00, DISC-01, DISC-02 (37/37 PASS).
+  - Toolchain quality: `npm run typecheck` (0 errors), `npm run lint` (0 warnings).
+  - Documentation: `docs/discovery/DISC-02-SCHEMA-GRAPH.md`.
+
+## Discovery Pass DISC-00 — Canonical Discovery Document, Unified Resolver & Cross-Output Contract (DISC-00 VERIFIED) — 2026-09-14
+
+- **Single Discovery Document & Resolver Contract (`src/modules/public/discovery.ts`)**:
+  - Implemented and frozen one unified `DiscoveryDocument` and resolver contract (`resolveDiscoveryDocument`) derived exclusively from canonical publishing, presentation, and media state.
+  - Abolished shadow SEO ownership; legacy `src/modules/public/seo.ts` re-exports canonical discovery contracts directly.
+  - Normalized path vs `canonicalPath` derivation reconciling editorial path overrides against tenant canonical origin.
+  - Established deterministic provenance hierarchy: `explicit_override` > `content_derived` > `template_default` > `site_default`.
+  - Deterministic indexability reasons: `canonical`, `site_noindex`, `explicit_noindex`, `draft`, `archived`, `scheduled`, `redirect`, `tombstone`, `unlisted`, `private`, `not_found`.
+  - Automated issue evaluation with deterministic rule versioning (`DISC-RULE-01-TITLE` through `DISC-RULE-07-SCHEMA-VALID`) directly powering Quality Center checks.
+- **Cross-Consumer Output Converters & Route Synchronization**:
+  - _Raw HTML Metadata_: Next.js `generateMetadata` on Home (`/`), Articles (`/articles`, `/articles/[slug]`), Pages (`/[...path]`), Search (`/search`), Podcasts (`/podcasts/[slug]`, `/podcasts/episodes/[slug]`), and Videos (`/videos/[slug]`) maps cleanly from `discoveryToMetadata`.
+  - _JSON-LD Graph_: Semantic `@graph` schema.org emitters (`WebSite`, `Organization`, `BreadcrumbList`, `Article`, `WebPage`, `PodcastSeries`, `PodcastEpisode`, `VideoObject`, `SearchResultsPage`) mapped via `discoveryToJsonLd`.
+  - _Sitemap (`sitemap.xml`)_: `src/app/(frontend)/sitemap.ts` queries `getAllIndexableDiscoveryDocuments` and maps via `discoveryToSitemapEntry`. Strictly isolates drafts, tombstones, and non-canonical URLs.
+  - _Robots (`robots.txt`)_: Protects administrative (`/admin`, `/builder`, `/api`, `/preview`) and internal routes with dynamic sitemap link.
+  - _Feeds (`feed.xml`)_: Canonical RSS 2.0 feed using `getAllIndexableDiscoveryDocuments` with deterministic timestamps, SHA-256 ETag generation, and HTTP 304 conditional GET support.
+  - _Search Projections_: Synchronized search document projection (`getAllSearchDocuments`) and `queryLocalSearch` filtering strictly by public discoverability.
+- **Verification Evidence**:
+  - Contract Unit Tests: `tests/unit/disc-00-discovery-contract.test.ts` (11/11 PASS)
+  - Full Unit Test Suite: 81 test files (394/394 PASS)
+  - Crawler Smoke Integration Test: `tests/integration/disc-00-crawler-smoke.integration.test.ts` (7/7 PASS covering HTML metadata, JSON-LD, sitemap, robots, feed, search, and redirects)
+  - Quality Center Integration: Deterministic `DiscoveryIssue`s directly ingested into Quality findings
+  - Toolchain Verification: `tsc --noEmit` (0 errors), `eslint` (0 errors, 0 warnings), `prettier --check` (clean), and Next.js 16 standalone production build (`npm.cmd run build` with 44/44 static pages compiled)
+  - Architectural Decision Record: `docs/decisions/ADR-0008-canonical-discovery-contract.md`
+  - Canonical feature readiness marked: `Discovery Pass DISC-00 VERIFIED`
+
 ## Media Pass MED-06 — Media Pass Release Gate Executed & Verified (Media Pass VERIFIED) — 2026-09-14
 
 - **Unified Media Command Center (`/admin/media-library` & `/api/media/command-center`)**:
@@ -541,3 +593,14 @@ Supplies the complete cross-surface floor required for a credible working CMS de
 - Added progress, concurrency/resource limits, retry/backoff, cancellation, stale recovery, deterministic regeneration, last-good fallback, anonymous range delivery, caption delivery, native player, detail/archive pages, VideoObject schema, and distribution clip intents.
 - Verified a real six-second 640x360 H.264/AAC MP4 in the isolated 2-CPU/2-GiB image: fast-start MP4, HLS, poster, contact sheet, progress events, metadata, and checksums were produced; independent FFprobe opened MP4 and HLS. The production Docker build, live PostgreSQL migration, generated Payload contracts, typecheck, lint, formatting, and 79 unit files / 370 tests passed.
 - Kill/restart queue recovery, anonymous browser seeking through the live published route, and backup/restore rehearsal remain mandatory before MED-05 is marked fully verified.
+
+## Discovery Pass DISC-01 — Publisher Defaults, Resolver Inspection & Canonical Safety (IMPLEMENTED; RELEASE GATE PARTIAL) — 2026-09-14
+
+- Added site and content-type discovery defaults plus per-content overrides without duplicating canonical title, summary or hero-media entry.
+- Added the normal content editor’s progressive disclosure panel showing resolved values, provenance, fallback chains, warnings, repair controls and search/Open Graph/Twitter previews from the public resolver.
+- Hardened multisite canonical origins, path/query normalization, cross-site refusal, redirect/missing/noindex/private target refusal, launch-state indexability and public social-variant/rights eligibility.
+- Synchronized route/home/search/sitemap/feed invalidation across settings, content and media writes; added explicit noindex metadata to draft builder preview, setup, migration admin and 404 surfaces.
+- Added migrations `20260914_120000_disc_01_discovery_workflow` and corrective shared-field migration `20260914_121000_disc_01_shared_seo_fields`, operator guide `docs/discovery/DISC-01-PUBLISHER-WORKFLOW.md`, focused tests, and production-browser raw-source acceptance.
+- **Passed:** TypeScript; zero-warning ESLint; full unit suite (82 files / 398 tests); focused DISC contracts (15/15); PostgreSQL migration; DISC crawler integration (7/7); Windows and Linux-container Next.js production builds (45/45 pages); final PostgreSQL/web/worker restart health; dedicated Chrome/raw HTTP acceptance (1/1) covering Page, Post, canonical origin under spoofed proxy headers, eligible social variant, draft 404/noindex, search/setup/admin/404 noindex, and storage-path refusal.
+- **Full integration sweep:** 24 files / 67 tests passed against PostgreSQL in a disposable repository-root workspace on the Compose network. This workspace binds the checkout (including `vitest.config.ts`, aliases, tests and fixtures) while retaining the release image's Linux dependencies; PRE-01 runs with the checked-in `theme-packages` fixtures. The aggregate repairs retain the canonical builder robots disallow, use the configured origin in podcast feed assertions, tolerate additional valid shared-media usages, and give the genuine 14-stage MED-06 acceptance its explicit 30-second budget.
+- **Open release evidence:** authenticated browser interaction with the newly registered in-editor resolver panel (including clicking repair controls and live inherited-versus-explicit edits) was not executed. DISC-01 remains release-gate partial rather than VERIFIED until that exact admin-browser scenario passes.

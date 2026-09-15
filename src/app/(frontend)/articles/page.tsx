@@ -12,20 +12,16 @@ type Args = {
   searchParams?: Promise<{ page?: string }>
 }
 
+import {
+  resolveDiscoveryDocument,
+  discoveryToMetadata,
+  serializeJsonLd,
+} from '@/modules/public/discovery'
+
 export async function generateMetadata(): Promise<Metadata> {
   const payload = await getPayload({ config })
-  const settings = await resolveSiteSettings(payload)
-  return {
-    title: `Articles — ${settings.siteName}`,
-    description: `Archive of published articles from ${settings.siteName}.`,
-    alternates: {
-      canonical: `${settings.canonicalOrigin}/articles`,
-    },
-    robots: {
-      index: settings.indexingMode !== 'noindex',
-      follow: settings.indexingMode !== 'noindex',
-    },
-  }
+  const doc = await resolveDiscoveryDocument(payload, { path: '/articles' })
+  return discoveryToMetadata(doc)
 }
 
 export default async function ArticlesArchivePage({ searchParams }: Args) {
@@ -66,8 +62,14 @@ export default async function ArticlesArchivePage({ searchParams }: Args) {
     overrideAccess: true,
   })
 
+  const doc = await resolveDiscoveryDocument(payload, { path: '/articles' })
+
   return (
     <PresentationSurface themeId={settings.themeId} surface="archive">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(doc.schema.jsonLd) }}
+      />
       <main className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-12 md:py-16">
         <header className="mb-10 border-b border-stone-200 dark:border-stone-800 pb-8">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">

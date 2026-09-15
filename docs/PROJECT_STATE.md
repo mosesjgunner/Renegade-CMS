@@ -1,3 +1,30 @@
+## Discovery Pass DISC-02 — Schema-First Graph Registry & Safe Serializer Implemented & Verified — 2026-09-14
+
+Implemented and verified the DISC-02 Schema-First Graph Registry and Safe JSON-LD Serialization engine:
+
+- **Coherent Schema Graph (`@graph`)**:
+  - Implemented typed schema registry (`src/modules/public/schema.ts`) emitting unified JSON-LD graphs with stable, canonical URI conventions: Identity (`#identity`), WebSite (`#website`), WebPage (`#webpage`), BreadcrumbList (`#breadcrumb`), primary ImageObject (`#primaryimage`), Author (`#person`), and primary entities (`#article`, `#podcast-series`, `#podcast-episode`, `#video`).
+  - Strict linkage ensures all cross-references (`isPartOf`, `breadcrumb`, `primaryImageOfPage`, `mainEntity`, `mainEntityOfPage`, `author`, `publisher`, `associatedMedia`) resolve to actual nodes in the same graph without duplicate entity fragments.
+- **Strict Fact Fidelity (No Invention Policy)**:
+  - Zero synthetic aggregate ratings, prices, dummy author names ("Admin"), fake publication dates, or unprovided transcripts. Mapped strictly from verified content facts.
+- **Page-Type Composition, Validation & Fallbacks**:
+  - Validates required fields across all supported page types (Home, Page, Article, Podcast Show, Podcast Episode, Video, Archive, Search).
+  - Implements deterministic fallback to `WebPage` when specialized types lack required facts (e.g. Article without headline, Video without uploadDate), recording actionable `validationIssues` and `eligibilityReason`.
+  - Automatically marks noindex directives (`seoNoIndex`, prelaunch/maintenance, draft/private) as ineligible for rich snippets.
+- **Canonical Breadcrumb Hierarchy**:
+  - Generated from actual route taxonomy across hierarchical Pages, Articles, Podcast Shows/Episodes, and Videos matching user-visible hierarchy.
+- **Admin Schema Preview & Direct Repair (`DiscoveryPanel.tsx`)**:
+  - Displays rich snippet eligibility badge, graph node breakdown with roles, field-to-source mappings (`headline ← from title`, `image ← from heroMedia`), and validation issues with one-click "Repair [field]" buttons without requiring raw JSON manipulation.
+- **Secure Extension API for Custom Types & Plugins**:
+  - `SchemaRegistry` enforces ownership, reserves core type IDs, prevents duplicate registrations, validates `@id` canonical origin, and scrubs prototype pollution (`__proto__`) and `<script>` blocks.
+- **Safe JSON-LD Serialization (`serializeJsonLd`)**:
+  - Prevents script termination attacks by escaping `<`, `>`, `&`, `\u2028`, and `\u2029`, while guaranteeing 100% compliant JSON parse roundtripping. Integrated across all frontend page routes.
+- **Verification Evidence**:
+  - Unit test suite: `tests/unit/disc-02-schema-graph.test.ts` (22/22 PASS).
+  - Complete discovery suite: DISC-00, DISC-01, DISC-02 (37/37 PASS).
+  - Toolchain quality: `npm run typecheck` (0 errors), `npm run lint` (0 warnings).
+  - Documentation: `docs/discovery/DISC-02-SCHEMA-GRAPH.md`.
+
 ## Media Pass MED-03 — Versioned image variant processing implemented — 2026-09-13
 
 - The `media` queue owns bounded, idempotent image processing. Approved recipe names resolve immutable checksum- and recipe-version-addressed output; browser delivery is responsive AVIF/WebP/JPEG with ETags and immutable cache control.

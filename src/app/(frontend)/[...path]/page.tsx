@@ -4,9 +4,14 @@ import Link from 'next/link'
 import { notFound, permanentRedirect, redirect } from 'next/navigation'
 
 import { canRenderPublic, type PublicState } from '@/modules/public/contracts'
-import { buildJsonLd, buildMetadata } from '@/modules/public/seo'
 import type { Metadata } from 'next'
-import { resolveRedirect, type RedirectRule } from '@/modules/public/discovery'
+import {
+  discoveryToMetadata,
+  resolveDiscoveryDocument,
+  resolveRedirect,
+  serializeJsonLd,
+  type RedirectRule,
+} from '@/modules/public/discovery'
 import { PublicLayout } from '@/modules/public/PublicLayout'
 import { PublicForm } from '@/modules/audience/PublicForm'
 import type { FormField } from '@/modules/audience/contracts'
@@ -52,64 +57,8 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
   const path = `/${(await params).path.join('/')}`
   try {
     const payload = await getPayload({ config })
-    const settings = await resolveSiteSettings(payload)
-    const publications = await payload.find({
-      collection: 'publications',
-      where: { and: [{ status: { equals: 'active' } }, { visibility: { equals: 'public' } }] },
-      sort: '-createdAt',
-      limit: 1,
-      depth: 0,
-      overrideAccess: true,
-    } as never)
-    const publication = publications.docs[0] as unknown as Record<string, unknown> | undefined
-    const siteId =
-      typeof publication?.site === 'string'
-        ? publication.site
-        : String((publication?.site as { id?: unknown } | undefined)?.id ?? '')
-    const layoutFound = await payload.find({
-      collection: 'page-layouts',
-      where: { and: [{ path: { equals: path } }, { site: { equals: siteId } }] },
-      limit: 1,
-      depth: 0,
-      overrideAccess: true,
-    } as never)
-    const layout = layoutFound.docs[0] as unknown as PublicRecord | undefined
-    if (layout && canRenderPublic(layout)) {
-      return buildMetadata({
-        ...layout,
-        title:
-          label(layout) !== 'Publication'
-            ? label(layout)
-            : path.slice(1).replace(/-/g, ' ') || 'Home',
-        canonicalPath: path,
-        siteUrl: settings.canonicalOrigin,
-        siteNoIndex: settings.indexingMode === 'noindex',
-      })
-    }
-    for (const collection of registeredOnly(payload, candidates)) {
-      const found = await payload.find({
-        collection,
-        where: { and: [{ canonicalPath: { equals: path } }, { site: { equals: siteId } }] },
-        limit: 1,
-        depth: 0,
-        overrideAccess: true,
-      } as never)
-      const record = found.docs[0] as unknown as PublicRecord | undefined
-      if (record && canRenderPublic(record))
-        return buildMetadata({
-          ...record,
-          title: label(record),
-          description:
-            typeof record.summary === 'string'
-              ? record.summary
-              : typeof record.description === 'string'
-                ? record.description
-                : null,
-          canonicalPath: path,
-          siteUrl: settings.canonicalOrigin,
-          siteNoIndex: settings.indexingMode === 'noindex',
-        })
-    }
+    const discovery = await resolveDiscoveryDocument(payload, { path })
+    return discoveryToMetadata(discovery)
   } catch {
     /* safe noindex fallback during recovery */
   }
@@ -259,7 +208,18 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
   const layoutRecord = layoutResult.docs[0] as unknown as PublicRecord | undefined
   if (layoutRecord) {
     if (!canRenderPublic(layoutRecord)) notFound()
-    return <PublicLayout record={layoutRecord} path={path} />
+    const discovery = await resolveDiscoveryDocument(payload, { path })
+    return (
+      <>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: serializeJsonLd(discovery.schema.jsonLd),
+          }}
+        />
+        <PublicLayout record={layoutRecord} path={path} />
+      </>
+    )
   }
 
   let editorialArticle: Awaited<ReturnType<typeof loadPublishedArticleByPath>> | undefined
@@ -270,7 +230,18 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
   }
   if (editorialArticle) {
     const settings = await resolveSiteSettings(payload)
-    return <EditorialArticleView themeId={settings.themeId} article={editorialArticle} />
+    const discovery = await resolveDiscoveryDocument(payload, { path })
+    return (
+      <>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: serializeJsonLd(discovery.schema.jsonLd),
+          }}
+        />
+        <EditorialArticleView themeId={settings.themeId} article={editorialArticle} />
+      </>
+    )
   }
 
   const bookResult = await findIfRegistered(payload, {
@@ -367,39 +338,16 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
         articleBody = projection
       }
     }
-    const jsonLd = buildJsonLd({
-      siteUrl: process.env.APP_URL ?? 'http://localhost:3000',
+    const discovery = await resolveDiscoveryDocument(payload, {
       path,
-      site: { ownerKind: 'organization', name: (await resolveSiteSettings(payload)).siteName },
-      breadcrumb: [
-        { name: 'Home', path: '/' },
-        { name, path },
-      ],
-      entity: {
-        kind: kind(collection),
-        id: String(record.id),
-        name,
-        description:
-          typeof record.summary === 'string'
-            ? record.summary
-            : typeof record.description === 'string'
-              ? record.description
-              : null,
-        startsAt: typeof record.startsAt === 'string' ? record.startsAt : null,
-        endsAt: typeof record.endsAt === 'string' ? record.endsAt : null,
-        attendanceMode: record.attendanceMode as 'in-person' | 'virtual' | 'hybrid' | null,
-        locationName: typeof record.venueName === 'string' ? record.venueName : null,
-        locationAddress: typeof record.venueAddress === 'string' ? record.venueAddress : null,
-        onlineUrl: typeof record.onlineUrl === 'string' ? record.onlineUrl : null,
-        organizerName: typeof record.organizerName === 'string' ? record.organizerName : null,
-        organizerUrl: typeof record.organizerUrl === 'string' ? record.organizerUrl : null,
-      },
+      record: record as Record<string, unknown>,
+      collection,
     })
     return (
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 space-y-8">
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(discovery.schema.jsonLd) }}
         />
         <nav
           aria-label="Breadcrumb"

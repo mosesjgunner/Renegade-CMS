@@ -5,6 +5,8 @@ import * as med02DamGovernance from './20260913_080000_med_02_dam_governance'
 import * as med03ImageVariants from './20260913_090000_med_03_image_variants'
 import * as med04PodcastWorkflow from './20260913_100000_med_04_podcast_workflow'
 import * as med05VideoWorkflow from './20260914_110000_med_05_video_workflow'
+import * as disc01DiscoveryWorkflow from './20260914_120000_disc_01_discovery_workflow'
+import * as disc01SharedSeoFields from './20260914_121000_disc_01_shared_seo_fields'
 import * as pre04ReusableComposition from './20260912_040000_pre_04_reusable_composition'
 import * as pre01Snapshots from './20260912_020000_pre_01_presentation_snapshots'
 import * as pre03VisualEditor from './20260912_030000_pre_03_visual_editor'
@@ -323,5 +325,15 @@ export const migrations = [
     up: med05VideoWorkflow.up,
     down: med05VideoWorkflow.down,
     name: '20260914_110000_med_05_video_workflow',
+  },
+  {
+    up: disc01DiscoveryWorkflow.up,
+    down: disc01DiscoveryWorkflow.down,
+    name: '20260914_120000_disc_01_discovery_workflow',
+  },
+  {
+    up: disc01SharedSeoFields.up,
+    down: disc01SharedSeoFields.down,
+    name: '20260914_121000_disc_01_shared_seo_fields',
   },
 ]

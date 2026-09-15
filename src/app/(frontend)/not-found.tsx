@@ -1,5 +1,8 @@
 import { PresentationSurface } from '@/modules/presentation/Surface'
 import Link from 'next/link'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = { robots: { index: false, follow: false } }
 
 export default function PublicNotFound() {
   return (

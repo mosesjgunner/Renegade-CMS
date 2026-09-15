@@ -6,7 +6,12 @@ import { notFound, permanentRedirect, redirect } from 'next/navigation'
 import type { Metadata } from 'next'
 
 import { canRenderPodcast } from '@/modules/media/publishing'
-import { loadConfig } from '@/modules/core/config'
+
+import {
+  discoveryToMetadata,
+  resolveDiscoveryDocument,
+  serializeJsonLd,
+} from '@/modules/public/discovery'
 
 export const dynamic = 'force-dynamic'
 
@@ -29,40 +34,17 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const payload = await getPayload({ config })
   const { slug } = await params
-  const result = await payload.find({
+  const discovery = await resolveDiscoveryDocument(payload, {
     collection: 'podcast-shows',
-    where: { slug: { equals: slug } },
-    limit: 1,
-    depth: 1,
-    overrideAccess: true,
-  } as never)
-  const show = result.docs[0] as any
-  if (!show || !canRenderPodcast(show)) return {}
-  const origin = loadConfig().appUrl
-  const artworkUrl = show.artwork
-    ? new URL(`/media/${value(show.artwork)}`, origin).toString()
-    : undefined
-
-  return {
-    title: show.seoTitle || show.title,
-    description: show.seoDescription || show.description,
-    openGraph: {
-      title: show.seoTitle || show.title,
-      description: show.seoDescription || show.description,
-      images: artworkUrl ? [{ url: artworkUrl }] : undefined,
-    },
-    alternates: {
-      types: show.rssEnabled
-        ? { 'application/rss+xml': `${origin}/podcasts/${show.slug}/feed.xml` }
-        : undefined,
-    },
-  }
+    slug,
+    path: `/podcasts/${slug}`,
+  })
+  return discoveryToMetadata(discovery)
 }
 
 export default async function PodcastShowPage({ params }: { params: Promise<{ slug: string }> }) {
   const payload = await getPayload({ config })
   const { slug } = await params
-  const origin = loadConfig().appUrl
 
   const result = await payload.find({
     collection: 'podcast-shows',
@@ -108,22 +90,11 @@ export default async function PodcastShowPage({ params }: { params: Promise<{ sl
     .sort((a, b) => new Date(b.publishedAt || 0).getTime() - new Date(a.publishedAt || 0).getTime())
 
   const artworkId = show.artwork ? value(show.artwork) : null
-  const artworkUrl = artworkId ? new URL(`/media/${artworkId}`, origin).toString() : null
-  const feedUrl = show.rssEnabled
-    ? new URL(`/podcasts/${show.slug}/feed.xml`, origin).toString()
-    : null
-
-  // Schema.org structured data (PodcastSeries)
-  const structuredData = {
-    '@context': 'https://schema.org',
-    '@type': 'PodcastSeries',
-    name: show.title,
-    description: show.description,
-    url: new URL(`/podcasts/${show.slug}`, origin).toString(),
-    inLanguage: show.language || 'en',
-    ...(artworkUrl ? { image: artworkUrl } : {}),
-    ...(feedUrl ? { webFeed: feedUrl } : {}),
-  }
+  const discovery = await resolveDiscoveryDocument(payload, {
+    collection: 'podcast-shows',
+    slug,
+    path: `/podcasts/${slug}`,
+  })
 
   const hostsList = Array.isArray(show.hosts) ? show.hosts : []
 
@@ -131,7 +102,9 @@ export default async function PodcastShowPage({ params }: { params: Promise<{ sl
     <main className="max-w-5xl mx-auto px-6 py-12 space-y-12">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        dangerouslySetInnerHTML={{
+          __html: serializeJsonLd(discovery.schema.jsonLd),
+        }}
       />
 
       {/* Show Hero Header */}

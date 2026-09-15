@@ -5,6 +5,7 @@ import {
   deriveEditorialPath,
 } from '../modules/editorial/publishing-pass'
 import { ensureEditorialCompanion } from '../modules/editorial/persistence'
+import { revalidateDiscoveryOutputs } from '../modules/public/revalidation'
 
 import {
   canonicalSlug,
@@ -148,6 +149,7 @@ const publisherFieldGroups = (fields: Field[]): Field[] => {
         'seoImageAlt',
         'seoFocusKeyphrase',
         'seoNoIndex',
+        'discoveryPanel',
       ],
       fields: [],
     },
@@ -192,6 +194,20 @@ export const MediaAssets: CollectionConfig = {
   // Metadata includes the opaque storage location. Anonymous readers must use the
   // scoped public byte route, which independently verifies a published reference.
   access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
+  hooks: {
+    afterChange: [
+      async ({ doc }) => {
+        await revalidateDiscoveryOutputs()
+        return doc
+      },
+    ],
+    afterDelete: [
+      async ({ doc }) => {
+        await revalidateDiscoveryOutputs()
+        return doc
+      },
+    ],
+  },
   fields: [
     ...ownerFields(),
     { name: 'title', type: 'text', required: true },
@@ -674,6 +690,10 @@ export const Content: CollectionConfig = {
     afterChange: [
       async ({ doc, previousDoc, operation, req }) => {
         await ensureEditorialCompanion(req.payload, doc as Record<string, unknown>, req)
+        await revalidateDiscoveryOutputs([
+          typeof previousDoc?.canonicalPath === 'string' ? previousDoc.canonicalPath : null,
+          typeof doc?.canonicalPath === 'string' ? doc.canonicalPath : null,
+        ])
         if (operation !== 'update') return doc
         const fromPath =
           typeof previousDoc?.canonicalPath === 'string' ? previousDoc.canonicalPath : ''
@@ -820,6 +840,11 @@ export const Content: CollectionConfig = {
       ],
     },
     ...seoFields(),
+    {
+      name: 'discoveryPanel',
+      type: 'ui',
+      admin: { components: { Field: '@/modules/admin/DiscoveryPanel#DiscoveryPanel' } },
+    },
     { name: 'relationships', type: 'relationship', relationTo: 'relationships', hasMany: true },
     { name: 'seoOverride', type: 'json' },
     { name: 'socialOverride', type: 'json' },

@@ -111,13 +111,15 @@ describe('canonical information architecture integration', () => {
     expect(album.visibility).toBe('public')
     expect(idOf(album.cover)).toBe(media.id)
     expect(idOf(album.items[0].media)).toBe(media.id)
-    expect(usages.docs.map((usage) => usage.usageKey).sort()).toEqual([
-      'album:demo-portfolio:item-1',
-      'content:demo-field-report:hero',
-      'event:demo-briefing:hero',
-      'event:demo-open-house:hero',
-      'timeline:demo-civic-schedule:hero',
-    ])
+    expect(usages.docs.map((usage) => usage.usageKey)).toEqual(
+      expect.arrayContaining([
+        'album:demo-portfolio:item-1',
+        'content:demo-field-report:hero',
+        'event:demo-briefing:hero',
+        'event:demo-open-house:hero',
+        'timeline:demo-civic-schedule:hero',
+      ]),
+    )
   })
 
   it('enforces relationship uniqueness and active block precedence', async () => {

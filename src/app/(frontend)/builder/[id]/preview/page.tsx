@@ -2,11 +2,13 @@ import config from '@payload-config'
 import { getPayload } from 'payload'
 import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
+import type { Metadata } from 'next'
 
 import { renderLayout, type PageLayout } from '@/modules/public/page-builder'
 import { resolveTheme } from '@/modules/presentation/registry'
 
 export const dynamic = 'force-dynamic'
+export const metadata: Metadata = { robots: { index: false, follow: false } }
 
 export default async function DraftLayoutPreview({
   params,

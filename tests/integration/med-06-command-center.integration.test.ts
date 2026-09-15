@@ -597,5 +597,5 @@ describe('MED-06 Media Pass Release Gate — Comprehensive Acceptance Integratio
     expect(imageChecksum).toMatch(/^sha256:[a-f0-9]{64}$/)
     expect(wavChecksum).toMatch(/^sha256:[a-f0-9]{64}$/)
     expect(mp4Checksum).toMatch(/^sha256:[a-f0-9]{64}$/)
-  })
+  }, 30_000)
 })

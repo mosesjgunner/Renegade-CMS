@@ -8,7 +8,11 @@ import type { Metadata } from 'next'
 
 import { canRenderPodcast } from '@/modules/media/publishing'
 import { PodcastPlayer } from '@/modules/media/PodcastPlayer'
-import { loadConfig } from '@/modules/core/config'
+import {
+  discoveryToMetadata,
+  resolveDiscoveryDocument,
+  serializeJsonLd,
+} from '@/modules/public/discovery'
 
 export const dynamic = 'force-dynamic'
 
@@ -22,29 +26,12 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const payload = await getPayload({ config })
   const { slug } = await params
-  const result = await payload.find({
+  const discovery = await resolveDiscoveryDocument(payload, {
     collection: 'podcast-episodes',
-    where: { slug: { equals: slug } },
-    limit: 1,
-    depth: 1,
-    overrideAccess: true,
-  } as never)
-  const episode = result.docs[0] as any
-  if (!episode) return {}
-
-  const origin = loadConfig().appUrl
-  const artwork = episode.artwork ? value(episode.artwork) : null
-  const artworkUrl = artwork ? new URL(`/media/${artwork}`, origin).toString() : undefined
-
-  return {
-    title: episode.seoTitle || episode.title,
-    description: episode.seoDescription || episode.description,
-    openGraph: {
-      title: episode.seoTitle || episode.title,
-      description: episode.seoDescription || episode.description,
-      images: artworkUrl ? [{ url: artworkUrl }] : undefined,
-    },
-  }
+    slug,
+    path: `/podcasts/episodes/${slug}`,
+  })
+  return discoveryToMetadata(discovery)
 }
 
 export default async function PodcastEpisodePage({
@@ -57,7 +44,6 @@ export default async function PodcastEpisodePage({
   const payload = await getPayload({ config })
   const { slug } = await params
   const query = (await searchParams) || {}
-  const origin = loadConfig().appUrl
 
   const result = await payload.find({
     collection: 'podcast-episodes',
@@ -118,7 +104,6 @@ export default async function PodcastEpisodePage({
     : show?.artwork
       ? value(show.artwork)
       : null
-  const artworkUrl = artworkId ? new URL(`/media/${artworkId}`, origin).toString() : null
   const audioUrl = audio ? `/media/${audio.id}` : episode.externalUrl
   const audioMime = audio?.mimeType || episode.enclosureMimeType || 'audio/mpeg'
 
@@ -137,37 +122,11 @@ export default async function PodcastEpisodePage({
       })
     : null
 
-  // Schema.org structured data (PodcastEpisode)
-  const structuredData = {
-    '@context': 'https://schema.org',
-    '@type': 'PodcastEpisode',
-    name: episode.title,
-    description: episode.description,
-    url: new URL(`/podcasts/episodes/${episode.slug}`, origin).toString(),
-    datePublished: episode.publishedAt || undefined,
-    ...(episode.episodeNumber !== undefined ? { episodeNumber: episode.episodeNumber } : {}),
-    ...(show
-      ? {
-          partOfSeries: {
-            '@type': 'PodcastSeries',
-            name: show.title,
-            url: new URL(`/podcasts/${show.slug}`, origin).toString(),
-          },
-        }
-      : {}),
-    ...(audio
-      ? {
-          associatedMedia: {
-            '@type': 'AudioObject',
-            contentUrl: new URL(`/media/${audio.id}`, origin).toString(),
-            encodingFormat: audioMime,
-            contentSize: audio.sizeBytes ? String(audio.sizeBytes) : undefined,
-            duration: audio.durationSeconds ? `PT${Math.round(audio.durationSeconds)}S` : undefined,
-          },
-        }
-      : {}),
-    ...(artworkUrl ? { image: artworkUrl } : {}),
-  }
+  const discovery = await resolveDiscoveryDocument(payload, {
+    collection: 'podcast-episodes',
+    slug,
+    path: `/podcasts/episodes/${slug}`,
+  })
 
   const downloadableFiles = Array.isArray(episode.downloadableFiles)
     ? episode.downloadableFiles
@@ -179,7 +138,9 @@ export default async function PodcastEpisodePage({
     <main className="max-w-4xl mx-auto px-6 py-12 space-y-8">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+        dangerouslySetInnerHTML={{
+          __html: serializeJsonLd(discovery.schema.jsonLd),
+        }}
       />
 
       {/* Authenticated draft / scheduled preview indicator */}

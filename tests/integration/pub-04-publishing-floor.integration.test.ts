@@ -330,7 +330,11 @@ describe('PUB-04 publishing floor integration contract', () => {
 
     const indexRobots = await robots()
     expect(indexRobots.rules).toEqual([
-      { userAgent: '*', allow: '/', disallow: ['/admin', '/api', '/preview', '/setup'] },
+      {
+        userAgent: '*',
+        allow: '/',
+        disallow: ['/admin', '/api', '/preview', '/setup', '/builder'],
+      },
     ])
     expect(indexRobots.sitemap).toBe('https://renegadeparty.org/sitemap.xml')
 

@@ -3,6 +3,7 @@ import { themes } from '../modules/presentation/registry'
 import type { GlobalConfig } from 'payload'
 
 import { seoFields, structuredDataSourceFields } from '../collections/canonical-shared'
+import { revalidateDiscoveryOutputs } from '../modules/public/revalidation'
 
 const staffOrOwner = ({ req }: { req: { user?: { role?: string } | null } }) =>
   ['owner', 'administrator', 'staff'].includes(String(req.user?.role))
@@ -17,17 +18,12 @@ export const SiteSettings: GlobalConfig = {
   hooks: {
     afterChange: [
       async ({ doc }) => {
-        try {
-          const { revalidatePath } = await import('next/cache.js')
-          revalidatePath('/', 'layout')
-        } catch {
-          // CLI writes have no Next cache; public routes also read settings dynamically.
-        }
+        await revalidateDiscoveryOutputs()
         return doc
       },
     ],
     beforeValidate: [
-      ({ data }) => {
+      ({ data, originalDoc }) => {
         if (!data) return data
         if (data.siteName && !data.defaultTitle) {
           data.defaultTitle = data.siteName
@@ -41,6 +37,9 @@ export const SiteSettings: GlobalConfig = {
           data.seoNoIndex = true
         } else if (data.indexingMode === 'index') {
           data.seoNoIndex = false
+        }
+        if (data.launchState === 'live' && originalDoc?.launchState !== 'live') {
+          data.launchedAt = new Date().toISOString()
         }
         return data
       },
@@ -60,6 +59,14 @@ export const SiteSettings: GlobalConfig = {
       type: 'text',
       label: 'Canonical Origin',
       admin: { description: 'Canonical public origin, e.g. https://renegadeparty.org' },
+    },
+    {
+      name: 'canonicalOriginsBySite',
+      type: 'json',
+      admin: {
+        description:
+          'Optional site-id to canonical-origin map for multisite installs. Origins must be absolute HTTPS URLs in production.',
+      },
     },
     { name: 'locale', type: 'text', defaultValue: 'en' },
     { name: 'timezone', type: 'text', defaultValue: 'UTC' },
@@ -219,6 +226,25 @@ export const SiteSettings: GlobalConfig = {
     { name: 'logo', type: 'relationship', relationTo: 'media-assets' },
     { name: 'favicon', type: 'relationship', relationTo: 'media-assets' },
     { name: 'defaultSocialImage', type: 'relationship', relationTo: 'media-assets' },
+    {
+      name: 'discoveryDefaults',
+      type: 'json',
+      admin: {
+        description:
+          'Optional defaults by content type. Keys may include default, page, post, article, podcast, video, author, taxonomy and search. Each may set titleTemplate, description, socialTitle, socialDescription, socialImage, locale, alternates, index and follow.',
+      },
+    },
+    {
+      name: 'launchState',
+      type: 'select',
+      defaultValue: 'live',
+      options: ['live', 'prelaunch', 'maintenance'],
+      admin: {
+        description:
+          'Prelaunch and maintenance safely noindex every public surface. Return this prominently to Live after launch.',
+      },
+    },
+    { name: 'launchedAt', type: 'date', admin: { readOnly: true } },
     { name: 'sameAs', type: 'json' },
     { name: 'contactDefaults', type: 'json' },
     { name: 'socialHandles', type: 'json' },

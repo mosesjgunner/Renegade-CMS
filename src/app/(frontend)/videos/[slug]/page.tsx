@@ -1,11 +1,32 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import { notFound } from 'next/navigation'
+import type { Metadata } from 'next'
 
 import { VideoPlayer } from '@/modules/media/VideoPlayer'
+import {
+  discoveryToMetadata,
+  resolveDiscoveryDocument,
+  serializeJsonLd,
+} from '@/modules/public/discovery'
 
 export const dynamic = 'force-dynamic'
 const identifier = (value: unknown) => String((value as { id?: string } | null)?.id ?? value ?? '')
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>
+}): Promise<Metadata> {
+  const payload = await getPayload({ config })
+  const { slug } = await params
+  const discovery = await resolveDiscoveryDocument(payload, {
+    collection: 'videos',
+    slug,
+    path: `/videos/${slug}`,
+  })
+  return discoveryToMetadata(discovery)
+}
 
 export default async function VideoPage({ params }: { params: Promise<{ slug: string }> }) {
   const payload = await getPayload({ config })
@@ -47,24 +68,21 @@ export default async function VideoPage({ params }: { params: Promise<{ slug: st
     : []
   const poster = outputs.find((item) => item.filename === 'poster.jpg')
   const title = String(video.title)
-  const metadata = asset.metadata as Record<string, unknown> | undefined
-  const structured = {
-    '@context': 'https://schema.org',
-    '@type': 'VideoObject',
-    name: title,
-    description: video.description,
-    uploadDate: video.publishedAt,
-    duration: metadata?.durationSeconds
-      ? `PT${Math.round(Number(metadata.durationSeconds))}S`
-      : undefined,
-    contentUrl: `/video-media/${asset.id}/baseline.mp4`,
-    thumbnailUrl: poster ? `/video-media/${asset.id}/poster.jpg` : undefined,
-  }
+
+  const discovery = await resolveDiscoveryDocument(payload, {
+    collection: 'videos',
+    slug,
+    path: `/videos/${slug}`,
+    record: video,
+  })
+
   return (
     <main className="mx-auto max-w-5xl space-y-8 px-6 py-12">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structured).replace(/</g, '\\u003c') }}
+        dangerouslySetInnerHTML={{
+          __html: serializeJsonLd(discovery.schema.jsonLd),
+        }}
       />
       <h1 className="text-4xl font-bold">{title}</h1>
       <VideoPlayer

@@ -1,5 +1,12 @@
 import type { Metadata } from 'next'
 
+/**
+ * Renegade CMoS Canonical Discovery Boundary.
+ * All canonical metadata, schema graph emission, sitemap entry generation,
+ * and discovery state auditing are defined in `src/modules/public/discovery.ts`.
+ */
+export * from './discovery'
+
 export type SEOFields = {
   seoTitle?: string | null
   seoDescription?: string | null

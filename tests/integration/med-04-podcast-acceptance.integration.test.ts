@@ -526,18 +526,19 @@ describe('MED-04 Podcast Publishing Workflow End-to-End Acceptance', () => {
     expect(feedXml).toContain('<itunes:author>Alex Vance</itunes:author>')
     expect(feedXml).toContain('<language>en-US</language>')
     // Episode 1 enclosure and metadata
+    const publicOrigin = (process.env.APP_URL ?? 'http://localhost:3000').replace(/\/$/, '')
     expect(feedXml).toContain(
-      `<enclosure url="http://localhost:3000/media/${audioAsset.id}" length="${wavBytes.byteLength}" type="audio/wav"/>`,
+      `<enclosure url="${publicOrigin}/media/${audioAsset.id}" length="${wavBytes.byteLength}" type="audio/wav"/>`,
     )
     expect(feedXml).toContain(`<guid isPermaLink="false">${ep1.guid}</guid>`)
     expect(feedXml).toContain('<itunes:duration>2</itunes:duration>')
     expect(feedXml).toContain('<itunes:season>1</itunes:season>')
     expect(feedXml).toContain('<itunes:episode>1</itunes:episode>')
     expect(feedXml).toContain(
-      `transcript url="http://localhost:3000/podcasts/episodes/${ep1Slug}/transcript"`,
+      `transcript url="${publicOrigin}/podcasts/episodes/${ep1Slug}/transcript"`,
     )
     expect(feedXml).toContain(
-      `podcast:chapters url="http://localhost:3000/podcasts/episodes/${ep1Slug}/chapters.json"`,
+      `podcast:chapters url="${publicOrigin}/podcasts/episodes/${ep1Slug}/chapters.json"`,
     )
     // Strictly excludes Episode 2
     expect(feedXml).not.toContain(`Episode 2: Post-SaaS Architectures ${runId}`)
@@ -614,10 +615,10 @@ describe('MED-04 Podcast Publishing Workflow End-to-End Acceptance', () => {
     const feedAfterRenameXml = await feedAfterRenameRes.text()
     expect(feedAfterRenameXml).toContain(`<guid isPermaLink="false">${originalGuid}</guid>`)
     expect(feedAfterRenameXml).toContain(
-      `<link>http://localhost:3000/podcasts/episodes/${ep1RenamedSlug}</link>`,
+      `<link>${publicOrigin}/podcasts/episodes/${ep1RenamedSlug}</link>`,
     )
     expect(feedAfterRenameXml).toContain(
-      `transcript url="http://localhost:3000/podcasts/episodes/${ep1RenamedSlug}/transcript"`,
+      `transcript url="${publicOrigin}/podcasts/episodes/${ep1RenamedSlug}/transcript"`,
     )
 
     // 13. Test Database Persistence & Clean Data State
