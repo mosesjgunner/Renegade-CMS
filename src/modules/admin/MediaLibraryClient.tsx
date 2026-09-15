@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { MediaPicker, type PickableMedia } from '../media/MediaPicker'
 import { MediaUploader } from '../media/MediaUploader'
 import { MediaGovernancePanel } from './MediaGovernancePanel'
+import { ImageEditorModal, type ImageEditorAsset } from '../media/image-editor'
 
 type VariantData = {
   id: string
@@ -48,6 +49,7 @@ type VariantsInspection = {
 
 export function MediaLibraryClient({ siteId }: { siteId: string }) {
   const [selected, setSelected] = useState<PickableMedia>()
+  const [editingAsset, setEditingAsset] = useState<ImageEditorAsset | null>(null)
   const [refreshKey, setRefreshKey] = useState(0)
   const [message, setMessage] = useState('')
   const [inspection, setInspection] = useState<VariantsInspection | null>(null)
@@ -499,6 +501,37 @@ export function MediaLibraryClient({ siteId }: { siteId: string }) {
                         Download original
                       </a>
                     )}
+                    {(inspection.original.mimeType?.startsWith('image/') ||
+                      selected.mimeType?.startsWith('image/')) && (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setEditingAsset({
+                            id: selected.id,
+                            title: selected.title,
+                            altText: selected.altText,
+                            caption: selected.caption,
+                            mimeType: selected.mimeType || inspection.original.mimeType,
+                            url: selected.url || inspection.original.url || `/media/${selected.id}`,
+                            siteId,
+                            width: inspection.original.width,
+                            height: inspection.original.height,
+                          })
+                        }
+                        style={{
+                          padding: '0.4rem 0.8rem',
+                          backgroundColor: '#2563eb',
+                          color: '#fff',
+                          border: '1px solid #1d4ed8',
+                          borderRadius: '4px',
+                          cursor: 'pointer',
+                          fontSize: '0.85rem',
+                          fontWeight: 600,
+                        }}
+                      >
+                        Edit in Image Editor
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
@@ -592,6 +625,15 @@ export function MediaLibraryClient({ siteId }: { siteId: string }) {
         </section>
       )}
       {message && <p role="status">{message}</p>}
+      <ImageEditorModal
+        asset={editingAsset}
+        isOpen={Boolean(editingAsset)}
+        onClose={() => setEditingAsset(null)}
+        onSaved={() => {
+          refresh()
+          setMessage('Image edited and saved successfully.')
+        }}
+      />
     </>
   )
 }

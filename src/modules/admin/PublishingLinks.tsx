@@ -10,8 +10,10 @@ export default function PublishingLinks() {
       <Link href="/admin/media-library">Media</Link>
       <Link href="/admin/collections/podcast-shows">Podcasts</Link>
       <Link href="/admin/navigation">Menus</Link>
+      <Link href="/admin/indexing">Indexing</Link>
       <Link href="/admin/globals/site-settings">Site Settings</Link>
-      <Link href="/admin/collections/public-redirects">Redirects</Link>
+      <Link href="/admin/redirects">Redirects</Link>
+      <Link href="/admin/rendered-quality">Rendered Quality</Link>
       <Link href="/" target="_blank" rel="noreferrer">
         View Site
       </Link>

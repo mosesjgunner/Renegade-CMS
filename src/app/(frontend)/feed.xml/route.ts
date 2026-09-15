@@ -18,7 +18,11 @@ const escapeXml = (unsafe: string) =>
 
 const cdata = (value?: string | null) => {
   if (!value) return ''
-  const sanitized = value.replace(/]]>/g, ']]]]><![CDATA[>')
+  const sanitized = value
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .replace(/]]>/g, ']]]]><![CDATA[>')
   return `<![CDATA[${sanitized}]]>`
 }
 
@@ -51,7 +55,7 @@ export async function GET(request: Request) {
       .map((doc) => {
         const title = escapeXml(doc.title.value)
         const link = escapeXml(doc.canonicalUrl)
-        const guid = escapeXml(doc.canonicalUrl)
+        const guid = escapeXml(`urn:renegade:content:${doc.revisions.entityId || doc.canonicalUrl}`)
         const itemDate = doc.dates.publishedAt || doc.dates.modifiedAt
         const pubDate = itemDate
           ? new Date(itemDate).toUTCString()
@@ -64,7 +68,7 @@ export async function GET(request: Request) {
         return `    <item>
       <title>${title}</title>
       <link>${link}</link>
-      <guid isPermaLink="true">${guid}</guid>
+      <guid isPermaLink="false">${guid}</guid>
       <pubDate>${pubDate}</pubDate>
       ${creator}
       <description>${description}</description>

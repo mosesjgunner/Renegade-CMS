@@ -120,7 +120,9 @@ describe('DISC-02 Schema-First Graph Registry & Engine', () => {
         indexable: true,
       })
 
-      const identityNode = graph['@graph'].find((n) => n['@id'] === schemaIdentityId('https://renegade.test'))
+      const identityNode = graph['@graph'].find(
+        (n) => n['@id'] === schemaIdentityId('https://renegade.test'),
+      )
       expect(identityNode).toBeDefined()
       expect(identityNode!['@type']).toBe('Person')
       expect(identityNode!.name).toBe('Moses Gunner')
@@ -188,11 +190,15 @@ describe('DISC-02 Schema-First Graph Registry & Engine', () => {
       })
 
       // Auxiliary nodes present and match references
-      const personNode = graph['@graph'].find((n) => n['@type'] === 'Person' && n['@id'] === expectedAuthorId)
+      const personNode = graph['@graph'].find(
+        (n) => n['@type'] === 'Person' && n['@id'] === expectedAuthorId,
+      )
       expect(personNode).toBeDefined()
       expect(personNode!.name).toBe('Jane Doe')
 
-      const imageNode = graph['@graph'].find((n) => n['@type'] === 'ImageObject' && n['@id'] === expectedImageId)
+      const imageNode = graph['@graph'].find(
+        (n) => n['@type'] === 'ImageObject' && n['@id'] === expectedImageId,
+      )
       expect(imageNode).toBeDefined()
       expect(imageNode!.url).toBe('https://renegade.test/media/dark-money-hero.jpg')
       expect(imageNode!.caption).toBe('Vault illustration')

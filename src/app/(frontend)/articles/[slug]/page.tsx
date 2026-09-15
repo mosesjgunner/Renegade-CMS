@@ -23,7 +23,10 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
   try {
     const payload = await getPayload({ config })
     const doc = await resolveDiscoveryDocument(payload, { collection: 'content', slug })
-    if (!doc.indexability.indexable && (doc.indexability.reason === 'not_found' || doc.indexability.reason === 'draft')) {
+    if (
+      !doc.indexability.indexable &&
+      (doc.indexability.reason === 'not_found' || doc.indexability.reason === 'draft')
+    ) {
       return { robots: { index: false, follow: false } }
     }
     return discoveryToMetadata(doc)

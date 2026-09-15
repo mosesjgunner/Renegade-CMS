@@ -1,8 +1,8 @@
 # Renegade CMS feature readiness
 
-Date: 2026-09-14  
-Status: Discovery Pass DISC-01 IMPLEMENTED / RELEASE GATE PARTIAL (Publishing Pass VERIFIED, Presentation Pass VERIFIED, Media Pass VERIFIED, Discovery Pass DISC-00 VERIFIED)  
-Method: Discovery Pass (DISC-01) Publisher Workflow, Raw Metadata & Canonical Safety Audit
+Date: 2026-09-15  
+Status: Discovery Pass DISC-06 VERIFIED (Publishing Pass VERIFIED, Presentation Pass VERIFIED, Media Pass VERIFIED, Discovery Pass VERIFIED)  
+Method: Discovery Pass Gate (DISC-06) Complete End-to-End Validation & Verification
 
 ## How to read this inventory
 
@@ -11,6 +11,20 @@ This is the release source of truth for public feature claims. A Payload collect
 The registered repository is `src/modules/payload-domains.ts`: Operations, Identity, Core, Integrations, Editorial, Releases, Media, Social, Network, Audience, Analytics, Experiences, Quality, and Commerce. It is the inventory boundary; historical ideas outside it are not release features.
 
 ## Executed evidence
+
+- **Discovery Pass Gate DISC-06 on 2026-09-15 (PASSED / VERIFIED)**:
+  - Complete 9-point mandatory proof executed against clean candidate environment and PostgreSQL database:
+    1. Site/type defaults & content overrides with provenance tracking (`site_default`, `template_default`, `content_derived`, `explicit_override`) and preview resolution.
+    2. Published Home Page, Page, Post/Article, Podcast Episode, and Video with distinct canonical URLs, `@graph` JSON-LD schema (WebPage, Article, PodcastEpisode, VideoObject), and media variant linkages.
+    3. HTML/Metadata inspection: `<title>`, `<meta name="description">`, `<link rel="canonical">`, `<meta name="robots">`, Open Graph (`og:*`), Twitter card (`summary_large_image`), language (`<html lang="en">`), alternate hreflang tags, and schema.org `@graph` JSON-LD graph coherence.
+    4. Fetched and validated `/sitemap.xml` index, `/sitemaps/1.xml` children, `/robots.txt`, `/feed.xml`, `/feed.json`, and podcast RSS XML feed; verified strict indexability filtering.
+    5. Local search: full lexical query matching title, body, and transcript terms, facets (contentType, tags), pagination, safe highlights, index rebuild (`reconcileSearchProjection`), and drift repair.
+    6. Slug changes & redirect management: 308 redirect creation, exact HTTP 308 + Location header behavior, circular loop/chain detection (`validateRedirectRuleInput`), and internal link update resolution.
+    7. Quality Center crawler: executed rendered audit (`runRenderedAudit`), detected deliberate metadata/schema/link/alt/orphan/duplicate issues, repaired contradictions via admin interface, and proved issue state transitions.
+    8. Dynamic lifecycle & asset isolation: switched themes (`renegade-party` <-> `neutral-starter`), replaced media variants/assets, scheduled/unpublished/noindexed items, restarted processes, and verified all discovery outputs converge cleanly without leaking drafts or private assets.
+    9. Webmaster & Indexing handoff: exercised manual handoff JSON export (`exportIndexingHandoff`), Webmaster adapter health probing, and failure/rate-limit fallback behavior.
+  - Automated Verification: All 91 unit test files passed (457/457 tests), all 25 integration test files passed (80/80 tests), all Playwright browser specs passed (`disc-03-indexing-center.spec.ts` & `disc-05-rendered-quality.spec.ts`), code formatting passed (`prettier --check .`), ESLint passed (0 errors, 0 warnings), TypeScript typecheck passed (0 errors), Next.js 16 standalone production build passed (49/49 static pages). Candidate SHA: `040b6ac5c8630e668086558034a6066f45bca03b`.
+  - Artifact report preserved at `docs/discovery/DISC-06-DISCOVERY-PASS-GATE.md`.
 
 - **Discovery Pass Gate DISC-00 on 2026-09-14 (PASSED / VERIFIED)**:
   - Canonical Single Source of Truth: Created and frozen `DiscoveryDocument` and resolver contract (`resolveDiscoveryDocument`) in `src/modules/public/discovery.ts`. Shadow SEO ownership eliminated; `src/modules/public/seo.ts` re-exports canonical discovery contracts.

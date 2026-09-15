@@ -6,7 +6,15 @@ import { useEffect, useState } from 'react'
 type SchemaInspectionNode = {
   type: string
   id: string
-  role: 'primary' | 'identity' | 'website' | 'webpage' | 'breadcrumb' | 'author' | 'media' | 'extension'
+  role:
+    | 'primary'
+    | 'identity'
+    | 'website'
+    | 'webpage'
+    | 'breadcrumb'
+    | 'author'
+    | 'media'
+    | 'extension'
   fields: Array<{
     field: string
     value: string | number | boolean | null
@@ -179,7 +187,10 @@ export function DiscoveryPanel() {
                     }}
                   >
                     <span>
-                      <strong>[{issue.nodeType} · {issue.field}]</strong> {issue.message}
+                      <strong>
+                        [{issue.nodeType} · {issue.field}]
+                      </strong>{' '}
+                      {issue.message}
                     </span>
                     {issue.repairField && (
                       <button
@@ -210,7 +221,14 @@ export function DiscoveryPanel() {
                         fontSize: '0.85em',
                       }}
                     >
-                      <div style={{ display: 'flex', justifyContent: 'space-between', flexWrap: 'wrap', gap: 4 }}>
+                      <div
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          flexWrap: 'wrap',
+                          gap: 4,
+                        }}
+                      >
                         <span>
                           <strong>{node.type}</strong> ({node.role})
                         </span>

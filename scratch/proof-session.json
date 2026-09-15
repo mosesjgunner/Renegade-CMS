@@ -1,0 +1,9 @@
+{
+  "userId": "bc23a175-d8dd-487e-8957-598c12b4cfb0",
+  "userEmail": "founder@renegadeparty.org",
+  "siteId": "66838fdf-a634-451a-9710-62b3bab9aacd",
+  "assetId": "8aae2aba-7f6b-4cc3-a5ac-c6352bbd0527",
+  "filename": "renegade-banner.png",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb2xsZWN0aW9uIjoidXNlcnMiLCJlbWFpbCI6ImZvdW5kZXJAcmVuZWdhZGVwYXJ0eS5vcmciLCJpZCI6ImJjMjNhMTc1LWQ4ZGQtNDg3ZS04OTU3LTU5OGMxMmI0Y2ZiMCIsInNpZCI6Ijk2MDA2NjI1LThjZTAtNDg1Ni04ZGNmLWNiMmI1N2NiMDA3ZCIsImlhdCI6MTc4OTQ1MjIzOSwiZXhwIjoxNzg5NDgxMDM5fQ.ztRgqDeZJBDTPDHQUEUvPpUUWg02ZxYD17C9J4e0pBY",
+  "mediaLibraryUrl": "http://localhost:3000/admin/media-library?siteId=66838fdf-a634-451a-9710-62b3bab9aacd"
+}

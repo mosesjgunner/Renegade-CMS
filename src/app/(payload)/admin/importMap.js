@@ -1,3 +1,4 @@
+import { MediaEditActionField as MediaEditActionField_b8fb06bf180aabcfc9a9d6262740382d } from '@/modules/admin/MediaEditActionField'
 import { RscEntryLexicalCell as RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { RscEntryLexicalField as RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { LexicalDiffComponent as LexicalDiffComponent_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
@@ -30,10 +31,14 @@ import { default as default_0fd01bf67ceb7252ce62502db9f5efed } from '../../../mo
 import { default as default_1b612582b29e59ed900919e4be5e042e } from '../../../modules/admin/PublishingCenter'
 import { default as default_dbda5750261f4922f3ed1a8fb807bbf7 } from '../../../modules/admin/NavigationCenter'
 import { default as default_a5090419c79b8bec522e497f5c0c6ffe } from '../../../modules/admin/MediaLibrary'
+import { default as default_af555b1dcb5771f1609cd823e974f9d0 } from '../../../modules/admin/IndexingCenter'
+import { default as default_a494b3e100f193cf1bd4cbea3adab1b2 } from '../../../modules/admin/RedirectManager'
+import { default as default_96f804af486ed760e64b391474a4ed82 } from '../../../modules/admin/RenderedQualityCenter'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
 /** @type import('payload').ImportMap */
 export const importMap = {
+  "@/modules/admin/MediaEditActionField#MediaEditActionField": MediaEditActionField_b8fb06bf180aabcfc9a9d6262740382d,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalCell": RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalField": RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#LexicalDiffComponent": LexicalDiffComponent_44fe37237e0ebf4470c9990d8cb7b07e,
@@ -66,5 +71,8 @@ export const importMap = {
   "./modules/admin/PublishingCenter#default": default_1b612582b29e59ed900919e4be5e042e,
   "./modules/admin/NavigationCenter#default": default_dbda5750261f4922f3ed1a8fb807bbf7,
   "./modules/admin/MediaLibrary#default": default_a5090419c79b8bec522e497f5c0c6ffe,
+  "./modules/admin/IndexingCenter#default": default_af555b1dcb5771f1609cd823e974f9d0,
+  "./modules/admin/RedirectManager#default": default_a494b3e100f193cf1bd4cbea3adab1b2,
+  "./modules/admin/RenderedQualityCenter#default": default_96f804af486ed760e64b391474a4ed82,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }

@@ -4,6 +4,7 @@ import { validateLayout, type PageLayout } from '../modules/public/page-builder'
 import type { CollectionConfig } from 'payload'
 
 import { retentionFields, siteScopeFields, visibilityOptions } from './canonical-shared'
+import { searchProjectionHooks } from '../modules/public/search-projection'
 
 const staffOnly = ({ req }: { req: { user?: { role?: string } | null } }) =>
   ['owner', 'administrator', 'staff'].includes(String(req.user?.role))
@@ -82,7 +83,9 @@ export const PageLayouts: CollectionConfig = {
         }
         return doc
       },
+      ...searchProjectionHooks('page-layouts').afterChange,
     ],
+    afterDelete: searchProjectionHooks('page-layouts').afterDelete,
   },
   fields: [
     {

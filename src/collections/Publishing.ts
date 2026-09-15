@@ -6,6 +6,13 @@ import {
 } from '../modules/editorial/publishing-pass'
 import { ensureEditorialCompanion } from '../modules/editorial/persistence'
 import { revalidateDiscoveryOutputs } from '../modules/public/revalidation'
+import {
+  indexingChangesFor,
+  indexingChangesForMedia,
+  safelyRecordIndexingChange,
+} from '../modules/public/indexing'
+import { resolveSiteSettings } from '../modules/core/site-settings'
+import { projectSearchDocument, removeSearchDocument } from '../modules/public/search-projection'
 
 import {
   canonicalSlug,
@@ -196,8 +203,36 @@ export const MediaAssets: CollectionConfig = {
   access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
   hooks: {
     afterChange: [
-      async ({ doc }) => {
+      async ({ doc, previousDoc, req }) => {
         await revalidateDiscoveryOutputs()
+        const expiry =
+          typeof doc.rightsExpiresAt === 'string' ? Date.parse(doc.rightsExpiresAt) : NaN
+        const previousExpiry =
+          typeof previousDoc?.rightsExpiresAt === 'string'
+            ? Date.parse(previousDoc.rightsExpiresAt)
+            : NaN
+        const replacementChanged =
+          String(doc.replaceGloballyWith || '') !== String(previousDoc?.replaceGloballyWith || '')
+        const newlyExpired =
+          Number.isFinite(expiry) &&
+          expiry <= Date.now() &&
+          (!Number.isFinite(previousExpiry) || previousExpiry > Date.now())
+        if (newlyExpired || replacementChanged) {
+          const siteId = typeof doc.site === 'string' ? doc.site : doc.site?.id
+          if (siteId) {
+            const settings = await resolveSiteSettings(req.payload)
+            const origin =
+              settings.canonicalOriginsBySite[String(siteId)] || settings.canonicalOrigin
+            const changes = await indexingChangesForMedia(req.payload, {
+              siteId: String(siteId),
+              mediaId: String(doc.id),
+              origin,
+              reason: newlyExpired ? 'media-expiry' : 'media-replacement',
+              version: String(doc.updatedAt || doc.rightsExpiresAt),
+            })
+            for (const change of changes) await safelyRecordIndexingChange(req.payload, change)
+          }
+        }
         return doc
       },
     ],
@@ -210,6 +245,15 @@ export const MediaAssets: CollectionConfig = {
   },
   fields: [
     ...ownerFields(),
+    {
+      name: 'imageEditor',
+      type: 'ui',
+      admin: {
+        components: {
+          Field: '@/modules/admin/MediaEditActionField#MediaEditActionField',
+        },
+      },
+    },
     { name: 'title', type: 'text', required: true },
     {
       name: 'kind',
@@ -694,6 +738,22 @@ export const Content: CollectionConfig = {
           typeof previousDoc?.canonicalPath === 'string' ? previousDoc.canonicalPath : null,
           typeof doc?.canonicalPath === 'string' ? doc.canonicalPath : null,
         ])
+        const settings = await resolveSiteSettings(req.payload)
+        const currentSiteId = typeof doc?.site === 'string' ? doc.site : doc?.site?.id
+        const origin =
+          (currentSiteId && settings.canonicalOriginsBySite[String(currentSiteId)]) ||
+          settings.canonicalOrigin
+        const indexingChanges = indexingChangesFor(
+          doc as Record<string, unknown>,
+          previousDoc as Record<string, unknown> | undefined,
+          origin,
+        )
+        for (const indexingChange of indexingChanges)
+          await safelyRecordIndexingChange(req.payload, indexingChange)
+        await projectSearchDocument(req.payload, {
+          collection: 'content',
+          record: doc as Record<string, unknown>,
+        })
         if (operation !== 'update') return doc
         const fromPath =
           typeof previousDoc?.canonicalPath === 'string' ? previousDoc.canonicalPath : ''
@@ -722,6 +782,13 @@ export const Content: CollectionConfig = {
             },
             overrideAccess: true,
           } as never)
+        return doc
+      },
+    ],
+    afterDelete: [
+      async ({ doc, req }) => {
+        await removeSearchDocument(req.payload, 'content', doc as Record<string, unknown>)
+        await revalidateDiscoveryOutputs()
         return doc
       },
     ],

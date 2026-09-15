@@ -37,6 +37,7 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
       { status },
     )
   }
+}
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const payload = await getPayload({ config })

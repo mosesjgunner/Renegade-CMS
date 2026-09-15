@@ -6,7 +6,7 @@ export const dynamic = 'force-dynamic'
 export async function GET() {
   try {
     const payload = await getPayload({ config })
-    await payload.find({ collection: 'sites', limit: 1, depth: 0 })
+    await payload.find({ collection: 'sites', limit: 1, depth: 0, overrideAccess: true })
     return Response.json({ status: 'ready', checks: { database: 'ok', migrations: 'applied' } })
   } catch {
     return Response.json(

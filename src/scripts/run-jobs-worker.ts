@@ -29,18 +29,21 @@ async function cycle(): Promise<void> {
         .catch(() => undefined)
     }
     // Presence is intentionally short-lived operational state, never an analytics log.
-    const stalePresence = await payload.find({
-      collection: 'realtime-presence',
-      where: { expiresAt: { less_than_equal: new Date().toISOString() } },
-      limit: 100,
-      overrideAccess: true,
-    } as never)
-    for (const entry of stalePresence.docs)
-      await payload.delete({
+    const stalePresence = await payload
+      .find({
         collection: 'realtime-presence',
-        id: entry.id,
+        where: { expiresAt: { less_than_equal: new Date().toISOString() } },
+        limit: 100,
         overrideAccess: true,
       } as never)
+      .catch(() => null)
+    if (stalePresence)
+      for (const entry of stalePresence.docs)
+        await payload.delete({
+          collection: 'realtime-presence',
+          id: entry.id,
+          overrideAccess: true,
+        } as never)
     await mkdir(path.dirname(heartbeatFile), { recursive: true }).catch(() => undefined)
     await writeFile(
       heartbeatFile,

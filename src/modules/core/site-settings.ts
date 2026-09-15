@@ -138,11 +138,11 @@ export async function resolveSiteSettings(payload: Payload): Promise<ResolvedSit
       },
       ownerKind: settings?.ownerKind === 'person' ? 'person' : 'organization',
       organizationName:
-        typeof settings?.organizationName === 'string' ? settings.organizationName.trim() : undefined,
-      personName:
-        typeof settings?.personName === 'string' ? settings.personName.trim() : undefined,
-      legalName:
-        typeof settings?.legalName === 'string' ? settings.legalName.trim() : undefined,
+        typeof settings?.organizationName === 'string'
+          ? settings.organizationName.trim()
+          : undefined,
+      personName: typeof settings?.personName === 'string' ? settings.personName.trim() : undefined,
+      legalName: typeof settings?.legalName === 'string' ? settings.legalName.trim() : undefined,
       sameAs: Array.isArray(settings?.sameAs)
         ? settings.sameAs.filter((s): s is string => typeof s === 'string' && Boolean(s.trim()))
         : undefined,

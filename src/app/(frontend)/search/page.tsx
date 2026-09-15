@@ -5,12 +5,11 @@ import { getPayload } from 'payload'
 import type { Metadata } from 'next'
 
 import {
-  queryLocalSearch,
   resolveDiscoveryDocument,
   discoveryToMetadata,
-  getAllSearchDocuments,
   serializeJsonLd,
 } from '@/modules/public/discovery'
+import { querySearchProjection } from '@/modules/public/search-projection'
 import { resolveSiteSettings } from '@/modules/core/site-settings'
 
 export const dynamic = 'force-dynamic'
@@ -24,9 +23,18 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function SearchPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; page?: string; site?: string }>
+  searchParams: Promise<{
+    q?: string
+    page?: string
+    site?: string
+    type?: string
+    author?: string
+    topic?: string
+    from?: string
+    to?: string
+  }>
 }) {
-  const { q = '', page, site } = await searchParams
+  const { q = '', page, site, type, author, topic, from, to } = await searchParams
   const payload = await getPayload({ config })
   const settings = await resolveSiteSettings(payload)
 
@@ -46,18 +54,34 @@ export default async function SearchPage({
     (typeof publication?.site === 'string' ? publication.site : String(publication?.site?.id ?? ''))
 
   const doc = await resolveDiscoveryDocument(payload, { path: '/search', siteId })
-  const documents = await getAllSearchDocuments(payload, siteId)
-
   const currentPage = Math.max(1, Number(page) || 1)
   const pageSize = 10
-
-  const search = queryLocalSearch({
-    documents,
-    query: q,
+  const search = await querySearchProjection(payload, {
     siteId,
+    query: q,
     page: currentPage,
     pageSize,
+    type,
+    author,
+    topic,
+    from,
+    to,
   })
+  const queryHref = (next: Record<string, string | number | undefined>) => {
+    const params = new URLSearchParams()
+    for (const [key, value] of Object.entries({
+      q,
+      site: siteId,
+      type,
+      author,
+      topic,
+      from,
+      to,
+      ...next,
+    }))
+      if (value) params.set(key, String(value))
+    return `/search?${params.toString()}`
+  }
 
   return (
     <PresentationSurface themeId={settings.themeId} surface="search">
@@ -75,6 +99,7 @@ export default async function SearchPage({
           </p>
 
           <form method="GET" action="/search" className="mt-6 flex gap-2">
+            <input type="hidden" name="site" value={siteId} />
             <input
               id="q"
               name="q"
@@ -89,6 +114,46 @@ export default async function SearchPage({
             >
               Search
             </button>
+            <details className="mt-3 text-sm text-stone-600 dark:text-stone-300">
+              <summary>Filter results</summary>
+              <div className="mt-2 grid grid-cols-2 gap-2">
+                <input
+                  name="type"
+                  defaultValue={type}
+                  placeholder="Content type"
+                  aria-label="Content type filter"
+                  className="rounded border p-2"
+                />
+                <input
+                  name="author"
+                  defaultValue={author}
+                  placeholder="Author"
+                  aria-label="Author filter"
+                  className="rounded border p-2"
+                />
+                <input
+                  name="topic"
+                  defaultValue={topic}
+                  placeholder="Topic"
+                  aria-label="Topic filter"
+                  className="rounded border p-2"
+                />
+                <input
+                  name="from"
+                  defaultValue={from}
+                  type="date"
+                  aria-label="Published after"
+                  className="rounded border p-2"
+                />
+                <input
+                  name="to"
+                  defaultValue={to}
+                  type="date"
+                  aria-label="Published before"
+                  className="rounded border p-2"
+                />
+              </div>
+            </details>
           </form>
         </header>
 
@@ -128,10 +193,9 @@ export default async function SearchPage({
                     <span>{hit.path}</span>
                   </div>
                   {hit.excerpt ? (
-                    <p
-                      className="mt-2 text-sm leading-relaxed text-stone-600 dark:text-stone-300 [&>mark]:bg-amber-200 [&>mark]:text-stone-950 dark:[&>mark]:bg-amber-500/40 dark:[&>mark]:text-white [&>mark]:px-0.5 [&>mark]:rounded"
-                      dangerouslySetInnerHTML={{ __html: hit.excerpt }}
-                    />
+                    <p className="mt-2 text-sm leading-relaxed text-stone-600 dark:text-stone-300">
+                      <HighlightedText text={hit.excerpt} query={q} />
+                    </p>
                   ) : null}
                 </article>
               ))}
@@ -144,7 +208,7 @@ export default async function SearchPage({
               >
                 {currentPage > 1 ? (
                   <Link
-                    href={`/search?q=${encodeURIComponent(q)}&page=${currentPage - 1}`}
+                    href={queryHref({ page: currentPage - 1 })}
                     className="rounded border border-stone-300 px-4 py-2 text-sm font-medium text-stone-700 hover:bg-stone-50 dark:border-stone-700 dark:text-stone-200 dark:hover:bg-stone-800"
                   >
                     ← Previous
@@ -157,7 +221,7 @@ export default async function SearchPage({
                 </span>
                 {currentPage < search.pageCount ? (
                   <Link
-                    href={`/search?q=${encodeURIComponent(q)}&page=${currentPage + 1}`}
+                    href={queryHref({ page: currentPage + 1 })}
                     className="rounded border border-stone-300 px-4 py-2 text-sm font-medium text-stone-700 hover:bg-stone-50 dark:border-stone-700 dark:text-stone-200 dark:hover:bg-stone-800"
                   >
                     Next →
@@ -171,5 +235,22 @@ export default async function SearchPage({
         )}
       </main>
     </PresentationSurface>
+  )
+}
+
+function HighlightedText({ text, query }: { text: string; query: string }) {
+  const needle = query.trim()
+  if (!needle) return text
+  const parts = text.split(new RegExp(`(${needle.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'ig'))
+  return (
+    <>
+      {parts.map((part, index) =>
+        part.toLocaleLowerCase() === needle.toLocaleLowerCase() ? (
+          <mark key={index}>{part}</mark>
+        ) : (
+          part
+        ),
+      )}
+    </>
   )
 }

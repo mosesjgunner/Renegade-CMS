@@ -1,5 +1,5 @@
 import { cache } from 'react'
-import { cookies, headers } from 'next/headers'
+import { cookies, headers } from 'next/headers.js'
 import type { Payload } from 'payload'
 import { resolveConfiguration, themePool } from './lifecycle'
 /** Same publication precedence as existing public routes; never take site scope from preview input. */

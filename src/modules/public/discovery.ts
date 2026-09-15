@@ -85,6 +85,8 @@ export type DiscoveryDocument = {
   // Core Presentation & Attribution
   contentType: string
   author: {
+    id?: string | null
+    ids?: string[]
     name: string
     url?: string | null
   } | null
@@ -101,6 +103,7 @@ export type DiscoveryDocument = {
     topics: string[]
     categories: string[]
     tags: string[]
+    entities?: Array<{ id: string; name: string; kind: 'topic' | 'category' | 'tag' }>
   }
   breadcrumbs: Array<{
     name: string
@@ -802,7 +805,11 @@ export async function resolveDiscoveryDocument(
       : null
 
     const siteIdentity = toSchemaSiteIdentity(settings, base)
-    const { graph: homeSchema, validation, inspection } = composeSchemaGraph({
+    const {
+      graph: homeSchema,
+      validation,
+      inspection,
+    } = composeSchemaGraph({
       canonicalUrl: `${base}/`,
       canonicalPath: '/',
       base,
@@ -882,7 +889,11 @@ export async function resolveDiscoveryDocument(
     const docDesc = `Archive of published articles from ${settings.siteName}.`
 
     const siteIdentity = toSchemaSiteIdentity(settings, base)
-    const { graph: archiveSchema, validation, inspection } = composeSchemaGraph({
+    const {
+      graph: archiveSchema,
+      validation,
+      inspection,
+    } = composeSchemaGraph({
       canonicalUrl: `${base}/articles`,
       canonicalPath: '/articles',
       base,
@@ -956,7 +967,11 @@ export async function resolveDiscoveryDocument(
   // CASE C: Search Page ('/search')
   if (normalizedPath === '/search') {
     const siteIdentity = toSchemaSiteIdentity(settings, base)
-    const { graph: searchSchema, validation, inspection } = composeSchemaGraph({
+    const {
+      graph: searchSchema,
+      validation,
+      inspection,
+    } = composeSchemaGraph({
       canonicalUrl: `${base}/search`,
       canonicalPath: '/search',
       base,
@@ -1567,14 +1582,24 @@ async function buildContentDiscoveryDocument(input: {
   }
 
   // 6. Authors, Dates, Taxonomy
-  const authors: string[] = []
+  const authors: Array<{ id: string | null; name: string }> = []
   if (Array.isArray(content.authors)) {
     for (const a of content.authors) {
-      const name = typeof a === 'string' ? a : a?.name || a?.displayName || a?.title
-      if (name) authors.push(String(name))
+      const value = typeof a === 'object' && a?.author ? a.author : a
+      const name =
+        typeof value === 'string' ? value : value?.name || value?.displayName || value?.title
+      const authorId = typeof value === 'string' ? value : idOf(value)
+      if (name) authors.push({ id: authorId || null, name: String(name) })
     }
   }
-  const author = authors.length ? { name: authors.join(', '), url: null } : null
+  const author = authors.length
+    ? {
+        id: authors[0]?.id || null,
+        ids: authors.map(({ id }) => id).filter((id): id is string => Boolean(id)),
+        name: authors.map(({ name }) => name).join(', '),
+        url: null,
+      }
+    : null
 
   const publishedAt = content.publishedAt || publishedRevision?.createdAt || null
   const modifiedAt = content.updatedAtEditorial || content.updatedAt || null
@@ -1588,6 +1613,21 @@ async function buildContentDiscoveryDocument(input: {
   const topics: string[] = Array.isArray(content.topics)
     ? content.topics.map((t: any) => String(t?.name || t?.title || t)).filter(Boolean)
     : []
+  const taxonomyEntities = (
+    [
+      ['category', content.categories],
+      ['topic', content.topics],
+      ['tag', content.tags],
+    ] as const
+  ).flatMap(([kind, values]) =>
+    Array.isArray(values)
+      ? values.flatMap((value: any) => {
+          const entityId = idOf(value)
+          const name = typeof value === 'string' ? value : value?.name || value?.title
+          return entityId && name ? [{ id: entityId, name: String(name), kind }] : []
+        })
+      : [],
+  )
 
   // 7. Breadcrumbs
   const breadcrumbs: Array<{ name: string; path: string; url: string }> = [
@@ -1631,7 +1671,11 @@ async function buildContentDiscoveryDocument(input: {
 
   // 8. Schema Graph
   const siteIdentity = toSchemaSiteIdentity(settings, base)
-  const { graph: schemaGraph, validation, inspection } = composeSchemaGraph({
+  const {
+    graph: schemaGraph,
+    validation,
+    inspection,
+  } = composeSchemaGraph({
     canonicalUrl,
     canonicalPath,
     base,
@@ -1680,14 +1724,21 @@ async function buildContentDiscoveryDocument(input: {
       variantUrl: socialVariantUrl,
     },
     contentType,
-    author,
+    author: author
+      ? {
+          id: author.id,
+          ids: author.ids,
+          name: author.name,
+          url: author.url,
+        }
+      : null,
     publisher: {
       name: settings.siteName,
       url: base,
       logoUrl: settings.logoUrl ? `${base}${settings.logoUrl}` : null,
     },
     dates: { publishedAt, modifiedAt },
-    taxonomy: { topics, categories, tags },
+    taxonomy: { topics, categories, tags, entities: taxonomyEntities },
     breadcrumbs,
     media: {
       heroImage: imageId
@@ -1876,7 +1927,11 @@ function buildLayoutDiscoveryDocument(input: {
     ...(canonicalPath !== '/' ? [{ name: titleValue, path: canonicalPath, url: publicUrl }] : []),
   ]
 
-  const { graph: schemaGraph, validation, inspection } = composeSchemaGraph({
+  const {
+    graph: schemaGraph,
+    validation,
+    inspection,
+  } = composeSchemaGraph({
     canonicalUrl: publicUrl,
     canonicalPath,
     base,
@@ -1987,7 +2042,11 @@ function buildPodcastShowDiscoveryDocument(input: {
     { name: titleValue, path: canonicalPath, url: publicUrl },
   ]
 
-  const { graph: schemaGraph, validation, inspection } = composeSchemaGraph({
+  const {
+    graph: schemaGraph,
+    validation,
+    inspection,
+  } = composeSchemaGraph({
     canonicalUrl: publicUrl,
     canonicalPath,
     base,
@@ -2128,7 +2187,11 @@ function buildPodcastEpisodeDiscoveryDocument(input: {
     { name: titleValue, path: canonicalPath, url: publicUrl },
   ]
 
-  const { graph: schemaGraph, validation, inspection } = composeSchemaGraph({
+  const {
+    graph: schemaGraph,
+    validation,
+    inspection,
+  } = composeSchemaGraph({
     canonicalUrl: publicUrl,
     canonicalPath,
     base,
@@ -2259,7 +2322,11 @@ function buildVideoDiscoveryDocument(input: {
     { name: titleValue, path: canonicalPath, url: publicUrl },
   ]
 
-  const { graph: schemaGraph, validation, inspection } = composeSchemaGraph({
+  const {
+    graph: schemaGraph,
+    validation,
+    inspection,
+  } = composeSchemaGraph({
     canonicalUrl: publicUrl,
     canonicalPath,
     base,
@@ -2426,7 +2493,11 @@ function buildGenericRecordDiscoveryDocument(input: {
     customNodes = extResult.nodes
   }
 
-  const { graph: schemaGraph, validation, inspection } = composeSchemaGraph({
+  const {
+    graph: schemaGraph,
+    validation,
+    inspection,
+  } = composeSchemaGraph({
     canonicalUrl: record.seoCanonicalURL || publicUrl,
     canonicalPath,
     base,
@@ -2626,22 +2697,33 @@ export async function getAllIndexableDiscoveryDocuments(
   if (archiveDoc.indexability.indexable) documents.push(archiveDoc)
 
   // 3. Content (articles & pages)
-  const content = await payload
-    .find({
-      collection: 'content',
-      where: {
-        and: [
-          ...(resolvedSiteId ? [{ site: { equals: resolvedSiteId } }] : []),
-          { status: { in: ['published', 'updated'] } },
-        ],
-      } as never,
-      limit: 1000,
-      depth: 1,
-      overrideAccess: true,
-    })
-    .catch(() => {
-      return { docs: [] }
-    })
+  const findAll = async (collection: string, where: Record<string, unknown>, limit = 250) => {
+    const docs: unknown[] = []
+    let page = 1
+    for (;;) {
+      const result = await payload.find({
+        collection,
+        where,
+        limit,
+        page,
+        depth: 1,
+        overrideAccess: true,
+      } as never)
+      docs.push(...result.docs)
+      if (!result.hasNextPage) break
+      page += 1
+    }
+    return { docs }
+  }
+
+  const content = await findAll('content', {
+    and: [
+      ...(resolvedSiteId ? [{ site: { equals: resolvedSiteId } }] : []),
+      { status: { in: ['published', 'updated'] } },
+    ],
+  })
+    /* tolerate optional modules during bootstrap */
+    .catch(() => ({ docs: [] }))
 
   const resolvedContentDocs = await Promise.all(
     content.docs.map((doc) =>
@@ -2662,23 +2744,15 @@ export async function getAllIndexableDiscoveryDocuments(
   }
 
   // 4. Page Layouts
-  const layouts = await payload
-    .find({
-      collection: 'page-layouts',
-      where: {
-        and: [
-          ...(resolvedSiteId ? [{ site: { equals: resolvedSiteId } }] : []),
-          { status: { equals: 'published' } },
-          { visibility: { equals: 'public' } },
-        ],
-      } as never,
-      limit: 1000,
-      depth: 0,
-      overrideAccess: true,
-    })
-    .catch(() => {
-      return { docs: [] }
-    })
+  const layouts = await findAll('page-layouts', {
+    and: [
+      ...(resolvedSiteId ? [{ site: { equals: resolvedSiteId } }] : []),
+      { status: { equals: 'published' } },
+      { visibility: { equals: 'public' } },
+    ],
+  }).catch(() => {
+    return { docs: [] }
+  })
 
   const resolvedLayouts = await Promise.all(
     layouts.docs.map(async (layout) => {
@@ -2704,20 +2778,12 @@ export async function getAllIndexableDiscoveryDocuments(
   }
 
   // 5. Podcast Shows
-  const shows = await payload
-    .find({
-      collection: 'podcast-shows',
-      where: {
-        and: [
-          ...(resolvedSiteId ? [{ site: { equals: resolvedSiteId } }] : []),
-          { status: { in: ['published', 'updated'] } },
-        ],
-      } as never,
-      limit: 500,
-      depth: 1,
-      overrideAccess: true,
-    })
-    .catch(() => ({ docs: [] }))
+  const shows = await findAll('podcast-shows', {
+    and: [
+      ...(resolvedSiteId ? [{ site: { equals: resolvedSiteId } }] : []),
+      { status: { in: ['published', 'updated'] } },
+    ],
+  }).catch(() => ({ docs: [] }))
 
   const resolvedShows = await Promise.all(
     shows.docs.map((show) =>
@@ -2734,20 +2800,12 @@ export async function getAllIndexableDiscoveryDocuments(
   }
 
   // 6. Podcast Episodes
-  const episodes = await payload
-    .find({
-      collection: 'podcast-episodes',
-      where: {
-        and: [
-          ...(resolvedSiteId ? [{ site: { equals: resolvedSiteId } }] : []),
-          { status: { in: ['published', 'updated'] } },
-        ],
-      } as never,
-      limit: 1000,
-      depth: 1,
-      overrideAccess: true,
-    })
-    .catch(() => ({ docs: [] }))
+  const episodes = await findAll('podcast-episodes', {
+    and: [
+      ...(resolvedSiteId ? [{ site: { equals: resolvedSiteId } }] : []),
+      { status: { in: ['published', 'updated'] } },
+    ],
+  }).catch(() => ({ docs: [] }))
 
   const resolvedEpisodes = await Promise.all(
     episodes.docs.map((ep) =>
@@ -2764,21 +2822,13 @@ export async function getAllIndexableDiscoveryDocuments(
   }
 
   // 7. Videos
-  const videos = await payload
-    .find({
-      collection: 'videos',
-      where: {
-        and: [
-          ...(resolvedSiteId ? [{ site: { equals: resolvedSiteId } }] : []),
-          { status: { equals: 'published' } },
-          { visibility: { equals: 'public' } },
-        ],
-      } as never,
-      limit: 500,
-      depth: 1,
-      overrideAccess: true,
-    })
-    .catch(() => ({ docs: [] }))
+  const videos = await findAll('videos', {
+    and: [
+      ...(resolvedSiteId ? [{ site: { equals: resolvedSiteId } }] : []),
+      { status: { equals: 'published' } },
+      { visibility: { equals: 'public' } },
+    ],
+  }).catch(() => ({ docs: [] }))
 
   const resolvedVideos = await Promise.all(
     videos.docs.map((vid) =>
@@ -2794,7 +2844,7 @@ export async function getAllIndexableDiscoveryDocuments(
     if (d.indexability.indexable) documents.push(d)
   }
 
-  return documents
+  return documents.sort((a, b) => a.canonicalUrl.localeCompare(b.canonicalUrl))
 }
 
 /** Queries all search documents projected from canonical discovery documents. */

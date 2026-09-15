@@ -6,6 +6,7 @@ import {
   seoFields,
   structuredDataSourceFields,
 } from './canonical-shared'
+import { searchProjectionHooks } from '../modules/public/search-projection'
 
 const staffOnly = ({ req }: { req: { user?: { role?: string } | null } }) =>
   ['owner', 'administrator', 'staff'].includes(String(req.user?.role))
@@ -45,6 +46,7 @@ const collection = (slug: string, fields: CollectionConfig['fields']): Collectio
   admin: { useAsTitle: 'title', group: 'Media publishing' },
   access: { create: staffOnly, delete: staffOnly, read: () => true, update: staffOnly },
   fields,
+  hooks: searchProjectionHooks(slug),
 })
 
 export const Books = collection('books', [
@@ -219,7 +221,9 @@ export const PodcastShows: CollectionConfig = {
         }
         return doc
       },
+      ...searchProjectionHooks('podcast-shows').afterChange,
     ],
+    afterDelete: searchProjectionHooks('podcast-shows').afterDelete,
   },
 }
 export const PodcastSeasons = collection('podcast-seasons', [
@@ -355,7 +359,9 @@ export const PodcastEpisodes: CollectionConfig = {
         }
         return doc
       },
+      ...searchProjectionHooks('podcast-episodes').afterChange,
     ],
+    afterDelete: searchProjectionHooks('podcast-episodes').afterDelete,
   },
 }
 export const VideoChannels = collection('video-channels', [
@@ -440,6 +446,7 @@ export const Videos: CollectionConfig = {
         return data
       },
     ],
+    ...searchProjectionHooks('videos'),
   },
 }
 

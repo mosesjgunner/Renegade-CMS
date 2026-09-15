@@ -9,7 +9,7 @@ import { mediaStorage, inspectMedia } from '../../src/modules/media/storage'
 import { deleteOrphanedMedia, publicMedia } from '../../src/modules/media/workflow'
 import { loadConfig } from '../../src/modules/core/config'
 import { queryLocalSearch, type SearchDocument } from '../../src/modules/public/discovery'
-import sitemap from '../../src/app/(frontend)/sitemap'
+import sitemap from '../../src/modules/public/sitemap-compat'
 import robots from '../../src/app/(frontend)/robots'
 import { seed } from '../../src/scripts/seed'
 
@@ -333,7 +333,16 @@ describe('PUB-04 publishing floor integration contract', () => {
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/admin', '/api', '/preview', '/setup', '/builder'],
+        disallow: [
+          '/admin',
+          '/api',
+          '/preview',
+          '/setup',
+          '/guided-setup',
+          '/builder',
+          '/internal',
+          '/private',
+        ],
       },
     ])
     expect(indexRobots.sitemap).toBe('https://renegadeparty.org/sitemap.xml')

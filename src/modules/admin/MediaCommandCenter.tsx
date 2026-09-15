@@ -7,6 +7,7 @@ import type {
   MediaAssetSummary,
 } from '../media/command-center'
 import { MediaUploader } from '../media/MediaUploader'
+import { ImageEditorModal, type ImageEditorAsset } from '../media/image-editor'
 
 type Tab = 'overview' | 'assets' | 'queue' | 'podcasts' | 'videos' | 'governance'
 
@@ -27,6 +28,7 @@ export function MediaCommandCenter({ siteId }: { siteId: string }) {
   const [loading, setLoading] = useState(true)
   const [message, setMessage] = useState('')
   const [selectedAsset, setSelectedAsset] = useState<MediaAssetSummary | null>(null)
+  const [editingAsset, setEditingAsset] = useState<ImageEditorAsset | null>(null)
   const [typeFilter, setTypeFilter] = useState<string>('all')
   const [stateFilter, setStateFilter] = useState<string>('all')
   const [usageFilter, setUsageFilter] = useState<string>('all')
@@ -671,6 +673,34 @@ export function MediaCommandCenter({ siteId }: { siteId: string }) {
                       >
                         Manage
                       </button>
+                      {(asset.kind === 'image' || asset.mimeType.startsWith('image/')) && (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setEditingAsset({
+                              id: asset.id,
+                              title: asset.title,
+                              altText: asset.altText,
+                              caption: asset.caption,
+                              mimeType: asset.mimeType,
+                              url: `/media/${asset.id}`,
+                              siteId,
+                            })
+                          }
+                          style={{
+                            padding: '0.2rem 0.5rem',
+                            fontSize: '0.75rem',
+                            backgroundColor: '#2563eb',
+                            color: '#fff',
+                            border: '1px solid #1d4ed8',
+                            borderRadius: '4px',
+                            cursor: 'pointer',
+                            fontWeight: 600,
+                          }}
+                        >
+                          Edit Image
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -828,6 +858,35 @@ export function MediaCommandCenter({ siteId }: { siteId: string }) {
                 <div>
                   <h4>Direct Actions</h4>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                    {(selectedAsset.kind === 'image' ||
+                      selectedAsset.mimeType.startsWith('image/')) && (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setEditingAsset({
+                            id: selectedAsset.id,
+                            title: selectedAsset.title,
+                            altText: selectedAsset.altText,
+                            caption: selectedAsset.caption,
+                            mimeType: selectedAsset.mimeType,
+                            url: `/media/${selectedAsset.id}`,
+                            siteId,
+                          })
+                        }
+                        disabled={isActionInProgress}
+                        style={{
+                          padding: '0.4rem 0.8rem',
+                          backgroundColor: '#2563eb',
+                          color: '#fff',
+                          border: '1px solid #1d4ed8',
+                          borderRadius: '4px',
+                          cursor: 'pointer',
+                          fontWeight: 600,
+                        }}
+                      >
+                        Edit in Image Editor
+                      </button>
+                    )}
                     <button
                       type="button"
                       onClick={() =>
@@ -1683,6 +1742,16 @@ export function MediaCommandCenter({ siteId }: { siteId: string }) {
           </div>
         </div>
       )}
+
+      <ImageEditorModal
+        asset={editingAsset}
+        isOpen={Boolean(editingAsset)}
+        onClose={() => setEditingAsset(null)}
+        onSaved={() => {
+          void loadData()
+          setMessage('Image edited and saved successfully.')
+        }}
+      />
     </div>
   )
 }

@@ -2,7 +2,14 @@
 export async function revalidateDiscoveryOutputs(paths: Array<string | null | undefined> = []) {
   try {
     const { revalidatePath } = await import('next/cache.js')
-    for (const path of new Set(['/', '/sitemap.xml', '/feed.xml', '/search', ...paths])) {
+    for (const path of new Set([
+      '/',
+      '/sitemap.xml',
+      '/feed.xml',
+      '/feed.json',
+      '/search',
+      ...paths,
+    ])) {
       if (path) revalidatePath(path, path === '/' ? 'layout' : 'page')
     }
   } catch {

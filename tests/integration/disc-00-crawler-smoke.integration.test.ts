@@ -12,13 +12,19 @@ import {
   discoveryToMetadata,
   discoveryToJsonLd,
 } from '../../src/modules/public/discovery'
-import sitemap from '../../src/app/(frontend)/sitemap'
+import sitemap from '../../src/modules/public/sitemap-compat'
 import robots from '../../src/app/robots'
 import { GET as getFeed } from '../../src/app/(frontend)/feed.xml/route'
+import { GET as getSitemapIndex } from '../../src/app/(frontend)/sitemap.xml/route'
+import { GET as getSitemapPage } from '../../src/app/(frontend)/sitemaps/[page]/route'
+import { GET as getJsonFeed } from '../../src/app/(frontend)/feed.json/route'
+import { GET as getScopedFeed } from '../../src/app/(frontend)/feeds/[scope]/[slug]/route'
+import { processIndexingExecutionEvent } from '../../src/modules/public/indexing'
 
 let payload: Payload
 let siteId: string
 let publicationId: string
+let publishedArticleId: string
 let publishedArticleSlug: string
 let draftArticleSlug: string
 let pageLayoutPath: string
@@ -47,7 +53,7 @@ beforeAll(async () => {
   pageLayoutPath = `/test-layout-${suffix}`
 
   // 1. Create a published test article
-  await payload.create({
+  const createdArticle = await payload.create({
     collection: 'content',
     data: {
       site: siteId,
@@ -69,6 +75,7 @@ beforeAll(async () => {
     },
     overrideAccess: true,
   } as never)
+  publishedArticleId = String(createdArticle.id)
 
   // 2. Create a draft test article
   await payload.create({
@@ -295,5 +302,144 @@ describe('DISC-00 Crawler-Facing Smoke Test Suite', { timeout: 30000 }, () => {
     expect(redirectDoc.redirect.targetUrl).toContain(publishedArticleSlug)
     expect(redirectDoc.indexability.indexable).toBe(false)
     expect(redirectDoc.indexability.reason).toBe('redirect')
+  })
+
+  it('serves valid sitemap index and child sitemaps with caching and conditional GET', async () => {
+    // 1. Sitemap index
+    const indexReq = new Request('http://localhost:3000/sitemap.xml')
+    const indexRes = await getSitemapIndex(indexReq)
+    expect(indexRes.status).toBe(200)
+    expect(indexRes.headers.get('content-type')).toContain('application/xml')
+
+    const indexEtag = indexRes.headers.get('etag')
+    expect(indexEtag).toBeTruthy()
+
+    const indexXml = await indexRes.text()
+    expect(indexXml).toContain('<sitemapindex')
+    expect(indexXml).toContain('/sitemaps/1.xml')
+
+    // Conditional GET on sitemap index
+    const indexReq304 = new Request('http://localhost:3000/sitemap.xml', {
+      headers: { 'if-none-match': indexEtag! },
+    })
+    const indexRes304 = await getSitemapIndex(indexReq304)
+    expect(indexRes304.status).toBe(304)
+
+    // 2. Child sitemap page 1
+    const pageReq = new Request('http://localhost:3000/sitemaps/1.xml')
+    const pageRes = await getSitemapPage(pageReq, {
+      params: Promise.resolve({ page: '1.xml' }),
+    })
+    expect(pageRes.status).toBe(200)
+    expect(pageRes.headers.get('content-type')).toContain('application/xml')
+
+    const pageEtag = pageRes.headers.get('etag')
+    expect(pageEtag).toBeTruthy()
+
+    const pageXml = await pageRes.text()
+    expect(pageXml).toContain('<urlset')
+    expect(pageXml).toContain(publishedArticleSlug)
+    expect(pageXml).toContain(pageLayoutPath)
+    // Drafts, search, and 404 must be strictly excluded
+    expect(pageXml).not.toContain(draftArticleSlug)
+    expect(pageXml).not.toContain('/search')
+    expect(pageXml).not.toContain('non-existent')
+
+    // Conditional GET on sitemap page
+    const pageReq304 = new Request('http://localhost:3000/sitemaps/1.xml', {
+      headers: { 'if-none-match': pageEtag! },
+    })
+    const pageRes304 = await getSitemapPage(pageReq304, {
+      params: Promise.resolve({ page: '1.xml' }),
+    })
+    expect(pageRes304.status).toBe(304)
+
+    // Non-existent partition returns 404
+    const page999Res = await getSitemapPage(new Request('http://localhost:3000/sitemaps/999.xml'), {
+      params: Promise.resolve({ page: '999.xml' }),
+    })
+    expect(page999Res.status).toBe(404)
+  })
+
+  it('serves JSON Feed 1.1 with ETag caching and conditional GET', async () => {
+    const jsonReq = new Request('http://localhost:3000/feed.json')
+    const jsonRes = await getJsonFeed(jsonReq)
+    expect(jsonRes.status).toBe(200)
+    expect(jsonRes.headers.get('content-type')).toContain('application/feed+json')
+
+    const jsonEtag = jsonRes.headers.get('etag')
+    expect(jsonEtag).toBeTruthy()
+
+    const jsonBody = await jsonRes.json()
+    expect(jsonBody.version).toBe('https://jsonfeed.org/version/1.1')
+    expect(Array.isArray(jsonBody.items)).toBe(true)
+    expect(jsonBody.items.some((item: any) => item.url.includes(publishedArticleSlug))).toBe(true)
+    expect(jsonBody.items.some((item: any) => item.url.includes(draftArticleSlug))).toBe(false)
+
+    // Test conditional GET
+    const jsonReq304 = new Request('http://localhost:3000/feed.json', {
+      headers: { 'if-none-match': jsonEtag! },
+    })
+    const jsonRes304 = await getJsonFeed(jsonReq304)
+    expect(jsonRes304.status).toBe(304)
+  })
+
+  it('serves content-scoped streams with stable entity IDs and conditional GET', async () => {
+    const scopedReq = new Request(`http://localhost:3000/feeds/content/${publishedArticleId}`)
+    const scopedRes = await getScopedFeed(scopedReq, {
+      params: Promise.resolve({ scope: 'content', slug: publishedArticleId }),
+    })
+    expect(scopedRes.status).toBe(200)
+    expect(scopedRes.headers.get('content-type')).toContain('application/xml')
+
+    const scopedXml = await scopedRes.text()
+    expect(scopedXml).toContain('<rss version="2.0"')
+    expect(scopedXml).toContain(publishedArticleSlug)
+    expect(scopedXml).toContain(publishedArticleId)
+
+    // JSON format via Accept header
+    const jsonScopedReq = new Request(`http://localhost:3000/feeds/content/${publishedArticleId}`, {
+      headers: { accept: 'application/feed+json' },
+    })
+    const jsonScopedRes = await getScopedFeed(jsonScopedReq, {
+      params: Promise.resolve({ scope: 'content', slug: publishedArticleId }),
+    })
+    expect(jsonScopedRes.status).toBe(200)
+    expect(jsonScopedRes.headers.get('content-type')).toContain('application/feed+json')
+    const jsonScopedBody = await jsonScopedRes.json()
+    expect(jsonScopedBody.version).toBe('https://jsonfeed.org/version/1.1')
+    expect(jsonScopedBody.items.length).toBeGreaterThanOrEqual(1)
+  })
+
+  it('records idempotent indexing execution events during publishing lifecycle and worker processes them', async () => {
+    // Check outbox events recorded for the published article
+    const events = await payload.find({
+      collection: 'execution-events',
+      where: { eventType: { equals: 'discovery.indexing.changed' } },
+      limit: 50,
+      sort: '-createdAt',
+      overrideAccess: true,
+    } as never)
+    const matchingDocs = events.docs.filter((e: any) =>
+      String(e.payload?.url || e.idempotencyKey || '').includes(publishedArticleSlug),
+    )
+
+    expect(matchingDocs.length).toBeGreaterThanOrEqual(1)
+    const event = matchingDocs[0] as any
+    expect(event.idempotencyKey).toContain(publishedArticleSlug)
+    expect(event.payload.action).toBe('upsert')
+    expect(event.payload.reason).toBe('publication')
+
+    // Simulate worker processing the event
+    const processResult = await processIndexingExecutionEvent(payload, event)
+    expect(processResult.state).toBe('manual')
+
+    const reloaded = (await payload.findByID({
+      collection: 'execution-events',
+      id: event.id,
+      overrideAccess: true,
+    } as never)) as any
+    expect(reloaded.payload.indexingState).toBe('manual')
+    expect(reloaded.payload.provider).toBe('manual')
   })
 })

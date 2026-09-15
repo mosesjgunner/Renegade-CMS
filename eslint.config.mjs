@@ -5,10 +5,13 @@ const eslintConfig = [
   {
     ignores: [
       '.next/**',
+      '.next*/**',
       '.worktrees/**',
       '.phase-a/**',
       '.payload-upstream/**',
       'docs/media/evidence/**',
+      'scratch/**',
+      'public/vendor/**',
       'src/payload-types.ts',
       'src/app/(payload)/admin/importMap.js',
     ],
