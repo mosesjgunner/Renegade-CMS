@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto'
 import { spawn } from 'node:child_process'
 import { readFile } from 'node:fs/promises'
 import path from 'node:path'
+import { projectNameFromEnvFile } from './operational-compose'
 
 const args = process.argv.slice(2)
 const value = (name: string, fallback?: string) =>
@@ -9,6 +10,11 @@ const value = (name: string, fallback?: string) =>
 const archive = value('--archive')
 const targetVersion = value('--target-version')
 const envFile = value('--env-file', '.env.restore')!
+const restoreProject = projectNameFromEnvFile(
+  envFile,
+  'RENEGADE_RESTORE_INSTANCE',
+  'renegade-cms-restore',
+)
 const sourceUrl = value('--source-url')
 const restoredUrl = value('--restored-url')
 const publicPath = value('--public-path')
@@ -41,6 +47,8 @@ const get = async (origin: string, pathname: string) => {
 // with --volumes makes every rehearsal begin from genuinely fresh DB/media.
 await run('docker', [
   'compose',
+  '--project-name',
+  restoreProject,
   '--env-file',
   envFile,
   '-f',

@@ -1,5 +1,6 @@
 import { defineConfig, devices } from '@playwright/test'
 import { readFileSync } from 'node:fs'
+import path from 'node:path'
 
 const runtimeEnv = Object.fromEntries(
   readFileSync('.env', 'utf8')
@@ -21,6 +22,7 @@ const e2eEnv = {
   LOCAL_E2E_TEST_MODE: 'true',
   RENEGADE_MODULES: 'all',
   RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT: 'true',
+  MEDIA_DIR: path.resolve('media'),
 }
 
 Object.assign(process.env, e2eEnv)
@@ -30,7 +32,11 @@ export default defineConfig({
   globalSetup: './tests/browser/global-setup.ts',
   timeout: 30_000,
   workers: 1,
-  use: { baseURL: 'http://localhost:3110', browserName: 'chromium', channel: 'chrome' },
+  use: {
+    baseURL: 'http://localhost:3110',
+    browserName: 'chromium',
+    ...(process.env.PLAYWRIGHT_CHANNEL ? { channel: process.env.PLAYWRIGHT_CHANNEL } : {}),
+  },
   webServer: {
     command: 'node .next/standalone/server.js',
     url: 'http://localhost:3110/health/ready',

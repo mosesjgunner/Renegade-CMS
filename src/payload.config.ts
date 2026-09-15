@@ -38,6 +38,13 @@ export default buildConfig({
         posts: { Component: './modules/admin/PublishingCenter', path: '/posts' },
         pages: { Component: './modules/admin/PublishingCenter', path: '/pages' },
         navigation: { Component: './modules/admin/NavigationCenter', path: '/navigation' },
+        mediaLibrary: { Component: './modules/admin/MediaLibrary', path: '/media-library' },
+        indexing: { Component: './modules/admin/IndexingCenter', path: '/indexing' },
+        redirects: { Component: './modules/admin/RedirectManager', path: '/redirects' },
+        renderedQuality: {
+          Component: './modules/admin/RenderedQualityCenter',
+          path: '/rendered-quality',
+        },
       },
     },
   },

@@ -1,10 +1,22 @@
 import { spawn } from 'node:child_process'
+import { readFileSync } from 'node:fs'
 
 export type ComposeTarget = {
   composeFile: string
   envFile: string
   imageTag?: string
   appVersion?: string
+}
+
+export function projectNameFromEnvFile(
+  envFile: string,
+  variable = 'RENEGADE_INSTANCE',
+  fallback = 'renegade-cms',
+) {
+  const line = readFileSync(envFile, 'utf8')
+    .split(/\r?\n/)
+    .find((entry) => entry.startsWith(`${variable}=`))
+  return line?.slice(variable.length + 1) || fallback
 }
 
 export const args = process.argv.slice(2)
@@ -20,6 +32,8 @@ const commandEnvironment = (target: ComposeTarget) => ({
 
 export const composeArgs = (target: ComposeTarget) => [
   'compose',
+  '--project-name',
+  projectNameFromEnvFile(target.envFile),
   '--env-file',
   target.envFile,
   '-f',

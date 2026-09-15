@@ -3,6 +3,7 @@ import { mkdir, readFile, rename, rm, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 
 import type { AppConfig } from '../core/config'
+import { extractAudioMetadata, type AudioMetadata } from './audio'
 
 export const supportedMediaTypes = {
   'image/png': { kind: 'image', extension: 'png' },
@@ -12,6 +13,9 @@ export const supportedMediaTypes = {
   'image/svg+xml': { kind: 'image', extension: 'svg' },
   'application/pdf': { kind: 'document', extension: 'pdf' },
   'audio/mpeg': { kind: 'audio', extension: 'mp3' },
+  'audio/mp4': { kind: 'audio', extension: 'm4a' },
+  'audio/ogg': { kind: 'audio', extension: 'ogg' },
+  'audio/wav': { kind: 'audio', extension: 'wav' },
   'video/mp4': { kind: 'video', extension: 'mp4' },
   'text/vtt': { kind: 'document', extension: 'vtt' },
 } as const
@@ -25,6 +29,8 @@ export type MediaInspection = {
   height?: number
   sha256: string
 }
+
+export type { AudioMetadata } from './audio'
 
 const signature = (bytes: Uint8Array, value: number[]) =>
   value.every((byte, offset) => bytes[offset] === byte)
@@ -55,6 +61,14 @@ function jpegDimensions(bytes: Uint8Array) {
   return undefined
 }
 
+/**
+ * Extracts container-level and audio facts without changing the uploaded original.
+ * Accurate loudness and any conversion are worker-owned, versioned recipes.
+ */
+export function inspectAudioMetadata(bytes: Uint8Array): AudioMetadata | undefined {
+  return extractAudioMetadata(bytes)
+}
+
 /** Content sniffing is deliberately allow-list based; headers and extensions are never trusted. */
 export function inspectMedia(bytes: Uint8Array): MediaInspection {
   const sha256 = `sha256:${createHash('sha256').update(bytes).digest('hex')}`
@@ -82,10 +96,19 @@ export function inspectMedia(bytes: Uint8Array): MediaInspection {
     return { ...supportedMediaTypes['application/pdf'], mimeType: 'application/pdf', sha256 }
   if (ascii(bytes, 0, 'ID3') || signature(bytes, [0xff, 0xfb]))
     return { ...supportedMediaTypes['audio/mpeg'], mimeType: 'audio/mpeg', sha256 }
+  if (ascii(bytes, 0, 'RIFF') && ascii(bytes, 8, 'WAVE'))
+    return { ...supportedMediaTypes['audio/wav'], mimeType: 'audio/wav', sha256 }
+  if (ascii(bytes, 0, 'OggS'))
+    return { ...supportedMediaTypes['audio/ogg'], mimeType: 'audio/ogg', sha256 }
   // ISO base media files place the ftyp box at byte four. We deliberately do not
   // infer a codec: the browser receives the original, content-sniffed MP4 only.
-  if (ascii(bytes, 4, 'ftyp'))
+  if (ascii(bytes, 4, 'ftyp')) {
+    const boxSize = numberAt(bytes, 0, 4)
+    const brand = new TextDecoder().decode(bytes.slice(8, 12))
+    if (!boxSize || boxSize < 16 || boxSize > bytes.byteLength || !/^[\x20-\x7e]{4}$/.test(brand))
+      throw new Error('Corrupt MP4 container header.')
     return { ...supportedMediaTypes['video/mp4'], mimeType: 'video/mp4', sha256 }
+  }
   if (new TextDecoder().decode(bytes.slice(0, 6)).startsWith('WEBVTT'))
     return { ...supportedMediaTypes['text/vtt'], mimeType: 'text/vtt', sha256 }
   const svg = inspectSvg(bytes)
@@ -151,6 +174,11 @@ function localPath(mediaDir: string, key: string) {
 
 export type MediaStorage = {
   provider: 'local' | 's3'
+  capabilities: Readonly<{
+    atomicWrite: boolean
+    privateObjects: boolean
+    checksumAddressed: boolean
+  }>
   put(key: string, bytes: Uint8Array, mimeType: string): Promise<void>
   get(key: string): Promise<Uint8Array | undefined>
   remove(key: string): Promise<void>
@@ -159,6 +187,7 @@ export type MediaStorage = {
 export function localMediaStorage(mediaDir: string): MediaStorage {
   return {
     provider: 'local',
+    capabilities: { atomicWrite: true, privateObjects: true, checksumAddressed: true },
     async put(key, bytes) {
       const target = localPath(mediaDir, key)
       await mkdir(path.dirname(target), { recursive: true })
@@ -239,6 +268,7 @@ export function s3MediaStorage(config: NonNullable<AppConfig['storage']['s3']>):
   }
   return {
     provider: 's3',
+    capabilities: { atomicWrite: true, privateObjects: true, checksumAddressed: true },
     put: (key, bytes, mimeType) => request('PUT', key, bytes, mimeType).then(() => undefined),
     get: (key) => request('GET', key),
     remove: (key) => request('DELETE', key).then(() => undefined),

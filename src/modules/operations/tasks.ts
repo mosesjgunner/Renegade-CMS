@@ -8,6 +8,7 @@ import {
 } from '../execution/contracts'
 import { executionHandlerFor } from '../execution/service'
 import { deliverWebhook, enqueueWebhookDeliveries } from '../integrations/webhooks'
+import { processIndexingExecutionEvent } from '../public/indexing'
 
 export const OPERATIONS_QUEUE = 'operations'
 
@@ -117,6 +118,8 @@ export const executionOutboxHandleTask = {
       return { output: {} }
     try {
       await enqueueWebhookDeliveries(req.payload, event)
+      if (event.eventType === 'discovery.indexing.changed')
+        await processIndexingExecutionEvent(req.payload, event)
       const handler = executionHandlerFor(event.eventType)
       if (handler) await handler(event)
       await req.payload.update({

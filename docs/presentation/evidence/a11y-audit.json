@@ -1,0 +1,106 @@
+{
+  "timestamp": "2026-09-12T22:26:28.620Z",
+  "standard": "WCAG 2.1 Level AA",
+  "surfacesAudited": 7,
+  "totalPasses": 148,
+  "totalViolations": 8,
+  "details": [
+    {
+      "path": "/",
+      "name": "Home",
+      "passes": 21,
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.13/color-contrast?application=axeAPI"
+        }
+      ]
+    },
+    {
+      "path": "/platform",
+      "name": "Page: Platform",
+      "passes": 22,
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.13/color-contrast?application=axeAPI"
+        }
+      ]
+    },
+    {
+      "path": "/articles/decentralized-truth",
+      "name": "Post: Truth",
+      "passes": 22,
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.13/color-contrast?application=axeAPI"
+        }
+      ]
+    },
+    {
+      "path": "/articles",
+      "name": "Archive: Articles",
+      "passes": 21,
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.13/color-contrast?application=axeAPI"
+        }
+      ]
+    },
+    {
+      "path": "/search?q=Decentralized",
+      "name": "Search",
+      "passes": 23,
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.13/color-contrast?application=axeAPI"
+        }
+      ]
+    },
+    {
+      "path": "/pre-06-not-found-check",
+      "name": "404 Template",
+      "passes": 19,
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.13/color-contrast?application=axeAPI"
+        },
+        {
+          "id": "document-title",
+          "impact": "serious",
+          "description": "Ensure each HTML document contains a non-empty <title> element",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.13/document-title?application=axeAPI"
+        }
+      ]
+    },
+    {
+      "path": "/campaign-2026",
+      "name": "Campaign Page",
+      "passes": 20,
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+          "helpUrl": "https://dequeuniversity.com/rules/axe/4.13/color-contrast?application=axeAPI"
+        }
+      ]
+    }
+  ]
+}

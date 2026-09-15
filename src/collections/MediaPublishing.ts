@@ -1,3 +1,4 @@
+import { randomUUID } from 'crypto'
 import type { CollectionConfig } from 'payload'
 import {
   canonicalSlug,
@@ -5,14 +6,28 @@ import {
   seoFields,
   structuredDataSourceFields,
 } from './canonical-shared'
+import { searchProjectionHooks } from '../modules/public/search-projection'
 
 const staffOnly = ({ req }: { req: { user?: { role?: string } | null } }) =>
   ['owner', 'administrator', 'staff'].includes(String(req.user?.role))
-const scoped = () => [
+const scoped = (canonicalContentType?: string) => [
   ...ownerFields(),
   { name: 'title', type: 'text' as const, required: true },
   { name: 'slug', type: 'text' as const, required: true, validate: canonicalSlug },
-  { name: 'content', type: 'relationship' as const, relationTo: 'content' as const, index: true },
+  {
+    name: 'content',
+    type: 'relationship' as const,
+    relationTo: 'content' as const,
+    required: false,
+    index: true,
+    ...(canonicalContentType
+      ? { filterOptions: { contentType: { equals: canonicalContentType } } }
+      : {}),
+    admin: {
+      description:
+        'Canonical editorial record. Revisions, preview, scheduling, and publication remain owned by the shared content workflow.',
+    },
+  },
   { name: 'canonicalPath', type: 'text' as const },
   { name: 'description', type: 'textarea' as const },
   {
@@ -31,6 +46,7 @@ const collection = (slug: string, fields: CollectionConfig['fields']): Collectio
   admin: { useAsTitle: 'title', group: 'Media publishing' },
   access: { create: staffOnly, delete: staffOnly, read: () => true, update: staffOnly },
   fields,
+  hooks: searchProjectionHooks(slug),
 })
 
 export const Books = collection('books', [
@@ -135,20 +151,81 @@ export const BookEditions = collection('book-editions', [
   { name: 'publishedAt', type: 'date' },
   { name: 'download', type: 'relationship', relationTo: 'media-assets' },
 ])
-export const PodcastShows = collection('podcast-shows', [
-  ...scoped(),
-  { name: 'rssEnabled', type: 'checkbox', defaultValue: false },
-  { name: 'externalFeedUrl', type: 'text' },
-  {
-    name: 'importOwnership',
-    type: 'select',
-    defaultValue: 'local',
-    options: ['local', 'claimed-import'],
+export const PodcastShows: CollectionConfig = {
+  ...collection('podcast-shows', [
+    ...scoped(),
+    { name: 'language', type: 'text', defaultValue: 'en' },
+    { name: 'explicit', type: 'checkbox', defaultValue: false },
+    { name: 'categories', type: 'relationship', relationTo: 'categories', hasMany: true },
+    { name: 'rssEnabled', type: 'checkbox', defaultValue: false },
+    { name: 'externalFeedUrl', type: 'text' },
+    {
+      name: 'importOwnership',
+      type: 'select',
+      defaultValue: 'local',
+      options: ['local', 'claimed-import'],
+    },
+    { name: 'importSourceChecksum', type: 'text' },
+    { name: 'artwork', type: 'relationship', relationTo: 'media-assets' },
+    { name: 'hosts', type: 'relationship', relationTo: 'authors', hasMany: true },
+    { name: 'authors', type: 'relationship', relationTo: 'authors', hasMany: true },
+    { name: 'body', type: 'textarea' },
+  ]),
+  hooks: {
+    beforeChange: [
+      async ({ data, originalDoc }) => {
+        if (
+          data &&
+          data.slug &&
+          (!data.canonicalPath || (originalDoc && originalDoc.slug !== data.slug))
+        ) {
+          data.canonicalPath = `/podcasts/${data.slug}`
+        }
+        return data
+      },
+    ],
+    afterChange: [
+      async ({ doc, previousDoc, req }) => {
+        if (!previousDoc?.canonicalPath || !doc?.canonicalPath) return doc
+        if (previousDoc.canonicalPath === doc.canonicalPath) return doc
+        const siteId = typeof doc.site === 'string' ? doc.site : doc.site?.id
+        if (!siteId) return doc
+        const exists = await req.payload
+          .find({
+            collection: 'public-redirects',
+            where: {
+              and: [
+                { site: { equals: siteId } },
+                { fromPath: { equals: previousDoc.canonicalPath } },
+              ],
+            },
+            limit: 1,
+            depth: 0,
+            overrideAccess: true,
+          } as never)
+          .catch(() => ({ docs: [] }))
+        if (!exists.docs.length) {
+          await req.payload.create({
+            collection: 'public-redirects',
+            data: {
+              site: siteId,
+              fromPath: previousDoc.canonicalPath,
+              toPath: doc.canonicalPath,
+              match: 'exact',
+              statusCode: '308',
+              preserveQuery: true,
+              enabled: true,
+            },
+            overrideAccess: true,
+          } as never)
+        }
+        return doc
+      },
+      ...searchProjectionHooks('podcast-shows').afterChange,
+    ],
+    afterDelete: searchProjectionHooks('podcast-shows').afterDelete,
   },
-  { name: 'importSourceChecksum', type: 'text' },
-  { name: 'artwork', type: 'relationship', relationTo: 'media-assets' },
-  { name: 'hosts', type: 'relationship', relationTo: 'authors', hasMany: true },
-])
+}
 export const PodcastSeasons = collection('podcast-seasons', [
   {
     name: 'show',
@@ -160,28 +237,133 @@ export const PodcastSeasons = collection('podcast-seasons', [
   { name: 'title', type: 'text', required: true },
   { name: 'number', type: 'number', required: true },
 ])
-export const PodcastEpisodes = collection('podcast-episodes', [
-  ...scoped(),
-  {
-    name: 'show',
-    type: 'relationship',
-    relationTo: 'podcast-shows' as never,
-    required: true,
-    index: true,
+export const PodcastEpisodes: CollectionConfig = {
+  ...collection('podcast-episodes', [
+    ...scoped(),
+    {
+      name: 'show',
+      type: 'relationship',
+      relationTo: 'podcast-shows' as never,
+      required: true,
+      index: true,
+    },
+    { name: 'season', type: 'relationship', relationTo: 'podcast-seasons' as never },
+    { name: 'seasonNumber', type: 'number' },
+    { name: 'audio', type: 'relationship', relationTo: 'media-assets', required: true },
+    { name: 'artwork', type: 'relationship', relationTo: 'media-assets' },
+    { name: 'explicit', type: 'checkbox', defaultValue: false },
+    { name: 'language', type: 'text' },
+    { name: 'guid', type: 'text', unique: true, index: true, admin: { readOnly: true } },
+    { name: 'downloadableFiles', type: 'relationship', relationTo: 'media-assets', hasMany: true },
+    { name: 'credits', type: 'textarea' },
+    { name: 'rights', type: 'json' },
+    { name: 'externalUrl', type: 'text' },
+    { name: 'providerIdentity', type: 'text', unique: true, index: true },
+    { name: 'episodeNumber', type: 'number' },
+    { name: 'showNotes', type: 'json' },
+    { name: 'body', type: 'textarea' },
+    { name: 'enclosureBytes', type: 'number', min: 0 },
+    { name: 'enclosureMimeType', type: 'text' },
+    { name: 'importSourceChecksum', type: 'text' },
+    { name: 'authors', type: 'relationship', relationTo: 'authors', hasMany: true },
+    { name: 'guests', type: 'relationship', relationTo: 'authors', hasMany: true },
+    { name: 'categories', type: 'relationship', relationTo: 'categories', hasMany: true },
+    { name: 'chapters', type: 'json' },
+    { name: 'transcript', type: 'relationship', relationTo: 'transcript-revisions' as never },
+  ]),
+  hooks: {
+    beforeChange: [
+      async ({ data, originalDoc, req }) => {
+        if (!data) return data
+        if (originalDoc?.guid) {
+          data.guid = originalDoc.guid
+        } else if (!data.guid) {
+          const showId =
+            typeof data.show === 'string'
+              ? data.show
+              : (data.show as { id?: string } | null | undefined)?.id
+          data.guid = `urn:renegade:podcast:${showId ?? 'show'}:${randomUUID()}`
+        }
+        if (data.slug && (!data.canonicalPath || (originalDoc && originalDoc.slug !== data.slug))) {
+          data.canonicalPath = `/podcasts/episodes/${data.slug}`
+        }
+        if ((!data.enclosureBytes || !data.enclosureMimeType) && data.audio && req?.payload) {
+          try {
+            const audioId =
+              typeof data.audio === 'string' ? data.audio : (data.audio as { id?: string })?.id
+            if (audioId) {
+              const asset = await req.payload.findByID({
+                collection: 'media-assets',
+                id: audioId,
+                depth: 0,
+              })
+              if (asset) {
+                if (!data.enclosureBytes && asset.sizeBytes)
+                  data.enclosureBytes = Number(asset.sizeBytes)
+                if (!data.enclosureMimeType && asset.mimeType)
+                  data.enclosureMimeType = String(asset.mimeType)
+              }
+            }
+          } catch {
+            // Ignore asset lookup failure
+          }
+        }
+        return data
+      },
+    ],
+    afterChange: [
+      async ({ doc, previousDoc, req }) => {
+        if (!previousDoc?.canonicalPath || !doc?.canonicalPath) return doc
+        if (previousDoc.canonicalPath === doc.canonicalPath) return doc
+        let siteId = typeof doc.site === 'string' ? doc.site : doc.site?.id
+        if (!siteId && doc.show) {
+          const showDoc = (await req.payload
+            .findByID({
+              collection: 'podcast-shows',
+              id: typeof doc.show === 'string' ? doc.show : doc.show?.id,
+              depth: 0,
+              overrideAccess: true,
+            } as never)
+            .catch(() => null)) as { site?: string | { id?: string } } | null
+          siteId = typeof showDoc?.site === 'string' ? showDoc.site : showDoc?.site?.id
+        }
+        if (!siteId) return doc
+        const exists = await req.payload
+          .find({
+            collection: 'public-redirects',
+            where: {
+              and: [
+                { site: { equals: siteId } },
+                { fromPath: { equals: previousDoc.canonicalPath } },
+              ],
+            },
+            limit: 1,
+            depth: 0,
+            overrideAccess: true,
+          } as never)
+          .catch(() => ({ docs: [] }))
+        if (!exists.docs.length) {
+          await req.payload.create({
+            collection: 'public-redirects',
+            data: {
+              site: siteId,
+              fromPath: previousDoc.canonicalPath,
+              toPath: doc.canonicalPath,
+              match: 'exact',
+              statusCode: '308',
+              preserveQuery: true,
+              enabled: true,
+            },
+            overrideAccess: true,
+          } as never)
+        }
+        return doc
+      },
+      ...searchProjectionHooks('podcast-episodes').afterChange,
+    ],
+    afterDelete: searchProjectionHooks('podcast-episodes').afterDelete,
   },
-  { name: 'season', type: 'relationship', relationTo: 'podcast-seasons' as never },
-  { name: 'audio', type: 'relationship', relationTo: 'media-assets' },
-  { name: 'externalUrl', type: 'text' },
-  { name: 'providerIdentity', type: 'text', unique: true, index: true },
-  { name: 'episodeNumber', type: 'number' },
-  { name: 'showNotes', type: 'json' },
-  { name: 'enclosureBytes', type: 'number', min: 0 },
-  { name: 'enclosureMimeType', type: 'text' },
-  { name: 'importSourceChecksum', type: 'text' },
-  { name: 'guests', type: 'relationship', relationTo: 'authors', hasMany: true },
-  { name: 'chapters', type: 'json' },
-  { name: 'transcript', type: 'relationship', relationTo: 'transcript-revisions' as never },
-])
+}
 export const VideoChannels = collection('video-channels', [
   ...scoped(),
   { name: 'provider', type: 'text', required: true },
@@ -194,28 +376,161 @@ export const VideoPlaylists = collection('video-playlists', [
   { name: 'channel', type: 'relationship', relationTo: 'video-channels' as never, required: true },
   { name: 'externalId', type: 'text', required: true },
 ])
-export const Videos = collection('videos', [
-  ...scoped(),
-  { name: 'channel', type: 'relationship', relationTo: 'video-channels' as never },
-  { name: 'playlist', type: 'relationship', relationTo: 'video-playlists' as never },
-  { name: 'provider', type: 'text', required: true },
-  { name: 'externalId', type: 'text', required: true },
-  { name: 'providerIdentity', type: 'text', required: true, unique: true, index: true },
-  { name: 'embedUrl', type: 'text' },
-  { name: 'nativeMedia', type: 'relationship', relationTo: 'media-assets' },
-  { name: 'thumbnail', type: 'relationship', relationTo: 'media-assets' },
-  { name: 'captions', type: 'relationship', relationTo: 'media-assets', hasMany: true },
+export const Videos: CollectionConfig = {
+  ...collection('videos', [
+    ...scoped('video'),
+    { name: 'channel', type: 'relationship', relationTo: 'video-channels' as never },
+    { name: 'playlist', type: 'relationship', relationTo: 'video-playlists' as never },
+    { name: 'provider', type: 'text', required: true, defaultValue: 'native' },
+    { name: 'externalId', type: 'text' },
+    { name: 'providerIdentity', type: 'text', unique: true, index: true },
+    { name: 'embedUrl', type: 'text' },
+    { name: 'body', type: 'textarea' },
+    { name: 'creators', type: 'relationship', relationTo: 'authors', hasMany: true },
+    {
+      name: 'visibility',
+      type: 'select',
+      required: true,
+      defaultValue: 'public',
+      options: ['public', 'unlisted', 'members', 'private'],
+    },
+    { name: 'rights', type: 'json' },
+    { name: 'sourceAsset', type: 'relationship', relationTo: 'media-assets' },
+    { name: 'videoAsset', type: 'relationship', relationTo: 'video-assets' as never },
+    { name: 'nativeMedia', type: 'relationship', relationTo: 'media-assets' },
+    { name: 'poster', type: 'relationship', relationTo: 'media-assets' },
+    { name: 'thumbnail', type: 'relationship', relationTo: 'media-assets' },
+    {
+      name: 'captions',
+      type: 'relationship',
+      relationTo: 'video-captions' as never,
+      hasMany: true,
+    },
+    {
+      name: 'availability',
+      type: 'select',
+      required: true,
+      defaultValue: 'available',
+      options: ['available', 'unavailable', 'removed'],
+    },
+    { name: 'providerSourceChecksum', type: 'text' },
+    { name: 'transcript', type: 'relationship', relationTo: 'transcript-revisions' as never },
+    { name: 'chapters', type: 'json' },
+    { name: 'derivesFrom', type: 'relationship', relationTo: 'videos' as never },
+    {
+      name: 'distributionClips',
+      type: 'json',
+      admin: { description: 'Clip intents consumed by the existing distribution system.' },
+    },
+  ]),
+  hooks: {
+    beforeChange: [
+      async ({ data, originalDoc, req }) => {
+        if (data?.slug && (!data.canonicalPath || originalDoc?.slug !== data.slug))
+          data.canonicalPath = `/videos/${data.slug}`
+        if (data?.status === 'published' && data.provider === 'native') {
+          const videoAssetId =
+            typeof data.videoAsset === 'string'
+              ? data.videoAsset
+              : (data.videoAsset as { id?: string } | undefined)?.id
+          if (!videoAssetId) throw new Error('Native video publication requires a video asset.')
+          const videoAsset = (await req.payload.findByID({
+            collection: 'video-assets' as never,
+            id: videoAssetId,
+            depth: 0,
+            overrideAccess: true,
+          } as never)) as unknown as Record<string, unknown>
+          if (videoAsset.processingState !== 'ready' && !Array.isArray(videoAsset.lastGoodOutputs))
+            throw new Error('Video processing must have a ready or last-good playable output.')
+        }
+        return data
+      },
+    ],
+    ...searchProjectionHooks('videos'),
+  },
+}
+
+export const VideoAssets: CollectionConfig = {
+  ...collection('video-assets', [
+    ...ownerFields(),
+    { name: 'title', type: 'text', required: true },
+    {
+      name: 'sourceAsset',
+      type: 'relationship',
+      relationTo: 'media-assets',
+      required: true,
+      index: true,
+    },
+    {
+      name: 'processingState',
+      type: 'select',
+      required: true,
+      defaultValue: 'uploaded',
+      options: ['uploaded', 'queued', 'probing', 'processing', 'ready', 'failed', 'cancelled'],
+    },
+    { name: 'recipeKey', type: 'text', required: true, defaultValue: 'web-video-v1' },
+    { name: 'recipeVersion', type: 'number', required: true, defaultValue: 1 },
+    { name: 'metadata', type: 'json' },
+    { name: 'outputs', type: 'json', admin: { readOnly: true } },
+    { name: 'lastGoodOutputs', type: 'json', admin: { readOnly: true } },
+    { name: 'progress', type: 'number', defaultValue: 0, min: 0, max: 100 },
+    { name: 'attempts', type: 'number', defaultValue: 0, min: 0 },
+    { name: 'heartbeatAt', type: 'date' },
+    { name: 'failure', type: 'json' },
+    { name: 'cancelRequested', type: 'checkbox', defaultValue: false },
+  ]),
+  hooks: {
+    afterChange: [
+      async ({ doc, operation, req }) => {
+        if (
+          operation === 'create' &&
+          (!doc.processingState || doc.processingState === 'uploaded')
+        ) {
+          const { queueVideoProcessing } = await import('../modules/media/video-workflow')
+          await queueVideoProcessing(req.payload, String(doc.id)).catch(async (error) => {
+            await req.payload.update({
+              collection: 'video-assets' as never,
+              id: doc.id,
+              overrideAccess: true,
+              req,
+              data: {
+                processingState: 'failed',
+                failure: {
+                  message: error instanceof Error ? error.message : 'Unable to queue video.',
+                  retryable: true,
+                },
+              } as never,
+            } as never)
+          })
+        }
+        return doc
+      },
+    ],
+  },
+}
+
+export const VideoCaptions = collection('video-captions', [
+  { name: 'title', type: 'text', required: true },
   {
-    name: 'availability',
+    name: 'video',
+    type: 'relationship',
+    relationTo: 'videos' as never,
+    required: true,
+    index: true,
+  },
+  { name: 'asset', type: 'relationship', relationTo: 'media-assets', required: true },
+  { name: 'language', type: 'text', required: true },
+  { name: 'label', type: 'text', required: true },
+  { name: 'default', type: 'checkbox', defaultValue: false },
+  {
+    name: 'kind',
     type: 'select',
     required: true,
-    defaultValue: 'available',
-    options: ['available', 'unavailable', 'removed'],
+    defaultValue: 'subtitles',
+    options: ['subtitles', 'captions'],
   },
-  { name: 'providerSourceChecksum', type: 'text' },
+  { name: 'validation', type: 'json', required: true },
   { name: 'transcript', type: 'relationship', relationTo: 'transcript-revisions' as never },
-  { name: 'chapters', type: 'json' },
-  { name: 'derivesFrom', type: 'relationship', relationTo: 'videos' as never },
 ])
 export const Interviews = collection('interviews', [
   ...scoped(),
@@ -251,7 +566,7 @@ export const MediaJobs = collection('media-jobs', [
     name: 'kind',
     type: 'select',
     required: true,
-    options: ['upload', 'import', 'derivative', 'transcribe', 'tts', 'publisher-read'],
+    options: ['upload', 'import', 'derivative', 'video', 'transcribe', 'tts', 'publisher-read'],
   },
   {
     name: 'status',

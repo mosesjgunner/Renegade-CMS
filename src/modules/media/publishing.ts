@@ -32,6 +32,7 @@ export type MediaPublishingStore = {
 }
 export type PodcastFeedEpisode = {
   id: string
+  guid: string
   title: string
   slug: string
   description?: string
@@ -41,8 +42,12 @@ export type PodcastFeedEpisode = {
   mimeType: string
   durationSeconds?: number
   episodeNumber?: number
+  seasonNumber?: number
   transcriptUrl?: string
   chapters?: unknown
+  explicit?: boolean
+  artworkUrl?: string
+  author?: string
 }
 
 export function assertSafeEmbedUrl(value: string, provider: string, externalId: string): string {
@@ -73,13 +78,29 @@ export function podcastRss(input: {
   description?: string
   siteUrl: string
   path: string
+  showPath?: string
   artworkUrl?: string
+  language?: string
+  explicit?: boolean
+  author?: string
+  categories?: readonly string[]
   episodes: readonly PodcastFeedEpisode[]
 }): string {
   const self = new URL(input.path, input.siteUrl).toString()
+  const showUrl = new URL(
+    input.showPath || input.path.replace(/\/feed\.xml$/, '') || '/',
+    input.siteUrl,
+  ).toString()
   const image = input.artworkUrl ? `<itunes:image href="${xml(input.artworkUrl)}"/>` : ''
+  const author = input.author ? `<itunes:author>${xml(input.author)}</itunes:author>` : ''
+  const categories = Array.isArray(input.categories)
+    ? input.categories.map((c) => `<itunes:category text="${xml(c)}"/>`).join('')
+    : ''
   const items = [...input.episodes]
-    .sort((a, b) => +new Date(b.publishedAt) - +new Date(a.publishedAt))
+    .sort((a, b) => {
+      const diff = +new Date(b.publishedAt) - +new Date(a.publishedAt)
+      return diff !== 0 ? diff : b.id.localeCompare(a.id)
+    })
     .map((episode) => {
       const chapters =
         Array.isArray(episode.chapters) && episode.chapters.length
@@ -88,26 +109,49 @@ export function podcastRss(input: {
       const transcript = episode.transcriptUrl
         ? `<podcast:transcript url="${xml(episode.transcriptUrl)}" type="text/html"/>`
         : ''
-      return `<item><title>${xml(episode.title)}</title><guid isPermaLink="true">${xml(new URL(`/podcasts/episodes/${episode.slug}`, input.siteUrl).toString())}</guid><link>${xml(new URL(`/podcasts/episodes/${episode.slug}`, input.siteUrl).toString())}</link><description>${cdata(episode.description)}</description><pubDate>${new Date(episode.publishedAt).toUTCString()}</pubDate><enclosure url="${xml(episode.audioUrl)}" length="${episode.bytes}" type="${xml(episode.mimeType)}"/>${episode.durationSeconds ? `<itunes:duration>${Math.round(episode.durationSeconds)}</itunes:duration>` : ''}${episode.episodeNumber ? `<itunes:episode>${episode.episodeNumber}</itunes:episode>` : ''}${transcript}${chapters}</item>`
+      const epAuthor = episode.author ? `<itunes:author>${xml(episode.author)}</itunes:author>` : ''
+      const season = episode.seasonNumber
+        ? `<itunes:season>${episode.seasonNumber}</itunes:season>`
+        : ''
+      return `<item><title>${xml(episode.title)}</title><guid isPermaLink="false">${xml(episode.guid)}</guid><link>${xml(new URL(`/podcasts/episodes/${episode.slug}`, input.siteUrl).toString())}</link><description>${cdata(episode.description)}</description><pubDate>${new Date(episode.publishedAt).toUTCString()}</pubDate><enclosure url="${xml(episode.audioUrl)}" length="${episode.bytes}" type="${xml(episode.mimeType)}"/>${episode.artworkUrl ? `<itunes:image href="${xml(episode.artworkUrl)}"/>` : ''}${episode.explicit ? '<itunes:explicit>yes</itunes:explicit>' : '<itunes:explicit>no</itunes:explicit>'}${episode.durationSeconds ? `<itunes:duration>${Math.round(episode.durationSeconds)}</itunes:duration>` : ''}${episode.episodeNumber ? `<itunes:episode>${episode.episodeNumber}</itunes:episode>` : ''}${season}${epAuthor}${transcript}${chapters}</item>`
     })
     .join('')
-  return `<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:podcast="https://podcastindex.org/namespace/1.0"><channel><title>${xml(input.title)}</title><link>${xml(new URL(input.path, input.siteUrl).toString())}</link><description>${cdata(input.description)}</description><atom:link xmlns:atom="http://www.w3.org/2005/Atom" href="${xml(self)}" rel="self" type="application/rss+xml"/>${image}${items}</channel></rss>`
+  return `<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:podcast="https://podcastindex.org/namespace/1.0" xmlns:atom="http://www.w3.org/2005/Atom"><channel><title>${xml(input.title)}</title><link>${xml(showUrl)}</link><description>${cdata(input.description)}</description><language>${xml(input.language || 'en')}</language>${input.explicit ? '<itunes:explicit>yes</itunes:explicit>' : '<itunes:explicit>no</itunes:explicit>'}${author}${categories}<atom:link href="${xml(self)}" rel="self" type="application/rss+xml"/>${image}${items}</channel></rss>`
 }
 
+/** Stable across a human URL/slug change; never derive a GUID from routing. */
+export const podcastGuid = (showId: string, episodeId: string) =>
+  `urn:renegade:podcast:${showId}:${episodeId}`
+
+/** Export podcast feed as valid RSS 2.0 / iTunes / Podcasting 2.0 XML. */
+export const exportPodcastFeed = (input: Parameters<typeof podcastRss>[0]): string =>
+  podcastRss(input)
+
+/** Podcast records integrate with canonical workflow; if linked to shared Content, both must be public. */
+export const canRenderPodcast = (record: Doc) =>
+  canRenderPublic(record) &&
+  (!record.content ||
+    canRenderPublic(typeof record.content === 'object' ? record.content : { status: 'draft' }))
+
 export function validatePodcastFeed(xmlText: string) {
+  const errors: string[] = []
+  if (!xmlText.startsWith('<?xml')) errors.push('Missing XML declaration.')
+  if (!/<rss\b/.test(xmlText)) errors.push('Missing <rss> root.')
+  if (!/<channel>/.test(xmlText)) errors.push('Missing <channel> element.')
   const enclosure = /<enclosure\s+([^>]+)>/.exec(xmlText)?.[1] ?? ''
   const length = /\blength="(\d+)"/.exec(enclosure)?.[1]
-  const type = /\btype="(audio\/(?:mpeg|mp4)|audio\/ogg)"/.exec(enclosure)?.[1]
-  if (
-    !xmlText.startsWith('<?xml') ||
-    !/<rss\b/.test(xmlText) ||
-    !/<channel>/.test(xmlText) ||
-    !length ||
-    Number(length) < 1 ||
-    !type
-  )
-    throw new Error('Podcast feed is missing a valid RSS enclosure.')
-  return { valid: true as const, enclosureLength: Number(length), enclosureType: type }
+  const type = /\btype="(audio\/(?:mpeg|mp4|wav|ogg)|audio\/ogg)"/.exec(enclosure)?.[1]
+  if (!length || Number(length) < 1) errors.push('Missing or invalid enclosure length.')
+  if (!type) errors.push('Missing or invalid enclosure audio type.')
+
+  if (errors.length > 0) {
+    throw new Error(`Podcast feed validation failed: ${errors.join(', ')}`)
+  }
+  return {
+    valid: true as const,
+    enclosureLength: Number(length),
+    enclosureType: type!,
+  }
 }
 
 const text = (source: string, tag: string) =>
@@ -150,6 +194,8 @@ export async function importPodcastFeed(
     fetcher?: typeof fetch
     resolve?: Lookup
     allowPrivate?: boolean
+    /** Explicit opt-in only. Remote bytes are not fetched by this conservative importer yet. */
+    migrateRemoteMedia?: boolean
   },
 ) {
   const show = await store.findByID({
@@ -231,7 +277,20 @@ export async function importPodcastFeed(
       created++
     }
   }
-  return { created, updated, unchanged: episodes.length - created - updated }
+  return {
+    created,
+    updated,
+    unchanged: episodes.length - created - updated,
+    remoteMedia: {
+      requested: Boolean(input.migrateRemoteMedia),
+      migrated: 0,
+      skipped: input.migrateRemoteMedia ? episodes.length : 0,
+    },
+    unsupportedFields: [
+      'remote media byte migration',
+      'provider-specific analytics, advertisements, and dynamic insertion markers',
+    ],
+  }
 }
 
 export type YouTubeVideo = {

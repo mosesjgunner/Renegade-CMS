@@ -8,6 +8,7 @@ import {
   type SocialVariant,
 } from './contracts'
 import { credentialsForSocialAccount, socialProviderFor } from './provider-runtime'
+import { assertMediaIdsPublishable } from '../media/workflow'
 
 const MAX_PROVIDER_ATTEMPTS = 3
 const id = (value: unknown) =>
@@ -75,7 +76,17 @@ export const socialPublishTask = {
       overrideAccess: true,
     } as never)
     const provider = socialProviderFor(variant.network)
-    const issues = validateForProvider(variant as SocialVariant, provider.capabilities)
+    let rightsIssue: string | undefined
+    try {
+      const attachmentIds = Array.isArray(variant.attachments) ? variant.attachments.map(id) : []
+      await assertMediaIdsPublishable(req.payload, attachmentIds)
+    } catch (error) {
+      rightsIssue = error instanceof Error ? error.message : 'Attached media cannot publish.'
+    }
+    const issues = [
+      ...validateForProvider(variant as SocialVariant, provider.capabilities),
+      ...(rightsIssue ? [rightsIssue] : []),
+    ]
     const result = issues.length
       ? {
           status: 'failed' as const,

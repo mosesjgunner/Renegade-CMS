@@ -87,6 +87,14 @@ export const seoFields = (): Field[] => [
   { name: 'seoKeywords', type: 'json' },
   { name: 'seoFocusKeyphrase', type: 'text' },
   { name: 'seoNoIndex', type: 'checkbox', defaultValue: false },
+  {
+    name: 'discoveryOverrides',
+    type: 'json',
+    admin: {
+      description:
+        'Optional advanced discovery overrides: socialTitle, socialDescription, socialImage, locale, alternates, follow. Ordinary titles, summaries and hero media are inherited automatically.',
+    },
+  },
 ]
 
 export const structuredDataSourceFields = (): Field[] => [

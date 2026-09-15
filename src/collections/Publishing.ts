@@ -5,6 +5,14 @@ import {
   deriveEditorialPath,
 } from '../modules/editorial/publishing-pass'
 import { ensureEditorialCompanion } from '../modules/editorial/persistence'
+import { revalidateDiscoveryOutputs } from '../modules/public/revalidation'
+import {
+  indexingChangesFor,
+  indexingChangesForMedia,
+  safelyRecordIndexingChange,
+} from '../modules/public/indexing'
+import { resolveSiteSettings } from '../modules/core/site-settings'
+import { projectSearchDocument, removeSearchDocument } from '../modules/public/search-projection'
 
 import {
   canonicalSlug,
@@ -148,6 +156,7 @@ const publisherFieldGroups = (fields: Field[]): Field[] => {
         'seoImageAlt',
         'seoFocusKeyphrase',
         'seoNoIndex',
+        'discoveryPanel',
       ],
       fields: [],
     },
@@ -192,8 +201,59 @@ export const MediaAssets: CollectionConfig = {
   // Metadata includes the opaque storage location. Anonymous readers must use the
   // scoped public byte route, which independently verifies a published reference.
   access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
+  hooks: {
+    afterChange: [
+      async ({ doc, previousDoc, req }) => {
+        await revalidateDiscoveryOutputs()
+        const expiry =
+          typeof doc.rightsExpiresAt === 'string' ? Date.parse(doc.rightsExpiresAt) : NaN
+        const previousExpiry =
+          typeof previousDoc?.rightsExpiresAt === 'string'
+            ? Date.parse(previousDoc.rightsExpiresAt)
+            : NaN
+        const replacementChanged =
+          String(doc.replaceGloballyWith || '') !== String(previousDoc?.replaceGloballyWith || '')
+        const newlyExpired =
+          Number.isFinite(expiry) &&
+          expiry <= Date.now() &&
+          (!Number.isFinite(previousExpiry) || previousExpiry > Date.now())
+        if (newlyExpired || replacementChanged) {
+          const siteId = typeof doc.site === 'string' ? doc.site : doc.site?.id
+          if (siteId) {
+            const settings = await resolveSiteSettings(req.payload)
+            const origin =
+              settings.canonicalOriginsBySite[String(siteId)] || settings.canonicalOrigin
+            const changes = await indexingChangesForMedia(req.payload, {
+              siteId: String(siteId),
+              mediaId: String(doc.id),
+              origin,
+              reason: newlyExpired ? 'media-expiry' : 'media-replacement',
+              version: String(doc.updatedAt || doc.rightsExpiresAt),
+            })
+            for (const change of changes) await safelyRecordIndexingChange(req.payload, change)
+          }
+        }
+        return doc
+      },
+    ],
+    afterDelete: [
+      async ({ doc }) => {
+        await revalidateDiscoveryOutputs()
+        return doc
+      },
+    ],
+  },
   fields: [
     ...ownerFields(),
+    {
+      name: 'imageEditor',
+      type: 'ui',
+      admin: {
+        components: {
+          Field: '@/modules/admin/MediaEditActionField#MediaEditActionField',
+        },
+      },
+    },
     { name: 'title', type: 'text', required: true },
     {
       name: 'kind',
@@ -201,20 +261,20 @@ export const MediaAssets: CollectionConfig = {
       required: true,
       options: ['image', 'audio', 'video', 'document', 'cover', 'thumbnail', 'graphic'],
     },
-    {
-      name: 'storageLocation',
-      type: 'text',
-      required: true,
-      unique: true,
-      admin: { description: 'Local storage first; provider location is an implementation detail.' },
-    },
+    // Kept for old exports and assets created before MED-00. New assets resolve
+    // their bytes through originalBlob; this is never a public URL.
+    { name: 'storageLocation', type: 'text', admin: { readOnly: true } },
     { name: 'storageProvider', type: 'text', required: true, defaultValue: 'local' },
+    { name: 'originalBlob', type: 'relationship', relationTo: 'media-blobs', index: true },
+    { name: 'originalFilename', type: 'text' },
     { name: 'mimeType', type: 'text' },
     { name: 'sizeBytes', type: 'number', min: 0 },
     { name: 'checksum', type: 'text', admin: { readOnly: true } },
     { name: 'width', type: 'number', min: 0 },
     { name: 'height', type: 'number', min: 0 },
     { name: 'durationSeconds', type: 'number', min: 0 },
+    { name: 'audioMetadata', type: 'json', admin: { readOnly: true } },
+    { name: 'videoMetadata', type: 'json', admin: { readOnly: true } },
     { name: 'altText', type: 'text' },
     {
       name: 'focalPoint',
@@ -225,9 +285,75 @@ export const MediaAssets: CollectionConfig = {
         { name: 'y', type: 'number', min: 0, max: 1 },
       ],
     },
+    { name: 'aspectRatio', type: 'number' },
+    { name: 'dominantColor', type: 'text' },
+    { name: 'colorPalette', type: 'json' },
+    { name: 'cropSettings', type: 'json' },
     { name: 'caption', type: 'textarea' },
-    { name: 'credits', type: 'text' },
+    // The first three fields are the everyday publisher contract. Rights and
+    // release evidence stay available, but do not interrupt ordinary uploads.
+    { name: 'description', type: 'textarea' },
+    { name: 'creatorCredit', type: 'text' },
+    { name: 'credits', type: 'text', admin: { hidden: true } }, // legacy export alias
+    { name: 'source', type: 'text' },
+    { name: 'copyrightOwner', type: 'text' },
     { name: 'license', type: 'text' },
+    {
+      name: 'licenseType',
+      type: 'select',
+      options: ['owned', 'licensed', 'creative-commons', 'public-domain', 'unknown'],
+    },
+    { name: 'licenseUrl', type: 'text' },
+    { name: 'rightsSourceUrl', type: 'text' },
+    { name: 'rightsExpiresAt', type: 'date' },
+    { name: 'embargoUntil', type: 'date' },
+    { name: 'usageRestrictions', type: 'textarea' },
+    {
+      name: 'consentReference',
+      type: 'text',
+      admin: { condition: (_, siblingData) => Boolean(siblingData?.governanceEnabled) },
+    },
+    {
+      name: 'modelReleaseReference',
+      type: 'text',
+      admin: { condition: (_, siblingData) => Boolean(siblingData?.governanceEnabled) },
+    },
+    {
+      name: 'propertyReleaseReference',
+      type: 'text',
+      admin: { condition: (_, siblingData) => Boolean(siblingData?.governanceEnabled) },
+    },
+    {
+      name: 'governanceEnabled',
+      type: 'checkbox',
+      defaultValue: false,
+      admin: { description: 'Show consent and release evidence for this governed asset.' },
+    },
+    {
+      name: 'customMetadata',
+      type: 'json',
+      admin: {
+        description:
+          'Site-approved extension metadata. Values are retained without becoming public fields.',
+      },
+    },
+    {
+      name: 'processingState',
+      type: 'select',
+      required: true,
+      defaultValue: 'ready',
+      options: ['pending', 'processing', 'ready', 'failed', 'quarantined'],
+    },
+    {
+      name: 'publicPolicy',
+      type: 'select',
+      required: true,
+      defaultValue: 'published-use',
+      options: ['private', 'published-use', 'site-identity'],
+      admin: {
+        description: 'Public delivery is derived from this policy and an approved published use.',
+      },
+    },
     { name: 'tags', type: 'relationship', relationTo: 'tags', hasMany: true },
     { name: 'collections', type: 'relationship', relationTo: 'albums', hasMany: true },
     {
@@ -248,6 +374,173 @@ export const MediaAssets: CollectionConfig = {
       options: ['pending', 'approved', 'restricted', 'expired'],
     },
     ...retentionFields(),
+  ],
+}
+
+/** Immutable replacement evidence; an asset identity is never overwritten by bytes. */
+export const MediaAssetVersions: CollectionConfig = {
+  slug: 'media-asset-versions',
+  admin: { useAsTitle: 'versionLabel', group: 'Media', hidden: true },
+  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
+  fields: [
+    ...siteScopeFields(),
+    {
+      name: 'asset',
+      type: 'relationship',
+      relationTo: 'media-assets',
+      required: true,
+      index: true,
+    },
+    {
+      name: 'replacesAsset',
+      type: 'relationship',
+      relationTo: 'media-assets',
+      required: true,
+      index: true,
+    },
+    { name: 'versionLabel', type: 'text', required: true },
+    {
+      name: 'mode',
+      type: 'select',
+      required: true,
+      options: ['new-asset', 'selected-usages', 'all-usages'],
+    },
+    { name: 'replacedUsageIds', type: 'json' },
+    { name: 'impactCount', type: 'number', required: true, min: 0 },
+    { name: 'reason', type: 'textarea' },
+  ],
+}
+
+/** A durable, staff-only remediation record for a public asset whose governance changed. */
+export const MediaGovernanceIncidents: CollectionConfig = {
+  slug: 'media-governance-incidents',
+  admin: { useAsTitle: 'summary', group: 'Media' },
+  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
+  fields: [
+    ...siteScopeFields(),
+    {
+      name: 'asset',
+      type: 'relationship',
+      relationTo: 'media-assets',
+      required: true,
+      index: true,
+    },
+    { name: 'summary', type: 'text', required: true },
+    { name: 'reason', type: 'textarea', required: true },
+    {
+      name: 'status',
+      type: 'select',
+      required: true,
+      defaultValue: 'open',
+      options: ['open', 'investigating', 'remediated', 'dismissed'],
+    },
+    { name: 'affectedUsageIds', type: 'json', required: true, defaultValue: [] },
+    { name: 'openedAt', type: 'date', required: true },
+    { name: 'resolvedAt', type: 'date' },
+    { name: 'resolution', type: 'textarea' },
+    { name: 'audit', type: 'json', required: true, defaultValue: [] },
+  ],
+}
+
+/** Physical, deduplicated bytes. These records are never addressed by public routes. */
+export const MediaBlobs: CollectionConfig = {
+  slug: 'media-blobs',
+  admin: { useAsTitle: 'checksum', group: 'Media', hidden: true },
+  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
+  fields: [
+    ...siteScopeFields(),
+    { name: 'checksum', type: 'text', required: true, index: true },
+    { name: 'storageKey', type: 'text', required: true, unique: true },
+    { name: 'storageProvider', type: 'text', required: true },
+    { name: 'mimeType', type: 'text', required: true },
+    { name: 'sizeBytes', type: 'number', required: true, min: 0 },
+    {
+      name: 'state',
+      type: 'select',
+      required: true,
+      defaultValue: 'ready',
+      options: ['writing', 'ready', 'failed', 'deleted'],
+    },
+  ],
+  indexes: [{ fields: ['site', 'checksum'], unique: true }],
+}
+
+/** Generated representations retain their own object identity and provenance. */
+export const MediaVariants: CollectionConfig = {
+  slug: 'media-variants',
+  admin: { useAsTitle: 'label', group: 'Media' },
+  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
+  fields: [
+    ...siteScopeFields(),
+    {
+      name: 'asset',
+      type: 'relationship',
+      relationTo: 'media-assets',
+      required: true,
+      index: true,
+    },
+    { name: 'blob', type: 'relationship', relationTo: 'media-blobs', required: true, index: true },
+    { name: 'label', type: 'text', required: true },
+    {
+      name: 'kind',
+      type: 'select',
+      required: true,
+      options: ['thumbnail', 'poster', 'transcode', 'caption', 'social', 'other'],
+    },
+    { name: 'width', type: 'number', min: 0 },
+    { name: 'height', type: 'number', min: 0 },
+    { name: 'durationSeconds', type: 'number', min: 0 },
+    {
+      name: 'processingState',
+      type: 'select',
+      required: true,
+      defaultValue: 'ready',
+      options: ['pending', 'processing', 'ready', 'failed'],
+    },
+    { name: 'format', type: 'text' },
+    { name: 'recipeKey', type: 'text' },
+    { name: 'recipeVersion', type: 'number', defaultValue: 1 },
+    {
+      name: 'previousBlob',
+      type: 'relationship',
+      relationTo: 'media-blobs',
+      index: true,
+      admin: { description: 'Last known-good output retained for a one-step recipe rollback.' },
+    },
+    { name: 'crop', type: 'json' },
+    { name: 'errorMessage', type: 'text' },
+    { name: 'sizeBytes', type: 'number', min: 0 },
+    { name: 'lastAccessedAt', type: 'date' },
+  ],
+}
+
+/** Durable, private upload intent. Bytes live in the storage staging area until finalization. */
+export const MediaUploadSessions: CollectionConfig = {
+  slug: 'media-upload-sessions',
+  admin: { useAsTitle: 'filename', group: 'Media', hidden: true },
+  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
+  fields: [
+    ...siteScopeFields(),
+    { name: 'owner', type: 'relationship', relationTo: 'members', required: true, index: true },
+    { name: 'filename', type: 'text', required: true },
+    { name: 'title', type: 'text', required: true },
+    { name: 'altText', type: 'text' },
+    { name: 'caption', type: 'textarea' },
+    { name: 'expectedSize', type: 'number', required: true, min: 1 },
+    { name: 'expectedChecksum', type: 'text' },
+    { name: 'chunkSize', type: 'number', required: true, min: 1 },
+    { name: 'receivedBytes', type: 'number', required: true, defaultValue: 0, min: 0 },
+    { name: 'receivedChunks', type: 'json', required: true, defaultValue: [] },
+    {
+      name: 'state',
+      type: 'select',
+      required: true,
+      defaultValue: 'open',
+      options: ['open', 'finalizing', 'completed', 'cancelled', 'failed', 'expired'],
+    },
+    { name: 'asset', type: 'relationship', relationTo: 'media-assets' },
+    { name: 'expiresAt', type: 'date', required: true, index: true },
+    { name: 'failureReason', type: 'text' },
   ],
 }
 
@@ -441,6 +734,26 @@ export const Content: CollectionConfig = {
     afterChange: [
       async ({ doc, previousDoc, operation, req }) => {
         await ensureEditorialCompanion(req.payload, doc as Record<string, unknown>, req)
+        await revalidateDiscoveryOutputs([
+          typeof previousDoc?.canonicalPath === 'string' ? previousDoc.canonicalPath : null,
+          typeof doc?.canonicalPath === 'string' ? doc.canonicalPath : null,
+        ])
+        const settings = await resolveSiteSettings(req.payload)
+        const currentSiteId = typeof doc?.site === 'string' ? doc.site : doc?.site?.id
+        const origin =
+          (currentSiteId && settings.canonicalOriginsBySite[String(currentSiteId)]) ||
+          settings.canonicalOrigin
+        const indexingChanges = indexingChangesFor(
+          doc as Record<string, unknown>,
+          previousDoc as Record<string, unknown> | undefined,
+          origin,
+        )
+        for (const indexingChange of indexingChanges)
+          await safelyRecordIndexingChange(req.payload, indexingChange)
+        await projectSearchDocument(req.payload, {
+          collection: 'content',
+          record: doc as Record<string, unknown>,
+        })
         if (operation !== 'update') return doc
         const fromPath =
           typeof previousDoc?.canonicalPath === 'string' ? previousDoc.canonicalPath : ''
@@ -469,6 +782,13 @@ export const Content: CollectionConfig = {
             },
             overrideAccess: true,
           } as never)
+        return doc
+      },
+    ],
+    afterDelete: [
+      async ({ doc, req }) => {
+        await removeSearchDocument(req.payload, 'content', doc as Record<string, unknown>)
+        await revalidateDiscoveryOutputs()
         return doc
       },
     ],
@@ -587,6 +907,11 @@ export const Content: CollectionConfig = {
       ],
     },
     ...seoFields(),
+    {
+      name: 'discoveryPanel',
+      type: 'ui',
+      admin: { components: { Field: '@/modules/admin/DiscoveryPanel#DiscoveryPanel' } },
+    },
     { name: 'relationships', type: 'relationship', relationTo: 'relationships', hasMany: true },
     { name: 'seoOverride', type: 'json' },
     { name: 'socialOverride', type: 'json' },
@@ -1169,6 +1494,7 @@ export const MediaUsages: CollectionConfig = {
   admin: { useAsTitle: 'usageKey', group: 'Media' },
   access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
   fields: [
+    { name: 'site', type: 'relationship', relationTo: 'sites', required: true, index: true },
     {
       name: 'media',
       type: 'relationship',
@@ -1187,17 +1513,52 @@ export const MediaUsages: CollectionConfig = {
         'events',
         'timelines',
         'email-messages',
+        'page-layouts',
+        'graphic-documents',
+        'podcast-episodes',
+        'videos',
+        'social-network-variants',
       ] as never,
       required: true,
       index: true,
     },
     { name: 'usageKey', type: 'text', required: true, unique: true, index: true },
+    { name: 'targetType', type: 'text', required: true, defaultValue: 'content' },
+    { name: 'targetId', type: 'text', required: true },
+    { name: 'targetRevision', type: 'text' },
+    { name: 'field', type: 'text' },
+    { name: 'slot', type: 'text' },
+    { name: 'publication', type: 'relationship', relationTo: 'publications', index: true },
+    { name: 'channel', type: 'text' },
+    {
+      name: 'lifecycle',
+      type: 'select',
+      required: true,
+      defaultValue: 'draft',
+      options: ['draft', 'scheduled', 'public'],
+    },
+    { name: 'lastReconciledAt', type: 'date' },
     {
       name: 'purpose',
       type: 'select',
       required: true,
-      options: ['hero', 'inline', 'cover', 'attachment', 'avatar', 'thumbnail', 'newsletter'],
+      options: [
+        'hero',
+        'inline',
+        'cover',
+        'attachment',
+        'avatar',
+        'thumbnail',
+        'newsletter',
+        'layout',
+        'theme',
+        'seo',
+        'podcast',
+        'video',
+        'distribution',
+      ],
     },
+    { name: 'approvedForPublic', type: 'checkbox', defaultValue: false },
     { name: 'replaceGlobally', type: 'checkbox', defaultValue: false },
   ],
 }

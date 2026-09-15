@@ -1,3 +1,18 @@
+import * as pre05LegacySiteMigration from './20260912_050000_pre_05_legacy_site_migration'
+import * as med00 from './20260912_060000_med_00_media_contract'
+import * as med01UploadSessions from './20260912_070000_med_01_upload_sessions'
+import * as med02DamGovernance from './20260913_080000_med_02_dam_governance'
+import * as med03ImageVariants from './20260913_090000_med_03_image_variants'
+import * as med04PodcastWorkflow from './20260913_100000_med_04_podcast_workflow'
+import * as med05VideoWorkflow from './20260914_110000_med_05_video_workflow'
+import * as disc01DiscoveryWorkflow from './20260914_120000_disc_01_discovery_workflow'
+import * as disc01SharedSeoFields from './20260914_121000_disc_01_shared_seo_fields'
+import * as disc04SearchProjection from './20260915_130000_disc_04_search_projection'
+import * as pre04ReusableComposition from './20260912_040000_pre_04_reusable_composition'
+import * as pre01Snapshots from './20260912_020000_pre_01_presentation_snapshots'
+import * as pre03VisualEditor from './20260912_030000_pre_03_visual_editor'
+import * as pre01 from './20260912_010000_pre_01_theme_lifecycle'
+import * as pre00 from './20260912_000000_pre_00_theme_selection'
 import * as migration_20260812_010209_initial_foundation from './20260812_010209_initial_foundation'
 import * as migration_20260812_034055_m02_operations_jobs from './20260812_034055_m02_operations_jobs'
 import * as migration_20260812_080000_m02_first_run_installation from './20260812_080000_m02_first_run_installation'
@@ -263,5 +278,68 @@ export const migrations = [
     up: migration_20260902_020000_pub_04_publishing_floor.up,
     down: migration_20260902_020000_pub_04_publishing_floor.down,
     name: '20260902_020000_pub_04_publishing_floor',
+  },
+  { up: pre00.up, down: pre00.down, name: '20260912_000000_pre_00_theme_selection' },
+  { up: pre01.up, down: pre01.down, name: '20260912_010000_pre_01_theme_lifecycle' },
+  {
+    up: pre01Snapshots.up,
+    down: pre01Snapshots.down,
+    name: '20260912_020000_pre_01_presentation_snapshots',
+  },
+  {
+    up: pre03VisualEditor.up,
+    down: pre03VisualEditor.down,
+    name: '20260912_030000_pre_03_visual_editor',
+  },
+  {
+    up: pre04ReusableComposition.up,
+    down: pre04ReusableComposition.down,
+    name: '20260912_040000_pre_04_reusable_composition',
+  },
+  {
+    up: pre05LegacySiteMigration.up,
+    down: pre05LegacySiteMigration.down,
+    name: '20260912_050000_pre_05_legacy_site_migration',
+  },
+  { up: med00.up, down: med00.down, name: '20260912_060000_med_00_media_contract' },
+  {
+    up: med01UploadSessions.up,
+    down: med01UploadSessions.down,
+    name: '20260912_070000_med_01_upload_sessions',
+  },
+  {
+    up: med02DamGovernance.up,
+    down: med02DamGovernance.down,
+    name: '20260913_080000_med_02_dam_governance',
+  },
+  {
+    up: med03ImageVariants.up,
+    down: med03ImageVariants.down,
+    name: '20260913_090000_med_03_image_variants',
+  },
+  {
+    up: med04PodcastWorkflow.up,
+    down: med04PodcastWorkflow.down,
+    name: '20260913_100000_med_04_podcast_workflow',
+  },
+  {
+    up: med05VideoWorkflow.up,
+    down: med05VideoWorkflow.down,
+    name: '20260914_110000_med_05_video_workflow',
+  },
+  {
+    up: disc01DiscoveryWorkflow.up,
+    down: disc01DiscoveryWorkflow.down,
+    name: '20260914_120000_disc_01_discovery_workflow',
+  },
+  {
+    up: disc01SharedSeoFields.up,
+    down: disc01SharedSeoFields.down,
+    name: '20260914_121000_disc_01_shared_seo_fields',
+  },
+  {
+    up: disc04SearchProjection.up,
+    down: disc04SearchProjection.down,
+    name: '20260915_130000_disc_04_search_projection',
   },
 ]

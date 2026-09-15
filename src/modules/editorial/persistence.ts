@@ -18,6 +18,11 @@ import {
 } from './workflow'
 import { OPERATIONS_QUEUE } from '../operations/tasks'
 import { canRenderPublic } from '../public/contracts'
+import {
+  assertMediaIdsPublishable,
+  assertUsageTargetsPublishable,
+  reconcileMediaUsages,
+} from '../media/workflow'
 
 type Doc = Record<string, any>
 
@@ -58,6 +63,7 @@ export type EditorialArticleInput = {
 }
 
 export type EditorialPresentation = {
+  contentType?: string
   title: string
   subtitle: string | null
   excerpt: string | null
@@ -882,6 +888,12 @@ export async function publishScheduledArticle(
   },
 ): Promise<boolean> {
   const bundle = await loadBundleByArticleId(payload, input.articleId)
+  // Rebuild before the release gate so rich text, SEO/social overrides, and layout links
+  // cannot bypass the historic hero-only attachment path.
+  await reconcileMediaUsages(payload, idOf(bundle.content.site))
+  await assertUsageTargetsPublishable(payload, [input.articleId, idOf(bundle.content.id)])
+  const heroMediaId = idOf(bundle.content.heroMedia)
+  if (heroMediaId) await assertMediaIdsPublishable(payload, [heroMediaId])
   const scheduledJob = await findOne(payload, 'scheduled-publish-jobs', {
     idempotencyKey: { equals: input.idempotencyKey },
   })
@@ -983,6 +995,7 @@ export async function buildArticlePresentation(
     : undefined
 
   return {
+    contentType: String(bundle.content.contentType),
     title: String(bundle.content.title),
     subtitle: bundle.content.subtitle ? String(bundle.content.subtitle) : null,
     excerpt: bundle.content.summary

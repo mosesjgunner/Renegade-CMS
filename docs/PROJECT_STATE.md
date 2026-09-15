@@ -1,3 +1,112 @@
+## Discovery Pass DISC-02 — Schema-First Graph Registry & Safe Serializer Implemented & Verified — 2026-09-14
+
+Implemented and verified the DISC-02 Schema-First Graph Registry and Safe JSON-LD Serialization engine:
+
+- **Coherent Schema Graph (`@graph`)**:
+  - Implemented typed schema registry (`src/modules/public/schema.ts`) emitting unified JSON-LD graphs with stable, canonical URI conventions: Identity (`#identity`), WebSite (`#website`), WebPage (`#webpage`), BreadcrumbList (`#breadcrumb`), primary ImageObject (`#primaryimage`), Author (`#person`), and primary entities (`#article`, `#podcast-series`, `#podcast-episode`, `#video`).
+  - Strict linkage ensures all cross-references (`isPartOf`, `breadcrumb`, `primaryImageOfPage`, `mainEntity`, `mainEntityOfPage`, `author`, `publisher`, `associatedMedia`) resolve to actual nodes in the same graph without duplicate entity fragments.
+- **Strict Fact Fidelity (No Invention Policy)**:
+  - Zero synthetic aggregate ratings, prices, dummy author names ("Admin"), fake publication dates, or unprovided transcripts. Mapped strictly from verified content facts.
+- **Page-Type Composition, Validation & Fallbacks**:
+  - Validates required fields across all supported page types (Home, Page, Article, Podcast Show, Podcast Episode, Video, Archive, Search).
+  - Implements deterministic fallback to `WebPage` when specialized types lack required facts (e.g. Article without headline, Video without uploadDate), recording actionable `validationIssues` and `eligibilityReason`.
+  - Automatically marks noindex directives (`seoNoIndex`, prelaunch/maintenance, draft/private) as ineligible for rich snippets.
+- **Canonical Breadcrumb Hierarchy**:
+  - Generated from actual route taxonomy across hierarchical Pages, Articles, Podcast Shows/Episodes, and Videos matching user-visible hierarchy.
+- **Admin Schema Preview & Direct Repair (`DiscoveryPanel.tsx`)**:
+  - Displays rich snippet eligibility badge, graph node breakdown with roles, field-to-source mappings (`headline ← from title`, `image ← from heroMedia`), and validation issues with one-click "Repair [field]" buttons without requiring raw JSON manipulation.
+- **Secure Extension API for Custom Types & Plugins**:
+  - `SchemaRegistry` enforces ownership, reserves core type IDs, prevents duplicate registrations, validates `@id` canonical origin, and scrubs prototype pollution (`__proto__`) and `<script>` blocks.
+- **Safe JSON-LD Serialization (`serializeJsonLd`)**:
+  - Prevents script termination attacks by escaping `<`, `>`, `&`, `\u2028`, and `\u2029`, while guaranteeing 100% compliant JSON parse roundtripping. Integrated across all frontend page routes.
+- **Verification Evidence**:
+  - Unit test suite: `tests/unit/disc-02-schema-graph.test.ts` (22/22 PASS).
+  - Complete discovery suite: DISC-00, DISC-01, DISC-02 (37/37 PASS).
+  - Toolchain quality: `npm run typecheck` (0 errors), `npm run lint` (0 warnings).
+  - Documentation: `docs/discovery/DISC-02-SCHEMA-GRAPH.md`.
+
+## Media Pass MED-03 — Versioned image variant processing implemented — 2026-09-13
+
+- The `media` queue owns bounded, idempotent image processing. Approved recipe names resolve immutable checksum- and recipe-version-addressed output; browser delivery is responsive AVIF/WebP/JPEG with ETags and immutable cache control.
+- Originals remain private, generated metadata is stripped, unsafe SVG is refused, animated originals are preserved without silent flattening, focal/crop data is non-destructive, and prior ready output is held for rollback-safe regeneration/GC.
+- Status: implementation and focused real-Sharp fixtures are in place. PostgreSQL worker restart, public browser, S3, backup/restore and full release gates still require live evidence before a VERIFIED claim.
+
+## Media Pass MED-01 — Durable Resumable Upload Foundation Verified & Complete — 2026-09-13
+
+Verified and completed the MED-01 durable upload foundation across live PostgreSQL integration, S3 storage adapter, operational backup/restore, and full Playwright browser tests:
+
+- **Durable Resumable Upload Sessions (`media-upload-sessions`)**: Private, site/owner-scoped sessions with chunk staging under `.upload-sessions/<sessionId>/<index>.part`, byte offset verification, idempotent retry handling, chunk integrity mismatch detection (409 Conflict), magic-byte MIME sniffing, SHA-256 validation, and automatic staging directory deletion upon finalization into canonical `media-assets` and `media-blobs`.
+- **Fault-Tolerant Finalization & Cleanup**: Interrupted finalization recovery (`state: 'finalizing'`) automatically recovers and commits canonical assets; completed sessions are idempotently refinalized; active cancellation purges staging chunks; and scheduled worker task `cleanupExpiredUploadSessions` purges expired sessions.
+- **S3-Compatible Storage Adapter**: Verified with AWS SigV4 signed canonical requests, PUT, GET (200 & 404), DELETE, and full `uploadMedia`/`deleteOrphanedMedia` workflows when `STORAGE_DRIVER=s3`.
+- **Operational Backup & Restore**: Operational backup script excludes ephemeral `.upload-sessions` staging directories while capturing canonical media (`media.tar.gz`). Verified checksum validation, tamper detection, empty target enforcement, and restore safety isolation.
+- **Publisher Media Library & Browser Verification**: Verified `/admin/media-library` with `MediaUploader` chunk staging and progress, `MediaPicker` selection, metadata management (Title, Alt text, Caption), "Save metadata", canonical URL display (`/media/:id` with 0 storage path leakage), and orphaned asset deletion.
+- **Verification Evidence**:
+  - Live PostgreSQL integration: `tests/integration/med-01-upload-sessions.integration.test.ts` (1/1 PASS)
+  - S3-compatible storage driver: `tests/unit/med-01-s3-storage.test.ts` (5/5 PASS)
+  - Backup/restore media verification: `tests/unit/med-01-backup-media.test.ts` (5/5 PASS)
+  - Playwright browser suite: `tests/browser/med-01-media-library.spec.ts` (1/1 PASS)
+  - Full test suite: 75 unit test files (344/344 PASS), `media-acceptance.integration.test.ts` (1/1 PASS)
+  - Toolchain quality: `npm run typecheck` (0 errors), `npm run lint` (0 warnings), `npm run format:check` (clean), `npm run build` (standalone build verified)
+
+## Media Pass MED-00 — Canonical Asset and Real-byte Delivery Contract — 2026-09-12
+
+Implemented the canonical `media-assets` / `media-blobs` / `media-variants`
+boundary. Assets preserve editorial identity and stable `/media/:id` URLs;
+private blobs own opaque local or S3-compatible storage keys and site-scoped
+SHA-256 deduplication; variants retain generated-object provenance. Uploads
+sniff bytes, record accessible and rights metadata, compensate failed metadata
+transactions, and default to private delivery. Anonymous delivery now requires
+an approved same-site published use (or explicit site identity policy), and
+legacy `local://` metadata fixtures cannot be served as bytes. Replacement,
+shared-blob deletion refusal, and local/S3 adapter capabilities are explicit.
+
+Migration: `20260912_060000_med_00_media_contract`. Contract tests cover byte
+deduplication, MIME spoofing, traversal protection, tenant isolation, public
+eligibility, replacement cycles, and transaction cleanup. See ADR-0007.
+
+## Presentation Pass PRE-03 — Controlled Visual Editor Implemented & Verified — 2026-09-12
+
+Delivered a registry-driven Puck editor behind the `VisualEditor` adapter with categorized template/slot palettes; accessible add/select/reorder/duplicate/configure/remove and session undo/redo; typed text, link, canonical media, bounded query, variant, alignment, and theme-token fields; autosave and optimistic-conflict recovery; authenticated exact draft preview; immutable publication snapshots; compatible theme switching; restricted global header/footer composition; and an article-template boundary that keeps canonical Post bodies outside the canvas.
+
+Both collection hooks and the PATCH boundary validate the explicit layout schema/version/component IDs, size/count/nesting limits, slot allow-lists, safe props, canonical site-scoped references, and approved tokens. Removed or incompatible stored components are preserved in `unknownBlocks`, render with a safe fallback, and surface an actionable repair state; newly injected unknown components are rejected. Puck CSS/code is editor-route-only.
+
+Verification: focused presentation 30/30; full unit 67 files / 285 tests; full integration 16 files / 46 tests (44/46 initial sweep, both environment/baseline failures repaired and 4/4 affected tests rerun); dedicated Chrome acceptance passed; canonical Next.js standalone build passed; `verify:presentation-bundles` passed. Migration `20260912_030000_pre_03_visual_editor` applied. See `docs/presentation/PRE-03-VISUAL-EDITOR.md`.
+
+## Presentation Pass PRE-01 — Local Theme Lifecycle Implemented & Verified — 2026-09-12
+
+Implemented and verified the end-to-end theme lifecycle from PRE-00 contracts across local package discovery, registered renderer resolution, typed design tokens, authenticated preview, atomic transactional activation, rollback, and process persistence:
+
+- **Local Package Boundary (`theme-packages/<id>-<semver>/theme.json`)**:
+  - Validated by `src/modules/presentation/packages.ts` against schema requirements: unique `id`, semantic `version`, compatibility range `renegade`, registered `renderer`, token schema/defaults, declared inert assets with SHA-256 integrity, and declarative idempotent `migrations`.
+  - Rejects unknown fields, path traversal (`../escape`), invalid semver (`latest`), undeclared assets, symlinks, arbitrary imports, and executable JS/CSS configuration.
+  - Retains incompatible packages in discovery with actionable operator errors (`compatible: false`) without offering activation. Verified against malicious fixtures in `tests/fixtures/themes/malicious.json`.
+- **Registered Presentation Renders & Scoped Tokens**:
+  - Packages resolve only registered executable renderers (`neutral-starter`, `renegade-party`) from `src/modules/presentation/registry.tsx`. Arbitrary filesystem imports and dynamic evaluation remain strictly forbidden.
+  - Typed design tokens (`src/modules/presentation/tokens.ts`) for canvas, surface, ink, accent, focus, typography, spacing, radii, border, card shadows, content widths, and motion duration. Contrast enforcement guarantees WCAG compliance (4.5:1 text/accent, 3:1 focus against canvas/surface).
+  - Emits scoped CSS variables (`--presentation-*`) on `body[data-theme]` without contaminating admin or leaking across sites.
+- **Draft Settings & Authenticated Preview Sessions**:
+  - Draft configurations saved to `presentation_theme_state` (PostgreSQL jsonb) without modifying anonymous output or canonical content revisions.
+  - Preview sessions issue opaque cryptographically random tokens stored as SHA-256 hashes in `presentation_theme_previews`, bound to owner ID and site ID with 15-minute expiration, delivered in HttpOnly SameSite Strict cookie `presentation-preview`.
+  - Unauthenticated visitors or stolen preview cookies cannot activate preview. Ending preview revokes stored token and prevents replay.
+- **Atomic Activation, Preflight Validation & Rollback**:
+  - Multi-step preflight renders public sample routes (`/`, `/articles`, `/search`, canonical paths) with preview probe before committing.
+  - Uses PostgreSQL row locks (`SELECT ... FOR UPDATE`), atomic revision increment, and rollback tracking. Commits active state, records audit log in `presentation_theme_audit`, revokes previews, and calls `revalidatePath('/', 'layout')` within a single atomic transaction.
+  - Public HTTP resolution automatically falls back and rolls back to previous compatible configuration if an active package is deleted, corrupted, or tampered on disk.
+- **Declarative Presentation Migrations**:
+  - Versioned declarative `defaults` migrations merge package token updates into existing selections while preserving operator token overrides. Idempotent and restricted strictly to presentation metadata. Never alters canonical content or rich-text bodies.
+- **Capability Center Admin UI (`/admin/capabilities`)**:
+  - `src/modules/admin/ThemeCenter.tsx` provides site selection, installed package inventory, compatibility badges, capability indicators, token overrides editor, preview launch/teardown, activation, and rollback controls with inline actionable status messages.
+- **Multisite Isolation**:
+  - State, previews, and audits are strictly partitioned by `site_id`.
+- **Verification Evidence**:
+  - Unit tests: 66 files / 281 tests passed (`tests/unit/pre-01-themes.test.ts`, `tests/unit/pre-00-presentation.test.tsx`).
+  - Integration tests: 16 files / 46 tests passed (`tests/integration/pre-01-theme-lifecycle.integration.test.ts`).
+  - Smoke tests:
+    - `tests/smoke/presentation.smoke.mjs`: verified 6 surfaces (home, Page, Post, archive, search, 404) with manifest headers and canonical revision text.
+    - `tests/smoke/theme-lifecycle.smoke.mjs`: verified anonymous denial, draft isolation, authenticated owner preview with token variables, cookie revocation, atomic activation, rollback, and revision fingerprint preservation.
+    - `tests/smoke/theme-restart.smoke.mjs`: restarted standalone web and worker processes twice, verified readiness (`/health/ready` and worker heartbeat), proved active theme and stored state persist across restarts (`docs/presentation/pre-01-restart-evidence.json`).
+  - Production build: `npm run build` compiled cleanly with Next.js standalone and asset synchronization. Lint and format checks clean.
+
 # Project state
 
 ## Publishing Pass PUB-02 — canonical Posts and Pages

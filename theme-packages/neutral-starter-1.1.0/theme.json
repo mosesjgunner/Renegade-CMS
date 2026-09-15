@@ -1,0 +1,21 @@
+{
+  "id": "neutral-starter",
+  "version": "1.1.0",
+  "label": "Neutral Starter",
+  "renegade": "^1.0.0",
+  "renderer": "neutral-starter",
+  "tokens": {
+    "radii.normal": "0.75rem"
+  },
+  "assets": [],
+  "migrations": [
+    {
+      "from": "1.0.0",
+      "to": "1.1.0",
+      "operation": "defaults",
+      "tokens": {
+        "radii.normal": "0.75rem"
+      }
+    }
+  ]
+}

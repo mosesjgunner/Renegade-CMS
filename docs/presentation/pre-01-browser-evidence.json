@@ -1,0 +1,24 @@
+{
+  "checkedAt": "2026-09-12T19:01:11.895Z",
+  "origin": "http://localhost:3120",
+  "evidence": [
+    "Anonymous theme administration denied",
+    "Draft leaves anonymous version unchanged",
+    "Authenticated browser preview uses draft tokens; stolen preview cookie alone has no effect",
+    "Public token variables do not contaminate admin",
+    "Ending preview revokes its stored token, including authenticated replay",
+    "Browser activation changes public HTTP atomically",
+    "Browser rollback restores previous public configuration",
+    "Canonical revision documents unchanged"
+  ],
+  "persisted": {
+    "revision": 9,
+    "active": {
+      "id": "neutral-starter",
+      "digest": "eb064f12c87f8778d192ff240d69f97bff8d18e06e7811ca3a4719d9d1a9737e",
+      "tokens": {},
+      "version": "1.0.0",
+      "renderer": "neutral-starter"
+    }
+  }
+}

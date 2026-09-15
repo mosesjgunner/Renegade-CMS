@@ -1,3 +1,4 @@
+import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
 
 import { canRenderPublic } from '../../src/modules/public/contracts'
@@ -39,11 +40,13 @@ describe('public navigation and resilient rendering', () => {
 
   it('renders a safe visible fallback for a legacy block', () => {
     const layout = installRecipe(undefined, 'writer-blogger', 'site-1')
-    const rendered = renderLayout({
-      ...layout,
-      blocks: [{ id: 'retired', component: 'legacy.hero', componentVersion: 1, props: {} }],
-    }) as Array<{ props?: Record<string, unknown> }>
-    expect(rendered).toHaveLength(1)
-    expect(rendered[0]?.props?.['data-unavailable-component']).toBe('legacy.hero')
+    const rendered = renderToStaticMarkup(
+      renderLayout({
+        ...layout,
+        blocks: [{ id: 'retired', component: 'legacy.hero', componentVersion: 1, props: {} }],
+      }),
+    )
+    expect(rendered).toContain('data-unavailable-component="legacy.hero"')
+    expect(rendered).toContain('This section is unavailable.')
   })
 })

@@ -3,9 +3,11 @@ import { describe, expect, it } from 'vitest'
 
 import {
   assertSafeEmbedUrl,
+  canRenderPodcast,
   importPodcastFeed,
   parseRssEpisodes,
   podcastRss,
+  podcastGuid,
   publicVideo,
   syncYouTubeVideo,
   transcriptFromSegments,
@@ -23,6 +25,7 @@ describe('podcast and video publishing workflows', () => {
       episodes: [
         {
           id: 'episode-1',
+          guid: podcastGuid('show-1', 'episode-1'),
           title: 'Representative episode',
           slug: 'representative',
           description: 'Notes',
@@ -41,6 +44,18 @@ describe('podcast and video publishing workflows', () => {
       enclosureType: 'audio/mpeg',
     })
     expect(feed).toContain('podcast:chapters')
+    expect(feed).toContain('<guid isPermaLink="false">urn:renegade:podcast:show-1:episode-1</guid>')
+    expect(feed).not.toContain('urn:renegade:podcast:show-1:renamed')
+  })
+
+  it('uses the shared canonical content workflow as the podcast public gate', () => {
+    expect(canRenderPodcast({ status: 'published', content: { status: 'draft' } })).toBe(false)
+    expect(
+      canRenderPodcast({
+        status: 'published',
+        content: { status: 'scheduled', publishedAt: '2020-01-01T00:00:00Z' },
+      }),
+    ).toBe(true)
   })
 
   it('parses an imported RSS enclosure deterministically and rejects malformed enclosures', () => {
@@ -88,7 +103,12 @@ describe('podcast and video publishing workflows', () => {
       fetcher: async () =>
         new Response(source, { headers: { 'content-type': 'application/rss+xml' } }) as any,
     }
-    expect(await importPodcastFeed(store, input)).toMatchObject({ created: 1, updated: 0 })
+    expect(await importPodcastFeed(store, { ...input, migrateRemoteMedia: true })).toMatchObject({
+      created: 1,
+      updated: 0,
+      remoteMedia: { requested: true, migrated: 0, skipped: 1 },
+      unsupportedFields: expect.arrayContaining(['remote media byte migration']),
+    })
     expect(await importPodcastFeed(store, input)).toMatchObject({
       created: 0,
       updated: 0,

@@ -3,6 +3,7 @@
 import { FormEvent, useMemo, useState } from 'react'
 import Link from 'next/link'
 
+import { themes } from '@/modules/presentation/registry'
 import type { OnboardingInput } from '@/modules/operations/onboarding'
 
 type RegistrationOptions = Omit<
@@ -321,18 +322,15 @@ function BrandStep({
         available.
       </p>
       <div className="grid sm:grid-cols-2 gap-3">
-        <Choice
-          checked={form.themeId === 'neutral-starter'}
-          onChange={() => update('themeId', 'neutral-starter')}
-          title="Neutral starter"
-          detail="Clean, readable and adaptable."
-        />
-        <Choice
-          checked={form.themeId === 'renegade-party'}
-          onChange={() => update('themeId', 'renegade-party')}
-          title="Renegade Party"
-          detail="A more editorial, high-contrast voice."
-        />
+        {Object.values(themes).map((theme) => (
+          <Choice
+            key={theme.id}
+            checked={form.themeId === theme.id}
+            onChange={() => update('themeId', theme.id)}
+            title={theme.label}
+            detail={theme.description}
+          />
+        ))}
       </div>
       <Field label="Starter site type">
         <select
