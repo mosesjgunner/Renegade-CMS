@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import {
   decryptSecret,
   encryptSecret,
@@ -66,6 +66,22 @@ describe('Pass DIST-01: Social Security, Canonical Models & Queue State Machine'
     it('handles empty inputs gracefully', () => {
       expect(encryptSecret('')).toBe('')
       expect(decryptSecret('')).toBe('')
+    })
+
+    it('fails closed when no production encryption key is configured', () => {
+      const previousNodeEnv = process.env.NODE_ENV
+      const previousKey = process.env.RENEGADE_ENCRYPTION_KEY
+      process.env.NODE_ENV = 'production'
+      delete process.env.RENEGADE_ENCRYPTION_KEY
+
+      try {
+        expect(() => encryptSecret('prod-secret')).toThrow(/production.*encryption/i)
+      } finally {
+        if (previousNodeEnv === undefined) delete process.env.NODE_ENV
+        else process.env.NODE_ENV = previousNodeEnv
+        if (previousKey === undefined) delete process.env.RENEGADE_ENCRYPTION_KEY
+        else process.env.RENEGADE_ENCRYPTION_KEY = previousKey
+      }
     })
   })
 
@@ -244,6 +260,24 @@ describe('Pass DIST-01: Social Security, Canonical Models & Queue State Machine'
       expect(backoff1).toBe(2000)
       expect(backoff2).toBe(4000)
       expect(backoffCapped).toBe(60000) // Capped at maxMs
+    })
+
+    it('reclaims expired worker leases so a new worker can take over safely', () => {
+      vi.useFakeTimers()
+      const jobId = 'job-expired-lease'
+
+      try {
+        vi.setSystemTime(new Date('2026-01-01T00:00:00.000Z'))
+        const firstLease = acquireWorkerLease(jobId, 'worker-a', 1000)
+        expect(firstLease.acquired).toBe(true)
+
+        vi.setSystemTime(new Date('2026-01-01T00:00:02.000Z'))
+        const staleLease = acquireWorkerLease(jobId, 'worker-b', 5000)
+        expect(staleLease.acquired).toBe(true)
+        expect(staleLease.existingOwner).toBeUndefined()
+      } finally {
+        vi.useRealTimers()
+      }
     })
 
     it('parses Retry-After and x-rate-limit-reset headers accurately', () => {

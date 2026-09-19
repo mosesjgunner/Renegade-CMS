@@ -50,7 +50,9 @@ export function acquireWorkerLease(
 
   if (existing) {
     const expiresAt = new Date(existing.leaseExpiresAt).getTime()
-    if (expiresAt > now && existing.leaseOwner !== workerId) {
+    if (expiresAt <= now) {
+      activeLeases.delete(jobId)
+    } else if (existing.leaseOwner !== workerId) {
       return { acquired: false, existingOwner: existing.leaseOwner, leaseExpiresAt: existing.leaseExpiresAt }
     }
   }

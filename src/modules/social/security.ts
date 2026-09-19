@@ -14,15 +14,32 @@ const DEFAULT_FALLBACK_DEV_KEY = '0123456789abcdef0123456789abcdef0123456789abcd
 
 /**
  * Resolves the 256-bit encryption key as a Buffer.
- * Prefers RENEGADE_ENCRYPTION_KEY from env, falling back to a deterministic SHA-256 hash of dev secret in non-production.
+ * Fail-closed in production: a real encryption key must be configured.
  */
 export function getEncryptionKey(explicitKeyHex?: string): Buffer {
-  const rawKey = explicitKeyHex || process.env.RENEGADE_ENCRYPTION_KEY || DEFAULT_FALLBACK_DEV_KEY
-  if (/^[0-9a-fA-F]{64}$/.test(rawKey)) {
-    return Buffer.from(rawKey, 'hex')
+  const rawKey = explicitKeyHex || process.env.RENEGADE_ENCRYPTION_KEY
+
+  if (rawKey) {
+    if (/^[0-9a-fA-F]{64}$/.test(rawKey)) {
+      return Buffer.from(rawKey, 'hex')
+    }
+    return createHash('sha256').update(rawKey).digest()
   }
-  // Deterministically hash to 32 bytes if provided key string is not 64-char hex
-  return createHash('sha256').update(rawKey).digest()
+
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('Production encryption key is required: set RENEGADE_ENCRYPTION_KEY')
+  }
+
+  return createHash('sha256').update(DEFAULT_FALLBACK_DEV_KEY).digest()
+}
+
+function resolveRequiredSecret(explicitSecret?: string): string {
+  if (explicitSecret) return explicitSecret
+  if (process.env.RENEGADE_ENCRYPTION_KEY) return process.env.RENEGADE_ENCRYPTION_KEY
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('Production OAuth secret is required: set RENEGADE_ENCRYPTION_KEY')
+  }
+  return DEFAULT_FALLBACK_DEV_KEY
 }
 
 /**
@@ -220,7 +237,7 @@ export function generateOAuthState(
   metadata: { siteId: string; accountId?: string; network: string; redirectUri?: string },
   explicitSecret?: string,
 ): string {
-  const secret = explicitSecret || process.env.RENEGADE_ENCRYPTION_KEY || DEFAULT_FALLBACK_DEV_KEY
+  const secret = resolveRequiredSecret(explicitSecret)
   const payload = {
     ...metadata,
     issuedAt: Date.now(),
@@ -253,7 +270,7 @@ export function verifyOAuthState(
   }
 
   const [payloadB64, signature] = parts
-  const secret = explicitSecret || process.env.RENEGADE_ENCRYPTION_KEY || DEFAULT_FALLBACK_DEV_KEY
+  const secret = resolveRequiredSecret(explicitSecret)
   const expectedSig = createHmac('sha256', secret).update(payloadB64).digest('base64url')
 
   // Timing safe equality check
