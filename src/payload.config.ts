@@ -45,6 +45,14 @@ export default buildConfig({
           Component: './modules/admin/RenderedQualityCenter',
           path: '/rendered-quality',
         },
+        workflow: {
+          Component: './modules/admin/EditorialWorkflowCenter',
+          path: '/workflow',
+        },
+        releases: {
+          Component: './modules/admin/ReleaseCenter',
+          path: '/releases',
+        },
       },
     },
   },

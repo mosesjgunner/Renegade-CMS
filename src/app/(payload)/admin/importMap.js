@@ -34,6 +34,7 @@ import { default as default_a5090419c79b8bec522e497f5c0c6ffe } from '../../../mo
 import { default as default_af555b1dcb5771f1609cd823e974f9d0 } from '../../../modules/admin/IndexingCenter'
 import { default as default_a494b3e100f193cf1bd4cbea3adab1b2 } from '../../../modules/admin/RedirectManager'
 import { default as default_96f804af486ed760e64b391474a4ed82 } from '../../../modules/admin/RenderedQualityCenter'
+import { default as default_f83c4f7c0cdcbc6ec7b78312628cd683 } from '../../../modules/admin/EditorialWorkflowCenter'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
 /** @type import('payload').ImportMap */
@@ -74,5 +75,6 @@ export const importMap = {
   "./modules/admin/IndexingCenter#default": default_af555b1dcb5771f1609cd823e974f9d0,
   "./modules/admin/RedirectManager#default": default_a494b3e100f193cf1bd4cbea3adab1b2,
   "./modules/admin/RenderedQualityCenter#default": default_96f804af486ed760e64b391474a4ed82,
+  "./modules/admin/EditorialWorkflowCenter#default": default_f83c4f7c0cdcbc6ec7b78312628cd683,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }

@@ -50,7 +50,12 @@ describe('MED-EXT-01: miniPaint Image Editor Architecture & Integration', () => 
       const htmlContent = fs.readFileSync(htmlPath, 'utf8')
       expect(htmlContent).toContain('miniPaint')
       expect(htmlContent).toContain('dist/bundle.js')
+      expect(htmlContent).toContain('cmos-overrides.css')
       expect(htmlContent).toContain('cmos:image-editor:ready')
+
+      const overridesPath = path.join(vendorDir, 'cmos-overrides.css')
+      expect(fs.existsSync(overridesPath)).toBe(true)
+      expect(fs.readFileSync(overridesPath, 'utf8')).toContain('CMoS-owned presentation overrides')
 
       const bundleStats = fs.statSync(bundlePath)
       expect(bundleStats.size).toBeGreaterThan(500 * 1024) // > 500KB bundle

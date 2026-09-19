@@ -75,6 +75,9 @@ const editorialLifecycleOptions = [
   'updated',
   'archived',
   'rejected',
+  'changes-requested',
+  'cancelled',
+  'failed',
 ] as const
 
 const editorialActionOptions = [
@@ -1052,6 +1055,9 @@ export const ArticleFamilyContent: CollectionConfig = {
     { name: 'acceptedMutationKeys', type: 'json', required: true, defaultValue: [] },
     { name: 'revisionComparison', type: 'json' },
     { name: 'promotionProvenance', type: 'json' },
+    { name: 'qualityGateSnapshot', type: 'json' },
+    { name: 'qualityWaiver', type: 'json' },
+    { name: 'reviewDecisions', type: 'json', required: true, defaultValue: [] },
   ],
 }
 
@@ -1183,8 +1189,13 @@ export const ScheduledPublishJobs: CollectionConfig = {
       type: 'select',
       required: true,
       defaultValue: 'pending-contract',
-      options: ['pending-contract', 'queued', 'completed', 'cancelled', 'failed'],
+      options: ['pending-contract', 'queued', 'processing', 'completed', 'cancelled', 'failed'],
     },
+    { name: 'leaseOwner', type: 'text' },
+    { name: 'leaseExpiresAt', type: 'date' },
+    { name: 'retryCount', type: 'number', required: true, defaultValue: 0 },
+    { name: 'maxRetries', type: 'number', required: true, defaultValue: 3 },
+    { name: 'lastError', type: 'textarea' },
     { name: 'createdBy', type: 'relationship', relationTo: 'users' },
   ],
 }

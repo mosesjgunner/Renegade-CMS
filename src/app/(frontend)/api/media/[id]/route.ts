@@ -97,6 +97,7 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
       scope: { kind: 'site', siteId },
       title: String(form.get('title') ?? file.name),
       altText: String(form.get('altText') ?? '') || undefined,
+      originalFilename: file.name,
       bytes: new Uint8Array(await file.arrayBuffer()),
       mode: ['new-asset', 'selected-usages', 'all-usages'].includes(String(form.get('mode')))
         ? (String(form.get('mode')) as 'new-asset' | 'selected-usages' | 'all-usages')

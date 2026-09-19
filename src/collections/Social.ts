@@ -19,6 +19,7 @@ const states = [
 ]
 const networks = [
   'activitypub',
+  'mastodon',
   'bluesky',
   'x',
   'threads',
@@ -27,6 +28,9 @@ const networks = [
   'linkedin',
   'youtube',
   'tiktok',
+  'pinterest',
+  'telegram',
+  'discord',
   'manual',
 ]
 const base = (slug: string, title: string): CollectionConfig => ({

@@ -1,17 +1,24 @@
 import { createHash } from 'node:crypto'
 
-/** Provider capability is deliberately granular: a connected account is never a blanket promise. */
+/**
+ * Supported Social Networks across 10 First-Class targets plus federated & secondary channels.
+ */
 export type SocialNetwork =
-  | 'activitypub'
-  | 'bluesky'
-  | 'x'
-  | 'threads'
   | 'facebook'
   | 'instagram'
+  | 'x'
+  | 'threads'
   | 'linkedin'
-  | 'youtube'
   | 'tiktok'
+  | 'youtube'
+  | 'bluesky'
+  | 'mastodon'
+  | 'pinterest'
+  | 'activitypub'
+  | 'telegram'
+  | 'discord'
   | 'manual'
+
 export type SocialState =
   | 'draft'
   | 'review'
@@ -24,12 +31,14 @@ export type SocialState =
   | 'failed'
   | 'cancelled'
   | 'deletion-requested'
+
 export type CapabilityState =
   | 'available'
   | 'limited'
   | 'approval-required'
   | 'manual-handoff'
   | 'unavailable'
+
 export type ProviderError = {
   kind:
     | 'validation'
@@ -45,11 +54,16 @@ export type ProviderError = {
   providerCode?: string
   remoteOutcome?: 'known-failed' | 'unknown'
 }
+
 export type SocialAttachment = {
   mediaAssetId: string
   role: 'image' | 'video' | 'audio' | 'document'
   altText?: string
+  mimeType?: string
+  fileSizeBytes?: number
+  aspectRatio?: number
 }
+
 export type SocialVariant = {
   id: string
   accountId: string
@@ -62,12 +76,202 @@ export type SocialVariant = {
   scheduledFor?: string
   timeZone?: string
   idempotencyKey: string
+  platformSettings?: Record<string, unknown>
 }
+
+export interface DeliveryReceipt {
+  remotePostId: string
+  remoteUrl: string
+  publishedAt: Date
+  rawResponse: Record<string, unknown>
+}
+
 export type AdapterResult =
-  | { status: 'published'; remoteId: string; remoteUrl?: string }
+  | {
+      status: 'published'
+      remoteId: string
+      remoteUrl?: string
+      rawResponse?: Record<string, unknown>
+      receipt?: DeliveryReceipt
+    }
   | { status: 'failed'; error: ProviderError }
   | { status: 'unknown'; error: ProviderError }
 
+// ==========================================
+// 2026 Normalization Specification Contracts
+// ==========================================
+
+export interface ProviderCapabilities {
+  supportsText: boolean
+  supportsImages: boolean
+  supportsVideo: boolean
+  supportsCarousels: boolean
+  supportsPolls: boolean
+  supportsThreads: boolean
+  supportsAltText: boolean
+  supportsNativeScheduling: boolean
+  supportsPostEditing: boolean
+  supportsPostDeletion: boolean
+  supportsAnalytics: boolean
+  supportsComments: boolean
+  supportsDrafts: boolean
+  requiresMedia: boolean
+  requiresBoardOrCategory: boolean
+  supportsCustomThumbnails: boolean
+
+  limits: {
+    maxCharacters: number
+    maxImages: number
+    maxVideoDurationSeconds: number
+    maxVideoFileSizeBytes: number
+    maxImageFileSizeBytes: number
+    carouselLimits?: {
+      minItems: number
+      maxItems: number
+      allowMixedMedia: boolean
+    }
+  }
+
+  mediaConstraints: {
+    allowedImageMimes: string[]
+    allowedVideoMimes: string[]
+    allowedVideoCodecs: string[]
+    aspectRatios: {
+      minRatio: number
+      maxRatio: number
+      strictStandard?: 'VERTICAL_9_16' | 'SQUARE_1_1' | 'LANDSCAPE_16_9' | 'VERTICAL_2_3' | 'PORTRAIT_4_5'
+      preferred?: string
+    }
+  }
+}
+
+export interface AccountConstraints {
+  accountId: string
+  accountHandle: string
+  characterCeilingOverride?: number
+  permissiblePrivacyLevels?: string[]
+  availableBoards?: Array<{ id: string; name: string }>
+  requiresCategorySelection?: boolean
+  dailyPostsRemaining?: number
+}
+
+export interface ValidationIssue {
+  field: string
+  message: string
+  code: string
+}
+
+export interface ValidationReport {
+  isValid: boolean
+  errors: ValidationIssue[]
+  warnings: ValidationIssue[]
+}
+
+export interface NormalizedAnalytics {
+  deliveryId: string
+  remotePostId: string
+  retrievedAt: Date
+  metrics: {
+    impressions: number
+    reach: number
+    views: number
+    clicks: number
+    likes: number
+    comments: number
+    shares: number
+    saves: number
+    engagementRate: number
+  }
+  videoTelemetry?: {
+    totalWatchTimeSeconds: number
+    averageWatchTimeSeconds: number
+    completionRate: number
+  }
+  rawPlatformMetrics: Record<string, unknown>
+}
+
+export interface AuthTokens {
+  accessToken: string
+  refreshToken?: string
+  expiresAt?: Date
+  tokenType?: string
+  scopes?: string[]
+}
+
+export interface OAuthInitParams {
+  redirectUri: string
+  state: string
+  codeChallenge?: string
+  codeChallengeMethod?: 'S256' | 'plain'
+  scopes?: string[]
+}
+
+export interface AuthContext {
+  accountId: string
+  accountHandle: string
+  network: SocialNetwork
+  credentials: Record<string, string> | null
+  tokens?: AuthTokens
+}
+
+export interface MediaResolver {
+  resolveUrl(mediaAssetId: string): Promise<string>
+  resolveBuffer(mediaAssetId: string): Promise<{ buffer: Buffer; mimeType: string; fileName: string }>
+}
+
+export interface NormalizedRemotePost {
+  remoteId: string
+  remoteUrl: string
+  text: string
+  publishedAt: Date
+  authorHandle?: string
+}
+
+/**
+ * Normalized Social Provider Adapter Contract.
+ */
+export interface SocialProviderAdapter {
+  readonly id?: string
+  readonly name?: string
+  readonly version?: string
+  readonly network: SocialNetwork
+  readonly mode: 'live' | 'manual-handoff' | 'unavailable' | 'fixture'
+
+  // Static capabilities
+  getCapabilities?(): ProviderCapabilities
+
+  // Runtime account constraints discovery
+  discoverAccountConstraints?(authContext: AuthContext): Promise<AccountConstraints>
+
+  // OAuth Lifecycle
+  getAuthorizationUrl?(params: OAuthInitParams): Promise<string>
+  exchangeAuthorizationCode?(code: string, verifier?: string): Promise<AuthTokens>
+  refreshTokens?(currentTokens: AuthTokens): Promise<AuthTokens>
+  revokeAccess?(authContext: AuthContext): Promise<void>
+
+  // Validation
+  validatePost?(variant: SocialVariant, constraints?: AccountConstraints): ValidationReport
+
+  // Publishing
+  publish?(
+    variant: SocialVariant,
+    context?: AuthContext | Readonly<{ accountId: string; credentials: Record<string, string> | null }>,
+    mediaService?: MediaResolver,
+  ): Promise<AdapterResult>
+
+  // Post-publication operations
+  fetchPost?(remotePostId: string, authContext: AuthContext): Promise<NormalizedRemotePost>
+  deletePost?(remotePostId: string, authContext: AuthContext): Promise<void>
+  editPost?(remotePostId: string, variant: SocialVariant, authContext: AuthContext): Promise<DeliveryReceipt>
+
+  // Telemetry
+  fetchAnalytics?(remotePostId: string, authContext: AuthContext): Promise<NormalizedAnalytics>
+
+  // Backward compatibility capability alias
+  readonly capabilities: SocialProviderCapabilities
+}
+
+// Legacy Capabilities Contract kept for backward compatibility with existing tests
 export type SocialProviderCapabilities = Readonly<{
   postTypes: readonly ('text' | 'link' | 'image' | 'video' | 'thread')[]
   textLimit: number | null
@@ -80,20 +284,18 @@ export type SocialProviderCapabilities = Readonly<{
   authentication: Readonly<{ required: boolean; modes: readonly string[] }>
   rateLimit: Readonly<{ requestsPerMinute?: number; retryAfterHeader?: string }>
 }>
-export type SocialProviderAdapter = Readonly<{
-  network: SocialNetwork
-  mode: 'live' | 'manual-handoff' | 'unavailable'
-  capabilities: SocialProviderCapabilities
-  publish?: (
-    variant: SocialVariant,
-    context: Readonly<{ accountId: string; credentials: Record<string, string> | null }>,
-  ) => Promise<AdapterResult>
-}>
+
+// ==========================================
+// Canonical Helper Functions & Utilities
+// ==========================================
+
 export const socialHash = (
   input: Pick<SocialVariant, 'text' | 'attachments' | 'linkUrl' | 'network'>,
 ) => `sha256:${createHash('sha256').update(JSON.stringify(input)).digest('hex')}`
+
 export const socialIdempotencyKey = (variantId: string, approvedHash: string) =>
   `social:${variantId}:${approvedHash.replace('sha256:', '')}`
+
 export const normalizeProviderError = (
   input: Partial<ProviderError> & { message?: string },
 ): ProviderError => ({
@@ -103,6 +305,7 @@ export const normalizeProviderError = (
   retryAfter: input.retryAfter,
   remoteOutcome: input.remoteOutcome ?? 'known-failed',
 })
+
 export const validateVariant = (variant: SocialVariant, maxCharacters?: number): string[] => {
   const issues: string[] = []
   if (!variant.text.trim() && !variant.attachments.length)
@@ -115,6 +318,7 @@ export const validateVariant = (variant: SocialVariant, maxCharacters?: number):
     issues.push('Instagram publishing requires media.')
   return issues
 }
+
 export const validateForProvider = (
   variant: SocialVariant,
   capabilities: SocialProviderCapabilities,
@@ -160,12 +364,14 @@ export const canTransitionSocial = (from: SocialState, to: SocialState) => {
     cancelled: [],
     'deletion-requested': ['published', 'failed'],
   }
-  return allowed[from].includes(to)
+  return allowed[from]?.includes(to) ?? false
 }
+
 export const assertSocialTransition = (from: SocialState, to: SocialState) => {
   if (!canTransitionSocial(from, to))
     throw new Error(`Cannot move social work from ${from} to ${to}.`)
 }
+
 export const campaignState = (states: readonly SocialState[]): SocialState => {
   if (states.includes('failed') && states.includes('published')) return 'partially-published'
   if (states.length && states.every((state) => state === 'published')) return 'published'
@@ -175,10 +381,62 @@ export const campaignState = (states: readonly SocialState[]): SocialState => {
   if (states.includes('approved')) return 'approved'
   return states.includes('review') ? 'review' : 'draft'
 }
+
 /** Test-only deterministic boundary; production resolves provider-runtime.ts. */
-export const fixtureAdapter = (network: 'activitypub' | 'bluesky', fail = false) => ({
+export const fixtureAdapter = (
+  network: 'activitypub' | 'bluesky',
+  fail = false,
+): SocialProviderAdapter & { publish: (variant: SocialVariant) => Promise<AdapterResult> } => ({
+  id: `fixture-${network}`,
+  name: `Fixture ${network}`,
+  version: '1.0.0',
   network,
   mode: 'fixture' as const,
+  capabilities: {
+    postTypes: ['text', 'link', 'image'],
+    textLimit: 500,
+    media: { images: true, video: false, audio: false, maxAttachments: 4 },
+    threads: true,
+    linkCards: 'native',
+    edit: true,
+    delete: true,
+    nativeScheduling: false,
+    authentication: { required: false, modes: [] },
+    rateLimit: {},
+  },
+  getCapabilities(): ProviderCapabilities {
+    return {
+      supportsText: true,
+      supportsImages: true,
+      supportsVideo: false,
+      supportsCarousels: false,
+      supportsPolls: false,
+      supportsThreads: true,
+      supportsAltText: true,
+      supportsNativeScheduling: false,
+      supportsPostEditing: true,
+      supportsPostDeletion: true,
+      supportsAnalytics: false,
+      supportsComments: true,
+      supportsDrafts: false,
+      requiresMedia: false,
+      requiresBoardOrCategory: false,
+      supportsCustomThumbnails: false,
+      limits: {
+        maxCharacters: 500,
+        maxImages: 4,
+        maxVideoDurationSeconds: 0,
+        maxVideoFileSizeBytes: 0,
+        maxImageFileSizeBytes: 10 * 1024 * 1024,
+      },
+      mediaConstraints: {
+        allowedImageMimes: ['image/jpeg', 'image/png', 'image/webp'],
+        allowedVideoMimes: [],
+        allowedVideoCodecs: [],
+        aspectRatios: { minRatio: 0.5, maxRatio: 2.5 },
+      },
+    }
+  },
   publish: async (variant: SocialVariant): Promise<AdapterResult> =>
     fail
       ? {
@@ -202,6 +460,7 @@ export type CalendarMove = {
   timeZone: string
   actorId: string
 }
+
 export const rescheduleCalendarEntry = (
   entry: { startsAt: string; endsAt?: string | null; timeZone: string },
   move: CalendarMove,

@@ -136,7 +136,60 @@ test('MED-EXT-01: miniPaint Image Editor opens CMoS image asset, initializes can
   })
   expect(isMiniPaintReady).toBe(true)
 
-  // 11. Close modal
-  await page.getByRole('button', { name: /Back to Media/ }).click()
+  // 11. Save a non-destructive version through the Media API, then verify its persisted lifecycle.
+  const editedTitle = `edited-banner-${suffix}`
+  await page.getByLabel('Filename').fill(editedTitle)
+  await page.getByRole('button', { name: 'Save version' }).click()
   await expect(modalHeader).not.toBeVisible()
+
+  const original = (
+    await payload.find({
+      collection: 'media-assets',
+      where: { originalFilename: { equals: filename } },
+      limit: 1,
+      depth: 0,
+      overrideAccess: true,
+    } as never)
+  ).docs[0] as unknown as { id: string; replaceGloballyWith?: string }
+  expect(original).toBeTruthy()
+  expect(original.replaceGloballyWith).toBeTruthy()
+
+  const replacement = (await payload.findByID({
+    collection: 'media-assets',
+    id: original.replaceGloballyWith,
+    depth: 0,
+    overrideAccess: true,
+  } as never)) as unknown as {
+    id: string
+    mimeType: string
+    width: number
+    height: number
+    checksum: string
+    originalFilename: string
+  }
+  expect(replacement).toMatchObject({
+    title: editedTitle,
+    mimeType: 'image/png',
+    width: 16,
+    height: 16,
+    originalFilename: `${editedTitle}.png`,
+  })
+  expect(replacement.checksum).toMatch(/^sha256:/)
+
+  const versions = await payload.find({
+    collection: 'media-asset-versions',
+    where: { and: [{ asset: { equals: replacement.id } }, { replacesAsset: { equals: original.id } }] },
+    limit: 1,
+    depth: 0,
+    overrideAccess: true,
+  } as never)
+  expect(versions.docs[0]).toBeTruthy()
+
+  // 12. The replacement is a media-library asset and can be reopened in the editor.
+  await page.getByRole('button', { name: 'Refresh' }).click()
+  const replacementRow = page.locator('tr', { hasText: editedTitle })
+  await expect(replacementRow).toBeVisible({ timeout: 10_000 })
+  await replacementRow.getByRole('button', { name: 'Edit Image' }).click()
+  await expect(page.getByRole('heading', { name: new RegExp(`Editing: ${editedTitle}`, 'i') })).toBeVisible()
+  await page.getByRole('button', { name: /Back to Media/ }).click()
 })

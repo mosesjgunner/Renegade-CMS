@@ -143,8 +143,8 @@ describe('DISC-06 Discovery Pass Gate — Comprehensive End-to-End Proof', () =>
     expect(['page', 'home']).toContain(resolvedHome?.contentType)
     expect(resolvedPost?.contentType).toBe('article')
 
-    const homeJsonLd = discoveryToJsonLd(resolvedHome!)
-    const postJsonLd = discoveryToJsonLd(resolvedPost!)
+    const homeJsonLd = discoveryToJsonLd(resolvedHome!) as any
+    const postJsonLd = discoveryToJsonLd(resolvedPost!) as any
 
     expect(homeJsonLd['@graph']).toBeDefined()
     expect(postJsonLd['@graph']).toBeDefined()
@@ -184,9 +184,9 @@ describe('DISC-06 Discovery Pass Gate — Comprehensive End-to-End Proof', () =>
     const metadata = discoveryToMetadata(doc!)
     expect(metadata.alternates?.canonical).toBe(doc?.canonicalUrl)
     expect(metadata.openGraph?.title).toBe(`Meta Inspect ${suffix}`)
-    expect(metadata.twitter?.card).toBe('summary_large_image')
+    expect((metadata.twitter as any)?.card).toBe('summary_large_image')
 
-    const jsonLd = discoveryToJsonLd(doc!)
+    const jsonLd = discoveryToJsonLd(doc!) as any
     expect(jsonLd['@context']).toBe('https://schema.org')
     expect(Array.isArray(jsonLd['@graph'])).toBe(true)
     const webpageNode = jsonLd['@graph'].find((n: any) => n['@type'] === 'WebPage')
@@ -307,7 +307,7 @@ describe('DISC-06 Discovery Pass Gate — Comprehensive End-to-End Proof', () =>
       },
     ]
 
-    const resolved = resolveRedirect(rules, siteId, fromPath, '?utm=test')
+    const resolved = resolveRedirect(rules, siteId, fromPath, '?utm=test') as any
     expect(resolved).toBeTruthy()
     expect(resolved?.statusCode).toBe(308)
     expect(resolved?.target).toBe(`${toPath}?utm=test`)

@@ -14,6 +14,9 @@ export default function PublishingLinks() {
       <Link href="/admin/globals/site-settings">Site Settings</Link>
       <Link href="/admin/redirects">Redirects</Link>
       <Link href="/admin/rendered-quality">Rendered Quality</Link>
+      <Link href="/admin/workflow">Editorial Workflow</Link>
+      <Link href="/admin/releases">Releases</Link>
+      <Link href="/admin/social">Social Distribution</Link>
       <Link href="/" target="_blank" rel="noreferrer">
         View Site
       </Link>

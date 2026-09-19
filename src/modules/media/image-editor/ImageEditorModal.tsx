@@ -29,6 +29,8 @@ function ImageEditorView({
   )
   const [isDirty, setIsDirty] = useState(false),
     [history, setHistory] = useState({ canUndo: false, canRedo: false })
+  const [showLeaveDialog, setShowLeaveDialog] = useState(false),
+    [isFullscreen, setIsFullscreen] = useState(false)
   const [saveMode, setSaveMode] = useState<ImageEditorSaveMode>('all-usages'),
     [title, setTitle] = useState(asset.title || 'Untitled Image'),
     [reason, setReason] = useState('Edited in miniPaint')
@@ -83,12 +85,26 @@ function ImageEditorView({
     window.addEventListener('beforeunload', warn)
     return () => window.removeEventListener('beforeunload', warn)
   }, [isDirty])
+  useEffect(() => {
+    const syncFullscreen = () => setIsFullscreen(document.fullscreenElement === workspaceRef.current)
+    document.addEventListener('fullscreenchange', syncFullscreen)
+    return () => document.removeEventListener('fullscreenchange', syncFullscreen)
+  }, [])
   const requestClose = useCallback(() => {
     if (isSaving) return
-    if (isDirty && !window.confirm('You have unsaved image edits. Leave without saving them?'))
+    if (isDirty) {
+      setShowLeaveDialog(true)
       return
+    }
     onClose()
   }, [isDirty, isSaving, onClose])
+  const toggleFullscreen = () => {
+    if (document.fullscreenElement) {
+      void document.exitFullscreen()
+    } else {
+      void workspaceRef.current?.requestFullscreen?.()
+    }
+  }
   const save = async () => {
     const adapter = adapterRef.current
     if (!adapter) return
@@ -106,21 +122,28 @@ function ImageEditorView({
       body.append('siteId', asset.siteId)
       body.append('title', title)
       body.append('altText', asset.altText || '')
+      body.append('caption', asset.caption || '')
       let response: Response
       if (saveMode === 'all-usages') {
         body.append('mode', 'all-usages')
-        body.append('reason', reason)
+        body.append('reason', `Edited in miniPaint: ${reason}`)
         response = await fetch(`/api/media/${asset.id}`, { method: 'PUT', body })
       } else response = await fetch('/api/media/upload', { method: 'POST', body })
-      const data = await response.json()
-      if (!response.ok) throw new Error(data.error || 'Failed to save the image.')
+      const data = (await response.json().catch(() => ({}))) as {
+        asset?: { id?: string }
+        error?: string
+        replacement?: { id?: string }
+        url?: string
+      }
+      if (!response.ok)
+        throw new Error(data.error || `Failed to save the image (HTTP ${response.status}).`)
       adapter.markSaved()
       setStatusMessage(
         saveMode === 'all-usages' ? 'New asset version saved.' : 'New media asset saved.',
       )
       onSaved?.({
         assetId: String(data.replacement?.id || data.asset?.id || asset.id),
-        url: data.url || `/media/${asset.id}`,
+        url: data.url || `/media/${data.replacement?.id || data.asset?.id || asset.id}`,
         mode: saveMode,
       })
       onClose()
@@ -206,10 +229,10 @@ function ImageEditorView({
           <button
             className={styles.button}
             type="button"
-            onClick={() => void workspaceRef.current?.requestFullscreen?.()}
-            title="Fullscreen editor"
+            onClick={toggleFullscreen}
+            title={isFullscreen ? 'Exit fullscreen editor' : 'Fullscreen editor'}
           >
-            Fullscreen
+            {isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}
           </button>
           <button
             className={styles.primaryButton}
@@ -306,6 +329,34 @@ function ImageEditorView({
           {saveMode === 'new-asset' ? 'Save As' : 'Save version'}
         </button>
       </footer>
+      {showLeaveDialog && (
+        <div className={styles.dialogBackdrop} role="presentation">
+          <section
+            className={styles.leaveDialog}
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="leave-editor-title"
+            aria-describedby="leave-editor-description"
+          >
+            <h3 id="leave-editor-title">Discard unsaved edits?</h3>
+            <p id="leave-editor-description">
+              Your changes to {asset.title} have not been saved to CMoS Media.
+            </p>
+            <div className={styles.dialogActions}>
+              <button
+                className={styles.button}
+                type="button"
+                onClick={() => setShowLeaveDialog(false)}
+              >
+                Keep editing
+              </button>
+              <button className={styles.dangerButton} type="button" onClick={onClose}>
+                Discard edits
+              </button>
+            </div>
+          </section>
+        </div>
+      )}
     </div>
   )
 }

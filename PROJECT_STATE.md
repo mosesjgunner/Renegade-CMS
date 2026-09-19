@@ -1,3 +1,370 @@
+## Distribution Pass DIST-05 — Secondary Providers (Telegram, Discord) & Background Queue Engine Implemented & Verified — 2026-09-18
+
+Implemented and verified the complete **DIST-05 Secondary Providers & Background Queue Engine** extension (completing the full 2026 Social Provider Capability Matrix and Architecture Specification):
+
+- **Telegram Bot API Adapter (`src/modules/social/adapters/telegram.ts`)**:
+  - Implements `SocialProviderAdapter` with support for text (up to 4096 characters), photo attachments with captions (up to 1024 characters), multi-photo album media groups (`sendMediaGroup` up to 10 items), and video publishing.
+  - In-place message editing (`editMessageText`), deletion (`deleteMessage`), and rate-limit backoff header parsing (`parameters.retry_after`).
+- **Discord Webhook & Bot API Adapter (`src/modules/social/adapters/discord.ts`)**:
+  - Dual delivery mode: Webhook execution via `POST /api/webhooks/:id/:token?wait=true` or Bot token execution via `POST /api/v10/channels/:id/messages`.
+  - Rich embed card support (title, url, description, color, footer, fields, timestamps) and multipart binary file uploads (up to 10 files, 25MB max).
+  - Rate-limit reset compliance with `X-RateLimit-Reset-After` and `retry_after`.
+  - Message editing (`PATCH`) and message deletion (`DELETE`).
+- **Background Queue Worker Engine (`src/modules/social/worker.ts`)**:
+  - Centralized adapter registry covering all 12 supported networks (`bluesky`, `mastodon`, `linkedin`, `facebook`, `instagram`, `threads`, `pinterest`, `youtube`, `tiktok`, `x`, `telegram`, `discord`).
+  - Scheduled dispatch engine: respects `post.scheduledAt`, `delivery.nextRetryAt`, and rate limit reset cooldowns.
+  - Decomposes long-running container checks without thread starvation.
+  - Partial failure isolation: automatically cascades multi-network status to `partially-published` when peer failures occur without corrupting completed deliveries.
+- **Worker Execution API Route (`src/app/(frontend)/api/admin/social/worker/route.ts`)**:
+  - Authenticated endpoint (`POST /api/admin/social/worker`) for cron schedulers or webhook triggers with batch summary reporting.
+- **Social Command Center UI (`src/modules/admin/SocialCommandCenter.tsx`)**:
+  - Added Telegram and Discord accounts, target channel / webhook controls, and character ceiling meters.
+  - Added one-click **"⚡ Process Background Queue"** execution button with live telemetry feedback.
+- **Verification Evidence**:
+  - Unit test suite: `tests/unit/dist-06-telegram-discord-adapters.test.ts` (11/11 PASS).
+  - Unit test suite: `tests/unit/dist-07-queue-worker.test.ts` (5/5 PASS).
+  - Full unit test baseline: **106/106 test files passed (600/600 tests passed, 0 failures)**.
+  - TypeScript static typecheck: `tsc --noEmit` (**0 errors**).
+  - Canonical feature readiness marked: `Distribution Pass DIST-05 VERIFIED`.
+
+## Distribution Pass DIST-04 — Video Pipelines, Monetized APIs & Unified Analytics Implemented & Verified — 2026-09-18
+
+Implemented and verified the complete **DIST-04 Video Pipelines, Monetized APIs & Unified Analytics** suite (Sub-Pass 6D of the Distribution / Social Publishing specification):
+
+- **YouTube Data API v3 Adapter (`src/modules/social/adapters/youtube.ts`)**:
+  - Implementation of `SocialProviderAdapter` with Google Resumable Upload protocol.
+  - Two-step resumable upload: Step 1 initiates upload session against `https://www.googleapis.com/upload/youtube/v3/videos?uploadType=resumable` yielding `Location` session URI; Step 2 uploads binary buffer chunks with `Content-Range: bytes 0-N/N`.
+  - YouTube Shorts classification support, custom thumbnail upload integration, and video deletion (`DELETE /youtube/v3/videos?id=:id`).
+- **TikTok Content Posting API v2 Adapter (`src/modules/social/adapters/tiktok.ts`)**:
+  - Direct Post API v2 (`/v2/post/publish/video/init/`) with `FILE_UPLOAD` and `PULL_FROM_URL` modes.
+  - Creator profile discovery (`/v2/post/publish/creator_info/query/`) inspecting privacy level options, duet/stitch permissions, and video duration limits.
+  - Binary chunk upload pipeline to TikTok S3 targets and publication status polling.
+- **X (Twitter) API v2 Adapter (`src/modules/social/adapters/x.ts`)**:
+  - URL weight calculation with 23-character fixed `t.co` shortening and 280-char ceiling enforcement (25,000 for verified long-form).
+  - Chunked media upload protocol on `upload.twitter.com/1.1/media/upload.json` (`INIT` -> `APPEND` -> `FINALIZE` with `STATUS` async polling).
+  - Tweet creation (`POST /2/tweets`) with quote tweet and reply settings.
+  - API billing surge guardrails (`checkBudgetGuardrail`) preventing unexpected monthly spend.
+- **Unified Analytics Ingestion Engine (`src/modules/social/analytics.ts`)**:
+  - Aggregates impressions, reach, views, clicks, likes, comments, shares, and saves across all 10 social networks.
+  - Calculates per-network and grand overall engagement rates.
+  - Generates persistent point-in-time cross-network telemetry snapshots (`AnalyticsSnapshot`).
+- **Social Admin API Endpoints**:
+  - `POST /api/admin/social/dispatch` ([src/app/(frontend)/api/admin/social/dispatch/route.ts](file:///c:/Projects/RENEGADE%20CMS/Renegade-CMS/src/app/(frontend)/api/admin/social/dispatch/route.ts)): Authenticated multi-network canonical post dispatch and staging.
+  - `GET /api/admin/social/accounts` ([src/app/(frontend)/api/admin/social/accounts/route.ts](file:///c:/Projects/RENEGADE%20CMS/Renegade-CMS/src/app/(frontend)/api/admin/social/accounts/route.ts)): Connected accounts discovery and credential health.
+  - `GET /api/admin/social/analytics` ([src/app/(frontend)/api/admin/social/analytics/route.ts](file:///c:/Projects/RENEGADE%20CMS/Renegade-CMS/src/app/(frontend)/api/admin/social/analytics/route.ts)): Aggregated telemetry ingestion across deliveries.
+- **Verification Evidence**:
+  - Unit test suite: `tests/unit/dist-04-video-monetized-and-analytics.test.ts` (11/11 PASS).
+  - API routes test suite: `tests/unit/dist-05-social-api-routes.test.ts` (6/6 PASS).
+  - Combined distribution tests: 70/70 PASS.
+  - Full unit test suite: 104 test files passed / 584 tests passed.
+  - TypeScript static typecheck: `tsc --noEmit` (0 errors).
+  - Canonical feature readiness marked: `Distribution Pass DIST-04 VERIFIED`.
+
+## Distribution Pass DIST-03 — Meta Infrastructure, Visual Networks & Social Command Center Implemented & Verified — 2026-09-18
+
+Implemented and verified the complete **DIST-03 Meta Infrastructure, Visual Networks & Social Command Center** suite (Sub-Pass 6C of the Distribution / Social Publishing specification):
+
+- **Facebook Pages Graph API Adapter (`src/modules/social/adapters/facebook.ts`)**:
+  - Single photo publishing (`POST /{pageId}/photos`) with multipart binary data.
+  - Multi-image album publishing via unpublished photo staging and feed post creation with `attached_media`.
+  - Link post dispatch with rich link preview metadata.
+  - Rate-limiting error normalization (BUC code 32, subcode 2446079), post update, and deletion (`DELETE /{postId}`).
+- **Instagram Graph API Adapter (`src/modules/social/adapters/instagram.ts`)**:
+  - Two-step container flow: container creation (`POST /{igUserId}/media`), container status polling loop until `FINISHED`, and container publish (`POST /{igUserId}/media_publish`).
+  - Multi-item carousel container synchronization with individual child containers (`is_carousel_item: true`) and parent carousel container.
+  - 25-post daily quota enforcement (error code 9007) and strict non-editable caption capability flagging.
+- **Threads Graph API Adapter (`src/modules/social/adapters/threads.ts`)**:
+  - 500-character ceiling validation, topic tag normalization (stripping `#`), and reply control scoping.
+  - Container creation and publishing status polling.
+- **Pinterest API v5 Adapter (`src/modules/social/adapters/pinterest.ts`)**:
+  - Pin creation with mandatory `board_id`, title, and 2:3 vertical aspect-ratio enforcement.
+  - Multi-image Carousel Pin source formatting (2 to 5 images).
+  - Board discovery (`getBoards`, `discoverAccountConstraints`), pin editing, and deletion.
+- **Social Command Center UI (`src/modules/admin/SocialCommandCenter.tsx`) & Route (`/admin/social`)**:
+  - Multi-network composer supporting canonical master draft with selective per-network overrides.
+  - Dynamic character count meters with network-specific ceilings and warning thresholds.
+  - Real-time fidelity preview cards rendering network-specific chrome (avatars, handles, action buttons, link previews, aspect ratio containers).
+  - Pre-flight compliance validation gate preventing dispatch of invalid variants.
+  - Linked directly in admin navigation (`PublishingLinks.tsx`).
+- **Verification Evidence**:
+  - Unit test suite: `tests/unit/dist-03-meta-visual-adapters.test.ts` (18/18 PASS).
+  - UI component test suite: `tests/unit/dist-03-social-command-center.test.tsx` (4/4 PASS).
+  - TypeScript static typecheck: `tsc --noEmit` (0 errors).
+  - Canonical feature readiness marked: `Distribution Pass DIST-03 VERIFIED`.
+
+## Distribution Pass DIST-02 — Open Protocols, Core 5 Adapters & Media Adaptation Pipeline Implemented & Verified — 2026-09-18
+
+Implemented and verified the complete **DIST-02 Open Protocols, Core 5 Adapters & Media Adaptation Pipeline** suite (Sub-Pass 6B of the Distribution / Social Publishing specification):
+
+- **Mastodon ActivityPub Adapter (`src/modules/social/adapters/mastodon.ts`)**:
+  - Full implementation of `SocialProviderAdapter` for decentralized ActivityPub instances.
+  - Dynamic instance resolution supporting custom federated hostnames with SSRF protection.
+  - Supported status features: text copy (up to 500 characters or instance override), polls (`poll: { options, expires_in, multiple }`), content warnings / spoilers (`spoiler_text`), sensitivity toggles (`sensitive: true`), visibility modes (`public`, `unlisted`, `private`, `direct`), and threading (`in_reply_to_id`).
+  - Asynchronous media upload with HTTP 202 status polling against `/api/v1/media/:id` with alt text descriptions.
+  - In-place status editing (`PUT /api/v1/statuses/:id`), post deletion (`DELETE /api/v1/statuses/:id`), and public engagement telemetry.
+- **Bluesky AT Protocol Adapter (`src/modules/social/adapters/bluesky.ts`)**:
+  - AT Protocol Lexicon post record commit (`app.bsky.feed.post`).
+  - Precise UTF-8 byte facet parser (`parseRichTextFacets`): scans post text for URLs, `@mentions`, and `#hashtags`, measuring exact byte start and end indices to prevent offset distortion with multi-byte Unicode characters and emojis.
+  - Blob uploading (`com.atproto.repo.uploadBlob`) with strict 1,000,000 byte enforcement.
+  - External embed cards (`app.bsky.embed.external`) for canonical URLs and image embeds (`app.bsky.embed.images`).
+  - App password session management, record deletion (`com.atproto.repo.deleteRecord`), and thread telemetry.
+- **LinkedIn Community Management Adapter (`src/modules/social/adapters/linkedin.ts`)**:
+  - Versioned Posts API integration (`/rest/posts`) enforcing required `LinkedIn-Version: 202603` and `X-Restli-Protocol-Version: 2.0.0` protocol headers.
+  - Support for Organization URNs (`urn:li:organization:{id}`) and Personal Member URNs (`urn:li:person:{id}`).
+  - Chunked/binary image upload flow (`/rest/images?action=initializeUpload`) generating `urn:li:image:{id}` asset references.
+  - Multi-image posts (up to 20 images in `content.multiImage`), article link cards (`content.article`), and post deletion.
+  - Organizational share statistics ingestion (`/rest/organizationalEntityShareStatistics`).
+- **Media Adaptation Pipeline (`src/modules/social/media-pipeline.ts`)**:
+  - Platform rules dictionary (`PLATFORM_MEDIA_RULES`) mapping aspect ratio bounds, MIME constraints, and byte limits across 10 primary platforms.
+  - On-demand adaptation planning (`planMediaAdaptation`): computes required format conversions (e.g. WebP to JPEG for Instagram), aspect ratio corrections, and compression goals.
+  - Pre-flight compliance validator (`validateMediaForNetwork`) emitting deterministic blockers and warnings.
+  - Buffer adaptation simulation (`adaptImageBuffer`) ensuring size thresholds like Bluesky's 1MB ceiling are respected.
+- **FLOW-04/FLOW-06 Coordinated Release Distribution Hook (`src/modules/releases/saga.ts`)**:
+  - Wired `distribution` artifact execution and compensation into the idempotent release saga engine, fulfilling the candidate release fixture contract.
+- **Verification Evidence**:
+  - Unit test suite: `tests/unit/dist-02-core-adapters.test.ts` (10/10 PASS).
+  - Combined distribution tests: 27/27 PASS.
+  - Full test suite: 100 test files passed / 545 tests passed.
+  - TypeScript static typecheck: `tsc --noEmit` (0 errors).
+  - Canonical feature readiness marked: `Distribution Pass DIST-02 VERIFIED`.
+
+## Distribution Pass DIST-01 — Social Core Architecture, Credential Security & Queue State Engine Implemented & Verified — 2026-09-18
+
+Implemented and verified the complete **DIST-01 Social Core Architecture, Credential Security & Queue State Engine** suite (Sub-Pass 6A of the Distribution / Social Publishing specification):
+
+- **Application-Layer Credential Security (`src/modules/social/security.ts`)**:
+  - Implemented AES-256-GCM authenticated encryption/decryption (`encryptSecret`, `decryptSecret`) for stored OAuth tokens, refresh tokens, and client secrets with 96-bit random IVs and 128-bit authentication tags.
+  - Transparent key resolution supporting `RENEGADE_ENCRYPTION_KEY` from environment with secure deterministic fallback for development.
+  - Implemented SSRF protection (`validateOutboundUrl`) blocking loopback (`127.0.0.0/8`), private RFC 1918 subnets (`10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`), cloud metadata (`169.254.169.254`, `metadata.google.internal`), carrier-grade NAT, IPv6 ULA/link-local, embedded credentials, and non-HTTPS protocols.
+  - Implemented social log sanitization (`sanitizeSocialLog`) masking Bearer tokens, authorization headers, passwords, and sensitive API keys from audit logs and diagnostics.
+  - Implemented OAuth 2.0 PKCE helpers (`generateCodeVerifier`, `generateCodeChallenge`) and time-bounded HMAC-signed state parameters (`generateOAuthState`, `verifyOAuthState`).
+- **Normalized Provider Contract & Capability Matrix (`src/modules/social/contracts.ts`)**:
+  - Defined normalized `SocialProviderAdapter` contract covering static capabilities (`getCapabilities`), runtime account constraint discovery (`discoverAccountConstraints`), OAuth lifecycle, validation (`validatePost`), publishing (`publish`), and analytics (`fetchAnalytics`).
+  - Implemented typed capability matrix (`ProviderCapabilities`), account constraints (`AccountConstraints`), and normalized analytics schema (`NormalizedAnalytics`).
+  - Supported all 10 first-class target networks: `facebook`, `instagram`, `x`, `threads`, `linkedin`, `tiktok`, `youtube`, `bluesky`, `mastodon`, and `pinterest`.
+- **Canonical Post & Provider Variant Hierarchy (`src/modules/social/models.ts`)**:
+  - Defined `CanonicalSocialPost` (representing publication intent) and `SocialPostVariant` (representing realized per-account dispatch payload).
+  - Implemented selective property shadowing (`resolveEffectiveCopy`): un-overridden variants inherit canonical `baseCopy` dynamically; overridden variants (`isOverridden = true`) retain custom platform text.
+  - Non-destructive upstream copy updates (`updateCanonicalCopy`): updating canonical base copy propagates to all un-overridden variants without clobbering customized variants.
+  - Deterministic idempotency key generation (`generateVariantIdempotencyKey`).
+- **Queue State Machine, Lease Locks & Partial Failure Isolation (`src/modules/social/queue.ts`)**:
+  - Atomic worker lease locking (`acquireWorkerLease`, `releaseWorkerLease`) preventing multi-instance concurrency races.
+  - Bounded exponential backoff with jitter (`calculateExponentialBackoff`).
+  - Header-based rate limit backoff parsing (`parseRateLimitHeaders`) for `Retry-After` and `x-rate-limit-reset`.
+  - **Strict partial failure isolation (`executeVariantDelivery`, `evaluateCanonicalPostStatus`)**: publishing multi-network posts where some succeed and some fail transitions the canonical post to `partially-published` (**never labeling partial success complete** and never rolling back succeeded deliveries).
+- **Verification Evidence**:
+  - Unit test suite: `tests/unit/dist-01-security-and-contracts.test.ts` (17/17 PASS).
+  - Full test suite: 99 test files passed / 535 tests passed.
+  - TypeScript static typecheck: `tsc --noEmit` (0 errors).
+  - Canonical feature readiness marked: `Distribution Pass DIST-01 VERIFIED`.
+
+## Workflow Pass FLOW-06 — Unified Workflow Command Center & Release Governance Implemented & Verified — 2026-09-18
+
+Implemented and verified the complete **FLOW-06 Unified Workflow Command Center & Multi-User Governance** suite, integrating FLOW-00 through FLOW-05 into an end-to-end operational engine:
+
+- **Unified Permission-Aware Workflow Command Center (`src/modules/admin/EditorialWorkflowCenter.tsx`, `/admin/workflow`)**:
+  - Built an interactive, role-aware operational hub combining 11 coordinated views: My Work, Team Review Queues, Unresolved Comments, Due/Overdue SLA Tracking, Operational Calendar, Scheduled Worker Health, Localization & Stale-Source Synchronization, Coordinated Releases, Deterministic Quality/Rights Blockers, Notification Outbox Failures, and Immutable Audit Activity.
+  - Provided direct, contextual navigation leading directly to the affected item, revision, and evidence anchor for all findings.
+  - Implemented a floating action drawer supporting instant review sign-offs, change requests, assignments, and emergency overrides with audit trails.
+- **Targeted Review Comments & Field-by-Field Revision Comparison (`src/modules/editorial/comments.ts`, `/api/admin/workflow/comments`)**:
+  - Implemented granular review comments targeting specific content elements: `body`, `media`, `seo`, and `layout`.
+  - Added full comment lifecycle support (`addressed`, `resolved`, `reopened`) linked to exact document revision sequences.
+  - Implemented field-by-field diff comparison evaluating changes across title, summary, body content, media attachments, SEO metadata, and presentation layout blocks.
+- **Approval Staleness Invalidation & Revision Pinning (`src/modules/editorial/cmos-workflow.ts`)**:
+  - Enforced strict approval staleness semantics: when an approved article at revision sequence $N$ is modified to create a new draft $N+1$, `staleApproval` is immediately set to `true`, invalidating approval on the pending draft.
+  - Guaranteed that scheduled publishing jobs remain strictly pinned to target approved revision $N$, preserving public site integrity.
+- **Multi-User Coordinated Release Lifecycle & Bounded Partial Failure Proof (`tests/integration/flow-06-workflow-pass-gate.integration.test.ts`)**:
+  - Proved end-to-end 9-stage lifecycle:
+    1. Multi-user authoring of Post and Campaign Page using canonical schemas and media.
+    2. Editor assignment, targeted element comments, and structured revision diffing.
+    3. Revision advancement, approval, and proof of draft staleness invalidation.
+    4. Operational scheduling across worker crash/restart with atomic lease reclaiming and exactly-once public convergence.
+    5. Second-locale translation sync, automated stale-source detection upon source advancement, 7-point completeness evaluation, and human reviewer sign-off.
+    6. Coordinated release creation pinning exact article, page, media rights, and redirect artifacts.
+    7. Preflight gate evaluation with permission checks, rights verification, and authorized waiver execution.
+    8. Bounded partial failure handling: non-fatal CDN/outbox failure transitions release to `partially-failed` (**never labeling partial execution complete**).
+    9. Safe idempotent retry executing only pending/failed steps, deliberate rollback restoring last-known-good state, and persistent immutable audit verification.
+- **Distribution Release Fixture (`fixtures/releases/flow-06-campaign-launch.json`)**:
+  - Preserved verified candidate release artifact fixture capturing exact revision hashes, preflight gate snapshots, waivers, and execution metrics for subsequent Distribution pass gates.
+- **Verification Evidence**:
+  - Unit test suite: `tests/unit/flow-06-command-center.test.ts` (3/3 PASS).
+  - Integration pass gate suite: `tests/integration/flow-06-workflow-pass-gate.integration.test.ts` (1/1 PASS).
+  - Full workflow test suite: 10 test files passed / 67 tests passed.
+  - TypeScript static typecheck: `tsc --noEmit` (0 errors).
+  - Next.js production build: `npm run build` (63/63 pages compiled cleanly).
+  - Prettier & ESLint checks: 100% clean formatting and 0 errors across all workflow modules.
+  - Candidate Git SHA: `a5726290aee0eb57fbdbf49e9552b5887a5df135`.
+  - Canonical feature readiness marked: `Workflow Pass FLOW-06 VERIFIED`.
+
+## Workflow Pass FLOW-05 — Translation Groups, Localization Quality & Reliable Notifications Implemented & Verified — 2026-09-18
+
+Implemented and verified the complete **FLOW-05 Content Localization, Translation Groups, Provider Boundaries, Quality Gates & Reliable Notifications** suite:
+
+- **Translation Groups & Source Immutability (`src/modules/editorial/localization/contracts.ts`, `engine.ts`)**:
+  - Implemented `TranslationGroup` linking locale variants to one conceptual content item.
+  - Guaranteed each locale retains its own canonical revision sequence, hash, canonical URL, SEO/discovery state, media choices (alt/captions), and workflow status.
+  - Enforced strict source immutability: drafting, updating, or approving target locale variants never overwrites the source document.
+- **Translation Request/Assignment & Stale-Source Detection**:
+  - Implemented `TranslationRequest` capturing pinned source revision (`sourceRevisionPin`), target locale, due date, translator/reviewer assignments, progress tracking, and changes-requested/approved states.
+  - Automated staleness detection: when source advances to revision $N+1$, `advanceSourceDocument` flags requests pinned to revision $N$ as stale (`isStale = true`), records detailed `staleReason`, dispatches notifications, and rejects approval (`CANNOT_APPROVE_STALE`) until realigned.
+- **Side-by-Side Review & Structured Completeness Checks (`src/modules/editorial/localization/completeness.ts`)**:
+  - Deterministic 7-point evaluation across title, excerpt/body blocks, links, media alt/captions, SEO fields, schema facts, and presentation slots.
+  - Visible failure enforcement: unknown or corrupt rich-text/layout AST nodes fail visibly with fatal blockers (`TRANSLATION_UNSUPPORTED_NODE_TYPE`).
+  - Direct repair links generated for all findings (e.g. `/admin/workflow/translations?id=...&focus=media`).
+- **Translation Provider Boundary & Mandatory Human Review (`src/modules/editorial/localization/adapter.ts`)**:
+  - Pluggable provider adapter (`TranslationProviderAdapter`, `SimulatedTranslationProviderAdapter`) generating attributed drafts with model, token counts, cost calculation, and error metadata.
+  - Strict human review enforcement (`assertHumanReviewApproved`): machine drafts are prohibited from publication/release without verified human reviewer sign-off (`humanReviewed: true`, `humanReviewerId`, `humanApprovedAt`).
+- **Hreflang Alternates & Phantom Language Elimination (`src/modules/editorial/localization/hreflang.ts`)**:
+  - Deterministic hreflang calculation including self-referencing alternate tags and canonical consistency.
+  - Strict phantom language elimination: draft, in-review, changes-requested, and unpublished locales are completely excluded from public `alternateLocales`.
+- **FLOW-04 Preflight Gate Integration (`src/modules/releases/gates.ts`, `policy.ts`)**:
+  - Integrated Rule 11: `rule-localization-quality` into FLOW-04's `evaluateReleaseGates`.
+  - Evaluates all localized release artifacts for staleness, unreviewed machine output, and completeness blockers.
+  - Added localization fields to `computeReleaseFingerprint` ensuring release fingerprint invalidation upon modification.
+  - Supported role-authorized waivers (`ReleaseGateRuleWaiver`) with authorizer, reason, and expiration dates.
+- **Notification Preferences & Reliable Durable Outbox (`src/modules/editorial/localization/notifications.ts`)**:
+  - Full event matrix: `assignment`, `mention_comment`, `changes_requested`, `approval`, `due_overdue`, `schedule_release_failure`, `stale_translation`, `rights_quality_issue`, and `completion`.
+  - In-app channel works immediately without any external provider.
+  - Decoupled outbox pattern with retry counts, exponential backoff, and last-error logging.
+  - Workflow state immunity: external email/webhook adapter failures never roll back or compromise workflow truth.
+- **Webhook Automation, SSRF Protection & Secret Rotation (`src/modules/editorial/localization/webhooks.ts`)**:
+  - Signed payloads with HMAC SHA-256 signatures (`X-Renegade-Signature: t=...,v1=...`) with timestamp skew protection.
+  - Zero-downtime secret rotation: supports dual verification under primary and secondary secrets.
+  - SSRF protection (`validateWebhookUrl`): blocks loopback (127.0.0.0/8, localhost), RFC 1918 private ranges (10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16), cloud metadata (169.254.169.254), non-HTTPS protocols, and embedded credentials.
+  - Strict code safety: strictly zero arbitrary user code execution (`eval`/`Function`).
+- **Verification Evidence**:
+  - Unit test suite: `tests/unit/flow-05-localization-workflow.test.ts` (9/9 PASS).
+  - Integration test suite: `tests/integration/flow-05-localization-pass-gate.integration.test.ts` (3/3 PASS).
+  - Full test suite: 98 test files passed / 518 tests passed.
+  - TypeScript static typecheck: `tsc --noEmit` (0 errors).
+  - Canonical feature readiness marked: `Workflow Pass FLOW-05 VERIFIED`.
+
+## Workflow Pass FLOW-04 — Coordinated Releases, Preflight Gate Matrix & Saga Rollback Implemented & Verified — 2026-09-18
+
+Implemented and verified the complete **FLOW-04 Coordinated Release Workflow** suite:
+
+- **Coordinated Release Contracts (`src/modules/releases/contracts.ts`)**:
+  - Defined comprehensive data models: `CoordinatedRelease`, `ReleaseStatus` (`draft`, `in-review`, `approved`, `scheduled`, `executing`, `completed`, `partially-failed`, `failed`, `cancelled`, `rolled-back`), `ReleaseArtifactItem` (`content`, `presentation`, `media`, `redirect`, `distribution`), `ReleaseGateSnapshot`, `ReleaseGateRuleResult`, `ReleaseApproval`, `ReleaseExecutionStep`, and `ReleaseAuditEvent`.
+- **Preflight Gate Matrix (`src/modules/releases/gates.ts`)**:
+  - Implemented 10 preflight rules covering:
+    1. Permissions (`staff`, `editor`, `admin`, `owner` required).
+    2. Editorial/Staging Approvals (requires positive sign-offs).
+    3. Unresolved Review Comments (checks for blocking review comments on pinned content revisions).
+    4. URL/Canonical Conflicts (validates unique slug paths and canonical URLs across published collections).
+    5. Redirect Loops/Chains (detects circular redirects).
+    6. Quality Center Thresholds (enforces zero critical/high QA/SEO/a11y findings).
+    7. Media Readiness & Rights State (verifies assets are processed, sized, and rights-cleared).
+    8. Scheduled Dependencies (ensures prerequisite upstream releases are completed).
+    9. Worker & Engine Health (verifies background worker and database latency).
+    10. Migrations & Product Policy (enforces no unapplied schema migrations or disallowed DDL).
+  - Implemented automatic SHA-256 fingerprint invalidation on input/revision modification, resetting status to `in-review` if pinned artifacts change post-evaluation.
+  - Implemented authorized waivers with reason, authorizer ID, and expiration dates.
+- **Saga Outbox Execution & Boundaries (`src/modules/releases/saga.ts`)**:
+  - Defined clear transactional boundaries: single-boundary database mutations are executed within DB transactions; external/CDN/distribution steps use a durable Saga outbox.
+  - Implemented worker lease locking (`leaseOwner`, `leaseExpiresAt`) preventing concurrent duplicate executions during worker restarts.
+  - Enforced strict failure semantics: **never label partial success complete**; failing external or non-fatal steps transition the release to `partially-failed`.
+  - Implemented idempotent safe retry: retries only failed or pending steps, skipping previously succeeded steps.
+  - Implemented deterministic rollback to `lastKnownGoodState`: creates new deliberate public revisions, disables created redirects, purges affected CDN/cache entries, and logs full compensation details.
+  - Preserved immutable audit trail: historical events in `scheduleAudit` and `executionAudit` are strictly retained and never erased.
+- **Service Layer & API (`src/modules/releases/service.ts`, `src/app/(frontend)/api/admin/releases/route.ts`)**:
+  - Full CRUD, artifact pinning/unpinning, preflight evaluation, waiver application, submission, approval, scheduling, execution, retry, cancellation, and rollback.
+  - Preserved complete backwards compatibility for legacy `scheduleContentRelease`, `executeContentRelease`, and `retryContentRelease`.
+- **Payload Collection (`src/collections/Releases.ts`)**:
+  - Enriched `content-releases` with release revision, artifacts, gate snapshots, approvals, saga steps, resulting URLs, worker leases, and comprehensive statuses.
+- **Admin Command Center UI (`src/modules/admin/ReleaseCenter.tsx` & `/admin/releases`)**:
+  - Interactive React interface for release creation, artifact pinning, revision diffs, preflight gate matrix checklist with waiver modal, sign-off approval, real-time saga execution timeline, and operator retry/rollback action controls.
+- **Verification Evidence**:
+  - Unit test suite: `tests/unit/flow-04-coordinated-releases.test.ts` (9/9 PASS).
+  - Multi-stage lifecycle acceptance test suite: `tests/unit/flow-04-acceptance.test.ts` (1/1 multi-stage lifecycle PASS: multi-artifact release, blocking issue introduced, repaired/waived, scheduled, worker restarted, partial failure induced, safe retry executed, rollback verified, audit trail integrity confirmed).
+  - Backward compatibility release service test suite: `tests/unit/releases-service.test.ts` (2/2 PASS).
+  - TypeScript static typecheck: `tsc --noEmit` (0 errors).
+  - Next.js production build: `npm run build` (58/58 pages compiled cleanly).
+  - Canonical feature readiness marked: `Workflow Pass FLOW-04 VERIFIED`.
+
+## Workflow Pass FLOW-03 — Operational Scheduling & Unified Calendar Center Implemented & Verified — 2026-09-18
+
+Implemented and verified the complete **FLOW-03 Operational Scheduling & Unified Calendar Center** suite:
+
+- **DST-Aware Timezone Engine (`src/modules/calendar/timezone.ts`)**:
+  - Implemented `convertLocalToUtc` parsing local datetime in IANA timezones (e.g. `America/Chicago`, `America/New_York`, `Europe/London`).
+  - Handled Spring Forward DST gap times (nonexistent local times) with automatic gap advancement under `nonexistentHandling: 'advance'` or strict rejection (`DSTNonexistentTimeError`).
+  - Handled Fall Back DST overlap times (ambiguous local times) with deterministic `ambiguousPreference: 'earlier' | 'later'` disambiguation.
+  - Formatted stored UTC instants (`scheduledFor`) into human-readable local timezone representations (`formatUtcInTimeZone`).
+- **Schedule Dependency & Collision Validator (`src/modules/calendar/dependencies.ts`)**:
+  - Evaluates rules prior to scheduling or rescheduling: missing approvals, un-waived blocking quality gate issues, embargo window breaches (`scheduledFor < embargoDate`), media rights expiration breaches (`scheduledFor > rightsExpirationDate`), unmet prerequisite content/releases, and same-slot campaign collisions (> N items in same 15m window).
+  - Emits structured rule violations matrix with `block` or `warn` policy.
+- **Worker Lease Locking & Idempotent Execution Engine (`src/modules/editorial/scheduler.ts`)**:
+  - Atomic worker lease locking (`leaseOwner`, `leaseExpiresAt`) preventing worker race conditions or duplicate execution during restarts.
+  - Clock drift skew buffer (±30s) and catch-up policy enforcement (`catchUpThresholdMinutes: 60`, mode: `publish-immediately` vs `expire-and-fail`).
+  - **Exact Revision Immutability**: `ScheduledPublishJob` locks target approved `revisionId`, `sequence` (`N`), and `hash`. Saving new working drafts post-schedule creates revision `N+1`, but the worker publishes **ONLY approved revision `N`**, preventing un-reviewed draft leakage.
+  - **Secret Sanitization (`sanitizeErrorLog`)**: Automatically redacts database passwords, API tokens, bearer headers, and private keys from `lastError` log strings.
+- **Unified Calendar Center UI (`src/modules/admin/CalendarCenter.tsx` & `/calendar`)**:
+  - Month, Week, and List/Agenda views.
+  - Filtering by site/publication, content type (`article`, `social`, `newsletter`, `event`, `release`), workflow state, assignee, campaign, and special states (`overdue`, `blocked`, `failure`).
+  - Drag & drop scheduling with confirmation modal, permission guard, and optimistic concurrency (`409 Conflict`) protection.
+  - Accessible non-drag modal rescheduling alternative with datetime pickers and keyboard navigation.
+- **Schedule Health Center (`src/modules/admin/ScheduleHealthCenter.tsx` & `/api/admin/schedule-health`)**:
+  - Real-time dashboard displaying next jobs, late/missed jobs, retrying/failed jobs, and worker health.
+  - Action controls for manual job retry, force cancel, and queue reconciliation (`reconcileScheduleWorkerJobs`).
+- **Calendar iCalendar (.ics) & JSON Export Boundary (`src/app/(frontend)/api/calendar/export/route.ts`)**:
+  - Exports RFC 5545 iCalendar (`.ics`) and JSON feeds with site-scoped permission and privacy filtering.
+- **Verification Evidence**:
+  - Unit test suite: `tests/unit/flow-03-scheduling-calendar.test.ts` (16/16 PASS).
+  - Integration test suite: `tests/integration/flow-03-scheduler-api.integration.test.ts`.
+  - Browser E2E suite: `tests/browser/flow-03-scheduling-calendar.spec.ts`.
+  - TypeScript static typecheck: `tsc --noEmit` (0 errors).
+  - Canonical feature readiness marked: `Workflow Pass FLOW-03 VERIFIED`.
+
+## Workflow Pass FLOW-01 — Renegade CMoS Workflow & Daily Editorial Loop Implemented & Verified — 2026-09-15
+
+Implemented and verified the complete **FLOW-01 Renegade CMoS Workflow** suite:
+
+- **Built-in Simple Workflow & Configurable Templates (`src/modules/editorial/cmos-workflow.ts`)**:
+  - Implemented default simple workflow for small sites (`BUILTIN_SIMPLE_WORKFLOW_TEMPLATE`) and configurable workflow templates (`WorkflowTemplate`) supporting custom required stages, eligible role requirements per action, required approval count/order, optional quality gates, SLA due offsets, emergency overrides, self-approval prevention, and site scope guards.
+  - Implemented `validateWorkflowTemplate` validating templates against dead ends (unreachable stages/missing decider roles) and privilege escalation risks (low-privilege author role mapped to emergency override).
+- **Task Assignment, SLA Due Offset & Review Queue Categorization**:
+  - Added assignment metadata (`ownerId`, `editorId`, `reviewerIds`, `dueDate`, `priority`, `watchers`).
+  - Implemented automated SLA due date calculation (`serviceLevelDueOffsetHours`).
+  - Implemented queue membership classification (`categorizeWorkflowQueues`) into `assigned`, `requested-changes`, `awaiting-approval`, `approved`, `scheduled`, `overdue`, and `blocked` queues across Personal and Team views.
+- **Stale Approval Protection**:
+  - Captured exact target revision sequence and hash on review decisions (`ReviewDecisionRecord`).
+  - Automatically flags approval as stale (`staleApproval = true`) when an author creates a new draft revision post-approval, preventing stale draft publishing.
+- **Security & Authorization Enforcement**:
+  - Server-authoritative enforcement of role permissions, site-scope matching (`siteScopeGuard`), and author self-approval prevention (`preventSelfApproval`).
+  - Staff emergency override (`emergencyOverride`) requiring mandatory justification reason.
+- **Bulk Queue Operations & Partial Failure Isolation**:
+  - Implemented `bulkExecuteWorkflowActions` and `/api/admin/workflow/bulk` processing queue actions with per-item validation and partial failure reporting matrix (`succeededCount`, `failedCount`, `results`).
+- **Admin Command Center (`src/modules/admin/EditorialWorkflowCenter.tsx`)**:
+  - Registered React Admin Command Center at `/admin/workflow` with queue tabs, filter pills, task inspection drawer, stale approval alerts, emergency override modal, template manager, and chronological audit history.
+- **Verification Evidence**:
+  - Unit test suite: `tests/unit/flow-01-cmos-workflow.test.ts` (16/16 PASS).
+  - Integration test suite: `tests/integration/flow-01-workflow-api.integration.test.ts` (3/3 PASS).
+  - Playwright browser acceptance test: `tests/browser/flow-01-cmos-workflow.spec.ts` (1/1 PASS).
+  - Static typechecking: `tsc --noEmit` (0 errors).
+  - Production build: `npm run build` (0 errors).
+  - Canonical readiness marked: `Workflow Pass FLOW-01 VERIFIED`.
+
+## Workflow Pass FLOW-00 — Canonical Workflow Contract & Editorial State Machine Hardened & Verified — 2026-09-15
+
+Implemented and verified the complete **FLOW-00 Workflow Contract & State Machine Hardening**:
+
+- **Frozen Canonical Workflow Contract (`FLOW_00_WORKFLOW_CONTRACT`)**:
+  - Sealed one server-authoritative workflow contract across all lifecycle states: `draft` → `review` → `approved` → `scheduled` → `published` → `archived`, plus explicit non-happy / exception states: `rejected`, `changes-requested`, `cancelled`, and `failed`.
+  - Defined explicit role requirements matrix (Author, Editor, Publisher) and site scope guards enforced on every transition.
+- **Last-Public-Revision Protection**:
+  - `latestPublishedRevisionId` is captured at publication time and preserved across working draft updates post-publication.
+  - `loadPublishedArticleBySlug` and `loadPublishedArticleByPath` strictly render the immutable published revision snapshot, preventing unapproved working draft leakage to public visitors while allowing staff preview tokens to inspect draft revisions.
+- **Quality Gate Snapshots & Waiver Overrides**:
+  - Review and schedule gates evaluate Quality Center scans; blocking issues require explicit staff waiver authorization (`QualityWaiverAuthorization`).
+- **Distinct Review Decision Log & Scheduled Job Reconciliation**:
+  - Captured `ReviewDecisionRecord` independently from content revisions.
+  - Implemented scheduled job lease locks, worker retry counters, max retries, last error logging, and `reconcileScheduledPublishJobs` reconciliation handler.
+- **Verification Evidence**:
+  - Unit test suite: `tests/unit/flow-00-workflow-contract.test.ts` (6/6 PASS).
+  - Integration test suite: `tests/integration/flow-00-editorial-pass-gate.integration.test.ts`.
+  - Toolchain quality: `tsc --noEmit` (0 errors), `npm run test` (92 test suites / 463 tests passed).
+  - Feature readiness marked: `Workflow Pass FLOW-00 VERIFIED`.
+
 ## Discovery Pass DISC-05 — Rendered Quality & Redirect Manager Implemented & Verified — 2026-09-15
 
 Implemented and verified the complete DISC-05 Rendered Discovery Quality & Redirect Manager suite:

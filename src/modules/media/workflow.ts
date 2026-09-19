@@ -43,6 +43,44 @@ export type DamMetadata = {
   customMetadata?: Record<string, unknown>
 }
 
+const replacementMetadataFields = [
+  'caption',
+  'description',
+  'creatorCredit',
+  'credits',
+  'source',
+  'copyrightOwner',
+  'license',
+  'licenseType',
+  'licenseUrl',
+  'rightsSourceUrl',
+  'rightsExpiresAt',
+  'embargoUntil',
+  'usageRestrictions',
+  'consentReference',
+  'modelReleaseReference',
+  'propertyReleaseReference',
+  'governanceEnabled',
+  'customMetadata',
+  'tags',
+  'collections',
+  'originalExportAllowed',
+  'rightsStatus',
+  'retentionMode',
+  'retentionExpiresAt',
+  'retentionHold',
+  'removeFromDiscovery',
+  'tombstoneLabel',
+  'publicPolicy',
+] as const
+
+const inheritedReplacementMetadata = (original: Doc) =>
+  Object.fromEntries(
+    replacementMetadataFields
+      .filter((field) => original[field] !== undefined)
+      .map((field) => [field, original[field]]),
+  )
+
 export class MediaWorkflowError extends Error {
   constructor(
     message: string,
@@ -317,6 +355,12 @@ export async function replaceMedia(
   if (id(original.site) !== input.scope.siteId)
     throw new MediaWorkflowError('Cross-site replacement is not allowed.', 403)
   const replacement = (await uploadMedia(payload, config, input)) as unknown as Doc
+  await payload.update({
+    collection: 'media-assets',
+    id: replacement.id,
+    overrideAccess: true,
+    data: inheritedReplacementMetadata(original),
+  } as never)
   const mode = input.mode ?? 'new-asset'
   const impact = await previewReplacementImpact(
     payload,

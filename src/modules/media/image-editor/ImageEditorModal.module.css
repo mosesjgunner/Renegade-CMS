@@ -97,6 +97,19 @@
 .primaryButton:hover:not(:disabled) {
   background: #1d4ed8;
 }
+.dangerButton {
+  padding: 0.48rem 0.85rem;
+  border: 1px solid #b42318;
+  border-radius: 4px;
+  color: #fff;
+  background: #b42318;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 600;
+}
+.dangerButton:hover {
+  background: #912018;
+}
 .iconButton {
   min-width: 2.25rem;
   padding: 0.45rem 0.55rem;
@@ -206,6 +219,39 @@
   background: var(--theme-elevation-0, #fff);
   box-shadow: 0 16px 40px rgba(16, 24, 40, 0.18);
 }
+.dialogBackdrop {
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(16, 24, 40, 0.42);
+}
+.leaveDialog {
+  width: min(26rem, 100%);
+  padding: 1.25rem;
+  border: 1px solid var(--theme-elevation-150, #dfe3e8);
+  border-radius: 6px;
+  color: var(--theme-text, #1f2937);
+  background: var(--theme-elevation-0, #fff);
+  box-shadow: 0 16px 40px rgba(16, 24, 40, 0.22);
+}
+.leaveDialog h3 {
+  margin: 0;
+  font-size: 1rem;
+}
+.leaveDialog p {
+  margin: 0.6rem 0 1.25rem;
+  color: var(--theme-elevation-700, #475467);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+.dialogActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+}
 
 @media (max-width: 960px) {
   .header {
@@ -264,6 +310,12 @@
     min-width: 0;
   }
   .saveDrawer > .primaryButton {
+    width: 100%;
+  }
+  .dialogActions {
+    flex-direction: column-reverse;
+  }
+  .dialogActions > button {
     width: 100%;
   }
 }

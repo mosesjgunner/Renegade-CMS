@@ -6,7 +6,7 @@ import { describe, expect, it } from 'vitest'
 
 import { loadConfig } from '../../src/modules/core/config'
 import { inspectMedia, localMediaStorage } from '../../src/modules/media/storage'
-import { publicMedia, uploadMedia } from '../../src/modules/media/workflow'
+import { publicMedia, replaceMedia, uploadMedia } from '../../src/modules/media/workflow'
 
 const png = Uint8Array.from([
   0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0, 0, 0, 0, 0x49, 0x48, 0x44, 0x52, 0, 0, 0, 1, 0,
@@ -112,5 +112,89 @@ describe('MED-00 canonical media contract', () => {
       }),
     ).rejects.toThrow('simulated database failure')
     expect(await localMediaStorage(mediaDir).get(blob.storageKey)).toBeUndefined()
+  })
+
+  it('creates an immutable edited version with inherited editorial metadata without replacing references', async () => {
+    const mediaDir = await mkdtemp(path.join(os.tmpdir(), 'renegade-med00-replace-'))
+    const config = loadConfig({
+      NODE_ENV: 'test',
+      DATABASE_URL: 'postgresql://u:p@localhost/db',
+      PAYLOAD_SECRET: 'a'.repeat(48),
+      APP_URL: 'http://localhost:3000',
+      MEDIA_DIR: mediaDir,
+    })
+    const records: Record<string, any> = {
+      original: {
+        id: 'original',
+        site: 'site-a',
+        title: 'Original asset',
+        storageLocation: 'site-a/original.png',
+        caption: 'Original caption',
+        creatorCredit: 'Original photographer',
+        licenseType: 'owned',
+        rightsStatus: 'approved',
+        publicPolicy: 'published-use',
+        customMetadata: { campaign: 'autumn' },
+      },
+    }
+    let counter = 0
+    const payload = {
+      find: async ({ collection, where }: any) => {
+        if (collection === 'media-blobs')
+          return {
+            docs: Object.values(records).filter(
+              (record: any) =>
+                record.collection === 'media-blobs' &&
+                record.site === where.and[0].site.equals &&
+                record.checksum === where.and[1].checksum.equals,
+            ),
+          }
+        return { docs: [] }
+      },
+      findByID: async ({ id }: any) => records[id],
+      create: async ({ collection, data }: any) => {
+        const record = { id: `${collection}-${++counter}`, collection, ...data }
+        records[record.id] = record
+        return record
+      },
+      update: async ({ id, data }: any) => Object.assign(records[id], data),
+    }
+
+    const replacement = await replaceMedia(payload as never, config, {
+      user: { role: 'owner' },
+      scope: { kind: 'site', siteId: 'site-a' },
+      replacedMediaId: 'original',
+      title: 'Edited asset',
+      altText: 'Updated alt text',
+      originalFilename: 'edited.png',
+      bytes: png,
+      mode: 'all-usages',
+      reason: 'Edited in miniPaint: cropped banner',
+    })
+    const replacementId = String(replacement.id)
+
+    expect(replacementId).not.toBe('original')
+    expect(records.original.replaceGloballyWith).toBe(replacementId)
+    expect(records[replacementId]).toMatchObject({
+      title: 'Edited asset',
+      altText: 'Updated alt text',
+      caption: 'Original caption',
+      creatorCredit: 'Original photographer',
+      licenseType: 'owned',
+      rightsStatus: 'approved',
+      publicPolicy: 'published-use',
+      customMetadata: { campaign: 'autumn' },
+      mimeType: 'image/png',
+      width: 1,
+      height: 1,
+    })
+    expect(
+      Object.values(records).find((record: any) => record.collection === 'media-asset-versions'),
+    ).toMatchObject({
+      asset: replacementId,
+      replacesAsset: 'original',
+      mode: 'all-usages',
+      reason: 'Edited in miniPaint: cropped banner',
+    })
   })
 })

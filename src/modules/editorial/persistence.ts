@@ -173,7 +173,7 @@ const toRichTextDocument = (value: unknown): RichTextDocument => {
   }
 }
 
-const hydrateWorkflow = (bundle: EditorialBundle): EditorialWorkflow => {
+export const hydrateWorkflow = (bundle: EditorialBundle): EditorialWorkflow => {
   const first = bundle.revisions[0]
   const fallbackDocument = toRichTextDocument(bundle.article.document)
   const initialDocument = first ? toRichTextDocument(first.document) : fallbackDocument
@@ -188,6 +188,7 @@ const hydrateWorkflow = (bundle: EditorialBundle): EditorialWorkflow => {
       id: string
       status: any
       currentRevisionId: string
+      latestPublishedRevisionId: string | null
       firstPublishedAt: string | null
       updatedAt: string | null
       revisions: EditorialRevision[]
@@ -198,6 +199,9 @@ const hydrateWorkflow = (bundle: EditorialBundle): EditorialWorkflow => {
         at: string
         detail: Record<string, string | number | null>
       }>
+      qualityGateSnapshot?: any
+      qualityWaiver?: any
+      reviewDecisions?: any[]
     }
     acceptedMutations: Map<string, string>
   }
@@ -225,10 +229,15 @@ const hydrateWorkflow = (bundle: EditorialBundle): EditorialWorkflow => {
     ? idOf(bundle.article.currentRevision)
     : String(revisions.at(-1)?.id ?? workflow.article.currentRevisionId)
 
+  const latestPublishedRevisionId = bundle.article.latestPublishedRevision
+    ? idOf(bundle.article.latestPublishedRevision)
+    : null
+
   mutable.article = {
     id: String(bundle.article.id),
     status: bundle.article.lifecycle,
     currentRevisionId,
+    latestPublishedRevisionId,
     firstPublishedAt: bundle.article.firstPublishedAt
       ? String(bundle.article.firstPublishedAt)
       : null,
@@ -242,6 +251,11 @@ const hydrateWorkflow = (bundle: EditorialBundle): EditorialWorkflow => {
           at: string
           detail: Record<string, string | number | null>
         }>)
+      : [],
+    qualityGateSnapshot: bundle.article.qualityGateSnapshot ?? null,
+    qualityWaiver: bundle.article.qualityWaiver ?? null,
+    reviewDecisions: Array.isArray(bundle.article.reviewDecisions)
+      ? bundle.article.reviewDecisions
       : [],
   }
   mutable.acceptedMutations = new Map(
@@ -271,7 +285,7 @@ const findOne = async (
   return result.docs[0] ?? null
 }
 
-const loadBundleByArticleId = async (
+export const loadBundleByArticleId = async (
   payload: Payload,
   articleId: string,
 ): Promise<EditorialBundle> => {
@@ -440,7 +454,7 @@ export async function ensureEditorialCompanion(payload: Payload, content: Doc, r
   } as never)
 }
 
-const persistWorkflow = async (
+export const persistWorkflow = async (
   payload: Payload,
   bundle: EditorialBundle,
   workflow: EditorialWorkflow,
@@ -485,6 +499,9 @@ const persistWorkflow = async (
       firstPublishedAt: workflow.article.firstPublishedAt,
       citations: toStoredCitations(workflow.article.citations),
       workflowAudit: workflow.article.audit,
+      qualityGateSnapshot: workflow.article.qualityGateSnapshot ?? null,
+      qualityWaiver: workflow.article.qualityWaiver ?? null,
+      reviewDecisions: workflow.article.reviewDecisions ?? [],
       acceptedMutationKeys: Array.from(
         (
           (workflow as unknown as { acceptedMutations: Map<string, string> }).acceptedMutations ??
@@ -766,11 +783,20 @@ export async function saveEditorialDraft(
 
 export async function requestEditorialReview(
   payload: Payload,
-  input: { articleId: string; actor: EditorialActor; actorUserId?: string | null; now?: string },
+  input: {
+    articleId: string
+    actor: EditorialActor
+    actorUserId?: string | null
+    qualityGateSnapshot?: any
+    now?: string
+  },
 ) {
   const bundle = await loadBundleByArticleId(payload, input.articleId)
   const workflow = hydrateWorkflow(bundle)
-  workflow.requestReview(input.actor, input.now)
+  workflow.requestReview(input.actor, {
+    qualityGateSnapshot: input.qualityGateSnapshot ?? null,
+    now: input.now,
+  })
   return persistWorkflow(payload, bundle, workflow, {
     reason: 'reviewed',
     actorUserId: input.actorUserId,
@@ -783,13 +809,18 @@ export async function decideEditorialReview(
     articleId: string
     actor: EditorialActor
     actorUserId?: string | null
-    approved: boolean
+    approved: boolean | 'approved' | 'rejected' | 'changes-requested'
+    comment?: string | null
+    qualityWaiver?: any
     now?: string
   },
 ) {
   const bundle = await loadBundleByArticleId(payload, input.articleId)
   const workflow = hydrateWorkflow(bundle)
-  workflow.decideReview(input.actor, input.approved, input.now)
+  workflow.decideReview(input.actor, input.approved, input.comment, {
+    qualityWaiver: input.qualityWaiver ?? null,
+    now: input.now,
+  })
   return persistWorkflow(payload, bundle, workflow, {
     reason: 'reviewed',
     actorUserId: input.actorUserId,
@@ -824,6 +855,7 @@ export async function scheduleEditorialPublication(
     scheduledFor: string
     timeZone: string
     idempotencyKey: string
+    qualityWaiver?: any
     now?: string
   },
 ) {
@@ -843,7 +875,10 @@ export async function scheduleEditorialPublication(
     input.scheduledFor,
     input.timeZone,
     input.idempotencyKey,
-    input.now,
+    {
+      qualityWaiver: input.qualityWaiver ?? null,
+      now: input.now,
+    },
   )
   const persisted = await persistWorkflow(payload, bundle, workflow, {
     reason: 'reviewed',
@@ -924,6 +959,134 @@ export async function publishScheduledArticle(
   } as never)
 
   return published
+}
+
+export async function cancelScheduledPublication(
+  payload: Payload,
+  input: {
+    articleId: string
+    actor: EditorialActor
+    idempotencyKey: string
+    reason?: string
+    actorUserId?: string | null
+    now?: string
+  },
+) {
+  const bundle = await loadBundleByArticleId(payload, input.articleId)
+  const scheduledJob = await findOne(payload, 'scheduled-publish-jobs', {
+    idempotencyKey: { equals: input.idempotencyKey },
+  })
+  if (scheduledJob) {
+    await payload.update({
+      collection: 'scheduled-publish-jobs',
+      id: scheduledJob.id,
+      data: { status: 'cancelled' },
+      overrideAccess: true,
+    } as never)
+  }
+  const workflow = hydrateWorkflow(bundle)
+  workflow.cancelSchedule(input.actor, input.idempotencyKey, input.reason, input.now)
+  return persistWorkflow(payload, bundle, workflow, {
+    reason: 'reviewed',
+    actorUserId: input.actorUserId,
+  })
+}
+
+export async function unpublishEditorialArticle(
+  payload: Payload,
+  input: {
+    articleId: string
+    actor: EditorialActor
+    reason?: string
+    actorUserId?: string | null
+    now?: string
+  },
+) {
+  const bundle = await loadBundleByArticleId(payload, input.articleId)
+  const workflow = hydrateWorkflow(bundle)
+  workflow.unpublish(input.actor, input.reason, input.now)
+  return persistWorkflow(payload, bundle, workflow, {
+    reason: 'edited',
+    actorUserId: input.actorUserId,
+  })
+}
+
+export async function archiveEditorialArticle(
+  payload: Payload,
+  input: {
+    articleId: string
+    actor: EditorialActor
+    reason?: string
+    actorUserId?: string | null
+    now?: string
+  },
+) {
+  const bundle = await loadBundleByArticleId(payload, input.articleId)
+  const workflow = hydrateWorkflow(bundle)
+  workflow.archive(input.actor, input.reason, input.now)
+  return persistWorkflow(payload, bundle, workflow, {
+    reason: 'reviewed',
+    actorUserId: input.actorUserId,
+  })
+}
+
+export async function reconcileScheduledPublishJobs(payload: Payload, workerId = 'worker-1') {
+  const pendingJobs = (
+    (await payload.find({
+      collection: 'scheduled-publish-jobs',
+      where: {
+        and: [
+          { status: { in: ['queued', 'processing'] } },
+          { scheduledFor: { less_than_equal: new Date().toISOString() } },
+        ],
+      },
+      limit: 50,
+      overrideAccess: true,
+    } as never)) as { docs: Doc[] }
+  ).docs
+
+  const processed: string[] = []
+
+  for (const job of pendingJobs) {
+    const articleId = idOf(job.article)
+    try {
+      await payload.update({
+        collection: 'scheduled-publish-jobs',
+        id: job.id,
+        data: {
+          status: 'processing',
+          leaseOwner: workerId,
+          leaseExpiresAt: new Date(Date.now() + 5 * 60 * 1000).toISOString(),
+        },
+        overrideAccess: true,
+      } as never)
+
+      const success = await publishScheduledArticle(payload, {
+        articleId,
+        actor: { id: 'scheduled-worker', role: 'publisher' },
+        idempotencyKey: String(job.idempotencyKey),
+      })
+      if (success) processed.push(String(job.id))
+    } catch (error) {
+      const retryCount = Number(job.retryCount ?? 0) + 1
+      const maxRetries = Number(job.maxRetries ?? 3)
+      const failedFinal = retryCount >= maxRetries
+      await payload.update({
+        collection: 'scheduled-publish-jobs',
+        id: job.id,
+        data: {
+          status: failedFinal ? 'failed' : 'queued',
+          retryCount,
+          lastError: error instanceof Error ? error.message : String(error),
+          leaseOwner: null,
+          leaseExpiresAt: null,
+        },
+        overrideAccess: true,
+      } as never)
+    }
+  }
+
+  return { processedCount: processed.length, processedJobIds: processed }
 }
 
 export async function createEditorialPreviewToken(
