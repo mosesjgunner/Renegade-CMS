@@ -4,7 +4,7 @@ import { getPayload, type Payload } from 'payload'
 import { migrations } from '../migrations'
 
 /** Advance this name, and only this name, when the supported upgrade baseline moves. */
-export const UPGRADE_BASELINE = '20260831_200000_member_identity_foundation'
+export const UPGRADE_BASELINE = '20260914_110000_med_05_video_workflow'
 const baselineIndex = migrations.findIndex(({ name }) => name === UPGRADE_BASELINE)
 const ids = {
   site: '10000000-0000-4000-8000-000000000001',
@@ -86,10 +86,11 @@ async function createHistoricalFixture(payload: Payload) {
     visibility: 'public',
   })
   await poolFor(payload).query(
-    `INSERT INTO spaces (id, member_id, profile_id, handle, canonical_path, display_name, visibility, moderation_state, transfer_state, created_at, updated_at)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $10)`,
+    `INSERT INTO spaces (id, site_id, member_id, profile_id, handle, canonical_path, display_name, visibility, moderation_state, transfer_state, created_at, updated_at)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $11)`,
     [
       ids.space,
+      ids.site,
       ids.member,
       ids.profile,
       'upgrade-sentinel',
