@@ -37,10 +37,15 @@ export async function GET(req: NextRequest) {
       return {
         id: String(job.id),
         articleId: idOf(job.article),
-        articleTitle: job.article && typeof job.article === 'object' ? String(job.article.title ?? 'Article') : 'Article',
+        articleTitle:
+          job.article && typeof job.article === 'object'
+            ? String(job.article.title ?? 'Article')
+            : 'Article',
         revisionId: idOf(job.revision),
-        revisionSequence: job.revision && typeof job.revision === 'object' ? Number(job.revision.sequence ?? 1) : 1,
-        revisionHash: job.revision && typeof job.revision === 'object' ? String(job.revision.hash ?? '') : '',
+        revisionSequence:
+          job.revision && typeof job.revision === 'object' ? Number(job.revision.sequence ?? 1) : 1,
+        revisionHash:
+          job.revision && typeof job.revision === 'object' ? String(job.revision.hash ?? '') : '',
         scheduledFor: String(job.scheduledFor),
         timeZone: String(job.timeZone ?? 'UTC'),
         idempotencyKey: String(job.idempotencyKey),
@@ -55,7 +60,8 @@ export async function GET(req: NextRequest) {
     })
 
     const counts = {
-      nextJobs: jobs.filter((j) => j.rawStatus === 'queued' && new Date(j.scheduledFor) >= now).length,
+      nextJobs: jobs.filter((j) => j.rawStatus === 'queued' && new Date(j.scheduledFor) >= now)
+        .length,
       lateJobs: jobs.filter((j) => j.status === 'late').length,
       retryingJobs: jobs.filter((j) => j.rawStatus === 'queued' && j.retryCount > 0).length,
       failedJobs: jobs.filter((j) => j.rawStatus === 'failed').length,
@@ -76,7 +82,10 @@ export async function GET(req: NextRequest) {
       jobs,
     })
   } catch (error) {
-    return NextResponse.json({ error: error instanceof Error ? error.message : String(error) }, { status: 500 })
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : String(error) },
+      { status: 500 },
+    )
   }
 }
 
@@ -95,7 +104,10 @@ export async function POST(req: NextRequest) {
     }
 
     if (!jobId) {
-      return NextResponse.json({ error: 'jobId is required for single-job actions.' }, { status: 400 })
+      return NextResponse.json(
+        { error: 'jobId is required for single-job actions.' },
+        { status: 400 },
+      )
     }
 
     if (action === 'retry') {
@@ -130,6 +142,9 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ error: `Unknown action "${action}".` }, { status: 400 })
   } catch (error) {
-    return NextResponse.json({ error: error instanceof Error ? error.message : String(error) }, { status: 500 })
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : String(error) },
+      { status: 500 },
+    )
   }
 }

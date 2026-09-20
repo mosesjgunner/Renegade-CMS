@@ -49,9 +49,9 @@ Implemented and verified the complete **DIST-04 Video Pipelines, Monetized APIs 
   - Calculates per-network and grand overall engagement rates.
   - Generates persistent point-in-time cross-network telemetry snapshots (`AnalyticsSnapshot`).
 - **Social Admin API Endpoints**:
-  - `POST /api/admin/social/dispatch` ([src/app/(frontend)/api/admin/social/dispatch/route.ts](file:///c:/Projects/RENEGADE%20CMS/Renegade-CMS/src/app/(frontend)/api/admin/social/dispatch/route.ts)): Authenticated multi-network canonical post dispatch and staging.
-  - `GET /api/admin/social/accounts` ([src/app/(frontend)/api/admin/social/accounts/route.ts](file:///c:/Projects/RENEGADE%20CMS/Renegade-CMS/src/app/(frontend)/api/admin/social/accounts/route.ts)): Connected accounts discovery and credential health.
-  - `GET /api/admin/social/analytics` ([src/app/(frontend)/api/admin/social/analytics/route.ts](file:///c:/Projects/RENEGADE%20CMS/Renegade-CMS/src/app/(frontend)/api/admin/social/analytics/route.ts)): Aggregated telemetry ingestion across deliveries.
+  - `POST /api/admin/social/dispatch` ([src/app/(frontend)/api/admin/social/dispatch/route.ts](<file:///c:/Projects/RENEGADE%20CMS/Renegade-CMS/src/app/(frontend)/api/admin/social/dispatch/route.ts>)): Authenticated multi-network canonical post dispatch and staging.
+  - `GET /api/admin/social/accounts` ([src/app/(frontend)/api/admin/social/accounts/route.ts](<file:///c:/Projects/RENEGADE%20CMS/Renegade-CMS/src/app/(frontend)/api/admin/social/accounts/route.ts>)): Connected accounts discovery and credential health.
+  - `GET /api/admin/social/analytics` ([src/app/(frontend)/api/admin/social/analytics/route.ts](<file:///c:/Projects/RENEGADE%20CMS/Renegade-CMS/src/app/(frontend)/api/admin/social/analytics/route.ts>)): Aggregated telemetry ingestion across deliveries.
 - **Verification Evidence**:
   - Unit test suite: `tests/unit/dist-04-video-monetized-and-analytics.test.ts` (11/11 PASS).
   - API routes test suite: `tests/unit/dist-05-social-api-routes.test.ts` (6/6 PASS).

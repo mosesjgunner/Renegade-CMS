@@ -193,7 +193,6 @@ describe('FLOW-05 Localization & Quality Pass Gate — Integration & API Suite',
     expect(pubData.variant.status).toBe('published')
     expect(pubData.hreflang.alternateLocales['es']).toBeDefined()
     expect(pubData.hreflang.alternateLocales['en']).toBeDefined()
-
   })
 
   it('2. Tests notification preferences and durable outbox processing API', async () => {
@@ -311,9 +310,12 @@ describe('FLOW-05 Localization & Quality Pass Gate — Integration & API Suite',
     expect(dispatchData.dispatchedCount).toBe(1)
 
     // Verify delivery logs
-    const getLogsReq = new Request('https://renegadeparty.org/api/admin/webhooks?webhookId=sub-valid', {
-      method: 'GET',
-    })
+    const getLogsReq = new Request(
+      'https://renegadeparty.org/api/admin/webhooks?webhookId=sub-valid',
+      {
+        method: 'GET',
+      },
+    )
     const getLogsRes = await getWebhooks(getLogsReq)
     expect(getLogsRes.status).toBe(200)
     const logsData = await getLogsRes.json()

@@ -34,12 +34,9 @@ export async function POST(request: Request) {
     const authMap = new Map<string, AuthContext>()
 
     // Execute the batch processing pass
-    const summary: QueueBatchSummary = await processQueueBatch(
-      incomingPosts,
-      authMap,
-      undefined,
-      { workerId },
-    )
+    const summary: QueueBatchSummary = await processQueueBatch(incomingPosts, authMap, undefined, {
+      workerId,
+    })
 
     return NextResponse.json({
       success: true,
@@ -47,6 +44,9 @@ export async function POST(request: Request) {
     })
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err)
-    return NextResponse.json({ error: `Queue worker execution failed: ${message}` }, { status: 500 })
+    return NextResponse.json(
+      { error: `Queue worker execution failed: ${message}` },
+      { status: 500 },
+    )
   }
 }

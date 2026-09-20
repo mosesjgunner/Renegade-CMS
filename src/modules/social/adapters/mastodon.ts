@@ -84,7 +84,10 @@ export class MastodonAdapter implements SocialProviderAdapter {
     }
   }
 
-  resolveInstanceUrl(authContext?: AuthContext, platformSettings?: MastodonPlatformSettings): string {
+  resolveInstanceUrl(
+    authContext?: AuthContext,
+    platformSettings?: MastodonPlatformSettings,
+  ): string {
     const fromSettings = platformSettings?.instanceUrl
     const fromCreds = authContext?.credentials?.instanceUrl || authContext?.credentials?.instance
     const raw = fromSettings || fromCreds || 'https://mastodon.social'
@@ -97,7 +100,11 @@ export class MastodonAdapter implements SocialProviderAdapter {
 
     const textLimit = constraints?.characterCeilingOverride || 500
     if (!variant.text.trim() && !variant.attachments.length) {
-      errors.push({ field: 'text', message: 'Status must contain text or attachments.', code: 'EMPTY_STATUS' })
+      errors.push({
+        field: 'text',
+        message: 'Status must contain text or attachments.',
+        code: 'EMPTY_STATUS',
+      })
     }
 
     if (variant.text.length > textLimit) {
@@ -119,13 +126,25 @@ export class MastodonAdapter implements SocialProviderAdapter {
     const settings = variant.platformSettings as MastodonPlatformSettings | undefined
     if (settings?.poll) {
       if (!settings.poll.options || settings.poll.options.length < 2) {
-        errors.push({ field: 'poll', message: 'Polls require at least 2 options.', code: 'POLL_OPTIONS_MIN' })
+        errors.push({
+          field: 'poll',
+          message: 'Polls require at least 2 options.',
+          code: 'POLL_OPTIONS_MIN',
+        })
       }
       if (settings.poll.options.length > 4) {
-        errors.push({ field: 'poll', message: 'Polls allow at most 4 options on standard instances.', code: 'POLL_OPTIONS_MAX' })
+        errors.push({
+          field: 'poll',
+          message: 'Polls allow at most 4 options on standard instances.',
+          code: 'POLL_OPTIONS_MAX',
+        })
       }
       if (variant.attachments.length > 0) {
-        errors.push({ field: 'poll', message: 'Mastodon does not allow combining polls with media attachments.', code: 'POLL_WITH_MEDIA' })
+        errors.push({
+          field: 'poll',
+          message: 'Mastodon does not allow combining polls with media attachments.',
+          code: 'POLL_WITH_MEDIA',
+        })
       }
     }
 
@@ -197,11 +216,14 @@ export class MastodonAdapter implements SocialProviderAdapter {
 
   async publish(
     variant: SocialVariant,
-    context?: AuthContext | Readonly<{ accountId: string; credentials: Record<string, string> | null }>,
+    context?:
+      | AuthContext
+      | Readonly<{ accountId: string; credentials: Record<string, string> | null }>,
     mediaResolver?: MediaResolver,
   ): Promise<AdapterResult> {
     const auth = context as AuthContext | undefined
-    const token = auth?.credentials?.token || auth?.credentials?.accessToken || auth?.tokens?.accessToken
+    const token =
+      auth?.credentials?.token || auth?.credentials?.accessToken || auth?.tokens?.accessToken
     const settings = variant.platformSettings as MastodonPlatformSettings | undefined
     const instanceUrl = this.resolveInstanceUrl(auth, settings)
 
@@ -296,7 +318,9 @@ export class MastodonAdapter implements SocialProviderAdapter {
           error: normalizeProviderError({
             kind: 'rate-limit',
             message: 'Mastodon instance rate limit reached.',
-            retryAfter: retryAfter ? new Date(Date.now() + Number(retryAfter) * 1000).toISOString() : undefined,
+            retryAfter: retryAfter
+              ? new Date(Date.now() + Number(retryAfter) * 1000).toISOString()
+              : undefined,
           }),
         }
       }
@@ -372,10 +396,17 @@ export class MastodonAdapter implements SocialProviderAdapter {
 
     if (!res.ok) {
       const err = await res.json().catch(() => null)
-      throw new Error(`Mastodon status edit failed (${res.status}): ${err?.error || res.statusText}`)
+      throw new Error(
+        `Mastodon status edit failed (${res.status}): ${err?.error || res.statusText}`,
+      )
     }
 
-    const data = (await res.json()) as { id: string; url: string; edited_at?: string; created_at: string }
+    const data = (await res.json()) as {
+      id: string
+      url: string
+      edited_at?: string
+      created_at: string
+    }
     return {
       remotePostId: data.id,
       remoteUrl: data.url,
@@ -427,7 +458,10 @@ export class MastodonAdapter implements SocialProviderAdapter {
     }
   }
 
-  async fetchAnalytics(remotePostId: string, authContext: AuthContext): Promise<NormalizedAnalytics> {
+  async fetchAnalytics(
+    remotePostId: string,
+    authContext: AuthContext,
+  ): Promise<NormalizedAnalytics> {
     const instanceUrl = this.resolveInstanceUrl(authContext)
     const token = authContext.credentials?.token || authContext.tokens?.accessToken
 

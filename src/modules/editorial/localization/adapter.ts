@@ -1,8 +1,4 @@
-import type {
-  LocaleCode,
-  LocaleVariant,
-  TranslationDraftAttribution,
-} from './contracts'
+import type { LocaleCode, LocaleVariant, TranslationDraftAttribution } from './contracts'
 
 export interface TranslationDraftRequest {
   sourceText: {

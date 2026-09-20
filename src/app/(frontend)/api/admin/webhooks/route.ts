@@ -54,7 +54,10 @@ export async function POST(request: Request) {
 
       case 'rotate-secret': {
         if (!body.subscriptionId || !body.newSecret) {
-          return NextResponse.json({ error: 'subscriptionId and newSecret required.' }, { status: 400 })
+          return NextResponse.json(
+            { error: 'subscriptionId and newSecret required.' },
+            { status: 400 },
+          )
         }
         const sub = engine.webhookEngine.getSubscription(body.subscriptionId)
         if (!sub) return NextResponse.json({ error: 'Subscription not found.' }, { status: 404 })
@@ -77,7 +80,10 @@ export async function POST(request: Request) {
       }
 
       default:
-        return NextResponse.json({ error: `Unknown action: ${(body as any).action}` }, { status: 400 })
+        return NextResponse.json(
+          { error: `Unknown action: ${(body as any).action}` },
+          { status: 400 },
+        )
     }
   } catch (err: any) {
     return NextResponse.json({ error: err?.message || String(err) }, { status: 500 })

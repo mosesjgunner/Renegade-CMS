@@ -51,7 +51,7 @@ export function encryptSecret(plaintext: string, explicitKeyHex?: string): strin
   const key = getEncryptionKey(explicitKeyHex)
   const iv = randomBytes(IV_LENGTH_BYTES)
   const cipher = createCipheriv(ALGORITHM, key, iv, { authTagLength: AUTH_TAG_LENGTH_BYTES })
-  
+
   const encrypted = Buffer.concat([cipher.update(plaintext, 'utf8'), cipher.final()])
   const tag = cipher.getAuthTag()
 
@@ -180,7 +180,7 @@ export function validateOutboundUrl(
  */
 export function sanitizeSocialLog(input: unknown): string {
   if (input === null || input === undefined) return String(input)
-  
+
   let text = typeof input === 'string' ? input : JSON.stringify(input)
 
   // Mask Bearer tokens
@@ -276,7 +276,10 @@ export function verifyOAuthState(
   // Timing safe equality check
   const sigBuffer = Buffer.from(signature)
   const expectedSigBuffer = Buffer.from(expectedSig)
-  if (sigBuffer.length !== expectedSigBuffer.length || !timingSafeEqual(sigBuffer, expectedSigBuffer)) {
+  if (
+    sigBuffer.length !== expectedSigBuffer.length ||
+    !timingSafeEqual(sigBuffer, expectedSigBuffer)
+  ) {
     return { isValid: false, error: 'State token signature mismatch' }
   }
 

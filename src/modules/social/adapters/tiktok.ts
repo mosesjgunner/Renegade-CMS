@@ -15,7 +15,11 @@ import {
 import { validateOutboundUrl } from '../security'
 
 export interface TikTokPlatformSettings {
-  privacyLevel?: 'PUBLIC_TO_EVERYONE' | 'MUTUAL_FOLLOW_FRIENDS' | 'FOLLOWER_OF_CREATOR' | 'SELF_ONLY'
+  privacyLevel?:
+    | 'PUBLIC_TO_EVERYONE'
+    | 'MUTUAL_FOLLOW_FRIENDS'
+    | 'FOLLOWER_OF_CREATOR'
+    | 'SELF_ONLY'
   disableDuet?: boolean
   disableStitch?: boolean
   disableComment?: boolean
@@ -206,8 +210,12 @@ export class TikTokAdapter implements SocialProviderAdapter {
     })
 
     if (!res.ok) {
-      const err = (await res.json().catch(() => null)) as { error?: { message?: string; code?: string } } | null
-      throw new Error(`TikTok post init failed (HTTP ${res.status}): ${err?.error?.message || res.statusText}`)
+      const err = (await res.json().catch(() => null)) as {
+        error?: { message?: string; code?: string }
+      } | null
+      throw new Error(
+        `TikTok post init failed (HTTP ${res.status}): ${err?.error?.message || res.statusText}`,
+      )
     }
 
     const data = (await res.json()) as {
@@ -228,10 +236,7 @@ export class TikTokAdapter implements SocialProviderAdapter {
   /**
    * Uploads binary video data to TikTok's dedicated S3/storage target.
    */
-  async uploadBinaryChunk(
-    uploadUrl: string,
-    buffer: Buffer,
-  ): Promise<void> {
+  async uploadBinaryChunk(uploadUrl: string, buffer: Buffer): Promise<void> {
     const ssrf = validateOutboundUrl(uploadUrl)
     if (!ssrf.isValid) throw new Error(`SSRF Blocked: ${ssrf.reason}`)
 
@@ -280,7 +285,9 @@ export class TikTokAdapter implements SocialProviderAdapter {
 
   async publish(
     variant: SocialVariant,
-    context?: AuthContext | Readonly<{ accountId: string; credentials: Record<string, string> | null }>,
+    context?:
+      | AuthContext
+      | Readonly<{ accountId: string; credentials: Record<string, string> | null }>,
     mediaResolver?: MediaResolver,
   ): Promise<AdapterResult> {
     const auth = context as AuthContext | undefined

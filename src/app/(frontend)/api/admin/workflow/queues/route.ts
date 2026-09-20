@@ -17,7 +17,10 @@ export async function GET(request: Request) {
   const now = url.searchParams.get('now') || undefined
 
   const userId = String(auth.user.id)
-  const userRole = String(auth.user.role) === 'owner' || String(auth.user.role) === 'administrator' ? 'publisher' : 'editor'
+  const userRole =
+    String(auth.user.role) === 'owner' || String(auth.user.role) === 'administrator'
+      ? 'publisher'
+      : 'editor'
 
   try {
     const queues = await getWorkflowQueuesForUser(payload, {

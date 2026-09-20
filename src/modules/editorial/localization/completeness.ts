@@ -247,10 +247,7 @@ export function evaluateTranslationCompleteness(
   }
 
   // 3. Links Validation
-  const allTargetLinks = [
-    ...(input.target.links || []),
-    ...targetInspection.links,
-  ]
+  const allTargetLinks = [...(input.target.links || []), ...targetInspection.links]
   const brokenLinks: string[] = []
   for (const link of allTargetLinks) {
     if (!link || link.trim() === '' || link.startsWith('javascript:')) {
@@ -405,7 +402,10 @@ export function evaluateTranslationCompleteness(
   const isComplete = blockers.length === 0
   const totalChecks = 7
   const failedChecks = (blockers.length > 0 ? 1 : 0) + (warnings.length > 0 ? 0.5 : 0)
-  const score = Math.max(0, Math.min(100, Math.round(((totalChecks - failedChecks) / totalChecks) * 100)))
+  const score = Math.max(
+    0,
+    Math.min(100, Math.round(((totalChecks - failedChecks) / totalChecks) * 100)),
+  )
 
   return {
     isComplete,

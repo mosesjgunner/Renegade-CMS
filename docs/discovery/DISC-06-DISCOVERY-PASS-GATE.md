@@ -2,7 +2,7 @@
 
 **Date**: 2026-09-15  
 **Candidate Git Commit SHA**: `040b6ac5c8630e668086558034a6066f45bca03b`  
-**Status**: `Discovery Pass VERIFIED`  
+**Status**: `Discovery Pass VERIFIED`
 
 ---
 
@@ -14,17 +14,17 @@ Renegade CMoS Discovery Pass Gate **DISC-06** has successfully executed and pass
 
 ## Mandatory Proof Verification Matrix
 
-| # | Mandatory Boundary Requirement | Execution Command / Test Suite | Result | Evidence / Notes |
-|---|--------------------------------|--------------------------------|--------|------------------|
-| 1 | **Provenance & Preview** | `vitest run tests/integration/disc-06-discovery-pass-gate.integration.test.ts` | **PASS** | Proved fallback priority: `explicit_override` > `content_derived` > `template_default` > `site_default`. Verified search/social previews. |
-| 2 | **Content Type Schema & Canonical** | `vitest run tests/integration/disc-06-discovery-pass-gate.integration.test.ts` | **PASS** | Published Home (`page`/`home`), Page (`page`), Post (`article`), Podcast Episode (`podcast-episodes`), Video (`videos`) with distinct `@graph` JSON-LD schema (WebPage, Article, PodcastEpisode, VideoObject). |
-| 3 | **Server HTML Metadata & Graph** | `vitest run tests/integration/disc-06-discovery-pass-gate.integration.test.ts` | **PASS** | Verified `<title>`, `<meta name="description">`, `<link rel="canonical">`, `<meta name="robots">`, Open Graph (`og:*`), Twitter card (`summary_large_image`), language (`<html lang="en">`), hreflang alternates, and schema `@graph` JSON-LD nodes. |
-| 4 | **Sitemaps, Feeds & Robots** | `vitest run tests/integration/disc-06-discovery-pass-gate.integration.test.ts` | **PASS** | Parsed sitemap index (`/sitemap.xml`), child sitemap (`/sitemaps/1.xml`), `robots.txt`, RSS feed (`/feed.xml`), JSON feed (`/feed.json`), and podcast feed. Confirmed strict indexability filters. |
-| 5 | **Local Search & Drift Repair** | `vitest run tests/integration/disc-06-discovery-pass-gate.integration.test.ts` | **PASS** | Executed local search for titles, bodies, and transcripts with facets, pagination, safe highlights, projection rebuild (`reconcileSearchProjection`), and drift repair. |
-| 6 | **Redirects & Loop Detection** | `vitest run tests/integration/disc-06-discovery-pass-gate.integration.test.ts` | **PASS** | Verified 308 redirect resolution (`resolveRedirect`), circular loop/chain detection (`validateRedirectRuleInput`), and internal-link update cascade. |
-| 7 | **Quality Center Audit** | `vitest run tests/integration/disc-06-discovery-pass-gate.integration.test.ts` | **PASS** | Executed crawler audit (`runRenderedAudit`), identified deliberate contradictions, repaired via UI, and verified issue state transitions. |
-| 8 | **Lifecycle & Draft Isolation** | `vitest run tests/integration/disc-06-discovery-pass-gate.integration.test.ts` | **PASS** | Switched themes (`renegade-party` / `neutral-starter`), replaced media assets, scheduled/unpublished/noindexed content, restarted server, and verified outputs converge without leaking draft/private assets. |
-| 9 | **Webmaster & Handoff** | `vitest run tests/integration/disc-06-discovery-pass-gate.integration.test.ts` | **PASS** | Exported manual handoff JSON (`exportIndexingHandoff`), exercised Webmaster adapter status handling, and verified rate-limit fallback behavior. |
+| #   | Mandatory Boundary Requirement      | Execution Command / Test Suite                                                 | Result   | Evidence / Notes                                                                                                                                                                                                                                     |
+| --- | ----------------------------------- | ------------------------------------------------------------------------------ | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | **Provenance & Preview**            | `vitest run tests/integration/disc-06-discovery-pass-gate.integration.test.ts` | **PASS** | Proved fallback priority: `explicit_override` > `content_derived` > `template_default` > `site_default`. Verified search/social previews.                                                                                                            |
+| 2   | **Content Type Schema & Canonical** | `vitest run tests/integration/disc-06-discovery-pass-gate.integration.test.ts` | **PASS** | Published Home (`page`/`home`), Page (`page`), Post (`article`), Podcast Episode (`podcast-episodes`), Video (`videos`) with distinct `@graph` JSON-LD schema (WebPage, Article, PodcastEpisode, VideoObject).                                       |
+| 3   | **Server HTML Metadata & Graph**    | `vitest run tests/integration/disc-06-discovery-pass-gate.integration.test.ts` | **PASS** | Verified `<title>`, `<meta name="description">`, `<link rel="canonical">`, `<meta name="robots">`, Open Graph (`og:*`), Twitter card (`summary_large_image`), language (`<html lang="en">`), hreflang alternates, and schema `@graph` JSON-LD nodes. |
+| 4   | **Sitemaps, Feeds & Robots**        | `vitest run tests/integration/disc-06-discovery-pass-gate.integration.test.ts` | **PASS** | Parsed sitemap index (`/sitemap.xml`), child sitemap (`/sitemaps/1.xml`), `robots.txt`, RSS feed (`/feed.xml`), JSON feed (`/feed.json`), and podcast feed. Confirmed strict indexability filters.                                                   |
+| 5   | **Local Search & Drift Repair**     | `vitest run tests/integration/disc-06-discovery-pass-gate.integration.test.ts` | **PASS** | Executed local search for titles, bodies, and transcripts with facets, pagination, safe highlights, projection rebuild (`reconcileSearchProjection`), and drift repair.                                                                              |
+| 6   | **Redirects & Loop Detection**      | `vitest run tests/integration/disc-06-discovery-pass-gate.integration.test.ts` | **PASS** | Verified 308 redirect resolution (`resolveRedirect`), circular loop/chain detection (`validateRedirectRuleInput`), and internal-link update cascade.                                                                                                 |
+| 7   | **Quality Center Audit**            | `vitest run tests/integration/disc-06-discovery-pass-gate.integration.test.ts` | **PASS** | Executed crawler audit (`runRenderedAudit`), identified deliberate contradictions, repaired via UI, and verified issue state transitions.                                                                                                            |
+| 8   | **Lifecycle & Draft Isolation**     | `vitest run tests/integration/disc-06-discovery-pass-gate.integration.test.ts` | **PASS** | Switched themes (`renegade-party` / `neutral-starter`), replaced media assets, scheduled/unpublished/noindexed content, restarted server, and verified outputs converge without leaking draft/private assets.                                        |
+| 9   | **Webmaster & Handoff**             | `vitest run tests/integration/disc-06-discovery-pass-gate.integration.test.ts` | **PASS** | Exported manual handoff JSON (`exportIndexingHandoff`), exercised Webmaster adapter status handling, and verified rate-limit fallback behavior.                                                                                                      |
 
 ---
 

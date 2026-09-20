@@ -27,7 +27,11 @@ export async function executeDatabaseStep(
   release: Partial<CoordinatedRelease>,
   item: ReleaseArtifactItem & { key?: string; type?: string; revisionId?: string },
   actorId: string,
-): Promise<{ output: Record<string, unknown>; lastKnownGoodState: Record<string, unknown>; url?: string }> {
+): Promise<{
+  output: Record<string, unknown>
+  lastKnownGoodState: Record<string, unknown>
+  url?: string
+}> {
   const at = new Date().toISOString()
   const targetType = item.targetType || item.type
   const revisionId = item.pinnedRevisionId || item.revisionId
@@ -174,10 +178,7 @@ export async function executeDatabaseStep(
       const existing = (await payload.find({
         collection: 'public-redirects' as never,
         where: {
-          and: [
-            { site: { equals: release.siteId } },
-            { fromPath: { equals: rule.fromPath } },
-          ],
+          and: [{ site: { equals: release.siteId } }, { fromPath: { equals: rule.fromPath } }],
         },
         limit: 1,
         depth: 0,
@@ -302,7 +303,9 @@ async function compensateStep(
 
   if (item.targetType === 'article') {
     if (payload.update) {
-      const prevRev = state.previousPublishedRevision ? String(state.previousPublishedRevision) : null
+      const prevRev = state.previousPublishedRevision
+        ? String(state.previousPublishedRevision)
+        : null
       const prevStatus = String(state.previousStatus || 'approved')
       await payload.update({
         collection: 'article-family-content' as never,
@@ -314,7 +317,10 @@ async function compensateStep(
         },
         overrideAccess: true,
       } as never)
-      return { compensated: true, details: { restoredPublishedRevision: prevRev, status: prevStatus } }
+      return {
+        compensated: true,
+        details: { restoredPublishedRevision: prevRev, status: prevStatus },
+      }
     }
   }
 
@@ -385,7 +391,10 @@ async function compensateStep(
   if (item.targetType === 'distribution') {
     return {
       compensated: true,
-      details: { distributionDraftId: item.distributionDraftId || item.targetId, status: 'cancelled' },
+      details: {
+        distributionDraftId: item.distributionDraftId || item.targetId,
+        status: 'cancelled',
+      },
     }
   }
 
@@ -442,7 +451,8 @@ export async function executeReleaseSaga(
     }
 
     const at = new Date().toISOString()
-    const itemId = item.id || (item as any).key || `${item.targetType || (item as any).type}:${item.targetId}`
+    const itemId =
+      item.id || (item as any).key || `${item.targetType || (item as any).type}:${item.targetId}`
     const targetType = item.targetType || (item as any).type
     const stepId = `step-${itemId}-${item.attempts + 1}`
 

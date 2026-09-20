@@ -86,7 +86,11 @@ export class LinkedInAdapter implements SocialProviderAdapter {
 
     const limit = constraints?.characterCeilingOverride || 3000
     if (!variant.text.trim() && !variant.attachments.length) {
-      errors.push({ field: 'text', message: 'Post commentary or media is required.', code: 'EMPTY_POST' })
+      errors.push({
+        field: 'text',
+        message: 'Post commentary or media is required.',
+        code: 'EMPTY_POST',
+      })
     }
 
     if (variant.text.length > limit) {
@@ -133,7 +137,9 @@ export class LinkedInAdapter implements SocialProviderAdapter {
 
     if (!res.ok) {
       const err = await res.json().catch(() => null)
-      throw new Error(`LinkedIn image init failed (${res.status}): ${err?.message || res.statusText}`)
+      throw new Error(
+        `LinkedIn image init failed (${res.status}): ${err?.message || res.statusText}`,
+      )
     }
 
     const data = (await res.json()) as { value: { uploadUrl: string; image: string } }
@@ -157,13 +163,17 @@ export class LinkedInAdapter implements SocialProviderAdapter {
 
   async publish(
     variant: SocialVariant,
-    context?: AuthContext | Readonly<{ accountId: string; credentials: Record<string, string> | null }>,
+    context?:
+      | AuthContext
+      | Readonly<{ accountId: string; credentials: Record<string, string> | null }>,
     mediaResolver?: MediaResolver,
   ): Promise<AdapterResult> {
     const auth = context as AuthContext | undefined
-    const token = auth?.credentials?.accessToken || auth?.credentials?.token || auth?.tokens?.accessToken
+    const token =
+      auth?.credentials?.accessToken || auth?.credentials?.token || auth?.tokens?.accessToken
     const settings = variant.platformSettings as LinkedInPlatformSettings | undefined
-    const authorUrn = settings?.authorUrn || auth?.credentials?.authorUrn || auth?.credentials?.orgUrn
+    const authorUrn =
+      settings?.authorUrn || auth?.credentials?.authorUrn || auth?.credentials?.orgUrn
 
     if (!token) {
       return {
@@ -180,7 +190,8 @@ export class LinkedInAdapter implements SocialProviderAdapter {
         status: 'failed',
         error: normalizeProviderError({
           kind: 'validation',
-          message: 'LinkedIn requires an author URN (e.g. urn:li:organization:123 or urn:li:person:456).',
+          message:
+            'LinkedIn requires an author URN (e.g. urn:li:organization:123 or urn:li:person:456).',
         }),
       }
     }
@@ -265,7 +276,9 @@ export class LinkedInAdapter implements SocialProviderAdapter {
           error: normalizeProviderError({
             kind: 'rate-limit',
             message: 'LinkedIn API rate limit reached.',
-            retryAfter: retryAfter ? new Date(Date.now() + Number(retryAfter) * 1000).toISOString() : undefined,
+            retryAfter: retryAfter
+              ? new Date(Date.now() + Number(retryAfter) * 1000).toISOString()
+              : undefined,
           }),
         }
       }
@@ -275,7 +288,8 @@ export class LinkedInAdapter implements SocialProviderAdapter {
           status: 'failed',
           error: normalizeProviderError({
             kind: 'reconnect-required',
-            message: 'LinkedIn access token expired or lacking w_member_social/w_organization_social scope.',
+            message:
+              'LinkedIn access token expired or lacking w_member_social/w_organization_social scope.',
           }),
         }
       }
@@ -350,7 +364,12 @@ export class LinkedInAdapter implements SocialProviderAdapter {
     })
 
     if (!res.ok) throw new Error(`Failed to fetch LinkedIn post: HTTP ${res.status}`)
-    const data = (await res.json()) as { id: string; commentary: string; createdAt: number; author: string }
+    const data = (await res.json()) as {
+      id: string
+      commentary: string
+      createdAt: number
+      author: string
+    }
 
     return {
       remoteId: data.id,
@@ -361,7 +380,10 @@ export class LinkedInAdapter implements SocialProviderAdapter {
     }
   }
 
-  async fetchAnalytics(remotePostId: string, authContext: AuthContext): Promise<NormalizedAnalytics> {
+  async fetchAnalytics(
+    remotePostId: string,
+    authContext: AuthContext,
+  ): Promise<NormalizedAnalytics> {
     const token = authContext.credentials?.accessToken || authContext.tokens?.accessToken
     const authorUrn = authContext.credentials?.authorUrn || authContext.credentials?.orgUrn
     if (!token || !authorUrn) throw new Error('Missing token or author URN for analytics')

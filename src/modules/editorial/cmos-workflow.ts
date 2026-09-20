@@ -1,6 +1,10 @@
 import { createHash, randomUUID } from 'node:crypto'
 
-import type { QualityGateSnapshot, QualityWaiverAuthorization, ReviewDecisionRecord } from './contracts'
+import type {
+  QualityGateSnapshot,
+  QualityWaiverAuthorization,
+  ReviewDecisionRecord,
+} from './contracts'
 import type { EditorialActor, EditorialRole, WorkflowStatus } from './workflow'
 export type { EditorialActor, EditorialRole, WorkflowStatus } from './workflow'
 
@@ -43,11 +47,11 @@ export const BUILTIN_SIMPLE_WORKFLOW_TEMPLATE: WorkflowTemplate = {
     'submit-for-review': ['author', 'editor'],
     'decide-review': ['editor', 'publisher'],
     'request-changes': ['editor', 'publisher'],
-    'withdraw': ['author', 'editor'],
-    'cancel': ['editor', 'publisher'],
-    'reopen': ['author', 'editor', 'publisher'],
+    withdraw: ['author', 'editor'],
+    cancel: ['editor', 'publisher'],
+    reopen: ['author', 'editor', 'publisher'],
     'emergency-override': ['publisher'],
-    'reassign': ['editor', 'publisher'],
+    reassign: ['editor', 'publisher'],
   },
   requiredApprovalCount: 1,
   approvalOrder: 'any',
@@ -66,7 +70,9 @@ export interface WorkflowTemplateValidationResult {
 /**
  * Validates a workflow template against dead ends, unreachable stages, and privilege escalation.
  */
-export function validateWorkflowTemplate(template: WorkflowTemplate): WorkflowTemplateValidationResult {
+export function validateWorkflowTemplate(
+  template: WorkflowTemplate,
+): WorkflowTemplateValidationResult {
   const errors: string[] = []
 
   if (!template.id || template.id.trim() === '') {
@@ -106,7 +112,9 @@ export function validateWorkflowTemplate(template: WorkflowTemplate): WorkflowTe
   if (template.requiredStages.includes('review')) {
     const deciders = template.eligibleRoles['decide-review'] || []
     if (deciders.length === 0) {
-      errors.push('Dead End Detected: "review" stage has no eligible roles mapped to "decide-review".')
+      errors.push(
+        'Dead End Detected: "review" stage has no eligible roles mapped to "decide-review".',
+      )
     }
   }
 
@@ -119,12 +127,20 @@ export function validateWorkflowTemplate(template: WorkflowTemplate): WorkflowTe
   // 1. Author role alone MUST NOT have emergency-override or decide-review unless explicitly allowed in custom non-production roles.
   const overrideRoles = template.eligibleRoles['emergency-override'] || []
   if (overrideRoles.includes('author') && overrideRoles.length === 1) {
-    errors.push('Privilege Escalation Risk: Emergency override is exclusively mapped to low-privilege "author" role.')
+    errors.push(
+      'Privilege Escalation Risk: Emergency override is exclusively mapped to low-privilege "author" role.',
+    )
   }
 
   const deciderRoles = template.eligibleRoles['decide-review'] || []
-  if (deciderRoles.includes('author') && !template.preventSelfApproval && deciderRoles.length === 1) {
-    errors.push('Privilege Escalation Risk: Only "author" role can decide review while self-approval is allowed.')
+  if (
+    deciderRoles.includes('author') &&
+    !template.preventSelfApproval &&
+    deciderRoles.length === 1
+  ) {
+    errors.push(
+      'Privilege Escalation Risk: Only "author" role can decide review while self-approval is allowed.',
+    )
   }
 
   return {
@@ -226,7 +242,10 @@ export function evaluateQueueMembership(
   if (item.status === 'review') return 'awaiting-approval'
 
   // 4. Default assigned if actor matches
-  if (actorUserId && (item.assignment.editorId === actorUserId || item.assignment.reviewerIds.includes(actorUserId))) {
+  if (
+    actorUserId &&
+    (item.assignment.editorId === actorUserId || item.assignment.reviewerIds.includes(actorUserId))
+  ) {
     return 'assigned'
   }
 
@@ -268,7 +287,12 @@ export class CMoSWorkflowEngine {
   }
 
   private checkSelfApproval(actor: EditorialActor) {
-    if (this.template.preventSelfApproval && (actor.id === this.item.assignment.ownerId || actor.id === this.item.auditTrail.find(a => a.action === 'workflow.submitted_for_review')?.actorId)) {
+    if (
+      this.template.preventSelfApproval &&
+      (actor.id === this.item.assignment.ownerId ||
+        actor.id ===
+          this.item.auditTrail.find((a) => a.action === 'workflow.submitted_for_review')?.actorId)
+    ) {
       throw new WorkflowPermissionError(
         `Self-approval is forbidden by template "${this.template.name}". Author "${actor.id}" cannot review/approve their own submission.`,
       )
@@ -280,7 +304,11 @@ export class CMoSWorkflowEngine {
    */
   submitForReview(
     actor: EditorialActor,
-    options?: { actorSiteId?: string | null; qualityGateSnapshot?: QualityGateSnapshot | null; now?: string },
+    options?: {
+      actorSiteId?: string | null
+      qualityGateSnapshot?: QualityGateSnapshot | null
+      now?: string
+    },
   ): WorkflowItem {
     this.checkRolePermission(actor, 'submit-for-review')
     this.checkSiteScope(options?.actorSiteId)
@@ -297,7 +325,9 @@ export class CMoSWorkflowEngine {
     // Calculate due date based on SLA offset if not already explicitly set
     let dueDate = this.item.assignment.dueDate
     if (!dueDate && this.template.serviceLevelDueOffsetHours > 0) {
-      const dueTime = new Date(new Date(now).getTime() + this.template.serviceLevelDueOffsetHours * 3600 * 1000)
+      const dueTime = new Date(
+        new Date(now).getTime() + this.template.serviceLevelDueOffsetHours * 3600 * 1000,
+      )
       dueDate = dueTime.toISOString()
     }
 
@@ -348,14 +378,20 @@ export class CMoSWorkflowEngine {
     }
 
     if (this.item.status !== 'review') {
-      throw new WorkflowStateError(`Only items in "review" status can be decided. Current status: "${this.item.status}".`)
+      throw new WorkflowStateError(
+        `Only items in "review" status can be decided. Current status: "${this.item.status}".`,
+      )
     }
 
     const now = options?.now ?? new Date().toISOString()
     const beforeState = this.item.status
 
     // Check Quality Gates
-    if (decision === 'approved' && this.item.qualityGateSnapshot && this.item.qualityGateSnapshot.blockingIssueCount > 0) {
+    if (
+      decision === 'approved' &&
+      this.item.qualityGateSnapshot &&
+      this.item.qualityGateSnapshot.blockingIssueCount > 0
+    ) {
       const waiver = options?.qualityWaiver ?? this.item.qualityWaiver
       if (!waiver) {
         throw new WorkflowStateError(
@@ -418,7 +454,9 @@ export class CMoSWorkflowEngine {
     this.checkRolePermission(actor, 'save-draft')
     const now = options?.now ?? new Date().toISOString()
     const beforeState = this.item.status
-    const wasApproved = this.item.status === 'approved' || (this.item.reviewDecisions.some((d) => d.decision === 'approved') && !this.item.staleApproval)
+    const wasApproved =
+      this.item.status === 'approved' ||
+      (this.item.reviewDecisions.some((d) => d.decision === 'approved') && !this.item.staleApproval)
 
     this.item.currentRevisionSequence = newRevisionSequence
     this.item.currentRevisionHash = newRevisionHash
@@ -454,7 +492,9 @@ export class CMoSWorkflowEngine {
   withdraw(actor: EditorialActor, reason?: string, options?: { now?: string }): WorkflowItem {
     this.checkRolePermission(actor, 'withdraw')
     if (this.item.status !== 'review') {
-      throw new WorkflowStateError(`Cannot withdraw item in status "${this.item.status}". Only items in "review" can be withdrawn.`)
+      throw new WorkflowStateError(
+        `Cannot withdraw item in status "${this.item.status}". Only items in "review" can be withdrawn.`,
+      )
     }
     const now = options?.now ?? new Date().toISOString()
     const beforeState = this.item.status
@@ -537,10 +577,14 @@ export class CMoSWorkflowEngine {
   ): WorkflowItem {
     this.checkRolePermission(actor, 'emergency-override')
     if (!this.template.allowEmergencyOverride) {
-      throw new WorkflowPermissionError(`Emergency override is disabled for template "${this.template.name}".`)
+      throw new WorkflowPermissionError(
+        `Emergency override is disabled for template "${this.template.name}".`,
+      )
     }
     if (!reason || reason.trim().length === 0) {
-      throw new WorkflowStateError('Emergency override requires an explicit non-empty justification reason.')
+      throw new WorkflowStateError(
+        'Emergency override requires an explicit non-empty justification reason.',
+      )
     }
     const now = options?.now ?? new Date().toISOString()
     const beforeState = this.item.status
@@ -586,7 +630,8 @@ export class CMoSWorkflowEngine {
     this.item.assignment = {
       ...this.item.assignment,
       editorId: update.editorId !== undefined ? update.editorId : this.item.assignment.editorId,
-      reviewerIds: update.reviewerIds !== undefined ? update.reviewerIds : this.item.assignment.reviewerIds,
+      reviewerIds:
+        update.reviewerIds !== undefined ? update.reviewerIds : this.item.assignment.reviewerIds,
       dueDate: update.dueDate !== undefined ? update.dueDate : this.item.assignment.dueDate,
       priority: update.priority !== undefined ? update.priority : this.item.assignment.priority,
       watchers: update.watchers !== undefined ? update.watchers : this.item.assignment.watchers,
@@ -644,7 +689,12 @@ export function bulkExecuteWorkflowActions(
     now?: string
   },
 ): BulkOperationResult {
-  const results: Array<{ itemId: string; success: boolean; status?: WorkflowStatus; error?: string }> = []
+  const results: Array<{
+    itemId: string
+    success: boolean
+    status?: WorkflowStatus
+    error?: string
+  }> = []
   let succeededCount = 0
   let failedCount = 0
 

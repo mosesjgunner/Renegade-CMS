@@ -86,7 +86,8 @@ function ImageEditorView({
     return () => window.removeEventListener('beforeunload', warn)
   }, [isDirty])
   useEffect(() => {
-    const syncFullscreen = () => setIsFullscreen(document.fullscreenElement === workspaceRef.current)
+    const syncFullscreen = () =>
+      setIsFullscreen(document.fullscreenElement === workspaceRef.current)
     document.addEventListener('fullscreenchange', syncFullscreen)
     return () => document.removeEventListener('fullscreenchange', syncFullscreen)
   }, [])

@@ -34,7 +34,10 @@ export function getWorkflowTemplate(templateId: string): WorkflowTemplate {
   return t
 }
 
-export function saveWorkflowTemplate(template: WorkflowTemplate): { template: WorkflowTemplate; validation: { valid: boolean; errors: string[] } } {
+export function saveWorkflowTemplate(template: WorkflowTemplate): {
+  template: WorkflowTemplate
+  validation: { valid: boolean; errors: string[] }
+} {
   const validation = validateWorkflowTemplate(template)
   if (!validation.valid) {
     return { template, validation }
@@ -70,7 +73,8 @@ export async function getWorkflowItemForArticle(
   }
 
   const siteId = (doc?.site as string) || (doc?.siteId as string) || 'default-site'
-  const ownerId = (doc?.owner as string) || (doc?.ownerId as string) || actorUserId || 'author-default'
+  const ownerId =
+    (doc?.owner as string) || (doc?.ownerId as string) || actorUserId || 'author-default'
   const status = (doc?.status as string) || 'draft'
   const currentRevisionId = (doc?.currentRevisionId as string) || 'rev-1'
 

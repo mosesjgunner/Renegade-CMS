@@ -99,7 +99,11 @@ export function isDeliveryReady(
   delivery: SocialDeliveryRecord,
   now = Date.now(),
 ): boolean {
-  if (delivery.status === 'published' || delivery.status === 'failed' || delivery.status === 'reconnect_required') {
+  if (
+    delivery.status === 'published' ||
+    delivery.status === 'failed' ||
+    delivery.status === 'reconnect_required'
+  ) {
     return false
   }
 

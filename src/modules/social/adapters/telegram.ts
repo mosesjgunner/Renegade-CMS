@@ -103,7 +103,7 @@ export class TelegramAdapter implements SocialProviderAdapter {
     if (settings?.chatId) return settings.chatId
     if (authContext?.credentials?.chatId) return authContext.credentials.chatId as string | number
     if (constraints?.accountHandle) return constraints.accountHandle
-    const customConstraints = constraints as (Record<string, unknown> | undefined)
+    const customConstraints = constraints as Record<string, unknown> | undefined
     if (customConstraints?.targetChannel) return customConstraints.targetChannel as string | number
     return null
   }
@@ -318,10 +318,12 @@ export class TelegramAdapter implements SocialProviderAdapter {
 
       const body = (await res.json().catch(() => null)) as {
         ok?: boolean
-        result?: {
-          message_id?: number
-          chat?: { id?: number; username?: string }
-        } | Array<{ message_id?: number; chat?: { id?: number; username?: string } }>
+        result?:
+          | {
+              message_id?: number
+              chat?: { id?: number; username?: string }
+            }
+          | Array<{ message_id?: number; chat?: { id?: number; username?: string } }>
         error_code?: number
         description?: string
         parameters?: { retry_after?: number }
@@ -479,7 +481,11 @@ export class TelegramAdapter implements SocialProviderAdapter {
 
   private mapTelegramError(
     status: number,
-    body: { error_code?: number; description?: string; parameters?: { retry_after?: number } } | null,
+    body: {
+      error_code?: number
+      description?: string
+      parameters?: { retry_after?: number }
+    } | null,
   ) {
     const description = body?.description || 'Telegram API Error'
     const errorCode = body?.error_code || status

@@ -870,16 +870,10 @@ export async function scheduleEditorialPublication(
 
   const bundle = await loadBundleByArticleId(payload, input.articleId)
   const workflow = hydrateWorkflow(bundle)
-  workflow.schedule(
-    input.actor,
-    input.scheduledFor,
-    input.timeZone,
-    input.idempotencyKey,
-    {
-      qualityWaiver: input.qualityWaiver ?? null,
-      now: input.now,
-    },
-  )
+  workflow.schedule(input.actor, input.scheduledFor, input.timeZone, input.idempotencyKey, {
+    qualityWaiver: input.qualityWaiver ?? null,
+    now: input.now,
+  })
   const persisted = await persistWorkflow(payload, bundle, workflow, {
     reason: 'reviewed',
     actorUserId: input.actorUserId,

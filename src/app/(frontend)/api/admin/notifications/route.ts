@@ -70,14 +70,20 @@ export async function POST(request: Request) {
 
       case 'process-outbox': {
         if (!['owner', 'administrator', 'staff'].includes(String(auth.user.role))) {
-          return NextResponse.json({ error: 'Staff access required to process outbox.' }, { status: 403 })
+          return NextResponse.json(
+            { error: 'Staff access required to process outbox.' },
+            { status: 403 },
+          )
         }
         const res = await engine.notificationManager.processOutbox()
         return NextResponse.json({ success: true, ...res })
       }
 
       default:
-        return NextResponse.json({ error: `Unknown action: ${(body as any).action}` }, { status: 400 })
+        return NextResponse.json(
+          { error: `Unknown action: ${(body as any).action}` },
+          { status: 400 },
+        )
     }
   } catch (err: any) {
     return NextResponse.json({ error: err?.message || String(err) }, { status: 500 })

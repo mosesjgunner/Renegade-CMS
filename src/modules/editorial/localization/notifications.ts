@@ -10,12 +10,19 @@ import type {
 
 export interface EmailDeliveryAdapter {
   readonly id: string
-  sendEmail(to: string, subject: string, body: string): Promise<{ success: boolean; error?: string }>
+  sendEmail(
+    to: string,
+    subject: string,
+    body: string,
+  ): Promise<{ success: boolean; error?: string }>
 }
 
 export interface WebhookNotificationAdapter {
   readonly id: string
-  sendWebhook(url: string, payload: Record<string, unknown>): Promise<{ success: boolean; statusCode?: number; error?: string }>
+  sendWebhook(
+    url: string,
+    payload: Record<string, unknown>,
+  ): Promise<{ success: boolean; statusCode?: number; error?: string }>
 }
 
 /**
@@ -139,7 +146,10 @@ export class NotificationManager {
   /**
    * Retrieves in-app notifications for a user.
    */
-  getInAppNotifications(userId: string, options: { unreadOnly?: boolean } = {}): InAppNotification[] {
+  getInAppNotifications(
+    userId: string,
+    options: { unreadOnly?: boolean } = {},
+  ): InAppNotification[] {
     return this.inAppNotifications.filter((n) => {
       if (n.userId !== userId) return false
       if (options.unreadOnly && n.read) return false

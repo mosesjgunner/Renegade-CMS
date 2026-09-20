@@ -2,14 +2,18 @@ import { assertIanaTimeZone } from './contracts'
 
 export class DSTNonexistentTimeError extends Error {
   constructor(localTime: string, timeZone: string) {
-    super(`The local time "${localTime}" does not exist in timezone "${timeZone}" due to Daylight Saving Time (Spring Forward).`)
+    super(
+      `The local time "${localTime}" does not exist in timezone "${timeZone}" due to Daylight Saving Time (Spring Forward).`,
+    )
     this.name = 'DSTNonexistentTimeError'
   }
 }
 
 export class DSTAmbiguousTimeError extends Error {
   constructor(localTime: string, timeZone: string) {
-    super(`The local time "${localTime}" is ambiguous in timezone "${timeZone}" due to Daylight Saving Time (Fall Back).`)
+    super(
+      `The local time "${localTime}" is ambiguous in timezone "${timeZone}" due to Daylight Saving Time (Fall Back).`,
+    )
     this.name = 'DSTAmbiguousTimeError'
   }
 }
@@ -45,7 +49,9 @@ export function convertLocalToUtc(
 
   const match = localDateTimeStr.match(/^(\d{4})-(\d{2})-(\d{2})[T ](\d{2}):(\d{2})(?::(\d{2}))?/)
   if (!match) {
-    throw new Error(`Invalid local date/time format: "${localDateTimeStr}". Expected YYYY-MM-DDTHH:mm[:ss].`)
+    throw new Error(
+      `Invalid local date/time format: "${localDateTimeStr}". Expected YYYY-MM-DDTHH:mm[:ss].`,
+    )
   }
 
   const [, yStr, mStr, dStr, hrStr, minStr, secStr = '00'] = match
@@ -89,10 +95,7 @@ export function convertLocalToUtc(
   const janOffset = getOffsetMinutes(Date.UTC(year, 0, 15))
   const julOffset = getOffsetMinutes(Date.UTC(year, 6, 15))
 
-  const candidateMsList = [
-    approxUtc - janOffset * 60000,
-    approxUtc - julOffset * 60000,
-  ]
+  const candidateMsList = [approxUtc - janOffset * 60000, approxUtc - julOffset * 60000]
 
   const checkMatchesLocal = (ms: number): boolean => {
     const d = new Date(ms)
@@ -126,9 +129,10 @@ export function convertLocalToUtc(
 
   if (validCandidates.length > 1) {
     isAmbiguous = true
-    finalEpochMs = ambiguousPreference === 'earlier'
-      ? Math.min(...validCandidates)
-      : Math.max(...validCandidates)
+    finalEpochMs =
+      ambiguousPreference === 'earlier'
+        ? Math.min(...validCandidates)
+        : Math.max(...validCandidates)
   } else if (validCandidates.length === 1) {
     finalEpochMs = validCandidates[0]
   } else {

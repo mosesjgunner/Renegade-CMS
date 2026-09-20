@@ -48,7 +48,8 @@ export function CalendarCenter({ initialEntries = [] }: { initialEntries?: Calen
   const filteredEntries = useMemo(() => {
     return entries.filter((item) => {
       if (filter.siteId !== 'all' && item.siteId !== filter.siteId) return false
-      if (filter.publicationId !== 'all' && item.publicationId !== filter.publicationId) return false
+      if (filter.publicationId !== 'all' && item.publicationId !== filter.publicationId)
+        return false
       if (filter.contentType !== 'all' && item.sourceType !== filter.contentType) return false
       if (filter.workflowState !== 'all' && item.status !== filter.workflowState) return false
       if (filter.assigneeId !== 'all' && item.ownerId !== filter.assigneeId) return false
@@ -60,7 +61,11 @@ export function CalendarCenter({ initialEntries = [] }: { initialEntries?: Calen
   }, [entries, filter])
 
   // Execute reschedule command
-  const executeReschedule = async (item: CalendarProjection, localDateTime: string, timeZone: string) => {
+  const executeReschedule = async (
+    item: CalendarProjection,
+    localDateTime: string,
+    timeZone: string,
+  ) => {
     setIsSubmitting(true)
     setStatusMessage(null)
     setErrorMessage(null)
@@ -82,14 +87,18 @@ export function CalendarCenter({ initialEntries = [] }: { initialEntries?: Calen
       const json = await res.json()
       if (!res.ok) {
         if (res.status === 409) {
-          throw new Error(`Optimistic Concurrency Conflict: ${json.message || 'Item was updated by another user.'}`)
+          throw new Error(
+            `Optimistic Concurrency Conflict: ${json.message || 'Item was updated by another user.'}`,
+          )
         }
         throw new Error(json.error || json.message || 'Reschedule failed')
       }
 
       // Update local state optimistic view
       setEntries((prev) =>
-        prev.map((e) => (e.id === item.id ? { ...e, startsAt: json.scheduledForUtc, timeZone: json.timeZone } : e)),
+        prev.map((e) =>
+          e.id === item.id ? { ...e, startsAt: json.scheduledForUtc, timeZone: json.timeZone } : e,
+        ),
       )
 
       setStatusMessage(`Rescheduled "${item.title}" to ${json.localFormatted}.`)
@@ -128,9 +137,12 @@ export function CalendarCenter({ initialEntries = [] }: { initialEntries?: Calen
       {/* Header */}
       <header className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-stone-200 dark:border-stone-800">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-100">Calendar Center</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-100">
+            Calendar Center
+          </h1>
           <p className="text-sm text-stone-500">
-            Multi-tenant editorial calendar, DST-aware scheduling, drag-drop validation, and release dependencies.
+            Multi-tenant editorial calendar, DST-aware scheduling, drag-drop validation, and release
+            dependencies.
           </p>
         </div>
         <div className="flex gap-2 items-center">
@@ -171,7 +183,9 @@ export function CalendarCenter({ initialEntries = [] }: { initialEntries?: Calen
               key={v}
               onClick={() => setView(v)}
               className={`px-3 py-1.5 font-semibold ${
-                view === v ? 'bg-stone-800 text-white' : 'bg-white dark:bg-stone-900 text-stone-600 hover:bg-stone-100'
+                view === v
+                  ? 'bg-stone-800 text-white'
+                  : 'bg-white dark:bg-stone-900 text-stone-600 hover:bg-stone-100'
               }`}
             >
               {v} View
@@ -227,9 +241,13 @@ export function CalendarCenter({ initialEntries = [] }: { initialEntries?: Calen
       {/* Calendar Views */}
       {view === 'List' ? (
         <div className="space-y-3">
-          <h2 className="text-sm font-bold text-stone-700 dark:text-stone-300 uppercase tracking-wider">Scheduled Items Agenda</h2>
+          <h2 className="text-sm font-bold text-stone-700 dark:text-stone-300 uppercase tracking-wider">
+            Scheduled Items Agenda
+          </h2>
           {filteredEntries.length === 0 ? (
-            <div className="p-8 text-center text-sm text-stone-400 border border-dashed rounded-lg">No items match current calendar filters.</div>
+            <div className="p-8 text-center text-sm text-stone-400 border border-dashed rounded-lg">
+              No items match current calendar filters.
+            </div>
           ) : (
             <div className="divide-y divide-stone-200 dark:divide-stone-800 border rounded-lg overflow-hidden">
               {filteredEntries.map((item) => (
@@ -244,10 +262,14 @@ export function CalendarCenter({ initialEntries = [] }: { initialEntries?: Calen
                       <span className="px-2 py-0.5 text-[10px] font-bold rounded uppercase bg-stone-100 text-stone-700">
                         {item.sourceType}
                       </span>
-                      <h3 className="text-sm font-bold text-stone-900 dark:text-stone-100">{item.title}</h3>
+                      <h3 className="text-sm font-bold text-stone-900 dark:text-stone-100">
+                        {item.title}
+                      </h3>
                     </div>
                     <div className="text-xs text-stone-500 font-mono">
-                      Scheduled: {item.startsAt ? new Date(item.startsAt).toLocaleString() : 'Unscheduled'} ({item.timeZone})
+                      Scheduled:{' '}
+                      {item.startsAt ? new Date(item.startsAt).toLocaleString() : 'Unscheduled'} (
+                      {item.timeZone})
                     </div>
                   </div>
 
@@ -260,7 +282,9 @@ export function CalendarCenter({ initialEntries = [] }: { initialEntries?: Calen
                       onClick={() =>
                         setRescheduleModal({
                           item,
-                          newLocalDateTime: item.startsAt ? item.startsAt.slice(0, 16) : '2026-09-20T14:00',
+                          newLocalDateTime: item.startsAt
+                            ? item.startsAt.slice(0, 16)
+                            : '2026-09-20T14:00',
                           timeZone: filter.timeZone,
                         })
                       }
@@ -288,8 +312,18 @@ export function CalendarCenter({ initialEntries = [] }: { initialEntries?: Calen
           </div>
 
           <div className="grid grid-cols-7 auto-rows-fr divide-x divide-y divide-stone-200 dark:divide-stone-800 text-xs min-h-[400px]">
-            {['2026-09-20', '2026-09-21', '2026-09-22', '2026-09-23', '2026-09-24', '2026-09-25', '2026-09-26'].map((dateStr) => {
-              const dayItems = filteredEntries.filter((e) => e.startsAt && e.startsAt.startsWith(dateStr))
+            {[
+              '2026-09-20',
+              '2026-09-21',
+              '2026-09-22',
+              '2026-09-23',
+              '2026-09-24',
+              '2026-09-25',
+              '2026-09-26',
+            ].map((dateStr) => {
+              const dayItems = filteredEntries.filter(
+                (e) => e.startsAt && e.startsAt.startsWith(dateStr),
+              )
               return (
                 <div
                   key={dateStr}
@@ -312,8 +346,12 @@ export function CalendarCenter({ initialEntries = [] }: { initialEntries?: Calen
                       }
                       className="p-2 rounded border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 cursor-grab active:cursor-grabbing hover:border-stone-400 transition"
                     >
-                      <div className="font-semibold text-stone-800 dark:text-stone-200 truncate">{item.title}</div>
-                      <div className="text-[10px] text-stone-400 truncate">{item.sourceType} • {item.status}</div>
+                      <div className="font-semibold text-stone-800 dark:text-stone-200 truncate">
+                        {item.title}
+                      </div>
+                      <div className="text-[10px] text-stone-400 truncate">
+                        {item.sourceType} • {item.status}
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -327,10 +365,13 @@ export function CalendarCenter({ initialEntries = [] }: { initialEntries?: Calen
       {dragConfirm && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
           <div className="bg-white dark:bg-stone-900 border rounded-lg p-6 max-w-md w-full space-y-4 shadow-xl">
-            <h3 className="text-lg font-bold text-stone-900 dark:text-stone-100">Confirm Schedule Drag</h3>
+            <h3 className="text-lg font-bold text-stone-900 dark:text-stone-100">
+              Confirm Schedule Drag
+            </h3>
             <p className="text-sm text-stone-600 dark:text-stone-400">
               Are you sure you want to reschedule <strong>"{dragConfirm.item.title}"</strong> to{' '}
-              <span className="font-mono">{dragConfirm.targetDate}</span> in timezone <span className="font-mono">{dragConfirm.timeZone}</span>?
+              <span className="font-mono">{dragConfirm.targetDate}</span> in timezone{' '}
+              <span className="font-mono">{dragConfirm.timeZone}</span>?
             </p>
             <div className="flex justify-end gap-2 pt-2">
               <button
@@ -341,7 +382,9 @@ export function CalendarCenter({ initialEntries = [] }: { initialEntries?: Calen
               </button>
               <button
                 disabled={isSubmitting}
-                onClick={() => executeReschedule(dragConfirm.item, dragConfirm.targetDate, dragConfirm.timeZone)}
+                onClick={() =>
+                  executeReschedule(dragConfirm.item, dragConfirm.targetDate, dragConfirm.timeZone)
+                }
                 className="px-4 py-2 text-xs font-semibold bg-stone-900 text-white rounded hover:bg-stone-800"
               >
                 {isSubmitting ? 'Rescheduling...' : 'Confirm Reschedule'}
@@ -355,10 +398,14 @@ export function CalendarCenter({ initialEntries = [] }: { initialEntries?: Calen
       {rescheduleModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
           <div className="bg-white dark:bg-stone-900 border rounded-lg p-6 max-w-md w-full space-y-4 shadow-xl">
-            <h3 className="text-lg font-bold text-stone-900 dark:text-stone-100">Reschedule Item</h3>
+            <h3 className="text-lg font-bold text-stone-900 dark:text-stone-100">
+              Reschedule Item
+            </h3>
             <div className="space-y-3 text-xs">
               <div>
-                <label className="font-semibold block text-stone-700 dark:text-stone-300">Item Title</label>
+                <label className="font-semibold block text-stone-700 dark:text-stone-300">
+                  Item Title
+                </label>
                 <input
                   readOnly
                   value={rescheduleModal.item.title}
@@ -367,20 +414,28 @@ export function CalendarCenter({ initialEntries = [] }: { initialEntries?: Calen
               </div>
 
               <div>
-                <label className="font-semibold block text-stone-700 dark:text-stone-300">New Local Date & Time</label>
+                <label className="font-semibold block text-stone-700 dark:text-stone-300">
+                  New Local Date & Time
+                </label>
                 <input
                   type="datetime-local"
                   value={rescheduleModal.newLocalDateTime}
-                  onChange={(e) => setRescheduleModal({ ...rescheduleModal, newLocalDateTime: e.target.value })}
+                  onChange={(e) =>
+                    setRescheduleModal({ ...rescheduleModal, newLocalDateTime: e.target.value })
+                  }
                   className="w-full p-2 border rounded font-mono"
                 />
               </div>
 
               <div>
-                <label className="font-semibold block text-stone-700 dark:text-stone-300">Target Timezone</label>
+                <label className="font-semibold block text-stone-700 dark:text-stone-300">
+                  Target Timezone
+                </label>
                 <select
                   value={rescheduleModal.timeZone}
-                  onChange={(e) => setRescheduleModal({ ...rescheduleModal, timeZone: e.target.value })}
+                  onChange={(e) =>
+                    setRescheduleModal({ ...rescheduleModal, timeZone: e.target.value })
+                  }
                   className="w-full p-2 border rounded font-mono"
                 >
                   <option value="America/Chicago">America/Chicago (CT)</option>
@@ -401,7 +456,11 @@ export function CalendarCenter({ initialEntries = [] }: { initialEntries?: Calen
               <button
                 disabled={isSubmitting}
                 onClick={() =>
-                  executeReschedule(rescheduleModal.item, rescheduleModal.newLocalDateTime, rescheduleModal.timeZone)
+                  executeReschedule(
+                    rescheduleModal.item,
+                    rescheduleModal.newLocalDateTime,
+                    rescheduleModal.timeZone,
+                  )
                 }
                 className="px-4 py-2 text-xs font-semibold bg-stone-900 text-white rounded hover:bg-stone-800"
               >

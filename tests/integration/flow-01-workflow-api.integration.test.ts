@@ -21,7 +21,10 @@ import {
   listWorkflowTemplates,
   saveWorkflowTemplate,
 } from '../../src/modules/editorial/cmos-persistence'
-import { BUILTIN_SIMPLE_WORKFLOW_TEMPLATE, type WorkflowTemplate } from '../../src/modules/editorial/cmos-workflow'
+import {
+  BUILTIN_SIMPLE_WORKFLOW_TEMPLATE,
+  type WorkflowTemplate,
+} from '../../src/modules/editorial/cmos-workflow'
 
 describe('FLOW-01 Workflow Integration & API Layer', () => {
   let payload: Payload

@@ -1,7 +1,9 @@
 import { expect, test } from '@playwright/test'
 
 test.describe('FLOW-03 Calendar & Scheduling Browser Suite', () => {
-  test('renders Calendar Center with Month/Week/Agenda views, filters, and reschedule modal', async ({ page }) => {
+  test('renders Calendar Center with Month/Week/Agenda views, filters, and reschedule modal', async ({
+    page,
+  }) => {
     // 1. Visit Calendar page
     await page.goto('/calendar')
 

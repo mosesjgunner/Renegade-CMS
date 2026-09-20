@@ -110,9 +110,7 @@ export class DiscordAdapter implements SocialProviderAdapter {
     const settings = variant.platformSettings as DiscordPlatformSettings | undefined
 
     const webhookUrl =
-      settings?.webhookUrl ||
-      (creds?.webhookUrl as string) ||
-      (creds?.url as string)
+      settings?.webhookUrl || (creds?.webhookUrl as string) || (creds?.url as string)
 
     if (webhookUrl) {
       const parsed = new URL(webhookUrl)
@@ -128,9 +126,7 @@ export class DiscordAdapter implements SocialProviderAdapter {
     }
 
     const botToken =
-      (creds?.botToken as string) ||
-      (creds?.token as string) ||
-      (creds?.appPassword as string)
+      (creds?.botToken as string) || (creds?.token as string) || (creds?.appPassword as string)
 
     const channelId =
       settings?.channelId ||

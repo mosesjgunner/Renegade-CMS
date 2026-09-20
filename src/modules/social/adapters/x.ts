@@ -190,11 +190,7 @@ export class XAdapter implements SocialProviderAdapter {
     formData.append('command', 'APPEND')
     formData.append('media_id', mediaId)
     formData.append('segment_index', '0')
-    formData.append(
-      'media',
-      new Blob([new Uint8Array(buffer)], { type: mimeType }),
-      'upload.bin',
-    )
+    formData.append('media', new Blob([new Uint8Array(buffer)], { type: mimeType }), 'upload.bin')
 
     const appendRes = await fetch(uploadBase, {
       method: 'POST',
@@ -222,7 +218,10 @@ export class XAdapter implements SocialProviderAdapter {
     }
 
     const finData = (await finRes.json()) as {
-      processing_info?: { state: 'pending' | 'in_progress' | 'succeeded' | 'failed'; check_after_secs?: number }
+      processing_info?: {
+        state: 'pending' | 'in_progress' | 'succeeded' | 'failed'
+        check_after_secs?: number
+      }
     }
 
     // 4. STATUS polling if async processing
@@ -253,7 +252,9 @@ export class XAdapter implements SocialProviderAdapter {
 
   async publish(
     variant: SocialVariant,
-    context?: AuthContext | Readonly<{ accountId: string; credentials: Record<string, string> | null }>,
+    context?:
+      | AuthContext
+      | Readonly<{ accountId: string; credentials: Record<string, string> | null }>,
     mediaResolver?: MediaResolver,
   ): Promise<AdapterResult> {
     const auth = context as AuthContext | undefined
@@ -279,7 +280,12 @@ export class XAdapter implements SocialProviderAdapter {
         for (const att of variant.attachments) {
           const { buffer, mimeType } = await mediaResolver.resolveBuffer(att.mediaAssetId)
           const category = att.role === 'video' ? 'tweet_video' : 'tweet_image'
-          const mId = await this.uploadMedia(accessToken, buffer, mimeType || 'image/jpeg', category)
+          const mId = await this.uploadMedia(
+            accessToken,
+            buffer,
+            mimeType || 'image/jpeg',
+            category,
+          )
           mediaIds.push(mId)
         }
       }

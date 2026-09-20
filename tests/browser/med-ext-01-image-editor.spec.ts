@@ -178,7 +178,9 @@ test('MED-EXT-01: miniPaint Image Editor opens CMoS image asset, initializes can
 
   const versions = await payload.find({
     collection: 'media-asset-versions',
-    where: { and: [{ asset: { equals: replacement.id } }, { replacesAsset: { equals: original.id } }] },
+    where: {
+      and: [{ asset: { equals: replacement.id } }, { replacesAsset: { equals: original.id } }],
+    },
     limit: 1,
     depth: 0,
     overrideAccess: true,
@@ -190,6 +192,8 @@ test('MED-EXT-01: miniPaint Image Editor opens CMoS image asset, initializes can
   const replacementRow = page.locator('tr', { hasText: editedTitle })
   await expect(replacementRow).toBeVisible({ timeout: 10_000 })
   await replacementRow.getByRole('button', { name: 'Edit Image' }).click()
-  await expect(page.getByRole('heading', { name: new RegExp(`Editing: ${editedTitle}`, 'i') })).toBeVisible()
+  await expect(
+    page.getByRole('heading', { name: new RegExp(`Editing: ${editedTitle}`, 'i') }),
+  ).toBeVisible()
   await page.getByRole('button', { name: /Back to Media/ }).click()
 })

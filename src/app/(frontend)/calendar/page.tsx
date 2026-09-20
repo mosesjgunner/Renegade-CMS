@@ -61,10 +61,16 @@ export default function CalendarPage() {
       <div className="flex justify-between items-center pb-2 border-b border-stone-200 dark:border-stone-800">
         <span className="text-xs text-stone-500">Renegade CMoS Workflow Pass FLOW-03</span>
         <div className="flex gap-2">
-          <Link href="/api/calendar/export?format=ics" className="px-3 py-1 text-xs font-medium rounded border border-stone-300 hover:bg-stone-100">
+          <Link
+            href="/api/calendar/export?format=ics"
+            className="px-3 py-1 text-xs font-medium rounded border border-stone-300 hover:bg-stone-100"
+          >
             Export iCal (.ics)
           </Link>
-          <Link href="/api/calendar/export?format=json" className="px-3 py-1 text-xs font-medium rounded border border-stone-300 hover:bg-stone-100">
+          <Link
+            href="/api/calendar/export?format=json"
+            className="px-3 py-1 text-xs font-medium rounded border border-stone-300 hover:bg-stone-100"
+          >
             JSON Feed
           </Link>
         </div>

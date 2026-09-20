@@ -1,9 +1,6 @@
 import { createHash, randomUUID } from 'node:crypto'
 
-import {
-  type TranslationDraftRequest,
-  type TranslationProviderAdapter,
-} from './adapter'
+import { type TranslationDraftRequest, type TranslationProviderAdapter } from './adapter'
 import type {
   LocaleCode,
   LocaleVariant,
@@ -60,10 +57,12 @@ export class LocalizationEngine {
   readonly notificationManager: NotificationManager
   readonly webhookEngine: WebhookEngine
 
-  constructor(options: {
-    notificationManager?: NotificationManager
-    webhookEngine?: WebhookEngine
-  } = {}) {
+  constructor(
+    options: {
+      notificationManager?: NotificationManager
+      webhookEngine?: WebhookEngine
+    } = {},
+  ) {
     this.notificationManager = options.notificationManager || new NotificationManager()
     this.webhookEngine = options.webhookEngine || new WebhookEngine()
   }
@@ -254,8 +253,10 @@ export class LocalizationEngine {
     const now = new Date().toISOString()
 
     // Update source document with new revision
-    sourceVariant.revisionSequence = update.newRevisionSequence ?? update.sequence ?? (sourceVariant.revisionSequence + 1)
-    sourceVariant.revisionHash = update.newRevisionHash ?? update.hash ?? `sha256-rev${sourceVariant.revisionSequence}`
+    sourceVariant.revisionSequence =
+      update.newRevisionSequence ?? update.sequence ?? sourceVariant.revisionSequence + 1
+    sourceVariant.revisionHash =
+      update.newRevisionHash ?? update.hash ?? `sha256-rev${sourceVariant.revisionSequence}`
     if (update.title) sourceVariant.title = update.title
     if (update.summary) sourceVariant.summary = update.summary
     if (update.body) sourceVariant.body = update.body
@@ -655,9 +656,7 @@ export class LocalizationEngine {
 
     if (policy.overallStatus === 'blocked') {
       const blockers = policy.rules.filter((r) => r.severity === 'blocker' && r.status === 'failed')
-      throw new Error(
-        `PUBLICATION_GATE_BLOCKED: ${blockers.map((b) => b.message).join('; ')}`,
-      )
+      throw new Error(`PUBLICATION_GATE_BLOCKED: ${blockers.map((b) => b.message).join('; ')}`)
     }
 
     const now = new Date().toISOString()

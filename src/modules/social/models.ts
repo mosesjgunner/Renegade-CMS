@@ -1,9 +1,5 @@
 import { createHash } from 'node:crypto'
-import {
-  type SocialAttachment,
-  type SocialNetwork,
-  type SocialState,
-} from './contracts'
+import { type SocialAttachment, type SocialNetwork, type SocialState } from './contracts'
 
 export type CanonicalPostStatus =
   | 'draft'
@@ -145,7 +141,11 @@ export function createCanonicalSocialPost(input: {
         isOverridden: false,
         attachments: [...post.defaultAttachments],
         linkUrl: post.canonicalUrl,
-        idempotencyKey: generateVariantIdempotencyKey(variantId, post.scheduledAt, target.accountId),
+        idempotencyKey: generateVariantIdempotencyKey(
+          variantId,
+          post.scheduledAt,
+          target.accountId,
+        ),
         status: 'pending',
       }
       post.variants.push(variant)
@@ -159,7 +159,10 @@ export function createCanonicalSocialPost(input: {
  * Resolves the effective copy for a post variant.
  * If the variant is not overridden or has null/empty copy, cascades to canonical base copy.
  */
-export function resolveEffectiveCopy(post: CanonicalSocialPost, variant: SocialPostVariant): string {
+export function resolveEffectiveCopy(
+  post: CanonicalSocialPost,
+  variant: SocialPostVariant,
+): string {
   if (variant.isOverridden && variant.copy !== null && variant.copy !== undefined) {
     return variant.copy
   }

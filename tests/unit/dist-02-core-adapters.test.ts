@@ -1,17 +1,11 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import {
-  MastodonAdapter,
-  mastodonAdapter,
-} from '../../src/modules/social/adapters/mastodon'
+import { MastodonAdapter, mastodonAdapter } from '../../src/modules/social/adapters/mastodon'
 import {
   BlueskyAdapter,
   blueskyAdapter,
   parseRichTextFacets,
 } from '../../src/modules/social/adapters/bluesky'
-import {
-  LinkedInAdapter,
-  linkedinAdapter,
-} from '../../src/modules/social/adapters/linkedin'
+import { LinkedInAdapter, linkedinAdapter } from '../../src/modules/social/adapters/linkedin'
 import {
   adaptImageBuffer,
   planMediaAdaptation,
@@ -174,9 +168,12 @@ describe('Pass DIST-02: Open Protocols, Core 5 Adapters & Media Adaptation Pipel
             { status: 200 },
           )
         }
-        return new Response(JSON.stringify({ id: 'status-new', url: 'https://mastodon.social/@renegade/status-new' }), {
-          status: 200,
-        })
+        return new Response(
+          JSON.stringify({ id: 'status-new', url: 'https://mastodon.social/@renegade/status-new' }),
+          {
+            status: 200,
+          },
+        )
       }) as any
 
       // Edit post
@@ -220,11 +217,15 @@ describe('Pass DIST-02: Open Protocols, Core 5 Adapters & Media Adaptation Pipel
 
       // Verify that byte slice matches the exact string
       const textBytes = new TextEncoder().encode(text)
-      const extractedUrl = new TextDecoder().decode(textBytes.slice(urlFacet!.index.byteStart, urlFacet!.index.byteEnd))
+      const extractedUrl = new TextDecoder().decode(
+        textBytes.slice(urlFacet!.index.byteStart, urlFacet!.index.byteEnd),
+      )
       expect(extractedUrl).toBe('https://renegadeparty.org')
 
       // Mention facet
-      const mentionFacet = facets.find((f) => f.features[0].$type === 'app.bsky.richtext.facet#mention')
+      const mentionFacet = facets.find(
+        (f) => f.features[0].$type === 'app.bsky.richtext.facet#mention',
+      )
       expect(mentionFacet).toBeDefined()
       const extractedMention = new TextDecoder().decode(
         textBytes.slice(mentionFacet!.index.byteStart, mentionFacet!.index.byteEnd),
@@ -302,13 +303,17 @@ describe('Pass DIST-02: Open Protocols, Core 5 Adapters & Media Adaptation Pipel
       expect(result.status).toBe('published')
       if (result.status === 'published') {
         expect(result.remoteId).toBe('at://did:plc:renegade123/app.bsky.feed.post/3k6abc123xyz')
-        expect(result.remoteUrl).toBe('https://bsky.app/profile/renegade.bsky.social/post/3k6abc123xyz')
+        expect(result.remoteUrl).toBe(
+          'https://bsky.app/profile/renegade.bsky.social/post/3k6abc123xyz',
+        )
       }
 
       expect(sessionCreated).toBe(true)
       expect(recordCreatedPayload.collection).toBe('app.bsky.feed.post')
       expect(recordCreatedPayload.record.embed.$type).toBe('app.bsky.embed.external')
-      expect(recordCreatedPayload.record.embed.external.uri).toBe('https://renegadeparty.org/post/1')
+      expect(recordCreatedPayload.record.embed.external.uri).toBe(
+        'https://renegadeparty.org/post/1',
+      )
     })
   })
 
@@ -341,13 +346,10 @@ describe('Pass DIST-02: Open Protocols, Core 5 Adapters & Media Adaptation Pipel
         if (urlStr.includes('/rest/posts')) {
           postHeaders = init?.headers || {}
           postPayload = JSON.parse(init.body)
-          return new Response(
-            JSON.stringify({ id: 'urn:li:share:share-789' }),
-            {
-              status: 201,
-              headers: { 'x-restli-id': 'urn:li:share:share-789' },
-            },
-          )
+          return new Response(JSON.stringify({ id: 'urn:li:share:share-789' }), {
+            status: 201,
+            headers: { 'x-restli-id': 'urn:li:share:share-789' },
+          })
         }
         return new Response('{}', { status: 200 })
       }) as any
@@ -479,7 +481,12 @@ describe('Pass DIST-02: Open Protocols, Core 5 Adapters & Media Adaptation Pipel
         updatedAt: new Date().toISOString(),
       }
 
-      const result = await executeDatabaseStep(mockPayload as Payload, release, distributionItem, 'user-publisher')
+      const result = await executeDatabaseStep(
+        mockPayload as Payload,
+        release,
+        distributionItem,
+        'user-publisher',
+      )
       expect(result.output.distributed).toBe(true)
       expect(result.output.distributionDraftId).toBe('draft-dist-autumn')
       expect(result.url).toBe('https://renegadeparty.org/campaigns/autumn')

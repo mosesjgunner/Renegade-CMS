@@ -190,7 +190,11 @@ describe('FLOW-00 workflow contract & state machine', () => {
     flow.transition({ action: 'request-review', actor: author })
     expect(flow.article.status).toBe('review')
 
-    flow.transition({ action: 'decide-review', actor: editor, comment: 'Approved via unified transition' })
+    flow.transition({
+      action: 'decide-review',
+      actor: editor,
+      comment: 'Approved via unified transition',
+    })
     expect(flow.article.status).toBe('approved')
 
     flow.transition({

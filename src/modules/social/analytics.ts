@@ -92,13 +92,13 @@ export function aggregateAnalytics(
   for (const key of Object.keys(breakdown) as SocialNetwork[]) {
     const b = breakdown[key]!
     const totalEngagements = b.likes + b.comments + b.shares + b.clicks
-    b.engagementRate = b.impressions > 0 ? Number(((totalEngagements / b.impressions) * 100).toFixed(2)) : 0
+    b.engagementRate =
+      b.impressions > 0 ? Number(((totalEngagements / b.impressions) * 100).toFixed(2)) : 0
   }
 
   const grandEngagements = totalLikes + totalComments + totalShares + totalClicks
-  const overallEngagementRate = totalImpressions > 0
-    ? Number(((grandEngagements / totalImpressions) * 100).toFixed(2))
-    : 0
+  const overallEngagementRate =
+    totalImpressions > 0 ? Number(((grandEngagements / totalImpressions) * 100).toFixed(2)) : 0
 
   return {
     totalImpressions,

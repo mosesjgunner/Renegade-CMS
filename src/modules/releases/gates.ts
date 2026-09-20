@@ -71,7 +71,8 @@ export function isGateSnapshotValid(
   if (snapshot.evaluatedFingerprint !== currentFingerprint) {
     return {
       valid: false,
-      reason: 'Pinned release inputs or release revision have changed since the last gate evaluation.',
+      reason:
+        'Pinned release inputs or release revision have changed since the last gate evaluation.',
     }
   }
   return { valid: true }
@@ -180,7 +181,9 @@ export async function evaluateReleaseGates(
   // 3. Unresolved Review Comments Gate
   // Checked against review comments or blocker notes
   const hasUnresolvedComments = artifacts.some(
-    (a) => a.error?.toLowerCase().includes('comment') || a.error?.toLowerCase().includes('change-requested'),
+    (a) =>
+      a.error?.toLowerCase().includes('comment') ||
+      a.error?.toLowerCase().includes('change-requested'),
   )
   if (hasUnresolvedComments) {
     const waiver = checkWaiver('rule-unresolved-comments')

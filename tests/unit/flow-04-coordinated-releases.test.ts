@@ -34,7 +34,7 @@ function createMockPayload(initialDocs: Record<string, Record<string, MockDoc>> 
     'article-family-content': {},
     'page-layouts': {},
     'public-redirects': {},
-    'products': {},
+    products: {},
     'quality-issues': {},
     'payload-jobs': {},
     ...initialDocs,
@@ -44,7 +44,8 @@ function createMockPayload(initialDocs: Record<string, Record<string, MockDoc>> 
 
   const payload: any = {
     create: async ({ collection, data }: { collection: string; data: MockDoc }) => {
-      const id = data.id || `mock-${collection}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`
+      const id =
+        data.id || `mock-${collection}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`
       const doc = { ...data, id }
       if (!store[collection]) store[collection] = {}
       store[collection][id] = doc
@@ -76,15 +77,7 @@ function createMockPayload(initialDocs: Record<string, Record<string, MockDoc>> 
       })
       return { docs: filtered }
     },
-    update: async ({
-      collection,
-      id,
-      data,
-    }: {
-      collection: string
-      id: string
-      data: MockDoc
-    }) => {
+    update: async ({ collection, id, data }: { collection: string; id: string; data: MockDoc }) => {
       if (!store[collection]) store[collection] = {}
       const existing = store[collection][id] || { id }
       const updated = { ...existing, ...data }
@@ -114,7 +107,8 @@ describe('FLOW-04 Coordinated Releases Comprehensive Unit Suite', () => {
       const payload = createMockPayload()
       const release = await createRelease(payload, {
         name: 'Fall 2026 Brand Refresh',
-        purpose: 'Major site redesign, product launch, updated privacy policies, and redirect cleanup',
+        purpose:
+          'Major site redesign, product launch, updated privacy policies, and redirect cleanup',
         ownerId: 'user-publisher-1',
         ownerTeam: 'Design & Editorial Ops',
         siteId: 'site-primary',
@@ -124,7 +118,11 @@ describe('FLOW-04 Coordinated Releases Comprehensive Unit Suite', () => {
         campaign: 'fall-brand-refresh',
         labels: ['q4-launch', 'redesign', 'priority-p0'],
         dependencies: [
-          { releaseId: 'rel-prereq-001', releaseName: 'Infrastructure Cutover', type: 'must-succeed-before' },
+          {
+            releaseId: 'rel-prereq-001',
+            releaseName: 'Infrastructure Cutover',
+            type: 'must-succeed-before',
+          },
         ],
       })
 
@@ -200,7 +198,9 @@ describe('FLOW-04 Coordinated Releases Comprehensive Unit Suite', () => {
           title: 'Global Header 2026',
           pinnedRevisionSequence: 2,
           pinnedHash: 'hash-header-v2',
-          pinnedSnapshot: { blocks: [{ blockType: 'nav-header', items: ['Home', 'Stories', 'Shop'] }] },
+          pinnedSnapshot: {
+            blocks: [{ blockType: 'nav-header', items: ['Home', 'Stories', 'Shop'] }],
+          },
         },
         'user-pub',
       )
@@ -605,7 +605,10 @@ describe('FLOW-04 Coordinated Releases Comprehensive Unit Suite', () => {
       expect(result.resultingUrls).toContain('/old-features')
 
       // Check persisted artifacts status
-      const updatedRelease = await payload.findByID({ collection: 'content-releases', id: release.id })
+      const updatedRelease = await payload.findByID({
+        collection: 'content-releases',
+        id: release.id,
+      })
       expect(updatedRelease.status).toBe('completed')
       for (const item of updatedRelease.artifacts) {
         expect(item.status).toBe('succeeded')
@@ -614,11 +617,17 @@ describe('FLOW-04 Coordinated Releases Comprehensive Unit Suite', () => {
       }
 
       // Check DB documents were updated
-      const publishedArticle = await payload.findByID({ collection: 'article-family-content', id: 'art-401' })
+      const publishedArticle = await payload.findByID({
+        collection: 'article-family-content',
+        id: 'art-401',
+      })
       expect(publishedArticle.status).toBe('published')
       expect(publishedArticle.latestPublishedRevision).toBe('rev-401-v2')
 
-      const publishedPage = await payload.findByID({ collection: 'page-layouts', id: 'page-layout-1' })
+      const publishedPage = await payload.findByID({
+        collection: 'page-layouts',
+        id: 'page-layout-1',
+      })
       expect(publishedPage.status).toBe('published')
     })
   })
@@ -701,7 +710,10 @@ describe('FLOW-04 Coordinated Releases Comprehensive Unit Suite', () => {
       expect(firstRun.failedSteps).toHaveLength(1)
       expect(firstRun.failedSteps[0].error).toContain('Transient commerce gateway timeout')
 
-      const intermediateDoc = await payload.findByID({ collection: 'content-releases', id: release.id })
+      const intermediateDoc = await payload.findByID({
+        collection: 'content-releases',
+        id: release.id,
+      })
       expect(intermediateDoc.status).toBe('partially-failed')
       expect(intermediateDoc.artifacts[0].status).toBe('succeeded')
       expect(intermediateDoc.artifacts[1].status).toBe('failed')
@@ -817,21 +829,28 @@ describe('FLOW-04 Coordinated Releases Comprehensive Unit Suite', () => {
       expect(exec.status).toBe('completed')
 
       // Verify published state prior to rollback
-      const artAfterExec = await payload.findByID({ collection: 'article-family-content', id: 'art-rollback-test' })
+      const artAfterExec = await payload.findByID({
+        collection: 'article-family-content',
+        id: 'art-rollback-test',
+      })
       expect(artAfterExec.latestPublishedRevision).toBe('rev-story-v2')
 
       // Operator triggers rollback
       const rollbackResult = await rollbackReleaseSaga(payload, {
         releaseId: release.id,
         actorId: 'user-admin',
-        reason: 'Critical pricing defect reported on specials page; rolling back entire coordinated release',
+        reason:
+          'Critical pricing defect reported on specials page; rolling back entire coordinated release',
       })
 
       expect(rollbackResult.status).toBe('rolled-back')
       expect(rollbackResult.compensatedCount).toBe(3)
 
       // Verify Article state was rolled back to last-known-good revision (rev-story-v1)
-      const artAfterRollback = await payload.findByID({ collection: 'article-family-content', id: 'art-rollback-test' })
+      const artAfterRollback = await payload.findByID({
+        collection: 'article-family-content',
+        id: 'art-rollback-test',
+      })
       expect(artAfterRollback.latestPublishedRevision).toBe('rev-story-v1')
 
       // Verify Redirect was disabled
@@ -840,7 +859,10 @@ describe('FLOW-04 Coordinated Releases Comprehensive Unit Suite', () => {
       expect(tempRedirect.enabled).toBe(false)
 
       // Verify Release document and audit trail
-      const rolledBackRelease = await payload.findByID({ collection: 'content-releases', id: release.id })
+      const rolledBackRelease = await payload.findByID({
+        collection: 'content-releases',
+        id: release.id,
+      })
       expect(rolledBackRelease.status).toBe('rolled-back')
       for (const item of rolledBackRelease.artifacts) {
         expect(item.status).toBe('compensated')
@@ -853,7 +875,9 @@ describe('FLOW-04 Coordinated Releases Comprehensive Unit Suite', () => {
       expect(actions).toContain('release.execution.completed')
       expect(actions).toContain('release.rolled-back')
 
-      const rollbackEvent = rolledBackRelease.executionAudit.find((a: any) => a.action === 'release.rolled-back')
+      const rollbackEvent = rolledBackRelease.executionAudit.find(
+        (a: any) => a.action === 'release.rolled-back',
+      )
       expect(rollbackEvent.details.reason).toContain('pricing defect')
     })
   })

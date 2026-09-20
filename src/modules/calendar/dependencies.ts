@@ -1,7 +1,13 @@
 export type ScheduleRuleViolationSeverity = 'error' | 'warning'
 
 export type ScheduleRuleViolation = {
-  ruleId: 'prerequisite-unmet' | 'embargo-breached' | 'rights-expired' | 'slot-collision' | 'missing-approval' | 'quality-gate-blocked'
+  ruleId:
+    | 'prerequisite-unmet'
+    | 'embargo-breached'
+    | 'rights-expired'
+    | 'slot-collision'
+    | 'missing-approval'
+    | 'quality-gate-blocked'
   severity: ScheduleRuleViolationSeverity
   message: string
   evidence: Record<string, unknown>
@@ -21,7 +27,12 @@ export type ScheduleTargetContext = {
   publicationId?: string | null
   embargoDate?: string | null
   rightsExpirationDate?: string | null
-  prerequisites?: Array<{ id: string; title: string; isPublished: boolean; publishedAt?: string | null }>
+  prerequisites?: Array<{
+    id: string
+    title: string
+    isPublished: boolean
+    publishedAt?: string | null
+  }>
   qualityGate?: {
     blockingIssueCount: number
     waived: boolean
@@ -65,12 +76,19 @@ export function evaluateScheduleRules(
   }
 
   // 2. Quality Gate check
-  if (target.qualityGate && target.qualityGate.blockingIssueCount > 0 && !target.qualityGate.waived) {
+  if (
+    target.qualityGate &&
+    target.qualityGate.blockingIssueCount > 0 &&
+    !target.qualityGate.waived
+  ) {
     violations.push({
       ruleId: 'quality-gate-blocked',
       severity: 'error',
       message: `Content has ${target.qualityGate.blockingIssueCount} un-waived blocking quality issues.`,
-      evidence: { blockingIssueCount: target.qualityGate.blockingIssueCount, waived: target.qualityGate.waived },
+      evidence: {
+        blockingIssueCount: target.qualityGate.blockingIssueCount,
+        waived: target.qualityGate.waived,
+      },
     })
   }
 
@@ -95,7 +113,10 @@ export function evaluateScheduleRules(
         ruleId: 'rights-expired',
         severity: 'error',
         message: `Scheduled time (${target.scheduledFor}) is after media rights expiration date (${target.rightsExpirationDate}).`,
-        evidence: { scheduledFor: target.scheduledFor, rightsExpirationDate: target.rightsExpirationDate },
+        evidence: {
+          scheduledFor: target.scheduledFor,
+          rightsExpirationDate: target.rightsExpirationDate,
+        },
       })
     }
   }
@@ -119,7 +140,8 @@ export function evaluateScheduleRules(
   const colliding = existingSlots.filter((slot) => {
     if (slot.id === target.id) return false
     if (slot.siteId !== target.siteId) return false
-    if (target.publicationId && slot.publicationId && target.publicationId !== slot.publicationId) return false
+    if (target.publicationId && slot.publicationId && target.publicationId !== slot.publicationId)
+      return false
     const slotTime = new Date(slot.scheduledFor).getTime()
     return Math.abs(slotTime - targetTime) <= windowMs
   })
@@ -129,7 +151,10 @@ export function evaluateScheduleRules(
       ruleId: 'slot-collision',
       severity: policyConfig.policy === 'block' ? 'error' : 'warning',
       message: `Time slot has ${colliding.length} existing scheduled items in the same 15m window.`,
-      evidence: { collidingCount: colliding.length, collidingTitles: colliding.map((c) => c.title) },
+      evidence: {
+        collidingCount: colliding.length,
+        collidingTitles: colliding.map((c) => c.title),
+      },
     })
   }
 

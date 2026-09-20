@@ -87,7 +87,11 @@ export class ThreadsAdapter implements SocialProviderAdapter {
 
     const limit = constraints?.characterCeilingOverride || 500
     if (!variant.text.trim() && !variant.attachments.length) {
-      errors.push({ field: 'text', message: 'Threads post must contain text or media.', code: 'EMPTY_POST' })
+      errors.push({
+        field: 'text',
+        message: 'Threads post must contain text or media.',
+        code: 'EMPTY_POST',
+      })
     }
 
     if (variant.text.length > limit) {
@@ -144,7 +148,9 @@ export class ThreadsAdapter implements SocialProviderAdapter {
 
   async publish(
     variant: SocialVariant,
-    context?: AuthContext | Readonly<{ accountId: string; credentials: Record<string, string> | null }>,
+    context?:
+      | AuthContext
+      | Readonly<{ accountId: string; credentials: Record<string, string> | null }>,
     mediaResolver?: MediaResolver,
   ): Promise<AdapterResult> {
     const auth = context as AuthContext | undefined
@@ -214,7 +220,8 @@ export class ThreadsAdapter implements SocialProviderAdapter {
             headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
             body: JSON.stringify(childPayload),
           })
-          if (!cRes.ok) throw new Error(`Threads carousel child creation failed with HTTP ${cRes.status}`)
+          if (!cRes.ok)
+            throw new Error(`Threads carousel child creation failed with HTTP ${cRes.status}`)
           const cData = (await cRes.json()) as { id: string }
           await this.pollContainerStatus(cData.id, accessToken)
           childIds.push(cData.id)
@@ -324,7 +331,12 @@ export class ThreadsAdapter implements SocialProviderAdapter {
     })
 
     if (!res.ok) throw new Error(`Failed to fetch Threads post: HTTP ${res.status}`)
-    const data = (await res.json()) as { id: string; text?: string; timestamp: string; permalink: string }
+    const data = (await res.json()) as {
+      id: string
+      text?: string
+      timestamp: string
+      permalink: string
+    }
 
     return {
       remoteId: data.id,
@@ -334,7 +346,10 @@ export class ThreadsAdapter implements SocialProviderAdapter {
     }
   }
 
-  async fetchAnalytics(remotePostId: string, authContext: AuthContext): Promise<NormalizedAnalytics> {
+  async fetchAnalytics(
+    remotePostId: string,
+    authContext: AuthContext,
+  ): Promise<NormalizedAnalytics> {
     const accessToken = authContext.credentials?.accessToken || authContext.tokens?.accessToken
     const endpoint = `https://graph.threads.net/v1.0/${remotePostId}/insights?metric=views,likes,replies,reposts,quotes`
 

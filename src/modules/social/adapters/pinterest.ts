@@ -158,7 +158,9 @@ export class PinterestAdapter implements SocialProviderAdapter {
 
   async publish(
     variant: SocialVariant,
-    context?: AuthContext | Readonly<{ accountId: string; credentials: Record<string, string> | null }>,
+    context?:
+      | AuthContext
+      | Readonly<{ accountId: string; credentials: Record<string, string> | null }>,
     mediaResolver?: MediaResolver,
   ): Promise<AdapterResult> {
     const auth = context as AuthContext | undefined
@@ -270,7 +272,9 @@ export class PinterestAdapter implements SocialProviderAdapter {
           error: normalizeProviderError({
             kind: 'rate-limit',
             message: 'Pinterest API rate limit reached.',
-            retryAfter: retryAfter ? new Date(Date.now() + Number(retryAfter) * 1000).toISOString() : undefined,
+            retryAfter: retryAfter
+              ? new Date(Date.now() + Number(retryAfter) * 1000).toISOString()
+              : undefined,
           }),
         }
       }
@@ -372,7 +376,12 @@ export class PinterestAdapter implements SocialProviderAdapter {
     })
 
     if (!res.ok) throw new Error(`Failed to fetch Pin: HTTP ${res.status}`)
-    const data = (await res.json()) as { id: string; title: string; description: string; created_at: string }
+    const data = (await res.json()) as {
+      id: string
+      title: string
+      description: string
+      created_at: string
+    }
 
     return {
       remoteId: data.id,
@@ -382,7 +391,10 @@ export class PinterestAdapter implements SocialProviderAdapter {
     }
   }
 
-  async fetchAnalytics(remotePostId: string, authContext: AuthContext): Promise<NormalizedAnalytics> {
+  async fetchAnalytics(
+    remotePostId: string,
+    authContext: AuthContext,
+  ): Promise<NormalizedAnalytics> {
     const accessToken = authContext.credentials?.accessToken || authContext.tokens?.accessToken
     const endpoint = `https://api.pinterest.com/v5/pins/${remotePostId}/analytics?metric_types=IMPRESSION,PIN_CLICK,OUTBOUND_CLICK,SAVE`
 

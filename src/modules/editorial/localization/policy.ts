@@ -149,7 +149,9 @@ export function evaluateLocalizationQualityPolicy(
     message: !hasCompletenessBlockers
       ? `Structured completeness verified (score: ${completenessReport.score}%).`
       : `Found ${completenessReport.blockers.length} completeness blocker(s): ${completenessReport.blockers.map((b) => b.message).join('; ')}`,
-    repairUrl: completenessReport.blockers[0]?.repairUrl || `${repairPrefix}?id=${targetId}&focus=completeness`,
+    repairUrl:
+      completenessReport.blockers[0]?.repairUrl ||
+      `${repairPrefix}?id=${targetId}&focus=completeness`,
     waiver: completenessWaiver,
     details: {
       score: completenessReport.score,

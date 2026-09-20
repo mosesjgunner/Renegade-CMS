@@ -55,7 +55,12 @@ describe('Social Distribution Admin API Routes', () => {
           canonicalUrl: 'https://renegadeparty.org/post-1',
           variants: [
             { accountId: 'acc-mastodon-1', network: 'mastodon' },
-            { accountId: 'acc-bsky-1', network: 'bluesky', customCopy: 'Short bsky copy', isOverridden: true },
+            {
+              accountId: 'acc-bsky-1',
+              network: 'bluesky',
+              customCopy: 'Short bsky copy',
+              isOverridden: true,
+            },
             { accountId: 'acc-fb-1', network: 'facebook' },
           ],
         }),
@@ -75,8 +80,18 @@ describe('Social Distribution Admin API Routes', () => {
   describe('GET /api/admin/social/accounts', () => {
     it('returns registered social accounts for staff users', async () => {
       mockFindDocs = [
-        { id: 'acc-1', displayName: 'Mastodon Main', network: 'mastodon', capabilityState: 'available' },
-        { id: 'acc-2', displayName: 'LinkedIn Page', network: 'linkedin', capabilityState: 'available' },
+        {
+          id: 'acc-1',
+          displayName: 'Mastodon Main',
+          network: 'mastodon',
+          capabilityState: 'available',
+        },
+        {
+          id: 'acc-2',
+          displayName: 'LinkedIn Page',
+          network: 'linkedin',
+          capabilityState: 'available',
+        },
       ]
 
       const req = new Request('http://localhost:3000/api/admin/social/accounts')
@@ -112,7 +127,9 @@ describe('Social Distribution Admin API Routes', () => {
         },
       ]
 
-      const req = new Request('http://localhost:3000/api/admin/social/analytics?canonicalPostId=canon-1')
+      const req = new Request(
+        'http://localhost:3000/api/admin/social/analytics?canonicalPostId=canon-1',
+      )
       const res = await analyticsGet(req)
       expect(res.status).toBe(200)
       const data = await res.json()

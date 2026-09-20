@@ -13,15 +13,17 @@ const idOf = (value: unknown): string => {
 /**
  * Generates an iCalendar (RFC 5545 .ics) feed string from a list of scheduled entries.
  */
-export function generateICalendarFeed(entries: Array<{
-  id: string
-  title: string
-  startsAt: string
-  endsAt?: string | null
-  timeZone: string
-  description?: string | null
-  url?: string | null
-}>): string {
+export function generateICalendarFeed(
+  entries: Array<{
+    id: string
+    title: string
+    startsAt: string
+    endsAt?: string | null
+    timeZone: string
+    description?: string | null
+    url?: string | null
+  }>,
+): string {
   const lines: string[] = [
     'BEGIN:VCALENDAR',
     'VERSION:2.0',
@@ -34,9 +36,15 @@ export function generateICalendarFeed(entries: Array<{
     const startDate = new Date(entry.startsAt)
     if (Number.isNaN(startDate.getTime())) continue
 
-    const formatDateUtc = (d: Date) => d.toISOString().replace(/[-:]/g, '').replace(/\.\d{3}/, '')
+    const formatDateUtc = (d: Date) =>
+      d
+        .toISOString()
+        .replace(/[-:]/g, '')
+        .replace(/\.\d{3}/, '')
     const dtStart = formatDateUtc(startDate)
-    const endDate = entry.endsAt ? new Date(entry.endsAt) : new Date(startDate.getTime() + 3600 * 1000)
+    const endDate = entry.endsAt
+      ? new Date(entry.endsAt)
+      : new Date(startDate.getTime() + 3600 * 1000)
     const dtEnd = formatDateUtc(endDate)
 
     lines.push(
@@ -129,6 +137,9 @@ export async function GET(req: NextRequest) {
       },
     })
   } catch (error) {
-    return NextResponse.json({ error: error instanceof Error ? error.message : String(error) }, { status: 500 })
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : String(error) },
+      { status: 500 },
+    )
   }
 }

@@ -27,20 +27,28 @@ describe('FLOW-03 Scheduling & Calendar Comprehensive Unit Suite', () => {
     })
 
     it('handles Spring Forward nonexistent DST gap time by advancing', () => {
-      const res = convertLocalToUtc('2026-03-08T02:30:00', 'America/Chicago', { nonexistentHandling: 'advance' })
+      const res = convertLocalToUtc('2026-03-08T02:30:00', 'America/Chicago', {
+        nonexistentHandling: 'advance',
+      })
       expect(res.wasNonexistent).toBe(true)
       expect(res.utcInstant).toBeDefined()
     })
 
     it('rejects Spring Forward gap time when nonexistentHandling is reject', () => {
       expect(() => {
-        convertLocalToUtc('2026-03-08T02:30:00', 'America/Chicago', { nonexistentHandling: 'reject' })
+        convertLocalToUtc('2026-03-08T02:30:00', 'America/Chicago', {
+          nonexistentHandling: 'reject',
+        })
       }).toThrow(DSTNonexistentTimeError)
     })
 
     it('handles Fall Back ambiguous DST overlap time with earlier preference', () => {
-      const res1 = convertLocalToUtc('2026-11-01T01:30:00', 'America/Chicago', { ambiguousPreference: 'earlier' })
-      const res2 = convertLocalToUtc('2026-11-01T01:30:00', 'America/Chicago', { ambiguousPreference: 'later' })
+      const res1 = convertLocalToUtc('2026-11-01T01:30:00', 'America/Chicago', {
+        ambiguousPreference: 'earlier',
+      })
+      const res2 = convertLocalToUtc('2026-11-01T01:30:00', 'America/Chicago', {
+        ambiguousPreference: 'later',
+      })
 
       expect(res1.isAmbiguous).toBe(true)
       expect(res2.isAmbiguous).toBe(true)
@@ -112,9 +120,7 @@ describe('FLOW-03 Scheduling & Calendar Comprehensive Unit Suite', () => {
     it('blocks item when prerequisite content is not published', () => {
       const prereqTarget = {
         ...validTarget,
-        prerequisites: [
-          { id: 'pre-1', title: 'Part 1', isPublished: false },
-        ],
+        prerequisites: [{ id: 'pre-1', title: 'Part 1', isPublished: false }],
       }
       const res = evaluateScheduleRules(prereqTarget, [])
       expect(res.allowed).toBe(false)
@@ -123,10 +129,25 @@ describe('FLOW-03 Scheduling & Calendar Comprehensive Unit Suite', () => {
 
     it('warns on same-slot campaign collision when threshold exceeded', () => {
       const existing: ExistingScheduledSlot[] = [
-        { id: 'art-100', title: 'Slot 1', scheduledFor: '2026-09-25T15:05:00.000Z', siteId: 'site-alpha', publicationId: 'pub-daily' },
-        { id: 'art-101', title: 'Slot 2', scheduledFor: '2026-09-25T15:10:00.000Z', siteId: 'site-alpha', publicationId: 'pub-daily' },
+        {
+          id: 'art-100',
+          title: 'Slot 1',
+          scheduledFor: '2026-09-25T15:05:00.000Z',
+          siteId: 'site-alpha',
+          publicationId: 'pub-daily',
+        },
+        {
+          id: 'art-101',
+          title: 'Slot 2',
+          scheduledFor: '2026-09-25T15:10:00.000Z',
+          siteId: 'site-alpha',
+          publicationId: 'pub-daily',
+        },
       ]
-      const res = evaluateScheduleRules(validTarget, existing, { policy: 'warn', maxItemsPerSlot: 2 })
+      const res = evaluateScheduleRules(validTarget, existing, {
+        policy: 'warn',
+        maxItemsPerSlot: 2,
+      })
       expect(res.allowed).toBe(true)
       expect(res.hasWarnings).toBe(true)
       expect(res.violations.some((v) => v.ruleId === 'slot-collision')).toBe(true)
@@ -135,7 +156,8 @@ describe('FLOW-03 Scheduling & Calendar Comprehensive Unit Suite', () => {
 
   describe('3. Scheduler Immutability, Catch-Up Policy & Sanitization', () => {
     it('sanitizes connection strings and tokens from error logs', () => {
-      const rawLog = 'Database connection error: postgres://admin:super_secret_password@db.prod.internal:5432/cms?auth=bearer_abc123_token'
+      const rawLog =
+        'Database connection error: postgres://admin:super_secret_password@db.prod.internal:5432/cms?auth=bearer_abc123_token'
       const sanitized = sanitizeErrorLog(rawLog)
       expect(sanitized).not.toContain('super_secret_password')
       expect(sanitized).not.toContain('bearer_abc123_token')

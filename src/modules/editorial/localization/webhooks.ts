@@ -14,7 +14,10 @@ export const WEBHOOK_TIMESTAMP_TOLERANCE_SECONDS = 300
  * Disallows localhost, private RFC 1918 ranges, link-local/cloud metadata IPs,
  * credentials in URLs, and non-HTTP/HTTPS protocols.
  */
-export function validateWebhookUrl(targetUrl: string, options: { allowTestHttp?: boolean } = {}): {
+export function validateWebhookUrl(
+  targetUrl: string,
+  options: { allowTestHttp?: boolean } = {},
+): {
   valid: boolean
   reason?: string
 } {
@@ -26,7 +29,10 @@ export function validateWebhookUrl(targetUrl: string, options: { allowTestHttp?:
     }
 
     if (parsed.username || parsed.password) {
-      return { valid: false, reason: 'SSRF_ERROR: Webhook URLs must not contain embedded user credentials.' }
+      return {
+        valid: false,
+        reason: 'SSRF_ERROR: Webhook URLs must not contain embedded user credentials.',
+      }
     }
 
     const hostname = parsed.hostname.toLowerCase()
@@ -38,7 +44,10 @@ export function validateWebhookUrl(targetUrl: string, options: { allowTestHttp?:
       hostname === '::1' ||
       hostname === '0.0.0.0'
     ) {
-      return { valid: false, reason: `SSRF_ERROR: Target host '${hostname}' is a loopback address and is not permitted.` }
+      return {
+        valid: false,
+        reason: `SSRF_ERROR: Target host '${hostname}' is a loopback address and is not permitted.`,
+      }
     }
 
     // IPv4 Private & Link-local Range Checks
@@ -53,19 +62,31 @@ export function validateWebhookUrl(targetUrl: string, options: { allowTestHttp?:
       }
       // 10.0.0.0/8 (RFC 1918)
       if (b1 === 10) {
-        return { valid: false, reason: 'SSRF_ERROR: Private network address (10.0.0.0/8) is forbidden.' }
+        return {
+          valid: false,
+          reason: 'SSRF_ERROR: Private network address (10.0.0.0/8) is forbidden.',
+        }
       }
       // 172.16.0.0/12 (RFC 1918)
       if (b1 === 172 && b2 >= 16 && b2 <= 31) {
-        return { valid: false, reason: 'SSRF_ERROR: Private network address (172.16.0.0/12) is forbidden.' }
+        return {
+          valid: false,
+          reason: 'SSRF_ERROR: Private network address (172.16.0.0/12) is forbidden.',
+        }
       }
       // 192.168.0.0/16 (RFC 1918)
       if (b1 === 192 && b2 === 168) {
-        return { valid: false, reason: 'SSRF_ERROR: Private network address (192.168.0.0/16) is forbidden.' }
+        return {
+          valid: false,
+          reason: 'SSRF_ERROR: Private network address (192.168.0.0/16) is forbidden.',
+        }
       }
       // 169.254.0.0/16 (Link-local / AWS / GCP / Azure metadata endpoint 169.254.169.254)
       if (b1 === 169 && b2 === 254) {
-        return { valid: false, reason: 'SSRF_ERROR: Link-local/cloud metadata address (169.254.0.0/16) is forbidden.' }
+        return {
+          valid: false,
+          reason: 'SSRF_ERROR: Link-local/cloud metadata address (169.254.0.0/16) is forbidden.',
+        }
       }
     }
 
@@ -79,9 +100,7 @@ export function validateWebhookUrl(targetUrl: string, options: { allowTestHttp?:
  * Computes an HMAC SHA-256 signature for a webhook payload.
  */
 export function signWebhookPayload(rawPayload: string, secret: string, timestamp: number): string {
-  const signature = createHmac('sha256', secret)
-    .update(`${timestamp}.${rawPayload}`)
-    .digest('hex')
+  const signature = createHmac('sha256', secret).update(`${timestamp}.${rawPayload}`).digest('hex')
   return `t=${timestamp},v1=${signature}`
 }
 
@@ -102,7 +121,10 @@ export function verifyWebhookSignature(input: {
 
   const match = input.signatureHeader.match(/^t=(\d+),v1=([a-f0-9]{64})$/)
   if (!match) {
-    return { valid: false, reason: 'Malformed signature header format. Expected t=timestamp,v1=hash.' }
+    return {
+      valid: false,
+      reason: 'Malformed signature header format. Expected t=timestamp,v1=hash.',
+    }
   }
 
   const timestamp = Number(match[1])
@@ -111,7 +133,10 @@ export function verifyWebhookSignature(input: {
   const tolerance = input.toleranceSeconds ?? WEBHOOK_TIMESTAMP_TOLERANCE_SECONDS
 
   if (Math.abs(now - timestamp) > tolerance) {
-    return { valid: false, reason: 'Signature timestamp expired or skewed beyond tolerance window.' }
+    return {
+      valid: false,
+      reason: 'Signature timestamp expired or skewed beyond tolerance window.',
+    }
   }
 
   // Check primary secret
@@ -132,7 +157,10 @@ export function verifyWebhookSignature(input: {
     }
   }
 
-  return { valid: false, reason: 'Signature verification failed against active and secondary secrets.' }
+  return {
+    valid: false,
+    reason: 'Signature verification failed against active and secondary secrets.',
+  }
 }
 
 /**
@@ -190,7 +218,9 @@ export class WebhookEngine {
   }
 
   registerSubscription(sub: WebhookSubscription): { valid: boolean; error?: string } {
-    const urlCheck = validateWebhookUrl(sub.targetUrl, { allowTestHttp: process.env.NODE_ENV === 'test' })
+    const urlCheck = validateWebhookUrl(sub.targetUrl, {
+      allowTestHttp: process.env.NODE_ENV === 'test',
+    })
     if (!urlCheck.valid) {
       return { valid: false, error: urlCheck.reason }
     }

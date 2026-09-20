@@ -14,10 +14,7 @@ import {
   verifyWebhookSignature,
   WebhookEngine,
 } from '../../src/modules/editorial/localization'
-import {
-  evaluateReleaseGates,
-  type GateEvaluationOptions,
-} from '../../src/modules/releases/gates'
+import { evaluateReleaseGates, type GateEvaluationOptions } from '../../src/modules/releases/gates'
 import type { CoordinatedRelease, ReleaseArtifactItem } from '../../src/modules/releases/contracts'
 
 describe('Workflow Pass FLOW-05 — Translation Groups, Localization Quality & Reliable Notifications', () => {
@@ -342,9 +339,7 @@ describe('Workflow Pass FLOW-05 — Translation Groups, Localization Quality & R
     )
 
     // Invariant 3: Canonical consistency
-    expect(hreflang.canonicalUrl).toBe(
-      'https://renegadeparty.org/es/articles/vision-plataforma',
-    )
+    expect(hreflang.canonicalUrl).toBe('https://renegadeparty.org/es/articles/vision-plataforma')
 
     // Invariant 4: No phantom languages! Draft 'fr' MUST NOT be in alternateLocales
     expect(hreflang.alternateLocales['fr']).toBeUndefined()

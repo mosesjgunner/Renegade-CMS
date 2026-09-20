@@ -25,11 +25,17 @@ export async function POST(request: Request) {
     }
 
     if (!Array.isArray(body.articleIds) || body.articleIds.length === 0 || !body.action) {
-      return NextResponse.json({ error: 'articleIds array and action are required.' }, { status: 400 })
+      return NextResponse.json(
+        { error: 'articleIds array and action are required.' },
+        { status: 400 },
+      )
     }
 
     const userRoleStr = String(auth.user.role)
-    const actorRole: EditorialRole = userRoleStr === 'owner' || userRoleStr === 'administrator' ? body.role || 'publisher' : 'editor'
+    const actorRole: EditorialRole =
+      userRoleStr === 'owner' || userRoleStr === 'administrator'
+        ? body.role || 'publisher'
+        : 'editor'
 
     const result = await bulkExecuteWorkflowItems(payload, {
       articleIds: body.articleIds,

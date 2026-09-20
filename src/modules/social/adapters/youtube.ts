@@ -158,7 +158,8 @@ export class YouTubeAdapter implements SocialProviderAdapter {
     totalByteSize: number,
     mimeType: string,
   ): Promise<string> {
-    const endpoint = 'https://www.googleapis.com/upload/youtube/v3/videos?uploadType=resumable&part=snippet,status'
+    const endpoint =
+      'https://www.googleapis.com/upload/youtube/v3/videos?uploadType=resumable&part=snippet,status'
     const ssrf = validateOutboundUrl(endpoint)
     if (!ssrf.isValid) throw new Error(`SSRF Blocked: ${ssrf.reason}`)
 
@@ -188,7 +189,9 @@ export class YouTubeAdapter implements SocialProviderAdapter {
 
     if (!res.ok) {
       const err = (await res.json().catch(() => null)) as { error?: { message?: string } } | null
-      throw new Error(`Failed to initiate YouTube resumable upload: ${err?.error?.message || res.statusText}`)
+      throw new Error(
+        `Failed to initiate YouTube resumable upload: ${err?.error?.message || res.statusText}`,
+      )
     }
 
     const sessionUri = res.headers.get('location')
@@ -230,7 +233,9 @@ export class YouTubeAdapter implements SocialProviderAdapter {
 
   async publish(
     variant: SocialVariant,
-    context?: AuthContext | Readonly<{ accountId: string; credentials: Record<string, string> | null }>,
+    context?:
+      | AuthContext
+      | Readonly<{ accountId: string; credentials: Record<string, string> | null }>,
     mediaResolver?: MediaResolver,
   ): Promise<AdapterResult> {
     const auth = context as AuthContext | undefined

@@ -1,7 +1,10 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
-import { defaultSimulatedProvider, getLocalizationEngine } from '@/modules/editorial/localization/service'
+import {
+  defaultSimulatedProvider,
+  getLocalizationEngine,
+} from '@/modules/editorial/localization/service'
 import { evaluateTranslationCompleteness } from '@/modules/editorial/localization/completeness'
 import { computeHreflangAlternates } from '@/modules/editorial/localization/hreflang'
 
@@ -10,7 +13,10 @@ export const runtime = 'nodejs'
 export async function GET(request: Request) {
   const payload = await getPayload({ config })
   const auth = await payload.auth({ headers: request.headers })
-  if (!auth.user || !['owner', 'administrator', 'staff', 'editor', 'author'].includes(String(auth.user.role))) {
+  if (
+    !auth.user ||
+    !['owner', 'administrator', 'staff', 'editor', 'author'].includes(String(auth.user.role))
+  ) {
     return NextResponse.json({ error: 'Authorized access required.' }, { status: 403 })
   }
 
@@ -38,7 +44,10 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   const payload = await getPayload({ config })
   const auth = await payload.auth({ headers: request.headers })
-  if (!auth.user || !['owner', 'administrator', 'staff', 'editor'].includes(String(auth.user.role))) {
+  if (
+    !auth.user ||
+    !['owner', 'administrator', 'staff', 'editor'].includes(String(auth.user.role))
+  ) {
     return NextResponse.json({ error: 'Staff or editor access required.' }, { status: 403 })
   }
 
@@ -84,7 +93,10 @@ export async function POST(request: Request) {
 
       case 'request-translation': {
         if (!body.groupId || !body.targetLocale) {
-          return NextResponse.json({ error: 'groupId and targetLocale are required.' }, { status: 400 })
+          return NextResponse.json(
+            { error: 'groupId and targetLocale are required.' },
+            { status: 400 },
+          )
         }
         const req = engine.requestTranslation({
           groupId: body.groupId,
@@ -106,7 +118,10 @@ export async function POST(request: Request) {
 
       case 'update-target': {
         if (!body.requestId || !body.updates) {
-          return NextResponse.json({ error: 'requestId and updates are required.' }, { status: 400 })
+          return NextResponse.json(
+            { error: 'requestId and updates are required.' },
+            { status: 400 },
+          )
         }
         const variant = engine.updateTargetContent(body.requestId, body.updates)
         return NextResponse.json({ success: true, variant })
@@ -172,7 +187,8 @@ export async function POST(request: Request) {
         if (!group) return NextResponse.json({ error: 'Group not found.' }, { status: 404 })
         const sourceVariant = group.variants[group.sourceLocale]
         const targetVariant = group.variants[body.locale]
-        if (!targetVariant) return NextResponse.json({ error: 'Variant not found.' }, { status: 404 })
+        if (!targetVariant)
+          return NextResponse.json({ error: 'Variant not found.' }, { status: 404 })
 
         const report = evaluateTranslationCompleteness({
           source: {
@@ -196,7 +212,10 @@ export async function POST(request: Request) {
       }
 
       default:
-        return NextResponse.json({ error: `Unknown action: ${(body as any).action}` }, { status: 400 })
+        return NextResponse.json(
+          { error: `Unknown action: ${(body as any).action}` },
+          { status: 400 },
+        )
     }
   } catch (err: any) {
     return NextResponse.json({ error: err?.message || String(err) }, { status: 500 })

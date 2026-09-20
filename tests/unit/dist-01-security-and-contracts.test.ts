@@ -98,7 +98,9 @@ describe('Pass DIST-01: Social Security, Canonical Models & Queue State Machine'
 
     it('blocks cloud instance metadata endpoints', () => {
       expect(validateOutboundUrl('https://169.254.169.254/latest/meta-data/').isValid).toBe(false)
-      expect(validateOutboundUrl('https://metadata.google.internal/computeMetadata/v1/').isValid).toBe(false)
+      expect(
+        validateOutboundUrl('https://metadata.google.internal/computeMetadata/v1/').isValid,
+      ).toBe(false)
     })
 
     it('blocks private RFC 1918 subnets', () => {
@@ -115,7 +117,9 @@ describe('Pass DIST-01: Social Security, Canonical Models & Queue State Machine'
     })
 
     it('allows valid public HTTPS endpoints', () => {
-      expect(validateOutboundUrl('https://api.bsky.app/xrpc/com.atproto.repo.createRecord').isValid).toBe(true)
+      expect(
+        validateOutboundUrl('https://api.bsky.app/xrpc/com.atproto.repo.createRecord').isValid,
+      ).toBe(true)
       expect(validateOutboundUrl('https://graph.facebook.com/v20.0/me').isValid).toBe(true)
       expect(validateOutboundUrl('https://api.linkedin.com/rest/posts').isValid).toBe(true)
     })
@@ -211,13 +215,21 @@ describe('Pass DIST-01: Social Security, Canonical Models & Queue State Machine'
       // Override X variant to fit character limit
       overrideVariantCopy(post, xVar.id, 'Short X copy: https://renegadeparty.org/post/1')
       expect(xVar.isOverridden).toBe(true)
-      expect(resolveEffectiveCopy(post, xVar)).toBe('Short X copy: https://renegadeparty.org/post/1')
+      expect(resolveEffectiveCopy(post, xVar)).toBe(
+        'Short X copy: https://renegadeparty.org/post/1',
+      )
 
       // Updating canonical copy propagates to Mastodon and Bluesky, but leaves customized X untouched!
       updateCanonicalCopy(post, 'Updated canonical copy for all networks!')
-      expect(resolveEffectiveCopy(post, mastodonVar)).toBe('Updated canonical copy for all networks!')
-      expect(resolveEffectiveCopy(post, blueskyVar)).toBe('Updated canonical copy for all networks!')
-      expect(resolveEffectiveCopy(post, xVar)).toBe('Short X copy: https://renegadeparty.org/post/1')
+      expect(resolveEffectiveCopy(post, mastodonVar)).toBe(
+        'Updated canonical copy for all networks!',
+      )
+      expect(resolveEffectiveCopy(post, blueskyVar)).toBe(
+        'Updated canonical copy for all networks!',
+      )
+      expect(resolveEffectiveCopy(post, xVar)).toBe(
+        'Short X copy: https://renegadeparty.org/post/1',
+      )
 
       // Resetting override re-enables inheritance
       resetVariantOverride(post, xVar.id)

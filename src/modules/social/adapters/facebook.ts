@@ -87,7 +87,11 @@ export class FacebookAdapter implements SocialProviderAdapter {
     const warnings: ValidationReport['warnings'] = []
 
     if (!variant.text.trim() && !variant.attachments.length && !variant.linkUrl) {
-      errors.push({ field: 'text', message: 'Facebook post must contain text, media, or a link.', code: 'EMPTY_POST' })
+      errors.push({
+        field: 'text',
+        message: 'Facebook post must contain text, media, or a link.',
+        code: 'EMPTY_POST',
+      })
     }
 
     if (variant.text.length > 63206) {
@@ -121,7 +125,11 @@ export class FacebookAdapter implements SocialProviderAdapter {
     if (!ssrf.isValid) throw new Error(`SSRF Blocked: ${ssrf.reason}`)
 
     const formData = new FormData()
-    formData.append('source', new Blob([new Uint8Array(buffer)], { type: 'image/jpeg' }), 'photo.jpg')
+    formData.append(
+      'source',
+      new Blob([new Uint8Array(buffer)], { type: 'image/jpeg' }),
+      'photo.jpg',
+    )
     formData.append('published', String(published))
     if (caption) formData.append('caption', caption)
 
@@ -133,7 +141,9 @@ export class FacebookAdapter implements SocialProviderAdapter {
 
     if (!res.ok) {
       const err = await res.json().catch(() => null)
-      throw new Error(`Facebook photo upload failed (${res.status}): ${err?.error?.message || res.statusText}`)
+      throw new Error(
+        `Facebook photo upload failed (${res.status}): ${err?.error?.message || res.statusText}`,
+      )
     }
 
     const data = (await res.json()) as { id: string }
@@ -142,11 +152,14 @@ export class FacebookAdapter implements SocialProviderAdapter {
 
   async publish(
     variant: SocialVariant,
-    context?: AuthContext | Readonly<{ accountId: string; credentials: Record<string, string> | null }>,
+    context?:
+      | AuthContext
+      | Readonly<{ accountId: string; credentials: Record<string, string> | null }>,
     mediaResolver?: MediaResolver,
   ): Promise<AdapterResult> {
     const auth = context as AuthContext | undefined
-    const pageToken = auth?.credentials?.pageToken || auth?.credentials?.accessToken || auth?.tokens?.accessToken
+    const pageToken =
+      auth?.credentials?.pageToken || auth?.credentials?.accessToken || auth?.tokens?.accessToken
     const settings = variant.platformSettings as FacebookPlatformSettings | undefined
     const pageId = settings?.pageId || auth?.credentials?.pageId || auth?.accountId
 
@@ -237,7 +250,9 @@ export class FacebookAdapter implements SocialProviderAdapter {
         message: variant.text,
       }
 
-      const targetLink = variant.linkUrl || (variant as unknown as { linkPreview?: { url?: string } })?.linkPreview?.url
+      const targetLink =
+        variant.linkUrl ||
+        (variant as unknown as { linkPreview?: { url?: string } })?.linkPreview?.url
       if (targetLink) {
         feedPayload.link = targetLink
       }
@@ -265,7 +280,10 @@ export class FacebookAdapter implements SocialProviderAdapter {
       })
 
       // Rate limit check
-      if (res.status === 429 || (res.headers.get('x-business-use-case-usage') && res.status >= 400)) {
+      if (
+        res.status === 429 ||
+        (res.headers.get('x-business-use-case-usage') && res.status >= 400)
+      ) {
         return {
           status: 'failed',
           error: normalizeProviderError({
@@ -342,7 +360,9 @@ export class FacebookAdapter implements SocialProviderAdapter {
 
     if (!res.ok) {
       const err = await res.json().catch(() => null)
-      throw new Error(`Facebook post edit failed (${res.status}): ${err?.error?.message || res.statusText}`)
+      throw new Error(
+        `Facebook post edit failed (${res.status}): ${err?.error?.message || res.statusText}`,
+      )
     }
 
     return {
@@ -377,7 +397,12 @@ export class FacebookAdapter implements SocialProviderAdapter {
     })
 
     if (!res.ok) throw new Error(`Failed to fetch Facebook post: HTTP ${res.status}`)
-    const data = (await res.json()) as { id: string; message: string; created_time: string; permalink_url?: string }
+    const data = (await res.json()) as {
+      id: string
+      message: string
+      created_time: string
+      permalink_url?: string
+    }
 
     return {
       remoteId: data.id,
@@ -387,7 +412,10 @@ export class FacebookAdapter implements SocialProviderAdapter {
     }
   }
 
-  async fetchAnalytics(remotePostId: string, authContext: AuthContext): Promise<NormalizedAnalytics> {
+  async fetchAnalytics(
+    remotePostId: string,
+    authContext: AuthContext,
+  ): Promise<NormalizedAnalytics> {
     const pageToken = authContext.credentials?.pageToken || authContext.credentials?.accessToken
     const endpoint = `https://graph.facebook.com/v20.0/${remotePostId}/insights?metric=post_impressions,post_impressions_unique,post_clicks,post_reactions_by_type_total`
 
@@ -407,7 +435,10 @@ export class FacebookAdapter implements SocialProviderAdapter {
         metricMap.set(item.name, val)
       } else if (typeof val === 'object' && val !== null) {
         // e.g. post_reactions_by_type_total
-        const totalReactions = Object.values(val).reduce((sum, n) => sum + (typeof n === 'number' ? n : 0), 0)
+        const totalReactions = Object.values(val).reduce(
+          (sum, n) => sum + (typeof n === 'number' ? n : 0),
+          0,
+        )
         metricMap.set(item.name, totalReactions)
       }
     }

@@ -1,10 +1,7 @@
 'use client'
 
 import React, { useState, useMemo } from 'react'
-import {
-  type SocialNetwork,
-  type SocialState,
-} from '../social/contracts'
+import { type SocialNetwork, type SocialState } from '../social/contracts'
 import {
   createCanonicalSocialPost,
   overrideVariantCopy,
@@ -25,12 +22,35 @@ interface ConnectedAccountUI {
 }
 
 const DEFAULT_ACCOUNTS: ConnectedAccountUI[] = [
-  { id: 'acc-mastodon', network: 'mastodon', handle: '@renegade@mastodon.social', status: 'active' },
+  {
+    id: 'acc-mastodon',
+    network: 'mastodon',
+    handle: '@renegade@mastodon.social',
+    status: 'active',
+  },
   { id: 'acc-bluesky', network: 'bluesky', handle: 'renegadeparty.bsky.social', status: 'active' },
-  { id: 'acc-linkedin', network: 'linkedin', handle: 'Renegade Sovereign Media', status: 'active', tokenExpiresInDays: 45 },
+  {
+    id: 'acc-linkedin',
+    network: 'linkedin',
+    handle: 'Renegade Sovereign Media',
+    status: 'active',
+    tokenExpiresInDays: 45,
+  },
   { id: 'acc-facebook', network: 'facebook', handle: 'Renegade CMS Official', status: 'active' },
-  { id: 'acc-instagram', network: 'instagram', handle: '@renegade.cms', status: 'active', tokenExpiresInDays: 28 },
-  { id: 'acc-threads', network: 'threads', handle: '@renegade.cms', status: 'active', tokenExpiresInDays: 28 },
+  {
+    id: 'acc-instagram',
+    network: 'instagram',
+    handle: '@renegade.cms',
+    status: 'active',
+    tokenExpiresInDays: 28,
+  },
+  {
+    id: 'acc-threads',
+    network: 'threads',
+    handle: '@renegade.cms',
+    status: 'active',
+    tokenExpiresInDays: 28,
+  },
   { id: 'acc-pinterest', network: 'pinterest', handle: 'Renegade Discovery', status: 'active' },
   { id: 'acc-youtube', network: 'youtube', handle: 'Renegade Media Studio', status: 'active' },
   { id: 'acc-tiktok', network: 'tiktok', handle: '@renegade.media', status: 'active' },
@@ -56,14 +76,17 @@ export default function SocialCommandCenter() {
       siteId: 'site-alpha',
       publicationId: 'pub-main',
       title: 'Spring 2026 Sovereign Publishing Launch',
-      baseCopy: 'We are thrilled to unveil Renegade CMoS: decentralized, multi-network distribution built for creators and sovereign publications. Read the full announcement: https://renegadeparty.org/launch-2026',
+      baseCopy:
+        'We are thrilled to unveil Renegade CMoS: decentralized, multi-network distribution built for creators and sovereign publications. Read the full announcement: https://renegadeparty.org/launch-2026',
       canonicalUrl: 'https://renegadeparty.org/launch-2026',
       authorId: 'user-admin',
       targetAccounts: DEFAULT_ACCOUNTS.map((a) => ({ accountId: a.id, network: a.network })),
     }),
   )
 
-  const [imageUrl, setImageUrl] = useState<string>('https://renegadeparty.org/media/hero-launch.jpg')
+  const [imageUrl, setImageUrl] = useState<string>(
+    'https://renegadeparty.org/media/hero-launch.jpg',
+  )
   const [imageRole, setImageRole] = useState<'image' | 'video'>('image')
   const [pinterestBoardId, setPinterestBoardId] = useState<string>('board-announcements')
   const [telegramChatId, setTelegramChatId] = useState<string>('@renegade_broadcast')
@@ -88,7 +111,9 @@ export default function SocialCommandCenter() {
       ? 280
       : activeAccount.network === 'bluesky'
         ? 300
-        : activeAccount.network === 'mastodon' || activeAccount.network === 'threads' || activeAccount.network === 'pinterest'
+        : activeAccount.network === 'mastodon' ||
+            activeAccount.network === 'threads' ||
+            activeAccount.network === 'pinterest'
           ? 500
           : activeAccount.network === 'discord'
             ? 2000
@@ -97,7 +122,9 @@ export default function SocialCommandCenter() {
               : activeAccount.network === 'linkedin'
                 ? 3000
                 : activeAccount.network === 'telegram'
-                  ? (imageUrl ? 1024 : 4096)
+                  ? imageUrl
+                    ? 1024
+                    : 4096
                   : 5000
 
   const charCount = effectiveCopy.length
@@ -116,7 +143,7 @@ export default function SocialCommandCenter() {
       const data = await res.json()
       if (res.ok) {
         setWorkerResult(
-          `Worker processed ${data.summary?.processedCount ?? 0} jobs (${data.summary?.succeededCount ?? 0} succeeded)`
+          `Worker processed ${data.summary?.processedCount ?? 0} jobs (${data.summary?.succeededCount ?? 0} succeeded)`,
         )
       } else {
         setWorkerResult(`Worker failed: ${data.error || 'Unknown error'}`)
@@ -179,11 +206,15 @@ export default function SocialCommandCenter() {
                   : acc.network === 'linkedin'
                     ? 3000
                     : acc.network === 'telegram'
-                      ? (imageUrl ? 1024 : 4096)
+                      ? imageUrl
+                        ? 1024
+                        : 4096
                       : 5000
 
       if (copy.length > limit) {
-        blockers.push(`${acc.network.toUpperCase()}: Copy exceeds limit (${copy.length}/${limit} chars)`)
+        blockers.push(
+          `${acc.network.toUpperCase()}: Copy exceeds limit (${copy.length}/${limit} chars)`,
+        )
       }
 
       if ((acc.network === 'instagram' || acc.network === 'pinterest') && !imageUrl) {
@@ -203,20 +234,41 @@ export default function SocialCommandCenter() {
   }, [canonicalPost, selectedAccountIds, accounts, imageUrl, pinterestBoardId])
 
   return (
-    <div style={{ padding: '24px', maxWidth: '1400px', margin: '0 auto', fontFamily: 'system-ui, -apple-system, sans-serif' }}>
+    <div
+      style={{
+        padding: '24px',
+        maxWidth: '1400px',
+        margin: '0 auto',
+        fontFamily: 'system-ui, -apple-system, sans-serif',
+      }}
+    >
       {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '24px', borderBottom: '1px solid #e5e7eb', paddingBottom: '16px' }}>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '24px',
+          borderBottom: '1px solid #e5e7eb',
+          paddingBottom: '16px',
+        }}
+      >
         <div>
-          <h1 style={{ fontSize: '24px', fontWeight: 'bold', margin: '0 0 4px 0', color: '#111827' }}>
+          <h1
+            style={{ fontSize: '24px', fontWeight: 'bold', margin: '0 0 4px 0', color: '#111827' }}
+          >
             Social Distribution Command Center
           </h1>
           <p style={{ margin: 0, color: '#6b7280', fontSize: '14px' }}>
-            Unified multi-channel distribution engine across commercial walled gardens and open federated protocols.
+            Unified multi-channel distribution engine across commercial walled gardens and open
+            federated protocols.
           </p>
         </div>
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
           {workerResult && (
-            <span style={{ fontSize: '12px', color: '#2563eb', fontWeight: 500, marginRight: '8px' }}>
+            <span
+              style={{ fontSize: '12px', color: '#2563eb', fontWeight: 500, marginRight: '8px' }}
+            >
               {workerResult}
             </span>
           )}
@@ -258,7 +310,16 @@ export default function SocialCommandCenter() {
 
       {/* Connected Accounts Strip */}
       <div style={{ marginBottom: '24px' }}>
-        <h2 style={{ fontSize: '14px', fontWeight: 600, color: '#374151', textTransform: 'uppercase', letterSpacing: '0.05em', marginBottom: '8px' }}>
+        <h2
+          style={{
+            fontSize: '14px',
+            fontWeight: 600,
+            color: '#374151',
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em',
+            marginBottom: '8px',
+          }}
+        >
           Connected Distribution Targets ({accounts.length})
         </h2>
         <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
@@ -299,7 +360,9 @@ export default function SocialCommandCenter() {
                 >
                   {acc.network}
                 </span>
-                <span style={{ fontSize: '13px', fontWeight: 500, color: '#111827' }}>{acc.handle}</span>
+                <span style={{ fontSize: '13px', fontWeight: 500, color: '#111827' }}>
+                  {acc.handle}
+                </span>
                 <span
                   style={{
                     width: '8px',
@@ -317,10 +380,25 @@ export default function SocialCommandCenter() {
       {/* Main Grid: Composer (Left) & Fidelity Preview / Checklist (Right) */}
       <div style={{ display: 'grid', gridTemplateColumns: '7fr 5fr', gap: '24px' }}>
         {/* Left Column: Composer */}
-        <div style={{ backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e5e7eb', padding: '20px' }}>
+        <div
+          style={{
+            backgroundColor: '#ffffff',
+            borderRadius: '12px',
+            border: '1px solid #e5e7eb',
+            padding: '20px',
+          }}
+        >
           {/* Canonical Base Copy */}
           <div style={{ marginBottom: '20px' }}>
-            <label style={{ display: 'block', fontWeight: 600, fontSize: '14px', marginBottom: '6px', color: '#374151' }}>
+            <label
+              style={{
+                display: 'block',
+                fontWeight: 600,
+                fontSize: '14px',
+                marginBottom: '6px',
+                color: '#374151',
+              }}
+            >
               Canonical Base Copy (Source of Truth)
             </label>
             <textarea
@@ -342,21 +420,53 @@ export default function SocialCommandCenter() {
           </div>
 
           {/* Canonical Media & Link */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', marginBottom: '20px' }}>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr',
+              gap: '12px',
+              marginBottom: '20px',
+            }}
+          >
             <div>
-              <label style={{ display: 'block', fontWeight: 500, fontSize: '13px', marginBottom: '4px', color: '#4b5563' }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontWeight: 500,
+                  fontSize: '13px',
+                  marginBottom: '4px',
+                  color: '#4b5563',
+                }}
+              >
                 Canonical Link URL
               </label>
               <input
                 type="text"
                 value={canonicalPost.canonicalUrl || ''}
-                onChange={(e) => setCanonicalPost({ ...canonicalPost, canonicalUrl: e.target.value })}
+                onChange={(e) =>
+                  setCanonicalPost({ ...canonicalPost, canonicalUrl: e.target.value })
+                }
                 placeholder="https://renegadeparty.org/..."
-                style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '13px', boxSizing: 'border-box' }}
+                style={{
+                  width: '100%',
+                  padding: '8px',
+                  borderRadius: '6px',
+                  border: '1px solid #d1d5db',
+                  fontSize: '13px',
+                  boxSizing: 'border-box',
+                }}
               />
             </div>
             <div>
-              <label style={{ display: 'block', fontWeight: 500, fontSize: '13px', marginBottom: '4px', color: '#4b5563' }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontWeight: 500,
+                  fontSize: '13px',
+                  marginBottom: '4px',
+                  color: '#4b5563',
+                }}
+              >
                 Attached Media URL
               </label>
               <input
@@ -364,14 +474,28 @@ export default function SocialCommandCenter() {
                 value={imageUrl}
                 onChange={(e) => setImageUrl(e.target.value)}
                 placeholder="https://.../image.jpg"
-                style={{ width: '100%', padding: '8px', borderRadius: '6px', border: '1px solid #d1d5db', fontSize: '13px', boxSizing: 'border-box' }}
+                style={{
+                  width: '100%',
+                  padding: '8px',
+                  borderRadius: '6px',
+                  border: '1px solid #d1d5db',
+                  fontSize: '13px',
+                  boxSizing: 'border-box',
+                }}
               />
             </div>
           </div>
 
           {/* Network-Specific Override Tabs */}
           <div style={{ borderTop: '1px solid #e5e7eb', paddingTop: '16px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '12px',
+              }}
+            >
               <div style={{ display: 'flex', gap: '6px', overflowX: 'auto' }}>
                 {accounts
                   .filter((a) => selectedAccountIds.includes(a.id))
@@ -398,7 +522,17 @@ export default function SocialCommandCenter() {
 
               {/* Override Toggle */}
               {activeVariant && (
-                <label style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', fontWeight: 500, cursor: 'pointer', color: '#374151' }}>
+                <label
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    fontSize: '13px',
+                    fontWeight: 500,
+                    cursor: 'pointer',
+                    color: '#374151',
+                  }}
+                >
                   <input
                     type="checkbox"
                     checked={activeVariant.isOverridden}
@@ -430,20 +564,48 @@ export default function SocialCommandCenter() {
                 />
 
                 {/* Meter Bar */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '6px', fontSize: '12px' }}>
+                <div
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                    marginTop: '6px',
+                    fontSize: '12px',
+                  }}
+                >
                   <span style={{ color: isOverLimit ? '#ef4444' : '#6b7280', fontWeight: 500 }}>
                     {charCount} / {charLimit} characters
                   </span>
-                  <span style={{ color: activeVariant.isOverridden ? '#2563eb' : '#9ca3af', fontWeight: 500 }}>
-                    {activeVariant.isOverridden ? '⚡ Overridden from canonical' : '🔗 Inheriting canonical copy'}
+                  <span
+                    style={{
+                      color: activeVariant.isOverridden ? '#2563eb' : '#9ca3af',
+                      fontWeight: 500,
+                    }}
+                  >
+                    {activeVariant.isOverridden
+                      ? '⚡ Overridden from canonical'
+                      : '🔗 Inheriting canonical copy'}
                   </span>
                 </div>
-                <div style={{ width: '100%', height: '4px', backgroundColor: '#e5e7eb', borderRadius: '2px', marginTop: '4px', overflow: 'hidden' }}>
+                <div
+                  style={{
+                    width: '100%',
+                    height: '4px',
+                    backgroundColor: '#e5e7eb',
+                    borderRadius: '2px',
+                    marginTop: '4px',
+                    overflow: 'hidden',
+                  }}
+                >
                   <div
                     style={{
                       width: `${percentUsed}%`,
                       height: '100%',
-                      backgroundColor: isOverLimit ? '#ef4444' : percentUsed > 90 ? '#f59e0b' : '#10b981',
+                      backgroundColor: isOverLimit
+                        ? '#ef4444'
+                        : percentUsed > 90
+                          ? '#f59e0b'
+                          : '#10b981',
                       transition: 'width 0.2s ease',
                     }}
                   />
@@ -452,7 +614,15 @@ export default function SocialCommandCenter() {
                 {/* Network Specific Controls */}
                 {activeAccount.network === 'mastodon' && (
                   <div style={{ marginTop: '12px' }}>
-                    <label style={{ display: 'block', fontSize: '12px', fontWeight: 500, color: '#4b5563', marginBottom: '2px' }}>
+                    <label
+                      style={{
+                        display: 'block',
+                        fontSize: '12px',
+                        fontWeight: 500,
+                        color: '#4b5563',
+                        marginBottom: '2px',
+                      }}
+                    >
                       Content Warning / Spoiler Banner
                     </label>
                     <input
@@ -460,20 +630,41 @@ export default function SocialCommandCenter() {
                       value={contentWarning}
                       onChange={(e) => setContentWarning(e.target.value)}
                       placeholder="Optional content warning..."
-                      style={{ width: '100%', padding: '6px', borderRadius: '4px', border: '1px solid #d1d5db', fontSize: '13px', boxSizing: 'border-box' }}
+                      style={{
+                        width: '100%',
+                        padding: '6px',
+                        borderRadius: '4px',
+                        border: '1px solid #d1d5db',
+                        fontSize: '13px',
+                        boxSizing: 'border-box',
+                      }}
                     />
                   </div>
                 )}
 
                 {activeAccount.network === 'pinterest' && (
                   <div style={{ marginTop: '12px' }}>
-                    <label style={{ display: 'block', fontSize: '12px', fontWeight: 500, color: '#4b5563', marginBottom: '2px' }}>
+                    <label
+                      style={{
+                        display: 'block',
+                        fontSize: '12px',
+                        fontWeight: 500,
+                        color: '#4b5563',
+                        marginBottom: '2px',
+                      }}
+                    >
                       Destination Board ID (Required)
                     </label>
                     <select
                       value={pinterestBoardId}
                       onChange={(e) => setPinterestBoardId(e.target.value)}
-                      style={{ width: '100%', padding: '6px', borderRadius: '4px', border: '1px solid #d1d5db', fontSize: '13px' }}
+                      style={{
+                        width: '100%',
+                        padding: '6px',
+                        borderRadius: '4px',
+                        border: '1px solid #d1d5db',
+                        fontSize: '13px',
+                      }}
                     >
                       <option value="board-announcements">Announcements & Releases</option>
                       <option value="board-guides">Design Systems & Architecture</option>
@@ -483,7 +674,15 @@ export default function SocialCommandCenter() {
 
                 {activeAccount.network === 'telegram' && (
                   <div style={{ marginTop: '12px' }}>
-                    <label style={{ display: 'block', fontSize: '12px', fontWeight: 500, color: '#4b5563', marginBottom: '2px' }}>
+                    <label
+                      style={{
+                        display: 'block',
+                        fontSize: '12px',
+                        fontWeight: 500,
+                        color: '#4b5563',
+                        marginBottom: '2px',
+                      }}
+                    >
                       Telegram Target Channel or Chat ID
                     </label>
                     <input
@@ -491,14 +690,29 @@ export default function SocialCommandCenter() {
                       value={telegramChatId}
                       onChange={(e) => setTelegramChatId(e.target.value)}
                       placeholder="@renegade_channel or -100123456789"
-                      style={{ width: '100%', padding: '6px', borderRadius: '4px', border: '1px solid #d1d5db', fontSize: '13px', boxSizing: 'border-box' }}
+                      style={{
+                        width: '100%',
+                        padding: '6px',
+                        borderRadius: '4px',
+                        border: '1px solid #d1d5db',
+                        fontSize: '13px',
+                        boxSizing: 'border-box',
+                      }}
                     />
                   </div>
                 )}
 
                 {activeAccount.network === 'discord' && (
                   <div style={{ marginTop: '12px' }}>
-                    <label style={{ display: 'block', fontSize: '12px', fontWeight: 500, color: '#4b5563', marginBottom: '2px' }}>
+                    <label
+                      style={{
+                        display: 'block',
+                        fontSize: '12px',
+                        fontWeight: 500,
+                        color: '#4b5563',
+                        marginBottom: '2px',
+                      }}
+                    >
                       Discord Webhook URL or Target Channel
                     </label>
                     <input
@@ -506,7 +720,14 @@ export default function SocialCommandCenter() {
                       value={discordWebhookUrl}
                       onChange={(e) => setDiscordWebhookUrl(e.target.value)}
                       placeholder="https://discord.com/api/webhooks/..."
-                      style={{ width: '100%', padding: '6px', borderRadius: '4px', border: '1px solid #d1d5db', fontSize: '13px', boxSizing: 'border-box' }}
+                      style={{
+                        width: '100%',
+                        padding: '6px',
+                        borderRadius: '4px',
+                        border: '1px solid #d1d5db',
+                        fontSize: '13px',
+                        boxSizing: 'border-box',
+                      }}
                     />
                   </div>
                 )}
@@ -518,18 +739,47 @@ export default function SocialCommandCenter() {
         {/* Right Column: Fidelity Preview & Validation Checklist */}
         <div>
           {/* Preflight Validation Banner */}
-          <div style={{ backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e5e7eb', padding: '16px', marginBottom: '20px' }}>
-            <h3 style={{ fontSize: '14px', fontWeight: 600, color: '#111827', margin: '0 0 10px 0' }}>
+          <div
+            style={{
+              backgroundColor: '#ffffff',
+              borderRadius: '12px',
+              border: '1px solid #e5e7eb',
+              padding: '16px',
+              marginBottom: '20px',
+            }}
+          >
+            <h3
+              style={{ fontSize: '14px', fontWeight: 600, color: '#111827', margin: '0 0 10px 0' }}
+            >
               Pre-Flight Validation Gates
             </h3>
             {validationFindings.blockers.length === 0 ? (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#059669', fontSize: '13px', fontWeight: 500 }}>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  color: '#059669',
+                  fontSize: '13px',
+                  fontWeight: 500,
+                }}
+              >
                 <span>✓</span> All target network requirements satisfied! Ready for dispatch.
               </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 {validationFindings.blockers.map((blocker, idx) => (
-                  <div key={idx} style={{ display: 'flex', alignItems: 'center', gap: '6px', color: '#dc2626', fontSize: '12px', fontWeight: 500 }}>
+                  <div
+                    key={idx}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      color: '#dc2626',
+                      fontSize: '12px',
+                      fontWeight: 500,
+                    }}
+                  >
                     <span>⚠</span> {blocker}
                   </div>
                 ))}
@@ -538,9 +788,30 @@ export default function SocialCommandCenter() {
           </div>
 
           {/* Live Fidelity Preview Card */}
-          <div style={{ backgroundColor: '#ffffff', borderRadius: '12px', border: '1px solid #e5e7eb', padding: '16px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
-              <span style={{ fontSize: '13px', fontWeight: 600, color: '#374151', textTransform: 'uppercase' }}>
+          <div
+            style={{
+              backgroundColor: '#ffffff',
+              borderRadius: '12px',
+              border: '1px solid #e5e7eb',
+              padding: '16px',
+            }}
+          >
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '12px',
+              }}
+            >
+              <span
+                style={{
+                  fontSize: '13px',
+                  fontWeight: 600,
+                  color: '#374151',
+                  textTransform: 'uppercase',
+                }}
+              >
                 Live {activeAccount.network.toUpperCase()} Preview
               </span>
               <span style={{ fontSize: '11px', color: '#9ca3af' }}>Client Rendering Fidelity</span>
@@ -559,13 +830,33 @@ export default function SocialCommandCenter() {
               }}
             >
               {/* Header */}
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}>
-                <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: '#3b82f6', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#fff', fontWeight: 'bold', fontSize: '14px' }}>
+              <div
+                style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '10px' }}
+              >
+                <div
+                  style={{
+                    width: '36px',
+                    height: '36px',
+                    borderRadius: '50%',
+                    backgroundColor: '#3b82f6',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    color: '#fff',
+                    fontWeight: 'bold',
+                    fontSize: '14px',
+                  }}
+                >
                   R
                 </div>
                 <div>
                   <div style={{ fontWeight: 'bold', fontSize: '13px' }}>Renegade CMoS</div>
-                  <div style={{ fontSize: '11px', color: activeAccount.network === 'x' ? '#71767b' : '#64748b' }}>
+                  <div
+                    style={{
+                      fontSize: '11px',
+                      color: activeAccount.network === 'x' ? '#71767b' : '#64748b',
+                    }}
+                  >
                     {activeAccount.handle} · Just now
                   </div>
                 </div>
@@ -573,7 +864,17 @@ export default function SocialCommandCenter() {
 
               {/* Spoiler Banner for Mastodon */}
               {activeAccount.network === 'mastodon' && contentWarning && (
-                <div style={{ padding: '6px 8px', backgroundColor: '#f1f5f9', borderRadius: '4px', marginBottom: '8px', fontSize: '12px', fontWeight: 600, color: '#334155' }}>
+                <div
+                  style={{
+                    padding: '6px 8px',
+                    backgroundColor: '#f1f5f9',
+                    borderRadius: '4px',
+                    marginBottom: '8px',
+                    fontSize: '12px',
+                    fontWeight: 600,
+                    color: '#334155',
+                  }}
+                >
                   CW: {contentWarning}
                 </div>
               )}
@@ -585,7 +886,14 @@ export default function SocialCommandCenter() {
 
               {/* Media Preview */}
               {imageUrl && (
-                <div style={{ borderRadius: '6px', overflow: 'hidden', border: '1px solid #cbd5e1', marginBottom: '8px' }}>
+                <div
+                  style={{
+                    borderRadius: '6px',
+                    overflow: 'hidden',
+                    border: '1px solid #cbd5e1',
+                    marginBottom: '8px',
+                  }}
+                >
                   <img
                     src={imageUrl}
                     alt="Preview"
@@ -600,7 +908,16 @@ export default function SocialCommandCenter() {
               )}
 
               {/* Action Bar Simulation */}
-              <div style={{ display: 'flex', justifyContent: 'space-around', paddingTop: '8px', borderTop: '1px solid #f1f5f9', fontSize: '12px', color: '#94a3b8' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-around',
+                  paddingTop: '8px',
+                  borderTop: '1px solid #f1f5f9',
+                  fontSize: '12px',
+                  color: '#94a3b8',
+                }}
+              >
                 <span>💬 Reply</span>
                 <span>🔁 Repost</span>
                 <span>❤️ Like</span>

@@ -82,18 +82,24 @@ export function ScheduleHealthCenter() {
     }
   }
 
-  const filteredJobs = data?.jobs.filter((j) => {
-    if (filter === 'all') return true
-    if (filter === 'late') return j.status === 'late'
-    return j.rawStatus === filter
-  }) ?? []
+  const filteredJobs =
+    data?.jobs.filter((j) => {
+      if (filter === 'all') return true
+      if (filter === 'late') return j.status === 'late'
+      return j.rawStatus === filter
+    }) ?? []
 
   return (
     <div className="space-y-6 font-sans">
       <header className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-stone-200 dark:border-stone-800">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-100">Schedule Health Center</h1>
-          <p className="text-sm text-stone-500">Operational queue visibility, worker lease health, retry controls, and revision integrity.</p>
+          <h1 className="text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-100">
+            Schedule Health Center
+          </h1>
+          <p className="text-sm text-stone-500">
+            Operational queue visibility, worker lease health, retry controls, and revision
+            integrity.
+          </p>
         </div>
         <div className="flex gap-2">
           <button
@@ -130,7 +136,9 @@ export function ScheduleHealthCenter() {
           <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400 capitalize">
             {data?.workerHealth.status ?? 'Unknown'}
           </span>
-          <span className="text-[10px] text-stone-400 block mt-1">Node: {data?.workerHealth.activeWorkerId}</span>
+          <span className="text-[10px] text-stone-400 block mt-1">
+            Node: {data?.workerHealth.activeWorkerId}
+          </span>
         </div>
 
         <div className="p-4 rounded-lg bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800">
@@ -142,14 +150,18 @@ export function ScheduleHealthCenter() {
 
         <div className="p-4 rounded-lg bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800">
           <span className="text-xs text-stone-500 block">Late / Overdue</span>
-          <span className={`text-xl font-bold ${(data?.counts.lateJobs ?? 0) > 0 ? 'text-amber-600' : 'text-stone-800 dark:text-stone-200'}`}>
+          <span
+            className={`text-xl font-bold ${(data?.counts.lateJobs ?? 0) > 0 ? 'text-amber-600' : 'text-stone-800 dark:text-stone-200'}`}
+          >
             {data?.counts.lateJobs ?? 0}
           </span>
         </div>
 
         <div className="p-4 rounded-lg bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800">
           <span className="text-xs text-stone-500 block">Retrying / Failed</span>
-          <span className={`text-xl font-bold ${(data?.counts.failedJobs ?? 0) > 0 ? 'text-rose-600' : 'text-stone-800 dark:text-stone-200'}`}>
+          <span
+            className={`text-xl font-bold ${(data?.counts.failedJobs ?? 0) > 0 ? 'text-rose-600' : 'text-stone-800 dark:text-stone-200'}`}
+          >
             {(data?.counts.retryingJobs ?? 0) + (data?.counts.failedJobs ?? 0)}
           </span>
         </div>
@@ -169,7 +181,9 @@ export function ScheduleHealthCenter() {
             key={tab}
             onClick={() => setFilter(tab)}
             className={`px-3 py-1.5 text-xs font-semibold rounded-md capitalize transition ${
-              filter === tab ? 'bg-stone-800 text-white' : 'text-stone-600 hover:bg-stone-100 dark:hover:bg-stone-800'
+              filter === tab
+                ? 'bg-stone-800 text-white'
+                : 'text-stone-600 hover:bg-stone-100 dark:hover:bg-stone-800'
             }`}
           >
             {tab}
@@ -193,17 +207,23 @@ export function ScheduleHealthCenter() {
           <tbody className="divide-y divide-stone-200 dark:divide-stone-800">
             {loading ? (
               <tr>
-                <td colSpan={6} className="p-6 text-center text-stone-400">Loading schedule health...</td>
+                <td colSpan={6} className="p-6 text-center text-stone-400">
+                  Loading schedule health...
+                </td>
               </tr>
             ) : filteredJobs.length === 0 ? (
               <tr>
-                <td colSpan={6} className="p-6 text-center text-stone-400">No scheduled publish jobs matching filter.</td>
+                <td colSpan={6} className="p-6 text-center text-stone-400">
+                  No scheduled publish jobs matching filter.
+                </td>
               </tr>
             ) : (
               filteredJobs.map((job) => (
                 <tr key={job.id} className="hover:bg-stone-50/50 dark:hover:bg-stone-900/50">
                   <td className="p-3 font-medium">
-                    <div className="text-stone-900 dark:text-stone-100 font-bold">{job.articleTitle}</div>
+                    <div className="text-stone-900 dark:text-stone-100 font-bold">
+                      {job.articleTitle}
+                    </div>
                     <div className="text-[10px] text-stone-400 font-mono">ID: {job.articleId}</div>
                   </td>
 
@@ -211,12 +231,20 @@ export function ScheduleHealthCenter() {
                     <span className="px-1.5 py-0.5 rounded bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300">
                       Seq #{job.revisionSequence}
                     </span>
-                    <div className="text-[10px] text-stone-400 mt-0.5">{job.revisionHash ? `Hash: ${job.revisionHash.slice(0, 8)}...` : 'Rev: ' + job.revisionId}</div>
+                    <div className="text-[10px] text-stone-400 mt-0.5">
+                      {job.revisionHash
+                        ? `Hash: ${job.revisionHash.slice(0, 8)}...`
+                        : 'Rev: ' + job.revisionId}
+                    </div>
                   </td>
 
                   <td className="p-3">
-                    <div className="font-semibold text-stone-800 dark:text-stone-200">{new Date(job.scheduledFor).toLocaleString()}</div>
-                    <div className="text-[10px] text-stone-400 font-mono">{job.scheduledFor} ({job.timeZone})</div>
+                    <div className="font-semibold text-stone-800 dark:text-stone-200">
+                      {new Date(job.scheduledFor).toLocaleString()}
+                    </div>
+                    <div className="text-[10px] text-stone-400 font-mono">
+                      {job.scheduledFor} ({job.timeZone})
+                    </div>
                   </td>
 
                   <td className="p-3">
@@ -225,20 +253,25 @@ export function ScheduleHealthCenter() {
                         job.status === 'completed'
                           ? 'bg-emerald-100 text-emerald-800'
                           : job.status === 'late'
-                          ? 'bg-amber-100 text-amber-800'
-                          : job.status === 'failed'
-                          ? 'bg-rose-100 text-rose-800'
-                          : 'bg-blue-100 text-blue-800'
+                            ? 'bg-amber-100 text-amber-800'
+                            : job.status === 'failed'
+                              ? 'bg-rose-100 text-rose-800'
+                              : 'bg-blue-100 text-blue-800'
                       }`}
                     >
                       {job.status}
                     </span>
-                    <div className="text-[10px] text-stone-400 mt-1">Retries: {job.retryCount}/{job.maxRetries}</div>
+                    <div className="text-[10px] text-stone-400 mt-1">
+                      Retries: {job.retryCount}/{job.maxRetries}
+                    </div>
                   </td>
 
                   <td className="p-3 max-w-xs truncate text-stone-600 dark:text-stone-400 font-mono text-[10px]">
                     {job.lastError ? (
-                      <span className="text-rose-600 dark:text-rose-400 font-sans block text-xs" title={job.lastError}>
+                      <span
+                        className="text-rose-600 dark:text-rose-400 font-sans block text-xs"
+                        title={job.lastError}
+                      >
                         ⚠️ {job.lastError}
                       </span>
                     ) : (

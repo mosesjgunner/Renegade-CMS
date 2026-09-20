@@ -1,7 +1,11 @@
 import type { Payload } from 'payload'
 import { loadBundleByArticleId, persistWorkflow, hydrateWorkflow } from './persistence'
 import type { EditorialActor } from './workflow'
-import { assertMediaIdsPublishable, assertUsageTargetsPublishable, reconcileMediaUsages } from '../media/workflow'
+import {
+  assertMediaIdsPublishable,
+  assertUsageTargetsPublishable,
+  reconcileMediaUsages,
+} from '../media/workflow'
 
 export type CatchUpPolicyMode = 'publish-immediately' | 'expire-and-fail' | 'manual-reconcile'
 
@@ -50,9 +54,15 @@ const idOf = (value: unknown): string => {
 export function sanitizeErrorLog(errorStr: string | null | undefined): string | null {
   if (!errorStr) return null
   return errorStr
-    .replace(/(?:postgres|mysql|mongodb|redis|http|https):\/\/[^\s@]+@/gi, 'scheme://***REDACTED***@')
+    .replace(
+      /(?:postgres|mysql|mongodb|redis|http|https):\/\/[^\s@]+@/gi,
+      'scheme://***REDACTED***@',
+    )
     .replace(/(?:bearer|token|secret|password|key|auth)=["']?[^"'\s]+["']?/gi, '$1=***REDACTED***')
-    .replace(/["']?(?:secret|password|privateKey|accessToken|apiKey)["']?\s*:\s*["']?[^"'\s,]+["']?/gi, '"secret":"***REDACTED***"')
+    .replace(
+      /["']?(?:secret|password|privateKey|accessToken|apiKey)["']?\s*:\s*["']?[^"'\s,]+["']?/gi,
+      '"secret":"***REDACTED***"',
+    )
 }
 
 /**
@@ -94,7 +104,12 @@ export async function executeScheduledPublishJob(
   // Check active lease from another live worker
   if (job.status === 'processing' && job.leaseOwner && job.leaseOwner !== options.workerId) {
     if (job.leaseExpiresAt && new Date(job.leaseExpiresAt).getTime() > nowMs) {
-      return { success: false, published: false, catchUpTriggered: false, error: `Job is leased by worker "${job.leaseOwner}"` }
+      return {
+        success: false,
+        published: false,
+        catchUpTriggered: false,
+        error: `Job is leased by worker "${job.leaseOwner}"`,
+      }
     }
   }
 
@@ -102,7 +117,12 @@ export async function executeScheduledPublishJob(
   const scheduledTimeMs = new Date(job.scheduledFor).getTime()
   const clockDriftBufferMs = 30 * 1000
   if (nowMs < scheduledTimeMs - clockDriftBufferMs) {
-    return { success: false, published: false, catchUpTriggered: false, error: 'Schedule window not yet reached' }
+    return {
+      success: false,
+      published: false,
+      catchUpTriggered: false,
+      error: 'Schedule window not yet reached',
+    }
   }
 
   // Check catch-up policy if job is late
@@ -163,7 +183,9 @@ export async function executeScheduledPublishJob(
     const workflow = hydrateWorkflow(bundle)
 
     const published = workflow.publishScheduled(actor, String(job.idempotencyKey), nowIso)
-    const latestPublishedRevisionId = published ? scheduledRevisionId : idOf(bundle.article.latestPublishedRevision)
+    const latestPublishedRevisionId = published
+      ? scheduledRevisionId
+      : idOf(bundle.article.latestPublishedRevision)
 
     await persistWorkflow(payload, bundle, workflow, {
       reason: 'published',

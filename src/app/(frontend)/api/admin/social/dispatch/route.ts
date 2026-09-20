@@ -36,15 +36,19 @@ export async function POST(request: Request) {
     }
 
     if (!body.baseCopy && !body.variants?.length) {
-      return NextResponse.json({ error: 'Post must contain base copy or variants.' }, { status: 400 })
+      return NextResponse.json(
+        { error: 'Post must contain base copy or variants.' },
+        { status: 400 },
+      )
     }
 
-    const targets = body.variants?.map((v) => ({
-      accountId: v.accountId,
-      network: v.network,
-      customCopy: v.isOverridden ? v.customCopy : undefined,
-      platformSettings: v.platformSettings,
-    })) || []
+    const targets =
+      body.variants?.map((v) => ({
+        accountId: v.accountId,
+        network: v.network,
+        customCopy: v.isOverridden ? v.customCopy : undefined,
+        platformSettings: v.platformSettings,
+      })) || []
 
     const post: CanonicalSocialPost = createCanonicalSocialPost({
       id: `post_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,

@@ -239,10 +239,7 @@ export default function EditorialWorkflowCenter() {
         action,
         comment: actionComment,
         reason: emergencyReason,
-        update:
-          action === 'reassign'
-            ? { editorId: 'unassigned', priority: 'normal' }
-            : undefined,
+        update: action === 'reassign' ? { editorId: 'unassigned', priority: 'normal' } : undefined,
       }
 
       const res = await fetch('/api/admin/workflow/actions', {

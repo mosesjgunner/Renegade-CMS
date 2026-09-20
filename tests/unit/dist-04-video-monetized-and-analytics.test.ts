@@ -3,7 +3,12 @@ import { YouTubeAdapter } from '@/modules/social/adapters/youtube'
 import { TikTokAdapter } from '@/modules/social/adapters/tiktok'
 import { XAdapter } from '@/modules/social/adapters/x'
 import { aggregateAnalytics, SocialAnalyticsCollector } from '@/modules/social/analytics'
-import type { SocialVariant, MediaResolver, AuthContext, NormalizedAnalytics } from '@/modules/social/contracts'
+import type {
+  SocialVariant,
+  MediaResolver,
+  AuthContext,
+  NormalizedAnalytics,
+} from '@/modules/social/contracts'
 
 function createTestVariant(overrides: Partial<SocialVariant> = {}): SocialVariant {
   return {
@@ -84,7 +89,10 @@ describe('Pass DIST-04: Video Pipelines, Monetized APIs & Unified Analytics', ()
         if (url.includes('uploadType=resumable')) {
           return new Response(null, {
             status: 200,
-            headers: { Location: 'https://www.googleapis.com/upload/youtube/v3/videos?upload_id=session_abc123' },
+            headers: {
+              Location:
+                'https://www.googleapis.com/upload/youtube/v3/videos?upload_id=session_abc123',
+            },
           })
         }
         if (url.includes('upload_id=session_abc123')) {
@@ -224,7 +232,8 @@ describe('Pass DIST-04: Video Pipelines, Monetized APIs & Unified Analytics', ()
 
     it('applies 23-character t.co weighting for URLs and validates character ceilings', () => {
       // "Check this out: " (16 chars) + long URL (23 chars on X) = 39 chars
-      const textWithUrl = 'Check this out: https://very-long-subdomain.renegade.media/articles/2026/09/special-report-volume-1'
+      const textWithUrl =
+        'Check this out: https://very-long-subdomain.renegade.media/articles/2026/09/special-report-volume-1'
       const weight = adapter.calculateEffectiveCharacters(textWithUrl)
       expect(weight).toBe(16 + 23)
 
@@ -244,7 +253,9 @@ describe('Pass DIST-04: Video Pipelines, Monetized APIs & Unified Analytics', ()
         calls.push(`${init?.method} ${url}`)
         if (url.includes('upload.twitter.com/1.1/media/upload.json')) {
           if (url.includes('command=INIT')) {
-            return new Response(JSON.stringify({ media_id_string: 'x_media_4444' }), { status: 200 })
+            return new Response(JSON.stringify({ media_id_string: 'x_media_4444' }), {
+              status: 200,
+            })
           }
           if (init?.method === 'POST' && !url.includes('command=FINALIZE')) {
             return new Response(null, { status: 204 }) // APPEND
@@ -300,7 +311,10 @@ describe('Pass DIST-04: Video Pipelines, Monetized APIs & Unified Analytics', ()
 
   describe('Unified Social Analytics Ingestion', () => {
     it('aggregates metrics and computes engagement rate accurately across networks', () => {
-      const reports: Array<{ network: 'mastodon' | 'linkedin' | 'x'; analytics: NormalizedAnalytics }> = [
+      const reports: Array<{
+        network: 'mastodon' | 'linkedin' | 'x'
+        analytics: NormalizedAnalytics
+      }> = [
         {
           network: 'mastodon',
           analytics: {

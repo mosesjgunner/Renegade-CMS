@@ -53,7 +53,11 @@ export function acquireWorkerLease(
     if (expiresAt <= now) {
       activeLeases.delete(jobId)
     } else if (existing.leaseOwner !== workerId) {
-      return { acquired: false, existingOwner: existing.leaseOwner, leaseExpiresAt: existing.leaseExpiresAt }
+      return {
+        acquired: false,
+        existingOwner: existing.leaseOwner,
+        leaseExpiresAt: existing.leaseExpiresAt,
+      }
     }
   }
 
@@ -250,7 +254,9 @@ export async function executeVariantDelivery(
 
     // Handle failure scenarios
     const errorKind = publishResult.error?.kind || 'transient'
-    const errorMessage = sanitizeSocialLog(publishResult.error?.message || 'Unknown publishing error')
+    const errorMessage = sanitizeSocialLog(
+      publishResult.error?.message || 'Unknown publishing error',
+    )
 
     delivery.lastError = errorMessage
 
@@ -278,7 +284,12 @@ export async function executeVariantDelivery(
     if (errorKind === 'rate-limit') {
       const retryMs = publishResult.error?.retryAfter
         ? Date.parse(publishResult.error.retryAfter) - Date.now()
-        : calculateExponentialBackoff(delivery.attemptCount, options.baseBackoffMs, options.maxBackoffMs, options.enableJitter)
+        : calculateExponentialBackoff(
+            delivery.attemptCount,
+            options.baseBackoffMs,
+            options.maxBackoffMs,
+            options.enableJitter,
+          )
 
       const nextRetryAt = new Date(Date.now() + Math.max(1000, retryMs)).toISOString()
       delivery.status = 'retrying'
@@ -352,7 +363,11 @@ export async function executeVariantDelivery(
     delivery.lastError = errorMsg
 
     if (delivery.attemptCount < delivery.maxRetries) {
-      const delayMs = calculateExponentialBackoff(delivery.attemptCount, options.baseBackoffMs, options.maxBackoffMs)
+      const delayMs = calculateExponentialBackoff(
+        delivery.attemptCount,
+        options.baseBackoffMs,
+        options.maxBackoffMs,
+      )
       delivery.status = 'retrying'
       variant.status = 'retrying'
       delivery.nextRetryAt = new Date(Date.now() + delayMs).toISOString()

@@ -3,7 +3,10 @@ import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import { convertLocalToUtc } from '@/modules/calendar/timezone'
 import { evaluateScheduleRules } from '@/modules/calendar/dependencies'
-import { scheduleEditorialPublication, cancelScheduledPublication } from '@/modules/editorial/persistence'
+import {
+  scheduleEditorialPublication,
+  cancelScheduledPublication,
+} from '@/modules/editorial/persistence'
 import type { EditorialActor } from '@/modules/editorial/workflow'
 
 type Doc = Record<string, any>
@@ -53,7 +56,10 @@ export async function POST(req: NextRequest) {
 
     if (action === 'schedule' || action === 'reschedule') {
       if (!startsAt) {
-        return NextResponse.json({ error: 'startsAt is required for schedule/reschedule.' }, { status: 400 })
+        return NextResponse.json(
+          { error: 'startsAt is required for schedule/reschedule.' },
+          { status: 400 },
+        )
       }
 
       // 1. Timezone conversion with DST handling
@@ -72,7 +78,10 @@ export async function POST(req: NextRequest) {
         })) as Doc
 
         if (!article) {
-          return NextResponse.json({ error: `Article "${sourceId}" was not found.` }, { status: 404 })
+          return NextResponse.json(
+            { error: `Article "${sourceId}" was not found.` },
+            { status: 404 },
+          )
         }
 
         // Optimistic concurrency protection
@@ -130,7 +139,11 @@ export async function POST(req: NextRequest) {
             action: action === 'reschedule' ? 'calendar.rescheduled' : 'calendar.scheduled',
             actor: actorUserId,
             before: { scheduledFor: article.scheduledFor, timeZone: article.timeZone },
-            after: { scheduledFor: tzResult.utcInstant, timeZone: tzResult.timeZone, localFormatted: tzResult.localFormatted },
+            after: {
+              scheduledFor: tzResult.utcInstant,
+              timeZone: tzResult.timeZone,
+              localFormatted: tzResult.localFormatted,
+            },
             createdAt: new Date().toISOString(),
           },
           overrideAccess: true,
@@ -148,8 +161,14 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    return NextResponse.json({ error: `Unsupported action "${action}" or sourceType "${sourceType}".` }, { status: 400 })
+    return NextResponse.json(
+      { error: `Unsupported action "${action}" or sourceType "${sourceType}".` },
+      { status: 400 },
+    )
   } catch (error) {
-    return NextResponse.json({ error: error instanceof Error ? error.message : String(error) }, { status: 500 })
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : String(error) },
+      { status: 500 },
+    )
   }
 }

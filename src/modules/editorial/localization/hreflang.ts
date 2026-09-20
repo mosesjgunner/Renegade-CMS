@@ -25,9 +25,7 @@ export function computeHreflangAlternates(
   const currentVariant = group.variants[currentLocale]
 
   if (!currentVariant) {
-    throw new Error(
-      `Locale '${currentLocale}' not found in TranslationGroup '${group.id}'`,
-    )
+    throw new Error(`Locale '${currentLocale}' not found in TranslationGroup '${group.id}'`)
   }
 
   const canonicalUrl = currentVariant.canonicalUrl.startsWith('http')
@@ -66,7 +64,10 @@ export function computeHreflangAlternates(
 
   // x-default: points to source locale if approved/published, else the first approved variant
   const sourceVariant = group.variants[group.sourceLocale]
-  if (sourceVariant && (sourceVariant.status === 'approved' || sourceVariant.status === 'published')) {
+  if (
+    sourceVariant &&
+    (sourceVariant.status === 'approved' || sourceVariant.status === 'published')
+  ) {
     const sourceUrl = sourceVariant.canonicalUrl.startsWith('http')
       ? sourceVariant.canonicalUrl
       : `${cleanBase}${sourceVariant.canonicalPath.startsWith('/') ? sourceVariant.canonicalPath : `/${sourceVariant.canonicalPath}`}`

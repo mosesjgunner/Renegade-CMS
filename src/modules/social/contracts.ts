@@ -139,7 +139,12 @@ export interface ProviderCapabilities {
     aspectRatios: {
       minRatio: number
       maxRatio: number
-      strictStandard?: 'VERTICAL_9_16' | 'SQUARE_1_1' | 'LANDSCAPE_16_9' | 'VERTICAL_2_3' | 'PORTRAIT_4_5'
+      strictStandard?:
+        | 'VERTICAL_9_16'
+        | 'SQUARE_1_1'
+        | 'LANDSCAPE_16_9'
+        | 'VERTICAL_2_3'
+        | 'PORTRAIT_4_5'
       preferred?: string
     }
   }
@@ -216,7 +221,9 @@ export interface AuthContext {
 
 export interface MediaResolver {
   resolveUrl(mediaAssetId: string): Promise<string>
-  resolveBuffer(mediaAssetId: string): Promise<{ buffer: Buffer; mimeType: string; fileName: string }>
+  resolveBuffer(
+    mediaAssetId: string,
+  ): Promise<{ buffer: Buffer; mimeType: string; fileName: string }>
 }
 
 export interface NormalizedRemotePost {
@@ -255,14 +262,20 @@ export interface SocialProviderAdapter {
   // Publishing
   publish?(
     variant: SocialVariant,
-    context?: AuthContext | Readonly<{ accountId: string; credentials: Record<string, string> | null }>,
+    context?:
+      | AuthContext
+      | Readonly<{ accountId: string; credentials: Record<string, string> | null }>,
     mediaService?: MediaResolver,
   ): Promise<AdapterResult>
 
   // Post-publication operations
   fetchPost?(remotePostId: string, authContext: AuthContext): Promise<NormalizedRemotePost>
   deletePost?(remotePostId: string, authContext: AuthContext): Promise<void>
-  editPost?(remotePostId: string, variant: SocialVariant, authContext: AuthContext): Promise<DeliveryReceipt>
+  editPost?(
+    remotePostId: string,
+    variant: SocialVariant,
+    authContext: AuthContext,
+  ): Promise<DeliveryReceipt>
 
   // Telemetry
   fetchAnalytics?(remotePostId: string, authContext: AuthContext): Promise<NormalizedAnalytics>

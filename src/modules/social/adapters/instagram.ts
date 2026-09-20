@@ -186,7 +186,9 @@ export class InstagramAdapter implements SocialProviderAdapter {
 
   async publish(
     variant: SocialVariant,
-    context?: AuthContext | Readonly<{ accountId: string; credentials: Record<string, string> | null }>,
+    context?:
+      | AuthContext
+      | Readonly<{ accountId: string; credentials: Record<string, string> | null }>,
     mediaResolver?: MediaResolver,
   ): Promise<AdapterResult> {
     const auth = context as AuthContext | undefined
@@ -343,7 +345,12 @@ export class InstagramAdapter implements SocialProviderAdapter {
     })
 
     if (!res.ok) throw new Error(`Failed to fetch Instagram media: HTTP ${res.status}`)
-    const data = (await res.json()) as { id: string; caption?: string; timestamp: string; permalink: string }
+    const data = (await res.json()) as {
+      id: string
+      caption?: string
+      timestamp: string
+      permalink: string
+    }
 
     return {
       remoteId: data.id,
@@ -353,7 +360,10 @@ export class InstagramAdapter implements SocialProviderAdapter {
     }
   }
 
-  async fetchAnalytics(remotePostId: string, authContext: AuthContext): Promise<NormalizedAnalytics> {
+  async fetchAnalytics(
+    remotePostId: string,
+    authContext: AuthContext,
+  ): Promise<NormalizedAnalytics> {
     const accessToken = authContext.credentials?.accessToken || authContext.tokens?.accessToken
     const endpoint = `https://graph.facebook.com/v20.0/${remotePostId}/insights?metric=impressions,reach,likes,comments,shares,saved`
 
@@ -391,7 +401,8 @@ export class InstagramAdapter implements SocialProviderAdapter {
         comments,
         shares,
         saves,
-        engagementRate: impressions > 0 ? ((likes + comments + shares + saves) / impressions) * 100 : 0,
+        engagementRate:
+          impressions > 0 ? ((likes + comments + shares + saves) / impressions) * 100 : 0,
       },
       rawPlatformMetrics: data as Record<string, unknown>,
     }

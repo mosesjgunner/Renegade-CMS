@@ -59,7 +59,10 @@ export async function POST(request: Request) {
       actorRole = 'author'
     }
 
-    const actorId = (userRoleStr === 'owner' || userRoleStr === 'administrator') && body.reviewerId ? body.reviewerId : String(auth.user.id)
+    const actorId =
+      (userRoleStr === 'owner' || userRoleStr === 'administrator') && body.reviewerId
+        ? body.reviewerId
+        : String(auth.user.id)
 
     const item = await executeWorkflowAction(payload, {
       articleId: body.articleId,
@@ -76,10 +79,16 @@ export async function POST(request: Request) {
     return NextResponse.json({ item })
   } catch (error) {
     if (error instanceof WorkflowPermissionError) {
-      return NextResponse.json({ error: error.message, code: 'WORKFLOW_PERMISSION_DENIED' }, { status: 403 })
+      return NextResponse.json(
+        { error: error.message, code: 'WORKFLOW_PERMISSION_DENIED' },
+        { status: 403 },
+      )
     }
     if (error instanceof WorkflowStateError) {
-      return NextResponse.json({ error: error.message, code: 'WORKFLOW_STATE_INVALID' }, { status: 422 })
+      return NextResponse.json(
+        { error: error.message, code: 'WORKFLOW_STATE_INVALID' },
+        { status: 422 },
+      )
     }
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Failed to execute workflow action.' },

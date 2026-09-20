@@ -184,11 +184,7 @@ export class EditorialWorkflow {
     const now = options?.now ?? new Date().toISOString()
 
     const decision: 'approved' | 'rejected' | 'changes-requested' =
-      typeof approved === 'boolean'
-        ? approved
-          ? 'approved'
-          : 'rejected'
-        : approved
+      typeof approved === 'boolean' ? (approved ? 'approved' : 'rejected') : approved
 
     if (
       decision === 'approved' &&

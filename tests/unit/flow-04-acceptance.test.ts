@@ -19,7 +19,7 @@ function createAcceptanceMockPayload() {
     'article-family-content': {},
     'page-layouts': {},
     'public-redirects': {},
-    'products': {},
+    products: {},
     'quality-issues': {},
     'payload-jobs': {},
   }
@@ -28,7 +28,8 @@ function createAcceptanceMockPayload() {
 
   const payload: any = {
     create: async ({ collection, data }: { collection: string; data: MockDoc }) => {
-      const id = data.id || `mock-${collection}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`
+      const id =
+        data.id || `mock-${collection}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`
       const doc = { ...data, id }
       if (!store[collection]) store[collection] = {}
       store[collection][id] = doc
@@ -59,15 +60,7 @@ function createAcceptanceMockPayload() {
       })
       return { docs: filtered }
     },
-    update: async ({
-      collection,
-      id,
-      data,
-    }: {
-      collection: string
-      id: string
-      data: MockDoc
-    }) => {
+    update: async ({ collection, id, data }: { collection: string; id: string; data: MockDoc }) => {
       if (!store[collection]) store[collection] = {}
       const existing = store[collection][id] || { id }
       const updated = { ...existing, ...data }
@@ -152,7 +145,10 @@ describe('FLOW-04 Coordinated Release Workflow End-to-End Acceptance Scenario', 
         blocks: [{ blockType: 'nav-header', links: ['Home', 'Spring Specials', 'About'] }],
         revisionHistory: [
           { revision: 2, blocks: [{ blockType: 'nav-header', links: ['Home', 'About'] }] },
-          { revision: 3, blocks: [{ blockType: 'nav-header', links: ['Home', 'Spring Specials', 'About'] }] },
+          {
+            revision: 3,
+            blocks: [{ blockType: 'nav-header', links: ['Home', 'Spring Specials', 'About'] }],
+          },
         ],
       },
     })
@@ -162,7 +158,8 @@ describe('FLOW-04 Coordinated Release Workflow End-to-End Acceptance Scenario', 
     // -------------------------------------------------------------------------
     const release = await createRelease(payload, {
       name: 'Spring 2026 Coordinated Campaign',
-      purpose: 'Launch multiple articles, new landing page, updated global navigation, media, and redirects',
+      purpose:
+        'Launch multiple articles, new landing page, updated global navigation, media, and redirects',
       ownerId: 'user-publisher-1',
       ownerTeam: 'Marketing & Editorial Ops',
       siteId: 'site-demo',
@@ -276,7 +273,10 @@ describe('FLOW-04 Coordinated Release Workflow End-to-End Acceptance Scenario', 
       'user-publisher-1',
     )
 
-    const releaseWithArtifacts = await payload.findByID({ collection: 'content-releases', id: release.id })
+    const releaseWithArtifacts = await payload.findByID({
+      collection: 'content-releases',
+      id: release.id,
+    })
     expect(releaseWithArtifacts.artifacts).toHaveLength(6)
     expect(releaseWithArtifacts.releaseRevision).toBe(7)
 
@@ -290,7 +290,8 @@ describe('FLOW-04 Coordinated Release Workflow End-to-End Acceptance Scenario', 
         targetId: 'post-spring-launch',
         severity: 'publication_blocking',
         status: 'open',
-        message: 'Mandatory environmental sustainability disclosures missing in product claims section.',
+        message:
+          'Mandatory environmental sustainability disclosures missing in product claims section.',
       },
     })
 
@@ -332,7 +333,8 @@ describe('FLOW-04 Coordinated Release Workflow End-to-End Acceptance Scenario', 
     // Authorized publisher grants waiver
     const waivedSnapshot = await waiveGateRule(payload, release.id, {
       ruleId: 'rule-quality-center',
-      reason: 'Temporary waiver authorized by Chief Compliance Officer for timed press release embargo',
+      reason:
+        'Temporary waiver authorized by Chief Compliance Officer for timed press release embargo',
       expiresAt: '2026-11-01T00:00:00.000Z',
       actor: { id: 'user-publisher-1', role: 'publisher' },
     })
@@ -399,11 +401,16 @@ describe('FLOW-04 Coordinated Release Workflow End-to-End Acceptance Scenario', 
     expect(firstRun.failedSteps).toHaveLength(1)
     expect(firstRun.failedSteps[0].error).toContain('Database deadlock')
 
-    const intermediateRelease = await payload.findByID({ collection: 'content-releases', id: release.id })
+    const intermediateRelease = await payload.findByID({
+      collection: 'content-releases',
+      id: release.id,
+    })
     expect(intermediateRelease.status).toBe('partially-failed')
 
     // Verify the 5 successful steps are marked succeeded
-    const succeededItems = intermediateRelease.artifacts.filter((a: any) => a.status === 'succeeded')
+    const succeededItems = intermediateRelease.artifacts.filter(
+      (a: any) => a.status === 'succeeded',
+    )
     expect(succeededItems).toHaveLength(5)
     const failedItems = intermediateRelease.artifacts.filter((a: any) => a.status === 'failed')
     expect(failedItems).toHaveLength(1)
@@ -448,7 +455,8 @@ describe('FLOW-04 Coordinated Release Workflow End-to-End Acceptance Scenario', 
     const rollbackResult = await rollbackReleaseSaga(payload, {
       releaseId: release.id,
       actorId: 'user-publisher-1',
-      reason: 'Urgent recall: embargo broken by competitor, roll back all public surfaces immediately',
+      reason:
+        'Urgent recall: embargo broken by competitor, roll back all public surfaces immediately',
     })
 
     expect(rollbackResult.status).toBe('rolled-back')
@@ -456,10 +464,16 @@ describe('FLOW-04 Coordinated Release Workflow End-to-End Acceptance Scenario', 
 
     // Verify database entities were compensated:
     // 1. Articles reverted to draft (or previous status)
-    const post1 = await payload.findByID({ collection: 'article-family-content', id: 'post-spring-launch' })
+    const post1 = await payload.findByID({
+      collection: 'article-family-content',
+      id: 'post-spring-launch',
+    })
     expect(post1.latestPublishedRevision).toBeNull()
 
-    const post2 = await payload.findByID({ collection: 'article-family-content', id: 'post-press-release' })
+    const post2 = await payload.findByID({
+      collection: 'article-family-content',
+      id: 'post-press-release',
+    })
     expect(post2.latestPublishedRevision).toBeNull()
 
     // 2. Redirect disabled
@@ -479,10 +493,12 @@ describe('FLOW-04 Coordinated Release Workflow End-to-End Acceptance Scenario', 
     expect(actionList).toContain('release.approved')
     expect(actionList).toContain('release.execution.queued')
     expect(actionList).toContain('release.execution.completed') // initial run
-    expect(actionList).toContain('release.execution.retried')   // retry run
-    expect(actionList).toContain('release.rolled-back')        // rollback event
+    expect(actionList).toContain('release.execution.retried') // retry run
+    expect(actionList).toContain('release.rolled-back') // rollback event
 
-    const rollbackAudit = finalDoc.executionAudit.find((a: any) => a.action === 'release.rolled-back')
+    const rollbackAudit = finalDoc.executionAudit.find(
+      (a: any) => a.action === 'release.rolled-back',
+    )
     expect(rollbackAudit.details.reason).toContain('embargo broken by competitor')
     expect(rollbackAudit.details.compensatedCount).toBe(6)
   })

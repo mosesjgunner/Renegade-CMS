@@ -41,7 +41,12 @@ export const PLATFORM_MEDIA_RULES: Record<
     aspectRatios: {
       min: number
       max: number
-      preferred?: 'VERTICAL_9_16' | 'SQUARE_1_1' | 'PORTRAIT_4_5' | 'LANDSCAPE_16_9' | 'VERTICAL_2_3'
+      preferred?:
+        | 'VERTICAL_9_16'
+        | 'SQUARE_1_1'
+        | 'PORTRAIT_4_5'
+        | 'LANDSCAPE_16_9'
+        | 'VERTICAL_2_3'
     }
   }
 > = {
@@ -190,7 +195,8 @@ export function planMediaAdaptation(
 
   // 3. Aspect ratio / dimension check
   let needsResize = false
-  const currentRatio = asset.aspectRatio || (asset.width && asset.height ? asset.width / asset.height : undefined)
+  const currentRatio =
+    asset.aspectRatio || (asset.width && asset.height ? asset.width / asset.height : undefined)
 
   if (currentRatio !== undefined) {
     if (currentRatio < rules.aspectRatios.min || currentRatio > rules.aspectRatios.max) {
@@ -225,17 +231,26 @@ export function validateMediaForNetwork(
   const warnings: string[] = []
 
   // Check MIME
-  if (!rules.allowedImageMimes.includes(asset.mimeType) && !rules.allowedVideoMimes.includes(asset.mimeType)) {
-    warnings.push(`File format ${asset.mimeType} is not natively supported by ${targetNetwork}; requires automated conversion.`)
+  if (
+    !rules.allowedImageMimes.includes(asset.mimeType) &&
+    !rules.allowedVideoMimes.includes(asset.mimeType)
+  ) {
+    warnings.push(
+      `File format ${asset.mimeType} is not natively supported by ${targetNetwork}; requires automated conversion.`,
+    )
   }
 
   // Check file size
   const maxBytes = asset.mimeType.startsWith('video/') ? rules.maxVideoBytes : rules.maxImageBytes
   if (asset.fileSizeBytes > maxBytes) {
     if (targetNetwork === 'bluesky') {
-      blockers.push(`File size (${asset.fileSizeBytes} bytes) exceeds Bluesky's strict 1,000,000 byte limit.`)
+      blockers.push(
+        `File size (${asset.fileSizeBytes} bytes) exceeds Bluesky's strict 1,000,000 byte limit.`,
+      )
     } else {
-      warnings.push(`File size exceeds ${targetNetwork} threshold (${maxBytes} bytes); compression will be applied.`)
+      warnings.push(
+        `File size exceeds ${targetNetwork} threshold (${maxBytes} bytes); compression will be applied.`,
+      )
     }
   }
 

@@ -30,7 +30,10 @@ export interface BlueskyFacet {
  * Accurately extracts AT Protocol rich text facets based on exact UTF-8 byte offsets.
  * Preserves multi-byte UTF-8 character boundaries (emojis, accented characters, CJK).
  */
-export function parseRichTextFacets(text: string, mentionDidMap: Record<string, string> = {}): BlueskyFacet[] {
+export function parseRichTextFacets(
+  text: string,
+  mentionDidMap: Record<string, string> = {},
+): BlueskyFacet[] {
   const facets: BlueskyFacet[] = []
   const utf8Encoder = new TextEncoder()
 
@@ -144,7 +147,11 @@ export class BlueskyAdapter implements SocialProviderAdapter {
 
     const charLimit = constraints?.characterCeilingOverride || 300
     if (!variant.text.trim() && !variant.attachments.length) {
-      errors.push({ field: 'text', message: 'Bluesky post must contain text or an image.', code: 'EMPTY_POST' })
+      errors.push({
+        field: 'text',
+        message: 'Bluesky post must contain text or an image.',
+        code: 'EMPTY_POST',
+      })
     }
 
     // Unicode grapheme check approximation
@@ -210,10 +217,14 @@ export class BlueskyAdapter implements SocialProviderAdapter {
 
     if (!res.ok) {
       const err = await res.json().catch(() => null)
-      throw new Error(`Bluesky blob upload failed (${res.status}): ${err?.message || res.statusText}`)
+      throw new Error(
+        `Bluesky blob upload failed (${res.status}): ${err?.message || res.statusText}`,
+      )
     }
 
-    const data = (await res.json()) as { blob: { $type: 'blob'; ref: { $link: string }; mimeType: string; size: number } }
+    const data = (await res.json()) as {
+      blob: { $type: 'blob'; ref: { $link: string }; mimeType: string; size: number }
+    }
     return data.blob
   }
 
@@ -237,12 +248,19 @@ export class BlueskyAdapter implements SocialProviderAdapter {
       throw new Error(err?.message || `Authentication failed with HTTP ${res.status}`)
     }
 
-    return res.json() as Promise<{ accessJwt: string; refreshJwt: string; did: string; handle: string }>
+    return res.json() as Promise<{
+      accessJwt: string
+      refreshJwt: string
+      did: string
+      handle: string
+    }>
   }
 
   async publish(
     variant: SocialVariant,
-    context?: AuthContext | Readonly<{ accountId: string; credentials: Record<string, string> | null }>,
+    context?:
+      | AuthContext
+      | Readonly<{ accountId: string; credentials: Record<string, string> | null }>,
     mediaResolver?: MediaResolver,
   ): Promise<AdapterResult> {
     const auth = context as AuthContext | undefined
@@ -255,7 +273,8 @@ export class BlueskyAdapter implements SocialProviderAdapter {
         status: 'failed',
         error: normalizeProviderError({
           kind: 'reconnect-required',
-          message: 'Bluesky requires an account identifier and app password. Reconnect this account.',
+          message:
+            'Bluesky requires an account identifier and app password. Reconnect this account.',
         }),
       }
     }
@@ -329,7 +348,9 @@ export class BlueskyAdapter implements SocialProviderAdapter {
           error: normalizeProviderError({
             kind: 'rate-limit',
             message: 'Bluesky PDS rate limit reached.',
-            retryAfter: retryAfter ? new Date(Date.now() + Number(retryAfter) * 1000).toISOString() : undefined,
+            retryAfter: retryAfter
+              ? new Date(Date.now() + Number(retryAfter) * 1000).toISOString()
+              : undefined,
           }),
         }
       }
@@ -375,7 +396,10 @@ export class BlueskyAdapter implements SocialProviderAdapter {
   async deletePost(remotePostId: string, authContext: AuthContext): Promise<void> {
     const identifier = authContext.credentials?.identifier || authContext.accountHandle
     const password = authContext.credentials?.appPassword
-    const serviceUrl = (authContext.credentials?.service || 'https://bsky.social').replace(/\/+$/, '')
+    const serviceUrl = (authContext.credentials?.service || 'https://bsky.social').replace(
+      /\/+$/,
+      '',
+    )
 
     if (!identifier || !password) throw new Error('Missing Bluesky credentials for delete')
 
@@ -403,7 +427,10 @@ export class BlueskyAdapter implements SocialProviderAdapter {
   }
 
   async fetchPost(remotePostId: string, authContext: AuthContext): Promise<NormalizedRemotePost> {
-    const serviceUrl = (authContext.credentials?.service || 'https://bsky.social').replace(/\/+$/, '')
+    const serviceUrl = (authContext.credentials?.service || 'https://bsky.social').replace(
+      /\/+$/,
+      '',
+    )
     const endpoint = `${serviceUrl}/xrpc/app.bsky.feed.getPostThread?uri=${encodeURIComponent(remotePostId)}&depth=0`
 
     const res = await fetch(endpoint)
@@ -430,8 +457,14 @@ export class BlueskyAdapter implements SocialProviderAdapter {
     }
   }
 
-  async fetchAnalytics(remotePostId: string, authContext: AuthContext): Promise<NormalizedAnalytics> {
-    const serviceUrl = (authContext.credentials?.service || 'https://bsky.social').replace(/\/+$/, '')
+  async fetchAnalytics(
+    remotePostId: string,
+    authContext: AuthContext,
+  ): Promise<NormalizedAnalytics> {
+    const serviceUrl = (authContext.credentials?.service || 'https://bsky.social').replace(
+      /\/+$/,
+      '',
+    )
     const endpoint = `${serviceUrl}/xrpc/app.bsky.feed.getPostThread?uri=${encodeURIComponent(remotePostId)}&depth=0`
 
     const res = await fetch(endpoint)

@@ -151,11 +151,21 @@ test('FLOW-01: Renegade CMoS Workflow Browser Acceptance & Editorial Loop Proof'
   expect(bulkData.result.succeededCount).toBe(1)
 
   // 11. Fetch Audit History & Verify Chronological Trail with Exact Identifiers
-  const auditRes = await page.request.get(`${baseURL}/api/admin/workflow/audit?articleId=${articleId}`)
+  const auditRes = await page.request.get(
+    `${baseURL}/api/admin/workflow/audit?articleId=${articleId}`,
+  )
   expect(auditRes.status()).toBe(200)
   const auditData = await auditRes.json()
   expect(auditData.auditTrail.length).toBeGreaterThanOrEqual(5)
-  expect(auditData.auditTrail.some((a: { action: string }) => a.action === 'workflow.submitted_for_review')).toBe(true)
-  expect(auditData.auditTrail.some((a: { action: string }) => a.action === 'workflow.decided_approved')).toBe(true)
-  expect(auditData.auditTrail.some((a: { staleApproval?: boolean }) => a.staleApproval === true)).toBe(true)
+  expect(
+    auditData.auditTrail.some(
+      (a: { action: string }) => a.action === 'workflow.submitted_for_review',
+    ),
+  ).toBe(true)
+  expect(
+    auditData.auditTrail.some((a: { action: string }) => a.action === 'workflow.decided_approved'),
+  ).toBe(true)
+  expect(
+    auditData.auditTrail.some((a: { staleApproval?: boolean }) => a.staleApproval === true),
+  ).toBe(true)
 })

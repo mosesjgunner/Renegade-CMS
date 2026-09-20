@@ -1,10 +1,7 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
-import {
-  listWorkflowTemplates,
-  saveWorkflowTemplate,
-} from '@/modules/editorial/cmos-persistence'
+import { listWorkflowTemplates, saveWorkflowTemplate } from '@/modules/editorial/cmos-persistence'
 import type { WorkflowTemplate } from '@/modules/editorial/cmos-workflow'
 
 export const runtime = 'nodejs'

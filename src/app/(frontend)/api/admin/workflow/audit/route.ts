@@ -24,7 +24,10 @@ export async function GET(request: Request) {
     return NextResponse.json({ articleId, auditTrail })
   } catch (error) {
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to retrieve workflow audit history.' },
+      {
+        error:
+          error instanceof Error ? error.message : 'Failed to retrieve workflow audit history.',
+      },
       { status: 400 },
     )
   }

@@ -16,11 +16,7 @@ import type {
   ReleaseGateSnapshot,
   ReleaseStatus,
 } from './contracts'
-import {
-  computeReleaseFingerprint,
-  evaluateReleaseGates,
-  isGateSnapshotValid,
-} from './gates'
+import { computeReleaseFingerprint, evaluateReleaseGates, isGateSnapshotValid } from './gates'
 import { executeReleaseSaga, rollbackReleaseSaga } from './saga'
 
 type Doc = Record<string, any>
@@ -115,9 +111,7 @@ export async function pinArtifact(
     overrideAccess: true,
   } as never)) as Doc
 
-  const artifacts: ReleaseArtifactItem[] = [
-    ...(release.artifacts || release.executionItems || []),
-  ]
+  const artifacts: ReleaseArtifactItem[] = [...(release.artifacts || release.executionItems || [])]
 
   const artifactKey = `${input.targetType}:${input.targetId}`
   const existingIdx = artifacts.findIndex((a) => a.id === artifactKey)
@@ -205,7 +199,9 @@ export async function unpinArtifact(
   } as never)) as Doc
 
   const artifacts: ReleaseArtifactItem[] = (
-    release.artifacts || release.executionItems || []
+    release.artifacts ||
+    release.executionItems ||
+    []
   ).filter((a: ReleaseArtifactItem) => a.id !== artifactId)
 
   const nextRevision = Number(release.releaseRevision || 1) + 1
