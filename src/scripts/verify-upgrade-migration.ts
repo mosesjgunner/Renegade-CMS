@@ -58,6 +58,18 @@ async function createHistoricalFixture(payload: Payload) {
     const record = await create(collection, data)
     ids[key] = String((record as { id: string }).id)
   }
+  // Payload's current collection schema includes columns added after UPGRADE_BASELINE
+  // (e.g. media_assets.original_blob_id). payload.create() would insert those columns
+  // even when unset, which fails against the historical schema. Insert baseline-only
+  // columns directly instead.
+  const insertRow = async (table: string, columns: string[], values: unknown[]) => {
+    const placeholders = columns.map((_, index) => `$${index + 1}`).join(', ')
+    await poolFor(payload).query(
+      `INSERT INTO "${table}" (${columns.map((column) => `"${column}"`).join(', ')})
+       VALUES (${placeholders})`,
+      values,
+    )
+  }
   await sentinel('site', 'sites', {
     id: ids.site,
     name: 'Upgrade Sentinel Site',
@@ -112,19 +124,39 @@ async function createHistoricalFixture(payload: Payload) {
     status: 'active',
     visibility: 'public',
   })
-  await sentinel('media', 'media-assets', {
-    id: ids.media,
-    site: ids.site,
-    publication: ids.publication,
-    space: ids.space,
-    owner: ids.member,
-    title: 'Upgrade sentinel image',
-    kind: 'image',
-    storageLocation: 'local://upgrade-sentinel/image.jpg',
-    storageProvider: 'local',
-    mimeType: 'image/jpeg',
-    altText: 'A migration sentinel image',
-  })
+  await insertRow(
+    'media_assets',
+    [
+      'id',
+      'site_id',
+      'publication_id',
+      'space_id',
+      'owner_id',
+      'title',
+      'kind',
+      'storage_location',
+      'storage_provider',
+      'mime_type',
+      'alt_text',
+      'created_at',
+      'updated_at',
+    ],
+    [
+      ids.media,
+      ids.site,
+      ids.publication,
+      ids.space,
+      ids.member,
+      'Upgrade sentinel image',
+      'image',
+      'local://upgrade-sentinel/image.jpg',
+      'local',
+      'image/jpeg',
+      'A migration sentinel image',
+      timestamp,
+      timestamp,
+    ],
+  )
   await poolFor(payload).query(
     `INSERT INTO content (id, site_id, publication_id, space_id, owner_id, content_type, title, slug, canonical_path, summary, status, published_at, hero_media_id, created_at, updated_at)
      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $14)`,
