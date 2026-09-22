@@ -20,6 +20,8 @@ import { EditorialArticleView } from '@/modules/editorial/ArticleView'
 import { loadPublishedArticleByPath } from '@/modules/editorial/persistence'
 import { findIfRegistered, registeredOnly } from '@/modules/public/registered-collections'
 import { resolveSiteSettings } from '@/modules/core/site-settings'
+import { CommentSection } from '@/modules/community/components/CommentSection'
+import { getPublicSsrComments } from '@/modules/community/thread-lifecycle'
 
 type Args = {
   params: Promise<{ path: string[] }>
@@ -173,6 +175,8 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
   const form = formResult.docs[0] as unknown as {
     id: string
     name: string
+    title?: string
+    copy?: string
     visibility: string
     activeSchema?: {
       schema?: { fields?: FormField[] }
@@ -187,7 +191,8 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
     return (
       <main className="max-w-xl mx-auto px-6 py-20">
         <section className="surface-card p-8 space-y-6">
-          <h1 className="text-3xl font-bold">{form.name}</h1>
+          <h1 className="text-3xl font-bold">{form.title || form.name}</h1>
+          {form.copy ? <p className="text-stone-700">{form.copy}</p> : null}
           <PublicForm
             formId={form.id}
             fields={schema.schema.fields}
@@ -345,6 +350,7 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
     })
     return (
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 space-y-8">
+        <link rel="canonical" href={discovery.canonicalUrl} />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: serializeJsonLd(discovery.schema.jsonLd) }}
@@ -432,6 +438,21 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
             </section>
           ) : null}
         </article>
+        {collection === 'content' || collection === 'discussions' ? (
+          <CommentSection
+            attachedToId={String(record.id)}
+            attachedToCollection={collection === 'content' ? 'content' : 'content'}
+            canonicalPath={path}
+            title={name}
+            siteId={typeof record.site === 'string' ? record.site : String((record.site as { id?: string })?.id ?? 'default')}
+            initialComments={await getPublicSsrComments(payload, {
+              canonicalContentId: String(record.id),
+              siteId: typeof record.site === 'string' ? record.site : String((record.site as { id?: string })?.id ?? ''),
+              contentStatus: String(record.status ?? record._status ?? 'published'),
+              isIndexable: Boolean(discovery.indexability.indexable),
+            })}
+          />
+        ) : null}
       </main>
     )
   }

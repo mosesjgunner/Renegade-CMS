@@ -286,6 +286,7 @@ export class PayloadLegacyMigrationStore implements LegacyMigrationStore {
         slug: data.slug,
         description: data.description,
         lifecycle: 'active',
+        communityRegistrationPolicy: 'open',
       },
     })) as { id: string; slug: string }
     return { id: String(created.id), slug: created.slug }

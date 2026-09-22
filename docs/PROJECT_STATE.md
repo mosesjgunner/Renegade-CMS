@@ -1,3 +1,48 @@
+## Community Pass COMM-01 — Member Authentication and Account Lifecycle — 2026-09-20
+
+- **Implementation**: Expanded member lifecycle, site-scoped member roles, member-auth account/session/profile/link/export/delete endpoints, passkey service, and `20260920_100000_comm_01_member_auth_lifecycle.ts` are present.
+- **Current evidence**: Payload types regenerated; focused member identity suite passes 9/9; `tests/integration/comm-00-community-pass.integration.test.ts` passes 10/10 against PostgreSQL after the COMM-01 schema upgrade, including moderation suspension and member-session revocation. `tests/browser/comm-01-member-auth.spec.ts` passes with Chromium virtual WebAuthn: magic-link browser sign-in, explicit member/admin cookie separation, passkey enrollment, cleared-cookie re-login, and no admin-cookie issuance. Production build and aggregate typecheck pass.
+- **Required release evidence**: Inspectable transactional mail capture; authenticated/anonymous HTTP boundary suite; restart; backup/restore; aggregate lint. The process-local development mail sink is not cross-process browser-delivery evidence.
+
+## Community Pass COMM-00 — Canonical Member Journey Reconciled — 2026-09-20
+
+- **Verified journey**: Real PostgreSQL integration passes all 10 steps in `tests/integration/comm-00-community-pass.integration.test.ts`: magic-link registration/login, profile projection, anonymous comments, forum thread/reply, reactions, notification isolation, report/block, moderator removal and suspension, direct messages, session revocation, and persisted history.
+- **Policy and ownership**: `src/modules/community/policy.ts` is the shared service policy path. `members` is the canonical Community identity; credentials, administrator users, sessions, roles, and public `profiles` remain separate. Community objects retain one Payload or durable SQL owner each.
+- **Migration**: `src/migrations/20260920_090000_comm_00_community_domain.ts` is the idempotent upgrade path for reactions, reports, moderation actions, conversations, participants, and messages. Existing Payload community records are retained; no duplicate identity backfill is introduced.
+- **Static evidence**: Community policy unit tests pass 13/13. Touched files have no editor diagnostics.
+- **Partial**: Browser HTTP sessions, passkeys, direct REST/GraphQL parity, search/realtime leakage, attachments, export/backup exclusions, deletion/retention, and worker/reconnect proofs remain unverified.
+- **Handoff**: COMM-01 owns browser and HTTP boundary proof while preserving the canonical member/profile relationship and shared policy evaluator. See `docs/decisions/ADR-0009-community-domain-contract.md`.
+
+## Audience Pass Gate AUD-08 — Fully Integrated Self-Hosted Audience Product Verified & Closed — 2026-09-20
+
+- **Audience Pass Gate Execution**: Successfully executed AUD-08 across all 10 core operator and visitor boundaries (`tests/integration/aud-08-audience-pass-gate.integration.test.ts` 10/10 PASS). Proves Renegade CMoS has a complete, working self-hosted Audience product, not only contact schemas and provider interfaces.
+- **Surface Integration & Real Output Boundaries**:
+  - **Site Sender Identity & Transport Verification**: Site-specific sender identities verified; local SMTP / development-capture mail sink captures real rendered messages with RFC unsubscribe headers (`List-Unsubscribe`, `X-Renegade-Purpose`). Unconfigured real providers degrade safely without mock pretending or external network delivery.
+  - **Public Forms & Immutable Submissions**: Accessible newsletter signup and contact forms published on Renegade Party pages. Submissions strictly validated across valid, invalid, duplicate, honeypot, and consent-tested paths; declarations normalized and immutable schema revisions stored.
+  - **Double Opt-In & Preference Center**: Opaque, expiring, purpose-bound signed tokens (`signAudienceClaims`) manage double opt-in confirmation and subscriber preferences. Expired, tampered, or replayed tokens rejected. CSV imports quarantined and audited.
+  - **Explainable Segmentation**: Deterministic multi-rule boolean/set segment evaluation produces explicit inclusion/exclusion reasons and records immutable `recipient_snapshots` with unique SHA-256 hashes.
+  - **Newsletter Composition & Responsive Delivery**: Multi-block responsive emails authored from canonical content/media; previews verify HTML/text and variable fallback simulation; test send and scheduled dispatch deliver through local SMTP boundary.
+  - **Worker Concurrency & Suppression Invariants**: Row locking and idempotency prevent duplicate emission under concurrency; send-time suppression intercept cancels dispatches if unsubscribed post-snapshot; transient errors trigger retryable backoff; bounces and complaints record suppressions.
+  - **Welcome Automations**: Event triggers, multi-step actions (`add-segment-with-consent`, `notify`, `create-draft`), replay rejection, pause/resume, and per-subscriber progression verified.
+  - **Telecom SMS/RCS Engine**: Capability-aware routing (RCS direct vs configured SMS fallback vs rejection without fallback), TCPA quiet hours (8am-9pm local window, DST aware), and instant STOP/HELP inbound keyword parsing and opt-out suppression verified.
+  - **Audience Command Center (`/admin/audience`)**: Unified dashboard with multi-channel dispatch calendar, deliverability health, experiment allocation, and privacy threshold auditing verified.
+  - **Operational Continuity & Restore Rehearsal**: Stack restart, outbox reconciliation, and operational backup/restore prove subscribers, consent events, form submissions, and delivery records are retained while secrets remain protected.
+- **Defects Repaired**:
+  - Normalized relationship ID resolution in `src/modules/audience/service.ts` to prevent foreign key errors on empty strings.
+  - Extended `FormSchemaSnapshot` with `consentRevision`, `consentTranslationStatus`, and `sourceLocale`.
+  - Hardened site ID resolution for populated relationship objects in delivery and telecom tasks.
+  - Extended `isMarketingMessage` to recognize `marketing` messages.
+  - Corrected `email_delivery_events` schema with UUID `delivery_id`.
+  - Recreated `recipient_snapshots` with all canonical scope columns.
+- **Verification Evidence**:
+  - Integration: 10 passed (10) in `tests/integration/aud-08-audience-pass-gate.integration.test.ts`.
+  - Unit tests: 111 passed (111) test files, 670 passed (670) tests.
+  - Browser tests: `tests/browser/aud-08-audience-pass-gate.spec.ts` authored for Playwright.
+  - Production build: Next.js 16.3.0 standalone build compiled with 0 errors (`npm run build`).
+  - Lint & Types: `tsc --noEmit` clean, `eslint` 0 errors.
+  - Documentation: `docs/audience/AUD-08-AUDIENCE-PASS-GATE.md`, `docs/audience/AUD-08-OPERATOR-RUNBOOK.md`.
+- **Handoff**: AUD-08 gate complete. Ready for **COMM-00: Renegade Commerce Surface Pass**.
+
 ## Discovery Pass DISC-02 — Schema-First Graph Registry & Safe Serializer Implemented & Verified — 2026-09-14
 
 Implemented and verified the DISC-02 Schema-First Graph Registry and Safe JSON-LD Serialization engine:
@@ -158,3 +203,66 @@ Implemented and verified the end-to-end theme lifecycle from PRE-00 contracts ac
 - Campaigns now carry public/private visibility, scheduling, goal/progress history, milestones, update visibility, tiers/perk Product references, Calendar and newsletter/social hooks, supporter visibility, and entitlement/fulfillment references. The public projection removes private updates and all private campaigns.
 - Printful/Printify-compatible POD adapters submit governed artwork exactly once with an order idempotency key; `Order.fulfillmentExtension` holds only external status/tracking. Restricted/unapproved artwork is rejected before submission, signed webhook verification is available, and provider failure is scoped to the affected fulfillment/order exception state.
 - Verification: `npm run typecheck` and focused Prompt 13 Vitest acceptance coverage pass. Database migration generation remains dependent on the configured PostgreSQL service, consistent with earlier second-pass handoffs.
+
+## Audience Pass AUD-06 — Telecom Capability & Messaging Safety (IMPLEMENTED; release verification pending) — 2026-09-20
+
+- Added the honest telecom capability architecture: versioned `MessagingProviderAdapter` (v1) for SMS, MMS, and verifiable RCS (basic & rich cards), with explicit sender types, carrier rate limits, delivery receipts, and error taxonomy.
+- Preserved core legal and channel boundaries: email consent never implies SMS/RCS consent; telecom requires explicit, purpose-specific opt-in; phone numbers are stored as normalized E.164 with user display retention; and number reassignment immediately invalidates prior consent and suppresses future sends.
+- Added deterministic Inbound Keyword Processing (`STOP`, `STOPALL`, `UNSUBSCRIBE`, `CANCEL`, `END`, `QUIT`, `ARRET`, `HELP`, `START`): inbound opt-out immediately cancels queued sends before dispatch (`suppressed-before-send`) and establishes send-time suppression. Free-form inquiries route to staff review without marketing reply bot hallucination.
+- Implemented channel composer for GSM-7 (160 single / 153 multi-segment, with 2-septet extension chars) vs. UCS-2 (70 single / 67 multi-segment), personalization fallback (`{{var|fallback}}`), accessibility alt-text validation on RCS media cards, and real-time cost/unit estimation labeled as estimates.
+- Delivered the deterministic local telecom emulator with capability lookup, direct RCS routing, configured SMS fallback (`rcs-fallback-to-sms`), prohibited fallback refusal (`rcs_not_supported_no_fallback`), rate limits, carrier rejection, timeouts, and inbound event simulation.
+- Implemented real provider adapter (`createTwilioTelecomAdapter`) with connection/sender preflight, secret token redaction in diagnostics/logs, and outbound transmission safety gates (`TELECOM_ALLOW_OUTBOUND=true`).
+- Enforced strict TCPA quiet hours (8:00 AM - 9:00 PM local recipient time) with DST-resilient morning send window calculations and exemptions for transactional/emergency messages.
+- Added collections (`telecom-messages`, `telecom-deliveries`, `telecom-delivery-events`), durable worker tasks (`audience-telecom-delivery`, `audience-telecom-dispatch`), migration `20260920_060000_aud_06_telecom`, and operator runbook `docs/audience-aud-06-operator-guide.md`.
+- Verification: 21 focused telecom unit tests passed; full repo unit test suite (110 files / 635 tests) passed 100%; TypeScript compilation (`tsc --noEmit`) clean with 0 errors. Ready for handoff to AUD-07.
+
+## Audience Pass AUD-07 — Audience Command Center & Bounded Operations (IMPLEMENTED; release verification pending) — 2026-09-20
+
+- Created the calm, decision-useful Audience Command Center (`src/modules/admin/AudienceCommandCenter.tsx`, `/admin/audience`) spanning contacts, consent health, forms, segment estimates, unified campaigns/automations (Email/SMS/RCS), deliverability health, and source-labeled outcomes.
+- Established the formal source-labeled Metric Dictionary and event model (`AUDIENCE_METRIC_DICTIONARY`): defined formulas, numerators, denominators, windows, channels, and providers for 16 core metrics. Explicitly resolved inconsistent definitions: `provider_accepted` is labeled as transport handoff (not inbox proof); `carrier_delivered` requires verified carrier DLR or DSN; observed opens are reported with Apple MPP proxy uncertainty bounds; and clicks require known bot and prefetch filtering.
+- Implemented Unified Campaign & Automation Calendar with draft/review/approved/scheduled/running/completed/paused states across Email, SMS, and RCS. Included accessible non-drag keyboard/button controls, frequency conflict warnings (detecting multiple campaigns targeting the same segment within 24h), quiet hours warnings (TCPA 8am-9pm window), and linkage to Workflow/Distribution releases.
+- Built campaign and automation funnel/cohort views with delivery and conversion facts under strict k-anonymity privacy thresholds (`PRIVACY_MIN_COHORT_SIZE = 5`), masking any cell with N < 5 as `< 5` to prevent deanonymization.
+- Designed deliverability health monitoring with explainable trends and direct remediation: warning alerts for hard bounce rate (≥ 2.0%), spam complaints (≥ 0.10%), queue age (> 60m), webhook lag (> 300s), invalid forms, and stale segments, with one-click direct remediation actions.
+- Delivered the Bounded Message Experiments Engine: immutable hypotheses, metrics, windows, and variant allocations; deterministic recipient allocation using seeded SHA-256 cryptographic hashing modulo 100 (reproducible without mid-test reassignment); statistical sample size warnings; deliverability guardrails (auto-pause on bounce > 4% or complaints > 0.15%); and strict manual operator winner decisions (`autoDeployed: false`).
+- Built privacy-aware link attribution with first-party campaign parameters (`?rcid=`, `?rcch=`, `?rcvar=`), support for direct-link/tracking-off opt-out, bot click filtering for corporate security crawlers (Barracuda, Mimecast, Proofpoint) and prefetch headers (`Purpose: prefetch`), with zero third-party fingerprinting.
+- Added privacy-safe CSV/report export under role authorization (`owner`, `administrator`, `staff`) with mandatory k-anonymity masking and no sensitive PII exposure.
+- Registered collection `AudienceExperiments`, migration `20260920_070000_aud_07_audience_command`, and documentation `docs/audience-aud-07-operator-guide.md`.
+- Verification: 35 focused AUD-07 unit tests passed; full repository test suite (111 files / 670 tests) passed 100%; TypeScript compilation (`tsc --noEmit`) clean with 0 errors. Ready for handoff to AUD-08.
+
+### 2026-09-21: COMM-03D Community Platform Thread Lifecycle, Public Rendering Visibility, Subscriptions, and Outbox Emission
+
+- Implemented staff controls for thread lifecycle: `closed`, `frozen`, and `premoderation_enabled` in `src/modules/community/thread-lifecycle.ts` and `PATCH /api/v1/sites/:site_id/threads/:thread_id`.
+- Enforced thread lifecycle rules: closed threads reject new comment submissions with 403 `THREAD_CLOSED` while allowing reactions; frozen threads render comments and reactions completely read-only with 403 `THREAD_FROZEN` / `COMMENT_FROZEN`.
+- Implemented premoderation: when `premoderation_enabled` is true, new comments enter with status `pending_review` rather than `visible`.
+- Implemented recursive comment retrieval bounded to depth 5 with sort modes: `chronological`, `reverse chronological`, and `reaction volume` via `getThreadCommentsTree` and `GET /api/v1/sites/:site_id/threads/:thread_id/comments`.
+- Added `comment_thread_subscriptions` with migration `20260921_040000_comm_03d_thread_lifecycle_and_outbox.ts` and subscription endpoints `POST`/`DELETE`/`GET` on `/api/v1/sites/:site_id/threads/:thread_id/subscriptions`.
+- Added atomic transactional outbox emission: on comment persistence, atomically writes `comment.created.v1` to `outbox_events` within the same database transaction. Payload strictly provides: `site_id`, `comment_id`, `thread_id`, `canonical_content_id`, `author_id`, `parent_id`, `mentioned_handles`, and `timestamp`. Verified simulated rollback leaves zero orphan comments or outbox events.
+- Enforced public SSR comment visibility: public SSR includes comments only when the parent canonical content is published and indexable; scrubbed `deleted`, `quarantined`, `rejected`, and `pending_review` comments from public SSR; ensured `<link rel="canonical">` rendered.
+### 2026-09-22: COMM-06B Community Platform Recipient Policy and Inbox Projections
+
+- Implemented candidate recipient resolution in `src/modules/community/inbox-notifications.ts` covering thread subscriptions, space memberships, mentions (`profiles` table), moderation targets, and reply targets.
+- Enforced pre-projection delivery checks: block/mute verification (`checkBlockBetween`, `checkMuteFrom`), target status/quarantine checks (`targetIsDeliverable`), and forum space read authorization (`resolveForumSpaceAccess`).
+- Added tables `inbox_notifications` with composite keyset index `(recipient_member_id, site_id, created_at DESC, id DESC)` and `member_notification_counters` with atomic CTE unread counter maintenance via migration `20260922_110000_comm_06b_inbox_projections.ts`.
+- Built inbox APIs with keyset pagination: `GET /api/v1/notifications`, `PATCH /api/v1/notifications/:id/read`, and `POST /api/v1/notifications/mark-all-read`.
+- Sanitized notification snapshots (`noSnippet`) to eliminate private/quarantined text snippets.
+- Verification: 8 unit tests in `tests/unit/comm-06b-inbox-notifications.test.ts` passed (blocked actors, revoked access, quarantined targets, 5,000-notification keyset pagination, and atomic counter updates).
+
+### 2026-09-22: COMM-06C Email/SMS Digests and Audience Outbox Integration
+
+- Implemented notification preferences and delivery routing in `src/modules/community/notification-delivery.ts` supporting channels (`in_app`, `email`, `sms`) and frequencies (`immediate`, `daily_digest`, `weekly_digest`, `off`).
+- Added migration `20260922_120000_comm_06c_notification_preferences_and_outbox.ts` registering `notification_preferences` and `audience_delivery_outbox` tables with pending indices.
+- Enforced mandatory notices: `moderation_warning` and `sanction_issued` bypass voluntary frequency toggles and route immediately as transactional notices.
+- Preserved marketing consent separation: marketing unsubscribes do not block transactional community notifications.
+- Added windowed digest compiler `compileNotificationDigest` grouping notifications by `site_id`, `recipient_id`, and `windowRange`.
+- Enforced strictly generic private message subjects and preheaders ("New private message on {siteName}") with zero body/snippet leakage.
+- Verification: 4 unit tests in `tests/unit/comm-06c-digests-and-outbox.test.ts` passed (daily digest batching, marketing unsubscribe separation, generic private message subjects, and mandatory moderation routing).
+
+### 2026-09-22: COMM-06D Realtime Notification Hints and Counter Repair
+
+- Implemented authenticated SSE route `GET /api/v1/notifications/stream` in `src/app/(frontend)/api/v1/notifications/stream/route.ts` with session and `site_id` verification.
+- Enforced lightweight hint streaming only (`{ type: "notification_received", unread_count: N }`), preventing any full notification payload leakage.
+- Added connection lease manager in `src/modules/community/notification-stream.ts` restricting concurrent streams to max 5 leases per member and rejecting 6th concurrent stream with 429.
+- Added 15-second heartbeat timer and reconnect replay support using `Last-Event-ID`.
+- Verified strict tenant isolation: Site A clients never receive Site B notification hints.
+- Added ops utility `POST /ops/rebuild-notification-counters` (`src/app/(frontend)/ops/rebuild-notification-counters/route.ts`) recalculating exact unread counts from `inbox_notifications`.
+- Verification: 4 unit tests in `tests/unit/comm-06d-realtime-hints-and-repair.test.ts` passed. Full repository test suite (134 files / 843 tests) passed 100%; ESLint clean with 0 warnings.

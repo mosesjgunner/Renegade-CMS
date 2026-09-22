@@ -14,6 +14,14 @@ export const canonicalSlug = (value: unknown): true | string => {
   return true
 }
 
+export const communityHandle = (value: unknown): true | string => {
+  if (typeof value !== 'string' || !/^[a-z0-9]+(?:[-_][a-z0-9]+)*$/.test(value)) {
+    return 'Use lowercase letters, numbers, hyphens, or underscores.'
+  }
+
+  return true
+}
+
 export const capabilityFields = (): Field[] => [
   {
     name: 'capabilities',

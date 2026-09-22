@@ -1,11 +1,19 @@
 import { resolveSiteSettings } from '@/modules/core/site-settings'
 import config from '@payload-config'
 import { getPayload } from 'payload'
-import { issueMagicLink } from '@/modules/identity/member-identity'
+import { enforceAuthRateLimit, issueMagicLink } from '@/modules/identity/member-identity'
 import { loadConfig } from '@/modules/core/config'
 import { selectEmailDeliveryAdapter } from '@/modules/email/delivery'
 export async function POST(request: Request) {
   const body = (await request.json().catch(() => ({}))) as { email?: string }
+  const clientIp = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown'
+  const throttle = enforceAuthRateLimit(clientIp)
+  if (!throttle.allowed) {
+    return Response.json(
+      { status: 'Too many requests. Try again shortly.' },
+      { status: 429, headers: { 'retry-after': String(throttle.retryAfter) } },
+    )
+  }
   const payload = await getPayload({ config })
   const result = await issueMagicLink(payload as never, body.email ?? '')
   const runtime = loadConfig()

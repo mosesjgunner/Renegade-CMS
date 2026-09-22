@@ -184,6 +184,40 @@ export type MediaStorage = {
   remove(key: string): Promise<void>
 }
 
+/** A browser PUT capability.  Its signature binds the key, MIME type, and expiry;
+ * no application endpoint ever receives the upload stream. */
+export function presignS3Put(
+  config: NonNullable<AppConfig['storage']['s3']>,
+  key: string,
+  mimeType: string,
+  expiresInSeconds = 15 * 60,
+  now = new Date(),
+) {
+  if (!Number.isInteger(expiresInSeconds) || expiresInSeconds < 1 || expiresInSeconds > 15 * 60)
+    throw new Error('Presigned upload expiry must be between one second and fifteen minutes.')
+  const endpoint = new URL(config.endpoint)
+  const objectPath = `${endpoint.pathname.replace(/\/$/, '')}/${encodeURIComponent(config.bucket)}/${key.split('/').map(encodeURIComponent).join('/')}`
+  const url = new URL(objectPath, endpoint)
+  const amzDate = now.toISOString().replace(/[-:]|\.\d{3}/g, '')
+  const date = amzDate.slice(0, 8)
+  const scope = `${date}/${config.region}/s3/aws4_request`
+  const headers = { host: endpoint.host, 'content-type': mimeType }
+  const signedHeaders = Object.keys(headers).sort().join(';')
+  url.searchParams.set('X-Amz-Algorithm', 'AWS4-HMAC-SHA256')
+  url.searchParams.set('X-Amz-Credential', `${config.accessKeyId}/${scope}`)
+  url.searchParams.set('X-Amz-Date', amzDate)
+  url.searchParams.set('X-Amz-Expires', String(expiresInSeconds))
+  url.searchParams.set('X-Amz-SignedHeaders', signedHeaders)
+  const canonicalQuery = [...url.searchParams.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`).join('&')
+  const canonicalHeaders = Object.entries(headers).sort(([a], [b]) => a.localeCompare(b)).map(([name, value]) => `${name}:${value}\n`).join('')
+  const canonicalRequest = ['PUT', url.pathname, canonicalQuery, canonicalHeaders, signedHeaders, 'UNSIGNED-PAYLOAD'].join('\n')
+  const stringToSign = ['AWS4-HMAC-SHA256', amzDate, scope, createHash('sha256').update(canonicalRequest).digest('hex')].join('\n')
+  const hmac = (secret: Uint8Array | string, value: string) => createHmac('sha256', secret).update(value).digest()
+  const signingKey = hmac(hmac(hmac(hmac(`AWS4${config.secretAccessKey}`, date), config.region), 's3'), 'aws4_request')
+  url.searchParams.set('X-Amz-Signature', createHmac('sha256', signingKey).update(stringToSign).digest('hex'))
+  return { url: url.toString(), headers: { 'content-type': mimeType }, expiresAt: new Date(now.getTime() + expiresInSeconds * 1000).toISOString() }
+}
+
 export function localMediaStorage(mediaDir: string): MediaStorage {
   return {
     provider: 'local',

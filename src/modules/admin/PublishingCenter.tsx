@@ -35,7 +35,7 @@ export default async function PublishingCenter({ initPageResult, params }: Admin
       </p>
       {result.docs.length ? (
         <ul>
-          {result.docs.map((doc: { id: string; title?: string }) => (
+          {result.docs.map((doc: { id: string; title?: string | null }) => (
             <li key={doc.id}>
               <Link href={`/admin/collections/content/${doc.id}`}>
                 {doc.title || `Untitled ${noun}`}

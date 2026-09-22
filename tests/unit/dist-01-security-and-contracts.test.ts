@@ -69,18 +69,19 @@ describe('Pass DIST-01: Social Security, Canonical Models & Queue State Machine'
     })
 
     it('fails closed when no production encryption key is configured', () => {
-      const previousNodeEnv = process.env.NODE_ENV
-      const previousKey = process.env.RENEGADE_ENCRYPTION_KEY
-      process.env.NODE_ENV = 'production'
-      delete process.env.RENEGADE_ENCRYPTION_KEY
+      const env = process.env as Record<string, string | undefined>
+      const previousNodeEnv = env.NODE_ENV
+      const previousKey = env.RENEGADE_ENCRYPTION_KEY
+      env.NODE_ENV = 'production'
+      delete env.RENEGADE_ENCRYPTION_KEY
 
       try {
         expect(() => encryptSecret('prod-secret')).toThrow(/production.*encryption/i)
       } finally {
-        if (previousNodeEnv === undefined) delete process.env.NODE_ENV
-        else process.env.NODE_ENV = previousNodeEnv
-        if (previousKey === undefined) delete process.env.RENEGADE_ENCRYPTION_KEY
-        else process.env.RENEGADE_ENCRYPTION_KEY = previousKey
+        if (previousNodeEnv === undefined) delete env.NODE_ENV
+        else env.NODE_ENV = previousNodeEnv
+        if (previousKey === undefined) delete env.RENEGADE_ENCRYPTION_KEY
+        else env.RENEGADE_ENCRYPTION_KEY = previousKey
       }
     })
   })

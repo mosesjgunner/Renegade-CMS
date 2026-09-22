@@ -17,6 +17,8 @@ export default function PublishingLinks() {
       <Link href="/admin/workflow">Editorial Workflow</Link>
       <Link href="/admin/releases">Releases</Link>
       <Link href="/admin/social">Social Distribution</Link>
+      <Link href="/admin/email-composer">Email Composer</Link>
+      <Link href="/admin/audience">Audience Command Center</Link>
       <Link href="/" target="_blank" rel="noreferrer">
         View Site
       </Link>

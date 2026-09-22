@@ -53,6 +53,8 @@ export default buildConfig({
           Component: './modules/admin/ReleaseCenter',
           path: '/releases',
         },
+        emailComposer: { Component: './modules/admin/EmailComposer', path: '/email-composer' },
+        audience: { Component: './modules/admin/AudienceCommandCenter', path: '/audience' },
       },
     },
   },

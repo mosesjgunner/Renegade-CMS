@@ -16,15 +16,17 @@ export async function POST(request: Request) {
   const body = JSON.parse(raw) as {
     siteId?: string
     email?: string
-    event?: 'bounce' | 'complaint' | 'unsubscribe'
+    event?: 'delivered' | 'deferred' | 'bounce' | 'complaint' | 'unsubscribe' | 'suppression'
     provider?: string
     providerMessageId?: string
+    providerEventId?: string
+    occurredAt?: string
   }
   if (
     !body.siteId ||
     !body.email ||
     !body.providerMessageId ||
-    !['bounce', 'complaint', 'unsubscribe'].includes(body.event ?? '')
+    !['delivered', 'deferred', 'bounce', 'complaint', 'unsubscribe', 'suppression'].includes(body.event ?? '')
   )
     return Response.json({ error: 'Invalid provider event.' }, { status: 400 })
   try {
@@ -34,6 +36,9 @@ export async function POST(request: Request) {
       event: body.event!,
       provider: body.provider,
       providerMessageId: body.providerMessageId,
+      providerEventId: body.providerEventId ?? request.headers.get('x-provider-event-id') ?? undefined,
+      occurredAt: body.occurredAt,
+      evidence: { source: 'signed-webhook/v1', event: body.event },
     })
   } catch {
     return Response.json({ error: 'Provider event does not match a delivery.' }, { status: 400 })

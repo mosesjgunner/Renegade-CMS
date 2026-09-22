@@ -25,7 +25,7 @@
     "lint": "eslint . --max-warnings=0",
     "typecheck": "tsc --noEmit",
     "test": "vitest run tests/unit",
-    "test:integration": "cross-env RENEGADE_MODULES=all RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT=true vitest run tests/integration --no-file-parallelism",
+    "test:integration": "cross-env ALLOW_FIXTURE_SEED=true RENEGADE_MODULES=all RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT=true vitest run tests/integration --no-file-parallelism",
     "test:browser": "cross-env RENEGADE_MODULES=all RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT=true playwright test",
     "test:migrations:fresh": "tsx src/scripts/verify-fresh-migration.ts",
     "test:migrations:upgrade": "tsx src/scripts/verify-upgrade-migration.ts",

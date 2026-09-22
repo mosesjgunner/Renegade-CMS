@@ -1,7 +1,6 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
-import { verifyAudienceToken } from '@/modules/audience/contracts'
-import { updateAudiencePreferences } from '@/modules/audience/service'
+import { authorizeAudienceAccess, recordAudienceChoices } from '@/modules/audience/service'
 import { takeAudiencePublicRequest } from '@/modules/audience/public-rate-limit'
 
 export async function POST(request: Request) {
@@ -10,19 +9,18 @@ export async function POST(request: Request) {
     return Response.json({ error: 'Please try again shortly.' }, { status: 429 })
   const body = (await request.json().catch(() => ({}))) as {
     token?: string
-    audienceList?: string
-    preferences?: Record<string, boolean | string | number>
+    choices?: { channel: 'email' | 'sms'; purpose: string; granted: boolean }[]
   }
-  const value = verifyAudienceToken(body.token ?? '', process.env.PAYLOAD_SECRET ?? '')
-  const [siteId, email] = value?.split('|') ?? []
-  if (!siteId || !email)
-    return Response.json({ error: 'Invalid preference link.' }, { status: 400 })
+  const payload = await getPayload({ config })
+  const claims = await authorizeAudienceAccess(payload, body.token ?? '', 'preferences')
+  if (!claims) return Response.json({ error: 'Invalid preference link.' }, { status: 400 })
   try {
-    await updateAudiencePreferences(await getPayload({ config }), {
-      siteId,
-      email,
-      audienceList: body.audienceList,
-      preferences: body.preferences ?? {},
+    await recordAudienceChoices(payload, {
+      siteId: claims.siteId,
+      subscriberId: claims.subscriberId,
+      choices: body.choices ?? [],
+      source: 'public-preference-center',
+      ipDigest: ip,
     })
     return Response.json({ status: 'updated' })
   } catch {

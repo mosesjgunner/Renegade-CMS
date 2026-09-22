@@ -1,6 +1,7 @@
 import type { CollectionConfig, Field } from 'payload'
 import { ownerFields, retentionFields } from './canonical-shared'
 import { validateFormSchema } from '../modules/audience/contracts'
+import { validateAutomation, validateSegmentTree } from '../modules/audience/engine'
 
 const staffOnly = ({ req }: { req: { user?: { role?: string } | null } }) =>
   ['owner', 'administrator', 'staff'].includes(String(req.user?.role))
@@ -27,6 +28,8 @@ export const FormDefinitions: CollectionConfig = {
   fields: [
     ...scope(),
     { name: 'name', type: 'text', required: true },
+    { name: 'title', type: 'text' },
+    { name: 'copy', type: 'textarea' },
     status(
       'template',
       [
@@ -53,6 +56,15 @@ export const FormDefinitions: CollectionConfig = {
     status('visibility', ['public', 'private', 'members'], 'public'),
     { name: 'activeSchema', type: 'relationship', relationTo: 'form-schemas' as never },
     { name: 'settings', type: 'json', required: true, defaultValue: {} },
+    {
+      name: 'actions',
+      type: 'json',
+      defaultValue: [],
+      admin: {
+        description:
+          'Bounded declared actions only: contact, tag, task, notification, approved webhook, redirect, download.',
+      },
+    },
     ...retentionFields(),
   ],
 }
@@ -133,6 +145,9 @@ export const FormSubmissions: CollectionConfig = {
     ref('organization', 'organizations'),
     ref('workflowItem', 'workflow-items'),
     { name: 'idempotencyKey', type: 'text', index: true },
+    { name: 'actionState', type: 'json', defaultValue: [], access: { read: staffOnly } },
+    { name: 'reviewNotes', type: 'json', defaultValue: [], access: { read: staffOnly } },
+    { name: 'submittedAt', type: 'date', index: true },
     ...retentionFields(),
   ],
 }
@@ -155,6 +170,7 @@ export const Contacts: CollectionConfig = {
     { name: 'displayName', type: 'text', required: true },
     { name: 'email', type: 'email', index: true },
     { name: 'emailHash', type: 'text', index: true },
+    { name: 'phoneE164', type: 'text', index: true },
     ref('member', 'members'),
     status('status', ['lead', 'active', 'inactive', 'blocked', 'archived'], 'lead'),
     { name: 'profile', type: 'json' },
@@ -333,6 +349,15 @@ export const AudienceLists: CollectionConfig = {
     { name: 'description', type: 'textarea' },
     status('status', ['active', 'archived'], 'active'),
     { name: 'doubleOptIn', type: 'checkbox', defaultValue: true },
+    {
+      name: 'provenance',
+      type: 'json',
+      defaultValue: {},
+      admin: {
+        description:
+          'Operator/import source and immutable audit reference. A list is never consent.',
+      },
+    },
   ],
 }
 export const AudienceSegments: CollectionConfig = {
@@ -340,7 +365,22 @@ export const AudienceSegments: CollectionConfig = {
   fields: [
     ...scope(),
     { name: 'name', type: 'text', required: true },
-    { name: 'definition', type: 'json', required: true },
+    {
+      name: 'definition',
+      type: 'json',
+      required: true,
+      validate: (value) => {
+        const errors = validateSegmentTree(value as never)
+        return errors.length ? errors.join(' ') : true
+      },
+    },
+    {
+      name: 'version',
+      type: 'text',
+      required: true,
+      admin: { description: 'Immutable SHA-256 version of the typed definition at approval.' },
+    },
+    { name: 'lastEvaluation', type: 'json' },
     { name: 'consentBasisRequired', type: 'checkbox', defaultValue: true },
     status('status', ['active', 'archived'], 'active'),
   ],
@@ -366,6 +406,8 @@ export const SubscriberConfirmationTokens: CollectionConfig = {
     { name: 'usedAt', type: 'date' },
     { name: 'locale', type: 'text', required: true },
     { name: 'consentWording', type: 'textarea', required: true },
+    { name: 'purpose', type: 'text', defaultValue: 'confirmation' },
+    { name: 'revokedAt', type: 'date' },
   ],
 }
 export const Subscribers: CollectionConfig = {
@@ -379,6 +421,7 @@ export const Subscribers: CollectionConfig = {
     status('status', ['pending', 'active', 'unsubscribed', 'suppressed'], 'pending'),
     { name: 'verifiedAt', type: 'date' },
     { name: 'globalUnsubscribedAt', type: 'date' },
+    { name: 'erasedAt', type: 'date' },
   ],
   indexes: [{ fields: ['site', 'emailHash'], unique: true }],
 }
@@ -400,6 +443,10 @@ export const ConsentEvents: CollectionConfig = {
         'imported',
         'bounce',
         'complaint',
+        'preference-granted',
+        'preference-withdrawn',
+        'operator-correction',
+        'erased',
       ],
       'requested',
     ),
@@ -408,6 +455,15 @@ export const ConsentEvents: CollectionConfig = {
     { name: 'locale', type: 'text' },
     { name: 'occurredAt', type: 'date', required: true },
     { name: 'evidence', type: 'json' },
+    { name: 'channel', type: 'select', options: ['email', 'sms', 'rcs', 'push', 'postal'] },
+    { name: 'purpose', type: 'text' },
+    { name: 'policyVersion', type: 'text' },
+    { name: 'captureSource', type: 'text' },
+    { name: 'proofReference', type: 'text' },
+    { name: 'jurisdiction', type: 'text' },
+    { name: 'actor', type: 'relationship', relationTo: 'users' as never },
+    { name: 'ipDigest', type: 'text' },
+    { name: 'userAgentDigest', type: 'text' },
   ],
 }
 export const Preferences: CollectionConfig = {
@@ -416,6 +472,7 @@ export const Preferences: CollectionConfig = {
     ref('subscriber', 'subscribers', true),
     ref('audienceList', 'audience-lists'),
     { name: 'preferences', type: 'json', required: true },
+    { name: 'derivedAt', type: 'date' },
   ],
 }
 export const Suppressions: CollectionConfig = {
@@ -423,19 +480,80 @@ export const Suppressions: CollectionConfig = {
   fields: [
     ...scope(),
     { name: 'emailHash', type: 'text', required: true, index: true },
-    status('reason', ['unsubscribe', 'bounce', 'complaint', 'provider'], 'unsubscribe'),
+    status(
+      'reason',
+      ['unsubscribe', 'bounce', 'complaint', 'provider', 'invalid', 'block', 'operator', 'legal'],
+      'unsubscribe',
+    ),
     { name: 'provider', type: 'text' },
     { name: 'occurredAt', type: 'date', required: true },
     { name: 'global', type: 'checkbox', defaultValue: true },
+    { name: 'scope', type: 'text', defaultValue: 'site' },
+    { name: 'source', type: 'text' },
+    { name: 'details', type: 'json' },
   ],
   indexes: [{ fields: ['site', 'emailHash', 'reason'], unique: true }],
 }
 export const EmailMessages: CollectionConfig = {
   ...base('email-messages', 'subject', 'Audience'),
+  hooks: {
+    beforeChange: [
+      ({ data, originalDoc, operation }) => {
+        if (operation !== 'update' || !originalDoc) return data
+        const material = [
+          'subject',
+          'preheader',
+          'blocks',
+          'messageDesign',
+          'emailTemplate',
+          'templateVersion',
+        ].some(
+          (key) => key in data && JSON.stringify(data[key]) !== JSON.stringify(originalDoc[key]),
+        )
+        return material
+          ? {
+              ...data,
+              status: 'draft',
+              approvedRender: null,
+              approvalInvalidatedAt: new Date().toISOString(),
+            }
+          : data
+      },
+    ],
+  },
   fields: [
     ...scope(),
     { name: 'subject', type: 'text', required: true },
+    { name: 'preheader', type: 'text' },
+    {
+      name: 'senderIdentity',
+      type: 'json',
+      admin: {
+        description:
+          'Reviewed from/reply-to identity; provider readiness is checked before test send.',
+      },
+    },
+    { name: 'purpose', type: 'text', defaultValue: 'newsletter' },
+    { name: 'channel', type: 'select', options: ['email'], defaultValue: 'email' },
+    { name: 'language', type: 'text', defaultValue: 'en' },
     { name: 'blocks', type: 'json', required: true },
+    {
+      name: 'messageDesign',
+      type: 'json',
+      admin: {
+        description: 'AUD-03 versioned email-only design. Never website CSS/JS or arbitrary HTML.',
+      },
+    },
+    ref('emailTemplate', 'email-templates'),
+    { name: 'templateVersion', type: 'text' },
+    { name: 'variantKey', type: 'text', defaultValue: 'control' },
+    { name: 'parentMessage', type: 'relationship', relationTo: 'email-messages' as never },
+    {
+      name: 'approvedRender',
+      type: 'json',
+      admin: { description: 'Immutable deterministic HTML/text/hash pinned at approval.' },
+    },
+    { name: 'approvalInvalidatedAt', type: 'date' },
     { name: 'kind', type: 'select', required: true, options: ['transactional', 'bulk', 'digest'] },
     status(
       'status',
@@ -450,11 +568,48 @@ export const EmailMessages: CollectionConfig = {
       type: 'json',
       admin: { description: 'Lists/segments frozen at review; no hidden personalization.' },
     },
+    ref('recipientSnapshot', 'recipient-snapshots'),
+    { name: 'priority', type: 'number', defaultValue: 100 },
     { name: 'reviewedAt', type: 'date' },
     { name: 'cancelCutoffAt', type: 'date' },
     { name: 'translationProject', type: 'text' },
     { name: 'localeCompleteness', type: 'json' },
   ],
+}
+export const EmailTemplates: CollectionConfig = {
+  ...base('email-templates', 'name', 'Audience'),
+  fields: [
+    ...scope(),
+    { name: 'name', type: 'text', required: true },
+    { name: 'version', type: 'text', required: true },
+    { name: 'locale', type: 'text', required: true, defaultValue: 'en' },
+    { name: 'brandTokens', type: 'json', required: true, defaultValue: {} },
+    {
+      name: 'registeredBlocks',
+      type: 'json',
+      required: true,
+      defaultValue: [
+        'heading',
+        'text',
+        'button',
+        'divider',
+        'spacer',
+        'image',
+        'content-card',
+        'social-links',
+        'legal',
+      ],
+    },
+    { name: 'layoutRegions', type: 'json', required: true, defaultValue: ['body', 'footer'] },
+    {
+      name: 'plainTextStrategy',
+      type: 'select',
+      options: ['generated', 'custom'],
+      defaultValue: 'generated',
+    },
+    status('status', ['draft', 'active', 'retired'], 'draft'),
+  ],
+  indexes: [{ fields: ['site', 'name', 'version'], unique: true }],
 }
 export const DeliveryIdentities: CollectionConfig = {
   ...base('delivery-identities', 'emailHash'),
@@ -475,13 +630,55 @@ export const EmailDeliveries: CollectionConfig = {
     { name: 'idempotencyKey', type: 'text', required: true, unique: true },
     status(
       'status',
-      ['queued', 'sending', 'sent', 'delivered', 'bounced', 'complained', 'cancelled', 'failed'],
+      [
+        'queued',
+        'sending',
+        'accepted',
+        'sent',
+        'delivered',
+        'deferred',
+        'bounced',
+        'complained',
+        'unknown',
+        'cancelled',
+        'failed',
+        'dead-letter',
+      ],
       'queued',
     ),
     { name: 'provider', type: 'text' },
     { name: 'providerMessageId', type: 'text' },
     { name: 'attempts', type: 'number', defaultValue: 0 },
+    { name: 'acceptedAt', type: 'date' },
+    { name: 'nextAttemptAt', type: 'date', index: true },
+    { name: 'leaseUntil', type: 'date', index: true },
+    { name: 'renderHash', type: 'text', index: true },
+    { name: 'rfcMessageId', type: 'text', index: true },
+    { name: 'unsubscribeToken', type: 'text', access: { read: staffOnly } },
+    {
+      name: 'messageSnapshot',
+      type: 'json',
+      admin: { description: 'Immutable subject/body revision rendered for this recipient.' },
+    },
     { name: 'outcome', type: 'json' },
+    { name: 'recipientSnapshotHash', type: 'text', index: true },
+  ],
+}
+/** Sanitized, idempotent operational evidence. Never persist a provider's raw payload. */
+export const EmailDeliveryEvents: CollectionConfig = {
+  ...base('email-delivery-events', 'idempotencyKey', 'Audience'),
+  fields: [
+    ref('delivery', 'email-deliveries', true),
+    { name: 'idempotencyKey', type: 'text', required: true, unique: true, index: true },
+    { name: 'provider', type: 'text', required: true },
+    { name: 'providerEventId', type: 'text', index: true },
+    status(
+      'event',
+      ['accepted', 'delivered', 'deferred', 'bounce', 'complaint', 'unsubscribe', 'suppression'],
+      'accepted',
+    ),
+    { name: 'occurredAt', type: 'date', required: true },
+    { name: 'evidence', type: 'json', required: true, defaultValue: {} },
   ],
 }
 export const ActivityEvents: CollectionConfig = {
@@ -564,10 +761,32 @@ export const AutomationDefinitions: CollectionConfig = {
   fields: [
     ...scope(),
     { name: 'name', type: 'text', required: true },
-    status('status', ['draft', 'active', 'paused', 'archived'], 'draft'),
-    { name: 'trigger', type: 'json', required: true },
+    status('status', ['draft', 'review', 'active', 'paused', 'cancelled', 'archived'], 'draft'),
+    { name: 'version', type: 'text', required: true },
+    {
+      name: 'trigger',
+      type: 'json',
+      required: true,
+      validate: (value, { siblingData }) => {
+        const sibling = siblingData as Record<string, unknown> | undefined
+        const errors = validateAutomation({
+          trigger: String((value as { type?: string })?.type ?? ''),
+          actions: Array.isArray(sibling?.actions) ? (sibling.actions as any[]) : [],
+        })
+        return errors.length ? errors.join(' ') : true
+      },
+    },
     { name: 'conditions', type: 'json', defaultValue: [] },
     { name: 'actions', type: 'json', required: true },
+    {
+      name: 'reentryPolicy',
+      type: 'select',
+      options: ['never', 'after-exit', 'after-days'],
+      defaultValue: 'never',
+    },
+    { name: 'quietHours', type: 'json' },
+    { name: 'approvedAt', type: 'date' },
+    { name: 'pinned', type: 'json' },
     { name: 'requiresApproval', type: 'checkbox', defaultValue: true },
   ],
 }
@@ -578,6 +797,10 @@ export const AutomationRuns: CollectionConfig = {
     ref('sourceEvent', 'activity-events'),
     { name: 'idempotencyKey', type: 'text', required: true, unique: true },
     status('status', ['queued', 'running', 'completed', 'failed', 'paused'], 'queued'),
+    { name: 'subject', type: 'json', required: true },
+    { name: 'definitionVersion', type: 'text', required: true },
+    { name: 'step', type: 'number', defaultValue: 0 },
+    { name: 'nextRunAt', type: 'date', index: true },
     { name: 'outcome', type: 'json' },
   ],
 }
@@ -591,3 +814,136 @@ export const AutomationFailures: CollectionConfig = {
     { name: 'resolvedAt', type: 'date' },
   ],
 }
+export const RecipientSnapshots: CollectionConfig = {
+  ...base('recipient-snapshots', 'hash', 'Audience'),
+  fields: [
+    ...scope(),
+    ref('message', 'email-messages', true),
+    ref('segment', 'audience-segments'),
+    { name: 'segmentVersion', type: 'text', required: true },
+    { name: 'evaluatedAt', type: 'date', required: true },
+    { name: 'recipients', type: 'json', required: true, access: { read: staffOnly } },
+    { name: 'exclusionCounts', type: 'json', required: true },
+    { name: 'hash', type: 'text', required: true, unique: true, index: true },
+    { name: 'approvalAudit', type: 'json', required: true },
+  ],
+}
+export const AudienceFrequencyPolicies: CollectionConfig = {
+  ...base('audience-frequency-policies', 'purpose', 'Audience'),
+  fields: [
+    ...scope(),
+    { name: 'purpose', type: 'text', required: true },
+    { name: 'channel', type: 'select', options: ['email', 'sms', 'rcs'], defaultValue: 'email' },
+    { name: 'maxSends', type: 'number', required: true, defaultValue: 4 },
+    { name: 'windowHours', type: 'number', required: true, defaultValue: 168 },
+    { name: 'globalFatigue', type: 'checkbox', defaultValue: false },
+  ],
+  indexes: [{ fields: ['site', 'purpose', 'channel'], unique: true }],
+}
+
+export const TelecomMessages: CollectionConfig = {
+  ...base('telecom-messages', 'title', 'Audience'),
+  fields: [
+    ...scope(),
+    { name: 'title', type: 'text', required: true },
+    { name: 'body', type: 'textarea', required: true },
+    status('channel', ['sms', 'rcs'], 'sms'),
+    { name: 'purpose', type: 'text', defaultValue: 'marketing' },
+    status('status', ['draft', 'scheduled', 'queued', 'sent', 'cancelled'], 'draft'),
+    { name: 'from', type: 'text' },
+    { name: 'scheduledFor', type: 'date' },
+    { name: 'rcsContent', type: 'json' },
+    {
+      name: 'fallbackPolicy',
+      type: 'select',
+      options: ['prohibit', 'allow-with-configured-text', 'manual-review'],
+      defaultValue: 'prohibit',
+    },
+    { name: 'fallbackSmsBody', type: 'textarea' },
+    { name: 'audience', type: 'json' },
+    { name: 'estimatedCost', type: 'json' },
+    { name: 'approvedAt', type: 'date' },
+    { name: 'approvedRender', type: 'json' },
+  ],
+}
+
+export const TelecomDeliveries: CollectionConfig = {
+  ...base('telecom-deliveries', 'idempotencyKey', 'Audience'),
+  fields: [
+    ...scope(),
+    ref('message', 'telecom-messages', true),
+    ref('subscriber', 'subscribers'),
+    { name: 'recipientPhone', type: 'text', required: true, access: { read: staffOnly } },
+    { name: 'recipientPhoneHash', type: 'text', required: true, index: true },
+    status('channel', ['sms', 'mms', 'rcs'], 'sms'),
+    { name: 'idempotencyKey', type: 'text', required: true, unique: true },
+    status(
+      'status',
+      [
+        'queued',
+        'sending',
+        'accepted',
+        'sent',
+        'delivered',
+        'failed',
+        'cancelled',
+        'unknown',
+        'manual-review',
+      ],
+      'queued',
+    ),
+    {
+      name: 'deliveryPath',
+      type: 'select',
+      options: ['sms-direct', 'rcs-direct', 'rcs-fallback-to-sms'],
+    },
+    { name: 'provider', type: 'text' },
+    { name: 'providerMessageId', type: 'text', index: true },
+    { name: 'attempts', type: 'number', defaultValue: 0 },
+    { name: 'segments', type: 'number' },
+    { name: 'acceptedAt', type: 'date' },
+    { name: 'scheduledFor', type: 'date' },
+    { name: 'quietHoursDelayedUntil', type: 'date' },
+    { name: 'messageSnapshot', type: 'json' },
+    { name: 'actualCost', type: 'json' },
+    { name: 'outcome', type: 'json' },
+  ],
+}
+
+export const TelecomDeliveryEvents: CollectionConfig = {
+  ...base('telecom-delivery-events', 'idempotencyKey', 'Audience'),
+  fields: [
+    ref('delivery', 'telecom-deliveries', true),
+    { name: 'idempotencyKey', type: 'text', required: true, unique: true, index: true },
+    { name: 'provider', type: 'text', required: true },
+    { name: 'providerEventId', type: 'text', index: true },
+    status(
+      'event',
+      ['accepted', 'sent', 'delivered', 'undelivered', 'failed', 'stop', 'help'],
+      'accepted',
+    ),
+    { name: 'occurredAt', type: 'date', required: true },
+    { name: 'evidence', type: 'json', required: true, defaultValue: {} },
+  ],
+}
+
+export const AudienceExperiments: CollectionConfig = {
+  ...base('audience-experiments', 'title', 'Audience'),
+  fields: [
+    ...scope(),
+    { name: 'title', type: 'text', required: true },
+    { name: 'hypothesis', type: 'textarea', required: true },
+    status('channel', ['email', 'sms', 'rcs'], 'email'),
+    status('metric', ['open_rate', 'click_rate', 'conversion_rate'], 'open_rate'),
+    { name: 'windowHours', type: 'number', defaultValue: 24 },
+    status('status', ['draft', 'running', 'completed', 'concluded', 'aborted'], 'draft'),
+    { name: 'variants', type: 'json', required: true },
+    { name: 'guardrails', type: 'json', required: true },
+    { name: 'winnerDecision', type: 'json', defaultValue: {} },
+    { name: 'allocationsHash', type: 'text' },
+    { name: 'totalAllocated', type: 'number', defaultValue: 0 },
+    { name: 'startedAt', type: 'date' },
+    { name: 'concludedAt', type: 'date' },
+  ],
+}
+

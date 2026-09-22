@@ -9,6 +9,35 @@ import * as disc01DiscoveryWorkflow from './20260914_120000_disc_01_discovery_wo
 import * as disc01SharedSeoFields from './20260914_121000_disc_01_shared_seo_fields'
 import * as disc04SearchProjection from './20260915_130000_disc_04_search_projection'
 import * as editorialQualityGateSnapshot from './20260916_070000_editorial_quality_gate_snapshot'
+import * as aud00DeliverySnapshots from './20260920_000000_aud_00_delivery_snapshots'
+import * as aud01AudienceEvidence from './20260920_010000_aud_01_audience_evidence'
+import * as aud02Forms from './20260920_020000_aud_02_forms'
+import * as aud03EmailComposer from './20260920_030000_aud_03_email_composer'
+import * as aud05EmailDelivery from './20260920_050000_aud_05_email_delivery'
+import * as aud06Telecom from './20260920_060000_aud_06_telecom'
+import * as aud07AudienceCommand from './20260920_070000_aud_07_audience_command'
+import * as aud08AudiencePassGate from './20260920_080000_aud_08_audience_pass_gate'
+import * as comm00CommunityDomain from './20260920_090000_comm_00_community_domain'
+import * as comm01MemberAuthLifecycle from './20260920_100000_comm_01_member_auth_lifecycle'
+import * as comm02ProfileProjection from './20260921_000000_comm_02_profile_projection'
+import * as comm02ProfileMediaUsageRelation from './20260921_010000_comm_02_profile_media_usage_relation'
+import * as comm03aCommentIdentity from './20260921_020000_comm_03a_comment_identity'
+import * as comm03cCommentReactions from './20260921_030000_comm_03c_comment_reactions'
+import * as comm03dThreadLifecycleAndOutbox from './20260921_040000_comm_03d_thread_lifecycle_and_outbox'
+import * as comm04aForumSpaces from './20260921_050000_comm_04a_forum_spaces'
+import * as comm04bForumTopicsPosts from './20260922_000000_comm_04b_forum_topics_posts'
+import * as comm04cForumBrowsingReadState from './20260922_010000_comm_04c_forum_browsing_read_state'
+import * as comm04dForumTopicOperations from './20260922_020000_comm_04d_forum_topic_operations'
+import * as comm05aModerationRegistryReports from './20260922_030000_comm_05a_moderation_registry_reports'
+import * as comm05bModerationActionsSanctions from './20260922_040000_comm_05b_moderation_actions_sanctions'
+import * as comm05cModerationAppealsAudit from './20260922_050000_comm_05c_moderation_appeals_audit'
+import * as comm05dAbuseTriageConsole from './20260922_060000_comm_05d_abuse_triage_console'
+import * as comm07aConversations from './20260922_070000_comm_07a_conversations'
+import * as comm07bMessageRequests from './20260922_080000_comm_07b_message_requests'
+import * as comm07cMessageAttachments from './20260922_090000_comm_07c_message_attachments'
+import * as comm07dGroupAdministration from './20260922_100000_comm_07d_group_administration'
+import * as comm06bInboxProjections from './20260922_110000_comm_06b_inbox_projections'
+import * as comm06cNotificationPreferencesAndOutbox from './20260922_120000_comm_06c_notification_preferences_and_outbox'
 import * as pre04ReusableComposition from './20260912_040000_pre_04_reusable_composition'
 import * as pre01Snapshots from './20260912_020000_pre_01_presentation_snapshots'
 import * as pre03VisualEditor from './20260912_030000_pre_03_visual_editor'
@@ -347,5 +376,150 @@ export const migrations = [
     up: editorialQualityGateSnapshot.up,
     down: editorialQualityGateSnapshot.down,
     name: '20260916_070000_editorial_quality_gate_snapshot',
+  },
+  {
+    up: aud00DeliverySnapshots.up,
+    down: aud00DeliverySnapshots.down,
+    name: '20260920_000000_aud_00_delivery_snapshots',
+  },
+  {
+    up: aud01AudienceEvidence.up,
+    down: aud01AudienceEvidence.down,
+    name: '20260920_010000_aud_01_audience_evidence',
+  },
+  {
+    up: aud02Forms.up,
+    down: aud02Forms.down,
+    name: '20260920_020000_aud_02_forms',
+  },
+  {
+    up: aud03EmailComposer.up,
+    down: aud03EmailComposer.down,
+    name: '20260920_030000_aud_03_email_composer',
+  },
+  {
+    up: aud05EmailDelivery.up,
+    down: aud05EmailDelivery.down,
+    name: '20260920_050000_aud_05_email_delivery',
+  },
+  {
+    up: aud06Telecom.up,
+    down: aud06Telecom.down,
+    name: '20260920_060000_aud_06_telecom',
+  },
+  {
+    up: aud07AudienceCommand.up,
+    down: aud07AudienceCommand.down,
+    name: '20260920_070000_aud_07_audience_command',
+  },
+  {
+    up: aud08AudiencePassGate.up,
+    down: aud08AudiencePassGate.down,
+    name: '20260920_080000_aud_08_audience_pass_gate',
+  },
+  {
+    up: comm00CommunityDomain.up,
+    down: comm00CommunityDomain.down,
+    name: '20260920_090000_comm_00_community_domain',
+  },
+  {
+    up: comm01MemberAuthLifecycle.up,
+    down: comm01MemberAuthLifecycle.down,
+    name: '20260920_100000_comm_01_member_auth_lifecycle',
+  },
+  {
+    up: comm02ProfileProjection.up,
+    down: comm02ProfileProjection.down,
+    name: '20260921_000000_comm_02_profile_projection',
+  },
+  {
+    up: comm02ProfileMediaUsageRelation.up,
+    down: comm02ProfileMediaUsageRelation.down,
+    name: '20260921_010000_comm_02_profile_media_usage_relation',
+  },
+  {
+    up: comm03aCommentIdentity.up,
+    down: comm03aCommentIdentity.down,
+    name: '20260921_020000_comm_03a_comment_identity',
+  },
+  {
+    up: comm03cCommentReactions.up,
+    down: comm03cCommentReactions.down,
+    name: '20260921_030000_comm_03c_comment_reactions',
+  },
+  {
+    up: comm03dThreadLifecycleAndOutbox.up,
+    down: comm03dThreadLifecycleAndOutbox.down,
+    name: '20260921_040000_comm_03d_thread_lifecycle_and_outbox',
+  },
+  {
+    up: comm04aForumSpaces.up,
+    down: comm04aForumSpaces.down,
+    name: '20260921_050000_comm_04a_forum_spaces',
+  },
+  {
+    up: comm04bForumTopicsPosts.up,
+    down: comm04bForumTopicsPosts.down,
+    name: '20260922_000000_comm_04b_forum_topics_posts',
+  },
+  {
+    up: comm04cForumBrowsingReadState.up,
+    down: comm04cForumBrowsingReadState.down,
+    name: '20260922_010000_comm_04c_forum_browsing_read_state',
+  },
+  {
+    up: comm04dForumTopicOperations.up,
+    down: comm04dForumTopicOperations.down,
+    name: '20260922_020000_comm_04d_forum_topic_operations',
+  },
+  {
+    up: comm05aModerationRegistryReports.up,
+    down: comm05aModerationRegistryReports.down,
+    name: '20260922_030000_comm_05a_moderation_registry_reports',
+  },
+  {
+    up: comm05bModerationActionsSanctions.up,
+    down: comm05bModerationActionsSanctions.down,
+    name: '20260922_040000_comm_05b_moderation_actions_sanctions',
+  },
+  {
+    up: comm05cModerationAppealsAudit.up,
+    down: comm05cModerationAppealsAudit.down,
+    name: '20260922_050000_comm_05c_moderation_appeals_audit',
+  },
+  {
+    up: comm05dAbuseTriageConsole.up,
+    down: comm05dAbuseTriageConsole.down,
+    name: '20260922_060000_comm_05d_abuse_triage_console',
+  },
+  {
+    up: comm07aConversations.up,
+    down: comm07aConversations.down,
+    name: '20260922_070000_comm_07a_conversations',
+  },
+  {
+    up: comm07bMessageRequests.up,
+    down: comm07bMessageRequests.down,
+    name: '20260922_080000_comm_07b_message_requests',
+  },
+  {
+    up: comm07cMessageAttachments.up,
+    down: comm07cMessageAttachments.down,
+    name: '20260922_090000_comm_07c_message_attachments',
+  },
+  {
+    up: comm07dGroupAdministration.up,
+    down: comm07dGroupAdministration.down,
+    name: '20260922_100000_comm_07d_group_administration',
+  },
+  {
+    up: comm06bInboxProjections.up,
+    down: comm06bInboxProjections.down,
+    name: '20260922_110000_comm_06b_inbox_projections',
+  },
+  {
+    up: comm06cNotificationPreferencesAndOutbox.up,
+    down: comm06cNotificationPreferencesAndOutbox.down,
+    name: '20260922_120000_comm_06c_notification_preferences_and_outbox',
   },
 ]

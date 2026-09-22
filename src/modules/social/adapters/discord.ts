@@ -135,7 +135,7 @@ export class DiscordAdapter implements SocialProviderAdapter {
       (authContext?.accountHandle as string)
 
     if (botToken && channelId) {
-      let url = `https://discord.com/api/v10/channels/${channelId}/messages`
+      const url = `https://discord.com/api/v10/channels/${channelId}/messages`
       return {
         mode: 'bot',
         url,

@@ -44,9 +44,50 @@ export type FormSchemaSnapshot = {
   locale: string
   fields: readonly FormField[]
   consentText?: string
+  consentRevision?: string
+  consentTranslationStatus?: string
+  sourceLocale?: string
 }
 export const audienceDigest = (value: string) =>
   createHash('sha256').update(value).digest('base64url')
+
+/** Canonical channel keys are deliberately small: provider ids never become identity. */
+export function normalizeEmailAddress(value: string) {
+  const email = value.normalize('NFKC').trim().toLocaleLowerCase('en-US')
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/u.test(email) || email.length > 254)
+    throw new Error('Enter a valid email address.')
+  return email
+}
+
+/** E.164 storage avoids locale-dependent telephone comparisons. */
+export function normalizePhoneAddress(value: string) {
+  const phone = value
+    .normalize('NFKC')
+    .trim()
+    .replace(/[\s().-]/g, '')
+  if (!/^\+[1-9]\d{7,14}$/.test(phone)) throw new Error('Enter an international phone number.')
+  return phone
+}
+
+/** Only declared answers are retained; client supplied extra keys never become data. */
+export function normalizeFormAnswers(schema: FormSchemaSnapshot, values: Record<string, unknown>) {
+  return Object.fromEntries(
+    schema.fields
+      .filter((field) => field.type !== 'hidden')
+      .map((field) => {
+        const value = values[field.key]
+        if (field.type === 'email' && typeof value === 'string')
+          return [field.key, normalizeEmailAddress(value)]
+        if (field.type === 'phone' && typeof value === 'string')
+          return [field.key, normalizePhoneAddress(value)]
+        if (typeof value === 'string')
+          return [field.key, value.normalize('NFKC').trim().slice(0, 10_000)]
+        if (typeof value === 'boolean' || typeof value === 'number') return [field.key, value]
+        return [field.key, null]
+      }),
+  )
+}
+
 export const opaqueDeliveryToken = () => randomBytes(32).toString('base64url')
 export const deliveryIdempotencyKey = (messageId: string, recipientId: string) =>
   `email:${messageId}:${recipientId}`
@@ -85,6 +126,10 @@ export function validateFormSchema(schema: Pick<FormSchemaSnapshot, 'fields'>) {
       errors.push(`Unsupported field type: ${field.type}`)
     if (!field.label.trim() && field.type !== 'hidden')
       errors.push(`Field ${field.key} needs a label.`)
+    if (field.visibleWhen && !/^[a-z][a-z0-9_]{0,63}$/.test(field.visibleWhen.field))
+      errors.push(`Invalid conditional field: ${field.key}`)
+    if (field.type === 'hidden' && field.required)
+      errors.push(`Hidden field ${field.key} cannot be required.`)
   }
   return errors
 }
@@ -181,6 +226,47 @@ export function verifyAudienceToken(token: string, secret: string) {
   return value
 }
 
+export type AudienceTokenClaims = {
+  v: 1
+  siteId: string
+  subscriberId: string
+  purpose: 'preferences' | 'unsubscribe' | 'confirmation'
+  exp: number
+  nonce: string
+}
+
+/** Expiring, purpose-bound token. The nonce is persisted hashed and can be revoked. */
+export function signAudienceClaims(claims: AudienceTokenClaims, secret: string) {
+  return signedAudienceToken(Buffer.from(JSON.stringify(claims)).toString('base64url'), secret)
+}
+export function verifyAudienceClaims(
+  token: string,
+  secret: string,
+  purpose: AudienceTokenClaims['purpose'],
+) {
+  const value = verifyAudienceToken(token, secret)
+  if (!value) return null
+  try {
+    const claims = JSON.parse(
+      Buffer.from(value, 'base64url').toString('utf8'),
+    ) as AudienceTokenClaims
+    if (
+      claims.v !== 1 ||
+      claims.purpose !== purpose ||
+      !claims.siteId ||
+      !claims.subscriberId ||
+      !claims.nonce ||
+      !Number.isSafeInteger(claims.exp) ||
+      claims.exp <= Math.floor(Date.now() / 1000)
+    )
+      return null
+    return claims
+  } catch {
+    return null
+  }
+}
+
+
 /** Provider signatures cover the exact raw body, before JSON parsing. */
 export const signEmailWebhook = (raw: string, secret: string) =>
   createHmac('sha256', secret).update(raw).digest('base64url')
@@ -196,5 +282,5 @@ export function verifyEmailWebhookSignature(raw: string, signature: string, secr
 export const testDeliveryIdempotencyKey = (messageId: string, recipientEmail: string) =>
   `email:test:${messageId}:${audienceDigest(recipientEmail.trim().toLowerCase())}`
 export function isMarketingMessage(kind: string) {
-  return kind === 'bulk' || kind === 'digest'
+  return kind === 'bulk' || kind === 'digest' || kind === 'marketing'
 }

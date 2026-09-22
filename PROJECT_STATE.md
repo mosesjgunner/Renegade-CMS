@@ -1,3 +1,81 @@
+## Community Pass COMM-03D — Thread Lifecycle, Public Rendering Visibility, Subscriptions & Outbox Emission — 2026-09-21
+
+- **Staff Lifecycle Controls**: Implemented staff controls (`closed`, `frozen`, `premoderation_enabled`) in `src/modules/community/thread-lifecycle.ts` and `PATCH /api/v1/sites/:site_id/threads/:thread_id`.
+- **Enforced Lifecycle Rules**:
+  - Closed threads reject new comments with 403 `THREAD_CLOSED` while allowing reactions.
+  - Frozen threads make the thread completely read-only, rejecting comments (403 `THREAD_FROZEN`) and reactions (403 `COMMENT_FROZEN`).
+  - Premoderation enabled stores new comments as `status: 'pending_review'`.
+- **Recursive Tree Retrieval**: Implemented `getThreadCommentsTree` and `GET /api/v1/sites/:site_id/threads/:thread_id/comments` bounded to depth 5 with sort modes: `chronological`, `reverse chronological`, and `reaction volume`.
+- **Public SSR Comment Scrubbing**: Public SSR includes comments only when parent canonical content is published and indexable; completely scrubs `deleted`, `quarantined`, `rejected`, and `pending_review` comments from public SSR; renders canonical `<link rel="canonical">`.
+- **Subscriptions**: Added `comment_thread_subscriptions` with migration `20260921_040000_comm_03d_thread_lifecycle_and_outbox.ts` and endpoints `POST`/`DELETE`/`GET` on `/api/v1/sites/:site_id/threads/:thread_id/subscriptions`.
+- **Atomic Outbox Persistence**: Implemented `persistCommentWithOutbox` committing comment insert and `comment.created.v1` to `outbox_events` within the same transaction client. Payload contains `site_id`, `comment_id`, `thread_id`, `canonical_content_id`, `author_id`, `parent_id`, `mentioned_handles`, and `timestamp`. Verified simulated rollback leaves zero orphans.
+- **Verification Evidence**:
+  - 19 unit tests in `tests/unit/comm-03d-thread-lifecycle.test.ts` passing (57/57 across COMM-03A-D).
+  - TypeScript compilation (`tsc --noEmit`) 0 errors.
+  - ESLint 0 errors / 0 warnings.
+
+## Community Pass COMM-01 — Member Authentication and Account Lifecycle — 2026-09-20
+
+COMM-01 is implemented in code but not release-verified: the additive migration, Payload type regeneration, unit and virtual-WebAuthn browser checks, PostgreSQL/HTTP/restart/backup evidence, and clean aggregate typecheck/lint/build are outstanding gates. Community roles remain site-scoped and distinct from Payload administrator roles; `members` remains canonical identity and `profiles` is its public projection.
+
+## Community Pass COMM-00 — Canonical Member Journey Reconciled — 2026-09-20
+
+The canonical Community journey is executable against real PostgreSQL: 10/10 integration steps pass from magic-link registration through profile, comments, forums, notifications, report/block, moderation, direct messages, suspension/session revocation, restart, and history. Community policy and ownership are documented in `docs/decisions/ADR-0009-community-domain-contract.md`.
+
+Readiness is partial beyond the journey: browser/HTTP boundary parity, passkeys, search, realtime reconnect authorization, attachments, exports/backups, and retention/deletion still require COMM-01 verification.
+
+## Audience Pass Gate AUD-08 — Fully Integrated Self-Hosted Audience Product Verified & Closed — 2026-09-20
+
+- **Audience Pass Gate Execution**: Successfully executed AUD-08 across all 10 core operator and visitor boundaries (`tests/integration/aud-08-audience-pass-gate.integration.test.ts` 10/10 PASS). Proves Renegade CMoS has a complete, working self-hosted Audience product, not only contact schemas and provider interfaces.
+- **Surface Integration & Real Output Boundaries**:
+  - **Site Sender Identity & Transport Verification**: Site-specific sender identities verified; local SMTP / development-capture mail sink captures real rendered messages with RFC unsubscribe headers (`List-Unsubscribe`, `X-Renegade-Purpose`). Unconfigured real providers degrade safely without mock pretending or external network delivery.
+  - **Public Forms & Immutable Submissions**: Accessible newsletter signup and contact forms published on Renegade Party pages. Submissions strictly validated across valid, invalid, duplicate, honeypot, and consent-tested paths; declarations normalized and immutable schema revisions stored.
+  - **Double Opt-In & Preference Center**: Opaque, expiring, purpose-bound signed tokens (`signAudienceClaims`) manage double opt-in confirmation and subscriber preferences. Expired, tampered, or replayed tokens rejected. CSV imports quarantined and audited.
+  - **Explainable Segmentation**: Deterministic multi-rule boolean/set segment evaluation produces explicit inclusion/exclusion reasons and records immutable `recipient_snapshots` with unique SHA-256 hashes.
+  - **Newsletter Composition & Responsive Delivery**: Multi-block responsive emails authored from canonical content/media; previews verify HTML/text and variable fallback simulation; test send and scheduled dispatch deliver through local SMTP boundary.
+  - **Worker Concurrency & Suppression Invariants**: Row locking and idempotency prevent duplicate emission under concurrency; send-time suppression intercept cancels dispatches if unsubscribed post-snapshot; transient errors trigger retryable backoff; bounces and complaints record suppressions.
+  - **Welcome Automations**: Event triggers, multi-step actions (`add-segment-with-consent`, `notify`, `create-draft`), replay rejection, pause/resume, and per-subscriber progression verified.
+  - **Telecom SMS/RCS Engine**: Capability-aware routing (RCS direct vs configured SMS fallback vs rejection without fallback), TCPA quiet hours (8am-9pm local window, DST aware), and instant STOP/HELP inbound keyword parsing and opt-out suppression verified.
+  - **Audience Command Center (`/admin/audience`)**: Unified dashboard with multi-channel dispatch calendar, deliverability health, experiment allocation, and privacy threshold auditing verified.
+  - **Operational Continuity & Restore Rehearsal**: Stack restart, outbox reconciliation, and operational backup/restore prove subscribers, consent events, form submissions, and delivery records are retained while secrets remain protected.
+- **Defects Repaired**:
+  - Normalized relationship ID resolution in `src/modules/audience/service.ts` to prevent foreign key errors on empty strings.
+  - Extended `FormSchemaSnapshot` with `consentRevision`, `consentTranslationStatus`, and `sourceLocale`.
+  - Hardened site ID resolution for populated relationship objects in delivery and telecom tasks.
+  - Extended `isMarketingMessage` to recognize `marketing` messages.
+  - Corrected `email_delivery_events` schema with UUID `delivery_id`.
+  - Recreated `recipient_snapshots` with all canonical scope columns.
+- **Verification Evidence**:
+  - Integration: 10 passed (10) in `tests/integration/aud-08-audience-pass-gate.integration.test.ts`.
+  - Unit tests: 111 passed (111) test files, 670 passed (670) tests.
+  - Browser tests: `tests/browser/aud-08-audience-pass-gate.spec.ts` authored for Playwright.
+  - Production build: Next.js 16.3.0 standalone build compiled with 0 errors (`npm run build`).
+  - Lint & Types: `tsc --noEmit` clean, `eslint` 0 errors.
+  - Documentation: `docs/audience/AUD-08-AUDIENCE-PASS-GATE.md`, `docs/audience/AUD-08-OPERATOR-RUNBOOK.md`.
+- **Handoff**: AUD-08 gate complete. Ready for **COMM-00: Renegade Commerce Surface Pass**.
+
+## Audience Pass AUD-00 — Canonical Audience Boundary (implemented; live release proof pending) — 2026-09-20
+
+- Retained the existing canonical `Subscribers` identity linked to existing `Contacts`/`Members`; no parallel person or CRM collection was introduced. Memberships, consent evidence, preferences, suppressions, messages, deliveries, and receipts remain in the Audience domain.
+- Repaired the earliest journey break: a double-opt-in request now queues one idempotent transactional confirmation delivery. Replays reuse the outstanding pending state rather than emitting another message.
+- Added a development local-mail-sink contract that captures rendered envelope, headers, and links and deduplicates provider acceptance by immutable delivery key.
+- Recipient deliveries pin a `messageSnapshot` at queue time. Migration `20260920_000000_aud_00_delivery_snapshots` backfills retained rows, and worker rendering uses that snapshot; the pre-adapter suppression check remains the final send-time invariant.
+- Required release evidence remains open: PostgreSQL migration/backfill, real HTTP/browser form journey, worker restart/concurrency, provider-webhook bounce/complaint, backup/export exclusion, clean aggregate suite, lint/format/build. AUD-01 starts with durable segment/preference recipient resolution and authenticated admin review UI.
+
+## Audience Pass AUD-03 — Email Composer & Approval (implemented; release verification pending) — 2026-09-20
+
+- Added a versioned `EmailTemplate` / `MessageDesign` boundary with constrained brand tokens, registered email-only blocks, plain-text strategy, deterministic HTML/text/hash snapshots, and no dependency on website themes, CSS, or JavaScript.
+- Canonical content cards pin article revision and resolved URL; stale revision detection and deliberate rebase preserve editor projection overrides. Typed personalized fields escape output and define missing-value fallback/blank/error behavior without expressions.
+- Test sends preserve rendered HTML/text through the existing outbox/provider adapter. Material message/template/source changes reset approval and scheduling pins the approved deterministic render.
+- Required PostgreSQL migration, authenticated browser author/review/test-send journey, provider readiness, deliverability inspection, accessibility, production build, restart/restore, and clean aggregate-suite evidence remain open before AUD-04/AUD-05 reliance.
+
+## Audience Pass AUD-01 — Identity, Consent & Audience Safety (implemented; release verification pending) — 2026-09-20
+
+- Extended the AUD-00 canonical Subscriber/Contact/Member boundary with Unicode-normalized email, E.164 phone validation, explicit cross-site/conflict-denying identity linking, append-only consent evidence, and derived eligibility.
+- Replaced reusable unscoped preference/unsubscribe claims with expiring, revocable nonce-backed, site/subject/purpose scoped claims. Public preference UI writes evidence rather than treating mutable preferences as proof.
+- Added conservative import preview/quarantine, reviewable same-address merge, export package, erasure/anonymization retaining only a suppression digest, expanded suppression provenance, migration `20260920_010000_aud_01_audience_evidence`, and operator runbook.
+- Focused unit/type evidence is required alongside PostgreSQL migration, browser/public token journey, concurrent confirmation/withdrawal, provider feedback, backup/restore, permission, integration, lint/format, and production-build evidence before VERIFIED or AUD-02/AUD-03 delivery reliance.
+
 ## Distribution Pass DIST-05 — Secondary Providers (Telegram, Discord) & Background Queue Engine Implemented & Verified — 2026-09-18
 
 Implemented and verified the complete **DIST-05 Secondary Providers & Background Queue Engine** extension (completing the full 2026 Social Provider Capability Matrix and Architecture Specification):
@@ -1007,6 +1085,200 @@ Supplies the complete cross-surface floor required for a credible working CMS de
 
 ## Discovery Pass DISC-03 — Crawler Infrastructure & Observable Indexing State Implemented; release proof pending — 2026-09-15
 
+The authoritative public-claim inventory is [docs/release/FEATURE_READINESS.md](docs/release/FEATURE_READINESS.md). It was derived from `registeredPayloadDomains`, real route/service/task paths, and PostgreSQL execution rather than collection or UI presence.
+
+PostgreSQL migrations applied cleanly. Individually executed PostgreSQL acceptance tests passed for installation (2), canonical information architecture (12), editorial (2), page builder (2), media (1), and the new coordinated release flow (1). The unit suite passed before audit changes (49 files / 192 tests), and the post-change TypeScript check passed. The aggregate integration command outlived this Windows command host; individual files are the current evidence.
+
+A release-blocking commerce correctness defect was repaired: confirmed payment webhooks previously wrote an order directly, bypassing canonical receipt issuance and idempotent inventory adjustment. They now call `finalizeVerifiedOrder`. Public commerce remains experimental until an HTTP checkout-to-duplicate-webhook acceptance scenario is added.
+
+Release scope is now intentionally narrow: verified editorial publishing, installation recovery, page layouts, ownership boundaries, media metadata/provenance, coordinated product release execution, and durable jobs. Do not claim upload, search, HTTP redirects, translation workflows, community posting, CRM automation, analytics collection, consent UI, outbound webhooks, live federation, or production commerce as ready.
+
+## Productization Pass Prompt 0 reconciliation - 2026-08-29
+
+This prompt inspected deployment/configuration, registered Payload domains/migrations, installation/owner bootstrap, worker/diagnostics, portability, extensions, identity, social/network, editorial/release/community/audience paths, frontend routes and focused tests. The authoritative plan is [docs/PRODUCTIZATION_PASS.md](docs/PRODUCTIZATION_PASS.md).
+
+Already present: an installable PostgreSQL/Payload web-plus-worker application with migration gating, configuration validation, setup/recovery, health checks, durable jobs, backup/restore tooling, revisioned editorial workflow, content-release execution, page layouts, persisted social drafting/queue/audit, public discussions, and notification/assignment vocabulary. Extension/provider manifests and compatibility are contracts, not lifecycle. ActivityPub/Bluesky delivery is deterministic fixtures, not federation. No websocket/SSE/presence/simultaneous editing runtime exists; public discussion is not staff review collaboration.
+
+Canonical direction: extend operations, extension contracts, identity/social delivery, editorial revisions/releases and audience notifications. Preserve Payload, PostgreSQL, Payload Jobs, Site/Publication/Space ownership, portable export/backup and Lean/Standard/Media/Scale as one product. Do not introduce a competing plugin system or major mandatory infrastructure.
+
+Remaining work follows `docs/PRODUCTIZATION_PASS.md`: operator tooling; installation; release/upgrade evidence; extension lifecycle/SDK; shared network core; ActivityPub; ATProto/Bluesky; editorial collaboration; optional realtime; unified system center; acceptance/handoff. No release-readiness claim is made here.
+
+**Next prompt:** Productization Pass Prompt 1 - product/runtime identity and operator tooling (follow the documented dependency order).
+
+---
+
+## Second Pass Prompt 0 reconciliation ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â  2026-08-25
+
+**First Pass remains completed and preserved.** Prompt 0 was audit/reconciliation only. The source-of-truth inventory is [docs/FULL_STACK_COMPLETION.md](docs/FULL_STACK_COMPLETION.md); it records registered schemas, migrations, routes, jobs, providers, auth, tests, reuse boundaries, enterprise capability ownership, and the exact Second Pass order.
+
+**Next Second Pass implementation prompt: Prompt 1 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â  Shared jobs/integration runtime and Coordinated Content Releases.** No newly identified blocker prevents starting it. Reuse `article-family-content`, `revision-records`, `scheduled-publish-jobs`, `campaigns`, and Payload Jobs; do not create a parallel editorial or scheduling family.
+
+## Preserved First Pass evidence
+
+- PostgreSQL/Payload modular-monolith foundation, centralized runtime configuration, structured logging/redaction, health routes, installation/recovery flow, and Payload Jobs were implemented.
+- Canonical ownership is Site/Publication/Space-first with stable UUID identities. Registered core records include Members, Profiles, Spaces, Publications, Content, MediaAssets, sources, taxonomy, forums/discussions, CalendarEntries, Events and Timelines.
+- Editorial implementation includes article-family content, immutable revision records, previews, review/approval lifecycle, scheduled publication and a focused database acceptance scenario.
+- Page layouts, two portable rendering themes, builder APIs, magic-link Member identity/session records, staff passkey authentication, media publishing schema/task boundaries, social distribution schema/task boundaries, and associated focused tests are present.
+- First Pass migrations are registered in `src/migrations/index.ts`: foundation; operations jobs; installation; canonical information architecture; Event/Timeline reconciliation; Site Settings/SEO reconciliation; editorial workflow; page layouts; passwordless identity; media publishing; and social distribution.
+
+## Reconciliation findings
+
+- `src/collections/Audience.ts` and `src/collections/Analytics.ts` are prospective source definitions only: neither is registered by `src/payload.config.ts` nor represented by a migration. `audience-email-delivery` is also not a registered Payload task.
+- Coordinated Content Releases, Translation Operations, Optional Enterprise Administrator Identity, privacy-safe personalization/experimentation, and Unified Site Quality Center have no canonical persisted implementation. Digital Asset Governance must extend existing media records/usages/derivatives rather than create a parallel asset family.
+- Web3/SIWX remains capability-gated contract vocabulary only. Messaging, commerce, crypto/crowdfunding/POD, executable import/export, provider webhooks and live provider connections remain incomplete.
+
+## Verification debt and risks
+
+- Historical evidence records focused integration acceptance for operations, canonical information architecture, editorial, page builder and media. This reconciliation did not rerun database tests because no live PostgreSQL availability was established.
+- Historical handoff records a pre-existing production build failure during `/_global-error` prerendering (`useContext` on null). This remains production-hardening debt.
+- There is no Git worktree in this directory, so clean status/history/remote evidence is unavailable.
+- Background operations must continue to use idempotency keys, bounded retries, observable Payload jobs, permissions, lifecycle state and audit records. External-provider failure must not break public reading or ordinary editorial work.
+
+## Second Pass Prompt 14 ÃƒÂ¯Ã‚Â¿Ã‚Â½ First-party analytics, privacy-safe experimentation, and Quality Center
+
+- Registered canonical analytics events/rollups/goals/snapshots and Command Center preferences, together with the Experiment/Experience family and Quality Policy/Rule/Scan/Issue/Exception/Waiver/Report family.
+- Analytics remains first-party, consent-gated, deduplicated and bounded; rollups aggregate only bounded deduplicated windows. No fingerprinting, cross-site identity graph, or third-party tracking is introduced.
+- Experiment variants are registered components only. Deterministic salted assignment returns a non-personalized control on opt-out or Lean collection disablement; exposure/conversion are separate idempotent events, analysis gives uncertainty/effect/sample warnings, and winner selection requires human approval.
+- Quality Center reuses local source producers through a common issue shape, blocks release scheduling on publication-blocking findings, keeps remote link failure uncertain, and restricts waivers for security/privacy/blocking issues.
+- Added metric, privacy-experiment, and quality-policy documentation plus focused Prompt 14 tests. PostgreSQL migration generation remains dependent on the configured service, as recorded in prior Second Pass handoffs.
+
+## Final Implementation Pass Prompt 16 — Scoped team collaboration
+
+- Added scoped Site, Publication, and Space memberships using the existing Member identity and an optional User-to-Member enterprise-administrator link. Roles resolve to granular permissions with scoped custom grants; no application login or hardcoded per-route role system was added.
+- Team invitations retain only normalized-email and opaque-token hashes, expire, accept once for an already verified existing member, can be revoked, create scope membership, and write audit/activity/notification records.
+- Editorial assignments, review handoff notifications, revision-linked staff discussions/comments/mentions, resolution state, and approval/rejection/release notification helpers extend canonical content, article, revision, activity, notification, and release records rather than duplicating revision history.
+- Work conversations/messages are private staff data with scope-plus-participant authorization. They have no ActivityPub projection or federation path and make no encryption claim. The schema migration is `20260829_180000_collaboration`.
+- Verification: generated Payload types, TypeScript, production build, and the full unit suite passed locally; focused coverage exercises scope isolation, invitation expiry/revocation/single use, role permissions, assignments, comments/mentions, notification creation, and unauthorized private-message access.
+
+## Final Implementation Pass Prompt 17 — Lightweight realtime collaboration
+
+- Added a replaceable realtime transport contract, default PostgreSQL-backed durable event outbox, optional SSE stream, authenticated HTTP presence/checkpoint endpoints, and no mandatory broker or external service.
+- Realtime events never contain draft bodies. Canonical Payload/PostgreSQL draft and immutable revision records remain authoritative; concurrent checkpoints use the existing base-revision plus idempotency boundary and return a conflict rather than last-write-wins.
+- Presence is authenticated, scoped, heartbeat-expiring operational state. The worker deletes expired rows; Lean defaults realtime and presence off. Streams recheck membership and close with `access.revoked` after revocation; notifications persist independently and stream only durable pointers.
+
+# Productization Pass Prompt 2 - VPS production bootstrap - 2026-08-29
+
+- Added `install.sh` as the supported restartable Linux VPS bootstrap for the existing PostgreSQL + migration + web + worker Compose architecture. It validates host capacity, Docker Compose v2, supported CPU, safe listener/configuration, permissions, existing-install state, then generates non-disclosed production secrets and verifies web readiness plus worker heartbeat.
+- Lean/Standard is now carried through production Compose as runtime profile guidance without schema or infrastructure changes. Focused deterministic installer decision tests cover preflight safety, configuration rendering, managed-install detection, placeholder/test-route refusal, and restart classification.
+- No disposable Docker rehearsal or final installation torture test was run in this prompt.
+
+## Productization Pass Prompt 6 - extension lifecycle and SDK - 2026-08-29
+
+- The existing extension/provider contracts now have a server-side lifecycle for manifest discovery, validation, compatibility/dependency/conflict checks, explicit permission review, budget reporting, trusted local/server deployment installation, enable/disable, health degradation, updates, and manifest-governed uninstall.
+- The lifecycle never downloads or executes marketplace JavaScript from the browser. Executable extensions must be explicitly trusted local deployments or trusted packages; activation can declare a restart requirement.
+- Contract, core-compatibility, and schema-compatibility boundaries are versioned. Migration hooks receive manifest-declared ownership and versions; migration failures are contained to the extension, while runtime health failures degrade it without affecting public rendering.
+- A small first-party TypeScript authoring SDK, tiny reference extension, lifecycle tests, and extension architecture documentation are present. Type checking, focused unit verification, and the production build completed successfully.
+
+## Second Pass Prompt 8 - Audience publishing workflow - 2026-08-29
+
+- Extended the registered canonical Audience records and existing Payload Jobs; no parallel subscriber or campaign model was introduced. Public subscription supports explicit consent, configured double opt-in confirmation through the durable email-delivery queue, global unsubscribe/suppression, preference updates, signed tokens, and bounded in-memory request throttling that retains no raw address or fingerprint.
+- Marketing delivery is limited to active, consented subscribers and is re-checked immediately before send. Transactional/operational versus marketing categories are explicit provider-runtime capabilities. SMTP remains the baseline adapter, disabled delivery is a terminal observable outcome, and provider failures stay in retryable durable job state rather than affecting public rendering.
+- Canonical composition supports email blocks, scheduled/reviewed newsletters, idempotent test sends, delivery outcomes, signed bounce/complaint webhook suppression, and digest composition from published canonical content. Delivery tasks use stable delivery keys, retries, terminal-state checks, and a bounded shared worker lane for recovery after restarts.
+- Added public `/subscribe`, `/subscribe/confirm`, `/unsubscribe`, and `/preferences` components and matching protected APIs. Verification completed: `npm run typecheck`, `npm test` (41 files / 157 tests), and `npm run build`.
+- Follow-up verification: Prompt 8 typecheck and unit tests passed after the final transactional-confirmation boundary correction. `next build` compiled the application but its subsequent build-time type phase remains blocked by the pre-existing `src/scripts/verify-upgrade-migration.ts` `db.allowIDOnCreate` optionality mismatch; this is outside the Prompt 8 implementation.
+
+## Second Pass Prompt 9 - Social provider-capable distribution - 2026-08-29
+
+- Preserved the existing content ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ social variant ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ social queue ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ publish attempt ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ provider adapter ÃƒÂ¢Ã¢â‚¬Â Ã¢â‚¬â„¢ external post flow; no new scheduler or queue was introduced.
+- Social adapters now declare granular post/media/link/thread/edit/delete/native-scheduling/authentication/rate-limit capabilities. Bluesky has a live text-post implementation using a server-only per-account app-password environment reference. ActivityPub remains unavailable pending the separate federation prompt; X, Threads, Facebook, Instagram, LinkedIn, YouTube, TikTok, and manual stay explicitly manual handoff.
+- Publishing checks existing external posts before calling a provider, validates provider-specific media/text limits, records each attempt, treats unknown remote outcomes as terminal, and uses existing Payload Job retries (max three provider attempts), queue retry timing, rate-limit retry-after metadata, reconnect-required errors, and dead-letter reasons.
+- Verification: typecheck and full unit suite passed (41 files / 159 tests). A production build compiled, type-checked, and began static data collection, but this environment did not return the build completion line; no full build-pass claim is made.
+
+## Second Pass Prompt 10 - executable basic commerce - 2026-08-29
+
+- Preserved the canonical Product, Cart, CheckoutSession, PaymentIntent, Order, merchant-connection, capability, webhook, and fulfillment records. Verified development-provider webhooks now finalize the canonical order, apply tracked variant inventory once using durable order transition keys, and issue a deterministic receipt; duplicate webhooks remain replay-safe.
+- The deterministic `development-*` payment adapter remains usable without credentials. Checkout now honors the existing optional `commerce.checkout` capability; disabled commerce refuses new checkout while payment reconciliation remains safe.
+- Crypto invoices stay noncustodial and quote-bound. Submitted transaction IDs are lookup hints only; the configured server-side adapter supplies observations. Re-observations update confirmation state without double settlement, while under/overpayment, expiry, provider/indexer absence, and reorg reconciliation remain non-authoritative/exception paths.
+- Crowdfunding entitlements and POD fulfillment continue to extend canonical products, orders, payment intents, and fulfillment metadata rather than creating competing payment/order models. POS retains the existing payment-intent QR, confirmed state, receipt, and idempotent inventory completion boundaries.
+- Verification: `npm run typecheck` passed and `npm test` passed (41 files, 161 tests). `npm run build` compiled successfully and entered the Next.js TypeScript phase; the command environment returned before a final completion line, so no full build-pass claim is made.
+
+# PUB-03 public publishing pass — complete 2026-09-02
+
+Canonical public Pages and Posts render the retained immutable published revision. Draft previews require the creating authenticated session and expire within one hour; public clean URLs, search, redirects, and scheduled publication all use the same publication boundary. Redirect hits are observable and structured rich text is rendered through an allow-list.
+
+---
+
+# Publishing Pass — PUB-04: Cross-Surface Floor for Credible Working CMS Demo — Complete 2026-09-02
+
+Supplies the complete cross-surface floor required for a credible working CMS demonstration (tested and verified against real PostgreSQL 17, local filesystem bytes, Next.js 16 standalone production runtime, and Chromium browser automation):
+
+### 1. Site Settings & Admin Controls
+
+- Canonical `SiteSettings` global schema enhanced with `siteName`, `siteDescription`, `canonicalOrigin`, `locale`, `timezone`, `logoMediaId`, `defaultSocialImageMediaId`, `footerText`, `homepageSelection` (`mode: 'default' | 'page' | 'layout'`, `pageId`, `layoutId`), and `indexingMode: 'index' | 'noindex'`.
+- Access controls ensure administrative modifications are protected, while public runtime resolver `resolveSiteSettings(payload, siteId)` supplies dynamic defaults and tenant fallback values.
+
+### 2. Accessible Multi-Zone Navigation
+
+- Primary, secondary/mobile, and footer navigation menus configurable per publication with internal canonical paths or external URLs, explicit ordering, and strict validation limiting nesting to at most 1 level.
+- Safe link protocols enforced (`http`, `https`, `/`), active states accurately computed against the current pathname, and immediate Next.js cache revalidation triggered on navigation updates.
+- Admin Navigation Center integrated at `/admin` (`/api/admin/navigation`).
+
+### 3. Clean Starter Presentation
+
+- Clean first-party presentation free from CMS promotional copy, AGPL notices, or external template badges.
+- Dedicated `/articles` archive with date-ordered pagination, article summaries, full-text links, and responsive grid layouts.
+- Dedicated `/search` interface and branded `/not-found` 404 handler matching site identity.
+
+### 4. Media Storage Engine & Identity
+
+- Real local disk byte upload supporting PNG, JPEG, WebP, safe sanitized SVG, and PDF with stable identity and automatic SHA-256 hash generation.
+- Safe SVG security policy strictly enforces XML sanitation, rejecting scripts, event handlers (`onload=`), and `<foreignObject>`.
+- Media library browser/picker supporting hero images, inline content images, site logos, and social share cards.
+- Restart persistence simulation verifies byte integrity across process lifecycles.
+- Referenced media deletion refusal (HTTP 409 Conflict) and anonymous raw media protection (HTTP 404).
+
+### 5. Basic SEO, Sitemaps & Crawlers
+
+- Fallback metadata inheritance (`title`, `description`, `canonical`, Open Graph, Twitter cards).
+- Valid Schema.org minimal JSON-LD (`WebSite` and `Article` nodes) reflecting dynamic site settings and article author/publisher data.
+- Standard Next.js metadata routes (`robots.ts` and `sitemap.ts`) honoring `indexingMode: 'noindex'` by emitting `disallow: /` and empty sitemaps, or enumerating canonical published articles when indexed.
+
+### 6. Local Public Search
+
+- Local search engine (`queryLocalSearch`) over current published Post and Page titles, excerpts, taxonomy keywords, and body prose projections.
+- Deterministic score calculation and safe `<mark>` highlighting with complete HTML entity escaping.
+- Draft, private, future-scheduled, and archived records strictly excluded from discovery.
+
+### 7. Comprehensive Verification Suite
+
+- **Unit Tests**: 64 test suites (257 tests) passing 100% in Vitest (`tests/unit/pub-04-publishing-floor.test.ts`).
+- **Integration Tests**: 5/5 tests passing against live PostgreSQL (`tests/integration/pub-04-publishing-floor.integration.test.ts`).
+- **Regression Acceptance**: 2/2 tests passing in `tests/integration/editorial-acceptance.integration.test.ts`.
+- **E2E Browser Acceptance**: Playwright browser test passing against live Next.js server (`tests/browser/pub-04-publishing-floor.spec.ts`).
+- **Production Build**: 100% clean Next.js 16 standalone build (`npm run build`) with zero compilation errors.
+- **Code Quality**: `npm run typecheck` (0 errors), `npm run lint` (0 errors, 0 warnings), and `npm run format:check` (100% compliant).
+
+---
+
+# Publishing Pass — PUB-05: Publisher Operations & Recovery — 2026-09-02
+
+- The default admin entry points now form a normal publisher navigation: Dashboard, Posts, Pages, Media, Menus, Site Settings, Redirects, and View Site. Infrastructure records remain registered but are progressively hidden; owner-only Capability Center remains the route to optional and operational surfaces.
+- Dashboard is task-oriented: it offers write/create/media/menu actions, setup progress, recent drafts, scheduled and published work, direct public View links, and an explicit owner route for actionable operational failures.
+- Operational restore validates manifest checksums and validates the native PostgreSQL and media archive formats before it starts the isolated Compose target. `restore:rehearsal` resets only the restore project volumes, restores, waits for readiness, and compares anonymous public HTML plus media SHA-256 values between source and restored sites.
+- `docs/OPERATIONAL_BACKUP.md` is the canonical command procedure for the backup, isolated recovery, and rehearsal path. It documents the Lean and Standard deployment profiles in conjunction with `docs/PRODUCTION_DEPLOYMENT.md`; no secret material is included in either archive format.
+- Operational npm commands terminate the TypeScript runner argument list before forwarding flags, so Node 24 does not consume `--env-file`. `restore:prepare-env` generates a non-overwriting, restore-only `.env.restore`; backup and restore preflight missing or placeholder environment values before invoking Compose.
+
+## Media Pass MED-05 — Native Small-Video Path Implemented; live profile proof pending — 2026-09-14
+
+- Added canonical video metadata, private source and `video-assets` processing records, validated WebVTT captions, transcript/chapter links, rights/visibility/canonical paths, and shared content/workflow relationships.
+- Added a `VideoProcessor` boundary and real FFprobe/FFmpeg `web-video-v1` recipe in an optional `media-heavy` image/profile. It creates fast-start H.264/AAC MP4, single-rendition VOD HLS, poster, contact sheet, checksums, and codec/duration/dimension metadata. The default worker does not consume the heavy queue.
+- Added progress, concurrency/resource limits, retry/backoff, cancellation, stale recovery, deterministic regeneration, last-good fallback, anonymous range delivery, caption delivery, native player, detail/archive pages, VideoObject schema, and distribution clip intents.
+- Verified a real six-second 640x360 H.264/AAC MP4 in the isolated 2-CPU/2-GiB image: fast-start MP4, HLS, poster, contact sheet, progress events, metadata, and checksums were produced; independent FFprobe opened MP4 and HLS. The production Docker build, live PostgreSQL migration, generated Payload contracts, typecheck, lint, formatting, and 79 unit files / 370 tests passed.
+- Kill/restart queue recovery, anonymous browser seeking through the live published route, and backup/restore rehearsal remain mandatory before MED-05 is marked fully verified.
+
+## Discovery Pass DISC-01 — Publisher Defaults, Resolver Inspection & Canonical Safety (IMPLEMENTED; RELEASE GATE PARTIAL) — 2026-09-14
+
+- Added site and content-type discovery defaults plus per-content overrides without duplicating canonical title, summary or hero-media entry.
+- Added the normal content editor’s progressive disclosure panel showing resolved values, provenance, fallback chains, warnings, repair controls and search/Open Graph/Twitter previews from the public resolver.
+- Hardened multisite canonical origins, path/query normalization, cross-site refusal, redirect/missing/noindex/private target refusal, launch-state indexability and public social-variant/rights eligibility.
+- Synchronized route/home/search/sitemap/feed invalidation across settings, content and media writes; added explicit noindex metadata to draft builder preview, setup, migration admin and 404 surfaces.
+- Added migrations `20260914_120000_disc_01_discovery_workflow` and corrective shared-field migration `20260914_121000_disc_01_shared_seo_fields`, operator guide `docs/discovery/DISC-01-PUBLISHER-WORKFLOW.md`, focused tests, and production-browser raw-source acceptance.
+- **Passed:** TypeScript; zero-warning ESLint; full unit suite (82 files / 398 tests); focused DISC contracts (15/15); PostgreSQL migration; DISC crawler integration (7/7); Windows and Linux-container Next.js production builds (45/45 pages); final PostgreSQL/web/worker restart health; dedicated Chrome/raw HTTP acceptance (1/1) covering Page, Post, canonical origin under spoofed proxy headers, eligible social variant, draft 404/noindex, search/setup/admin/404 noindex, and storage-path refusal.
+- **Full integration sweep:** 24 files / 67 tests passed against PostgreSQL in a disposable repository-root workspace on the Compose network. This workspace binds the checkout (including `vitest.config.ts`, aliases, tests and fixtures) while retaining the release image's Linux dependencies; PRE-01 runs with the checked-in `theme-packages` fixtures. The aggregate repairs retain the canonical builder robots disallow, use the configured origin in podcast feed assertions, tolerate additional valid shared-media usages, and give the genuine 14-stage MED-06 acceptance its explicit 30-second budget.
+- **Open release evidence:** authenticated browser interaction with the newly registered in-editor resolver panel (including clicking repair controls and live inherited-versus-explicit edits) was not executed. DISC-01 remains release-gate partial rather than VERIFIED until that exact admin-browser scenario passes.
+
+## Discovery Pass DISC-03 — Crawler Infrastructure & Observable Indexing State Implemented; release proof pending — 2026-09-15
+
 - Added the canonical sitemap-index route with 1,000-URL deterministic children; removed the conflicting Next metadata sitemap route; paginated resolver source scans; omitted invalid timestamp/image extension facts rather than inventing them; and retained the 25,000-eligible-URL asynchronous-generation recommendation.
 - Added RSS 2.0, JSON Feed 1.1, and stable-ID author/taxonomy/content scoped feeds while preserving Media-owned podcast RSS. Robots now blocks all required management paths while allowing crawler public surfaces.
 - Added idempotent canonical-URL indexing changes: slug transitions remove the old URL and upsert the new URL; media expiry/replacement finds affected public content URLs; the existing outbox handler records provider outcome; and staff can download an honest manual handoff JSON artifact.
@@ -1014,3 +1286,38 @@ Supplies the complete cross-surface floor required for a credible working CMS de
 - **Aggregate integration:** 23 files / 66 tests passed; one PUB-04 assertion failed solely because it expected the old weaker robots disallow list. The assertion was updated for `/guided-setup`, `/internal`, and `/private`, and that affected suite then passed; the full 24-file aggregate was not rerun afterwards.
 - **Open release evidence:** normal production build/restart is blocked by a pre-existing live process locking `.next/standalone` (`EBUSY`); browser Indexing Center acceptance was added but interrupted before execution; lifecycle/output-set/event convergence, indexing-worker restart, non-empty multipage PostgreSQL set comparison, non-empty scoped-feed crawl, migration-status confirmation, and clean repository-wide format check remain open. The WSL Linux Rollup tree also remains unusable (`@rollup/rollup-linux-x64-gnu` absent); Windows-native tooling was used without deleting locks or `node_modules`. **Do not label DISC-03 VERIFIED.**
 - Documentation: `docs/discovery/DISC-03-CRAWLER-INFRASTRUCTURE.md`.
+
+# Audience Pass AUD-05 — Email Delivery (IMPLEMENTED; live-provider/restart release proof pending) — 2026-09-20
+
+- Added the versioned provider-neutral email adapter v1 contract: connection and sender readiness, single/batch/idempotency/reconciliation capability truth, local capture and SMTP implementations, and sanitized error normalization.
+- Per-recipient deliveries now distinguish transport `accepted` from verified `delivered`, persist approved render hashes, Message-ID, retry/lease fields, and retain a deduplicated sanitized provider-event evidence ledger. Timeout is an `unknown` outcome and cannot be automatically retried or failed over.
+- Marketing delivery rechecks canonical eligibility immediately before transport use, creates a recipient-bound unsubscribe token, and supplies absolute List-Unsubscribe/one-click and purpose headers. Bounce, complaint, unsubscribe, and provider suppression feed the existing canonical suppression service; signed webhook events are idempotent and order-safe.
+- Added migration `20260920_050000_aud_05_email_delivery` and `docs/audience-aud-05-operator-guide.md`. Focused email/audience unit tests passed (12 tests). SMTP real credentials, production DNS authentication, PostgreSQL migration, worker-crash/restart, browser journey, security scan, full integration suite, and production build remain required release evidence. AUD-06/AUD-07 can consume canonical delivery/event states but must not infer inbox placement from `accepted`.
+
+# Audience Pass AUD-06 — Telecom Capability & Messaging Safety (IMPLEMENTED; release verification pending) — 2026-09-20
+
+- Added the honest telecom capability architecture: versioned `MessagingProviderAdapter` (v1) for SMS, MMS, and verifiable RCS (basic & rich cards), with explicit sender types, carrier rate limits, delivery receipts, and error taxonomy.
+- Preserved core legal and channel boundaries: email consent never implies SMS/RCS consent; telecom requires explicit, purpose-specific opt-in; phone numbers are stored as normalized E.164 with user display retention; and number reassignment immediately invalidates prior consent and suppresses future sends.
+- Added deterministic Inbound Keyword Processing (`STOP`, `STOPALL`, `UNSUBSCRIBE`, `CANCEL`, `END`, `QUIT`, `ARRET`, `HELP`, `START`): inbound opt-out immediately cancels queued sends before dispatch (`suppressed-before-send`) and establishes send-time suppression. Free-form inquiries route to staff review without marketing reply bot hallucination.
+- Implemented channel composer for GSM-7 (160 single / 153 multi-segment, with 2-septet extension chars) vs. UCS-2 (70 single / 67 multi-segment), personalization fallback (`{{var|fallback}}`), accessibility alt-text validation on RCS media cards, and real-time cost/unit estimation labeled as estimates.
+- Delivered the deterministic local telecom emulator with capability lookup, direct RCS routing, configured SMS fallback (`rcs-fallback-to-sms`), prohibited fallback refusal (`rcs_not_supported_no_fallback`), rate limits, carrier rejection, timeouts, and inbound event simulation.
+- Implemented real provider adapter (`createTwilioTelecomAdapter`) with connection/sender preflight, secret token redaction in diagnostics/logs, and outbound transmission safety gates (`TELECOM_ALLOW_OUTBOUND=true`).
+- Enforced strict TCPA quiet hours (8:00 AM - 9:00 PM local recipient time) with DST-resilient morning send window calculations and exemptions for transactional/emergency messages.
+- Added collections (`telecom-messages`, `telecom-deliveries`, `telecom-delivery-events`), durable worker tasks (`audience-telecom-delivery`, `audience-telecom-dispatch`), migration `20260920_060000_aud_06_telecom`, and operator runbook `docs/audience-aud-06-operator-guide.md`.
+- Verification: 21 focused telecom unit tests passed; full repo unit test suite (110 files / 635 tests) passed 100%; TypeScript compilation (`tsc --noEmit`) clean with 0 errors. Ready for handoff to AUD-07.
+
+# Audience Pass AUD-07 — Audience Command Center & Bounded Operations (IMPLEMENTED; release verification pending) — 2026-09-20
+
+- Created the calm, decision-useful Audience Command Center (`src/modules/admin/AudienceCommandCenter.tsx`, `/admin/audience`) spanning contacts, consent health, forms, segment estimates, unified campaigns/automations (Email/SMS/RCS), deliverability health, and source-labeled outcomes.
+- Established the formal source-labeled Metric Dictionary and event model (`AUDIENCE_METRIC_DICTIONARY`): defined formulas, numerators, denominators, windows, channels, and providers for 16 core metrics. Explicitly resolved inconsistent definitions: `provider_accepted` is labeled as transport handoff (not inbox proof); `carrier_delivered` requires verified carrier DLR or DSN; observed opens are reported with Apple MPP proxy uncertainty bounds; and clicks require known bot and prefetch filtering.
+- Implemented Unified Campaign & Automation Calendar with draft/review/approved/scheduled/running/completed/paused states across Email, SMS, and RCS. Included accessible non-drag keyboard/button controls, frequency conflict warnings (detecting multiple campaigns targeting the same segment within 24h), quiet hours warnings (TCPA 8am-9pm window), and linkage to Workflow/Distribution releases.
+- Built campaign and automation funnel/cohort views with delivery and conversion facts under strict k-anonymity privacy thresholds (`PRIVACY_MIN_COHORT_SIZE = 5`), masking any cell with N < 5 as `< 5` to prevent deanonymization.
+- Designed deliverability health monitoring with explainable trends and direct remediation: warning alerts for hard bounce rate (≥ 2.0%), spam complaints (≥ 0.10%), queue age (> 60m), webhook lag (> 300s), invalid forms, and stale segments, with one-click direct remediation actions.
+- Delivered the Bounded Message Experiments Engine: immutable hypotheses, metrics, windows, and variant allocations; deterministic recipient allocation using seeded SHA-256 cryptographic hashing modulo 100 (reproducible without mid-test reassignment); statistical sample size warnings; deliverability guardrails (auto-pause on bounce > 4% or complaints > 0.15%); and strict manual operator winner decisions (`autoDeployed: false`).
+- Built privacy-aware link attribution with first-party campaign parameters (`?rcid=`, `?rcch=`, `?rcvar=`), support for direct-link/tracking-off opt-out, bot click filtering for corporate security crawlers (Barracuda, Mimecast, Proofpoint) and prefetch headers (`Purpose: prefetch`), with zero third-party fingerprinting.
+- Added privacy-safe CSV/report export under role authorization (`owner`, `administrator`, `staff`) with mandatory k-anonymity masking and no sensitive PII exposure.
+- Registered collection `AudienceExperiments`, migration `20260920_070000_aud_07_audience_command`, and documentation `docs/audience-aud-07-operator-guide.md`.
+- Verification: 35 focused AUD-07 unit tests passed; full repository test suite (111 files / 670 tests) passed 100%; TypeScript compilation (`tsc --noEmit`) clean with 0 errors. Ready for handoff to AUD-08.
+## Community Pass COMM-02 — Public Profile Projection — 2026-09-21
+
+Partial implementation: a versioned allowlisted projection, staff-only raw profile reads, governed image references, field visibility, member editing/preview, discovery opt-out and directory API, site-scoped follow/block/mute writes, handle redirects, export/deletion linkage, and focused policy tests. Release work added and applied `20260921_010000_comm_02_profile_media_usage_relation`, repairing the required `media_usages_rels.profiles_id` FK/index; generated types, TypeScript, production build, and all 11 COMM-00 PostgreSQL integration stages pass. This is **not release-verified**: repository aggregate suites contain unrelated pre-existing registration and legacy schema failures, and the latest focused browser rerun had transient status-region failures. Accessibility, clean multi-browser repeat, restart/recovery, and exhaustive live lifecycle/export evidence remain open. COMM-05/COMM-06 must reuse the canonical projection and block/mute policy.

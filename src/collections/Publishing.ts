@@ -1529,6 +1529,9 @@ export const MediaUsages: CollectionConfig = {
         'podcast-episodes',
         'videos',
         'social-network-variants',
+        // A member profile is a governed use too. Its usage starts private and
+        // requires the same explicit approval as every other public use.
+        'profiles',
       ] as never,
       required: true,
       index: true,

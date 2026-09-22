@@ -83,6 +83,7 @@ export interface Config {
     'identity-tokens': IdentityToken;
     'member-recovery-codes': MemberRecoveryCode;
     'identity-audit-events': IdentityAuditEvent;
+    'member-site-roles': MemberSiteRole;
     profiles: Profile;
     spaces: Space;
     authors: Author;
@@ -192,8 +193,13 @@ export interface Config {
     preferences: Preference;
     suppressions: Suppression;
     'email-messages': EmailMessage;
+    'email-templates': EmailTemplate;
     'delivery-identities': DeliveryIdentity;
     'email-deliveries': EmailDelivery;
+    'email-delivery-events': EmailDeliveryEvent;
+    'telecom-messages': TelecomMessage;
+    'telecom-deliveries': TelecomDelivery;
+    'telecom-delivery-events': TelecomDeliveryEvent;
     'activity-events': ActivityEvent;
     notifications: Notification;
     'notification-preferences': NotificationPreference;
@@ -202,6 +208,11 @@ export interface Config {
     'digest-runs': DigestRun;
     'delivery-receipts': DeliveryReceipt;
     'automation-definitions': AutomationDefinition;
+    'automation-runs': AutomationRun;
+    'automation-failures': AutomationFailure;
+    'recipient-snapshots': RecipientSnapshot;
+    'audience-frequency-policies': AudienceFrequencyPolicy;
+    'audience-experiments': AudienceExperiment;
     'analytics-events': AnalyticsEvent;
     'analytics-consent-records': AnalyticsConsentRecord;
     'analytics-rollups': AnalyticsRollup;
@@ -259,6 +270,7 @@ export interface Config {
     'identity-tokens': IdentityTokensSelect<false> | IdentityTokensSelect<true>;
     'member-recovery-codes': MemberRecoveryCodesSelect<false> | MemberRecoveryCodesSelect<true>;
     'identity-audit-events': IdentityAuditEventsSelect<false> | IdentityAuditEventsSelect<true>;
+    'member-site-roles': MemberSiteRolesSelect<false> | MemberSiteRolesSelect<true>;
     profiles: ProfilesSelect<false> | ProfilesSelect<true>;
     spaces: SpacesSelect<false> | SpacesSelect<true>;
     authors: AuthorsSelect<false> | AuthorsSelect<true>;
@@ -368,8 +380,13 @@ export interface Config {
     preferences: PreferencesSelect<false> | PreferencesSelect<true>;
     suppressions: SuppressionsSelect<false> | SuppressionsSelect<true>;
     'email-messages': EmailMessagesSelect<false> | EmailMessagesSelect<true>;
+    'email-templates': EmailTemplatesSelect<false> | EmailTemplatesSelect<true>;
     'delivery-identities': DeliveryIdentitiesSelect<false> | DeliveryIdentitiesSelect<true>;
     'email-deliveries': EmailDeliveriesSelect<false> | EmailDeliveriesSelect<true>;
+    'email-delivery-events': EmailDeliveryEventsSelect<false> | EmailDeliveryEventsSelect<true>;
+    'telecom-messages': TelecomMessagesSelect<false> | TelecomMessagesSelect<true>;
+    'telecom-deliveries': TelecomDeliveriesSelect<false> | TelecomDeliveriesSelect<true>;
+    'telecom-delivery-events': TelecomDeliveryEventsSelect<false> | TelecomDeliveryEventsSelect<true>;
     'activity-events': ActivityEventsSelect<false> | ActivityEventsSelect<true>;
     notifications: NotificationsSelect<false> | NotificationsSelect<true>;
     'notification-preferences': NotificationPreferencesSelect<false> | NotificationPreferencesSelect<true>;
@@ -378,6 +395,11 @@ export interface Config {
     'digest-runs': DigestRunsSelect<false> | DigestRunsSelect<true>;
     'delivery-receipts': DeliveryReceiptsSelect<false> | DeliveryReceiptsSelect<true>;
     'automation-definitions': AutomationDefinitionsSelect<false> | AutomationDefinitionsSelect<true>;
+    'automation-runs': AutomationRunsSelect<false> | AutomationRunsSelect<true>;
+    'automation-failures': AutomationFailuresSelect<false> | AutomationFailuresSelect<true>;
+    'recipient-snapshots': RecipientSnapshotsSelect<false> | RecipientSnapshotsSelect<true>;
+    'audience-frequency-policies': AudienceFrequencyPoliciesSelect<false> | AudienceFrequencyPoliciesSelect<true>;
+    'audience-experiments': AudienceExperimentsSelect<false> | AudienceExperimentsSelect<true>;
     'analytics-events': AnalyticsEventsSelect<false> | AnalyticsEventsSelect<true>;
     'analytics-consent-records': AnalyticsConsentRecordsSelect<false> | AnalyticsConsentRecordsSelect<true>;
     'analytics-rollups': AnalyticsRollupsSelect<false> | AnalyticsRollupsSelect<true>;
@@ -458,6 +480,8 @@ export interface Config {
       'network-delivery': TaskNetworkDelivery;
       'audience-email-delivery': TaskAudienceEmailDelivery;
       'audience-newsletter-dispatch': TaskAudienceNewsletterDispatch;
+      'audience-telecom-delivery': TaskAudienceTelecomDelivery;
+      'audience-telecom-dispatch': TaskAudienceTelecomDispatch;
       'analytics-retention-cleanup': TaskAnalyticsRetentionCleanup;
       'quality-scan': TaskQualityScan;
       'commerce-abandon-checkouts': TaskCommerceAbandonCheckouts;
@@ -508,13 +532,25 @@ export interface Member {
   id: string;
   displayName: string;
   email?: string | null;
-  status: 'active' | 'disabled' | 'archived';
+  /**
+   * Canonical account lifecycle state. Changes here must go through the account-state service so sessions, notices, and audit stay consistent.
+   */
+  status: 'pending' | 'active' | 'restricted' | 'suspended' | 'deactivated' | 'deletion-pending' | 'deleted';
   disabledAt?: string | null;
   archivedAt?: string | null;
+  restrictedAt?: string | null;
+  suspendedAt?: string | null;
+  deactivatedAt?: string | null;
+  deletionPendingAt?: string | null;
+  deletedAt?: string | null;
   exportRequestedAt?: string | null;
   deletionRequestedAt?: string | null;
   verifiedEmailAt?: string | null;
   moderationReason?: string | null;
+  /**
+   * Reason recorded for the current account state.
+   */
+  stateReason?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -528,6 +564,10 @@ export interface Site {
   slug: string;
   description?: string | null;
   lifecycle: 'draft' | 'active' | 'archived';
+  /**
+   * Controls whether new members may register on this site: open sign-up, invite-only, staff approval required, or registration disabled.
+   */
+  communityRegistrationPolicy: 'open' | 'invite' | 'approval' | 'disabled';
   updatedAt: string;
   createdAt: string;
 }
@@ -791,8 +831,26 @@ export interface Profile {
    * Public handle; changes require an explicit member self-service request.
    */
   handle: string;
+  handleChangedAt?: string | null;
+  /**
+   * Append-only prior handles with change timestamps so old references can redirect.
+   */
+  handleHistory?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   avatar?: (string | null) | MediaAsset;
   cover?: (string | null) | MediaAsset;
+  avatarAlt?: string | null;
+  coverAlt?: string | null;
+  locale?: string | null;
+  timeZone?: string | null;
+  discoveryOptOut?: boolean | null;
   bio?: string | null;
   links?:
     | {
@@ -1406,7 +1464,7 @@ export interface MemberSession {
  */
 export interface IdentityToken {
   id: string;
-  purpose: 'magic-link-sign-in' | 'identity-link' | 'wallet-nonce';
+  purpose: 'magic-link-sign-in' | 'identity-link' | 'wallet-nonce' | 'passkey-registration' | 'passkey-authentication';
   tokenHash: string;
   emailHash?: string | null;
   member?: (string | null) | Member;
@@ -1454,6 +1512,19 @@ export interface IdentityAuditEvent {
     | number
     | boolean
     | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "member-site-roles".
+ */
+export interface MemberSiteRole {
+  id: string;
+  site: string | Site;
+  member: string | Member;
+  role: 'member' | 'trusted' | 'contributor' | 'moderator' | 'community-manager';
+  grantedByUserId?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1611,6 +1682,18 @@ export interface Content {
   seoFocusKeyphrase?: string | null;
   seoNoIndex?: boolean | null;
   seoKeywords?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Optional advanced discovery overrides: socialTitle, socialDescription, socialImage, locale, alternates, follow. Ordinary titles, summaries and hero media are inherited automatically.
+   */
+  discoveryOverrides?:
     | {
         [k: string]: unknown;
       }
@@ -1909,7 +1992,18 @@ export interface ArticleFamilyContent {
   id: string;
   content: string | Content;
   articleKey: string;
-  lifecycle: 'draft' | 'review' | 'approved' | 'scheduled' | 'published' | 'updated' | 'archived' | 'rejected';
+  lifecycle:
+    | 'draft'
+    | 'review'
+    | 'approved'
+    | 'scheduled'
+    | 'published'
+    | 'updated'
+    | 'archived'
+    | 'rejected'
+    | 'changes-requested'
+    | 'cancelled'
+    | 'failed';
   document:
     | {
         [k: string]: unknown;
@@ -2004,6 +2098,33 @@ export interface ArticleFamilyContent {
     | boolean
     | null;
   promotionProvenance?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  qualityGateSnapshot?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  qualityWaiver?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  reviewDecisions:
     | {
         [k: string]: unknown;
       }
@@ -2405,6 +2526,9 @@ export interface ContentRelease {
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   title: string;
+  name?: string | null;
+  purpose?: string | null;
+  ownerTeam?: string | null;
   content?: (string | null) | Content;
   article?: (string | null) | ArticleFamilyContent;
   product?: (string | null) | Product;
@@ -2412,10 +2536,94 @@ export interface ContentRelease {
    * Approved Product revision pinned for storefront release; never a payment instruction.
    */
   productRevision?: string | null;
+  plannedInstant?: string | null;
   scheduledFor?: string | null;
   timeZone?: string | null;
-  status?: ('draft' | 'scheduled' | 'executing' | 'partial-failure' | 'blocked' | 'released' | 'cancelled') | null;
+  labels?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  campaign?: string | null;
+  dependencies?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  releaseRevision?: number | null;
+  status?:
+    | (
+        | 'draft'
+        | 'in-review'
+        | 'approved'
+        | 'scheduled'
+        | 'executing'
+        | 'completed'
+        | 'partially-failed'
+        | 'failed'
+        | 'cancelled'
+        | 'rolled-back'
+        | 'released'
+        | 'blocked'
+        | 'partial-failure'
+      )
+    | null;
   lastScheduleMutationId?: string | null;
+  artifacts?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  gateSnapshot?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  approvals?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  sagaSteps?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  resultingUrls?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  leaseOwner?: string | null;
+  leaseExpiresAt?: string | null;
   scheduleAudit?:
     | {
         [k: string]: unknown;
@@ -2638,6 +2846,8 @@ export interface PayloadJob {
           | 'network-delivery'
           | 'audience-email-delivery'
           | 'audience-newsletter-dispatch'
+          | 'audience-telecom-delivery'
+          | 'audience-telecom-dispatch'
           | 'analytics-retention-cleanup'
           | 'quality-scan'
           | 'commerce-abandon-checkouts';
@@ -2696,6 +2906,8 @@ export interface PayloadJob {
         | 'network-delivery'
         | 'audience-email-delivery'
         | 'audience-newsletter-dispatch'
+        | 'audience-telecom-delivery'
+        | 'audience-telecom-dispatch'
         | 'analytics-retention-cleanup'
         | 'quality-scan'
         | 'commerce-abandon-checkouts'
@@ -2790,7 +3002,12 @@ export interface ScheduledPublishJob {
   scheduledFor: string;
   timeZone: string;
   idempotencyKey: string;
-  status: 'pending-contract' | 'queued' | 'completed' | 'cancelled' | 'failed';
+  status: 'pending-contract' | 'queued' | 'processing' | 'completed' | 'cancelled' | 'failed';
+  leaseOwner?: string | null;
+  leaseExpiresAt?: string | null;
+  retryCount: number;
+  maxRetries: number;
+  lastError?: string | null;
   createdBy?: (string | null) | User;
   updatedAt: string;
   createdAt: string;
@@ -2842,6 +3059,18 @@ export interface Book {
     | null;
   seoFocusKeyphrase?: string | null;
   seoNoIndex?: boolean | null;
+  /**
+   * Optional advanced discovery overrides: socialTitle, socialDescription, socialImage, locale, alternates, follow. Ordinary titles, summaries and hero media are inherited automatically.
+   */
+  discoveryOverrides?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   structuredDataMode: 'none' | 'manual' | 'inherit-source' | 'event-derived' | 'timeline-derived';
   structuredDataPrimaryType?: string | null;
   structuredDataSourceCollection?: ('content' | 'events' | 'timelines' | 'sources' | 'calendar-entries') | null;
@@ -2985,6 +3214,18 @@ export interface PodcastShow {
     | null;
   seoFocusKeyphrase?: string | null;
   seoNoIndex?: boolean | null;
+  /**
+   * Optional advanced discovery overrides: socialTitle, socialDescription, socialImage, locale, alternates, follow. Ordinary titles, summaries and hero media are inherited automatically.
+   */
+  discoveryOverrides?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   structuredDataMode: 'none' | 'manual' | 'inherit-source' | 'event-derived' | 'timeline-derived';
   structuredDataPrimaryType?: string | null;
   structuredDataSourceCollection?: ('content' | 'events' | 'timelines' | 'sources' | 'calendar-entries') | null;
@@ -3072,6 +3313,18 @@ export interface PodcastEpisode {
     | null;
   seoFocusKeyphrase?: string | null;
   seoNoIndex?: boolean | null;
+  /**
+   * Optional advanced discovery overrides: socialTitle, socialDescription, socialImage, locale, alternates, follow. Ordinary titles, summaries and hero media are inherited automatically.
+   */
+  discoveryOverrides?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   structuredDataMode: 'none' | 'manual' | 'inherit-source' | 'event-derived' | 'timeline-derived';
   structuredDataPrimaryType?: string | null;
   structuredDataSourceCollection?: ('content' | 'events' | 'timelines' | 'sources' | 'calendar-entries') | null;
@@ -3209,6 +3462,18 @@ export interface VideoChannel {
     | null;
   seoFocusKeyphrase?: string | null;
   seoNoIndex?: boolean | null;
+  /**
+   * Optional advanced discovery overrides: socialTitle, socialDescription, socialImage, locale, alternates, follow. Ordinary titles, summaries and hero media are inherited automatically.
+   */
+  discoveryOverrides?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   structuredDataMode: 'none' | 'manual' | 'inherit-source' | 'event-derived' | 'timeline-derived';
   structuredDataPrimaryType?: string | null;
   structuredDataSourceCollection?: ('content' | 'events' | 'timelines' | 'sources' | 'calendar-entries') | null;
@@ -3277,6 +3542,18 @@ export interface VideoPlaylist {
     | null;
   seoFocusKeyphrase?: string | null;
   seoNoIndex?: boolean | null;
+  /**
+   * Optional advanced discovery overrides: socialTitle, socialDescription, socialImage, locale, alternates, follow. Ordinary titles, summaries and hero media are inherited automatically.
+   */
+  discoveryOverrides?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   structuredDataMode: 'none' | 'manual' | 'inherit-source' | 'event-derived' | 'timeline-derived';
   structuredDataPrimaryType?: string | null;
   structuredDataSourceCollection?: ('content' | 'events' | 'timelines' | 'sources' | 'calendar-entries') | null;
@@ -3343,6 +3620,18 @@ export interface Video {
     | null;
   seoFocusKeyphrase?: string | null;
   seoNoIndex?: boolean | null;
+  /**
+   * Optional advanced discovery overrides: socialTitle, socialDescription, socialImage, locale, alternates, follow. Ordinary titles, summaries and hero media are inherited automatically.
+   */
+  discoveryOverrides?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   structuredDataMode: 'none' | 'manual' | 'inherit-source' | 'event-derived' | 'timeline-derived';
   structuredDataPrimaryType?: string | null;
   structuredDataSourceCollection?: ('content' | 'events' | 'timelines' | 'sources' | 'calendar-entries') | null;
@@ -3415,6 +3704,10 @@ export interface Video {
  */
 export interface VideoAsset {
   id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
   title: string;
   sourceAsset: string | MediaAsset;
   processingState: 'uploaded' | 'queued' | 'probing' | 'processing' | 'ready' | 'failed' | 'cancelled';
@@ -3536,6 +3829,18 @@ export interface Interview {
     | null;
   seoFocusKeyphrase?: string | null;
   seoNoIndex?: boolean | null;
+  /**
+   * Optional advanced discovery overrides: socialTitle, socialDescription, socialImage, locale, alternates, follow. Ordinary titles, summaries and hero media are inherited automatically.
+   */
+  discoveryOverrides?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   structuredDataMode: 'none' | 'manual' | 'inherit-source' | 'event-derived' | 'timeline-derived';
   structuredDataPrimaryType?: string | null;
   structuredDataSourceCollection?: ('content' | 'events' | 'timelines' | 'sources' | 'calendar-entries') | null;
@@ -3614,6 +3919,18 @@ export interface Livestream {
     | null;
   seoFocusKeyphrase?: string | null;
   seoNoIndex?: boolean | null;
+  /**
+   * Optional advanced discovery overrides: socialTitle, socialDescription, socialImage, locale, alternates, follow. Ordinary titles, summaries and hero media are inherited automatically.
+   */
+  discoveryOverrides?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   structuredDataMode: 'none' | 'manual' | 'inherit-source' | 'event-derived' | 'timeline-derived';
   structuredDataPrimaryType?: string | null;
   structuredDataSourceCollection?: ('content' | 'events' | 'timelines' | 'sources' | 'calendar-entries') | null;
@@ -3833,6 +4150,7 @@ export interface SocialAccount {
   displayName: string;
   network:
     | 'activitypub'
+    | 'mastodon'
     | 'bluesky'
     | 'x'
     | 'threads'
@@ -3841,6 +4159,9 @@ export interface SocialAccount {
     | 'linkedin'
     | 'youtube'
     | 'tiktok'
+    | 'pinterest'
+    | 'telegram'
+    | 'discord'
     | 'manual';
   actorType: 'site' | 'publication' | 'space';
   externalAccountId: string;
@@ -4251,6 +4572,18 @@ export interface Event {
     | null;
   seoFocusKeyphrase?: string | null;
   seoNoIndex?: boolean | null;
+  /**
+   * Optional advanced discovery overrides: socialTitle, socialDescription, socialImage, locale, alternates, follow. Ordinary titles, summaries and hero media are inherited automatically.
+   */
+  discoveryOverrides?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   structuredDataMode: 'none' | 'manual' | 'inherit-source' | 'event-derived' | 'timeline-derived';
   structuredDataPrimaryType?: string | null;
   structuredDataSourceCollection?: ('content' | 'events' | 'timelines' | 'sources' | 'calendar-entries') | null;
@@ -4329,6 +4662,7 @@ export interface SocialNetworkVariant {
   label: string;
   network:
     | 'activitypub'
+    | 'mastodon'
     | 'bluesky'
     | 'x'
     | 'threads'
@@ -4337,6 +4671,9 @@ export interface SocialNetworkVariant {
     | 'linkedin'
     | 'youtube'
     | 'tiktok'
+    | 'pinterest'
+    | 'telegram'
+    | 'discord'
     | 'manual';
   text: string;
   linkUrl?: string | null;
@@ -4561,6 +4898,18 @@ export interface Timeline {
     | null;
   seoFocusKeyphrase?: string | null;
   seoNoIndex?: boolean | null;
+  /**
+   * Optional advanced discovery overrides: socialTitle, socialDescription, socialImage, locale, alternates, follow. Ordinary titles, summaries and hero media are inherited automatically.
+   */
+  discoveryOverrides?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   structuredDataMode: 'none' | 'manual' | 'inherit-source' | 'event-derived' | 'timeline-derived';
   structuredDataPrimaryType?: string | null;
   structuredDataSourceCollection?: ('content' | 'events' | 'timelines' | 'sources' | 'calendar-entries') | null;
@@ -4703,6 +5052,10 @@ export interface MediaUsage {
     | {
         relationTo: 'social-network-variants';
         value: string | SocialNetworkVariant;
+      }
+    | {
+        relationTo: 'profiles';
+        value: string | Profile;
       };
   usageKey: string;
   targetType: string;
@@ -4857,6 +5210,22 @@ export interface EmailMessage {
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   subject: string;
+  preheader?: string | null;
+  /**
+   * Reviewed from/reply-to identity; provider readiness is checked before test send.
+   */
+  senderIdentity?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  purpose?: string | null;
+  channel?: 'email' | null;
+  language?: string | null;
   blocks:
     | {
         [k: string]: unknown;
@@ -4866,6 +5235,35 @@ export interface EmailMessage {
     | number
     | boolean
     | null;
+  /**
+   * AUD-03 versioned email-only design. Never website CSS/JS or arbitrary HTML.
+   */
+  messageDesign?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  emailTemplate?: (string | null) | EmailTemplate;
+  templateVersion?: string | null;
+  variantKey?: string | null;
+  parentMessage?: (string | null) | EmailMessage;
+  /**
+   * Immutable deterministic HTML/text/hash pinned at approval.
+   */
+  approvedRender?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  approvalInvalidatedAt?: string | null;
   kind: 'transactional' | 'bulk' | 'digest';
   status: 'draft' | 'review' | 'scheduled' | 'queued' | 'sending' | 'sent' | 'cancelled' | 'failed';
   scheduledFor?: string | null;
@@ -4891,6 +5289,8 @@ export interface EmailMessage {
     | number
     | boolean
     | null;
+  recipientSnapshot?: (string | null) | RecipientSnapshot;
+  priority?: number | null;
   reviewedAt?: string | null;
   cancelCutoffAt?: string | null;
   translationProject?: string | null;
@@ -4903,6 +5303,134 @@ export interface EmailMessage {
     | number
     | boolean
     | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "email-templates".
+ */
+export interface EmailTemplate {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  name: string;
+  version: string;
+  locale: string;
+  brandTokens:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  registeredBlocks:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  layoutRegions:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  plainTextStrategy?: ('generated' | 'custom') | null;
+  status: 'draft' | 'active' | 'retired';
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "recipient-snapshots".
+ */
+export interface RecipientSnapshot {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  message: string | EmailMessage;
+  segment?: (string | null) | AudienceSegment;
+  segmentVersion: string;
+  evaluatedAt: string;
+  recipients:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  exclusionCounts:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  hash: string;
+  approvalAudit:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "audience-segments".
+ */
+export interface AudienceSegment {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  name: string;
+  definition:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Immutable SHA-256 version of the typed definition at approval.
+   */
+  version: string;
+  lastEvaluation?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  consentBasisRequired?: boolean | null;
+  status: 'active' | 'archived';
   updatedAt: string;
   createdAt: string;
 }
@@ -5126,6 +5654,8 @@ export interface FormDefinition {
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   name: string;
+  title?: string | null;
+  copy?: string | null;
   template:
     | 'contact'
     | 'newsletter-signup'
@@ -5147,6 +5677,18 @@ export interface FormDefinition {
   visibility: 'public' | 'private' | 'members';
   activeSchema?: (string | null) | FormSchema;
   settings:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Bounded declared actions only: contact, tag, task, notification, approved webhook, redirect, download.
+   */
+  actions?:
     | {
         [k: string]: unknown;
       }
@@ -5269,6 +5811,25 @@ export interface FormSubmission {
   organization?: (string | null) | Organization;
   workflowItem?: (string | null) | WorkflowItem;
   idempotencyKey?: string | null;
+  actionState?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  reviewNotes?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  submittedAt?: string | null;
   retentionMode: 'permanent' | 'expire-at' | 'manual-burn' | 'archive' | 'tombstone';
   retentionExpiresAt?: string | null;
   retentionHold: 'none' | 'legal' | 'moderation';
@@ -5293,6 +5854,7 @@ export interface Contact {
   displayName: string;
   email?: string | null;
   emailHash?: string | null;
+  phoneE164?: string | null;
   member?: (string | null) | Member;
   status: 'lead' | 'active' | 'inactive' | 'blocked' | 'archived';
   profile?:
@@ -5637,21 +6199,10 @@ export interface AudienceList {
   description?: string | null;
   status: 'active' | 'archived';
   doubleOptIn?: boolean | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "audience-segments".
- */
-export interface AudienceSegment {
-  id: string;
-  site: string | Site;
-  publication?: (string | null) | Publication;
-  space?: (string | null) | Space;
-  owner?: (string | null) | Member;
-  name: string;
-  definition:
+  /**
+   * Operator/import source and immutable audit reference. A list is never consent.
+   */
+  provenance?:
     | {
         [k: string]: unknown;
       }
@@ -5660,8 +6211,6 @@ export interface AudienceSegment {
     | number
     | boolean
     | null;
-  consentBasisRequired?: boolean | null;
-  status: 'active' | 'archived';
   updatedAt: string;
   createdAt: string;
 }
@@ -5696,6 +6245,7 @@ export interface Subscriber {
   status: 'pending' | 'active' | 'unsubscribed' | 'suppressed';
   verifiedAt?: string | null;
   globalUnsubscribedAt?: string | null;
+  erasedAt?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -5712,6 +6262,8 @@ export interface SubscriberConfirmationToken {
   usedAt?: string | null;
   locale: string;
   consentWording: string;
+  purpose?: string | null;
+  revokedAt?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -5729,7 +6281,18 @@ export interface ConsentEvent {
   contact?: (string | null) | Contact;
   formSubmission?: (string | null) | FormSubmission;
   audienceList?: (string | null) | AudienceList;
-  event: 'requested' | 'double-opt-in-confirmed' | 'unsubscribe' | 'resubscribe' | 'imported' | 'bounce' | 'complaint';
+  event:
+    | 'requested'
+    | 'double-opt-in-confirmed'
+    | 'unsubscribe'
+    | 'resubscribe'
+    | 'imported'
+    | 'bounce'
+    | 'complaint'
+    | 'preference-granted'
+    | 'preference-withdrawn'
+    | 'operator-correction'
+    | 'erased';
   basis: string;
   wording?: string | null;
   locale?: string | null;
@@ -5743,6 +6306,15 @@ export interface ConsentEvent {
     | number
     | boolean
     | null;
+  channel?: ('email' | 'sms' | 'rcs' | 'push' | 'postal') | null;
+  purpose?: string | null;
+  policyVersion?: string | null;
+  captureSource?: string | null;
+  proofReference?: string | null;
+  jurisdiction?: string | null;
+  actor?: (string | null) | User;
+  ipDigest?: string | null;
+  userAgentDigest?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -5763,6 +6335,7 @@ export interface Preference {
     | number
     | boolean
     | null;
+  derivedAt?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -5777,10 +6350,21 @@ export interface Suppression {
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   emailHash: string;
-  reason: 'unsubscribe' | 'bounce' | 'complaint' | 'provider';
+  reason: 'unsubscribe' | 'bounce' | 'complaint' | 'provider' | 'invalid' | 'block' | 'operator' | 'legal';
   provider?: string | null;
   occurredAt: string;
   global?: boolean | null;
+  scope?: string | null;
+  source?: string | null;
+  details?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -5819,11 +6403,213 @@ export interface EmailDelivery {
   subscriber?: (string | null) | Subscriber;
   recipientEmail: string;
   idempotencyKey: string;
-  status: 'queued' | 'sending' | 'sent' | 'delivered' | 'bounced' | 'complained' | 'cancelled' | 'failed';
+  status:
+    | 'queued'
+    | 'sending'
+    | 'accepted'
+    | 'sent'
+    | 'delivered'
+    | 'deferred'
+    | 'bounced'
+    | 'complained'
+    | 'unknown'
+    | 'cancelled'
+    | 'failed'
+    | 'dead-letter';
   provider?: string | null;
   providerMessageId?: string | null;
   attempts?: number | null;
+  acceptedAt?: string | null;
+  nextAttemptAt?: string | null;
+  leaseUntil?: string | null;
+  renderHash?: string | null;
+  rfcMessageId?: string | null;
+  unsubscribeToken?: string | null;
+  /**
+   * Immutable subject/body revision rendered for this recipient.
+   */
+  messageSnapshot?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   outcome?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  recipientSnapshotHash?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "email-delivery-events".
+ */
+export interface EmailDeliveryEvent {
+  id: string;
+  delivery: string | EmailDelivery;
+  idempotencyKey: string;
+  provider: string;
+  providerEventId?: string | null;
+  event: 'accepted' | 'delivered' | 'deferred' | 'bounce' | 'complaint' | 'unsubscribe' | 'suppression';
+  occurredAt: string;
+  evidence:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "telecom-messages".
+ */
+export interface TelecomMessage {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  title: string;
+  body: string;
+  channel: 'sms' | 'rcs';
+  purpose?: string | null;
+  status: 'draft' | 'scheduled' | 'queued' | 'sent' | 'cancelled';
+  from?: string | null;
+  scheduledFor?: string | null;
+  rcsContent?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  fallbackPolicy?: ('prohibit' | 'allow-with-configured-text' | 'manual-review') | null;
+  fallbackSmsBody?: string | null;
+  audience?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  estimatedCost?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  approvedAt?: string | null;
+  approvedRender?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "telecom-deliveries".
+ */
+export interface TelecomDelivery {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  message: string | TelecomMessage;
+  subscriber?: (string | null) | Subscriber;
+  recipientPhone: string;
+  recipientPhoneHash: string;
+  channel: 'sms' | 'mms' | 'rcs';
+  idempotencyKey: string;
+  status:
+    | 'queued'
+    | 'sending'
+    | 'accepted'
+    | 'sent'
+    | 'delivered'
+    | 'failed'
+    | 'cancelled'
+    | 'unknown'
+    | 'manual-review';
+  deliveryPath?: ('sms-direct' | 'rcs-direct' | 'rcs-fallback-to-sms') | null;
+  provider?: string | null;
+  providerMessageId?: string | null;
+  attempts?: number | null;
+  segments?: number | null;
+  acceptedAt?: string | null;
+  scheduledFor?: string | null;
+  quietHoursDelayedUntil?: string | null;
+  messageSnapshot?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  actualCost?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  outcome?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "telecom-delivery-events".
+ */
+export interface TelecomDeliveryEvent {
+  id: string;
+  delivery: string | TelecomDelivery;
+  idempotencyKey: string;
+  provider: string;
+  providerEventId?: string | null;
+  event: 'accepted' | 'sent' | 'delivered' | 'undelivered' | 'failed' | 'stop' | 'help';
+  occurredAt: string;
+  evidence:
     | {
         [k: string]: unknown;
       }
@@ -6058,7 +6844,8 @@ export interface AutomationDefinition {
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   name: string;
-  status: 'draft' | 'active' | 'paused' | 'archived';
+  status: 'draft' | 'review' | 'active' | 'paused' | 'cancelled' | 'archived';
+  version: string;
   trigger:
     | {
         [k: string]: unknown;
@@ -6086,7 +6873,151 @@ export interface AutomationDefinition {
     | number
     | boolean
     | null;
+  reentryPolicy?: ('never' | 'after-exit' | 'after-days') | null;
+  quietHours?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  approvedAt?: string | null;
+  pinned?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   requiresApproval?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "automation-runs".
+ */
+export interface AutomationRun {
+  id: string;
+  definition: string | AutomationDefinition;
+  sourceEvent?: (string | null) | ActivityEvent;
+  idempotencyKey: string;
+  status: 'queued' | 'running' | 'completed' | 'failed' | 'paused';
+  subject:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  definitionVersion: string;
+  step?: number | null;
+  nextRunAt?: string | null;
+  outcome?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "automation-failures".
+ */
+export interface AutomationFailure {
+  id: string;
+  run: string | AutomationRun;
+  actionIndex: number;
+  error:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  retryable?: boolean | null;
+  resolvedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "audience-frequency-policies".
+ */
+export interface AudienceFrequencyPolicy {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  purpose: string;
+  channel?: ('email' | 'sms' | 'rcs') | null;
+  maxSends: number;
+  windowHours: number;
+  globalFatigue?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "audience-experiments".
+ */
+export interface AudienceExperiment {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  title: string;
+  hypothesis: string;
+  channel: 'email' | 'sms' | 'rcs';
+  metric: 'open_rate' | 'click_rate' | 'conversion_rate';
+  windowHours?: number | null;
+  status: 'draft' | 'running' | 'completed' | 'concluded' | 'aborted';
+  variants:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  guardrails:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  winnerDecision?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  allocationsHash?: string | null;
+  totalAllocated?: number | null;
+  startedAt?: string | null;
+  concludedAt?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -7199,6 +8130,10 @@ export interface PayloadLockedDocument {
         value: string | IdentityAuditEvent;
       } | null)
     | ({
+        relationTo: 'member-site-roles';
+        value: string | MemberSiteRole;
+      } | null)
+    | ({
         relationTo: 'profiles';
         value: string | Profile;
       } | null)
@@ -7635,12 +8570,32 @@ export interface PayloadLockedDocument {
         value: string | EmailMessage;
       } | null)
     | ({
+        relationTo: 'email-templates';
+        value: string | EmailTemplate;
+      } | null)
+    | ({
         relationTo: 'delivery-identities';
         value: string | DeliveryIdentity;
       } | null)
     | ({
         relationTo: 'email-deliveries';
         value: string | EmailDelivery;
+      } | null)
+    | ({
+        relationTo: 'email-delivery-events';
+        value: string | EmailDeliveryEvent;
+      } | null)
+    | ({
+        relationTo: 'telecom-messages';
+        value: string | TelecomMessage;
+      } | null)
+    | ({
+        relationTo: 'telecom-deliveries';
+        value: string | TelecomDelivery;
+      } | null)
+    | ({
+        relationTo: 'telecom-delivery-events';
+        value: string | TelecomDeliveryEvent;
       } | null)
     | ({
         relationTo: 'activity-events';
@@ -7673,6 +8628,26 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'automation-definitions';
         value: string | AutomationDefinition;
+      } | null)
+    | ({
+        relationTo: 'automation-runs';
+        value: string | AutomationRun;
+      } | null)
+    | ({
+        relationTo: 'automation-failures';
+        value: string | AutomationFailure;
+      } | null)
+    | ({
+        relationTo: 'recipient-snapshots';
+        value: string | RecipientSnapshot;
+      } | null)
+    | ({
+        relationTo: 'audience-frequency-policies';
+        value: string | AudienceFrequencyPolicy;
+      } | null)
+    | ({
+        relationTo: 'audience-experiments';
+        value: string | AudienceExperiment;
       } | null)
     | ({
         relationTo: 'analytics-events';
@@ -7868,6 +8843,7 @@ export interface SitesSelect<T extends boolean = true> {
   slug?: T;
   description?: T;
   lifecycle?: T;
+  communityRegistrationPolicy?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -8058,10 +9034,16 @@ export interface MembersSelect<T extends boolean = true> {
   status?: T;
   disabledAt?: T;
   archivedAt?: T;
+  restrictedAt?: T;
+  suspendedAt?: T;
+  deactivatedAt?: T;
+  deletionPendingAt?: T;
+  deletedAt?: T;
   exportRequestedAt?: T;
   deletionRequestedAt?: T;
   verifiedEmailAt?: T;
   moderationReason?: T;
+  stateReason?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -8136,14 +9118,33 @@ export interface IdentityAuditEventsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "member-site-roles_select".
+ */
+export interface MemberSiteRolesSelect<T extends boolean = true> {
+  site?: T;
+  member?: T;
+  role?: T;
+  grantedByUserId?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "profiles_select".
  */
 export interface ProfilesSelect<T extends boolean = true> {
   member?: T;
   displayName?: T;
   handle?: T;
+  handleChangedAt?: T;
+  handleHistory?: T;
   avatar?: T;
   cover?: T;
+  avatarAlt?: T;
+  coverAlt?: T;
+  locale?: T;
+  timeZone?: T;
+  discoveryOptOut?: T;
   bio?: T;
   links?: T;
   preferences?: T;
@@ -8750,14 +9751,29 @@ export interface ContentReleasesSelect<T extends boolean = true> {
   space?: T;
   owner?: T;
   title?: T;
+  name?: T;
+  purpose?: T;
+  ownerTeam?: T;
   content?: T;
   article?: T;
   product?: T;
   productRevision?: T;
+  plannedInstant?: T;
   scheduledFor?: T;
   timeZone?: T;
+  labels?: T;
+  campaign?: T;
+  dependencies?: T;
+  releaseRevision?: T;
   status?: T;
   lastScheduleMutationId?: T;
+  artifacts?: T;
+  gateSnapshot?: T;
+  approvals?: T;
+  sagaSteps?: T;
+  resultingUrls?: T;
+  leaseOwner?: T;
+  leaseExpiresAt?: T;
   scheduleAudit?: T;
   executionJob?: T;
   executionItems?: T;
@@ -8831,6 +9847,7 @@ export interface ContentSelect<T extends boolean = true> {
   seoFocusKeyphrase?: T;
   seoNoIndex?: T;
   seoKeywords?: T;
+  discoveryOverrides?: T;
   relationships?: T;
   seoOverride?: T;
   socialOverride?: T;
@@ -8920,6 +9937,9 @@ export interface ArticleFamilyContentSelect<T extends boolean = true> {
   acceptedMutationKeys?: T;
   revisionComparison?: T;
   promotionProvenance?: T;
+  qualityGateSnapshot?: T;
+  qualityWaiver?: T;
+  reviewDecisions?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -8985,6 +10005,11 @@ export interface ScheduledPublishJobsSelect<T extends boolean = true> {
   timeZone?: T;
   idempotencyKey?: T;
   status?: T;
+  leaseOwner?: T;
+  leaseExpiresAt?: T;
+  retryCount?: T;
+  maxRetries?: T;
+  lastError?: T;
   createdBy?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -9012,6 +10037,7 @@ export interface BooksSelect<T extends boolean = true> {
   seoKeywords?: T;
   seoFocusKeyphrase?: T;
   seoNoIndex?: T;
+  discoveryOverrides?: T;
   structuredDataMode?: T;
   structuredDataPrimaryType?: T;
   structuredDataSourceCollection?: T;
@@ -9096,6 +10122,7 @@ export interface PodcastShowsSelect<T extends boolean = true> {
   seoKeywords?: T;
   seoFocusKeyphrase?: T;
   seoNoIndex?: T;
+  discoveryOverrides?: T;
   structuredDataMode?: T;
   structuredDataPrimaryType?: T;
   structuredDataSourceCollection?: T;
@@ -9150,6 +10177,7 @@ export interface PodcastEpisodesSelect<T extends boolean = true> {
   seoKeywords?: T;
   seoFocusKeyphrase?: T;
   seoNoIndex?: T;
+  discoveryOverrides?: T;
   structuredDataMode?: T;
   structuredDataPrimaryType?: T;
   structuredDataSourceCollection?: T;
@@ -9206,6 +10234,7 @@ export interface VideoChannelsSelect<T extends boolean = true> {
   seoKeywords?: T;
   seoFocusKeyphrase?: T;
   seoNoIndex?: T;
+  discoveryOverrides?: T;
   structuredDataMode?: T;
   structuredDataPrimaryType?: T;
   structuredDataSourceCollection?: T;
@@ -9242,6 +10271,7 @@ export interface VideoPlaylistsSelect<T extends boolean = true> {
   seoKeywords?: T;
   seoFocusKeyphrase?: T;
   seoNoIndex?: T;
+  discoveryOverrides?: T;
   structuredDataMode?: T;
   structuredDataPrimaryType?: T;
   structuredDataSourceCollection?: T;
@@ -9276,6 +10306,7 @@ export interface VideosSelect<T extends boolean = true> {
   seoKeywords?: T;
   seoFocusKeyphrase?: T;
   seoNoIndex?: T;
+  discoveryOverrides?: T;
   structuredDataMode?: T;
   structuredDataPrimaryType?: T;
   structuredDataSourceCollection?: T;
@@ -9312,6 +10343,10 @@ export interface VideosSelect<T extends boolean = true> {
  * via the `definition` "video-assets_select".
  */
 export interface VideoAssetsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
   title?: T;
   sourceAsset?: T;
   processingState?: T;
@@ -9368,6 +10403,7 @@ export interface InterviewsSelect<T extends boolean = true> {
   seoKeywords?: T;
   seoFocusKeyphrase?: T;
   seoNoIndex?: T;
+  discoveryOverrides?: T;
   structuredDataMode?: T;
   structuredDataPrimaryType?: T;
   structuredDataSourceCollection?: T;
@@ -9406,6 +10442,7 @@ export interface LivestreamsSelect<T extends boolean = true> {
   seoKeywords?: T;
   seoFocusKeyphrase?: T;
   seoNoIndex?: T;
+  discoveryOverrides?: T;
   structuredDataMode?: T;
   structuredDataPrimaryType?: T;
   structuredDataSourceCollection?: T;
@@ -9735,6 +10772,7 @@ export interface EventsSelect<T extends boolean = true> {
   seoKeywords?: T;
   seoFocusKeyphrase?: T;
   seoNoIndex?: T;
+  discoveryOverrides?: T;
   structuredDataMode?: T;
   structuredDataPrimaryType?: T;
   structuredDataSourceCollection?: T;
@@ -9789,6 +10827,7 @@ export interface TimelinesSelect<T extends boolean = true> {
   seoKeywords?: T;
   seoFocusKeyphrase?: T;
   seoNoIndex?: T;
+  discoveryOverrides?: T;
   structuredDataMode?: T;
   structuredDataPrimaryType?: T;
   structuredDataSourceCollection?: T;
@@ -10198,11 +11237,14 @@ export interface FormDefinitionsSelect<T extends boolean = true> {
   space?: T;
   owner?: T;
   name?: T;
+  title?: T;
+  copy?: T;
   template?: T;
   publicPath?: T;
   visibility?: T;
   activeSchema?: T;
   settings?: T;
+  actions?: T;
   retentionMode?: T;
   retentionExpiresAt?: T;
   retentionHold?: T;
@@ -10252,6 +11294,9 @@ export interface FormSubmissionsSelect<T extends boolean = true> {
   organization?: T;
   workflowItem?: T;
   idempotencyKey?: T;
+  actionState?: T;
+  reviewNotes?: T;
+  submittedAt?: T;
   retentionMode?: T;
   retentionExpiresAt?: T;
   retentionHold?: T;
@@ -10287,6 +11332,7 @@ export interface ContactsSelect<T extends boolean = true> {
   displayName?: T;
   email?: T;
   emailHash?: T;
+  phoneE164?: T;
   member?: T;
   status?: T;
   profile?: T;
@@ -10490,6 +11536,7 @@ export interface AudienceListsSelect<T extends boolean = true> {
   description?: T;
   status?: T;
   doubleOptIn?: T;
+  provenance?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -10504,6 +11551,8 @@ export interface AudienceSegmentsSelect<T extends boolean = true> {
   owner?: T;
   name?: T;
   definition?: T;
+  version?: T;
+  lastEvaluation?: T;
   consentBasisRequired?: T;
   status?: T;
   updatedAt?: T;
@@ -10534,6 +11583,8 @@ export interface SubscriberConfirmationTokensSelect<T extends boolean = true> {
   usedAt?: T;
   locale?: T;
   consentWording?: T;
+  purpose?: T;
+  revokedAt?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -10553,6 +11604,7 @@ export interface SubscribersSelect<T extends boolean = true> {
   status?: T;
   verifiedAt?: T;
   globalUnsubscribedAt?: T;
+  erasedAt?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -10575,6 +11627,15 @@ export interface ConsentEventsSelect<T extends boolean = true> {
   locale?: T;
   occurredAt?: T;
   evidence?: T;
+  channel?: T;
+  purpose?: T;
+  policyVersion?: T;
+  captureSource?: T;
+  proofReference?: T;
+  jurisdiction?: T;
+  actor?: T;
+  ipDigest?: T;
+  userAgentDigest?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -10586,6 +11647,7 @@ export interface PreferencesSelect<T extends boolean = true> {
   subscriber?: T;
   audienceList?: T;
   preferences?: T;
+  derivedAt?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -10603,6 +11665,9 @@ export interface SuppressionsSelect<T extends boolean = true> {
   provider?: T;
   occurredAt?: T;
   global?: T;
+  scope?: T;
+  source?: T;
+  details?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -10616,17 +11681,51 @@ export interface EmailMessagesSelect<T extends boolean = true> {
   space?: T;
   owner?: T;
   subject?: T;
+  preheader?: T;
+  senderIdentity?: T;
+  purpose?: T;
+  channel?: T;
+  language?: T;
   blocks?: T;
+  messageDesign?: T;
+  emailTemplate?: T;
+  templateVersion?: T;
+  variantKey?: T;
+  parentMessage?: T;
+  approvedRender?: T;
+  approvalInvalidatedAt?: T;
   kind?: T;
   status?: T;
   scheduledFor?: T;
   idempotencyKey?: T;
   tracking?: T;
   audience?: T;
+  recipientSnapshot?: T;
+  priority?: T;
   reviewedAt?: T;
   cancelCutoffAt?: T;
   translationProject?: T;
   localeCompleteness?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "email-templates_select".
+ */
+export interface EmailTemplatesSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  name?: T;
+  version?: T;
+  locale?: T;
+  brandTokens?: T;
+  registeredBlocks?: T;
+  layoutRegions?: T;
+  plainTextStrategy?: T;
+  status?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -10659,7 +11758,101 @@ export interface EmailDeliveriesSelect<T extends boolean = true> {
   provider?: T;
   providerMessageId?: T;
   attempts?: T;
+  acceptedAt?: T;
+  nextAttemptAt?: T;
+  leaseUntil?: T;
+  renderHash?: T;
+  rfcMessageId?: T;
+  unsubscribeToken?: T;
+  messageSnapshot?: T;
   outcome?: T;
+  recipientSnapshotHash?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "email-delivery-events_select".
+ */
+export interface EmailDeliveryEventsSelect<T extends boolean = true> {
+  delivery?: T;
+  idempotencyKey?: T;
+  provider?: T;
+  providerEventId?: T;
+  event?: T;
+  occurredAt?: T;
+  evidence?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "telecom-messages_select".
+ */
+export interface TelecomMessagesSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  title?: T;
+  body?: T;
+  channel?: T;
+  purpose?: T;
+  status?: T;
+  from?: T;
+  scheduledFor?: T;
+  rcsContent?: T;
+  fallbackPolicy?: T;
+  fallbackSmsBody?: T;
+  audience?: T;
+  estimatedCost?: T;
+  approvedAt?: T;
+  approvedRender?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "telecom-deliveries_select".
+ */
+export interface TelecomDeliveriesSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  message?: T;
+  subscriber?: T;
+  recipientPhone?: T;
+  recipientPhoneHash?: T;
+  channel?: T;
+  idempotencyKey?: T;
+  status?: T;
+  deliveryPath?: T;
+  provider?: T;
+  providerMessageId?: T;
+  attempts?: T;
+  segments?: T;
+  acceptedAt?: T;
+  scheduledFor?: T;
+  quietHoursDelayedUntil?: T;
+  messageSnapshot?: T;
+  actualCost?: T;
+  outcome?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "telecom-delivery-events_select".
+ */
+export interface TelecomDeliveryEventsSelect<T extends boolean = true> {
+  delivery?: T;
+  idempotencyKey?: T;
+  provider?: T;
+  providerEventId?: T;
+  event?: T;
+  occurredAt?: T;
+  evidence?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -10775,10 +11968,107 @@ export interface AutomationDefinitionsSelect<T extends boolean = true> {
   owner?: T;
   name?: T;
   status?: T;
+  version?: T;
   trigger?: T;
   conditions?: T;
   actions?: T;
+  reentryPolicy?: T;
+  quietHours?: T;
+  approvedAt?: T;
+  pinned?: T;
   requiresApproval?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "automation-runs_select".
+ */
+export interface AutomationRunsSelect<T extends boolean = true> {
+  definition?: T;
+  sourceEvent?: T;
+  idempotencyKey?: T;
+  status?: T;
+  subject?: T;
+  definitionVersion?: T;
+  step?: T;
+  nextRunAt?: T;
+  outcome?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "automation-failures_select".
+ */
+export interface AutomationFailuresSelect<T extends boolean = true> {
+  run?: T;
+  actionIndex?: T;
+  error?: T;
+  retryable?: T;
+  resolvedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "recipient-snapshots_select".
+ */
+export interface RecipientSnapshotsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  message?: T;
+  segment?: T;
+  segmentVersion?: T;
+  evaluatedAt?: T;
+  recipients?: T;
+  exclusionCounts?: T;
+  hash?: T;
+  approvalAudit?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "audience-frequency-policies_select".
+ */
+export interface AudienceFrequencyPoliciesSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  purpose?: T;
+  channel?: T;
+  maxSends?: T;
+  windowHours?: T;
+  globalFatigue?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "audience-experiments_select".
+ */
+export interface AudienceExperimentsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  title?: T;
+  hypothesis?: T;
+  channel?: T;
+  metric?: T;
+  windowHours?: T;
+  status?: T;
+  variants?: T;
+  guardrails?: T;
+  winnerDecision?: T;
+  allocationsHash?: T;
+  totalAllocated?: T;
+  startedAt?: T;
+  concludedAt?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -11567,6 +12857,18 @@ export interface SiteSetting {
    * Canonical public origin, e.g. https://renegadeparty.org
    */
   canonicalOrigin?: string | null;
+  /**
+   * Optional site-id to canonical-origin map for multisite installs. Origins must be absolute HTTPS URLs in production.
+   */
+  canonicalOriginsBySite?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   locale?: string | null;
   timezone?: string | null;
   /**
@@ -11627,6 +12929,23 @@ export interface SiteSetting {
   logo?: (string | null) | MediaAsset;
   favicon?: (string | null) | MediaAsset;
   defaultSocialImage?: (string | null) | MediaAsset;
+  /**
+   * Optional defaults by content type. Keys may include default, page, post, article, podcast, video, author, taxonomy and search. Each may set titleTemplate, description, socialTitle, socialDescription, socialImage, locale, alternates, index and follow.
+   */
+  discoveryDefaults?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Prelaunch and maintenance safely noindex every public surface. Return this prominently to Live after launch.
+   */
+  launchState?: ('live' | 'prelaunch' | 'maintenance') | null;
+  launchedAt?: string | null;
   sameAs?:
     | {
         [k: string]: unknown;
@@ -11722,6 +13041,18 @@ export interface SiteSetting {
     | null;
   seoFocusKeyphrase?: string | null;
   seoNoIndex?: boolean | null;
+  /**
+   * Optional advanced discovery overrides: socialTitle, socialDescription, socialImage, locale, alternates, follow. Ordinary titles, summaries and hero media are inherited automatically.
+   */
+  discoveryOverrides?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   structuredDataMode: 'none' | 'manual' | 'inherit-source' | 'event-derived' | 'timeline-derived';
   structuredDataPrimaryType?: string | null;
   structuredDataSourceCollection?: ('content' | 'events' | 'timelines' | 'sources' | 'calendar-entries') | null;
@@ -11819,6 +13150,7 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   siteName?: T;
   siteDescription?: T;
   canonicalOrigin?: T;
+  canonicalOriginsBySite?: T;
   locale?: T;
   timezone?: T;
   footerText?: T;
@@ -11874,6 +13206,9 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   logo?: T;
   favicon?: T;
   defaultSocialImage?: T;
+  discoveryDefaults?: T;
+  launchState?: T;
+  launchedAt?: T;
   sameAs?: T;
   contactDefaults?: T;
   socialHandles?: T;
@@ -11895,6 +13230,7 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   seoKeywords?: T;
   seoFocusKeyphrase?: T;
   seoNoIndex?: T;
+  discoveryOverrides?: T;
   structuredDataMode?: T;
   structuredDataPrimaryType?: T;
   structuredDataSourceCollection?: T;
@@ -12248,6 +13584,24 @@ export interface TaskAudienceEmailDelivery {
  * via the `definition` "TaskAudience-newsletter-dispatch".
  */
 export interface TaskAudienceNewsletterDispatch {
+  input?: unknown;
+  output?: unknown;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskAudience-telecom-delivery".
+ */
+export interface TaskAudienceTelecomDelivery {
+  input: {
+    deliveryId: string;
+  };
+  output?: unknown;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskAudience-telecom-dispatch".
+ */
+export interface TaskAudienceTelecomDispatch {
   input?: unknown;
   output?: unknown;
 }

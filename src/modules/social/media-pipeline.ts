@@ -290,7 +290,7 @@ export function adaptImageBuffer(
   }
 
   let outputBuffer = inputBuffer
-  let outputMime = plan.needsFormatConversion ? plan.targetMimeType : currentMime
+  const outputMime = plan.needsFormatConversion ? plan.targetMimeType : currentMime
 
   // If compression is needed (e.g. Bluesky 1MB limit), iteratively downscale buffer slice in simulation
   if (plan.needsCompression && outputBuffer.length > plan.maxFileSizeBytes) {
