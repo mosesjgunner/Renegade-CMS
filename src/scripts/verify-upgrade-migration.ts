@@ -2,10 +2,15 @@ import { Client } from 'pg'
 import { getPayload, type Payload } from 'payload'
 
 import { migrations } from '../migrations'
+import * as eventsEntitlementMigration from '../migrations/20260923_090000_events_required_entitlement'
+import { assertPublishingRuntimeSchema } from './assert-publishing-runtime-schema'
 
 /** Advance this name, and only this name, when the supported upgrade baseline moves. */
-export const UPGRADE_BASELINE = '20260831_200000_member_identity_foundation'
+export const UPGRADE_BASELINE = '20260914_110000_med_05_video_workflow'
 const baselineIndex = migrations.findIndex(({ name }) => name === UPGRADE_BASELINE)
+const eventsEntitlementMigrationIndex = migrations.findIndex(
+  ({ name }) => name === '20260923_090000_events_required_entitlement',
+)
 const ids = {
   site: '10000000-0000-4000-8000-000000000001',
   member: '10000000-0000-4000-8000-000000000002',
@@ -58,18 +63,37 @@ async function createHistoricalFixture(payload: Payload) {
     const record = await create(collection, data)
     ids[key] = String((record as { id: string }).id)
   }
-  await sentinel('site', 'sites', {
-    id: ids.site,
-    name: 'Upgrade Sentinel Site',
-    slug: 'upgrade-sentinel',
-    lifecycle: 'active',
-  })
-  await sentinel('member', 'members', {
-    id: ids.member,
-    displayName: 'Upgrade Sentinel Member',
-    email: 'upgrade-sentinel@example.test',
-    status: 'active',
-  })
+  // Payload's current collection schema includes columns added after UPGRADE_BASELINE
+  // (e.g. media_assets.original_blob_id). payload.create() would insert those columns
+  // even when unset, which fails against the historical schema. Insert baseline-only
+  // columns directly instead.
+  const insertRow = async (table: string, columns: string[], values: unknown[]) => {
+    const placeholders = columns.map((_, index) => `$${index + 1}`).join(', ')
+    await poolFor(payload).query(
+      `INSERT INTO "${table}" (${columns.map((column) => `"${column}"`).join(', ')})
+       VALUES (${placeholders})`,
+      values,
+    )
+  }
+  // The upgrade baseline predates community_registration_policy, which exists
+  // in today's Sites collection. Insert only columns present at the baseline.
+  await insertRow(
+    'sites',
+    ['id', 'name', 'slug', 'lifecycle', 'created_at', 'updated_at'],
+    [ids.site, 'Upgrade Sentinel Site', 'upgrade-sentinel', 'active', timestamp, timestamp],
+  )
+  await insertRow(
+    'members',
+    ['id', 'display_name', 'email', 'status', 'created_at', 'updated_at'],
+    [
+      ids.member,
+      'Upgrade Sentinel Member',
+      'upgrade-sentinel@example.test',
+      'active',
+      timestamp,
+      timestamp,
+    ],
+  )
   await sentinel('identity', 'linked-identities', {
     id: ids.identity,
     member: ids.member,
@@ -78,18 +102,25 @@ async function createHistoricalFixture(payload: Payload) {
     externalSubject: 'upgrade-sentinel@example.test',
     verifiedAt: timestamp,
   })
-  await sentinel('profile', 'profiles', {
-    id: ids.profile,
-    member: ids.member,
-    displayName: 'Upgrade Sentinel Member',
-    handle: 'upgrade-sentinel',
-    visibility: 'public',
-  })
+  await insertRow(
+    'profiles',
+    ['id', 'member_id', 'display_name', 'handle', 'visibility', 'created_at', 'updated_at'],
+    [
+      ids.profile,
+      ids.member,
+      'Upgrade Sentinel Member',
+      'upgrade-sentinel',
+      'public',
+      timestamp,
+      timestamp,
+    ],
+  )
   await poolFor(payload).query(
-    `INSERT INTO spaces (id, member_id, profile_id, handle, canonical_path, display_name, visibility, moderation_state, transfer_state, created_at, updated_at)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $10)`,
+    `INSERT INTO spaces (id, site_id, member_id, profile_id, handle, canonical_path, display_name, visibility, moderation_state, transfer_state, created_at, updated_at)
+     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $11)`,
     [
       ids.space,
+      ids.site,
       ids.member,
       ids.profile,
       'upgrade-sentinel',
@@ -112,19 +143,39 @@ async function createHistoricalFixture(payload: Payload) {
     status: 'active',
     visibility: 'public',
   })
-  await sentinel('media', 'media-assets', {
-    id: ids.media,
-    site: ids.site,
-    publication: ids.publication,
-    space: ids.space,
-    owner: ids.member,
-    title: 'Upgrade sentinel image',
-    kind: 'image',
-    storageLocation: 'local://upgrade-sentinel/image.jpg',
-    storageProvider: 'local',
-    mimeType: 'image/jpeg',
-    altText: 'A migration sentinel image',
-  })
+  await insertRow(
+    'media_assets',
+    [
+      'id',
+      'site_id',
+      'publication_id',
+      'space_id',
+      'owner_id',
+      'title',
+      'kind',
+      'storage_location',
+      'storage_provider',
+      'mime_type',
+      'alt_text',
+      'created_at',
+      'updated_at',
+    ],
+    [
+      ids.media,
+      ids.site,
+      ids.publication,
+      ids.space,
+      ids.member,
+      'Upgrade sentinel image',
+      'image',
+      'local://upgrade-sentinel/image.jpg',
+      'local',
+      'image/jpeg',
+      'A migration sentinel image',
+      timestamp,
+      timestamp,
+    ],
+  )
   await poolFor(payload).query(
     `INSERT INTO content (id, site_id, publication_id, space_id, owner_id, content_type, title, slug, canonical_path, summary, status, published_at, hero_media_id, created_at, updated_at)
      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $14)`,
@@ -261,6 +312,19 @@ async function assertUpgrade(payload: Payload) {
   )
   if (!purposeRows.rows.some((row) => row.enumlabel === 'newsletter'))
     throw new Error('Shared media enum missing newsletter.')
+  const eventsEntitlement = await poolFor(payload).query(
+    `SELECT data_type, is_nullable, column_default FROM information_schema.columns
+     WHERE table_schema = 'public' AND table_name = 'events'
+       AND column_name = 'required_entitlement'`,
+  )
+  if (
+    eventsEntitlement.rows.length !== 1 ||
+    eventsEntitlement.rows[0]?.data_type !== 'jsonb' ||
+    eventsEntitlement.rows[0]?.is_nullable !== 'YES' ||
+    eventsEntitlement.rows[0]?.column_default !== null
+  )
+    throw new Error('Upgrade did not create the optional Events entitlement JSON column.')
+  await assertPublishingRuntimeSchema(poolFor(payload))
   const form = await payload.create({
     collection: 'form-definitions',
     data: {
@@ -287,6 +351,8 @@ async function assertUpgrade(payload: Payload) {
 
 export async function verifyUpgradeMigration() {
   if (baselineIndex < 0) throw new Error(`Missing upgrade baseline ${UPGRADE_BASELINE}.`)
+  if (eventsEntitlementMigrationIndex <= baselineIndex)
+    throw new Error('Missing Events entitlement repair migration after the upgrade baseline.')
   const url = scratchUrl(),
     client = new Client({ connectionString: url })
   await client.connect()
@@ -307,8 +373,60 @@ export async function verifyUpgradeMigration() {
     try {
       await migrationDb(payload).migrate({ migrations: migrations.slice(0, baselineIndex + 1) })
       await createHistoricalFixture(payload)
+      // Reproduce the release-gate database: every pre-fix migration is marked
+      // applied, while the Events JSON column is still absent.
+      await migrationDb(payload).migrate({
+        migrations: migrations.slice(0, eventsEntitlementMigrationIndex),
+      })
+      const preFixMigrations = await poolFor(payload).query(
+        'SELECT count(*) FROM payload_migrations',
+      )
+      const preFixColumn = await poolFor(payload).query(
+        `SELECT 1 FROM information_schema.columns
+         WHERE table_schema = 'public' AND table_name = 'events'
+           AND column_name = 'required_entitlement'`,
+      )
+      if (
+        Number(preFixMigrations.rows[0]?.count) !== eventsEntitlementMigrationIndex ||
+        preFixColumn.rows.length !== 0
+      )
+        throw new Error('Could not reproduce the pre-fix Events schema before upgrading.')
       await migrationDb(payload).migrate({ migrations })
       await assertUpgrade(payload)
+      const migrationArgs = {
+        db: (payload.db as Payload['db'] & { drizzle: unknown }).drizzle,
+        payload,
+        req: {},
+      } as Parameters<typeof eventsEntitlementMigration.down>[0]
+      await eventsEntitlementMigration.down(migrationArgs)
+      const afterDown = await poolFor(payload).query(
+        `SELECT 1 FROM information_schema.columns
+         WHERE table_schema = 'public' AND table_name = 'events'
+           AND column_name = 'required_entitlement'`,
+      )
+      if (afterDown.rows.length !== 0)
+        throw new Error('Events entitlement rollback did not remove its column.')
+      await eventsEntitlementMigration.up(migrationArgs)
+      await eventsEntitlementMigration.up(migrationArgs)
+      const afterRestore = await poolFor(payload).query(
+        `SELECT data_type, is_nullable, column_default FROM information_schema.columns
+         WHERE table_schema = 'public' AND table_name = 'events'
+           AND column_name = 'required_entitlement'`,
+      )
+      const preservedContent = await poolFor(payload).query(
+        'SELECT id FROM content WHERE id = $1',
+        [ids.content],
+      )
+      if (
+        afterRestore.rows.length !== 1 ||
+        afterRestore.rows[0]?.data_type !== 'jsonb' ||
+        afterRestore.rows[0]?.is_nullable !== 'YES' ||
+        afterRestore.rows[0]?.column_default !== null ||
+        preservedContent.rows[0]?.id !== ids.content
+      )
+        throw new Error(
+          'Events entitlement rollback and replay did not preserve the schema or data.',
+        )
       await migrationDb(payload).migrate({ migrations })
       const applied = await poolFor(payload).query('SELECT count(*) FROM payload_migrations')
       if (Number(applied.rows[0]?.count) !== migrations.length)

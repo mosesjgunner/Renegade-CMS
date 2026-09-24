@@ -14,6 +14,14 @@ export const canonicalSlug = (value: unknown): true | string => {
   return true
 }
 
+export const communityHandle = (value: unknown): true | string => {
+  if (typeof value !== 'string' || !/^[a-z0-9]+(?:[-_][a-z0-9]+)*$/.test(value)) {
+    return 'Use lowercase letters, numbers, hyphens, or underscores.'
+  }
+
+  return true
+}
+
 export const capabilityFields = (): Field[] => [
   {
     name: 'capabilities',
@@ -87,6 +95,14 @@ export const seoFields = (): Field[] => [
   { name: 'seoKeywords', type: 'json' },
   { name: 'seoFocusKeyphrase', type: 'text' },
   { name: 'seoNoIndex', type: 'checkbox', defaultValue: false },
+  {
+    name: 'discoveryOverrides',
+    type: 'json',
+    admin: {
+      description:
+        'Optional advanced discovery overrides: socialTitle, socialDescription, socialImage, locale, alternates, follow. Ordinary titles, summaries and hero media are inherited automatically.',
+    },
+  },
 ]
 
 export const structuredDataSourceFields = (): Field[] => [

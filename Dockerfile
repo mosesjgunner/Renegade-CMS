@@ -33,3 +33,10 @@ COPY --from=builder --chown=nextjs:nodejs /app/docker ./docker
 USER nextjs
 EXPOSE 3000
 CMD ["node", "standalone/server.js"]
+
+# Optional target used only by the media-heavy worker. The ordinary web and
+# publishing worker image remains free of FFmpeg and cannot transcode requests.
+FROM runner AS media-heavy
+USER root
+RUN apk add --no-cache ffmpeg
+USER nextjs

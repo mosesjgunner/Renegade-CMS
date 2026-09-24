@@ -1,15 +1,21 @@
+import { tokenStyle } from '@/modules/presentation/tokens'
+import type { Configuration } from '@/modules/presentation/lifecycle'
 import type { ReactNode } from 'react'
-import Link from 'next/link'
 import { Inter, Newsreader, JetBrains_Mono } from 'next/font/google'
 
 import './styles.css'
-import { PublicNavigationBar } from '@/modules/public/PublicNavigation'
+import { resolveTheme } from '@/modules/presentation/registry'
+import { renderPresentation } from '@/modules/presentation/document'
+import type { PresentationDocument } from '@/modules/presentation/contracts'
+import { shellRegistry, themeStyle } from '@/modules/presentation/runtime'
+import { DEFAULT_SITE_NAME } from '@/modules/presentation/themes/identity'
 import { normalizeNavigation } from '@/modules/public/navigation'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import { ConsentManager } from '@/modules/analytics/ConsentManager'
 
 import { resolveSiteSettings } from '@/modules/core/site-settings'
+import { canRenderPublic } from '@/modules/public/contracts'
 
 // Public navigation and branding are PostgreSQL-backed. They must be read at
 // request time so an image build never tries to contact a deployment database.
@@ -35,16 +41,21 @@ const jetbrainsMono = JetBrains_Mono({
 })
 
 export default async function FrontendLayout({ children }: { children: ReactNode }) {
-  let siteName = 'Renegade CMS'
+  let siteName = DEFAULT_SITE_NAME
+  let themeId: string | undefined
+  let themeConfiguration: Configuration | null | undefined
   let siteDescription = ''
   let logoUrl: string | null = null
   let footerText: string | null = null
   let navigation = normalizeNavigation([])
   let siteId: string | undefined
+  const globalRegions: Partial<Record<'header' | 'announcement' | 'cta' | 'footer', ReactNode>> = {}
 
   try {
     const payload = await getPayload({ config })
     const settings = await resolveSiteSettings(payload)
+    themeId = settings.themeId
+    themeConfiguration = settings.themeConfiguration
     siteName = settings.siteName
     siteDescription = settings.siteDescription
     logoUrl = settings.logoUrl
@@ -54,6 +65,7 @@ export default async function FrontendLayout({ children }: { children: ReactNode
       collection: 'publications',
       where: { and: [{ status: { equals: 'active' } }, { visibility: { equals: 'public' } }] },
       depth: 1,
+      sort: '-createdAt',
       limit: 1,
       overrideAccess: true,
     } as never)
@@ -68,10 +80,60 @@ export default async function FrontendLayout({ children }: { children: ReactNode
           ? publication.site
           : (publication.site as { id?: string } | undefined)?.id
     }
+
+    if (siteId) {
+      const regions = await payload.find({
+        collection: 'page-layouts',
+        where: {
+          and: [
+            { site: { equals: siteId } },
+            { surface: { equals: 'global' } },
+            { status: { equals: 'published' } },
+            { visibility: { equals: 'public' } },
+          ],
+        },
+        sort: '-updatedAt',
+        limit: 100,
+        depth: 0,
+        overrideAccess: true,
+      } as never)
+      for (const rawRegion of regions.docs as unknown as Array<Record<string, unknown>>) {
+        if (!canRenderPublic(rawRegion)) continue
+        const slot = rawRegion.slot
+        if (slot !== 'header' && slot !== 'announcement' && slot !== 'cta' && slot !== 'footer')
+          continue
+        // A region can only be public from its immutable published snapshot. This
+        // deliberately ignores current draft blocks and incompatible theme pins.
+        const snapshot = rawRegion.publishedPresentation as
+          | { version?: unknown; document?: PresentationDocument }
+          | undefined
+        const document = snapshot?.document
+        if (
+          snapshot?.version !== 1 ||
+          !document ||
+          document.version !== 1 ||
+          document.siteId !== siteId ||
+          document.theme.version !== resolveTheme(document.theme.id).version
+        )
+          continue
+        const blocks = document.slots[slot] ?? []
+        // The layout template renders its main slot. Re-homing this one already
+        // validated global slot makes the region renderable without giving a
+        // region document authority over page content or the shell itself.
+        const regionDocument: PresentationDocument = {
+          ...document,
+          slots: { main: blocks },
+        }
+        if (!globalRegions[slot])
+          globalRegions[slot] = renderPresentation(regionDocument, resolveTheme(document.theme.id))
+      }
+    }
   } catch {
     // The public shell remains usable before first-run setup and during recovery.
   }
 
+  const theme = resolveTheme(themeId)
+  const StarterShell = shellRegistry[theme.globalRegions.header]
   const currentYear = new Date().getFullYear()
 
   return (
@@ -79,64 +141,27 @@ export default async function FrontendLayout({ children }: { children: ReactNode
       lang="en"
       className={`${inter.variable} ${newsreader.variable} ${jetbrainsMono.variable}`}
     >
-      <body className="min-h-screen flex flex-col font-sans antialiased selection:bg-red-600 selection:text-white">
-        <PublicNavigationBar siteName={siteName} logoUrl={logoUrl} navigation={navigation} />
-
-        {/* Main Content Viewport */}
-        <div className="flex-1">{children}</div>
-        <ConsentManager siteId={siteId} />
-
-        {/* Global Footer */}
-        <footer className="border-t border-stone-200 dark:border-stone-800 bg-stone-100/50 dark:bg-stone-950/50 py-12 mt-20 transition-colors">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="flex flex-col items-center md:items-start gap-1">
-              <p className="text-sm font-semibold tracking-tight text-stone-900 dark:text-stone-100">
-                {siteName}
-              </p>
-              {footerText ? (
-                <p className="text-xs text-stone-500 dark:text-stone-400">{footerText}</p>
-              ) : siteDescription ? (
-                <p className="text-xs text-stone-500 dark:text-stone-400">{siteDescription}</p>
-              ) : (
-                <p className="text-xs text-stone-500 dark:text-stone-400">
-                  © {currentYear} {siteName}. All rights reserved.
-                </p>
-              )}
-            </div>
-            <div className="flex flex-wrap items-center justify-center gap-6 text-xs font-medium text-stone-600 dark:text-stone-400">
-              <Link href="/" className="hover:text-red-600 transition-colors">
-                Home
-              </Link>
-              <Link href="/articles" className="hover:text-red-600 transition-colors">
-                Articles
-              </Link>
-              <Link href="/search" className="hover:text-red-600 transition-colors">
-                Search
-              </Link>
-              {navigation.footer.map((item) =>
-                item.href.startsWith('/') ? (
-                  <Link
-                    key={`${item.label}:${item.href}`}
-                    href={item.href}
-                    className="hover:text-red-600 transition-colors"
-                  >
-                    {item.label}
-                  </Link>
-                ) : (
-                  <a
-                    key={`${item.label}:${item.href}`}
-                    href={item.href}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="hover:text-red-600 transition-colors"
-                  >
-                    {item.label}
-                  </a>
-                ),
-              )}
-            </div>
-          </div>
-        </footer>
+      <body
+        data-theme={themeConfiguration?.id ?? theme.id}
+        data-theme-version={themeConfiguration?.version ?? theme.version}
+        style={{ ...themeStyle(theme), ...tokenStyle(themeConfiguration?.tokens ?? {}) }}
+        className="min-h-screen flex flex-col font-sans antialiased selection:bg-red-600 selection:text-white"
+      >
+        <StarterShell
+          globalHeader={globalRegions.header}
+          globalAnnouncement={globalRegions.announcement}
+          globalCta={globalRegions.cta}
+          globalFooter={globalRegions.footer}
+          consent={<ConsentManager siteId={siteId} />}
+          siteName={siteName}
+          siteDescription={siteDescription}
+          logoUrl={logoUrl}
+          footerText={footerText}
+          navigation={navigation}
+          year={currentYear}
+        >
+          {children}
+        </StarterShell>
       </body>
     </html>
   )

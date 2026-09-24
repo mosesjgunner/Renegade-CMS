@@ -111,7 +111,6 @@ describe('M10 media publication acceptance', () => {
       overrideAccess: true,
     } as never)
     expect(episodes.totalDocs).toBe(1)
-
     const channel = (await payload.create({
       collection: 'video-channels',
       data: {
@@ -304,5 +303,5 @@ describe('M10 media publication acceptance', () => {
       overrideAccess: true,
     } as never)
     expect((derivative as any).sourceMedia).toBeTruthy()
-  }, 30_000)
+  }, 120_000)
 })

@@ -1,4 +1,4 @@
-﻿import { mkdir, rm, writeFile } from 'node:fs/promises'
+import { mkdir, rm, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { spawn } from 'node:child_process'
 import { createReadStream, createWriteStream } from 'node:fs'
@@ -7,6 +7,7 @@ import {
   verifyOperationalBackup,
 } from '../modules/operations/backup'
 import { assertOperationalEnv } from './operational-env'
+import { projectNameFromEnvFile } from './operational-compose'
 
 const args = process.argv.slice(2)
 const value = (name: string, fallback?: string) =>
@@ -23,7 +24,15 @@ const backupRoot = path.resolve(
   output,
   `renegade-backup-${new Date().toISOString().replace(/[:.]/g, '-')}`,
 )
-const composeArgs = ['compose', '--env-file', envFile, '-f', compose]
+const composeArgs = [
+  'compose',
+  '--project-name',
+  projectNameFromEnvFile(envFile),
+  '--env-file',
+  envFile,
+  '-f',
+  compose,
+]
 await assertOperationalEnv(envFile)
 
 function run(command: string, commandArgs: string[], outputFile?: string, inputFile?: string) {
@@ -91,6 +100,8 @@ try {
       'renegade-web',
       '-C',
       '/app/media',
+      '--exclude=./.upload-sessions',
+      '--exclude=.upload-sessions',
       '-czf',
       '-',
       '.',

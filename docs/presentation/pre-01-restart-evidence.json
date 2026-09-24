@@ -1,0 +1,22 @@
+{
+  "checkedAt": "2026-09-12T19:03:34.243Z",
+  "origin": "http://127.0.0.1:3121",
+  "evidence": [
+    {
+      "round": 1,
+      "webPid": 10440,
+      "workerPid": 13768,
+      "ready": true,
+      "publicTheme": "neutral-starter@1.0.0",
+      "stateUnchanged": true
+    },
+    {
+      "round": 2,
+      "webPid": 24236,
+      "workerPid": 25088,
+      "ready": true,
+      "publicTheme": "neutral-starter@1.0.0",
+      "stateUnchanged": true
+    }
+  ]
+}

@@ -16,8 +16,13 @@ describe('Payload PostgreSQL integration', () => {
     const slug = `integration-${randomUUID()}`
     const created = await payload.create({
       collection: 'sites',
-      data: { name: 'Integration Publication', slug, lifecycle: 'active' },
-    })
+      data: {
+        name: 'Integration Publication',
+        slug,
+        lifecycle: 'active',
+        communityRegistrationPolicy: 'open',
+      },
+    } as never)
 
     const read = await payload.find({
       collection: 'sites',

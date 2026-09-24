@@ -150,6 +150,7 @@ describe('Phase B Publisher Final Acceptance Integration', () => {
       episodes: [
         {
           id: 'ep-1',
+          guid: 'ep-1',
           title: 'Episode 1: Architecture',
           slug: 'ep-1-architecture',
           description: 'Deep dive into canonical Payload architecture',

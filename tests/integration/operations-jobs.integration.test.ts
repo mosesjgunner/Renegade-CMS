@@ -1,4 +1,5 @@
-import { spawnSync } from 'node:child_process'
+import { execFile } from 'node:child_process'
+import { promisify } from 'node:util'
 import { randomUUID } from 'node:crypto'
 import path from 'node:path'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
@@ -7,6 +8,7 @@ import { getPayload, type Payload } from 'payload'
 import config from '../../src/payload.config'
 import { OPERATIONS_QUEUE } from '../../src/modules/operations/tasks'
 
+const runProcess = promisify(execFile)
 let payload: Payload
 
 beforeAll(async () => {
@@ -59,17 +61,24 @@ describe('PostgreSQL operations jobs', () => {
   it('runs a future-scheduled job after the queueing process has exited', async () => {
     const tsxCLI = path.resolve('node_modules/tsx/dist/cli.mjs')
     const helper = path.resolve('tests/helpers/job-restart-process.ts')
-    const childOptions = { encoding: 'utf8' as const, env: process.env, timeout: 60_000 }
-    const queuedProcess = spawnSync(process.execPath, [tsxCLI, helper, 'queue'], childOptions)
-    expect(queuedProcess.status, queuedProcess.stderr).toBe(0)
+    // Cold Next/Payload imports on mounted WSL checkouts can exceed one minute.
+    const childOptions = { encoding: 'utf8' as const, env: process.env, timeout: 180_000 }
+    const queuedProcess = await runProcess(
+      process.execPath,
+      [tsxCLI, helper, 'queue'],
+      childOptions,
+    )
     const jobID = queuedProcess.stdout.match(/JOB_ID=([0-9a-f-]{36})/i)?.[1]
     expect(jobID).toBeTruthy()
 
     await new Promise((resolve) => setTimeout(resolve, 350))
-    const runnerProcess = spawnSync(process.execPath, [tsxCLI, helper, 'run', jobID!], childOptions)
-    expect(runnerProcess.status, runnerProcess.stderr).toBe(0)
+    const runnerProcess = await runProcess(
+      process.execPath,
+      [tsxCLI, helper, 'run', jobID!],
+      childOptions,
+    )
     const resultText = runnerProcess.stdout.match(/RESULT=(\{.*\})/)?.[1]
     expect(resultText).toBeTruthy()
     expect(JSON.parse(resultText!)).toMatchObject({ hasError: false })
-  }, 60_000)
+  }, 370_000)
 })

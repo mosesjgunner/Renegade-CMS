@@ -32,7 +32,12 @@ export function PublicForm({ formId, fields, consentText }: Props) {
     )
   }
   return (
-    <form action={submit} className="grid gap-4" noValidate>
+    <form
+      action={submit}
+      className="grid gap-4"
+      noValidate
+      aria-describedby={consentText ? 'form-consent' : undefined}
+    >
       <div aria-hidden="true" className="hidden">
         <label>
           Website
@@ -53,7 +58,7 @@ export function PublicForm({ formId, fields, consentText }: Props) {
                 required={field.required}
                 aria-describedby={field.helpText ? `${field.key}-help` : undefined}
               />
-            ) : field.type === 'select' ? (
+            ) : field.type === 'select' || field.type === 'radio' ? (
               <select name={field.key} required={field.required}>
                 <option value="">Select…</option>
                 {Array.isArray(field.validation?.options)
@@ -76,7 +81,11 @@ export function PublicForm({ formId, fields, consentText }: Props) {
             {field.helpText ? <small id={`${field.key}-help`}>{field.helpText}</small> : null}
           </label>
         ))}
-      {consentText ? <p className="text-sm text-stone-600">{consentText}</p> : null}
+      {consentText ? (
+        <p id="form-consent" className="text-sm text-stone-600">
+          {consentText}
+        </p>
+      ) : null}
       <button className="btn btn-primary" type="submit">
         Submit
       </button>

@@ -1,0 +1,93 @@
+{
+  "fixtureId": "flow-06-campaign-launch-fixture",
+  "candidateSha": "08f4cb12de884e9d7b42fc0f9c2d159a68a51351",
+  "releaseName": "Autumn Resilience Coordinated Launch",
+  "siteId": "site-alpha",
+  "publicationId": "pub-main",
+  "purpose": "Multi-artifact coordinated campaign release for distribution pass gate",
+  "plannedInstant": "2026-09-25T14:00:00.000Z",
+  "timeZone": "America/Chicago",
+  "artifacts": [
+    {
+      "id": "article:art-autumn-resilience-post",
+      "targetType": "article",
+      "targetId": "art-autumn-resilience-post",
+      "title": "Autumn Community Resilience Post",
+      "canonicalUrl": "https://renegadeparty.org/posts/autumn-resilience",
+      "pinnedRevisionSequence": 3,
+      "pinnedHash": "sha256-post-rev3",
+      "status": "succeeded"
+    },
+    {
+      "id": "page:page-autumn-resilience-campaign",
+      "targetType": "page",
+      "targetId": "page-autumn-resilience-campaign",
+      "title": "Autumn Community Resilience Campaign Page",
+      "canonicalUrl": "https://renegadeparty.org/campaigns/autumn-resilience",
+      "pinnedRevisionSequence": 1,
+      "pinnedHash": "sha256-page-rev1",
+      "status": "succeeded"
+    },
+    {
+      "id": "media:media-autumn-hero",
+      "targetType": "media",
+      "targetId": "media-autumn-hero",
+      "title": "Autumn Campaign Hero Image",
+      "canonicalUrl": "https://renegadeparty.org/media/autumn-hero.webp",
+      "pinnedRevisionSequence": 1,
+      "pinnedHash": "sha256-media-v1",
+      "mediaRightsExpiresAt": "2027-01-01T00:00:00.000Z",
+      "status": "succeeded"
+    },
+    {
+      "id": "redirect:redir-autumn-campaign",
+      "targetType": "redirect",
+      "targetId": "redir-autumn-campaign",
+      "title": "Old Campaign Redirect",
+      "pinnedHash": "sha256-redir-autumn",
+      "redirectRule": {
+        "fromPath": "/old-autumn",
+        "toPath": "/campaigns/resilience",
+        "statusCode": "301",
+        "match": "exact",
+        "enabled": true
+      },
+      "status": "succeeded"
+    },
+    {
+      "id": "translation:art-autumn-resilience-post:es",
+      "targetType": "article",
+      "targetId": "art-autumn-resilience-post",
+      "title": "Resiliencia Comunitaria de Otoño",
+      "canonicalUrl": "https://renegadeparty.org/es/posts/resiliencia-comunitaria-otono",
+      "locale": "es",
+      "translationGroupId": "concept-autumn-resilience",
+      "pinnedRevisionSequence": 4,
+      "pinnedHash": "sha256-post-rev4-es",
+      "humanReviewed": true,
+      "completenessScore": 98,
+      "status": "succeeded"
+    }
+  ],
+  "preflightGates": {
+    "status": "passed",
+    "blockerCount": 0,
+    "warningCount": 0,
+    "evaluatedAt": "2026-09-19T12:00:00.000Z",
+    "waivers": [
+      {
+        "ruleId": "rule-quality-thresholds",
+        "waivedBy": "user-publisher-jordan",
+        "role": "publisher",
+        "reason": "Editorial Director approval granted for scheduled campaign window",
+        "expiresAt": "2026-10-01T00:00:00.000Z"
+      }
+    ]
+  },
+  "executionMetrics": {
+    "sagaStepsCount": 4,
+    "idempotentRetryVerified": true,
+    "rollbackVerified": true,
+    "immutableAuditEventsCount": 18
+  }
+}

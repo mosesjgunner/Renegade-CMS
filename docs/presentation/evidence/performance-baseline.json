@@ -1,0 +1,23 @@
+{
+  "timestamp": "2026-09-12T22:26:33.639Z",
+  "measurements": {
+    "home": {
+      "path": "/",
+      "status": 200,
+      "durationMs": 138
+    },
+    "campaign": {
+      "path": "/campaign-2026",
+      "status": 200,
+      "durationMs": 184
+    }
+  },
+  "bundleBoundary": {
+    "publicRoutesExcludePuck": true,
+    "zeroEditorCodeInPublicShell": true
+  },
+  "layoutStability": {
+    "imageLazyLoaded": true,
+    "imageContainmentClassesApplied": true
+  }
+}

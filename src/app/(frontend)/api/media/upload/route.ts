@@ -31,6 +31,7 @@ export async function POST(request: Request) {
       title: String(form.get('title') ?? file.name),
       altText: String(form.get('altText') ?? '') || undefined,
       caption: String(form.get('caption') ?? '') || undefined,
+      originalFilename: file.name,
       focalPoint:
         form.get('focalX') !== null && form.get('focalY') !== null
           ? { x: Number(form.get('focalX')), y: Number(form.get('focalY')) }

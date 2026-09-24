@@ -83,6 +83,7 @@ export interface Config {
     'identity-tokens': IdentityToken;
     'member-recovery-codes': MemberRecoveryCode;
     'identity-audit-events': IdentityAuditEvent;
+    'member-site-roles': MemberSiteRole;
     profiles: Profile;
     spaces: Space;
     authors: Author;
@@ -99,6 +100,11 @@ export interface Config {
     'realtime-events': RealtimeEvent;
     'realtime-presence': RealtimePresence;
     'media-assets': MediaAsset;
+    'media-asset-versions': MediaAssetVersion;
+    'media-governance-incidents': MediaGovernanceIncident;
+    'media-blobs': MediaBlob;
+    'media-variants': MediaVariant;
+    'media-upload-sessions': MediaUploadSession;
     sections: Section;
     categories: Category;
     topics: Topic;
@@ -106,18 +112,13 @@ export interface Config {
     series: Series;
     'taxonomy-redirects': TaxonomyRedirect;
     'public-redirects': PublicRedirect;
+    'content-releases': ContentRelease;
     content: Content;
     'article-family-content': ArticleFamilyContent;
     'markdown-conversion-reports': MarkdownConversionReport;
     'revision-records': RevisionRecord;
     'preview-tokens': PreviewToken;
-    'content-releases': ContentRelease;
     'scheduled-publish-jobs': ScheduledPublishJob;
-    events: Event;
-    timelines: Timeline;
-    'timeline-memberships': TimelineMembership;
-    sources: Source;
-    albums: Album;
     books: Book;
     'book-parts': BookPart;
     'book-chapters': BookChapter;
@@ -128,6 +129,8 @@ export interface Config {
     'video-channels': VideoChannel;
     'video-playlists': VideoPlaylist;
     videos: Video;
+    'video-assets': VideoAsset;
+    'video-captions': VideoCaption;
     interviews: Interview;
     livestreams: Livestream;
     'transcript-revisions': TranscriptRevision;
@@ -145,6 +148,11 @@ export interface Config {
     'external-posts': ExternalPost;
     campaigns: Campaign;
     'calendar-entry-audits': CalendarEntryAudit;
+    events: Event;
+    timelines: Timeline;
+    'timeline-memberships': TimelineMembership;
+    sources: Source;
+    albums: Album;
     'media-usages': MediaUsage;
     'forum-sections': ForumSection;
     forums: Forum;
@@ -185,8 +193,13 @@ export interface Config {
     preferences: Preference;
     suppressions: Suppression;
     'email-messages': EmailMessage;
+    'email-templates': EmailTemplate;
     'delivery-identities': DeliveryIdentity;
     'email-deliveries': EmailDelivery;
+    'email-delivery-events': EmailDeliveryEvent;
+    'telecom-messages': TelecomMessage;
+    'telecom-deliveries': TelecomDelivery;
+    'telecom-delivery-events': TelecomDeliveryEvent;
     'activity-events': ActivityEvent;
     notifications: Notification;
     'notification-preferences': NotificationPreference;
@@ -195,6 +208,11 @@ export interface Config {
     'digest-runs': DigestRun;
     'delivery-receipts': DeliveryReceipt;
     'automation-definitions': AutomationDefinition;
+    'automation-runs': AutomationRun;
+    'automation-failures': AutomationFailure;
+    'recipient-snapshots': RecipientSnapshot;
+    'audience-frequency-policies': AudienceFrequencyPolicy;
+    'audience-experiments': AudienceExperiment;
     'analytics-events': AnalyticsEvent;
     'analytics-consent-records': AnalyticsConsentRecord;
     'analytics-rollups': AnalyticsRollup;
@@ -221,13 +239,33 @@ export interface Config {
     'merchant-connections': MerchantConnection;
     'payment-method-capabilities': PaymentMethodCapability;
     products: Product;
+    'digital-delivery-grants': DigitalDeliveryGrant;
+    'digital-download-events': DigitalDownloadEvent;
+    'catalog-import-runs': CatalogImportRun;
     carts: Cart;
+    promotions: Promotion;
+    'checkout-proposals': CheckoutProposal;
+    'inventory-reservations': InventoryReservation;
     'checkout-sessions': CheckoutSession;
     'payment-intents': PaymentIntent;
+    'payment-attempts': PaymentAttempt;
     orders: Order;
     'payment-webhook-events': PaymentWebhookEvent;
+    'commerce-refunds': CommerceRefund;
+    'commerce-disputes': CommerceDispute;
+    'commerce-reconciliation-cases': CommerceReconciliationCase;
     supporters: Supporter;
     entitlements: Entitlement;
+    'plan-revisions': PlanRevision;
+    subscriptions: Subscription;
+    'subscription-events': SubscriptionEvent;
+    'donation-campaigns': DonationCampaign;
+    'donation-intents': DonationIntent;
+    donations: Donation;
+    'donation-events': DonationEvent;
+    'pod-connections': PodConnection;
+    'pod-jobs': PodJob;
+    'manual-fulfillment-packages': ManualFulfillmentPackage;
     'payload-kv': PayloadKv;
     'payload-jobs': PayloadJob;
     'payload-locked-documents': PayloadLockedDocument;
@@ -252,6 +290,7 @@ export interface Config {
     'identity-tokens': IdentityTokensSelect<false> | IdentityTokensSelect<true>;
     'member-recovery-codes': MemberRecoveryCodesSelect<false> | MemberRecoveryCodesSelect<true>;
     'identity-audit-events': IdentityAuditEventsSelect<false> | IdentityAuditEventsSelect<true>;
+    'member-site-roles': MemberSiteRolesSelect<false> | MemberSiteRolesSelect<true>;
     profiles: ProfilesSelect<false> | ProfilesSelect<true>;
     spaces: SpacesSelect<false> | SpacesSelect<true>;
     authors: AuthorsSelect<false> | AuthorsSelect<true>;
@@ -268,6 +307,11 @@ export interface Config {
     'realtime-events': RealtimeEventsSelect<false> | RealtimeEventsSelect<true>;
     'realtime-presence': RealtimePresenceSelect<false> | RealtimePresenceSelect<true>;
     'media-assets': MediaAssetsSelect<false> | MediaAssetsSelect<true>;
+    'media-asset-versions': MediaAssetVersionsSelect<false> | MediaAssetVersionsSelect<true>;
+    'media-governance-incidents': MediaGovernanceIncidentsSelect<false> | MediaGovernanceIncidentsSelect<true>;
+    'media-blobs': MediaBlobsSelect<false> | MediaBlobsSelect<true>;
+    'media-variants': MediaVariantsSelect<false> | MediaVariantsSelect<true>;
+    'media-upload-sessions': MediaUploadSessionsSelect<false> | MediaUploadSessionsSelect<true>;
     sections: SectionsSelect<false> | SectionsSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     topics: TopicsSelect<false> | TopicsSelect<true>;
@@ -275,18 +319,13 @@ export interface Config {
     series: SeriesSelect<false> | SeriesSelect<true>;
     'taxonomy-redirects': TaxonomyRedirectsSelect<false> | TaxonomyRedirectsSelect<true>;
     'public-redirects': PublicRedirectsSelect<false> | PublicRedirectsSelect<true>;
+    'content-releases': ContentReleasesSelect<false> | ContentReleasesSelect<true>;
     content: ContentSelect<false> | ContentSelect<true>;
     'article-family-content': ArticleFamilyContentSelect<false> | ArticleFamilyContentSelect<true>;
     'markdown-conversion-reports': MarkdownConversionReportsSelect<false> | MarkdownConversionReportsSelect<true>;
     'revision-records': RevisionRecordsSelect<false> | RevisionRecordsSelect<true>;
     'preview-tokens': PreviewTokensSelect<false> | PreviewTokensSelect<true>;
-    'content-releases': ContentReleasesSelect<false> | ContentReleasesSelect<true>;
     'scheduled-publish-jobs': ScheduledPublishJobsSelect<false> | ScheduledPublishJobsSelect<true>;
-    events: EventsSelect<false> | EventsSelect<true>;
-    timelines: TimelinesSelect<false> | TimelinesSelect<true>;
-    'timeline-memberships': TimelineMembershipsSelect<false> | TimelineMembershipsSelect<true>;
-    sources: SourcesSelect<false> | SourcesSelect<true>;
-    albums: AlbumsSelect<false> | AlbumsSelect<true>;
     books: BooksSelect<false> | BooksSelect<true>;
     'book-parts': BookPartsSelect<false> | BookPartsSelect<true>;
     'book-chapters': BookChaptersSelect<false> | BookChaptersSelect<true>;
@@ -297,6 +336,8 @@ export interface Config {
     'video-channels': VideoChannelsSelect<false> | VideoChannelsSelect<true>;
     'video-playlists': VideoPlaylistsSelect<false> | VideoPlaylistsSelect<true>;
     videos: VideosSelect<false> | VideosSelect<true>;
+    'video-assets': VideoAssetsSelect<false> | VideoAssetsSelect<true>;
+    'video-captions': VideoCaptionsSelect<false> | VideoCaptionsSelect<true>;
     interviews: InterviewsSelect<false> | InterviewsSelect<true>;
     livestreams: LivestreamsSelect<false> | LivestreamsSelect<true>;
     'transcript-revisions': TranscriptRevisionsSelect<false> | TranscriptRevisionsSelect<true>;
@@ -314,6 +355,11 @@ export interface Config {
     'external-posts': ExternalPostsSelect<false> | ExternalPostsSelect<true>;
     campaigns: CampaignsSelect<false> | CampaignsSelect<true>;
     'calendar-entry-audits': CalendarEntryAuditsSelect<false> | CalendarEntryAuditsSelect<true>;
+    events: EventsSelect<false> | EventsSelect<true>;
+    timelines: TimelinesSelect<false> | TimelinesSelect<true>;
+    'timeline-memberships': TimelineMembershipsSelect<false> | TimelineMembershipsSelect<true>;
+    sources: SourcesSelect<false> | SourcesSelect<true>;
+    albums: AlbumsSelect<false> | AlbumsSelect<true>;
     'media-usages': MediaUsagesSelect<false> | MediaUsagesSelect<true>;
     'forum-sections': ForumSectionsSelect<false> | ForumSectionsSelect<true>;
     forums: ForumsSelect<false> | ForumsSelect<true>;
@@ -354,8 +400,13 @@ export interface Config {
     preferences: PreferencesSelect<false> | PreferencesSelect<true>;
     suppressions: SuppressionsSelect<false> | SuppressionsSelect<true>;
     'email-messages': EmailMessagesSelect<false> | EmailMessagesSelect<true>;
+    'email-templates': EmailTemplatesSelect<false> | EmailTemplatesSelect<true>;
     'delivery-identities': DeliveryIdentitiesSelect<false> | DeliveryIdentitiesSelect<true>;
     'email-deliveries': EmailDeliveriesSelect<false> | EmailDeliveriesSelect<true>;
+    'email-delivery-events': EmailDeliveryEventsSelect<false> | EmailDeliveryEventsSelect<true>;
+    'telecom-messages': TelecomMessagesSelect<false> | TelecomMessagesSelect<true>;
+    'telecom-deliveries': TelecomDeliveriesSelect<false> | TelecomDeliveriesSelect<true>;
+    'telecom-delivery-events': TelecomDeliveryEventsSelect<false> | TelecomDeliveryEventsSelect<true>;
     'activity-events': ActivityEventsSelect<false> | ActivityEventsSelect<true>;
     notifications: NotificationsSelect<false> | NotificationsSelect<true>;
     'notification-preferences': NotificationPreferencesSelect<false> | NotificationPreferencesSelect<true>;
@@ -364,6 +415,11 @@ export interface Config {
     'digest-runs': DigestRunsSelect<false> | DigestRunsSelect<true>;
     'delivery-receipts': DeliveryReceiptsSelect<false> | DeliveryReceiptsSelect<true>;
     'automation-definitions': AutomationDefinitionsSelect<false> | AutomationDefinitionsSelect<true>;
+    'automation-runs': AutomationRunsSelect<false> | AutomationRunsSelect<true>;
+    'automation-failures': AutomationFailuresSelect<false> | AutomationFailuresSelect<true>;
+    'recipient-snapshots': RecipientSnapshotsSelect<false> | RecipientSnapshotsSelect<true>;
+    'audience-frequency-policies': AudienceFrequencyPoliciesSelect<false> | AudienceFrequencyPoliciesSelect<true>;
+    'audience-experiments': AudienceExperimentsSelect<false> | AudienceExperimentsSelect<true>;
     'analytics-events': AnalyticsEventsSelect<false> | AnalyticsEventsSelect<true>;
     'analytics-consent-records': AnalyticsConsentRecordsSelect<false> | AnalyticsConsentRecordsSelect<true>;
     'analytics-rollups': AnalyticsRollupsSelect<false> | AnalyticsRollupsSelect<true>;
@@ -390,13 +446,33 @@ export interface Config {
     'merchant-connections': MerchantConnectionsSelect<false> | MerchantConnectionsSelect<true>;
     'payment-method-capabilities': PaymentMethodCapabilitiesSelect<false> | PaymentMethodCapabilitiesSelect<true>;
     products: ProductsSelect<false> | ProductsSelect<true>;
+    'digital-delivery-grants': DigitalDeliveryGrantsSelect<false> | DigitalDeliveryGrantsSelect<true>;
+    'digital-download-events': DigitalDownloadEventsSelect<false> | DigitalDownloadEventsSelect<true>;
+    'catalog-import-runs': CatalogImportRunsSelect<false> | CatalogImportRunsSelect<true>;
     carts: CartsSelect<false> | CartsSelect<true>;
+    promotions: PromotionsSelect<false> | PromotionsSelect<true>;
+    'checkout-proposals': CheckoutProposalsSelect<false> | CheckoutProposalsSelect<true>;
+    'inventory-reservations': InventoryReservationsSelect<false> | InventoryReservationsSelect<true>;
     'checkout-sessions': CheckoutSessionsSelect<false> | CheckoutSessionsSelect<true>;
     'payment-intents': PaymentIntentsSelect<false> | PaymentIntentsSelect<true>;
+    'payment-attempts': PaymentAttemptsSelect<false> | PaymentAttemptsSelect<true>;
     orders: OrdersSelect<false> | OrdersSelect<true>;
     'payment-webhook-events': PaymentWebhookEventsSelect<false> | PaymentWebhookEventsSelect<true>;
+    'commerce-refunds': CommerceRefundsSelect<false> | CommerceRefundsSelect<true>;
+    'commerce-disputes': CommerceDisputesSelect<false> | CommerceDisputesSelect<true>;
+    'commerce-reconciliation-cases': CommerceReconciliationCasesSelect<false> | CommerceReconciliationCasesSelect<true>;
     supporters: SupportersSelect<false> | SupportersSelect<true>;
     entitlements: EntitlementsSelect<false> | EntitlementsSelect<true>;
+    'plan-revisions': PlanRevisionsSelect<false> | PlanRevisionsSelect<true>;
+    subscriptions: SubscriptionsSelect<false> | SubscriptionsSelect<true>;
+    'subscription-events': SubscriptionEventsSelect<false> | SubscriptionEventsSelect<true>;
+    'donation-campaigns': DonationCampaignsSelect<false> | DonationCampaignsSelect<true>;
+    'donation-intents': DonationIntentsSelect<false> | DonationIntentsSelect<true>;
+    donations: DonationsSelect<false> | DonationsSelect<true>;
+    'donation-events': DonationEventsSelect<false> | DonationEventsSelect<true>;
+    'pod-connections': PodConnectionsSelect<false> | PodConnectionsSelect<true>;
+    'pod-jobs': PodJobsSelect<false> | PodJobsSelect<true>;
+    'manual-fulfillment-packages': ManualFulfillmentPackagesSelect<false> | ManualFulfillmentPackagesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -430,18 +506,30 @@ export interface Config {
       'execution-outbox-handle': TaskExecutionOutboxHandle;
       'webhook-delivery-dispatch': TaskWebhookDeliveryDispatch;
       'editorial-publish': TaskEditorialPublish;
+      'media-upload-cleanup': TaskMediaUploadCleanup;
+      'community-message-attachment-cleanup': TaskCommunityMessageAttachmentCleanup;
+      'community-message-attachment-scan': TaskCommunityMessageAttachmentScan;
       'content-release-execute': TaskContentReleaseExecute;
       'media-import': TaskMediaImport;
       'media-render': TaskMediaRender;
+      'media-variant-generate': TaskMediaVariantGenerate;
       'media-transcribe': TaskMediaTranscribe;
       'media-tts': TaskMediaTts;
+      'video-process': TaskVideoProcess;
+      'media-usage-reconcile': TaskMediaUsageReconcile;
+      'audio-recipe-task': TaskAudioRecipeTask;
       'social-publish': TaskSocialPublish;
       'network-delivery': TaskNetworkDelivery;
       'audience-email-delivery': TaskAudienceEmailDelivery;
       'audience-newsletter-dispatch': TaskAudienceNewsletterDispatch;
+      'audience-telecom-delivery': TaskAudienceTelecomDelivery;
+      'audience-telecom-dispatch': TaskAudienceTelecomDispatch;
       'analytics-retention-cleanup': TaskAnalyticsRetentionCleanup;
       'quality-scan': TaskQualityScan;
       'commerce-abandon-checkouts': TaskCommerceAbandonCheckouts;
+      'commerce-process-payment-event': TaskCommerceProcessPaymentEvent;
+      'commerce-reconcile-payments': TaskCommerceReconcilePayments;
+      'commerce-reconcile-subscriptions': TaskCommerceReconcileSubscriptions;
       inline: {
         input: unknown;
         output: unknown;
@@ -489,13 +577,25 @@ export interface Member {
   id: string;
   displayName: string;
   email?: string | null;
-  status: 'active' | 'disabled' | 'archived';
+  /**
+   * Canonical account lifecycle state. Changes here must go through the account-state service so sessions, notices, and audit stay consistent.
+   */
+  status: 'pending' | 'active' | 'restricted' | 'suspended' | 'deactivated' | 'deletion-pending' | 'deleted';
   disabledAt?: string | null;
   archivedAt?: string | null;
+  restrictedAt?: string | null;
+  suspendedAt?: string | null;
+  deactivatedAt?: string | null;
+  deletionPendingAt?: string | null;
+  deletedAt?: string | null;
   exportRequestedAt?: string | null;
   deletionRequestedAt?: string | null;
   verifiedEmailAt?: string | null;
   moderationReason?: string | null;
+  /**
+   * Reason recorded for the current account state.
+   */
+  stateReason?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -509,6 +609,14 @@ export interface Site {
   slug: string;
   description?: string | null;
   lifecycle: 'draft' | 'active' | 'archived';
+  /**
+   * Controls whether new members may register on this site: open sign-up, invite-only, staff approval required, or registration disabled.
+   */
+  communityRegistrationPolicy: 'open' | 'invite' | 'approval' | 'disabled';
+  /**
+   * Reaction codes members may use on canonical comments for this site.
+   */
+  commentReactionCodes: ('thumbs_up' | 'heart' | 'insightful' | 'applause')[];
   updatedAt: string;
   createdAt: string;
 }
@@ -518,11 +626,37 @@ export interface Site {
  */
 export interface PageLayout {
   id: string;
+  /**
+   * Complete immutable public presentation; replaced only by explicit publication.
+   */
+  publishedPresentation?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   site: string | Site;
   publication?: (string | null) | Publication;
   space?: (string | null) | Space;
+  /**
+   * Human-readable title or template/pattern name
+   */
+  name?: string | null;
   path: string;
   themeId: 'neutral-starter' | 'renegade-party';
+  surface: 'page' | 'global' | 'template' | 'pattern';
+  slot: 'main' | 'header' | 'footer' | 'announcement' | 'cta';
+  /**
+   * Source template ID if created from a template
+   */
+  templateId?: string | null;
+  templateVersion?: number | null;
+  templateMode?: ('inherited' | 'explicit' | 'detached') | null;
+  isRetired?: boolean | null;
+  category?: string | null;
   layoutVersion: number;
   status: 'draft' | 'published';
   visibility: 'public' | 'unlisted' | 'members' | 'friends' | 'private';
@@ -746,8 +880,26 @@ export interface Profile {
    * Public handle; changes require an explicit member self-service request.
    */
   handle: string;
+  handleChangedAt?: string | null;
+  /**
+   * Append-only prior handles with change timestamps so old references can redirect.
+   */
+  handleHistory?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   avatar?: (string | null) | MediaAsset;
   cover?: (string | null) | MediaAsset;
+  avatarAlt?: string | null;
+  coverAlt?: string | null;
+  locale?: string | null;
+  timeZone?: string | null;
+  discoveryOptOut?: boolean | null;
   bio?: string | null;
   links?:
     | {
@@ -807,17 +959,34 @@ export interface MediaAsset {
   owner?: (string | null) | Member;
   title: string;
   kind: 'image' | 'audio' | 'video' | 'document' | 'cover' | 'thumbnail' | 'graphic';
-  /**
-   * Local storage first; provider location is an implementation detail.
-   */
-  storageLocation: string;
+  storageLocation?: string | null;
   storageProvider: string;
+  originalBlob?: (string | null) | MediaBlob;
+  originalFilename?: string | null;
   mimeType?: string | null;
   sizeBytes?: number | null;
   checksum?: string | null;
   width?: number | null;
   height?: number | null;
   durationSeconds?: number | null;
+  audioMetadata?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  videoMetadata?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   altText?: string | null;
   /**
    * Normalized focal point for supported image crops.
@@ -826,9 +995,63 @@ export interface MediaAsset {
     x?: number | null;
     y?: number | null;
   };
+  aspectRatio?: number | null;
+  dominantColor?: string | null;
+  colorPalette?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  cropSettings?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   caption?: string | null;
+  description?: string | null;
+  creatorCredit?: string | null;
   credits?: string | null;
+  source?: string | null;
+  copyrightOwner?: string | null;
   license?: string | null;
+  licenseType?: ('owned' | 'licensed' | 'creative-commons' | 'public-domain' | 'unknown') | null;
+  licenseUrl?: string | null;
+  rightsSourceUrl?: string | null;
+  rightsExpiresAt?: string | null;
+  embargoUntil?: string | null;
+  usageRestrictions?: string | null;
+  consentReference?: string | null;
+  modelReleaseReference?: string | null;
+  propertyReleaseReference?: string | null;
+  /**
+   * Show consent and release evidence for this governed asset.
+   */
+  governanceEnabled?: boolean | null;
+  /**
+   * Site-approved extension metadata. Values are retained without becoming public fields.
+   */
+  customMetadata?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  processingState: 'pending' | 'processing' | 'ready' | 'failed' | 'quarantined';
+  /**
+   * Public delivery is derived from this policy and an approved published use.
+   */
+  publicPolicy: 'private' | 'published-use' | 'site-identity';
   tags?: (string | Tag)[] | null;
   collections?: (string | Album)[] | null;
   variants?:
@@ -850,6 +1073,24 @@ export interface MediaAsset {
    */
   removeFromDiscovery?: boolean | null;
   tombstoneLabel?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media-blobs".
+ */
+export interface MediaBlob {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  checksum: string;
+  storageKey: string;
+  storageProvider: string;
+  mimeType: string;
+  sizeBytes: number;
+  state: 'writing' | 'ready' | 'failed' | 'deleted';
   updatedAt: string;
   createdAt: string;
 }
@@ -1272,7 +1513,7 @@ export interface MemberSession {
  */
 export interface IdentityToken {
   id: string;
-  purpose: 'magic-link-sign-in' | 'identity-link' | 'wallet-nonce';
+  purpose: 'magic-link-sign-in' | 'identity-link' | 'wallet-nonce' | 'passkey-registration' | 'passkey-authentication';
   tokenHash: string;
   emailHash?: string | null;
   member?: (string | null) | Member;
@@ -1320,6 +1561,19 @@ export interface IdentityAuditEvent {
     | number
     | boolean
     | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "member-site-roles".
+ */
+export interface MemberSiteRole {
+  id: string;
+  site: string | Site;
+  member: string | Member;
+  role: 'member' | 'trusted' | 'contributor' | 'moderator' | 'community-manager';
+  grantedByUserId?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1377,20 +1631,6 @@ export interface Content {
   contentType: 'article' | 'page' | 'book' | 'podcast' | 'video' | 'product' | 'event' | 'campaign';
   title: string;
   /**
-   * Generated from the title until you choose a different URL slug.
-   */
-  slug: string;
-  /**
-   * Keep a manually chosen canonical path instead of deriving it from the slug.
-   */
-  pathOverride?: boolean | null;
-  canonicalPath: string;
-  /**
-   * Optional parent Page. Its path becomes the prefix for this page.
-   */
-  parentPage?: (string | null) | Content;
-  pageTemplate?: ('standard' | 'landing' | 'about' | 'contact' | 'legal') | null;
-  /**
    * Structured, accessible prose. Use the editor controls for headings, links, lists, quotes, and safe inline references—not raw HTML or JSON.
    */
   body?: {
@@ -1409,9 +1649,6 @@ export interface Content {
     [k: string]: unknown;
   } | null;
   summary?: string | null;
-  status: 'draft' | 'review' | 'approved' | 'scheduled' | 'published' | 'updated' | 'archived' | 'rejected';
-  publishedAt?: string | null;
-  updatedAtEditorial?: string | null;
   subtitle?: string | null;
   excerpt?: string | null;
   authors?:
@@ -1427,7 +1664,20 @@ export interface Content {
   topics?: (string | Topic)[] | null;
   tags?: (string | Tag)[] | null;
   series?: (string | Series)[] | null;
-  heroMedia?: (string | null) | MediaAsset;
+  /**
+   * Generated from the title until you choose a different URL slug.
+   */
+  slug: string;
+  /**
+   * Keep a manually chosen canonical path instead of deriving it from the slug.
+   */
+  pathOverride?: boolean | null;
+  canonicalPath: string;
+  /**
+   * Optional parent Page. Its path becomes the prefix for this page.
+   */
+  parentPage?: (string | null) | Content;
+  pageTemplate?: ('standard' | 'landing' | 'about' | 'contact' | 'legal') | null;
   featured?: boolean | null;
   pinned?: boolean | null;
   readingTimeMinutes?: number | null;
@@ -1456,10 +1706,30 @@ export interface Content {
         id?: string | null;
       }[]
     | null;
+  heroMedia?: (string | null) | MediaAsset;
+  status: 'draft' | 'review' | 'approved' | 'scheduled' | 'published' | 'updated' | 'archived' | 'rejected';
+  publishedAt?: string | null;
+  updatedAtEditorial?: string | null;
+  commentsPolicy: 'open' | 'members' | 'closed';
+  publicChangeHistoryPolicy: 'hidden' | 'summary' | 'full';
+  /**
+   * Leave blank to use the resolved title from this content.
+   */
   seoTitle?: string | null;
+  /**
+   * Leave blank to use the resolved summary or Site Settings description.
+   */
   seoDescription?: string | null;
+  /**
+   * Leave blank to use this content’s resolved canonical path.
+   */
   seoCanonicalURL?: string | null;
+  /**
+   * Leave blank to use the selected media’s resolved alt text.
+   */
   seoImageAlt?: string | null;
+  seoFocusKeyphrase?: string | null;
+  seoNoIndex?: boolean | null;
   seoKeywords?:
     | {
         [k: string]: unknown;
@@ -1469,8 +1739,18 @@ export interface Content {
     | number
     | boolean
     | null;
-  seoFocusKeyphrase?: string | null;
-  seoNoIndex?: boolean | null;
+  /**
+   * Optional advanced discovery overrides: socialTitle, socialDescription, socialImage, locale, alternates, follow. Ordinary titles, summaries and hero media are inherited automatically.
+   */
+  discoveryOverrides?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   relationships?: (string | Relationship)[] | null;
   seoOverride?:
     | {
@@ -1531,7 +1811,6 @@ export interface Content {
     | number
     | boolean
     | null;
-  commentsPolicy: 'open' | 'members' | 'closed';
   revisionCompatibility?:
     | {
         [k: string]: unknown;
@@ -1550,7 +1829,6 @@ export interface Content {
     | number
     | boolean
     | null;
-  publicChangeHistoryPolicy: 'hidden' | 'summary' | 'full';
   retentionMode: 'permanent' | 'expire-at' | 'manual-burn' | 'archive' | 'tombstone';
   retentionExpiresAt?: string | null;
   retentionHold: 'none' | 'legal' | 'moderation';
@@ -1763,7 +2041,18 @@ export interface ArticleFamilyContent {
   id: string;
   content: string | Content;
   articleKey: string;
-  lifecycle: 'draft' | 'review' | 'approved' | 'scheduled' | 'published' | 'updated' | 'archived' | 'rejected';
+  lifecycle:
+    | 'draft'
+    | 'review'
+    | 'approved'
+    | 'scheduled'
+    | 'published'
+    | 'updated'
+    | 'archived'
+    | 'rejected'
+    | 'changes-requested'
+    | 'cancelled'
+    | 'failed';
   document:
     | {
         [k: string]: unknown;
@@ -1858,6 +2147,33 @@ export interface ArticleFamilyContent {
     | boolean
     | null;
   promotionProvenance?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  qualityGateSnapshot?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  qualityWaiver?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  reviewDecisions:
     | {
         [k: string]: unknown;
       }
@@ -2081,6 +2397,143 @@ export interface RealtimePresence {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media-asset-versions".
+ */
+export interface MediaAssetVersion {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  asset: string | MediaAsset;
+  replacesAsset: string | MediaAsset;
+  versionLabel: string;
+  mode: 'new-asset' | 'selected-usages' | 'all-usages';
+  replacedUsageIds?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  impactCount: number;
+  reason?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media-governance-incidents".
+ */
+export interface MediaGovernanceIncident {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  asset: string | MediaAsset;
+  summary: string;
+  reason: string;
+  status: 'open' | 'investigating' | 'remediated' | 'dismissed';
+  affectedUsageIds:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  openedAt: string;
+  resolvedAt?: string | null;
+  resolution?: string | null;
+  audit:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media-variants".
+ */
+export interface MediaVariant {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  asset: string | MediaAsset;
+  blob: string | MediaBlob;
+  label: string;
+  kind: 'thumbnail' | 'poster' | 'transcode' | 'caption' | 'social' | 'other';
+  width?: number | null;
+  height?: number | null;
+  durationSeconds?: number | null;
+  processingState: 'pending' | 'processing' | 'ready' | 'failed';
+  format?: string | null;
+  recipeKey?: string | null;
+  recipeVersion?: number | null;
+  /**
+   * Last known-good output retained for a one-step recipe rollback.
+   */
+  previousBlob?: (string | null) | MediaBlob;
+  crop?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  errorMessage?: string | null;
+  sizeBytes?: number | null;
+  lastAccessedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media-upload-sessions".
+ */
+export interface MediaUploadSession {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner: string | Member;
+  filename: string;
+  title: string;
+  altText?: string | null;
+  caption?: string | null;
+  expectedSize: number;
+  expectedChecksum?: string | null;
+  chunkSize: number;
+  receivedBytes: number;
+  receivedChunks:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  state: 'open' | 'finalizing' | 'completed' | 'cancelled' | 'failed' | 'expired';
+  asset?: (string | null) | MediaAsset;
+  expiresAt: string;
+  failureReason?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "taxonomy-redirects".
  */
 export interface TaxonomyRedirect {
@@ -2113,64 +2566,6 @@ export interface PublicRedirect {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "markdown-conversion-reports".
- */
-export interface MarkdownConversionReport {
-  id: string;
-  article?: (string | null) | ArticleFamilyContent;
-  sourceChecksum: string;
-  targetDocumentHash?: string | null;
-  formatVersion: number;
-  status: 'accepted' | 'accepted-with-warnings' | 'rejected';
-  fidelityBoundary:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-  warnings:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-  unsupportedConstructs:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-  createdBy?: (string | null) | User;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "preview-tokens".
- */
-export interface PreviewToken {
-  id: string;
-  article: string | ArticleFamilyContent;
-  revision?: (string | null) | RevisionRecord;
-  tokenHash: string;
-  scope: 'article-preview';
-  expiresAt: string;
-  revokedAt?: string | null;
-  createdBy?: (string | null) | User;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "content-releases".
  */
 export interface ContentRelease {
@@ -2180,6 +2575,9 @@ export interface ContentRelease {
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   title: string;
+  name?: string | null;
+  purpose?: string | null;
+  ownerTeam?: string | null;
   content?: (string | null) | Content;
   article?: (string | null) | ArticleFamilyContent;
   product?: (string | null) | Product;
@@ -2187,10 +2585,94 @@ export interface ContentRelease {
    * Approved Product revision pinned for storefront release; never a payment instruction.
    */
   productRevision?: string | null;
+  plannedInstant?: string | null;
   scheduledFor?: string | null;
   timeZone?: string | null;
-  status?: ('draft' | 'scheduled' | 'executing' | 'partial-failure' | 'blocked' | 'released' | 'cancelled') | null;
+  labels?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  campaign?: string | null;
+  dependencies?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  releaseRevision?: number | null;
+  status?:
+    | (
+        | 'draft'
+        | 'in-review'
+        | 'approved'
+        | 'scheduled'
+        | 'executing'
+        | 'completed'
+        | 'partially-failed'
+        | 'failed'
+        | 'cancelled'
+        | 'rolled-back'
+        | 'released'
+        | 'blocked'
+        | 'partial-failure'
+      )
+    | null;
   lastScheduleMutationId?: string | null;
+  artifacts?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  gateSnapshot?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  approvals?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  sagaSteps?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  resultingUrls?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  leaseOwner?: string | null;
+  leaseExpiresAt?: string | null;
   scheduleAudit?:
     | {
         [k: string]: unknown;
@@ -2232,12 +2714,17 @@ export interface Product {
   publication?: (string | null) | Publication;
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
-  merchantConnection: string | MerchantConnection;
+  merchantConnection?: (string | null) | MerchantConnection;
+  catalogContractVersion: number;
   name: string;
+  summary?: string | null;
   slug: string;
   canonicalPath: string;
-  kind: 'physical' | 'digital' | 'pod-reference' | 'subscription' | 'membership';
+  kind: 'physical' | 'digital' | 'pod-reference' | 'subscription' | 'membership' | 'donation' | 'affiliate';
   state: 'draft' | 'review' | 'approved' | 'published' | 'archived';
+  publishedAt?: string | null;
+  archivedAt?: string | null;
+  redirectTo?: string | null;
   description?: string | null;
   /**
    * Prompt 2 reviewed product text keyed by locale; legal/payment copy is kept separately and reviewed.
@@ -2252,8 +2739,35 @@ export interface Product {
     | boolean
     | null;
   categories?: (string | null) | Category;
+  topics?: (string | Topic)[] | null;
+  tags?: (string | Tag)[] | null;
   collections?: (string | Album)[] | null;
   media?: (string | MediaAsset)[] | null;
+  relationships?: (string | Product)[] | null;
+  /**
+   * Allowlisted capabilities: shippable, digital-entitlement, subscription, donation, affiliate, pod.
+   */
+  productCapabilities:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Deliberate option dimensions and allowed values; variants are authored explicitly.
+   */
+  optionDimensions?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   variants?:
     | {
         sku: string;
@@ -2267,7 +2781,27 @@ export interface Product {
           | number
           | boolean
           | null;
-        inventoryPolicy?: ('untracked' | 'tracked' | 'external-hook' | 'pod-provider') | null;
+        optionValues?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        status?: ('active' | 'unavailable' | 'archived') | null;
+        weightGrams?: number | null;
+        dimensionsMm?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        inventoryPolicy?: ('untracked' | 'tracked' | 'external-hook' | 'pod-provider' | 'affiliate' | 'pod') | null;
         inventoryQuantity?: number | null;
         inventoryReference?: string | null;
         digitalFiles?: (string | MediaAsset)[] | null;
@@ -2294,10 +2828,133 @@ export interface Product {
       }[]
     | null;
   /**
+   * Versioned canonical price offers. Never overwrite historical versions.
+   */
+  offers?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Private media IDs, entitlement key, limits, expiry and malware/rights evidence. Originals are never public.
+   */
+  digitalDelivery?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Destination, disclosure, allowlisted tracking, observed remote facts and freshness window.
+   */
+  affiliatePolicy?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Reviewed remote IDs/options, pinned artwork revision, mockup provenance and cost/availability snapshot.
+   */
+  podMappings?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  disclosures?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  workflowAudit?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  revisionSnapshots?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  publishedPresentation?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
    * Existing entitlement key for subscription/membership products.
    */
   entitlement?: string | null;
   releaseRevision?: string | null;
+  /**
+   * Leave blank to use the resolved title from this content.
+   */
+  seoTitle?: string | null;
+  /**
+   * Leave blank to use the resolved summary or Site Settings description.
+   */
+  seoDescription?: string | null;
+  /**
+   * Leave blank to use this content’s resolved canonical path.
+   */
+  seoCanonicalURL?: string | null;
+  /**
+   * Leave blank to use the selected media’s resolved alt text.
+   */
+  seoImageAlt?: string | null;
+  seoKeywords?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  seoFocusKeyphrase?: string | null;
+  seoNoIndex?: boolean | null;
+  /**
+   * Optional advanced discovery overrides: socialTitle, socialDescription, socialImage, locale, alternates, follow. Ordinary titles, summaries and hero media are inherited automatically.
+   */
+  discoveryOverrides?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   retentionMode: 'permanent' | 'expire-at' | 'manual-burn' | 'archive' | 'tombstone';
   retentionExpiresAt?: string | null;
   retentionHold: 'none' | 'legal' | 'moderation';
@@ -2399,18 +3056,30 @@ export interface PayloadJob {
           | 'execution-outbox-handle'
           | 'webhook-delivery-dispatch'
           | 'editorial-publish'
+          | 'media-upload-cleanup'
+          | 'community-message-attachment-cleanup'
+          | 'community-message-attachment-scan'
           | 'content-release-execute'
           | 'media-import'
           | 'media-render'
+          | 'media-variant-generate'
           | 'media-transcribe'
           | 'media-tts'
+          | 'video-process'
+          | 'media-usage-reconcile'
+          | 'audio-recipe-task'
           | 'social-publish'
           | 'network-delivery'
           | 'audience-email-delivery'
           | 'audience-newsletter-dispatch'
+          | 'audience-telecom-delivery'
+          | 'audience-telecom-dispatch'
           | 'analytics-retention-cleanup'
           | 'quality-scan'
-          | 'commerce-abandon-checkouts';
+          | 'commerce-abandon-checkouts'
+          | 'commerce-process-payment-event'
+          | 'commerce-reconcile-payments'
+          | 'commerce-reconcile-subscriptions';
         taskID: string;
         input?:
           | {
@@ -2452,18 +3121,30 @@ export interface PayloadJob {
         | 'execution-outbox-handle'
         | 'webhook-delivery-dispatch'
         | 'editorial-publish'
+        | 'media-upload-cleanup'
+        | 'community-message-attachment-cleanup'
+        | 'community-message-attachment-scan'
         | 'content-release-execute'
         | 'media-import'
         | 'media-render'
+        | 'media-variant-generate'
         | 'media-transcribe'
         | 'media-tts'
+        | 'video-process'
+        | 'media-usage-reconcile'
+        | 'audio-recipe-task'
         | 'social-publish'
         | 'network-delivery'
         | 'audience-email-delivery'
         | 'audience-newsletter-dispatch'
+        | 'audience-telecom-delivery'
+        | 'audience-telecom-dispatch'
         | 'analytics-retention-cleanup'
         | 'quality-scan'
         | 'commerce-abandon-checkouts'
+        | 'commerce-process-payment-event'
+        | 'commerce-reconcile-payments'
+        | 'commerce-reconcile-subscriptions'
       )
     | null;
   queue?: string | null;
@@ -2487,6 +3168,64 @@ export interface PayloadJob {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "markdown-conversion-reports".
+ */
+export interface MarkdownConversionReport {
+  id: string;
+  article?: (string | null) | ArticleFamilyContent;
+  sourceChecksum: string;
+  targetDocumentHash?: string | null;
+  formatVersion: number;
+  status: 'accepted' | 'accepted-with-warnings' | 'rejected';
+  fidelityBoundary:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  warnings:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  unsupportedConstructs:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  createdBy?: (string | null) | User;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "preview-tokens".
+ */
+export interface PreviewToken {
+  id: string;
+  article: string | ArticleFamilyContent;
+  revision?: (string | null) | RevisionRecord;
+  tokenHash: string;
+  scope: 'article-preview';
+  expiresAt: string;
+  revokedAt?: string | null;
+  createdBy?: (string | null) | User;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "scheduled-publish-jobs".
  */
 export interface ScheduledPublishJob {
@@ -2497,412 +3236,13 @@ export interface ScheduledPublishJob {
   scheduledFor: string;
   timeZone: string;
   idempotencyKey: string;
-  status: 'pending-contract' | 'queued' | 'completed' | 'cancelled' | 'failed';
+  status: 'pending-contract' | 'queued' | 'processing' | 'completed' | 'cancelled' | 'failed';
+  leaseOwner?: string | null;
+  leaseExpiresAt?: string | null;
+  retryCount: number;
+  maxRetries: number;
+  lastError?: string | null;
   createdBy?: (string | null) | User;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "events".
- */
-export interface Event {
-  id: string;
-  site: string | Site;
-  publication?: (string | null) | Publication;
-  space?: (string | null) | Space;
-  owner?: (string | null) | Member;
-  title: string;
-  slug: string;
-  canonicalPath: string;
-  summary?: string | null;
-  status: 'draft' | 'scheduled' | 'published' | 'cancelled' | 'archived';
-  allDay?: boolean | null;
-  startsAt: string;
-  endsAt?: string | null;
-  /**
-   * IANA timezone for the event start and end values.
-   */
-  timeZone: string;
-  visibility: 'public' | 'unlisted' | 'members' | 'friends' | 'private';
-  venueName?: string | null;
-  venueRegion?: string | null;
-  venueAddress?: string | null;
-  attendanceMode: 'in-person' | 'virtual' | 'hybrid';
-  /**
-   * Meeting or livestream URL; required for virtual events.
-   */
-  onlineUrl?: string | null;
-  organizerName?: string | null;
-  organizerUrl?: string | null;
-  capacity?: number | null;
-  /**
-   * External registration only; ticketing and payments are not part of Events.
-   */
-  registrationUrl?: string | null;
-  /**
-   * Optional daily, weekly, or monthly series. Expansion is limited to 250 occurrences / 366 days.
-   */
-  recurrence?:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-  /**
-   * Edit one occurrence by its original ISO start instant; edit the series by changing this event. Cancelled overrides suppress only that occurrence.
-   */
-  recurrenceOverrides?:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-  categories?: (string | Category)[] | null;
-  relatedContent?:
-    | (
-        | {
-            relationTo: 'content';
-            value: string | Content;
-          }
-        | {
-            relationTo: 'events';
-            value: string | Event;
-          }
-      )[]
-    | null;
-  heroMedia?: (string | null) | MediaAsset;
-  calendarEntry?: (string | null) | CalendarEntry;
-  audience?:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-  seoTitle?: string | null;
-  seoDescription?: string | null;
-  seoCanonicalURL?: string | null;
-  seoImageAlt?: string | null;
-  seoKeywords?:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-  seoFocusKeyphrase?: string | null;
-  seoNoIndex?: boolean | null;
-  structuredDataMode: 'none' | 'manual' | 'inherit-source' | 'event-derived' | 'timeline-derived';
-  structuredDataPrimaryType?: string | null;
-  structuredDataSourceCollection?: ('content' | 'events' | 'timelines' | 'sources' | 'calendar-entries') | null;
-  structuredDataSourceIdentifier?: string | null;
-  structuredDataManual?:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-  structuredDataVersion?: number | null;
-  knowledgeGraphProjectionStatus: 'disabled' | 'pending' | 'projected' | 'failed';
-  knowledgeGraphNodeKey?: string | null;
-  /**
-   * Optional Neo4j / knowledge-graph projection contract. PostgreSQL remains canonical.
-   */
-  knowledgeGraphProjectionBoundary?:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-  importSourceSystem?: string | null;
-  importSourceIdentifier?: string | null;
-  importSourceChecksum?: string | null;
-  exportFormatVersion?: number | null;
-  exportOwnership?:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-  publicRenderStrategy: 'default' | 'event-page' | 'event-card-list';
-  publicRenderVariant?: string | null;
-  publicRenderContext?:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-  eventCardVariant?: string | null;
-  eventListVariant?: string | null;
-  timelineEmbedVariant?: string | null;
-  timelineBlockVariant?: string | null;
-  retentionMode: 'permanent' | 'expire-at' | 'manual-burn' | 'archive' | 'tombstone';
-  retentionExpiresAt?: string | null;
-  retentionHold: 'none' | 'legal' | 'moderation';
-  /**
-   * Removes expired or burned records from routes, search, feeds, and sitemaps.
-   */
-  removeFromDiscovery?: boolean | null;
-  tombstoneLabel?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "calendar-entries".
- */
-export interface CalendarEntry {
-  id: string;
-  site: string | Site;
-  publication?: (string | null) | Publication;
-  space?: (string | null) | Space;
-  owner?: (string | null) | Member;
-  title: string;
-  allDay?: boolean | null;
-  startsAt: string;
-  endsAt?: string | null;
-  /**
-   * IANA timezone, for example America/Chicago.
-   */
-  timeZone: string;
-  status: 'draft' | 'scheduled' | 'in-progress' | 'completed' | 'cancelled' | 'archived';
-  visibility: 'public' | 'unlisted' | 'members' | 'friends' | 'private';
-  audience?:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-  calendarPlacement?: string | null;
-  /**
-   * One record is a series boundary; external calendar sync is intentionally deferred.
-   */
-  recurrence?:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-  /**
-   * Hook for RSVP or registration modules.
-   */
-  rsvpRegistration?:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-  conflictMetadata?:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-  canonicalPath?: string | null;
-  event?: (string | null) | Event;
-  structuredData?:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-  references?:
-    | (
-        | {
-            relationTo: 'content';
-            value: string | Content;
-          }
-        | {
-            relationTo: 'publications';
-            value: string | Publication;
-          }
-        | {
-            relationTo: 'media-assets';
-            value: string | MediaAsset;
-          }
-        | {
-            relationTo: 'events';
-            value: string | Event;
-          }
-      )[]
-    | null;
-  retentionMode: 'permanent' | 'expire-at' | 'manual-burn' | 'archive' | 'tombstone';
-  retentionExpiresAt?: string | null;
-  retentionHold: 'none' | 'legal' | 'moderation';
-  /**
-   * Removes expired or burned records from routes, search, feeds, and sitemaps.
-   */
-  removeFromDiscovery?: boolean | null;
-  tombstoneLabel?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "timelines".
- */
-export interface Timeline {
-  id: string;
-  site: string | Site;
-  publication?: (string | null) | Publication;
-  space?: (string | null) | Space;
-  owner?: (string | null) | Member;
-  title: string;
-  slug: string;
-  canonicalPath: string;
-  summary?: string | null;
-  status: 'draft' | 'published' | 'archived';
-  visibility: 'public' | 'unlisted' | 'members' | 'friends' | 'private';
-  orderingMode: 'chronological' | 'manual';
-  heroMedia?: (string | null) | MediaAsset;
-  /**
-   * Canonical timeline query boundary. PostgreSQL remains the source of truth before any optional graph projection.
-   */
-  postgresQueryScope?:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-  seoTitle?: string | null;
-  seoDescription?: string | null;
-  seoCanonicalURL?: string | null;
-  seoImageAlt?: string | null;
-  seoKeywords?:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-  seoFocusKeyphrase?: string | null;
-  seoNoIndex?: boolean | null;
-  structuredDataMode: 'none' | 'manual' | 'inherit-source' | 'event-derived' | 'timeline-derived';
-  structuredDataPrimaryType?: string | null;
-  structuredDataSourceCollection?: ('content' | 'events' | 'timelines' | 'sources' | 'calendar-entries') | null;
-  structuredDataSourceIdentifier?: string | null;
-  structuredDataManual?:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-  structuredDataVersion?: number | null;
-  knowledgeGraphProjectionStatus: 'disabled' | 'pending' | 'projected' | 'failed';
-  knowledgeGraphNodeKey?: string | null;
-  /**
-   * Optional Neo4j / knowledge-graph projection contract. PostgreSQL remains canonical.
-   */
-  knowledgeGraphProjectionBoundary?:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-  importSourceSystem?: string | null;
-  importSourceIdentifier?: string | null;
-  importSourceChecksum?: string | null;
-  exportFormatVersion?: number | null;
-  exportOwnership?:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-  publicRenderStrategy: 'default' | 'timeline-page';
-  publicRenderVariant?: string | null;
-  publicRenderContext?:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-  eventCardVariant?: string | null;
-  eventListVariant?: string | null;
-  timelineEmbedVariant?: string | null;
-  timelineBlockVariant?: string | null;
-  retentionMode: 'permanent' | 'expire-at' | 'manual-burn' | 'archive' | 'tombstone';
-  retentionExpiresAt?: string | null;
-  retentionHold: 'none' | 'legal' | 'moderation';
-  /**
-   * Removes expired or burned records from routes, search, feeds, and sitemaps.
-   */
-  removeFromDiscovery?: boolean | null;
-  tombstoneLabel?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "timeline-memberships".
- */
-export interface TimelineMembership {
-  id: string;
-  timeline: string | Timeline;
-  event: string | Event;
-  membershipKey: string;
-  displayTitle?: string | null;
-  displaySummary?: string | null;
-  eraLabel?: string | null;
-  position?: number | null;
-  displayStartsAt?: string | null;
-  displayEndsAt?: string | null;
-  renderVariant?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -2918,14 +3258,29 @@ export interface Book {
   owner?: (string | null) | Member;
   title: string;
   slug: string;
+  /**
+   * Canonical editorial record. Revisions, preview, scheduling, and publication remain owned by the shared content workflow.
+   */
   content?: (string | null) | Content;
   canonicalPath?: string | null;
   description?: string | null;
   status: 'draft' | 'scheduled' | 'published' | 'updated' | 'unavailable';
   publishedAt?: string | null;
+  /**
+   * Leave blank to use the resolved title from this content.
+   */
   seoTitle?: string | null;
+  /**
+   * Leave blank to use the resolved summary or Site Settings description.
+   */
   seoDescription?: string | null;
+  /**
+   * Leave blank to use this content’s resolved canonical path.
+   */
   seoCanonicalURL?: string | null;
+  /**
+   * Leave blank to use the selected media’s resolved alt text.
+   */
   seoImageAlt?: string | null;
   seoKeywords?:
     | {
@@ -2938,6 +3293,18 @@ export interface Book {
     | null;
   seoFocusKeyphrase?: string | null;
   seoNoIndex?: boolean | null;
+  /**
+   * Optional advanced discovery overrides: socialTitle, socialDescription, socialImage, locale, alternates, follow. Ordinary titles, summaries and hero media are inherited automatically.
+   */
+  discoveryOverrides?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   structuredDataMode: 'none' | 'manual' | 'inherit-source' | 'event-derived' | 'timeline-derived';
   structuredDataPrimaryType?: string | null;
   structuredDataSourceCollection?: ('content' | 'events' | 'timelines' | 'sources' | 'calendar-entries') | null;
@@ -3046,14 +3413,29 @@ export interface PodcastShow {
   owner?: (string | null) | Member;
   title: string;
   slug: string;
+  /**
+   * Canonical editorial record. Revisions, preview, scheduling, and publication remain owned by the shared content workflow.
+   */
   content?: (string | null) | Content;
   canonicalPath?: string | null;
   description?: string | null;
   status: 'draft' | 'scheduled' | 'published' | 'updated' | 'unavailable';
   publishedAt?: string | null;
+  /**
+   * Leave blank to use the resolved title from this content.
+   */
   seoTitle?: string | null;
+  /**
+   * Leave blank to use the resolved summary or Site Settings description.
+   */
   seoDescription?: string | null;
+  /**
+   * Leave blank to use this content’s resolved canonical path.
+   */
   seoCanonicalURL?: string | null;
+  /**
+   * Leave blank to use the selected media’s resolved alt text.
+   */
   seoImageAlt?: string | null;
   seoKeywords?:
     | {
@@ -3066,6 +3448,18 @@ export interface PodcastShow {
     | null;
   seoFocusKeyphrase?: string | null;
   seoNoIndex?: boolean | null;
+  /**
+   * Optional advanced discovery overrides: socialTitle, socialDescription, socialImage, locale, alternates, follow. Ordinary titles, summaries and hero media are inherited automatically.
+   */
+  discoveryOverrides?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   structuredDataMode: 'none' | 'manual' | 'inherit-source' | 'event-derived' | 'timeline-derived';
   structuredDataPrimaryType?: string | null;
   structuredDataSourceCollection?: ('content' | 'events' | 'timelines' | 'sources' | 'calendar-entries') | null;
@@ -3080,12 +3474,17 @@ export interface PodcastShow {
     | boolean
     | null;
   structuredDataVersion?: number | null;
+  language?: string | null;
+  explicit?: boolean | null;
+  categories?: (string | Category)[] | null;
   rssEnabled?: boolean | null;
   externalFeedUrl?: string | null;
   importOwnership?: ('local' | 'claimed-import') | null;
   importSourceChecksum?: string | null;
   artwork?: (string | null) | MediaAsset;
   hosts?: (string | Author)[] | null;
+  authors?: (string | Author)[] | null;
+  body?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -3113,14 +3512,29 @@ export interface PodcastEpisode {
   owner?: (string | null) | Member;
   title: string;
   slug: string;
+  /**
+   * Canonical editorial record. Revisions, preview, scheduling, and publication remain owned by the shared content workflow.
+   */
   content?: (string | null) | Content;
   canonicalPath?: string | null;
   description?: string | null;
   status: 'draft' | 'scheduled' | 'published' | 'updated' | 'unavailable';
   publishedAt?: string | null;
+  /**
+   * Leave blank to use the resolved title from this content.
+   */
   seoTitle?: string | null;
+  /**
+   * Leave blank to use the resolved summary or Site Settings description.
+   */
   seoDescription?: string | null;
+  /**
+   * Leave blank to use this content’s resolved canonical path.
+   */
   seoCanonicalURL?: string | null;
+  /**
+   * Leave blank to use the selected media’s resolved alt text.
+   */
   seoImageAlt?: string | null;
   seoKeywords?:
     | {
@@ -3133,6 +3547,18 @@ export interface PodcastEpisode {
     | null;
   seoFocusKeyphrase?: string | null;
   seoNoIndex?: boolean | null;
+  /**
+   * Optional advanced discovery overrides: socialTitle, socialDescription, socialImage, locale, alternates, follow. Ordinary titles, summaries and hero media are inherited automatically.
+   */
+  discoveryOverrides?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   structuredDataMode: 'none' | 'manual' | 'inherit-source' | 'event-derived' | 'timeline-derived';
   structuredDataPrimaryType?: string | null;
   structuredDataSourceCollection?: ('content' | 'events' | 'timelines' | 'sources' | 'calendar-entries') | null;
@@ -3149,7 +3575,23 @@ export interface PodcastEpisode {
   structuredDataVersion?: number | null;
   show: string | PodcastShow;
   season?: (string | null) | PodcastSeason;
-  audio?: (string | null) | MediaAsset;
+  seasonNumber?: number | null;
+  audio: string | MediaAsset;
+  artwork?: (string | null) | MediaAsset;
+  explicit?: boolean | null;
+  language?: string | null;
+  guid?: string | null;
+  downloadableFiles?: (string | MediaAsset)[] | null;
+  credits?: string | null;
+  rights?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   externalUrl?: string | null;
   providerIdentity?: string | null;
   episodeNumber?: number | null;
@@ -3162,10 +3604,13 @@ export interface PodcastEpisode {
     | number
     | boolean
     | null;
+  body?: string | null;
   enclosureBytes?: number | null;
   enclosureMimeType?: string | null;
   importSourceChecksum?: string | null;
+  authors?: (string | Author)[] | null;
   guests?: (string | Author)[] | null;
+  categories?: (string | Category)[] | null;
   chapters?:
     | {
         [k: string]: unknown;
@@ -3216,14 +3661,29 @@ export interface VideoChannel {
   owner?: (string | null) | Member;
   title: string;
   slug: string;
+  /**
+   * Canonical editorial record. Revisions, preview, scheduling, and publication remain owned by the shared content workflow.
+   */
   content?: (string | null) | Content;
   canonicalPath?: string | null;
   description?: string | null;
   status: 'draft' | 'scheduled' | 'published' | 'updated' | 'unavailable';
   publishedAt?: string | null;
+  /**
+   * Leave blank to use the resolved title from this content.
+   */
   seoTitle?: string | null;
+  /**
+   * Leave blank to use the resolved summary or Site Settings description.
+   */
   seoDescription?: string | null;
+  /**
+   * Leave blank to use this content’s resolved canonical path.
+   */
   seoCanonicalURL?: string | null;
+  /**
+   * Leave blank to use the selected media’s resolved alt text.
+   */
   seoImageAlt?: string | null;
   seoKeywords?:
     | {
@@ -3236,6 +3696,18 @@ export interface VideoChannel {
     | null;
   seoFocusKeyphrase?: string | null;
   seoNoIndex?: boolean | null;
+  /**
+   * Optional advanced discovery overrides: socialTitle, socialDescription, socialImage, locale, alternates, follow. Ordinary titles, summaries and hero media are inherited automatically.
+   */
+  discoveryOverrides?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   structuredDataMode: 'none' | 'manual' | 'inherit-source' | 'event-derived' | 'timeline-derived';
   structuredDataPrimaryType?: string | null;
   structuredDataSourceCollection?: ('content' | 'events' | 'timelines' | 'sources' | 'calendar-entries') | null;
@@ -3269,14 +3741,29 @@ export interface VideoPlaylist {
   owner?: (string | null) | Member;
   title: string;
   slug: string;
+  /**
+   * Canonical editorial record. Revisions, preview, scheduling, and publication remain owned by the shared content workflow.
+   */
   content?: (string | null) | Content;
   canonicalPath?: string | null;
   description?: string | null;
   status: 'draft' | 'scheduled' | 'published' | 'updated' | 'unavailable';
   publishedAt?: string | null;
+  /**
+   * Leave blank to use the resolved title from this content.
+   */
   seoTitle?: string | null;
+  /**
+   * Leave blank to use the resolved summary or Site Settings description.
+   */
   seoDescription?: string | null;
+  /**
+   * Leave blank to use this content’s resolved canonical path.
+   */
   seoCanonicalURL?: string | null;
+  /**
+   * Leave blank to use the selected media’s resolved alt text.
+   */
   seoImageAlt?: string | null;
   seoKeywords?:
     | {
@@ -3289,6 +3776,18 @@ export interface VideoPlaylist {
     | null;
   seoFocusKeyphrase?: string | null;
   seoNoIndex?: boolean | null;
+  /**
+   * Optional advanced discovery overrides: socialTitle, socialDescription, socialImage, locale, alternates, follow. Ordinary titles, summaries and hero media are inherited automatically.
+   */
+  discoveryOverrides?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   structuredDataMode: 'none' | 'manual' | 'inherit-source' | 'event-derived' | 'timeline-derived';
   structuredDataPrimaryType?: string | null;
   structuredDataSourceCollection?: ('content' | 'events' | 'timelines' | 'sources' | 'calendar-entries') | null;
@@ -3320,14 +3819,29 @@ export interface Video {
   owner?: (string | null) | Member;
   title: string;
   slug: string;
+  /**
+   * Canonical editorial record. Revisions, preview, scheduling, and publication remain owned by the shared content workflow.
+   */
   content?: (string | null) | Content;
   canonicalPath?: string | null;
   description?: string | null;
   status: 'draft' | 'scheduled' | 'published' | 'updated' | 'unavailable';
   publishedAt?: string | null;
+  /**
+   * Leave blank to use the resolved title from this content.
+   */
   seoTitle?: string | null;
+  /**
+   * Leave blank to use the resolved summary or Site Settings description.
+   */
   seoDescription?: string | null;
+  /**
+   * Leave blank to use this content’s resolved canonical path.
+   */
   seoCanonicalURL?: string | null;
+  /**
+   * Leave blank to use the selected media’s resolved alt text.
+   */
   seoImageAlt?: string | null;
   seoKeywords?:
     | {
@@ -3340,6 +3854,18 @@ export interface Video {
     | null;
   seoFocusKeyphrase?: string | null;
   seoNoIndex?: boolean | null;
+  /**
+   * Optional advanced discovery overrides: socialTitle, socialDescription, socialImage, locale, alternates, follow. Ordinary titles, summaries and hero media are inherited automatically.
+   */
+  discoveryOverrides?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   structuredDataMode: 'none' | 'manual' | 'inherit-source' | 'event-derived' | 'timeline-derived';
   structuredDataPrimaryType?: string | null;
   structuredDataSourceCollection?: ('content' | 'events' | 'timelines' | 'sources' | 'calendar-entries') | null;
@@ -3357,12 +3883,27 @@ export interface Video {
   channel?: (string | null) | VideoChannel;
   playlist?: (string | null) | VideoPlaylist;
   provider: string;
-  externalId: string;
-  providerIdentity: string;
+  externalId?: string | null;
+  providerIdentity?: string | null;
   embedUrl?: string | null;
+  body?: string | null;
+  creators?: (string | Author)[] | null;
+  visibility: 'public' | 'unlisted' | 'members' | 'private';
+  rights?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  sourceAsset?: (string | null) | MediaAsset;
+  videoAsset?: (string | null) | VideoAsset;
   nativeMedia?: (string | null) | MediaAsset;
+  poster?: (string | null) | MediaAsset;
   thumbnail?: (string | null) | MediaAsset;
-  captions?: (string | MediaAsset)[] | null;
+  captions?: (string | VideoCaption)[] | null;
   availability: 'available' | 'unavailable' | 'removed';
   providerSourceChecksum?: string | null;
   transcript?: (string | null) | TranscriptRevision;
@@ -3376,6 +3917,102 @@ export interface Video {
     | boolean
     | null;
   derivesFrom?: (string | null) | Video;
+  /**
+   * Clip intents consumed by the existing distribution system.
+   */
+  distributionClips?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "video-assets".
+ */
+export interface VideoAsset {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  title: string;
+  sourceAsset: string | MediaAsset;
+  processingState: 'uploaded' | 'queued' | 'probing' | 'processing' | 'ready' | 'failed' | 'cancelled';
+  recipeKey: string;
+  recipeVersion: number;
+  metadata?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  outputs?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  lastGoodOutputs?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  progress?: number | null;
+  attempts?: number | null;
+  heartbeatAt?: string | null;
+  failure?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  cancelRequested?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "video-captions".
+ */
+export interface VideoCaption {
+  id: string;
+  title: string;
+  video: string | Video;
+  asset: string | MediaAsset;
+  language: string;
+  label: string;
+  default?: boolean | null;
+  kind: 'subtitles' | 'captions';
+  validation:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  transcript?: (string | null) | TranscriptRevision;
   updatedAt: string;
   createdAt: string;
 }
@@ -3391,14 +4028,29 @@ export interface Interview {
   owner?: (string | null) | Member;
   title: string;
   slug: string;
+  /**
+   * Canonical editorial record. Revisions, preview, scheduling, and publication remain owned by the shared content workflow.
+   */
   content?: (string | null) | Content;
   canonicalPath?: string | null;
   description?: string | null;
   status: 'draft' | 'scheduled' | 'published' | 'updated' | 'unavailable';
   publishedAt?: string | null;
+  /**
+   * Leave blank to use the resolved title from this content.
+   */
   seoTitle?: string | null;
+  /**
+   * Leave blank to use the resolved summary or Site Settings description.
+   */
   seoDescription?: string | null;
+  /**
+   * Leave blank to use this content’s resolved canonical path.
+   */
   seoCanonicalURL?: string | null;
+  /**
+   * Leave blank to use the selected media’s resolved alt text.
+   */
   seoImageAlt?: string | null;
   seoKeywords?:
     | {
@@ -3411,6 +4063,18 @@ export interface Interview {
     | null;
   seoFocusKeyphrase?: string | null;
   seoNoIndex?: boolean | null;
+  /**
+   * Optional advanced discovery overrides: socialTitle, socialDescription, socialImage, locale, alternates, follow. Ordinary titles, summaries and hero media are inherited automatically.
+   */
+  discoveryOverrides?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   structuredDataMode: 'none' | 'manual' | 'inherit-source' | 'event-derived' | 'timeline-derived';
   structuredDataPrimaryType?: string | null;
   structuredDataSourceCollection?: ('content' | 'events' | 'timelines' | 'sources' | 'calendar-entries') | null;
@@ -3454,14 +4118,29 @@ export interface Livestream {
   owner?: (string | null) | Member;
   title: string;
   slug: string;
+  /**
+   * Canonical editorial record. Revisions, preview, scheduling, and publication remain owned by the shared content workflow.
+   */
   content?: (string | null) | Content;
   canonicalPath?: string | null;
   description?: string | null;
   status: 'draft' | 'scheduled' | 'published' | 'updated' | 'unavailable';
   publishedAt?: string | null;
+  /**
+   * Leave blank to use the resolved title from this content.
+   */
   seoTitle?: string | null;
+  /**
+   * Leave blank to use the resolved summary or Site Settings description.
+   */
   seoDescription?: string | null;
+  /**
+   * Leave blank to use this content’s resolved canonical path.
+   */
   seoCanonicalURL?: string | null;
+  /**
+   * Leave blank to use the selected media’s resolved alt text.
+   */
   seoImageAlt?: string | null;
   seoKeywords?:
     | {
@@ -3474,6 +4153,18 @@ export interface Livestream {
     | null;
   seoFocusKeyphrase?: string | null;
   seoNoIndex?: boolean | null;
+  /**
+   * Optional advanced discovery overrides: socialTitle, socialDescription, socialImage, locale, alternates, follow. Ordinary titles, summaries and hero media are inherited automatically.
+   */
+  discoveryOverrides?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   structuredDataMode: 'none' | 'manual' | 'inherit-source' | 'event-derived' | 'timeline-derived';
   structuredDataPrimaryType?: string | null;
   structuredDataSourceCollection?: ('content' | 'events' | 'timelines' | 'sources' | 'calendar-entries') | null;
@@ -3512,7 +4203,7 @@ export interface Livestream {
 export interface MediaJob {
   id: string;
   title: string;
-  kind: 'upload' | 'import' | 'derivative' | 'transcribe' | 'tts' | 'publisher-read';
+  kind: 'upload' | 'import' | 'derivative' | 'video' | 'transcribe' | 'tts' | 'publisher-read';
   status: 'queued' | 'running' | 'cancelled' | 'retrying' | 'failed' | 'completed';
   progress?: number | null;
   idempotencyKey: string;
@@ -3693,6 +4384,7 @@ export interface SocialAccount {
   displayName: string;
   network:
     | 'activitypub'
+    | 'mastodon'
     | 'bluesky'
     | 'x'
     | 'threads'
@@ -3701,6 +4393,9 @@ export interface SocialAccount {
     | 'linkedin'
     | 'youtube'
     | 'tiktok'
+    | 'pinterest'
+    | 'telegram'
+    | 'discord'
     | 'manual';
   actorType: 'site' | 'publication' | 'space';
   externalAccountId: string;
@@ -3895,6 +4590,315 @@ export interface Campaign {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "calendar-entries".
+ */
+export interface CalendarEntry {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  title: string;
+  allDay?: boolean | null;
+  startsAt: string;
+  endsAt?: string | null;
+  /**
+   * IANA timezone, for example America/Chicago.
+   */
+  timeZone: string;
+  status: 'draft' | 'scheduled' | 'in-progress' | 'completed' | 'cancelled' | 'archived';
+  visibility: 'public' | 'unlisted' | 'members' | 'friends' | 'private';
+  audience?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  calendarPlacement?: string | null;
+  /**
+   * One record is a series boundary; external calendar sync is intentionally deferred.
+   */
+  recurrence?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Hook for RSVP or registration modules.
+   */
+  rsvpRegistration?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  conflictMetadata?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  canonicalPath?: string | null;
+  event?: (string | null) | Event;
+  structuredData?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  references?:
+    | (
+        | {
+            relationTo: 'content';
+            value: string | Content;
+          }
+        | {
+            relationTo: 'publications';
+            value: string | Publication;
+          }
+        | {
+            relationTo: 'media-assets';
+            value: string | MediaAsset;
+          }
+        | {
+            relationTo: 'events';
+            value: string | Event;
+          }
+      )[]
+    | null;
+  retentionMode: 'permanent' | 'expire-at' | 'manual-burn' | 'archive' | 'tombstone';
+  retentionExpiresAt?: string | null;
+  retentionHold: 'none' | 'legal' | 'moderation';
+  /**
+   * Removes expired or burned records from routes, search, feeds, and sitemaps.
+   */
+  removeFromDiscovery?: boolean | null;
+  tombstoneLabel?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "events".
+ */
+export interface Event {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  /**
+   * Optional site-scoped resource and capability required for this published page.
+   */
+  requiredEntitlement?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  title: string;
+  slug: string;
+  canonicalPath: string;
+  summary?: string | null;
+  status: 'draft' | 'scheduled' | 'published' | 'cancelled' | 'archived';
+  allDay?: boolean | null;
+  startsAt: string;
+  endsAt?: string | null;
+  /**
+   * IANA timezone for the event start and end values.
+   */
+  timeZone: string;
+  visibility: 'public' | 'unlisted' | 'members' | 'friends' | 'private';
+  venueName?: string | null;
+  venueRegion?: string | null;
+  venueAddress?: string | null;
+  attendanceMode: 'in-person' | 'virtual' | 'hybrid';
+  /**
+   * Meeting or livestream URL; required for virtual events.
+   */
+  onlineUrl?: string | null;
+  organizerName?: string | null;
+  organizerUrl?: string | null;
+  capacity?: number | null;
+  /**
+   * External registration only; ticketing and payments are not part of Events.
+   */
+  registrationUrl?: string | null;
+  /**
+   * Optional daily, weekly, or monthly series. Expansion is limited to 250 occurrences / 366 days.
+   */
+  recurrence?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Edit one occurrence by its original ISO start instant; edit the series by changing this event. Cancelled overrides suppress only that occurrence.
+   */
+  recurrenceOverrides?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  categories?: (string | Category)[] | null;
+  relatedContent?:
+    | (
+        | {
+            relationTo: 'content';
+            value: string | Content;
+          }
+        | {
+            relationTo: 'events';
+            value: string | Event;
+          }
+      )[]
+    | null;
+  heroMedia?: (string | null) | MediaAsset;
+  calendarEntry?: (string | null) | CalendarEntry;
+  audience?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Leave blank to use the resolved title from this content.
+   */
+  seoTitle?: string | null;
+  /**
+   * Leave blank to use the resolved summary or Site Settings description.
+   */
+  seoDescription?: string | null;
+  /**
+   * Leave blank to use this content’s resolved canonical path.
+   */
+  seoCanonicalURL?: string | null;
+  /**
+   * Leave blank to use the selected media’s resolved alt text.
+   */
+  seoImageAlt?: string | null;
+  seoKeywords?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  seoFocusKeyphrase?: string | null;
+  seoNoIndex?: boolean | null;
+  /**
+   * Optional advanced discovery overrides: socialTitle, socialDescription, socialImage, locale, alternates, follow. Ordinary titles, summaries and hero media are inherited automatically.
+   */
+  discoveryOverrides?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  structuredDataMode: 'none' | 'manual' | 'inherit-source' | 'event-derived' | 'timeline-derived';
+  structuredDataPrimaryType?: string | null;
+  structuredDataSourceCollection?: ('content' | 'events' | 'timelines' | 'sources' | 'calendar-entries') | null;
+  structuredDataSourceIdentifier?: string | null;
+  structuredDataManual?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  structuredDataVersion?: number | null;
+  knowledgeGraphProjectionStatus: 'disabled' | 'pending' | 'projected' | 'failed';
+  knowledgeGraphNodeKey?: string | null;
+  /**
+   * Optional Neo4j / knowledge-graph projection contract. PostgreSQL remains canonical.
+   */
+  knowledgeGraphProjectionBoundary?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  importSourceSystem?: string | null;
+  importSourceIdentifier?: string | null;
+  importSourceChecksum?: string | null;
+  exportFormatVersion?: number | null;
+  exportOwnership?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  publicRenderStrategy: 'default' | 'event-page' | 'event-card-list';
+  publicRenderVariant?: string | null;
+  publicRenderContext?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  eventCardVariant?: string | null;
+  eventListVariant?: string | null;
+  timelineEmbedVariant?: string | null;
+  timelineBlockVariant?: string | null;
+  retentionMode: 'permanent' | 'expire-at' | 'manual-burn' | 'archive' | 'tombstone';
+  retentionExpiresAt?: string | null;
+  retentionHold: 'none' | 'legal' | 'moderation';
+  /**
+   * Removes expired or burned records from routes, search, feeds, and sitemaps.
+   */
+  removeFromDiscovery?: boolean | null;
+  tombstoneLabel?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "social-network-variants".
  */
 export interface SocialNetworkVariant {
@@ -3904,6 +4908,7 @@ export interface SocialNetworkVariant {
   label: string;
   network:
     | 'activitypub'
+    | 'mastodon'
     | 'bluesky'
     | 'x'
     | 'threads'
@@ -3912,6 +4917,9 @@ export interface SocialNetworkVariant {
     | 'linkedin'
     | 'youtube'
     | 'tiktok'
+    | 'pinterest'
+    | 'telegram'
+    | 'discord'
     | 'manual';
   text: string;
   linkUrl?: string | null;
@@ -4081,10 +5089,166 @@ export interface CalendarEntryAudit {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "timelines".
+ */
+export interface Timeline {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  title: string;
+  slug: string;
+  canonicalPath: string;
+  summary?: string | null;
+  status: 'draft' | 'published' | 'archived';
+  visibility: 'public' | 'unlisted' | 'members' | 'friends' | 'private';
+  orderingMode: 'chronological' | 'manual';
+  heroMedia?: (string | null) | MediaAsset;
+  /**
+   * Canonical timeline query boundary. PostgreSQL remains the source of truth before any optional graph projection.
+   */
+  postgresQueryScope?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Leave blank to use the resolved title from this content.
+   */
+  seoTitle?: string | null;
+  /**
+   * Leave blank to use the resolved summary or Site Settings description.
+   */
+  seoDescription?: string | null;
+  /**
+   * Leave blank to use this content’s resolved canonical path.
+   */
+  seoCanonicalURL?: string | null;
+  /**
+   * Leave blank to use the selected media’s resolved alt text.
+   */
+  seoImageAlt?: string | null;
+  seoKeywords?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  seoFocusKeyphrase?: string | null;
+  seoNoIndex?: boolean | null;
+  /**
+   * Optional advanced discovery overrides: socialTitle, socialDescription, socialImage, locale, alternates, follow. Ordinary titles, summaries and hero media are inherited automatically.
+   */
+  discoveryOverrides?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  structuredDataMode: 'none' | 'manual' | 'inherit-source' | 'event-derived' | 'timeline-derived';
+  structuredDataPrimaryType?: string | null;
+  structuredDataSourceCollection?: ('content' | 'events' | 'timelines' | 'sources' | 'calendar-entries') | null;
+  structuredDataSourceIdentifier?: string | null;
+  structuredDataManual?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  structuredDataVersion?: number | null;
+  knowledgeGraphProjectionStatus: 'disabled' | 'pending' | 'projected' | 'failed';
+  knowledgeGraphNodeKey?: string | null;
+  /**
+   * Optional Neo4j / knowledge-graph projection contract. PostgreSQL remains canonical.
+   */
+  knowledgeGraphProjectionBoundary?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  importSourceSystem?: string | null;
+  importSourceIdentifier?: string | null;
+  importSourceChecksum?: string | null;
+  exportFormatVersion?: number | null;
+  exportOwnership?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  publicRenderStrategy: 'default' | 'timeline-page';
+  publicRenderVariant?: string | null;
+  publicRenderContext?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  eventCardVariant?: string | null;
+  eventListVariant?: string | null;
+  timelineEmbedVariant?: string | null;
+  timelineBlockVariant?: string | null;
+  retentionMode: 'permanent' | 'expire-at' | 'manual-burn' | 'archive' | 'tombstone';
+  retentionExpiresAt?: string | null;
+  retentionHold: 'none' | 'legal' | 'moderation';
+  /**
+   * Removes expired or burned records from routes, search, feeds, and sitemaps.
+   */
+  removeFromDiscovery?: boolean | null;
+  tombstoneLabel?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "timeline-memberships".
+ */
+export interface TimelineMembership {
+  id: string;
+  timeline: string | Timeline;
+  event: string | Event;
+  membershipKey: string;
+  displayTitle?: string | null;
+  displaySummary?: string | null;
+  eraLabel?: string | null;
+  position?: number | null;
+  displayStartsAt?: string | null;
+  displayEndsAt?: string | null;
+  renderVariant?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media-usages".
  */
 export interface MediaUsage {
   id: string;
+  site: string | Site;
   media: string | MediaAsset;
   usedBy:
     | {
@@ -4114,9 +5278,56 @@ export interface MediaUsage {
     | {
         relationTo: 'email-messages';
         value: string | EmailMessage;
+      }
+    | {
+        relationTo: 'page-layouts';
+        value: string | PageLayout;
+      }
+    | {
+        relationTo: 'graphic-documents';
+        value: string | GraphicDocument;
+      }
+    | {
+        relationTo: 'podcast-episodes';
+        value: string | PodcastEpisode;
+      }
+    | {
+        relationTo: 'videos';
+        value: string | Video;
+      }
+    | {
+        relationTo: 'social-network-variants';
+        value: string | SocialNetworkVariant;
+      }
+    | {
+        relationTo: 'profiles';
+        value: string | Profile;
       };
   usageKey: string;
-  purpose: 'hero' | 'inline' | 'cover' | 'attachment' | 'avatar' | 'thumbnail' | 'newsletter';
+  targetType: string;
+  targetId: string;
+  targetRevision?: string | null;
+  field?: string | null;
+  slot?: string | null;
+  publication?: (string | null) | Publication;
+  channel?: string | null;
+  lifecycle: 'draft' | 'scheduled' | 'public';
+  lastReconciledAt?: string | null;
+  purpose:
+    | 'hero'
+    | 'inline'
+    | 'cover'
+    | 'attachment'
+    | 'avatar'
+    | 'thumbnail'
+    | 'newsletter'
+    | 'layout'
+    | 'theme'
+    | 'seo'
+    | 'podcast'
+    | 'video'
+    | 'distribution';
+  approvedForPublic?: boolean | null;
   replaceGlobally?: boolean | null;
   updatedAt: string;
   createdAt: string;
@@ -4245,6 +5456,22 @@ export interface EmailMessage {
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   subject: string;
+  preheader?: string | null;
+  /**
+   * Reviewed from/reply-to identity; provider readiness is checked before test send.
+   */
+  senderIdentity?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  purpose?: string | null;
+  channel?: 'email' | null;
+  language?: string | null;
   blocks:
     | {
         [k: string]: unknown;
@@ -4254,6 +5481,35 @@ export interface EmailMessage {
     | number
     | boolean
     | null;
+  /**
+   * AUD-03 versioned email-only design. Never website CSS/JS or arbitrary HTML.
+   */
+  messageDesign?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  emailTemplate?: (string | null) | EmailTemplate;
+  templateVersion?: string | null;
+  variantKey?: string | null;
+  parentMessage?: (string | null) | EmailMessage;
+  /**
+   * Immutable deterministic HTML/text/hash pinned at approval.
+   */
+  approvedRender?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  approvalInvalidatedAt?: string | null;
   kind: 'transactional' | 'bulk' | 'digest';
   status: 'draft' | 'review' | 'scheduled' | 'queued' | 'sending' | 'sent' | 'cancelled' | 'failed';
   scheduledFor?: string | null;
@@ -4279,6 +5535,8 @@ export interface EmailMessage {
     | number
     | boolean
     | null;
+  recipientSnapshot?: (string | null) | RecipientSnapshot;
+  priority?: number | null;
   reviewedAt?: string | null;
   cancelCutoffAt?: string | null;
   translationProject?: string | null;
@@ -4291,6 +5549,134 @@ export interface EmailMessage {
     | number
     | boolean
     | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "email-templates".
+ */
+export interface EmailTemplate {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  name: string;
+  version: string;
+  locale: string;
+  brandTokens:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  registeredBlocks:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  layoutRegions:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  plainTextStrategy?: ('generated' | 'custom') | null;
+  status: 'draft' | 'active' | 'retired';
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "recipient-snapshots".
+ */
+export interface RecipientSnapshot {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  message: string | EmailMessage;
+  segment?: (string | null) | AudienceSegment;
+  segmentVersion: string;
+  evaluatedAt: string;
+  recipients:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  exclusionCounts:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  hash: string;
+  approvalAudit:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "audience-segments".
+ */
+export interface AudienceSegment {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  name: string;
+  definition:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Immutable SHA-256 version of the typed definition at approval.
+   */
+  version: string;
+  lastEvaluation?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  consentBasisRequired?: boolean | null;
+  status: 'active' | 'archived';
   updatedAt: string;
   createdAt: string;
 }
@@ -4514,6 +5900,8 @@ export interface FormDefinition {
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   name: string;
+  title?: string | null;
+  copy?: string | null;
   template:
     | 'contact'
     | 'newsletter-signup'
@@ -4535,6 +5923,18 @@ export interface FormDefinition {
   visibility: 'public' | 'private' | 'members';
   activeSchema?: (string | null) | FormSchema;
   settings:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Bounded declared actions only: contact, tag, task, notification, approved webhook, redirect, download.
+   */
+  actions?:
     | {
         [k: string]: unknown;
       }
@@ -4657,6 +6057,25 @@ export interface FormSubmission {
   organization?: (string | null) | Organization;
   workflowItem?: (string | null) | WorkflowItem;
   idempotencyKey?: string | null;
+  actionState?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  reviewNotes?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  submittedAt?: string | null;
   retentionMode: 'permanent' | 'expire-at' | 'manual-burn' | 'archive' | 'tombstone';
   retentionExpiresAt?: string | null;
   retentionHold: 'none' | 'legal' | 'moderation';
@@ -4681,6 +6100,7 @@ export interface Contact {
   displayName: string;
   email?: string | null;
   emailHash?: string | null;
+  phoneE164?: string | null;
   member?: (string | null) | Member;
   status: 'lead' | 'active' | 'inactive' | 'blocked' | 'archived';
   profile?:
@@ -5025,21 +6445,10 @@ export interface AudienceList {
   description?: string | null;
   status: 'active' | 'archived';
   doubleOptIn?: boolean | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "audience-segments".
- */
-export interface AudienceSegment {
-  id: string;
-  site: string | Site;
-  publication?: (string | null) | Publication;
-  space?: (string | null) | Space;
-  owner?: (string | null) | Member;
-  name: string;
-  definition:
+  /**
+   * Operator/import source and immutable audit reference. A list is never consent.
+   */
+  provenance?:
     | {
         [k: string]: unknown;
       }
@@ -5048,8 +6457,6 @@ export interface AudienceSegment {
     | number
     | boolean
     | null;
-  consentBasisRequired?: boolean | null;
-  status: 'active' | 'archived';
   updatedAt: string;
   createdAt: string;
 }
@@ -5084,6 +6491,7 @@ export interface Subscriber {
   status: 'pending' | 'active' | 'unsubscribed' | 'suppressed';
   verifiedAt?: string | null;
   globalUnsubscribedAt?: string | null;
+  erasedAt?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -5100,6 +6508,8 @@ export interface SubscriberConfirmationToken {
   usedAt?: string | null;
   locale: string;
   consentWording: string;
+  purpose?: string | null;
+  revokedAt?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -5117,7 +6527,18 @@ export interface ConsentEvent {
   contact?: (string | null) | Contact;
   formSubmission?: (string | null) | FormSubmission;
   audienceList?: (string | null) | AudienceList;
-  event: 'requested' | 'double-opt-in-confirmed' | 'unsubscribe' | 'resubscribe' | 'imported' | 'bounce' | 'complaint';
+  event:
+    | 'requested'
+    | 'double-opt-in-confirmed'
+    | 'unsubscribe'
+    | 'resubscribe'
+    | 'imported'
+    | 'bounce'
+    | 'complaint'
+    | 'preference-granted'
+    | 'preference-withdrawn'
+    | 'operator-correction'
+    | 'erased';
   basis: string;
   wording?: string | null;
   locale?: string | null;
@@ -5131,6 +6552,15 @@ export interface ConsentEvent {
     | number
     | boolean
     | null;
+  channel?: ('email' | 'sms' | 'rcs' | 'push' | 'postal') | null;
+  purpose?: string | null;
+  policyVersion?: string | null;
+  captureSource?: string | null;
+  proofReference?: string | null;
+  jurisdiction?: string | null;
+  actor?: (string | null) | User;
+  ipDigest?: string | null;
+  userAgentDigest?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -5151,6 +6581,7 @@ export interface Preference {
     | number
     | boolean
     | null;
+  derivedAt?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -5165,10 +6596,21 @@ export interface Suppression {
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   emailHash: string;
-  reason: 'unsubscribe' | 'bounce' | 'complaint' | 'provider';
+  reason: 'unsubscribe' | 'bounce' | 'complaint' | 'provider' | 'invalid' | 'block' | 'operator' | 'legal';
   provider?: string | null;
   occurredAt: string;
   global?: boolean | null;
+  scope?: string | null;
+  source?: string | null;
+  details?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -5207,11 +6649,213 @@ export interface EmailDelivery {
   subscriber?: (string | null) | Subscriber;
   recipientEmail: string;
   idempotencyKey: string;
-  status: 'queued' | 'sending' | 'sent' | 'delivered' | 'bounced' | 'complained' | 'cancelled' | 'failed';
+  status:
+    | 'queued'
+    | 'sending'
+    | 'accepted'
+    | 'sent'
+    | 'delivered'
+    | 'deferred'
+    | 'bounced'
+    | 'complained'
+    | 'unknown'
+    | 'cancelled'
+    | 'failed'
+    | 'dead-letter';
   provider?: string | null;
   providerMessageId?: string | null;
   attempts?: number | null;
+  acceptedAt?: string | null;
+  nextAttemptAt?: string | null;
+  leaseUntil?: string | null;
+  renderHash?: string | null;
+  rfcMessageId?: string | null;
+  unsubscribeToken?: string | null;
+  /**
+   * Immutable subject/body revision rendered for this recipient.
+   */
+  messageSnapshot?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   outcome?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  recipientSnapshotHash?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "email-delivery-events".
+ */
+export interface EmailDeliveryEvent {
+  id: string;
+  delivery: string | EmailDelivery;
+  idempotencyKey: string;
+  provider: string;
+  providerEventId?: string | null;
+  event: 'accepted' | 'delivered' | 'deferred' | 'bounce' | 'complaint' | 'unsubscribe' | 'suppression';
+  occurredAt: string;
+  evidence:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "telecom-messages".
+ */
+export interface TelecomMessage {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  title: string;
+  body: string;
+  channel: 'sms' | 'rcs';
+  purpose?: string | null;
+  status: 'draft' | 'scheduled' | 'queued' | 'sent' | 'cancelled';
+  from?: string | null;
+  scheduledFor?: string | null;
+  rcsContent?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  fallbackPolicy?: ('prohibit' | 'allow-with-configured-text' | 'manual-review') | null;
+  fallbackSmsBody?: string | null;
+  audience?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  estimatedCost?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  approvedAt?: string | null;
+  approvedRender?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "telecom-deliveries".
+ */
+export interface TelecomDelivery {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  message: string | TelecomMessage;
+  subscriber?: (string | null) | Subscriber;
+  recipientPhone: string;
+  recipientPhoneHash: string;
+  channel: 'sms' | 'mms' | 'rcs';
+  idempotencyKey: string;
+  status:
+    | 'queued'
+    | 'sending'
+    | 'accepted'
+    | 'sent'
+    | 'delivered'
+    | 'failed'
+    | 'cancelled'
+    | 'unknown'
+    | 'manual-review';
+  deliveryPath?: ('sms-direct' | 'rcs-direct' | 'rcs-fallback-to-sms') | null;
+  provider?: string | null;
+  providerMessageId?: string | null;
+  attempts?: number | null;
+  segments?: number | null;
+  acceptedAt?: string | null;
+  scheduledFor?: string | null;
+  quietHoursDelayedUntil?: string | null;
+  messageSnapshot?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  actualCost?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  outcome?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "telecom-delivery-events".
+ */
+export interface TelecomDeliveryEvent {
+  id: string;
+  delivery: string | TelecomDelivery;
+  idempotencyKey: string;
+  provider: string;
+  providerEventId?: string | null;
+  event: 'accepted' | 'sent' | 'delivered' | 'undelivered' | 'failed' | 'stop' | 'help';
+  occurredAt: string;
+  evidence:
     | {
         [k: string]: unknown;
       }
@@ -5446,7 +7090,8 @@ export interface AutomationDefinition {
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   name: string;
-  status: 'draft' | 'active' | 'paused' | 'archived';
+  status: 'draft' | 'review' | 'active' | 'paused' | 'cancelled' | 'archived';
+  version: string;
   trigger:
     | {
         [k: string]: unknown;
@@ -5474,7 +7119,151 @@ export interface AutomationDefinition {
     | number
     | boolean
     | null;
+  reentryPolicy?: ('never' | 'after-exit' | 'after-days') | null;
+  quietHours?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  approvedAt?: string | null;
+  pinned?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   requiresApproval?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "automation-runs".
+ */
+export interface AutomationRun {
+  id: string;
+  definition: string | AutomationDefinition;
+  sourceEvent?: (string | null) | ActivityEvent;
+  idempotencyKey: string;
+  status: 'queued' | 'running' | 'completed' | 'failed' | 'paused';
+  subject:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  definitionVersion: string;
+  step?: number | null;
+  nextRunAt?: string | null;
+  outcome?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "automation-failures".
+ */
+export interface AutomationFailure {
+  id: string;
+  run: string | AutomationRun;
+  actionIndex: number;
+  error:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  retryable?: boolean | null;
+  resolvedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "audience-frequency-policies".
+ */
+export interface AudienceFrequencyPolicy {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  purpose: string;
+  channel?: ('email' | 'sms' | 'rcs') | null;
+  maxSends: number;
+  windowHours: number;
+  globalFatigue?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "audience-experiments".
+ */
+export interface AudienceExperiment {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  title: string;
+  hypothesis: string;
+  channel: 'email' | 'sms' | 'rcs';
+  metric: 'open_rate' | 'click_rate' | 'conversion_rate';
+  windowHours?: number | null;
+  status: 'draft' | 'running' | 'completed' | 'concluded' | 'aborted';
+  variants:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  guardrails:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  winnerDecision?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  allocationsHash?: string | null;
+  totalAllocated?: number | null;
+  startedAt?: string | null;
+  concludedAt?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -6190,50 +7979,47 @@ export interface PaymentMethodCapability {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "carts".
+ * via the `definition` "digital-delivery-grants".
  */
-export interface Cart {
+export interface DigitalDeliveryGrant {
   id: string;
   site: string | Site;
   publication?: (string | null) | Publication;
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
-  merchantConnection: string | MerchantConnection;
-  currency: string;
-  buyerCountry?: string | null;
-  items:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-  state: 'active' | 'converted' | 'abandoned' | 'expired';
-  idempotencyKey?: string | null;
+  product: string | Product;
+  variantSku: string;
+  entitlement: string | Entitlement;
+  member?: (string | null) | Member;
+  mediaAsset: string | MediaAsset;
+  grantKeyHash: string;
+  downloadLimit?: number | null;
+  downloadCount: number;
   expiresAt?: string | null;
+  revokedAt?: string | null;
+  lastDownloadedAt?: string | null;
   updatedAt: string;
   createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "checkout-sessions".
+ * via the `definition` "entitlements".
  */
-export interface CheckoutSession {
+export interface Entitlement {
   id: string;
   site: string | Site;
   publication?: (string | null) | Publication;
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
-  cart: string | Cart;
-  merchantConnection: string | MerchantConnection;
-  currency: string;
-  amountMinor: string;
-  buyerCountry?: string | null;
-  state: 'open' | 'pending' | 'completed' | 'failed' | 'cancelled' | 'abandoned' | 'expired';
-  selectedCapabilityId?: string | null;
-  legalCopy?:
+  supporter: string | Supporter;
+  campaign?: (string | null) | Campaign;
+  paymentIntent?: (string | null) | PaymentIntent;
+  entitlement: string;
+  source: string;
+  startsAt: string;
+  endsAt?: string | null;
+  revokedAt?: string | null;
+  fulfillmentReference?:
     | {
         [k: string]: unknown;
       }
@@ -6242,9 +8028,12 @@ export interface CheckoutSession {
     | number
     | boolean
     | null;
-  idempotencyKey?: string | null;
-  expiresAt?: string | null;
-  shippingExtension?:
+  resource?: string | null;
+  capability?: string | null;
+  scope?: string | null;
+  grantKey?: string | null;
+  limit?: number | null;
+  evidence?:
     | {
         [k: string]: unknown;
       }
@@ -6253,7 +8042,23 @@ export interface CheckoutSession {
     | number
     | boolean
     | null;
-  taxExtension?:
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "supporters".
+ */
+export interface Supporter {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  displayName?: string | null;
+  member?: (string | null) | Member;
+  emailHash?: string | null;
+  providerReferences?:
     | {
         [k: string]: unknown;
       }
@@ -6262,6 +8067,7 @@ export interface CheckoutSession {
     | number
     | boolean
     | null;
+  visibilityPreference?: ('public' | 'anonymous' | 'private') | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -6326,6 +8132,402 @@ export interface PaymentIntent {
     | number
     | boolean
     | null;
+  /**
+   * Server-priced immutable checkout snapshot; never copied from a later cart.
+   */
+  orderLines?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  expiresAt: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "checkout-sessions".
+ */
+export interface CheckoutSession {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  cart: string | Cart;
+  proposal?: (string | null) | CheckoutProposal;
+  merchantConnection: string | MerchantConnection;
+  currency: string;
+  amountMinor: string;
+  buyerCountry?: string | null;
+  state: 'open' | 'pending' | 'completed' | 'failed' | 'cancelled' | 'abandoned' | 'expired';
+  selectedCapabilityId?: string | null;
+  legalCopy?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  idempotencyKey?: string | null;
+  bindingKey?: string | null;
+  customerKey?: string | null;
+  attempt: number;
+  guestAccessTokenHash?: string | null;
+  returnPath?: string | null;
+  cancelPath?: string | null;
+  expiresAt?: string | null;
+  shippingExtension?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  taxExtension?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "carts".
+ */
+export interface Cart {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  merchantConnection: string | MerchantConnection;
+  version: number;
+  guestTokenHash?: string | null;
+  member?: (string | null) | Member;
+  customerEmail?: string | null;
+  currency: string;
+  buyerCountry?: string | null;
+  items:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  appliedCouponCodes?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  shippingAddress?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  billingAddress?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  selectedShippingRateId?: string | null;
+  reconciliationNotes?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  state: 'active' | 'converted' | 'abandoned' | 'expired';
+  idempotencyKey?: string | null;
+  expiresAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "checkout-proposals".
+ */
+export interface CheckoutProposal {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  cart: string | Cart;
+  merchantConnection: string | MerchantConnection;
+  cartVersion: number;
+  currency: string;
+  customer:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  shippingAddress?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  billingAddress?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  selectedShippingRate?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  pricingSnapshot:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  taxSnapshot?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  consents:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  fulfillmentSplit:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  integrityHash: string;
+  state: 'active' | 'consumed' | 'expired' | 'cancelled';
+  expiresAt: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "digital-download-events".
+ */
+export interface DigitalDownloadEvent {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  grant: string | DigitalDeliveryGrant;
+  mediaAsset: string | MediaAsset;
+  occurredAt: string;
+  outcome: 'allowed' | 'denied';
+  reason?: string | null;
+  requestFingerprint: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "catalog-import-runs".
+ */
+export interface CatalogImportRun {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  checksum: string;
+  mode: 'dry-run' | 'apply';
+  status: 'planned' | 'applied' | 'replayed' | 'rejected';
+  source: string;
+  summary:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  appliedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "promotions".
+ */
+export interface Promotion {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  version: number;
+  code: string;
+  description: string;
+  scope: 'order' | 'line' | 'category' | 'shipping';
+  discountType: 'fixed-minor' | 'percentage-basis-points' | 'free-shipping';
+  discountValue: string;
+  maxDiscountMinor?: string | null;
+  currency: string;
+  startsAt?: string | null;
+  endsAt?: string | null;
+  timezone?: string | null;
+  status: 'active' | 'paused' | 'archived';
+  stackingRule: 'exclusive' | 'stackable' | 'priority';
+  stackingPriority: number;
+  usageLimitTotal?: number | null;
+  usageCount: number;
+  usageLimitPerCustomer?: number | null;
+  eligibility?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "inventory-reservations".
+ */
+export interface InventoryReservation {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  cart: string | Cart;
+  proposal?: (string | null) | CheckoutProposal;
+  product: string | Product;
+  variantSku: string;
+  quantity: number;
+  status: 'active' | 'consumed' | 'released' | 'expired';
+  expiresAt: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payment-attempts".
+ */
+export interface PaymentAttempt {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  checkoutSession: string | CheckoutSession;
+  paymentIntent: string | PaymentIntent;
+  proposal?: (string | null) | CheckoutProposal;
+  merchantConnection: string | MerchantConnection;
+  attempt: number;
+  idempotencyKey: string;
+  providerKey: string;
+  providerContractVersion: string;
+  providerImplementationVersion: string;
+  providerApiVersion: string;
+  providerReference?: string | null;
+  providerPaymentReference?: string | null;
+  amountMinor: string;
+  currency: string;
+  state:
+    | 'initiated'
+    | 'action-required'
+    | 'processing'
+    | 'succeeded'
+    | 'failed'
+    | 'cancelled'
+    | 'partially-refunded'
+    | 'refunded'
+    | 'disputed'
+    | 'unknown';
+  refundedAmountMinor: string;
+  lastProviderSequence?: number | null;
+  processedEventIds?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  unknownSince?: string | null;
+  lastReconciledAt?: string | null;
+  nextReconcileAt?: string | null;
+  failure?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   expiresAt: string;
   updatedAt: string;
   createdAt: string;
@@ -6347,6 +8549,60 @@ export interface Order {
   currency: string;
   amountMinor: string;
   items:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  partySnapshot?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  addressSnapshot?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  totalsSnapshot?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  termsSnapshot?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  sourceSnapshot?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  downstreamInstructions?:
     | {
         [k: string]: unknown;
       }
@@ -6429,6 +8685,22 @@ export interface PaymentWebhookEvent {
   providerEventId: string;
   payloadHash: string;
   verifiedAt: string;
+  occurredAt?: string | null;
+  sequence?: number | null;
+  normalizedKind?: string | null;
+  providerReference?: string | null;
+  sanitizedEvidence?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  processingState: 'received' | 'processing' | 'processed' | 'failed' | 'gap';
+  attempts: number;
+  lastError?: string | null;
   processedAt?: string | null;
   outcome?:
     | {
@@ -6444,18 +8716,26 @@ export interface PaymentWebhookEvent {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "supporters".
+ * via the `definition` "commerce-refunds".
  */
-export interface Supporter {
+export interface CommerceRefund {
   id: string;
   site: string | Site;
   publication?: (string | null) | Publication;
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
-  displayName?: string | null;
-  member?: (string | null) | Member;
-  emailHash?: string | null;
-  providerReferences?:
+  order: string | Order;
+  paymentAttempt: string | PaymentAttempt;
+  idempotencyKey: string;
+  amountMinor: string;
+  currency: string;
+  kind: 'partial' | 'full';
+  state: 'previewed' | 'awaiting-approval' | 'processing' | 'succeeded' | 'failed' | 'unknown';
+  reason: string;
+  requestedBy: string;
+  approvedBy?: string | null;
+  providerRefundReference?: string | null;
+  providerEvidence?:
     | {
         [k: string]: unknown;
       }
@@ -6464,29 +8744,650 @@ export interface Supporter {
     | number
     | boolean
     | null;
-  visibilityPreference?: ('public' | 'anonymous' | 'private') | null;
+  downstreamPolicy?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  correctionReceipt?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  auditLog?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   updatedAt: string;
   createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "entitlements".
+ * via the `definition` "commerce-disputes".
  */
-export interface Entitlement {
+export interface CommerceDispute {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  order: string | Order;
+  paymentAttempt: string | PaymentAttempt;
+  providerDisputeReference: string;
+  amountMinor: string;
+  currency: string;
+  state: 'open' | 'under-review' | 'won' | 'lost' | 'closed';
+  reason?: string | null;
+  deadlineAt?: string | null;
+  sanitizedEvidence?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  auditLog?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "commerce-reconciliation-cases".
+ */
+export interface CommerceReconciliationCase {
+  id: string;
+  site: string | Site;
+  legacyType: string;
+  legacyId: string;
+  reason: string;
+  evidence:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  status: 'quarantined' | 'resolved' | 'dismissed';
+  createdAt: string;
+  resolvedAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "plan-revisions".
+ */
+export interface PlanRevision {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  planKey: string;
+  revision: number;
+  name: string;
+  lifecycle: 'published' | 'retired';
+  interval: 'week' | 'month' | 'year';
+  intervalCount: number;
+  amountMinor: string;
+  currency: string;
+  trialDays: number;
+  trialEligibility: 'once_per_customer' | 'unrestricted' | 'none';
+  entitlements:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  cancelPolicy: 'immediate' | 'period_end';
+  changePolicy: 'immediate' | 'period_end';
+  taxPolicy: 'provider' | 'inclusive' | 'exclusive';
+  providerMappings:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  publishedAt: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "subscriptions".
+ */
+export interface Subscription {
   id: string;
   site: string | Site;
   publication?: (string | null) | Publication;
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   supporter: string | Supporter;
-  campaign?: (string | null) | Campaign;
-  paymentIntent?: (string | null) | PaymentIntent;
-  entitlement: string;
-  source: string;
-  startsAt: string;
+  planRevision: string | PlanRevision;
+  planSnapshot:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  providerKey: string;
+  providerCustomerReference?: string | null;
+  providerSubscriptionReference?: string | null;
+  providerStatus?: string | null;
+  state:
+    | 'incomplete'
+    | 'trialing'
+    | 'active'
+    | 'past_due'
+    | 'grace'
+    | 'paused'
+    | 'cancel_at_period_end'
+    | 'canceled'
+    | 'expired'
+    | 'incomplete_expired';
+  source: 'provider' | 'complimentary' | 'migration';
+  currentPeriodStart: string;
+  currentPeriodEnd: string;
+  trialEnd?: string | null;
+  graceEnd?: string | null;
+  cancelAtPeriodEnd?: boolean | null;
+  settings?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  version: number;
+  lastEventSequence?: number | null;
+  lastEventOccurredAt?: string | null;
+  lastReconciledAt?: string | null;
+  checkoutKey?: string | null;
+  failure?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "subscription-events".
+ */
+export interface SubscriptionEvent {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  subscription: string | Subscription;
+  eventKey: string;
+  providerEventId?: string | null;
+  kind: string;
+  occurredAt: string;
+  evidence?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "donation-campaigns".
+ */
+export interface DonationCampaign {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  organization?: (string | null) | Organization;
+  campaignKey: string;
+  version: number;
+  title: string;
+  story?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  media?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  purpose: string;
+  designations?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  startsAt?: string | null;
   endsAt?: string | null;
-  revokedAt?: string | null;
-  fulfillmentReference?:
+  goalAmountMinor?: string | null;
+  goalRules?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  allowedAmounts?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  currency: string;
+  /**
+   * Entity name frozen onto each settled receipt.
+   */
+  receiptEntityName?: string | null;
+  verifiedNonprofitStatus?: boolean | null;
+  verified501c3Status?: boolean | null;
+  verifiedTaxDeductibility?: boolean | null;
+  taxDisclaimer?: string | null;
+  donorWallMinimumMinor?: string | null;
+  supporterEntitlement?: string | null;
+  supporterEntitlementTermDays?: number | null;
+  recurrence:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  feeCover?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  privacyDefault: 'public' | 'anonymous' | 'private';
+  disclosures:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  lifecycle: 'draft' | 'scheduled' | 'active' | 'paused' | 'completed' | 'archived';
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "donation-intents".
+ */
+export interface DonationIntent {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  campaign: string | DonationCampaign;
+  campaignVersion: number;
+  designation?: string | null;
+  donorSnapshot:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  moneySnapshot:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  recognition: 'public' | 'anonymous' | 'private';
+  publicDisplayName?: string | null;
+  donorMessage?: string | null;
+  trackingSource?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  paymentIntent?: (string | null) | PaymentIntent;
+  subscription?: (string | null) | Subscription;
+  recurrence: 'one-time' | 'recurring';
+  lifecycle: 'created' | 'pending' | 'succeeded' | 'failed' | 'cancelled' | 'refunded' | 'disputed' | 'unknown';
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "donations".
+ */
+export interface Donation {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  donationIntent: string | DonationIntent;
+  campaign: string | DonationCampaign;
+  paymentIntent: string | PaymentIntent;
+  subscription?: (string | null) | Subscription;
+  supporter?: (string | null) | Supporter;
+  donorSnapshot:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  campaignSnapshot:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  receiptSnapshot?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  designation?: string | null;
+  baseAmountMinor: string;
+  feeCoveredAmountMinor: string;
+  currency: string;
+  recognition: 'public' | 'anonymous' | 'private';
+  publicDisplayName?: string | null;
+  donorMessage?: string | null;
+  trackingSource?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  lifecycle: 'succeeded' | 'partially-refunded' | 'refunded' | 'disputed' | 'exception';
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "donation-events".
+ */
+export interface DonationEvent {
+  id: string;
+  donation?: (string | null) | Donation;
+  donationIntent?: (string | null) | DonationIntent;
+  eventKey: string;
+  kind: string;
+  occurredAt: string;
+  actor?: string | null;
+  evidence?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pod-connections".
+ */
+export interface PodConnection {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  providerKey: string;
+  label: string;
+  remoteStoreId?: string | null;
+  remoteStoreName?: string | null;
+  /**
+   * Encrypted credential envelope; never display or store plaintext secrets.
+   */
+  encryptedApiKey: string;
+  encryptedWebhookSecret?: string | null;
+  status: 'active' | 'degraded' | 'disabled';
+  capabilities?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  lastHealthCheckedAt?: string | null;
+  lastHealthStatus?: string | null;
+  lastHealthReason?: string | null;
+  disabledReason?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pod-jobs".
+ */
+export interface PodJob {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  order: string | Order;
+  connection?: (string | null) | PodConnection;
+  providerKey: string;
+  packageIndex: number;
+  idempotencyKey: string;
+  payloadHash: string;
+  state:
+    | 'created'
+    | 'on_hold'
+    | 'submitting'
+    | 'submitted'
+    | 'in_production'
+    | 'partially_shipped'
+    | 'shipped'
+    | 'delivered'
+    | 'cancelled'
+    | 'failed'
+    | 'exception'
+    | 'returned';
+  addressPolicy: 'domestic' | 'international' | 'po-box-rejected';
+  recipientSnapshot:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  itemsSnapshot:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  costSnapshot:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  attemptCount: number;
+  externalOrderId?: string | null;
+  holdExpiresAt?: string | null;
+  releasedAt?: string | null;
+  auditTrail?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  lastError?: string | null;
+  parentJob?: (string | null) | PodJob;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "manual-fulfillment-packages".
+ */
+export interface ManualFulfillmentPackage {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  order: string | Order;
+  packageIndex: number;
+  source: string;
+  status: 'pending_acknowledgement' | 'acknowledged' | 'in_production' | 'shipped' | 'cancelled';
+  approvedLines:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  permissionedAddressManifest:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  instructions?: string | null;
+  acknowledgement?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  externalFulfillment?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  auditTrail?:
     | {
         [k: string]: unknown;
       }
@@ -6587,6 +9488,10 @@ export interface PayloadLockedDocument {
         value: string | IdentityAuditEvent;
       } | null)
     | ({
+        relationTo: 'member-site-roles';
+        value: string | MemberSiteRole;
+      } | null)
+    | ({
         relationTo: 'profiles';
         value: string | Profile;
       } | null)
@@ -6651,6 +9556,26 @@ export interface PayloadLockedDocument {
         value: string | MediaAsset;
       } | null)
     | ({
+        relationTo: 'media-asset-versions';
+        value: string | MediaAssetVersion;
+      } | null)
+    | ({
+        relationTo: 'media-governance-incidents';
+        value: string | MediaGovernanceIncident;
+      } | null)
+    | ({
+        relationTo: 'media-blobs';
+        value: string | MediaBlob;
+      } | null)
+    | ({
+        relationTo: 'media-variants';
+        value: string | MediaVariant;
+      } | null)
+    | ({
+        relationTo: 'media-upload-sessions';
+        value: string | MediaUploadSession;
+      } | null)
+    | ({
         relationTo: 'sections';
         value: string | Section;
       } | null)
@@ -6679,6 +9604,10 @@ export interface PayloadLockedDocument {
         value: string | PublicRedirect;
       } | null)
     | ({
+        relationTo: 'content-releases';
+        value: string | ContentRelease;
+      } | null)
+    | ({
         relationTo: 'content';
         value: string | Content;
       } | null)
@@ -6699,32 +9628,8 @@ export interface PayloadLockedDocument {
         value: string | PreviewToken;
       } | null)
     | ({
-        relationTo: 'content-releases';
-        value: string | ContentRelease;
-      } | null)
-    | ({
         relationTo: 'scheduled-publish-jobs';
         value: string | ScheduledPublishJob;
-      } | null)
-    | ({
-        relationTo: 'events';
-        value: string | Event;
-      } | null)
-    | ({
-        relationTo: 'timelines';
-        value: string | Timeline;
-      } | null)
-    | ({
-        relationTo: 'timeline-memberships';
-        value: string | TimelineMembership;
-      } | null)
-    | ({
-        relationTo: 'sources';
-        value: string | Source;
-      } | null)
-    | ({
-        relationTo: 'albums';
-        value: string | Album;
       } | null)
     | ({
         relationTo: 'books';
@@ -6765,6 +9670,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'videos';
         value: string | Video;
+      } | null)
+    | ({
+        relationTo: 'video-assets';
+        value: string | VideoAsset;
+      } | null)
+    | ({
+        relationTo: 'video-captions';
+        value: string | VideoCaption;
       } | null)
     | ({
         relationTo: 'interviews';
@@ -6833,6 +9746,26 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'calendar-entry-audits';
         value: string | CalendarEntryAudit;
+      } | null)
+    | ({
+        relationTo: 'events';
+        value: string | Event;
+      } | null)
+    | ({
+        relationTo: 'timelines';
+        value: string | Timeline;
+      } | null)
+    | ({
+        relationTo: 'timeline-memberships';
+        value: string | TimelineMembership;
+      } | null)
+    | ({
+        relationTo: 'sources';
+        value: string | Source;
+      } | null)
+    | ({
+        relationTo: 'albums';
+        value: string | Album;
       } | null)
     | ({
         relationTo: 'media-usages';
@@ -6995,12 +9928,32 @@ export interface PayloadLockedDocument {
         value: string | EmailMessage;
       } | null)
     | ({
+        relationTo: 'email-templates';
+        value: string | EmailTemplate;
+      } | null)
+    | ({
         relationTo: 'delivery-identities';
         value: string | DeliveryIdentity;
       } | null)
     | ({
         relationTo: 'email-deliveries';
         value: string | EmailDelivery;
+      } | null)
+    | ({
+        relationTo: 'email-delivery-events';
+        value: string | EmailDeliveryEvent;
+      } | null)
+    | ({
+        relationTo: 'telecom-messages';
+        value: string | TelecomMessage;
+      } | null)
+    | ({
+        relationTo: 'telecom-deliveries';
+        value: string | TelecomDelivery;
+      } | null)
+    | ({
+        relationTo: 'telecom-delivery-events';
+        value: string | TelecomDeliveryEvent;
       } | null)
     | ({
         relationTo: 'activity-events';
@@ -7033,6 +9986,26 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'automation-definitions';
         value: string | AutomationDefinition;
+      } | null)
+    | ({
+        relationTo: 'automation-runs';
+        value: string | AutomationRun;
+      } | null)
+    | ({
+        relationTo: 'automation-failures';
+        value: string | AutomationFailure;
+      } | null)
+    | ({
+        relationTo: 'recipient-snapshots';
+        value: string | RecipientSnapshot;
+      } | null)
+    | ({
+        relationTo: 'audience-frequency-policies';
+        value: string | AudienceFrequencyPolicy;
+      } | null)
+    | ({
+        relationTo: 'audience-experiments';
+        value: string | AudienceExperiment;
       } | null)
     | ({
         relationTo: 'analytics-events';
@@ -7125,46 +10098,6 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'quality-reports';
         value: string | QualityReport;
-      } | null)
-    | ({
-        relationTo: 'merchant-connections';
-        value: string | MerchantConnection;
-      } | null)
-    | ({
-        relationTo: 'payment-method-capabilities';
-        value: string | PaymentMethodCapability;
-      } | null)
-    | ({
-        relationTo: 'products';
-        value: string | Product;
-      } | null)
-    | ({
-        relationTo: 'carts';
-        value: string | Cart;
-      } | null)
-    | ({
-        relationTo: 'checkout-sessions';
-        value: string | CheckoutSession;
-      } | null)
-    | ({
-        relationTo: 'payment-intents';
-        value: string | PaymentIntent;
-      } | null)
-    | ({
-        relationTo: 'orders';
-        value: string | Order;
-      } | null)
-    | ({
-        relationTo: 'payment-webhook-events';
-        value: string | PaymentWebhookEvent;
-      } | null)
-    | ({
-        relationTo: 'supporters';
-        value: string | Supporter;
-      } | null)
-    | ({
-        relationTo: 'entitlements';
-        value: string | Entitlement;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -7228,6 +10161,8 @@ export interface SitesSelect<T extends boolean = true> {
   slug?: T;
   description?: T;
   lifecycle?: T;
+  communityRegistrationPolicy?: T;
+  commentReactionCodes?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -7236,11 +10171,20 @@ export interface SitesSelect<T extends boolean = true> {
  * via the `definition` "page-layouts_select".
  */
 export interface PageLayoutsSelect<T extends boolean = true> {
+  publishedPresentation?: T;
   site?: T;
   publication?: T;
   space?: T;
+  name?: T;
   path?: T;
   themeId?: T;
+  surface?: T;
+  slot?: T;
+  templateId?: T;
+  templateVersion?: T;
+  templateMode?: T;
+  isRetired?: T;
+  category?: T;
   layoutVersion?: T;
   status?: T;
   visibility?: T;
@@ -7409,10 +10353,16 @@ export interface MembersSelect<T extends boolean = true> {
   status?: T;
   disabledAt?: T;
   archivedAt?: T;
+  restrictedAt?: T;
+  suspendedAt?: T;
+  deactivatedAt?: T;
+  deletionPendingAt?: T;
+  deletedAt?: T;
   exportRequestedAt?: T;
   deletionRequestedAt?: T;
   verifiedEmailAt?: T;
   moderationReason?: T;
+  stateReason?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -7487,14 +10437,33 @@ export interface IdentityAuditEventsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "member-site-roles_select".
+ */
+export interface MemberSiteRolesSelect<T extends boolean = true> {
+  site?: T;
+  member?: T;
+  role?: T;
+  grantedByUserId?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "profiles_select".
  */
 export interface ProfilesSelect<T extends boolean = true> {
   member?: T;
   displayName?: T;
   handle?: T;
+  handleChangedAt?: T;
+  handleHistory?: T;
   avatar?: T;
   cover?: T;
+  avatarAlt?: T;
+  coverAlt?: T;
+  locale?: T;
+  timeZone?: T;
+  discoveryOptOut?: T;
   bio?: T;
   links?: T;
   preferences?: T;
@@ -7814,12 +10783,16 @@ export interface MediaAssetsSelect<T extends boolean = true> {
   kind?: T;
   storageLocation?: T;
   storageProvider?: T;
+  originalBlob?: T;
+  originalFilename?: T;
   mimeType?: T;
   sizeBytes?: T;
   checksum?: T;
   width?: T;
   height?: T;
   durationSeconds?: T;
+  audioMetadata?: T;
+  videoMetadata?: T;
   altText?: T;
   focalPoint?:
     | T
@@ -7827,9 +10800,30 @@ export interface MediaAssetsSelect<T extends boolean = true> {
         x?: T;
         y?: T;
       };
+  aspectRatio?: T;
+  dominantColor?: T;
+  colorPalette?: T;
+  cropSettings?: T;
   caption?: T;
+  description?: T;
+  creatorCredit?: T;
   credits?: T;
+  source?: T;
+  copyrightOwner?: T;
   license?: T;
+  licenseType?: T;
+  licenseUrl?: T;
+  rightsSourceUrl?: T;
+  rightsExpiresAt?: T;
+  embargoUntil?: T;
+  usageRestrictions?: T;
+  consentReference?: T;
+  modelReleaseReference?: T;
+  propertyReleaseReference?: T;
+  governanceEnabled?: T;
+  customMetadata?: T;
+  processingState?: T;
+  publicPolicy?: T;
   tags?: T;
   collections?: T;
   variants?:
@@ -7848,6 +10842,113 @@ export interface MediaAssetsSelect<T extends boolean = true> {
   retentionHold?: T;
   removeFromDiscovery?: T;
   tombstoneLabel?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media-asset-versions_select".
+ */
+export interface MediaAssetVersionsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  asset?: T;
+  replacesAsset?: T;
+  versionLabel?: T;
+  mode?: T;
+  replacedUsageIds?: T;
+  impactCount?: T;
+  reason?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media-governance-incidents_select".
+ */
+export interface MediaGovernanceIncidentsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  asset?: T;
+  summary?: T;
+  reason?: T;
+  status?: T;
+  affectedUsageIds?: T;
+  openedAt?: T;
+  resolvedAt?: T;
+  resolution?: T;
+  audit?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media-blobs_select".
+ */
+export interface MediaBlobsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  checksum?: T;
+  storageKey?: T;
+  storageProvider?: T;
+  mimeType?: T;
+  sizeBytes?: T;
+  state?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media-variants_select".
+ */
+export interface MediaVariantsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  asset?: T;
+  blob?: T;
+  label?: T;
+  kind?: T;
+  width?: T;
+  height?: T;
+  durationSeconds?: T;
+  processingState?: T;
+  format?: T;
+  recipeKey?: T;
+  recipeVersion?: T;
+  previousBlob?: T;
+  crop?: T;
+  errorMessage?: T;
+  sizeBytes?: T;
+  lastAccessedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "media-upload-sessions_select".
+ */
+export interface MediaUploadSessionsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  filename?: T;
+  title?: T;
+  altText?: T;
+  caption?: T;
+  expectedSize?: T;
+  expectedChecksum?: T;
+  chunkSize?: T;
+  receivedBytes?: T;
+  receivedChunks?: T;
+  state?: T;
+  asset?: T;
+  expiresAt?: T;
+  failureReason?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -7961,6 +11062,46 @@ export interface PublicRedirectsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "content-releases_select".
+ */
+export interface ContentReleasesSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  title?: T;
+  name?: T;
+  purpose?: T;
+  ownerTeam?: T;
+  content?: T;
+  article?: T;
+  product?: T;
+  productRevision?: T;
+  plannedInstant?: T;
+  scheduledFor?: T;
+  timeZone?: T;
+  labels?: T;
+  campaign?: T;
+  dependencies?: T;
+  releaseRevision?: T;
+  status?: T;
+  lastScheduleMutationId?: T;
+  artifacts?: T;
+  gateSnapshot?: T;
+  approvals?: T;
+  sagaSteps?: T;
+  resultingUrls?: T;
+  leaseOwner?: T;
+  leaseExpiresAt?: T;
+  scheduleAudit?: T;
+  executionJob?: T;
+  executionItems?: T;
+  executionAudit?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "content_select".
  */
 export interface ContentSelect<T extends boolean = true> {
@@ -7970,16 +11111,8 @@ export interface ContentSelect<T extends boolean = true> {
   owner?: T;
   contentType?: T;
   title?: T;
-  slug?: T;
-  pathOverride?: T;
-  canonicalPath?: T;
-  parentPage?: T;
-  pageTemplate?: T;
   body?: T;
   summary?: T;
-  status?: T;
-  publishedAt?: T;
-  updatedAtEditorial?: T;
   subtitle?: T;
   excerpt?: T;
   authors?:
@@ -7995,7 +11128,11 @@ export interface ContentSelect<T extends boolean = true> {
   topics?: T;
   tags?: T;
   series?: T;
-  heroMedia?: T;
+  slug?: T;
+  pathOverride?: T;
+  canonicalPath?: T;
+  parentPage?: T;
+  pageTemplate?: T;
   featured?: T;
   pinned?: T;
   readingTimeMinutes?: T;
@@ -8016,13 +11153,20 @@ export interface ContentSelect<T extends boolean = true> {
         issuedAt?: T;
         id?: T;
       };
+  heroMedia?: T;
+  status?: T;
+  publishedAt?: T;
+  updatedAtEditorial?: T;
+  commentsPolicy?: T;
+  publicChangeHistoryPolicy?: T;
   seoTitle?: T;
   seoDescription?: T;
   seoCanonicalURL?: T;
   seoImageAlt?: T;
-  seoKeywords?: T;
   seoFocusKeyphrase?: T;
   seoNoIndex?: T;
+  seoKeywords?: T;
+  discoveryOverrides?: T;
   relationships?: T;
   seoOverride?: T;
   socialOverride?: T;
@@ -8040,10 +11184,8 @@ export interface ContentSelect<T extends boolean = true> {
   importSourceChecksum?: T;
   exportFormatVersion?: T;
   exportOwnership?: T;
-  commentsPolicy?: T;
   revisionCompatibility?: T;
   auditMetadata?: T;
-  publicChangeHistoryPolicy?: T;
   retentionMode?: T;
   retentionExpiresAt?: T;
   retentionHold?: T;
@@ -8114,6 +11256,9 @@ export interface ArticleFamilyContentSelect<T extends boolean = true> {
   acceptedMutationKeys?: T;
   revisionComparison?: T;
   promotionProvenance?: T;
+  qualityGateSnapshot?: T;
+  qualityWaiver?: T;
+  reviewDecisions?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -8169,31 +11314,6 @@ export interface PreviewTokensSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "content-releases_select".
- */
-export interface ContentReleasesSelect<T extends boolean = true> {
-  site?: T;
-  publication?: T;
-  space?: T;
-  owner?: T;
-  title?: T;
-  content?: T;
-  article?: T;
-  product?: T;
-  productRevision?: T;
-  scheduledFor?: T;
-  timeZone?: T;
-  status?: T;
-  lastScheduleMutationId?: T;
-  scheduleAudit?: T;
-  executionJob?: T;
-  executionItems?: T;
-  executionAudit?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "scheduled-publish-jobs_select".
  */
 export interface ScheduledPublishJobsSelect<T extends boolean = true> {
@@ -8204,214 +11324,12 @@ export interface ScheduledPublishJobsSelect<T extends boolean = true> {
   timeZone?: T;
   idempotencyKey?: T;
   status?: T;
+  leaseOwner?: T;
+  leaseExpiresAt?: T;
+  retryCount?: T;
+  maxRetries?: T;
+  lastError?: T;
   createdBy?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "events_select".
- */
-export interface EventsSelect<T extends boolean = true> {
-  site?: T;
-  publication?: T;
-  space?: T;
-  owner?: T;
-  title?: T;
-  slug?: T;
-  canonicalPath?: T;
-  summary?: T;
-  status?: T;
-  allDay?: T;
-  startsAt?: T;
-  endsAt?: T;
-  timeZone?: T;
-  visibility?: T;
-  venueName?: T;
-  venueRegion?: T;
-  venueAddress?: T;
-  attendanceMode?: T;
-  onlineUrl?: T;
-  organizerName?: T;
-  organizerUrl?: T;
-  capacity?: T;
-  registrationUrl?: T;
-  recurrence?: T;
-  recurrenceOverrides?: T;
-  categories?: T;
-  relatedContent?: T;
-  heroMedia?: T;
-  calendarEntry?: T;
-  audience?: T;
-  seoTitle?: T;
-  seoDescription?: T;
-  seoCanonicalURL?: T;
-  seoImageAlt?: T;
-  seoKeywords?: T;
-  seoFocusKeyphrase?: T;
-  seoNoIndex?: T;
-  structuredDataMode?: T;
-  structuredDataPrimaryType?: T;
-  structuredDataSourceCollection?: T;
-  structuredDataSourceIdentifier?: T;
-  structuredDataManual?: T;
-  structuredDataVersion?: T;
-  knowledgeGraphProjectionStatus?: T;
-  knowledgeGraphNodeKey?: T;
-  knowledgeGraphProjectionBoundary?: T;
-  importSourceSystem?: T;
-  importSourceIdentifier?: T;
-  importSourceChecksum?: T;
-  exportFormatVersion?: T;
-  exportOwnership?: T;
-  publicRenderStrategy?: T;
-  publicRenderVariant?: T;
-  publicRenderContext?: T;
-  eventCardVariant?: T;
-  eventListVariant?: T;
-  timelineEmbedVariant?: T;
-  timelineBlockVariant?: T;
-  retentionMode?: T;
-  retentionExpiresAt?: T;
-  retentionHold?: T;
-  removeFromDiscovery?: T;
-  tombstoneLabel?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "timelines_select".
- */
-export interface TimelinesSelect<T extends boolean = true> {
-  site?: T;
-  publication?: T;
-  space?: T;
-  owner?: T;
-  title?: T;
-  slug?: T;
-  canonicalPath?: T;
-  summary?: T;
-  status?: T;
-  visibility?: T;
-  orderingMode?: T;
-  heroMedia?: T;
-  postgresQueryScope?: T;
-  seoTitle?: T;
-  seoDescription?: T;
-  seoCanonicalURL?: T;
-  seoImageAlt?: T;
-  seoKeywords?: T;
-  seoFocusKeyphrase?: T;
-  seoNoIndex?: T;
-  structuredDataMode?: T;
-  structuredDataPrimaryType?: T;
-  structuredDataSourceCollection?: T;
-  structuredDataSourceIdentifier?: T;
-  structuredDataManual?: T;
-  structuredDataVersion?: T;
-  knowledgeGraphProjectionStatus?: T;
-  knowledgeGraphNodeKey?: T;
-  knowledgeGraphProjectionBoundary?: T;
-  importSourceSystem?: T;
-  importSourceIdentifier?: T;
-  importSourceChecksum?: T;
-  exportFormatVersion?: T;
-  exportOwnership?: T;
-  publicRenderStrategy?: T;
-  publicRenderVariant?: T;
-  publicRenderContext?: T;
-  eventCardVariant?: T;
-  eventListVariant?: T;
-  timelineEmbedVariant?: T;
-  timelineBlockVariant?: T;
-  retentionMode?: T;
-  retentionExpiresAt?: T;
-  retentionHold?: T;
-  removeFromDiscovery?: T;
-  tombstoneLabel?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "timeline-memberships_select".
- */
-export interface TimelineMembershipsSelect<T extends boolean = true> {
-  timeline?: T;
-  event?: T;
-  membershipKey?: T;
-  displayTitle?: T;
-  displaySummary?: T;
-  eraLabel?: T;
-  position?: T;
-  displayStartsAt?: T;
-  displayEndsAt?: T;
-  renderVariant?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "sources_select".
- */
-export interface SourcesSelect<T extends boolean = true> {
-  site?: T;
-  publication?: T;
-  space?: T;
-  title?: T;
-  publisher?: T;
-  authors?: T;
-  url?: T;
-  publishedAt?: T;
-  accessedAt?: T;
-  sourceType?: T;
-  excerpt?: T;
-  quoteMetadata?: T;
-  archiveMetadata?: T;
-  credibilityNotes?: T;
-  editorialNotes?: T;
-  reuseNotes?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "albums_select".
- */
-export interface AlbumsSelect<T extends boolean = true> {
-  site?: T;
-  publication?: T;
-  space?: T;
-  owner?: T;
-  kind?: T;
-  title?: T;
-  slug?: T;
-  canonicalPath?: T;
-  description?: T;
-  cover?: T;
-  visibility?: T;
-  items?:
-    | T
-    | {
-        media?: T;
-        displayOrder?: T;
-        caption?: T;
-        altText?: T;
-        credits?: T;
-        license?: T;
-        id?: T;
-      };
-  originalDownloadPolicy?: T;
-  exifPolicy?: T;
-  commentsPolicy?: T;
-  moderationState?: T;
-  exportRequestedAt?: T;
-  retentionMode?: T;
-  retentionExpiresAt?: T;
-  retentionHold?: T;
-  removeFromDiscovery?: T;
-  tombstoneLabel?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -8438,6 +11356,7 @@ export interface BooksSelect<T extends boolean = true> {
   seoKeywords?: T;
   seoFocusKeyphrase?: T;
   seoNoIndex?: T;
+  discoveryOverrides?: T;
   structuredDataMode?: T;
   structuredDataPrimaryType?: T;
   structuredDataSourceCollection?: T;
@@ -8522,18 +11441,24 @@ export interface PodcastShowsSelect<T extends boolean = true> {
   seoKeywords?: T;
   seoFocusKeyphrase?: T;
   seoNoIndex?: T;
+  discoveryOverrides?: T;
   structuredDataMode?: T;
   structuredDataPrimaryType?: T;
   structuredDataSourceCollection?: T;
   structuredDataSourceIdentifier?: T;
   structuredDataManual?: T;
   structuredDataVersion?: T;
+  language?: T;
+  explicit?: T;
+  categories?: T;
   rssEnabled?: T;
   externalFeedUrl?: T;
   importOwnership?: T;
   importSourceChecksum?: T;
   artwork?: T;
   hosts?: T;
+  authors?: T;
+  body?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -8571,6 +11496,7 @@ export interface PodcastEpisodesSelect<T extends boolean = true> {
   seoKeywords?: T;
   seoFocusKeyphrase?: T;
   seoNoIndex?: T;
+  discoveryOverrides?: T;
   structuredDataMode?: T;
   structuredDataPrimaryType?: T;
   structuredDataSourceCollection?: T;
@@ -8579,15 +11505,26 @@ export interface PodcastEpisodesSelect<T extends boolean = true> {
   structuredDataVersion?: T;
   show?: T;
   season?: T;
+  seasonNumber?: T;
   audio?: T;
+  artwork?: T;
+  explicit?: T;
+  language?: T;
+  guid?: T;
+  downloadableFiles?: T;
+  credits?: T;
+  rights?: T;
   externalUrl?: T;
   providerIdentity?: T;
   episodeNumber?: T;
   showNotes?: T;
+  body?: T;
   enclosureBytes?: T;
   enclosureMimeType?: T;
   importSourceChecksum?: T;
+  authors?: T;
   guests?: T;
+  categories?: T;
   chapters?: T;
   transcript?: T;
   updatedAt?: T;
@@ -8616,6 +11553,7 @@ export interface VideoChannelsSelect<T extends boolean = true> {
   seoKeywords?: T;
   seoFocusKeyphrase?: T;
   seoNoIndex?: T;
+  discoveryOverrides?: T;
   structuredDataMode?: T;
   structuredDataPrimaryType?: T;
   structuredDataSourceCollection?: T;
@@ -8652,6 +11590,7 @@ export interface VideoPlaylistsSelect<T extends boolean = true> {
   seoKeywords?: T;
   seoFocusKeyphrase?: T;
   seoNoIndex?: T;
+  discoveryOverrides?: T;
   structuredDataMode?: T;
   structuredDataPrimaryType?: T;
   structuredDataSourceCollection?: T;
@@ -8686,6 +11625,7 @@ export interface VideosSelect<T extends boolean = true> {
   seoKeywords?: T;
   seoFocusKeyphrase?: T;
   seoNoIndex?: T;
+  discoveryOverrides?: T;
   structuredDataMode?: T;
   structuredDataPrimaryType?: T;
   structuredDataSourceCollection?: T;
@@ -8698,7 +11638,14 @@ export interface VideosSelect<T extends boolean = true> {
   externalId?: T;
   providerIdentity?: T;
   embedUrl?: T;
+  body?: T;
+  creators?: T;
+  visibility?: T;
+  rights?: T;
+  sourceAsset?: T;
+  videoAsset?: T;
   nativeMedia?: T;
+  poster?: T;
   thumbnail?: T;
   captions?: T;
   availability?: T;
@@ -8706,6 +11653,49 @@ export interface VideosSelect<T extends boolean = true> {
   transcript?: T;
   chapters?: T;
   derivesFrom?: T;
+  distributionClips?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "video-assets_select".
+ */
+export interface VideoAssetsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  title?: T;
+  sourceAsset?: T;
+  processingState?: T;
+  recipeKey?: T;
+  recipeVersion?: T;
+  metadata?: T;
+  outputs?: T;
+  lastGoodOutputs?: T;
+  progress?: T;
+  attempts?: T;
+  heartbeatAt?: T;
+  failure?: T;
+  cancelRequested?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "video-captions_select".
+ */
+export interface VideoCaptionsSelect<T extends boolean = true> {
+  title?: T;
+  video?: T;
+  asset?: T;
+  language?: T;
+  label?: T;
+  default?: T;
+  kind?: T;
+  validation?: T;
+  transcript?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -8732,6 +11722,7 @@ export interface InterviewsSelect<T extends boolean = true> {
   seoKeywords?: T;
   seoFocusKeyphrase?: T;
   seoNoIndex?: T;
+  discoveryOverrides?: T;
   structuredDataMode?: T;
   structuredDataPrimaryType?: T;
   structuredDataSourceCollection?: T;
@@ -8770,6 +11761,7 @@ export interface LivestreamsSelect<T extends boolean = true> {
   seoKeywords?: T;
   seoFocusKeyphrase?: T;
   seoNoIndex?: T;
+  discoveryOverrides?: T;
   structuredDataMode?: T;
   structuredDataPrimaryType?: T;
   structuredDataSourceCollection?: T;
@@ -9059,13 +12051,234 @@ export interface CalendarEntryAuditsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "events_select".
+ */
+export interface EventsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  requiredEntitlement?: T;
+  title?: T;
+  slug?: T;
+  canonicalPath?: T;
+  summary?: T;
+  status?: T;
+  allDay?: T;
+  startsAt?: T;
+  endsAt?: T;
+  timeZone?: T;
+  visibility?: T;
+  venueName?: T;
+  venueRegion?: T;
+  venueAddress?: T;
+  attendanceMode?: T;
+  onlineUrl?: T;
+  organizerName?: T;
+  organizerUrl?: T;
+  capacity?: T;
+  registrationUrl?: T;
+  recurrence?: T;
+  recurrenceOverrides?: T;
+  categories?: T;
+  relatedContent?: T;
+  heroMedia?: T;
+  calendarEntry?: T;
+  audience?: T;
+  seoTitle?: T;
+  seoDescription?: T;
+  seoCanonicalURL?: T;
+  seoImageAlt?: T;
+  seoKeywords?: T;
+  seoFocusKeyphrase?: T;
+  seoNoIndex?: T;
+  discoveryOverrides?: T;
+  structuredDataMode?: T;
+  structuredDataPrimaryType?: T;
+  structuredDataSourceCollection?: T;
+  structuredDataSourceIdentifier?: T;
+  structuredDataManual?: T;
+  structuredDataVersion?: T;
+  knowledgeGraphProjectionStatus?: T;
+  knowledgeGraphNodeKey?: T;
+  knowledgeGraphProjectionBoundary?: T;
+  importSourceSystem?: T;
+  importSourceIdentifier?: T;
+  importSourceChecksum?: T;
+  exportFormatVersion?: T;
+  exportOwnership?: T;
+  publicRenderStrategy?: T;
+  publicRenderVariant?: T;
+  publicRenderContext?: T;
+  eventCardVariant?: T;
+  eventListVariant?: T;
+  timelineEmbedVariant?: T;
+  timelineBlockVariant?: T;
+  retentionMode?: T;
+  retentionExpiresAt?: T;
+  retentionHold?: T;
+  removeFromDiscovery?: T;
+  tombstoneLabel?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "timelines_select".
+ */
+export interface TimelinesSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  title?: T;
+  slug?: T;
+  canonicalPath?: T;
+  summary?: T;
+  status?: T;
+  visibility?: T;
+  orderingMode?: T;
+  heroMedia?: T;
+  postgresQueryScope?: T;
+  seoTitle?: T;
+  seoDescription?: T;
+  seoCanonicalURL?: T;
+  seoImageAlt?: T;
+  seoKeywords?: T;
+  seoFocusKeyphrase?: T;
+  seoNoIndex?: T;
+  discoveryOverrides?: T;
+  structuredDataMode?: T;
+  structuredDataPrimaryType?: T;
+  structuredDataSourceCollection?: T;
+  structuredDataSourceIdentifier?: T;
+  structuredDataManual?: T;
+  structuredDataVersion?: T;
+  knowledgeGraphProjectionStatus?: T;
+  knowledgeGraphNodeKey?: T;
+  knowledgeGraphProjectionBoundary?: T;
+  importSourceSystem?: T;
+  importSourceIdentifier?: T;
+  importSourceChecksum?: T;
+  exportFormatVersion?: T;
+  exportOwnership?: T;
+  publicRenderStrategy?: T;
+  publicRenderVariant?: T;
+  publicRenderContext?: T;
+  eventCardVariant?: T;
+  eventListVariant?: T;
+  timelineEmbedVariant?: T;
+  timelineBlockVariant?: T;
+  retentionMode?: T;
+  retentionExpiresAt?: T;
+  retentionHold?: T;
+  removeFromDiscovery?: T;
+  tombstoneLabel?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "timeline-memberships_select".
+ */
+export interface TimelineMembershipsSelect<T extends boolean = true> {
+  timeline?: T;
+  event?: T;
+  membershipKey?: T;
+  displayTitle?: T;
+  displaySummary?: T;
+  eraLabel?: T;
+  position?: T;
+  displayStartsAt?: T;
+  displayEndsAt?: T;
+  renderVariant?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sources_select".
+ */
+export interface SourcesSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  title?: T;
+  publisher?: T;
+  authors?: T;
+  url?: T;
+  publishedAt?: T;
+  accessedAt?: T;
+  sourceType?: T;
+  excerpt?: T;
+  quoteMetadata?: T;
+  archiveMetadata?: T;
+  credibilityNotes?: T;
+  editorialNotes?: T;
+  reuseNotes?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "albums_select".
+ */
+export interface AlbumsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  kind?: T;
+  title?: T;
+  slug?: T;
+  canonicalPath?: T;
+  description?: T;
+  cover?: T;
+  visibility?: T;
+  items?:
+    | T
+    | {
+        media?: T;
+        displayOrder?: T;
+        caption?: T;
+        altText?: T;
+        credits?: T;
+        license?: T;
+        id?: T;
+      };
+  originalDownloadPolicy?: T;
+  exifPolicy?: T;
+  commentsPolicy?: T;
+  moderationState?: T;
+  exportRequestedAt?: T;
+  retentionMode?: T;
+  retentionExpiresAt?: T;
+  retentionHold?: T;
+  removeFromDiscovery?: T;
+  tombstoneLabel?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media-usages_select".
  */
 export interface MediaUsagesSelect<T extends boolean = true> {
+  site?: T;
   media?: T;
   usedBy?: T;
   usageKey?: T;
+  targetType?: T;
+  targetId?: T;
+  targetRevision?: T;
+  field?: T;
+  slot?: T;
+  publication?: T;
+  channel?: T;
+  lifecycle?: T;
+  lastReconciledAt?: T;
   purpose?: T;
+  approvedForPublic?: T;
   replaceGlobally?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -9344,11 +12557,14 @@ export interface FormDefinitionsSelect<T extends boolean = true> {
   space?: T;
   owner?: T;
   name?: T;
+  title?: T;
+  copy?: T;
   template?: T;
   publicPath?: T;
   visibility?: T;
   activeSchema?: T;
   settings?: T;
+  actions?: T;
   retentionMode?: T;
   retentionExpiresAt?: T;
   retentionHold?: T;
@@ -9398,6 +12614,9 @@ export interface FormSubmissionsSelect<T extends boolean = true> {
   organization?: T;
   workflowItem?: T;
   idempotencyKey?: T;
+  actionState?: T;
+  reviewNotes?: T;
+  submittedAt?: T;
   retentionMode?: T;
   retentionExpiresAt?: T;
   retentionHold?: T;
@@ -9433,6 +12652,7 @@ export interface ContactsSelect<T extends boolean = true> {
   displayName?: T;
   email?: T;
   emailHash?: T;
+  phoneE164?: T;
   member?: T;
   status?: T;
   profile?: T;
@@ -9636,6 +12856,7 @@ export interface AudienceListsSelect<T extends boolean = true> {
   description?: T;
   status?: T;
   doubleOptIn?: T;
+  provenance?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -9650,6 +12871,8 @@ export interface AudienceSegmentsSelect<T extends boolean = true> {
   owner?: T;
   name?: T;
   definition?: T;
+  version?: T;
+  lastEvaluation?: T;
   consentBasisRequired?: T;
   status?: T;
   updatedAt?: T;
@@ -9680,6 +12903,8 @@ export interface SubscriberConfirmationTokensSelect<T extends boolean = true> {
   usedAt?: T;
   locale?: T;
   consentWording?: T;
+  purpose?: T;
+  revokedAt?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -9699,6 +12924,7 @@ export interface SubscribersSelect<T extends boolean = true> {
   status?: T;
   verifiedAt?: T;
   globalUnsubscribedAt?: T;
+  erasedAt?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -9721,6 +12947,15 @@ export interface ConsentEventsSelect<T extends boolean = true> {
   locale?: T;
   occurredAt?: T;
   evidence?: T;
+  channel?: T;
+  purpose?: T;
+  policyVersion?: T;
+  captureSource?: T;
+  proofReference?: T;
+  jurisdiction?: T;
+  actor?: T;
+  ipDigest?: T;
+  userAgentDigest?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -9732,6 +12967,7 @@ export interface PreferencesSelect<T extends boolean = true> {
   subscriber?: T;
   audienceList?: T;
   preferences?: T;
+  derivedAt?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -9749,6 +12985,9 @@ export interface SuppressionsSelect<T extends boolean = true> {
   provider?: T;
   occurredAt?: T;
   global?: T;
+  scope?: T;
+  source?: T;
+  details?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -9762,17 +13001,51 @@ export interface EmailMessagesSelect<T extends boolean = true> {
   space?: T;
   owner?: T;
   subject?: T;
+  preheader?: T;
+  senderIdentity?: T;
+  purpose?: T;
+  channel?: T;
+  language?: T;
   blocks?: T;
+  messageDesign?: T;
+  emailTemplate?: T;
+  templateVersion?: T;
+  variantKey?: T;
+  parentMessage?: T;
+  approvedRender?: T;
+  approvalInvalidatedAt?: T;
   kind?: T;
   status?: T;
   scheduledFor?: T;
   idempotencyKey?: T;
   tracking?: T;
   audience?: T;
+  recipientSnapshot?: T;
+  priority?: T;
   reviewedAt?: T;
   cancelCutoffAt?: T;
   translationProject?: T;
   localeCompleteness?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "email-templates_select".
+ */
+export interface EmailTemplatesSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  name?: T;
+  version?: T;
+  locale?: T;
+  brandTokens?: T;
+  registeredBlocks?: T;
+  layoutRegions?: T;
+  plainTextStrategy?: T;
+  status?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -9805,7 +13078,101 @@ export interface EmailDeliveriesSelect<T extends boolean = true> {
   provider?: T;
   providerMessageId?: T;
   attempts?: T;
+  acceptedAt?: T;
+  nextAttemptAt?: T;
+  leaseUntil?: T;
+  renderHash?: T;
+  rfcMessageId?: T;
+  unsubscribeToken?: T;
+  messageSnapshot?: T;
   outcome?: T;
+  recipientSnapshotHash?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "email-delivery-events_select".
+ */
+export interface EmailDeliveryEventsSelect<T extends boolean = true> {
+  delivery?: T;
+  idempotencyKey?: T;
+  provider?: T;
+  providerEventId?: T;
+  event?: T;
+  occurredAt?: T;
+  evidence?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "telecom-messages_select".
+ */
+export interface TelecomMessagesSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  title?: T;
+  body?: T;
+  channel?: T;
+  purpose?: T;
+  status?: T;
+  from?: T;
+  scheduledFor?: T;
+  rcsContent?: T;
+  fallbackPolicy?: T;
+  fallbackSmsBody?: T;
+  audience?: T;
+  estimatedCost?: T;
+  approvedAt?: T;
+  approvedRender?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "telecom-deliveries_select".
+ */
+export interface TelecomDeliveriesSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  message?: T;
+  subscriber?: T;
+  recipientPhone?: T;
+  recipientPhoneHash?: T;
+  channel?: T;
+  idempotencyKey?: T;
+  status?: T;
+  deliveryPath?: T;
+  provider?: T;
+  providerMessageId?: T;
+  attempts?: T;
+  segments?: T;
+  acceptedAt?: T;
+  scheduledFor?: T;
+  quietHoursDelayedUntil?: T;
+  messageSnapshot?: T;
+  actualCost?: T;
+  outcome?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "telecom-delivery-events_select".
+ */
+export interface TelecomDeliveryEventsSelect<T extends boolean = true> {
+  delivery?: T;
+  idempotencyKey?: T;
+  provider?: T;
+  providerEventId?: T;
+  event?: T;
+  occurredAt?: T;
+  evidence?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -9921,10 +13288,107 @@ export interface AutomationDefinitionsSelect<T extends boolean = true> {
   owner?: T;
   name?: T;
   status?: T;
+  version?: T;
   trigger?: T;
   conditions?: T;
   actions?: T;
+  reentryPolicy?: T;
+  quietHours?: T;
+  approvedAt?: T;
+  pinned?: T;
   requiresApproval?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "automation-runs_select".
+ */
+export interface AutomationRunsSelect<T extends boolean = true> {
+  definition?: T;
+  sourceEvent?: T;
+  idempotencyKey?: T;
+  status?: T;
+  subject?: T;
+  definitionVersion?: T;
+  step?: T;
+  nextRunAt?: T;
+  outcome?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "automation-failures_select".
+ */
+export interface AutomationFailuresSelect<T extends boolean = true> {
+  run?: T;
+  actionIndex?: T;
+  error?: T;
+  retryable?: T;
+  resolvedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "recipient-snapshots_select".
+ */
+export interface RecipientSnapshotsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  message?: T;
+  segment?: T;
+  segmentVersion?: T;
+  evaluatedAt?: T;
+  recipients?: T;
+  exclusionCounts?: T;
+  hash?: T;
+  approvalAudit?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "audience-frequency-policies_select".
+ */
+export interface AudienceFrequencyPoliciesSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  purpose?: T;
+  channel?: T;
+  maxSends?: T;
+  windowHours?: T;
+  globalFatigue?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "audience-experiments_select".
+ */
+export interface AudienceExperimentsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  title?: T;
+  hypothesis?: T;
+  channel?: T;
+  metric?: T;
+  windowHours?: T;
+  status?: T;
+  variants?: T;
+  guardrails?: T;
+  winnerDecision?: T;
+  allocationsHash?: T;
+  totalAllocated?: T;
+  startedAt?: T;
+  concludedAt?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -10439,22 +13903,36 @@ export interface ProductsSelect<T extends boolean = true> {
   space?: T;
   owner?: T;
   merchantConnection?: T;
+  catalogContractVersion?: T;
   name?: T;
+  summary?: T;
   slug?: T;
   canonicalPath?: T;
   kind?: T;
   state?: T;
+  publishedAt?: T;
+  archivedAt?: T;
+  redirectTo?: T;
   description?: T;
   localized?: T;
   categories?: T;
+  topics?: T;
+  tags?: T;
   collections?: T;
   media?: T;
+  relationships?: T;
+  productCapabilities?: T;
+  optionDimensions?: T;
   variants?:
     | T
     | {
         sku?: T;
         title?: T;
         attributes?: T;
+        optionValues?: T;
+        status?: T;
+        weightGrams?: T;
+        dimensionsMm?: T;
         inventoryPolicy?: T;
         inventoryQuantity?: T;
         inventoryReference?: T;
@@ -10472,13 +13950,88 @@ export interface ProductsSelect<T extends boolean = true> {
         recurringInterval?: T;
         id?: T;
       };
+  offers?: T;
+  digitalDelivery?: T;
+  affiliatePolicy?: T;
+  podMappings?: T;
+  disclosures?: T;
+  workflowAudit?: T;
+  revisionSnapshots?: T;
+  publishedPresentation?: T;
   entitlement?: T;
   releaseRevision?: T;
+  seoTitle?: T;
+  seoDescription?: T;
+  seoCanonicalURL?: T;
+  seoImageAlt?: T;
+  seoKeywords?: T;
+  seoFocusKeyphrase?: T;
+  seoNoIndex?: T;
+  discoveryOverrides?: T;
   retentionMode?: T;
   retentionExpiresAt?: T;
   retentionHold?: T;
   removeFromDiscovery?: T;
   tombstoneLabel?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "digital-delivery-grants_select".
+ */
+export interface DigitalDeliveryGrantsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  product?: T;
+  variantSku?: T;
+  entitlement?: T;
+  member?: T;
+  mediaAsset?: T;
+  grantKeyHash?: T;
+  downloadLimit?: T;
+  downloadCount?: T;
+  expiresAt?: T;
+  revokedAt?: T;
+  lastDownloadedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "digital-download-events_select".
+ */
+export interface DigitalDownloadEventsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  grant?: T;
+  mediaAsset?: T;
+  occurredAt?: T;
+  outcome?: T;
+  reason?: T;
+  requestFingerprint?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "catalog-import-runs_select".
+ */
+export interface CatalogImportRunsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  checksum?: T;
+  mode?: T;
+  status?: T;
+  source?: T;
+  summary?: T;
+  appliedAt?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -10492,11 +14045,96 @@ export interface CartsSelect<T extends boolean = true> {
   space?: T;
   owner?: T;
   merchantConnection?: T;
+  version?: T;
+  guestTokenHash?: T;
+  member?: T;
+  customerEmail?: T;
   currency?: T;
   buyerCountry?: T;
   items?: T;
+  appliedCouponCodes?: T;
+  shippingAddress?: T;
+  billingAddress?: T;
+  selectedShippingRateId?: T;
+  reconciliationNotes?: T;
   state?: T;
   idempotencyKey?: T;
+  expiresAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "promotions_select".
+ */
+export interface PromotionsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  version?: T;
+  code?: T;
+  description?: T;
+  scope?: T;
+  discountType?: T;
+  discountValue?: T;
+  maxDiscountMinor?: T;
+  currency?: T;
+  startsAt?: T;
+  endsAt?: T;
+  timezone?: T;
+  status?: T;
+  stackingRule?: T;
+  stackingPriority?: T;
+  usageLimitTotal?: T;
+  usageCount?: T;
+  usageLimitPerCustomer?: T;
+  eligibility?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "checkout-proposals_select".
+ */
+export interface CheckoutProposalsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  cart?: T;
+  merchantConnection?: T;
+  cartVersion?: T;
+  currency?: T;
+  customer?: T;
+  shippingAddress?: T;
+  billingAddress?: T;
+  selectedShippingRate?: T;
+  pricingSnapshot?: T;
+  taxSnapshot?: T;
+  consents?: T;
+  fulfillmentSplit?: T;
+  integrityHash?: T;
+  state?: T;
+  expiresAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "inventory-reservations_select".
+ */
+export interface InventoryReservationsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  cart?: T;
+  proposal?: T;
+  product?: T;
+  variantSku?: T;
+  quantity?: T;
+  status?: T;
   expiresAt?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -10511,6 +14149,7 @@ export interface CheckoutSessionsSelect<T extends boolean = true> {
   space?: T;
   owner?: T;
   cart?: T;
+  proposal?: T;
   merchantConnection?: T;
   currency?: T;
   amountMinor?: T;
@@ -10519,6 +14158,12 @@ export interface CheckoutSessionsSelect<T extends boolean = true> {
   selectedCapabilityId?: T;
   legalCopy?: T;
   idempotencyKey?: T;
+  bindingKey?: T;
+  customerKey?: T;
+  attempt?: T;
+  guestAccessTokenHash?: T;
+  returnPath?: T;
+  cancelPath?: T;
   expiresAt?: T;
   shippingExtension?: T;
   taxExtension?: T;
@@ -10545,6 +14190,42 @@ export interface PaymentIntentsSelect<T extends boolean = true> {
   cryptoInvoice?: T;
   exception?: T;
   financialEvents?: T;
+  orderLines?: T;
+  expiresAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payment-attempts_select".
+ */
+export interface PaymentAttemptsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  checkoutSession?: T;
+  paymentIntent?: T;
+  proposal?: T;
+  merchantConnection?: T;
+  attempt?: T;
+  idempotencyKey?: T;
+  providerKey?: T;
+  providerContractVersion?: T;
+  providerImplementationVersion?: T;
+  providerApiVersion?: T;
+  providerReference?: T;
+  providerPaymentReference?: T;
+  amountMinor?: T;
+  currency?: T;
+  state?: T;
+  refundedAmountMinor?: T;
+  lastProviderSequence?: T;
+  processedEventIds?: T;
+  unknownSince?: T;
+  lastReconciledAt?: T;
+  nextReconcileAt?: T;
+  failure?: T;
   expiresAt?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -10565,6 +14246,12 @@ export interface OrdersSelect<T extends boolean = true> {
   currency?: T;
   amountMinor?: T;
   items?: T;
+  partySnapshot?: T;
+  addressSnapshot?: T;
+  totalsSnapshot?: T;
+  termsSnapshot?: T;
+  sourceSnapshot?: T;
+  downstreamInstructions?: T;
   transitionLog?: T;
   refundExtension?: T;
   receipt?: T;
@@ -10584,10 +14271,81 @@ export interface PaymentWebhookEventsSelect<T extends boolean = true> {
   providerEventId?: T;
   payloadHash?: T;
   verifiedAt?: T;
+  occurredAt?: T;
+  sequence?: T;
+  normalizedKind?: T;
+  providerReference?: T;
+  sanitizedEvidence?: T;
+  processingState?: T;
+  attempts?: T;
+  lastError?: T;
   processedAt?: T;
   outcome?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "commerce-refunds_select".
+ */
+export interface CommerceRefundsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  order?: T;
+  paymentAttempt?: T;
+  idempotencyKey?: T;
+  amountMinor?: T;
+  currency?: T;
+  kind?: T;
+  state?: T;
+  reason?: T;
+  requestedBy?: T;
+  approvedBy?: T;
+  providerRefundReference?: T;
+  providerEvidence?: T;
+  downstreamPolicy?: T;
+  correctionReceipt?: T;
+  auditLog?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "commerce-disputes_select".
+ */
+export interface CommerceDisputesSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  order?: T;
+  paymentAttempt?: T;
+  providerDisputeReference?: T;
+  amountMinor?: T;
+  currency?: T;
+  state?: T;
+  reason?: T;
+  deadlineAt?: T;
+  sanitizedEvidence?: T;
+  auditLog?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "commerce-reconciliation-cases_select".
+ */
+export interface CommerceReconciliationCasesSelect<T extends boolean = true> {
+  site?: T;
+  legacyType?: T;
+  legacyId?: T;
+  reason?: T;
+  evidence?: T;
+  status?: T;
+  createdAt?: T;
+  resolvedAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -10624,6 +14382,275 @@ export interface EntitlementsSelect<T extends boolean = true> {
   endsAt?: T;
   revokedAt?: T;
   fulfillmentReference?: T;
+  resource?: T;
+  capability?: T;
+  scope?: T;
+  grantKey?: T;
+  limit?: T;
+  evidence?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "plan-revisions_select".
+ */
+export interface PlanRevisionsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  planKey?: T;
+  revision?: T;
+  name?: T;
+  lifecycle?: T;
+  interval?: T;
+  intervalCount?: T;
+  amountMinor?: T;
+  currency?: T;
+  trialDays?: T;
+  trialEligibility?: T;
+  entitlements?: T;
+  cancelPolicy?: T;
+  changePolicy?: T;
+  taxPolicy?: T;
+  providerMappings?: T;
+  publishedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "subscriptions_select".
+ */
+export interface SubscriptionsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  supporter?: T;
+  planRevision?: T;
+  planSnapshot?: T;
+  providerKey?: T;
+  providerCustomerReference?: T;
+  providerSubscriptionReference?: T;
+  providerStatus?: T;
+  state?: T;
+  source?: T;
+  currentPeriodStart?: T;
+  currentPeriodEnd?: T;
+  trialEnd?: T;
+  graceEnd?: T;
+  cancelAtPeriodEnd?: T;
+  settings?: T;
+  version?: T;
+  lastEventSequence?: T;
+  lastEventOccurredAt?: T;
+  lastReconciledAt?: T;
+  checkoutKey?: T;
+  failure?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "subscription-events_select".
+ */
+export interface SubscriptionEventsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  subscription?: T;
+  eventKey?: T;
+  providerEventId?: T;
+  kind?: T;
+  occurredAt?: T;
+  evidence?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "donation-campaigns_select".
+ */
+export interface DonationCampaignsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  organization?: T;
+  campaignKey?: T;
+  version?: T;
+  title?: T;
+  story?: T;
+  media?: T;
+  purpose?: T;
+  designations?: T;
+  startsAt?: T;
+  endsAt?: T;
+  goalAmountMinor?: T;
+  goalRules?: T;
+  allowedAmounts?: T;
+  currency?: T;
+  receiptEntityName?: T;
+  verifiedNonprofitStatus?: T;
+  verified501c3Status?: T;
+  verifiedTaxDeductibility?: T;
+  taxDisclaimer?: T;
+  donorWallMinimumMinor?: T;
+  supporterEntitlement?: T;
+  supporterEntitlementTermDays?: T;
+  recurrence?: T;
+  feeCover?: T;
+  privacyDefault?: T;
+  disclosures?: T;
+  lifecycle?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "donation-intents_select".
+ */
+export interface DonationIntentsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  campaign?: T;
+  campaignVersion?: T;
+  designation?: T;
+  donorSnapshot?: T;
+  moneySnapshot?: T;
+  recognition?: T;
+  publicDisplayName?: T;
+  donorMessage?: T;
+  trackingSource?: T;
+  paymentIntent?: T;
+  subscription?: T;
+  recurrence?: T;
+  lifecycle?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "donations_select".
+ */
+export interface DonationsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  donationIntent?: T;
+  campaign?: T;
+  paymentIntent?: T;
+  subscription?: T;
+  supporter?: T;
+  donorSnapshot?: T;
+  campaignSnapshot?: T;
+  receiptSnapshot?: T;
+  designation?: T;
+  baseAmountMinor?: T;
+  feeCoveredAmountMinor?: T;
+  currency?: T;
+  recognition?: T;
+  publicDisplayName?: T;
+  donorMessage?: T;
+  trackingSource?: T;
+  lifecycle?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "donation-events_select".
+ */
+export interface DonationEventsSelect<T extends boolean = true> {
+  donation?: T;
+  donationIntent?: T;
+  eventKey?: T;
+  kind?: T;
+  occurredAt?: T;
+  actor?: T;
+  evidence?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pod-connections_select".
+ */
+export interface PodConnectionsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  providerKey?: T;
+  label?: T;
+  remoteStoreId?: T;
+  remoteStoreName?: T;
+  encryptedApiKey?: T;
+  encryptedWebhookSecret?: T;
+  status?: T;
+  capabilities?: T;
+  lastHealthCheckedAt?: T;
+  lastHealthStatus?: T;
+  lastHealthReason?: T;
+  disabledReason?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pod-jobs_select".
+ */
+export interface PodJobsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  order?: T;
+  connection?: T;
+  providerKey?: T;
+  packageIndex?: T;
+  idempotencyKey?: T;
+  payloadHash?: T;
+  state?: T;
+  addressPolicy?: T;
+  recipientSnapshot?: T;
+  itemsSnapshot?: T;
+  costSnapshot?: T;
+  attemptCount?: T;
+  externalOrderId?: T;
+  holdExpiresAt?: T;
+  releasedAt?: T;
+  auditTrail?: T;
+  lastError?: T;
+  parentJob?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "manual-fulfillment-packages_select".
+ */
+export interface ManualFulfillmentPackagesSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  order?: T;
+  packageIndex?: T;
+  source?: T;
+  status?: T;
+  approvedLines?: T;
+  permissionedAddressManifest?: T;
+  instructions?: T;
+  acknowledgement?: T;
+  externalFulfillment?: T;
+  auditTrail?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -10706,12 +14733,25 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
  */
 export interface SiteSetting {
   id: string;
+  themeId?: ('neutral-starter' | 'renegade-party') | null;
   siteName?: string | null;
   siteDescription?: string | null;
   /**
    * Canonical public origin, e.g. https://renegadeparty.org
    */
   canonicalOrigin?: string | null;
+  /**
+   * Optional site-id to canonical-origin map for multisite installs. Origins must be absolute HTTPS URLs in production.
+   */
+  canonicalOriginsBySite?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   locale?: string | null;
   timezone?: string | null;
   /**
@@ -10772,6 +14812,23 @@ export interface SiteSetting {
   logo?: (string | null) | MediaAsset;
   favicon?: (string | null) | MediaAsset;
   defaultSocialImage?: (string | null) | MediaAsset;
+  /**
+   * Optional defaults by content type. Keys may include default, page, post, article, podcast, video, author, taxonomy and search. Each may set titleTemplate, description, socialTitle, socialDescription, socialImage, locale, alternates, index and follow.
+   */
+  discoveryDefaults?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Prelaunch and maintenance safely noindex every public surface. Return this prominently to Live after launch.
+   */
+  launchState?: ('live' | 'prelaunch' | 'maintenance') | null;
+  launchedAt?: string | null;
   sameAs?:
     | {
         [k: string]: unknown;
@@ -10840,9 +14897,21 @@ export interface SiteSetting {
     | boolean
     | null;
   inheritancePolicy: 'site-publication-brand' | 'site-brand-publication' | 'explicit-only';
+  /**
+   * Leave blank to use the resolved title from this content.
+   */
   seoTitle?: string | null;
+  /**
+   * Leave blank to use the resolved summary or Site Settings description.
+   */
   seoDescription?: string | null;
+  /**
+   * Leave blank to use this content’s resolved canonical path.
+   */
   seoCanonicalURL?: string | null;
+  /**
+   * Leave blank to use the selected media’s resolved alt text.
+   */
   seoImageAlt?: string | null;
   seoKeywords?:
     | {
@@ -10855,6 +14924,18 @@ export interface SiteSetting {
     | null;
   seoFocusKeyphrase?: string | null;
   seoNoIndex?: boolean | null;
+  /**
+   * Optional advanced discovery overrides: socialTitle, socialDescription, socialImage, locale, alternates, follow. Ordinary titles, summaries and hero media are inherited automatically.
+   */
+  discoveryOverrides?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   structuredDataMode: 'none' | 'manual' | 'inherit-source' | 'event-derived' | 'timeline-derived';
   structuredDataPrimaryType?: string | null;
   structuredDataSourceCollection?: ('content' | 'events' | 'timelines' | 'sources' | 'calendar-entries') | null;
@@ -10948,9 +15029,11 @@ export interface PayloadJobsStat {
  * via the `definition` "site-settings_select".
  */
 export interface SiteSettingsSelect<T extends boolean = true> {
+  themeId?: T;
   siteName?: T;
   siteDescription?: T;
   canonicalOrigin?: T;
+  canonicalOriginsBySite?: T;
   locale?: T;
   timezone?: T;
   footerText?: T;
@@ -11006,6 +15089,9 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   logo?: T;
   favicon?: T;
   defaultSocialImage?: T;
+  discoveryDefaults?: T;
+  launchState?: T;
+  launchedAt?: T;
   sameAs?: T;
   contactDefaults?: T;
   socialHandles?: T;
@@ -11027,6 +15113,7 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   seoKeywords?: T;
   seoFocusKeyphrase?: T;
   seoNoIndex?: T;
+  discoveryOverrides?: T;
   structuredDataMode?: T;
   structuredDataPrimaryType?: T;
   structuredDataSourceCollection?: T;
@@ -11136,6 +15223,36 @@ export interface TaskEditorialPublish {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskMedia-upload-cleanup".
+ */
+export interface TaskMediaUploadCleanup {
+  input?: unknown;
+  output: {
+    removed: number;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskCommunity-message-attachment-cleanup".
+ */
+export interface TaskCommunityMessageAttachmentCleanup {
+  input?: unknown;
+  output: {
+    removed: number;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskCommunity-message-attachment-scan".
+ */
+export interface TaskCommunityMessageAttachmentScan {
+  input?: unknown;
+  output: {
+    scanned: number;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "TaskContent-release-execute".
  */
 export interface TaskContentReleaseExecute {
@@ -11157,12 +15274,24 @@ export interface TaskContentReleaseExecute {
  */
 export interface TaskMediaImport {
   input: {
-    mediaJobId: string;
+    mediaJobId?: string | null;
+    mediaAssetId?: string | null;
     idempotencyKey: string;
+    recipeKeys?:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
   };
   output: {
-    mediaJobId: string;
+    mediaJobId?: string | null;
+    mediaAssetId?: string | null;
     completed: boolean;
+    count?: number | null;
   };
 }
 /**
@@ -11171,12 +15300,50 @@ export interface TaskMediaImport {
  */
 export interface TaskMediaRender {
   input: {
-    mediaJobId: string;
+    mediaJobId?: string | null;
+    mediaAssetId?: string | null;
     idempotencyKey: string;
+    recipeKeys?:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
   };
   output: {
-    mediaJobId: string;
+    mediaJobId?: string | null;
+    mediaAssetId?: string | null;
     completed: boolean;
+    count?: number | null;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskMedia-variant-generate".
+ */
+export interface TaskMediaVariantGenerate {
+  input: {
+    mediaJobId?: string | null;
+    mediaAssetId?: string | null;
+    idempotencyKey: string;
+    recipeKeys?:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
+  };
+  output: {
+    mediaJobId?: string | null;
+    mediaAssetId?: string | null;
+    completed: boolean;
+    count?: number | null;
   };
 }
 /**
@@ -11185,12 +15352,24 @@ export interface TaskMediaRender {
  */
 export interface TaskMediaTranscribe {
   input: {
-    mediaJobId: string;
+    mediaJobId?: string | null;
+    mediaAssetId?: string | null;
     idempotencyKey: string;
+    recipeKeys?:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
   };
   output: {
-    mediaJobId: string;
+    mediaJobId?: string | null;
+    mediaAssetId?: string | null;
     completed: boolean;
+    count?: number | null;
   };
 }
 /**
@@ -11199,12 +15378,77 @@ export interface TaskMediaTranscribe {
  */
 export interface TaskMediaTts {
   input: {
-    mediaJobId: string;
+    mediaJobId?: string | null;
+    mediaAssetId?: string | null;
+    idempotencyKey: string;
+    recipeKeys?:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
+  };
+  output: {
+    mediaJobId?: string | null;
+    mediaAssetId?: string | null;
+    completed: boolean;
+    count?: number | null;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskVideo-process".
+ */
+export interface TaskVideoProcess {
+  input: {
+    videoAssetId: string;
     idempotencyKey: string;
   };
   output: {
-    mediaJobId: string;
     completed: boolean;
+    count?: number | null;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskMedia-usage-reconcile".
+ */
+export interface TaskMediaUsageReconcile {
+  input: {
+    siteId: string;
+  };
+  output: {
+    created: number;
+    updated: number;
+    removed: number;
+    incidents: number;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskAudio-recipe-task".
+ */
+export interface TaskAudioRecipeTask {
+  input: {
+    mediaAssetId: string;
+    recipeKey?: string | null;
+    idempotencyKey: string;
+  };
+  output: {
+    mediaAssetId: string;
+    completed: boolean;
+    loudness?:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
   };
 }
 /**
@@ -11248,6 +15492,24 @@ export interface TaskAudienceNewsletterDispatch {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskAudience-telecom-delivery".
+ */
+export interface TaskAudienceTelecomDelivery {
+  input: {
+    deliveryId: string;
+  };
+  output?: unknown;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskAudience-telecom-dispatch".
+ */
+export interface TaskAudienceTelecomDispatch {
+  input?: unknown;
+  output?: unknown;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "TaskAnalytics-retention-cleanup".
  */
 export interface TaskAnalyticsRetentionCleanup {
@@ -11278,6 +15540,32 @@ export interface TaskQualityScan {
  * via the `definition` "TaskCommerce-abandon-checkouts".
  */
 export interface TaskCommerceAbandonCheckouts {
+  input?: unknown;
+  output?: unknown;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskCommerce-process-payment-event".
+ */
+export interface TaskCommerceProcessPaymentEvent {
+  input: {
+    webhookEventId: string;
+  };
+  output?: unknown;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskCommerce-reconcile-payments".
+ */
+export interface TaskCommerceReconcilePayments {
+  input?: unknown;
+  output?: unknown;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskCommerce-reconcile-subscriptions".
+ */
+export interface TaskCommerceReconcileSubscriptions {
   input?: unknown;
   output?: unknown;
 }

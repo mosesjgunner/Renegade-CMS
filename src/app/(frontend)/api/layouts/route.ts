@@ -5,7 +5,7 @@ import { NextResponse } from 'next/server'
 import { installRecipe } from '@/modules/public/page-builder'
 
 const staff = (user: { role?: string } | null | undefined) =>
-  user?.role === 'owner' || user?.role === 'staff'
+  user?.role === 'owner' || user?.role === 'administrator' || user?.role === 'staff'
 
 export async function POST(request: Request) {
   const payload = await getPayload({ config })

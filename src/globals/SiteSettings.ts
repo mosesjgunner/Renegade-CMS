@@ -1,6 +1,9 @@
+import { DEFAULT_SITE_NAME } from '../modules/presentation/themes/identity'
+import { themes } from '../modules/presentation/registry'
 import type { GlobalConfig } from 'payload'
 
 import { seoFields, structuredDataSourceFields } from '../collections/canonical-shared'
+import { revalidateDiscoveryOutputs } from '../modules/public/revalidation'
 
 const staffOrOwner = ({ req }: { req: { user?: { role?: string } | null } }) =>
   ['owner', 'administrator', 'staff'].includes(String(req.user?.role))
@@ -13,8 +16,14 @@ export const SiteSettings: GlobalConfig = {
   admin: { group: 'Settings' },
   access: { read: () => true, update: staffOrOwner },
   hooks: {
+    afterChange: [
+      async ({ doc }) => {
+        await revalidateDiscoveryOutputs()
+        return doc
+      },
+    ],
     beforeValidate: [
-      ({ data }) => {
+      ({ data, originalDoc }) => {
         if (!data) return data
         if (data.siteName && !data.defaultTitle) {
           data.defaultTitle = data.siteName
@@ -29,18 +38,35 @@ export const SiteSettings: GlobalConfig = {
         } else if (data.indexingMode === 'index') {
           data.seoNoIndex = false
         }
+        if (data.launchState === 'live' && originalDoc?.launchState !== 'live') {
+          data.launchedAt = new Date().toISOString()
+        }
         return data
       },
     ],
   },
   fields: [
-    { name: 'siteName', type: 'text', label: 'Site Name', defaultValue: 'Renegade CMS' },
+    {
+      name: 'themeId',
+      type: 'select',
+      defaultValue: 'neutral-starter',
+      options: Object.values(themes).map(({ id, label }) => ({ label, value: id })),
+    },
+    { name: 'siteName', type: 'text', label: 'Site Name', defaultValue: DEFAULT_SITE_NAME },
     { name: 'siteDescription', type: 'textarea', label: 'Site Description' },
     {
       name: 'canonicalOrigin',
       type: 'text',
       label: 'Canonical Origin',
       admin: { description: 'Canonical public origin, e.g. https://renegadeparty.org' },
+    },
+    {
+      name: 'canonicalOriginsBySite',
+      type: 'json',
+      admin: {
+        description:
+          'Optional site-id to canonical-origin map for multisite installs. Origins must be absolute HTTPS URLs in production.',
+      },
     },
     { name: 'locale', type: 'text', defaultValue: 'en' },
     { name: 'timezone', type: 'text', defaultValue: 'UTC' },
@@ -195,11 +221,30 @@ export const SiteSettings: GlobalConfig = {
     { name: 'organizationName', type: 'text' },
     { name: 'personName', type: 'text' },
     { name: 'legalName', type: 'text' },
-    { name: 'defaultTitle', type: 'text', defaultValue: 'Renegade CMS' },
+    { name: 'defaultTitle', type: 'text', defaultValue: DEFAULT_SITE_NAME },
     { name: 'defaultDescription', type: 'textarea' },
     { name: 'logo', type: 'relationship', relationTo: 'media-assets' },
     { name: 'favicon', type: 'relationship', relationTo: 'media-assets' },
     { name: 'defaultSocialImage', type: 'relationship', relationTo: 'media-assets' },
+    {
+      name: 'discoveryDefaults',
+      type: 'json',
+      admin: {
+        description:
+          'Optional defaults by content type. Keys may include default, page, post, article, podcast, video, author, taxonomy and search. Each may set titleTemplate, description, socialTitle, socialDescription, socialImage, locale, alternates, index and follow.',
+      },
+    },
+    {
+      name: 'launchState',
+      type: 'select',
+      defaultValue: 'live',
+      options: ['live', 'prelaunch', 'maintenance'],
+      admin: {
+        description:
+          'Prelaunch and maintenance safely noindex every public surface. Return this prominently to Live after launch.',
+      },
+    },
+    { name: 'launchedAt', type: 'date', admin: { readOnly: true } },
     { name: 'sameAs', type: 'json' },
     { name: 'contactDefaults', type: 'json' },
     { name: 'socialHandles', type: 'json' },

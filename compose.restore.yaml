@@ -1,4 +1,4 @@
-name: renegade-cms-restore
+name: ${RENEGADE_RESTORE_INSTANCE:-renegade-cms-restore}
 
 # Isolated recovery target; use a separate .env.restore with fresh credentials.
 services:

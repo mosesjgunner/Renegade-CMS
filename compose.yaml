@@ -1,4 +1,4 @@
-name: renegade-cms
+name: ${RENEGADE_INSTANCE:-renegade-cms}
 
 services:
   postgres:

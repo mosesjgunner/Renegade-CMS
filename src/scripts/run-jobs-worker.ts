@@ -6,6 +6,7 @@ import { getPayload } from 'payload'
 
 const pollInterval = Number(process.env.WORKER_POLL_INTERVAL_MS ?? 10_000)
 const heartbeatFile = process.env.WORKER_HEARTBEAT_FILE ?? '/tmp/renegade-worker/heartbeat.json'
+const workerProfile = process.env.WORKER_PROFILE ?? 'default'
 
 if (!Number.isInteger(pollInterval) || pollInterval < 1_000 || pollInterval > 60_000) {
   throw new Error('WORKER_POLL_INTERVAL_MS must be an integer between 1000 and 60000')
@@ -19,19 +20,30 @@ async function cycle(): Promise<void> {
   try {
     await payload.jobs.handleSchedules({ queue: 'operations' })
     await payload.jobs.run({ queue: 'operations' })
+    await payload.jobs.run({ queue: 'media' }).catch(() => undefined)
+    if (workerProfile === 'media-heavy') {
+      const { recoverStaleVideoJobs } = await import('../modules/media/video-workflow')
+      await recoverStaleVideoJobs(payload).catch(() => undefined)
+      await payload.jobs
+        .run({ queue: 'media-heavy', limit: Number(process.env.VIDEO_JOB_CONCURRENCY || 1) })
+        .catch(() => undefined)
+    }
     // Presence is intentionally short-lived operational state, never an analytics log.
-    const stalePresence = await payload.find({
-      collection: 'realtime-presence',
-      where: { expiresAt: { less_than_equal: new Date().toISOString() } },
-      limit: 100,
-      overrideAccess: true,
-    } as never)
-    for (const entry of stalePresence.docs)
-      await payload.delete({
+    const stalePresence = await payload
+      .find({
         collection: 'realtime-presence',
-        id: entry.id,
+        where: { expiresAt: { less_than_equal: new Date().toISOString() } },
+        limit: 100,
         overrideAccess: true,
       } as never)
+      .catch(() => null)
+    if (stalePresence)
+      for (const entry of stalePresence.docs)
+        await payload.delete({
+          collection: 'realtime-presence',
+          id: entry.id,
+          overrideAccess: true,
+        } as never)
     await mkdir(path.dirname(heartbeatFile), { recursive: true }).catch(() => undefined)
     await writeFile(
       heartbeatFile,

@@ -53,7 +53,7 @@ describe('portable page builder', () => {
       mediaId: 'media-1',
     })
     expect(replaced.blocks[0].placeholder).toBeUndefined()
-    expect(componentRegistry['publisher.custom-embed'].fields.url).toBe('text')
+    expect(componentRegistry['publisher.custom-embed'].fields.link.type).toBe('link')
     expect(() => registerDeveloperComponent(componentRegistry['publisher.hero'], [])).toThrow(
       'permission',
     )

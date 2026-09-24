@@ -61,9 +61,32 @@ describe('coordinated content release acceptance', () => {
         name: `Release product ${suffix}`,
         slug: `release-product-${suffix}`,
         canonicalPath: `/store/release-product-${suffix}`,
-        kind: 'digital',
+        kind: 'physical',
         state: 'approved',
         releaseRevision: `revision-${suffix}`,
+        productCapabilities: ['shippable'],
+        variants: [
+          {
+            sku: `RELEASE-${suffix}`,
+            title: 'Release edition',
+            optionValues: {},
+            status: 'active',
+            weightGrams: 100,
+            dimensionsMm: { length: 100, width: 100, height: 10 },
+            inventoryPolicy: 'untracked',
+          },
+        ],
+        offers: [
+          {
+            id: `release-offer-${suffix}`,
+            version: 1,
+            status: 'active',
+            variantSku: `RELEASE-${suffix}`,
+            amountMinor: '1000',
+            currency: 'USD',
+            taxDisplay: 'exclusive',
+          },
+        ],
       },
       overrideAccess: true,
     } as never)) as any
@@ -100,7 +123,7 @@ describe('coordinated content release acceptance', () => {
       depth: 0,
       overrideAccess: true,
     } as never)) as any
-    expect(finished.status).toBe('released')
+    expect(finished.status).toBe('completed')
     expect(finished.executionItems).toMatchObject([{ status: 'succeeded', attempts: 1 }])
     expect(published.state).toBe('published')
 

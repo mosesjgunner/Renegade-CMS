@@ -1,4 +1,4 @@
-name: renegade-cms
+name: ${RENEGADE_INSTANCE:-renegade-cms}
 
 services:
   postgres:
@@ -8,8 +8,6 @@ services:
       POSTGRES_DB: renegade
       POSTGRES_USER: renegade
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env.production}
-    ports:
-      - '${POSTGRES_BIND:-127.0.0.1:5432}:5432'
     volumes:
       - renegade_postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -96,6 +94,33 @@ services:
       timeout: 5s
       retries: 12
       start_period: 20s
+
+  media-heavy:
+    profiles: ['media-heavy']
+    build:
+      context: .
+      target: media-heavy
+    image: ${RENEGADE_MEDIA_HEAVY_IMAGE:-renegade-cms-media-heavy}:${RENEGADE_IMAGE_TAG:-local}
+    restart: unless-stopped
+    environment:
+      <<: *app_environment
+      WORKER_PROFILE: media-heavy
+      WORKER_POLL_INTERVAL_MS: ${MEDIA_HEAVY_POLL_INTERVAL_MS:-10000}
+      WORKER_HEARTBEAT_FILE: /tmp/renegade-worker/media-heavy-heartbeat.json
+      VIDEO_JOB_CONCURRENCY: ${VIDEO_JOB_CONCURRENCY:-1}
+      VIDEO_FFMPEG_THREADS: ${VIDEO_FFMPEG_THREADS:-1}
+      VIDEO_PROCESSOR: ${VIDEO_PROCESSOR:-local-ffmpeg}
+    command: ['npm', 'run', 'jobs:worker']
+    volumes:
+      - renegade_media:/app/media
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    deploy:
+      resources:
+        limits:
+          cpus: '${VIDEO_CPU_LIMIT:-2.0}'
+          memory: ${VIDEO_MEMORY_LIMIT:-2G}
 
 volumes:
   renegade_postgres_data:

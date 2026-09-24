@@ -4,7 +4,9 @@ import {
   createSmtpEmailAdapter,
   developmentCaptureEmailAdapter,
   disabledEmailAdapter,
+  localMailSinkReceipts,
   normalizeEmailError,
+  resetLocalMailSink,
   selectEmailDeliveryAdapter,
 } from '../../src/modules/email/delivery'
 
@@ -29,7 +31,13 @@ const request = {
 
 describe('email delivery adapters', () => {
   it('captures development mail and makes disabled mode an explicit non-retryable outcome', async () => {
-    await expect(developmentCaptureEmailAdapter.send(request)).resolves.toMatchObject({
+    resetLocalMailSink()
+    await expect(
+      developmentCaptureEmailAdapter.send({
+        ...request,
+        text: 'Read https://example.test/confirm',
+      }),
+    ).resolves.toMatchObject({
       ok: true,
       provider: 'development-capture',
     })
@@ -40,6 +48,17 @@ describe('email delivery adapters', () => {
     expect(selectEmailDeliveryAdapter({ email: { mode: 'development' } } as never).id).toBe(
       'development-capture',
     )
+    await developmentCaptureEmailAdapter.send({
+      ...request,
+      text: 'replay must not replace receipt',
+    })
+    expect(localMailSinkReceipts()).toEqual([
+      expect.objectContaining({
+        to: request.to,
+        headers: { 'X-Renegade-Idempotency-Key': request.idempotencyKey },
+        links: ['https://example.test/confirm'],
+      }),
+    ])
   })
 
   it('selects SMTP with TLS validation, optional authentication, and bounded transport timeouts', async () => {
@@ -75,8 +94,8 @@ describe('email delivery adapters', () => {
       code: 'tls_failed',
     })
     expect(normalizeEmailError({ code: 'ETIMEDOUT' })).toMatchObject({
-      kind: 'retryable',
-      code: 'timeout',
+      kind: 'unknown',
+      code: 'unknown_outcome',
     })
     expect(normalizeEmailError({ responseCode: 421 })).toMatchObject({
       kind: 'retryable',
@@ -102,6 +121,29 @@ describe('email delivery adapters', () => {
       provider: 'smtp',
       status: 'degraded',
       error: { kind: 'retryable' },
+    })
+  })
+
+  it('declares provider-neutral v1 capabilities and does not pretend SMTP can reconcile unknown sends', async () => {
+    const local = developmentCaptureEmailAdapter
+    expect(local.contract).toMatchObject({
+      version: 1,
+      providerIdempotency: true,
+      reconciliation: true,
+    })
+    await local.send(request)
+    await expect(
+      local.reconcile?.({ idempotencyKey: request.idempotencyKey }),
+    ).resolves.toMatchObject({ ok: true })
+    const smtpAdapter = createSmtpEmailAdapter(smtp(), {
+      createTransport: () => ({ sendMail: vi.fn(), verify: vi.fn() }),
+    })
+    expect(smtpAdapter.contract).toMatchObject({
+      providerIdempotency: false,
+      reconciliation: false,
+    })
+    await expect(smtpAdapter.senderReadiness()).resolves.toMatchObject({
+      domainAuthentication: 'not-observed',
     })
   })
 })

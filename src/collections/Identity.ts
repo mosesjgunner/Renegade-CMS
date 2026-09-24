@@ -3,6 +3,7 @@ import type { CollectionConfig } from 'payload'
 import {
   canonicalSlug,
   capabilityFields,
+  communityHandle,
   enforceSiteTenantBoundary,
   moderationStateOptions,
   publicationStatusOptions,
@@ -52,6 +53,16 @@ export const Brands: CollectionConfig = {
   ],
 }
 
+export const memberAccountStates = [
+  'pending',
+  'active',
+  'restricted',
+  'suspended',
+  'deactivated',
+  'deletion-pending',
+  'deleted',
+] as const
+
 export const Members: CollectionConfig = {
   slug: 'members',
   admin: { useAsTitle: 'displayName', group: 'Community' },
@@ -63,16 +74,50 @@ export const Members: CollectionConfig = {
       name: 'status',
       type: 'select',
       required: true,
-      defaultValue: 'active',
-      options: ['active', 'disabled', 'archived'],
+      defaultValue: 'pending',
+      options: [...memberAccountStates],
+      admin: {
+        description:
+          'Canonical account lifecycle state. Changes here must go through the account-state service so sessions, notices, and audit stay consistent.',
+      },
     },
     { name: 'disabledAt', type: 'date' },
     { name: 'archivedAt', type: 'date' },
+    { name: 'restrictedAt', type: 'date' },
+    { name: 'suspendedAt', type: 'date' },
+    { name: 'deactivatedAt', type: 'date' },
+    { name: 'deletionPendingAt', type: 'date' },
+    { name: 'deletedAt', type: 'date' },
     { name: 'exportRequestedAt', type: 'date' },
     { name: 'deletionRequestedAt', type: 'date' },
     { name: 'verifiedEmailAt', type: 'date' },
     { name: 'moderationReason', type: 'textarea', admin: { readOnly: true } },
+    {
+      name: 'stateReason',
+      type: 'textarea',
+      admin: { readOnly: true, description: 'Reason recorded for the current account state.' },
+    },
   ],
+}
+
+/** Site-scoped community roles are distinct from the Payload administrator `users.role`. */
+export const MemberSiteRoles: CollectionConfig = {
+  slug: 'member-site-roles',
+  admin: { useAsTitle: 'role', group: 'Community', hidden: true },
+  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
+  fields: [
+    { name: 'site', type: 'relationship', relationTo: 'sites', required: true, index: true },
+    { name: 'member', type: 'relationship', relationTo: 'members', required: true, index: true },
+    {
+      name: 'role',
+      type: 'select',
+      required: true,
+      defaultValue: 'member',
+      options: ['member', 'trusted', 'contributor', 'moderator', 'community-manager'],
+    },
+    { name: 'grantedByUserId', type: 'text' },
+  ],
+  indexes: [{ fields: ['site', 'member'], unique: true }],
 }
 
 export const LinkedIdentities: CollectionConfig = {
@@ -124,7 +169,13 @@ export const IdentityTokens: CollectionConfig = {
       name: 'purpose',
       type: 'select',
       required: true,
-      options: ['magic-link-sign-in', 'identity-link', 'wallet-nonce'],
+      options: [
+        'magic-link-sign-in',
+        'identity-link',
+        'wallet-nonce',
+        'passkey-registration',
+        'passkey-authentication',
+      ],
     },
     { name: 'tokenHash', type: 'text', required: true, unique: true },
     { name: 'emailHash', type: 'text', index: true },
@@ -158,7 +209,9 @@ export const IdentityAuditEvents: CollectionConfig = {
 export const Profiles: CollectionConfig = {
   slug: 'profiles',
   admin: { useAsTitle: 'displayName', group: 'Community' },
-  access: { create: staffOnly, delete: staffOnly, read: () => true, update: staffOnly },
+  // Public reads use the versioned projection service. Payload REST/GraphQL
+  // must never serialize the underlying preferences or field audience map.
+  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
   fields: [
     {
       name: 'member',
@@ -175,13 +228,27 @@ export const Profiles: CollectionConfig = {
       required: true,
       unique: true,
       index: true,
-      validate: canonicalSlug,
+      validate: communityHandle,
       admin: {
         description: 'Public handle; changes require an explicit member self-service request.',
       },
     },
+    { name: 'handleChangedAt', type: 'date' },
+    {
+      name: 'handleHistory',
+      type: 'json',
+      admin: {
+        description:
+          'Append-only prior handles with change timestamps so old references can redirect.',
+      },
+    },
     { name: 'avatar', type: 'relationship', relationTo: 'media-assets' },
     { name: 'cover', type: 'relationship', relationTo: 'media-assets' },
+    { name: 'avatarAlt', type: 'text' },
+    { name: 'coverAlt', type: 'text' },
+    { name: 'locale', type: 'text' },
+    { name: 'timeZone', type: 'text' },
+    { name: 'discoveryOptOut', type: 'checkbox', defaultValue: false },
     { name: 'bio', type: 'textarea' },
     { name: 'links', type: 'json' },
     {
@@ -363,9 +430,19 @@ export const Relationships: CollectionConfig = {
     beforeValidate: [
       ({ data }) => {
         if (data?.subject && data?.object && data?.kind) {
-          const object = data.object as string | { value?: string }
-          const objectId = typeof object === 'string' ? object : object.value
-          data.pairKey = `${data.kind}:${data.subject}:${objectId}`
+          const site = data.site as string | { id?: string } | undefined
+          const siteId = typeof site === 'string' ? site : site?.id
+          const subject = data.subject as string | { id?: string }
+          const subjectId = typeof subject === 'string' ? subject : subject.id
+          const object = data.object as string | { value?: string | { id?: string } }
+          const objectId =
+            typeof object === 'string'
+              ? object
+              : typeof object.value === 'string'
+                ? object.value
+                : object.value?.id
+          if (siteId && subjectId && objectId)
+            data.pairKey = `${data.kind}:${siteId}:${subjectId}:${objectId}`
         }
         return data
       },

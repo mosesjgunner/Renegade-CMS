@@ -16,6 +16,8 @@ import {
   TranscriptRevisions,
   TtsOutputs,
   VideoChannels,
+  VideoAssets,
+  VideoCaptions,
   VideoPlaylists,
   Videos,
 } from '../../collections/MediaPublishing'
@@ -35,6 +37,8 @@ export const mediaDomain: DomainDefinition = {
     VideoChannels,
     VideoPlaylists,
     Videos,
+    VideoAssets,
+    VideoCaptions,
     Interviews,
     Livestreams,
     TranscriptRevisions,

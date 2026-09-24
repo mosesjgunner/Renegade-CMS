@@ -368,8 +368,11 @@ export async function seed(payload: Payload): Promise<void> {
     collection: 'media-usages',
     where: { usageKey: { equals: 'content:demo-field-report:hero' } },
     data: {
+      site: site.id,
       media: media.id,
       usedBy: rel('content', article.id),
+      targetType: 'content',
+      targetId: String(article.id),
       usageKey: 'content:demo-field-report:hero',
       purpose: 'hero',
     },
@@ -379,8 +382,11 @@ export async function seed(payload: Payload): Promise<void> {
     collection: 'media-usages',
     where: { usageKey: { equals: 'album:demo-portfolio:item-1' } },
     data: {
+      site: site.id,
       media: media.id,
       usedBy: rel('albums', album.id),
+      targetType: 'albums',
+      targetId: String(album.id),
       usageKey: 'album:demo-portfolio:item-1',
       purpose: 'inline',
     },
@@ -495,8 +501,11 @@ export async function seed(payload: Payload): Promise<void> {
     collection: 'media-usages',
     where: { usageKey: { equals: 'event:demo-open-house:hero' } },
     data: {
+      site: site.id,
       media: media.id,
       usedBy: rel('events', openHouseEvent.id),
+      targetType: 'events',
+      targetId: String(openHouseEvent.id),
       usageKey: 'event:demo-open-house:hero',
       purpose: 'hero',
     },
@@ -506,8 +515,11 @@ export async function seed(payload: Payload): Promise<void> {
     collection: 'media-usages',
     where: { usageKey: { equals: 'event:demo-briefing:hero' } },
     data: {
+      site: site.id,
       media: media.id,
       usedBy: rel('events', briefingEvent.id),
+      targetType: 'events',
+      targetId: String(briefingEvent.id),
       usageKey: 'event:demo-briefing:hero',
       purpose: 'hero',
     },
@@ -625,8 +637,11 @@ export async function seed(payload: Payload): Promise<void> {
     collection: 'media-usages',
     where: { usageKey: { equals: 'timeline:demo-civic-schedule:hero' } },
     data: {
+      site: site.id,
       media: media.id,
       usedBy: rel('timelines', civicTimeline.id),
+      targetType: 'timelines',
+      targetId: String(civicTimeline.id),
       usageKey: 'timeline:demo-civic-schedule:hero',
       purpose: 'hero',
     },
@@ -774,7 +789,11 @@ export async function seed(payload: Payload): Promise<void> {
 
   await upsert(payload, {
     collection: 'relationships',
-    where: { pairKey: { equals: `publication-membership:${member.id}:${mainPublication.id}` } },
+    where: {
+      pairKey: {
+        equals: `publication-membership:${site.id}:${member.id}:${mainPublication.id}`,
+      },
+    },
     data: {
       site: site.id,
       subject: member.id,

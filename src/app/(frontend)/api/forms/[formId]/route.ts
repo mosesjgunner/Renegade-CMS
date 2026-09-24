@@ -2,7 +2,7 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
-import { submitPublicForm } from '@/modules/audience/service'
+import { runFormActions, submitPublicForm } from '@/modules/audience/service'
 import { requestNewsletterSubscription } from '@/modules/audience/service'
 import { audienceDigest } from '@/modules/audience/contracts'
 import { takeAudiencePublicRequest } from '@/modules/audience/public-rate-limit'
@@ -11,14 +11,19 @@ function requestIp(request: Request) {
   return request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown'
 }
 
-function isSameOrigin(request: Request) {
+function isAllowedOrigin(request: Request, allowedEmbedOrigins: unknown) {
   const origin = request.headers.get('origin')
-  return !origin || origin === new URL(process.env.APP_URL ?? 'http://localhost:3000').origin
+  if (!origin) return true
+  const own = new URL(process.env.APP_URL ?? 'http://localhost:3000').origin
+  return (
+    origin === own || (Array.isArray(allowedEmbedOrigins) && allowedEmbedOrigins.includes(origin))
+  )
 }
 export async function POST(request: Request, context: { params: Promise<{ formId: string }> }) {
   const { formId } = await context.params
-  if (!isSameOrigin(request))
-    return NextResponse.json({ error: 'Cross-site submission rejected.' }, { status: 403 })
+  const contentLength = Number(request.headers.get('content-length') ?? 0)
+  if (!Number.isFinite(contentLength) || contentLength > 64 * 1024)
+    return NextResponse.json({ error: 'Submission is too large.' }, { status: 413 })
   const ip = requestIp(request)
   if (!takeAudiencePublicRequest(ip, `form:${formId}`))
     return NextResponse.json({ error: 'Please try again shortly.' }, { status: 429 })
@@ -42,6 +47,8 @@ export async function POST(request: Request, context: { params: Promise<{ formId
     form.activeSchema.state !== 'published'
   )
     return NextResponse.json({ error: 'Form unavailable.' }, { status: 404 })
+  if (!isAllowedOrigin(request, form.settings?.allowedEmbedOrigins))
+    return NextResponse.json({ error: 'Cross-site submission rejected.' }, { status: 403 })
   const schema = form.activeSchema as any
   try {
     const result = await submitPublicForm(payload, {
@@ -61,6 +68,12 @@ export async function POST(request: Request, context: { params: Promise<{ formId
       idempotencyKey: body.idempotencyKey ?? crypto.randomUUID(),
     })
     if (result.errors) return NextResponse.json(result, { status: 422 })
+    if (result.replay)
+      return NextResponse.json(
+        { ...result, actions: result.submission.actionState ?? [] },
+        { status: 200 },
+      )
+    const actions = await runFormActions(payload, { submission: result.submission, form, schema })
     const newsletter = form.settings?.newsletter
     if (newsletter?.listId) {
       const email = body.values?.[newsletter.emailField ?? 'email']
@@ -70,6 +83,7 @@ export async function POST(request: Request, context: { params: Promise<{ formId
           {
             ...result,
             newsletter: { status: 'not-requested', reason: 'explicit-consent-required' },
+            actions,
           },
           { status: 201 },
         )
@@ -83,11 +97,11 @@ export async function POST(request: Request, context: { params: Promise<{ formId
         formSubmissionId: result.submission.id,
       })
       return NextResponse.json(
-        { ...result, newsletter: { status: subscription.status } },
+        { ...result, newsletter: { status: subscription.status }, actions },
         { status: 201 },
       )
     }
-    return NextResponse.json(result, { status: 201 })
+    return NextResponse.json({ ...result, actions }, { status: 201 })
   } catch {
     return NextResponse.json({ error: 'Submission could not be accepted.' }, { status: 400 })
   }

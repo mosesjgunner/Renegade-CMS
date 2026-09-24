@@ -9,10 +9,7 @@ import { EditorialConflictError } from '@/modules/editorial/workflow'
 export const dynamic = 'force-dynamic'
 export const runtime = 'nodejs'
 
-export async function POST(
-  request: Request,
-  context: RouteContext<'/api/realtime/drafts/[articleId]/checkpoint'>,
-) {
+export async function POST(request: Request, context: { params: Promise<{ articleId: string }> }) {
   const { articleId } = await context.params
   const body = (await request.json().catch(() => null)) as {
     document?: RichTextDocument

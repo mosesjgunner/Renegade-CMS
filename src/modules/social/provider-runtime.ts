@@ -66,9 +66,9 @@ export const blueskyAdapter: SocialProviderAdapter = {
   mode: 'live',
   capabilities: blueskyCapabilities,
   async publish(variant: SocialVariant, context): Promise<AdapterResult> {
-    const identifier = context.credentials?.identifier,
-      password = context.credentials?.appPassword,
-      service = context.credentials?.service ?? 'https://bsky.social'
+    const identifier = context?.credentials?.identifier,
+      password = context?.credentials?.appPassword,
+      service = context?.credentials?.service ?? 'https://bsky.social'
     if (!identifier || !password)
       return {
         status: 'failed',

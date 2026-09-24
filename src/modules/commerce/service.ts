@@ -1,4 +1,4 @@
-import { createHmac, timingSafeEqual } from 'node:crypto'
+import { createHash, createHmac, timingSafeEqual } from 'node:crypto'
 import type { Payload } from 'payload'
 import {
   appendFinancialEvent,
@@ -9,6 +9,8 @@ import {
   type CryptoInvoice,
   type PaymentIntent,
   type PaymentMethodCapability,
+  type OrderLineSnapshot,
+  quoteOrderLines,
   verifyCryptoObservation,
 } from './contracts'
 
@@ -17,7 +19,8 @@ export type CartLine = {
   variantSku: string
   quantity: number
   merchantConnectionId: string
-  kind: 'physical' | 'digital' | 'pod-reference' | 'subscription' | 'membership'
+  kind: 'physical' | 'digital' | 'pod-reference' | 'subscription' | 'membership' | 'donation'
+  donationAmountMinor?: string
 }
 export type CheckoutState =
   | 'open'
@@ -30,7 +33,14 @@ export type CheckoutState =
 export type ProviderEvent = {
   id: string
   intentId: string
-  kind: 'confirmed' | 'failed' | 'cancelled'
+  kind:
+    | 'confirmed'
+    | 'failed'
+    | 'cancelled'
+    | 'refunded'
+    | 'disputed'
+    | 'subscription-renewed'
+    | 'fulfillment-failed'
   occurredAt: string
 }
 export function sameCommerceScope(
@@ -51,7 +61,18 @@ export function validWebhookEvent(
 ) {
   if (!event || !/^[A-Za-z0-9_.:-]{1,200}$/.test(event.id) || event.intentId !== expectedIntentId)
     return false
-  if (!['confirmed', 'failed', 'cancelled'].includes(event.kind)) return false
+  if (
+    ![
+      'confirmed',
+      'failed',
+      'cancelled',
+      'refunded',
+      'disputed',
+      'subscription-renewed',
+      'fulfillment-failed',
+    ].includes(event.kind)
+  )
+    return false
   const occurredAt = Date.parse(event.occurredAt)
   return (
     Number.isFinite(occurredAt) &&
@@ -130,7 +151,11 @@ export function methodsForCart(
   return eligiblePaymentMethods(methods, context)
 }
 export function transitionOrder(state: string, event: ProviderEvent): string {
-  if (['paid', 'fulfilled', 'refunded', 'cancelled'].includes(state)) return state
+  if (['refunded', 'cancelled'].includes(state)) return state
+  if (event.kind === 'refunded') return 'refunded'
+  if (event.kind === 'disputed') return 'exception'
+  if (event.kind === 'fulfillment-failed') return 'exception'
+  if (['paid', 'fulfilled'].includes(state)) return state
   if (event.kind === 'confirmed') return 'paid'
   if (event.kind === 'failed') return 'failed'
   return 'cancelled'
@@ -140,7 +165,13 @@ export function applyVerifiedWebhook(intent: PaymentIntent, event: ProviderEvent
     id: `provider:${event.id}`,
     intentId: intent.id,
     kind:
-      event.kind === 'confirmed' ? 'confirmed' : event.kind === 'failed' ? 'failed' : 'reversed',
+      event.kind === 'confirmed' || event.kind === 'subscription-renewed'
+        ? 'confirmed'
+        : event.kind === 'refunded'
+          ? 'refunded'
+          : event.kind === 'disputed'
+            ? 'disputed'
+            : 'failed',
     money: intent.money,
     providerEventId: event.id,
     occurredAt: event.occurredAt,
@@ -148,6 +179,165 @@ export function applyVerifiedWebhook(intent: PaymentIntent, event: ProviderEvent
 }
 export function clientCallbackCannotConfirmPayment(): false {
   return false
+}
+
+export function deriveDownloadGrantKey(
+  input: { orderId: string; productId: string; variantSku: string; mediaId: string },
+  secret: string,
+): string {
+  if (secret.length < 16) throw new Error('Digital delivery secret is not configured.')
+  return createHmac('sha256', secret)
+    .update(`${input.orderId}\0${input.productId}\0${input.variantSku}\0${input.mediaId}`)
+    .digest('base64url')
+}
+
+/** A cart is only a selection. This produces the immutable server quote used by checkout and Order. */
+export function snapshotQuotedLines(input: {
+  cartLines: readonly CartLine[]
+  products: readonly {
+    id: string
+    name: string
+    state?: string
+    kind: string
+    catalogContractVersion?: number
+    productCapabilities?: readonly string[]
+    variants?: readonly {
+      sku?: string
+      title?: string
+      status?: string
+      inventoryPolicy?: string
+      inventoryQuantity?: number
+    }[]
+    prices?: readonly {
+      currency?: string
+      amountMinor?: string
+      variantSku?: string
+      recurringInterval?: string
+    }[]
+    offers?: readonly {
+      offerId?: string
+      version?: number
+      status?: string
+      currency?: string
+      amountMinor?: string
+      variantSku?: string
+      startsAt?: string
+      endsAt?: string
+      segmentPolicy?: { mode?: string }
+      donation?: { minimumMinor?: string; suggestedMinor?: readonly string[] }
+    }[]
+    entitlement?: string | null
+    digitalDelivery?: { entitlement?: string } | null
+  }[]
+  currency: string
+  now?: string
+}): OrderLineSnapshot[] {
+  const now = input.now ?? new Date().toISOString()
+  return input.cartLines.map((cartLine) => {
+    const product = input.products.find((candidate) => candidate.id === cartLine.productId)
+    if (!product || product.state !== 'published') throw new Error('Product is not published.')
+    if (product.kind === 'affiliate' || product.productCapabilities?.includes('affiliate'))
+      throw new Error('Affiliate products must be purchased at the disclosed seller destination.')
+    if (!Number.isInteger(cartLine.quantity) || cartLine.quantity < 1)
+      throw new Error('Product quantity must be a positive integer.')
+    const variant = product.variants?.find((candidate) => candidate.sku === cartLine.variantSku)
+    if (
+      variant?.status === 'unavailable' ||
+      variant?.status === 'archived' ||
+      (variant?.inventoryPolicy === 'tracked' &&
+        Number(variant.inventoryQuantity ?? 0) < cartLine.quantity)
+    )
+      throw new Error('Product variant is unavailable.')
+    const offer = product.offers
+      ?.filter(
+        (candidate) =>
+          candidate.status === 'active' &&
+          candidate.currency === input.currency &&
+          (candidate.variantSku === cartLine.variantSku || !candidate.variantSku) &&
+          (!candidate.startsAt || candidate.startsAt <= now) &&
+          (!candidate.endsAt || candidate.endsAt > now) &&
+          candidate.segmentPolicy?.mode !== 'allowlist',
+      )
+      .sort((a, b) => Number(b.version ?? 0) - Number(a.version ?? 0))[0]
+    const price =
+      offer ??
+      (!product.catalogContractVersion
+        ? product.prices?.find(
+            (candidate) =>
+              candidate.currency === input.currency &&
+              (candidate.variantSku === cartLine.variantSku || !candidate.variantSku),
+          )
+        : undefined)
+    if (!variant || !price?.amountMinor)
+      throw new Error('Product variant has no server price in this currency.')
+    let unitAmountMinor = String(price.amountMinor)
+    if (!/^(0|[1-9][0-9]*)$/.test(unitAmountMinor))
+      throw new Error('Product price must use integer minor units.')
+    if (product.kind === 'donation' || product.productCapabilities?.includes('donation')) {
+      const selected = String(cartLine.donationAmountMinor ?? '')
+      const minimum = offer?.donation?.minimumMinor
+      if (
+        cartLine.quantity !== 1 ||
+        !/^(0|[1-9][0-9]*)$/.test(selected) ||
+        !minimum ||
+        !/^(0|[1-9][0-9]*)$/.test(minimum) ||
+        BigInt(selected) < BigInt(minimum)
+      )
+        throw new Error('Donation amount does not meet the published minimum.')
+      unitAmountMinor = selected
+    }
+    return {
+      productId: product.id,
+      variantSku: cartLine.variantSku,
+      title: variant.title ?? product.name,
+      quantity: cartLine.quantity,
+      unitAmountMinor,
+      lineAmountMinor: (BigInt(unitAmountMinor) * BigInt(cartLine.quantity)).toString(),
+      currency: input.currency,
+      kind: product.kind,
+      ...((product.digitalDelivery?.entitlement ?? product.entitlement)
+        ? { entitlement: product.digitalDelivery?.entitlement ?? product.entitlement ?? undefined }
+        : {}),
+    }
+  })
+}
+
+export function assertCheckoutQuote(input: {
+  lines: readonly OrderLineSnapshot[]
+  currency: string
+  amountMinor: string
+}) {
+  const quote = quoteOrderLines(input.lines)
+  if (quote.currency !== input.currency || quote.amountMinor !== input.amountMinor)
+    throw new Error('Checkout total differs from the server quote.')
+  return quote
+}
+
+export type ReconciliationDecision =
+  | { status: 'matched'; reason: 'verified-payment-evidence' }
+  | {
+      status: 'quarantined'
+      reason:
+        | 'missing-provider-evidence'
+        | 'ambiguous-legacy-record'
+        | 'amount-or-currency-mismatch'
+    }
+
+/** Conservative legacy/backfill rule: absence or ambiguity is reviewable quarantine, never a paid inference. */
+export function reconcileLegacyCommerceRecord(input: {
+  hasSingleScope: boolean
+  amountMinor?: string
+  currency?: string
+  providerEventId?: string
+  verified: boolean
+  matchesCanonicalQuote: boolean
+}): ReconciliationDecision {
+  if (!input.hasSingleScope) return { status: 'quarantined', reason: 'ambiguous-legacy-record' }
+  if (!input.amountMinor || !input.currency || !input.matchesCanonicalQuote)
+    return { status: 'quarantined', reason: 'amount-or-currency-mismatch' }
+  if (!input.providerEventId || !input.verified)
+    return { status: 'quarantined', reason: 'missing-provider-evidence' }
+  return { status: 'matched', reason: 'verified-payment-evidence' }
 }
 
 export type InventoryLine = Readonly<{
@@ -399,6 +589,7 @@ export async function publishProductRelease(
     collection: 'products' as never,
     id: input.productId,
     data: { state: 'published' },
+    context: { catalogWorkflow: true },
     overrideAccess: true,
   } as never)
   return true
@@ -426,6 +617,16 @@ export async function finalizeVerifiedOrder(
           depth: 0,
           overrideAccess: true,
         })
+  const proposal = input.session.proposal
+    ? typeof input.session.proposal === 'object'
+      ? input.session.proposal
+      : await db.findByID({
+          collection: 'checkout-proposals',
+          id: input.session.proposal,
+          depth: 0,
+          overrideAccess: true,
+        })
+    : null
   if (!order) {
     order = await db.create({
       collection: 'orders',
@@ -439,12 +640,32 @@ export async function finalizeVerifiedOrder(
         state: 'pending-payment',
         currency: input.session.currency,
         amountMinor: input.session.amountMinor,
-        items: cart.items,
+        items: Array.isArray(input.intent.orderLines) ? input.intent.orderLines : cart.items,
+        partySnapshot: proposal?.customer ?? { memberId: cart.member ?? cart.owner ?? null },
+        addressSnapshot: proposal
+          ? { shipping: proposal.shippingAddress ?? null, billing: proposal.billingAddress ?? null }
+          : null,
+        totalsSnapshot: proposal?.pricingSnapshot ?? {
+          grandTotalMinor: input.session.amountMinor,
+          currency: input.session.currency,
+        },
+        termsSnapshot: proposal?.consents ?? input.session.legalCopy ?? {},
+        sourceSnapshot: {
+          checkoutSessionId: String(input.session.id),
+          proposalId: proposal ? String(proposal.id) : null,
+          paymentIntentId: String(input.intent.id),
+          providerKey: String(input.intent.providerKey),
+        },
+        downstreamInstructions: Array.isArray(proposal?.fulfillmentSplit)
+          ? proposal.fulfillmentSplit
+          : proposal?.fulfillmentSplit
+            ? [proposal.fulfillmentSplit]
+            : [],
       },
       overrideAccess: true,
     })
   }
-  if (order.receipt?.state === 'issued') return { order, replay: true }
+  const alreadySettled = order.receipt?.state === 'issued'
   const lines = (Array.isArray(order.items) ? order.items : []) as InventoryLine[]
   const productIds = [...new Set(lines.map((line) => line.productId).filter(Boolean))]
   const products = await Promise.all(
@@ -457,15 +678,17 @@ export async function finalizeVerifiedOrder(
         .filter((entry: any) => entry?.kind === 'inventory-applied')
         .map((entry: any) => entry.key)
     : []
-  const adjustments = inventoryAdjustmentsForOrder({
-    orderId: String(order.id),
-    appliedKeys,
-    lines,
-    products: products.map((product: any) => ({
-      id: String(product.id),
-      variants: product.variants,
-    })),
-  })
+  const adjustments = alreadySettled
+    ? []
+    : inventoryAdjustmentsForOrder({
+        orderId: String(order.id),
+        appliedKeys,
+        lines,
+        products: products.map((product: any) => ({
+          id: String(product.id),
+          variants: product.variants,
+        })),
+      })
   for (const adjustment of adjustments) {
     const product = products.find((candidate: any) => String(candidate.id) === adjustment.productId)
     await db.update({
@@ -493,22 +716,171 @@ export async function finalizeVerifiedOrder(
     })),
     { kind: 'payment-confirmed', intentId: input.intent.id, at: input.verifiedAt },
   ]
-  order = await db.update({
-    collection: 'orders',
-    id: order.id,
-    data: {
-      state: 'paid',
-      transitionLog,
-      receipt: receiptForVerifiedPayment({
-        orderId: String(order.id),
-        intentId: String(input.intent.id),
-        providerKey: input.intent.providerKey,
-        amountMinor: input.intent.amountMinor,
-        currency: input.intent.currency,
-        verifiedAt: input.verifiedAt,
-      }),
-    },
-    overrideAccess: true,
-  })
-  return { order, replay: false }
+  if (!alreadySettled)
+    order = await db.update({
+      collection: 'orders',
+      id: order.id,
+      data: {
+        state: 'paid',
+        transitionLog,
+        receipt: receiptForVerifiedPayment({
+          orderId: String(order.id),
+          intentId: String(input.intent.id),
+          providerKey: input.intent.providerKey,
+          amountMinor: input.intent.amountMinor,
+          currency: input.intent.currency,
+          verifiedAt: input.verifiedAt,
+        }),
+      },
+      overrideAccess: true,
+    })
+  // Grants are derived from immutable paid lines, never a redirect or mutable product record.
+  const cartMember = cart.member ?? cart.owner
+  const memberId =
+    typeof cartMember === 'object' ? String(cartMember?.id ?? '') : String(cartMember ?? '')
+  let supporter: any
+  for (const line of lines as Array<InventoryLine & { entitlement?: string }>) {
+    if (!line.entitlement) continue
+    const prior = await db.find({
+      collection: 'entitlements',
+      where: {
+        and: [
+          { paymentIntent: { equals: input.intent.id } },
+          { entitlement: { equals: line.entitlement } },
+        ],
+      },
+      limit: 1,
+      overrideAccess: true,
+    })
+    if (prior.docs.length) continue
+    if (!supporter) {
+      const supporterResult = await db.find({
+        collection: 'supporters',
+        where: memberId
+          ? { member: { equals: memberId } }
+          : { providerReferences: { contains: String(input.intent.id) } },
+        limit: 1,
+        overrideAccess: true,
+      })
+      supporter = supporterResult.docs[0]
+      if (!supporter)
+        supporter = await db.create({
+          collection: 'supporters',
+          data: {
+            site: input.session.site,
+            publication: input.session.publication,
+            space: input.session.space,
+            ...(memberId ? { member: memberId } : {}),
+            displayName: memberId ? undefined : `Order ${order.orderNumber}`,
+            providerReferences: [
+              { providerKey: input.intent.providerKey, externalId: String(input.intent.id) },
+            ],
+            visibilityPreference: 'private',
+          },
+          overrideAccess: true,
+        })
+    }
+    await db.create({
+      collection: 'entitlements',
+      data: {
+        site: input.session.site,
+        publication: input.session.publication,
+        space: input.session.space,
+        supporter: supporter.id,
+        paymentIntent: input.intent.id,
+        entitlement: line.entitlement,
+        source: `order:${order.id}`,
+        startsAt: input.verifiedAt,
+      },
+      overrideAccess: true,
+    })
+  }
+  const deliverySecret =
+    process.env.COMMERCE_DELIVERY_SECRET ??
+    (process.env.NODE_ENV === 'production' ? '' : 'development-delivery-secret')
+  const downloads: Array<{ productId: string; variantSku: string; mediaId: string; path: string }> =
+    []
+  for (const line of lines as Array<InventoryLine & { entitlement?: string }>) {
+    if (!line.entitlement) continue
+    const product = products.find((candidate: any) => String(candidate.id) === line.productId)
+    const delivery = product?.digitalDelivery as
+      | {
+          downloadLimit?: number
+          expiresAfterDays?: number
+          assets?: Array<{ mediaId?: string }>
+        }
+      | undefined
+    if (!delivery?.assets?.length) continue
+    const entitlementResult = await db.find({
+      collection: 'entitlements',
+      where: {
+        and: [
+          { paymentIntent: { equals: input.intent.id } },
+          { entitlement: { equals: line.entitlement } },
+        ],
+      },
+      limit: 1,
+      overrideAccess: true,
+    })
+    const entitlement = entitlementResult.docs[0]
+    for (const asset of delivery.assets) {
+      const mediaId = String(asset.mediaId ?? '')
+      if (!mediaId || !entitlement) continue
+      const grantKey = deriveDownloadGrantKey(
+        {
+          orderId: String(order.id),
+          productId: line.productId,
+          variantSku: line.variantSku,
+          mediaId,
+        },
+        deliverySecret,
+      )
+      const grantKeyHash = createHash('sha256').update(grantKey).digest('hex')
+      const priorGrant = await db.find({
+        collection: 'digital-delivery-grants',
+        where: { grantKeyHash: { equals: grantKeyHash } },
+        limit: 1,
+        overrideAccess: true,
+      })
+      if (!priorGrant.docs.length)
+        await db.create({
+          collection: 'digital-delivery-grants',
+          data: {
+            site: input.session.site,
+            publication: input.session.publication,
+            space: input.session.space,
+            product: line.productId,
+            variantSku: line.variantSku,
+            entitlement: entitlement.id,
+            ...(memberId ? { member: memberId } : {}),
+            mediaAsset: mediaId,
+            grantKeyHash,
+            downloadLimit: delivery.downloadLimit,
+            downloadCount: 0,
+            ...(delivery.expiresAfterDays
+              ? {
+                  expiresAt: new Date(
+                    Date.parse(input.verifiedAt) + delivery.expiresAfterDays * 86_400_000,
+                  ).toISOString(),
+                }
+              : {}),
+          },
+          overrideAccess: true,
+        })
+      downloads.push({
+        productId: line.productId,
+        variantSku: line.variantSku,
+        mediaId,
+        path: `/api/commerce/download/${grantKey}`,
+      })
+    }
+  }
+  if (downloads.length)
+    order = await db.update({
+      collection: 'orders',
+      id: order.id,
+      data: { fulfillmentExtension: { downloads } },
+      overrideAccess: true,
+    })
+  return { order, replay: alreadySettled }
 }

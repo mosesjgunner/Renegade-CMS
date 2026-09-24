@@ -2,6 +2,7 @@ import type { Payload } from 'payload'
 
 import { buildTableOfContents } from '../editorial/presentation'
 import { OPERATIONS_QUEUE } from '../operations/tasks'
+import { resolveDiscoveryDocument } from '../public/discovery'
 import { canIgnore, canWaive, qualityDedupeKey, scanLocal, type QualityFinding } from './contracts'
 
 type Doc = Record<string, unknown>
@@ -224,7 +225,7 @@ export async function produceLocalFindings(
       }
     }),
   )
-  return scanLocal({
+  const findings = scanLocal({
     targetId: input.targetId,
     title: typeof content?.title === 'string' ? content.title : undefined,
     description:
@@ -250,6 +251,32 @@ export async function produceLocalFindings(
     internalLinks,
     translationStatus: translation,
   })
+
+  if (content) {
+    try {
+      const discovery = await resolveDiscoveryDocument(payload, {
+        collection: 'content',
+        id: contentId,
+        record: content,
+      })
+      for (const issue of discovery.issues) {
+        if (!findings.some((f) => f.rule === issue.ruleId)) {
+          findings.push({
+            rule: issue.ruleId,
+            severity: issue.severity,
+            message: issue.evidence,
+            remediation: issue.repairTarget,
+            location: issue.affectedUrl,
+            repairUrl: issue.repairTarget,
+          })
+        }
+      }
+    } catch {
+      // Non-blocking discovery audit fallback
+    }
+  }
+
+  return findings
 }
 
 async function activeWaiver(payload: Payload, issueId: string, now: Date) {

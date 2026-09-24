@@ -4,6 +4,7 @@ import { NextResponse } from 'next/server'
 import {
   MediaWorkflowError,
   deleteOrphanedMedia,
+  previewReplacementImpact,
   replaceMedia,
   updateMediaMetadata,
 } from '@/modules/media/workflow'
@@ -11,17 +12,42 @@ import { loadConfig } from '@/modules/core/config'
 
 export const runtime = 'nodejs'
 
+export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
+  const payload = await getPayload({ config })
+  const auth = await payload.auth({ headers: request.headers })
+  try {
+    const body = (await request.json()) as Record<string, unknown>
+    const siteId = String(body.siteId ?? '')
+    await updateMediaMetadata(payload, auth.user as never, {
+      mediaId: (await params).id,
+      scope: { kind: 'site', siteId },
+    })
+    return NextResponse.json({
+      impact: await previewReplacementImpact(
+        payload,
+        siteId,
+        (await params).id,
+        Array.isArray(body.usageIds) ? body.usageIds.map(String) : undefined,
+      ),
+    })
+  } catch (error) {
+    const status = error instanceof MediaWorkflowError ? error.status : 400
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : 'Replacement preview failed.' },
+      { status },
+    )
+  }
+}
+
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const payload = await getPayload({ config })
   const auth = await payload.auth({ headers: request.headers })
   try {
-    const body = (await request.json()) as Record<string, string | undefined>
+    const body = (await request.json()) as Record<string, unknown>
     const media = await updateMediaMetadata(payload, auth.user as never, {
       mediaId: (await params).id,
       scope: { kind: 'site', siteId: String(body.siteId ?? '') },
-      title: body.title,
-      altText: body.altText,
-      caption: body.caption,
+      ...body,
     })
     return NextResponse.json({ media })
   } catch (error) {
@@ -59,6 +85,9 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
   const payload = await getPayload({ config })
   const auth = await payload.auth({ headers: request.headers })
   try {
+    const declaredLength = Number(request.headers.get('content-length') ?? 0)
+    if (declaredLength > appConfig.storage.maxUploadBytes + 1_000_000)
+      throw new MediaWorkflowError('Media exceeds the configured upload limit.', 413)
     const form = await request.formData()
     const file = form.get('file')
     if (!(file instanceof File))
@@ -71,7 +100,16 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
       scope: { kind: 'site', siteId },
       title: String(form.get('title') ?? file.name),
       altText: String(form.get('altText') ?? '') || undefined,
+      originalFilename: file.name,
       bytes: new Uint8Array(await file.arrayBuffer()),
+      mode: ['new-asset', 'selected-usages', 'all-usages'].includes(String(form.get('mode')))
+        ? (String(form.get('mode')) as 'new-asset' | 'selected-usages' | 'all-usages')
+        : 'new-asset',
+      usageIds: String(form.get('usageIds') ?? '')
+        .split(',')
+        .map((value) => value.trim())
+        .filter(Boolean),
+      reason: String(form.get('reason') ?? '') || undefined,
     })
     return NextResponse.json({ replacement }, { status: 201 })
   } catch (error) {

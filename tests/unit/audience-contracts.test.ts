@@ -4,6 +4,7 @@ import {
   deliveryIdempotencyKey,
   isSuppressionEvent,
   safeAutomationAction,
+  normalizeFormAnswers,
   validateFormSchema,
   validateSubmission,
 } from '../../src/modules/audience/contracts'
@@ -52,5 +53,32 @@ describe('audience contracts', () => {
         { consent: false },
       ),
     ).toEqual({ consent: 'Required.' })
+  })
+  it('drops undeclared and hidden browser values while normalizing declared answers', () => {
+    const schema = {
+      version: 2,
+      locale: 'en',
+      fields: [
+        { key: 'email', type: 'email', label: 'Email' },
+        { key: 'campaign', type: 'hidden', label: '' },
+        { key: 'phone', type: 'phone', label: 'Phone' },
+      ],
+    } as const
+    expect(
+      normalizeFormAnswers(schema, {
+        email: ' Reader@Example.test ',
+        phone: '+1 (312) 555-0100',
+        campaign: 'client-forged',
+        admin: true,
+      }),
+    ).toEqual({
+      email: 'reader@example.test',
+      phone: '+13125550100',
+    })
+    expect(
+      validateFormSchema({
+        fields: [{ key: 'campaign', type: 'hidden', label: '', required: true }],
+      }),
+    ).toContain('Hidden field campaign cannot be required.')
   })
 })

@@ -6,6 +6,47 @@ export type MoneySnapshot = Readonly<{
   quoteSource: string | null
   buyerConfirmedConversion: boolean
 }>
+/** Integer minor-unit money only.  Decimal display/input is converted before this boundary. */
+export function assertMoney(amountMinor: string, currency: string): MoneySnapshot {
+  if (!/^[A-Z]{3}$/.test(currency)) throw new Error('Currency must be an ISO-4217 uppercase code.')
+  if (!/^(0|[1-9][0-9]*)$/.test(amountMinor))
+    throw new Error('Amount must be a non-negative integer minor unit.')
+  return {
+    amountMinor,
+    currency,
+    quotedAt: new Date(0).toISOString(),
+    quoteSource: null,
+    buyerConfirmedConversion: false,
+  }
+}
+export type OrderLineSnapshot = Readonly<{
+  productId: string
+  variantSku: string
+  title: string
+  quantity: number
+  unitAmountMinor: string
+  lineAmountMinor: string
+  currency: string
+  kind: string
+  entitlement?: string
+  fulfillmentInstruction?: Readonly<Record<string, unknown>>
+}>
+export function quoteOrderLines(lines: readonly OrderLineSnapshot[]): {
+  amountMinor: string
+  currency: string
+} {
+  if (!lines.length) throw new Error('A checkout needs at least one line.')
+  const currency = lines[0].currency
+  let total = 0n
+  for (const line of lines) {
+    if (!Number.isSafeInteger(line.quantity) || line.quantity <= 0 || line.currency !== currency)
+      throw new Error('Invalid quoted order line.')
+    const expected = BigInt(line.unitAmountMinor) * BigInt(line.quantity)
+    if (expected !== BigInt(line.lineAmountMinor)) throw new Error('Quoted line total is invalid.')
+    total += expected
+  }
+  return { amountMinor: total.toString(), currency }
+}
 export type MerchantScope = Readonly<{
   siteId: string
   publicationId?: string
@@ -173,6 +214,12 @@ export function appendFinancialEvent(intent: PaymentIntent, event: FinancialEven
         existing.id === event.id ||
         (event.providerEventId && existing.providerEventId === event.providerEventId),
     )
+  )
+    return intent
+  // Provider events are append-only evidence; stale success must never resurrect a cancelled intent.
+  if (
+    ['cancelled', 'expired', 'refunded', 'disputed'].includes(intent.state) &&
+    event.kind === 'confirmed'
   )
     return intent
   const state: PaymentIntentState =

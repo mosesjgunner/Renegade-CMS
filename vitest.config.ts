@@ -10,7 +10,13 @@ export default defineConfig({
   },
   test: {
     environment: 'node',
-    exclude: [...configDefaults.exclude, '.worktrees/**', '.phase-a/**'],
+    exclude: [
+      ...configDefaults.exclude,
+      '.worktrees/**',
+      '.phase-a/**',
+      '.next/**',
+      'tests/browser/**',
+    ],
     env: {
       APP_URL: process.env.APP_URL ?? 'http://localhost:3000',
       DATABASE_URL:

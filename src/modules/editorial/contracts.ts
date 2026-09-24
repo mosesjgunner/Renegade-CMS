@@ -1,4 +1,4 @@
-﻿import { createHash } from 'node:crypto'
+import { createHash } from 'node:crypto'
 
 import type {
   ActorID,
@@ -42,6 +42,92 @@ export type EditorialLifecycle =
   | 'updated'
   | 'archived'
   | 'rejected'
+  | 'changes-requested'
+  | 'cancelled'
+  | 'failed'
+
+export type QualityGateSnapshot = {
+  scanId: string
+  scannedAt: string
+  blockingIssueCount: number
+  issues: Array<{ id: string; ruleId: string; severity: string; message: string }>
+}
+
+export type QualityWaiverAuthorization = {
+  waivedByUserId: string
+  waivedByUserRole: string
+  reason: string
+  waivedAt: string
+}
+
+export type ReviewDecisionRecord = {
+  id: string
+  decision: 'approved' | 'rejected' | 'changes-requested'
+  comment: string | null
+  reviewerId: string
+  reviewerRole: string
+  targetRevisionSequence: number
+  targetRevisionHash: string
+  createdAt: string
+}
+
+export type ScheduledJobIdentity = {
+  jobId: string
+  idempotencyKey: string
+  scheduledFor: string
+  timeZone: string
+  targetRevisionId: string
+  leaseOwner?: string | null
+  leaseExpiresAt?: string | null
+  retryCount: number
+  maxRetries: number
+  lastError?: string | null
+  status: 'pending-contract' | 'queued' | 'processing' | 'completed' | 'cancelled' | 'failed'
+}
+
+export type CoordinatedReleaseReference = {
+  releaseId: string
+  releaseManifestId: string
+  exactRevisionId: string
+  boundAt: string
+}
+
+export type WorkflowTransitionAction =
+  | 'save-draft'
+  | 'request-review'
+  | 'decide-review'
+  | 'request-changes'
+  | 'schedule'
+  | 'cancel-schedule'
+  | 'fail-schedule'
+  | 'publish'
+  | 'unpublish'
+  | 'archive'
+  | 'restore-revision'
+
+export const FLOW_00_WORKFLOW_CONTRACT = {
+  contractVersion: 'FLOW-00-v1',
+  allowedStates: [
+    'draft',
+    'review',
+    'approved',
+    'scheduled',
+    'published',
+    'updated',
+    'archived',
+    'rejected',
+    'changes-requested',
+    'cancelled',
+    'failed',
+  ] as const,
+  happyPath: ['draft', 'review', 'approved', 'scheduled', 'published', 'archived'] as const,
+  terminalOrExceptionStates: ['rejected', 'changes-requested', 'cancelled', 'failed'] as const,
+  roleRequirements: {
+    author: ['save-draft', 'request-review', 'set-citations'] as const,
+    editor: ['decide-review', 'request-changes', 'restore-revision', 'grant-waiver'] as const,
+    publisher: ['schedule', 'publish', 'unpublish', 'archive', 'cancel-schedule'] as const,
+  },
+} as const
 
 export type RichTextDocument = {
   format: 'payload-lexical'

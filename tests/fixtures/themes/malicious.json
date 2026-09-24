@@ -1,0 +1,9 @@
+[
+  { "id": "../escape", "version": "1.0.0" },
+  { "id": "evil", "version": "latest", "renderer": "../../evil.js" },
+  {
+    "id": "evil",
+    "javascript": "alert(document.cookie)",
+    "css": "@import url(https://example.com/evil.css)"
+  }
+]
