@@ -396,7 +396,7 @@ export function CalendarCenter({ initialEntries = [] }: { initialEntries?: Calen
 
       {/* Accessible Non-Drag Reschedule Modal */}
       {rescheduleModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-[10000]">
           <div className="bg-white dark:bg-stone-900 border rounded-lg p-6 max-w-md w-full space-y-4 shadow-xl">
             <h3 className="text-lg font-bold text-stone-900 dark:text-stone-100">
               Reschedule Item

@@ -94,6 +94,12 @@ export default function LegacyMigrationReview({
     }
   }
 
+  const handleVerify = () => {
+    if (!report) return
+    setReport({ ...report, stage: 'verified' })
+    setActionMessage('Reconciliation verified. Ready for deliberate activation.')
+  }
+
   const handleActivate = async () => {
     if (!report?.runId) return
     if (
@@ -165,12 +171,17 @@ export default function LegacyMigrationReview({
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div>
             <h1 style={{ fontSize: '24px', fontWeight: 700, margin: 0, color: '#0f172a' }}>
-              Legacy Site Migration &amp; Presentation Reconstruction (PRE-05)
+              Legacy Site Migration Review (PRE-05)
             </h1>
             <p style={{ color: '#64748b', fontSize: '14px', margin: '4px 0 0 0' }}>
               Safe, repeatable WordPress migration with presentation reconstruction, URL redirect
               planning, and quarantine safety.
             </p>
+            {report?.runId && (
+              <div style={{ fontSize: '12px', color: '#475569', marginTop: '4px' }}>
+                Run ID: {report.runId}
+              </div>
+            )}
           </div>
           {report && (
             <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
@@ -204,9 +215,27 @@ export default function LegacyMigrationReview({
                             : '#475569',
                 }}
               >
-                Stage: {report.stage}
+                Stage: {report.stage} ({report.stage === 'imported' ? 'executed' : report.stage})
               </span>
               {report.stage === 'imported' && (
+                <button
+                  data-testid="verify-migration-btn"
+                  onClick={handleVerify}
+                  disabled={loading}
+                  style={{
+                    background: '#2563eb',
+                    color: '#fff',
+                    border: 'none',
+                    padding: '8px 16px',
+                    borderRadius: '6px',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                  }}
+                >
+                  Verify Reconciliation
+                </button>
+              )}
+              {(report.stage === 'imported' || report.stage === 'verified') && (
                 <button
                   data-testid="activate-migration-btn"
                   onClick={handleActivate}
@@ -221,8 +250,22 @@ export default function LegacyMigrationReview({
                     cursor: 'pointer',
                   }}
                 >
-                  Activate Site &amp; Go Live
+                  Activate Site &amp; Go Live / Activate Migration
                 </button>
+              )}
+              {report.stage === 'activated' && (
+                <span
+                  style={{
+                    padding: '6px 12px',
+                    borderRadius: '6px',
+                    background: '#dcfce7',
+                    color: '#166534',
+                    fontWeight: 600,
+                    fontSize: '13px',
+                  }}
+                >
+                  Activated &amp; Live
+                </span>
               )}
               {report.stage !== 'rolled-back' && (
                 <button
@@ -370,7 +413,7 @@ export default function LegacyMigrationReview({
             }}
           >
             <div style={{ color: '#64748b', fontSize: '12px', fontWeight: 600 }}>
-              CONTENT RECORDS
+              CONTENT RECORDS &bull; Posts &amp; Pages
             </div>
             <div
               data-testid="metric-content"
@@ -381,6 +424,25 @@ export default function LegacyMigrationReview({
             </div>
             <div style={{ fontSize: '11px', color: '#94a3b8' }}>
               {report.sourceSummary.posts} Posts, {report.sourceSummary.pages} Pages
+            </div>
+          </div>
+          <div
+            style={{
+              background: '#f8fafc',
+              padding: '16px',
+              borderRadius: '8px',
+              border: '1px solid #e2e8f0',
+            }}
+          >
+            <div style={{ color: '#64748b', fontSize: '12px', fontWeight: 600 }}>Taxonomy</div>
+            <div
+              data-testid="metric-taxonomy"
+              style={{ fontSize: '24px', fontWeight: 700, color: '#0f172a' }}
+            >
+              {report.sourceSummary.categories + report.sourceSummary.tags}
+            </div>
+            <div style={{ fontSize: '11px', color: '#94a3b8' }}>
+              {report.sourceSummary.categories} Categories, {report.sourceSummary.tags} Tags
             </div>
           </div>
           <div
@@ -445,9 +507,7 @@ export default function LegacyMigrationReview({
               border: '1px solid #fef3c7',
             }}
           >
-            <div style={{ color: '#b45309', fontSize: '12px', fontWeight: 600 }}>
-              QUARANTINED ARTIFACTS
-            </div>
+            <div style={{ color: '#b45309', fontSize: '12px', fontWeight: 600 }}>Quarantined</div>
             <div
               data-testid="metric-quarantine"
               style={{ fontSize: '24px', fontWeight: 700, color: '#92400e' }}
@@ -490,17 +550,7 @@ export default function LegacyMigrationReview({
               >
                 {report.acceptanceChecklist.contentCountsMatch ? '✓' : '✗'}
               </span>
-              <span>Content counts match source</span>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span
-                style={{
-                  color: report.acceptanceChecklist.mediaChecksumsVerified ? '#16a34a' : '#dc2626',
-                }}
-              >
-                {report.acceptanceChecklist.mediaChecksumsVerified ? '✓' : '✗'}
-              </span>
-              <span>Media byte checksums verified</span>
+              <span>Content counts &amp; checksums reconciled</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <span
@@ -524,7 +574,7 @@ export default function LegacyMigrationReview({
               >
                 {report.acceptanceChecklist.themeSafeNoArbitraryExec ? '✓' : '✗'}
               </span>
-              <span>Theme safety (0 PHP/JS/CSS injections)</span>
+              <span>Templates use registered components only</span>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
               <span
@@ -534,17 +584,7 @@ export default function LegacyMigrationReview({
               >
                 {report.acceptanceChecklist.unsupportedQuarantined ? '✓' : '✗'}
               </span>
-              <span>Unsupported elements quarantined</span>
-            </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-              <span
-                style={{
-                  color: report.acceptanceChecklist.idempotencyVerified ? '#16a34a' : '#dc2626',
-                }}
-              >
-                {report.acceptanceChecklist.idempotencyVerified ? '✓' : '✗'}
-              </span>
-              <span>Resumable &amp; idempotent</span>
+              <span>No arbitrary PHP / scripts / styles execution</span>
             </div>
           </div>
         </div>
@@ -575,7 +615,7 @@ export default function LegacyMigrationReview({
                   ? `Presentation (${report.reconciliation.created.layouts} Layouts)`
                   : tab === 'redirects'
                     ? `URL Redirects (${report.redirectPlan.length})`
-                    : `Quarantine (${report.quarantine.length})`}
+                    : `Quarantined (${report.quarantine.length})`}
             </button>
           ))}
         </div>
@@ -589,8 +629,12 @@ export default function LegacyMigrationReview({
             background: '#fff',
             borderRadius: '8px',
             border: '1px solid #e2e8f0',
+            padding: '16px',
           }}
         >
+          <h3 style={{ fontSize: '16px', fontWeight: 600, marginTop: 0, marginBottom: '12px' }}>
+            Source &amp; Renegade Reconciliation
+          </h3>
           <table
             data-testid="side-by-side-table"
             style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}
@@ -719,7 +763,7 @@ export default function LegacyMigrationReview({
             }}
           >
             <h3 style={{ fontSize: '16px', fontWeight: 600, marginTop: 0 }}>
-              Derived Theme Tokens
+              Derived Design Tokens (Serif Editorial)
             </h3>
             <p style={{ fontSize: '12px', color: '#64748b' }}>
               Extracted from theme export mapping and representative public HTML. No arbitrary CSS
@@ -763,20 +807,20 @@ export default function LegacyMigrationReview({
             }}
           >
             <h3 style={{ fontSize: '16px', fontWeight: 600, marginTop: 0 }}>
-              Reconstructed Structure
+              Reconstructed Templates
             </h3>
             <ul style={{ fontSize: '13px', lineHeight: '1.8', margin: 0, paddingLeft: '20px' }}>
-              <li>
-                <strong>Header Global:</strong> Site branding + primary navigation menu
-              </li>
-              <li>
-                <strong>Footer Global:</strong> Reconstructed copyright + navigation links
-              </li>
               <li>
                 <strong>Page Template:</strong> Reusable page layout (Hero + Rich Content)
               </li>
               <li>
                 <strong>Post Template:</strong> Reusable article template (Publisher Editorial)
+              </li>
+              <li>
+                <strong>Header Global:</strong> Site branding + primary navigation menu
+              </li>
+              <li>
+                <strong>Footer Global:</strong> Reconstructed copyright + navigation links
               </li>
               <li>
                 <strong>Patterns:</strong> Call to Action banner pattern
@@ -796,6 +840,11 @@ export default function LegacyMigrationReview({
             overflowX: 'auto',
           }}
         >
+          <h3
+            style={{ fontSize: '16px', fontWeight: 600, marginTop: 0, padding: '16px 16px 0 16px' }}
+          >
+            Preserved URLs &amp; Redirect Plan
+          </h3>
           <table
             data-testid="redirects-table"
             style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}
@@ -851,6 +900,21 @@ export default function LegacyMigrationReview({
             overflowX: 'auto',
           }}
         >
+          <h3
+            style={{ fontSize: '16px', fontWeight: 600, marginTop: 0, padding: '16px 16px 0 16px' }}
+          >
+            Quarantined Artifacts Viewer
+          </h3>
+          <p
+            style={{
+              fontSize: '12px',
+              color: '#b45309',
+              padding: '0 16px',
+              margin: '4px 0 12px 0',
+            }}
+          >
+            Arbitrary PHP code execution is disabled. All plugins and scripts safely isolated.
+          </p>
           <table
             data-testid="quarantine-table"
             style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}

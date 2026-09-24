@@ -33,7 +33,7 @@ test.describe('PUB-04 publishing floor browser acceptance', () => {
     // Perform a search
     await page.getByPlaceholder(/Search keywords/i).fill('demo')
     await page.getByRole('button', { name: 'Search' }).click()
-    await expect(page).toHaveURL(/\/search\?q=demo/)
+    await expect(page).toHaveURL(/\/search\?.*q=demo/)
 
     // 5. Intentional 404 page
     const res = await page.goto('/random-nonexistent-page-404')

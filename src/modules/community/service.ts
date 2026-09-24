@@ -428,7 +428,10 @@ export async function getOrCreateAttachedDiscussion(
             limit: 1,
             overrideAccess: true,
           })
-          if (conflicting.totalDocs === 0) {
+          const isConflict = (conflicting.docs ?? []).some(
+            (doc: unknown) => String((doc as { id?: unknown }).id) !== String(existing.id),
+          )
+          if (!isConflict) {
             updateData.canonicalPath = input.canonicalPath
             newPath = input.canonicalPath
           }

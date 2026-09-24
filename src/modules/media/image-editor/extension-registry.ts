@@ -12,8 +12,11 @@ import type { ImageEditorExtensionAction } from './contracts'
 
 const registry = new Map<string, ImageEditorExtensionAction>()
 const listeners = new Set<() => void>()
+let cachedSnapshot: ImageEditorExtensionAction[] = []
+const EMPTY_EXTENSIONS: ImageEditorExtensionAction[] = []
 
 function notifyListeners(): void {
+  cachedSnapshot = Array.from(registry.values())
   for (const listener of listeners) {
     try {
       listener()
@@ -40,7 +43,7 @@ export function registerImageEditorExtension(action: ImageEditorExtensionAction)
  * Retrieve all currently registered editor extension actions.
  */
 export function getImageEditorExtensions(): ImageEditorExtensionAction[] {
-  return Array.from(registry.values())
+  return cachedSnapshot
 }
 
 /**
@@ -62,7 +65,7 @@ export function useImageEditorExtensions(): ImageEditorExtensionAction[] {
         listeners.delete(callback)
       }
     },
-    () => getImageEditorExtensions(),
-    () => [],
+    () => cachedSnapshot,
+    () => EMPTY_EXTENSIONS,
   )
 }

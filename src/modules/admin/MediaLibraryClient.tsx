@@ -232,12 +232,21 @@ export function MediaLibraryClient({ siteId }: { siteId: string }) {
   }
 
   return (
-    <>
+    <div id="media-library-client-root" style={{ marginTop: '1.5rem' }}>
+      <h2 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '0.25rem' }}>
+        Media Library
+      </h2>
+      <p style={{ color: '#4b5563', marginBottom: '1rem' }}>
+        Upload, organize, and select canonical media assets. Storage locations are never displayed.
+      </p>
       <MediaUploader
         siteId={siteId}
         onComplete={() => {
           setMessage('Upload complete.')
           refresh()
+          if (typeof window !== 'undefined') {
+            window.dispatchEvent(new CustomEvent('renegade:media-uploaded'))
+          }
         }}
       />
       <MediaPicker
@@ -634,6 +643,6 @@ export function MediaLibraryClient({ siteId }: { siteId: string }) {
           setMessage('Image edited and saved successfully.')
         }}
       />
-    </>
+    </div>
   )
 }

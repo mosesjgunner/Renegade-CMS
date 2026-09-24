@@ -290,14 +290,18 @@ const INITIAL_EXPERIMENTS: AudienceExperiment[] = [
 export default function AudienceCommandCenter() {
   const [activeTab, setActiveTab] = useState<
     | 'overview'
+    | 'campaigns'
     | 'calendar'
     | 'deliverability'
+    | 'suppression'
     | 'funnels'
     | 'experiments'
+    | 'policies'
+    | 'audit'
     | 'attribution'
     | 'dictionary'
     | 'reports'
-  >('overview')
+  >('campaigns')
 
   const [siteId, setSiteId] = useState('site-renegade-1')
   const [timeWindow, setTimeWindow] = useState<'24h' | '7d' | '30d' | 'qtd'>('7d')
@@ -551,7 +555,7 @@ export default function AudienceCommandCenter() {
                 color: '#94a3b8',
               }}
             >
-              AUD-07 Canonical Floor
+              Renegade CMoS AUD-07
             </span>
           </div>
           <p style={{ margin: 0, fontSize: '14px', color: '#94a3b8', maxWidth: '720px' }}>
@@ -691,12 +695,15 @@ export default function AudienceCommandCenter() {
         }}
       >
         {[
-          { id: 'overview', label: 'Overview & Growth' },
-          { id: 'calendar', label: 'Unified Calendar & Schedule' },
-          { id: 'deliverability', label: 'Deliverability & Health' },
+          { id: 'campaigns', label: 'Campaigns' },
+          { id: 'calendar', label: 'Calendar' },
+          { id: 'deliverability', label: 'Deliverability' },
+          { id: 'suppression', label: 'Suppression' },
+          { id: 'experiments', label: 'Experiments' },
+          { id: 'policies', label: 'Policies' },
+          { id: 'audit', label: 'Audit' },
           { id: 'funnels', label: 'Funnels & Cohorts' },
-          { id: 'experiments', label: 'Bounded Experiments' },
-          { id: 'attribution', label: 'Privacy Attribution & Links' },
+          { id: 'attribution', label: 'Attribution & Links' },
           { id: 'dictionary', label: 'Metric Dictionary' },
           { id: 'reports', label: 'Reports & Exports' },
         ].map((tab) => {
@@ -723,9 +730,20 @@ export default function AudienceCommandCenter() {
         })}
       </nav>
 
-      {/* TAB 1: OVERVIEW & GROWTH */}
-      {activeTab === 'overview' && (
+      {/* TAB 1: CAMPAIGNS & OVERVIEW */}
+      {(activeTab === 'overview' || activeTab === 'campaigns') && (
         <section>
+          <div style={{ marginBottom: '16px' }}>
+            <h2
+              style={{ fontSize: '18px', fontWeight: 600, color: '#f8fafc', margin: '0 0 4px 0' }}
+            >
+              Campaign Dispatch & Lifecycle
+            </h2>
+            <p style={{ fontSize: '13px', color: '#94a3b8', margin: 0 }}>
+              Real-time multi-channel overview across subscriber acquisition, dispatch operations,
+              and deliverability floor.
+            </p>
+          </div>
           {/* Top KPI Cards */}
           <div
             style={{
@@ -1246,6 +1264,16 @@ export default function AudienceCommandCenter() {
       {/* TAB 2: UNIFIED CALENDAR & SCHEDULE */}
       {activeTab === 'calendar' && (
         <section>
+          <div style={{ marginBottom: '16px' }}>
+            <h2
+              style={{ fontSize: '18px', fontWeight: 600, color: '#f8fafc', margin: '0 0 4px 0' }}
+            >
+              Multi-Channel Dispatch Schedule
+            </h2>
+            <p style={{ fontSize: '13px', color: '#94a3b8', margin: 0 }}>
+              Chronological queue and scheduled releases across Email, SMS, and RCS.
+            </p>
+          </div>
           {/* Calendar Toolbar & Accessible Controls */}
           <div
             style={{
@@ -1535,6 +1563,17 @@ export default function AudienceCommandCenter() {
       {/* TAB 3: DELIVERABILITY & HEALTH */}
       {activeTab === 'deliverability' && (
         <section>
+          <div style={{ marginBottom: '16px' }}>
+            <h2
+              style={{ fontSize: '18px', fontWeight: 600, color: '#f8fafc', margin: '0 0 4px 0' }}
+            >
+              Email & Telecom Delivery Infrastructure
+            </h2>
+            <p style={{ fontSize: '13px', color: '#94a3b8', margin: 0 }}>
+              DNS authentication status, bounce thresholds, direct SMTP latency, and telecom gateway
+              health.
+            </p>
+          </div>
           {/* Provider Readiness Cards */}
           <div
             style={{
@@ -1824,6 +1863,76 @@ export default function AudienceCommandCenter() {
         </section>
       )}
 
+      {/* TAB: SUPPRESSION LEDGER */}
+      {activeTab === 'suppression' && (
+        <section>
+          <div style={{ marginBottom: '16px' }}>
+            <h2
+              style={{ fontSize: '18px', fontWeight: 600, color: '#f8fafc', margin: '0 0 4px 0' }}
+            >
+              Global & Channel Suppression Ledger
+            </h2>
+            <p style={{ fontSize: '13px', color: '#94a3b8', margin: 0 }}>
+              Deterministic quarantine ledger enforcing hard bounce, complaint, and inbound STOP
+              suppressions across all channels.
+            </p>
+          </div>
+          <div
+            style={{
+              backgroundColor: '#0f172a',
+              border: '1px solid #1e293b',
+              borderRadius: '8px',
+              padding: '20px',
+              overflowX: 'auto',
+            }}
+          >
+            <table
+              style={{
+                width: '100%',
+                borderCollapse: 'collapse',
+                fontSize: '13px',
+                color: '#cbd5e1',
+              }}
+            >
+              <thead>
+                <tr
+                  style={{ borderBottom: '1px solid #334155', textAlign: 'left', color: '#94a3b8' }}
+                >
+                  <th style={{ padding: '8px 12px' }}>Identifier (Masked)</th>
+                  <th style={{ padding: '8px 12px' }}>Channel</th>
+                  <th style={{ padding: '8px 12px' }}>Reason</th>
+                  <th style={{ padding: '8px 12px' }}>Suppression Date</th>
+                  <th style={{ padding: '8px 12px' }}>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style={{ borderBottom: '1px solid #1e293b' }}>
+                  <td style={{ padding: '10px 12px' }}>user-****@example.org</td>
+                  <td style={{ padding: '10px 12px' }}>Email</td>
+                  <td style={{ padding: '10px 12px' }}>Hard Bounce (550 Mailbox Unavailable)</td>
+                  <td style={{ padding: '10px 12px' }}>2026-09-20 14:22 UTC</td>
+                  <td style={{ padding: '10px 12px', color: '#ef4444' }}>Permanently Suppressed</td>
+                </tr>
+                <tr style={{ borderBottom: '1px solid #1e293b' }}>
+                  <td style={{ padding: '10px 12px' }}>+1 (555) ***-9182</td>
+                  <td style={{ padding: '10px 12px' }}>SMS / RCS</td>
+                  <td style={{ padding: '10px 12px' }}>Inbound STOP Keyword</td>
+                  <td style={{ padding: '10px 12px' }}>2026-09-21 09:15 UTC</td>
+                  <td style={{ padding: '10px 12px', color: '#f59e0b' }}>Opt-Out Suppressed</td>
+                </tr>
+                <tr>
+                  <td style={{ padding: '10px 12px' }}>subscriber-****@privacy.net</td>
+                  <td style={{ padding: '10px 12px' }}>Email</td>
+                  <td style={{ padding: '10px 12px' }}>Feedback Loop Complaint</td>
+                  <td style={{ padding: '10px 12px' }}>2026-09-22 18:04 UTC</td>
+                  <td style={{ padding: '10px 12px', color: '#ef4444' }}>Permanently Suppressed</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      )}
+
       {/* TAB 4: FUNNELS & COHORTS */}
       {activeTab === 'funnels' && (
         <section>
@@ -2042,6 +2151,17 @@ export default function AudienceCommandCenter() {
       {/* TAB 5: BOUNDED EXPERIMENTS */}
       {activeTab === 'experiments' && (
         <section>
+          <div style={{ marginBottom: '16px' }}>
+            <h2
+              style={{ fontSize: '18px', fontWeight: 600, color: '#f8fafc', margin: '0 0 4px 0' }}
+            >
+              Deterministic A/B & Multivariate Experiments
+            </h2>
+            <p style={{ fontSize: '13px', color: '#94a3b8', margin: 0 }}>
+              Deterministic recipient hashing, SRM guardrails, and operator-confirmed promotion
+              rules.
+            </p>
+          </div>
           {/* Active Experiment Header */}
           <div
             style={{
@@ -2388,6 +2508,160 @@ export default function AudienceCommandCenter() {
               Rationale: &ldquo;{activeExp.winnerDecision.decisionRationale}&rdquo;
             </div>
           )}
+        </section>
+      )}
+
+      {/* TAB: POLICIES */}
+      {activeTab === 'policies' && (
+        <section>
+          <div style={{ marginBottom: '16px' }}>
+            <h2
+              style={{ fontSize: '18px', fontWeight: 600, color: '#f8fafc', margin: '0 0 4px 0' }}
+            >
+              TCPA Quiet Hours & Email Frequency Controls
+            </h2>
+            <p style={{ fontSize: '13px', color: '#94a3b8', margin: 0 }}>
+              Automated recipient fatigue mitigation and telecom compliance windows.
+            </p>
+          </div>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+              gap: '20px',
+            }}
+          >
+            <div
+              style={{
+                backgroundColor: '#0f172a',
+                border: '1px solid #1e293b',
+                borderRadius: '8px',
+                padding: '20px',
+              }}
+            >
+              <h3 style={{ fontSize: '15px', fontWeight: 600, color: '#38bdf8', marginTop: 0 }}>
+                TCPA Quiet Hours Window
+              </h3>
+              <p style={{ fontSize: '13px', color: '#cbd5e1' }}>
+                Enforces no promotional SMS/RCS dispatches before 08:00 AM or after 09:00 PM in the
+                recipient&apos;s local timezone.
+              </p>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  color: '#10b981',
+                  fontSize: '13px',
+                  fontWeight: 600,
+                }}
+              >
+                <span>✓ Active (Automated Reschedule to 08:00 AM Local)</span>
+              </div>
+            </div>
+            <div
+              style={{
+                backgroundColor: '#0f172a',
+                border: '1px solid #1e293b',
+                borderRadius: '8px',
+                padding: '20px',
+              }}
+            >
+              <h3 style={{ fontSize: '15px', fontWeight: 600, color: '#38bdf8', marginTop: 0 }}>
+                Email Frequency Fatigue Cap
+              </h3>
+              <p style={{ fontSize: '13px', color: '#cbd5e1' }}>
+                Limits marketing dispatches to a maximum of 3 messages per rolling 7-day period per
+                verified subscriber.
+              </p>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                  color: '#10b981',
+                  fontSize: '13px',
+                  fontWeight: 600,
+                }}
+              >
+                <span>✓ Active (3 Dispatches / 7-Day Rolling Ceiling)</span>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* TAB: AUDIT LEDGER */}
+      {activeTab === 'audit' && (
+        <section>
+          <div style={{ marginBottom: '16px' }}>
+            <h2
+              style={{ fontSize: '18px', fontWeight: 600, color: '#f8fafc', margin: '0 0 4px 0' }}
+            >
+              Immutable Consent & Delivery Provenance
+            </h2>
+            <p style={{ fontSize: '13px', color: '#94a3b8', margin: 0 }}>
+              Cryptographically verifiable consent logs, double opt-in proofs, and transactional
+              outbox provenance.
+            </p>
+          </div>
+          <div
+            style={{
+              backgroundColor: '#0f172a',
+              border: '1px solid #1e293b',
+              borderRadius: '8px',
+              padding: '20px',
+              overflowX: 'auto',
+            }}
+          >
+            <table
+              style={{
+                width: '100%',
+                borderCollapse: 'collapse',
+                fontSize: '13px',
+                color: '#cbd5e1',
+              }}
+            >
+              <thead>
+                <tr
+                  style={{ borderBottom: '1px solid #334155', textAlign: 'left', color: '#94a3b8' }}
+                >
+                  <th style={{ padding: '8px 12px' }}>Timestamp</th>
+                  <th style={{ padding: '8px 12px' }}>Event Type</th>
+                  <th style={{ padding: '8px 12px' }}>Subject Hash</th>
+                  <th style={{ padding: '8px 12px' }}>Legal Proof / Token Hash</th>
+                  <th style={{ padding: '8px 12px' }}>IP / Header Provenance</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style={{ borderBottom: '1px solid #1e293b' }}>
+                  <td style={{ padding: '10px 12px' }}>2026-09-23 20:14:02 UTC</td>
+                  <td style={{ padding: '10px 12px', color: '#10b981' }}>
+                    Double Opt-In Confirmed
+                  </td>
+                  <td style={{ padding: '10px 12px' }}>sha256:8f2a...c01e</td>
+                  <td style={{ padding: '10px 12px' }}>token:e2e-doi-49a...</td>
+                  <td style={{ padding: '10px 12px' }}>127.0.0.1 (Direct Form)</td>
+                </tr>
+                <tr style={{ borderBottom: '1px solid #1e293b' }}>
+                  <td style={{ padding: '10px 12px' }}>2026-09-23 19:40:11 UTC</td>
+                  <td style={{ padding: '10px 12px', color: '#38bdf8' }}>Newsletter Dispatched</td>
+                  <td style={{ padding: '10px 12px' }}>sha256:d11c...749b</td>
+                  <td style={{ padding: '10px 12px' }}>msg:smtp-250-ok-renegade</td>
+                  <td style={{ padding: '10px 12px' }}>Direct-to-MX TLS</td>
+                </tr>
+                <tr>
+                  <td style={{ padding: '10px 12px' }}>2026-09-23 18:10:55 UTC</td>
+                  <td style={{ padding: '10px 12px', color: '#f59e0b' }}>
+                    Preference Center Updated
+                  </td>
+                  <td style={{ padding: '10px 12px' }}>sha256:4a02...bb31</td>
+                  <td style={{ padding: '10px 12px' }}>token:pref-access-91b...</td>
+                  <td style={{ padding: '10px 12px' }}>Bearer Auth Token</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </section>
       )}
 

@@ -1,5 +1,4 @@
 import type { EditorialPresentation } from '../../editorial/persistence'
-import Image from 'next/image'
 import { SafeRichText } from '../../editorial/RichText'
 
 export function StarterArticleView({ article }: { article: EditorialPresentation }) {
@@ -79,13 +78,13 @@ export function StarterArticleView({ article }: { article: EditorialPresentation
           </div>
         ) : null}
         {article.heroMedia ? (
-          <Image
+          <img
             src={article.heroMedia.url}
             alt={article.heroMedia.altText}
             width={article.heroMedia.width ?? 1200}
             height={article.heroMedia.height ?? 675}
-            sizes="(max-width: 1024px) 100vw, 896px"
             className="w-full rounded-xl border border-stone-200 object-cover dark:border-stone-800"
+            loading="lazy"
           />
         ) : null}
       </header>

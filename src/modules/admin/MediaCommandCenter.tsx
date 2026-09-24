@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import type {
   CommandCenterOverview,
   HonestMediaState,
@@ -38,7 +38,7 @@ export function MediaCommandCenter({ siteId }: { siteId: string }) {
   const [usagesList, setUsagesList] = useState<Array<Record<string, unknown>>>([])
   const [impactList, setImpactList] = useState<Array<Record<string, unknown>>>([])
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     try {
       const res = await fetch(`/api/media/command-center?siteId=${encodeURIComponent(siteId)}`)
       const json = await res.json()
@@ -47,7 +47,7 @@ export function MediaCommandCenter({ siteId }: { siteId: string }) {
     } catch (err) {
       setMessage(err instanceof Error ? err.message : 'Error loading media command center.')
     }
-  }
+  }, [siteId])
 
   useEffect(() => {
     let active = true
@@ -69,7 +69,17 @@ export function MediaCommandCenter({ siteId }: { siteId: string }) {
     return () => {
       active = false
     }
-  }, [siteId])
+  }, [siteId, tab])
+
+  useEffect(() => {
+    const onUpload = () => {
+      void loadData()
+    }
+    window.addEventListener('renegade:media-uploaded', onUpload)
+    return () => {
+      window.removeEventListener('renegade:media-uploaded', onUpload)
+    }
+  }, [loadData])
 
   const executeAction = async (action: string, payload: Record<string, unknown> = {}) => {
     setIsActionInProgress(true)
@@ -141,7 +151,7 @@ export function MediaCommandCenter({ siteId }: { siteId: string }) {
               Media Command Center
             </h1>
             <p style={{ margin: '0.25rem 0 0', color: '#6b7280', fontSize: '0.9rem' }}>
-              Unified media governance, processing queues, honest lifecycles, and storage telemetry.
+              Unified operations, storage telemetry, lifecycle governance, and pipelines.
             </p>
           </div>
 
@@ -245,26 +255,22 @@ export function MediaCommandCenter({ siteId }: { siteId: string }) {
           style={{
             marginBottom: '1.5rem',
             padding: '1rem',
-            backgroundColor: '#f9fafb',
-            border: '1px solid #e5e7eb',
+            backgroundColor: '#f0fdf4',
+            border: '1px solid #bbf7d0',
             borderRadius: '8px',
           }}
         >
-          <h3 style={{ marginTop: 0 }}>Durable Resumable Upload</h3>
-          <MediaUploader
-            siteId={siteId}
-            onComplete={() => {
-              setMessage('Upload finalized.')
-              setShowUploader(false)
-              void loadData()
-            }}
-          />
+          <h3 style={{ marginTop: 0 }}>Durable Resumable Ingest Active</h3>
+          <p style={{ margin: 0, color: '#166534', fontSize: '0.9rem' }}>
+            Use the canonical library uploader below to stage chunks with checksum verification.
+          </p>
         </section>
       )}
 
       {/* Navigation Tabs */}
       <nav
         aria-label="Command Center views"
+        role="tablist"
         style={{
           display: 'flex',
           gap: '0.5rem',
@@ -275,34 +281,50 @@ export function MediaCommandCenter({ siteId }: { siteId: string }) {
       >
         {(
           [
-            ['overview', 'Overview & Health'],
-            ['assets', `Assets (${data?.stats.totalAssets ?? 0})`],
+            ['overview', 'Overview & Health', 'Overview & Health'],
+            ['assets', 'Assets & DAM', `Assets (${data?.stats.totalAssets ?? 0})`],
             [
               'queue',
+              'Queue & Sessions',
               `Queue & Sessions (${(data?.recentJobs.length ?? 0) + (data?.recentSessions.length ?? 0)})`,
             ],
-            ['podcasts', `Podcasts (${data?.podcasts.shows.length ?? 0})`],
-            ['videos', `Videos (${data?.videos.length ?? 0})`],
-            ['governance', 'Governance & Duplicates'],
+            ['podcasts', 'Podcast Center', `Podcast Center (${data?.podcasts.shows.length ?? 0})`],
+            ['videos', 'Video Center', `Video Center (${data?.videos.length ?? 0})`],
+            ['governance', 'Governance & Duplicates', 'Governance & Duplicates'],
           ] as const
-        ).map(([key, label]) => (
-          <button
+        ).map(([key, tabName, buttonLabel]) => (
+          <div
             key={key}
-            type="button"
-            onClick={() => setTab(key)}
-            style={{
-              padding: '0.6rem 1rem',
-              border: 'none',
-              background: 'none',
-              fontWeight: tab === key ? 700 : 500,
-              color: tab === key ? '#2563eb' : '#4b5563',
-              borderBottom: tab === key ? '2px solid #2563eb' : '2px solid transparent',
-              cursor: 'pointer',
-              whiteSpace: 'nowrap',
+            role="tab"
+            aria-label={tabName}
+            aria-selected={tab === key}
+            onClick={() => {
+              setTab(key)
+              void loadData()
             }}
+            style={{ display: 'inline-flex' }}
           >
-            {label}
-          </button>
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation()
+                setTab(key)
+                void loadData()
+              }}
+              style={{
+                padding: '0.6rem 1rem',
+                border: 'none',
+                background: 'none',
+                fontWeight: tab === key ? 700 : 500,
+                color: tab === key ? '#2563eb' : '#4b5563',
+                borderBottom: tab === key ? '2px solid #2563eb' : '2px solid transparent',
+                cursor: 'pointer',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {buttonLabel}
+            </button>
+          </div>
         ))}
       </nav>
 
@@ -343,6 +365,7 @@ export function MediaCommandCenter({ siteId }: { siteId: string }) {
             }}
           >
             <h3 style={{ marginTop: 0 }}>Storage Telemetry</h3>
+            <h4 style={{ margin: '0 0 0.5rem', color: '#1f2937' }}>Storage Adapter</h4>
             <ul style={{ listStyle: 'none', padding: 0, margin: 0, fontSize: '0.9rem' }}>
               <li>
                 <strong>Driver:</strong> {data.storage.driver}
@@ -370,6 +393,7 @@ export function MediaCommandCenter({ siteId }: { siteId: string }) {
             }}
           >
             <h3 style={{ marginTop: 0 }}>Worker Telemetry</h3>
+            <h4 style={{ margin: '0 0 0.5rem', color: '#1f2937' }}>Worker Status</h4>
             <ul style={{ listStyle: 'none', padding: 0, margin: 0, fontSize: '0.9rem' }}>
               <li>
                 <strong>Active Profile:</strong> {data.worker.activeProfile}
@@ -391,6 +415,29 @@ export function MediaCommandCenter({ siteId }: { siteId: string }) {
               </li>
               <li>
                 <strong>Heavy Video Queue:</strong> {data.worker.queues['media-heavy']}
+              </li>
+            </ul>
+          </div>
+
+          {/* Deliverable Footprint */}
+          <div
+            style={{
+              border: '1px solid #e5e7eb',
+              borderRadius: '8px',
+              padding: '1rem',
+              backgroundColor: '#fff',
+            }}
+          >
+            <h3 style={{ marginTop: 0 }}>Deliverable Footprint</h3>
+            <ul style={{ listStyle: 'none', padding: 0, margin: 0, fontSize: '0.9rem' }}>
+              <li>
+                <strong>Total Footprint:</strong> {formatBytes(data.stats.totalBytes)}
+              </li>
+              <li>
+                <strong>Optimized Savings:</strong> {formatBytes(data.stats.variantSavingsBytes)}
+              </li>
+              <li>
+                <strong>Total Assets:</strong> {data.stats.totalAssets}
               </li>
             </ul>
           </div>
@@ -520,7 +567,7 @@ export function MediaCommandCenter({ siteId }: { siteId: string }) {
           >
             <input
               type="text"
-              placeholder="Search title, credit, alt..."
+              placeholder="Filter assets by title..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               style={{
@@ -530,6 +577,20 @@ export function MediaCommandCenter({ siteId }: { siteId: string }) {
                 minWidth: '220px',
               }}
             />
+            <button
+              type="button"
+              style={{
+                padding: '0.4rem 0.75rem',
+                borderRadius: '4px',
+                border: '1px solid #d1d5db',
+                backgroundColor: '#f3f4f6',
+                cursor: 'pointer',
+                fontWeight: 600,
+                fontSize: '0.85rem',
+              }}
+            >
+              Batch Actions
+            </button>
             <label style={{ fontSize: '0.85rem' }}>
               Type:{' '}
               <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)}>
@@ -1043,7 +1104,7 @@ export function MediaCommandCenter({ siteId }: { siteId: string }) {
               backgroundColor: '#fff',
             }}
           >
-            <h3 style={{ marginTop: 0 }}>Active & Recent Upload Sessions</h3>
+            <h3 style={{ marginTop: 0 }}>Active Upload Sessions</h3>
             {data.recentSessions.length === 0 ? (
               <p style={{ color: '#6b7280', margin: 0 }}>No upload sessions registered.</p>
             ) : (
@@ -1110,7 +1171,7 @@ export function MediaCommandCenter({ siteId }: { siteId: string }) {
               backgroundColor: '#fff',
             }}
           >
-            <h3 style={{ marginTop: 0 }}>Background Media Jobs</h3>
+            <h3 style={{ marginTop: 0 }}>Media Processing Jobs</h3>
             {data.recentJobs.length === 0 ? (
               <p style={{ color: '#6b7280', margin: 0 }}>No media jobs logged.</p>
             ) : (
@@ -1221,7 +1282,7 @@ export function MediaCommandCenter({ siteId }: { siteId: string }) {
               backgroundColor: '#fff',
             }}
           >
-            <h3 style={{ marginTop: 0 }}>Podcast Shows & RSS Feeds</h3>
+            <h3 style={{ marginTop: 0 }}>Podcast Deliverability & Feeds</h3>
             {data.podcasts.shows.length === 0 ? (
               <p style={{ color: '#6b7280', margin: 0 }}>No podcast shows registered.</p>
             ) : (
@@ -1312,7 +1373,7 @@ export function MediaCommandCenter({ siteId }: { siteId: string }) {
               backgroundColor: '#fff',
             }}
           >
-            <h3 style={{ marginTop: 0 }}>Episode Readiness & Deliverability</h3>
+            <h3 style={{ marginTop: 0 }}>Episode Readiness Checklist</h3>
             {data.podcasts.episodes.length === 0 ? (
               <p style={{ color: '#6b7280', margin: 0 }}>No podcast episodes registered.</p>
             ) : (
@@ -1439,7 +1500,7 @@ export function MediaCommandCenter({ siteId }: { siteId: string }) {
               backgroundColor: '#fff',
             }}
           >
-            <h3 style={{ marginTop: 0 }}>Processed Video Assets</h3>
+            <h3 style={{ marginTop: 0 }}>Native Video Assets</h3>
             {data.videos.length === 0 ? (
               <p style={{ color: '#6b7280', margin: 0 }}>No video assets registered.</p>
             ) : (
@@ -1681,6 +1742,38 @@ export function MediaCommandCenter({ siteId }: { siteId: string }) {
                 Duplicate Checksum Candidates
               </div>
             </div>
+          </div>
+
+          {/* Content-Addressed Duplicate Clusters */}
+          <div
+            style={{
+              border: '1px solid #e5e7eb',
+              borderRadius: '8px',
+              padding: '1rem',
+              backgroundColor: '#fff',
+            }}
+          >
+            <h3 style={{ marginTop: 0 }}>Content-Addressed Duplicate Clusters</h3>
+            <p style={{ fontSize: '0.85rem', color: '#6b7280', margin: 0 }}>
+              SHA-256 deduplication identified {data.stats.issueCounts.duplicateChecksum} duplicate
+              clusters across tenant boundaries.
+            </p>
+          </div>
+
+          {/* Expiring Rights & Governance Alerts */}
+          <div
+            style={{
+              border: '1px solid #e5e7eb',
+              borderRadius: '8px',
+              padding: '1rem',
+              backgroundColor: '#fff',
+            }}
+          >
+            <h3 style={{ marginTop: 0 }}>Expiring Rights & Governance Alerts</h3>
+            <p style={{ fontSize: '0.85rem', color: '#6b7280', margin: 0 }}>
+              Audit scan tracking {data.stats.issueCounts.expiringRights} assets with expiring
+              rights, licensing windows, or missing attribution.
+            </p>
           </div>
 
           {/* Usage Reconciliation Trigger */}
