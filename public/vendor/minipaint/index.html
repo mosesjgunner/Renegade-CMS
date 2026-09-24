@@ -183,8 +183,8 @@
 								window.parent.postMessage({
 									type: 'cmos:image-editor:loaded',
 									payload: {
-									width: imageWidth,
-									height: imageHeight,
+										width: imageWidth,
+										height: imageHeight,
 										layerCount: 1
 									}
 								}, window.location.origin);
@@ -250,6 +250,80 @@
 							payload: { message: err ? err.message : 'Export failed' }
 						}, window.location.origin);
 					}
+				}
+
+				if (data.type === 'cmos:image-editor:insert-layer' || data.type === 'cmos:image-editor:replace-layer') {
+					var isReplace = data.type === 'cmos:image-editor:replace-layer';
+					var actionId = data.payload && data.payload.actionId;
+					var layerName = (data.payload && data.payload.name) || (isReplace ? 'Modified Layer' : 'AI Layer');
+					var layerImageSrc = data.payload && data.payload.image;
+					var opacity = (data.payload && typeof data.payload.opacity === 'number') ? data.payload.opacity : 1;
+					var State = (window.app && window.app.State) || window.State;
+					var Actions = (window.app && window.app.Actions) || window.Actions;
+					var Layers = (window.app && window.app.Layers) || window.Layers;
+					if (!State || !Actions || !Layers) {
+						window.parent.postMessage({
+							type: 'cmos:image-editor:layer-response',
+							payload: { actionId: actionId, success: false, error: 'Editor not ready' }
+						}, window.location.origin);
+						return;
+					}
+					var layerImg = new Image();
+					layerImg.crossOrigin = 'anonymous';
+					layerImg.onload = function() {
+						try {
+							var w = layerImg.naturalWidth || layerImg.width;
+							var h = layerImg.naturalHeight || layerImg.height;
+							var new_layer = {
+								name: layerName,
+								type: 'image',
+								link: layerImg,
+								width: w,
+								height: h,
+								width_original: w,
+								height_original: h,
+								opacity: opacity * 100
+							};
+							if (isReplace) {
+								var activeLayer = Layers.get_active_layer ? Layers.get_active_layer() : null;
+								if (activeLayer) {
+									activeLayer.link = layerImg;
+									activeLayer.width = w;
+									activeLayer.height = h;
+									activeLayer.width_original = w;
+									activeLayer.height_original = h;
+									if (data.payload.name) activeLayer.name = data.payload.name;
+									if (Actions.Refresh_action) {
+										State.do_action(new Actions.Refresh_action());
+									} else if (Actions.Update_layer_action) {
+										State.do_action(new Actions.Update_layer_action(activeLayer.id, activeLayer));
+									}
+								} else {
+									State.do_action(new Actions.Insert_layer_action(new_layer));
+								}
+							} else {
+								State.do_action(new Actions.Insert_layer_action(new_layer));
+							}
+							cmosHistory.dirty = true; cmosHistory.canUndo = true; cmosHistory.canRedo = false;
+							reportState();
+							window.parent.postMessage({
+								type: 'cmos:image-editor:layer-response',
+								payload: { actionId: actionId, success: true, width: w, height: h }
+							}, window.location.origin);
+						} catch (err) {
+							window.parent.postMessage({
+								type: 'cmos:image-editor:layer-response',
+								payload: { actionId: actionId, success: false, error: err ? err.message : 'Failed to apply layer' }
+							}, window.location.origin);
+						}
+					};
+					layerImg.onerror = function() {
+						window.parent.postMessage({
+							type: 'cmos:image-editor:layer-response',
+							payload: { actionId: actionId, success: false, error: 'Failed to load image for layer' }
+						}, window.location.origin);
+					};
+					layerImg.src = layerImageSrc;
 				}
 			});
 		})();

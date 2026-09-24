@@ -3,13 +3,22 @@ import path from 'node:path'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { describe, expect, it } from 'vitest'
 import {
+  clearImageEditorExtensions,
   createMiniPaintAdapter,
+  getImageEditorExtensions,
   ImageEditorModal,
+  isEditableImageMimeType,
+  MAX_IMAGE_EDITOR_PIXELS,
   MiniPaintAdapter,
+  registerImageEditorExtension,
+  sanitizeImageFilename,
+  SUPPORTED_IMAGE_EDITOR_MIME_TYPES,
+  type ImageEditorAIActionType,
   type ImageEditorAsset,
+  type ImageEditorExtensionAction,
 } from '../../src/modules/media/image-editor'
 
-describe('MED-EXT-01: miniPaint Image Editor Architecture & Integration', () => {
+describe('MED-EXT: miniPaint Native CMoS Image Editor & AI Extension Boundary', () => {
   const sampleAsset: ImageEditorAsset = {
     id: 'asset_test_123',
     title: 'Hero Landscape Banner',
@@ -21,7 +30,7 @@ describe('MED-EXT-01: miniPaint Image Editor Architecture & Integration', () => 
     altText: 'Mountain landscape in golden hour',
   }
 
-  describe('1. Vendored miniPaint bundle & license verification', () => {
+  describe('1. MED-EXT-01: Vendored miniPaint bundle & license verification', () => {
     const vendorDir = path.resolve(process.cwd(), 'public/vendor/minipaint')
 
     it('has valid MIT license attribution for Vilius Kraujutis / ViliusL', () => {
@@ -41,7 +50,7 @@ describe('MED-EXT-01: miniPaint Image Editor Architecture & Integration', () => 
       expect(content).toContain('Upstream Isolation')
     })
 
-    it('has self-contained bundle.js and HTML entry point', () => {
+    it('has self-contained bundle.js and HTML entry point with bridge handlers', () => {
       const htmlPath = path.join(vendorDir, 'index.html')
       const bundlePath = path.join(vendorDir, 'dist/bundle.js')
       expect(fs.existsSync(htmlPath)).toBe(true)
@@ -52,6 +61,8 @@ describe('MED-EXT-01: miniPaint Image Editor Architecture & Integration', () => 
       expect(htmlContent).toContain('dist/bundle.js')
       expect(htmlContent).toContain('cmos-overrides.css')
       expect(htmlContent).toContain('cmos:image-editor:ready')
+      expect(htmlContent).toContain('cmos:image-editor:insert-layer')
+      expect(htmlContent).toContain('cmos:image-editor:replace-layer')
 
       const overridesPath = path.join(vendorDir, 'cmos-overrides.css')
       expect(fs.existsSync(overridesPath)).toBe(true)
@@ -62,7 +73,7 @@ describe('MED-EXT-01: miniPaint Image Editor Architecture & Integration', () => 
     })
   })
 
-  describe('2. MiniPaintAdapter contracts & lifecycle', () => {
+  describe('2. MED-EXT-01 & MED-EXT-02: MiniPaintAdapter contracts & lifecycle', () => {
     it('creates an adapter instance conforming to ImageEditorAdapter', () => {
       const adapter = createMiniPaintAdapter()
       expect(adapter).toBeInstanceOf(MiniPaintAdapter)
@@ -76,6 +87,10 @@ describe('MED-EXT-01: miniPaint Image Editor Architecture & Integration', () => 
       expect(typeof adapter.destroy).toBe('function')
       expect(typeof adapter.undo).toBe('function')
       expect(typeof adapter.redo).toBe('function')
+      expect(typeof adapter.getDimensions).toBe('function')
+      expect(typeof adapter.insertLayer).toBe('function')
+      expect(typeof adapter.replaceActiveLayer).toBe('function')
+      expect(typeof adapter.getActiveLayerImage).toBe('function')
       expect(adapter.isDirty()).toBe(false)
     })
 
@@ -96,9 +111,18 @@ describe('MED-EXT-01: miniPaint Image Editor Architecture & Integration', () => 
       await expect(adapter.exportProject()).rejects.toThrow(/Image editor iframe is not attached/)
     })
 
-    it('exposes insertLayer as an AI tool extension point', () => {
+    it('throws when calling insertLayer before attach', async () => {
       const adapter = new MiniPaintAdapter()
-      expect(typeof adapter.insertLayer).toBe('function')
+      await expect(
+        adapter.insertLayer({ name: 'test', image: 'data:image/png;base64,iVBORw0KGgo=' }),
+      ).rejects.toThrow(/Image editor iframe is not attached/)
+    })
+
+    it('throws when calling replaceActiveLayer before attach', async () => {
+      const adapter = new MiniPaintAdapter()
+      await expect(
+        adapter.replaceActiveLayer({ name: 'test', image: 'data:image/png;base64,iVBORw0KGgo=' }),
+      ).rejects.toThrow(/Image editor iframe is not attached/)
     })
 
     it('cleans up resources and listeners on destroy', () => {
@@ -108,7 +132,7 @@ describe('MED-EXT-01: miniPaint Image Editor Architecture & Integration', () => 
     })
   })
 
-  describe('3. ImageEditorModal component presentation', () => {
+  describe('3. MED-EXT-02 & MED-EXT-03: ImageEditorModal presentation & controls', () => {
     it('renders null when isOpen is false', () => {
       const html = renderToStaticMarkup(
         <ImageEditorModal isOpen={false} asset={sampleAsset} onClose={() => {}} />,
@@ -153,8 +177,51 @@ describe('MED-EXT-01: miniPaint Image Editor Architecture & Integration', () => 
       expect(html).toContain('iframe')
       expect(html).toContain('/vendor/minipaint/index.html')
     })
+  })
 
-    it('renders alert when non-image asset is provided', () => {
+  describe('4. MED-EXT-04: Security, Sanitization & Reliability Audit', () => {
+    it('sanitizes filenames against path traversal, control chars, and reserved symbols', () => {
+      expect(sanitizeImageFilename('../../etc/passwd', 'png')).toBe('etc_passwd.png')
+      expect(sanitizeImageFilename('..\\Windows\\System32\\calc.exe', 'webp')).toBe(
+        'Windows_System32_calc.exe.webp',
+      )
+      expect(sanitizeImageFilename('photo *?"<>|: test', 'jpg')).toBe('photo _______ test.jpg')
+      expect(sanitizeImageFilename('   spaced name   ', 'png')).toBe('spaced name.png')
+      expect(sanitizeImageFilename('...', 'png')).toBe('image.png')
+    })
+
+    it('validates supported image MIME types correctly', () => {
+      expect(isEditableImageMimeType('image/png')).toBe(true)
+      expect(isEditableImageMimeType('image/jpeg')).toBe(true)
+      expect(isEditableImageMimeType('image/webp')).toBe(true)
+      expect(isEditableImageMimeType('image/gif')).toBe(true)
+      expect(isEditableImageMimeType('image/bmp')).toBe(true)
+
+      // Reject SVG vector graphic to prevent XSS script execution
+      expect(isEditableImageMimeType('image/svg+xml')).toBe(false)
+      expect(isEditableImageMimeType('video/mp4')).toBe(false)
+      expect(isEditableImageMimeType('application/pdf')).toBe(false)
+    })
+
+    it('rejects SVG assets specifically with clear safe messaging in ImageEditorModal', () => {
+      const svgAsset: ImageEditorAsset = {
+        id: 'svg_asset_01',
+        title: 'Vector Logo',
+        url: '/media/svg_asset_01',
+        mimeType: 'image/svg+xml',
+        siteId: 'site_1',
+      }
+
+      const html = renderToStaticMarkup(
+        <ImageEditorModal isOpen={true} asset={svgAsset} onClose={() => {}} />,
+      )
+
+      expect(html).toMatch(/vector format not supported/i)
+      expect(html).toContain('SVG vector graphics cannot be safely raster-edited')
+      expect(html).not.toContain('iframe')
+    })
+
+    it('rejects non-image media assets in ImageEditorModal', () => {
       const audioAsset: ImageEditorAsset = {
         id: 'audio_01',
         title: 'Podcast Episode',
@@ -169,6 +236,87 @@ describe('MED-EXT-01: miniPaint Image Editor Architecture & Integration', () => 
 
       expect(html).toMatch(/unsupported media type/i)
       expect(html).toContain('audio/mpeg')
+      expect(html).not.toContain('iframe')
+    })
+
+    it('defines the 50 megapixel decompression bomb protection threshold', () => {
+      expect(MAX_IMAGE_EDITOR_PIXELS).toBe(50_000_000)
+    })
+
+    it('has complete supported MIME type definitions', () => {
+      expect(SUPPORTED_IMAGE_EDITOR_MIME_TYPES).toContain('image/png')
+      expect(SUPPORTED_IMAGE_EDITOR_MIME_TYPES).toContain('image/jpeg')
+      expect(SUPPORTED_IMAGE_EDITOR_MIME_TYPES).toContain('image/webp')
+    })
+  })
+
+  describe('5. MED-EXT-05: AI Extension Boundary & Registry', () => {
+    it('supports registration, discovery, and cleanup of generic AI actions', () => {
+      clearImageEditorExtensions()
+      expect(getImageEditorExtensions()).toHaveLength(0)
+
+      const supportedTypes: ImageEditorAIActionType[] = [
+        'generative-fill',
+        'remove-object',
+        'replace-background',
+        'expand-outpaint',
+        'generate-variation',
+        'restyle',
+        'generate-image',
+      ]
+
+      expect(supportedTypes).toHaveLength(7)
+
+      const sampleAction: ImageEditorExtensionAction = {
+        id: 'ai-restyle',
+        label: 'Restyle Artwork',
+        description: 'Applies style transfer to active layer',
+        actionType: 'restyle',
+        category: 'ai',
+        run: async () => {},
+      }
+
+      const unregister = registerImageEditorExtension(sampleAction)
+      expect(getImageEditorExtensions()).toHaveLength(1)
+      expect(getImageEditorExtensions()[0].id).toBe('ai-restyle')
+      expect(getImageEditorExtensions()[0].actionType).toBe('restyle')
+
+      unregister()
+      expect(getImageEditorExtensions()).toHaveLength(0)
+    })
+
+    it('renders registered extension actions in the ImageEditorModal toolbar', () => {
+      const customAction: ImageEditorExtensionAction = {
+        id: 'test-gen-fill',
+        label: 'Generative Fill',
+        description: 'Fill selection with prompt',
+        actionType: 'generative-fill',
+        category: 'ai',
+        run: async () => {},
+      }
+
+      const html = renderToStaticMarkup(
+        <ImageEditorModal
+          isOpen={true}
+          asset={sampleAsset}
+          onClose={() => {}}
+          extensions={[customAction]}
+        />,
+      )
+
+      expect(html).toContain('Generative Fill')
+      expect(html).toContain('Fill selection with prompt')
+    })
+
+    it('does not render fake or stub AI buttons when no extensions are registered', () => {
+      clearImageEditorExtensions()
+      const html = renderToStaticMarkup(
+        <ImageEditorModal isOpen={true} asset={sampleAsset} onClose={() => {}} extensions={[]} />,
+      )
+
+      expect(html).not.toContain('Generative Fill')
+      expect(html).not.toContain('Remove Object')
+      expect(html).not.toContain('AI &')
     })
   })
 })

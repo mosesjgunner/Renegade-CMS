@@ -7,7 +7,7 @@
  * Upstream project: https://github.com/viliusle/miniPaint (MIT License)
  */
 
-import { MAX_IMAGE_EDITOR_PIXELS } from './contracts'
+import { MAX_IMAGE_EDITOR_PIXELS, isEditableImageMimeType } from './contracts'
 import type {
   ImageEditorAdapter,
   ImageEditorAsset,
@@ -20,6 +20,7 @@ type WindowWithMiniPaint = Window & {
     get_dimensions: () => { width: number; height: number }
     convert_layers_to_canvas: (ctx: CanvasRenderingContext2D) => void
     insert: (layer: Record<string, unknown>) => void
+    get_active_layer?: () => Record<string, unknown> | null
     auto_increment?: number
   }
   FileSave?: {
@@ -27,17 +28,22 @@ type WindowWithMiniPaint = Window & {
   }
   State?: {
     do_action: (action: unknown) => Promise<unknown> | void
+    undo?: () => void
+    redo?: () => void
   }
   Actions?: Record<string, new (...args: unknown[]) => unknown>
   app?: {
     State?: {
       do_action: (action: unknown) => Promise<unknown> | void
+      undo?: () => void
+      redo?: () => void
     }
     Actions?: Record<string, new (...args: unknown[]) => unknown>
     Layers?: {
       get_dimensions: () => { width: number; height: number }
       convert_layers_to_canvas: (ctx: CanvasRenderingContext2D) => void
       insert: (layer: Record<string, unknown>) => void
+      get_active_layer?: () => Record<string, unknown> | null
       auto_increment?: number
     }
   }
@@ -154,6 +160,13 @@ export class MiniPaintAdapter implements ImageEditorAdapter {
   async loadImage(asset: ImageEditorAsset): Promise<{ width: number; height: number }> {
     if (!this.iframe || !this.iframe.contentWindow) {
       throw new Error('Image editor iframe is not attached.')
+    }
+
+    if (asset.mimeType === 'image/svg+xml') {
+      throw new Error('Vector graphics (SVG) cannot be edited in the raster image editor.')
+    }
+    if (!isEditableImageMimeType(asset.mimeType)) {
+      throw new Error(`Unsupported media type for image editing: ${asset.mimeType}`)
     }
 
     if (asset.width && asset.height && asset.width * asset.height > MAX_IMAGE_EDITOR_PIXELS) {
@@ -297,6 +310,15 @@ export class MiniPaintAdapter implements ImageEditorAdapter {
     })
   }
 
+  getDimensions(): { width: number; height: number } {
+    const win = this.iframe?.contentWindow as WindowWithMiniPaint | null
+    const layers = win?.app?.Layers || win?.Layers
+    if (layers?.get_dimensions) {
+      return layers.get_dimensions()
+    }
+    return { width: 0, height: 0 }
+  }
+
   async exportImage(
     options: {
       format?: ImageEditorFormat
@@ -415,6 +437,48 @@ export class MiniPaintAdapter implements ImageEditorAdapter {
     return this.dirty
   }
 
+  async getActiveLayerImage(): Promise<ImageEditorExportResult | null> {
+    if (!this.iframe || !this.iframe.contentWindow) {
+      throw new Error('Image editor iframe is not attached.')
+    }
+    const win = this.iframe.contentWindow as WindowWithMiniPaint
+    const layers = win.app?.Layers || win.Layers
+    const active = layers?.get_active_layer?.()
+    if (!active || !layers) return null
+
+    const dim = layers.get_dimensions()
+    const tempCanvas = document.createElement('canvas')
+    tempCanvas.width = dim.width
+    tempCanvas.height = dim.height
+    const ctx = tempCanvas.getContext('2d')
+    if (!ctx) return null
+
+    const img = (active.link || active.image) as CanvasImageSource | undefined
+    if (img) {
+      const x = (active.x as number) || 0
+      const y = (active.y as number) || 0
+      const w = (active.width as number) || dim.width
+      const h = (active.height as number) || dim.height
+      ctx.drawImage(img, x, y, w, h)
+    }
+
+    const dataUrl = tempCanvas.toDataURL('image/png', 1)
+    const blob = await new Promise<Blob>((resolve, reject) => {
+      tempCanvas.toBlob(
+        (res) => (res ? resolve(res) : reject(new Error('Failed to export layer blob'))),
+        'image/png',
+      )
+    })
+
+    return {
+      blob,
+      dataUrl,
+      width: dim.width,
+      height: dim.height,
+      format: 'image/png',
+    }
+  }
+
   /**
    * Extension point for future AI image tools (inpainting, background removal, layer generation).
    */
@@ -423,17 +487,19 @@ export class MiniPaintAdapter implements ImageEditorAdapter {
     image: HTMLImageElement | string
     opacity?: number
   }): Promise<void> {
-    const win = this.iframe?.contentWindow as WindowWithMiniPaint | null
+    if (!this.iframe || !this.iframe.contentWindow) {
+      throw new Error('Image editor iframe is not attached.')
+    }
+
+    const win = this.iframe.contentWindow as WindowWithMiniPaint | null
     const appActions = win?.app?.Actions || win?.Actions
     const appState = win?.app?.State || win?.State
-    if (!win?.Layers || !appActions || !appState) {
-      throw new Error('Editor not ready to insert AI layer.')
-    }
+    const appLayers = win?.app?.Layers || win?.Layers
 
     let img: HTMLImageElement
     if (typeof options.image === 'string') {
       img = new Image()
-      img.crossOrigin = 'Anonymous'
+      img.crossOrigin = 'anonymous'
       await new Promise<void>((resolve, reject) => {
         img.onload = () => resolve()
         img.onerror = () => reject(new Error('Failed to load image for AI layer.'))
@@ -443,22 +509,200 @@ export class MiniPaintAdapter implements ImageEditorAdapter {
       img = options.image
     }
 
-    const newLayer = {
-      name: options.name,
-      type: 'image',
-      link: img,
-      width: img.naturalWidth || img.width,
-      height: img.naturalHeight || img.height,
-      width_original: img.naturalWidth || img.width,
-      height_original: img.naturalHeight || img.height,
-      opacity: (options.opacity ?? 1) * 100,
+    const width = img.naturalWidth || img.width
+    const height = img.naturalHeight || img.height
+
+    if (appLayers && appActions && appState) {
+      const newLayer = {
+        name: options.name,
+        type: 'image',
+        link: img,
+        width,
+        height,
+        width_original: width,
+        height_original: height,
+        opacity: (options.opacity ?? 1) * 100,
+      }
+
+      const Actions = appActions
+      const InsertLayer = Actions.Insert_layer_action as new (layer: unknown) => unknown
+      appState.do_action(new InsertLayer(newLayer))
+      this.dirty = true
+      this.stateListener?.({ dirty: true, canUndo: true, canRedo: false })
+      return
     }
 
-    const Actions = appActions
-    const InsertLayer = Actions.Insert_layer_action as new (layer: unknown) => unknown
-    appState.do_action(new InsertLayer(newLayer))
-    this.dirty = true
-    this.stateListener?.({ dirty: true, canUndo: true, canRedo: false })
+    // PostMessage fallback
+    const actionId = `insert-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
+    return new Promise<void>((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        cleanup()
+        reject(new Error('Timeout inserting layer in editor.'))
+      }, 10_000)
+
+      const onMessage = (event: MessageEvent) => {
+        if (
+          !this.iframe ||
+          event.source !== this.iframe.contentWindow ||
+          event.origin !== window.location.origin
+        )
+          return
+        const data = event.data
+        if (
+          data?.type === 'cmos:image-editor:layer-response' &&
+          data.payload?.actionId === actionId
+        ) {
+          cleanup()
+          if (data.payload.success) {
+            this.dirty = true
+            this.stateListener?.({ dirty: true, canUndo: true, canRedo: false })
+            resolve()
+          } else {
+            reject(new Error(data.payload.error || 'Failed to insert layer.'))
+          }
+        }
+      }
+
+      const cleanup = () => {
+        clearTimeout(timeout)
+        window.removeEventListener('message', onMessage)
+      }
+
+      window.addEventListener('message', onMessage)
+
+      this.iframe?.contentWindow?.postMessage(
+        {
+          type: 'cmos:image-editor:insert-layer',
+          payload: {
+            actionId,
+            name: options.name,
+            image: img.src,
+            opacity: options.opacity ?? 1,
+          },
+        },
+        window.location.origin,
+      )
+    })
+  }
+
+  /**
+   * Extension point for future AI image tools (restyle, remove object, replace background).
+   * Replaces the active layer with a newly generated image.
+   */
+  async replaceActiveLayer(options: {
+    name?: string
+    image: HTMLImageElement | string
+  }): Promise<void> {
+    if (!this.iframe || !this.iframe.contentWindow) {
+      throw new Error('Image editor iframe is not attached.')
+    }
+
+    const win = this.iframe.contentWindow as WindowWithMiniPaint | null
+    const appActions = win?.app?.Actions || win?.Actions
+    const appState = win?.app?.State || win?.State
+    const appLayers = win?.app?.Layers || win?.Layers
+
+    let img: HTMLImageElement
+    if (typeof options.image === 'string') {
+      img = new Image()
+      img.crossOrigin = 'anonymous'
+      await new Promise<void>((resolve, reject) => {
+        img.onload = () => resolve()
+        img.onerror = () => reject(new Error('Failed to load image for AI layer.'))
+        img.src = options.image as string
+      })
+    } else {
+      img = options.image
+    }
+
+    const width = img.naturalWidth || img.width
+    const height = img.naturalHeight || img.height
+
+    if (appState && appActions && appLayers) {
+      const active = appLayers.get_active_layer ? appLayers.get_active_layer() : null
+      if (active) {
+        active.link = img
+        active.width = width
+        active.height = height
+        active.width_original = width
+        active.height_original = height
+        if (options.name) active.name = options.name
+
+        const Refresh = appActions.Refresh_action as (new () => unknown) | undefined
+        const UpdateLayer = appActions.Update_layer_action as
+          | (new (id: unknown, layer: unknown) => unknown)
+          | undefined
+
+        if (Refresh) {
+          appState.do_action(new Refresh())
+        } else if (UpdateLayer && active.id !== undefined) {
+          appState.do_action(new UpdateLayer(active.id, active))
+        }
+      } else {
+        const InsertLayer = appActions.Insert_layer_action as new (layer: unknown) => unknown
+        appState.do_action(
+          new InsertLayer({
+            name: options.name || 'Modified Layer',
+            type: 'image',
+            link: img,
+            width,
+            height,
+            width_original: width,
+            height_original: height,
+          }),
+        )
+      }
+      this.dirty = true
+      this.stateListener?.({ dirty: true, canUndo: true, canRedo: false })
+      return
+    }
+
+    // PostMessage protocol fallback
+    const actionId = `replace-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`
+    return new Promise<void>((resolve, reject) => {
+      const timeout = setTimeout(() => {
+        cleanup()
+        reject(new Error('Timeout replacing layer via postMessage.'))
+      }, 10_000)
+
+      const onMessage = (event: MessageEvent) => {
+        if (
+          !this.iframe ||
+          event.source !== this.iframe.contentWindow ||
+          event.origin !== window.location.origin
+        )
+          return
+        const data = event.data
+        if (
+          data?.type === 'cmos:image-editor:layer-response' &&
+          data.payload?.actionId === actionId
+        ) {
+          cleanup()
+          if (data.payload.success) {
+            this.dirty = true
+            this.stateListener?.({ dirty: true, canUndo: true, canRedo: false })
+            resolve()
+          } else {
+            reject(new Error(data.payload.error || 'Failed to replace layer.'))
+          }
+        }
+      }
+
+      const cleanup = () => {
+        clearTimeout(timeout)
+        window.removeEventListener('message', onMessage)
+      }
+
+      window.addEventListener('message', onMessage)
+
+      this.iframe?.contentWindow?.postMessage(
+        {
+          type: 'cmos:image-editor:replace-layer',
+          payload: { actionId, name: options.name, image: img.src },
+        },
+        window.location.origin,
+      )
+    })
   }
 
   destroy(): void {

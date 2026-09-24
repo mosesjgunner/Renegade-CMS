@@ -1,56 +1,82 @@
 'use client'
 
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import type { ImageEditorAsset, ImageEditorFormat, ImageEditorSaveMode } from './contracts'
+import type {
+  ImageEditorAsset,
+  ImageEditorExtensionAction,
+  ImageEditorExtensionContext,
+  ImageEditorFormat,
+  ImageEditorSaveMode,
+} from './contracts'
 import { MiniPaintAdapter } from './minipaint-adapter'
+import { useImageEditorExtensions } from './extension-registry'
 import styles from './ImageEditorModal.module.css'
 
-interface ImageEditorModalProps {
+export interface ImageEditorModalProps {
   asset: ImageEditorAsset | null
   isOpen: boolean
   onClose: () => void
   onSaved?: (result: { assetId: string; url: string; mode: string }) => void
+  extensions?: ImageEditorExtensionAction[]
+}
+
+export function sanitizeImageFilename(raw: string, extension: string): string {
+  const trimmed = raw.trim()
+  const withoutDots = trimmed.replace(/\.{2,}/g, '')
+  const safe =
+    withoutDots
+      .replace(/[/\\?%*:|"<>]/g, '_')
+      .replace(/^_+/, '')
+      .replace(/^\.+/, '') || 'image'
+  return `${safe.slice(0, 120)}.${extension}`
 }
 
 function ImageEditorView({
   asset,
   onClose,
   onSaved,
+  extensions: propExtensions,
 }: Omit<ImageEditorModalProps, 'asset' | 'isOpen'> & { asset: ImageEditorAsset }) {
+  const registryExtensions = useImageEditorExtensions()
+  const extensions = propExtensions ?? registryExtensions
+
   const iframeRef = useRef<HTMLIFrameElement>(null)
   const workspaceRef = useRef<HTMLDivElement>(null)
   const adapterRef = useRef<MiniPaintAdapter | null>(null)
-  const [isLoading, setIsLoading] = useState(true),
-    [isSaving, setIsSaving] = useState(false)
-  const [errorMessage, setErrorMessage] = useState<string | null>(null),
-    [statusMessage, setStatusMessage] = useState('Opening editor…')
+  const [isLoading, setIsLoading] = useState(true)
+  const [isSaving, setIsSaving] = useState(false)
+  const [isRunningExtension, setIsRunningExtension] = useState(false)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [statusMessage, setStatusMessage] = useState('Opening editor…')
   const [dimensions, setDimensions] = useState<{ width: number; height: number } | null>(
     asset.width && asset.height ? { width: asset.width, height: asset.height } : null,
   )
-  const [isDirty, setIsDirty] = useState(false),
-    [history, setHistory] = useState({ canUndo: false, canRedo: false })
-  const [showLeaveDialog, setShowLeaveDialog] = useState(false),
-    [isFullscreen, setIsFullscreen] = useState(false)
-  const [saveMode, setSaveMode] = useState<ImageEditorSaveMode>('all-usages'),
-    [title, setTitle] = useState(asset.title || 'Untitled Image'),
-    [reason, setReason] = useState('Edited in miniPaint')
+  const [isDirty, setIsDirty] = useState(false)
+  const [history, setHistory] = useState({ canUndo: false, canRedo: false })
+  const [showLeaveDialog, setShowLeaveDialog] = useState(false)
+  const [isFullscreen, setIsFullscreen] = useState(false)
+  const [saveMode, setSaveMode] = useState<ImageEditorSaveMode>('all-usages')
+  const [title, setTitle] = useState(asset.title || 'Untitled Image')
+  const [reason, setReason] = useState('Edited in miniPaint')
   const [format, setFormat] = useState<ImageEditorFormat>(
-      asset.mimeType === 'image/jpeg' || asset.mimeType === 'image/webp'
-        ? asset.mimeType
-        : 'image/png',
-    ),
-    [quality, setQuality] = useState(0.92)
+    asset.mimeType === 'image/jpeg' || asset.mimeType === 'image/webp'
+      ? asset.mimeType
+      : 'image/png',
+  )
+  const [quality, setQuality] = useState(0.92)
 
   useEffect(() => {
     let active = true
     const adapter = new MiniPaintAdapter()
     adapterRef.current = adapter
+
     adapter.onStateChange((state) => {
       if (!active) return
       setIsDirty(state.dirty)
       setHistory({ canUndo: state.canUndo, canRedo: state.canRedo })
       if (state.dimensions) setDimensions(state.dimensions)
     })
+
     void (async () => {
       try {
         if (!iframeRef.current) return
@@ -70,12 +96,14 @@ function ImageEditorView({
         }
       }
     })()
+
     return () => {
       active = false
       adapter.destroy()
       adapterRef.current = null
     }
   }, [asset])
+
   useEffect(() => {
     const warn = (event: BeforeUnloadEvent) => {
       if (!isDirty) return
@@ -85,20 +113,37 @@ function ImageEditorView({
     window.addEventListener('beforeunload', warn)
     return () => window.removeEventListener('beforeunload', warn)
   }, [isDirty])
+
   useEffect(() => {
     const syncFullscreen = () =>
       setIsFullscreen(document.fullscreenElement === workspaceRef.current)
     document.addEventListener('fullscreenchange', syncFullscreen)
     return () => document.removeEventListener('fullscreenchange', syncFullscreen)
   }, [])
+
   const requestClose = useCallback(() => {
-    if (isSaving) return
+    if (isSaving || isRunningExtension) return
     if (isDirty) {
       setShowLeaveDialog(true)
       return
     }
     onClose()
-  }, [isDirty, isSaving, onClose])
+  }, [isDirty, isSaving, isRunningExtension, onClose])
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        if (showLeaveDialog) {
+          setShowLeaveDialog(false)
+        } else {
+          requestClose()
+        }
+      }
+    }
+    window.addEventListener('keydown', handleKeyDown)
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [showLeaveDialog, requestClose])
+
   const toggleFullscreen = () => {
     if (document.fullscreenElement) {
       void document.exitFullscreen()
@@ -106,6 +151,43 @@ function ImageEditorView({
       void workspaceRef.current?.requestFullscreen?.()
     }
   }
+
+  const runExtension = async (action: ImageEditorExtensionAction) => {
+    const adapter = adapterRef.current
+    if (!adapter) return
+    setIsRunningExtension(true)
+    setErrorMessage(null)
+    setStatusMessage(`Running ${action.label}…`)
+    try {
+      const context: ImageEditorExtensionContext = {
+        asset,
+        adapter,
+        getCanvasDimensions: () =>
+          dimensions || adapter.getDimensions?.() || { width: 0, height: 0 },
+        getCanvasImage: (opts) => adapter.exportImage(opts),
+        getActiveLayerImage: () =>
+          adapter.getActiveLayerImage ? adapter.getActiveLayerImage() : Promise.resolve(null),
+        insertLayer: (opts) => {
+          if (!adapter.insertLayer) throw new Error('Layer insertion not supported by adapter.')
+          return adapter.insertLayer(opts)
+        },
+        replaceActiveLayer: (opts) => {
+          if (!adapter.replaceActiveLayer)
+            throw new Error('Layer replacement not supported by adapter.')
+          return adapter.replaceActiveLayer(opts)
+        },
+        setStatus: (msg) => setStatusMessage(msg),
+        setError: (err) => setErrorMessage(err),
+      }
+      await action.run(context)
+      setStatusMessage(`${action.label} completed.`)
+    } catch (err) {
+      setErrorMessage(err instanceof Error ? err.message : `Failed to run ${action.label}.`)
+    } finally {
+      setIsRunningExtension(false)
+    }
+  }
+
   const save = async () => {
     const adapter = adapterRef.current
     if (!adapter) return
@@ -117,7 +199,7 @@ function ImageEditorView({
       setDimensions({ width: exported.width, height: exported.height })
       setStatusMessage('Saving to CMoS Media…')
       const extension = format === 'image/jpeg' ? 'jpg' : format === 'image/webp' ? 'webp' : 'png'
-      const filename = `${(title || asset.title || 'image').replace(/[^a-zA-Z0-9-_]/g, '_')}.${extension}`
+      const filename = sanitizeImageFilename(title || asset.title || 'image', extension)
       const body = new FormData()
       body.append('file', new File([exported.blob], filename, { type: format }))
       body.append('siteId', asset.siteId)
@@ -129,7 +211,9 @@ function ImageEditorView({
         body.append('mode', 'all-usages')
         body.append('reason', `Edited in miniPaint: ${reason}`)
         response = await fetch(`/api/media/${asset.id}`, { method: 'PUT', body })
-      } else response = await fetch('/api/media/upload', { method: 'POST', body })
+      } else {
+        response = await fetch('/api/media/upload', { method: 'POST', body })
+      }
       const data = (await response.json().catch(() => ({}))) as {
         asset?: { id?: string }
         error?: string
@@ -154,7 +238,30 @@ function ImageEditorView({
       setIsSaving(false)
     }
   }
-  if (!asset.mimeType.startsWith('image/'))
+
+  if (asset.mimeType === 'image/svg+xml') {
+    return (
+      <div
+        className={styles.workspace}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Image Editor: SVG Vector Graphic Not Supported"
+      >
+        <section className={styles.unsupported}>
+          <h2>Vector format not supported</h2>
+          <p>
+            SVG vector graphics cannot be safely raster-edited in this workspace. Please edit PNG,
+            JPEG, or WebP raster assets instead.
+          </p>
+          <button className={styles.primaryButton} type="button" onClick={onClose}>
+            Back to Media
+          </button>
+        </section>
+      </div>
+    )
+  }
+
+  if (!asset.mimeType.startsWith('image/')) {
     return (
       <div
         className={styles.workspace}
@@ -171,6 +278,8 @@ function ImageEditorView({
         </section>
       </div>
     )
+  }
+
   return (
     <div
       ref={workspaceRef}
@@ -185,7 +294,7 @@ function ImageEditorView({
             className={styles.button}
             type="button"
             onClick={requestClose}
-            disabled={isSaving}
+            disabled={isSaving || isRunningExtension}
           >
             ← Back to Media
           </button>
@@ -207,6 +316,22 @@ function ImageEditorView({
           </div>
         </div>
         <div className={styles.actions} aria-label="Editor actions">
+          {extensions.length > 0 && (
+            <div className={styles.extensionsGroup} role="group" aria-label="Extension actions">
+              {extensions.map((ext) => (
+                <button
+                  key={ext.id}
+                  className={styles.button}
+                  type="button"
+                  title={ext.description || ext.label}
+                  disabled={isLoading || isSaving || isRunningExtension}
+                  onClick={() => void runExtension(ext)}
+                >
+                  {ext.label}
+                </button>
+              ))}
+            </div>
+          )}
           <button
             className={styles.iconButton}
             type="button"
@@ -239,7 +364,7 @@ function ImageEditorView({
             className={styles.primaryButton}
             type="button"
             onClick={() => void save()}
-            disabled={isLoading || isSaving}
+            disabled={isLoading || isSaving || isRunningExtension}
           >
             {isSaving ? 'Saving…' : 'Save'}
           </button>
@@ -257,7 +382,7 @@ function ImageEditorView({
           title="miniPaint Editor"
           allow="clipboard-write; camera"
         />
-        {isLoading && (
+        {(isLoading || isRunningExtension) && (
           <div className={styles.loading}>
             <span className={styles.spinner} />
             <span>{statusMessage}</span>
@@ -325,7 +450,7 @@ function ImageEditorView({
           className={styles.primaryButton}
           type="button"
           onClick={() => void save()}
-          disabled={isLoading || isSaving}
+          disabled={isLoading || isSaving || isRunningExtension}
         >
           {saveMode === 'new-asset' ? 'Save As' : 'Save version'}
         </button>
@@ -361,7 +486,22 @@ function ImageEditorView({
     </div>
   )
 }
-export function ImageEditorModal({ asset, isOpen, onClose, onSaved }: ImageEditorModalProps) {
+
+export function ImageEditorModal({
+  asset,
+  isOpen,
+  onClose,
+  onSaved,
+  extensions,
+}: ImageEditorModalProps) {
   if (!isOpen || !asset) return null
-  return <ImageEditorView key={asset.id} asset={asset} onClose={onClose} onSaved={onSaved} />
+  return (
+    <ImageEditorView
+      key={asset.id}
+      asset={asset}
+      onClose={onClose}
+      onSaved={onSaved}
+      extensions={extensions}
+    />
+  )
 }
