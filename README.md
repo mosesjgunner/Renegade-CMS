@@ -89,6 +89,13 @@ graph TD
 
 ### 1. Clone & Install
 
+For a local all-modules verification, create a **new disposable PostgreSQL database**,
+set `DATABASE_URL`, `APP_URL`, and a unique 32+ character `PAYLOAD_SECRET`, then run
+`npm run db:migrate` before `npm run test:integration`. The integration command does
+not migrate an empty database. `db:seed` additionally requires
+`ALLOW_FIXTURE_SEED=true` and is for disposable demo data only. On Windows
+PowerShell, use `npm.cmd` in place of `npm`.
+
 ```bash
 git clone https://github.com/mosesjgunner/Renegade-CMS.git
 cd Renegade-CMS

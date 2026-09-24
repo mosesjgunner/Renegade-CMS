@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useState } from 'react'
 import { createMemberPasskey } from '@/modules/identity/member-passkey-browser'
 import { MemberRelationshipList } from '@/modules/community/MemberRelationshipList'
+import { NotificationPreferences } from '@/modules/community/NotificationPreferences'
 
 function csrfHeader(): Record<string, string> {
   const token = document.cookie
@@ -438,6 +439,7 @@ export default function MemberSettingsPage() {
         </button>
       </section>
       {siteId ? <MemberRelationshipList siteId={siteId} /> : null}
+      {siteId ? <NotificationPreferences siteId={siteId} /> : null}
       <section className="mt-8" aria-label="Profile revision history">
         <h2 className="text-xl font-semibold">Profile revision history</h2>
         {history.length ? (

@@ -16,6 +16,13 @@ Keep the resulting directory off the VPS according to your retention policy. If 
 
 ## Isolated restore rehearsal
 
+A PostgreSQL dump alone is insufficient restore acceptance. After restoring,
+boot the application against the restored database and check readiness and
+critical public/admin routes, then exercise a representative authorized read
+and write. Include the media archive and verify its bytes when the source has
+media. A rehearsal using only a database dump and anonymous route reads must
+be reported as partial.
+
 Build or obtain the same image tag, then create isolated restore credentials (the command refuses to overwrite an existing file). `compose.restore.yaml` has distinct volumes and binds web to port 3300 by default.
 
 ```powershell
