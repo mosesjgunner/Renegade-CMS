@@ -3,17 +3,23 @@ import { type MigrateDownArgs, type MigrateUpArgs, sql } from '@payloadcms/db-po
 /** COMM-03A: canonical content comment identity and durable thread tree. */
 export async function up({ db }: MigrateUpArgs): Promise<void> {
   await db.execute(sql`
+    CREATE EXTENSION IF NOT EXISTS pgcrypto;
     -- PostgreSQL has no built-in UUIDv7 generator on all supported versions.
     -- Keep generation local and time-sortable instead of silently using UUIDv4.
     CREATE OR REPLACE FUNCTION "renegade_uuid_v7"() RETURNS uuid
     LANGUAGE sql VOLATILE AS $$
+      WITH parts AS (
+        SELECT
+          lpad(to_hex(floor(extract(epoch FROM clock_timestamp()) * 1000)::bigint), 12, '0') AS ts,
+          encode(gen_random_bytes(10), 'hex') AS random_hex
+      )
       SELECT (
-        lpad(to_hex(floor(extract(epoch FROM clock_timestamp()) * 1000)::bigint), 12, '0') ||
-        '-7' || substr(encode(gen_random_bytes(10), 'hex'), 1, 3) ||
-        '-' || substr(encode(gen_random_bytes(10), 'hex'), 4, 4) ||
-        '-8' || substr(encode(gen_random_bytes(10), 'hex'), 8, 3) ||
-        '-' || substr(encode(gen_random_bytes(10), 'hex'), 1, 12)
-      )::uuid;
+        substr(ts, 1, 8) || '-' || substr(ts, 9, 4) ||
+        '-7' || substr(random_hex, 1, 3) ||
+        '-8' || substr(random_hex, 4, 3) ||
+        '-' || substr(random_hex, 7, 12)
+      )::uuid
+      FROM parts;
     $$;
 
     DO $$ BEGIN

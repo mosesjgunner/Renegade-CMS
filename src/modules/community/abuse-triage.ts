@@ -55,7 +55,10 @@ export function simHashDistance(a: string, b: string) {
   }
   return count
 }
-function hasUnverifiedImageAttachment(attachments: unknown[] | undefined, verified: boolean | undefined) {
+function hasUnverifiedImageAttachment(
+  attachments: unknown[] | undefined,
+  verified: boolean | undefined,
+) {
   if (verified || !attachments) return false
   return attachments.some((attachment) => {
     if (!attachment || typeof attachment !== 'object') return false
@@ -174,7 +177,8 @@ export async function triageSubmission(
       )
     ).rows.reduce<string | null>((best, row) => {
       if (!row.fingerprint) return best
-      return !best || simHashDistance(currentHash, row.fingerprint) < simHashDistance(currentHash, best)
+      return !best ||
+        simHashDistance(currentHash, row.fingerprint) < simHashDistance(currentHash, best)
         ? row.fingerprint
         : best
     }, null)
@@ -196,7 +200,10 @@ export async function triageSubmission(
         input.targetId,
       ])
     if (input.targetType === 'forum_post')
-      await query("UPDATE forum_posts SET is_quarantined=true, review_status='pending_review', updated_at=now() WHERE id=$1", [input.targetId])
+      await query(
+        "UPDATE forum_posts SET is_quarantined=true, review_status='pending_review', updated_at=now() WHERE id=$1",
+        [input.targetId],
+      )
     const row = (
       await query<{ id: string }>(
         `INSERT INTO moderation_cases (site_id,target_type,target_id,priority,rule_categories,sla_deadline,triage_payload) VALUES ($1,$2,$3,'high',$4::jsonb,now()+interval '4 hours',$5::jsonb) RETURNING id`,
@@ -273,31 +280,42 @@ export async function batchDispositionModerationCases(
   payload: Payload,
   input: { siteId: string; actorMemberId: string; caseIds: string[]; disposition: string },
 ) {
-  if (!input.caseIds.length || input.caseIds.length > 50)
-    throw new Error('MODERATION_BATCH_LIMIT')
-  return Promise.all(input.caseIds.map(async (caseId) => {
-    try {
-      return await withTransaction(payload, async query => {
-        const found = (await query<{ id: string }>(
-          'SELECT id FROM moderation_cases WHERE id=$1 AND site_id=$2 FOR UPDATE',
-          [caseId, input.siteId],
-        )).rows[0]
-        if (!found) return { caseId, success: false, code: 'CASE_NOT_FOUND' as const }
-        const closes = ['close', 'closed', 'dismiss'].includes(input.disposition)
-        await query(
-          "UPDATE moderation_cases SET status=CASE WHEN $1 IN ('close','closed','dismiss') THEN 'closed' ELSE status END, disposition=$1, closed_at=CASE WHEN $1 IN ('close','closed','dismiss') THEN now() ELSE closed_at END, closed_by_member_id=CASE WHEN $1 IN ('close','closed','dismiss') THEN $2 ELSE closed_by_member_id END WHERE id=$3",
-          [input.disposition, input.actorMemberId, caseId],
-        )
-        await query(
-          "INSERT INTO community_audit_log (site_id,event_type,event_payload) VALUES ($1,'moderation.case.disposition.v1',$2::jsonb)",
-          [input.siteId, JSON.stringify({ case_id: caseId, actor_member_id: input.actorMemberId, disposition: input.disposition, closes })],
-        )
-        return { caseId, success: true as const }
-      })
-    } catch {
-      return { caseId, success: false as const, code: 'CASE_DISPOSITION_FAILED' as const }
-    }
-  }))
+  if (!input.caseIds.length || input.caseIds.length > 50) throw new Error('MODERATION_BATCH_LIMIT')
+  return Promise.all(
+    input.caseIds.map(async (caseId) => {
+      try {
+        return await withTransaction(payload, async (query) => {
+          const found = (
+            await query<{ id: string }>(
+              'SELECT id FROM moderation_cases WHERE id=$1 AND site_id=$2 FOR UPDATE',
+              [caseId, input.siteId],
+            )
+          ).rows[0]
+          if (!found) return { caseId, success: false, code: 'CASE_NOT_FOUND' as const }
+          const closes = ['close', 'closed', 'dismiss'].includes(input.disposition)
+          await query(
+            "UPDATE moderation_cases SET status=CASE WHEN $1 IN ('close','closed','dismiss') THEN 'closed' ELSE status END, disposition=$1, closed_at=CASE WHEN $1 IN ('close','closed','dismiss') THEN now() ELSE closed_at END, closed_by_member_id=CASE WHEN $1 IN ('close','closed','dismiss') THEN $2 ELSE closed_by_member_id END WHERE id=$3",
+            [input.disposition, input.actorMemberId, caseId],
+          )
+          await query(
+            "INSERT INTO community_audit_log (site_id,event_type,event_payload) VALUES ($1,'moderation.case.disposition.v1',$2::jsonb)",
+            [
+              input.siteId,
+              JSON.stringify({
+                case_id: caseId,
+                actor_member_id: input.actorMemberId,
+                disposition: input.disposition,
+                closes,
+              }),
+            ],
+          )
+          return { caseId, success: true as const }
+        })
+      } catch {
+        return { caseId, success: false as const, code: 'CASE_DISPOSITION_FAILED' as const }
+      }
+    }),
+  )
 }
 
 export async function exportModerationCaseAudit(payload: Payload, siteId: string) {
@@ -305,12 +323,17 @@ export async function exportModerationCaseAudit(payload: Payload, siteId: string
   if (!pool?.connect) throw new Error('MODERATION_DB_UNAVAILABLE')
   const client = await pool.connect()
   try {
-    return (await client.query<Record<string, unknown>>(
-      `SELECT c.id AS case_id, c.target_type, c.target_id, c.status, c.priority, c.rule_categories,
+    return (
+      await client.query<Record<string, unknown>>(
+        `SELECT c.id AS case_id, c.target_type, c.target_id, c.status, c.priority, c.rule_categories,
         c.sla_deadline, c.opened_at, c.disposition, l.event_type, l.event_payload, l.created_at AS audit_created_at
        FROM moderation_cases c LEFT JOIN community_audit_log l ON l.site_id=c.site_id
         AND (l.event_payload->>'case_id')=c.id::text
-       WHERE c.site_id=$1 ORDER BY c.opened_at DESC, l.created_at ASC NULLS LAST`, [siteId],
-    )).rows
-  } finally { client.release?.() }
+       WHERE c.site_id=$1 ORDER BY c.opened_at DESC, l.created_at ASC NULLS LAST`,
+        [siteId],
+      )
+    ).rows
+  } finally {
+    client.release?.()
+  }
 }

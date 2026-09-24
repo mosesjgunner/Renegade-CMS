@@ -208,14 +208,43 @@ export function presignS3Put(
   url.searchParams.set('X-Amz-Date', amzDate)
   url.searchParams.set('X-Amz-Expires', String(expiresInSeconds))
   url.searchParams.set('X-Amz-SignedHeaders', signedHeaders)
-  const canonicalQuery = [...url.searchParams.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`).join('&')
-  const canonicalHeaders = Object.entries(headers).sort(([a], [b]) => a.localeCompare(b)).map(([name, value]) => `${name}:${value}\n`).join('')
-  const canonicalRequest = ['PUT', url.pathname, canonicalQuery, canonicalHeaders, signedHeaders, 'UNSIGNED-PAYLOAD'].join('\n')
-  const stringToSign = ['AWS4-HMAC-SHA256', amzDate, scope, createHash('sha256').update(canonicalRequest).digest('hex')].join('\n')
-  const hmac = (secret: Uint8Array | string, value: string) => createHmac('sha256', secret).update(value).digest()
-  const signingKey = hmac(hmac(hmac(hmac(`AWS4${config.secretAccessKey}`, date), config.region), 's3'), 'aws4_request')
-  url.searchParams.set('X-Amz-Signature', createHmac('sha256', signingKey).update(stringToSign).digest('hex'))
-  return { url: url.toString(), headers: { 'content-type': mimeType }, expiresAt: new Date(now.getTime() + expiresInSeconds * 1000).toISOString() }
+  const canonicalQuery = [...url.searchParams.entries()]
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
+    .join('&')
+  const canonicalHeaders = Object.entries(headers)
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([name, value]) => `${name}:${value}\n`)
+    .join('')
+  const canonicalRequest = [
+    'PUT',
+    url.pathname,
+    canonicalQuery,
+    canonicalHeaders,
+    signedHeaders,
+    'UNSIGNED-PAYLOAD',
+  ].join('\n')
+  const stringToSign = [
+    'AWS4-HMAC-SHA256',
+    amzDate,
+    scope,
+    createHash('sha256').update(canonicalRequest).digest('hex'),
+  ].join('\n')
+  const hmac = (secret: Uint8Array | string, value: string) =>
+    createHmac('sha256', secret).update(value).digest()
+  const signingKey = hmac(
+    hmac(hmac(hmac(`AWS4${config.secretAccessKey}`, date), config.region), 's3'),
+    'aws4_request',
+  )
+  url.searchParams.set(
+    'X-Amz-Signature',
+    createHmac('sha256', signingKey).update(stringToSign).digest('hex'),
+  )
+  return {
+    url: url.toString(),
+    headers: { 'content-type': mimeType },
+    expiresAt: new Date(now.getTime() + expiresInSeconds * 1000).toISOString(),
+  }
 }
 
 export function localMediaStorage(mediaDir: string): MediaStorage {

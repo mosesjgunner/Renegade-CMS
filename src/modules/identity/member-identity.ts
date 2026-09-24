@@ -575,6 +575,48 @@ export async function finalizeMemberDeletion(
   memberId: string,
   now = new Date(),
 ): Promise<void> {
+  const billingSupporters = await store.find({
+    collection: 'supporters',
+    where: { member: { equals: memberId } },
+    limit: 500,
+    depth: 0,
+    overrideAccess: true,
+  })
+  const supporterIds = billingSupporters.docs.map((supporter) => String(supporter.id))
+  if (supporterIds.length) {
+    const entitlements = await store.find({
+      collection: 'entitlements',
+      where: { supporter: { in: supporterIds } },
+      limit: 5000,
+      depth: 0,
+      overrideAccess: true,
+    })
+    for (const entitlement of entitlements.docs) {
+      if (!entitlement.revokedAt)
+        await store.update({
+          collection: 'entitlements',
+          id: String(entitlement.id),
+          overrideAccess: true,
+          data: { revokedAt: now.toISOString() },
+        })
+    }
+  }
+  const downloadGrants = await store.find({
+    collection: 'digital-delivery-grants',
+    where: { member: { equals: memberId } },
+    limit: 5000,
+    depth: 0,
+    overrideAccess: true,
+  })
+  for (const grant of downloadGrants.docs) {
+    if (!grant.revokedAt)
+      await store.update({
+        collection: 'digital-delivery-grants',
+        id: String(grant.id),
+        overrideAccess: true,
+        data: { revokedAt: now.toISOString() },
+      })
+  }
   await store.update({
     collection: 'members',
     id: memberId,
@@ -669,7 +711,7 @@ export async function exportMemberData(
     id: memberId,
     overrideAccess: true,
   })
-  const [profiles, identities, sessions, auditEvents] = await Promise.all([
+  const [profiles, identities, sessions, auditEvents, supporters] = await Promise.all([
     store.find({
       collection: 'profiles',
       where: { member: { equals: memberId } },
@@ -689,7 +731,33 @@ export async function exportMemberData(
       limit: 500,
       overrideAccess: true,
     }),
+    store.find({
+      collection: 'supporters',
+      where: { member: { equals: memberId } },
+      limit: 100,
+      depth: 0,
+      overrideAccess: true,
+    }),
   ])
+  const supporterIds = supporters.docs.map((supporter) => String(supporter.id))
+  const [subscriptions, entitlements] = supporterIds.length
+    ? await Promise.all([
+        store.find({
+          collection: 'subscriptions',
+          where: { supporter: { in: supporterIds } },
+          limit: 1000,
+          depth: 0,
+          overrideAccess: true,
+        }),
+        store.find({
+          collection: 'entitlements',
+          where: { supporter: { in: supporterIds } },
+          limit: 2000,
+          depth: 0,
+          overrideAccess: true,
+        }),
+      ])
+    : [{ docs: [] }, { docs: [] }]
   const relationships: Array<Record<string, unknown>> = []
   for (let page = 1; ; page++) {
     const batch = await store.find({
@@ -713,6 +781,29 @@ export async function exportMemberData(
       createdAt: member.createdAt,
     },
     profile: profiles.docs[0] ?? null,
+    billing: {
+      subscriptions: subscriptions.docs.map((subscription) => ({
+        state: subscription.state,
+        source: subscription.source,
+        plan: subscription.planSnapshot,
+        currentPeriodStart: subscription.currentPeriodStart,
+        currentPeriodEnd: subscription.currentPeriodEnd,
+        trialEnd: subscription.trialEnd,
+        graceEnd: subscription.graceEnd,
+        cancelAtPeriodEnd: subscription.cancelAtPeriodEnd,
+        createdAt: subscription.createdAt,
+      })),
+      entitlements: entitlements.docs.map((entitlement) => ({
+        resource: entitlement.resource,
+        capability: entitlement.capability,
+        site: entitlement.site,
+        scope: entitlement.scope,
+        source: entitlement.source,
+        startsAt: entitlement.startsAt,
+        endsAt: entitlement.endsAt,
+        revokedAt: entitlement.revokedAt,
+      })),
+    },
     relationships: relationships.map((relationship) => ({
       site: relationship.site,
       targetMemberId:

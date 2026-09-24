@@ -5,7 +5,7 @@ import { migrations } from '../migrations'
 import { isDedicatedDatabase } from './verification-contract'
 
 type Pool = {
-  query: (sql: string) => Promise<{ rows: Array<{ count: string }> }>
+  query: (sql: string) => Promise<{ rows: Array<Record<string, unknown>> }>
 }
 
 export async function verifyFreshMigration() {
@@ -36,6 +36,20 @@ export async function verifyFreshMigration() {
     const result = await db.pool.query('SELECT count(*) FROM payload_migrations')
     if (Number(result.rows[0]?.count) !== migrations.length) {
       throw new Error('Fresh migration acceptance did not record every migration exactly once.')
+    }
+    const column = await db.pool.query(`
+      SELECT data_type, is_nullable, column_default
+      FROM information_schema.columns
+      WHERE table_schema = 'public' AND table_name = 'events'
+        AND column_name = 'required_entitlement'
+    `)
+    if (
+      column.rows.length !== 1 ||
+      column.rows[0]?.data_type !== 'jsonb' ||
+      column.rows[0]?.is_nullable !== 'YES' ||
+      column.rows[0]?.column_default !== null
+    ) {
+      throw new Error('Fresh migration did not create the optional Events entitlement JSON column.')
     }
   } finally {
     await payload.db.destroy?.()

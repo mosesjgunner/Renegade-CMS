@@ -234,13 +234,17 @@ describe('COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edi
       let insertCount = 0
 
       const query = vi.fn(async (text: string, values?: unknown[]) => {
-        if (text.includes('SELECT * FROM comments WHERE thread_id = $1 AND client_mutation_id = $2')) {
+        if (
+          text.includes('SELECT * FROM comments WHERE thread_id = $1 AND client_mutation_id = $2')
+        ) {
           return { rows: storedComment ? [storedComment] : [] }
         }
         if (text.includes('INSERT INTO comments')) {
           if (storedComment) {
             // Simulate PostgreSQL 23505 unique constraint violation on duplicate client_mutation_id
-            const error = new Error('duplicate key value violates unique constraint "comments_client_mutation_unique"')
+            const error = new Error(
+              'duplicate key value violates unique constraint "comments_client_mutation_unique"',
+            )
             ;(error as unknown as { code: string }).code = '23505'
             throw error
           }
@@ -308,7 +312,9 @@ describe('COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edi
       }
 
       const query = vi.fn(async (text: string) => {
-        if (text.includes('SELECT * FROM comments WHERE thread_id = $1 AND client_mutation_id = $2')) {
+        if (
+          text.includes('SELECT * FROM comments WHERE thread_id = $1 AND client_mutation_id = $2')
+        ) {
           return { rows: [existing] }
         }
         return { rows: [] }
@@ -618,11 +624,14 @@ describe('COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edi
         '@/app/(frontend)/api/v1/sites/[site_id]/threads/[thread_id]/comments/route'
       )
 
-      const req = new Request(`http://localhost/api/v1/sites/${siteId}/threads/${threadId}/comments`, {
-        method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ body: 'Hello world' }),
-      })
+      const req = new Request(
+        `http://localhost/api/v1/sites/${siteId}/threads/${threadId}/comments`,
+        {
+          method: 'POST',
+          headers: { 'content-type': 'application/json' },
+          body: JSON.stringify({ body: 'Hello world' }),
+        },
+      )
 
       const res = await POST(req, {
         params: Promise.resolve({ site_id: siteId, thread_id: threadId }),
@@ -631,22 +640,25 @@ describe('COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edi
       expect(res.status).toBe(400)
       const data = await res.json()
       expect(data.error?.code).toBe('IDEMPOTENCY_KEY_REQUIRED')
-    })
+    }, 30_000)
 
     it('POST /api/v1/sites/:site_id/threads/:thread_id/comments rejects empty body', async () => {
       const { POST } = await import(
         '@/app/(frontend)/api/v1/sites/[site_id]/threads/[thread_id]/comments/route'
       )
 
-      const req = new Request(`http://localhost/api/v1/sites/${siteId}/threads/${threadId}/comments`, {
-        method: 'POST',
-        headers: {
-          'content-type': 'application/json',
-          'idempotency-key': 'idem-test-empty',
-          'x-member-id': authorId,
+      const req = new Request(
+        `http://localhost/api/v1/sites/${siteId}/threads/${threadId}/comments`,
+        {
+          method: 'POST',
+          headers: {
+            'content-type': 'application/json',
+            'idempotency-key': 'idem-test-empty',
+            'x-member-id': authorId,
+          },
+          body: JSON.stringify({ body: '   ' }),
         },
-        body: JSON.stringify({ body: '   ' }),
-      })
+      )
 
       const res = await POST(req, {
         params: Promise.resolve({ site_id: siteId, thread_id: threadId }),

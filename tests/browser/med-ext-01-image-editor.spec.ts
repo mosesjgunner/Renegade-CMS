@@ -45,9 +45,11 @@ test('MED-EXT-01: miniPaint Image Editor opens CMoS image asset, initializes can
   } as never)
 
   // 2. Authenticate as administrative user
-  const user = (
-    await payload.find({ collection: 'users', limit: 1, overrideAccess: true } as never)
-  ).docs[0] as unknown as { id: string | number; email?: string }
+  const user = (await payload.create({
+    collection: 'users',
+    data: { email: `image-editor-${suffix}@renegade.test`, role: 'owner' },
+    overrideAccess: true,
+  } as never)) as unknown as { id: string | number; email?: string }
   expect(user).toBeTruthy()
 
   const session = await createPasskeySession(
@@ -132,9 +134,10 @@ test('MED-EXT-01: miniPaint Image Editor opens CMoS image asset, initializes can
       }
       app?: unknown
     }
-    return Boolean(win.Layers && win.app)
+    if (!win.Layers || !win.app) return null
+    return win.Layers.get_dimensions()
   })
-  expect(isMiniPaintReady).toBe(true)
+  expect(isMiniPaintReady).toEqual({ width: 16, height: 16 })
 
   // 11. Save a non-destructive version through the Media API, then verify its persisted lifecycle.
   const editedTitle = `edited-banner-${suffix}`

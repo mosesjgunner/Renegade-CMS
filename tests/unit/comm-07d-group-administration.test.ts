@@ -58,7 +58,7 @@ function groupPayload(
 
 describe('COMM-07D group administration', () => {
   it('migrates durable roles, visibility boundary, and system message shape', async () => {
-    const execute = vi.fn(async () => undefined)
+    const execute = vi.fn(async (_statement: unknown) => undefined)
     await up({ db: { execute } } as never)
     const schema = JSON.stringify(execute.mock.calls[0][0])
     expect(schema).toContain('visible_from_sequence')
@@ -75,7 +75,10 @@ describe('COMM-07D group administration', () => {
         actorMemberId: alice,
         action: 'leave',
       }),
-    ).rejects.toMatchObject<Partial<ConversationError>>({ status: 409, code: 'LAST_OWNER' })
+    ).rejects.toMatchObject({
+      status: 409,
+      code: 'LAST_OWNER',
+    } satisfies Partial<ConversationError>)
   })
 
   it('returns 422 for the 101st group member invite', async () => {
@@ -87,7 +90,10 @@ describe('COMM-07D group administration', () => {
         action: 'invite',
         targetMemberId: bob,
       }),
-    ).rejects.toMatchObject<Partial<ConversationError>>({ status: 422, code: 'GROUP_MEMBER_LIMIT' })
+    ).rejects.toMatchObject({
+      status: 422,
+      code: 'GROUP_MEMBER_LIMIT',
+    } satisfies Partial<ConversationError>)
   })
 
   it('appends immutable system notices for membership changes', async () => {
@@ -100,9 +106,7 @@ describe('COMM-07D group administration', () => {
       targetMemberId: bob,
     })
     expect(result.notice).toMatchObject({ kind: 'system', system_event: 'member_removed' })
-    expect(
-      p.query.mock.calls.some(([text]: [string]) => text.startsWith('INSERT INTO messages')),
-    ).toBe(true)
+    expect(p.query.mock.calls.some(([text]) => text.startsWith('INSERT INTO messages'))).toBe(true)
   })
 
   it('only returns messages at or after the joining sequence boundary', async () => {
@@ -113,7 +117,7 @@ describe('COMM-07D group administration', () => {
       memberId: bob,
     })
     expect(messages).toEqual([{ sequence_number: 8, kind: 'system' }])
-    const messageQuery = p.query.mock.calls.find(([text]: [string]) =>
+    const messageQuery = p.query.mock.calls.find(([text]) =>
       text.includes('FROM messages m LEFT JOIN'),
     )
     expect(messageQuery?.[1]).toEqual(['g', 8])
@@ -127,9 +131,7 @@ describe('COMM-07D group administration', () => {
       actorMemberId: alice,
       action: 'leave',
     })
-    expect(p.query.mock.calls.some(([text]: [string]) => text.includes("status='archived'"))).toBe(
-      true,
-    )
+    expect(p.query.mock.calls.some(([text]) => text.includes("status='archived'"))).toBe(true)
   })
 
   it('makes an archived empty group read-only', async () => {
@@ -148,9 +150,9 @@ describe('COMM-07D group administration', () => {
         body: 'nope',
         idempotencyKey: 'archived',
       }),
-    ).rejects.toMatchObject<Partial<ConversationError>>({
+    ).rejects.toMatchObject({
       status: 409,
       code: 'CONVERSATION_ARCHIVED',
-    })
+    } satisfies Partial<ConversationError>)
   })
 })

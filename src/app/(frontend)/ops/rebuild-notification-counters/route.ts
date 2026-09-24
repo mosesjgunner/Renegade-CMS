@@ -15,8 +15,7 @@ export async function POST(request: Request) {
   const opsSecret = process.env.OPS_TOKEN || process.env.PAYLOAD_SECRET
   const authHeader = request.headers.get('authorization')
   const isAuthorizedOps =
-    (actor.isStaff && actor.memberId) ||
-    (opsSecret && authHeader === `Bearer ${opsSecret}`)
+    (actor.isStaff && actor.memberId) || (opsSecret && authHeader === `Bearer ${opsSecret}`)
 
   if (!isAuthorizedOps) {
     return Response.json(

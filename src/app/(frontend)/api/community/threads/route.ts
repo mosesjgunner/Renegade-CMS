@@ -16,7 +16,10 @@ export async function POST(request: Request) {
   const content = String(body.body ?? '')
 
   if (!siteId || !forumId || !title || !content) {
-    return Response.json({ error: 'siteId, forumId, title, and body are required' }, { status: 400 })
+    return Response.json(
+      { error: 'siteId, forumId, title, and body are required' },
+      { status: 400 },
+    )
   }
 
   const actor = await resolveCommunityActor(payload, request.headers, siteId)

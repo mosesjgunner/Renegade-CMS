@@ -1,16 +1,21 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import config from '@payload-config'
-import Link from 'next/link'
 import { getPayload } from 'payload'
+import { headers } from 'next/headers'
+import { notFound } from 'next/navigation'
+import { ProductCard } from '@/modules/commerce/ProductView'
+import { catalogSiteForHost } from '@/modules/commerce/site-scope'
 
 export const dynamic = 'force-dynamic'
 export default async function StorePage() {
   const payload = await getPayload({ config })
+  const siteId = await catalogSiteForHost(payload, (await headers()).get('host')).catch(() => null)
+  if (!siteId) notFound()
   const products = await (payload as any).find({
     collection: 'products',
-    where: { state: { equals: 'published' } },
+    where: { and: [{ state: { equals: 'published' } }, { site: { equals: siteId } }] },
     limit: 100,
-    depth: 0,
+    depth: 1,
     overrideAccess: true,
   })
   return (
@@ -18,13 +23,10 @@ export default async function StorePage() {
       <h1 className="text-3xl font-black mb-8">Store</h1>
       <div className="grid gap-4 sm:grid-cols-2">
         {products.docs.map((product: any) => (
-          <article key={product.id} className="surface-card p-5">
-            <h2 className="text-xl font-bold">{product.name}</h2>
-            <p>{product.description}</p>
-            <Link href={product.canonicalPath}>View product</Link>
-          </article>
+          <ProductCard key={product.id} product={product} />
         ))}
       </div>
+      {!products.docs.length ? <p>No products are published yet.</p> : null}
     </main>
   )
 }

@@ -13,14 +13,22 @@ import * as forumSpaceAccess from '@/modules/community/forum-space-access'
 
 describe('COMM-06B inbox keyset cursor', () => {
   it('round-trips a stable created-at/id boundary', () => {
-    const cursor = encodeInboxCursor({ id: '018f0000-0000-8000-8000-000000000001', createdAt: '2026-09-22T12:00:00.000Z' })
-    expect(decodeInboxCursor(cursor)).toEqual({ id: '018f0000-0000-8000-8000-000000000001', createdAt: '2026-09-22T12:00:00.000Z' })
+    const cursor = encodeInboxCursor({
+      id: '018f0000-0000-8000-8000-000000000001',
+      createdAt: '2026-09-22T12:00:00.000Z',
+    })
+    expect(decodeInboxCursor(cursor)).toEqual({
+      id: '018f0000-0000-8000-8000-000000000001',
+      createdAt: '2026-09-22T12:00:00.000Z',
+    })
   })
 
   it('rejects malformed cursors instead of falling back to offset pagination', () => {
     expect(decodeInboxCursor('not-a-cursor')).toBeNull()
     expect(decodeInboxCursor(Buffer.from('{}').toString('base64url'))).toBeNull()
-    expect(decodeInboxCursor(Buffer.from(JSON.stringify({ id: 123 })).toString('base64url'))).toBeNull()
+    expect(
+      decodeInboxCursor(Buffer.from(JSON.stringify({ id: 123 })).toString('base64url')),
+    ).toBeNull()
   })
 })
 
@@ -57,7 +65,9 @@ describe('COMM-06B recipient policy & inbox projection', () => {
   const spaceId = '00000000-0000-7000-8000-000000000004'
   const commentId = '00000000-0000-7000-8000-000000000005'
 
-  function createMockPayload(queryHandler: (text: string, values?: unknown[]) => Promise<unknown[]>) {
+  function createMockPayload(
+    queryHandler: (text: string, values?: unknown[]) => Promise<unknown[]>,
+  ) {
     return {
       db: {
         pool: {

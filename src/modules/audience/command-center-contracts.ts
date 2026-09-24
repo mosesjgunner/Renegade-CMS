@@ -17,7 +17,10 @@ export const PRIVACY_MIN_COHORT_SIZE = 5
 /** Privacy-safe display value for counts below threshold */
 export const PRIVACY_MASKED_VALUE = '< 5'
 
-export function applyPrivacyThreshold(count: number, threshold = PRIVACY_MIN_COHORT_SIZE): string | number {
+export function applyPrivacyThreshold(
+  count: number,
+  threshold = PRIVACY_MIN_COHORT_SIZE,
+): string | number {
   if (count === 0) return 0
   if (count < threshold) return PRIVACY_MASKED_VALUE
   return count
@@ -98,7 +101,8 @@ export const AUDIENCE_METRIC_DICTIONARY: readonly MetricDictionaryEntry[] = [
     denominator: 'form_submissions requiring confirmation',
     window: '24-hour expiration window',
     formula: 'COUNT(subscriber_confirmation_tokens)',
-    definition: 'Opaque cryptographically signed confirmation invitations dispatched to subscriber.',
+    definition:
+      'Opaque cryptographically signed confirmation invitations dispatched to subscriber.',
     caveats: ['One token per subscriber per 24 hours; expired tokens are pruned.'],
     source: '`subscriber-confirmation-tokens` outbox',
   },
@@ -139,7 +143,8 @@ export const AUDIENCE_METRIC_DICTIONARY: readonly MetricDictionaryEntry[] = [
     numerator: 'Deliveries claimed by outbox worker',
     denominator: 'eligible_snapshot',
     window: 'Job execution batch',
-    formula: 'COUNT(deliveries WHERE status IN ("sending", "accepted", "delivered", "bounced", "failed"))',
+    formula:
+      'COUNT(deliveries WHERE status IN ("sending", "accepted", "delivered", "bounced", "failed"))',
     definition: 'Outbox records passed to channel transport adapter after suppression re-check.',
     caveats: ['Excludes deliveries cancelled due to send-time suppression or quiet-hours hold.'],
     source: '`email-deliveries` / `telecom-deliveries`',
@@ -153,7 +158,8 @@ export const AUDIENCE_METRIC_DICTIONARY: readonly MetricDictionaryEntry[] = [
     denominator: 'dispatch_attempted',
     window: 'Immediate transport response',
     formula: 'COUNT(deliveries WHERE status = "accepted")',
-    definition: 'Upstream gateway (SMTP MTA or Twilio API) accepted message for transmission; not proof of recipient inbox placement.',
+    definition:
+      'Upstream gateway (SMTP MTA or Twilio API) accepted message for transmission; not proof of recipient inbox placement.',
     caveats: [
       'CRITICAL: "Accepted" is transport handoff, NOT proof of recipient inbox placement or handset arrival.',
       'SMTP 250 OK or Telecom 201 Created only proves provider enqueue.',
@@ -170,7 +176,8 @@ export const AUDIENCE_METRIC_DICTIONARY: readonly MetricDictionaryEntry[] = [
     denominator: 'provider_accepted',
     window: 'Up to 72h webhook callback',
     formula: 'COUNT(delivery_events WHERE event = "delivered")',
-    definition: 'Cryptographically verified Delivery Receipt (DLR) from carrier or DSN delivery confirmation.',
+    definition:
+      'Cryptographically verified Delivery Receipt (DLR) from carrier or DSN delivery confirmation.',
     caveats: [
       'For SMS: Network carrier DLR.',
       'For RCS: Device read/delivery receipt.',
@@ -188,7 +195,8 @@ export const AUDIENCE_METRIC_DICTIONARY: readonly MetricDictionaryEntry[] = [
     denominator: 'dispatch_attempted',
     window: 'Retry policy backoff (up to 24h)',
     formula: 'COUNT(deliveries WHERE status = "deferred")',
-    definition: 'Deliveries temporarily queued for retry due to rate limiting or temporary carrier congestion.',
+    definition:
+      'Deliveries temporarily queued for retry due to rate limiting or temporary carrier congestion.',
     caveats: ['Automatically retried using exponential backoff with jitter.'],
     source: 'Transport error handler',
   },
@@ -201,7 +209,8 @@ export const AUDIENCE_METRIC_DICTIONARY: readonly MetricDictionaryEntry[] = [
     denominator: 'provider_accepted',
     window: 'Delivery response or bounce webhook',
     formula: 'COUNT(deliveries WHERE status = "bounced")',
-    definition: 'Permanent destination failure. Automatically creates canonical suppression record.',
+    definition:
+      'Permanent destination failure. Automatically creates canonical suppression record.',
     caveats: [
       'Warning threshold: > 2.0% signals severe domain or list hygiene issues.',
       'Subscribers are immediately suppressed.',
@@ -246,7 +255,8 @@ export const AUDIENCE_METRIC_DICTIONARY: readonly MetricDictionaryEntry[] = [
     denominator: 'provider_accepted',
     window: '30 days post-dispatch',
     formula: 'COUNT(DISTINCT delivery_id WHERE open_observed)',
-    definition: 'Observed image asset fetch. Explicitly separated into human-likely vs proxy/bot cached.',
+    definition:
+      'Observed image asset fetch. Explicitly separated into human-likely vs proxy/bot cached.',
     caveats: [
       'Apple Mail Privacy Protection (MPP) and Google Image Proxies prefetch images automatically.',
       'Exact open truth is impossible; reports must display min-confirmed and max-possible uncertainty range.',
@@ -263,7 +273,8 @@ export const AUDIENCE_METRIC_DICTIONARY: readonly MetricDictionaryEntry[] = [
     denominator: 'provider_accepted',
     window: '30 days post-dispatch',
     formula: 'COUNT(DISTINCT delivery_id WHERE click_observed AND NOT is_bot)',
-    definition: 'Interactive URL navigations from message content, with known bot scanners and security crawlers filtered.',
+    definition:
+      'Interactive URL navigations from message content, with known bot scanners and security crawlers filtered.',
     caveats: [
       'Corporate email scanners (Barracuda, Proofpoint, Mimecast) pre-click links to scan malware.',
       'Scanners are identified by header signatures and excluded from human totals.',
@@ -293,7 +304,8 @@ export const AUDIENCE_METRIC_DICTIONARY: readonly MetricDictionaryEntry[] = [
     denominator: 'observed_clicks',
     window: 'Configured window (default 7 days)',
     formula: 'COUNT(attributed_goal_events WHERE campaign_id = target.id)',
-    definition: 'Completed site goals (e.g. form submission, donation, purchase, registration) attributed to campaign.',
+    definition:
+      'Completed site goals (e.g. form submission, donation, purchase, registration) attributed to campaign.',
     caveats: [
       'Uses first-party campaign parameters (?rcid=).',
       'No third-party cross-site fingerprinting or dark tracking.',

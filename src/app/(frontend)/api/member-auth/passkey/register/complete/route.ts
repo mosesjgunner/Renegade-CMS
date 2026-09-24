@@ -3,7 +3,10 @@ import { getPayload } from 'payload'
 import type { RegistrationResponseJSON } from '@simplewebauthn/server'
 
 import { currentMember, readMemberSession, verifyCsrf } from '@/modules/identity/member-identity'
-import { MemberPasskeyError, completeMemberPasskeyRegistration } from '@/modules/identity/member-passkey'
+import {
+  MemberPasskeyError,
+  completeMemberPasskeyRegistration,
+} from '@/modules/identity/member-passkey'
 import { loadConfig } from '@/modules/core/config'
 
 export async function POST(request: Request) {
@@ -18,7 +21,10 @@ export async function POST(request: Request) {
     label?: string
   }
   if (!body.challengeToken || !body.credential)
-    return Response.json({ error: 'A passkey registration challenge is required.' }, { status: 400 })
+    return Response.json(
+      { error: 'A passkey registration challenge is required.' },
+      { status: 400 },
+    )
   try {
     await completeMemberPasskeyRegistration(payload as never, {
       memberId,

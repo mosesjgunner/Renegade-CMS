@@ -5,6 +5,7 @@ This runbook documents the deterministic operator runbook and visitor walkthroug
 ---
 
 ## Workflow 1: Sender Identity & Transport Configuration
+
 1. **Configure Site Sender Identity**:
    - Navigate to Site Settings or execute sender identity configuration.
    - Configure Default Sender: `news@renegadeparty.org`, Reply-To: `contact@renegadeparty.org`.
@@ -18,6 +19,7 @@ This runbook documents the deterministic operator runbook and visitor walkthroug
 ---
 
 ## Workflow 2: Public Form Authoring & Visitor Submissions
+
 1. **Author Form Definition**:
    - Template: `newsletter-signup`.
    - Form Fields: `email` (email, required), `full_name` (text), `consent` (checkbox, required).
@@ -31,6 +33,7 @@ This runbook documents the deterministic operator runbook and visitor walkthroug
 ---
 
 ## Workflow 3: Double Opt-In & Preference Center
+
 1. **Double Opt-In Token Verification**:
    - The system generates an expiring, cryptographically signed token bound to the visitor's email and site ID.
    - Visiting `/audience/confirm?token={token}` transitions the subscriber record from `pending` to `active` and logs an immutable `consent-events` record (`double-opt-in-confirmed`).
@@ -46,6 +49,7 @@ This runbook documents the deterministic operator runbook and visitor walkthroug
 ---
 
 ## Workflow 4: Explainable Segmentation & Recipient Snapshots
+
 1. **Define Segment Filter Criteria**:
    - Build criteria combining list membership, tags, engagement, and consent status.
 2. **Explainable Evaluation**:
@@ -57,6 +61,7 @@ This runbook documents the deterministic operator runbook and visitor walkthroug
 ---
 
 ## Workflow 5: Newsletter Composition & Local SMTP Dispatch
+
 1. **Author Responsive Email**:
    - Compose multi-block message using heading, text, button, content-card, and divider blocks.
    - Validate design against responsive width and contrast rules.
@@ -71,11 +76,12 @@ This runbook documents the deterministic operator runbook and visitor walkthroug
 ---
 
 ## Workflow 6: Concurrency, Suppression & Fault Recovery
+
 1. **Worker Concurrency**:
    - Simultaneous worker executions for the same `email-deliveries` ID acquire row-level locks or concurrency keys (`audience.email:{id}`).
    - Idempotent delivery prevents duplicate email emission.
 2. **Send-Time Suppression Checks**:
-   - If a subscriber unsubscribes or is suppressed *after* snapshot creation but *before* actual dispatch, the task intercepts the send, updates delivery status to `cancelled`, and records `code: 'suppressed-before-send'`.
+   - If a subscriber unsubscribes or is suppressed _after_ snapshot creation but _before_ actual dispatch, the task intercepts the send, updates delivery status to `cancelled`, and records `code: 'suppressed-before-send'`.
 3. **Transient Failure Recovery**:
    - Simulated network timeouts or temporary provider errors update the delivery to `sending`/`queued` and re-throw retryable errors for exponential backoff.
 4. **Bounce & Complaint Ingestion**:
@@ -84,6 +90,7 @@ This runbook documents the deterministic operator runbook and visitor walkthroug
 ---
 
 ## Workflow 7: Welcome Automations
+
 1. **Activate Automation Definition**:
    - Trigger: `form-submission` or `list-joined`.
    - Actions: `add-segment-with-consent`, `notify`, `create-draft`.
@@ -95,6 +102,7 @@ This runbook documents the deterministic operator runbook and visitor walkthroug
 ---
 
 ## Workflow 8: Telecom SMS & RCS Dispatch
+
 1. **Author Telecom Messages**:
    - Compose rich RCS Card with media, title, suggestions, and explicit SMS fallback body.
 2. **Capability-Aware Routing**:
@@ -112,6 +120,7 @@ This runbook documents the deterministic operator runbook and visitor walkthroug
 ---
 
 ## Workflow 9: Audience Command Center Operations
+
 1. **Unified Command Center (`/admin/audience`)**:
    - View Multi-Channel Dispatch Calendar across Email and Telecom.
    - Inspect Deliverability Health: Provider status, latency, bounce rates, spam rate.
@@ -123,6 +132,7 @@ This runbook documents the deterministic operator runbook and visitor walkthroug
 ---
 
 ## Workflow 10: Stack Restart, Backup & Isolated Restore
+
 1. **Operational Backup**:
    - Run `npm run backup:operational` to create snapshot of database and media files.
 2. **Stack Restart & Outbox Reconciliation**:

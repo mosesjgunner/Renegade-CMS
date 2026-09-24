@@ -12,7 +12,8 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
     ALTER TYPE "public"."enum_identity_tokens_purpose" ADD VALUE IF NOT EXISTS 'passkey-registration';
     ALTER TYPE "public"."enum_identity_tokens_purpose" ADD VALUE IF NOT EXISTS 'passkey-authentication';
 
-    ALTER TABLE "members" ALTER COLUMN "status" SET DEFAULT 'pending';
+    -- PostgreSQL cannot use an enum value added by ALTER TYPE until this
+    -- migration transaction commits. COMM-02 applies the new default next.
     ALTER TABLE "members" ADD COLUMN IF NOT EXISTS "restricted_at" timestamp(3) with time zone;
     ALTER TABLE "members" ADD COLUMN IF NOT EXISTS "suspended_at" timestamp(3) with time zone;
     ALTER TABLE "members" ADD COLUMN IF NOT EXISTS "deactivated_at" timestamp(3) with time zone;

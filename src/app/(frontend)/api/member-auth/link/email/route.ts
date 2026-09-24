@@ -1,7 +1,12 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
 
-import { currentMember, readMemberSession, requestEmailLink, verifyCsrf } from '@/modules/identity/member-identity'
+import {
+  currentMember,
+  readMemberSession,
+  requestEmailLink,
+  verifyCsrf,
+} from '@/modules/identity/member-identity'
 import { loadConfig } from '@/modules/core/config'
 import { selectEmailDeliveryAdapter } from '@/modules/email/delivery'
 import { resolveSiteSettings } from '@/modules/core/site-settings'

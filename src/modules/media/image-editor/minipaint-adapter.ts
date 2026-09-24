@@ -7,6 +7,7 @@
  * Upstream project: https://github.com/viliusle/miniPaint (MIT License)
  */
 
+import { MAX_IMAGE_EDITOR_PIXELS } from './contracts'
 import type {
   ImageEditorAdapter,
   ImageEditorAsset,
@@ -95,7 +96,12 @@ export class MiniPaintAdapter implements ImageEditorAdapter {
     })
 
     this.messageHandler = (event: MessageEvent) => {
-      if (!this.iframe || event.source !== this.iframe.contentWindow) return
+      if (
+        !this.iframe ||
+        event.source !== this.iframe.contentWindow ||
+        event.origin !== window.location.origin
+      )
+        return
       const data = event.data
       if (!data || typeof data !== 'object') return
 
@@ -150,6 +156,14 @@ export class MiniPaintAdapter implements ImageEditorAdapter {
       throw new Error('Image editor iframe is not attached.')
     }
 
+    if (asset.width && asset.height && asset.width * asset.height > MAX_IMAGE_EDITOR_PIXELS) {
+      throw new Error('This image exceeds the 50 megapixel editor limit.')
+    }
+    const imageUrl = new URL(asset.url, window.location.origin)
+    if (imageUrl.origin !== window.location.origin) {
+      throw new Error('The image editor can load CMoS media URLs only.')
+    }
+
     const win = this.iframe.contentWindow as WindowWithMiniPaint
     const appState = win.app?.State || win.State
     const appActions = win.app?.Actions || win.Actions
@@ -159,7 +173,7 @@ export class MiniPaintAdapter implements ImageEditorAdapter {
     if (appState && appActions && appLayers) {
       let objectUrl: string | null = null
       try {
-        const resp = await fetch(asset.url)
+        const resp = await fetch(imageUrl)
         if (resp.ok) {
           const blob = await resp.blob()
           objectUrl = URL.createObjectURL(blob)
@@ -170,24 +184,22 @@ export class MiniPaintAdapter implements ImageEditorAdapter {
 
       return new Promise<{ width: number; height: number }>((resolve, reject) => {
         const img = new Image()
-        const effectiveUrl = objectUrl || asset.url
-        const isCrossOrigin =
-          typeof window !== 'undefined' &&
-          effectiveUrl.startsWith('http') &&
-          !effectiveUrl.startsWith(window.location.origin)
-        if (isCrossOrigin) {
-          img.crossOrigin = 'anonymous'
-        }
+        const effectiveUrl = objectUrl || imageUrl.toString()
         img.onload = () => {
           try {
+            const width = img.naturalWidth || img.width
+            const height = img.naturalHeight || img.height
+            if (width * height > MAX_IMAGE_EDITOR_PIXELS) {
+              throw new Error('This image exceeds the 50 megapixel editor limit.')
+            }
             const newLayer = {
               name: asset.title || 'image',
               type: 'image',
               link: img,
-              width: img.naturalWidth || img.width,
-              height: img.naturalHeight || img.height,
-              width_original: img.naturalWidth || img.width,
-              height_original: img.naturalHeight || img.height,
+              width,
+              height,
+              width_original: width,
+              height_original: height,
             }
 
             const Actions = appActions!
@@ -210,7 +222,7 @@ export class MiniPaintAdapter implements ImageEditorAdapter {
               new Bundle('load_cmos_asset', 'Load CMoS Asset', [
                 new ResetLayers(),
                 new InsertLayer(newLayer),
-                new Autoresize(img.naturalWidth, img.naturalHeight, null, true, true),
+                new Autoresize(width, height, null, true, true),
               ]),
             )
             this.dirty = false
@@ -219,10 +231,10 @@ export class MiniPaintAdapter implements ImageEditorAdapter {
               dirty: false,
               canUndo: false,
               canRedo: false,
-              dimensions: { width: img.naturalWidth, height: img.naturalHeight },
+              dimensions: { width, height },
             })
             if (objectUrl) URL.revokeObjectURL(objectUrl)
-            resolve({ width: img.naturalWidth, height: img.naturalHeight })
+            resolve({ width, height })
           } catch (err) {
             if (objectUrl) URL.revokeObjectURL(objectUrl)
             reject(err)
@@ -230,7 +242,7 @@ export class MiniPaintAdapter implements ImageEditorAdapter {
         }
         img.onerror = () => {
           if (objectUrl) URL.revokeObjectURL(objectUrl)
-          reject(new Error(`Failed to load CMoS asset bytes from ${asset.url}`))
+          reject(new Error(`Failed to load CMoS asset bytes from ${imageUrl.pathname}`))
         }
         img.src = effectiveUrl
       })
@@ -244,7 +256,12 @@ export class MiniPaintAdapter implements ImageEditorAdapter {
       }, 10_000)
 
       const onMessage = (event: MessageEvent) => {
-        if (!this.iframe || event.source !== this.iframe.contentWindow) return
+        if (
+          !this.iframe ||
+          event.source !== this.iframe.contentWindow ||
+          event.origin !== window.location.origin
+        )
+          return
         const data = event.data
         if (data?.type === 'cmos:image-editor:loaded') {
           cleanup()
@@ -273,9 +290,9 @@ export class MiniPaintAdapter implements ImageEditorAdapter {
       this.iframe?.contentWindow?.postMessage(
         {
           type: 'cmos:image-editor:load',
-          payload: { url: asset.url, name: asset.title || 'image' },
+          payload: { url: imageUrl.toString(), name: asset.title || 'image' },
         },
-        '*',
+        window.location.origin,
       )
     })
   }
@@ -337,7 +354,12 @@ export class MiniPaintAdapter implements ImageEditorAdapter {
       }, 10_000)
 
       const onMessage = async (event: MessageEvent) => {
-        if (!this.iframe || event.source !== this.iframe.contentWindow) return
+        if (
+          !this.iframe ||
+          event.source !== this.iframe.contentWindow ||
+          event.origin !== window.location.origin
+        )
+          return
         const data = event.data
         if (
           data?.type === 'cmos:image-editor:export-response' &&
@@ -373,7 +395,7 @@ export class MiniPaintAdapter implements ImageEditorAdapter {
           type: 'cmos:image-editor:export-request',
           payload: { requestId, mimeType: format, quality },
         },
-        '*',
+        window.location.origin,
       )
     })
   }

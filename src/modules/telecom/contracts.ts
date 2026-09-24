@@ -327,7 +327,11 @@ export function isWithinQuietHours(
           return { isQuiet: true, resolvedTimezone: tz, localHour: hour }
         }
       }
-      return { isQuiet: false, resolvedTimezone: 'conservative-safe', localHour: getLocalHour(time, siteTz) }
+      return {
+        isQuiet: false,
+        resolvedTimezone: 'conservative-safe',
+        localHour: getLocalHour(time, siteTz),
+      }
     }
     // Default: use site timezone
     const hour = getLocalHour(time, siteTz)
@@ -336,7 +340,11 @@ export function isWithinQuietHours(
 
   try {
     const hour = getLocalHour(time, recipientTimezone)
-    return { isQuiet: isHourQuiet(hour, start, end), resolvedTimezone: recipientTimezone, localHour: hour }
+    return {
+      isQuiet: isHourQuiet(hour, start, end),
+      resolvedTimezone: recipientTimezone,
+      localHour: hour,
+    }
   } catch {
     const hour = getLocalHour(time, siteTz)
     return { isQuiet: isHourQuiet(hour, start, end), resolvedTimezone: siteTz, localHour: hour }
@@ -386,7 +394,7 @@ export function calculateNextSendWindow(
 
     // Construct local target time string: YYYY-MM-DDTHH:00:00
     const localIsoTarget = `${localDateStr}T${String(endHour).padStart(2, '0')}:00:00`
-    
+
     // Parse in target timezone
     const targetDate = parseInTimezone(localIsoTarget, tz)
     if (targetDate.getTime() > fromTime.getTime()) {
@@ -406,7 +414,7 @@ function parseInTimezone(localIso: string, timeZone: string): Date {
 
   // Start with a UTC representation
   const utcGuess = new Date(Date.UTC(year, month - 1, day, hour, minute, second))
-  
+
   // Format utcGuess in target timezone to see what local time it represents
   const dtf = new Intl.DateTimeFormat('en-US', {
     timeZone,

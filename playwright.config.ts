@@ -13,6 +13,8 @@ const runtimeEnv = Object.fromEntries(
 )
 const e2eEnv = {
   ...runtimeEnv,
+  // Allows destructive browser fixtures to run against a dedicated disposable database.
+  DATABASE_URL: process.env.E2E_DATABASE_URL ?? runtimeEnv.DATABASE_URL,
   // Use `localhost` (not the 127.0.0.1 literal) so browser WebAuthn accepts the
   // origin: an IP address is an invalid RP ID, but `localhost` is allowed. It
   // resolves to the same loopback address, so non-passkey specs are unaffected.
@@ -38,7 +40,7 @@ export default defineConfig({
     ...(process.env.PLAYWRIGHT_CHANNEL ? { channel: process.env.PLAYWRIGHT_CHANNEL } : {}),
   },
   webServer: {
-    command: 'node .next/standalone/server.js',
+    command: process.env.E2E_WEB_SERVER_COMMAND ?? 'node .next/standalone/server.js',
     url: 'http://localhost:3110/health/ready',
     reuseExistingServer: false,
     timeout: 120_000,

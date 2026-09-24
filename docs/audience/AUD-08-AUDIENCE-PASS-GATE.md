@@ -1,11 +1,13 @@
 # AUD-08 Audience Pass Gate Acceptance & Capability Report
 
 ## Executive Summary
+
 The **Renegade CMoS Audience Pass Gate (AUD-08)** establishes and proves a fully self-hosted, sovereign, multi-channel Audience product for Renegade CMS. It validates that all contracts and surfaces established across `AUD-00` through `AUD-07` operate seamlessly through normal operator and visitor boundaries without mock substitution, external delivery leakage, or synthetic state bypasses.
 
 ---
 
 ## 1. Candidate Baseline & Environment Configuration
+
 - **Git Commit Baseline**: `8f908c6939fb2a01d63fedd9c9759131db5f3f28`
 - **Candidate Environment Profile**: Supported default self-hosted profile
   - **Database**: PostgreSQL 16+ on `127.0.0.1:5432/renegade`
@@ -18,7 +20,9 @@ The **Renegade CMoS Audience Pass Gate (AUD-08)** establishes and proves a fully
 ---
 
 ## 2. Migrations & Schema Ledger
+
 The AUD-08 pass gate registered and executed:
+
 - **Migration**: `src/migrations/20260920_080000_aud_08_audience_pass_gate.ts`
 - **Enum Enhancements**:
   - `enum_consent_events_event`: added `'preference-granted'`, `'preference-withdrawn'`, `'operator-correction'`, `'erased'`
@@ -33,16 +37,17 @@ The AUD-08 pass gate registered and executed:
 
 ## 3. Provider Capability Matrix
 
-| Channel | Provider / Adapter | Status | Single Send | Batch Send | Provider Idempotency | Webhook Verification | Reconciliation | TCPA / Quiet Hours |
-|---|---|---|:---:|:---:|:---:|:---:|:---:|:---:|
-| **Email** | `development-capture` / `local-mail-sink` | **Certified Ready** | Yes | No | Yes | Yes | Yes | N/A |
-| **Email** | `smtp` (unconfigured real) | **Graceful Degradation** | Safe | Safe | Safe | Safe | Safe | N/A |
-| **Telecom** | `telecom-emulator` | **Certified Ready** | Yes | Yes | Yes | Yes | Yes | Enforced (8am-9pm) |
-| **Telecom** | `rcs` / `sms` live transport | **Unconfigured / Policy Safe** | Safe | Safe | Safe | Safe | Safe | Enforced (8am-9pm) |
+| Channel     | Provider / Adapter                        | Status                         | Single Send | Batch Send | Provider Idempotency | Webhook Verification | Reconciliation | TCPA / Quiet Hours |
+| ----------- | ----------------------------------------- | ------------------------------ | :---------: | :--------: | :------------------: | :------------------: | :------------: | :----------------: |
+| **Email**   | `development-capture` / `local-mail-sink` | **Certified Ready**            |     Yes     |     No     |         Yes          |         Yes          |      Yes       |        N/A         |
+| **Email**   | `smtp` (unconfigured real)                | **Graceful Degradation**       |    Safe     |    Safe    |         Safe         |         Safe         |      Safe      |        N/A         |
+| **Telecom** | `telecom-emulator`                        | **Certified Ready**            |     Yes     |    Yes     |         Yes          |         Yes          |      Yes       | Enforced (8am-9pm) |
+| **Telecom** | `rcs` / `sms` live transport              | **Unconfigured / Policy Safe** |    Safe     |    Safe    |         Safe         |         Safe         |      Safe      | Enforced (8am-9pm) |
 
 ---
 
 ## 4. Acceptance Criteria & Test Execution Matrix
+
 All 10 core integration tests and the browser test suite passed with 100% success rate:
 
 ```
@@ -62,6 +67,7 @@ Result: 10 passed (10) | 100%
 ```
 
 ### Full Unit Test Suite:
+
 ```
 Test Files: 111 passed (111)
 Tests:      670 passed (670)
@@ -71,6 +77,7 @@ Result:     100% PASS
 ---
 
 ## 5. Repaired Defects (Audited & Bounded)
+
 1. **Foreign Key Reference Normalization (`service.ts`)**:
    - Resolved empty string `""` vs `undefined` coercion in `relationId`, preventing foreign key constraint validation failures.
 2. **Form Schema Localization & Consent Snapshot (`contracts.ts`, `service.ts`)**:
@@ -88,6 +95,7 @@ Result:     100% PASS
 ---
 
 ## 6. Verification Proofs
+
 - **Local Mail Sink**: Real SMTP dispatch verified with RFC headers (`List-Unsubscribe`, `X-Renegade-Purpose`, `X-Renegade-Idempotency-Key`).
 - **Telecom Emulator**: Verified RCS routing, automatic SMS fallback with configured text, recipient capability detection, and instant STOP opt-out suppression.
 - **Audience Command Center**: Unified dashboard at `/admin/audience` verified with multi-channel dispatch calendar, deliverability health, experiment allocation, and privacy threshold auditing.
@@ -96,6 +104,8 @@ Result:     100% PASS
 ---
 
 ## 7. Next Step & COMM-00 Handoff
+
 With `AUD-08` verified and passing all gates:
+
 - The self-hosted Audience engine is declared **Production Ready**.
 - Ready for handoff to **COMM-00: Renegade Commerce Surface Pass**.

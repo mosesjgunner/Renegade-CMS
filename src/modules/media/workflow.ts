@@ -346,6 +346,42 @@ export async function replaceMedia(
     reason?: string
   },
 ) {
+  const pool = (payload as any)?.db?.pool as
+    | {
+        connect?: () => Promise<{
+          query: (sql: string, values?: unknown[]) => Promise<unknown>
+          release: () => void
+        }>
+      }
+    | undefined
+  if (!pool?.connect) {
+    return replaceMediaUnlocked(payload, config, input)
+  }
+
+  const client = await pool.connect()
+  const lockKey = `media-replacement:${input.scope.siteId}:${input.replacedMediaId}`
+  try {
+    await client.query('SELECT pg_advisory_lock(hashtextextended($1, 0))', [lockKey])
+    return await replaceMediaUnlocked(payload, config, input)
+  } finally {
+    try {
+      await client.query('SELECT pg_advisory_unlock(hashtextextended($1, 0))', [lockKey])
+    } finally {
+      client.release()
+    }
+  }
+}
+
+async function replaceMediaUnlocked(
+  payload: Payload,
+  config: AppConfig,
+  input: Parameters<typeof uploadMedia>[2] & {
+    replacedMediaId: string
+    mode?: ReplacementMode
+    usageIds?: string[]
+    reason?: string
+  },
+) {
   const original = (await payload.findByID({
     collection: 'media-assets',
     id: input.replacedMediaId,
@@ -354,6 +390,11 @@ export async function replaceMedia(
   } as never)) as unknown as Doc
   if (id(original.site) !== input.scope.siteId)
     throw new MediaWorkflowError('Cross-site replacement is not allowed.', 403)
+  if (input.mode === 'all-usages' && original.replaceGloballyWith)
+    throw new MediaWorkflowError(
+      'This asset already has a replacement version. Refresh Media before saving again.',
+      409,
+    )
   const replacement = (await uploadMedia(payload, config, input)) as unknown as Doc
   await payload.update({
     collection: 'media-assets',

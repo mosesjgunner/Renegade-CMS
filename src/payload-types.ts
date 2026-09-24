@@ -239,13 +239,30 @@ export interface Config {
     'merchant-connections': MerchantConnection;
     'payment-method-capabilities': PaymentMethodCapability;
     products: Product;
+    'digital-delivery-grants': DigitalDeliveryGrant;
+    'digital-download-events': DigitalDownloadEvent;
+    'catalog-import-runs': CatalogImportRun;
     carts: Cart;
+    promotions: Promotion;
+    'checkout-proposals': CheckoutProposal;
+    'inventory-reservations': InventoryReservation;
     'checkout-sessions': CheckoutSession;
     'payment-intents': PaymentIntent;
+    'payment-attempts': PaymentAttempt;
     orders: Order;
     'payment-webhook-events': PaymentWebhookEvent;
+    'commerce-refunds': CommerceRefund;
+    'commerce-disputes': CommerceDispute;
+    'commerce-reconciliation-cases': CommerceReconciliationCase;
     supporters: Supporter;
     entitlements: Entitlement;
+    'plan-revisions': PlanRevision;
+    subscriptions: Subscription;
+    'subscription-events': SubscriptionEvent;
+    'donation-campaigns': DonationCampaign;
+    'donation-intents': DonationIntent;
+    donations: Donation;
+    'donation-events': DonationEvent;
     'payload-kv': PayloadKv;
     'payload-jobs': PayloadJob;
     'payload-locked-documents': PayloadLockedDocument;
@@ -426,13 +443,30 @@ export interface Config {
     'merchant-connections': MerchantConnectionsSelect<false> | MerchantConnectionsSelect<true>;
     'payment-method-capabilities': PaymentMethodCapabilitiesSelect<false> | PaymentMethodCapabilitiesSelect<true>;
     products: ProductsSelect<false> | ProductsSelect<true>;
+    'digital-delivery-grants': DigitalDeliveryGrantsSelect<false> | DigitalDeliveryGrantsSelect<true>;
+    'digital-download-events': DigitalDownloadEventsSelect<false> | DigitalDownloadEventsSelect<true>;
+    'catalog-import-runs': CatalogImportRunsSelect<false> | CatalogImportRunsSelect<true>;
     carts: CartsSelect<false> | CartsSelect<true>;
+    promotions: PromotionsSelect<false> | PromotionsSelect<true>;
+    'checkout-proposals': CheckoutProposalsSelect<false> | CheckoutProposalsSelect<true>;
+    'inventory-reservations': InventoryReservationsSelect<false> | InventoryReservationsSelect<true>;
     'checkout-sessions': CheckoutSessionsSelect<false> | CheckoutSessionsSelect<true>;
     'payment-intents': PaymentIntentsSelect<false> | PaymentIntentsSelect<true>;
+    'payment-attempts': PaymentAttemptsSelect<false> | PaymentAttemptsSelect<true>;
     orders: OrdersSelect<false> | OrdersSelect<true>;
     'payment-webhook-events': PaymentWebhookEventsSelect<false> | PaymentWebhookEventsSelect<true>;
+    'commerce-refunds': CommerceRefundsSelect<false> | CommerceRefundsSelect<true>;
+    'commerce-disputes': CommerceDisputesSelect<false> | CommerceDisputesSelect<true>;
+    'commerce-reconciliation-cases': CommerceReconciliationCasesSelect<false> | CommerceReconciliationCasesSelect<true>;
     supporters: SupportersSelect<false> | SupportersSelect<true>;
     entitlements: EntitlementsSelect<false> | EntitlementsSelect<true>;
+    'plan-revisions': PlanRevisionsSelect<false> | PlanRevisionsSelect<true>;
+    subscriptions: SubscriptionsSelect<false> | SubscriptionsSelect<true>;
+    'subscription-events': SubscriptionEventsSelect<false> | SubscriptionEventsSelect<true>;
+    'donation-campaigns': DonationCampaignsSelect<false> | DonationCampaignsSelect<true>;
+    'donation-intents': DonationIntentsSelect<false> | DonationIntentsSelect<true>;
+    donations: DonationsSelect<false> | DonationsSelect<true>;
+    'donation-events': DonationEventsSelect<false> | DonationEventsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -467,6 +501,8 @@ export interface Config {
       'webhook-delivery-dispatch': TaskWebhookDeliveryDispatch;
       'editorial-publish': TaskEditorialPublish;
       'media-upload-cleanup': TaskMediaUploadCleanup;
+      'community-message-attachment-cleanup': TaskCommunityMessageAttachmentCleanup;
+      'community-message-attachment-scan': TaskCommunityMessageAttachmentScan;
       'content-release-execute': TaskContentReleaseExecute;
       'media-import': TaskMediaImport;
       'media-render': TaskMediaRender;
@@ -485,6 +521,9 @@ export interface Config {
       'analytics-retention-cleanup': TaskAnalyticsRetentionCleanup;
       'quality-scan': TaskQualityScan;
       'commerce-abandon-checkouts': TaskCommerceAbandonCheckouts;
+      'commerce-process-payment-event': TaskCommerceProcessPaymentEvent;
+      'commerce-reconcile-payments': TaskCommerceReconcilePayments;
+      'commerce-reconcile-subscriptions': TaskCommerceReconcileSubscriptions;
       inline: {
         input: unknown;
         output: unknown;
@@ -568,6 +607,10 @@ export interface Site {
    * Controls whether new members may register on this site: open sign-up, invite-only, staff approval required, or registration disabled.
    */
   communityRegistrationPolicy: 'open' | 'invite' | 'approval' | 'disabled';
+  /**
+   * Reaction codes members may use on canonical comments for this site.
+   */
+  commentReactionCodes: ('thumbs_up' | 'heart' | 'insightful' | 'applause')[];
   updatedAt: string;
   createdAt: string;
 }
@@ -2665,12 +2708,17 @@ export interface Product {
   publication?: (string | null) | Publication;
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
-  merchantConnection: string | MerchantConnection;
+  merchantConnection?: (string | null) | MerchantConnection;
+  catalogContractVersion: number;
   name: string;
+  summary?: string | null;
   slug: string;
   canonicalPath: string;
-  kind: 'physical' | 'digital' | 'pod-reference' | 'subscription' | 'membership';
+  kind: 'physical' | 'digital' | 'pod-reference' | 'subscription' | 'membership' | 'donation' | 'affiliate';
   state: 'draft' | 'review' | 'approved' | 'published' | 'archived';
+  publishedAt?: string | null;
+  archivedAt?: string | null;
+  redirectTo?: string | null;
   description?: string | null;
   /**
    * Prompt 2 reviewed product text keyed by locale; legal/payment copy is kept separately and reviewed.
@@ -2685,8 +2733,35 @@ export interface Product {
     | boolean
     | null;
   categories?: (string | null) | Category;
+  topics?: (string | Topic)[] | null;
+  tags?: (string | Tag)[] | null;
   collections?: (string | Album)[] | null;
   media?: (string | MediaAsset)[] | null;
+  relationships?: (string | Product)[] | null;
+  /**
+   * Allowlisted capabilities: shippable, digital-entitlement, subscription, donation, affiliate, pod.
+   */
+  productCapabilities:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Deliberate option dimensions and allowed values; variants are authored explicitly.
+   */
+  optionDimensions?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   variants?:
     | {
         sku: string;
@@ -2700,7 +2775,27 @@ export interface Product {
           | number
           | boolean
           | null;
-        inventoryPolicy?: ('untracked' | 'tracked' | 'external-hook' | 'pod-provider') | null;
+        optionValues?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        status?: ('active' | 'unavailable' | 'archived') | null;
+        weightGrams?: number | null;
+        dimensionsMm?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        inventoryPolicy?: ('untracked' | 'tracked' | 'external-hook' | 'pod-provider' | 'affiliate' | 'pod') | null;
         inventoryQuantity?: number | null;
         inventoryReference?: string | null;
         digitalFiles?: (string | MediaAsset)[] | null;
@@ -2727,10 +2822,133 @@ export interface Product {
       }[]
     | null;
   /**
+   * Versioned canonical price offers. Never overwrite historical versions.
+   */
+  offers?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Private media IDs, entitlement key, limits, expiry and malware/rights evidence. Originals are never public.
+   */
+  digitalDelivery?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Destination, disclosure, allowlisted tracking, observed remote facts and freshness window.
+   */
+  affiliatePolicy?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Reviewed remote IDs/options, pinned artwork revision, mockup provenance and cost/availability snapshot.
+   */
+  podMappings?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  disclosures?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  workflowAudit?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  revisionSnapshots?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  publishedPresentation?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
    * Existing entitlement key for subscription/membership products.
    */
   entitlement?: string | null;
   releaseRevision?: string | null;
+  /**
+   * Leave blank to use the resolved title from this content.
+   */
+  seoTitle?: string | null;
+  /**
+   * Leave blank to use the resolved summary or Site Settings description.
+   */
+  seoDescription?: string | null;
+  /**
+   * Leave blank to use this content’s resolved canonical path.
+   */
+  seoCanonicalURL?: string | null;
+  /**
+   * Leave blank to use the selected media’s resolved alt text.
+   */
+  seoImageAlt?: string | null;
+  seoKeywords?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  seoFocusKeyphrase?: string | null;
+  seoNoIndex?: boolean | null;
+  /**
+   * Optional advanced discovery overrides: socialTitle, socialDescription, socialImage, locale, alternates, follow. Ordinary titles, summaries and hero media are inherited automatically.
+   */
+  discoveryOverrides?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   retentionMode: 'permanent' | 'expire-at' | 'manual-burn' | 'archive' | 'tombstone';
   retentionExpiresAt?: string | null;
   retentionHold: 'none' | 'legal' | 'moderation';
@@ -2833,6 +3051,8 @@ export interface PayloadJob {
           | 'webhook-delivery-dispatch'
           | 'editorial-publish'
           | 'media-upload-cleanup'
+          | 'community-message-attachment-cleanup'
+          | 'community-message-attachment-scan'
           | 'content-release-execute'
           | 'media-import'
           | 'media-render'
@@ -2850,7 +3070,10 @@ export interface PayloadJob {
           | 'audience-telecom-dispatch'
           | 'analytics-retention-cleanup'
           | 'quality-scan'
-          | 'commerce-abandon-checkouts';
+          | 'commerce-abandon-checkouts'
+          | 'commerce-process-payment-event'
+          | 'commerce-reconcile-payments'
+          | 'commerce-reconcile-subscriptions';
         taskID: string;
         input?:
           | {
@@ -2893,6 +3116,8 @@ export interface PayloadJob {
         | 'webhook-delivery-dispatch'
         | 'editorial-publish'
         | 'media-upload-cleanup'
+        | 'community-message-attachment-cleanup'
+        | 'community-message-attachment-scan'
         | 'content-release-execute'
         | 'media-import'
         | 'media-render'
@@ -2911,6 +3136,9 @@ export interface PayloadJob {
         | 'analytics-retention-cleanup'
         | 'quality-scan'
         | 'commerce-abandon-checkouts'
+        | 'commerce-process-payment-event'
+        | 'commerce-reconcile-payments'
+        | 'commerce-reconcile-subscriptions'
       )
     | null;
   queue?: string | null;
@@ -4469,6 +4697,18 @@ export interface Event {
   publication?: (string | null) | Publication;
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
+  /**
+   * Optional site-scoped resource and capability required for this published page.
+   */
+  requiredEntitlement?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   title: string;
   slug: string;
   canonicalPath: string;
@@ -7733,50 +7973,47 @@ export interface PaymentMethodCapability {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "carts".
+ * via the `definition` "digital-delivery-grants".
  */
-export interface Cart {
+export interface DigitalDeliveryGrant {
   id: string;
   site: string | Site;
   publication?: (string | null) | Publication;
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
-  merchantConnection: string | MerchantConnection;
-  currency: string;
-  buyerCountry?: string | null;
-  items:
-    | {
-        [k: string]: unknown;
-      }
-    | unknown[]
-    | string
-    | number
-    | boolean
-    | null;
-  state: 'active' | 'converted' | 'abandoned' | 'expired';
-  idempotencyKey?: string | null;
+  product: string | Product;
+  variantSku: string;
+  entitlement: string | Entitlement;
+  member?: (string | null) | Member;
+  mediaAsset: string | MediaAsset;
+  grantKeyHash: string;
+  downloadLimit?: number | null;
+  downloadCount: number;
   expiresAt?: string | null;
+  revokedAt?: string | null;
+  lastDownloadedAt?: string | null;
   updatedAt: string;
   createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "checkout-sessions".
+ * via the `definition` "entitlements".
  */
-export interface CheckoutSession {
+export interface Entitlement {
   id: string;
   site: string | Site;
   publication?: (string | null) | Publication;
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
-  cart: string | Cart;
-  merchantConnection: string | MerchantConnection;
-  currency: string;
-  amountMinor: string;
-  buyerCountry?: string | null;
-  state: 'open' | 'pending' | 'completed' | 'failed' | 'cancelled' | 'abandoned' | 'expired';
-  selectedCapabilityId?: string | null;
-  legalCopy?:
+  supporter: string | Supporter;
+  campaign?: (string | null) | Campaign;
+  paymentIntent?: (string | null) | PaymentIntent;
+  entitlement: string;
+  source: string;
+  startsAt: string;
+  endsAt?: string | null;
+  revokedAt?: string | null;
+  fulfillmentReference?:
     | {
         [k: string]: unknown;
       }
@@ -7785,9 +8022,12 @@ export interface CheckoutSession {
     | number
     | boolean
     | null;
-  idempotencyKey?: string | null;
-  expiresAt?: string | null;
-  shippingExtension?:
+  resource?: string | null;
+  capability?: string | null;
+  scope?: string | null;
+  grantKey?: string | null;
+  limit?: number | null;
+  evidence?:
     | {
         [k: string]: unknown;
       }
@@ -7796,7 +8036,23 @@ export interface CheckoutSession {
     | number
     | boolean
     | null;
-  taxExtension?:
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "supporters".
+ */
+export interface Supporter {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  displayName?: string | null;
+  member?: (string | null) | Member;
+  emailHash?: string | null;
+  providerReferences?:
     | {
         [k: string]: unknown;
       }
@@ -7805,6 +8061,7 @@ export interface CheckoutSession {
     | number
     | boolean
     | null;
+  visibilityPreference?: ('public' | 'anonymous' | 'private') | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -7869,6 +8126,402 @@ export interface PaymentIntent {
     | number
     | boolean
     | null;
+  /**
+   * Server-priced immutable checkout snapshot; never copied from a later cart.
+   */
+  orderLines?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  expiresAt: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "checkout-sessions".
+ */
+export interface CheckoutSession {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  cart: string | Cart;
+  proposal?: (string | null) | CheckoutProposal;
+  merchantConnection: string | MerchantConnection;
+  currency: string;
+  amountMinor: string;
+  buyerCountry?: string | null;
+  state: 'open' | 'pending' | 'completed' | 'failed' | 'cancelled' | 'abandoned' | 'expired';
+  selectedCapabilityId?: string | null;
+  legalCopy?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  idempotencyKey?: string | null;
+  bindingKey?: string | null;
+  customerKey?: string | null;
+  attempt: number;
+  guestAccessTokenHash?: string | null;
+  returnPath?: string | null;
+  cancelPath?: string | null;
+  expiresAt?: string | null;
+  shippingExtension?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  taxExtension?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "carts".
+ */
+export interface Cart {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  merchantConnection: string | MerchantConnection;
+  version: number;
+  guestTokenHash?: string | null;
+  member?: (string | null) | Member;
+  customerEmail?: string | null;
+  currency: string;
+  buyerCountry?: string | null;
+  items:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  appliedCouponCodes?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  shippingAddress?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  billingAddress?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  selectedShippingRateId?: string | null;
+  reconciliationNotes?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  state: 'active' | 'converted' | 'abandoned' | 'expired';
+  idempotencyKey?: string | null;
+  expiresAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "checkout-proposals".
+ */
+export interface CheckoutProposal {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  cart: string | Cart;
+  merchantConnection: string | MerchantConnection;
+  cartVersion: number;
+  currency: string;
+  customer:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  shippingAddress?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  billingAddress?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  selectedShippingRate?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  pricingSnapshot:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  taxSnapshot?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  consents:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  fulfillmentSplit:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  integrityHash: string;
+  state: 'active' | 'consumed' | 'expired' | 'cancelled';
+  expiresAt: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "digital-download-events".
+ */
+export interface DigitalDownloadEvent {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  grant: string | DigitalDeliveryGrant;
+  mediaAsset: string | MediaAsset;
+  occurredAt: string;
+  outcome: 'allowed' | 'denied';
+  reason?: string | null;
+  requestFingerprint: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "catalog-import-runs".
+ */
+export interface CatalogImportRun {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  checksum: string;
+  mode: 'dry-run' | 'apply';
+  status: 'planned' | 'applied' | 'replayed' | 'rejected';
+  source: string;
+  summary:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  appliedAt?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "promotions".
+ */
+export interface Promotion {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  version: number;
+  code: string;
+  description: string;
+  scope: 'order' | 'line' | 'category' | 'shipping';
+  discountType: 'fixed-minor' | 'percentage-basis-points' | 'free-shipping';
+  discountValue: string;
+  maxDiscountMinor?: string | null;
+  currency: string;
+  startsAt?: string | null;
+  endsAt?: string | null;
+  timezone?: string | null;
+  status: 'active' | 'paused' | 'archived';
+  stackingRule: 'exclusive' | 'stackable' | 'priority';
+  stackingPriority: number;
+  usageLimitTotal?: number | null;
+  usageCount: number;
+  usageLimitPerCustomer?: number | null;
+  eligibility?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "inventory-reservations".
+ */
+export interface InventoryReservation {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  cart: string | Cart;
+  proposal?: (string | null) | CheckoutProposal;
+  product: string | Product;
+  variantSku: string;
+  quantity: number;
+  status: 'active' | 'consumed' | 'released' | 'expired';
+  expiresAt: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payment-attempts".
+ */
+export interface PaymentAttempt {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  checkoutSession: string | CheckoutSession;
+  paymentIntent: string | PaymentIntent;
+  proposal?: (string | null) | CheckoutProposal;
+  merchantConnection: string | MerchantConnection;
+  attempt: number;
+  idempotencyKey: string;
+  providerKey: string;
+  providerContractVersion: string;
+  providerImplementationVersion: string;
+  providerApiVersion: string;
+  providerReference?: string | null;
+  providerPaymentReference?: string | null;
+  amountMinor: string;
+  currency: string;
+  state:
+    | 'initiated'
+    | 'action-required'
+    | 'processing'
+    | 'succeeded'
+    | 'failed'
+    | 'cancelled'
+    | 'partially-refunded'
+    | 'refunded'
+    | 'disputed'
+    | 'unknown';
+  refundedAmountMinor: string;
+  lastProviderSequence?: number | null;
+  processedEventIds?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  unknownSince?: string | null;
+  lastReconciledAt?: string | null;
+  nextReconcileAt?: string | null;
+  failure?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   expiresAt: string;
   updatedAt: string;
   createdAt: string;
@@ -7890,6 +8543,60 @@ export interface Order {
   currency: string;
   amountMinor: string;
   items:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  partySnapshot?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  addressSnapshot?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  totalsSnapshot?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  termsSnapshot?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  sourceSnapshot?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  downstreamInstructions?:
     | {
         [k: string]: unknown;
       }
@@ -7972,6 +8679,22 @@ export interface PaymentWebhookEvent {
   providerEventId: string;
   payloadHash: string;
   verifiedAt: string;
+  occurredAt?: string | null;
+  sequence?: number | null;
+  normalizedKind?: string | null;
+  providerReference?: string | null;
+  sanitizedEvidence?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  processingState: 'received' | 'processing' | 'processed' | 'failed' | 'gap';
+  attempts: number;
+  lastError?: string | null;
   processedAt?: string | null;
   outcome?:
     | {
@@ -7987,18 +8710,26 @@ export interface PaymentWebhookEvent {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "supporters".
+ * via the `definition` "commerce-refunds".
  */
-export interface Supporter {
+export interface CommerceRefund {
   id: string;
   site: string | Site;
   publication?: (string | null) | Publication;
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
-  displayName?: string | null;
-  member?: (string | null) | Member;
-  emailHash?: string | null;
-  providerReferences?:
+  order: string | Order;
+  paymentAttempt: string | PaymentAttempt;
+  idempotencyKey: string;
+  amountMinor: string;
+  currency: string;
+  kind: 'partial' | 'full';
+  state: 'previewed' | 'awaiting-approval' | 'processing' | 'succeeded' | 'failed' | 'unknown';
+  reason: string;
+  requestedBy: string;
+  approvedBy?: string | null;
+  providerRefundReference?: string | null;
+  providerEvidence?:
     | {
         [k: string]: unknown;
       }
@@ -8007,29 +8738,455 @@ export interface Supporter {
     | number
     | boolean
     | null;
-  visibilityPreference?: ('public' | 'anonymous' | 'private') | null;
+  downstreamPolicy?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  correctionReceipt?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  auditLog?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   updatedAt: string;
   createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "entitlements".
+ * via the `definition` "commerce-disputes".
  */
-export interface Entitlement {
+export interface CommerceDispute {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  order: string | Order;
+  paymentAttempt: string | PaymentAttempt;
+  providerDisputeReference: string;
+  amountMinor: string;
+  currency: string;
+  state: 'open' | 'under-review' | 'won' | 'lost' | 'closed';
+  reason?: string | null;
+  deadlineAt?: string | null;
+  sanitizedEvidence?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  auditLog?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "commerce-reconciliation-cases".
+ */
+export interface CommerceReconciliationCase {
+  id: string;
+  site: string | Site;
+  legacyType: string;
+  legacyId: string;
+  reason: string;
+  evidence:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  status: 'quarantined' | 'resolved' | 'dismissed';
+  createdAt: string;
+  resolvedAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "plan-revisions".
+ */
+export interface PlanRevision {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  planKey: string;
+  revision: number;
+  name: string;
+  lifecycle: 'published' | 'retired';
+  interval: 'week' | 'month' | 'year';
+  intervalCount: number;
+  amountMinor: string;
+  currency: string;
+  trialDays: number;
+  trialEligibility: 'once_per_customer' | 'unrestricted' | 'none';
+  entitlements:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  cancelPolicy: 'immediate' | 'period_end';
+  changePolicy: 'immediate' | 'period_end';
+  taxPolicy: 'provider' | 'inclusive' | 'exclusive';
+  providerMappings:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  publishedAt: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "subscriptions".
+ */
+export interface Subscription {
   id: string;
   site: string | Site;
   publication?: (string | null) | Publication;
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   supporter: string | Supporter;
-  campaign?: (string | null) | Campaign;
-  paymentIntent?: (string | null) | PaymentIntent;
-  entitlement: string;
-  source: string;
-  startsAt: string;
+  planRevision: string | PlanRevision;
+  planSnapshot:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  providerKey: string;
+  providerCustomerReference?: string | null;
+  providerSubscriptionReference?: string | null;
+  providerStatus?: string | null;
+  state:
+    | 'incomplete'
+    | 'trialing'
+    | 'active'
+    | 'past_due'
+    | 'grace'
+    | 'paused'
+    | 'cancel_at_period_end'
+    | 'canceled'
+    | 'expired'
+    | 'incomplete_expired';
+  source: 'provider' | 'complimentary' | 'migration';
+  currentPeriodStart: string;
+  currentPeriodEnd: string;
+  trialEnd?: string | null;
+  graceEnd?: string | null;
+  cancelAtPeriodEnd?: boolean | null;
+  settings?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  version: number;
+  lastEventSequence?: number | null;
+  lastEventOccurredAt?: string | null;
+  lastReconciledAt?: string | null;
+  checkoutKey?: string | null;
+  failure?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "subscription-events".
+ */
+export interface SubscriptionEvent {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  subscription: string | Subscription;
+  eventKey: string;
+  providerEventId?: string | null;
+  kind: string;
+  occurredAt: string;
+  evidence?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "donation-campaigns".
+ */
+export interface DonationCampaign {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  organization?: (string | null) | Organization;
+  campaignKey: string;
+  version: number;
+  title: string;
+  story?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  media?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  purpose: string;
+  designations?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  startsAt?: string | null;
   endsAt?: string | null;
-  revokedAt?: string | null;
-  fulfillmentReference?:
+  goalAmountMinor?: string | null;
+  goalRules?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  allowedAmounts?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  currency: string;
+  recurrence:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  feeCover?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  privacyDefault: 'public' | 'anonymous' | 'private';
+  disclosures:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  lifecycle: 'draft' | 'scheduled' | 'active' | 'paused' | 'completed' | 'archived';
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "donation-intents".
+ */
+export interface DonationIntent {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  campaign: string | DonationCampaign;
+  campaignVersion: number;
+  designation?: string | null;
+  donorSnapshot:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  moneySnapshot:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  recognition: 'public' | 'anonymous' | 'private';
+  publicDisplayName?: string | null;
+  donorMessage?: string | null;
+  trackingSource?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  paymentIntent?: (string | null) | PaymentIntent;
+  subscription?: (string | null) | Subscription;
+  recurrence: 'one-time' | 'recurring';
+  lifecycle: 'created' | 'pending' | 'succeeded' | 'failed' | 'cancelled' | 'refunded' | 'disputed' | 'unknown';
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "donations".
+ */
+export interface Donation {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  donationIntent: string | DonationIntent;
+  campaign: string | DonationCampaign;
+  paymentIntent: string | PaymentIntent;
+  subscription?: (string | null) | Subscription;
+  donorSnapshot:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  campaignSnapshot:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  designation?: string | null;
+  baseAmountMinor: string;
+  feeCoveredAmountMinor: string;
+  currency: string;
+  recognition: 'public' | 'anonymous' | 'private';
+  publicDisplayName?: string | null;
+  donorMessage?: string | null;
+  trackingSource?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  lifecycle: 'succeeded' | 'partially-refunded' | 'refunded' | 'disputed' | 'exception';
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "donation-events".
+ */
+export interface DonationEvent {
+  id: string;
+  donation?: (string | null) | Donation;
+  donationIntent?: (string | null) | DonationIntent;
+  eventKey: string;
+  kind: string;
+  occurredAt: string;
+  actor?: string | null;
+  evidence?:
     | {
         [k: string]: unknown;
       }
@@ -8754,8 +9911,32 @@ export interface PayloadLockedDocument {
         value: string | Product;
       } | null)
     | ({
+        relationTo: 'digital-delivery-grants';
+        value: string | DigitalDeliveryGrant;
+      } | null)
+    | ({
+        relationTo: 'digital-download-events';
+        value: string | DigitalDownloadEvent;
+      } | null)
+    | ({
+        relationTo: 'catalog-import-runs';
+        value: string | CatalogImportRun;
+      } | null)
+    | ({
         relationTo: 'carts';
         value: string | Cart;
+      } | null)
+    | ({
+        relationTo: 'promotions';
+        value: string | Promotion;
+      } | null)
+    | ({
+        relationTo: 'checkout-proposals';
+        value: string | CheckoutProposal;
+      } | null)
+    | ({
+        relationTo: 'inventory-reservations';
+        value: string | InventoryReservation;
       } | null)
     | ({
         relationTo: 'checkout-sessions';
@@ -8766,6 +9947,10 @@ export interface PayloadLockedDocument {
         value: string | PaymentIntent;
       } | null)
     | ({
+        relationTo: 'payment-attempts';
+        value: string | PaymentAttempt;
+      } | null)
+    | ({
         relationTo: 'orders';
         value: string | Order;
       } | null)
@@ -8774,12 +9959,52 @@ export interface PayloadLockedDocument {
         value: string | PaymentWebhookEvent;
       } | null)
     | ({
+        relationTo: 'commerce-refunds';
+        value: string | CommerceRefund;
+      } | null)
+    | ({
+        relationTo: 'commerce-disputes';
+        value: string | CommerceDispute;
+      } | null)
+    | ({
+        relationTo: 'commerce-reconciliation-cases';
+        value: string | CommerceReconciliationCase;
+      } | null)
+    | ({
         relationTo: 'supporters';
         value: string | Supporter;
       } | null)
     | ({
         relationTo: 'entitlements';
         value: string | Entitlement;
+      } | null)
+    | ({
+        relationTo: 'plan-revisions';
+        value: string | PlanRevision;
+      } | null)
+    | ({
+        relationTo: 'subscriptions';
+        value: string | Subscription;
+      } | null)
+    | ({
+        relationTo: 'subscription-events';
+        value: string | SubscriptionEvent;
+      } | null)
+    | ({
+        relationTo: 'donation-campaigns';
+        value: string | DonationCampaign;
+      } | null)
+    | ({
+        relationTo: 'donation-intents';
+        value: string | DonationIntent;
+      } | null)
+    | ({
+        relationTo: 'donations';
+        value: string | Donation;
+      } | null)
+    | ({
+        relationTo: 'donation-events';
+        value: string | DonationEvent;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -8844,6 +10069,7 @@ export interface SitesSelect<T extends boolean = true> {
   description?: T;
   lifecycle?: T;
   communityRegistrationPolicy?: T;
+  commentReactionCodes?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -10739,6 +11965,7 @@ export interface EventsSelect<T extends boolean = true> {
   publication?: T;
   space?: T;
   owner?: T;
+  requiredEntitlement?: T;
   title?: T;
   slug?: T;
   canonicalPath?: T;
@@ -12583,22 +13810,36 @@ export interface ProductsSelect<T extends boolean = true> {
   space?: T;
   owner?: T;
   merchantConnection?: T;
+  catalogContractVersion?: T;
   name?: T;
+  summary?: T;
   slug?: T;
   canonicalPath?: T;
   kind?: T;
   state?: T;
+  publishedAt?: T;
+  archivedAt?: T;
+  redirectTo?: T;
   description?: T;
   localized?: T;
   categories?: T;
+  topics?: T;
+  tags?: T;
   collections?: T;
   media?: T;
+  relationships?: T;
+  productCapabilities?: T;
+  optionDimensions?: T;
   variants?:
     | T
     | {
         sku?: T;
         title?: T;
         attributes?: T;
+        optionValues?: T;
+        status?: T;
+        weightGrams?: T;
+        dimensionsMm?: T;
         inventoryPolicy?: T;
         inventoryQuantity?: T;
         inventoryReference?: T;
@@ -12616,13 +13857,88 @@ export interface ProductsSelect<T extends boolean = true> {
         recurringInterval?: T;
         id?: T;
       };
+  offers?: T;
+  digitalDelivery?: T;
+  affiliatePolicy?: T;
+  podMappings?: T;
+  disclosures?: T;
+  workflowAudit?: T;
+  revisionSnapshots?: T;
+  publishedPresentation?: T;
   entitlement?: T;
   releaseRevision?: T;
+  seoTitle?: T;
+  seoDescription?: T;
+  seoCanonicalURL?: T;
+  seoImageAlt?: T;
+  seoKeywords?: T;
+  seoFocusKeyphrase?: T;
+  seoNoIndex?: T;
+  discoveryOverrides?: T;
   retentionMode?: T;
   retentionExpiresAt?: T;
   retentionHold?: T;
   removeFromDiscovery?: T;
   tombstoneLabel?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "digital-delivery-grants_select".
+ */
+export interface DigitalDeliveryGrantsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  product?: T;
+  variantSku?: T;
+  entitlement?: T;
+  member?: T;
+  mediaAsset?: T;
+  grantKeyHash?: T;
+  downloadLimit?: T;
+  downloadCount?: T;
+  expiresAt?: T;
+  revokedAt?: T;
+  lastDownloadedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "digital-download-events_select".
+ */
+export interface DigitalDownloadEventsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  grant?: T;
+  mediaAsset?: T;
+  occurredAt?: T;
+  outcome?: T;
+  reason?: T;
+  requestFingerprint?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "catalog-import-runs_select".
+ */
+export interface CatalogImportRunsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  checksum?: T;
+  mode?: T;
+  status?: T;
+  source?: T;
+  summary?: T;
+  appliedAt?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -12636,11 +13952,96 @@ export interface CartsSelect<T extends boolean = true> {
   space?: T;
   owner?: T;
   merchantConnection?: T;
+  version?: T;
+  guestTokenHash?: T;
+  member?: T;
+  customerEmail?: T;
   currency?: T;
   buyerCountry?: T;
   items?: T;
+  appliedCouponCodes?: T;
+  shippingAddress?: T;
+  billingAddress?: T;
+  selectedShippingRateId?: T;
+  reconciliationNotes?: T;
   state?: T;
   idempotencyKey?: T;
+  expiresAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "promotions_select".
+ */
+export interface PromotionsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  version?: T;
+  code?: T;
+  description?: T;
+  scope?: T;
+  discountType?: T;
+  discountValue?: T;
+  maxDiscountMinor?: T;
+  currency?: T;
+  startsAt?: T;
+  endsAt?: T;
+  timezone?: T;
+  status?: T;
+  stackingRule?: T;
+  stackingPriority?: T;
+  usageLimitTotal?: T;
+  usageCount?: T;
+  usageLimitPerCustomer?: T;
+  eligibility?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "checkout-proposals_select".
+ */
+export interface CheckoutProposalsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  cart?: T;
+  merchantConnection?: T;
+  cartVersion?: T;
+  currency?: T;
+  customer?: T;
+  shippingAddress?: T;
+  billingAddress?: T;
+  selectedShippingRate?: T;
+  pricingSnapshot?: T;
+  taxSnapshot?: T;
+  consents?: T;
+  fulfillmentSplit?: T;
+  integrityHash?: T;
+  state?: T;
+  expiresAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "inventory-reservations_select".
+ */
+export interface InventoryReservationsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  cart?: T;
+  proposal?: T;
+  product?: T;
+  variantSku?: T;
+  quantity?: T;
+  status?: T;
   expiresAt?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -12655,6 +14056,7 @@ export interface CheckoutSessionsSelect<T extends boolean = true> {
   space?: T;
   owner?: T;
   cart?: T;
+  proposal?: T;
   merchantConnection?: T;
   currency?: T;
   amountMinor?: T;
@@ -12663,6 +14065,12 @@ export interface CheckoutSessionsSelect<T extends boolean = true> {
   selectedCapabilityId?: T;
   legalCopy?: T;
   idempotencyKey?: T;
+  bindingKey?: T;
+  customerKey?: T;
+  attempt?: T;
+  guestAccessTokenHash?: T;
+  returnPath?: T;
+  cancelPath?: T;
   expiresAt?: T;
   shippingExtension?: T;
   taxExtension?: T;
@@ -12689,6 +14097,42 @@ export interface PaymentIntentsSelect<T extends boolean = true> {
   cryptoInvoice?: T;
   exception?: T;
   financialEvents?: T;
+  orderLines?: T;
+  expiresAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payment-attempts_select".
+ */
+export interface PaymentAttemptsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  checkoutSession?: T;
+  paymentIntent?: T;
+  proposal?: T;
+  merchantConnection?: T;
+  attempt?: T;
+  idempotencyKey?: T;
+  providerKey?: T;
+  providerContractVersion?: T;
+  providerImplementationVersion?: T;
+  providerApiVersion?: T;
+  providerReference?: T;
+  providerPaymentReference?: T;
+  amountMinor?: T;
+  currency?: T;
+  state?: T;
+  refundedAmountMinor?: T;
+  lastProviderSequence?: T;
+  processedEventIds?: T;
+  unknownSince?: T;
+  lastReconciledAt?: T;
+  nextReconcileAt?: T;
+  failure?: T;
   expiresAt?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -12709,6 +14153,12 @@ export interface OrdersSelect<T extends boolean = true> {
   currency?: T;
   amountMinor?: T;
   items?: T;
+  partySnapshot?: T;
+  addressSnapshot?: T;
+  totalsSnapshot?: T;
+  termsSnapshot?: T;
+  sourceSnapshot?: T;
+  downstreamInstructions?: T;
   transitionLog?: T;
   refundExtension?: T;
   receipt?: T;
@@ -12728,10 +14178,81 @@ export interface PaymentWebhookEventsSelect<T extends boolean = true> {
   providerEventId?: T;
   payloadHash?: T;
   verifiedAt?: T;
+  occurredAt?: T;
+  sequence?: T;
+  normalizedKind?: T;
+  providerReference?: T;
+  sanitizedEvidence?: T;
+  processingState?: T;
+  attempts?: T;
+  lastError?: T;
   processedAt?: T;
   outcome?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "commerce-refunds_select".
+ */
+export interface CommerceRefundsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  order?: T;
+  paymentAttempt?: T;
+  idempotencyKey?: T;
+  amountMinor?: T;
+  currency?: T;
+  kind?: T;
+  state?: T;
+  reason?: T;
+  requestedBy?: T;
+  approvedBy?: T;
+  providerRefundReference?: T;
+  providerEvidence?: T;
+  downstreamPolicy?: T;
+  correctionReceipt?: T;
+  auditLog?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "commerce-disputes_select".
+ */
+export interface CommerceDisputesSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  order?: T;
+  paymentAttempt?: T;
+  providerDisputeReference?: T;
+  amountMinor?: T;
+  currency?: T;
+  state?: T;
+  reason?: T;
+  deadlineAt?: T;
+  sanitizedEvidence?: T;
+  auditLog?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "commerce-reconciliation-cases_select".
+ */
+export interface CommerceReconciliationCasesSelect<T extends boolean = true> {
+  site?: T;
+  legacyType?: T;
+  legacyId?: T;
+  reason?: T;
+  evidence?: T;
+  status?: T;
+  createdAt?: T;
+  resolvedAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -12768,6 +14289,189 @@ export interface EntitlementsSelect<T extends boolean = true> {
   endsAt?: T;
   revokedAt?: T;
   fulfillmentReference?: T;
+  resource?: T;
+  capability?: T;
+  scope?: T;
+  grantKey?: T;
+  limit?: T;
+  evidence?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "plan-revisions_select".
+ */
+export interface PlanRevisionsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  planKey?: T;
+  revision?: T;
+  name?: T;
+  lifecycle?: T;
+  interval?: T;
+  intervalCount?: T;
+  amountMinor?: T;
+  currency?: T;
+  trialDays?: T;
+  trialEligibility?: T;
+  entitlements?: T;
+  cancelPolicy?: T;
+  changePolicy?: T;
+  taxPolicy?: T;
+  providerMappings?: T;
+  publishedAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "subscriptions_select".
+ */
+export interface SubscriptionsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  supporter?: T;
+  planRevision?: T;
+  planSnapshot?: T;
+  providerKey?: T;
+  providerCustomerReference?: T;
+  providerSubscriptionReference?: T;
+  providerStatus?: T;
+  state?: T;
+  source?: T;
+  currentPeriodStart?: T;
+  currentPeriodEnd?: T;
+  trialEnd?: T;
+  graceEnd?: T;
+  cancelAtPeriodEnd?: T;
+  settings?: T;
+  version?: T;
+  lastEventSequence?: T;
+  lastEventOccurredAt?: T;
+  lastReconciledAt?: T;
+  checkoutKey?: T;
+  failure?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "subscription-events_select".
+ */
+export interface SubscriptionEventsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  subscription?: T;
+  eventKey?: T;
+  providerEventId?: T;
+  kind?: T;
+  occurredAt?: T;
+  evidence?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "donation-campaigns_select".
+ */
+export interface DonationCampaignsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  organization?: T;
+  campaignKey?: T;
+  version?: T;
+  title?: T;
+  story?: T;
+  media?: T;
+  purpose?: T;
+  designations?: T;
+  startsAt?: T;
+  endsAt?: T;
+  goalAmountMinor?: T;
+  goalRules?: T;
+  allowedAmounts?: T;
+  currency?: T;
+  recurrence?: T;
+  feeCover?: T;
+  privacyDefault?: T;
+  disclosures?: T;
+  lifecycle?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "donation-intents_select".
+ */
+export interface DonationIntentsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  campaign?: T;
+  campaignVersion?: T;
+  designation?: T;
+  donorSnapshot?: T;
+  moneySnapshot?: T;
+  recognition?: T;
+  publicDisplayName?: T;
+  donorMessage?: T;
+  trackingSource?: T;
+  paymentIntent?: T;
+  subscription?: T;
+  recurrence?: T;
+  lifecycle?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "donations_select".
+ */
+export interface DonationsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  donationIntent?: T;
+  campaign?: T;
+  paymentIntent?: T;
+  subscription?: T;
+  donorSnapshot?: T;
+  campaignSnapshot?: T;
+  designation?: T;
+  baseAmountMinor?: T;
+  feeCoveredAmountMinor?: T;
+  currency?: T;
+  recognition?: T;
+  publicDisplayName?: T;
+  donorMessage?: T;
+  trackingSource?: T;
+  lifecycle?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "donation-events_select".
+ */
+export interface DonationEventsSelect<T extends boolean = true> {
+  donation?: T;
+  donationIntent?: T;
+  eventKey?: T;
+  kind?: T;
+  occurredAt?: T;
+  actor?: T;
+  evidence?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -13350,6 +15054,26 @@ export interface TaskMediaUploadCleanup {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskCommunity-message-attachment-cleanup".
+ */
+export interface TaskCommunityMessageAttachmentCleanup {
+  input?: unknown;
+  output: {
+    removed: number;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskCommunity-message-attachment-scan".
+ */
+export interface TaskCommunityMessageAttachmentScan {
+  input?: unknown;
+  output: {
+    scanned: number;
+  };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "TaskContent-release-execute".
  */
 export interface TaskContentReleaseExecute {
@@ -13637,6 +15361,32 @@ export interface TaskQualityScan {
  * via the `definition` "TaskCommerce-abandon-checkouts".
  */
 export interface TaskCommerceAbandonCheckouts {
+  input?: unknown;
+  output?: unknown;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskCommerce-process-payment-event".
+ */
+export interface TaskCommerceProcessPaymentEvent {
+  input: {
+    webhookEventId: string;
+  };
+  output?: unknown;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskCommerce-reconcile-payments".
+ */
+export interface TaskCommerceReconcilePayments {
+  input?: unknown;
+  output?: unknown;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskCommerce-reconcile-subscriptions".
+ */
+export interface TaskCommerceReconcileSubscriptions {
   input?: unknown;
   output?: unknown;
 }

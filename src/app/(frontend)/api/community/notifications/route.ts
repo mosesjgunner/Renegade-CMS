@@ -1,6 +1,10 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
-import { resolveCommunityActor, getMemberNotifications, CommunityError } from '@/modules/community/service'
+import {
+  resolveCommunityActor,
+  getMemberNotifications,
+  CommunityError,
+} from '@/modules/community/service'
 
 export async function GET(request: Request) {
   const payload = await getPayload({ config })

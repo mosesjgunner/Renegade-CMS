@@ -33,7 +33,10 @@ describe('email delivery adapters', () => {
   it('captures development mail and makes disabled mode an explicit non-retryable outcome', async () => {
     resetLocalMailSink()
     await expect(
-      developmentCaptureEmailAdapter.send({ ...request, text: 'Read https://example.test/confirm' }),
+      developmentCaptureEmailAdapter.send({
+        ...request,
+        text: 'Read https://example.test/confirm',
+      }),
     ).resolves.toMatchObject({
       ok: true,
       provider: 'development-capture',
@@ -45,7 +48,10 @@ describe('email delivery adapters', () => {
     expect(selectEmailDeliveryAdapter({ email: { mode: 'development' } } as never).id).toBe(
       'development-capture',
     )
-    await developmentCaptureEmailAdapter.send({ ...request, text: 'replay must not replace receipt' })
+    await developmentCaptureEmailAdapter.send({
+      ...request,
+      text: 'replay must not replace receipt',
+    })
     expect(localMailSinkReceipts()).toEqual([
       expect.objectContaining({
         to: request.to,
@@ -120,11 +126,24 @@ describe('email delivery adapters', () => {
 
   it('declares provider-neutral v1 capabilities and does not pretend SMTP can reconcile unknown sends', async () => {
     const local = developmentCaptureEmailAdapter
-    expect(local.contract).toMatchObject({ version: 1, providerIdempotency: true, reconciliation: true })
+    expect(local.contract).toMatchObject({
+      version: 1,
+      providerIdempotency: true,
+      reconciliation: true,
+    })
     await local.send(request)
-    await expect(local.reconcile?.({ idempotencyKey: request.idempotencyKey })).resolves.toMatchObject({ ok: true })
-    const smtpAdapter = createSmtpEmailAdapter(smtp(), { createTransport: () => ({ sendMail: vi.fn(), verify: vi.fn() }) })
-    expect(smtpAdapter.contract).toMatchObject({ providerIdempotency: false, reconciliation: false })
-    await expect(smtpAdapter.senderReadiness()).resolves.toMatchObject({ domainAuthentication: 'not-observed' })
+    await expect(
+      local.reconcile?.({ idempotencyKey: request.idempotencyKey }),
+    ).resolves.toMatchObject({ ok: true })
+    const smtpAdapter = createSmtpEmailAdapter(smtp(), {
+      createTransport: () => ({ sendMail: vi.fn(), verify: vi.fn() }),
+    })
+    expect(smtpAdapter.contract).toMatchObject({
+      providerIdempotency: false,
+      reconciliation: false,
+    })
+    await expect(smtpAdapter.senderReadiness()).resolves.toMatchObject({
+      domainAuthentication: 'not-observed',
+    })
   })
 })

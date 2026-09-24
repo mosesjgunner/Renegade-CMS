@@ -1,4 +1,5 @@
 import { describe, expect, it, vi } from 'vitest'
+import type { Payload } from 'payload'
 
 import { down, up } from '@/migrations/20260922_000000_comm_04b_forum_topics_posts'
 import { createForumTopic, replyToForumTopic } from '@/modules/community/forum-composer'
@@ -47,12 +48,12 @@ function payload(options: { locked?: boolean; privateQuote?: boolean } = {}) {
   return {
     db: { pool: { query, connect: async () => ({ query, release: vi.fn() }) } },
     calls,
-  } as never
+  } as unknown as Payload & { calls: string[] }
 }
 
 describe('COMM-04B: forum topics, posts, quotes, and drafts', () => {
   it('creates the three durable tables and identity/quote guards', async () => {
-    const execute = vi.fn(async () => undefined)
+    const execute = vi.fn(async (_statement: unknown) => undefined)
     await up({ db: { execute } } as never)
     await down({ db: { execute } } as never)
     const schema = JSON.stringify(execute.mock.calls[0]?.[0])

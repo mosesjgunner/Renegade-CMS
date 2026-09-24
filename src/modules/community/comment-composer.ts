@@ -1,11 +1,14 @@
 import { createHash } from 'node:crypto'
 import type { Payload } from 'payload'
-import xss, { escapeAttrValue } from 'xss'
+import xss from 'xss'
 
 import { createCanonicalComment, type CommentThread } from './comment-identity'
 import type { CommunityActor } from './contracts'
 import { assertMemberCanPost, ModerationActionError } from './moderation-actions'
 import { triageSubmission } from './abuse-triage'
+
+const escapeXssAttr = (xss as unknown as { escapeAttrValue: (value: string) => string })
+  .escapeAttrValue
 
 export class CommentComposerError extends Error {
   constructor(
@@ -185,7 +188,7 @@ export function sanitizeCommentHtml(html: string): string {
         if (!isSafeLinkUrl(value)) {
           return ''
         }
-        return `href="${escapeAttrValue(value.trim())}"`
+        return `href="${escapeXssAttr(value.trim())}"`
       }
       return ''
     },
@@ -416,10 +419,12 @@ export async function persistCommentWithOutbox(
       let rootId: string | null = null
       if (input.parentId) {
         const parents = (
-          await client.query<{ id: string; thread_id: string; root_id: string | null; depth: number }>(
-            `SELECT id, thread_id, root_id, depth FROM comments WHERE id = $1`,
-            [input.parentId],
-          )
+          await client.query<{
+            id: string
+            thread_id: string
+            root_id: string | null
+            depth: number
+          }>(`SELECT id, thread_id, root_id, depth FROM comments WHERE id = $1`, [input.parentId])
         ).rows
         const parent = parents[0]
         if (!parent || parent.thread_id !== input.threadId) {
@@ -641,11 +646,7 @@ export async function postThreadComment(payload: Payload, input: PostThreadComme
 
   if (thread) {
     if (thread.isFrozen) {
-      throw new CommentComposerError(
-        'This comment thread is frozen.',
-        403,
-        'THREAD_FROZEN',
-      )
+      throw new CommentComposerError('This comment thread is frozen.', 403, 'THREAD_FROZEN')
     }
     if (thread.isClosed) {
       throw new CommentComposerError(
@@ -658,12 +659,20 @@ export async function postThreadComment(payload: Payload, input: PostThreadComme
 
   // Payload-only test/adaptor mode has no SQL read boundary. Production PostgreSQL
   // always has one, so it cannot silently bypass sanctions.
-  const hasDbBoundary = Boolean((payload as unknown as QueryablePayload).db?.pool || (payload as unknown as QueryablePayload).db?.drizzle)
+  const hasDbBoundary = Boolean(
+    (payload as unknown as QueryablePayload).db?.pool ||
+      (payload as unknown as QueryablePayload).db?.drizzle,
+  )
   if (hasDbBoundary && (input.authorType ?? 'member') === 'member' && input.authorId) {
     try {
-      await assertMemberCanPost(payload, { siteId: input.siteId, memberId: input.authorId, objectId: input.threadId })
+      await assertMemberCanPost(payload, {
+        siteId: input.siteId,
+        memberId: input.authorId,
+        objectId: input.threadId,
+      })
     } catch (error) {
-      if (error instanceof ModerationActionError) throw new CommentComposerError(error.message, error.status, error.code)
+      if (error instanceof ModerationActionError)
+        throw new CommentComposerError(error.message, error.status, error.code)
       throw error
     }
   }
@@ -698,7 +707,14 @@ export async function postThreadComment(payload: Payload, input: PostThreadComme
     })
 
     // Triage only ever moves a submission into review; it never performs a sanction.
-    if ((input.authorType ?? 'member') === 'member' && input.authorId) await triageSubmission(payload, { siteId: input.siteId, targetType: 'comment', targetId: String(created.id), authorId: input.authorId, text: rawBody })
+    if ((input.authorType ?? 'member') === 'member' && input.authorId)
+      await triageSubmission(payload, {
+        siteId: input.siteId,
+        targetType: 'comment',
+        targetId: String(created.id),
+        authorId: input.authorId,
+        text: rawBody,
+      })
 
     return {
       comment: created,

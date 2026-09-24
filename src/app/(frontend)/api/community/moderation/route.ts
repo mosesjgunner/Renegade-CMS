@@ -1,7 +1,10 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import { resolveCommunityActor, CommunityError } from '@/modules/community/service'
-import { applyModerationAction, ModerationActionError } from '@/modules/community/moderation-actions'
+import {
+  applyModerationAction,
+  ModerationActionError,
+} from '@/modules/community/moderation-actions'
 
 export async function POST(request: Request) {
   const payload = await getPayload({ config })
@@ -21,11 +24,26 @@ export async function POST(request: Request) {
   const details = (body.details as Record<string, unknown>) ?? undefined
 
   if (!action || !targetType || !targetId || !reason || !caseId || !actor.memberId) {
-    return Response.json({ error: 'caseId, action, targetType, targetId, and reason are required' }, { status: 400 })
+    return Response.json(
+      { error: 'caseId, action, targetType, targetId, and reason are required' },
+      { status: 400 },
+    )
   }
 
   try {
-    const result = await applyModerationAction(payload, { siteId, caseId, actorMemberId: actor.memberId, targetType, targetId, action, scope: String(body.scope ?? 'object') as never, scopeId: body.scopeId ? String(body.scopeId) : null, expiresAt: body.expiresAt ? String(body.expiresAt) : null, reason, details })
+    const result = await applyModerationAction(payload, {
+      siteId,
+      caseId,
+      actorMemberId: actor.memberId,
+      targetType,
+      targetId,
+      action,
+      scope: String(body.scope ?? 'object') as never,
+      scopeId: body.scopeId ? String(body.scopeId) : null,
+      expiresAt: body.expiresAt ? String(body.expiresAt) : null,
+      reason,
+      details,
+    })
     return Response.json({ success: true, data: result }, { status: 200 })
   } catch (err: unknown) {
     if (err instanceof CommunityError || err instanceof ModerationActionError) {

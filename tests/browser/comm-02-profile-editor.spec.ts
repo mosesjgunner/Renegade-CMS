@@ -47,7 +47,11 @@ test('COMM-02 member can edit field visibility in the browser without exposing r
     // self view below waits for its persisted result without coupling the
     // acceptance contract to a transient status-region render.
     await expect
-      .poll(async () => ((await page.request.get('/api/member-auth/me')).json()).then(({ profile }) => profile.avatar))
+      .poll(async () =>
+        (await page.request.get('/api/member-auth/me'))
+          .json()
+          .then(({ profile }) => profile.avatar),
+      )
       .toBeTruthy()
     const afterUpload = await page.request.get('/api/member-auth/me')
     const uploadedProfile = (await afterUpload.json()).profile

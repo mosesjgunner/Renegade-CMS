@@ -19,7 +19,11 @@ export async function GET(request: Request) {
     'priority',
     'rule_categories',
     'sla_deadline',
-    'opened_at', 'disposition', 'event_type', 'event_payload', 'audit_created_at',
+    'opened_at',
+    'disposition',
+    'event_type',
+    'event_payload',
+    'audit_created_at',
   ]
   const csv = [
     keys.join(','),

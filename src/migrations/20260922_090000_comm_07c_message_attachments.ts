@@ -1,7 +1,8 @@
 import { type MigrateDownArgs, type MigrateUpArgs, sql } from '@payloadcms/db-postgres'
 
 /** COMM-07C: private direct-storage message attachment metadata and quarantine state. */
-export async function up({ db }: MigrateUpArgs): Promise<void> { await db.execute(sql`
+export async function up({ db }: MigrateUpArgs): Promise<void> {
+  await db.execute(sql`
   CREATE TABLE IF NOT EXISTS "message_attachments" (
     "id" uuid PRIMARY KEY, "site_id" uuid NOT NULL REFERENCES "sites"("id") ON DELETE CASCADE,
     "owner_id" uuid NOT NULL REFERENCES "members"("id") ON DELETE CASCADE,
@@ -15,5 +16,8 @@ export async function up({ db }: MigrateUpArgs): Promise<void> { await db.execut
   );
   CREATE INDEX IF NOT EXISTS "message_attachments_orphan_cleanup_idx" ON "message_attachments" ("created_at") WHERE "message_id" IS NULL;
   CREATE INDEX IF NOT EXISTS "message_attachments_message_idx" ON "message_attachments" ("message_id");
-`) }
-export async function down({ db }: MigrateDownArgs): Promise<void> { await db.execute(sql`DROP TABLE IF EXISTS "message_attachments";`) }
+`)
+}
+export async function down({ db }: MigrateDownArgs): Promise<void> {
+  await db.execute(sql`DROP TABLE IF EXISTS "message_attachments";`)
+}

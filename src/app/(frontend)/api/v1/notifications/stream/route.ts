@@ -7,8 +7,7 @@ export const dynamic = 'force-dynamic'
 
 export async function GET(request: Request) {
   const url = new URL(request.url)
-  const siteId =
-    url.searchParams.get('siteId') ?? request.headers.get('x-site-id') ?? 'default'
+  const siteId = url.searchParams.get('siteId') ?? request.headers.get('x-site-id') ?? 'default'
   const payload = await getPayload({ config })
   const actor = await resolveCommunityActor(payload, request.headers, siteId)
 
@@ -70,9 +69,7 @@ export async function GET(request: Request) {
 
       // Handle Last-Event-ID replay
       const lastEventId =
-        request.headers.get('last-event-id') ??
-        url.searchParams.get('lastEventId') ??
-        null
+        request.headers.get('last-event-id') ?? url.searchParams.get('lastEventId') ?? null
 
       if (lastEventId) {
         const missed = notificationStreamManager.getMissedHints(siteId, memberId, lastEventId)

@@ -177,10 +177,7 @@ export async function isSubscribedToThread(
   return Boolean(rows[0]?.exists)
 }
 
-export async function getThreadSubscribers(
-  payload: Payload,
-  threadId: string,
-): Promise<string[]> {
+export async function getThreadSubscribers(payload: Payload, threadId: string): Promise<string[]> {
   const rows = await executeDbQuery<{ member_id: string }>(
     payload,
     `SELECT member_id FROM comment_thread_subscriptions WHERE thread_id = $1`,
@@ -262,9 +259,7 @@ export async function getThreadCommentsTree(
   }
 
   // Filter out non-public comments if requested
-  const filteredRows = input.includeNonPublic
-    ? rows
-    : rows.filter((r) => r.status === 'visible')
+  const filteredRows = input.includeNonPublic ? rows : rows.filter((r) => r.status === 'visible')
 
   const nodesMap = new Map<string, CommentNode>()
   const rootNodes: CommentNode[] = []
@@ -361,7 +356,9 @@ const NON_PUBLIC_STATUSES = new Set([
 ])
 
 export function isCommentPublicVisible(status: string): boolean {
-  const norm = String(status || '').toLowerCase().trim()
+  const norm = String(status || '')
+    .toLowerCase()
+    .trim()
   if (!norm) return false
   if (NON_PUBLIC_STATUSES.has(norm)) return false
   return norm === 'visible'

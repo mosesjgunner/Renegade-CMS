@@ -13,7 +13,13 @@ describe('newsletter snapshot acceptance boundaries', () => {
     const queued: unknown[] = []
     const all = (collection: string): any[] => rows.get(collection) ?? []
     const payload = {
-      find: async ({ collection, where }: { collection: string; where?: Record<string, unknown> }) => {
+      find: async ({
+        collection,
+        where,
+      }: {
+        collection: string
+        where?: Record<string, unknown>
+      }) => {
         const values = all(collection).filter((doc) => {
           const candidate = where ?? {}
           return Object.entries(candidate).every(([key, condition]) => {
@@ -25,7 +31,13 @@ describe('newsletter snapshot acceptance boundaries', () => {
         })
         return { docs: values }
       },
-      create: async ({ collection, data }: { collection: string; data: Record<string, unknown> }) => {
+      create: async ({
+        collection,
+        data,
+      }: {
+        collection: string
+        data: Record<string, unknown>
+      }) => {
         const doc = { id: `${collection}-${all(collection).length + 1}`, ...data }
         rows.set(collection, [...all(collection), doc])
         return doc

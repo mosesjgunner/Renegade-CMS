@@ -14,18 +14,34 @@ const otherSiteId = '00000000-0000-7000-8000-000000000002'
 const spaceId = '00000000-0000-7000-8000-000000000003'
 const memberId = '00000000-0000-7000-8000-000000000004'
 
-function payload(options: {
-  visibility?: 'public' | 'member_only' | 'private' | 'hidden'
-  role?: SpaceRole | null
-  siteAdmin?: boolean
-} = {}) {
+function payload(
+  options: {
+    visibility?: 'public' | 'member_only' | 'private' | 'hidden'
+    role?: SpaceRole | null
+    siteAdmin?: boolean
+  } = {},
+) {
   const query = vi.fn(async (text: string, values: unknown[] = []) => {
     if (text.includes('FROM forum_spaces')) {
       if (values[0] !== spaceId || values[1] !== siteId) return { rows: [] }
-      return { rows: [{ id: spaceId, siteId, parentId: null, name: 'General', slug: 'general', visibility: options.visibility ?? 'public', joinPolicy: 'open' }] }
+      return {
+        rows: [
+          {
+            id: spaceId,
+            siteId,
+            parentId: null,
+            name: 'General',
+            slug: 'general',
+            visibility: options.visibility ?? 'public',
+            joinPolicy: 'open',
+          },
+        ],
+      }
     }
-    if (text.includes('FROM space_memberships')) return { rows: options.role ? [{ role: options.role }] : [] }
-    if (text.includes('FROM member_site_roles')) return { rows: [{ exists: Boolean(options.siteAdmin) }] }
+    if (text.includes('FROM space_memberships'))
+      return { rows: options.role ? [{ role: options.role }] : [] }
+    if (text.includes('FROM member_site_roles'))
+      return { rows: [{ exists: Boolean(options.siteAdmin) }] }
     return { rows: [] }
   })
   return { db: { pool: { query } }, query } as never
@@ -33,7 +49,7 @@ function payload(options: {
 
 describe('COMM-04A: forum space hierarchy, membership roles, and access', () => {
   it('creates reversible site-scoped spaces, shallow hierarchy guard, and memberships', async () => {
-    const execute = vi.fn(async () => undefined)
+    const execute = vi.fn(async (_statement: unknown) => undefined)
     await up({ db: { execute } } as never)
     await down({ db: { execute } } as never)
     const schema = JSON.stringify(execute.mock.calls[0]?.[0])
@@ -51,7 +67,11 @@ describe('COMM-04A: forum space hierarchy, membership roles, and access', () => 
     ['moderator', true, true, true],
     ['administrator', true, true, true],
   ] as const)('resolves the %s capability matrix', async (role, creates, replies, pins) => {
-    const access = await resolveForumSpaceAccess(payload({ role }), { siteId, spaceId, actor: { memberId } })
+    const access = await resolveForumSpaceAccess(payload({ role }), {
+      siteId,
+      spaceId,
+      actor: { memberId },
+    })
     expect(access.canView).toBe(true)
     expect(access.canCreateTopic).toBe(creates)
     expect(access.canReply).toBe(replies)
@@ -60,8 +80,16 @@ describe('COMM-04A: forum space hierarchy, membership roles, and access', () => 
   })
 
   it('denies viewer topic creation and contributor pin/lock with a capability error', async () => {
-    const viewer = await resolveForumSpaceAccess(payload({ role: 'viewer' }), { siteId, spaceId, actor: { memberId } })
-    const contributor = await resolveForumSpaceAccess(payload({ role: 'contributor' }), { siteId, spaceId, actor: { memberId } })
+    const viewer = await resolveForumSpaceAccess(payload({ role: 'viewer' }), {
+      siteId,
+      spaceId,
+      actor: { memberId },
+    })
+    const contributor = await resolveForumSpaceAccess(payload({ role: 'contributor' }), {
+      siteId,
+      spaceId,
+      actor: { memberId },
+    })
     try {
       requireForumSpaceCapability(viewer, 'can_create_topic')
     } catch (error) {
@@ -75,30 +103,61 @@ describe('COMM-04A: forum space hierarchy, membership roles, and access', () => 
   })
 
   it('grants every capability to a site administrator without a space membership', async () => {
-    const access = await resolveForumSpaceAccess(payload({ visibility: 'hidden', siteAdmin: true }), { siteId, spaceId, actor: { memberId } })
-    expect(access).toMatchObject({ isSiteAdministrator: true, canCreateTopic: true, canReply: true, canPinLock: true, canManageMembers: true })
+    const access = await resolveForumSpaceAccess(
+      payload({ visibility: 'hidden', siteAdmin: true }),
+      { siteId, spaceId, actor: { memberId } },
+    )
+    expect(access).toMatchObject({
+      isSiteAdministrator: true,
+      canCreateTopic: true,
+      canReply: true,
+      canPinLock: true,
+      canManageMembers: true,
+    })
   })
 
-  it.each(['private', 'hidden'] as const)('returns the same 404 for unauthorized %s spaces', async (visibility) => {
-    const hidden = await resolveForumSpaceAccess(payload({ visibility }), { siteId, spaceId })
-      .then(() => null)
-      .catch((error) => error)
-    const absent = await resolveForumSpaceAccess(payload(), { siteId, spaceId: '00000000-0000-7000-8000-000000000099' })
-      .then(() => null)
-      .catch((error) => error)
-    expect(hidden).toBeInstanceOf(ForumSpaceAccessError)
-    expect(hidden).toMatchObject({ status: 404, code: 'SPACE_NOT_FOUND', message: 'Forum space not found.' })
-    expect(absent).toMatchObject({ status: 404, code: 'SPACE_NOT_FOUND', message: 'Forum space not found.' })
-  })
+  it.each(['private', 'hidden'] as const)(
+    'returns the same 404 for unauthorized %s spaces',
+    async (visibility) => {
+      const hidden = await resolveForumSpaceAccess(payload({ visibility }), { siteId, spaceId })
+        .then(() => null)
+        .catch((error) => error)
+      const absent = await resolveForumSpaceAccess(payload(), {
+        siteId,
+        spaceId: '00000000-0000-7000-8000-000000000099',
+      })
+        .then(() => null)
+        .catch((error) => error)
+      expect(hidden).toBeInstanceOf(ForumSpaceAccessError)
+      expect(hidden).toMatchObject({
+        status: 404,
+        code: 'SPACE_NOT_FOUND',
+        message: 'Forum space not found.',
+      })
+      expect(absent).toMatchObject({
+        status: 404,
+        code: 'SPACE_NOT_FOUND',
+        message: 'Forum space not found.',
+      })
+    },
+  )
 
   it('blocks cross-site space lookup before membership can confer access', async () => {
-    await expect(resolveForumSpaceAccess(payload({ role: 'administrator' }), { siteId: otherSiteId, spaceId, actor: { memberId } }))
-      .rejects.toMatchObject({ status: 404, code: 'SPACE_NOT_FOUND' })
+    await expect(
+      resolveForumSpaceAccess(payload({ role: 'administrator' }), {
+        siteId: otherSiteId,
+        spaceId,
+        actor: { memberId },
+      }),
+    ).rejects.toMatchObject({ status: 404, code: 'SPACE_NOT_FOUND' })
   })
 
   it('models open and approval joins without silently accepting invite-only joins', () => {
     expect(initialSpaceMembershipForJoin('open')).toEqual({ status: 'active', role: 'viewer' })
-    expect(initialSpaceMembershipForJoin('request_approval')).toEqual({ status: 'pending', role: 'viewer' })
+    expect(initialSpaceMembershipForJoin('request_approval')).toEqual({
+      status: 'pending',
+      role: 'viewer',
+    })
     try {
       initialSpaceMembershipForJoin('invite_only')
     } catch (error) {

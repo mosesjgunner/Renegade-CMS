@@ -1107,11 +1107,11 @@ Remaining work follows `docs/PRODUCTIZATION_PASS.md`: operator tooling; installa
 
 ---
 
-## Second Pass Prompt 0 reconciliation ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â  2026-08-25
+## Second Pass Prompt 0 reconciliation ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â 2026-08-25
 
 **First Pass remains completed and preserved.** Prompt 0 was audit/reconciliation only. The source-of-truth inventory is [docs/FULL_STACK_COMPLETION.md](docs/FULL_STACK_COMPLETION.md); it records registered schemas, migrations, routes, jobs, providers, auth, tests, reuse boundaries, enterprise capability ownership, and the exact Second Pass order.
 
-**Next Second Pass implementation prompt: Prompt 1 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â  Shared jobs/integration runtime and Coordinated Content Releases.** No newly identified blocker prevents starting it. Reuse `article-family-content`, `revision-records`, `scheduled-publish-jobs`, `campaigns`, and Payload Jobs; do not create a parallel editorial or scheduling family.
+**Next Second Pass implementation prompt: Prompt 1 ÃƒÂ¢Ã¢â€šÂ¬Ã¢â‚¬Â Shared jobs/integration runtime and Coordinated Content Releases.** No newly identified blocker prevents starting it. Reuse `article-family-content`, `revision-records`, `scheduled-publish-jobs`, `campaigns`, and Payload Jobs; do not create a parallel editorial or scheduling family.
 
 ## Preserved First Pass evidence
 
@@ -1318,6 +1318,15 @@ Supplies the complete cross-surface floor required for a credible working CMS de
 - Added privacy-safe CSV/report export under role authorization (`owner`, `administrator`, `staff`) with mandatory k-anonymity masking and no sensitive PII exposure.
 - Registered collection `AudienceExperiments`, migration `20260920_070000_aud_07_audience_command`, and documentation `docs/audience-aud-07-operator-guide.md`.
 - Verification: 35 focused AUD-07 unit tests passed; full repository test suite (111 files / 670 tests) passed 100%; TypeScript compilation (`tsc --noEmit`) clean with 0 errors. Ready for handoff to AUD-08.
+
 ## Community Pass COMM-02 — Public Profile Projection — 2026-09-21
 
 Partial implementation: a versioned allowlisted projection, staff-only raw profile reads, governed image references, field visibility, member editing/preview, discovery opt-out and directory API, site-scoped follow/block/mute writes, handle redirects, export/deletion linkage, and focused policy tests. Release work added and applied `20260921_010000_comm_02_profile_media_usage_relation`, repairing the required `media_usages_rels.profiles_id` FK/index; generated types, TypeScript, production build, and all 11 COMM-00 PostgreSQL integration stages pass. This is **not release-verified**: repository aggregate suites contain unrelated pre-existing registration and legacy schema failures, and the latest focused browser rerun had transient status-region failures. Accessibility, clean multi-browser repeat, restart/recovery, and exhaustive live lifecycle/export evidence remain open. COMM-05/COMM-06 must reuse the canonical projection and block/mute policy.
+
+# Shared Contract Candidate Run — 2026-09-23
+
+**PARTIAL.** Candidate execution and evidence: [shared-contract-candidate-2026-09-23.md](docs/execution/shared-contract-candidate-2026-09-23.md). After restart, fresh/upgrade/commerce migrations, first-run passkey setup, build, lint, typecheck, formatting, and all unit tests passed. Broader provider-backed commerce, editorial/release, operations, accessibility, query-bound, and audit/metrics surface acceptance remains unverified.
+
+## Final release-proof gate — BROKEN (2026-09-23)
+
+The final gate did not accept the dirty candidate based on `8eaa32b895599fa1b6ae1fcac44d89d6bbab0082`. Fresh and upgrade migrations recorded 98 entries, but a clean seed and `/events` fail because `events.required_entitlement` is missing. Full integration failed; nine-surface restore and restart proof are incomplete. Do not launch. See `docs/execution/final-release-proof-2026-09-23.md`.

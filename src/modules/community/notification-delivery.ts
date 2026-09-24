@@ -62,7 +62,11 @@ export function isPrivateMessageKind(kind: string, isPrivate?: boolean): boolean
   )
 }
 
-export function formatNotificationSubject(kind: string, isPrivate?: boolean, siteName = 'Renegade'): string {
+export function formatNotificationSubject(
+  kind: string,
+  isPrivate?: boolean,
+  siteName = 'Renegade',
+): string {
   if (isPrivateMessageKind(kind, isPrivate)) {
     return `New private message on ${siteName}`
   }
@@ -116,7 +120,14 @@ export async function setMemberNotificationPreference(
      VALUES ($1, $2, $3, $4, $5, $6::jsonb, now())
      ON CONFLICT (site_id, member_id, channel, kind)
      DO UPDATE SET frequency=EXCLUDED.frequency, rules=EXCLUDED.rules, updated_at=now()`,
-    [input.siteId, input.memberId, input.channel, kind, input.frequency, JSON.stringify(input.rules ?? {})],
+    [
+      input.siteId,
+      input.memberId,
+      input.channel,
+      kind,
+      input.frequency,
+      JSON.stringify(input.rules ?? {}),
+    ],
   )
 }
 
@@ -259,10 +270,12 @@ export async function compileNotificationDigest(
   }
 
   const subject = `Your ${siteName} digest: ${rows.length} new update${rows.length > 1 ? 's' : ''}`
-  const bodyText = `Here is your summary of activity on ${siteName} between ${input.windowRange.startAt} and ${input.windowRange.endAt}:\n` +
+  const bodyText =
+    `Here is your summary of activity on ${siteName} between ${input.windowRange.startAt} and ${input.windowRange.endAt}:\n` +
     itemsSummary.map((item) => `- ${item}`).join('\n') +
     '\n\nSign in to view your inbox.'
-  const bodyHtml = `<h2>${subject}</h2><p>Here is your activity summary:</p><ul>` +
+  const bodyHtml =
+    `<h2>${subject}</h2><p>Here is your activity summary:</p><ul>` +
     itemsSummary.map((item) => `<li>${item}</li>`).join('') +
     '</ul><p><a href="/messages">View your notifications</a></p>'
 

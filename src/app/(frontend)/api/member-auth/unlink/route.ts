@@ -1,7 +1,12 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
 
-import { currentMember, readMemberSession, unlinkIdentity, verifyCsrf } from '@/modules/identity/member-identity'
+import {
+  currentMember,
+  readMemberSession,
+  unlinkIdentity,
+  verifyCsrf,
+} from '@/modules/identity/member-identity'
 
 export async function POST(request: Request) {
   if (!verifyCsrf(request.headers))

@@ -35,6 +35,9 @@ import { default as default_af555b1dcb5771f1609cd823e974f9d0 } from '../../../mo
 import { default as default_a494b3e100f193cf1bd4cbea3adab1b2 } from '../../../modules/admin/RedirectManager'
 import { default as default_96f804af486ed760e64b391474a4ed82 } from '../../../modules/admin/RenderedQualityCenter'
 import { default as default_f83c4f7c0cdcbc6ec7b78312628cd683 } from '../../../modules/admin/EditorialWorkflowCenter'
+import { default as default_39aa3fd1587c2b8ee4dc0f366466a053 } from '../../../modules/admin/ReleaseCenter'
+import { default as default_e75c2b8fe5fd91e268a943fe348e6b76 } from '../../../modules/admin/EmailComposer'
+import { default as default_ce6cee81687356be6c2aed9bcf1a86e2 } from '../../../modules/admin/AudienceCommandCenter'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
 /** @type import('payload').ImportMap */
@@ -76,5 +79,8 @@ export const importMap = {
   "./modules/admin/RedirectManager#default": default_a494b3e100f193cf1bd4cbea3adab1b2,
   "./modules/admin/RenderedQualityCenter#default": default_96f804af486ed760e64b391474a4ed82,
   "./modules/admin/EditorialWorkflowCenter#default": default_f83c4f7c0cdcbc6ec7b78312628cd683,
+  "./modules/admin/ReleaseCenter#default": default_39aa3fd1587c2b8ee4dc0f366466a053,
+  "./modules/admin/EmailComposer#default": default_e75c2b8fe5fd91e268a943fe348e6b76,
+  "./modules/admin/AudienceCommandCenter#default": default_ce6cee81687356be6c2aed9bcf1a86e2,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }

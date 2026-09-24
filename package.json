@@ -29,6 +29,7 @@
     "test:browser": "cross-env RENEGADE_MODULES=all RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT=true playwright test",
     "test:migrations:fresh": "tsx src/scripts/verify-fresh-migration.ts",
     "test:migrations:upgrade": "tsx src/scripts/verify-upgrade-migration.ts",
+    "test:migrations:commerce": "tsx src/scripts/verify-commerce-migrations.ts",
     "test:smoke": "tsx tests/smoke/stack.smoke.ts",
     "verify:release:checks": "tsx src/scripts/verify-release.ts",
     "verify:presentation-bundles": "node scripts/verify-presentation-bundles.mjs",
@@ -70,6 +71,7 @@
   },
   "devDependencies": {
     "@playwright/test": "^1.62.1",
+    "@rollup/rollup-win32-x64-msvc": "^4.63.4",
     "@tailwindcss/postcss": "4.3.3",
     "@types/node": "24.3.0",
     "@types/nodemailer": "7.0.8",

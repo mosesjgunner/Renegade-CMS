@@ -305,12 +305,20 @@ export const OPTIONAL_MODULES: readonly ModuleManifestEntry[] = [
       'carts',
       'checkout-sessions',
       'payment-intents',
+      'payment-attempts',
       'orders',
       'payment-webhook-events',
+      'commerce-refunds',
+      'commerce-disputes',
+      'commerce-reconciliation-cases',
       'supporters',
       'entitlements',
     ],
-    tasks: ['commerce-abandon-checkouts'],
+    tasks: [
+      'commerce-abandon-checkouts',
+      'commerce-process-payment-event',
+      'commerce-reconcile-payments',
+    ],
   },
 ] as const
 

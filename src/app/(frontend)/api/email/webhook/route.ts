@@ -26,7 +26,9 @@ export async function POST(request: Request) {
     !body.siteId ||
     !body.email ||
     !body.providerMessageId ||
-    !['delivered', 'deferred', 'bounce', 'complaint', 'unsubscribe', 'suppression'].includes(body.event ?? '')
+    !['delivered', 'deferred', 'bounce', 'complaint', 'unsubscribe', 'suppression'].includes(
+      body.event ?? '',
+    )
   )
     return Response.json({ error: 'Invalid provider event.' }, { status: 400 })
   try {
@@ -36,7 +38,8 @@ export async function POST(request: Request) {
       event: body.event!,
       provider: body.provider,
       providerMessageId: body.providerMessageId,
-      providerEventId: body.providerEventId ?? request.headers.get('x-provider-event-id') ?? undefined,
+      providerEventId:
+        body.providerEventId ?? request.headers.get('x-provider-event-id') ?? undefined,
       occurredAt: body.occurredAt,
       evidence: { source: 'signed-webhook/v1', event: body.event },
     })

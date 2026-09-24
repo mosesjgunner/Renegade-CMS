@@ -946,4 +946,3 @@ export const AudienceExperiments: CollectionConfig = {
     { name: 'concludedAt', type: 'date' },
   ],
 }
-

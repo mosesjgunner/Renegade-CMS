@@ -85,6 +85,9 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
   const payload = await getPayload({ config })
   const auth = await payload.auth({ headers: request.headers })
   try {
+    const declaredLength = Number(request.headers.get('content-length') ?? 0)
+    if (declaredLength > appConfig.storage.maxUploadBytes + 1_000_000)
+      throw new MediaWorkflowError('Media exceeds the configured upload limit.', 413)
     const form = await request.formData()
     const file = form.get('file')
     if (!(file instanceof File))

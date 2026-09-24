@@ -14,6 +14,74 @@ import {
   type SchemaSiteIdentityInput,
   type SchemaValidationIssue,
 } from './schema'
+import {
+  affiliateFreshness,
+  catalogProductFromDocument,
+  minorMoneyDecimal,
+} from '../commerce/catalog'
+
+if (!globalSchemaRegistry.getExtension('products')) {
+  globalSchemaRegistry.register({
+    id: 'core:commerce-product-v1',
+    targetContentType: 'products',
+    primarySchemaType: 'Product',
+    requiredFields: ['name'],
+    buildNodes: ({ canonicalUrl, record }) => {
+      const product = catalogProductFromDocument(record)
+      const variants = product.variants.filter((variant) => variant.status !== 'archived')
+      const affiliate = product.affiliate ? affiliateFreshness(product.affiliate) : null
+      const offers = affiliate
+        ? affiliate.price
+          ? [
+              {
+                '@type': 'Offer',
+                price: minorMoneyDecimal(affiliate.price.amountMinor, affiliate.price.currency),
+                priceCurrency: affiliate.price.currency,
+                ...(affiliate.availability === 'unknown'
+                  ? {}
+                  : {
+                      availability: `https://schema.org/${affiliate.availability === 'in-stock' ? 'InStock' : 'OutOfStock'}`,
+                    }),
+                url: canonicalUrl,
+              },
+            ]
+          : []
+        : product.offers
+            .filter(
+              (offer) =>
+                offer.status === 'active' &&
+                (!offer.startsAt || Date.parse(offer.startsAt) <= Date.now()) &&
+                (!offer.endsAt || Date.parse(offer.endsAt) > Date.now()),
+            )
+            .map((offer) => {
+              const variant = offer.variantSku
+                ? variants.find((item) => item.sku === offer.variantSku)
+                : variants[0]
+              const available =
+                variant?.status !== 'unavailable' &&
+                !(variant?.inventory?.policy === 'tracked' && variant.inventory.quantity === 0)
+              return {
+                '@type': 'Offer',
+                price: minorMoneyDecimal(offer.amountMinor, offer.currency),
+                priceCurrency: offer.currency,
+                availability: `https://schema.org/${available ? 'InStock' : 'OutOfStock'}`,
+                url: canonicalUrl,
+                ...(offer.endsAt ? { priceValidUntil: offer.endsAt.slice(0, 10) } : {}),
+              }
+            })
+      return [
+        {
+          '@type': 'Product',
+          '@id': `${canonicalUrl}#product`,
+          name: product.name,
+          description: typeof record.description === 'string' ? record.description : undefined,
+          sku: variants.length === 1 ? variants[0]?.sku : undefined,
+          offers,
+        },
+      ]
+    },
+  })
+}
 
 export * from './schema'
 
@@ -2434,7 +2502,8 @@ function buildGenericRecordDiscoveryDocument(input: {
   const { record, collection, settings, base, now } = input
   const canonicalPath = String(record.canonicalPath || `/${collection}/${record.slug || record.id}`)
   const publicUrl = new URL(canonicalPath, base).toString()
-  const isPublic = canRenderPublic(record, now)
+  const isPublic =
+    canRenderPublic(record, now) && (collection !== 'products' || record.state === 'published')
   const isIndexable =
     isPublic &&
     settings.indexingMode !== 'noindex' &&

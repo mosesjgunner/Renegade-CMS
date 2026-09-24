@@ -7,6 +7,9 @@
 
 export type ImageEditorFormat = 'image/png' | 'image/jpeg' | 'image/webp'
 
+/** Match the existing Media variant processor's 50 megapixel decompression limit. */
+export const MAX_IMAGE_EDITOR_PIXELS = 50_000_000
+
 export type ImageEditorSaveMode = 'all-usages' | 'new-asset'
 
 export interface ImageEditorAsset {
@@ -37,6 +40,19 @@ export interface ImageEditorSavePayload {
   reason?: string
   format: ImageEditorFormat
   exportResult: ImageEditorExportResult
+}
+
+/** A host supplied editor action. Runtime/provider work stays outside Media and the editor. */
+export interface ImageEditorExtensionAction {
+  id: string
+  label: string
+  description?: string
+  run(context: ImageEditorExtensionContext): Promise<void>
+}
+
+export interface ImageEditorExtensionContext {
+  asset: ImageEditorAsset
+  adapter: ImageEditorAdapter
 }
 
 export interface ImageEditorAdapter {

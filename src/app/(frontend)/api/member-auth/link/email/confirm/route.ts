@@ -8,6 +8,9 @@ export async function POST(request: Request) {
   const payload = await getPayload({ config })
   const confirmed = await confirmEmailLink(payload as never, body.token ?? '')
   if (!confirmed)
-    return Response.json({ error: 'This confirmation link is invalid or expired.' }, { status: 400 })
+    return Response.json(
+      { error: 'This confirmation link is invalid or expired.' },
+      { status: 400 },
+    )
   return Response.json({ status: 'ok' })
 }

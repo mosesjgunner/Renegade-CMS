@@ -26,17 +26,17 @@ Renegade CMS treats telecom transport (SMS, MMS, and RCS) as an **honest, capabi
 
 ## 2. Provider Capability Matrix
 
-| Feature | SMS | MMS | RCS Basic | RCS Rich |
-| :--- | :--- | :--- | :--- | :--- |
-| **Transport** | Standard Carrier SS7/SMPP | WAP / MMSC | IP (Google Jibe / Carrier UP) | IP (Google Jibe / Carrier UP) |
-| **Max Single Length** | 160 chars (GSM-7) / 70 chars (UCS-2) | N/A (Media payload) | 2048 characters | 2048 characters + Media |
-| **Encoding** | GSM 03.38 7-bit or UCS-2 | UTF-8 | UTF-8 | UTF-8 |
-| **Rich Media** | No | Image/Audio (up to 1MB) | No | Images, Video (up to 2MB) |
-| **Interactive Cards** | No | No | Quick Reply Chips | Standalone Cards, Carousels |
-| **Suggested Actions**| No | No | Open URL, Dial, Reply | Open URL, Dial, Reply |
-| **Sender Identity** | Shortcode, 10DLC, Toll-Free, Alphanumeric | 10DLC, Toll-Free | Verified Brand / Agent ID | Verified Brand / Agent ID |
-| **Capability Check** | Carrier routing | MMSC check | Required (Preflight / Jibe) | Required (Preflight / Jibe) |
-| **Delivery Receipts**| Network DLR | MMSC DLR | Read & Delivery Receipts | Read & Delivery Receipts |
+| Feature               | SMS                                       | MMS                     | RCS Basic                     | RCS Rich                      |
+| :-------------------- | :---------------------------------------- | :---------------------- | :---------------------------- | :---------------------------- |
+| **Transport**         | Standard Carrier SS7/SMPP                 | WAP / MMSC              | IP (Google Jibe / Carrier UP) | IP (Google Jibe / Carrier UP) |
+| **Max Single Length** | 160 chars (GSM-7) / 70 chars (UCS-2)      | N/A (Media payload)     | 2048 characters               | 2048 characters + Media       |
+| **Encoding**          | GSM 03.38 7-bit or UCS-2                  | UTF-8                   | UTF-8                         | UTF-8                         |
+| **Rich Media**        | No                                        | Image/Audio (up to 1MB) | No                            | Images, Video (up to 2MB)     |
+| **Interactive Cards** | No                                        | No                      | Quick Reply Chips             | Standalone Cards, Carousels   |
+| **Suggested Actions** | No                                        | No                      | Open URL, Dial, Reply         | Open URL, Dial, Reply         |
+| **Sender Identity**   | Shortcode, 10DLC, Toll-Free, Alphanumeric | 10DLC, Toll-Free        | Verified Brand / Agent ID     | Verified Brand / Agent ID     |
+| **Capability Check**  | Carrier routing                           | MMSC check              | Required (Preflight / Jibe)   | Required (Preflight / Jibe)   |
+| **Delivery Receipts** | Network DLR                               | MMSC DLR                | Read & Delivery Receipts      | Read & Delivery Receipts      |
 
 ---
 
@@ -75,6 +75,7 @@ For development, testing, and CI, set `TELECOM_MODE=development` or leave teleco
 ## 5. Real Provider Preflight (Twilio / Standard Telecom)
 
 To configure live telecom transport:
+
 ```env
 TELECOM_MODE=real
 TWILIO_ACCOUNT_SID=ACXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX

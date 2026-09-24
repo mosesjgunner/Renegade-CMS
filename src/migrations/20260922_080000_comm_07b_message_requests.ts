@@ -14,9 +14,11 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
     CREATE INDEX IF NOT EXISTS "message_request_attempts_sender_window_idx" ON "message_request_attempts" ("site_id","sender_id","created_at" DESC);
   `)
 }
-export async function down({ db }: MigrateDownArgs): Promise<void> { await db.execute(sql`
+export async function down({ db }: MigrateDownArgs): Promise<void> {
+  await db.execute(sql`
   DROP TABLE IF EXISTS "message_request_attempts";
   ALTER TABLE "conversations" DROP CONSTRAINT IF EXISTS "conversations_request_recipient_shape";
   ALTER TABLE "conversations" DROP COLUMN IF EXISTS "request_recipient_member_id";
   ALTER TABLE "conversations" DROP COLUMN IF EXISTS "request_state";
-`) }
+`)
+}

@@ -20,17 +20,20 @@ export function interpolatePersonalization(
 ): { text: string; missingVariables: string[] } {
   const missingVariables: string[] = []
 
-  const text = template.replace(/\{\{\s*([a-zA-Z0-9_]+)(?:\|([^}]*))?\s*\}\}/g, (_, key, fallback) => {
-    const val = context[key]
-    if (val !== undefined && val !== null && val !== '') {
-      return String(val)
-    }
-    if (fallback !== undefined) {
-      return fallback
-    }
-    missingVariables.push(key)
-    return ''
-  })
+  const text = template.replace(
+    /\{\{\s*([a-zA-Z0-9_]+)(?:\|([^}]*))?\s*\}\}/g,
+    (_, key, fallback) => {
+      const val = context[key]
+      if (val !== undefined && val !== null && val !== '') {
+        return String(val)
+      }
+      if (fallback !== undefined) {
+        return fallback
+      }
+      missingVariables.push(key)
+      return ''
+    },
+  )
 
   return { text, missingVariables }
 }
@@ -66,7 +69,9 @@ export function composeSmsMessage(input: {
   if (input.purpose === 'marketing') {
     const uppercase = text.toUpperCase()
     if (!uppercase.includes('STOP')) {
-      warnings.push("Marketing messages must include clear opt-out instructions (e.g. 'Reply STOP to cancel').")
+      warnings.push(
+        "Marketing messages must include clear opt-out instructions (e.g. 'Reply STOP to cancel').",
+      )
     }
   }
 
@@ -150,7 +155,9 @@ export function composeRcsMessage(input: {
 
   // Cost estimate for RCS
   const isRich = Boolean(
-    input.rcs.media || (input.rcs.cards && input.rcs.cards.length > 0) || input.rcs.type !== 'basic',
+    input.rcs.media ||
+      (input.rcs.cards && input.rcs.cards.length > 0) ||
+      input.rcs.type !== 'basic',
   )
   const rcsCostEstimate = estimateTelecomCost({
     channel: 'rcs',

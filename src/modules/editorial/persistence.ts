@@ -1294,10 +1294,13 @@ export async function loadPublishedArticleByPath(
   )
   if (!article || !idOf(article.latestPublishedRevision))
     throw new Error('Published revision was not found.')
-  return buildArticlePresentation(payload, {
-    articleId: String(article.id),
-    revisionId: idOf(article.latestPublishedRevision),
-  })
+  return {
+    ...(await buildArticlePresentation(payload, {
+      articleId: String(article.id),
+      revisionId: idOf(article.latestPublishedRevision),
+    })),
+    requiredEntitlement: content.requiredEntitlement ?? null,
+  }
 }
 
 export async function promoteDiscussionPostToArticle(

@@ -29,7 +29,7 @@ export async function POST(request: Request) {
   }
   const document = existing.docs[0]
     ? await payload.update({ collection: 'sites', id: existing.docs[0].id, data })
-    : await payload.create({ collection: 'sites', data })
+    : await payload.create({ collection: 'sites', data } as never)
 
-  return Response.json({ status: 'ok', site: toPublicSite(document) })
+  return Response.json({ status: 'ok', site: toPublicSite(document as never) })
 }

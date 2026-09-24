@@ -1,6 +1,6 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
-import { resolveCommunityActor } from '@/modules/community/service'
+import { CommunityError, resolveCommunityActor } from '@/modules/community/service'
 import {
   ConversationError,
   listConversationMessages,
@@ -50,7 +50,9 @@ export async function POST(request: Request) {
   const conversationId = body.conversationId ? String(body.conversationId) : undefined
   const messageBody = body.body ? String(body.body) : ''
   const idempotencyKey = body.idempotencyKey ? String(body.idempotencyKey) : ''
-  const attachmentIds = Array.isArray(body.attachmentIds) ? body.attachmentIds.map(String) : undefined
+  const attachmentIds = Array.isArray(body.attachmentIds)
+    ? body.attachmentIds.map(String)
+    : undefined
 
   if (!messageBody) {
     return Response.json({ error: 'body is required' }, { status: 400 })

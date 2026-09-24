@@ -59,6 +59,105 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
     ALTER TABLE "automation_definitions" ADD COLUMN IF NOT EXISTS "approved_at" timestamp(3) with time zone;
     ALTER TABLE "automation_definitions" ADD COLUMN IF NOT EXISTS "pinned" jsonb;
 
+    DO $$
+    BEGIN
+      IF EXISTS (
+        SELECT 1 FROM information_schema.columns 
+        WHERE table_name = 'email_delivery_events' AND column_name = 'delivery_id' AND data_type = 'integer'
+      ) THEN
+        DROP TABLE IF EXISTS "email_delivery_events" CASCADE;
+        CREATE TABLE "email_delivery_events" (
+          "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+          "delivery_id" uuid NOT NULL REFERENCES "email_deliveries"("id") ON DELETE CASCADE,
+          "idempotency_key" varchar NOT NULL UNIQUE,
+          "provider" varchar NOT NULL,
+          "provider_event_id" varchar,
+          "event" varchar NOT NULL,
+          "occurred_at" timestamp(3) with time zone NOT NULL,
+          "evidence" jsonb DEFAULT '{}'::jsonb,
+          "created_at" timestamp(3) with time zone DEFAULT now(),
+          "updated_at" timestamp(3) with time zone DEFAULT now()
+        );
+      END IF;
+    END $$;
+
+    DO $$
+    BEGIN
+      IF EXISTS (
+        SELECT 1 FROM information_schema.columns 
+        WHERE table_name = 'telecom_messages' AND column_name = 'site_id' AND data_type = 'integer'
+      ) THEN
+        DROP TABLE IF EXISTS "telecom_delivery_events" CASCADE;
+        DROP TABLE IF EXISTS "telecom_deliveries" CASCADE;
+        DROP TABLE IF EXISTS "telecom_messages" CASCADE;
+
+        CREATE TABLE "telecom_messages" (
+          "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+          "site_id" uuid REFERENCES "sites"("id") ON DELETE CASCADE,
+          "publication_id" uuid,
+          "space_id" uuid,
+          "owner_id" uuid,
+          "title" varchar NOT NULL,
+          "body" text NOT NULL,
+          "channel" varchar NOT NULL DEFAULT 'sms',
+          "purpose" varchar DEFAULT 'marketing',
+          "status" varchar NOT NULL DEFAULT 'draft',
+          "from" varchar,
+          "scheduled_for" timestamp(3) with time zone,
+          "rcs_content" jsonb,
+          "fallback_policy" varchar DEFAULT 'prohibit',
+          "fallback_sms_body" text,
+          "audience" jsonb,
+          "estimated_cost" jsonb,
+          "approved_at" timestamp(3) with time zone,
+          "approved_render" jsonb,
+          "created_at" timestamp(3) with time zone DEFAULT now(),
+          "updated_at" timestamp(3) with time zone DEFAULT now()
+        );
+
+        CREATE TABLE "telecom_deliveries" (
+          "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+          "site_id" uuid REFERENCES "sites"("id") ON DELETE CASCADE,
+          "publication_id" uuid,
+          "space_id" uuid,
+          "owner_id" uuid,
+          "message_id" uuid NOT NULL REFERENCES "telecom_messages"("id") ON DELETE CASCADE,
+          "subscriber_id" uuid,
+          "recipient_phone" varchar NOT NULL,
+          "recipient_phone_hash" varchar NOT NULL,
+          "channel" varchar NOT NULL DEFAULT 'sms',
+          "idempotency_key" varchar NOT NULL UNIQUE,
+          "status" varchar NOT NULL DEFAULT 'queued',
+          "delivery_path" varchar,
+          "provider" varchar,
+          "provider_message_id" varchar,
+          "attempts" integer DEFAULT 0,
+          "segments" integer,
+          "accepted_at" timestamp(3) with time zone,
+          "scheduled_for" timestamp(3) with time zone,
+          "quiet_hours_delayed_until" timestamp(3) with time zone,
+          "message_snapshot" jsonb,
+          "actual_cost" jsonb,
+          "outcome" jsonb,
+          "created_at" timestamp(3) with time zone DEFAULT now(),
+          "updated_at" timestamp(3) with time zone DEFAULT now()
+        );
+
+        CREATE TABLE "telecom_delivery_events" (
+          "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+          "delivery_id" uuid NOT NULL REFERENCES "telecom_deliveries"("id") ON DELETE CASCADE,
+          "idempotency_key" varchar NOT NULL UNIQUE,
+          "provider" varchar NOT NULL,
+          "provider_event_id" varchar,
+          "event" varchar NOT NULL,
+          "occurred_at" timestamp(3) with time zone NOT NULL,
+          "evidence" jsonb DEFAULT '{}'::jsonb,
+          "created_at" timestamp(3) with time zone DEFAULT now(),
+          "updated_at" timestamp(3) with time zone DEFAULT now()
+        );
+      END IF;
+    END $$;
+
     -- 3. Ensure durable automation and recipient tables exist
     CREATE TABLE IF NOT EXISTS "automation_runs" (
       "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -90,6 +189,9 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
     CREATE TABLE IF NOT EXISTS "recipient_snapshots" (
       "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
       "site_id" uuid,
+      "publication_id" uuid,
+      "space_id" uuid,
+      "owner_id" uuid,
       "message_id" uuid,
       "segment_id" uuid,
       "segment_version" varchar NOT NULL,
@@ -105,6 +207,9 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
     CREATE TABLE IF NOT EXISTS "audience_frequency_policies" (
       "id" uuid PRIMARY KEY DEFAULT gen_random_uuid(),
       "site_id" uuid,
+      "publication_id" uuid,
+      "space_id" uuid,
+      "owner_id" uuid,
       "purpose" varchar NOT NULL,
       "channel" varchar DEFAULT 'email',
       "max_sends" integer NOT NULL DEFAULT 4,
@@ -113,6 +218,19 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
       "created_at" timestamp(3) with time zone DEFAULT now(),
       "updated_at" timestamp(3) with time zone DEFAULT now()
     );
+
+    ALTER TABLE "recipient_snapshots" ADD COLUMN IF NOT EXISTS "publication_id" uuid;
+    ALTER TABLE "recipient_snapshots" ADD COLUMN IF NOT EXISTS "space_id" uuid;
+    ALTER TABLE "recipient_snapshots" ADD COLUMN IF NOT EXISTS "owner_id" uuid;
+    ALTER TABLE "automation_runs" ADD COLUMN IF NOT EXISTS "publication_id" uuid;
+    ALTER TABLE "automation_runs" ADD COLUMN IF NOT EXISTS "space_id" uuid;
+    ALTER TABLE "automation_runs" ADD COLUMN IF NOT EXISTS "owner_id" uuid;
+    ALTER TABLE "automation_failures" ADD COLUMN IF NOT EXISTS "publication_id" uuid;
+    ALTER TABLE "automation_failures" ADD COLUMN IF NOT EXISTS "space_id" uuid;
+    ALTER TABLE "automation_failures" ADD COLUMN IF NOT EXISTS "owner_id" uuid;
+    ALTER TABLE "audience_frequency_policies" ADD COLUMN IF NOT EXISTS "publication_id" uuid;
+    ALTER TABLE "audience_frequency_policies" ADD COLUMN IF NOT EXISTS "space_id" uuid;
+    ALTER TABLE "audience_frequency_policies" ADD COLUMN IF NOT EXISTS "owner_id" uuid;
   `)
 }
 

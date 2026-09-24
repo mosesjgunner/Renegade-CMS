@@ -10,17 +10,20 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
       ADD COLUMN IF NOT EXISTS "last_post_timestamp" timestamp(3) with time zone,
       ADD COLUMN IF NOT EXISTS "last_post_sequence_number" integer NOT NULL DEFAULT 0 CHECK ("last_post_sequence_number" >= 0);
 
+    WITH latest_post AS (
+      SELECT DISTINCT ON (fp.topic_id)
+        fp.topic_id, fp.author_id, fp.created_at, fp.sequence_number,
+        COUNT(*) OVER (PARTITION BY fp.topic_id)::integer AS count
+      FROM "forum_posts" fp
+      ORDER BY fp.topic_id, fp.sequence_number DESC
+    )
     UPDATE "forum_topics" t SET
       "reply_count" = GREATEST(COALESCE(p.count, 0) - 1, 0),
       "last_post_author_id" = p.author_id,
       "last_post_timestamp" = p.created_at,
       "last_post_sequence_number" = COALESCE(p.sequence_number, 0)
-    FROM LATERAL (
-      SELECT fp.author_id, fp.created_at, fp.sequence_number,
-             COUNT(*) OVER ()::integer AS count
-      FROM "forum_posts" fp WHERE fp.topic_id = t.id
-      ORDER BY fp.sequence_number DESC LIMIT 1
-    ) p;
+    FROM latest_post p
+    WHERE p.topic_id = t.id;
 
     CREATE TABLE IF NOT EXISTS "member_topic_read_state" (
       "member_id" uuid NOT NULL REFERENCES "members"("id") ON DELETE CASCADE,

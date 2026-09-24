@@ -53,7 +53,8 @@ export function enforceCommunityWriteRateLimit(context: CommunityPolicyContext, 
   const rate = consumeApiRateLimit(`community:${action}:${memberId}`, true)
   if (!rate.allowed) throw new CommunityError('Rate limit exceeded', 429, 'COMMUNITY_RATE_LIMITED')
 }
-const hasSanctionReadBoundary = (payload: Payload) => Boolean((payload as any).db?.pool || (payload as any).db?.drizzle)
+const hasSanctionReadBoundary = (payload: Payload) =>
+  Boolean((payload as any).db?.pool || (payload as any).db?.drizzle)
 
 export async function queryDb<T = any>(
   payload: Payload,
@@ -444,8 +445,18 @@ export async function addComment(
   context: CommunityPolicyContext,
 ): Promise<CommunityPostRecord> {
   enforceCommunityWriteRateLimit(context, 'comment')
-  if (hasSanctionReadBoundary(payload)) try { await assertMemberCanPost(payload, { siteId: input.siteId, memberId: input.authorMemberId, objectId: input.attachedToId }) }
-  catch (error) { if (error instanceof ModerationActionError) throw new CommunityError(error.message, error.status, error.code); throw error }
+  if (hasSanctionReadBoundary(payload))
+    try {
+      await assertMemberCanPost(payload, {
+        siteId: input.siteId,
+        memberId: input.authorMemberId,
+        objectId: input.attachedToId,
+      })
+    } catch (error) {
+      if (error instanceof ModerationActionError)
+        throw new CommunityError(error.message, error.status, error.code)
+      throw error
+    }
   const discussion = await getOrCreateAttachedDiscussion(payload, {
     siteId: input.siteId,
     attachedToCollection: input.attachedToCollection,
@@ -607,16 +618,16 @@ export async function listDiscussionComments(
     ),
   )
 
-  const profileMap = new Map<string, { displayName: string; handle: string; avatarUrl?: string | null }>()
+  const profileMap = new Map<
+    string,
+    { displayName: string; handle: string; avatarUrl?: string | null }
+  >()
   if (authorIds.length > 0) {
     try {
       const profilesRes = await payload.find({
         collection: 'profiles',
         where: {
-          and: [
-            { site: { equals: context.siteId } },
-            { member: { in: authorIds } },
-          ],
+          and: [{ site: { equals: context.siteId } }, { member: { in: authorIds } }],
         },
         limit: 100,
         depth: 0,
@@ -689,16 +700,18 @@ export async function listDiscussionComments(
     // Check tombstone / removed state
     const isRemoved = post.status === 'removed' || post.moderationState === 'removed'
     if (isRemoved) {
-      const tombstoneLabel = (post as any).tombstoneLabel || '[Comment deleted]'
-      visible.push({
-        ...post,
-        body: tombstoneLabel,
-        isTombstone: true,
-        tombstoneLabel,
-        authorProfile: undefined,
-        reactions: {},
-        viewerReactions: [],
-      })
+      if ((post as any).tombstoneLabel) {
+        const tombstoneLabel = (post as any).tombstoneLabel
+        visible.push({
+          ...post,
+          body: tombstoneLabel,
+          isTombstone: true,
+          tombstoneLabel,
+          authorProfile: undefined,
+          reactions: {},
+          viewerReactions: [],
+        })
+      }
       continue
     }
 
@@ -877,9 +890,7 @@ export async function deleteComment(
   const isAuthor = context.actor.memberId === authorId
 
   const tombstoneLabel =
-    isPrivileged && !isAuthor
-      ? '[Comment removed by moderator]'
-      : '[Comment deleted by author]'
+    isPrivileged && !isAuthor ? '[Comment removed by moderator]' : '[Comment deleted by author]'
 
   await payload.update({
     collection: 'discussion-posts' as any,
@@ -916,8 +927,18 @@ export async function createForumThread(
   context: CommunityPolicyContext,
 ): Promise<{ discussion: CommunityDiscussionRecord; firstPost: CommunityPostRecord }> {
   enforceCommunityWriteRateLimit(context, 'thread')
-  if (hasSanctionReadBoundary(payload)) try { await assertMemberCanPost(payload, { siteId: input.siteId, memberId: input.authorMemberId, objectId: input.forumId }) }
-  catch (error) { if (error instanceof ModerationActionError) throw new CommunityError(error.message, error.status, error.code); throw error }
+  if (hasSanctionReadBoundary(payload))
+    try {
+      await assertMemberCanPost(payload, {
+        siteId: input.siteId,
+        memberId: input.authorMemberId,
+        objectId: input.forumId,
+      })
+    } catch (error) {
+      if (error instanceof ModerationActionError)
+        throw new CommunityError(error.message, error.status, error.code)
+      throw error
+    }
   const forum = (await payload.findByID({
     collection: 'forums',
     id: input.forumId,
@@ -1007,8 +1028,18 @@ export async function replyToForumThread(
   context: CommunityPolicyContext,
 ): Promise<CommunityPostRecord> {
   enforceCommunityWriteRateLimit(context, 'reply')
-  if (hasSanctionReadBoundary(payload)) try { await assertMemberCanPost(payload, { siteId: input.siteId, memberId: input.authorMemberId, objectId: input.discussionId }) }
-  catch (error) { if (error instanceof ModerationActionError) throw new CommunityError(error.message, error.status, error.code); throw error }
+  if (hasSanctionReadBoundary(payload))
+    try {
+      await assertMemberCanPost(payload, {
+        siteId: input.siteId,
+        memberId: input.authorMemberId,
+        objectId: input.discussionId,
+      })
+    } catch (error) {
+      if (error instanceof ModerationActionError)
+        throw new CommunityError(error.message, error.status, error.code)
+      throw error
+    }
   const discussion = (await payload.findByID({
     collection: 'discussions',
     id: input.discussionId,

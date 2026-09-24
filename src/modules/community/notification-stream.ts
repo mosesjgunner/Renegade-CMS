@@ -132,7 +132,11 @@ export async function rebuildNotificationCounters(
   const values = siteId ? [siteId] : []
 
   // 1. Calculate and upsert positive unread counts
-  const computed = await executeDbQuery<{ site_id: string; member_id: string; unread_count: number }>(
+  const computed = await executeDbQuery<{
+    site_id: string
+    member_id: string
+    unread_count: number
+  }>(
     payload,
     `SELECT site_id, recipient_member_id AS member_id, COUNT(*)::int AS unread_count
      FROM inbox_notifications

@@ -2,7 +2,12 @@ import type { Payload } from 'payload'
 
 import { executeDbQuery } from './comment-composer'
 
-export const DEFAULT_COMMENT_REACTION_CODES = ['thumbs_up', 'heart', 'insightful', 'applause'] as const
+export const DEFAULT_COMMENT_REACTION_CODES = [
+  'thumbs_up',
+  'heart',
+  'insightful',
+  'applause',
+] as const
 export type CommentReactionCode = (typeof DEFAULT_COMMENT_REACTION_CODES)[number]
 
 export class CommentReactionError extends Error {
@@ -24,7 +29,10 @@ type CommentReactionTarget = {
   threadClosed: boolean
 }
 
-export async function getSiteCommentReactionCodes(payload: Payload, siteId: string): Promise<string[]> {
+export async function getSiteCommentReactionCodes(
+  payload: Payload,
+  siteId: string,
+): Promise<string[]> {
   const site = (await payload.findByID({
     collection: 'sites',
     id: siteId,
@@ -36,7 +44,10 @@ export async function getSiteCommentReactionCodes(payload: Payload, siteId: stri
   return Array.isArray(codes) ? codes.map(String) : [...DEFAULT_COMMENT_REACTION_CODES]
 }
 
-async function getReactionTarget(payload: Payload, commentId: string): Promise<CommentReactionTarget> {
+async function getReactionTarget(
+  payload: Payload,
+  commentId: string,
+): Promise<CommentReactionTarget> {
   const rows = await executeDbQuery<CommentReactionTarget>(
     payload,
     `SELECT c.id, c.status, t.site_id AS "siteId", t.is_frozen AS "threadFrozen", t.is_closed AS "threadClosed"
@@ -77,7 +88,11 @@ export async function toggleCommentReaction(
   const reactionCode = input.reactionCode.trim()
   const allowedCodes = await getSiteCommentReactionCodes(payload, input.siteId)
   if (!allowedCodes.includes(reactionCode)) {
-    throw new CommentReactionError('Reaction code is not enabled for this site.', 422, 'INVALID_REACTION_CODE')
+    throw new CommentReactionError(
+      'Reaction code is not enabled for this site.',
+      422,
+      'INVALID_REACTION_CODE',
+    )
   }
 
   const target = await getReactionTarget(payload, input.commentId)
@@ -88,7 +103,11 @@ export async function toggleCommentReaction(
     throw new CommentReactionError('Cannot react to a deleted comment.', 422, 'COMMENT_DELETED')
   }
   if (target.threadFrozen) {
-    throw new CommentReactionError('Cannot react to a frozen comment thread.', 403, 'COMMENT_FROZEN')
+    throw new CommentReactionError(
+      'Cannot react to a frozen comment thread.',
+      403,
+      'COMMENT_FROZEN',
+    )
   }
 
   // One advisory transaction lock per comment/code serializes both this member's toggle and its

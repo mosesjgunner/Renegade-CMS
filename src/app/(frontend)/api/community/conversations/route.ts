@@ -1,6 +1,6 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
-import { resolveCommunityActor } from '@/modules/community/service'
+import { CommunityError, resolveCommunityActor } from '@/modules/community/service'
 import {
   ConversationError,
   createGroupConversation,

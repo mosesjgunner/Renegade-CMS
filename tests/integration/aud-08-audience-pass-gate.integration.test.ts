@@ -5,14 +5,8 @@ import { getPayload, type Payload } from 'payload'
 
 import config from '../../src/payload.config'
 import { ensureRenegadePartyDemo, type DemoEnvironment } from '../helpers/renegadeparty-demo'
-import {
-  audienceDigest,
-  type FormSchemaSnapshot,
-} from '../../src/modules/audience/contracts'
-import {
-  type MessageDesign,
-  renderEmailDesign,
-} from '../../src/modules/audience/email-composer'
+import { audienceDigest, type FormSchemaSnapshot } from '../../src/modules/audience/contracts'
+import { type MessageDesign, renderEmailDesign } from '../../src/modules/audience/email-composer'
 import {
   confirmDoubleOptIn,
   exportAudienceSubject,
@@ -297,7 +291,9 @@ describe('AUD-08 Audience Pass Gate — Comprehensive End-to-End Acceptance Inte
       schema: schemaSnapshot as any,
     })
     expect(actionResult).toBeDefined()
-    expect(actionResult.some((a) => a.type === 'create-contact' && a.status === 'completed')).toBe(true)
+    expect(actionResult.some((a) => a.type === 'create-contact' && a.status === 'completed')).toBe(
+      true,
+    )
 
     // Path B: Invalid submission (missing required email or malformed)
     const invalidRes = await submitPublicForm(payload, {
@@ -1390,15 +1386,21 @@ describe('AUD-08 Audience Pass Gate — Comprehensive End-to-End Acceptance Inte
     expect(trackingUrl).toContain('rcvar=B')
 
     // Bot click classification excludes corporate email scanners
-    const botAgent = classifyClickAgent('Mozilla/5.0 (compatible; Barracuda-Sentinel/1.0; +http://barracuda.com)')
+    const botAgent = classifyClickAgent(
+      'Mozilla/5.0 (compatible; Barracuda-Sentinel/1.0; +http://barracuda.com)',
+    )
     expect(botAgent.isBot).toBe(true)
     expect(botAgent.botType).toBe('security_scanner')
 
-    const prefetchAgent = classifyClickAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)', { purpose: 'prefetch' })
+    const prefetchAgent = classifyClickAgent('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)', {
+      purpose: 'prefetch',
+    })
     expect(prefetchAgent.isBot).toBe(true)
     expect(prefetchAgent.botType).toBe('prefetch_engine')
 
-    const humanAgent = classifyClickAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36')
+    const humanAgent = classifyClickAgent(
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+    )
     expect(humanAgent.isBot).toBe(false)
     expect(humanAgent.botType).toBe('human')
 
@@ -1515,7 +1517,17 @@ describe('AUD-08 Audience Pass Gate — Comprehensive End-to-End Acceptance Inte
     // Prove secrets remain excluded: checking exported structures reveals zero credentials or unhashed tokens
     const sampleExport = await exportAudienceSubject(restartedPayload, {
       siteId,
-      subscriberId: String(subscribers.totalDocs > 0 ? (await restartedPayload.find({ collection: 'subscribers', limit: 1, overrideAccess: true } as never)).docs[0].id : ''),
+      subscriberId: String(
+        subscribers.totalDocs > 0
+          ? (
+              await restartedPayload.find({
+                collection: 'subscribers',
+                limit: 1,
+                overrideAccess: true,
+              } as never)
+            ).docs[0].id
+          : '',
+      ),
     })
     const serializedExport = JSON.stringify(sampleExport)
     expect(serializedExport).not.toContain('renegade_dev_only')

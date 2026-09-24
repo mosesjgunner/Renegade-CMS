@@ -30,24 +30,24 @@ Renegade CMS AUD-07 establishes a **calm, decision-useful Audience Command Cente
 
 ## 2. Source-Labeled Metric Dictionary
 
-| Metric Key | Label | Channel | Calculation Formula | Uncertainty & Caveats |
-| :--- | :--- | :--- | :--- | :--- |
-| `form_views` | Form Impressions | Web | `COUNT(form_view_events)` | Client-side lower bound; subject to content blockers. |
-| `form_submissions` | Form Submissions | Web | `COUNT(form_submissions WHERE status = "received")` | Validated against published schema; excludes honeypots. |
-| `double_opt_in_sent`| Confirmations Dispatched | Email | `COUNT(subscriber_confirmation_tokens)` | Hashed, single-use, 24h expiration tokens. |
-| `double_opt_in_confirmed` | Confirmed Opt-Ins | Email | `COUNT(consent_events WHERE event = "double-opt-in-confirmed")` | Verifiable affirmative consent evidence. |
-| `eligible_snapshot`| Eligible Audience | Multi | `COUNT(recipient_snapshot_members)` | Exact frozen snapshot evaluated at campaign approval. |
-| `dispatch_attempted`| Attempted Dispatch | Multi | `COUNT(deliveries WHERE status IN (...))` | Handed to channel worker after suppression re-check. |
-| `provider_accepted`| Provider Accepted (Sent) | Multi | `COUNT(deliveries WHERE status = "accepted")` | **Transport handoff only; not inbox receipt.** |
-| `carrier_delivered`| Confirmed Delivered | Multi | `COUNT(delivery_events WHERE event = "delivered")` | Network DLR (SMS/RCS) or MTA DSN (Email). |
-| `deferred_transient`| Deferred / Retryable | Multi | `COUNT(deliveries WHERE status = "deferred")` | 4xx MTA rate limit or carrier congestion; retried. |
-| `hard_bounced` | Permanent Hard Bounce | Multi | `COUNT(deliveries WHERE status = "bounced")` | 5xx invalid mailbox / unallocated phone; auto-suppressed. |
-| `spam_complaint` | Spam Complaint | Email | `COUNT(delivery_events WHERE event = "complaint")` | ISP Feedback Loop report; critical alert at > 0.10%. |
-| `unsubscribed` | Unsubscribe / Opt-Out | Multi | `COUNT(consent_events WHERE event = "unsubscribe")` | Permanent suppression until affirmative re-opt-in. |
-| `observed_opens` | Observed Opens | Email | `COUNT(DISTINCT delivery_id WHERE open_observed)` | Proxy cache uncertainty range: ±20-35% due to Apple MPP. |
-| `observed_clicks` | Human Clicks | Multi | `COUNT(DISTINCT delivery_id WHERE click AND NOT is_bot)` | Filtered known security crawlers and prefetch bots. |
-| `inbound_replies` | Inbound Replies | Multi | `COUNT(telecom_inbound_messages WHERE keyword != "stop")` | Conversational inbound routed to staff workflow inbox. |
-| `attributed_conversions`| Configured Conversions | Multi | `COUNT(attributed_goal_events)` | First-party goal attribution (?rcid=) over 7-day window. |
+| Metric Key                | Label                    | Channel | Calculation Formula                                             | Uncertainty & Caveats                                     |
+| :------------------------ | :----------------------- | :------ | :-------------------------------------------------------------- | :-------------------------------------------------------- |
+| `form_views`              | Form Impressions         | Web     | `COUNT(form_view_events)`                                       | Client-side lower bound; subject to content blockers.     |
+| `form_submissions`        | Form Submissions         | Web     | `COUNT(form_submissions WHERE status = "received")`             | Validated against published schema; excludes honeypots.   |
+| `double_opt_in_sent`      | Confirmations Dispatched | Email   | `COUNT(subscriber_confirmation_tokens)`                         | Hashed, single-use, 24h expiration tokens.                |
+| `double_opt_in_confirmed` | Confirmed Opt-Ins        | Email   | `COUNT(consent_events WHERE event = "double-opt-in-confirmed")` | Verifiable affirmative consent evidence.                  |
+| `eligible_snapshot`       | Eligible Audience        | Multi   | `COUNT(recipient_snapshot_members)`                             | Exact frozen snapshot evaluated at campaign approval.     |
+| `dispatch_attempted`      | Attempted Dispatch       | Multi   | `COUNT(deliveries WHERE status IN (...))`                       | Handed to channel worker after suppression re-check.      |
+| `provider_accepted`       | Provider Accepted (Sent) | Multi   | `COUNT(deliveries WHERE status = "accepted")`                   | **Transport handoff only; not inbox receipt.**            |
+| `carrier_delivered`       | Confirmed Delivered      | Multi   | `COUNT(delivery_events WHERE event = "delivered")`              | Network DLR (SMS/RCS) or MTA DSN (Email).                 |
+| `deferred_transient`      | Deferred / Retryable     | Multi   | `COUNT(deliveries WHERE status = "deferred")`                   | 4xx MTA rate limit or carrier congestion; retried.        |
+| `hard_bounced`            | Permanent Hard Bounce    | Multi   | `COUNT(deliveries WHERE status = "bounced")`                    | 5xx invalid mailbox / unallocated phone; auto-suppressed. |
+| `spam_complaint`          | Spam Complaint           | Email   | `COUNT(delivery_events WHERE event = "complaint")`              | ISP Feedback Loop report; critical alert at > 0.10%.      |
+| `unsubscribed`            | Unsubscribe / Opt-Out    | Multi   | `COUNT(consent_events WHERE event = "unsubscribe")`             | Permanent suppression until affirmative re-opt-in.        |
+| `observed_opens`          | Observed Opens           | Email   | `COUNT(DISTINCT delivery_id WHERE open_observed)`               | Proxy cache uncertainty range: ±20-35% due to Apple MPP.  |
+| `observed_clicks`         | Human Clicks             | Multi   | `COUNT(DISTINCT delivery_id WHERE click AND NOT is_bot)`        | Filtered known security crawlers and prefetch bots.       |
+| `inbound_replies`         | Inbound Replies          | Multi   | `COUNT(telecom_inbound_messages WHERE keyword != "stop")`       | Conversational inbound routed to staff workflow inbox.    |
+| `attributed_conversions`  | Configured Conversions   | Multi   | `COUNT(attributed_goal_events)`                                 | First-party goal attribution (?rcid=) over 7-day window.  |
 
 ---
 
@@ -113,6 +113,7 @@ Renegade CMS enables scientific, honest A/B experimentation without dark pattern
 ## 7. Reports & Privacy-Safe Export
 
 Operators can export operational summaries to CSV or JSON under permission (`owner`, `administrator`, `staff`):
+
 - All cohort cells with `N < 5` are masked as `< 5`.
 - Individual subscriber contact records, email addresses, and phone numbers are excluded from aggregate export.
 

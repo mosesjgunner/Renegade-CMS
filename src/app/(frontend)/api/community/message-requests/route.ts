@@ -9,15 +9,27 @@ export async function POST(request: Request) {
   const body = (await request.json().catch(() => ({}))) as Record<string, unknown>
   const siteId = String(body.siteId ?? request.headers.get('x-site-id') ?? 'default')
   const actor = await resolveCommunityActor(payload, request.headers, siteId)
-  if (actor.kind === 'anonymous' || !actor.memberId) return Response.json({ error: 'Authentication required' }, { status: 401 })
+  if (actor.kind === 'anonymous' || !actor.memberId)
+    return Response.json({ error: 'Authentication required' }, { status: 401 })
   const action = String(body.action ?? '')
   if (!body.conversationId || !['accept', 'decline', 'block_and_report'].includes(action))
-    return Response.json({ error: 'conversationId and a valid action are required' }, { status: 400 })
+    return Response.json(
+      { error: 'conversationId and a valid action are required' },
+      { status: 400 },
+    )
   try {
-    const result = await actOnMessageRequest(payload, { siteId, conversationId: String(body.conversationId), recipientMemberId: actor.memberId, action: action as 'accept' | 'decline' | 'block_and_report', reason: body.reason ? String(body.reason) : undefined, details: body.details ? String(body.details) : undefined })
+    const result = await actOnMessageRequest(payload, {
+      siteId,
+      conversationId: String(body.conversationId),
+      recipientMemberId: actor.memberId,
+      action: action as 'accept' | 'decline' | 'block_and_report',
+      reason: body.reason ? String(body.reason) : undefined,
+      details: body.details ? String(body.details) : undefined,
+    })
     return Response.json({ success: true, ...result })
   } catch (error) {
-    if (error instanceof ConversationError) return Response.json({ error: error.message, code: error.code }, { status: error.status })
+    if (error instanceof ConversationError)
+      return Response.json({ error: error.message, code: error.code }, { status: error.status })
     return Response.json({ error: 'Failed to process message request' }, { status: 500 })
   }
 }

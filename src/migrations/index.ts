@@ -10,6 +10,12 @@ import * as disc01SharedSeoFields from './20260914_121000_disc_01_shared_seo_fie
 import * as disc04SearchProjection from './20260915_130000_disc_04_search_projection'
 import * as editorialQualityGateSnapshot from './20260916_070000_editorial_quality_gate_snapshot'
 import * as aud00DeliverySnapshots from './20260920_000000_aud_00_delivery_snapshots'
+import * as shop05Subscriptions from './20260923_040000_shop_05_subscriptions'
+import * as shop06AffiliateAndReferrals from './20260923_050000_shop_06_affiliate_and_referrals'
+import * as shop07Donations from './20260923_060000_shop_07_donations'
+import * as shop07DonationLifecycle from './20260923_070000_shop_07_donation_lifecycle'
+import * as shop03PodAndFulfillment from './20260923_080000_shop_03_pod_and_fulfillment'
+import * as eventsRequiredEntitlement from './20260923_090000_events_required_entitlement'
 import * as aud01AudienceEvidence from './20260920_010000_aud_01_audience_evidence'
 import * as aud02Forms from './20260920_020000_aud_02_forms'
 import * as aud03EmailComposer from './20260920_030000_aud_03_email_composer'
@@ -38,6 +44,10 @@ import * as comm07cMessageAttachments from './20260922_090000_comm_07c_message_a
 import * as comm07dGroupAdministration from './20260922_100000_comm_07d_group_administration'
 import * as comm06bInboxProjections from './20260922_110000_comm_06b_inbox_projections'
 import * as comm06cNotificationPreferencesAndOutbox from './20260922_120000_comm_06c_notification_preferences_and_outbox'
+import * as commerceCanonicalContract from './20260922_130000_commerce_canonical_contract'
+import * as shop01CatalogWorkflows from './20260923_010000_shop_01_catalog_workflows'
+import * as shop02CartsAndProposals from './20260923_020000_shop_02_carts_and_checkout_proposals'
+import * as shop04PaymentOperations from './20260923_030000_shop_04_payment_operations'
 import * as pre04ReusableComposition from './20260912_040000_pre_04_reusable_composition'
 import * as pre01Snapshots from './20260912_020000_pre_01_presentation_snapshots'
 import * as pre03VisualEditor from './20260912_030000_pre_03_visual_editor'
@@ -521,5 +531,55 @@ export const migrations = [
     up: comm06cNotificationPreferencesAndOutbox.up,
     down: comm06cNotificationPreferencesAndOutbox.down,
     name: '20260922_120000_comm_06c_notification_preferences_and_outbox',
+  },
+  {
+    up: commerceCanonicalContract.up,
+    down: commerceCanonicalContract.down,
+    name: '20260922_130000_commerce_canonical_contract',
+  },
+  {
+    up: shop01CatalogWorkflows.up,
+    down: shop01CatalogWorkflows.down,
+    name: '20260923_010000_shop_01_catalog_workflows',
+  },
+  {
+    up: shop02CartsAndProposals.up,
+    down: shop02CartsAndProposals.down,
+    name: '20260923_020000_shop_02_carts_and_checkout_proposals',
+  },
+  {
+    up: shop04PaymentOperations.up,
+    down: shop04PaymentOperations.down,
+    name: '20260923_030000_shop_04_payment_operations',
+  },
+  {
+    up: shop05Subscriptions.up,
+    down: shop05Subscriptions.down,
+    name: '20260923_040000_shop_05_subscriptions',
+  },
+  {
+    up: shop06AffiliateAndReferrals.up,
+    down: shop06AffiliateAndReferrals.down,
+    name: '20260923_050000_shop_06_affiliate_and_referrals',
+  },
+  {
+    up: shop07Donations.up,
+    down: shop07Donations.down,
+    name: '20260923_060000_shop_07_donations',
+  },
+  {
+    up: shop07DonationLifecycle.up,
+    down: shop07DonationLifecycle.down,
+    name: '20260923_070000_shop_07_donation_lifecycle',
+  },
+  {
+    up: shop03PodAndFulfillment.up,
+    down: shop03PodAndFulfillment.down,
+    name: '20260923_080000_shop_03_pod_and_fulfillment',
+  },
+  {
+    up: eventsRequiredEntitlement.up,
+    down: eventsRequiredEntitlement.down,
+    name: '20260923_090000_events_required_entitlement',
   },
 ]

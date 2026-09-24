@@ -289,7 +289,14 @@ const INITIAL_EXPERIMENTS: AudienceExperiment[] = [
 
 export default function AudienceCommandCenter() {
   const [activeTab, setActiveTab] = useState<
-    'overview' | 'calendar' | 'deliverability' | 'funnels' | 'experiments' | 'attribution' | 'dictionary' | 'reports'
+    | 'overview'
+    | 'calendar'
+    | 'deliverability'
+    | 'funnels'
+    | 'experiments'
+    | 'attribution'
+    | 'dictionary'
+    | 'reports'
   >('overview')
 
   const [siteId, setSiteId] = useState('site-renegade-1')
@@ -298,7 +305,8 @@ export default function AudienceCommandCenter() {
 
   // State management
   const [healthData, setHealthData] = useState<AudienceCommandCenterHealth>(SEED_HEALTH_DATA)
-  const [calendarItems, setCalendarItems] = useState<UnifiedCampaignCalendarItem[]>(SEED_CALENDAR_ITEMS)
+  const [calendarItems, setCalendarItems] =
+    useState<UnifiedCampaignCalendarItem[]>(SEED_CALENDAR_ITEMS)
   const [funnelData] = useState<CampaignFunnelProjection>(SEED_FUNNEL_DATA)
   const [experiments, setExperiments] = useState<AudienceExperiment[]>(INITIAL_EXPERIMENTS)
   const [operatorNotice, setOperatorNotice] = useState<string | null>(null)
@@ -308,7 +316,9 @@ export default function AudienceCommandCenter() {
   const [testUrlBase, setTestUrlBase] = useState('https://renegade.media/townhall-2026')
   const [testCampaignId, setTestCampaignId] = useState('camp-autumn-dispatch')
   const [testDirectOnly, setTestDirectOnly] = useState(false)
-  const [testUserAgent, setTestUserAgent] = useState('Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)')
+  const [testUserAgent, setTestUserAgent] = useState(
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7)',
+  )
   const [testHeaderPurpose, setTestHeaderPurpose] = useState('')
 
   // Experiment modal / form state
@@ -348,18 +358,28 @@ export default function AudienceCommandCenter() {
   const handleRemediation = (actionKey: string, title: string) => {
     setOperatorError(null)
     if (actionKey === 'review_bounce_suppressions') {
-      setOperatorNotice(`Remediation executed: Stale addresses quarantined and suppression list refreshed.`)
+      setOperatorNotice(
+        `Remediation executed: Stale addresses quarantined and suppression list refreshed.`,
+      )
     } else if (actionKey === 'pause_marketing_campaigns') {
       setCalendarItems((prev) =>
-        prev.map((c) => (c.status === 'scheduled' || c.status === 'running' ? { ...c, status: 'paused' } : c)),
+        prev.map((c) =>
+          c.status === 'scheduled' || c.status === 'running' ? { ...c, status: 'paused' } : c,
+        ),
       )
-      setOperatorNotice(`Remediation executed: Running and scheduled campaigns paused pending consent audit.`)
+      setOperatorNotice(
+        `Remediation executed: Running and scheduled campaigns paused pending consent audit.`,
+      )
     } else if (actionKey === 'quarantine_invalid_forms') {
       setHealthData((prev) => ({
         ...prev,
         metrics: {
           ...prev.metrics,
-          invalidFormCount: { ...prev.metrics.invalidFormCount, currentValue: 0, formattedValue: '0' },
+          invalidFormCount: {
+            ...prev.metrics.invalidFormCount,
+            currentValue: 0,
+            formattedValue: '0',
+          },
         },
         remediationsAvailable: prev.remediationsAvailable.filter((r) => r.actionKey !== actionKey),
       }))
@@ -369,11 +389,17 @@ export default function AudienceCommandCenter() {
         ...prev,
         metrics: {
           ...prev.metrics,
-          staleSegmentCount: { ...prev.metrics.staleSegmentCount, currentValue: 0, formattedValue: '0' },
+          staleSegmentCount: {
+            ...prev.metrics.staleSegmentCount,
+            currentValue: 0,
+            formattedValue: '0',
+          },
         },
         remediationsAvailable: prev.remediationsAvailable.filter((r) => r.actionKey !== actionKey),
       }))
-      setOperatorNotice(`Remediation executed: Background re-evaluation queued for all audience segments.`)
+      setOperatorNotice(
+        `Remediation executed: Background re-evaluation queued for all audience segments.`,
+      )
     } else {
       setOperatorNotice(`Action "${title}" executed successfully via domain service.`)
     }
@@ -406,29 +432,27 @@ export default function AudienceCommandCenter() {
   // Handle CSV Export
   const handleExportCsv = () => {
     try {
-      const exportResult = exportAudienceSummaryReport(
-        {
-          siteId,
-          userRole: 'administrator',
-          windowLabel: timeWindow.toUpperCase(),
-          metrics: AUDIENCE_METRIC_DICTIONARY.map((m) => ({
-            key: m.key,
-            label: m.label,
-            channel: m.channel,
-            count: 4200, // sample aggregate
-            definition: m.definition,
-            caveats: m.caveats.join('; '),
-          })),
-          cohorts: funnelData.cohortBreakdown.map((c) => ({
-            dimension: c.dimension,
-            label: c.label,
-            eligible: typeof c.eligible === 'number' ? c.eligible : 4,
-            delivered: typeof c.delivered === 'number' ? c.delivered : 4,
-            observedClicks: typeof c.observedClicks === 'number' ? c.observedClicks : 1,
-            conversions: typeof c.conversions === 'number' ? c.conversions : 1,
-          })),
-        },
-      )
+      const exportResult = exportAudienceSummaryReport({
+        siteId,
+        userRole: 'administrator',
+        windowLabel: timeWindow.toUpperCase(),
+        metrics: AUDIENCE_METRIC_DICTIONARY.map((m) => ({
+          key: m.key,
+          label: m.label,
+          channel: m.channel,
+          count: 4200, // sample aggregate
+          definition: m.definition,
+          caveats: m.caveats.join('; '),
+        })),
+        cohorts: funnelData.cohortBreakdown.map((c) => ({
+          dimension: c.dimension,
+          label: c.label,
+          eligible: typeof c.eligible === 'number' ? c.eligible : 4,
+          delivered: typeof c.delivered === 'number' ? c.delivered : 4,
+          observedClicks: typeof c.observedClicks === 'number' ? c.observedClicks : 1,
+          conversions: typeof c.conversions === 'number' ? c.conversions : 1,
+        })),
+      })
 
       // Browser download simulation
       const blob = new Blob([exportResult.csv], { type: 'text/csv;charset=utf-8;' })
@@ -440,7 +464,9 @@ export default function AudienceCommandCenter() {
       link.click()
       document.body.removeChild(link)
 
-      setOperatorNotice(`Report exported successfully: ${exportResult.filename}. ${exportResult.privacyStatement}`)
+      setOperatorNotice(
+        `Report exported successfully: ${exportResult.filename}. ${exportResult.privacyStatement}`,
+      )
     } catch (err) {
       setOperatorError((err as Error).message)
     }
@@ -502,7 +528,15 @@ export default function AudienceCommandCenter() {
                 boxShadow: '0 0 10px #10b981',
               }}
             />
-            <h1 style={{ fontSize: '24px', fontWeight: 700, margin: 0, color: '#f8fafc', letterSpacing: '-0.02em' }}>
+            <h1
+              style={{
+                fontSize: '24px',
+                fontWeight: 700,
+                margin: 0,
+                color: '#f8fafc',
+                letterSpacing: '-0.02em',
+              }}
+            >
               Audience Command Center
             </h1>
             <span
@@ -521,8 +555,9 @@ export default function AudienceCommandCenter() {
             </span>
           </div>
           <p style={{ margin: 0, fontSize: '14px', color: '#94a3b8', maxWidth: '720px' }}>
-            Calm, privacy-safe operations across contacts, consent health, forms, unified campaigns (Email/SMS/RCS),
-            deliverability evidence, and bounded experiments without fabricated universal marketing scores.
+            Calm, privacy-safe operations across contacts, consent health, forms, unified campaigns
+            (Email/SMS/RCS), deliverability evidence, and bounded experiments without fabricated
+            universal marketing scores.
           </p>
         </div>
 
@@ -708,10 +743,21 @@ export default function AudienceCommandCenter() {
                 padding: '18px',
               }}
             >
-              <div style={{ fontSize: '12px', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 600 }}>
+              <div
+                style={{
+                  fontSize: '12px',
+                  color: '#94a3b8',
+                  textTransform: 'uppercase',
+                  fontWeight: 600,
+                }}
+              >
                 Total Active Audience
               </div>
-              <div style={{ fontSize: '28px', fontWeight: 700, color: '#f8fafc', marginTop: '6px' }}>12,480</div>
+              <div
+                style={{ fontSize: '28px', fontWeight: 700, color: '#f8fafc', marginTop: '6px' }}
+              >
+                12,480
+              </div>
               <div style={{ fontSize: '12px', color: '#10b981', marginTop: '4px' }}>
                 +312 (+2.5%) net confirmed this window
               </div>
@@ -725,10 +771,21 @@ export default function AudienceCommandCenter() {
                 padding: '18px',
               }}
             >
-              <div style={{ fontSize: '12px', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 600 }}>
+              <div
+                style={{
+                  fontSize: '12px',
+                  color: '#94a3b8',
+                  textTransform: 'uppercase',
+                  fontWeight: 600,
+                }}
+              >
                 Consent & Confirmation Rate
               </div>
-              <div style={{ fontSize: '28px', fontWeight: 700, color: '#f8fafc', marginTop: '6px' }}>87.4%</div>
+              <div
+                style={{ fontSize: '28px', fontWeight: 700, color: '#f8fafc', marginTop: '6px' }}
+              >
+                87.4%
+              </div>
               <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '4px' }}>
                 Double opt-in tokens confirmed within 24h
               </div>
@@ -742,10 +799,19 @@ export default function AudienceCommandCenter() {
                 padding: '18px',
               }}
             >
-              <div style={{ fontSize: '12px', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 600 }}>
+              <div
+                style={{
+                  fontSize: '12px',
+                  color: '#94a3b8',
+                  textTransform: 'uppercase',
+                  fontWeight: 600,
+                }}
+              >
                 Hard Bounce Rate
               </div>
-              <div style={{ fontSize: '28px', fontWeight: 700, color: '#10b981', marginTop: '6px' }}>
+              <div
+                style={{ fontSize: '28px', fontWeight: 700, color: '#10b981', marginTop: '6px' }}
+              >
                 {healthData.metrics.hardBounceRate.formattedValue}
               </div>
               <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '4px' }}>
@@ -761,10 +827,19 @@ export default function AudienceCommandCenter() {
                 padding: '18px',
               }}
             >
-              <div style={{ fontSize: '12px', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 600 }}>
+              <div
+                style={{
+                  fontSize: '12px',
+                  color: '#94a3b8',
+                  textTransform: 'uppercase',
+                  fontWeight: 600,
+                }}
+              >
                 Spam Complaint Rate
               </div>
-              <div style={{ fontSize: '28px', fontWeight: 700, color: '#10b981', marginTop: '6px' }}>
+              <div
+                style={{ fontSize: '28px', fontWeight: 700, color: '#10b981', marginTop: '6px' }}
+              >
                 {healthData.metrics.complaintRate.formattedValue}
               </div>
               <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '4px' }}>
@@ -780,10 +855,19 @@ export default function AudienceCommandCenter() {
                 padding: '18px',
               }}
             >
-              <div style={{ fontSize: '12px', color: '#94a3b8', textTransform: 'uppercase', fontWeight: 600 }}>
+              <div
+                style={{
+                  fontSize: '12px',
+                  color: '#94a3b8',
+                  textTransform: 'uppercase',
+                  fontWeight: 600,
+                }}
+              >
                 Oldest Queued Job
               </div>
-              <div style={{ fontSize: '28px', fontWeight: 700, color: '#f8fafc', marginTop: '6px' }}>
+              <div
+                style={{ fontSize: '28px', fontWeight: 700, color: '#f8fafc', marginTop: '6px' }}
+              >
                 {healthData.metrics.queueAgeMinutes.formattedValue}
               </div>
               <div style={{ fontSize: '12px', color: '#94a3b8', marginTop: '4px' }}>
@@ -793,7 +877,13 @@ export default function AudienceCommandCenter() {
           </div>
 
           {/* Breakdown Grids */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(440px, 1fr))', gap: '20px' }}>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(440px, 1fr))',
+              gap: '20px',
+            }}
+          >
             {/* Growth & Loss by Source */}
             <div
               style={{
@@ -803,12 +893,25 @@ export default function AudienceCommandCenter() {
                 padding: '20px',
               }}
             >
-              <h3 style={{ fontSize: '16px', fontWeight: 600, margin: '0 0 16px 0', color: '#f1f5f9' }}>
+              <h3
+                style={{
+                  fontSize: '16px',
+                  fontWeight: 600,
+                  margin: '0 0 16px 0',
+                  color: '#f1f5f9',
+                }}
+              >
                 Audience Growth & Loss by Source
               </h3>
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
                 <thead>
-                  <tr style={{ borderBottom: '1px solid #334155', color: '#94a3b8', textAlign: 'left' }}>
+                  <tr
+                    style={{
+                      borderBottom: '1px solid #334155',
+                      color: '#94a3b8',
+                      textAlign: 'left',
+                    }}
+                  >
                     <th style={{ padding: '8px 0' }}>Capture Source</th>
                     <th>Gross New</th>
                     <th>Confirmed</th>
@@ -818,18 +921,43 @@ export default function AudienceCommandCenter() {
                 </thead>
                 <tbody>
                   {[
-                    { source: 'Website Forms (Organic)', gross: 420, conf: 385, unsub: 18, net: '+367' },
+                    {
+                      source: 'Website Forms (Organic)',
+                      gross: 420,
+                      conf: 385,
+                      unsub: 18,
+                      net: '+367',
+                    },
                     { source: 'Podcast Live RSVP', gross: 185, conf: 160, unsub: 9, net: '+151' },
-                    { source: 'Member Account Checkout', gross: 64, conf: 64, unsub: 1, net: '+63' },
+                    {
+                      source: 'Member Account Checkout',
+                      gross: 64,
+                      conf: 64,
+                      unsub: 1,
+                      net: '+63',
+                    },
                     { source: 'Reviewed CSV Import', gross: 45, conf: 45, unsub: 4, net: '+41' },
-                    { source: 'Inbound Telecom STOP Keywords', gross: 0, conf: 0, unsub: 28, net: '-28' },
+                    {
+                      source: 'Inbound Telecom STOP Keywords',
+                      gross: 0,
+                      conf: 0,
+                      unsub: 28,
+                      net: '-28',
+                    },
                   ].map((row, idx) => (
                     <tr key={idx} style={{ borderBottom: '1px solid #1e293b' }}>
-                      <td style={{ padding: '10px 0', fontWeight: 500, color: '#f8fafc' }}>{row.source}</td>
+                      <td style={{ padding: '10px 0', fontWeight: 500, color: '#f8fafc' }}>
+                        {row.source}
+                      </td>
                       <td>{row.gross}</td>
                       <td>{row.conf}</td>
                       <td style={{ color: '#f87171' }}>{row.unsub}</td>
-                      <td style={{ fontWeight: 600, color: row.net.startsWith('+') ? '#10b981' : '#f87171' }}>
+                      <td
+                        style={{
+                          fontWeight: 600,
+                          color: row.net.startsWith('+') ? '#10b981' : '#f87171',
+                        }}
+                      >
                         {row.net}
                       </td>
                     </tr>
@@ -847,16 +975,48 @@ export default function AudienceCommandCenter() {
                 padding: '20px',
               }}
             >
-              <h3 style={{ fontSize: '16px', fontWeight: 600, margin: '0 0 16px 0', color: '#f1f5f9' }}>
+              <h3
+                style={{
+                  fontSize: '16px',
+                  fontWeight: 600,
+                  margin: '0 0 16px 0',
+                  color: '#f1f5f9',
+                }}
+              >
                 Suppression Reason Breakdown (Evidence Ledger)
               </h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 {[
-                  { reason: 'User-Initiated Unsubscribe Link', count: 342, pct: '48%', color: '#38bdf8' },
-                  { reason: 'Permanent Hard Bounce (5xx / Invalid)', count: 184, pct: '26%', color: '#f59e0b' },
-                  { reason: 'Inbound STOP Keyword (Telecom SMS/RCS)', count: 128, pct: '18%', color: '#ec4899' },
-                  { reason: 'ISP Feedback Loop Spam Complaint', count: 32, pct: '4.5%', color: '#ef4444' },
-                  { reason: 'Operator Correction / Legal Erasure', count: 24, pct: '3.5%', color: '#a855f7' },
+                  {
+                    reason: 'User-Initiated Unsubscribe Link',
+                    count: 342,
+                    pct: '48%',
+                    color: '#38bdf8',
+                  },
+                  {
+                    reason: 'Permanent Hard Bounce (5xx / Invalid)',
+                    count: 184,
+                    pct: '26%',
+                    color: '#f59e0b',
+                  },
+                  {
+                    reason: 'Inbound STOP Keyword (Telecom SMS/RCS)',
+                    count: 128,
+                    pct: '18%',
+                    color: '#ec4899',
+                  },
+                  {
+                    reason: 'ISP Feedback Loop Spam Complaint',
+                    count: 32,
+                    pct: '4.5%',
+                    color: '#ef4444',
+                  },
+                  {
+                    reason: 'Operator Correction / Legal Erasure',
+                    count: 24,
+                    pct: '3.5%',
+                    color: '#a855f7',
+                  },
                 ].map((item, idx) => (
                   <div key={idx}>
                     <div
@@ -872,7 +1032,14 @@ export default function AudienceCommandCenter() {
                         {item.count} ({item.pct})
                       </span>
                     </div>
-                    <div style={{ height: '6px', backgroundColor: '#1e293b', borderRadius: '3px', overflow: 'hidden' }}>
+                    <div
+                      style={{
+                        height: '6px',
+                        backgroundColor: '#1e293b',
+                        borderRadius: '3px',
+                        overflow: 'hidden',
+                      }}
+                    >
                       <div
                         style={{
                           height: '100%',
@@ -906,12 +1073,21 @@ export default function AudienceCommandCenter() {
                 padding: '20px',
               }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '14px' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: '14px',
+                }}
+              >
                 <h3 style={{ fontSize: '16px', fontWeight: 600, margin: 0, color: '#f1f5f9' }}>
                   Audience Segment Estimates & Freshness
                 </h3>
                 <button
-                  onClick={() => handleRemediation('refresh_stale_segments', 'Refresh Stale Segments')}
+                  onClick={() =>
+                    handleRemediation('refresh_stale_segments', 'Refresh Stale Segments')
+                  }
                   style={{
                     backgroundColor: '#1e293b',
                     color: '#38bdf8',
@@ -925,12 +1101,34 @@ export default function AudienceCommandCenter() {
                   Recalculate All
                 </button>
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '13px' }}>
+              <div
+                style={{ display: 'flex', flexDirection: 'column', gap: '10px', fontSize: '13px' }}
+              >
                 {[
-                  { name: 'All Active Double-Opted Subscribers', size: 10840, stale: false, lastEval: '12 min ago' },
-                  { name: 'SMS / RCS Action Volunteers', size: 1240, stale: false, lastEval: '45 min ago' },
-                  { name: 'Paid Members (Active Entitlement)', size: 890, stale: false, lastEval: '2 hours ago' },
-                  { name: 'Engaged Past 60 Days (Bot-Filtered)', size: 4210, stale: true, lastEval: '28 hours ago' },
+                  {
+                    name: 'All Active Double-Opted Subscribers',
+                    size: 10840,
+                    stale: false,
+                    lastEval: '12 min ago',
+                  },
+                  {
+                    name: 'SMS / RCS Action Volunteers',
+                    size: 1240,
+                    stale: false,
+                    lastEval: '45 min ago',
+                  },
+                  {
+                    name: 'Paid Members (Active Entitlement)',
+                    size: 890,
+                    stale: false,
+                    lastEval: '2 hours ago',
+                  },
+                  {
+                    name: 'Engaged Past 60 Days (Bot-Filtered)',
+                    size: 4210,
+                    stale: true,
+                    lastEval: '28 hours ago',
+                  },
                 ].map((seg, idx) => (
                   <div
                     key={idx}
@@ -950,7 +1148,9 @@ export default function AudienceCommandCenter() {
                       </div>
                     </div>
                     <div style={{ textAlign: 'right' }}>
-                      <div style={{ fontWeight: 600, color: '#38bdf8' }}>{seg.size.toLocaleString()}</div>
+                      <div style={{ fontWeight: 600, color: '#38bdf8' }}>
+                        {seg.size.toLocaleString()}
+                      </div>
                       <div style={{ fontSize: '11px', color: '#94a3b8' }}>recipients</div>
                     </div>
                   </div>
@@ -967,16 +1167,50 @@ export default function AudienceCommandCenter() {
                 padding: '20px',
               }}
             >
-              <h3 style={{ fontSize: '16px', fontWeight: 600, margin: '0 0 14px 0', color: '#f1f5f9' }}>
+              <h3
+                style={{
+                  fontSize: '16px',
+                  fontWeight: 600,
+                  margin: '0 0 14px 0',
+                  color: '#f1f5f9',
+                }}
+              >
                 Recent Operator Actions (Audit Evidence)
               </h3>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '12px' }}>
+              <div
+                style={{ display: 'flex', flexDirection: 'column', gap: '8px', fontSize: '12px' }}
+              >
                 {[
-                  { action: 'Experiment Winner Confirmed', target: 'Subject Curiosity vs Clarity', actor: 'Moses (Owner)', time: '10 min ago' },
-                  { action: 'Manual Contact Suppression', target: 'quarantine-bounce-404@invalid.domain', actor: 'Staff Reviewer', time: '1 hour ago' },
-                  { action: 'Campaign Approved & Scheduled', target: 'September Sovereign Dispatch #42', actor: 'Lead Editor', time: '3 hours ago' },
-                  { action: 'Reviewed CSV Import Committed', target: '45 attendees with verified proof', actor: 'Moses (Owner)', time: 'Yesterday' },
-                  { action: 'Subject Erasure Completed', target: 'Anonymized + suppression digest retained', actor: 'Compliance Officer', time: '2 days ago' },
+                  {
+                    action: 'Experiment Winner Confirmed',
+                    target: 'Subject Curiosity vs Clarity',
+                    actor: 'Moses (Owner)',
+                    time: '10 min ago',
+                  },
+                  {
+                    action: 'Manual Contact Suppression',
+                    target: 'quarantine-bounce-404@invalid.domain',
+                    actor: 'Staff Reviewer',
+                    time: '1 hour ago',
+                  },
+                  {
+                    action: 'Campaign Approved & Scheduled',
+                    target: 'September Sovereign Dispatch #42',
+                    actor: 'Lead Editor',
+                    time: '3 hours ago',
+                  },
+                  {
+                    action: 'Reviewed CSV Import Committed',
+                    target: '45 attendees with verified proof',
+                    actor: 'Moses (Owner)',
+                    time: 'Yesterday',
+                  },
+                  {
+                    action: 'Subject Erasure Completed',
+                    target: 'Anonymized + suppression digest retained',
+                    actor: 'Compliance Officer',
+                    time: '2 days ago',
+                  },
                 ].map((act, idx) => (
                   <div
                     key={idx}
@@ -987,7 +1221,14 @@ export default function AudienceCommandCenter() {
                       borderLeft: '3px solid #38bdf8',
                     }}
                   >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 600, color: '#e2e8f0' }}>
+                    <div
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        fontWeight: 600,
+                        color: '#e2e8f0',
+                      }}
+                    >
                       <span>{act.action}</span>
                       <span style={{ color: '#94a3b8', fontWeight: 400 }}>{act.time}</span>
                     </div>
@@ -1019,7 +1260,9 @@ export default function AudienceCommandCenter() {
             }}
           >
             <div style={{ display: 'flex', gap: '10px', alignItems: 'center' }}>
-              <span style={{ fontSize: '13px', color: '#94a3b8', fontWeight: 500 }}>Channel Filter:</span>
+              <span style={{ fontSize: '13px', color: '#94a3b8', fontWeight: 500 }}>
+                Channel Filter:
+              </span>
               {(['all', 'email', 'sms', 'rcs'] as const).map((ch) => (
                 <button
                   key={ch}
@@ -1059,11 +1302,17 @@ export default function AudienceCommandCenter() {
                 fontSize: '13px',
               }}
             >
-              <div style={{ fontWeight: 600, marginBottom: '6px' }}>⚠️ Schedule & Frequency Invariants Requiring Attention:</div>
+              <div style={{ fontWeight: 600, marginBottom: '6px' }}>
+                ⚠️ Schedule & Frequency Invariants Requiring Attention:
+              </div>
               <ul style={{ margin: 0, paddingLeft: '20px' }}>
-                {filteredCalendarItems.flatMap((i) => i.warnings).map((w, idx) => (
-                  <li key={idx} style={{ margin: '3px 0' }}>{w}</li>
-                ))}
+                {filteredCalendarItems
+                  .flatMap((i) => i.warnings)
+                  .map((w, idx) => (
+                    <li key={idx} style={{ margin: '3px 0' }}>
+                      {w}
+                    </li>
+                  ))}
               </ul>
             </div>
           )}
@@ -1096,9 +1345,22 @@ export default function AudienceCommandCenter() {
                     gap: '10px',
                   }}
                 >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'flex-start',
+                    }}
+                  >
                     <div>
-                      <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '6px' }}>
+                      <div
+                        style={{
+                          display: 'flex',
+                          gap: '8px',
+                          alignItems: 'center',
+                          marginBottom: '6px',
+                        }}
+                      >
                         <span
                           style={{
                             fontSize: '11px',
@@ -1139,9 +1401,14 @@ export default function AudienceCommandCenter() {
                           </span>
                         )}
                       </div>
-                      <h4 style={{ fontSize: '16px', fontWeight: 600, margin: 0, color: '#f8fafc' }}>{item.title}</h4>
+                      <h4
+                        style={{ fontSize: '16px', fontWeight: 600, margin: 0, color: '#f8fafc' }}
+                      >
+                        {item.title}
+                      </h4>
                       <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: '#94a3b8' }}>
-                        Target Audience: <strong style={{ color: '#cbd5e1' }}>{item.targetAudienceLabel}</strong> (~
+                        Target Audience:{' '}
+                        <strong style={{ color: '#cbd5e1' }}>{item.targetAudienceLabel}</strong> (~
                         {item.estimatedRecipients.toLocaleString()} eligible recipients)
                       </p>
                     </div>
@@ -1154,7 +1421,9 @@ export default function AudienceCommandCenter() {
                             setCalendarItems((prev) =>
                               prev.map((c) => (c.id === item.id ? { ...c, status: 'review' } : c)),
                             )
-                            setOperatorNotice(`Campaign "${item.title}" submitted for editorial review.`)
+                            setOperatorNotice(
+                              `Campaign "${item.title}" submitted for editorial review.`,
+                            )
                           }}
                           style={{
                             backgroundColor: '#1e293b',
@@ -1174,7 +1443,9 @@ export default function AudienceCommandCenter() {
                         <button
                           onClick={() => {
                             setCalendarItems((prev) =>
-                              prev.map((c) => (c.id === item.id ? { ...c, status: 'scheduled' } : c)),
+                              prev.map((c) =>
+                                c.id === item.id ? { ...c, status: 'scheduled' } : c,
+                              ),
                             )
                             setOperatorNotice(`Campaign "${item.title}" approved and scheduled.`)
                           }}
@@ -1219,7 +1490,9 @@ export default function AudienceCommandCenter() {
                         <button
                           onClick={() => {
                             setCalendarItems((prev) =>
-                              prev.map((c) => (c.id === item.id ? { ...c, status: 'scheduled' } : c)),
+                              prev.map((c) =>
+                                c.id === item.id ? { ...c, status: 'scheduled' } : c,
+                              ),
                             )
                             setOperatorNotice(`Campaign "${item.title}" resumed.`)
                           }}
@@ -1241,9 +1514,16 @@ export default function AudienceCommandCenter() {
                   </div>
 
                   <div style={{ display: 'flex', gap: '16px', fontSize: '12px', color: '#64748b' }}>
-                    <span>Scheduled: {item.scheduledFor ? new Date(item.scheduledFor).toLocaleString() : 'Triggered Event'}</span>
+                    <span>
+                      Scheduled:{' '}
+                      {item.scheduledFor
+                        ? new Date(item.scheduledFor).toLocaleString()
+                        : 'Triggered Event'}
+                    </span>
                     <span>Timezone: {item.timeZone}</span>
-                    {item.completedAt && <span>Completed: {new Date(item.completedAt).toLocaleTimeString()}</span>}
+                    {item.completedAt && (
+                      <span>Completed: {new Date(item.completedAt).toLocaleTimeString()}</span>
+                    )}
                   </div>
                 </div>
               )
@@ -1256,7 +1536,14 @@ export default function AudienceCommandCenter() {
       {activeTab === 'deliverability' && (
         <section>
           {/* Provider Readiness Cards */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '20px', marginBottom: '24px' }}>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))',
+              gap: '20px',
+              marginBottom: '24px',
+            }}
+          >
             <div
               style={{
                 backgroundColor: '#0f172a',
@@ -1265,7 +1552,14 @@ export default function AudienceCommandCenter() {
                 padding: '20px',
               }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: '12px',
+                }}
+              >
                 <h3 style={{ fontSize: '16px', fontWeight: 600, margin: 0, color: '#f1f5f9' }}>
                   Email Provider & Domain Auth
                 </h3>
@@ -1283,20 +1577,42 @@ export default function AudienceCommandCenter() {
                 </span>
               </div>
               <p style={{ fontSize: '13px', color: '#94a3b8', margin: '0 0 16px 0' }}>
-                Active Provider: <strong style={{ color: '#f8fafc' }}>{healthData.providers.email.provider}</strong>
+                Active Provider:{' '}
+                <strong style={{ color: '#f8fafc' }}>{healthData.providers.email.provider}</strong>
               </p>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', fontSize: '13px' }}>
-                <div style={{ color: healthData.providers.email.spfVerified ? '#10b981' : '#f87171' }}>
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 1fr',
+                  gap: '8px',
+                  fontSize: '13px',
+                }}
+              >
+                <div
+                  style={{ color: healthData.providers.email.spfVerified ? '#10b981' : '#f87171' }}
+                >
                   {healthData.providers.email.spfVerified ? '✓ SPF Verified' : '✗ SPF Missing'}
                 </div>
-                <div style={{ color: healthData.providers.email.dkimVerified ? '#10b981' : '#f87171' }}>
+                <div
+                  style={{ color: healthData.providers.email.dkimVerified ? '#10b981' : '#f87171' }}
+                >
                   {healthData.providers.email.dkimVerified ? '✓ DKIM Verified' : '✗ DKIM Missing'}
                 </div>
-                <div style={{ color: healthData.providers.email.dmarcVerified ? '#10b981' : '#f87171' }}>
-                  {healthData.providers.email.dmarcVerified ? '✓ DMARC Policy Active' : '✗ DMARC Missing'}
+                <div
+                  style={{
+                    color: healthData.providers.email.dmarcVerified ? '#10b981' : '#f87171',
+                  }}
+                >
+                  {healthData.providers.email.dmarcVerified
+                    ? '✓ DMARC Policy Active'
+                    : '✗ DMARC Missing'}
                 </div>
-                <div style={{ color: healthData.providers.email.tlsVerified ? '#10b981' : '#f87171' }}>
-                  {healthData.providers.email.tlsVerified ? '✓ Strict TLS Cipher' : '✗ TLS Insecure'}
+                <div
+                  style={{ color: healthData.providers.email.tlsVerified ? '#10b981' : '#f87171' }}
+                >
+                  {healthData.providers.email.tlsVerified
+                    ? '✓ Strict TLS Cipher'
+                    : '✗ TLS Insecure'}
                 </div>
               </div>
             </div>
@@ -1309,7 +1625,14 @@ export default function AudienceCommandCenter() {
                 padding: '20px',
               }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '12px' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: '12px',
+                }}
+              >
                 <h3 style={{ fontSize: '16px', fontWeight: 600, margin: 0, color: '#f1f5f9' }}>
                   Telecom (SMS/MMS/RCS) Readiness
                 </h3>
@@ -1327,9 +1650,19 @@ export default function AudienceCommandCenter() {
                 </span>
               </div>
               <p style={{ fontSize: '13px', color: '#94a3b8', margin: '0 0 16px 0' }}>
-                Active Provider: <strong style={{ color: '#f8fafc' }}>{healthData.providers.telecom.provider}</strong>
+                Active Provider:{' '}
+                <strong style={{ color: '#f8fafc' }}>
+                  {healthData.providers.telecom.provider}
+                </strong>
               </p>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', fontSize: '13px' }}>
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 1fr',
+                  gap: '8px',
+                  fontSize: '13px',
+                }}
+              >
                 <div style={{ color: '#10b981' }}>✓ Outbound Transmission Allowed</div>
                 <div style={{ color: '#10b981' }}>✓ 10DLC Brand Verified</div>
                 <div style={{ color: '#10b981' }}>✓ Inbound STOP Webhook Active</div>
@@ -1348,10 +1681,18 @@ export default function AudienceCommandCenter() {
               marginBottom: '24px',
             }}
           >
-            <h3 style={{ fontSize: '16px', fontWeight: 600, margin: '0 0 16px 0', color: '#f1f5f9' }}>
+            <h3
+              style={{ fontSize: '16px', fontWeight: 600, margin: '0 0 16px 0', color: '#f1f5f9' }}
+            >
               Explainable Deliverability Metrics & Safety Invariants
             </h3>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '16px' }}>
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+                gap: '16px',
+              }}
+            >
               {Object.values(healthData.metrics).map((m) => {
                 const color =
                   m.severity === 'critical'
@@ -1372,8 +1713,16 @@ export default function AudienceCommandCenter() {
                       padding: '14px',
                     }}
                   >
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                      <span style={{ fontSize: '13px', fontWeight: 600, color: '#f8fafc' }}>{m.title}</span>
+                    <div
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <span style={{ fontSize: '13px', fontWeight: 600, color: '#f8fafc' }}>
+                        {m.title}
+                      </span>
                       <span
                         style={{
                           fontSize: '11px',
@@ -1385,10 +1734,21 @@ export default function AudienceCommandCenter() {
                         {m.severity}
                       </span>
                     </div>
-                    <div style={{ fontSize: '22px', fontWeight: 700, color, marginTop: '6px' }}>{m.formattedValue}</div>
-                    <p style={{ fontSize: '12px', color: '#94a3b8', margin: '6px 0 0 0' }}>{m.explanation}</p>
+                    <div style={{ fontSize: '22px', fontWeight: 700, color, marginTop: '6px' }}>
+                      {m.formattedValue}
+                    </div>
+                    <p style={{ fontSize: '12px', color: '#94a3b8', margin: '6px 0 0 0' }}>
+                      {m.explanation}
+                    </p>
                     {m.remediationAction && (
-                      <div style={{ fontSize: '11px', color: '#cbd5e1', marginTop: '6px', fontStyle: 'italic' }}>
+                      <div
+                        style={{
+                          fontSize: '11px',
+                          color: '#cbd5e1',
+                          marginTop: '6px',
+                          fontStyle: 'italic',
+                        }}
+                      >
                         Remediation: {m.remediationAction}
                       </div>
                     )}
@@ -1408,7 +1768,14 @@ export default function AudienceCommandCenter() {
                 padding: '20px',
               }}
             >
-              <h3 style={{ fontSize: '16px', fontWeight: 600, margin: '0 0 14px 0', color: '#f1f5f9' }}>
+              <h3
+                style={{
+                  fontSize: '16px',
+                  fontWeight: 600,
+                  margin: '0 0 14px 0',
+                  color: '#f1f5f9',
+                }}
+              >
                 Direct Remediation Center
               </h3>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
@@ -1426,8 +1793,12 @@ export default function AudienceCommandCenter() {
                     }}
                   >
                     <div>
-                      <h5 style={{ margin: '0 0 4px 0', fontSize: '14px', color: '#f8fafc' }}>{rem.title}</h5>
-                      <p style={{ margin: 0, fontSize: '12px', color: '#94a3b8' }}>{rem.description}</p>
+                      <h5 style={{ margin: '0 0 4px 0', fontSize: '14px', color: '#f8fafc' }}>
+                        {rem.title}
+                      </h5>
+                      <p style={{ margin: 0, fontSize: '12px', color: '#94a3b8' }}>
+                        {rem.description}
+                      </p>
                     </div>
                     <button
                       onClick={() => handleRemediation(rem.actionKey, rem.title)}
@@ -1466,14 +1837,22 @@ export default function AudienceCommandCenter() {
               marginBottom: '24px',
             }}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '16px' }}>
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'flex-start',
+                marginBottom: '16px',
+              }}
+            >
               <div>
                 <h3 style={{ fontSize: '18px', fontWeight: 600, margin: 0, color: '#f8fafc' }}>
                   {funnelData.campaignTitle}
                 </h3>
                 <p style={{ margin: '4px 0 0 0', fontSize: '13px', color: '#94a3b8' }}>
-                  Channel: <strong style={{ color: '#38bdf8' }}>{funnelData.channel.toUpperCase()}</strong> • Provider:{' '}
-                  {funnelData.provider}
+                  Channel:{' '}
+                  <strong style={{ color: '#38bdf8' }}>{funnelData.channel.toUpperCase()}</strong> •
+                  Provider: {funnelData.provider}
                 </p>
               </div>
 
@@ -1524,8 +1903,12 @@ export default function AudienceCommandCenter() {
                   </div>
 
                   <div style={{ width: '220px' }}>
-                    <div style={{ fontWeight: 600, color: '#f8fafc', fontSize: '14px' }}>{st.label}</div>
-                    <div style={{ fontSize: '11px', color: '#94a3b8' }}>{st.status.toUpperCase()} EVIDENCE</div>
+                    <div style={{ fontWeight: 600, color: '#f8fafc', fontSize: '14px' }}>
+                      {st.label}
+                    </div>
+                    <div style={{ fontSize: '11px', color: '#94a3b8' }}>
+                      {st.status.toUpperCase()} EVIDENCE
+                    </div>
                   </div>
 
                   <div style={{ width: '160px' }}>
@@ -1535,7 +1918,9 @@ export default function AudienceCommandCenter() {
                   </div>
 
                   <div style={{ width: '120px', fontSize: '13px', color: '#cbd5e1' }}>
-                    {st.rateFromTop !== null ? `${(st.rateFromTop * 100).toFixed(1)}% of eligible` : '—'}
+                    {st.rateFromTop !== null
+                      ? `${(st.rateFromTop * 100).toFixed(1)}% of eligible`
+                      : '—'}
                   </div>
 
                   <div style={{ flex: 1, fontSize: '12px', color: '#94a3b8', fontStyle: 'italic' }}>
@@ -1560,9 +1945,13 @@ export default function AudienceCommandCenter() {
             >
               <span>
                 <strong>Apple MPP & Proxy Open Range:</strong> Minimum Confirmed (Human-Active):{' '}
-                <strong style={{ color: '#10b981' }}>{funnelData.openUncertaintyRange.minimumConfirmed}</strong> | Maximum
-                Possible (including proxy prefetch):{' '}
-                <strong style={{ color: '#f59e0b' }}>{funnelData.openUncertaintyRange.maximumPossible}</strong>
+                <strong style={{ color: '#10b981' }}>
+                  {funnelData.openUncertaintyRange.minimumConfirmed}
+                </strong>{' '}
+                | Maximum Possible (including proxy prefetch):{' '}
+                <strong style={{ color: '#f59e0b' }}>
+                  {funnelData.openUncertaintyRange.maximumPossible}
+                </strong>
               </span>
               <span style={{ color: '#94a3b8' }}>
                 Proxy Cached: {funnelData.openUncertaintyRange.proxyCachedCount}
@@ -1579,12 +1968,16 @@ export default function AudienceCommandCenter() {
               padding: '20px',
             }}
           >
-            <h3 style={{ fontSize: '16px', fontWeight: 600, margin: '0 0 14px 0', color: '#f1f5f9' }}>
+            <h3
+              style={{ fontSize: '16px', fontWeight: 600, margin: '0 0 14px 0', color: '#f1f5f9' }}
+            >
               Cohort & Subgroup Breakdown (Strict k-Anonymity ≥ 5)
             </h3>
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
               <thead>
-                <tr style={{ borderBottom: '1px solid #334155', color: '#94a3b8', textAlign: 'left' }}>
+                <tr
+                  style={{ borderBottom: '1px solid #334155', color: '#94a3b8', textAlign: 'left' }}
+                >
                   <th style={{ padding: '8px 0' }}>Dimension</th>
                   <th>Cohort Label</th>
                   <th>Eligible</th>
@@ -1598,7 +1991,9 @@ export default function AudienceCommandCenter() {
               <tbody>
                 {funnelData.cohortBreakdown.map((row, idx) => (
                   <tr key={idx} style={{ borderBottom: '1px solid #1e293b' }}>
-                    <td style={{ padding: '10px 0', color: '#94a3b8', textTransform: 'capitalize' }}>
+                    <td
+                      style={{ padding: '10px 0', color: '#94a3b8', textTransform: 'capitalize' }}
+                    >
                       {row.dimension}
                     </td>
                     <td style={{ fontWeight: 500, color: '#f8fafc' }}>{row.label}</td>
@@ -1657,9 +2052,13 @@ export default function AudienceCommandCenter() {
               marginBottom: '24px',
             }}
           >
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div
+              style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}
+            >
               <div>
-                <div style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '6px' }}>
+                <div
+                  style={{ display: 'flex', gap: '8px', alignItems: 'center', marginBottom: '6px' }}
+                >
                   <span
                     style={{
                       fontSize: '11px',
@@ -1674,19 +2073,34 @@ export default function AudienceCommandCenter() {
                     {activeExp.status.toUpperCase()}
                   </span>
                   <span style={{ fontSize: '12px', color: '#94a3b8' }}>
-                    Window: {activeExp.windowHours}h • Primary Metric: <strong>{activeExp.metric}</strong>
+                    Window: {activeExp.windowHours}h • Primary Metric:{' '}
+                    <strong>{activeExp.metric}</strong>
                   </span>
                 </div>
-                <h3 style={{ fontSize: '18px', fontWeight: 700, margin: 0, color: '#f8fafc' }}>{activeExp.title}</h3>
-                <p style={{ margin: '6px 0 0 0', fontSize: '13px', color: '#cbd5e1', maxWidth: '700px' }}>
+                <h3 style={{ fontSize: '18px', fontWeight: 700, margin: 0, color: '#f8fafc' }}>
+                  {activeExp.title}
+                </h3>
+                <p
+                  style={{
+                    margin: '6px 0 0 0',
+                    fontSize: '13px',
+                    color: '#cbd5e1',
+                    maxWidth: '700px',
+                  }}
+                >
                   <strong>Hypothesis:</strong> &ldquo;{activeExp.hypothesis}&rdquo;
                 </p>
               </div>
 
               <div style={{ textAlign: 'right', fontSize: '12px', color: '#94a3b8' }}>
-                <div>Total Allocated: <strong>{activeExp.totalAllocated}</strong></div>
+                <div>
+                  Total Allocated: <strong>{activeExp.totalAllocated}</strong>
+                </div>
                 <div style={{ fontFamily: 'monospace', fontSize: '11px', marginTop: '4px' }}>
-                  Allocation Hash: {activeExp.allocationsHash ? activeExp.allocationsHash.slice(0, 16) + '...' : 'pending'}
+                  Allocation Hash:{' '}
+                  {activeExp.allocationsHash
+                    ? activeExp.allocationsHash.slice(0, 16) + '...'
+                    : 'pending'}
                 </div>
               </div>
             </div>
@@ -1712,10 +2126,23 @@ export default function AudienceCommandCenter() {
           </div>
 
           {/* Variant Comparison Cards */}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))', gap: '20px', marginBottom: '24px' }}>
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(auto-fit, minmax(360px, 1fr))',
+              gap: '20px',
+              marginBottom: '24px',
+            }}
+          >
             {activeExp.variants.map((variant) => {
-              const convRate = variant.sampleSize > 0 ? ((variant.conversions / variant.sampleSize) * 100).toFixed(1) : '0.0'
-              const openRate = variant.sampleSize > 0 ? ((variant.observedOpens / variant.sampleSize) * 100).toFixed(1) : '0.0'
+              const convRate =
+                variant.sampleSize > 0
+                  ? ((variant.conversions / variant.sampleSize) * 100).toFixed(1)
+                  : '0.0'
+              const openRate =
+                variant.sampleSize > 0
+                  ? ((variant.observedOpens / variant.sampleSize) * 100).toFixed(1)
+                  : '0.0'
               const isWinner = activeExp.winnerDecision.winningVariantId === variant.id
 
               return (
@@ -1731,8 +2158,16 @@ export default function AudienceCommandCenter() {
                     gap: '12px',
                   }}
                 >
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <h4 style={{ margin: 0, fontSize: '15px', fontWeight: 600, color: '#f8fafc' }}>{variant.label}</h4>
+                  <div
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <h4 style={{ margin: 0, fontSize: '15px', fontWeight: 600, color: '#f8fafc' }}>
+                      {variant.label}
+                    </h4>
                     {isWinner && (
                       <span
                         style={{
@@ -1755,22 +2190,49 @@ export default function AudienceCommandCenter() {
                     </div>
                   )}
 
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px', textAlign: 'center', marginTop: '8px' }}>
-                    <div style={{ backgroundColor: '#131d31', padding: '10px', borderRadius: '6px' }}>
+                  <div
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: '1fr 1fr 1fr',
+                      gap: '8px',
+                      textAlign: 'center',
+                      marginTop: '8px',
+                    }}
+                  >
+                    <div
+                      style={{ backgroundColor: '#131d31', padding: '10px', borderRadius: '6px' }}
+                    >
                       <div style={{ fontSize: '11px', color: '#94a3b8' }}>Sample Size</div>
-                      <div style={{ fontSize: '16px', fontWeight: 700, color: '#f8fafc' }}>{variant.sampleSize}</div>
+                      <div style={{ fontSize: '16px', fontWeight: 700, color: '#f8fafc' }}>
+                        {variant.sampleSize}
+                      </div>
                     </div>
-                    <div style={{ backgroundColor: '#131d31', padding: '10px', borderRadius: '6px' }}>
+                    <div
+                      style={{ backgroundColor: '#131d31', padding: '10px', borderRadius: '6px' }}
+                    >
                       <div style={{ fontSize: '11px', color: '#94a3b8' }}>Open Rate</div>
-                      <div style={{ fontSize: '16px', fontWeight: 700, color: '#38bdf8' }}>{openRate}%</div>
+                      <div style={{ fontSize: '16px', fontWeight: 700, color: '#38bdf8' }}>
+                        {openRate}%
+                      </div>
                     </div>
-                    <div style={{ backgroundColor: '#131d31', padding: '10px', borderRadius: '6px' }}>
+                    <div
+                      style={{ backgroundColor: '#131d31', padding: '10px', borderRadius: '6px' }}
+                    >
                       <div style={{ fontSize: '11px', color: '#94a3b8' }}>Conversions</div>
-                      <div style={{ fontSize: '16px', fontWeight: 700, color: '#10b981' }}>{convRate}% ({variant.conversions})</div>
+                      <div style={{ fontSize: '16px', fontWeight: 700, color: '#10b981' }}>
+                        {convRate}% ({variant.conversions})
+                      </div>
                     </div>
                   </div>
 
-                  <div style={{ fontSize: '12px', color: '#94a3b8', display: 'flex', justifyContent: 'space-between' }}>
+                  <div
+                    style={{
+                      fontSize: '12px',
+                      color: '#94a3b8',
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                    }}
+                  >
                     <span>Bounces: {variant.bounces}</span>
                     <span>Complaints: {variant.complaints}</span>
                   </div>
@@ -1789,17 +2251,39 @@ export default function AudienceCommandCenter() {
                 padding: '20px',
               }}
             >
-              <h4 style={{ fontSize: '15px', fontWeight: 600, margin: '0 0 12px 0', color: '#f1f5f9' }}>
+              <h4
+                style={{
+                  fontSize: '15px',
+                  fontWeight: 600,
+                  margin: '0 0 12px 0',
+                  color: '#f1f5f9',
+                }}
+              >
                 Manual Winner Decision & Approval Station
               </h4>
               <p style={{ margin: '0 0 16px 0', fontSize: '13px', color: '#94a3b8' }}>
-                Renegade CMS strictly prohibits unapproved automated winner switches. Review the statistical facts and
-                record your explicit manual choice and rationale below.
+                Renegade CMS strictly prohibits unapproved automated winner switches. Review the
+                statistical facts and record your explicit manual choice and rationale below.
               </p>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '16px', marginBottom: '16px' }}>
+              <div
+                style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 2fr',
+                  gap: '16px',
+                  marginBottom: '16px',
+                }}
+              >
                 <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#cbd5e1', marginBottom: '6px' }}>
+                  <label
+                    style={{
+                      display: 'block',
+                      fontSize: '12px',
+                      fontWeight: 600,
+                      color: '#cbd5e1',
+                      marginBottom: '6px',
+                    }}
+                  >
                     Winning Variant Selection:
                   </label>
                   <select
@@ -1824,7 +2308,15 @@ export default function AudienceCommandCenter() {
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#cbd5e1', marginBottom: '6px' }}>
+                  <label
+                    style={{
+                      display: 'block',
+                      fontSize: '12px',
+                      fontWeight: 600,
+                      color: '#cbd5e1',
+                      marginBottom: '6px',
+                    }}
+                  >
                     Operator Decision Rationale (Mandatory Audit):
                   </label>
                   <input
@@ -1845,7 +2337,9 @@ export default function AudienceCommandCenter() {
                 </div>
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
+              <div
+                style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}
+              >
                 <input
                   type="checkbox"
                   id="confirm-winner-box"
@@ -1853,7 +2347,8 @@ export default function AudienceCommandCenter() {
                   onChange={(e) => setWinnerManualConfirmed(e.target.checked)}
                 />
                 <label htmlFor="confirm-winner-box" style={{ fontSize: '13px', color: '#cbd5e1' }}>
-                  I confirm that I have reviewed the facts, sample sizes, and deliverability metrics, and authorize this manual decision.
+                  I confirm that I have reviewed the facts, sample sizes, and deliverability
+                  metrics, and authorize this manual decision.
                 </label>
               </div>
 
@@ -1861,14 +2356,16 @@ export default function AudienceCommandCenter() {
                 onClick={() => handleDeclareWinner(activeExp.id)}
                 disabled={!winnerManualConfirmed || !winnerRationale.trim()}
                 style={{
-                  backgroundColor: winnerManualConfirmed && winnerRationale.trim() ? '#10b981' : '#334155',
+                  backgroundColor:
+                    winnerManualConfirmed && winnerRationale.trim() ? '#10b981' : '#334155',
                   color: '#ffffff',
                   border: 'none',
                   borderRadius: '6px',
                   padding: '8px 18px',
                   fontSize: '13px',
                   fontWeight: 600,
-                  cursor: winnerManualConfirmed && winnerRationale.trim() ? 'pointer' : 'not-allowed',
+                  cursor:
+                    winnerManualConfirmed && winnerRationale.trim() ? 'pointer' : 'not-allowed',
                 }}
               >
                 Conclude Experiment & Record Winner
@@ -1885,9 +2382,10 @@ export default function AudienceCommandCenter() {
                 color: '#6ee7b7',
               }}
             >
-              <strong>Winner Declared:</strong> Variant &ldquo;{activeExp.winnerDecision.winningVariantId}&rdquo; confirmed by{' '}
-              {activeExp.winnerDecision.decidedBy} at {activeExp.winnerDecision.decidedAt}. Rationale:{' '}
-              &ldquo;{activeExp.winnerDecision.decisionRationale}&rdquo;
+              <strong>Winner Declared:</strong> Variant &ldquo;
+              {activeExp.winnerDecision.winningVariantId}&rdquo; confirmed by{' '}
+              {activeExp.winnerDecision.decidedBy} at {activeExp.winnerDecision.decidedAt}.
+              Rationale: &ldquo;{activeExp.winnerDecision.decisionRationale}&rdquo;
             </div>
           )}
         </section>
@@ -1906,17 +2404,35 @@ export default function AudienceCommandCenter() {
               marginBottom: '24px',
             }}
           >
-            <h3 style={{ fontSize: '16px', fontWeight: 600, margin: '0 0 12px 0', color: '#f1f5f9' }}>
+            <h3
+              style={{ fontSize: '16px', fontWeight: 600, margin: '0 0 12px 0', color: '#f1f5f9' }}
+            >
               First-Party Campaign Link Generator
             </h3>
             <p style={{ margin: '0 0 16px 0', fontSize: '13px', color: '#94a3b8' }}>
-              Generates honest, clean first-party attribution links (`rcid`, `rcch`, `rcvar`). Supports immediate
-              &ldquo;Direct-Link / Tracking-Off&rdquo; for visitors who opt out. Zero third-party ad networks or fingerprinting.
+              Generates honest, clean first-party attribution links (`rcid`, `rcch`, `rcvar`).
+              Supports immediate &ldquo;Direct-Link / Tracking-Off&rdquo; for visitors who opt out.
+              Zero third-party ad networks or fingerprinting.
             </p>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '16px', marginBottom: '14px' }}>
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '2fr 1fr',
+                gap: '16px',
+                marginBottom: '14px',
+              }}
+            >
               <div>
-                <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#cbd5e1', marginBottom: '6px' }}>
+                <label
+                  style={{
+                    display: 'block',
+                    fontSize: '12px',
+                    fontWeight: 600,
+                    color: '#cbd5e1',
+                    marginBottom: '6px',
+                  }}
+                >
                   Destination URL:
                 </label>
                 <input
@@ -1936,7 +2452,15 @@ export default function AudienceCommandCenter() {
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#cbd5e1', marginBottom: '6px' }}>
+                <label
+                  style={{
+                    display: 'block',
+                    fontSize: '12px',
+                    fontWeight: 600,
+                    color: '#cbd5e1',
+                    marginBottom: '6px',
+                  }}
+                >
                   Campaign Identifier (rcid):
                 </label>
                 <input
@@ -1956,7 +2480,9 @@ export default function AudienceCommandCenter() {
               </div>
             </div>
 
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}>
+            <div
+              style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '16px' }}
+            >
               <input
                 type="checkbox"
                 id="direct-only-check"
@@ -1964,12 +2490,21 @@ export default function AudienceCommandCenter() {
                 onChange={(e) => setTestDirectOnly(e.target.checked)}
               />
               <label htmlFor="direct-only-check" style={{ fontSize: '13px', color: '#cbd5e1' }}>
-                <strong>Direct-Link / Tracking-Off:</strong> Strip all campaign and tracking parameters for privacy opt-outs.
+                <strong>Direct-Link / Tracking-Off:</strong> Strip all campaign and tracking
+                parameters for privacy opt-outs.
               </label>
             </div>
 
             <div>
-              <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#cbd5e1', marginBottom: '6px' }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  color: '#cbd5e1',
+                  marginBottom: '6px',
+                }}
+              >
                 Generated Output URL:
               </label>
               <div
@@ -1998,17 +2533,35 @@ export default function AudienceCommandCenter() {
               padding: '20px',
             }}
           >
-            <h3 style={{ fontSize: '16px', fontWeight: 600, margin: '0 0 12px 0', color: '#f1f5f9' }}>
+            <h3
+              style={{ fontSize: '16px', fontWeight: 600, margin: '0 0 12px 0', color: '#f1f5f9' }}
+            >
               Bot Click & Prefetch Inspector
             </h3>
             <p style={{ margin: '0 0 16px 0', fontSize: '13px', color: '#94a3b8' }}>
-              Test how the AUD-07 bot filtering engine identifies corporate email scanners (e.g. Barracuda, Mimecast)
-              and HTTP Purpose: prefetch headers to protect engagement counts from false inflation.
+              Test how the AUD-07 bot filtering engine identifies corporate email scanners (e.g.
+              Barracuda, Mimecast) and HTTP Purpose: prefetch headers to protect engagement counts
+              from false inflation.
             </p>
 
-            <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '16px', marginBottom: '14px' }}>
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: '2fr 1fr',
+                gap: '16px',
+                marginBottom: '14px',
+              }}
+            >
               <div>
-                <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#cbd5e1', marginBottom: '6px' }}>
+                <label
+                  style={{
+                    display: 'block',
+                    fontSize: '12px',
+                    fontWeight: 600,
+                    color: '#cbd5e1',
+                    marginBottom: '6px',
+                  }}
+                >
                   Test User-Agent String:
                 </label>
                 <input
@@ -2027,20 +2580,54 @@ export default function AudienceCommandCenter() {
                 />
                 <div style={{ display: 'flex', gap: '6px', marginTop: '6px' }}>
                   <button
-                    onClick={() => setTestUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36')}
-                    style={{ fontSize: '11px', background: '#1e293b', color: '#38bdf8', border: 'none', padding: '3px 8px', borderRadius: '4px', cursor: 'pointer' }}
+                    onClick={() =>
+                      setTestUserAgent(
+                        'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                      )
+                    }
+                    style={{
+                      fontSize: '11px',
+                      background: '#1e293b',
+                      color: '#38bdf8',
+                      border: 'none',
+                      padding: '3px 8px',
+                      borderRadius: '4px',
+                      cursor: 'pointer',
+                    }}
                   >
                     Preset: Chrome Browser
                   </button>
                   <button
-                    onClick={() => setTestUserAgent('Mozilla/5.0 (compatible; Barracuda-Sentinel/1.0; +http://barracuda.com)')}
-                    style={{ fontSize: '11px', background: '#1e293b', color: '#38bdf8', border: 'none', padding: '3px 8px', borderRadius: '4px', cursor: 'pointer' }}
+                    onClick={() =>
+                      setTestUserAgent(
+                        'Mozilla/5.0 (compatible; Barracuda-Sentinel/1.0; +http://barracuda.com)',
+                      )
+                    }
+                    style={{
+                      fontSize: '11px',
+                      background: '#1e293b',
+                      color: '#38bdf8',
+                      border: 'none',
+                      padding: '3px 8px',
+                      borderRadius: '4px',
+                      cursor: 'pointer',
+                    }}
                   >
                     Preset: Barracuda Scanner
                   </button>
                   <button
-                    onClick={() => setTestUserAgent('Googlebot/2.1 (+http://www.google.com/bot.html)')}
-                    style={{ fontSize: '11px', background: '#1e293b', color: '#38bdf8', border: 'none', padding: '3px 8px', borderRadius: '4px', cursor: 'pointer' }}
+                    onClick={() =>
+                      setTestUserAgent('Googlebot/2.1 (+http://www.google.com/bot.html)')
+                    }
+                    style={{
+                      fontSize: '11px',
+                      background: '#1e293b',
+                      color: '#38bdf8',
+                      border: 'none',
+                      padding: '3px 8px',
+                      borderRadius: '4px',
+                      cursor: 'pointer',
+                    }}
                   >
                     Preset: Googlebot
                   </button>
@@ -2048,7 +2635,15 @@ export default function AudienceCommandCenter() {
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: '#cbd5e1', marginBottom: '6px' }}>
+                <label
+                  style={{
+                    display: 'block',
+                    fontSize: '12px',
+                    fontWeight: 600,
+                    color: '#cbd5e1',
+                    marginBottom: '6px',
+                  }}
+                >
                   HTTP Header Purpose:
                 </label>
                 <input
@@ -2071,16 +2666,28 @@ export default function AudienceCommandCenter() {
 
             <div
               style={{
-                backgroundColor: botClassification.isBot ? 'rgba(245, 158, 11, 0.1)' : 'rgba(16, 185, 129, 0.1)',
+                backgroundColor: botClassification.isBot
+                  ? 'rgba(245, 158, 11, 0.1)'
+                  : 'rgba(16, 185, 129, 0.1)',
                 border: `1px solid ${botClassification.isBot ? '#f59e0b' : '#10b981'}`,
                 borderRadius: '6px',
                 padding: '14px 18px',
                 fontSize: '13px',
               }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontWeight: 600, color: botClassification.isBot ? '#fde68a' : '#6ee7b7' }}>
-                  Classification: {botClassification.isBot ? `🤖 BOT DETECTED (${botClassification.botType.toUpperCase()})` : '👤 HUMAN ENGAGEMENT'}
+              <div
+                style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}
+              >
+                <span
+                  style={{
+                    fontWeight: 600,
+                    color: botClassification.isBot ? '#fde68a' : '#6ee7b7',
+                  }}
+                >
+                  Classification:{' '}
+                  {botClassification.isBot
+                    ? `🤖 BOT DETECTED (${botClassification.botType.toUpperCase()})`
+                    : '👤 HUMAN ENGAGEMENT'}
                 </span>
                 <span style={{ fontSize: '11px', textTransform: 'uppercase', color: '#94a3b8' }}>
                   Confidence: {botClassification.confidence}
@@ -2147,7 +2754,8 @@ export default function AudienceCommandCenter() {
             </div>
 
             <div style={{ fontSize: '13px', color: '#94a3b8' }}>
-              Showing {filteredDictionary.length} of {AUDIENCE_METRIC_DICTIONARY.length} formal definitions
+              Showing {filteredDictionary.length} of {AUDIENCE_METRIC_DICTIONARY.length} formal
+              definitions
             </div>
           </div>
 
@@ -2162,7 +2770,9 @@ export default function AudienceCommandCenter() {
           >
             <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '13px' }}>
               <thead>
-                <tr style={{ borderBottom: '1px solid #334155', color: '#94a3b8', textAlign: 'left' }}>
+                <tr
+                  style={{ borderBottom: '1px solid #334155', color: '#94a3b8', textAlign: 'left' }}
+                >
                   <th style={{ padding: '8px 0', width: '220px' }}>Metric Key & Label</th>
                   <th style={{ width: '120px' }}>Category</th>
                   <th style={{ width: '220px' }}>Formula & Denominator</th>
@@ -2174,7 +2784,14 @@ export default function AudienceCommandCenter() {
                   <tr key={entry.key} style={{ borderBottom: '1px solid #1e293b' }}>
                     <td style={{ padding: '12px 0', verticalAlign: 'top' }}>
                       <div style={{ fontWeight: 600, color: '#f8fafc' }}>{entry.label}</div>
-                      <div style={{ fontFamily: 'monospace', fontSize: '11px', color: '#38bdf8', marginTop: '2px' }}>
+                      <div
+                        style={{
+                          fontFamily: 'monospace',
+                          fontSize: '11px',
+                          color: '#38bdf8',
+                          marginTop: '2px',
+                        }}
+                      >
                         {entry.key}
                       </div>
                       <span
@@ -2194,12 +2811,20 @@ export default function AudienceCommandCenter() {
                       </span>
                     </td>
 
-                    <td style={{ verticalAlign: 'top', textTransform: 'capitalize', color: '#cbd5e1' }}>
+                    <td
+                      style={{
+                        verticalAlign: 'top',
+                        textTransform: 'capitalize',
+                        color: '#cbd5e1',
+                      }}
+                    >
                       {entry.category}
                     </td>
 
                     <td style={{ verticalAlign: 'top' }}>
-                      <div style={{ fontFamily: 'monospace', fontSize: '12px', color: '#f1f5f9' }}>{entry.formula}</div>
+                      <div style={{ fontFamily: 'monospace', fontSize: '12px', color: '#f1f5f9' }}>
+                        {entry.formula}
+                      </div>
                       {entry.denominator && (
                         <div style={{ fontSize: '11px', color: '#94a3b8', marginTop: '4px' }}>
                           Denom: {entry.denominator}
@@ -2213,8 +2838,17 @@ export default function AudienceCommandCenter() {
                     </td>
 
                     <td style={{ verticalAlign: 'top' }}>
-                      <div style={{ color: '#e2e8f0', marginBottom: '6px' }}>{entry.definition}</div>
-                      <ul style={{ margin: 0, paddingLeft: '16px', fontSize: '11px', color: '#94a3b8' }}>
+                      <div style={{ color: '#e2e8f0', marginBottom: '6px' }}>
+                        {entry.definition}
+                      </div>
+                      <ul
+                        style={{
+                          margin: 0,
+                          paddingLeft: '16px',
+                          fontSize: '11px',
+                          color: '#94a3b8',
+                        }}
+                      >
                         {entry.caveats.map((c, cIdx) => (
                           <li key={cIdx}>{c}</li>
                         ))}
@@ -2242,13 +2876,23 @@ export default function AudienceCommandCenter() {
               padding: '24px',
             }}
           >
-            <h3 style={{ fontSize: '18px', fontWeight: 600, margin: '0 0 12px 0', color: '#f8fafc' }}>
+            <h3
+              style={{ fontSize: '18px', fontWeight: 600, margin: '0 0 12px 0', color: '#f8fafc' }}
+            >
               Privacy-Safe CSV & Operational Reports
             </h3>
-            <p style={{ margin: '0 0 20px 0', fontSize: '13px', color: '#94a3b8', maxWidth: '720px' }}>
-              Renegade CMS enforces k-anonymity privacy thresholds. Any group or cohort with fewer than 5 subjects is
-              strictly masked as &ldquo;{PRIVACY_MASKED_VALUE}&rdquo;. Sensitive form answers, individual contact engagement,
-              and tracking cookies are never exported in aggregate reports.
+            <p
+              style={{
+                margin: '0 0 20px 0',
+                fontSize: '13px',
+                color: '#94a3b8',
+                maxWidth: '720px',
+              }}
+            >
+              Renegade CMS enforces k-anonymity privacy thresholds. Any group or cohort with fewer
+              than 5 subjects is strictly masked as &ldquo;{PRIVACY_MASKED_VALUE}&rdquo;. Sensitive
+              form answers, individual contact engagement, and tracking cookies are never exported
+              in aggregate reports.
             </p>
 
             <div
@@ -2260,12 +2904,22 @@ export default function AudienceCommandCenter() {
                 marginBottom: '20px',
               }}
             >
-              <h5 style={{ margin: '0 0 8px 0', fontSize: '14px', color: '#f8fafc' }}>Export Configuration</h5>
+              <h5 style={{ margin: '0 0 8px 0', fontSize: '14px', color: '#f8fafc' }}>
+                Export Configuration
+              </h5>
               <div style={{ display: 'flex', gap: '16px', alignItems: 'center', fontSize: '13px' }}>
-                <div>Site: <strong style={{ color: '#38bdf8' }}>{siteId}</strong></div>
-                <div>Role: <strong style={{ color: '#10b981' }}>administrator</strong></div>
-                <div>Window: <strong style={{ color: '#f8fafc' }}>{timeWindow.toUpperCase()}</strong></div>
-                <div>Privacy Threshold: <strong style={{ color: '#f59e0b' }}>≥ 5 subjects</strong></div>
+                <div>
+                  Site: <strong style={{ color: '#38bdf8' }}>{siteId}</strong>
+                </div>
+                <div>
+                  Role: <strong style={{ color: '#10b981' }}>administrator</strong>
+                </div>
+                <div>
+                  Window: <strong style={{ color: '#f8fafc' }}>{timeWindow.toUpperCase()}</strong>
+                </div>
+                <div>
+                  Privacy Threshold: <strong style={{ color: '#f59e0b' }}>≥ 5 subjects</strong>
+                </div>
               </div>
             </div>
 

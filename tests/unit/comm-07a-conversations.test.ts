@@ -51,12 +51,12 @@ function payload() {
     db: { pool: { connect: async () => ({ query, release: vi.fn() }) } },
     find: async () => ({ docs: [] }),
     query,
-  } as never
+  }
 }
 
 describe('COMM-07A conversations', () => {
   it('creates canonical aggregate tables and database membership/ordering guards', async () => {
-    const execute = vi.fn(async () => undefined)
+    const execute = vi.fn(async (_statement: unknown) => undefined)
     await up({ db: { execute } } as never)
     await down({ db: { execute } } as never)
     const schema = JSON.stringify(execute.mock.calls[0][0])
@@ -70,28 +70,36 @@ describe('COMM-07A conversations', () => {
   it('returns the same direct conversation for unordered repeated creation', async () => {
     const p = payload()
     const [one, two] = await Promise.all([
-      startDirectConversation(p, { siteId: site, memberId: alice, recipientMemberId: bob }),
-      startDirectConversation(p, { siteId: site, memberId: bob, recipientMemberId: alice }),
+      startDirectConversation(p as never, {
+        siteId: site,
+        memberId: alice,
+        recipientMemberId: bob,
+      }),
+      startDirectConversation(p as never, {
+        siteId: site,
+        memberId: bob,
+        recipientMemberId: alice,
+      }),
     ])
     expect(one.id).toBe(two.id)
   })
   it('sanitizes, orders, and deduplicates messages by required idempotency key', async () => {
     const p = payload()
-    const first = await sendConversationMessage(p, {
+    const first = await sendConversationMessage(p as never, {
       siteId: site,
       conversationId: 'conversation-1',
       senderId: alice,
       body: '<p>Hello</p><script>bad()</script>',
       idempotencyKey: 'one',
     })
-    const duplicate = await sendConversationMessage(p, {
+    const duplicate = await sendConversationMessage(p as never, {
       siteId: site,
       conversationId: 'conversation-1',
       senderId: alice,
       body: '<p>ignored</p>',
       idempotencyKey: 'one',
     })
-    const second = await sendConversationMessage(p, {
+    const second = await sendConversationMessage(p as never, {
       siteId: site,
       conversationId: 'conversation-1',
       senderId: alice,
@@ -106,7 +114,7 @@ describe('COMM-07A conversations', () => {
     const p = payload()
     const sent = await Promise.all(
       Array.from({ length: 100 }, (_, index) =>
-        sendConversationMessage(p, {
+        sendConversationMessage(p as never, {
           siteId: site,
           conversationId: 'group-1',
           senderId: alice,
@@ -115,13 +123,15 @@ describe('COMM-07A conversations', () => {
         }),
       ),
     )
-    expect(sent.map((message) => Number(message.sequence_number)).sort((a, b) => a - b)).toEqual(
-      Array.from({ length: 100 }, (_, index) => index + 1),
-    )
+    expect(
+      sent
+        .map((message) => Number('sequence_number' in message ? message.sequence_number : 0))
+        .sort((a, b) => a - b),
+    ).toEqual(Array.from({ length: 100 }, (_, index) => index + 1))
   })
   it('rejects missing idempotency keys and non-members', async () => {
     await expect(
-      sendConversationMessage(payload(), {
+      sendConversationMessage(payload() as never, {
         siteId: site,
         conversationId: 'c',
         senderId: alice,
@@ -130,13 +140,12 @@ describe('COMM-07A conversations', () => {
       }),
     ).rejects.toMatchObject({ code: 'IDEMPOTENCY_KEY_REQUIRED' })
     const p = payload()
-    p.db.pool.connect = async () => ({
-      query: async (text: string) =>
-        text.includes('conversation_memberships') ? { rows: [] } : { rows: [] },
+    p.db.pool.connect = (async () => ({
+      query: vi.fn(async () => ({ rows: [] })),
       release: vi.fn(),
-    })
+    })) as typeof p.db.pool.connect
     await expect(
-      sendConversationMessage(p, {
+      sendConversationMessage(p as never, {
         siteId: site,
         conversationId: 'c',
         senderId: alice,

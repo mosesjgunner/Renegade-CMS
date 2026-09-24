@@ -150,7 +150,10 @@ describe('COMM-06D realtime notification hints and counter repair', () => {
 
     const payload = createMockPayload(async (text, values = []) => {
       // 1. Group query on inbox_notifications
-      if (text.includes('FROM inbox_notifications') && text.includes('GROUP BY site_id, recipient_member_id')) {
+      if (
+        text.includes('FROM inbox_notifications') &&
+        text.includes('GROUP BY site_id, recipient_member_id')
+      ) {
         return [
           { site_id: siteA, member_id: member1, unread_count: 3 },
           // Note: member2 has 0 unread rows, so is omitted from GROUP BY
@@ -165,7 +168,10 @@ describe('COMM-06D realtime notification hints and counter repair', () => {
         return []
       }
       // 3. Zero out counters for members with 0 unread
-      if (text.includes('UPDATE member_notification_counters') && text.includes('SET unread_count = 0')) {
+      if (
+        text.includes('UPDATE member_notification_counters') &&
+        text.includes('SET unread_count = 0')
+      ) {
         counterRows.set(`${siteA}:${member2}`, 0)
         return [{ count: 1 }]
       }

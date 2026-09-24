@@ -252,7 +252,7 @@ export function classifyClickAgent(
   // 1. Check HTTP Prefetch / Preview headers
   const getHeader = (key: string): string => {
     const val = headers[key] || headers[key.toLowerCase()]
-    return Array.isArray(val) ? val.join(',') : val ?? ''
+    return Array.isArray(val) ? val.join(',') : (val ?? '')
   }
 
   const purpose = getHeader('purpose') || getHeader('sec-purpose') || getHeader('x-purpose')
@@ -331,10 +331,7 @@ export function classifyClickAgent(
  * - Uses first-party parameters (`rcid`, `rcch`, `rcvar`).
  * - Never includes cross-site third-party ad networks, fingerprinting, or tracking pixels.
  */
-export function buildCampaignTrackingUrl(
-  baseUrl: string,
-  params: CampaignTrackingParams,
-): string {
+export function buildCampaignTrackingUrl(baseUrl: string, params: CampaignTrackingParams): string {
   if (params.directLinkOnly) {
     return baseUrl
   }
@@ -695,7 +692,8 @@ export function evaluateAudienceHealth(
         thresholdCritical: 3600,
         severity: webhookSeverity,
         trend: 'stable',
-        explanation: 'Latency between provider dispatch and delivery receipt / event webhook ingestion.',
+        explanation:
+          'Latency between provider dispatch and delivery receipt / event webhook ingestion.',
       },
       staleSegmentCount: {
         key: 'stale_segment_count',
@@ -877,9 +875,11 @@ export type AudienceReportExportInput = {
  * - Counts < 5 are masked with '< 5' to preserve k-anonymity.
  * - Never includes contact PII (emails, phone numbers) or sensitive form inputs in aggregate export.
  */
-export function exportAudienceSummaryReport(
-  input: AudienceReportExportInput,
-): { csv: string; filename: string; privacyStatement: string } {
+export function exportAudienceSummaryReport(input: AudienceReportExportInput): {
+  csv: string
+  filename: string
+  privacyStatement: string
+} {
   const allowedRoles = ['owner', 'administrator', 'staff']
   if (!allowedRoles.includes(input.userRole)) {
     throw new Error('Unauthorized: Audience summary export requires staff or administrator role.')
@@ -916,9 +916,7 @@ export function exportAudienceSummaryReport(
     const delivered = applyPrivacyThreshold(c.delivered)
     const clicks = applyPrivacyThreshold(c.observedClicks)
     const conversions = applyPrivacyThreshold(c.conversions)
-    lines.push(
-      `"${c.dimension}","${c.label}",${eligible},${delivered},${clicks},${conversions}`,
-    )
+    lines.push(`"${c.dimension}","${c.label}",${eligible},${delivered},${clicks},${conversions}`)
   }
 
   const filename = `audience-report-${input.siteId}-${new Date().toISOString().slice(0, 10)}.csv`

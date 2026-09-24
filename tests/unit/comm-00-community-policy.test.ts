@@ -1,8 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import {
-  evaluateCommunityPolicy,
-  sanitizeProfileProjection,
-} from '@/modules/community/policy'
+import { evaluateCommunityPolicy, sanitizeProfileProjection } from '@/modules/community/policy'
 import type { CommunityActor, CommunityPolicyContext } from '@/modules/community/contracts'
 
 describe('COMM-00: Community Domain Policy Engine', () => {
@@ -42,11 +39,7 @@ describe('COMM-00: Community Domain Policy Engine', () => {
   describe('1. Multi-Site Boundary Isolation', () => {
     it('denies access when target object belongs to another site', () => {
       const context: CommunityPolicyContext = { siteId: defaultSiteId, actor: activeMember }
-      const decision = evaluateCommunityPolicy(
-        context,
-        { siteId: otherSiteId },
-        'read',
-      )
+      const decision = evaluateCommunityPolicy(context, { siteId: otherSiteId }, 'read')
       expect(decision.allowed).toBe(false)
       expect(decision.status).toBe(403)
       expect(decision.reason).toBe('cross_site_forbidden')

@@ -22,7 +22,7 @@ describe('Payload PostgreSQL integration', () => {
         lifecycle: 'active',
         communityRegistrationPolicy: 'open',
       },
-    })
+    } as never)
 
     const read = await payload.find({
       collection: 'sites',

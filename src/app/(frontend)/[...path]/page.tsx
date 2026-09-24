@@ -2,6 +2,7 @@ import config from '@payload-config'
 import { getPayload } from 'payload'
 import Link from 'next/link'
 import { notFound, permanentRedirect, redirect } from 'next/navigation'
+import { headers as requestHeaders } from 'next/headers'
 
 import { canRenderPublic, type PublicState } from '@/modules/public/contracts'
 import type { Metadata } from 'next'
@@ -22,6 +23,10 @@ import { findIfRegistered, registeredOnly } from '@/modules/public/registered-co
 import { resolveSiteSettings } from '@/modules/core/site-settings'
 import { CommentSection } from '@/modules/community/components/CommentSection'
 import { getPublicSsrComments } from '@/modules/community/thread-lifecycle'
+import { ProductDetail } from '@/modules/commerce/ProductView'
+import { catalogSiteForHost } from '@/modules/commerce/site-scope'
+import { hasEntitlement } from '@/modules/commerce/subscription-service'
+import { currentMember, readMemberSession } from '@/modules/identity/member-identity'
 
 type Args = {
   params: Promise<{ path: string[] }>
@@ -59,7 +64,8 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
   const path = `/${(await params).path.join('/')}`
   try {
     const payload = await getPayload({ config })
-    const discovery = await resolveDiscoveryDocument(payload, { path })
+    const siteId = await catalogSiteForHost(payload, (await requestHeaders()).get('host'))
+    const discovery = await resolveDiscoveryDocument(payload, { path, siteId })
     return discoveryToMetadata(discovery)
   } catch {
     /* safe noindex fallback during recovery */
@@ -79,10 +85,20 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
     ),
   ).toString()
   const payload = await getPayload({ config })
+  const siteId = await catalogSiteForHost(payload, (await requestHeaders()).get('host')).catch(
+    () => null,
+  )
+  if (!siteId) notFound()
 
   const publications = await payload.find({
     collection: 'publications',
-    where: { and: [{ status: { equals: 'active' } }, { visibility: { equals: 'public' } }] },
+    where: {
+      and: [
+        { site: { equals: siteId } },
+        { status: { equals: 'active' } },
+        { visibility: { equals: 'public' } },
+      ],
+    },
     sort: '-createdAt',
     limit: 1,
     depth: 0,
@@ -90,10 +106,6 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
   } as never)
   const publication = publications.docs[0] as unknown as Record<string, unknown> | undefined
   if (!publication) notFound()
-  const siteId =
-    typeof publication.site === 'string'
-      ? publication.site
-      : String((publication.site as { id?: unknown } | undefined)?.id ?? '')
 
   const redirects = await payload
     .find({
@@ -234,6 +246,28 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
     // Continue to non-editorial canonical collections below.
   }
   if (editorialArticle) {
+    const required = editorialArticle.requiredEntitlement as {
+      resource?: string
+      capability?: string
+      scope?: string
+    } | null
+    if (required?.resource && required.capability) {
+      const memberId = await currentMember(
+        payload as never,
+        readMemberSession(await requestHeaders()),
+      )
+      if (
+        !memberId ||
+        !(await hasEntitlement(payload as never, {
+          subjectId: memberId,
+          siteId,
+          resource: required.resource,
+          capability: required.capability,
+          ...(required.scope ? { scope: required.scope } : {}),
+        }))
+      )
+        notFound()
+    }
     const settings = await resolveSiteSettings(payload)
     const discovery = await resolveDiscoveryDocument(payload, { path })
     return (
@@ -324,6 +358,7 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
     } as never)
     const record = result.docs[0] as unknown as PublicRecord | undefined
     if (!record) continue
+    if (collection === 'products' && record.state !== 'published') notFound()
     if (!canRenderPublic(record)) notFound()
 
     const name = label(record)
@@ -348,6 +383,18 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
       record: record as Record<string, unknown>,
       collection,
     })
+    if (collection === 'products') {
+      return (
+        <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 space-y-8">
+          <link rel="canonical" href={discovery.canonicalUrl} />
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: serializeJsonLd(discovery.schema.jsonLd) }}
+          />
+          <ProductDetail product={record} />
+        </main>
+      )
+    }
     return (
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 space-y-8">
         <link rel="canonical" href={discovery.canonicalUrl} />
@@ -444,10 +491,17 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
             attachedToCollection={collection === 'content' ? 'content' : 'content'}
             canonicalPath={path}
             title={name}
-            siteId={typeof record.site === 'string' ? record.site : String((record.site as { id?: string })?.id ?? 'default')}
+            siteId={
+              typeof record.site === 'string'
+                ? record.site
+                : String((record.site as { id?: string })?.id ?? 'default')
+            }
             initialComments={await getPublicSsrComments(payload, {
               canonicalContentId: String(record.id),
-              siteId: typeof record.site === 'string' ? record.site : String((record.site as { id?: string })?.id ?? ''),
+              siteId:
+                typeof record.site === 'string'
+                  ? record.site
+                  : String((record.site as { id?: string })?.id ?? ''),
               contentStatus: String(record.status ?? record._status ?? 'published'),
               isIndexable: Boolean(discovery.indexability.indexable),
             })}

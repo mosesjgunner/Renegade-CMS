@@ -106,7 +106,9 @@ export const telecomDeliveryTask = {
     // 2. Send-Time Safety Invariant: Check active purpose consent
     const hasConsent = await hasTelecomConsent(req.payload, {
       siteId,
-      subscriberId: delivery.subscriber ? String(delivery.subscriber.id ?? delivery.subscriber) : undefined,
+      subscriberId: delivery.subscriber
+        ? String(delivery.subscriber.id ?? delivery.subscriber)
+        : undefined,
       phoneHash,
       purpose,
     })
@@ -119,7 +121,8 @@ export const telecomDeliveryTask = {
           status: 'cancelled',
           outcome: {
             code: 'missing_consent',
-            message: 'Active purpose-specific telecom consent is missing or withdrawn at send time.',
+            message:
+              'Active purpose-specific telecom consent is missing or withdrawn at send time.',
           },
         },
         overrideAccess: true,
@@ -132,9 +135,9 @@ export const telecomDeliveryTask = {
     const quietEval = checkRecipientQuietHours({
       currentTime: delivery.scheduledFor
         ? new Date(delivery.scheduledFor)
-        : ((process.env.VITEST || process.env.NODE_ENV === 'test') && !delivery.enforceQuietHours
+        : (process.env.VITEST || process.env.NODE_ENV === 'test') && !delivery.enforceQuietHours
           ? new Date('2026-09-20T18:00:00Z')
-          : new Date()),
+          : new Date(),
       recipientTimezone: subscriber?.timezone,
       siteTimezone: 'UTC',
       isExemptPurpose: purpose === 'transactional' || purpose === 'alerts',

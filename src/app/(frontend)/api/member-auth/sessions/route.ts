@@ -1,7 +1,11 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
 
-import { currentMember, listMemberSessions, readMemberSession } from '@/modules/identity/member-identity'
+import {
+  currentMember,
+  listMemberSessions,
+  readMemberSession,
+} from '@/modules/identity/member-identity'
 
 export async function GET(request: Request) {
   const payload = await getPayload({ config })

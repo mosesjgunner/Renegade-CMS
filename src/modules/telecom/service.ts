@@ -390,11 +390,7 @@ export function checkRecipientQuietHours(input: {
     unknownTimezonePolicy: 'conservative-intersection',
   }
 
-  const quietCheck = isWithinQuietHours(
-    input.currentTime,
-    input.recipientTimezone,
-    effectivePolicy,
-  )
+  const quietCheck = isWithinQuietHours(input.currentTime, input.recipientTimezone, effectivePolicy)
 
   if (!quietCheck.isQuiet) {
     return { isQuiet: false, resolvedTimezone: quietCheck.resolvedTimezone }

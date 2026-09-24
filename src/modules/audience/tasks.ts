@@ -78,11 +78,7 @@ export const emailDeliveryTask = {
     if (!eligible) {
       const subscriber = delivery.subscriber as Doc | undefined
       const reason = subscriber?.emailHash
-        ? await subscriberSuppressionReason(
-            req.payload,
-            siteId,
-            String(subscriber.emailHash),
-          )
+        ? await subscriberSuppressionReason(req.payload, siteId, String(subscriber.emailHash))
         : null
       await req.payload.update({
         collection: 'email-deliveries',

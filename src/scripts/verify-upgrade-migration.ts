@@ -70,18 +70,25 @@ async function createHistoricalFixture(payload: Payload) {
       values,
     )
   }
-  await sentinel('site', 'sites', {
-    id: ids.site,
-    name: 'Upgrade Sentinel Site',
-    slug: 'upgrade-sentinel',
-    lifecycle: 'active',
-  })
-  await sentinel('member', 'members', {
-    id: ids.member,
-    displayName: 'Upgrade Sentinel Member',
-    email: 'upgrade-sentinel@example.test',
-    status: 'active',
-  })
+  // The upgrade baseline predates community_registration_policy, which exists
+  // in today's Sites collection. Insert only columns present at the baseline.
+  await insertRow(
+    'sites',
+    ['id', 'name', 'slug', 'lifecycle', 'created_at', 'updated_at'],
+    [ids.site, 'Upgrade Sentinel Site', 'upgrade-sentinel', 'active', timestamp, timestamp],
+  )
+  await insertRow(
+    'members',
+    ['id', 'display_name', 'email', 'status', 'created_at', 'updated_at'],
+    [
+      ids.member,
+      'Upgrade Sentinel Member',
+      'upgrade-sentinel@example.test',
+      'active',
+      timestamp,
+      timestamp,
+    ],
+  )
   await sentinel('identity', 'linked-identities', {
     id: ids.identity,
     member: ids.member,
@@ -90,13 +97,19 @@ async function createHistoricalFixture(payload: Payload) {
     externalSubject: 'upgrade-sentinel@example.test',
     verifiedAt: timestamp,
   })
-  await sentinel('profile', 'profiles', {
-    id: ids.profile,
-    member: ids.member,
-    displayName: 'Upgrade Sentinel Member',
-    handle: 'upgrade-sentinel',
-    visibility: 'public',
-  })
+  await insertRow(
+    'profiles',
+    ['id', 'member_id', 'display_name', 'handle', 'visibility', 'created_at', 'updated_at'],
+    [
+      ids.profile,
+      ids.member,
+      'Upgrade Sentinel Member',
+      'upgrade-sentinel',
+      'public',
+      timestamp,
+      timestamp,
+    ],
+  )
   await poolFor(payload).query(
     `INSERT INTO spaces (id, site_id, member_id, profile_id, handle, canonical_path, display_name, visibility, moderation_state, transfer_state, created_at, updated_at)
      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $11)`,
@@ -294,6 +307,18 @@ async function assertUpgrade(payload: Payload) {
   )
   if (!purposeRows.rows.some((row) => row.enumlabel === 'newsletter'))
     throw new Error('Shared media enum missing newsletter.')
+  const eventsEntitlement = await poolFor(payload).query(
+    `SELECT data_type, is_nullable, column_default FROM information_schema.columns
+     WHERE table_schema = 'public' AND table_name = 'events'
+       AND column_name = 'required_entitlement'`,
+  )
+  if (
+    eventsEntitlement.rows.length !== 1 ||
+    eventsEntitlement.rows[0]?.data_type !== 'jsonb' ||
+    eventsEntitlement.rows[0]?.is_nullable !== 'YES' ||
+    eventsEntitlement.rows[0]?.column_default !== null
+  )
+    throw new Error('Upgrade did not create the optional Events entitlement JSON column.')
   const form = await payload.create({
     collection: 'form-definitions',
     data: {

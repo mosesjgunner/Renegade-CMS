@@ -6,10 +6,7 @@ import {
   postThreadComment,
   resetCommentRateLimitsForTest,
 } from '@/modules/community/comment-composer'
-import {
-  CommentReactionError,
-  toggleCommentReaction,
-} from '@/modules/community/comment-reactions'
+import { CommentReactionError, toggleCommentReaction } from '@/modules/community/comment-reactions'
 import {
   CommentLifecycleError,
   getPublicSsrComments,
@@ -30,11 +27,13 @@ const authorId = '00000000-0000-7000-8000-000000000004'
 const memberId = '00000000-0000-7000-8000-000000000005'
 const staffId = '00000000-0000-7000-8000-000000000006'
 
-function mockPayload(options: {
-  thread?: Record<string, unknown>
-  comments?: Record<string, unknown>[]
-  queryHandler?: (text: string, values?: unknown[]) => Promise<{ rows: unknown[] }>
-} = {}) {
+function mockPayload(
+  options: {
+    thread?: Record<string, unknown>
+    comments?: Record<string, unknown>[]
+    queryHandler?: (text: string, values?: unknown[]) => Promise<{ rows: unknown[] }>
+  } = {},
+) {
   const defaultThread = {
     id: threadId,
     siteId,
@@ -63,9 +62,18 @@ function mockPayload(options: {
     if (text.includes('UPDATE comment_threads')) {
       const updated = {
         ...defaultThread,
-        isClosed: values[2] !== null && values[2] !== undefined ? Boolean(values[2]) : defaultThread.isClosed,
-        isFrozen: values[3] !== null && values[3] !== undefined ? Boolean(values[3]) : defaultThread.isFrozen,
-        premoderationEnabled: values[4] !== null && values[4] !== undefined ? Boolean(values[4]) : defaultThread.premoderationEnabled,
+        isClosed:
+          values[2] !== null && values[2] !== undefined
+            ? Boolean(values[2])
+            : defaultThread.isClosed,
+        isFrozen:
+          values[3] !== null && values[3] !== undefined
+            ? Boolean(values[3])
+            : defaultThread.isFrozen,
+        premoderationEnabled:
+          values[4] !== null && values[4] !== undefined
+            ? Boolean(values[4])
+            : defaultThread.premoderationEnabled,
         updatedAt: new Date().toISOString(),
       }
       return { rows: [updated] }
@@ -503,7 +511,9 @@ describe('COMM-03D: Thread Lifecycle, Visibility, Subscriptions, & Outbox', () =
       expect(root1.children[0]?.children[0]?.children[0]?.children[0]?.id).toBe('c6')
       expect(root1.children[0]?.children[0]?.children[0]?.children[0]?.children[0]?.id).toBe('c7')
       // depth 5 has no children
-      expect(root1.children[0]?.children[0]?.children[0]?.children[0]?.children[0]?.children).toHaveLength(0)
+      expect(
+        root1.children[0]?.children[0]?.children[0]?.children[0]?.children[0]?.children,
+      ).toHaveLength(0)
     })
 
     it('sorts by chronological order (oldest first)', async () => {
@@ -827,7 +837,9 @@ describe('COMM-03D: Thread Lifecycle, Visibility, Subscriptions, & Outbox', () =
         parent_id: null,
         mentioned_handles: ['jane_doe'],
       })
-      expect(typeof (capturedOutboxPayload as Record<string, unknown> | null)?.timestamp).toBe('string')
+      expect(typeof (capturedOutboxPayload as Record<string, unknown> | null)?.timestamp).toBe(
+        'string',
+      )
     })
 
     it('simulated rollback does not leave orphan comments or orphan outbox events', async () => {

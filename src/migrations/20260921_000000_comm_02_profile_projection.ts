@@ -2,6 +2,7 @@ import { type MigrateDownArgs, type MigrateUpArgs, sql } from '@payloadcms/db-po
 
 export async function up({ db }: MigrateUpArgs): Promise<void> {
   await db.execute(sql`
+    ALTER TABLE "members" ALTER COLUMN "status" SET DEFAULT 'pending';
     ALTER TABLE "profiles" ADD COLUMN IF NOT EXISTS "avatar_alt" varchar;
     ALTER TABLE "profiles" ADD COLUMN IF NOT EXISTS "cover_alt" varchar;
     ALTER TABLE "profiles" ADD COLUMN IF NOT EXISTS "locale" varchar;
@@ -12,6 +13,7 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
 
 export async function down({ db }: MigrateDownArgs): Promise<void> {
   await db.execute(sql`
+    ALTER TABLE "members" ALTER COLUMN "status" SET DEFAULT 'active';
     ALTER TABLE "profiles" DROP COLUMN IF EXISTS "discovery_opt_out";
     ALTER TABLE "profiles" DROP COLUMN IF EXISTS "time_zone";
     ALTER TABLE "profiles" DROP COLUMN IF EXISTS "locale";

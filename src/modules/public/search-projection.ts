@@ -132,7 +132,14 @@ export const searchProjectionHooks = (collection: string) => ({
 })
 
 export async function rebuildSearchProjection(payload: Payload, siteId?: string) {
-  const collections = ['content', 'podcast-shows', 'podcast-episodes', 'videos', 'page-layouts']
+  const collections = [
+    'content',
+    'podcast-shows',
+    'podcast-episodes',
+    'videos',
+    'page-layouts',
+    'products',
+  ]
   if (!siteId) await poolFor(payload).query('TRUNCATE search_documents')
   else await poolFor(payload).query('DELETE FROM search_documents WHERE site_id = $1', [siteId])
   let processed = 0

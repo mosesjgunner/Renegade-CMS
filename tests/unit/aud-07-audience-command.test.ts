@@ -724,8 +724,7 @@ describe('AUD-07 Audience Command Center, Metrics & Bounded Experiments', () => 
       expect(result.csv).toContain(`rare_event,"Rare Micro Action",email,${PRIVACY_MASKED_VALUE}`)
 
       // Cohort with N < 5 is masked
-      expect(
-        result.csv).toContain(
+      expect(result.csv).toContain(
         `"source","Secret VIP Link",${PRIVACY_MASKED_VALUE},${PRIVACY_MASKED_VALUE},${PRIVACY_MASKED_VALUE},${PRIVACY_MASKED_VALUE}`,
       )
     })

@@ -1,0 +1,136 @@
+'use client'
+
+import { useEffect, useState } from 'react'
+import { DonationReconciliationPanel } from './DonationReconciliationPanel'
+
+type Dashboard = {
+  summary: {
+    counts: Record<string, number>
+    totalsMinor: Record<string, string>
+    oldestAgeMs: Record<string, number>
+  }
+  health: Array<{ providerKey: string; ready: boolean; health: string; reason?: string }>
+  pendingActions: Array<{
+    id: string
+    state: string
+    amountMinor: string
+    currency: string
+    createdAt: string
+    safeActions: string[]
+  }>
+  refunds: Array<{
+    id: string
+    state: string
+    amountMinor: string
+    currency: string
+    createdAt: string
+  }>
+  disputes: Array<{
+    id: string
+    state: string
+    amountMinor: string
+    currency: string
+    deadlineAt: string | null
+  }>
+  webhookFailures: Array<{
+    id: string
+    state: string
+    providerKey: string
+    verifiedAt: string
+    error: string | null
+  }>
+  reconciliationCases: Array<{
+    id: string
+    reason: string
+    createdAt: string
+    status: string
+  }>
+  disclaimer: string
+}
+
+export function CommerceOperations() {
+  const [data, setData] = useState<Dashboard | null>(null)
+  const [error, setError] = useState('')
+  const load = async () => {
+    const response = await fetch('/api/admin/commerce/dashboard', { cache: 'no-store' })
+    const body = await response.json()
+    if (!response.ok) setError(body.error ?? 'Commerce operations are unavailable.')
+    else setData(body)
+  }
+  useEffect(() => {
+    void load()
+  }, [])
+  if (error) return <p role="alert">{error}</p>
+  if (!data) return <p role="status">Loading payment operations…</p>
+  const states = Object.keys(data.summary.counts).sort()
+  return (
+    <main>
+      <h1>Commerce operations</h1>
+      <p>{data.disclaimer}</p>
+      <button type="button" onClick={() => void load()}>
+        Refresh server truth
+      </button>
+      <button
+        type="button"
+        onClick={async () => {
+          await fetch('/api/admin/commerce/reconcile', { method: 'POST' })
+          await load()
+        }}
+      >
+        Queue reconciliation
+      </button>
+      <h2>Provider health</h2>
+      <ul>
+        {data.health.map((item) => (
+          <li key={item.providerKey}>
+            {item.providerKey}: {item.health}
+            {item.reason ? ` — ${item.reason}` : ''}
+          </li>
+        ))}
+      </ul>
+      <h2>Payment state and age</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>State</th>
+            <th>Count</th>
+            <th>Total minor units</th>
+            <th>Oldest age</th>
+          </tr>
+        </thead>
+        <tbody>
+          {states.map((state) => (
+            <tr key={state}>
+              <th>{state}</th>
+              <td>{data.summary.counts[state]}</td>
+              <td>{data.summary.totalsMinor[state]}</td>
+              <td>{Math.floor((data.summary.oldestAgeMs[state] ?? 0) / 60000)} min</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <h2>Needs attention</h2>
+      {data.pendingActions.length ? (
+        <ul>
+          {data.pendingActions.map((item) => (
+            <li key={item.id}>
+              {item.state}: {item.amountMinor} {item.currency}; actions:{' '}
+              {item.safeActions.join(', ') || 'inspect'}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p>No pending payment exceptions.</p>
+      )}
+      <h2>Refunds</h2>
+      <p>{data.refunds.length} recent refund records.</p>
+      <h2>Disputes</h2>
+      <p>{data.disputes.length} recent dispute cases.</p>
+      <h2>Webhook and ordering gaps</h2>
+      <p>{data.webhookFailures.length} events need reconciliation.</p>
+      <h2>Quarantined reconciliation cases</h2>
+      <p>{data.reconciliationCases.length} cases require explicit review.</p>
+      <DonationReconciliationPanel />
+    </main>
+  )
+}

@@ -127,7 +127,7 @@
 			function notifyReady() {
 				if (window.Layers && (window.app || window.State)) {
 					observeHistory();
-					window.parent.postMessage({ type: 'cmos:image-editor:ready', payload: { version: 'minipaint-4' } }, '*');
+					window.parent.postMessage({ type: 'cmos:image-editor:ready', payload: { version: 'minipaint-4' } }, window.location.origin);
 					return true;
 				}
 				return false;
@@ -158,44 +158,49 @@
 					}
 					img.onload = function() {
 						try {
+							var imageWidth = img.naturalWidth || img.width;
+							var imageHeight = img.naturalHeight || img.height;
+							if (imageWidth * imageHeight > 50000000) {
+								throw new Error('This image exceeds the 50 megapixel editor limit.');
+							}
 							if (State && Actions) {
 								var new_layer = {
 									name: assetName,
 									type: 'image',
 									link: img,
-									width: img.naturalWidth || img.width,
-									height: img.naturalHeight || img.height,
-									width_original: img.naturalWidth || img.width,
-									height_original: img.naturalHeight || img.height,
+									width: imageWidth,
+									height: imageHeight,
+									width_original: imageWidth,
+									height_original: imageHeight,
 								};
 								State.do_action(
 									new Actions.Bundle_action('load_cmos_asset', 'Load CMoS Asset', [
 										new Actions.Reset_layers_action(),
 										new Actions.Insert_layer_action(new_layer),
-										new Actions.Autoresize_canvas_action(img.naturalWidth, img.naturalHeight, null, true, true)
+										new Actions.Autoresize_canvas_action(imageWidth, imageHeight, null, true, true)
 									])
 								);
 								window.parent.postMessage({
 									type: 'cmos:image-editor:loaded',
 									payload: {
-										width: img.naturalWidth,
-										height: img.naturalHeight,
+									width: imageWidth,
+									height: imageHeight,
 										layerCount: 1
 									}
-								}, '*');
+								}, window.location.origin);
 							}
 						} catch (err) {
 							window.parent.postMessage({
 								type: 'cmos:image-editor:error',
 								payload: { message: err ? err.message : 'Error applying image layer' }
-							}, '*');
+							}, window.location.origin);
 						}
 					};
 					img.onerror = function() {
 						window.parent.postMessage({
 							type: 'cmos:image-editor:error',
 							payload: { message: 'Failed to load image from ' + imageUrl }
-						}, '*');
+						}, window.location.origin);
 					};
 					img.src = imageUrl;
 				}
@@ -238,12 +243,12 @@
 								mimeType: mimeType,
 								projectJson: projectJson
 							}
-						}, '*');
+						}, window.location.origin);
 					} catch (err) {
 						window.parent.postMessage({
 							type: 'cmos:image-editor:error',
 							payload: { message: err ? err.message : 'Export failed' }
-						}, '*');
+						}, window.location.origin);
 					}
 				}
 			});

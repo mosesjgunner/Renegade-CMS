@@ -71,7 +71,13 @@ export function evaluateCommunityPolicy(
     if (target.retentionHold === 'burn' || target.retentionMode === 'manual-burn') {
       return { allowed: false, reason: 'record_burned', status: 410 }
     }
-    if (action === 'edit' && (target.status === 'removed' || target.moderationState === 'removed' || target.deletedAt || target.retentionMode === 'tombstone')) {
+    if (
+      action === 'edit' &&
+      (target.status === 'removed' ||
+        target.moderationState === 'removed' ||
+        target.deletedAt ||
+        target.retentionMode === 'tombstone')
+    ) {
       return { allowed: false, reason: 'cannot_edit_removed_content', status: 400 }
     }
     if (target.deletedAt || target.retentionMode === 'tombstone' || target.status === 'removed') {
@@ -159,7 +165,11 @@ export function evaluateCommunityPolicy(
     if (!isOwner && !isPrivileged) {
       return { allowed: false, reason: 'ownership_required', status: 403 }
     }
-    if (action === 'edit' && target && (target.status === 'removed' || target.moderationState === 'removed')) {
+    if (
+      action === 'edit' &&
+      target &&
+      (target.status === 'removed' || target.moderationState === 'removed')
+    ) {
       return { allowed: false, reason: 'cannot_edit_removed_content', status: 400 }
     }
   }

@@ -266,7 +266,6 @@ export function verifyAudienceClaims(
   }
 }
 
-
 /** Provider signatures cover the exact raw body, before JSON parsing. */
 export const signEmailWebhook = (raw: string, secret: string) =>
   createHmac('sha256', secret).update(raw).digest('base64url')

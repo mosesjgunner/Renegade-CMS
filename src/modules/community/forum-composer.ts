@@ -25,10 +25,32 @@ type PoolPayload = Payload & { db: { pool?: { connect?: () => Promise<Client> } 
 type Topic = { id: string; spaceId: string; isLocked: boolean }
 
 /** The search worker owns projection; mutations only stage an ACL-bearing, deduplicated request. */
-async function enqueueForumSearchSync(query: Client['query'], siteId: string, topicId: string, mutationId: string) {
-  const visibility = (await query<{ visibility: string }>('SELECT visibility FROM forum_spaces s JOIN forum_topics t ON t.space_id=s.id WHERE t.id=$1', [topicId])).rows[0]?.visibility ?? 'private'
+async function enqueueForumSearchSync(
+  query: Client['query'],
+  siteId: string,
+  topicId: string,
+  mutationId: string,
+) {
+  const visibility =
+    (
+      await query<{ visibility: string }>(
+        'SELECT visibility FROM forum_spaces s JOIN forum_topics t ON t.space_id=s.id WHERE t.id=$1',
+        [topicId],
+      )
+    ).rows[0]?.visibility ?? 'private'
   const key = `forum.search_sync.v1:${topicId}:${mutationId}`
-  await query(`INSERT INTO outbox_events (event_type,payload,idempotency_key,created_at) VALUES ('forum.search_sync.v1',$1::jsonb,$2,now()) ON CONFLICT (idempotency_key) WHERE idempotency_key IS NOT NULL DO NOTHING`, [JSON.stringify({ version: 1, siteId, topicId, acl: { visibility, requiresMembership: ['private', 'hidden'].includes(visibility) } }), key])
+  await query(
+    `INSERT INTO outbox_events (event_type,payload,idempotency_key,created_at) VALUES ('forum.search_sync.v1',$1::jsonb,$2,now()) ON CONFLICT (idempotency_key) WHERE idempotency_key IS NOT NULL DO NOTHING`,
+    [
+      JSON.stringify({
+        version: 1,
+        siteId,
+        topicId,
+        acl: { visibility, requiresMembership: ['private', 'hidden'].includes(visibility) },
+      }),
+      key,
+    ],
+  )
 }
 
 function requireBody(body: string) {
@@ -62,9 +84,9 @@ async function withTransaction<T>(
   }
   await executeDbQuery(payload, 'BEGIN')
   try {
-    const result = await work((text, values) =>
-      executeDbQuery(payload, text, values).then((rows) => ({ rows })),
-    )
+    const fallbackQuery = ((text: string, values?: unknown[]) =>
+      executeDbQuery(payload, text, values).then((rows) => ({ rows }))) as Client['query']
+    const result = await work(fallbackQuery)
     await executeDbQuery(payload, 'COMMIT')
     return result
   } catch (error) {
@@ -84,8 +106,8 @@ async function assertQuoteReadable(
 ) {
   const run =
     query ??
-    ((text: string, values?: unknown[]) =>
-      executeDbQuery(payload, text, values).then((rows) => ({ rows })))
+    (((text: string, values?: unknown[]) =>
+      executeDbQuery(payload, text, values).then((rows) => ({ rows }))) as Client['query'])
   const result = await run<{ id: string; spaceId: string }>(
     `SELECT p.id, t.space_id AS "spaceId" FROM forum_posts p JOIN forum_topics t ON t.id = p.topic_id
      WHERE p.id = $1 AND t.site_id = $2`,
@@ -116,8 +138,17 @@ export async function createForumTopic(
   const title = String(input.title ?? '').trim()
   if (!title) throw new ForumComposerError('Topic title cannot be empty.', 422, 'EMPTY_TOPIC_TITLE')
   const body = requireBody(input.body)
-  try { await assertMemberCanPost(payload, { siteId: input.siteId, memberId: input.authorId, spaceId: input.spaceId }) }
-  catch (error) { if (error instanceof ModerationActionError) throw new ForumComposerError(error.message, error.status, error.code); throw error }
+  try {
+    await assertMemberCanPost(payload, {
+      siteId: input.siteId,
+      memberId: input.authorId,
+      spaceId: input.spaceId,
+    })
+  } catch (error) {
+    if (error instanceof ModerationActionError)
+      throw new ForumComposerError(error.message, error.status, error.code)
+    throw error
+  }
   const access = await resolveForumSpaceAccess(payload, {
     siteId: input.siteId,
     spaceId: input.spaceId,
@@ -139,10 +170,21 @@ export async function createForumTopic(
         [topic.id, input.authorId, input.replyToPostId ?? null, body.raw, body.html],
       )
     ).rows[0]!
-    await enqueueForumSearchSync(query, input.siteId, topic.id, String((post as { id?: string }).id ?? topic.id))
+    await enqueueForumSearchSync(
+      query,
+      input.siteId,
+      topic.id,
+      String((post as { id?: string }).id ?? topic.id),
+    )
     return { topic, post }
   })
-  await triageSubmission(payload, { siteId: input.siteId, targetType: 'forum_post', targetId: String((created.post as { id: string }).id), authorId: input.authorId, text: body.raw })
+  await triageSubmission(payload, {
+    siteId: input.siteId,
+    targetType: 'forum_post',
+    targetId: String((created.post as { id: string }).id),
+    authorId: input.authorId,
+    text: body.raw,
+  })
   return created
 }
 
@@ -168,8 +210,18 @@ export async function replyToForumTopic(
     if (!topic) throw new ForumComposerError('Forum topic not found.', 404, 'TOPIC_NOT_FOUND')
     if (topic.isLocked)
       throw new ForumComposerError('This forum topic is locked.', 403, 'TOPIC_LOCKED')
-    try { await assertMemberCanPost(payload, { siteId: input.siteId, memberId: input.authorId, spaceId: topic.spaceId, objectId: topic.id }) }
-    catch (error) { if (error instanceof ModerationActionError) throw new ForumComposerError(error.message, error.status, error.code); throw error }
+    try {
+      await assertMemberCanPost(payload, {
+        siteId: input.siteId,
+        memberId: input.authorId,
+        spaceId: topic.spaceId,
+        objectId: topic.id,
+      })
+    } catch (error) {
+      if (error instanceof ModerationActionError)
+        throw new ForumComposerError(error.message, error.status, error.code)
+      throw error
+    }
     const access = await resolveForumSpaceAccess(payload, {
       siteId: input.siteId,
       spaceId: topic.spaceId,
@@ -216,10 +268,21 @@ export async function replyToForumTopic(
         ],
       )
     ).rows[0]!
-    await enqueueForumSearchSync(query, input.siteId, topic.id, String((post as { id?: string }).id ?? allocated.sequenceNumber))
+    await enqueueForumSearchSync(
+      query,
+      input.siteId,
+      topic.id,
+      String((post as { id?: string }).id ?? allocated.sequenceNumber),
+    )
     return post
   })
-  await triageSubmission(payload, { siteId: input.siteId, targetType: 'forum_post', targetId: String((post as { id: string }).id), authorId: input.authorId, text: body.raw })
+  await triageSubmission(payload, {
+    siteId: input.siteId,
+    targetType: 'forum_post',
+    targetId: String((post as { id: string }).id),
+    authorId: input.authorId,
+    text: body.raw,
+  })
   return post
 }
 
@@ -279,7 +342,10 @@ export async function editForumPost(
     )
   const updated = rows[0]
   await enqueueForumSearchSync(
-    (text, values) => executeDbQuery(payload, text, values).then((result) => ({ rows: result })),
+    ((text, values) =>
+      executeDbQuery(payload, text, values).then((result) => ({
+        rows: result,
+      }))) as Client['query'],
     String(updated.siteId),
     String(updated.topicId),
     String(updated.id),

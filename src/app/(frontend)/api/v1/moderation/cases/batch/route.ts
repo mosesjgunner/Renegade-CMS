@@ -18,7 +18,12 @@ export async function POST(request: Request) {
   if (!ids.length || ids.length > 50 || !body.disposition)
     return Response.json({ error: '1 to 50 caseIds and disposition are required' }, { status: 400 })
   try {
-    const items = await batchDispositionModerationCases(payload, { siteId, actorMemberId: actor.memberId, caseIds: ids, disposition: body.disposition })
+    const items = await batchDispositionModerationCases(payload, {
+      siteId,
+      actorMemberId: actor.memberId,
+      caseIds: ids,
+      disposition: body.disposition,
+    })
     return Response.json({ success: items.every((i) => i.success), items })
   } catch {
     return Response.json({ error: 'Moderation database unavailable' }, { status: 503 })

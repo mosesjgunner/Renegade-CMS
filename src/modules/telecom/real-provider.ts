@@ -106,7 +106,9 @@ export function createTwilioTelecomAdapter(config: TwilioTelecomConfig): Messagi
             error: {
               kind: 'permanent',
               code: 'authentication_failed',
-              message: String(redact(`Twilio connection verification failed: ${res.status} ${text}`, secrets)),
+              message: String(
+                redact(`Twilio connection verification failed: ${res.status} ${text}`, secrets),
+              ),
             },
           }
         }

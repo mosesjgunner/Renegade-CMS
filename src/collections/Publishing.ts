@@ -1214,6 +1214,14 @@ export const Events: CollectionConfig = {
   },
   fields: [
     ...ownerFields(),
+    {
+      name: 'requiredEntitlement',
+      type: 'json',
+      admin: {
+        description:
+          'Optional site-scoped resource and capability required for this published page.',
+      },
+    },
     { name: 'title', type: 'text', required: true },
     { name: 'slug', type: 'text', required: true, validate: canonicalSlug },
     { name: 'canonicalPath', type: 'text', required: true, unique: true },
