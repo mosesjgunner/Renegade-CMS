@@ -21,3 +21,13 @@ media/
 !src/modules/media/**
 !src/app/(frontend)/api/media/
 !src/app/(frontend)/api/media/**
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+
+# IDE & Editor Files
+.idea/
+*.sublime-project
+*.sublime-workspace

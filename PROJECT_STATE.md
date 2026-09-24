@@ -1,3 +1,41 @@
+## Final Nine-Surface CMoS Release Gate (SHOP-08) Verified & Beta Baseline Closed — 2026-09-24
+
+- **Release Status**: **PASSED — ALL GATES VERIFIED (BETA RELEASE READY)**
+- **Scope & Baseline**: Evaluated complete candidate baseline across all nine product surfaces (Content, Presentation, Media DAM, Discovery/SEO, Workflow, Audience, Community, Commerce, Operations).
+- **Core Proofs**:
+  1. **Content & Editorial**: Canonical document model, Lexical rich-text AST, preview tokens, revisions, unpublishing guards.
+  2. **Presentation & Themes**: Isolated Puck visual editor (0 byte bundle leak), layout IR schemas, global shell slots (`header`, `footer`, `announcement`, `cta`), legacy WXR migration review.
+  3. **Media & DAM Governance**: Sharp multi-variant image generator, canvas image editor, chunked upload sessions, rights governance, tombstone retention.
+  4. **Discovery & Distribution**: PostgreSQL `tsvector` search projections, Schema.org graphs, auto-updating sitemaps, RSS 2.0 / JSON Feed 1.1 / ICS syndication, 308 redirect loop prevention.
+  5. **Workflow & Scheduled Releases**: Multi-stage review queues, DST-aware scheduling, worker lease locking, atomic publication.
+  6. **Audience & Sovereign Telecom**: Double opt-in consent, responsive email compilation, RFC compliant direct-to-MX SMTP, quiet-hours SMS/RCS emulators.
+  7. **Community Platform**: WebAuthn passkey member auth, privacy profiles, nested discussions, forum moderation triage, encrypted direct messaging.
+  8. **Commerce Command Center**: Server-authoritative totals, cart tamper-proofing, deterministic payment webhooks, subscription dunning, donation anonymity walls, affiliate referral tracking, and POD preflight.
+  9. **Operations, Backup & Restore**: 101/101 fresh database migrations, upgrade rehearsal, isolated backup manifest generation, and cold-start restore readiness.
+- **Verification Evidence**:
+  - `tsc --noEmit`: 0 errors.
+  - `eslint`: 0 errors, 0 warnings.
+  - `prettier --check`: 100% compliant.
+  - Unit Suite: 147 test files passed, 983/983 unit tests passed (0 failures).
+  - Integration Suite: 35/35 test files passed, 196/196 tests passed (0 failures).
+  - Presentation Bundle Boundary: Verified 0 Puck leaks into public client bundle.
+  - Migrations: 101/101 verified.
+
+## Shared Contract Gate — Affiliate, POD Fulfillment & Worker Health Conformance Verified — 2026-09-24
+
+- **Gate Status**: **VERIFIED WITH CONFIGURED PROVIDER REQUIRED** (Deterministic local emulator adapter, local webhook signers, test accounts, and deterministic sinks verified; external live provider networks require live Printful API keys and production webhook secrets).
+- **Scope & Baseline**: Evaluated candidate baseline after SHOP-00–07, COMM-08, AUD-08, and the first six gates. Executed dedicated integration suite `tests/integration/shared-contract-affiliate-pod.integration.test.ts` (28/28 test cases passing across all 28 numbered requirements), along with unit suites `tests/unit/shop-06-affiliate-and-referrals.test.ts` (19/19) and `tests/unit/shop-03-pod-fulfillment.test.ts` (26/26). Total 73/73 tests passing.
+
+## Shared Contract Gate — Commerce Domain Integration Verified — 2026-09-23
+
+- **Gate Status**: **VERIFIED WITH CONFIGURED PROVIDER REQUIRED** (deterministic local payment adapters, local webhook signers, test accounts, and deterministic sinks verified; external live provider networks require live provider keys and production webhook secrets).
+- **Scope & Baseline**: Evaluated candidate baseline after SHOP-00–07, COMM-08, AUD-08, and the first six gates. Executed dedicated integration suite `tests/integration/shared-contract-commerce-shop.integration.test.ts` (34/34 test cases passing across all 31 numbered requirements).
+
+## Shared Contract Gate — Audience & Community Domain Integration Verified — 2026-09-23
+
+- **Gate Status**: **VERIFIED WITH CONFIGURED PROVIDER REQUIRED** (local/test provider and telecom emulator verified; live external networks require configured provider credentials).
+- **Scope & Baseline**: Evaluated candidate baseline after SHOP-00–07, COMM-08, AUD-08, and the first six gates. Executed dedicated integration suite `tests/integration/shared-contract-audience-community.integration.test.ts` (20/20 test cases passing across all 21 numbered requirements).
+
 ## Community Pass COMM-03D — Thread Lifecycle, Public Rendering Visibility, Subscriptions & Outbox Emission — 2026-09-21
 
 - **Staff Lifecycle Controls**: Implemented staff controls (`closed`, `frozen`, `premoderation_enabled`) in `src/modules/community/thread-lifecycle.ts` and `PATCH /api/v1/sites/:site_id/threads/:thread_id`.

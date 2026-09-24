@@ -679,23 +679,23 @@ Do not add new feature families during hardening. Fix release blockers, record l
 
 ## Milestone dependency and proof map
 
-| Prompt | Primary proof | Unlocks |
-|---:|---|---|
-| 1 | Reproducible kernel with optional-capability, compatibility, passwordless identity, Space, retention/encryption, commerce and update contracts | All implementation without foundational rework |
-| 2 | Passwordless bootstrap plus proven install/update/jobs/backup and two isolated transferable deployments | Safe self-hosting and managed-hosting readiness |
-| 3 | Site hosts capability-driven Spaces, publications, blogs, albums/portfolios, forums and expiring content over one spine | Every content/community/module schema |
-| 4 | Complete sourced editorial lifecycle | Product’s flagship promise |
-| 5 | Theme-independent publications, profiles, portfolios, forums and privacy-safe discovery | Real audience and search discovery |
-| 6 | Nondeveloper builds a finished site or expressive safe personal Space from guided components | Starter-site/profile/template promise |
-| 7 | A pinned Reown/SIWX wallet flow and other passwordless identities safely unlock Member Spaces, blogs, albums, forums and normal/encrypted/burnable messages | Independent passwordless social/community platform and safe forms |
-| 8 | Optional module/provider lifecycle survives disable, replacement and compatible upgrades without data loss | Sustainable plug-and-play integrations |
-| 9 | Optional AI assists but cannot take control | Contextual intelligence everywhere |
-| 10 | Media imports/derivatives publish as first-class content | Multimedia publisher promise |
-| 11 | One source becomes an audited multi-network campaign through a shared personal, Space and publication calendar | Distribution command center and operating calendar |
-| 12 | Consented subscriber receives durable scheduled email | Owned audience loop |
-| 13 | A Space owner launches a creator-owned crowdfunding campaign, accepts locally eligible processor/crypto methods, sells a POD shirt through cart/order automation and owns portable records | Global autonomous creator commerce and financial sovereignty |
-| 14 | Real journeys are attributed and operational failures surface as actionable exceptions | Decision-making without daily babysitting |
-| 15 | Clean round trip, update, autonomous creator rehearsal and transfer between isolated hosts | Credible production and managed-hosting launch |
+| Prompt | Primary proof                                                                                                                                                                              | Unlocks                                                           |
+| -----: | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------- |
+|      1 | Reproducible kernel with optional-capability, compatibility, passwordless identity, Space, retention/encryption, commerce and update contracts                                             | All implementation without foundational rework                    |
+|      2 | Passwordless bootstrap plus proven install/update/jobs/backup and two isolated transferable deployments                                                                                    | Safe self-hosting and managed-hosting readiness                   |
+|      3 | Site hosts capability-driven Spaces, publications, blogs, albums/portfolios, forums and expiring content over one spine                                                                    | Every content/community/module schema                             |
+|      4 | Complete sourced editorial lifecycle                                                                                                                                                       | Product’s flagship promise                                        |
+|      5 | Theme-independent publications, profiles, portfolios, forums and privacy-safe discovery                                                                                                    | Real audience and search discovery                                |
+|      6 | Nondeveloper builds a finished site or expressive safe personal Space from guided components                                                                                               | Starter-site/profile/template promise                             |
+|      7 | A pinned Reown/SIWX wallet flow and other passwordless identities safely unlock Member Spaces, blogs, albums, forums and normal/encrypted/burnable messages                                | Independent passwordless social/community platform and safe forms |
+|      8 | Optional module/provider lifecycle survives disable, replacement and compatible upgrades without data loss                                                                                 | Sustainable plug-and-play integrations                            |
+|      9 | Optional AI assists but cannot take control                                                                                                                                                | Contextual intelligence everywhere                                |
+|     10 | Media imports/derivatives publish as first-class content                                                                                                                                   | Multimedia publisher promise                                      |
+|     11 | One source becomes an audited multi-network campaign through a shared personal, Space and publication calendar                                                                             | Distribution command center and operating calendar                |
+|     12 | Consented subscriber receives durable scheduled email                                                                                                                                      | Owned audience loop                                               |
+|     13 | A Space owner launches a creator-owned crowdfunding campaign, accepts locally eligible processor/crypto methods, sells a POD shirt through cart/order automation and owns portable records | Global autonomous creator commerce and financial sovereignty      |
+|     14 | Real journeys are attributed and operational failures surface as actionable exceptions                                                                                                     | Decision-making without daily babysitting                         |
+|     15 | Clean round trip, update, autonomous creator rehearsal and transfer between isolated hosts                                                                                                 | Credible production and managed-hosting launch                    |
 
 ## Scope rule for the named integrations
 
