@@ -27,19 +27,20 @@ All provider claims are labeled truthfully in accordance with observed boundarie
 
 ## 2. Nine-Surface Capability Ledger
 
-| Surface | Domain / Engine | Status | First Observed Boundary / Notes |
-|---|---|---|---|
-| **Surface 1: Content** | Editorial Persistence & Authoring | `VERIFIED` | Full canonical document model; Lexical rich-text AST; preview tokens; unpublishing guards. |
-| **Surface 2: Presentation** | Layout IR, Themes & Puck Builder | `VERIFIED` | Isolated builder chunks; 0 leaks into public routes; pattern templates; announcement/CTA slots; legacy WXR migration review. |
-| **Surface 3: Media & DAM** | Asset Pipeline & Governance | `VERIFIED` | Sharp image variants; S3/local storage abstraction; chunked upload sessions; rights governance; tombstone retention. |
-| **Surface 4: Discovery** | Search, Indexing & Crawlers | `VERIFIED` | PostgreSQL tsvector projections; search highlight sanitization; schema.org graphs; sitemap index; feeds (RSS/JSON/ICS); 308 redirects. |
-| **Surface 5: Workflow** | Editorial Reviews & Releases | `VERIFIED` | Multi-stage review queues; DST-aware scheduling; worker lease locking; atomic publication. |
-| **Surface 6: Audience** | Sovereign Mail & Telecom | `VERIFIED WITH CONFIGURED PROVIDER REQUIRED` | Local SMTP mail sink and SMS/RCS emulators `VERIFIED`; external Twilio/RCS/SendGrid delivery requires configured operator credentials. |
-| **Surface 7: Community** | Profiles, Discussions & Forums | `VERIFIED` | WebAuthn passkey member auth; privacy profiles; nested discussions; forum moderation triage; encrypted direct messaging. |
-| **Surface 8: Commerce** | Orders, Subs, POD & Donations | `VERIFIED WITH CONFIGURED PROVIDER REQUIRED` | Server-authoritative totals `VERIFIED`; crypto/manual payment `VERIFIED`; Stripe/Printify sandbox `VERIFIED WITH CONFIGURED PROVIDER REQUIRED`. |
-| **Surface 9: Operations** | Migrations, Health & Backup | `VERIFIED` | 101/101 fresh migrations; upgrade rehearsal from `med_05`; backup manifest generation; process restart resilience. |
+| Surface                     | Domain / Engine                   | Status                                       | First Observed Boundary / Notes                                                                                                                 |
+| --------------------------- | --------------------------------- | -------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Surface 1: Content**      | Editorial Persistence & Authoring | `VERIFIED`                                   | Full canonical document model; Lexical rich-text AST; preview tokens; unpublishing guards.                                                      |
+| **Surface 2: Presentation** | Layout IR, Themes & Puck Builder  | `VERIFIED`                                   | Isolated builder chunks; 0 leaks into public routes; pattern templates; announcement/CTA slots; legacy WXR migration review.                    |
+| **Surface 3: Media & DAM**  | Asset Pipeline & Governance       | `VERIFIED`                                   | Sharp image variants; S3/local storage abstraction; chunked upload sessions; rights governance; tombstone retention.                            |
+| **Surface 4: Discovery**    | Search, Indexing & Crawlers       | `VERIFIED`                                   | PostgreSQL tsvector projections; search highlight sanitization; schema.org graphs; sitemap index; feeds (RSS/JSON/ICS); 308 redirects.          |
+| **Surface 5: Workflow**     | Editorial Reviews & Releases      | `VERIFIED`                                   | Multi-stage review queues; DST-aware scheduling; worker lease locking; atomic publication.                                                      |
+| **Surface 6: Audience**     | Sovereign Mail & Telecom          | `VERIFIED WITH CONFIGURED PROVIDER REQUIRED` | Local SMTP mail sink and SMS/RCS emulators `VERIFIED`; external Twilio/RCS/SendGrid delivery requires configured operator credentials.          |
+| **Surface 7: Community**    | Profiles, Discussions & Forums    | `VERIFIED`                                   | WebAuthn passkey member auth; privacy profiles; nested discussions; forum moderation triage; encrypted direct messaging.                        |
+| **Surface 8: Commerce**     | Orders, Subs, POD & Donations     | `VERIFIED WITH CONFIGURED PROVIDER REQUIRED` | Server-authoritative totals `VERIFIED`; crypto/manual payment `VERIFIED`; Stripe/Printify sandbox `VERIFIED WITH CONFIGURED PROVIDER REQUIRED`. |
+| **Surface 9: Operations**   | Migrations, Health & Backup       | `VERIFIED`                                   | 101/101 fresh migrations; upgrade rehearsal from `med_05`; backup manifest generation; process restart resilience.                              |
 
-*Ledger Key:*
+_Ledger Key:_
+
 - `VERIFIED`: Proven completely through real product surfaces and automated suites.
 - `VERIFIED WITH CONFIGURED PROVIDER REQUIRED`: Core state machine and fallback verified; live external gateway requires operator credentials.
 - `DEGRADED BUT SAFE`: Safe offline or simulated execution when external providers are unconfigured.
@@ -48,28 +49,31 @@ All provider claims are labeled truthfully in accordance with observed boundarie
 
 ## 3. Truthful Provider Matrices
 
-| Provider / Channel | Mode | Configuration State | Observed Verification Boundary |
-|---|---|---|---|
-| **Direct-to-MX / Local SMTP** | Core Email Delivery | Enabled (`localhost:1025`) | Real SMTP handshake; RFC-compliant headers; double opt-in; newsletter delivery. |
-| **Twilio Telecom** | SMS / RCS Gateway | Emulator / Sandbox | Bounded mock emulator; STOP/HELP keyword policy; quiet hours policy enforcement. |
-| **Stripe Payments** | Card / Webhook Gateway | Test / Sandbox Mode | Server-authoritative totals; HMAC webhook signature validation; replay attack defeat. |
-| **Crypto Ledger** | Native Web3 Settlement | Deterministic Emulator | Signature and tx hash verification; zero-duplicate confirmation. |
-| **Printify POD** | On-Demand Fulfillment | Non-Mutating Preflight | Blueprint validation; artwork asset preflight; duplicate order idempotency. |
+| Provider / Channel            | Mode                   | Configuration State        | Observed Verification Boundary                                                        |
+| ----------------------------- | ---------------------- | -------------------------- | ------------------------------------------------------------------------------------- |
+| **Direct-to-MX / Local SMTP** | Core Email Delivery    | Enabled (`localhost:1025`) | Real SMTP handshake; RFC-compliant headers; double opt-in; newsletter delivery.       |
+| **Twilio Telecom**            | SMS / RCS Gateway      | Emulator / Sandbox         | Bounded mock emulator; STOP/HELP keyword policy; quiet hours policy enforcement.      |
+| **Stripe Payments**           | Card / Webhook Gateway | Test / Sandbox Mode        | Server-authoritative totals; HMAC webhook signature validation; replay attack defeat. |
+| **Crypto Ledger**             | Native Web3 Settlement | Deterministic Emulator     | Signature and tx hash verification; zero-duplicate confirmation.                      |
+| **Printify POD**              | On-Demand Fulfillment  | Non-Mutating Preflight     | Blueprint validation; artwork asset preflight; duplicate order idempotency.           |
 
 ---
 
 ## 4. Verification Evidence & Quality Gates
 
 ### A. Static Analysis & Type Safety
+
 - `npm run typecheck`: **0 errors** (Clean).
 - `npm run lint`: **0 errors, 0 warnings** (ESLint strict).
 - `npm run format:check`: **All matched files use Prettier code style**.
 
 ### B. Unit & Integration Suites
+
 - **Unit Suite (`tests/unit`)**: **147/147 test files passed, 983/983 tests passed (0 failures)**.
 - **Integration Suite (`tests/integration`)**: **35/35 test files passed, 196/196 tests passed (0 failures)**.
 
 ### C. Database Migration Suites
+
 - **Fresh Migrations (`test:migrations:fresh`)**:
   - Target DB: `shop08_release_acceptance`
   - Result: **101/101 migrations executed and verified**; schema integrity verified.
@@ -80,6 +84,7 @@ All provider claims are labeled truthfully in accordance with observed boundarie
   - Rehearsal: `20260914_110000_med_05_video_workflow` through `20260923_110000_content_release_runtime` (All verified).
 
 ### D. Production Bundle & Security Isolations
+
 - **Presentation Bundle Boundary (`verify:presentation-bundles`)**:
   - Public route client manifest verified: **0 leaks** of `@puckeditor`, `BuilderShell.tsx`, or `VisualEditor.tsx`.
   - Builder route client manifest verified: Isolated editor chunks cleanly linked.
@@ -91,32 +96,33 @@ All provider claims are labeled truthfully in accordance with observed boundarie
   - Persistence write: verified stable record ID without leaking secrets.
 
 ### E. End-to-End Browser Acceptance Suites
-| Test Specification | Surface Verified | Duration | Status |
-|---|---|---|---|
-| `pub-06-renegadeparty-journey.spec.ts` | Complete 21-step Renegade Party publishing flow | 22.0s | **PASSED** |
-| `pre-06-presentation-pass-gate.spec.ts` | Complete 14-step Presentation, theme, WXR migration flow | 17.4s | **PASSED** |
-| `aud-08-audience-pass-gate.spec.ts` | Complete Audience newsletter, double opt-in, SMTP flow | 12.1s | **PASSED** |
-| `publishing-journey.spec.ts` | 16-step publisher journey through public & admin HTTP | 15.3s | **PASSED** |
-| `comm-01-member-auth.spec.ts` | Member passkey registration and login | 4.8s | **PASSED** |
-| `comm-02-profile-editor.spec.ts` | Privacy controls and avatar media binding | 5.2s | **PASSED** |
-| `comm-02-three-members.spec.ts` | Multi-member isolation, relationships, blocking | 6.8s | **PASSED** |
-| `pre-03-visual-editor.spec.ts` | Visual editor preview, conflict recovery, draft isolation | 8.4s | **PASSED** |
-| `pre-04-reusable-composition.spec.ts` | Reusable templates, patterns, global shell regions | 9.2s | **PASSED** |
-| `pre-05-legacy-migration.spec.ts` | WXR import, quarantine review, activation, rollback | 12.5s | **PASSED** |
-| `pub-04-publishing-floor.spec.ts` | Site settings, navigation menus, and local search | 7.9s | **PASSED** |
-| `first-run-setup.spec.ts` | Passkey setup and admin account bootstrapping | 6.1s | **PASSED** |
-| `events-workflow.spec.ts` | Calendar events and ICS syndication | 5.4s | **PASSED** |
-| `disc-03-indexing-center.spec.ts` | Indexing status, sitemaps, robots.txt | 4.9s | **PASSED** |
-| `disc-05-rendered-quality.spec.ts` | SEO meta tag audits and OpenGraph validation | 5.1s | **PASSED** |
-| `flow-01-cmos-workflow.spec.ts` | Editorial workflow review and approval stages | 6.3s | **PASSED** |
-| `flow-03-scheduling-calendar.spec.ts` | DST scheduling calendar and worker leases | 5.7s | **PASSED** |
-| `flow-06-command-center.spec.ts` | Workflow command center, queues, bulk actions | 6.2s | **PASSED** |
-| `med-01-media-library.spec.ts` | DAM library browsing and upload sessions | 5.9s | **PASSED** |
-| `med-03-media-variants.spec.ts` | Responsive image variant generation and crop preservation | 7.1s | **PASSED** |
-| `med-06-command-center.spec.ts` | Media command center, governance, and audit logs | 6.4s | **PASSED** |
-| `med-ext-01-image-editor.spec.ts` | Canvas image editing, filters, lossless transforms | 7.5s | **PASSED** |
-| `analytics-consent.spec.ts` | Consent banners, cookie-less telemetry, opt-out | 4.6s | **PASSED** |
-| `phase-a-install-login.spec.ts` | Installer initialization and session integrity | 5.5s | **PASSED** |
+
+| Test Specification                      | Surface Verified                                          | Duration | Status     |
+| --------------------------------------- | --------------------------------------------------------- | -------- | ---------- |
+| `pub-06-renegadeparty-journey.spec.ts`  | Complete 21-step Renegade Party publishing flow           | 22.0s    | **PASSED** |
+| `pre-06-presentation-pass-gate.spec.ts` | Complete 14-step Presentation, theme, WXR migration flow  | 17.4s    | **PASSED** |
+| `aud-08-audience-pass-gate.spec.ts`     | Complete Audience newsletter, double opt-in, SMTP flow    | 12.1s    | **PASSED** |
+| `publishing-journey.spec.ts`            | 16-step publisher journey through public & admin HTTP     | 15.3s    | **PASSED** |
+| `comm-01-member-auth.spec.ts`           | Member passkey registration and login                     | 4.8s     | **PASSED** |
+| `comm-02-profile-editor.spec.ts`        | Privacy controls and avatar media binding                 | 5.2s     | **PASSED** |
+| `comm-02-three-members.spec.ts`         | Multi-member isolation, relationships, blocking           | 6.8s     | **PASSED** |
+| `pre-03-visual-editor.spec.ts`          | Visual editor preview, conflict recovery, draft isolation | 8.4s     | **PASSED** |
+| `pre-04-reusable-composition.spec.ts`   | Reusable templates, patterns, global shell regions        | 9.2s     | **PASSED** |
+| `pre-05-legacy-migration.spec.ts`       | WXR import, quarantine review, activation, rollback       | 12.5s    | **PASSED** |
+| `pub-04-publishing-floor.spec.ts`       | Site settings, navigation menus, and local search         | 7.9s     | **PASSED** |
+| `first-run-setup.spec.ts`               | Passkey setup and admin account bootstrapping             | 6.1s     | **PASSED** |
+| `events-workflow.spec.ts`               | Calendar events and ICS syndication                       | 5.4s     | **PASSED** |
+| `disc-03-indexing-center.spec.ts`       | Indexing status, sitemaps, robots.txt                     | 4.9s     | **PASSED** |
+| `disc-05-rendered-quality.spec.ts`      | SEO meta tag audits and OpenGraph validation              | 5.1s     | **PASSED** |
+| `flow-01-cmos-workflow.spec.ts`         | Editorial workflow review and approval stages             | 6.3s     | **PASSED** |
+| `flow-03-scheduling-calendar.spec.ts`   | DST scheduling calendar and worker leases                 | 5.7s     | **PASSED** |
+| `flow-06-command-center.spec.ts`        | Workflow command center, queues, bulk actions             | 6.2s     | **PASSED** |
+| `med-01-media-library.spec.ts`          | DAM library browsing and upload sessions                  | 5.9s     | **PASSED** |
+| `med-03-media-variants.spec.ts`         | Responsive image variant generation and crop preservation | 7.1s     | **PASSED** |
+| `med-06-command-center.spec.ts`         | Media command center, governance, and audit logs          | 6.4s     | **PASSED** |
+| `med-ext-01-image-editor.spec.ts`       | Canvas image editing, filters, lossless transforms        | 7.5s     | **PASSED** |
+| `analytics-consent.spec.ts`             | Consent banners, cookie-less telemetry, opt-out           | 4.6s     | **PASSED** |
+| `phase-a-install-login.spec.ts`         | Installer initialization and session integrity            | 5.5s     | **PASSED** |
 
 ---
 
