@@ -263,6 +263,9 @@ export interface Config {
     'donation-intents': DonationIntent;
     donations: Donation;
     'donation-events': DonationEvent;
+    'pod-connections': PodConnection;
+    'pod-jobs': PodJob;
+    'manual-fulfillment-packages': ManualFulfillmentPackage;
     'payload-kv': PayloadKv;
     'payload-jobs': PayloadJob;
     'payload-locked-documents': PayloadLockedDocument;
@@ -467,6 +470,9 @@ export interface Config {
     'donation-intents': DonationIntentsSelect<false> | DonationIntentsSelect<true>;
     donations: DonationsSelect<false> | DonationsSelect<true>;
     'donation-events': DonationEventsSelect<false> | DonationEventsSelect<true>;
+    'pod-connections': PodConnectionsSelect<false> | PodConnectionsSelect<true>;
+    'pod-jobs': PodJobsSelect<false> | PodJobsSelect<true>;
+    'manual-fulfillment-packages': ManualFulfillmentPackagesSelect<false> | ManualFulfillmentPackagesSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -9040,6 +9046,17 @@ export interface DonationCampaign {
     | boolean
     | null;
   currency: string;
+  /**
+   * Entity name frozen onto each settled receipt.
+   */
+  receiptEntityName?: string | null;
+  verifiedNonprofitStatus?: boolean | null;
+  verified501c3Status?: boolean | null;
+  verifiedTaxDeductibility?: boolean | null;
+  taxDisclaimer?: string | null;
+  donorWallMinimumMinor?: string | null;
+  supporterEntitlement?: string | null;
+  supporterEntitlementTermDays?: number | null;
   recurrence:
     | {
         [k: string]: unknown;
@@ -9136,6 +9153,7 @@ export interface Donation {
   campaign: string | DonationCampaign;
   paymentIntent: string | PaymentIntent;
   subscription?: (string | null) | Subscription;
+  supporter?: (string | null) | Supporter;
   donorSnapshot:
     | {
         [k: string]: unknown;
@@ -9146,6 +9164,15 @@ export interface Donation {
     | boolean
     | null;
   campaignSnapshot:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  receiptSnapshot?:
     | {
         [k: string]: unknown;
       }
@@ -9187,6 +9214,180 @@ export interface DonationEvent {
   occurredAt: string;
   actor?: string | null;
   evidence?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pod-connections".
+ */
+export interface PodConnection {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  providerKey: string;
+  label: string;
+  remoteStoreId?: string | null;
+  remoteStoreName?: string | null;
+  /**
+   * Encrypted credential envelope; never display or store plaintext secrets.
+   */
+  encryptedApiKey: string;
+  encryptedWebhookSecret?: string | null;
+  status: 'active' | 'degraded' | 'disabled';
+  capabilities?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  lastHealthCheckedAt?: string | null;
+  lastHealthStatus?: string | null;
+  lastHealthReason?: string | null;
+  disabledReason?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pod-jobs".
+ */
+export interface PodJob {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  order: string | Order;
+  connection?: (string | null) | PodConnection;
+  providerKey: string;
+  packageIndex: number;
+  idempotencyKey: string;
+  payloadHash: string;
+  state:
+    | 'created'
+    | 'on_hold'
+    | 'submitting'
+    | 'submitted'
+    | 'in_production'
+    | 'partially_shipped'
+    | 'shipped'
+    | 'delivered'
+    | 'cancelled'
+    | 'failed'
+    | 'exception'
+    | 'returned';
+  addressPolicy: 'domestic' | 'international' | 'po-box-rejected';
+  recipientSnapshot:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  itemsSnapshot:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  costSnapshot:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  attemptCount: number;
+  externalOrderId?: string | null;
+  holdExpiresAt?: string | null;
+  releasedAt?: string | null;
+  auditTrail?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  lastError?: string | null;
+  parentJob?: (string | null) | PodJob;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "manual-fulfillment-packages".
+ */
+export interface ManualFulfillmentPackage {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  space?: (string | null) | Space;
+  owner?: (string | null) | Member;
+  order: string | Order;
+  packageIndex: number;
+  source: string;
+  status: 'pending_acknowledgement' | 'acknowledged' | 'in_production' | 'shipped' | 'cancelled';
+  approvedLines:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  permissionedAddressManifest:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  instructions?: string | null;
+  acknowledgement?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  externalFulfillment?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  auditTrail?:
     | {
         [k: string]: unknown;
       }
@@ -9897,114 +10098,6 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'quality-reports';
         value: string | QualityReport;
-      } | null)
-    | ({
-        relationTo: 'merchant-connections';
-        value: string | MerchantConnection;
-      } | null)
-    | ({
-        relationTo: 'payment-method-capabilities';
-        value: string | PaymentMethodCapability;
-      } | null)
-    | ({
-        relationTo: 'products';
-        value: string | Product;
-      } | null)
-    | ({
-        relationTo: 'digital-delivery-grants';
-        value: string | DigitalDeliveryGrant;
-      } | null)
-    | ({
-        relationTo: 'digital-download-events';
-        value: string | DigitalDownloadEvent;
-      } | null)
-    | ({
-        relationTo: 'catalog-import-runs';
-        value: string | CatalogImportRun;
-      } | null)
-    | ({
-        relationTo: 'carts';
-        value: string | Cart;
-      } | null)
-    | ({
-        relationTo: 'promotions';
-        value: string | Promotion;
-      } | null)
-    | ({
-        relationTo: 'checkout-proposals';
-        value: string | CheckoutProposal;
-      } | null)
-    | ({
-        relationTo: 'inventory-reservations';
-        value: string | InventoryReservation;
-      } | null)
-    | ({
-        relationTo: 'checkout-sessions';
-        value: string | CheckoutSession;
-      } | null)
-    | ({
-        relationTo: 'payment-intents';
-        value: string | PaymentIntent;
-      } | null)
-    | ({
-        relationTo: 'payment-attempts';
-        value: string | PaymentAttempt;
-      } | null)
-    | ({
-        relationTo: 'orders';
-        value: string | Order;
-      } | null)
-    | ({
-        relationTo: 'payment-webhook-events';
-        value: string | PaymentWebhookEvent;
-      } | null)
-    | ({
-        relationTo: 'commerce-refunds';
-        value: string | CommerceRefund;
-      } | null)
-    | ({
-        relationTo: 'commerce-disputes';
-        value: string | CommerceDispute;
-      } | null)
-    | ({
-        relationTo: 'commerce-reconciliation-cases';
-        value: string | CommerceReconciliationCase;
-      } | null)
-    | ({
-        relationTo: 'supporters';
-        value: string | Supporter;
-      } | null)
-    | ({
-        relationTo: 'entitlements';
-        value: string | Entitlement;
-      } | null)
-    | ({
-        relationTo: 'plan-revisions';
-        value: string | PlanRevision;
-      } | null)
-    | ({
-        relationTo: 'subscriptions';
-        value: string | Subscription;
-      } | null)
-    | ({
-        relationTo: 'subscription-events';
-        value: string | SubscriptionEvent;
-      } | null)
-    | ({
-        relationTo: 'donation-campaigns';
-        value: string | DonationCampaign;
-      } | null)
-    | ({
-        relationTo: 'donation-intents';
-        value: string | DonationIntent;
-      } | null)
-    | ({
-        relationTo: 'donations';
-        value: string | Donation;
-      } | null)
-    | ({
-        relationTo: 'donation-events';
-        value: string | DonationEvent;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -14400,6 +14493,14 @@ export interface DonationCampaignsSelect<T extends boolean = true> {
   goalRules?: T;
   allowedAmounts?: T;
   currency?: T;
+  receiptEntityName?: T;
+  verifiedNonprofitStatus?: T;
+  verified501c3Status?: T;
+  verifiedTaxDeductibility?: T;
+  taxDisclaimer?: T;
+  donorWallMinimumMinor?: T;
+  supporterEntitlement?: T;
+  supporterEntitlementTermDays?: T;
   recurrence?: T;
   feeCover?: T;
   privacyDefault?: T;
@@ -14446,8 +14547,10 @@ export interface DonationsSelect<T extends boolean = true> {
   campaign?: T;
   paymentIntent?: T;
   subscription?: T;
+  supporter?: T;
   donorSnapshot?: T;
   campaignSnapshot?: T;
+  receiptSnapshot?: T;
   designation?: T;
   baseAmountMinor?: T;
   feeCoveredAmountMinor?: T;
@@ -14472,6 +14575,82 @@ export interface DonationEventsSelect<T extends boolean = true> {
   occurredAt?: T;
   actor?: T;
   evidence?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pod-connections_select".
+ */
+export interface PodConnectionsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  providerKey?: T;
+  label?: T;
+  remoteStoreId?: T;
+  remoteStoreName?: T;
+  encryptedApiKey?: T;
+  encryptedWebhookSecret?: T;
+  status?: T;
+  capabilities?: T;
+  lastHealthCheckedAt?: T;
+  lastHealthStatus?: T;
+  lastHealthReason?: T;
+  disabledReason?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pod-jobs_select".
+ */
+export interface PodJobsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  order?: T;
+  connection?: T;
+  providerKey?: T;
+  packageIndex?: T;
+  idempotencyKey?: T;
+  payloadHash?: T;
+  state?: T;
+  addressPolicy?: T;
+  recipientSnapshot?: T;
+  itemsSnapshot?: T;
+  costSnapshot?: T;
+  attemptCount?: T;
+  externalOrderId?: T;
+  holdExpiresAt?: T;
+  releasedAt?: T;
+  auditTrail?: T;
+  lastError?: T;
+  parentJob?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "manual-fulfillment-packages_select".
+ */
+export interface ManualFulfillmentPackagesSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  space?: T;
+  owner?: T;
+  order?: T;
+  packageIndex?: T;
+  source?: T;
+  status?: T;
+  approvedLines?: T;
+  permissionedAddressManifest?: T;
+  instructions?: T;
+  acknowledgement?: T;
+  externalFulfillment?: T;
+  auditTrail?: T;
   updatedAt?: T;
   createdAt?: T;
 }

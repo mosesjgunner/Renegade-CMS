@@ -789,7 +789,11 @@ export async function seed(payload: Payload): Promise<void> {
 
   await upsert(payload, {
     collection: 'relationships',
-    where: { pairKey: { equals: `publication-membership:${member.id}:${mainPublication.id}` } },
+    where: {
+      pairKey: {
+        equals: `publication-membership:${site.id}:${member.id}:${mainPublication.id}`,
+      },
+    },
     data: {
       site: site.id,
       subject: member.id,
