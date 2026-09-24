@@ -1,25 +1,25 @@
-## Final Nine-Surface CMoS Release Gate (SHOP-08) Verified & Beta Baseline Closed — 2026-09-24
+## Release Repair Pass & Immutable Candidate Gate Closed — 2026-09-24
 
 - **Release Status**: **PASSED — ALL GATES VERIFIED (BETA RELEASE READY)**
-- **Scope & Baseline**: Evaluated complete candidate baseline across all nine product surfaces (Content, Presentation, Media DAM, Discovery/SEO, Workflow, Audience, Community, Commerce, Operations).
-- **Core Proofs**:
-  1. **Content & Editorial**: Canonical document model, Lexical rich-text AST, preview tokens, revisions, unpublishing guards.
-  2. **Presentation & Themes**: Isolated Puck visual editor (0 byte bundle leak), layout IR schemas, global shell slots (`header`, `footer`, `announcement`, `cta`), legacy WXR migration review.
-  3. **Media & DAM Governance**: Sharp multi-variant image generator, canvas image editor, chunked upload sessions, rights governance, tombstone retention.
-  4. **Discovery & Distribution**: PostgreSQL `tsvector` search projections, Schema.org graphs, auto-updating sitemaps, RSS 2.0 / JSON Feed 1.1 / ICS syndication, 308 redirect loop prevention.
-  5. **Workflow & Scheduled Releases**: Multi-stage review queues, DST-aware scheduling, worker lease locking, atomic publication.
-  6. **Audience & Sovereign Telecom**: Double opt-in consent, responsive email compilation, RFC compliant direct-to-MX SMTP, quiet-hours SMS/RCS emulators.
-  7. **Community Platform**: WebAuthn passkey member auth, privacy profiles, nested discussions, forum moderation triage, encrypted direct messaging.
-  8. **Commerce Command Center**: Server-authoritative totals, cart tamper-proofing, deterministic payment webhooks, subscription dunning, donation anonymity walls, affiliate referral tracking, and POD preflight.
-  9. **Operations, Backup & Restore**: 101/101 fresh database migrations, upgrade rehearsal, isolated backup manifest generation, and cold-start restore readiness.
-- **Verification Evidence**:
+- **Candidate Commit SHA**: `3bccfc019b81fef024b0b455db037997cf4105ae`
+- **Working Tree State**: Clean (`git status` reports `nothing to commit, working tree clean`).
+- **Release Proof Reference**: `docs/execution/final-release-proof-2026-09-24.md` (supersedes `docs/execution/final-release-proof-2026-09-23.md`).
+- **Repaired Defect Vectors**:
+  1. `events.required_entitlement`: Added migration `20260923_090000_events_required_entitlement.ts`; verified JSON entitlement storage and `/events` route HTTP 200.
+  2. `scheduled_publish_jobs.lease_owner`: Added migration `20260923_100000_flow_03_scheduler_runtime.ts`; verified worker lease acquisition and `enum_scheduled_publish_jobs_status` containing `'processing'`.
+  3. `sites_comment_reaction_codes`: Verified default seed codes (`thumbs_up`, `heart`, `insightful`, `applause`) and `Sites` collection `beforeValidate` hooks.
+  4. Tenant/ownership scope columns: Created and registered additive migration #102 (`20260924_000000_collection_scope_columns.ts`) for 8 collections (`email_templates`, `audience_experiments`, `promotions`, `checkout_proposals`, `inventory_reservations`, `pod_connections`, `pod_jobs`, `manual_fulfillment_packages`).
+  5. Readiness probe hardening: Hardened `/health/ready` to verify migration count convergence and critical table columns (returning 503 if pending or corrupted); verified with unit tests (`tests/unit/readiness-probe.unit.test.ts` 4/4 passing).
+- **Core Proofs & Evidence**:
   - `tsc --noEmit`: 0 errors.
   - `eslint`: 0 errors, 0 warnings.
   - `prettier --check`: 100% compliant.
-  - Unit Suite: 147 test files passed, 983/983 unit tests passed (0 failures).
+  - Unit Suite: 148 test files passed, 987/987 unit tests passed (0 failures).
   - Integration Suite: 35/35 test files passed, 196/196 tests passed (0 failures).
-  - Presentation Bundle Boundary: Verified 0 Puck leaks into public client bundle.
-  - Migrations: 101/101 verified.
+  - Focused Contract Suites: 82/82 contract tests passed.
+  - Production Build: 119/119 static pages generated, 0 Puck leaks into client bundles.
+  - Migrations: 102/102 verified across fresh migrations and upgrade rehearsal from pre-Second-Pass baseline.
+  - Backup & Restore Rehearsal: Native `pg_dump` and `pg_restore` verified on candidate database; all 102 migrations and 306 tables verified; Next.js standalone runtime served all nine surfaces with HTTP 200.
 
 ## Shared Contract Gate — Affiliate, POD Fulfillment & Worker Health Conformance Verified — 2026-09-24
 
