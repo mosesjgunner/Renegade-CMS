@@ -2,11 +2,15 @@ import { Client } from 'pg'
 import { getPayload, type Payload } from 'payload'
 
 import { migrations } from '../migrations'
+import * as eventsEntitlementMigration from '../migrations/20260923_090000_events_required_entitlement'
 import { assertPublishingRuntimeSchema } from './assert-publishing-runtime-schema'
 
 /** Advance this name, and only this name, when the supported upgrade baseline moves. */
 export const UPGRADE_BASELINE = '20260914_110000_med_05_video_workflow'
 const baselineIndex = migrations.findIndex(({ name }) => name === UPGRADE_BASELINE)
+const eventsEntitlementMigrationIndex = migrations.findIndex(
+  ({ name }) => name === '20260923_090000_events_required_entitlement',
+)
 const ids = {
   site: '10000000-0000-4000-8000-000000000001',
   member: '10000000-0000-4000-8000-000000000002',
@@ -347,6 +351,8 @@ async function assertUpgrade(payload: Payload) {
 
 export async function verifyUpgradeMigration() {
   if (baselineIndex < 0) throw new Error(`Missing upgrade baseline ${UPGRADE_BASELINE}.`)
+  if (eventsEntitlementMigrationIndex <= baselineIndex)
+    throw new Error('Missing Events entitlement repair migration after the upgrade baseline.')
   const url = scratchUrl(),
     client = new Client({ connectionString: url })
   await client.connect()
@@ -367,8 +373,60 @@ export async function verifyUpgradeMigration() {
     try {
       await migrationDb(payload).migrate({ migrations: migrations.slice(0, baselineIndex + 1) })
       await createHistoricalFixture(payload)
+      // Reproduce the release-gate database: every pre-fix migration is marked
+      // applied, while the Events JSON column is still absent.
+      await migrationDb(payload).migrate({
+        migrations: migrations.slice(0, eventsEntitlementMigrationIndex),
+      })
+      const preFixMigrations = await poolFor(payload).query(
+        'SELECT count(*) FROM payload_migrations',
+      )
+      const preFixColumn = await poolFor(payload).query(
+        `SELECT 1 FROM information_schema.columns
+         WHERE table_schema = 'public' AND table_name = 'events'
+           AND column_name = 'required_entitlement'`,
+      )
+      if (
+        Number(preFixMigrations.rows[0]?.count) !== eventsEntitlementMigrationIndex ||
+        preFixColumn.rows.length !== 0
+      )
+        throw new Error('Could not reproduce the pre-fix Events schema before upgrading.')
       await migrationDb(payload).migrate({ migrations })
       await assertUpgrade(payload)
+      const migrationArgs = {
+        db: (payload.db as Payload['db'] & { drizzle: unknown }).drizzle,
+        payload,
+        req: {},
+      } as Parameters<typeof eventsEntitlementMigration.down>[0]
+      await eventsEntitlementMigration.down(migrationArgs)
+      const afterDown = await poolFor(payload).query(
+        `SELECT 1 FROM information_schema.columns
+         WHERE table_schema = 'public' AND table_name = 'events'
+           AND column_name = 'required_entitlement'`,
+      )
+      if (afterDown.rows.length !== 0)
+        throw new Error('Events entitlement rollback did not remove its column.')
+      await eventsEntitlementMigration.up(migrationArgs)
+      await eventsEntitlementMigration.up(migrationArgs)
+      const afterRestore = await poolFor(payload).query(
+        `SELECT data_type, is_nullable, column_default FROM information_schema.columns
+         WHERE table_schema = 'public' AND table_name = 'events'
+           AND column_name = 'required_entitlement'`,
+      )
+      const preservedContent = await poolFor(payload).query(
+        'SELECT id FROM content WHERE id = $1',
+        [ids.content],
+      )
+      if (
+        afterRestore.rows.length !== 1 ||
+        afterRestore.rows[0]?.data_type !== 'jsonb' ||
+        afterRestore.rows[0]?.is_nullable !== 'YES' ||
+        afterRestore.rows[0]?.column_default !== null ||
+        preservedContent.rows[0]?.id !== ids.content
+      )
+        throw new Error(
+          'Events entitlement rollback and replay did not preserve the schema or data.',
+        )
       await migrationDb(payload).migrate({ migrations })
       const applied = await poolFor(payload).query('SELECT count(*) FROM payload_migrations')
       if (Number(applied.rows[0]?.count) !== migrations.length)
