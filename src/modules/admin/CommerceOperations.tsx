@@ -1,14 +1,16 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
 import { DonationReconciliationPanel } from './DonationReconciliationPanel'
 
 type Dashboard = {
   summary: {
     counts: Record<string, number>
-    totalsMinor: Record<string, string>
+    totalsMinorByCurrency: Record<string, Record<string, string>>
     oldestAgeMs: Record<string, number>
   }
+  summaryScope: { sampled: boolean; rows: number; totalRows: number }
   health: Array<{ providerKey: string; ready: boolean; health: string; reason?: string }>
   pendingActions: Array<{
     id: string
@@ -67,6 +69,19 @@ export function CommerceOperations() {
     <main>
       <h1>Commerce operations</h1>
       <p>{data.disclaimer}</p>
+      {data.summaryScope.sampled && (
+        <p role="status">
+          Payment summary covers the latest {data.summaryScope.rows} of{' '}
+          {data.summaryScope.totalRows} attempts. Use the payment ledger for complete history.
+        </p>
+      )}
+      <nav aria-label="Commerce work areas">
+        <Link href="/admin/catalog">Catalog and readiness</Link>
+        {' | '}
+        <Link href="/admin/fulfillment">POD and fulfillment</Link>
+        {' | '}
+        <Link href="/admin">Orders and audit</Link>
+      </nav>
       <button type="button" onClick={() => void load()}>
         Refresh server truth
       </button>
@@ -94,7 +109,7 @@ export function CommerceOperations() {
           <tr>
             <th>State</th>
             <th>Count</th>
-            <th>Total minor units</th>
+            <th>Totals by currency (minor units)</th>
             <th>Oldest age</th>
           </tr>
         </thead>
@@ -103,7 +118,12 @@ export function CommerceOperations() {
             <tr key={state}>
               <th>{state}</th>
               <td>{data.summary.counts[state]}</td>
-              <td>{data.summary.totalsMinor[state]}</td>
+              <td>
+                {Object.entries(data.summary.totalsMinorByCurrency)
+                  .filter(([, totals]) => totals[state] !== undefined)
+                  .map(([currency, totals]) => `${currency} ${totals[state]}`)
+                  .join(', ')}
+              </td>
               <td>{Math.floor((data.summary.oldestAgeMs[state] ?? 0) / 60000)} min</td>
             </tr>
           ))}

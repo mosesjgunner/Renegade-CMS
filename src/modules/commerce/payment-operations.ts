@@ -216,19 +216,24 @@ export function financeDashboardSummary(
   rows: readonly {
     state: ProviderPaymentState
     amountMinor: string
+    currency: string
     createdAt: string
     reconciledAt?: string
   }[],
   now = Date.now(),
 ) {
-  const totals: Record<string, string> = {}
+  const totalsByCurrency: Record<string, Record<string, string>> = {}
   const counts: Record<string, number> = {}
   const oldestAgeMs: Record<string, number> = {}
   for (const row of rows) {
     counts[row.state] = (counts[row.state] ?? 0) + 1
-    totals[row.state] = (BigInt(totals[row.state] ?? '0') + BigInt(row.amountMinor)).toString()
+    const currency = row.currency.toUpperCase()
+    totalsByCurrency[currency] ??= {}
+    totalsByCurrency[currency][row.state] = (
+      BigInt(totalsByCurrency[currency][row.state] ?? '0') + BigInt(row.amountMinor)
+    ).toString()
     const age = Math.max(0, now - Date.parse(row.createdAt))
     oldestAgeMs[row.state] = Math.max(oldestAgeMs[row.state] ?? 0, age)
   }
-  return { counts, totalsMinor: totals, oldestAgeMs }
+  return { counts, totalsMinorByCurrency: totalsByCurrency, oldestAgeMs }
 }

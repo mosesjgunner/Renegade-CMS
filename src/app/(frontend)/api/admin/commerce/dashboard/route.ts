@@ -102,10 +102,16 @@ export async function GET(request: Request) {
         (attempts.docs as any[]).map((row) => ({
           state: row.state,
           amountMinor: row.amountMinor,
+          currency: row.currency,
           createdAt: row.createdAt,
           reconciledAt: row.lastReconciledAt,
         })),
       ),
+      summaryScope: {
+        sampled: attempts.hasNextPage,
+        rows: attempts.docs.length,
+        totalRows: attempts.totalDocs,
+      },
       health,
       pendingActions: (attempts.docs as any[])
         .filter((row) => ['unknown', 'failed', 'processing'].includes(row.state))

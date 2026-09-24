@@ -391,14 +391,24 @@ describe('SHOP-04 replay, ordering, refund, receipt, and access invariants', () 
     expect(
       financeDashboardSummary(
         [
-          { state: 'unknown', amountMinor: '125', createdAt: '2026-09-22T23:00:00.000Z' },
-          { state: 'unknown', amountMinor: '75', createdAt: '2026-09-22T23:30:00.000Z' },
+          {
+            state: 'unknown',
+            amountMinor: '125',
+            currency: 'USD',
+            createdAt: '2026-09-22T23:00:00.000Z',
+          },
+          {
+            state: 'unknown',
+            amountMinor: '75',
+            currency: 'EUR',
+            createdAt: '2026-09-22T23:30:00.000Z',
+          },
         ],
         Date.parse('2026-09-23T00:00:00.000Z'),
       ),
     ).toEqual({
       counts: { unknown: 2 },
-      totalsMinor: { unknown: '200' },
+      totalsMinorByCurrency: { USD: { unknown: '125' }, EUR: { unknown: '75' } },
       oldestAgeMs: { unknown: 3_600_000 },
     })
   })
@@ -517,12 +527,17 @@ describe('SHOP-04 replay, ordering, refund, receipt, and access invariants', () 
 
     // Verify dashboard projection does not include PII or card credentials
     const summary = financeDashboardSummary([
-      { state: 'succeeded', amountMinor: '2599', createdAt: '2026-09-23T00:00:00.000Z' },
+      {
+        state: 'succeeded',
+        amountMinor: '2599',
+        currency: 'USD',
+        createdAt: '2026-09-23T00:00:00.000Z',
+      },
     ])
     expect(summary).not.toHaveProperty('email')
     expect(summary).not.toHaveProperty('card')
     expect(summary).not.toHaveProperty('customer')
-    expect(summary.totalsMinor.succeeded).toBe('2599')
+    expect(summary.totalsMinorByCurrency.USD.succeeded).toBe('2599')
   })
 
   it('guarantees receipt idempotency, auditability, and no marketing consent implications', () => {

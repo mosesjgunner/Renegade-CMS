@@ -24,7 +24,7 @@ const e2eEnv = {
   LOCAL_E2E_TEST_MODE: 'true',
   RENEGADE_MODULES: 'all',
   RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT: 'true',
-  MEDIA_DIR: path.resolve('media'),
+  MEDIA_DIR: process.env.E2E_MEDIA_DIR ?? path.resolve('media'),
 }
 
 Object.assign(process.env, e2eEnv)
