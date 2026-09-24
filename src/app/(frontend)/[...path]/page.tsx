@@ -27,6 +27,7 @@ import { ProductDetail } from '@/modules/commerce/ProductView'
 import { catalogSiteForHost } from '@/modules/commerce/site-scope'
 import { hasEntitlement } from '@/modules/commerce/subscription-service'
 import { currentMember, readMemberSession } from '@/modules/identity/member-identity'
+import { canReadEvent } from '@/modules/events/public'
 
 type Args = {
   params: Promise<{ path: string[] }>
@@ -360,6 +361,7 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
     if (!record) continue
     if (collection === 'products' && record.state !== 'published') notFound()
     if (!canRenderPublic(record)) notFound()
+    if (collection === 'events' && !(await canReadEvent(payload, record, siteId))) notFound()
 
     const name = label(record)
     let articleBody: string | null = null

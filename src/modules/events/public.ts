@@ -1,8 +1,35 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
+import { headers as requestHeaders } from 'next/headers'
+import { hasEntitlement } from '../commerce/subscription-service'
+import { currentMember, readMemberSession } from '../identity/member-identity'
 import { publicEventOccurrences, type EventRecord } from './contracts'
 
 type Raw = Record<string, unknown>
+
+export async function canReadEvent(
+  payload: Awaited<ReturnType<typeof getPayload>>,
+  event: Raw,
+  siteId: string,
+): Promise<boolean> {
+  const required = event.requiredEntitlement as
+    | { resource?: unknown; capability?: unknown; scope?: unknown }
+    | null
+    | undefined
+  if (!required || typeof required.resource !== 'string' || typeof required.capability !== 'string')
+    return true
+  const memberId = await currentMember(payload as never, readMemberSession(await requestHeaders()))
+  return Boolean(
+    memberId &&
+      (await hasEntitlement(payload as never, {
+        subjectId: memberId,
+        siteId,
+        resource: required.resource,
+        capability: required.capability,
+        ...(typeof required.scope === 'string' ? { scope: required.scope } : {}),
+      })),
+  )
+}
 const relationId = (value: unknown) =>
   typeof value === 'string' ? value : String((value as { id?: unknown } | null)?.id ?? '')
 
@@ -53,11 +80,14 @@ export async function findPublicEvents(input: {
     depth: 0,
     overrideAccess: true,
   } as never)
-  let occurrences = publicEventOccurrences(
-    (records.docs as unknown as Raw[]).map(asEvent),
-    input.from,
-    input.to,
-  )
+  const visible = (
+    await Promise.all(
+      (records.docs as unknown as Raw[]).map(async (event) =>
+        (await canReadEvent(payload, event, siteId)) ? event : null,
+      ),
+    )
+  ).filter((event): event is Raw => event !== null)
+  let occurrences = publicEventOccurrences(visible.map(asEvent), input.from, input.to)
   if (input.category)
     occurrences = occurrences.filter(
       (event) =>
@@ -88,5 +118,5 @@ export async function findPublicEvent(slug: string) {
     overrideAccess: true,
   } as never)
   const record = result.docs[0] as unknown as Raw | undefined
-  return record ? asEvent(record) : null
+  return record && (await canReadEvent(payload, record, siteId)) ? asEvent(record) : null
 }
