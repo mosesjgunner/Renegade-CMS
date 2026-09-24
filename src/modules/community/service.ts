@@ -391,26 +391,61 @@ export async function getOrCreateAttachedDiscussion(
     overrideAccess: true,
   })
 
-  if (discussions.docs[0]) {
-    const existing = discussions.docs[0] as unknown as CommunityDiscussionRecord
+  let existing = discussions.docs[0] as unknown as CommunityDiscussionRecord | undefined
+  if (!existing && input.canonicalPath) {
+    const byPath = await payload.find({
+      collection: 'discussions',
+      where: {
+        and: [
+          { site: { equals: input.siteId } },
+          { canonicalPath: { equals: input.canonicalPath } },
+        ],
+      },
+      limit: 1,
+      depth: 0,
+      overrideAccess: true,
+    })
+    if (byPath.docs[0]) {
+      existing = byPath.docs[0] as unknown as CommunityDiscussionRecord
+    }
+  }
+
+  if (existing) {
     // If canonical path or title changed on parent content, update metadata without orphaning thread
     if (existing.canonicalPath !== input.canonicalPath || existing.title !== input.title) {
       if (typeof payload.update === 'function') {
+        const updateData: Record<string, unknown> = { title: input.title }
+        let newPath = existing.canonicalPath
+        if (existing.canonicalPath !== input.canonicalPath) {
+          const conflicting = await payload.find({
+            collection: 'discussions',
+            where: {
+              and: [
+                { canonicalPath: { equals: input.canonicalPath } },
+                { id: { not_equals: existing.id } },
+              ],
+            },
+            limit: 1,
+            overrideAccess: true,
+          })
+          if (conflicting.totalDocs === 0) {
+            updateData.canonicalPath = input.canonicalPath
+            newPath = input.canonicalPath
+          }
+        }
         await payload.update({
           collection: 'discussions',
           id: existing.id,
-          data: {
-            canonicalPath: input.canonicalPath,
-            title: input.title,
-          },
+          data: updateData,
           overrideAccess: true,
         })
+        return {
+          ...existing,
+          canonicalPath: newPath,
+          title: input.title,
+        }
       }
-      return {
-        ...existing,
-        canonicalPath: input.canonicalPath,
-        title: input.title,
-      }
+      return existing
     }
     return existing
   }
@@ -490,8 +525,24 @@ export async function addComment(
     limit: 0,
     overrideAccess: true,
   })
-  const nextOrder = countRes.totalDocs + 1
-  const permalink = `${discussion.canonicalPath}#comment-${nextOrder}`
+  let nextOrder = countRes.totalDocs + 1
+  let permalink = `${discussion.canonicalPath}#comment-${nextOrder}`
+  let collision = await payload.find({
+    collection: 'discussion-posts',
+    where: { permalink: { equals: permalink } },
+    limit: 1,
+    overrideAccess: true,
+  })
+  while (collision.totalDocs > 0) {
+    nextOrder++
+    permalink = `${discussion.canonicalPath}#comment-${nextOrder}`
+    collision = await payload.find({
+      collection: 'discussion-posts',
+      where: { permalink: { equals: permalink } },
+      limit: 1,
+      overrideAccess: true,
+    })
+  }
 
   const post = (await payload.create({
     collection: 'discussion-posts' as any,
