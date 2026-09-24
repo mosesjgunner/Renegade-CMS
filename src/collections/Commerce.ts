@@ -762,6 +762,7 @@ export const DonationIntents: CollectionConfig = {
   hooks: {
     beforeChange: [
       immutableFields([
+        'idempotencyKey',
         'site',
         'campaign',
         'campaignVersion',
@@ -792,6 +793,7 @@ export const DonationIntents: CollectionConfig = {
   fields: [
     ...ownerFields(),
     ref('campaign', 'donation-campaigns', true),
+    { name: 'idempotencyKey', type: 'text', unique: true, index: true },
     { name: 'campaignVersion', type: 'number', required: true },
     { name: 'designation', type: 'text' },
     { name: 'donorSnapshot', type: 'json', required: true },

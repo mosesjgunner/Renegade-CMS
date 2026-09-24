@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
 import {
   AUDIENCE_METRIC_DICTIONARY,
   type AudienceCommandCenterHealth,
@@ -315,6 +315,28 @@ export default function AudienceCommandCenter() {
   const [experiments, setExperiments] = useState<AudienceExperiment[]>(INITIAL_EXPERIMENTS)
   const [operatorNotice, setOperatorNotice] = useState<string | null>(null)
   const [operatorError, setOperatorError] = useState<string | null>(null)
+
+  useEffect(() => {
+    let cancelled = false
+    void fetch('/api/admin/audience/command-center')
+      .then(async (res) => {
+        if (!res.ok) return
+        const data = await res.json()
+        if (cancelled) return
+        if (data.deliverabilityHealth) {
+          setHealthData(data.deliverabilityHealth)
+        }
+        if (Array.isArray(data.recentCampaigns) && data.recentCampaigns.length > 0) {
+          setCalendarItems(data.recentCampaigns)
+        }
+      })
+      .catch(() => {
+        // Fall back gracefully to local projection
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   // Attribution test state
   const [testUrlBase, setTestUrlBase] = useState('https://renegade.media/townhall-2026')

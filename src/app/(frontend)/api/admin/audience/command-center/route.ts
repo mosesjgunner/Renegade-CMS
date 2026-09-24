@@ -41,25 +41,64 @@ export async function GET(request: Request) {
 
   const resolvedSiteId = siteId || 'site-renegade-1'
 
+  const appConfig = (await import('@/modules/core/config')).loadConfig()
+  const isSmtpConfigured = appConfig.email.mode === 'smtp' && Boolean(appConfig.email.host)
+  const isDevEmail = appConfig.email.mode === 'development'
+  const isTwilioConfigured = Boolean(
+    process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN,
+  )
+
+  const emailProviderStatus: 'healthy' | 'degraded' | 'disabled' = isSmtpConfigured
+    ? 'healthy'
+    : isDevEmail
+      ? 'degraded'
+      : 'disabled'
+
+  const emailProviderName = isSmtpConfigured
+    ? `SMTP (${appConfig.email.host})`
+    : isDevEmail
+      ? 'Local Development Mailer (unconfigured for production)'
+      : 'No email delivery configured'
+
+  const telecomProviderStatus: 'healthy' | 'degraded' | 'disabled' = isTwilioConfigured
+    ? 'healthy'
+    : 'disabled'
+
+  const telecomProviderName = isTwilioConfigured
+    ? 'Twilio Telecom / Jibe RCS Gateway'
+    : 'Twilio Telecom (not configured)'
+
+  let subscriberCount = 0
+  try {
+    const subscribers = await payload.find({
+      collection: 'subscribers',
+      limit: 0,
+      overrideAccess: true,
+    })
+    subscriberCount = subscribers.totalDocs ?? 0
+  } catch {
+    // collection may be empty or not installed
+  }
+
   const deliverabilityHealth = evaluateAudienceHealth({
     siteId: resolvedSiteId,
-    emailProviderStatus: 'healthy',
-    emailProviderName: 'SMTP (Direct-to-MX TLS)',
-    spfVerified: true,
-    dkimVerified: true,
-    dmarcVerified: true,
-    tlsVerified: true,
-    telecomProviderStatus: 'healthy',
-    telecomProviderName: 'Twilio Telecom / Jibe RCS Gateway',
-    telecomOutboundAllowed: true,
-    totalSentRecently: 14250,
-    hardBouncesRecently: 142,
-    complaintsRecently: 7,
-    queueAgeMinutesMax: 14,
-    webhookLagSecondsMax: 42,
-    staleSegmentCount: 1,
+    emailProviderStatus,
+    emailProviderName,
+    spfVerified: isSmtpConfigured,
+    dkimVerified: isSmtpConfigured,
+    dmarcVerified: isSmtpConfigured,
+    tlsVerified: isSmtpConfigured,
+    telecomProviderStatus,
+    telecomProviderName,
+    telecomOutboundAllowed: isTwilioConfigured,
+    totalSentRecently: subscriberCount,
+    hardBouncesRecently: 0,
+    complaintsRecently: 0,
+    queueAgeMinutesMax: 0,
+    webhookLagSecondsMax: 0,
+    staleSegmentCount: 0,
     invalidFormCount: 0,
-    failingAutomationsCount: 1,
+    failingAutomationsCount: 0,
   })
 
   const recentCampaigns = projectUnifiedAudienceCalendar([

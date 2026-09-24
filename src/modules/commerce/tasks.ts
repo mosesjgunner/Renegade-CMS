@@ -47,7 +47,15 @@ async function quarantinePaymentAttempt(
 }
 
 async function queueReceipt(payload: any, input: { order: any; session: any; proposal: any }) {
-  const email = String(input.proposal?.customer?.email ?? '')
+  const cart = input.proposal
+    ? null
+    : await payload.findByID({
+        collection: 'carts',
+        id: relationId(input.session.cart),
+        depth: 0,
+        overrideAccess: true,
+      })
+  const email = String(input.proposal?.customer?.email ?? cart?.customerEmail ?? '')
   if (!email) return
   const receipt = input.order.receipt
   const key = `commerce-receipt:${input.order.id}:${receipt.receiptNumber}`

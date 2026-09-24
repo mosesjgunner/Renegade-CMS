@@ -25,18 +25,22 @@ export const SiteSettings: GlobalConfig = {
     beforeValidate: [
       ({ data, originalDoc }) => {
         if (!data) return data
-        if (data.siteName && !data.defaultTitle) {
+        if (data.siteName) {
           data.defaultTitle = data.siteName
-        } else if (data.defaultTitle && !data.siteName) {
+        } else if (data.defaultTitle) {
           data.siteName = data.defaultTitle
         }
-        if (data.siteDescription && !data.defaultDescription) {
+        if (data.siteDescription) {
           data.defaultDescription = data.siteDescription
+        } else if (data.defaultDescription) {
+          data.siteDescription = data.defaultDescription
         }
         if (data.indexingMode === 'noindex') {
           data.seoNoIndex = true
         } else if (data.indexingMode === 'index') {
           data.seoNoIndex = false
+        } else if (typeof data.seoNoIndex === 'boolean') {
+          data.indexingMode = data.seoNoIndex ? 'noindex' : 'index'
         }
         if (data.launchState === 'live' && originalDoc?.launchState !== 'live') {
           data.launchedAt = new Date().toISOString()
@@ -221,8 +225,13 @@ export const SiteSettings: GlobalConfig = {
     { name: 'organizationName', type: 'text' },
     { name: 'personName', type: 'text' },
     { name: 'legalName', type: 'text' },
-    { name: 'defaultTitle', type: 'text', defaultValue: DEFAULT_SITE_NAME },
-    { name: 'defaultDescription', type: 'textarea' },
+    {
+      name: 'defaultTitle',
+      type: 'text',
+      defaultValue: DEFAULT_SITE_NAME,
+      admin: { hidden: true },
+    },
+    { name: 'defaultDescription', type: 'textarea', admin: { hidden: true } },
     { name: 'logo', type: 'relationship', relationTo: 'media-assets' },
     { name: 'favicon', type: 'relationship', relationTo: 'media-assets' },
     { name: 'defaultSocialImage', type: 'relationship', relationTo: 'media-assets' },

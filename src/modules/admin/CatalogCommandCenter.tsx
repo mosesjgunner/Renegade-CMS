@@ -114,7 +114,14 @@ export default function CatalogCommandCenter() {
               </tr>
             </thead>
             <tbody>
-              {items.map(({ document, readiness }) => {
+              {items.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="py-8 text-center text-stone-500">
+                    No catalog products found. Create a product in Collections &rarr; Products to begin.
+                  </td>
+                </tr>
+              ) : (
+                items.map(({ document, readiness }) => {
                 const id = String(document.id)
                 const state = String(document.state)
                 return (
@@ -181,7 +188,8 @@ export default function CatalogCommandCenter() {
                     </td>
                   </tr>
                 )
-              })}
+              })
+            )}
             </tbody>
           </table>
         </div>

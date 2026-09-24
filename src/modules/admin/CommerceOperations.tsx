@@ -82,7 +82,7 @@ export function CommerceOperations() {
         {' | '}
         <Link href="/admin/fulfillment">POD and fulfillment</Link>
         {' | '}
-        <Link href="/admin">Orders and audit</Link>
+        <Link href="/admin/collections/orders">Orders and audit</Link>
         {' | '}
         <Link href="/admin/collections/subscriptions">Subscriptions and dunning</Link>
         {' | '}

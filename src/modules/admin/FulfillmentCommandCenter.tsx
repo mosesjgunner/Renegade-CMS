@@ -401,7 +401,21 @@ export const FulfillmentCommandCenter: React.FC<FulfillmentCommandCenterProps> =
             )}
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              {displayedJobs.map((job) => (
+              {displayedJobs.length === 0 ? (
+                <div
+                  style={{
+                    padding: '32px',
+                    textAlign: 'center',
+                    background: '#f9fafb',
+                    borderRadius: '8px',
+                    border: '1px dashed #d1d5db',
+                    color: '#6b7280',
+                  }}
+                >
+                  No print-on-demand fulfillment jobs found.
+                </div>
+              ) : (
+                displayedJobs.map((job) => (
                 <div
                   key={job.id}
                   style={{
@@ -568,7 +582,8 @@ export const FulfillmentCommandCenter: React.FC<FulfillmentCommandCenterProps> =
                     </div>
                   </div>
                 </div>
-              ))}
+              ))
+              )}
             </div>
           </section>
         )}
@@ -591,7 +606,21 @@ export const FulfillmentCommandCenter: React.FC<FulfillmentCommandCenterProps> =
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              {manualPackages.map((pkg) => (
+              {manualPackages.length === 0 ? (
+                <div
+                  style={{
+                    padding: '32px',
+                    textAlign: 'center',
+                    background: '#f9fafb',
+                    borderRadius: '8px',
+                    border: '1px dashed #d1d5db',
+                    color: '#6b7280',
+                  }}
+                >
+                  No manual fulfillment packages pending.
+                </div>
+              ) : (
+                manualPackages.map((pkg) => (
                 <div
                   key={pkg.id}
                   style={{
@@ -758,7 +787,8 @@ export const FulfillmentCommandCenter: React.FC<FulfillmentCommandCenterProps> =
                     )}
                   </div>
                 </div>
-              ))}
+              ))
+              )}
             </div>
           </section>
         )}

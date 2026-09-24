@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { feeCoverAmount } from './donations'
 
 export type DonationFormCampaign = {
@@ -58,6 +58,7 @@ export function DonationForm({
   const [marketingConsent, setMarketingConsent] = useState(false)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
+  const checkoutKey = useRef<{ body: string; key: string } | null>(null)
   const minor = useMemo(
     () => toMinor(amount, campaign.minorUnitDigits),
     [amount, campaign.minorUnitDigits],
@@ -88,23 +89,26 @@ export function DonationForm({
     }
     setBusy(true)
     try {
+      const body = JSON.stringify({
+        campaignId: campaign.id,
+        amountMinor: minor,
+        customAmount: !campaign.allowedAmounts.includes(minor),
+        currency: campaign.currency,
+        recurrence,
+        feeCover: coverFees,
+        recognition,
+        publicDisplayName: recognition === 'public' ? displayName : undefined,
+        donorMessage: recognition === 'private' ? message : undefined,
+        designation: designation || undefined,
+        email: email || undefined,
+        marketingConsent,
+      })
+      if (checkoutKey.current?.body !== body)
+        checkoutKey.current = { body, key: crypto.randomUUID() }
       const response = await fetch(intentEndpoint, {
         method: 'POST',
-        headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({
-          campaignId: campaign.id,
-          amountMinor: minor,
-          customAmount: !campaign.allowedAmounts.includes(minor),
-          currency: campaign.currency,
-          recurrence,
-          feeCover: coverFees,
-          recognition,
-          publicDisplayName: recognition === 'public' ? displayName : undefined,
-          donorMessage: recognition === 'private' ? message : undefined,
-          designation: designation || undefined,
-          email: email || undefined,
-          marketingConsent,
-        }),
+        headers: { 'content-type': 'application/json', 'idempotency-key': checkoutKey.current.key },
+        body,
       })
       const result = await response.json()
       if (!response.ok)

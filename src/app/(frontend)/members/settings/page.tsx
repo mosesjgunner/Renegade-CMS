@@ -132,6 +132,27 @@ export default function MemberSettingsPage() {
       setMessage('Passkey enrollment was cancelled or could not be completed.')
     }
   }
+  if (message === 'Sign in required.') {
+    return (
+      <main className="max-w-xl mx-auto px-6 py-16">
+        <h1 className="text-3xl font-bold">Member settings</h1>
+        <div className="mt-6 p-8 rounded-xl border border-stone-200 bg-stone-50 dark:border-stone-800 dark:bg-stone-900 text-center">
+          <p className="text-base text-stone-700 dark:text-stone-300">
+            Sign in is required to view and manage your member profile and settings.
+          </p>
+          <div className="mt-5">
+            <a
+              href="/member-auth"
+              className="inline-block px-5 py-2.5 rounded-lg bg-stone-900 text-white font-medium hover:bg-stone-800 dark:bg-stone-100 dark:text-stone-900 dark:hover:bg-white transition"
+            >
+              Sign in or create account &rarr;
+            </a>
+          </div>
+        </div>
+      </main>
+    )
+  }
+
   return (
     <main className="max-w-xl mx-auto px-6 py-16">
       <h1 className="text-3xl font-bold">Member settings</h1>

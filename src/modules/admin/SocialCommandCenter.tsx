@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
 import { type SocialNetwork, type SocialState } from '../social/contracts'
 import {
   createCanonicalSocialPost,
@@ -95,6 +95,37 @@ export default function SocialCommandCenter() {
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [isProcessingQueue, setIsProcessingQueue] = useState<boolean>(false)
   const [workerResult, setWorkerResult] = useState<string | null>(null)
+  const [isSimulation, setIsSimulation] = useState<boolean>(true)
+
+  useEffect(() => {
+    let cancelled = false
+    void fetch('/api/admin/social/accounts')
+      .then(async (res) => {
+        if (!res.ok) return
+        const data = await res.json()
+        if (cancelled) return
+        if (Array.isArray(data.accounts) && data.accounts.length > 0) {
+          const liveAccounts: ConnectedAccountUI[] = data.accounts.map((doc: any) => ({
+            id: String(doc.id),
+            network: doc.network,
+            handle: doc.displayName || doc.externalAccountId || String(doc.id),
+            status: doc.credentialHealth === 'healthy' ? 'active' : 'reconnect_required',
+          }))
+          setAccounts(liveAccounts)
+          setSelectedAccountIds(liveAccounts.map((a) => a.id))
+          setActiveTabAccountId(liveAccounts[0].id)
+          setIsSimulation(false)
+        } else {
+          setIsSimulation(true)
+        }
+      })
+      .catch(() => {
+        setIsSimulation(true)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   // Current active account & variant
   const activeAccount = accounts.find((a) => a.id === activeTabAccountId) || accounts[0]
@@ -307,6 +338,22 @@ export default function SocialCommandCenter() {
           </button>
         </div>
       </div>
+
+      {isSimulation ? (
+        <div
+          style={{
+            padding: '10px 14px',
+            backgroundColor: '#fffbeb',
+            border: '1px solid #fde68a',
+            borderRadius: '6px',
+            color: '#92400e',
+            fontSize: '13px',
+            marginBottom: '16px',
+          }}
+        >
+          <strong>Simulation Mode:</strong> No live social network accounts configured in Collections &rarr; Social Accounts. Displaying simulated platform preview channels.
+        </div>
+      ) : null}
 
       {/* Connected Accounts Strip */}
       <div style={{ marginBottom: '24px' }}>

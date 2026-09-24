@@ -1,3 +1,32 @@
+## First-Time Operator and Visitor Sweep Passed — 2026-09-24
+
+- **Release Status**: **PARTIAL (Customer-Upgrade Proof Unavailable)**
+- **Audit Reference**: `docs/execution/first-time-operator-visitor-sweep-2026-09-24.md`
+- **Customer Upgrade Proof**: Unavailable. No pre-1.0 release artifact exists in the repository archive (`git tag -l` reveals zero antecedent release tags). Per release requirements, release label remains strictly PARTIAL until a real predecessor artifact is published and upgraded.
+- **Surface Sweep Scope**:
+  1. Isolated installation and lifecycle scripts (`npm.cmd install` across Lean `core,publishing` and Standard `all` profiles).
+  2. Database initialization and migrations (104 migrations verified).
+  3. First-run owner onboarding and WebAuthn passkey authentication.
+  4. Provider selection and capabilities (`/connections`, `CapabilityCenter`).
+  5. Customization and site settings (`SiteSettings` duplicate field resolution).
+  6. Editorial publishing (`/admin/posts`, `/admin/pages`, `/admin/catalog`).
+  7. Audience & Newsletter (`/subscribe` auto-resolution, `AudienceCommandCenter` honest provider health).
+  8. Community & Member experience (`/member-auth`, `/members/settings` unauthenticated state).
+  9. Commerce & Donations (`/donate`, `/checkout`, `/admin/commerce`, `/admin/fulfillment` empty states).
+  10. Analytics, backup & recovery (`/admin/analytics`, `pg_dump` rehearsal).
+- **Repairs Applied**:
+  - Broken navigation: Fixed `/admin` links in `CommerceOperations` and `ConnectionsCenter`; fixed broken `/admin/operations` link in `CapabilityCenter`.
+  - Confusing permissions: Removed `<ThemeCenter />` from access-denied state in `CapabilityCenter`.
+  - Duplicated settings: Hidden redundant `defaultTitle` and `defaultDescription` in `SiteSettings` with bidirectional sync on `siteName`, `siteDescription`, `indexingMode`, and `seoNoIndex`.
+  - Weak empty states: Added informative cards/rows in `FulfillmentCommandCenter` and `CatalogCommandCenter`.
+  - Misleading provider claims: Dynamic environment inspection in audience command center API; accounts fetch with simulation indicator in `SocialCommandCenter`.
+  - Visitor friction: Streamlined `/subscribe` form; added unauthenticated sign-in callout on `/members/settings`.
+  - Inaccessible controls: Added `aria-label` and screen-reader accessible names across `/search` and `/admin/navigation`.
+- **Verification Evidence**:
+  - `tsc --noEmit`: 0 errors.
+  - Unit tests: 150 test files passed, 997/997 tests passed.
+  - Integration suites: `installation.integration.test.ts`, `setup-first-run.integration.test.ts`, `upgrade-migration.integration.test.ts`, `shared-contract-commerce-shop.integration.test.ts`, `shared-contract-affiliate-pod.integration.test.ts`, `shared-contract-audience-community.integration.test.ts` all passed (100%).
+
 ## Release Repair Pass & Immutable Candidate Gate Closed — 2026-09-24
 
 - **Release Status**: **PASSED — ALL GATES VERIFIED (BETA RELEASE READY)**

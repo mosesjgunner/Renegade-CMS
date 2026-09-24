@@ -30,6 +30,20 @@ const groupIcons: Record<ConnectionGroup, string> = {
   Security: '🔒',
 }
 
+const groupAdminLinks: Record<ConnectionGroup, string> = {
+  Social: '/admin/social',
+  Media: '/admin/capability-center',
+  AI: '/admin/capability-center',
+  'Payments & Support': '/admin/commerce',
+  Commerce: '/admin/commerce',
+  Fulfillment: '/admin/fulfillment',
+  Email: '/admin/audience',
+  Analytics: '/admin/analytics',
+  Identity: '/admin/collections/members',
+  Messaging: '/admin/audience',
+  Security: '/admin/collections/api-clients',
+}
+
 export function ConnectionsCenter({
   connections,
   groupFor,
@@ -143,10 +157,10 @@ export function ConnectionsCenter({
 
               <div className="pt-3 border-t border-stone-100 dark:border-stone-800 text-right">
                 <Link
-                  href="/admin"
+                  href={groupAdminLinks[group] || '/admin'}
                   className="text-xs font-semibold text-red-600 dark:text-red-400 hover:underline inline-flex items-center gap-1"
                 >
-                  Configure provider &rarr;
+                  Configure {group.toLowerCase()} provider &rarr;
                 </Link>
               </div>
             </section>
