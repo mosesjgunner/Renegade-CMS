@@ -16,6 +16,8 @@ import * as shop07Donations from './20260923_060000_shop_07_donations'
 import * as shop07DonationLifecycle from './20260923_070000_shop_07_donation_lifecycle'
 import * as shop03PodAndFulfillment from './20260923_080000_shop_03_pod_and_fulfillment'
 import * as eventsRequiredEntitlement from './20260923_090000_events_required_entitlement'
+import * as flow03SchedulerRuntime from './20260923_100000_flow_03_scheduler_runtime'
+import * as contentReleaseRuntime from './20260923_110000_content_release_runtime'
 import * as aud01AudienceEvidence from './20260920_010000_aud_01_audience_evidence'
 import * as aud02Forms from './20260920_020000_aud_02_forms'
 import * as aud03EmailComposer from './20260920_030000_aud_03_email_composer'
@@ -581,5 +583,15 @@ export const migrations = [
     up: eventsRequiredEntitlement.up,
     down: eventsRequiredEntitlement.down,
     name: '20260923_090000_events_required_entitlement',
+  },
+  {
+    up: flow03SchedulerRuntime.up,
+    down: flow03SchedulerRuntime.down,
+    name: '20260923_100000_flow_03_scheduler_runtime',
+  },
+  {
+    up: contentReleaseRuntime.up,
+    down: contentReleaseRuntime.down,
+    name: '20260923_110000_content_release_runtime',
   },
 ]

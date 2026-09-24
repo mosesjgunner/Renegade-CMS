@@ -2,6 +2,7 @@ import { Client } from 'pg'
 import { getPayload, type Payload } from 'payload'
 
 import { migrations } from '../migrations'
+import { assertPublishingRuntimeSchema } from './assert-publishing-runtime-schema'
 
 /** Advance this name, and only this name, when the supported upgrade baseline moves. */
 export const UPGRADE_BASELINE = '20260914_110000_med_05_video_workflow'
@@ -319,6 +320,7 @@ async function assertUpgrade(payload: Payload) {
     eventsEntitlement.rows[0]?.column_default !== null
   )
     throw new Error('Upgrade did not create the optional Events entitlement JSON column.')
+  await assertPublishingRuntimeSchema(poolFor(payload))
   const form = await payload.create({
     collection: 'form-definitions',
     data: {

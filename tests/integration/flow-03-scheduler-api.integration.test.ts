@@ -111,7 +111,7 @@ describe('FLOW-03 Scheduling & Calendar Integration Suite', () => {
       idempotencyKey,
     })
 
-    expect(bundle.article.status).toBe('scheduled')
+    expect(bundle.article.lifecycle).toBe('scheduled')
 
     const jobs = await payload.find({
       collection: 'scheduled-publish-jobs',
@@ -132,14 +132,14 @@ describe('FLOW-03 Scheduling & Calendar Integration Suite', () => {
     }
     const author = { id: authorDoc.id, role: 'author' as const }
     const initialBundle = await loadBundleByArticleId(payload, testArticleId)
-    const targetApprovedRevId = idOf(initialBundle.article.latestApprovedRevision)
+    const targetApprovedRevId = idOf(initialBundle.article.currentRevision)
 
     // Author saves a new draft after scheduling
     await saveEditorialDraft(payload, {
       articleId: testArticleId,
       actor: author,
       document: initialBundle.article.document,
-      baseRevisionId: targetApprovedRevId,
+      baseRevisionId: idOf(initialBundle.article.currentRevision),
       mutationId: `mut-${Date.now()}`,
     })
 
@@ -179,7 +179,7 @@ describe('FLOW-03 Scheduling & Calendar Integration Suite', () => {
 
     // Verify published state: latestPublishedRevision MUST equal the scheduled approved revision (rev 1), NOT the new draft (rev 2)
     const finalBundle = await loadBundleByArticleId(payload, testArticleId)
-    expect(finalBundle.article.status).toBe('published')
+    expect(finalBundle.article.lifecycle).toBe('published')
     expect(idOf(finalBundle.article.latestPublishedRevision)).not.toBe(
       idOf(finalBundle.article.currentRevision),
     )

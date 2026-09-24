@@ -826,7 +826,18 @@ describe('Shared Contract Proof: Audience, Community, Permissions/Privacy & Resi
           limit: 1,
           overrideAccess: true,
         } as never)
-        const sectionId = String(sRes.docs[0].id)
+        const section =
+          sRes.docs[0] ??
+          (await payload.create({
+            collection: 'forum-sections',
+            data: {
+              site: siteId,
+              name: `Proof Section ${testRunId}`,
+              slug: `proof-section-${testRunId}`,
+            },
+            overrideAccess: true,
+          } as never))
+        const sectionId = String(section.id)
 
         const createdForum = (await payload.create({
           collection: 'forums',
