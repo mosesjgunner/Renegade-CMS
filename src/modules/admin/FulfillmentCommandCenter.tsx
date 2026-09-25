@@ -401,174 +401,192 @@ export const FulfillmentCommandCenter: React.FC<FulfillmentCommandCenterProps> =
             )}
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              {displayedJobs.map((job) => (
+              {displayedJobs.length === 0 ? (
                 <div
-                  key={job.id}
                   style={{
-                    border: '1px solid #e5e7eb',
+                    padding: '32px',
+                    textAlign: 'center',
+                    background: '#f9fafb',
                     borderRadius: '8px',
-                    padding: '20px',
-                    background: '#ffffff',
-                    boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+                    border: '1px dashed #d1d5db',
+                    color: '#6b7280',
                   }}
                 >
+                  No print-on-demand fulfillment jobs found.
+                </div>
+              ) : (
+                displayedJobs.map((job) => (
                   <div
+                    key={job.id}
                     style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      marginBottom: '12px',
+                      border: '1px solid #e5e7eb',
+                      borderRadius: '8px',
+                      padding: '20px',
+                      background: '#ffffff',
+                      boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
                     }}
                   >
-                    <div>
-                      <h3 style={{ fontSize: '16px', fontWeight: 'bold', margin: '0 0 4px 0' }}>
-                        Job {job.id}{' '}
-                        <span style={{ color: '#6b7280', fontSize: '13px' }}>({job.orderId})</span>
-                      </h3>
-                      <div style={{ fontSize: '12px', color: '#6b7280' }}>
-                        Provider: <strong>{job.providerKey}</strong> • Idempotency:{' '}
-                        <code>
-                          {job.idempotencyKey ? `${job.idempotencyKey.slice(0, 30)}...` : 'N/A'}
-                        </code>
-                      </div>
-                    </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-                      <span
-                        style={{
-                          padding: '4px 10px',
-                          borderRadius: '9999px',
-                          fontSize: '12px',
-                          fontWeight: '600',
-                          background:
-                            job.state === 'on_hold'
-                              ? '#fef3c7'
-                              : job.state === 'shipped'
-                                ? '#dcfce7'
-                                : job.state === 'failed'
-                                  ? '#fee2e2'
-                                  : '#e0e7ff',
-                          color:
-                            job.state === 'on_hold'
-                              ? '#92400e'
-                              : job.state === 'shipped'
-                                ? '#166534'
-                                : job.state === 'failed'
-                                  ? '#991b1b'
-                                  : '#3730a3',
-                        }}
-                      >
-                        {job.state ? job.state.toUpperCase() : 'UNKNOWN'}
-                      </span>
-                      {job.state === 'on_hold' && (
-                        <button
-                          onClick={() => handleReleaseHold(job.id)}
-                          style={{
-                            padding: '6px 12px',
-                            borderRadius: '4px',
-                            border: 'none',
-                            background: '#16a34a',
-                            color: '#fff',
-                            cursor: 'pointer',
-                            fontSize: '12px',
-                            fontWeight: '500',
-                          }}
-                        >
-                          ✓ Release Hold Now
-                        </button>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Failed worker/job indicator */}
-                  {job.state === 'failed' && (
                     <div
-                      data-testid={`failed-job-alert-${job.id}`}
                       style={{
-                        marginBottom: '12px',
-                        backgroundColor: '#fee2e2',
-                        border: '1px solid #fca5a5',
-                        borderRadius: '4px',
-                        padding: '8px 12px',
-                        color: '#991b1b',
-                        fontSize: '12px',
                         display: 'flex',
                         justifyContent: 'space-between',
                         alignItems: 'center',
+                        marginBottom: '12px',
                       }}
                     >
                       <div>
-                        <strong>FAILED WORKER / SUBMISSION:</strong> Attempts: {job.attemptCount} •
-                        Error:{' '}
-                        {job.lastError ?? 'Submission exhausted or non-retryable provider failure.'}
+                        <h3 style={{ fontSize: '16px', fontWeight: 'bold', margin: '0 0 4px 0' }}>
+                          Job {job.id}{' '}
+                          <span style={{ color: '#6b7280', fontSize: '13px' }}>
+                            ({job.orderId})
+                          </span>
+                        </h3>
+                        <div style={{ fontSize: '12px', color: '#6b7280' }}>
+                          Provider: <strong>{job.providerKey}</strong> • Idempotency:{' '}
+                          <code>
+                            {job.idempotencyKey ? `${job.idempotencyKey.slice(0, 30)}...` : 'N/A'}
+                          </code>
+                        </div>
                       </div>
-                      <button
-                        type="button"
-                        onClick={() => setActiveTab('manual')}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                        <span
+                          style={{
+                            padding: '4px 10px',
+                            borderRadius: '9999px',
+                            fontSize: '12px',
+                            fontWeight: '600',
+                            background:
+                              job.state === 'on_hold'
+                                ? '#fef3c7'
+                                : job.state === 'shipped'
+                                  ? '#dcfce7'
+                                  : job.state === 'failed'
+                                    ? '#fee2e2'
+                                    : '#e0e7ff',
+                            color:
+                              job.state === 'on_hold'
+                                ? '#92400e'
+                                : job.state === 'shipped'
+                                  ? '#166534'
+                                  : job.state === 'failed'
+                                    ? '#991b1b'
+                                    : '#3730a3',
+                          }}
+                        >
+                          {job.state ? job.state.toUpperCase() : 'UNKNOWN'}
+                        </span>
+                        {job.state === 'on_hold' && (
+                          <button
+                            onClick={() => handleReleaseHold(job.id)}
+                            style={{
+                              padding: '6px 12px',
+                              borderRadius: '4px',
+                              border: 'none',
+                              background: '#16a34a',
+                              color: '#fff',
+                              cursor: 'pointer',
+                              fontSize: '12px',
+                              fontWeight: '500',
+                            }}
+                          >
+                            ✓ Release Hold Now
+                          </button>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Failed worker/job indicator */}
+                    {job.state === 'failed' && (
+                      <div
+                        data-testid={`failed-job-alert-${job.id}`}
                         style={{
-                          background: 'none',
-                          border: 'none',
+                          marginBottom: '12px',
+                          backgroundColor: '#fee2e2',
+                          border: '1px solid #fca5a5',
+                          borderRadius: '4px',
+                          padding: '8px 12px',
                           color: '#991b1b',
-                          textDecoration: 'underline',
-                          cursor: 'pointer',
-                          fontSize: '11px',
-                          fontWeight: '600',
+                          fontSize: '12px',
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
                         }}
                       >
-                        View in Manual Queue →
-                      </button>
-                    </div>
-                  )}
-
-                  <div
-                    style={{
-                      display: 'grid',
-                      gridTemplateColumns: '1fr 1fr',
-                      gap: '16px',
-                      fontSize: '13px',
-                      background: '#f9fafb',
-                      padding: '12px',
-                      borderRadius: '6px',
-                    }}
-                  >
-                    <div>
-                      <strong>Shipping Recipient:</strong>
-                      <div>{job.recipientSnapshot?.name ?? 'N/A'}</div>
-                      <div>{job.recipientSnapshot?.address1 ?? ''}</div>
-                      <div>
-                        {job.recipientSnapshot?.city ?? ''}, {job.recipientSnapshot?.state ?? ''}{' '}
-                        {job.recipientSnapshot?.postalCode ?? ''},{' '}
-                        {job.recipientSnapshot?.country ?? ''}
+                        <div>
+                          <strong>FAILED WORKER / SUBMISSION:</strong> Attempts: {job.attemptCount}{' '}
+                          • Error:{' '}
+                          {job.lastError ??
+                            'Submission exhausted or non-retryable provider failure.'}
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setActiveTab('manual')}
+                          style={{
+                            background: 'none',
+                            border: 'none',
+                            color: '#991b1b',
+                            textDecoration: 'underline',
+                            cursor: 'pointer',
+                            fontSize: '11px',
+                            fontWeight: '600',
+                          }}
+                        >
+                          View in Manual Queue →
+                        </button>
                       </div>
-                    </div>
-                    <div>
-                      <strong>Items & Estimated Cost:</strong>
-                      {(job.itemsSnapshot ?? []).map((item, idx) => (
-                        <div key={idx}>
-                          • {item.quantity}x {item.title}
+                    )}
+
+                    <div
+                      style={{
+                        display: 'grid',
+                        gridTemplateColumns: '1fr 1fr',
+                        gap: '16px',
+                        fontSize: '13px',
+                        background: '#f9fafb',
+                        padding: '12px',
+                        borderRadius: '6px',
+                      }}
+                    >
+                      <div>
+                        <strong>Shipping Recipient:</strong>
+                        <div>{job.recipientSnapshot?.name ?? 'N/A'}</div>
+                        <div>{job.recipientSnapshot?.address1 ?? ''}</div>
+                        <div>
+                          {job.recipientSnapshot?.city ?? ''}, {job.recipientSnapshot?.state ?? ''}{' '}
+                          {job.recipientSnapshot?.postalCode ?? ''},{' '}
+                          {job.recipientSnapshot?.country ?? ''}
                         </div>
-                      ))}
-                      {job.costSnapshot && (
-                        <div style={{ marginTop: '4px', color: '#4b5563' }}>
-                          Estimated POD Cost: $
-                          {(Number(job.costSnapshot.estimatedCostMinor) / 100).toFixed(2)}{' '}
-                          {job.costSnapshot.currency}
+                      </div>
+                      <div>
+                        <strong>Items & Estimated Cost:</strong>
+                        {(job.itemsSnapshot ?? []).map((item, idx) => (
+                          <div key={idx}>
+                            • {item.quantity}x {item.title}
+                          </div>
+                        ))}
+                        {job.costSnapshot && (
+                          <div style={{ marginTop: '4px', color: '#4b5563' }}>
+                            Estimated POD Cost: $
+                            {(Number(job.costSnapshot.estimatedCostMinor) / 100).toFixed(2)}{' '}
+                            {job.costSnapshot.currency}
+                          </div>
+                        )}
+                        {job.holdExpiresAt && (
+                          <div style={{ color: '#b45309', marginTop: '4px' }}>
+                            Hold expires: {new Date(job.holdExpiresAt).toLocaleTimeString()}
+                          </div>
+                        )}
+                        <div style={{ marginTop: '4px', fontSize: '11px', color: '#6b7280' }}>
+                          <strong>Reconciliation Age:</strong>{' '}
+                          {job.lastReconciledAt
+                            ? `Reconciled with provider at ${new Date(job.lastReconciledAt).toISOString()}`
+                            : 'Pending initial provider reconciliation'}
                         </div>
-                      )}
-                      {job.holdExpiresAt && (
-                        <div style={{ color: '#b45309', marginTop: '4px' }}>
-                          Hold expires: {new Date(job.holdExpiresAt).toLocaleTimeString()}
-                        </div>
-                      )}
-                      <div style={{ marginTop: '4px', fontSize: '11px', color: '#6b7280' }}>
-                        <strong>Reconciliation Age:</strong>{' '}
-                        {job.lastReconciledAt
-                          ? `Reconciled with provider at ${new Date(job.lastReconciledAt).toISOString()}`
-                          : 'Pending initial provider reconciliation'}
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </section>
         )}
@@ -591,174 +609,189 @@ export const FulfillmentCommandCenter: React.FC<FulfillmentCommandCenterProps> =
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              {manualPackages.map((pkg) => (
+              {manualPackages.length === 0 ? (
                 <div
-                  key={pkg.id}
                   style={{
-                    border: '1px solid #e5e7eb',
+                    padding: '32px',
+                    textAlign: 'center',
+                    background: '#f9fafb',
                     borderRadius: '8px',
-                    padding: '20px',
-                    background: '#ffffff',
+                    border: '1px dashed #d1d5db',
+                    color: '#6b7280',
                   }}
                 >
+                  No manual fulfillment packages pending.
+                </div>
+              ) : (
+                manualPackages.map((pkg) => (
                   <div
+                    key={pkg.id}
                     style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      marginBottom: '12px',
+                      border: '1px solid #e5e7eb',
+                      borderRadius: '8px',
+                      padding: '20px',
+                      background: '#ffffff',
                     }}
                   >
-                    <div>
-                      <h3 style={{ fontSize: '16px', fontWeight: 'bold', margin: '0 0 4px 0' }}>
-                        Package {pkg.id} ({pkg.orderId})
-                      </h3>
-                      <div style={{ fontSize: '12px', color: '#dc2626' }}>
-                        Reason: <strong>{pkg.source}</strong>
-                      </div>
-                    </div>
-                    <span
+                    <div
                       style={{
-                        padding: '4px 10px',
-                        borderRadius: '9999px',
-                        fontSize: '12px',
-                        fontWeight: '600',
-                        background: pkg.status === 'shipped' ? '#dcfce7' : '#fee2e2',
-                        color: pkg.status === 'shipped' ? '#166534' : '#991b1b',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        marginBottom: '12px',
                       }}
                     >
-                      {pkg.status.toUpperCase()}
-                    </span>
-                  </div>
-
-                  <div style={{ fontSize: '13px', marginBottom: '16px', lineHeight: '1.5' }}>
-                    <div>
-                      <strong>Instructions:</strong> {pkg.instructions}
-                    </div>
-                    <div>
-                      <strong>Ship To:</strong> {pkg.permissionedAddressManifest.name},{' '}
-                      {pkg.permissionedAddressManifest.address1},{' '}
-                      {pkg.permissionedAddressManifest.city},{' '}
-                      {pkg.permissionedAddressManifest.state}{' '}
-                      {pkg.permissionedAddressManifest.postalCode}
-                    </div>
-                  </div>
-
-                  {/* Items & Artwork Links */}
-                  <div
-                    style={{
-                      borderTop: '1px solid #e5e7eb',
-                      paddingTop: '12px',
-                      marginBottom: '16px',
-                    }}
-                  >
-                    <h4 style={{ fontSize: '14px', fontWeight: '600', marginBottom: '8px' }}>
-                      Approved Artwork Specifications
-                    </h4>
-                    {pkg.approvedLines.map((line, idx) => (
-                      <div key={idx} style={{ fontSize: '13px', marginBottom: '8px' }}>
-                        <div>
-                          • {line.quantity}x {line.title} ({line.variantSku})
+                      <div>
+                        <h3 style={{ fontSize: '16px', fontWeight: 'bold', margin: '0 0 4px 0' }}>
+                          Package {pkg.id} ({pkg.orderId})
+                        </h3>
+                        <div style={{ fontSize: '12px', color: '#dc2626' }}>
+                          Reason: <strong>{pkg.source}</strong>
                         </div>
-                        {line.artworkSpecs.map((spec, sIdx) => (
-                          <div
-                            key={sIdx}
-                            style={{ marginLeft: '16px', fontSize: '12px', color: '#4b5563' }}
-                          >
-                            Print Area: {spec.area} • Bounds: {spec.placement.widthMm}x
-                            {spec.placement.heightMm}mm •{' '}
-                            <a
-                              href={spec.downloadUrl}
-                              target="_blank"
-                              rel="noreferrer"
-                              style={{ color: '#2563eb' }}
-                            >
-                              📥 Download Governed High-Res Artwork
-                            </a>
-                          </div>
-                        ))}
                       </div>
-                    ))}
-                  </div>
-
-                  {/* Operator Actions */}
-                  <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-                    {pkg.status === 'pending_acknowledgement' && (
-                      <button
-                        onClick={() => handleAcknowledgeManual(pkg.id)}
+                      <span
                         style={{
-                          padding: '8px 16px',
-                          borderRadius: '4px',
-                          border: 'none',
-                          background: '#2563eb',
-                          color: '#fff',
-                          cursor: 'pointer',
-                          fontSize: '13px',
-                          fontWeight: '500',
+                          padding: '4px 10px',
+                          borderRadius: '9999px',
+                          fontSize: '12px',
+                          fontWeight: '600',
+                          background: pkg.status === 'shipped' ? '#dcfce7' : '#fee2e2',
+                          color: pkg.status === 'shipped' ? '#166534' : '#991b1b',
                         }}
                       >
-                        Acknowledge Package & Claim for Shop Production
-                      </button>
-                    )}
-                    {pkg.status === 'acknowledged' && (
-                      <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                        <input
-                          type="text"
-                          placeholder="Carrier (e.g. USPS)"
-                          value={carrierInput}
-                          onChange={(e) => setCarrierInput(e.target.value)}
-                          style={{
-                            padding: '6px 8px',
-                            border: '1px solid #d1d5db',
-                            borderRadius: '4px',
-                            fontSize: '13px',
-                          }}
-                        />
-                        <input
-                          type="text"
-                          placeholder="Tracking Number"
-                          value={trackingInput}
-                          onChange={(e) => setTrackingInput(e.target.value)}
-                          style={{
-                            padding: '6px 8px',
-                            border: '1px solid #d1d5db',
-                            borderRadius: '4px',
-                            fontSize: '13px',
-                          }}
-                        />
+                        {pkg.status.toUpperCase()}
+                      </span>
+                    </div>
+
+                    <div style={{ fontSize: '13px', marginBottom: '16px', lineHeight: '1.5' }}>
+                      <div>
+                        <strong>Instructions:</strong> {pkg.instructions}
+                      </div>
+                      <div>
+                        <strong>Ship To:</strong> {pkg.permissionedAddressManifest.name},{' '}
+                        {pkg.permissionedAddressManifest.address1},{' '}
+                        {pkg.permissionedAddressManifest.city},{' '}
+                        {pkg.permissionedAddressManifest.state}{' '}
+                        {pkg.permissionedAddressManifest.postalCode}
+                      </div>
+                    </div>
+
+                    {/* Items & Artwork Links */}
+                    <div
+                      style={{
+                        borderTop: '1px solid #e5e7eb',
+                        paddingTop: '12px',
+                        marginBottom: '16px',
+                      }}
+                    >
+                      <h4 style={{ fontSize: '14px', fontWeight: '600', marginBottom: '8px' }}>
+                        Approved Artwork Specifications
+                      </h4>
+                      {pkg.approvedLines.map((line, idx) => (
+                        <div key={idx} style={{ fontSize: '13px', marginBottom: '8px' }}>
+                          <div>
+                            • {line.quantity}x {line.title} ({line.variantSku})
+                          </div>
+                          {line.artworkSpecs.map((spec, sIdx) => (
+                            <div
+                              key={sIdx}
+                              style={{ marginLeft: '16px', fontSize: '12px', color: '#4b5563' }}
+                            >
+                              Print Area: {spec.area} • Bounds: {spec.placement.widthMm}x
+                              {spec.placement.heightMm}mm •{' '}
+                              <a
+                                href={spec.downloadUrl}
+                                target="_blank"
+                                rel="noreferrer"
+                                style={{ color: '#2563eb' }}
+                              >
+                                📥 Download Governed High-Res Artwork
+                              </a>
+                            </div>
+                          ))}
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Operator Actions */}
+                    <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
+                      {pkg.status === 'pending_acknowledgement' && (
                         <button
-                          onClick={() => handleShipManual(pkg.id)}
-                          disabled={!trackingInput.trim()}
+                          onClick={() => handleAcknowledgeManual(pkg.id)}
                           style={{
-                            padding: '6px 14px',
+                            padding: '8px 16px',
                             borderRadius: '4px',
                             border: 'none',
-                            background: trackingInput.trim() ? '#16a34a' : '#9ca3af',
+                            background: '#2563eb',
                             color: '#fff',
-                            cursor: trackingInput.trim() ? 'pointer' : 'not-allowed',
+                            cursor: 'pointer',
                             fontSize: '13px',
+                            fontWeight: '500',
                           }}
                         >
-                          Dispatch & Record Tracking
+                          Acknowledge Package & Claim for Shop Production
                         </button>
-                      </div>
-                    )}
-                    {pkg.externalFulfillment && (
-                      <div style={{ fontSize: '13px', color: '#166534' }}>
-                        Shipped via {pkg.externalFulfillment.carrier} • Tracking:{' '}
-                        <a
-                          href={pkg.externalFulfillment.trackingUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                          style={{ textDecoration: 'underline' }}
-                        >
-                          {pkg.externalFulfillment.trackingNumber}
-                        </a>
-                      </div>
-                    )}
+                      )}
+                      {pkg.status === 'acknowledged' && (
+                        <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                          <input
+                            type="text"
+                            placeholder="Carrier (e.g. USPS)"
+                            value={carrierInput}
+                            onChange={(e) => setCarrierInput(e.target.value)}
+                            style={{
+                              padding: '6px 8px',
+                              border: '1px solid #d1d5db',
+                              borderRadius: '4px',
+                              fontSize: '13px',
+                            }}
+                          />
+                          <input
+                            type="text"
+                            placeholder="Tracking Number"
+                            value={trackingInput}
+                            onChange={(e) => setTrackingInput(e.target.value)}
+                            style={{
+                              padding: '6px 8px',
+                              border: '1px solid #d1d5db',
+                              borderRadius: '4px',
+                              fontSize: '13px',
+                            }}
+                          />
+                          <button
+                            onClick={() => handleShipManual(pkg.id)}
+                            disabled={!trackingInput.trim()}
+                            style={{
+                              padding: '6px 14px',
+                              borderRadius: '4px',
+                              border: 'none',
+                              background: trackingInput.trim() ? '#16a34a' : '#9ca3af',
+                              color: '#fff',
+                              cursor: trackingInput.trim() ? 'pointer' : 'not-allowed',
+                              fontSize: '13px',
+                            }}
+                          >
+                            Dispatch & Record Tracking
+                          </button>
+                        </div>
+                      )}
+                      {pkg.externalFulfillment && (
+                        <div style={{ fontSize: '13px', color: '#166534' }}>
+                          Shipped via {pkg.externalFulfillment.carrier} • Tracking:{' '}
+                          <a
+                            href={pkg.externalFulfillment.trackingUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            style={{ textDecoration: 'underline' }}
+                          >
+                            {pkg.externalFulfillment.trackingNumber}
+                          </a>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))
+              )}
             </div>
           </section>
         )}

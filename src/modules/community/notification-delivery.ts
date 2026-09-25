@@ -277,7 +277,7 @@ export async function compileNotificationDigest(
   const bodyHtml =
     `<h2>${subject}</h2><p>Here is your activity summary:</p><ul>` +
     itemsSummary.map((item) => `<li>${item}</li>`).join('') +
-    '</ul><p><a href="/messages">View your notifications</a></p>'
+    '</ul><p><a href="/notifications">View your notifications</a></p>'
 
   const envelope: OutboxEnvelope = {
     subject,

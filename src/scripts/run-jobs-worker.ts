@@ -18,9 +18,12 @@ let timer: NodeJS.Timeout | undefined
 
 async function cycle(): Promise<void> {
   try {
-    await payload.jobs.handleSchedules({ queue: 'operations' })
-    await payload.jobs.run({ queue: 'operations' })
-    await payload.jobs.run({ queue: 'media' }).catch(() => undefined)
+    if (workerProfile !== 'commerce-only') {
+      await payload.jobs.handleSchedules({ queue: 'operations' })
+      await payload.jobs.run({ queue: 'operations' })
+      await payload.jobs.run({ queue: 'media' }).catch(() => undefined)
+    }
+    await payload.jobs.run({ queue: 'commerce' })
     if (workerProfile === 'media-heavy') {
       const { recoverStaleVideoJobs } = await import('../modules/media/video-workflow')
       await recoverStaleVideoJobs(payload).catch(() => undefined)

@@ -15,6 +15,8 @@ import {
   discoveryToMetadata,
   serializeJsonLd,
 } from '@/modules/public/discovery'
+import { PublicExperiment } from '@/modules/experiences/PublicExperiment'
+import { resolvePublicUrl } from '@/modules/public/semantic-url'
 
 export const dynamic = 'force-dynamic'
 
@@ -164,6 +166,7 @@ export default async function HomePage() {
               </Link>
             </div>
           </section>
+          <PublicExperiment siteId={siteId} />
 
           {/* Recent Articles */}
           <section className="py-12">
@@ -192,6 +195,9 @@ export default async function HomePage() {
                   const publishedDate =
                     typeof article.publishedAt === 'string' ? article.publishedAt : null
                   const slug = String(article.slug ?? '')
+                  const articlePath = String(
+                    article.canonicalPath || resolvePublicUrl({ kind: 'article', slug }),
+                  )
                   const title = String(article.title ?? '')
                   const summary =
                     typeof article.summary === 'string'
@@ -219,7 +225,7 @@ export default async function HomePage() {
                         ) : null}
                         <h3 className="mt-2 text-xl font-bold tracking-tight text-stone-900 dark:text-white line-clamp-2">
                           <Link
-                            href={`/articles/${slug}`}
+                            href={articlePath}
                             className="hover:text-red-600 dark:hover:text-red-400 transition-colors"
                           >
                             {title}
@@ -233,7 +239,7 @@ export default async function HomePage() {
                       </div>
                       <div className="mt-6 pt-4 border-t border-stone-100 dark:border-stone-800">
                         <Link
-                          href={`/articles/${slug}`}
+                          href={articlePath}
                           className="text-xs font-semibold text-red-600 hover:underline dark:text-red-400"
                         >
                           Read story →

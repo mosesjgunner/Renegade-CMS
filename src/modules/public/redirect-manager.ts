@@ -33,8 +33,28 @@ const ALLOWED_MATCHES = new Set(['exact', 'prefix', 'regex'])
 export function normalizePath(path: string): string {
   const trimmed = path.trim()
   if (!trimmed) return '/'
-  if (/^https?:\/\//i.test(trimmed)) return trimmed
   return trimmed.startsWith('/') ? trimmed : `/${trimmed}`
+}
+
+const safeSameSitePath = (path: string) => {
+  if (
+    !path.startsWith('/') ||
+    path.startsWith('//') ||
+    path.slice(1).includes('//') ||
+    /^https?:\/\//i.test(path) ||
+    /[\\?#\u0000-\u001f\u007f]/.test(path)
+  )
+    return false
+  try {
+    return path.split('/').every((part) => {
+      const decoded = decodeURIComponent(part)
+      return (
+        decoded !== '.' && decoded !== '..' && !decoded.includes('/') && !decoded.includes('\\')
+      )
+    })
+  } catch {
+    return false
+  }
 }
 
 export function validateRedirectRuleInput(
@@ -50,6 +70,14 @@ export function validateRedirectRuleInput(
   if (!rule.toPath || !rule.toPath.trim()) {
     return { valid: false, error: 'Target path (toPath) is required.' }
   }
+  if (/^https?:\/\//i.test(rule.fromPath) || /^https?:\/\//i.test(rule.toPath))
+    return { valid: false, error: 'Redirects must remain on this site.' }
+  if (!safeSameSitePath(from) || !safeSameSitePath(to))
+    return {
+      valid: false,
+      error:
+        'Redirect paths must be safe same-site paths without traversal, query, or fragment parts.',
+    }
   if (from === to) {
     return { valid: false, error: 'A redirect cannot target its own source path.' }
   }

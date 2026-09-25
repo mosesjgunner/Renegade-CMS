@@ -62,6 +62,10 @@ try {
   console.log(
     'PASS: Next.js public/admin routes and Payload PostgreSQL persistence are operational.',
   )
+} catch (err) {
+  console.error('Smoke test failed:', err)
+  console.error('App logs:', logs)
+  throw err
 } finally {
   app.kill('SIGTERM')
   app.stdout.destroy()

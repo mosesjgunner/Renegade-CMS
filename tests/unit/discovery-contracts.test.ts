@@ -4,6 +4,7 @@ import {
   resolveRedirect,
   validateRedirectRule,
 } from '../../src/modules/public/discovery'
+import { validateRedirectRuleInput } from '../../src/modules/public/redirect-manager'
 
 const publicDocument = {
   id: 'a',
@@ -71,5 +72,11 @@ describe('public discovery contracts', () => {
     expect(resolveRedirect(rules, 'one', '/a')).toEqual({ error: 'loop' })
     expect(resolveRedirect(rules, 'two', '/old')).toBeNull()
     expect(validateRedirectRule({ ...rules[0], fromPath: '//evil' })).not.toBe(true)
+    expect(
+      validateRedirectRuleInput({ fromPath: '/old', toPath: 'https://attacker.test' }).valid,
+    ).toBe(false)
+    expect(validateRedirectRuleInput({ fromPath: '/%2e%2e/private', toPath: '/new' }).valid).toBe(
+      false,
+    )
   })
 })

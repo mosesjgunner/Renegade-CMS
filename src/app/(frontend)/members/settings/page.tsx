@@ -1,8 +1,10 @@
 'use client'
 
 import { FormEvent, useEffect, useState } from 'react'
+import Link from 'next/link'
 import { createMemberPasskey } from '@/modules/identity/member-passkey-browser'
 import { MemberRelationshipList } from '@/modules/community/MemberRelationshipList'
+import { NotificationPreferences } from '@/modules/community/NotificationPreferences'
 
 function csrfHeader(): Record<string, string> {
   const token = document.cookie
@@ -106,6 +108,46 @@ export default function MemberSettingsPage() {
     })
     setMessage(response.ok ? 'Account deactivated.' : 'Could not deactivate account.')
   }
+  async function exportData() {
+    setMessage('Exporting member data…')
+    const response = await fetch('/api/member-auth/export')
+    if (!response.ok) return setMessage('Could not export member data.')
+    const blob = await response.blob()
+    const url = window.URL.createObjectURL(blob)
+    const a = document.createElement('a')
+    a.href = url
+    a.download = 'member-data-export.json'
+    document.body.appendChild(a)
+    a.click()
+    a.remove()
+    setMessage('Member data export downloaded.')
+  }
+  async function deleteAccount() {
+    if (
+      !window.confirm(
+        'Are you sure you want to request permanent account deletion? This starts a cooling-off period before full data anonymization.',
+      )
+    )
+      return
+    const response = await fetch('/api/member-auth/delete', {
+      method: 'POST',
+      headers: csrfHeader(),
+    })
+    setMessage(
+      response.ok
+        ? 'Account deletion requested. You have been signed out.'
+        : 'Could not request account deletion.',
+    )
+  }
+  async function reactivateAccount() {
+    const response = await fetch('/api/member-auth/reactivate', {
+      method: 'POST',
+      headers: csrfHeader(),
+    })
+    setMessage(
+      response.ok ? 'Account reactivated and deletion cancelled.' : 'Could not reactivate account.',
+    )
+  }
   async function enrollPasskey() {
     if (!window.PublicKeyCredential)
       return setMessage('Passkeys are not supported by this browser.')
@@ -131,6 +173,27 @@ export default function MemberSettingsPage() {
       setMessage('Passkey enrollment was cancelled or could not be completed.')
     }
   }
+  if (message === 'Sign in required.') {
+    return (
+      <main className="max-w-xl mx-auto px-6 py-16">
+        <h1 className="text-3xl font-bold">Member settings</h1>
+        <div className="mt-6 p-8 rounded-xl border border-stone-200 bg-stone-50 dark:border-stone-800 dark:bg-stone-900 text-center">
+          <p className="text-base text-stone-700 dark:text-stone-300">
+            Sign in is required to view and manage your member profile and settings.
+          </p>
+          <div className="mt-5">
+            <Link
+              href="/member-auth"
+              className="inline-block px-5 py-2.5 rounded-lg bg-stone-900 text-white font-medium hover:bg-stone-800 dark:bg-stone-100 dark:text-stone-900 dark:hover:bg-white transition"
+            >
+              Sign in or create account &rarr;
+            </Link>
+          </div>
+        </div>
+      </main>
+    )
+  }
+
   return (
     <main className="max-w-xl mx-auto px-6 py-16">
       <h1 className="text-3xl font-bold">Member settings</h1>
@@ -438,6 +501,7 @@ export default function MemberSettingsPage() {
         </button>
       </section>
       {siteId ? <MemberRelationshipList siteId={siteId} /> : null}
+      {siteId ? <NotificationPreferences siteId={siteId} /> : null}
       <section className="mt-8" aria-label="Profile revision history">
         <h2 className="text-xl font-semibold">Profile revision history</h2>
         {history.length ? (
@@ -453,9 +517,31 @@ export default function MemberSettingsPage() {
           <p>No consequential profile changes recorded yet.</p>
         )}
       </section>
-      <button className="btn mt-8" onClick={deactivate}>
-        Deactivate account
-      </button>
+      <section className="mt-8 rounded border p-4" aria-label="Account lifecycle and data">
+        <h2 className="text-xl font-semibold">Privacy, Data & Account</h2>
+        <p className="mt-2 text-sm text-stone-600 dark:text-stone-400">
+          Download a machine-readable copy of your profile, contributions, and messages, or manage
+          your account lifecycle.
+        </p>
+        <div className="mt-4 flex flex-wrap gap-3">
+          <button className="btn" type="button" onClick={() => void exportData()}>
+            Export my data (JSON)
+          </button>
+          <button className="btn" type="button" onClick={() => void reactivateAccount()}>
+            Reactivate account
+          </button>
+          <button className="btn" type="button" onClick={() => void deactivate()}>
+            Deactivate account
+          </button>
+          <button
+            className="btn btn-danger text-red-600 border-red-300 hover:bg-red-50 dark:hover:bg-red-950/30"
+            type="button"
+            onClick={() => void deleteAccount()}
+          >
+            Delete account
+          </button>
+        </div>
+      </section>
       {message ? (
         <p role="status" className="mt-4">
           {message}

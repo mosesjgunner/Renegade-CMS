@@ -6,6 +6,7 @@ import { notFound, permanentRedirect, redirect } from 'next/navigation'
 import type { Metadata } from 'next'
 
 import { canRenderPodcast } from '@/modules/media/publishing'
+import { resolvePublicUrl } from '@/modules/public/semantic-url'
 
 import {
   discoveryToMetadata,
@@ -194,6 +195,10 @@ export default async function PodcastShowPage({ params }: { params: Promise<{ sl
         ) : (
           <ul className="space-y-4">
             {publishedEpisodes.map((episode) => {
+              const episodePath = String(
+                episode.canonicalPath ||
+                  resolvePublicUrl({ kind: 'podcast-episode', slug: String(episode.slug) }),
+              )
               const epArtwork = episode.artwork ? value(episode.artwork) : artworkId
               const durationText = formatDuration(Number(episode.audio?.durationSeconds))
               const dateStr = episode.publishedAt
@@ -245,7 +250,7 @@ export default async function PodcastShowPage({ params }: { params: Promise<{ sl
                     </div>
 
                     <h3 className="text-lg font-bold text-white hover:text-emerald-400 transition">
-                      <Link href={`/podcasts/episodes/${episode.slug}`}>{episode.title}</Link>
+                      <Link href={episodePath}>{episode.title}</Link>
                     </h3>
 
                     {episode.description && (
@@ -256,7 +261,7 @@ export default async function PodcastShowPage({ params }: { params: Promise<{ sl
 
                     <div className="pt-2">
                       <Link
-                        href={`/podcasts/episodes/${episode.slug}`}
+                        href={episodePath}
                         className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-400 hover:text-emerald-300"
                       >
                         Listen to episode →

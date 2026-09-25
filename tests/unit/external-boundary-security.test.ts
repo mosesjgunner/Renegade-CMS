@@ -47,6 +47,26 @@ describe('external boundary hardening', () => {
     ).rejects.toThrow('size limit')
     await expect(readBoundedJson(new Response('{"large":true}'), 2)).rejects.toThrow('size limit')
   })
+  it('passes caller cancellation through the outbound boundary', async () => {
+    const cancel = new AbortController()
+    const pending = safeFetch(
+      'https://example.test/',
+      { signal: cancel.signal },
+      {
+        resolve: publicDns,
+        fetcher: async (_url, init) =>
+          new Promise((_resolve, reject) => {
+            if (init?.signal?.aborted) reject(new Error('aborted'))
+            else
+              init?.signal?.addEventListener('abort', () => reject(new Error('aborted')), {
+                once: true,
+              })
+          }),
+      },
+    )
+    cancel.abort()
+    await expect(pending).rejects.toThrow('aborted')
+  })
 
   it('rejects forged, replayed, stale, malformed, and misbound webhook events', () => {
     const raw = JSON.stringify({

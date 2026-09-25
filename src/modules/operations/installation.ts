@@ -13,6 +13,7 @@ import {
 import type { Payload } from 'payload'
 
 import type { AppConfig } from '../core/config'
+import { migrations } from '../../migrations'
 import { createPasskeySession } from './passkey-auth'
 import { requireAdminUser } from './passkey-auth'
 import {
@@ -55,6 +56,17 @@ export type InstallationStatus = {
   ownerEmail?: string
 }
 
+export type InstallationReadiness = {
+  ready: boolean
+  database: 'connected' | 'disconnected'
+  migrationState: 'applied' | 'pending' | 'uninitialized'
+  appliedMigrations: number
+  totalMigrations: number
+  pendingMigrations: string[]
+  installationState: 'uninitialized' | 'incomplete' | 'installing' | 'complete' | 'expired'
+  recoveryAction?: string
+}
+
 export class InstallationError extends Error {
   constructor(
     readonly code:
@@ -67,6 +79,140 @@ export class InstallationError extends Error {
   ) {
     super(message)
     this.name = 'InstallationError'
+  }
+}
+
+export async function getInstallationReadiness(
+  payload: Payload,
+  config?: AppConfig,
+): Promise<InstallationReadiness> {
+  let pool: SqlPool
+  try {
+    pool = getPool(payload)
+  } catch {
+    return {
+      ready: false,
+      database: 'disconnected',
+      migrationState: 'uninitialized',
+      appliedMigrations: 0,
+      totalMigrations: migrations.length,
+      pendingMigrations: migrations.map((m) => m.name),
+      installationState: 'uninitialized',
+      recoveryAction: 'Start PostgreSQL and verify DATABASE_URL in .env.',
+    }
+  }
+
+  try {
+    await pool.query('SELECT 1')
+  } catch {
+    return {
+      ready: false,
+      database: 'disconnected',
+      migrationState: 'uninitialized',
+      appliedMigrations: 0,
+      totalMigrations: migrations.length,
+      pendingMigrations: migrations.map((m) => m.name),
+      installationState: 'uninitialized',
+      recoveryAction:
+        'PostgreSQL is unavailable. Start container with "docker compose up -d" and verify DATABASE_URL.',
+    }
+  }
+
+  try {
+    const tableRes = await pool.query<{ table_name: string }>(
+      `SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'payload_migrations'`,
+    )
+    if (!tableRes.rows.length) {
+      return {
+        ready: false,
+        database: 'connected',
+        migrationState: 'uninitialized',
+        appliedMigrations: 0,
+        totalMigrations: migrations.length,
+        pendingMigrations: migrations.map((m) => m.name),
+        installationState: 'uninitialized',
+        recoveryAction: 'Run "npm run db:migrate" to apply schema migrations.',
+      }
+    }
+
+    const appliedRes = await pool.query<{ name: string }>(
+      'SELECT name FROM payload_migrations ORDER BY name',
+    )
+    const appliedNames = new Set(appliedRes.rows.map((row) => row.name))
+    const pending = migrations.filter((m) => !appliedNames.has(m.name)).map((m) => m.name)
+
+    if (pending.length > 0) {
+      return {
+        ready: false,
+        database: 'connected',
+        migrationState: 'pending',
+        appliedMigrations: appliedNames.size,
+        totalMigrations: migrations.length,
+        pendingMigrations: pending,
+        installationState: 'uninitialized',
+        recoveryAction: `Run "npm run db:migrate" to apply ${pending.length} pending migration(s).`,
+      }
+    }
+
+    const installTableRes = await pool.query<{ table_name: string }>(
+      `SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' AND table_name = 'installation_state'`,
+    )
+    if (!installTableRes.rows.length) {
+      return {
+        ready: false,
+        database: 'connected',
+        migrationState: 'uninitialized',
+        appliedMigrations: appliedNames.size,
+        totalMigrations: migrations.length,
+        pendingMigrations: ['installation_state'],
+        installationState: 'uninitialized',
+        recoveryAction: 'Run "npm run db:migrate" to create installation tables.',
+      }
+    }
+
+    const stateRow = await getState(pool)
+    let installState: InstallationReadiness['installationState'] = 'incomplete'
+    if (!stateRow) {
+      installState = 'incomplete'
+    } else if (stateRow.state === 'complete') {
+      installState = 'complete'
+    } else if (
+      stateRow.state === 'incomplete' &&
+      (!stateRow.bootstrap_expires_at || stateRow.bootstrap_expires_at <= new Date())
+    ) {
+      installState = 'expired'
+    } else {
+      installState = stateRow.state
+    }
+
+    let recoveryAction: string | undefined
+    if (installState === 'complete') {
+      recoveryAction = 'Installation is already complete. Sign in at /login.'
+    } else if (installState === 'expired') {
+      recoveryAction = 'Bootstrap token expired. Run "npm run installation:recover" locally.'
+    }
+
+    return {
+      ready: true,
+      database: 'connected',
+      migrationState: 'applied',
+      appliedMigrations: appliedNames.size,
+      totalMigrations: migrations.length,
+      pendingMigrations: [],
+      installationState: installState,
+      recoveryAction,
+    }
+  } catch (error) {
+    return {
+      ready: false,
+      database: 'connected',
+      migrationState: 'uninitialized',
+      appliedMigrations: 0,
+      totalMigrations: migrations.length,
+      pendingMigrations: migrations.map((m) => m.name),
+      installationState: 'uninitialized',
+      recoveryAction: 'Database error occurred. Verify schema integrity with "npm run db:status".',
+    }
   }
 }
 
@@ -395,6 +541,54 @@ export async function completePasskeyAuthentication(
   return session
 }
 
+export async function authenticateWithRecoveryCode(
+  payload: Payload,
+  config: AppConfig,
+  input: { email: string; recoveryCode: string },
+) {
+  const normalizedEmail = validateOwnerEmail(input.email)
+  const normalizedCode = input.recoveryCode
+    .trim()
+    .toUpperCase()
+    .replace(/[^A-F0-9]/g, '')
+  if (normalizedCode.length !== 20) {
+    throw new InstallationError('INSTALLATION_INVALID', 'Recovery code must be 20 characters.')
+  }
+
+  const pool = getPool(payload)
+  await enforceRateLimit(pool, `recovery:${hashValue(normalizedEmail, payload.config.secret)}`)
+
+  const codeHash = hashValue(normalizedCode, config.payloadSecret)
+
+  const userResult = await pool.query<{ id: string; email: string; role: string }>(
+    `SELECT id, email, role FROM users WHERE lower(email) = $1`,
+    [normalizedEmail],
+  )
+  const user = userResult.rows[0]
+  if (!user) {
+    throw new InstallationError('INSTALLATION_INVALID', 'Invalid recovery credentials.')
+  }
+
+  const codeResult = await pool.query<{ id: string; user_id: string; used_at: Date | null }>(
+    `UPDATE recovery_codes
+     SET used_at = now()
+     WHERE user_id = $1 AND code_hash = $2 AND used_at IS NULL
+     RETURNING id, user_id`,
+    [user.id, codeHash],
+  )
+
+  if (!codeResult.rowCount) {
+    throw new InstallationError('INSTALLATION_INVALID', 'Invalid or already used recovery code.')
+  }
+
+  const session = await createAdminSession(payload, config, {
+    email: user.email,
+    id: user.id,
+  })
+  await audit(payload, user.id, 'recovery_code.used')
+  return session
+}
+
 async function createAdminSession(
   payload: Payload,
   config: AppConfig,
@@ -605,12 +799,19 @@ function getPool(payload: Payload): SqlPool {
 }
 
 async function getState(pool: SqlPool): Promise<InstallationRow | undefined> {
-  const result = await pool.query<InstallationRow>(
-    `SELECT state, bootstrap_token_hash, bootstrap_expires_at, registration_challenge,
-            registration_email, registration_session_hash
-     FROM installation_state WHERE singleton = true`,
-  )
-  return result.rows[0]
+  try {
+    const result = await pool.query<InstallationRow>(
+      `SELECT state, bootstrap_token_hash, bootstrap_expires_at, registration_challenge,
+              registration_email, registration_session_hash
+       FROM installation_state WHERE singleton = true`,
+    )
+    return result.rows[0]
+  } catch (error: any) {
+    if (error?.code === '42P01') {
+      return undefined
+    }
+    throw error
+  }
 }
 
 async function getRequiredOpenState(

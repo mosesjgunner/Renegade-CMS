@@ -4,6 +4,31 @@ export const Sites: CollectionConfig = {
   slug: 'sites',
   admin: { useAsTitle: 'name' },
   access: { read: () => true },
+  hooks: {
+    beforeValidate: [
+      ({ data, originalDoc }) => {
+        if (!data) return data
+        if (
+          !data.commentReactionCodes ||
+          !Array.isArray(data.commentReactionCodes) ||
+          data.commentReactionCodes.length === 0
+        ) {
+          if (
+            Array.isArray(originalDoc?.commentReactionCodes) &&
+            originalDoc.commentReactionCodes.length > 0
+          ) {
+            data.commentReactionCodes = originalDoc.commentReactionCodes
+          } else {
+            data.commentReactionCodes = ['thumbs_up', 'heart', 'insightful', 'applause']
+          }
+        }
+        if (!data.communityRegistrationPolicy) {
+          data.communityRegistrationPolicy = originalDoc?.communityRegistrationPolicy ?? 'open'
+        }
+        return data
+      },
+    ],
+  },
   fields: [
     { name: 'name', type: 'text', required: true },
     { name: 'slug', type: 'text', required: true, unique: true, index: true },

@@ -65,6 +65,8 @@ export function CommerceOperations() {
   if (error) return <p role="alert">{error}</p>
   if (!data) return <p role="status">Loading payment operations…</p>
   const states = Object.keys(data.summary.counts).sort()
+  const recordUrl = (collection: string, id: string) =>
+    `/admin/collections/${collection}/${encodeURIComponent(id)}`
   return (
     <main>
       <h1>Commerce operations</h1>
@@ -80,7 +82,13 @@ export function CommerceOperations() {
         {' | '}
         <Link href="/admin/fulfillment">POD and fulfillment</Link>
         {' | '}
-        <Link href="/admin">Orders and audit</Link>
+        <Link href="/admin/collections/orders">Orders and audit</Link>
+        {' | '}
+        <Link href="/admin/collections/subscriptions">Subscriptions and dunning</Link>
+        {' | '}
+        <Link href="/admin/collections/entitlements">Entitlements</Link>
+        {' | '}
+        <Link href="/admin/collections/donation-campaigns">Fundraising</Link>
       </nav>
       <button type="button" onClick={() => void load()}>
         Refresh server truth
@@ -134,7 +142,8 @@ export function CommerceOperations() {
         <ul>
           {data.pendingActions.map((item) => (
             <li key={item.id}>
-              {item.state}: {item.amountMinor} {item.currency}; actions:{' '}
+              <Link href={recordUrl('payment-attempts', item.id)}>{item.state} payment</Link>:{' '}
+              {item.amountMinor} {item.currency}; opened {item.createdAt}; actions:{' '}
               {item.safeActions.join(', ') || 'inspect'}
             </li>
           ))}
@@ -143,13 +152,47 @@ export function CommerceOperations() {
         <p>No pending payment exceptions.</p>
       )}
       <h2>Refunds</h2>
-      <p>{data.refunds.length} recent refund records.</p>
+      <ul>
+        {data.refunds.map((item) => (
+          <li key={item.id}>
+            <Link href={recordUrl('commerce-refunds', item.id)}>{item.state} refund</Link>:{' '}
+            {item.amountMinor} {item.currency}; opened {item.createdAt}
+          </li>
+        ))}
+      </ul>
+      {!data.refunds.length && <p>No recent refunds.</p>}
       <h2>Disputes</h2>
-      <p>{data.disputes.length} recent dispute cases.</p>
+      <ul>
+        {data.disputes.map((item) => (
+          <li key={item.id}>
+            <Link href={recordUrl('commerce-disputes', item.id)}>{item.state} dispute</Link>:{' '}
+            {item.amountMinor} {item.currency}; deadline {item.deadlineAt ?? 'not supplied'}
+          </li>
+        ))}
+      </ul>
+      {!data.disputes.length && <p>No recent disputes.</p>}
       <h2>Webhook and ordering gaps</h2>
-      <p>{data.webhookFailures.length} events need reconciliation.</p>
+      <ul>
+        {data.webhookFailures.map((item) => (
+          <li key={item.id}>
+            <Link href={recordUrl('payment-webhook-events', item.id)}>{item.state} event</Link>:{' '}
+            {item.providerKey}; verified {item.verifiedAt}; {item.error ?? 'inspect event'}
+          </li>
+        ))}
+      </ul>
+      {!data.webhookFailures.length && <p>No recent webhook failures or ordering gaps.</p>}
       <h2>Quarantined reconciliation cases</h2>
-      <p>{data.reconciliationCases.length} cases require explicit review.</p>
+      <ul>
+        {data.reconciliationCases.map((item) => (
+          <li key={item.id}>
+            <Link href={recordUrl('commerce-reconciliation-cases', item.id)}>
+              {item.status} case
+            </Link>
+            : {item.reason}; opened {item.createdAt}
+          </li>
+        ))}
+      </ul>
+      {!data.reconciliationCases.length && <p>No quarantined cases.</p>}
       <DonationReconciliationPanel />
     </main>
   )

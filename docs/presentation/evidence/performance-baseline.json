@@ -1,15 +1,15 @@
 {
-  "timestamp": "2026-09-12T22:26:33.639Z",
+  "timestamp": "2026-09-24T05:16:03.250Z",
   "measurements": {
     "home": {
       "path": "/",
       "status": 200,
-      "durationMs": 138
+      "durationMs": 92
     },
     "campaign": {
       "path": "/campaign-2026",
       "status": 200,
-      "durationMs": 184
+      "durationMs": 161
     }
   },
   "bundleBoundary": {

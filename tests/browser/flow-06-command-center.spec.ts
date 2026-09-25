@@ -49,13 +49,13 @@ test('FLOW-06: Unified Workflow Command Center Browser & Multi-User Governance P
   await expect(page.getByText('Renegade CMoS FLOW-06')).toBeVisible()
 
   // 3. Verify KPI Metric Cards
-  await expect(page.getByText('My Work', { exact: true })).toBeVisible()
-  await expect(page.getByText('In Review', { exact: true })).toBeVisible()
-  await expect(page.getByText('Comments', { exact: true })).toBeVisible()
-  await expect(page.getByText('Overdue', { exact: true })).toBeVisible()
-  await expect(page.getByText('Blockers', { exact: true })).toBeVisible()
-  await expect(page.getByText('Stale Locales', { exact: true })).toBeVisible()
-  await expect(page.getByText('Worker', { exact: true })).toBeVisible()
+  await expect(page.getByText('My Work', { exact: true }).first()).toBeVisible()
+  await expect(page.getByText('In Review', { exact: true }).first()).toBeVisible()
+  await expect(page.getByText('Comments', { exact: true }).first()).toBeVisible()
+  await expect(page.getByText('Overdue', { exact: true }).first()).toBeVisible()
+  await expect(page.getByText('Blockers', { exact: true }).first()).toBeVisible()
+  await expect(page.getByText('Stale Locales', { exact: true }).first()).toBeVisible()
+  await expect(page.getByText('Worker', { exact: true }).first()).toBeVisible()
 
   // 4. Test Tab Navigation across sections
   // Team Queues
@@ -64,7 +64,7 @@ test('FLOW-06: Unified Workflow Command Center Browser & Multi-User Governance P
 
   // Comments
   await page.getByRole('button', { name: /Comments/ }).click()
-  await expect(page.getByText('Unresolved Review Comments')).toBeVisible()
+  await expect(page.getByRole('heading', { name: /Unresolved Review Comments/ })).toBeVisible()
 
   // Due / Overdue
   await page.getByRole('button', { name: /Due \/ Overdue/ }).click()
@@ -85,7 +85,7 @@ test('FLOW-06: Unified Workflow Command Center Browser & Multi-User Governance P
 
   // Releases
   await page.getByRole('button', { name: /Releases/ }).click()
-  await expect(page.getByText('Coordinated Releases')).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Coordinated Releases' })).toBeVisible()
 
   // Blockers & Quality
   await page.getByRole('button', { name: /Blockers & Quality/ }).click()

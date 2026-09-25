@@ -49,6 +49,7 @@ export type ConnectionGroup =
   | 'Identity'
   | 'Messaging'
   | 'Security'
+  | 'Webhooks'
 export type ConnectionScope = {
   siteId: string
   publicationId?: string
