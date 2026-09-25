@@ -1,0 +1,17 @@
+{
+  "node": {
+    "6016059c14e55321b8f55c38aa488e3ea7c00ac8ee": {
+      "workers": {
+        "app/(payload)/admin/[[...segments]]/page": {
+          "moduleId": 539998,
+          "async": false,
+          "codeHash": null
+        }
+      },
+      "filename": "node_modules/@payloadcms/next/dist/layouts/Root/index.js",
+      "exportedName": "$$RSC_SERVER_ACTION_0"
+    }
+  },
+  "edge": {},
+  "encryptionKey": "ExRVeSqW5yQ87Zjh8UCH/4lG2mPsntmETNbq+PH7a+Q="
+}

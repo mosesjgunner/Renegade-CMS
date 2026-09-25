@@ -1,0 +1,3 @@
+{
+  "/(frontend)/api/community/notification-preferences/route": "app/(frontend)/api/community/notification-preferences/route.js"
+}

@@ -1,0 +1,3 @@
+{
+  "/(frontend)/api/admin/discovery/route": "app/(frontend)/api/admin/discovery/route.js"
+}

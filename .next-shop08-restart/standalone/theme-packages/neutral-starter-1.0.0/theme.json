@@ -1,0 +1,10 @@
+{
+  "id": "neutral-starter",
+  "version": "1.0.0",
+  "label": "Neutral Starter",
+  "renegade": "^1.0.0",
+  "renderer": "neutral-starter",
+  "tokens": {},
+  "assets": [],
+  "migrations": []
+}

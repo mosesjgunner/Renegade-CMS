@@ -1,0 +1,13 @@
+var R=require("../../../../../../chunks/[turbopack]_runtime.js")("server/app/(frontend)/api/v1/notifications/mark-all-read/route.js")
+R.c("server/chunks/[root-of-the-server]__0n37ffy._.js")
+R.c("server/chunks/[root-of-the-server]__0v_wsvf._.js")
+R.c("server/chunks/node_modules_next_dist_compiled_06q7exl._.js")
+R.c("server/chunks/_0gg2am5._.js")
+R.c("server/chunks/[root-of-the-server]__12uj088._.js")
+R.c("server/chunks/_0847jrf._.js")
+R.c("server/chunks/_1ntdu-6._.js")
+R.c("server/chunks/node_modules_next_dist_17t41mm._.js")
+R.c("server/chunks/_0zvlmmz._.js")
+R.c("server/chunks/1oeh_server_app_(frontend)_api_v1_notifications_mark-all-read_route_actions_1-ag4zj.js")
+R.m(807019)
+module.exports=R.m(807019).exports

@@ -1,0 +1,3 @@
+{
+  "/(frontend)/api/v1/notifications/mark-all-read/route": "app/(frontend)/api/v1/notifications/mark-all-read/route.js"
+}

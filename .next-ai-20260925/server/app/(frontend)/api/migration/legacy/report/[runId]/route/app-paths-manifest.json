@@ -1,0 +1,3 @@
+{
+  "/(frontend)/api/migration/legacy/report/[runId]/route": "app/(frontend)/api/migration/legacy/report/[runId]/route.js"
+}

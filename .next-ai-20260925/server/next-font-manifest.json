@@ -1,0 +1,331 @@
+{
+  "app": {
+    "[project]/src/app/(frontend)/[...path]/page": [
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/9433d1a810498265-s.p.1hij5ex6k3v9q.woff2",
+      "static/media/5f402bd2d8eef81a-s.p.40bho2kviej2o.woff2",
+      "static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2"
+    ],
+    "[project]/src/app/(frontend)/admin/ai/page": [
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/9433d1a810498265-s.p.1hij5ex6k3v9q.woff2",
+      "static/media/5f402bd2d8eef81a-s.p.40bho2kviej2o.woff2",
+      "static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2"
+    ],
+    "[project]/src/app/(frontend)/admin/audience/page": [
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/9433d1a810498265-s.p.1hij5ex6k3v9q.woff2",
+      "static/media/5f402bd2d8eef81a-s.p.40bho2kviej2o.woff2",
+      "static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2"
+    ],
+    "[project]/src/app/(frontend)/admin/catalog/page": [
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/9433d1a810498265-s.p.1hij5ex6k3v9q.woff2",
+      "static/media/5f402bd2d8eef81a-s.p.40bho2kviej2o.woff2",
+      "static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2"
+    ],
+    "[project]/src/app/(frontend)/admin/catalog/preview/[id]/page": [
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/9433d1a810498265-s.p.1hij5ex6k3v9q.woff2",
+      "static/media/5f402bd2d8eef81a-s.p.40bho2kviej2o.woff2",
+      "static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2"
+    ],
+    "[project]/src/app/(frontend)/admin/commerce/page": [
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/9433d1a810498265-s.p.1hij5ex6k3v9q.woff2",
+      "static/media/5f402bd2d8eef81a-s.p.40bho2kviej2o.woff2",
+      "static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2"
+    ],
+    "[project]/src/app/(frontend)/admin/fulfillment/page": [
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/9433d1a810498265-s.p.1hij5ex6k3v9q.woff2",
+      "static/media/5f402bd2d8eef81a-s.p.40bho2kviej2o.woff2",
+      "static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2"
+    ],
+    "[project]/src/app/(frontend)/admin/migration/page": [
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/9433d1a810498265-s.p.1hij5ex6k3v9q.woff2",
+      "static/media/5f402bd2d8eef81a-s.p.40bho2kviej2o.woff2",
+      "static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2"
+    ],
+    "[project]/src/app/(frontend)/admin/releases/page": [
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/9433d1a810498265-s.p.1hij5ex6k3v9q.woff2",
+      "static/media/5f402bd2d8eef81a-s.p.40bho2kviej2o.woff2",
+      "static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2"
+    ],
+    "[project]/src/app/(frontend)/admin/social/page": [
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/9433d1a810498265-s.p.1hij5ex6k3v9q.woff2",
+      "static/media/5f402bd2d8eef81a-s.p.40bho2kviej2o.woff2",
+      "static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2"
+    ],
+    "[project]/src/app/(frontend)/admin/telemetry/page": [
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/9433d1a810498265-s.p.1hij5ex6k3v9q.woff2",
+      "static/media/5f402bd2d8eef81a-s.p.40bho2kviej2o.woff2",
+      "static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2"
+    ],
+    "[project]/src/app/(frontend)/admin/workflow/page": [
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/9433d1a810498265-s.p.1hij5ex6k3v9q.woff2",
+      "static/media/5f402bd2d8eef81a-s.p.40bho2kviej2o.woff2",
+      "static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2"
+    ],
+    "[project]/src/app/(frontend)/articles/[slug]/page": [
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/9433d1a810498265-s.p.1hij5ex6k3v9q.woff2",
+      "static/media/5f402bd2d8eef81a-s.p.40bho2kviej2o.woff2",
+      "static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2"
+    ],
+    "[project]/src/app/(frontend)/articles/page": [
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/9433d1a810498265-s.p.1hij5ex6k3v9q.woff2",
+      "static/media/5f402bd2d8eef81a-s.p.40bho2kviej2o.woff2",
+      "static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2"
+    ],
+    "[project]/src/app/(frontend)/builder/[id]/page": [
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/9433d1a810498265-s.p.1hij5ex6k3v9q.woff2",
+      "static/media/5f402bd2d8eef81a-s.p.40bho2kviej2o.woff2",
+      "static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2"
+    ],
+    "[project]/src/app/(frontend)/builder/[id]/preview/page": [
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/9433d1a810498265-s.p.1hij5ex6k3v9q.woff2",
+      "static/media/5f402bd2d8eef81a-s.p.40bho2kviej2o.woff2",
+      "static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2"
+    ],
+    "[project]/src/app/(frontend)/calendar/page": [
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/9433d1a810498265-s.p.1hij5ex6k3v9q.woff2",
+      "static/media/5f402bd2d8eef81a-s.p.40bho2kviej2o.woff2",
+      "static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2"
+    ],
+    "[project]/src/app/(frontend)/cart/page": [
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/9433d1a810498265-s.p.1hij5ex6k3v9q.woff2",
+      "static/media/5f402bd2d8eef81a-s.p.40bho2kviej2o.woff2",
+      "static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2"
+    ],
+    "[project]/src/app/(frontend)/checkout/cancel/page": [
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/9433d1a810498265-s.p.1hij5ex6k3v9q.woff2",
+      "static/media/5f402bd2d8eef81a-s.p.40bho2kviej2o.woff2",
+      "static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2"
+    ],
+    "[project]/src/app/(frontend)/checkout/return/page": [
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/9433d1a810498265-s.p.1hij5ex6k3v9q.woff2",
+      "static/media/5f402bd2d8eef81a-s.p.40bho2kviej2o.woff2",
+      "static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2"
+    ],
+    "[project]/src/app/(frontend)/checkout/test/[reference]/page": [
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/9433d1a810498265-s.p.1hij5ex6k3v9q.woff2",
+      "static/media/5f402bd2d8eef81a-s.p.40bho2kviej2o.woff2",
+      "static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2"
+    ],
+    "[project]/src/app/(frontend)/connections/page": [
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/9433d1a810498265-s.p.1hij5ex6k3v9q.woff2",
+      "static/media/5f402bd2d8eef81a-s.p.40bho2kviej2o.woff2",
+      "static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2"
+    ],
+    "[project]/src/app/(frontend)/donate/[campaignId]/page": [
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/9433d1a810498265-s.p.1hij5ex6k3v9q.woff2",
+      "static/media/5f402bd2d8eef81a-s.p.40bho2kviej2o.woff2",
+      "static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2"
+    ],
+    "[project]/src/app/(frontend)/donate/page": [
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/9433d1a810498265-s.p.1hij5ex6k3v9q.woff2",
+      "static/media/5f402bd2d8eef81a-s.p.40bho2kviej2o.woff2",
+      "static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2"
+    ],
+    "[project]/src/app/(frontend)/events/page": [
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/9433d1a810498265-s.p.1hij5ex6k3v9q.woff2",
+      "static/media/5f402bd2d8eef81a-s.p.40bho2kviej2o.woff2",
+      "static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2"
+    ],
+    "[project]/src/app/(frontend)/forums/[forumSlug]/[topicSlug]/page": [
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/9433d1a810498265-s.p.1hij5ex6k3v9q.woff2",
+      "static/media/5f402bd2d8eef81a-s.p.40bho2kviej2o.woff2",
+      "static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2"
+    ],
+    "[project]/src/app/(frontend)/forums/[forumSlug]/page": [
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/9433d1a810498265-s.p.1hij5ex6k3v9q.woff2",
+      "static/media/5f402bd2d8eef81a-s.p.40bho2kviej2o.woff2",
+      "static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2"
+    ],
+    "[project]/src/app/(frontend)/forums/page": [
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/9433d1a810498265-s.p.1hij5ex6k3v9q.woff2",
+      "static/media/5f402bd2d8eef81a-s.p.40bho2kviej2o.woff2",
+      "static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2"
+    ],
+    "[project]/src/app/(frontend)/graphics-studio/page": [
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/9433d1a810498265-s.p.1hij5ex6k3v9q.woff2",
+      "static/media/5f402bd2d8eef81a-s.p.40bho2kviej2o.woff2",
+      "static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2"
+    ],
+    "[project]/src/app/(frontend)/guided-setup/page": [
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/9433d1a810498265-s.p.1hij5ex6k3v9q.woff2",
+      "static/media/5f402bd2d8eef81a-s.p.40bho2kviej2o.woff2",
+      "static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2"
+    ],
+    "[project]/src/app/(frontend)/login/page": [
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/9433d1a810498265-s.p.1hij5ex6k3v9q.woff2",
+      "static/media/5f402bd2d8eef81a-s.p.40bho2kviej2o.woff2",
+      "static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2"
+    ],
+    "[project]/src/app/(frontend)/member-auth/page": [
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/9433d1a810498265-s.p.1hij5ex6k3v9q.woff2",
+      "static/media/5f402bd2d8eef81a-s.p.40bho2kviej2o.woff2",
+      "static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2"
+    ],
+    "[project]/src/app/(frontend)/member-auth/verify/page": [
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/9433d1a810498265-s.p.1hij5ex6k3v9q.woff2",
+      "static/media/5f402bd2d8eef81a-s.p.40bho2kviej2o.woff2",
+      "static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2"
+    ],
+    "[project]/src/app/(frontend)/members/[handle]/page": [
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/9433d1a810498265-s.p.1hij5ex6k3v9q.woff2",
+      "static/media/5f402bd2d8eef81a-s.p.40bho2kviej2o.woff2",
+      "static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2"
+    ],
+    "[project]/src/app/(frontend)/members/page": [
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/9433d1a810498265-s.p.1hij5ex6k3v9q.woff2",
+      "static/media/5f402bd2d8eef81a-s.p.40bho2kviej2o.woff2",
+      "static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2"
+    ],
+    "[project]/src/app/(frontend)/members/settings/page": [
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/9433d1a810498265-s.p.1hij5ex6k3v9q.woff2",
+      "static/media/5f402bd2d8eef81a-s.p.40bho2kviej2o.woff2",
+      "static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2"
+    ],
+    "[project]/src/app/(frontend)/messages/page": [
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/9433d1a810498265-s.p.1hij5ex6k3v9q.woff2",
+      "static/media/5f402bd2d8eef81a-s.p.40bho2kviej2o.woff2",
+      "static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2"
+    ],
+    "[project]/src/app/(frontend)/network/page": [
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/9433d1a810498265-s.p.1hij5ex6k3v9q.woff2",
+      "static/media/5f402bd2d8eef81a-s.p.40bho2kviej2o.woff2",
+      "static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2"
+    ],
+    "[project]/src/app/(frontend)/notifications/page": [
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/9433d1a810498265-s.p.1hij5ex6k3v9q.woff2",
+      "static/media/5f402bd2d8eef81a-s.p.40bho2kviej2o.woff2",
+      "static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2"
+    ],
+    "[project]/src/app/(frontend)/page": [
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/9433d1a810498265-s.p.1hij5ex6k3v9q.woff2",
+      "static/media/5f402bd2d8eef81a-s.p.40bho2kviej2o.woff2",
+      "static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2"
+    ],
+    "[project]/src/app/(frontend)/podcasts/[slug]/page": [
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/9433d1a810498265-s.p.1hij5ex6k3v9q.woff2",
+      "static/media/5f402bd2d8eef81a-s.p.40bho2kviej2o.woff2",
+      "static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2"
+    ],
+    "[project]/src/app/(frontend)/podcasts/episodes/[slug]/page": [
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/9433d1a810498265-s.p.1hij5ex6k3v9q.woff2",
+      "static/media/5f402bd2d8eef81a-s.p.40bho2kviej2o.woff2",
+      "static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2"
+    ],
+    "[project]/src/app/(frontend)/pos/page": [
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/9433d1a810498265-s.p.1hij5ex6k3v9q.woff2",
+      "static/media/5f402bd2d8eef81a-s.p.40bho2kviej2o.woff2",
+      "static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2"
+    ],
+    "[project]/src/app/(frontend)/preferences/page": [
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/9433d1a810498265-s.p.1hij5ex6k3v9q.woff2",
+      "static/media/5f402bd2d8eef81a-s.p.40bho2kviej2o.woff2",
+      "static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2"
+    ],
+    "[project]/src/app/(frontend)/preview/article/[token]/page": [
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/9433d1a810498265-s.p.1hij5ex6k3v9q.woff2",
+      "static/media/5f402bd2d8eef81a-s.p.40bho2kviej2o.woff2",
+      "static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2"
+    ],
+    "[project]/src/app/(frontend)/search/page": [
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/9433d1a810498265-s.p.1hij5ex6k3v9q.woff2",
+      "static/media/5f402bd2d8eef81a-s.p.40bho2kviej2o.woff2",
+      "static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2"
+    ],
+    "[project]/src/app/(frontend)/setup/page": [
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/9433d1a810498265-s.p.1hij5ex6k3v9q.woff2",
+      "static/media/5f402bd2d8eef81a-s.p.40bho2kviej2o.woff2",
+      "static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2"
+    ],
+    "[project]/src/app/(frontend)/social-studio/page": [
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/9433d1a810498265-s.p.1hij5ex6k3v9q.woff2",
+      "static/media/5f402bd2d8eef81a-s.p.40bho2kviej2o.woff2",
+      "static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2"
+    ],
+    "[project]/src/app/(frontend)/store/page": [
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/9433d1a810498265-s.p.1hij5ex6k3v9q.woff2",
+      "static/media/5f402bd2d8eef81a-s.p.40bho2kviej2o.woff2",
+      "static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2"
+    ],
+    "[project]/src/app/(frontend)/subscribe/confirm/page": [
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/9433d1a810498265-s.p.1hij5ex6k3v9q.woff2",
+      "static/media/5f402bd2d8eef81a-s.p.40bho2kviej2o.woff2",
+      "static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2"
+    ],
+    "[project]/src/app/(frontend)/subscribe/page": [
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/9433d1a810498265-s.p.1hij5ex6k3v9q.woff2",
+      "static/media/5f402bd2d8eef81a-s.p.40bho2kviej2o.woff2",
+      "static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2"
+    ],
+    "[project]/src/app/(frontend)/unsubscribe/page": [
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/9433d1a810498265-s.p.1hij5ex6k3v9q.woff2",
+      "static/media/5f402bd2d8eef81a-s.p.40bho2kviej2o.woff2",
+      "static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2"
+    ],
+    "[project]/src/app/(frontend)/videos/[slug]/page": [
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/9433d1a810498265-s.p.1hij5ex6k3v9q.woff2",
+      "static/media/5f402bd2d8eef81a-s.p.40bho2kviej2o.woff2",
+      "static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2"
+    ],
+    "[project]/src/app/(frontend)/videos/page": [
+      "static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+      "static/media/9433d1a810498265-s.p.1hij5ex6k3v9q.woff2",
+      "static/media/5f402bd2d8eef81a-s.p.40bho2kviej2o.woff2",
+      "static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2"
+    ]
+  },
+  "appUsingSizeAdjust": true,
+  "pages": {},
+  "pagesUsingSizeAdjust": false
+}

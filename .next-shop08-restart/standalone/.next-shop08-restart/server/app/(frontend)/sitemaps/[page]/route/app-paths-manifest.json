@@ -1,0 +1,3 @@
+{
+  "/(frontend)/sitemaps/[page]/route": "app/(frontend)/sitemaps/[page]/route.js"
+}

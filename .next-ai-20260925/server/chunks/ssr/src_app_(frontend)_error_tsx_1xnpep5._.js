@@ -1,0 +1,3 @@
+module.exports=[842923,a=>{"use strict";var b=a.i(187924),c=a.i(572131);a.s(["default",0,function({reset:a}){return(0,c.useEffect)(()=>{},[]),(0,b.jsxs)("main",{className:"mx-auto max-w-2xl px-6 py-24 text-center",children:[(0,b.jsx)("h1",{className:"text-3xl font-bold",children:"We could not load this page."}),(0,b.jsx)("p",{className:"mt-4 text-stone-600 dark:text-stone-300",children:"No unpublished content has been shown. Please try again."}),(0,b.jsx)("button",{type:"button",onClick:a,className:"mt-8 rounded bg-red-700 px-4 py-2 font-semibold text-white",children:"Try again"})]})}])}];
+
+//# sourceMappingURL=src_app_%28frontend%29_error_tsx_1xnpep5._.js.map

@@ -1,0 +1,3 @@
+{
+  "/(frontend)/api/auth/passkey/options/route": "app/(frontend)/api/auth/passkey/options/route.js"
+}

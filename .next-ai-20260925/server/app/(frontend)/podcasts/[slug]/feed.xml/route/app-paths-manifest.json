@@ -1,0 +1,3 @@
+{
+  "/(frontend)/podcasts/[slug]/feed.xml/route": "app/(frontend)/podcasts/[slug]/feed.xml/route.js"
+}

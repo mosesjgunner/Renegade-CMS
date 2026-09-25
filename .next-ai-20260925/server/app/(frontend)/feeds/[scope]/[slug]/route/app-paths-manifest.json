@@ -1,0 +1,3 @@
+{
+  "/(frontend)/feeds/[scope]/[slug]/route": "app/(frontend)/feeds/[scope]/[slug]/route.js"
+}

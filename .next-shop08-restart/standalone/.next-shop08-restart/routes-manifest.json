@@ -1,0 +1,1624 @@
+{
+  "version": 3,
+  "pages404": true,
+  "appType": "app",
+  "caseSensitive": false,
+  "basePath": "",
+  "redirects": [
+    {
+      "source": "/:path+/",
+      "destination": "/:path+",
+      "internal": true,
+      "priority": true,
+      "statusCode": 308,
+      "regex": "^(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))/$"
+    }
+  ],
+  "headers": [
+    {
+      "headers": [
+        {
+          "key": "Accept-CH",
+          "value": "Sec-CH-Prefers-Color-Scheme"
+        },
+        {
+          "key": "Vary",
+          "value": "Sec-CH-Prefers-Color-Scheme"
+        },
+        {
+          "key": "Critical-CH",
+          "value": "Sec-CH-Prefers-Color-Scheme"
+        },
+        {
+          "key": "X-Powered-By",
+          "value": "Next.js, Payload"
+        }
+      ],
+      "source": "/:path*",
+      "regex": "^(?:/((?:[^/]+?)(?:/(?:[^/]+?))*))?(?:/)?$"
+    }
+  ],
+  "onMatchHeaders": [],
+  "rewrites": {
+    "beforeFiles": [],
+    "afterFiles": [],
+    "fallback": []
+  },
+  "dynamicRoutes": [
+    {
+      "page": "/admin/catalog/preview/[id]",
+      "regex": "^/admin/catalog/preview/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/admin/catalog/preview/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/admin/[[...segments]]",
+      "regex": "^/admin(?:/(.+?))?(?:/)?$",
+      "routeKeys": {
+        "nxtPsegments": "nxtPsegments"
+      },
+      "namedRegex": "^/admin(?:/(?<nxtPsegments>.+?))?(?:/)?$"
+    },
+    {
+      "page": "/ap/actors/[handle]",
+      "regex": "^/ap/actors/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPhandle": "nxtPhandle"
+      },
+      "namedRegex": "^/ap/actors/(?<nxtPhandle>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/ap/actors/[handle]/followers",
+      "regex": "^/ap/actors/([^/]+?)/followers(?:/)?$",
+      "routeKeys": {
+        "nxtPhandle": "nxtPhandle"
+      },
+      "namedRegex": "^/ap/actors/(?<nxtPhandle>[^/]+?)/followers(?:/)?$"
+    },
+    {
+      "page": "/ap/actors/[handle]/following",
+      "regex": "^/ap/actors/([^/]+?)/following(?:/)?$",
+      "routeKeys": {
+        "nxtPhandle": "nxtPhandle"
+      },
+      "namedRegex": "^/ap/actors/(?<nxtPhandle>[^/]+?)/following(?:/)?$"
+    },
+    {
+      "page": "/ap/actors/[handle]/inbox",
+      "regex": "^/ap/actors/([^/]+?)/inbox(?:/)?$",
+      "routeKeys": {
+        "nxtPhandle": "nxtPhandle"
+      },
+      "namedRegex": "^/ap/actors/(?<nxtPhandle>[^/]+?)/inbox(?:/)?$"
+    },
+    {
+      "page": "/ap/actors/[handle]/outbox",
+      "regex": "^/ap/actors/([^/]+?)/outbox(?:/)?$",
+      "routeKeys": {
+        "nxtPhandle": "nxtPhandle"
+      },
+      "namedRegex": "^/ap/actors/(?<nxtPhandle>[^/]+?)/outbox(?:/)?$"
+    },
+    {
+      "page": "/api/admin/commerce/receipts/[orderId]/resend",
+      "regex": "^/api/admin/commerce/receipts/([^/]+?)/resend(?:/)?$",
+      "routeKeys": {
+        "nxtPorderId": "nxtPorderId"
+      },
+      "namedRegex": "^/api/admin/commerce/receipts/(?<nxtPorderId>[^/]+?)/resend(?:/)?$"
+    },
+    {
+      "page": "/api/admin/releases/[id]",
+      "regex": "^/api/admin/releases/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/admin/releases/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/commerce/donations/campaign/[campaignId]",
+      "regex": "^/api/commerce/donations/campaign/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPcampaignId": "nxtPcampaignId"
+      },
+      "namedRegex": "^/api/commerce/donations/campaign/(?<nxtPcampaignId>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/commerce/download/[grantKey]",
+      "regex": "^/api/commerce/download/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPgrantKey": "nxtPgrantKey"
+      },
+      "namedRegex": "^/api/commerce/download/(?<nxtPgrantKey>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/commerce/webhooks/[provider]",
+      "regex": "^/api/commerce/webhooks/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPprovider": "nxtPprovider"
+      },
+      "namedRegex": "^/api/commerce/webhooks/(?<nxtPprovider>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/community/conversations/[conversationId]",
+      "regex": "^/api/community/conversations/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPconversationId": "nxtPconversationId"
+      },
+      "namedRegex": "^/api/community/conversations/(?<nxtPconversationId>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/community/profiles/[handle]",
+      "regex": "^/api/community/profiles/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPhandle": "nxtPhandle"
+      },
+      "namedRegex": "^/api/community/profiles/(?<nxtPhandle>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/forms/[formId]",
+      "regex": "^/api/forms/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPformId": "nxtPformId"
+      },
+      "namedRegex": "^/api/forms/(?<nxtPformId>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/layouts/[id]",
+      "regex": "^/api/layouts/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/layouts/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/layouts/[id]/choices",
+      "regex": "^/api/layouts/([^/]+?)/choices(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/layouts/(?<nxtPid>[^/]+?)/choices(?:/)?$"
+    },
+    {
+      "page": "/api/layouts/[id]/rollback",
+      "regex": "^/api/layouts/([^/]+?)/rollback(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/layouts/(?<nxtPid>[^/]+?)/rollback(?:/)?$"
+    },
+    {
+      "page": "/api/media/sessions/[id]",
+      "regex": "^/api/media/sessions/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/media/sessions/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/media/[id]",
+      "regex": "^/api/media/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/media/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/media/[id]/variants",
+      "regex": "^/api/media/([^/]+?)/variants(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/media/(?<nxtPid>[^/]+?)/variants(?:/)?$"
+    },
+    {
+      "page": "/api/member-auth/sessions/[id]/revoke",
+      "regex": "^/api/member\\-auth/sessions/([^/]+?)/revoke(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/member\\-auth/sessions/(?<nxtPid>[^/]+?)/revoke(?:/)?$"
+    },
+    {
+      "page": "/api/migration/legacy/activate/[runId]",
+      "regex": "^/api/migration/legacy/activate/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPrunId": "nxtPrunId"
+      },
+      "namedRegex": "^/api/migration/legacy/activate/(?<nxtPrunId>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/migration/legacy/report/[runId]",
+      "regex": "^/api/migration/legacy/report/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPrunId": "nxtPrunId"
+      },
+      "namedRegex": "^/api/migration/legacy/report/(?<nxtPrunId>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/migration/legacy/rollback/[runId]",
+      "regex": "^/api/migration/legacy/rollback/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPrunId": "nxtPrunId"
+      },
+      "namedRegex": "^/api/migration/legacy/rollback/(?<nxtPrunId>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/realtime/drafts/[articleId]/checkpoint",
+      "regex": "^/api/realtime/drafts/([^/]+?)/checkpoint(?:/)?$",
+      "routeKeys": {
+        "nxtParticleId": "nxtParticleId"
+      },
+      "namedRegex": "^/api/realtime/drafts/(?<nxtParticleId>[^/]+?)/checkpoint(?:/)?$"
+    },
+    {
+      "page": "/api/v1/notifications/[id]/read",
+      "regex": "^/api/v1/notifications/([^/]+?)/read(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/api/v1/notifications/(?<nxtPid>[^/]+?)/read(?:/)?$"
+    },
+    {
+      "page": "/api/v1/sites/[site_id]/comments/[comment_id]/reactions",
+      "regex": "^/api/v1/sites/([^/]+?)/comments/([^/]+?)/reactions(?:/)?$",
+      "routeKeys": {
+        "nxtPsite_id": "nxtPsite_id",
+        "nxtPcomment_id": "nxtPcomment_id"
+      },
+      "namedRegex": "^/api/v1/sites/(?<nxtPsite_id>[^/]+?)/comments/(?<nxtPcomment_id>[^/]+?)/reactions(?:/)?$"
+    },
+    {
+      "page": "/api/v1/sites/[site_id]/spaces/[space_id]",
+      "regex": "^/api/v1/sites/([^/]+?)/spaces/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPsite_id": "nxtPsite_id",
+        "nxtPspace_id": "nxtPspace_id"
+      },
+      "namedRegex": "^/api/v1/sites/(?<nxtPsite_id>[^/]+?)/spaces/(?<nxtPspace_id>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/v1/sites/[site_id]/threads/[thread_id]",
+      "regex": "^/api/v1/sites/([^/]+?)/threads/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPsite_id": "nxtPsite_id",
+        "nxtPthread_id": "nxtPthread_id"
+      },
+      "namedRegex": "^/api/v1/sites/(?<nxtPsite_id>[^/]+?)/threads/(?<nxtPthread_id>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/v1/sites/[site_id]/threads/[thread_id]/comments",
+      "regex": "^/api/v1/sites/([^/]+?)/threads/([^/]+?)/comments(?:/)?$",
+      "routeKeys": {
+        "nxtPsite_id": "nxtPsite_id",
+        "nxtPthread_id": "nxtPthread_id"
+      },
+      "namedRegex": "^/api/v1/sites/(?<nxtPsite_id>[^/]+?)/threads/(?<nxtPthread_id>[^/]+?)/comments(?:/)?$"
+    },
+    {
+      "page": "/api/v1/sites/[site_id]/threads/[thread_id]/comments/[comment_id]",
+      "regex": "^/api/v1/sites/([^/]+?)/threads/([^/]+?)/comments/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPsite_id": "nxtPsite_id",
+        "nxtPthread_id": "nxtPthread_id",
+        "nxtPcomment_id": "nxtPcomment_id"
+      },
+      "namedRegex": "^/api/v1/sites/(?<nxtPsite_id>[^/]+?)/threads/(?<nxtPthread_id>[^/]+?)/comments/(?<nxtPcomment_id>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/v1/sites/[site_id]/threads/[thread_id]/subscriptions",
+      "regex": "^/api/v1/sites/([^/]+?)/threads/([^/]+?)/subscriptions(?:/)?$",
+      "routeKeys": {
+        "nxtPsite_id": "nxtPsite_id",
+        "nxtPthread_id": "nxtPthread_id"
+      },
+      "namedRegex": "^/api/v1/sites/(?<nxtPsite_id>[^/]+?)/threads/(?<nxtPthread_id>[^/]+?)/subscriptions(?:/)?$"
+    },
+    {
+      "page": "/api/v1/sites/[site_id]/topics",
+      "regex": "^/api/v1/sites/([^/]+?)/topics(?:/)?$",
+      "routeKeys": {
+        "nxtPsite_id": "nxtPsite_id"
+      },
+      "namedRegex": "^/api/v1/sites/(?<nxtPsite_id>[^/]+?)/topics(?:/)?$"
+    },
+    {
+      "page": "/api/v1/sites/[site_id]/topics/[topic_id]",
+      "regex": "^/api/v1/sites/([^/]+?)/topics/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPsite_id": "nxtPsite_id",
+        "nxtPtopic_id": "nxtPtopic_id"
+      },
+      "namedRegex": "^/api/v1/sites/(?<nxtPsite_id>[^/]+?)/topics/(?<nxtPtopic_id>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/api/v1/sites/[site_id]/topics/[topic_id]/read",
+      "regex": "^/api/v1/sites/([^/]+?)/topics/([^/]+?)/read(?:/)?$",
+      "routeKeys": {
+        "nxtPsite_id": "nxtPsite_id",
+        "nxtPtopic_id": "nxtPtopic_id"
+      },
+      "namedRegex": "^/api/v1/sites/(?<nxtPsite_id>[^/]+?)/topics/(?<nxtPtopic_id>[^/]+?)/read(?:/)?$"
+    },
+    {
+      "page": "/api/v1/[...segments]",
+      "regex": "^/api/v1/(.+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPsegments": "nxtPsegments"
+      },
+      "namedRegex": "^/api/v1/(?<nxtPsegments>.+?)(?:/)?$"
+    },
+    {
+      "page": "/api/[...slug]",
+      "regex": "^/api/(.+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPslug": "nxtPslug"
+      },
+      "namedRegex": "^/api/(?<nxtPslug>.+?)(?:/)?$"
+    },
+    {
+      "page": "/articles/[slug]",
+      "regex": "^/articles/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPslug": "nxtPslug"
+      },
+      "namedRegex": "^/articles/(?<nxtPslug>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/builder/[id]",
+      "regex": "^/builder/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/builder/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/builder/[id]/preview",
+      "regex": "^/builder/([^/]+?)/preview(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/builder/(?<nxtPid>[^/]+?)/preview(?:/)?$"
+    },
+    {
+      "page": "/checkout/test/[reference]",
+      "regex": "^/checkout/test/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPreference": "nxtPreference"
+      },
+      "namedRegex": "^/checkout/test/(?<nxtPreference>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/donate/[campaignId]",
+      "regex": "^/donate/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPcampaignId": "nxtPcampaignId"
+      },
+      "namedRegex": "^/donate/(?<nxtPcampaignId>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/events/[slug]/ics",
+      "regex": "^/events/([^/]+?)/ics(?:/)?$",
+      "routeKeys": {
+        "nxtPslug": "nxtPslug"
+      },
+      "namedRegex": "^/events/(?<nxtPslug>[^/]+?)/ics(?:/)?$"
+    },
+    {
+      "page": "/feeds/[scope]/[slug]",
+      "regex": "^/feeds/([^/]+?)/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPscope": "nxtPscope",
+        "nxtPslug": "nxtPslug"
+      },
+      "namedRegex": "^/feeds/(?<nxtPscope>[^/]+?)/(?<nxtPslug>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/media/[id]",
+      "regex": "^/media/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/media/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/members/[handle]",
+      "regex": "^/members/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPhandle": "nxtPhandle"
+      },
+      "namedRegex": "^/members/(?<nxtPhandle>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/podcasts/episodes/[slug]",
+      "regex": "^/podcasts/episodes/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPslug": "nxtPslug"
+      },
+      "namedRegex": "^/podcasts/episodes/(?<nxtPslug>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/podcasts/episodes/[slug]/chapters.json",
+      "regex": "^/podcasts/episodes/([^/]+?)/chapters\\.json(?:/)?$",
+      "routeKeys": {
+        "nxtPslug": "nxtPslug"
+      },
+      "namedRegex": "^/podcasts/episodes/(?<nxtPslug>[^/]+?)/chapters\\.json(?:/)?$"
+    },
+    {
+      "page": "/podcasts/episodes/[slug]/transcript",
+      "regex": "^/podcasts/episodes/([^/]+?)/transcript(?:/)?$",
+      "routeKeys": {
+        "nxtPslug": "nxtPslug"
+      },
+      "namedRegex": "^/podcasts/episodes/(?<nxtPslug>[^/]+?)/transcript(?:/)?$"
+    },
+    {
+      "page": "/podcasts/[slug]",
+      "regex": "^/podcasts/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPslug": "nxtPslug"
+      },
+      "namedRegex": "^/podcasts/(?<nxtPslug>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/podcasts/[slug]/feed.xml",
+      "regex": "^/podcasts/([^/]+?)/feed\\.xml(?:/)?$",
+      "routeKeys": {
+        "nxtPslug": "nxtPslug"
+      },
+      "namedRegex": "^/podcasts/(?<nxtPslug>[^/]+?)/feed\\.xml(?:/)?$"
+    },
+    {
+      "page": "/preview/article/[token]",
+      "regex": "^/preview/article/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPtoken": "nxtPtoken"
+      },
+      "namedRegex": "^/preview/article/(?<nxtPtoken>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/sitemaps/[page]",
+      "regex": "^/sitemaps/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPpage": "nxtPpage"
+      },
+      "namedRegex": "^/sitemaps/(?<nxtPpage>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/video-captions/[id]",
+      "regex": "^/video\\-captions/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid"
+      },
+      "namedRegex": "^/video\\-captions/(?<nxtPid>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/video-media/[id]/[filename]",
+      "regex": "^/video\\-media/([^/]+?)/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPid": "nxtPid",
+        "nxtPfilename": "nxtPfilename"
+      },
+      "namedRegex": "^/video\\-media/(?<nxtPid>[^/]+?)/(?<nxtPfilename>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/videos/[slug]",
+      "regex": "^/videos/([^/]+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPslug": "nxtPslug"
+      },
+      "namedRegex": "^/videos/(?<nxtPslug>[^/]+?)(?:/)?$"
+    },
+    {
+      "page": "/[...path]",
+      "regex": "^/(.+?)(?:/)?$",
+      "routeKeys": {
+        "nxtPpath": "nxtPpath"
+      },
+      "namedRegex": "^/(?<nxtPpath>.+?)(?:/)?$"
+    }
+  ],
+  "staticRoutes": [
+    {
+      "page": "/",
+      "regex": "^/(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/(?:/)?$"
+    },
+    {
+      "page": "/_global-error",
+      "regex": "^/_global\\-error(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/_global\\-error(?:/)?$"
+    },
+    {
+      "page": "/_not-found",
+      "regex": "^/_not\\-found(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/_not\\-found(?:/)?$"
+    },
+    {
+      "page": "/.well-known/nodeinfo",
+      "regex": "^/\\.well\\-known/nodeinfo(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/\\.well\\-known/nodeinfo(?:/)?$"
+    },
+    {
+      "page": "/.well-known/webfinger",
+      "regex": "^/\\.well\\-known/webfinger(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/\\.well\\-known/webfinger(?:/)?$"
+    },
+    {
+      "page": "/admin/audience",
+      "regex": "^/admin/audience(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/audience(?:/)?$"
+    },
+    {
+      "page": "/admin/catalog",
+      "regex": "^/admin/catalog(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/catalog(?:/)?$"
+    },
+    {
+      "page": "/admin/commerce",
+      "regex": "^/admin/commerce(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/commerce(?:/)?$"
+    },
+    {
+      "page": "/admin/fulfillment",
+      "regex": "^/admin/fulfillment(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/fulfillment(?:/)?$"
+    },
+    {
+      "page": "/admin/migration",
+      "regex": "^/admin/migration(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/migration(?:/)?$"
+    },
+    {
+      "page": "/admin/releases",
+      "regex": "^/admin/releases(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/releases(?:/)?$"
+    },
+    {
+      "page": "/admin/social",
+      "regex": "^/admin/social(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/social(?:/)?$"
+    },
+    {
+      "page": "/admin/workflow",
+      "regex": "^/admin/workflow(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/workflow(?:/)?$"
+    },
+    {
+      "page": "/api/admin/audience/command-center",
+      "regex": "^/api/admin/audience/command\\-center(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/audience/command\\-center(?:/)?$"
+    },
+    {
+      "page": "/api/admin/calendar/schedule",
+      "regex": "^/api/admin/calendar/schedule(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/calendar/schedule(?:/)?$"
+    },
+    {
+      "page": "/api/admin/catalog",
+      "regex": "^/api/admin/catalog(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/catalog(?:/)?$"
+    },
+    {
+      "page": "/api/admin/catalog/import",
+      "regex": "^/api/admin/catalog/import(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/catalog/import(?:/)?$"
+    },
+    {
+      "page": "/api/admin/commerce/affiliate",
+      "regex": "^/api/admin/commerce/affiliate(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/commerce/affiliate(?:/)?$"
+    },
+    {
+      "page": "/api/admin/commerce/dashboard",
+      "regex": "^/api/admin/commerce/dashboard(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/commerce/dashboard(?:/)?$"
+    },
+    {
+      "page": "/api/admin/commerce/donations",
+      "regex": "^/api/admin/commerce/donations(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/commerce/donations(?:/)?$"
+    },
+    {
+      "page": "/api/admin/commerce/reconcile",
+      "regex": "^/api/admin/commerce/reconcile(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/commerce/reconcile(?:/)?$"
+    },
+    {
+      "page": "/api/admin/commerce/refunds",
+      "regex": "^/api/admin/commerce/refunds(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/commerce/refunds(?:/)?$"
+    },
+    {
+      "page": "/api/admin/commerce/subscriptions",
+      "regex": "^/api/admin/commerce/subscriptions(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/commerce/subscriptions(?:/)?$"
+    },
+    {
+      "page": "/api/admin/commerce/subscriptions/grant",
+      "regex": "^/api/admin/commerce/subscriptions/grant(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/commerce/subscriptions/grant(?:/)?$"
+    },
+    {
+      "page": "/api/admin/discovery",
+      "regex": "^/api/admin/discovery(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/discovery(?:/)?$"
+    },
+    {
+      "page": "/api/admin/discovery/ai-suggestion/accept",
+      "regex": "^/api/admin/discovery/ai\\-suggestion/accept(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/discovery/ai\\-suggestion/accept(?:/)?$"
+    },
+    {
+      "page": "/api/admin/discovery/audit",
+      "regex": "^/api/admin/discovery/audit(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/discovery/audit(?:/)?$"
+    },
+    {
+      "page": "/api/admin/indexing/export",
+      "regex": "^/api/admin/indexing/export(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/indexing/export(?:/)?$"
+    },
+    {
+      "page": "/api/admin/indexing/search/reconcile",
+      "regex": "^/api/admin/indexing/search/reconcile(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/indexing/search/reconcile(?:/)?$"
+    },
+    {
+      "page": "/api/admin/navigation",
+      "regex": "^/api/admin/navigation(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/navigation(?:/)?$"
+    },
+    {
+      "page": "/api/admin/notifications",
+      "regex": "^/api/admin/notifications(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/notifications(?:/)?$"
+    },
+    {
+      "page": "/api/admin/redirects",
+      "regex": "^/api/admin/redirects(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/redirects(?:/)?$"
+    },
+    {
+      "page": "/api/admin/redirects/export",
+      "regex": "^/api/admin/redirects/export(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/redirects/export(?:/)?$"
+    },
+    {
+      "page": "/api/admin/redirects/import",
+      "regex": "^/api/admin/redirects/import(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/redirects/import(?:/)?$"
+    },
+    {
+      "page": "/api/admin/releases",
+      "regex": "^/api/admin/releases(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/releases(?:/)?$"
+    },
+    {
+      "page": "/api/admin/schedule-health",
+      "regex": "^/api/admin/schedule\\-health(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/schedule\\-health(?:/)?$"
+    },
+    {
+      "page": "/api/admin/social/accounts",
+      "regex": "^/api/admin/social/accounts(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/social/accounts(?:/)?$"
+    },
+    {
+      "page": "/api/admin/social/analytics",
+      "regex": "^/api/admin/social/analytics(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/social/analytics(?:/)?$"
+    },
+    {
+      "page": "/api/admin/social/dispatch",
+      "regex": "^/api/admin/social/dispatch(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/social/dispatch(?:/)?$"
+    },
+    {
+      "page": "/api/admin/social/worker",
+      "regex": "^/api/admin/social/worker(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/social/worker(?:/)?$"
+    },
+    {
+      "page": "/api/admin/themes",
+      "regex": "^/api/admin/themes(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/themes(?:/)?$"
+    },
+    {
+      "page": "/api/admin/translations",
+      "regex": "^/api/admin/translations(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/translations(?:/)?$"
+    },
+    {
+      "page": "/api/admin/webhooks",
+      "regex": "^/api/admin/webhooks(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/webhooks(?:/)?$"
+    },
+    {
+      "page": "/api/admin/workflow/actions",
+      "regex": "^/api/admin/workflow/actions(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/workflow/actions(?:/)?$"
+    },
+    {
+      "page": "/api/admin/workflow/audit",
+      "regex": "^/api/admin/workflow/audit(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/workflow/audit(?:/)?$"
+    },
+    {
+      "page": "/api/admin/workflow/bulk",
+      "regex": "^/api/admin/workflow/bulk(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/workflow/bulk(?:/)?$"
+    },
+    {
+      "page": "/api/admin/workflow/command-center",
+      "regex": "^/api/admin/workflow/command\\-center(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/workflow/command\\-center(?:/)?$"
+    },
+    {
+      "page": "/api/admin/workflow/comments",
+      "regex": "^/api/admin/workflow/comments(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/workflow/comments(?:/)?$"
+    },
+    {
+      "page": "/api/admin/workflow/queues",
+      "regex": "^/api/admin/workflow/queues(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/workflow/queues(?:/)?$"
+    },
+    {
+      "page": "/api/admin/workflow/templates",
+      "regex": "^/api/admin/workflow/templates(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/workflow/templates(?:/)?$"
+    },
+    {
+      "page": "/api/analytics/collect",
+      "regex": "^/api/analytics/collect(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/analytics/collect(?:/)?$"
+    },
+    {
+      "page": "/api/analytics/consent",
+      "regex": "^/api/analytics/consent(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/analytics/consent(?:/)?$"
+    },
+    {
+      "page": "/api/analytics/report",
+      "regex": "^/api/analytics/report(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/analytics/report(?:/)?$"
+    },
+    {
+      "page": "/api/auth/logout",
+      "regex": "^/api/auth/logout(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/auth/logout(?:/)?$"
+    },
+    {
+      "page": "/api/auth/passkey/complete",
+      "regex": "^/api/auth/passkey/complete(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/auth/passkey/complete(?:/)?$"
+    },
+    {
+      "page": "/api/auth/passkey/options",
+      "regex": "^/api/auth/passkey/options(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/auth/passkey/options(?:/)?$"
+    },
+    {
+      "page": "/api/auth/passkeys",
+      "regex": "^/api/auth/passkeys(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/auth/passkeys(?:/)?$"
+    },
+    {
+      "page": "/api/calendar/export",
+      "regex": "^/api/calendar/export(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/calendar/export(?:/)?$"
+    },
+    {
+      "page": "/api/commerce/affiliate/conversions",
+      "regex": "^/api/commerce/affiliate/conversions(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/commerce/affiliate/conversions(?:/)?$"
+    },
+    {
+      "page": "/api/commerce/affiliate/redirect",
+      "regex": "^/api/commerce/affiliate/redirect(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/commerce/affiliate/redirect(?:/)?$"
+    },
+    {
+      "page": "/api/commerce/cart",
+      "regex": "^/api/commerce/cart(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/commerce/cart(?:/)?$"
+    },
+    {
+      "page": "/api/commerce/cart/merge",
+      "regex": "^/api/commerce/cart/merge(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/commerce/cart/merge(?:/)?$"
+    },
+    {
+      "page": "/api/commerce/checkout/initiate",
+      "regex": "^/api/commerce/checkout/initiate(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/commerce/checkout/initiate(?:/)?$"
+    },
+    {
+      "page": "/api/commerce/checkout/status",
+      "regex": "^/api/commerce/checkout/status(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/commerce/checkout/status(?:/)?$"
+    },
+    {
+      "page": "/api/commerce/checkout/test/confirm",
+      "regex": "^/api/commerce/checkout/test/confirm(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/commerce/checkout/test/confirm(?:/)?$"
+    },
+    {
+      "page": "/api/commerce/crypto/verify",
+      "regex": "^/api/commerce/crypto/verify(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/commerce/crypto/verify(?:/)?$"
+    },
+    {
+      "page": "/api/commerce/donations/intent",
+      "regex": "^/api/commerce/donations/intent(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/commerce/donations/intent(?:/)?$"
+    },
+    {
+      "page": "/api/commerce/donations/privacy",
+      "regex": "^/api/commerce/donations/privacy(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/commerce/donations/privacy(?:/)?$"
+    },
+    {
+      "page": "/api/commerce/proposal",
+      "regex": "^/api/commerce/proposal(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/commerce/proposal(?:/)?$"
+    },
+    {
+      "page": "/api/commerce/referrals/claim",
+      "regex": "^/api/commerce/referrals/claim(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/commerce/referrals/claim(?:/)?$"
+    },
+    {
+      "page": "/api/commerce/subscriptions",
+      "regex": "^/api/commerce/subscriptions(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/commerce/subscriptions(?:/)?$"
+    },
+    {
+      "page": "/api/commerce/subscriptions/checkout",
+      "regex": "^/api/commerce/subscriptions/checkout(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/commerce/subscriptions/checkout(?:/)?$"
+    },
+    {
+      "page": "/api/community/blocks",
+      "regex": "^/api/community/blocks(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/community/blocks(?:/)?$"
+    },
+    {
+      "page": "/api/community/comments",
+      "regex": "^/api/community/comments(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/community/comments(?:/)?$"
+    },
+    {
+      "page": "/api/community/conversations",
+      "regex": "^/api/community/conversations(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/community/conversations(?:/)?$"
+    },
+    {
+      "page": "/api/community/directory",
+      "regex": "^/api/community/directory(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/community/directory(?:/)?$"
+    },
+    {
+      "page": "/api/community/history",
+      "regex": "^/api/community/history(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/community/history(?:/)?$"
+    },
+    {
+      "page": "/api/community/message-requests",
+      "regex": "^/api/community/message\\-requests(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/community/message\\-requests(?:/)?$"
+    },
+    {
+      "page": "/api/community/messages",
+      "regex": "^/api/community/messages(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/community/messages(?:/)?$"
+    },
+    {
+      "page": "/api/community/messages/report",
+      "regex": "^/api/community/messages/report(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/community/messages/report(?:/)?$"
+    },
+    {
+      "page": "/api/community/moderation",
+      "regex": "^/api/community/moderation(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/community/moderation(?:/)?$"
+    },
+    {
+      "page": "/api/community/moderation/appeals",
+      "regex": "^/api/community/moderation/appeals(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/community/moderation/appeals(?:/)?$"
+    },
+    {
+      "page": "/api/community/notification-preferences",
+      "regex": "^/api/community/notification\\-preferences(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/community/notification\\-preferences(?:/)?$"
+    },
+    {
+      "page": "/api/community/notifications",
+      "regex": "^/api/community/notifications(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/community/notifications(?:/)?$"
+    },
+    {
+      "page": "/api/community/posts",
+      "regex": "^/api/community/posts(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/community/posts(?:/)?$"
+    },
+    {
+      "page": "/api/community/reactions",
+      "regex": "^/api/community/reactions(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/community/reactions(?:/)?$"
+    },
+    {
+      "page": "/api/community/relationships",
+      "regex": "^/api/community/relationships(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/community/relationships(?:/)?$"
+    },
+    {
+      "page": "/api/community/reports",
+      "regex": "^/api/community/reports(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/community/reports(?:/)?$"
+    },
+    {
+      "page": "/api/community/threads",
+      "regex": "^/api/community/threads(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/community/threads(?:/)?$"
+    },
+    {
+      "page": "/api/email/webhook",
+      "regex": "^/api/email/webhook(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/email/webhook(?:/)?$"
+    },
+    {
+      "page": "/api/foundation-smoke",
+      "regex": "^/api/foundation\\-smoke(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/foundation\\-smoke(?:/)?$"
+    },
+    {
+      "page": "/api/graphql",
+      "regex": "^/api/graphql(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/graphql(?:/)?$"
+    },
+    {
+      "page": "/api/graphql-playground",
+      "regex": "^/api/graphql\\-playground(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/graphql\\-playground(?:/)?$"
+    },
+    {
+      "page": "/api/layouts",
+      "regex": "^/api/layouts(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/layouts(?:/)?$"
+    },
+    {
+      "page": "/api/layouts/overview",
+      "regex": "^/api/layouts/overview(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/layouts/overview(?:/)?$"
+    },
+    {
+      "page": "/api/layouts/patterns",
+      "regex": "^/api/layouts/patterns(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/layouts/patterns(?:/)?$"
+    },
+    {
+      "page": "/api/layouts/templates",
+      "regex": "^/api/layouts/templates(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/layouts/templates(?:/)?$"
+    },
+    {
+      "page": "/api/media",
+      "regex": "^/api/media(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/media(?:/)?$"
+    },
+    {
+      "page": "/api/media/attach",
+      "regex": "^/api/media/attach(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/media/attach(?:/)?$"
+    },
+    {
+      "page": "/api/media/command-center",
+      "regex": "^/api/media/command\\-center(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/media/command\\-center(?:/)?$"
+    },
+    {
+      "page": "/api/media/governance",
+      "regex": "^/api/media/governance(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/media/governance(?:/)?$"
+    },
+    {
+      "page": "/api/media/sessions",
+      "regex": "^/api/media/sessions(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/media/sessions(?:/)?$"
+    },
+    {
+      "page": "/api/media/upload",
+      "regex": "^/api/media/upload(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/media/upload(?:/)?$"
+    },
+    {
+      "page": "/api/member-auth/deactivate",
+      "regex": "^/api/member\\-auth/deactivate(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/member\\-auth/deactivate(?:/)?$"
+    },
+    {
+      "page": "/api/member-auth/delete",
+      "regex": "^/api/member\\-auth/delete(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/member\\-auth/delete(?:/)?$"
+    },
+    {
+      "page": "/api/member-auth/export",
+      "regex": "^/api/member\\-auth/export(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/member\\-auth/export(?:/)?$"
+    },
+    {
+      "page": "/api/member-auth/link",
+      "regex": "^/api/member\\-auth/link(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/member\\-auth/link(?:/)?$"
+    },
+    {
+      "page": "/api/member-auth/link/email",
+      "regex": "^/api/member\\-auth/link/email(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/member\\-auth/link/email(?:/)?$"
+    },
+    {
+      "page": "/api/member-auth/link/email/confirm",
+      "regex": "^/api/member\\-auth/link/email/confirm(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/member\\-auth/link/email/confirm(?:/)?$"
+    },
+    {
+      "page": "/api/member-auth/logout",
+      "regex": "^/api/member\\-auth/logout(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/member\\-auth/logout(?:/)?$"
+    },
+    {
+      "page": "/api/member-auth/magic-link/complete",
+      "regex": "^/api/member\\-auth/magic\\-link/complete(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/member\\-auth/magic\\-link/complete(?:/)?$"
+    },
+    {
+      "page": "/api/member-auth/magic-link/request",
+      "regex": "^/api/member\\-auth/magic\\-link/request(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/member\\-auth/magic\\-link/request(?:/)?$"
+    },
+    {
+      "page": "/api/member-auth/me",
+      "regex": "^/api/member\\-auth/me(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/member\\-auth/me(?:/)?$"
+    },
+    {
+      "page": "/api/member-auth/passkey/login/complete",
+      "regex": "^/api/member\\-auth/passkey/login/complete(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/member\\-auth/passkey/login/complete(?:/)?$"
+    },
+    {
+      "page": "/api/member-auth/passkey/login/options",
+      "regex": "^/api/member\\-auth/passkey/login/options(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/member\\-auth/passkey/login/options(?:/)?$"
+    },
+    {
+      "page": "/api/member-auth/passkey/register/complete",
+      "regex": "^/api/member\\-auth/passkey/register/complete(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/member\\-auth/passkey/register/complete(?:/)?$"
+    },
+    {
+      "page": "/api/member-auth/passkey/register/options",
+      "regex": "^/api/member\\-auth/passkey/register/options(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/member\\-auth/passkey/register/options(?:/)?$"
+    },
+    {
+      "page": "/api/member-auth/profile",
+      "regex": "^/api/member\\-auth/profile(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/member\\-auth/profile(?:/)?$"
+    },
+    {
+      "page": "/api/member-auth/profile-media",
+      "regex": "^/api/member\\-auth/profile\\-media(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/member\\-auth/profile\\-media(?:/)?$"
+    },
+    {
+      "page": "/api/member-auth/sessions",
+      "regex": "^/api/member\\-auth/sessions(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/member\\-auth/sessions(?:/)?$"
+    },
+    {
+      "page": "/api/member-auth/sessions/revoke-all",
+      "regex": "^/api/member\\-auth/sessions/revoke\\-all(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/member\\-auth/sessions/revoke\\-all(?:/)?$"
+    },
+    {
+      "page": "/api/member-auth/unlink",
+      "regex": "^/api/member\\-auth/unlink(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/member\\-auth/unlink(?:/)?$"
+    },
+    {
+      "page": "/api/migration/legacy/execute",
+      "regex": "^/api/migration/legacy/execute(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/migration/legacy/execute(?:/)?$"
+    },
+    {
+      "page": "/api/migration/legacy/inspect",
+      "regex": "^/api/migration/legacy/inspect(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/migration/legacy/inspect(?:/)?$"
+    },
+    {
+      "page": "/api/migration/legacy/preflight",
+      "regex": "^/api/migration/legacy/preflight(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/migration/legacy/preflight(?:/)?$"
+    },
+    {
+      "page": "/api/operations/diagnostics",
+      "regex": "^/api/operations/diagnostics(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/operations/diagnostics(?:/)?$"
+    },
+    {
+      "page": "/api/operations/support-bundle",
+      "regex": "^/api/operations/support\\-bundle(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/operations/support\\-bundle(?:/)?$"
+    },
+    {
+      "page": "/api/presentation/export",
+      "regex": "^/api/presentation/export(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/presentation/export(?:/)?$"
+    },
+    {
+      "page": "/api/presentation/import",
+      "regex": "^/api/presentation/import(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/presentation/import(?:/)?$"
+    },
+    {
+      "page": "/api/realtime/presence",
+      "regex": "^/api/realtime/presence(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/realtime/presence(?:/)?$"
+    },
+    {
+      "page": "/api/realtime/stream",
+      "regex": "^/api/realtime/stream(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/realtime/stream(?:/)?$"
+    },
+    {
+      "page": "/api/setup/complete",
+      "regex": "^/api/setup/complete(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/setup/complete(?:/)?$"
+    },
+    {
+      "page": "/api/setup/options",
+      "regex": "^/api/setup/options(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/setup/options(?:/)?$"
+    },
+    {
+      "page": "/api/subscribers/confirm",
+      "regex": "^/api/subscribers/confirm(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/subscribers/confirm(?:/)?$"
+    },
+    {
+      "page": "/api/subscribers/preferences",
+      "regex": "^/api/subscribers/preferences(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/subscribers/preferences(?:/)?$"
+    },
+    {
+      "page": "/api/subscribers/subscribe",
+      "regex": "^/api/subscribers/subscribe(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/subscribers/subscribe(?:/)?$"
+    },
+    {
+      "page": "/api/subscribers/unsubscribe",
+      "regex": "^/api/subscribers/unsubscribe(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/subscribers/unsubscribe(?:/)?$"
+    },
+    {
+      "page": "/api/v1/attachments/presign",
+      "regex": "^/api/v1/attachments/presign(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/v1/attachments/presign(?:/)?$"
+    },
+    {
+      "page": "/api/v1/moderation/cases",
+      "regex": "^/api/v1/moderation/cases(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/v1/moderation/cases(?:/)?$"
+    },
+    {
+      "page": "/api/v1/moderation/cases/batch",
+      "regex": "^/api/v1/moderation/cases/batch(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/v1/moderation/cases/batch(?:/)?$"
+    },
+    {
+      "page": "/api/v1/moderation/cases/export",
+      "regex": "^/api/v1/moderation/cases/export(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/v1/moderation/cases/export(?:/)?$"
+    },
+    {
+      "page": "/api/v1/notifications",
+      "regex": "^/api/v1/notifications(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/v1/notifications(?:/)?$"
+    },
+    {
+      "page": "/api/v1/notifications/mark-all-read",
+      "regex": "^/api/v1/notifications/mark\\-all\\-read(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/v1/notifications/mark\\-all\\-read(?:/)?$"
+    },
+    {
+      "page": "/api/v1/notifications/stream",
+      "regex": "^/api/v1/notifications/stream(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/v1/notifications/stream(?:/)?$"
+    },
+    {
+      "page": "/articles",
+      "regex": "^/articles(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/articles(?:/)?$"
+    },
+    {
+      "page": "/calendar",
+      "regex": "^/calendar(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/calendar(?:/)?$"
+    },
+    {
+      "page": "/cart",
+      "regex": "^/cart(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/cart(?:/)?$"
+    },
+    {
+      "page": "/checkout/cancel",
+      "regex": "^/checkout/cancel(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/checkout/cancel(?:/)?$"
+    },
+    {
+      "page": "/checkout/return",
+      "regex": "^/checkout/return(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/checkout/return(?:/)?$"
+    },
+    {
+      "page": "/connections",
+      "regex": "^/connections(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/connections(?:/)?$"
+    },
+    {
+      "page": "/donate",
+      "regex": "^/donate(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/donate(?:/)?$"
+    },
+    {
+      "page": "/events",
+      "regex": "^/events(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/events(?:/)?$"
+    },
+    {
+      "page": "/events/feed.ics",
+      "regex": "^/events/feed\\.ics(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/events/feed\\.ics(?:/)?$"
+    },
+    {
+      "page": "/feed.json",
+      "regex": "^/feed\\.json(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/feed\\.json(?:/)?$"
+    },
+    {
+      "page": "/feed.xml",
+      "regex": "^/feed\\.xml(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/feed\\.xml(?:/)?$"
+    },
+    {
+      "page": "/graphics-studio",
+      "regex": "^/graphics\\-studio(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/graphics\\-studio(?:/)?$"
+    },
+    {
+      "page": "/guided-setup",
+      "regex": "^/guided\\-setup(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/guided\\-setup(?:/)?$"
+    },
+    {
+      "page": "/health/live",
+      "regex": "^/health/live(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/health/live(?:/)?$"
+    },
+    {
+      "page": "/health/ready",
+      "regex": "^/health/ready(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/health/ready(?:/)?$"
+    },
+    {
+      "page": "/login",
+      "regex": "^/login(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/login(?:/)?$"
+    },
+    {
+      "page": "/member-auth",
+      "regex": "^/member\\-auth(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/member\\-auth(?:/)?$"
+    },
+    {
+      "page": "/member-auth/verify",
+      "regex": "^/member\\-auth/verify(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/member\\-auth/verify(?:/)?$"
+    },
+    {
+      "page": "/members",
+      "regex": "^/members(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/members(?:/)?$"
+    },
+    {
+      "page": "/members/settings",
+      "regex": "^/members/settings(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/members/settings(?:/)?$"
+    },
+    {
+      "page": "/messages",
+      "regex": "^/messages(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/messages(?:/)?$"
+    },
+    {
+      "page": "/network",
+      "regex": "^/network(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/network(?:/)?$"
+    },
+    {
+      "page": "/nodeinfo/2.1",
+      "regex": "^/nodeinfo/2\\.1(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/nodeinfo/2\\.1(?:/)?$"
+    },
+    {
+      "page": "/ops/rebuild-notification-counters",
+      "regex": "^/ops/rebuild\\-notification\\-counters(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/ops/rebuild\\-notification\\-counters(?:/)?$"
+    },
+    {
+      "page": "/pos",
+      "regex": "^/pos(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/pos(?:/)?$"
+    },
+    {
+      "page": "/preferences",
+      "regex": "^/preferences(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/preferences(?:/)?$"
+    },
+    {
+      "page": "/robots.txt",
+      "regex": "^/robots\\.txt(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/robots\\.txt(?:/)?$"
+    },
+    {
+      "page": "/search",
+      "regex": "^/search(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/search(?:/)?$"
+    },
+    {
+      "page": "/setup",
+      "regex": "^/setup(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/setup(?:/)?$"
+    },
+    {
+      "page": "/sitemap.xml",
+      "regex": "^/sitemap\\.xml(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/sitemap\\.xml(?:/)?$"
+    },
+    {
+      "page": "/social-studio",
+      "regex": "^/social\\-studio(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/social\\-studio(?:/)?$"
+    },
+    {
+      "page": "/store",
+      "regex": "^/store(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/store(?:/)?$"
+    },
+    {
+      "page": "/subscribe",
+      "regex": "^/subscribe(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/subscribe(?:/)?$"
+    },
+    {
+      "page": "/subscribe/confirm",
+      "regex": "^/subscribe/confirm(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/subscribe/confirm(?:/)?$"
+    },
+    {
+      "page": "/unsubscribe",
+      "regex": "^/unsubscribe(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/unsubscribe(?:/)?$"
+    },
+    {
+      "page": "/videos",
+      "regex": "^/videos(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/videos(?:/)?$"
+    }
+  ],
+  "dataRoutes": [],
+  "rsc": {
+    "header": "rsc",
+    "varyHeader": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+    "prefetchHeader": "next-router-prefetch",
+    "didPostponeHeader": "x-nextjs-postponed",
+    "contentTypeHeader": "text/x-component",
+    "suffix": ".rsc",
+    "prefetchSegmentHeader": "next-router-segment-prefetch",
+    "prefetchSegmentSuffix": ".segment.rsc",
+    "prefetchSegmentDirSuffix": ".segments",
+    "clientParamParsing": false,
+    "dynamicRSCPrerender": false
+  },
+  "rewriteHeaders": {
+    "pathHeader": "x-nextjs-rewritten-path",
+    "queryHeader": "x-nextjs-rewritten-query"
+  }
+}

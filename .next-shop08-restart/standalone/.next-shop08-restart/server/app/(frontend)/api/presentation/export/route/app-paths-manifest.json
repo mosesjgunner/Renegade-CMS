@@ -1,0 +1,3 @@
+{
+  "/(frontend)/api/presentation/export/route": "app/(frontend)/api/presentation/export/route.js"
+}

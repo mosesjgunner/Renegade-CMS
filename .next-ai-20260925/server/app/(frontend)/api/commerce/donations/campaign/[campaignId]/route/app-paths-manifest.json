@@ -1,0 +1,3 @@
+{
+  "/(frontend)/api/commerce/donations/campaign/[campaignId]/route": "app/(frontend)/api/commerce/donations/campaign/[campaignId]/route.js"
+}

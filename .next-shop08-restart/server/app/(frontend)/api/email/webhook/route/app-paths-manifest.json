@@ -1,0 +1,3 @@
+{
+  "/(frontend)/api/email/webhook/route": "app/(frontend)/api/email/webhook/route.js"
+}

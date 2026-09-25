@@ -1,0 +1,3 @@
+{
+  "/(frontend)/api/admin/social/dispatch/route": "app/(frontend)/api/admin/social/dispatch/route.js"
+}

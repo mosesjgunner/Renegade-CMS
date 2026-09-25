@@ -1,0 +1,13 @@
+var R=require("../../../../../../chunks/[turbopack]_runtime.js")("server/app/(frontend)/podcasts/episodes/[slug]/chapters.json/route.js")
+R.c("server/chunks/[root-of-the-server]__1z5ak18._.js")
+R.c("server/chunks/[root-of-the-server]__0v_wsvf._.js")
+R.c("server/chunks/node_modules_next_dist_compiled_06q7exl._.js")
+R.c("server/chunks/_1la37k6._.js")
+R.c("server/chunks/node_modules_next_dist_17t41mm._.js")
+R.c("server/chunks/_0847jrf._.js")
+R.c("server/chunks/[root-of-the-server]__12uj088._.js")
+R.c("server/chunks/_1ntdu-6._.js")
+R.c("server/chunks/_0zvlmmz._.js")
+R.c("server/chunks/1jng_app_(frontend)_podcasts_episodes_[slug]_chapters_json_route_actions_1a-4cqk.js")
+R.m(922009)
+module.exports=R.m(922009).exports

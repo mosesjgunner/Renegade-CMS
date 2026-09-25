@@ -1,0 +1,12 @@
+var R=require("../../../../../../chunks/[turbopack]_runtime.js")("server/app/(frontend)/api/member-auth/magic-link/request/route.js")
+R.c("server/chunks/[root-of-the-server]__01r6xob._.js")
+R.c("server/chunks/[root-of-the-server]__180bxv7._.js")
+R.c("server/chunks/node_modules_next_dist_compiled_06q7exl._.js")
+R.c("server/chunks/_0zvlmmz._.js")
+R.c("server/chunks/_0aekddv._.js")
+R.c("server/chunks/_1f_7_79._.js")
+R.c("server/chunks/[root-of-the-server]__12uj088._.js")
+R.c("server/chunks/node_modules_next_dist_17t41mm._.js")
+R.c("server/chunks/1oeh_server_app_(frontend)_api_member-auth_magic-link_request_route_actions_1bua8hy.js")
+R.m(339470)
+module.exports=R.m(339470).exports

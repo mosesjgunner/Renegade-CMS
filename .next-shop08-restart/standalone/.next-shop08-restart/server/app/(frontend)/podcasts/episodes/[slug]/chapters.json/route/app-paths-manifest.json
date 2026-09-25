@@ -1,0 +1,3 @@
+{
+  "/(frontend)/podcasts/episodes/[slug]/chapters.json/route": "app/(frontend)/podcasts/episodes/[slug]/chapters.json/route.js"
+}

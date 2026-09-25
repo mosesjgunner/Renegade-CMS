@@ -1,0 +1,3 @@
+{
+  "/(frontend)/api/member-auth/link/email/confirm/route": "app/(frontend)/api/member-auth/link/email/confirm/route.js"
+}

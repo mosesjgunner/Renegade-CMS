@@ -1,0 +1,3 @@
+{
+  "/(frontend)/api/commerce/cart/merge/route": "app/(frontend)/api/commerce/cart/merge/route.js"
+}

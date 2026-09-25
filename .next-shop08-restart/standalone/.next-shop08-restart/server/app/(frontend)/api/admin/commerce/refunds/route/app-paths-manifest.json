@@ -1,0 +1,3 @@
+{
+  "/(frontend)/api/admin/commerce/refunds/route": "app/(frontend)/api/admin/commerce/refunds/route.js"
+}

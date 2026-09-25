@@ -1,0 +1,3 @@
+{
+  "/(frontend)/api/commerce/subscriptions/checkout/route": "app/(frontend)/api/commerce/subscriptions/checkout/route.js"
+}

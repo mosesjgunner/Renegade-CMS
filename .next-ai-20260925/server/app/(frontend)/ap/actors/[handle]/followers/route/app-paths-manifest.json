@@ -1,0 +1,3 @@
+{
+  "/(frontend)/ap/actors/[handle]/followers/route": "app/(frontend)/ap/actors/[handle]/followers/route.js"
+}

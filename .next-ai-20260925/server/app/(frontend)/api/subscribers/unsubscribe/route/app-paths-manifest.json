@@ -1,0 +1,3 @@
+{
+  "/(frontend)/api/subscribers/unsubscribe/route": "app/(frontend)/api/subscribers/unsubscribe/route.js"
+}
