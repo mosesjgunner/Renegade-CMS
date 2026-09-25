@@ -387,7 +387,7 @@ export async function POST(request: Request) {
         }
 
         const rotated = rotateMachineCredential({
-          id: String(existing.id),
+          id: String((existing as any).id),
           name: String((existing as any).name),
           siteId: asId((existing as any).site),
           publicationId: (existing as any).publication ? asId((existing as any).publication) : null,
