@@ -336,10 +336,22 @@ function BrandStep({
         <select
           className="form-input text-sm"
           value={form.starterType}
-          onChange={(event) =>
-            update('starterType', event.target.value as OnboardingInput['starterType'])
-          }
+          onChange={(event) => {
+            const nextType = event.target.value as OnboardingInput['starterType']
+            update('starterType', nextType)
+            if (nextType === 'publication-community') {
+              update('themeId', 'neutral-starter')
+            } else if (nextType === 'campaign-commerce') {
+              update('themeId', 'renegade-party')
+            }
+          }}
         >
+          <option value="publication-community">
+            ★ Publication / Community Starter (The Vanguard Chronicle)
+          </option>
+          <option value="campaign-commerce">
+            ★ Campaign / Commerce Starter (Forward for the People)
+          </option>
           <option value="creator-publication">Creator / publication</option>
           <option value="business">Business</option>
           <option value="nonprofit-community">Nonprofit / community</option>

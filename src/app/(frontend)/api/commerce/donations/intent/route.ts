@@ -346,25 +346,42 @@ export async function POST(request: Request) {
       { status: 422 },
     )
   }
-  const created = await payload.create({
-    collection: 'donation-intents',
-    data: {
-      site: siteId,
-      campaign: campaign.id,
-      idempotencyKey,
-      campaignVersion: Number(campaign.version),
-      designation: input.designation,
-      donorSnapshot: intent.donorSnapshot,
-      moneySnapshot: intent.money,
-      recognition,
-      publicDisplayName: intent.publicDisplayName,
-      donorMessage: intent.donorMessage,
-      trackingSource: intent.trackingSource,
-      recurrence: input.recurrence,
-      lifecycle: 'created',
-    },
-    overrideAccess: true,
-  })
+  let created: any
+  try {
+    created = await payload.create({
+      collection: 'donation-intents',
+      data: {
+        site: siteId,
+        campaign: campaign.id,
+        idempotencyKey,
+        campaignVersion: Number(campaign.version),
+        designation: input.designation,
+        donorSnapshot: intent.donorSnapshot,
+        moneySnapshot: intent.money,
+        recognition,
+        publicDisplayName: intent.publicDisplayName,
+        donorMessage: intent.donorMessage,
+        trackingSource: intent.trackingSource,
+        recurrence: input.recurrence,
+        lifecycle: 'created',
+      },
+      overrideAccess: true,
+    })
+  } catch (error) {
+    const raced = await payload.find({
+      collection: 'donation-intents',
+      where: { idempotencyKey: { equals: idempotencyKey } },
+      limit: 1,
+      depth: 0,
+      overrideAccess: true,
+    })
+    if (raced.docs.length)
+      return NextResponse.json(
+        { error: 'Checkout setup is already in progress. Retry with the same details and key.' },
+        { status: 409 },
+      )
+    throw error
+  }
   const scope = {
     site: siteId,
     ...(id(campaign.publication) ? { publication: id(campaign.publication) } : {}),

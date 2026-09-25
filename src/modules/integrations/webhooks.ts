@@ -32,9 +32,10 @@ const id = (value: unknown) =>
   String(typeof value === 'object' && value ? (value as { id?: unknown }).id : value)
 const supportedTarget = (target: string) => {
   const url = new URL(target)
-  if (url.protocol !== 'https:' && !(process.env.NODE_ENV === 'test' && url.protocol === 'http:'))
+  const isTest = process.env.NODE_ENV === 'test'
+  if (url.protocol !== 'https:' && !(isTest && url.protocol === 'http:'))
     throw new Error('Webhook targets must use HTTPS.')
-  if (url.username || url.password || ['localhost', '127.0.0.1', '[::1]'].includes(url.hostname))
+  if (url.username || url.password || (!isTest && ['localhost', '127.0.0.1', '[::1]'].includes(url.hostname)))
     throw new Error('Webhook target is not permitted.')
   return url
 }

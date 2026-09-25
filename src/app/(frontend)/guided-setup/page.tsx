@@ -47,6 +47,27 @@ export default function GuidedSetupPage() {
     }
   }
 
+  const installFullStarter = async (starterId: 'publication-community' | 'campaign-commerce') => {
+    setBusy(true)
+    try {
+      const response = await fetch('/api/admin/starters', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ action: 'install', siteId, starterId }),
+      })
+      const data = await response.json()
+      if (response.ok) {
+        setMessage(`✓ ${data.summary || 'Complete starter installed and published!'}`)
+      } else {
+        setMessage(`Error: ${data.error || 'Failed to install starter.'}`)
+      }
+    } catch {
+      setMessage('Network error during starter installation.')
+    } finally {
+      setBusy(false)
+    }
+  }
+
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-16 space-y-10">
       {/* Header */}
@@ -63,10 +84,67 @@ export default function GuidedSetupPage() {
             other advanced capabilities are optional and can be enabled later in Capability Center.
           </p>
         </div>
-        <Link href="/admin" className="btn btn-secondary text-xs">
-          Open Payload Studio
-        </Link>
+        <div className="flex gap-2">
+          <Link href="/admin/capabilities" className="btn btn-secondary text-xs">
+            Open Starter Studio
+          </Link>
+          <Link href="/admin" className="btn btn-secondary text-xs">
+            Open Payload Studio
+          </Link>
+        </div>
       </div>
+
+      {/* Production Starter Quick-Install Banner */}
+      <section aria-label="Production Starters" className="p-6 rounded-2xl bg-gradient-to-r from-stone-900 to-stone-800 text-white shadow-lg space-y-4">
+        <div>
+          <span className="text-xs uppercase tracking-widest text-red-400 font-bold">Recommended</span>
+          <h2 className="text-xl font-bold mt-1">Complete Production Starters</h2>
+          <p className="text-xs text-stone-300 mt-1 max-w-3xl">
+            Install an entire production-grade experience with realistic sample content, governed media, and published visitor journeys (home, articles, search, signup, members, and commerce/donations).
+          </p>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+          <div className="p-4 rounded-xl bg-white/10 backdrop-blur border border-white/10 flex flex-col justify-between gap-3">
+            <div>
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-sm">The Vanguard Chronicle</span>
+                <span className="text-[10px] bg-red-600/80 px-2 py-0.5 rounded text-white font-mono">Publication &amp; Community</span>
+              </div>
+              <p className="text-xs text-stone-300 mt-1">
+                Independent dispatches, investigative inquiries, community discussion hub, member profiles, and newsletter subscriptions.
+              </p>
+            </div>
+            <button
+              type="button"
+              disabled={busy}
+              onClick={() => void installFullStarter('publication-community')}
+              className="btn btn-primary text-xs w-full py-2"
+            >
+              {busy ? 'Installing...' : 'Install Publication & Community Starter →'}
+            </button>
+          </div>
+
+          <div className="p-4 rounded-xl bg-white/10 backdrop-blur border border-white/10 flex flex-col justify-between gap-3">
+            <div>
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-sm">Forward for the People</span>
+                <span className="text-[10px] bg-blue-600/80 px-2 py-0.5 rounded text-white font-mono">Campaign &amp; Commerce</span>
+              </div>
+              <p className="text-xs text-stone-300 mt-1">
+                Grassroots campaign hub, campaign store with merchandise, cart &amp; checkout, donations with FEC disclosures, and volunteer team.
+              </p>
+            </div>
+            <button
+              type="button"
+              disabled={busy}
+              onClick={() => void installFullStarter('campaign-commerce')}
+              className="btn btn-primary text-xs w-full py-2 bg-red-700 hover:bg-red-800"
+            >
+              {busy ? 'Installing...' : 'Install Campaign & Commerce Starter →'}
+            </button>
+          </div>
+        </div>
+      </section>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* Left Column: Preset Gallery & Inputs (7 cols) */}

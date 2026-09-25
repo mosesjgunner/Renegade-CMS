@@ -351,7 +351,8 @@ export default function SocialCommandCenter() {
             marginBottom: '16px',
           }}
         >
-          <strong>Simulation Mode:</strong> No live social network accounts configured in Collections &rarr; Social Accounts. Displaying simulated platform preview channels.
+          <strong>Simulation Mode:</strong> No live social network accounts configured in
+          Collections &rarr; Social Accounts. Displaying simulated platform preview channels.
         </div>
       ) : null}
 

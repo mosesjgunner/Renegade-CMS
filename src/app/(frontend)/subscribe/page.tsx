@@ -36,7 +36,8 @@ export default function SubscribePage() {
           Subscribe to Newsletter
         </h1>
         <p className="mt-2 text-sm text-stone-600 dark:text-stone-400">
-          Receive thoughtful dispatches, articles, and updates directly in your inbox. No spam, ever.
+          Receive thoughtful dispatches, articles, and updates directly in your inbox. No spam,
+          ever.
         </p>
 
         <form action={submit} className="mt-6 grid gap-4">

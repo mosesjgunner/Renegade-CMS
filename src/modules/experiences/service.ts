@@ -1,7 +1,7 @@
 import { createHash, randomUUID } from 'node:crypto'
 import type { Payload } from 'payload'
 
-import type { AnalyticsEventStore } from '../analytics/service'
+import { PayloadAnalyticsEventStore, type AnalyticsEventStore } from '../analytics/service'
 import {
   ANALYTICS_SCHEMA_VERSION,
   type EventType,
@@ -305,3 +305,19 @@ export class PayloadExperimentDecisionStore implements ExperimentDecisionStore {
     } as never)
   }
 }
+
+export const DEFAULT_REGISTERED_COMPONENTS: ReadonlySet<string> = new Set([
+  'publisher.newsletter-cta',
+  'publisher.cta',
+  'publisher.hero-action',
+])
+
+export function createExperiencesRuntimeService(
+  payload: Payload,
+  registeredComponents: ReadonlySet<string> = DEFAULT_REGISTERED_COMPONENTS,
+) {
+  const analyticsStore = new PayloadAnalyticsEventStore(payload)
+  const decisionStore = new PayloadExperimentDecisionStore(payload)
+  return new ExperiencesRuntimeService(analyticsStore, registeredComponents, decisionStore)
+}
+

@@ -117,79 +117,80 @@ export default function CatalogCommandCenter() {
               {items.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="py-8 text-center text-stone-500">
-                    No catalog products found. Create a product in Collections &rarr; Products to begin.
+                    No catalog products found. Create a product in Collections &rarr; Products to
+                    begin.
                   </td>
                 </tr>
               ) : (
                 items.map(({ document, readiness }) => {
-                const id = String(document.id)
-                const state = String(document.state)
-                return (
-                  <tr key={id}>
-                    <td>
-                      <input
-                        type="checkbox"
-                        aria-label={`Select ${String(document.name)}`}
-                        checked={selected.includes(id)}
-                        onChange={(event) =>
-                          setSelected(
-                            event.target.checked
-                              ? [...selected, id]
-                              : selected.filter((value) => value !== id),
-                          )
-                        }
-                      />
-                    </td>
-                    <th scope="row">
-                      {String(document.name)}
-                      <br />
-                      <small>{String(document.canonicalPath)}</small>
-                    </th>
-                    <td>{state}</td>
-                    <td>
-                      {readiness.ready ? (
-                        'Ready'
-                      ) : (
-                        <details>
-                          <summary>{readiness.blockers.length} blocker(s)</summary>
-                          <ul>
-                            {readiness.blockers.map((blocker) => (
-                              <li key={blocker}>{blocker}</li>
-                            ))}
-                          </ul>
-                        </details>
-                      )}
-                    </td>
-                    <td className="space-x-2">
-                      <a href={`/admin/collections/products/${encodeURIComponent(id)}`}>Edit</a>
-                      <a
-                        href={`/admin/catalog/preview/${encodeURIComponent(id)}`}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        Preview
-                      </a>
-                      {state === 'draft' ? (
-                        <button onClick={() => void transition(id, 'request-review')}>
-                          Request review
-                        </button>
-                      ) : null}
-                      {state === 'review' ? (
-                        <button onClick={() => void transition(id, 'approve')}>Approve</button>
-                      ) : null}
-                      {state === 'approved' ? (
-                        <button
-                          disabled={!readiness.ready}
-                          onClick={() => void transition(id, 'publish')}
+                  const id = String(document.id)
+                  const state = String(document.state)
+                  return (
+                    <tr key={id}>
+                      <td>
+                        <input
+                          type="checkbox"
+                          aria-label={`Select ${String(document.name)}`}
+                          checked={selected.includes(id)}
+                          onChange={(event) =>
+                            setSelected(
+                              event.target.checked
+                                ? [...selected, id]
+                                : selected.filter((value) => value !== id),
+                            )
+                          }
+                        />
+                      </td>
+                      <th scope="row">
+                        {String(document.name)}
+                        <br />
+                        <small>{String(document.canonicalPath)}</small>
+                      </th>
+                      <td>{state}</td>
+                      <td>
+                        {readiness.ready ? (
+                          'Ready'
+                        ) : (
+                          <details>
+                            <summary>{readiness.blockers.length} blocker(s)</summary>
+                            <ul>
+                              {readiness.blockers.map((blocker) => (
+                                <li key={blocker}>{blocker}</li>
+                              ))}
+                            </ul>
+                          </details>
+                        )}
+                      </td>
+                      <td className="space-x-2">
+                        <a href={`/admin/collections/products/${encodeURIComponent(id)}`}>Edit</a>
+                        <a
+                          href={`/admin/catalog/preview/${encodeURIComponent(id)}`}
+                          target="_blank"
+                          rel="noreferrer"
                         >
-                          Publish
-                        </button>
-                      ) : null}
-                    </td>
-                  </tr>
-                )
-              })
-            )}
+                          Preview
+                        </a>
+                        {state === 'draft' ? (
+                          <button onClick={() => void transition(id, 'request-review')}>
+                            Request review
+                          </button>
+                        ) : null}
+                        {state === 'review' ? (
+                          <button onClick={() => void transition(id, 'approve')}>Approve</button>
+                        ) : null}
+                        {state === 'approved' ? (
+                          <button
+                            disabled={!readiness.ready}
+                            onClick={() => void transition(id, 'publish')}
+                          >
+                            Publish
+                          </button>
+                        ) : null}
+                      </td>
+                    </tr>
+                  )
+                })
+              )}
             </tbody>
           </table>
         </div>

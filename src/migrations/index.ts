@@ -21,6 +21,9 @@ import * as contentReleaseRuntime from './20260923_110000_content_release_runtim
 import * as collectionScopeColumns from './20260924_000000_collection_scope_columns'
 import * as donationCheckoutIdempotency from './20260924_010000_donation_checkout_idempotency'
 import * as commerceJobEnum from './20260924_020000_commerce_job_enum'
+import * as aiProposals from './20260924_030000_ai_proposals'
+import * as aiLockedDocumentsRels from './20260924_040000_ai_locked_documents_rels'
+import * as aiBudgetReservation from './20260924_050000_ai_budget_reservation'
 import * as aud01AudienceEvidence from './20260920_010000_aud_01_audience_evidence'
 import * as aud02Forms from './20260920_020000_aud_02_forms'
 import * as aud03EmailComposer from './20260920_030000_aud_03_email_composer'
@@ -611,5 +614,20 @@ export const migrations = [
     up: commerceJobEnum.up,
     down: commerceJobEnum.down,
     name: '20260924_020000_commerce_job_enum',
+  },
+  {
+    up: aiProposals.up,
+    down: aiProposals.down,
+    name: '20260924_030000_ai_proposals',
+  },
+  {
+    up: aiLockedDocumentsRels.up,
+    down: aiLockedDocumentsRels.down,
+    name: '20260924_040000_ai_locked_documents_rels',
+  },
+  {
+    up: aiBudgetReservation.up,
+    down: aiBudgetReservation.down,
+    name: '20260924_050000_ai_budget_reservation',
   },
 ]

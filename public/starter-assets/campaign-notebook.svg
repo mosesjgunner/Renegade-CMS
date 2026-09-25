@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="600" height="600" role="img" aria-label="Organizer Field Notebook &amp; Pencil Set">
+  <rect width="600" height="600" fill="#f5f3ee" rx="16" />
+  <g transform="translate(150, 90)">
+    <!-- Notebook Cover -->
+    <rect x="0" y="0" width="260" height="380" rx="14" fill="#aa1d2f" stroke="#78111e" stroke-width="4" filter="drop-shadow(0 8px 16px rgba(0,0,0,0.1))" />
+    <rect x="0" y="0" width="30" height="380" fill="#78111e" />
+    <rect x="50" y="80" width="160" height="100" rx="6" fill="#fdfbf7" stroke="#e0d6c8" stroke-width="2" />
+    <text x="130" y="125" font-family="system-ui, sans-serif" font-size="13" font-weight="900" fill="#171719" text-anchor="middle">FIELD NOTES</text>
+    <text x="130" y="148" font-family="system-ui, sans-serif" font-size="10" font-weight="bold" fill="#aa1d2f" text-anchor="middle">CANVASSER EDITION</text>
+    <!-- Pencil -->
+    <g transform="translate(230, 40) rotate(15)">
+      <rect x="0" y="0" width="22" height="280" fill="#f59e0b" stroke="#b45309" stroke-width="2" />
+      <polygon points="0,280 22,280 11,320" fill="#fed7aa" stroke="#b45309" stroke-width="2" />
+      <polygon points="7,305 15,305 11,320" fill="#171719" />
+      <rect x="0" y="0" width="22" height="24" fill="#ec4899" />
+      <rect x="0" y="24" width="22" height="10" fill="#9ca3af" />
+    </g>
+  </g>
+</svg>

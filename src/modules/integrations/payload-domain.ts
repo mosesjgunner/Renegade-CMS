@@ -6,6 +6,7 @@ import {
   WebhookSubscriptions,
 } from '../../collections/Integrations'
 import type { DomainDefinition } from '../core/payload-domains'
+import { AiConnections, AiCredentials, AiProposals } from '../../collections/Ai'
 
 export const integrationsDomain: DomainDefinition = {
   id: 'integrations',
@@ -16,5 +17,8 @@ export const integrationsDomain: DomainDefinition = {
     WebhookSubscriptions,
     WebhookDeliveries,
     IntegrationAuditEvents,
+    AiConnections,
+    AiCredentials,
+    AiProposals,
   ],
 }

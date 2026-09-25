@@ -4,6 +4,7 @@ import { randomUUID } from 'node:crypto'
 import type { Payload } from 'payload'
 
 import { previewRecipe } from '../public/page-builder'
+import { installStarter } from '../starters/service'
 
 const CANONICAL_SLUG = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 
@@ -43,6 +44,8 @@ async function resolveUniqueProfileHandle(
 
 export const onboardingProfiles = ['Lean', 'Standard'] as const
 export const starterSiteTypes = [
+  'publication-community',
+  'campaign-commerce',
   'creator-publication',
   'business',
   'nonprofit-community',
@@ -295,6 +298,10 @@ async function provisionStarterContent(
   },
 ) {
   const { input, site, publication, space, member } = context
+  if (input.starterType === 'publication-community' || input.starterType === 'campaign-commerce') {
+    await installStarter(payload, { siteId: site.id, starterId: input.starterType })
+    return
+  }
   const recipe = recipeFor(input.starterType)
   const pages = [
     [

@@ -19,6 +19,8 @@ export default function PublishingLinks() {
       <Link href="/admin/social">Social Distribution</Link>
       <Link href="/admin/email-composer">Email Composer</Link>
       <Link href="/admin/audience">Audience Command Center</Link>
+      <Link href="/admin/moderation">Community Moderation</Link>
+      <Link href="/admin/telemetry">Telemetry & Experiments</Link>
       <Link href="/admin/catalog">Catalog</Link>
       <Link href="/admin/commerce">Commerce Operations</Link>
       <Link href="/admin/fulfillment">POD & Fulfillment</Link>

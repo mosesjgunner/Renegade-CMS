@@ -257,6 +257,11 @@ export const MediaAssets: CollectionConfig = {
         },
       },
     },
+    {
+      name: 'aiMediaProposals',
+      type: 'ui',
+      admin: { components: { Field: '@/modules/admin/AiProposalActionField#AiMediaActionField' } },
+    },
     { name: 'title', type: 'text', required: true },
     {
       name: 'kind',
@@ -914,6 +919,13 @@ export const Content: CollectionConfig = {
       name: 'discoveryPanel',
       type: 'ui',
       admin: { components: { Field: '@/modules/admin/DiscoveryPanel#DiscoveryPanel' } },
+    },
+    {
+      name: 'aiContentProposals',
+      type: 'ui',
+      admin: {
+        components: { Field: '@/modules/admin/AiProposalActionField#AiContentActionField' },
+      },
     },
     { name: 'relationships', type: 'relationship', relationTo: 'relationships', hasMany: true },
     { name: 'seoOverride', type: 'json' },

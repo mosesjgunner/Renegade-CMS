@@ -15,6 +15,7 @@ import {
   discoveryToMetadata,
   serializeJsonLd,
 } from '@/modules/public/discovery'
+import { PublicExperiment } from '@/modules/experiences/PublicExperiment'
 
 export const dynamic = 'force-dynamic'
 
@@ -164,6 +165,7 @@ export default async function HomePage() {
               </Link>
             </div>
           </section>
+          <PublicExperiment siteId={siteId} />
 
           {/* Recent Articles */}
           <section className="py-12">
