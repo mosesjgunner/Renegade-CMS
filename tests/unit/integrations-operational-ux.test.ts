@@ -364,7 +364,7 @@ describe('Operational UX & Integrations Contract Proofs', () => {
       const rotated = rotateMachineCredential(initial.credential)
 
       // Token prefix and hash changed
-      expect(rotated.tokenPrefix).not.toBe(initial.credential.tokenPrefix)
+      expect(rotated.credential.tokenPrefix).not.toBe(initial.credential.tokenPrefix)
       expect(rotated.credential.tokenHash).not.toBe(initial.credential.tokenHash)
 
       // New token authenticates successfully
