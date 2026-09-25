@@ -745,7 +745,24 @@ export async function resolveDiscoveryDocument(
   const settings = await resolveSiteSettings(payload)
 
   // 1. Resolve publication and site ID
-  let siteId = input.siteId
+  let siteId = input.siteId || idOf(input.record?.site)
+  if (!siteId && input.collection && (input.slug || input.id)) {
+    try {
+      const targetDoc = await payload.find({
+        collection: input.collection as never,
+        where: input.id ? { id: { equals: input.id } } : { slug: { equals: input.slug } },
+        limit: 1,
+        depth: 0,
+        overrideAccess: true,
+      } as never)
+      const foundSite = idOf((targetDoc.docs[0] as { site?: unknown } | undefined)?.site)
+      if (foundSite) {
+        siteId = foundSite
+      }
+    } catch {
+      // ignore
+    }
+  }
   if (!siteId) {
     const publications = await payload.find({
       collection: 'publications',

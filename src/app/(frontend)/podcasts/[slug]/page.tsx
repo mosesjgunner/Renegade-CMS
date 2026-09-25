@@ -35,10 +35,18 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const payload = await getPayload({ config })
   const { slug } = await params
+  const show = await payload.find({
+    collection: 'podcast-shows',
+    where: { slug: { equals: slug } },
+    limit: 1,
+    depth: 0,
+    overrideAccess: true,
+  } as never)
   const discovery = await resolveDiscoveryDocument(payload, {
     collection: 'podcast-shows',
     slug,
     path: `/podcasts/${slug}`,
+    siteId: value((show.docs[0] as { site?: unknown } | undefined)?.site) || undefined,
   })
   return discoveryToMetadata(discovery)
 }
@@ -95,6 +103,7 @@ export default async function PodcastShowPage({ params }: { params: Promise<{ sl
     collection: 'podcast-shows',
     slug,
     path: `/podcasts/${slug}`,
+    siteId: value(show.site) || undefined,
   })
 
   const hostsList = Array.isArray(show.hosts) ? show.hosts : []
