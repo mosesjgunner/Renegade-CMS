@@ -250,6 +250,8 @@ describe('Public Experiment & Consent-Safe Telemetry Integration — Prompt 5', 
       const resolvedAfterWinner = resolvePublicExperimentVariant({
         experiment: {
           ...CANONICAL_PUBLIC_EXPERIMENT,
+          dbId: 'exp-1',
+          siteId: 'site-default',
           state: 'winner-selected',
           winnerDecision: {
             selectedVariantId: 'variant-treatment',
