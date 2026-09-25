@@ -58,10 +58,17 @@ export const TELEMETRY_EVENT_INVENTORY: readonly EventSourceInventoryItem[] = [
     name: 'First-Party Client Web Telemetry',
     collection: 'analytics-events',
     primaryGrain: 'raw-event',
-    supportedGrains: ['raw-event', 'daily-rollup', 'campaign-rollup', 'content-rollup', 'goal-rollup'],
+    supportedGrains: [
+      'raw-event',
+      'daily-rollup',
+      'campaign-rollup',
+      'content-rollup',
+      'goal-rollup',
+    ],
     identityLinkage: 'consented-salted-hash',
     retentionDays: 90,
-    suppressionBehavior: 'Excluded if subject matches suppression hash; never joined with suppressed visitor identities.',
+    suppressionBehavior:
+      'Excluded if subject matches suppression hash; never joined with suppressed visitor identities.',
     reconciliationTarget: 'canonical-content',
     canonicalCollections: ['content', 'publications', 'page-layouts'],
     uncertaintyDisclosures: [
@@ -78,7 +85,8 @@ export const TELEMETRY_EVENT_INVENTORY: readonly EventSourceInventoryItem[] = [
     supportedGrains: ['raw-event', 'daily-rollup'],
     identityLinkage: 'consented-salted-hash',
     retentionDays: 'permanent',
-    suppressionBehavior: 'Suppression records maintained separately in suppressions collection; withdrawals generate immutable audit records.',
+    suppressionBehavior:
+      'Suppression records maintained separately in suppressions collection; withdrawals generate immutable audit records.',
     reconciliationTarget: 'canonical-audience',
     canonicalCollections: ['consent-events', 'subscribers', 'suppressions'],
     uncertaintyDisclosures: [
@@ -94,7 +102,8 @@ export const TELEMETRY_EVENT_INVENTORY: readonly EventSourceInventoryItem[] = [
     supportedGrains: ['raw-event', 'campaign-rollup', 'goal-rollup'],
     identityLinkage: 'member-authenticated',
     retentionDays: 730,
-    suppressionBehavior: 'Suppressed emails blocked from campaigns and masked with < 5 privacy floor in reports.',
+    suppressionBehavior:
+      'Suppressed emails blocked from campaigns and masked with < 5 privacy floor in reports.',
     reconciliationTarget: 'canonical-audience',
     canonicalCollections: ['form-definitions', 'contacts', 'subscribers', 'audience-lists'],
     uncertaintyDisclosures: [
@@ -126,7 +135,8 @@ export const TELEMETRY_EVENT_INVENTORY: readonly EventSourceInventoryItem[] = [
     supportedGrains: ['order-snapshot', 'daily-rollup', 'campaign-rollup'],
     identityLinkage: 'member-authenticated',
     retentionDays: 'permanent',
-    suppressionBehavior: 'Suppression does not delete financial audit records required by legal or tax regulations.',
+    suppressionBehavior:
+      'Suppression does not delete financial audit records required by legal or tax regulations.',
     reconciliationTarget: 'canonical-commerce',
     canonicalCollections: ['orders', 'contributions', 'affiliate-referrals', 'subscriptions'],
     uncertaintyDisclosures: [
@@ -142,9 +152,15 @@ export const TELEMETRY_EVENT_INVENTORY: readonly EventSourceInventoryItem[] = [
     supportedGrains: ['raw-event', 'goal-rollup'],
     identityLinkage: 'consented-salted-hash',
     retentionDays: 90,
-    suppressionBehavior: 'Suppressed visitors receive deterministic control and generate zero experiment telemetry.',
+    suppressionBehavior:
+      'Suppressed visitors receive deterministic control and generate zero experiment telemetry.',
     reconciliationTarget: 'canonical-audience',
-    canonicalCollections: ['experiments', 'experiment-variants', 'experiment-decisions', 'conversion-goals'],
+    canonicalCollections: [
+      'experiments',
+      'experiment-variants',
+      'experiment-decisions',
+      'conversion-goals',
+    ],
     uncertaintyDisclosures: [
       'Unconsented or privacy-controlled visitors are served the control variant with isDefault: true.',
       'Early stopping prohibited: statistical significance requires sample size >= 100 per variant.',
@@ -159,7 +175,8 @@ export const TELEMETRY_EVENT_INVENTORY: readonly EventSourceInventoryItem[] = [
     supportedGrains: ['raw-event'],
     identityLinkage: 'suppressed-masked',
     retentionDays: 'permanent',
-    suppressionBehavior: 'Authoritative barrier: hashed emails are permanently blocked from outbound dispatch and masked in reports.',
+    suppressionBehavior:
+      'Authoritative barrier: hashed emails are permanently blocked from outbound dispatch and masked in reports.',
     reconciliationTarget: 'canonical-audience',
     canonicalCollections: ['subscribers', 'contacts', 'telecom-deliveries'],
     uncertaintyDisclosures: [

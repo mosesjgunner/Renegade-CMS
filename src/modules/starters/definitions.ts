@@ -141,8 +141,7 @@ export const publicationCommunityStarter: StarterDefinition = {
       canonicalPath: '/about',
       summary:
         'The Vanguard Chronicle is a member-owned, reader-supported publication committed to investigative inquiry and digital commons advocacy.',
-      body:
-        '# Our Editorial Mission\n\nThe Vanguard Chronicle was founded on a simple conviction: democratic society requires transparent, uncompromised investigative inquiry. We accept zero venture capital, zero corporate sponsored content, and zero behavioral tracking cookies.\n\n### Core Tenets\n\n1. **Reader Sovereignty**: We answer only to our subscribers and the public interest.\n2. **Verified Sources**: All documentation, raw data sets, and methodology are openly cited.\n3. **Public Commons**: Critical reporting on health, climate, and elections is never paywalled.\n\nOur editorial team operates across four regional hubs, collaborating with independent researchers and community leaders to illuminate issues that matter to everyday people.',
+      body: '# Our Editorial Mission\n\nThe Vanguard Chronicle was founded on a simple conviction: democratic society requires transparent, uncompromised investigative inquiry. We accept zero venture capital, zero corporate sponsored content, and zero behavioral tracking cookies.\n\n### Core Tenets\n\n1. **Reader Sovereignty**: We answer only to our subscribers and the public interest.\n2. **Verified Sources**: All documentation, raw data sets, and methodology are openly cited.\n3. **Public Commons**: Critical reporting on health, climate, and elections is never paywalled.\n\nOur editorial team operates across four regional hubs, collaborating with independent researchers and community leaders to illuminate issues that matter to everyday people.',
       status: 'published',
     },
     {
@@ -151,8 +150,7 @@ export const publicationCommunityStarter: StarterDefinition = {
       canonicalPath: '/disclosure',
       summary:
         'Complete transparency regarding our funding sources, editorial ethics, and conflict-of-interest protocols.',
-      body:
-        '# Editorial Independence & Ethics Charter\n\n### 1. Funding Model\nThe Vanguard Chronicle is 100% financed through voluntary reader subscriptions, small-dollar community donations, and mission-aligned philanthropic research grants. We publish an annual public financial balance sheet.\n\n### 2. Conflict of Interest Policy\n- Our reporters and contributors hold no equity or financial positions in entities they cover.\n- Gifts, travel subsidies, and honoraria from covered institutions are strictly prohibited.\n- All potential conflicts are explicitly documented in editor bylines.\n\n### 3. Corrections & Accountability\nWhen errors occur, we correct the historical record transparently with clear timestamps and an explanation of the modification at the top of the article.',
+      body: '# Editorial Independence & Ethics Charter\n\n### 1. Funding Model\nThe Vanguard Chronicle is 100% financed through voluntary reader subscriptions, small-dollar community donations, and mission-aligned philanthropic research grants. We publish an annual public financial balance sheet.\n\n### 2. Conflict of Interest Policy\n- Our reporters and contributors hold no equity or financial positions in entities they cover.\n- Gifts, travel subsidies, and honoraria from covered institutions are strictly prohibited.\n- All potential conflicts are explicitly documented in editor bylines.\n\n### 3. Corrections & Accountability\nWhen errors occur, we correct the historical record transparently with clear timestamps and an explanation of the modification at the top of the article.',
       status: 'published',
     },
     {
@@ -161,8 +159,7 @@ export const publicationCommunityStarter: StarterDefinition = {
       canonicalPath: '/privacy',
       summary:
         'Our strict privacy commitment: zero behavioral advertising, no third-party tracking, and privacy by design.',
-      body:
-        '# Privacy Policy\n\nWe believe reading is a private act. The Vanguard Chronicle does not install surveillance cookies, sell visitor data, or partner with commercial ad networks.\n\n- **Information We Collect**: Only what you provide voluntarily (your email address when subscribing or username when posting comments).\n- **Cookies**: We use only strictly necessary session cookies for authentication.\n- **Data Portability**: You may request an export or complete deletion of your account and comments at any time.\n\nQuestions? Contact privacy@vanguardchronicle.org.',
+      body: '# Privacy Policy\n\nWe believe reading is a private act. The Vanguard Chronicle does not install surveillance cookies, sell visitor data, or partner with commercial ad networks.\n\n- **Information We Collect**: Only what you provide voluntarily (your email address when subscribing or username when posting comments).\n- **Cookies**: We use only strictly necessary session cookies for authentication.\n- **Data Portability**: You may request an export or complete deletion of your account and comments at any time.\n\nQuestions? Contact privacy@vanguardchronicle.org.',
       status: 'published',
     },
     {
@@ -171,8 +168,7 @@ export const publicationCommunityStarter: StarterDefinition = {
       canonicalPath: '/terms',
       summary:
         'Rules of engagement for constructive, respectful dialogue in our public comments and community forums.',
-      body:
-        '# Community Code of Conduct\n\nWe welcome lively debate, informed skepticism, and rigorous critique. To preserve our forums as welcoming public squares, the following standards are enforced:\n\n1. **Civility & Respect**: Harassment, bigotry, defamation, or bad-faith trolling will result in immediate moderation.\n2. **Evidence-Based Discussion**: Support claims with reputable references whenever possible.\n3. **No Commercial Solicitation**: Spam, affiliate links, and self-promotion are prohibited.',
+      body: '# Community Code of Conduct\n\nWe welcome lively debate, informed skepticism, and rigorous critique. To preserve our forums as welcoming public squares, the following standards are enforced:\n\n1. **Civility & Respect**: Harassment, bigotry, defamation, or bad-faith trolling will result in immediate moderation.\n2. **Evidence-Based Discussion**: Support claims with reputable references whenever possible.\n3. **No Commercial Solicitation**: Spam, affiliate links, and self-promotion are prohibited.',
       status: 'published',
     },
     {
@@ -181,8 +177,7 @@ export const publicationCommunityStarter: StarterDefinition = {
       canonicalPath: '/subscribe',
       summary:
         'Join thousands of sustaining readers who keep sovereign investigative journalism thriving.',
-      body:
-        '# Choose Your Membership Tier\n\nSupport fearless reporting and join an engaged community of civic-minded readers.\n\n### Tier 1: Free Reader ($0/mo)\n- Access to all public dispatches\n- Weekly email digest\n- Commenting privileges in community threads\n\n### Tier 2: Sustaining Patron ($8/mo)\n- Everything in Free, plus:\n- Monthly private investigative briefings\n- Direct Q&A with contributing journalists\n- Archive access with raw data sets\n\n### Tier 3: Founding Member ($20/mo)\n- Full recognition in our published annual colophon\n- Invitation to annual editorial roundtable\n- Complimentary print anthology',
+      body: '# Choose Your Membership Tier\n\nSupport fearless reporting and join an engaged community of civic-minded readers.\n\n### Tier 1: Free Reader ($0/mo)\n- Access to all public dispatches\n- Weekly email digest\n- Commenting privileges in community threads\n\n### Tier 2: Sustaining Patron ($8/mo)\n- Everything in Free, plus:\n- Monthly private investigative briefings\n- Direct Q&A with contributing journalists\n- Archive access with raw data sets\n\n### Tier 3: Founding Member ($20/mo)\n- Full recognition in our published annual colophon\n- Invitation to annual editorial roundtable\n- Complimentary print anthology',
       status: 'published',
     },
     {
@@ -190,8 +185,7 @@ export const publicationCommunityStarter: StarterDefinition = {
       slug: 'contact',
       canonicalPath: '/contact',
       summary: 'Secure whistleblowing tips, editorial feedback, and general inquiries.',
-      body:
-        '# Get in Touch\n\n- **Newsroom Inquiries**: editorial@vanguardchronicle.org\n- **Confidential Whistleblower Tips**: tips@vanguardchronicle.org (PGP Key Available)\n- **Subscriber Support**: support@vanguardchronicle.org\n\nOur physical office is located in the Civic Media Center, Room 402, 100 Main Street.',
+      body: '# Get in Touch\n\n- **Newsroom Inquiries**: editorial@vanguardchronicle.org\n- **Confidential Whistleblower Tips**: tips@vanguardchronicle.org (PGP Key Available)\n- **Subscriber Support**: support@vanguardchronicle.org\n\nOur physical office is located in the Civic Media Center, Room 402, 100 Main Street.',
       status: 'published',
     },
   ],
@@ -202,8 +196,7 @@ export const publicationCommunityStarter: StarterDefinition = {
       canonicalPath: '/articles/future-of-the-commons',
       summary:
         'As proprietary social platforms fragment into algorithmic paywalls, decentralized protocols and civic infrastructure offer a resilient alternative.',
-      body:
-        'Across the globe, the foundational architecture of the internet is experiencing a quiet renaissance. For two decades, our public discourse was concentrated inside centralized platforms that treated user attention as an extractable commodity. Today, journalists, civic organizers, and researchers are turning toward sovereign protocols where communities retain ownership over their communication.\n\n### The Failure of the Walled Garden\n\nWhen public conversations are governed by opaque engagement algorithms, sensationalism is rewarded while deliberative civic problem-solving is suppressed. The consequence is not merely cultural fatigue, but an erosion of democratic capability.\n\n### Principles of the Sovereign Public Square\n\n1. **Interoperability**: You should own your identity and reading list, free to move between platforms.\n2. **Transparent Governance**: Moderation policies must be transparently enacted by members, not advertising executives.\n3. **Local First**: Data should reside under the stewardship of local organizations that answer directly to their communities.\n\nAs we enter the next decade of digital communication, the question is no longer whether sovereign commons are viable — it is whether we have the collective courage to build them.',
+      body: 'Across the globe, the foundational architecture of the internet is experiencing a quiet renaissance. For two decades, our public discourse was concentrated inside centralized platforms that treated user attention as an extractable commodity. Today, journalists, civic organizers, and researchers are turning toward sovereign protocols where communities retain ownership over their communication.\n\n### The Failure of the Walled Garden\n\nWhen public conversations are governed by opaque engagement algorithms, sensationalism is rewarded while deliberative civic problem-solving is suppressed. The consequence is not merely cultural fatigue, but an erosion of democratic capability.\n\n### Principles of the Sovereign Public Square\n\n1. **Interoperability**: You should own your identity and reading list, free to move between platforms.\n2. **Transparent Governance**: Moderation policies must be transparently enacted by members, not advertising executives.\n3. **Local First**: Data should reside under the stewardship of local organizations that answer directly to their communities.\n\nAs we enter the next decade of digital communication, the question is no longer whether sovereign commons are viable — it is whether we have the collective courage to build them.',
       tags: ['digital-commons', 'investigation', 'technology'],
       publishedAt: new Date(Date.now() - 86400000 * 2).toISOString(),
       commentsPolicy: 'open',
@@ -214,8 +207,7 @@ export const publicationCommunityStarter: StarterDefinition = {
       canonicalPath: '/articles/investigative-water-ledger',
       summary:
         'A four-month collaborative investigation reveals how private equity leases are quietly acquiring regional water allocations without public review.',
-      body:
-        'Over the past sixteen months, our investigative desk examined over 4,000 pages of public records across three river basins. The findings paint an alarming picture of strategic resource acquisition under the guise of municipal infrastructure modernization.\n\n### The Hidden Clauses\n\nIn seven of the twelve municipalities examined, agreements contained non-disclosure stipulations that prevented city councils from disclosing rate increases to residents prior to binding execution.\n\n> "When essential natural endowments are mortgaged for short-term fiscal relief, it is our grandchildren who pay the principal."\n\nWe have released the complete data set alongside this article in our open data repository.',
+      body: 'Over the past sixteen months, our investigative desk examined over 4,000 pages of public records across three river basins. The findings paint an alarming picture of strategic resource acquisition under the guise of municipal infrastructure modernization.\n\n### The Hidden Clauses\n\nIn seven of the twelve municipalities examined, agreements contained non-disclosure stipulations that prevented city councils from disclosing rate increases to residents prior to binding execution.\n\n> "When essential natural endowments are mortgaged for short-term fiscal relief, it is our grandchildren who pay the principal."\n\nWe have released the complete data set alongside this article in our open data repository.',
       tags: ['investigation', 'environment', 'civics'],
       publishedAt: new Date(Date.now() - 86400000 * 6).toISOString(),
       commentsPolicy: 'open',
@@ -226,8 +218,7 @@ export const publicationCommunityStarter: StarterDefinition = {
       canonicalPath: '/articles/community-led-infrastructure',
       summary:
         'How neighborhood assemblies are revitalizing municipal transit and community food forests from the grassroots up.',
-      body:
-        'In the historic West Ward, transformation is not arriving from distant consulting firms. It is emerging from weekly neighborhood assemblies where residents directly allocate municipal participatory budgeting funds.\n\nOver the past two years, this initiative has restored four community parks, planted twelve urban fruit orchards, and launched a cooperatively operated micro-transit route serving senior residents.\n\n### Lessons for Neighboring Towns\n\n- Direct participatory voting produces higher voter satisfaction than advisory surveys.\n- Transparent open accounting eliminates suspicion of bureaucratic waste.\n- Community stewardship ensures infrastructure is maintained with personal pride.',
+      body: 'In the historic West Ward, transformation is not arriving from distant consulting firms. It is emerging from weekly neighborhood assemblies where residents directly allocate municipal participatory budgeting funds.\n\nOver the past two years, this initiative has restored four community parks, planted twelve urban fruit orchards, and launched a cooperatively operated micro-transit route serving senior residents.\n\n### Lessons for Neighboring Towns\n\n- Direct participatory voting produces higher voter satisfaction than advisory surveys.\n- Transparent open accounting eliminates suspicion of bureaucratic waste.\n- Community stewardship ensures infrastructure is maintained with personal pride.',
       tags: ['community', 'urbanism', 'civics'],
       publishedAt: new Date(Date.now() - 86400000 * 12).toISOString(),
       commentsPolicy: 'open',
@@ -836,8 +827,7 @@ export const campaignCommerceStarter: StarterDefinition = {
       canonicalPath: '/about',
       summary:
         'The pillars of our grassroots civic platform: zero-emission public transit, municipal green power, and community wealth building.',
-      body:
-        '# A Civic Agenda Built from the Ground Up\n\nForward for the People is an independent coalition of community organizers, transit workers, educators, and working families dedicated to bold municipal action.\n\n### Pillar 1: Zero-Emission Rapid Transit\nEvery resident deserves fast, safe, dependable, and free public transit connecting our residential neighborhoods to major hospital, education, and employment centers.\n\n### Pillar 2: Municipal Clean Energy Utility\nWe are ending dependence on corporate monopoly utilities by creating a publicly accountable energy district delivering 100% solar and wind power with capped residential rates.\n\n### Pillar 3: Fair Living Wages and Union Protections\nAll public contracts must guarantee prevailing union wages, comprehensive apprentice pathways, and full workplace safety protections.',
+      body: '# A Civic Agenda Built from the Ground Up\n\nForward for the People is an independent coalition of community organizers, transit workers, educators, and working families dedicated to bold municipal action.\n\n### Pillar 1: Zero-Emission Rapid Transit\nEvery resident deserves fast, safe, dependable, and free public transit connecting our residential neighborhoods to major hospital, education, and employment centers.\n\n### Pillar 2: Municipal Clean Energy Utility\nWe are ending dependence on corporate monopoly utilities by creating a publicly accountable energy district delivering 100% solar and wind power with capped residential rates.\n\n### Pillar 3: Fair Living Wages and Union Protections\nAll public contracts must guarantee prevailing union wages, comprehensive apprentice pathways, and full workplace safety protections.',
       status: 'published',
     },
     {
@@ -846,8 +836,7 @@ export const campaignCommerceStarter: StarterDefinition = {
       canonicalPath: '/disclosure',
       summary:
         'Official campaign committee identification, contributor guidelines, and legal disclaimer.',
-      body:
-        '# Official Campaign Finance Disclosure\n\n**Paid for by the Committee for Civic Progress.**\nNot authorized by any candidate or candidate committee.\n\n### Contributor Eligibility Rules\n1. I am a U.S. citizen or lawfully admitted permanent resident (i.e., green card holder).\n2. This contribution is made from my own personal funds, and funds are not being provided to me by another person or entity for the purpose of making this contribution.\n3. I am at least eighteen years old.\n4. I am not a federal government contractor.\n\nContributions or gifts to the Committee for Civic Progress are not tax-deductible as charitable contributions for federal income tax purposes.\n\nFederal law requires us to use our best efforts to collect and report the name, mailing address, occupation, and name of employer of individuals whose contributions exceed $200 in a calendar year.',
+      body: '# Official Campaign Finance Disclosure\n\n**Paid for by the Committee for Civic Progress.**\nNot authorized by any candidate or candidate committee.\n\n### Contributor Eligibility Rules\n1. I am a U.S. citizen or lawfully admitted permanent resident (i.e., green card holder).\n2. This contribution is made from my own personal funds, and funds are not being provided to me by another person or entity for the purpose of making this contribution.\n3. I am at least eighteen years old.\n4. I am not a federal government contractor.\n\nContributions or gifts to the Committee for Civic Progress are not tax-deductible as charitable contributions for federal income tax purposes.\n\nFederal law requires us to use our best efforts to collect and report the name, mailing address, occupation, and name of employer of individuals whose contributions exceed $200 in a calendar year.',
       status: 'published',
     },
     {
@@ -856,8 +845,7 @@ export const campaignCommerceStarter: StarterDefinition = {
       canonicalPath: '/privacy',
       summary:
         'How we protect supporter and volunteer contact information with strict security protocols.',
-      body:
-        '# Supporter Privacy Commitment\n\nWe value your trust. The Committee for Civic Progress never rents, sells, or trades supporter phone numbers or email addresses to commercial brokers or third-party marketing companies.\n\n- **Volunteer Data**: Stored in encrypted, role-permissioned databases accessed solely by authorized campaign staff.\n- **SMS Notifications**: If you opt in to field mobilization alerts, you may text STOP at any time to unsubscribe immediately.\n- **Payment Security**: Donation and store transactions are processed through tokenized, PCI-DSS Level 1 compliant processors.',
+      body: '# Supporter Privacy Commitment\n\nWe value your trust. The Committee for Civic Progress never rents, sells, or trades supporter phone numbers or email addresses to commercial brokers or third-party marketing companies.\n\n- **Volunteer Data**: Stored in encrypted, role-permissioned databases accessed solely by authorized campaign staff.\n- **SMS Notifications**: If you opt in to field mobilization alerts, you may text STOP at any time to unsubscribe immediately.\n- **Payment Security**: Donation and store transactions are processed through tokenized, PCI-DSS Level 1 compliant processors.',
       status: 'published',
     },
     {
@@ -866,8 +854,7 @@ export const campaignCommerceStarter: StarterDefinition = {
       canonicalPath: '/terms',
       summary:
         'Shipping times, union manufacturing standards, and refund policies for our campaign store.',
-      body:
-        '# Campaign Store Terms & Fulfillment Policies\n\n### 1. Union Manufacturing Standard\nAll merchandise offered in our store is manufactured in union-represented facilities in the United States. We take immense pride in supporting fair labor.\n\n### 2. Shipping & Handling\nOrders ship within 3–5 business days via USPS Ground Advantage. Tracking numbers are sent via email upon dispatch.\n\n### 3. Exchanges & Returns\nIf an item arrives damaged or you need a size exchange, contact store@forwardforthepeople.org within 14 days of receipt.',
+      body: '# Campaign Store Terms & Fulfillment Policies\n\n### 1. Union Manufacturing Standard\nAll merchandise offered in our store is manufactured in union-represented facilities in the United States. We take immense pride in supporting fair labor.\n\n### 2. Shipping & Handling\nOrders ship within 3–5 business days via USPS Ground Advantage. Tracking numbers are sent via email upon dispatch.\n\n### 3. Exchanges & Returns\nIf an item arrives damaged or you need a size exchange, contact store@forwardforthepeople.org within 14 days of receipt.',
       status: 'published',
     },
     {
@@ -876,8 +863,7 @@ export const campaignCommerceStarter: StarterDefinition = {
       canonicalPath: '/subscribe',
       summary:
         'Sign up to canvass, host a neighborhood house meeting, or make voter education calls.',
-      body:
-        '# Join the Grassroots Organizing Team\n\nWinning progressive change takes people power. Whether you have two hours on Saturday morning or want to coordinate your neighborhood precinct, your voice makes the difference.\n\n### Ways to Get Involved\n- **Door-to-Door Canvassing**: Friendly conversations with neighbors across your district.\n- **Phone & Text Banking**: Remind supporters about town halls and voter deadlines from home.\n- **Town Hall Host**: Host a 10-person living room discussion on clean energy with our campaign briefing kits.',
+      body: '# Join the Grassroots Organizing Team\n\nWinning progressive change takes people power. Whether you have two hours on Saturday morning or want to coordinate your neighborhood precinct, your voice makes the difference.\n\n### Ways to Get Involved\n- **Door-to-Door Canvassing**: Friendly conversations with neighbors across your district.\n- **Phone & Text Banking**: Remind supporters about town halls and voter deadlines from home.\n- **Town Hall Host**: Host a 10-person living room discussion on clean energy with our campaign briefing kits.',
       status: 'published',
     },
     {
@@ -885,8 +871,7 @@ export const campaignCommerceStarter: StarterDefinition = {
       slug: 'contact',
       canonicalPath: '/contact',
       summary: 'Campaign office address, phone numbers, and press inquiry contacts.',
-      body:
-        '# Campaign Office & Media Contacts\n\n- **Field Headquarters**: 450 Liberty Way, Suite 200\n- **Campaign Phone**: (555) 019-2026\n- **Press Inquiries**: press@forwardforthepeople.org\n- **Store Support**: store@forwardforthepeople.org\n\nOffice hours are Monday through Saturday, 9:00 AM to 7:00 PM.',
+      body: '# Campaign Office & Media Contacts\n\n- **Field Headquarters**: 450 Liberty Way, Suite 200\n- **Campaign Phone**: (555) 019-2026\n- **Press Inquiries**: press@forwardforthepeople.org\n- **Store Support**: store@forwardforthepeople.org\n\nOffice hours are Monday through Saturday, 9:00 AM to 7:00 PM.',
       status: 'published',
     },
   ],
@@ -897,8 +882,7 @@ export const campaignCommerceStarter: StarterDefinition = {
       canonicalPath: '/articles/clean-transit-plan',
       summary:
         'Our comprehensive blueprint for expanding electric bus rapid transit, modernizing light rail, and making transit free for youth and seniors.',
-      body:
-        'Today, our campaign officially releases the Civic Transit Accord — a fully costed, phased strategy to transform metropolitan mobility over the next four years.\n\n### Why Free Transit Pays for Itself\n\nFor every dollar invested in zero-fare public transit, local communities gain $4.20 in economic productivity, reduced road maintenance, and improved air quality. By converting transit from a farebox-reliant system into a vital municipal utility like libraries and public parks, we unlock opportunity for thousands of families.\n\n### Key Milestones\n\n- Immediate fare elimination for students, seniors, and veterans.\n- 120 new battery-electric articulated buses built by union workers.\n- Dedicated 24/7 bus rapid transit corridors on all major cross-town arteries.',
+      body: 'Today, our campaign officially releases the Civic Transit Accord — a fully costed, phased strategy to transform metropolitan mobility over the next four years.\n\n### Why Free Transit Pays for Itself\n\nFor every dollar invested in zero-fare public transit, local communities gain $4.20 in economic productivity, reduced road maintenance, and improved air quality. By converting transit from a farebox-reliant system into a vital municipal utility like libraries and public parks, we unlock opportunity for thousands of families.\n\n### Key Milestones\n\n- Immediate fare elimination for students, seniors, and veterans.\n- 120 new battery-electric articulated buses built by union workers.\n- Dedicated 24/7 bus rapid transit corridors on all major cross-town arteries.',
       tags: ['transit', 'clean-energy', 'platform'],
       publishedAt: new Date(Date.now() - 86400000 * 3).toISOString(),
       commentsPolicy: 'open',
@@ -909,8 +893,7 @@ export const campaignCommerceStarter: StarterDefinition = {
       canonicalPath: '/articles/rally-at-city-hall',
       summary:
         'Over five thousand supporters, labor union members, and transit advocates rallied on the steps of City Hall to demand the Green Mobility Ordinance.',
-      body:
-        'On Saturday morning, the civic square outside City Hall was filled with a sea of red banners, union flags, and handmade signs as our coalition delivered over 18,000 verified citizen petition signatures to the city clerk.\n\n> "They said a grassroots coalition without corporate PAC funding couldn\'t compete. Today, five thousand working people proved that collective solidarity is unstoppable."\n\nOur field teams are now deploying into every precinct to educate voters ahead of next month\'s council vote.',
+      body: 'On Saturday morning, the civic square outside City Hall was filled with a sea of red banners, union flags, and handmade signs as our coalition delivered over 18,000 verified citizen petition signatures to the city clerk.\n\n> "They said a grassroots coalition without corporate PAC funding couldn\'t compete. Today, five thousand working people proved that collective solidarity is unstoppable."\n\nOur field teams are now deploying into every precinct to educate voters ahead of next month\'s council vote.',
       tags: ['mobilization', 'rally', 'field-update'],
       publishedAt: new Date(Date.now() - 86400000 * 7).toISOString(),
       commentsPolicy: 'open',
@@ -921,8 +904,7 @@ export const campaignCommerceStarter: StarterDefinition = {
       canonicalPath: '/articles/small-dollar-surge',
       summary:
         'Our campaign finance report confirms an average contribution of $27.40 with zero corporate PAC money accepted.',
-      body:
-        'In our latest public transparency filing, we are proud to share that over 10,400 individual donors have contributed to Forward for the People. The average donation is just $27.40, with 94% of contributions under $50.\n\nThis grassroots independence ensures our allegiance remains strictly to our neighbors and our shared public future.',
+      body: 'In our latest public transparency filing, we are proud to share that over 10,400 individual donors have contributed to Forward for the People. The average donation is just $27.40, with 94% of contributions under $50.\n\nThis grassroots independence ensures our allegiance remains strictly to our neighbors and our shared public future.',
       tags: ['transparency', 'campaign-finance', 'momentum'],
       publishedAt: new Date(Date.now() - 86400000 * 14).toISOString(),
       commentsPolicy: 'open',

@@ -19,7 +19,10 @@ export async function GET(request: Request) {
 
   try {
     // Check inbox_notifications first
-    let inboxResult: { notifications: any[]; unreadCount: number } = { notifications: [], unreadCount: 0 }
+    let inboxResult: { notifications: any[]; unreadCount: number } = {
+      notifications: [],
+      unreadCount: 0,
+    }
     try {
       inboxResult = await listInbox(payload, { siteId, memberId: actor.memberId })
     } catch {
@@ -27,10 +30,14 @@ export async function GET(request: Request) {
     }
 
     // Also fetch canonical notifications
-    const canonicalNotifications = await getMemberNotifications(payload, actor.memberId, { siteId, actor })
+    const canonicalNotifications = await getMemberNotifications(payload, actor.memberId, {
+      siteId,
+      actor,
+    })
 
     return Response.json({
-      notifications: inboxResult.notifications.length > 0 ? inboxResult.notifications : canonicalNotifications,
+      notifications:
+        inboxResult.notifications.length > 0 ? inboxResult.notifications : canonicalNotifications,
       inboxNotifications: inboxResult.notifications,
       canonicalNotifications,
       unreadCount: inboxResult.unreadCount,

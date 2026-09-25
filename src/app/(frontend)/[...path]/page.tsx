@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { notFound, permanentRedirect, redirect } from 'next/navigation'
 import { headers as requestHeaders } from 'next/headers'
 
-import { canRenderPublic, type PublicState } from '@/modules/public/contracts'
+import { canDiscoverPublic, canRenderPublic, type PublicState } from '@/modules/public/contracts'
 import type { Metadata } from 'next'
 import {
   discoveryToMetadata,
@@ -28,6 +28,7 @@ import { catalogSiteForHost } from '@/modules/commerce/site-scope'
 import { hasEntitlement } from '@/modules/commerce/subscription-service'
 import { currentMember, readMemberSession } from '@/modules/identity/member-identity'
 import { canReadEvent } from '@/modules/events/public'
+import { isSafeSemanticRequestPath } from '@/modules/public/semantic-url'
 
 type Args = {
   params: Promise<{ path: string[] }>
@@ -43,6 +44,7 @@ const candidates = [
   'albums',
   'discussions',
   'products',
+  'topics',
 ] as const
 
 function label(record: PublicRecord): string {
@@ -51,11 +53,12 @@ function label(record: PublicRecord): string {
 
 function kind(
   collection: (typeof candidates)[number],
-): 'article' | 'event' | 'timeline' | 'album' | 'forum' | 'product' {
+): 'article' | 'event' | 'timeline' | 'album' | 'forum' | 'product' | 'topic' {
   if (collection === 'events') return 'event'
   if (collection === 'timelines') return 'timeline'
   if (collection === 'albums') return 'album'
   if (collection === 'discussions') return 'forum'
+  if (collection === 'topics') return 'topic'
   return 'article'
 }
 
@@ -63,6 +66,7 @@ export const dynamic = 'force-dynamic'
 
 export async function generateMetadata({ params }: Args): Promise<Metadata> {
   const path = `/${(await params).path.join('/')}`
+  if (!isSafeSemanticRequestPath(path)) return { robots: { index: false, follow: false } }
   try {
     const payload = await getPayload({ config })
     const siteId = await catalogSiteForHost(payload, (await requestHeaders()).get('host'))
@@ -76,6 +80,7 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
 
 export default async function CanonicalPublicPage({ params, searchParams }: Args) {
   const path = `/${(await params).path.join('/')}`
+  if (!isSafeSemanticRequestPath(path)) notFound()
   const query = new URLSearchParams(
     Object.entries((await searchParams) ?? {}).flatMap(([key, value]) =>
       Array.isArray(value)
@@ -303,6 +308,68 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
       } as never)
     ).docs as unknown as PublicRecord[]
     return <BookReader book={book} chapters={chapters} />
+  }
+
+  const topicResult = await findIfRegistered(payload, {
+    collection: 'topics',
+    where: { and: [{ canonicalPath: { equals: path } }, { site: { equals: siteId } }] },
+    limit: 1,
+    depth: 0,
+    overrideAccess: true,
+  } as never)
+  const topic = topicResult.docs[0] as unknown as PublicRecord | undefined
+  if (topic) {
+    const articles = await payload.find({
+      collection: 'content',
+      where: {
+        and: [
+          { site: { equals: siteId } },
+          { topics: { contains: String(topic.id) } },
+          { status: { in: ['published', 'updated'] } },
+          { visibility: { equals: 'public' } },
+          { moderationState: { equals: 'clear' } },
+          { removeFromDiscovery: { not_equals: true } },
+        ],
+      } as never,
+      sort: '-publishedAt',
+      limit: 50,
+      depth: 0,
+      overrideAccess: true,
+    } as never)
+    const publicArticles = (articles.docs as unknown as PublicRecord[]).filter((article) =>
+      canDiscoverPublic(article),
+    )
+    if (!publicArticles.length) notFound()
+    const discovery = await resolveDiscoveryDocument(payload, {
+      collection: 'topics',
+      record: { ...topic, status: 'published', visibility: 'public' },
+      path,
+      siteId,
+    })
+    return (
+      <main className="mx-auto max-w-4xl space-y-8 px-6 py-12">
+        <link rel="canonical" href={discovery.canonicalUrl} />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(discovery.schema.jsonLd) }}
+        />
+        <header className="space-y-3">
+          <p className="text-sm text-stone-500">Topic</p>
+          <h1 className="text-4xl font-bold">{String(topic.name)}</h1>
+          {typeof topic.description === 'string' ? <p>{topic.description}</p> : null}
+        </header>
+        <ul className="space-y-5">
+          {publicArticles.map((article) => (
+            <li key={String(article.id)} className="surface-card p-5">
+              <h2 className="text-xl font-semibold">
+                <Link href={String(article.canonicalPath)}>{label(article)}</Link>
+              </h2>
+              {typeof article.summary === 'string' ? <p>{article.summary}</p> : null}
+            </li>
+          ))}
+        </ul>
+      </main>
+    )
   }
   const chapterResult = await findIfRegistered(payload, {
     collection: 'book-chapters',

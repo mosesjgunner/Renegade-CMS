@@ -126,7 +126,9 @@ export default function CommunityModerationCenter() {
         return
       }
 
-      setStatusMessage(`Action '${actionChoice}' successfully applied and recorded to immutable audit log.`)
+      setStatusMessage(
+        `Action '${actionChoice}' successfully applied and recorded to immutable audit log.`,
+      )
       setSelectedReport(null)
       setActionReason('')
       setBusy(false)
@@ -143,7 +145,8 @@ export default function CommunityModerationCenter() {
         <div>
           <h1 className="text-2xl font-bold tracking-tight">Community Moderation Center</h1>
           <p className="mt-1 text-sm text-stone-600 dark:text-stone-400">
-            Inspect pending reports, review immutable snapshot evidence, apply sanctions, and verify audit integrity.
+            Inspect pending reports, review immutable snapshot evidence, apply sanctions, and verify
+            audit integrity.
           </p>
         </div>
         <div className="flex items-center gap-3">
@@ -155,18 +158,17 @@ export default function CommunityModerationCenter() {
               onChange={(e) => setSiteId(e.target.value)}
             />
           </label>
-          <button
-            type="button"
-            className="btn btn-sm"
-            onClick={() => void loadData(siteId)}
-          >
+          <button type="button" className="btn btn-sm" onClick={() => void loadData(siteId)}>
             Refresh
           </button>
         </div>
       </header>
 
       {statusMessage ? (
-        <div role="status" className="p-4 rounded-xl border border-stone-200 bg-stone-50 dark:border-stone-800 dark:bg-stone-900 text-sm">
+        <div
+          role="status"
+          className="p-4 rounded-xl border border-stone-200 bg-stone-50 dark:border-stone-800 dark:bg-stone-900 text-sm"
+        >
           {statusMessage}
         </div>
       ) : null}
@@ -245,7 +247,10 @@ export default function CommunityModerationCenter() {
           <div className="space-y-4">
             <h2 className="text-lg font-semibold">Moderator Decision Panel</h2>
             {selectedReport ? (
-              <form onSubmit={handleApplyAction} className="p-5 rounded-xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 shadow-sm space-y-4">
+              <form
+                onSubmit={handleApplyAction}
+                className="p-5 rounded-xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 shadow-sm space-y-4"
+              >
                 <div>
                   <span className="text-xs uppercase font-semibold text-stone-400 tracking-wider">
                     Target Inspection
@@ -304,11 +309,7 @@ export default function CommunityModerationCenter() {
                 </label>
 
                 <div className="pt-2 flex gap-2">
-                  <button
-                    className="btn btn-primary btn-sm flex-1"
-                    type="submit"
-                    disabled={busy}
-                  >
+                  <button className="btn btn-primary btn-sm flex-1" type="submit" disabled={busy}>
                     {busy ? 'Applying…' : 'Execute Decision'}
                   </button>
                   <button
@@ -322,7 +323,8 @@ export default function CommunityModerationCenter() {
               </form>
             ) : (
               <div className="p-6 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900/50 text-center text-xs text-stone-500">
-                Select a report from the list to view evidence snapshots and execute moderation decisions.
+                Select a report from the list to view evidence snapshots and execute moderation
+                decisions.
               </div>
             )}
           </div>
@@ -388,7 +390,9 @@ export default function CommunityModerationCenter() {
           </section>
 
           <section className="space-y-3">
-            <h2 className="text-lg font-semibold">Immutable Community Audit Log ({auditLog.length})</h2>
+            <h2 className="text-lg font-semibold">
+              Immutable Community Audit Log ({auditLog.length})
+            </h2>
             <div className="rounded-xl border border-stone-200 dark:border-stone-800 overflow-hidden bg-white dark:bg-stone-900">
               <table className="w-full text-left text-xs font-mono">
                 <thead className="bg-stone-50 dark:bg-stone-800/60 border-b border-stone-200 dark:border-stone-800 text-stone-500">

@@ -6,11 +6,22 @@ async function main() {
   if (!id) throw new Error('Proposal ID required.')
   const payload = await getPayload({ config })
   try {
-    const proposal = await payload.findByID({ collection: 'ai-proposals' as never,
-      id, depth: 0, overrideAccess: true }) as { status: string; auditId: string }
-    console.log(`AI_RESTART=${JSON.stringify({ status: proposal.status, auditId: proposal.auditId })}`)
+    const proposal = (await payload.findByID({
+      collection: 'ai-proposals' as never,
+      id,
+      depth: 0,
+      overrideAccess: true,
+    })) as { status: string; auditId: string }
+    console.log(
+      `AI_RESTART=${JSON.stringify({ status: proposal.status, auditId: proposal.auditId })}`,
+    )
   } finally {
     await payload.db.destroy?.()
   }
 }
-main().then(() => process.exit(0)).catch((error) => { console.error(error); process.exit(1) })
+main()
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error(error)
+    process.exit(1)
+  })

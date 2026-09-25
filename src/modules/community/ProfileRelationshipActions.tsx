@@ -91,10 +91,7 @@ export function ProfileRelationshipActions({
         <button className="btn" type="button" onClick={() => void update('block', !state.blocked)}>
           {state.blocked ? 'Unblock' : 'Block'}
         </button>
-        <a
-          href={`/messages?targetMemberId=${encodeURIComponent(targetMemberId)}`}
-          className="btn"
-        >
+        <a href={`/messages?targetMemberId=${encodeURIComponent(targetMemberId)}`} className="btn">
           Send Message
         </a>
         <button
@@ -106,7 +103,10 @@ export function ProfileRelationshipActions({
         </button>
       </div>
       {showReport ? (
-        <form onSubmit={submitReport} className="mt-4 p-4 border rounded space-y-3 bg-stone-50 dark:bg-stone-900">
+        <form
+          onSubmit={submitReport}
+          className="mt-4 p-4 border rounded space-y-3 bg-stone-50 dark:bg-stone-900"
+        >
           <h3 className="font-semibold text-sm">Report this member</h3>
           <label className="block text-sm">
             Reason

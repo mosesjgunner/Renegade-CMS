@@ -306,7 +306,8 @@ export default function AiStudio() {
             </small>
             <br />
             <small>
-                Task budget ${item.perTaskUsd}; {item.budgetMonth || 'Current'} month estimated spend ${item.spentMonthUsd || 0} / ${item.monthlyUsd}; last test{' '}
+              Task budget ${item.perTaskUsd}; {item.budgetMonth || 'Current'} month estimated spend
+              ${item.spentMonthUsd || 0} / ${item.monthlyUsd}; last test{' '}
               {item.lastTestedAt || 'never'}
             </small>
             {item.lastError && <p role="alert">{item.lastError}</p>}

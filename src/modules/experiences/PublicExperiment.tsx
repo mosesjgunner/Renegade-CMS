@@ -74,12 +74,14 @@ export function PublicExperiment({ siteId }: { siteId?: string }) {
                     assignmentKey: json.assignment.dedupeKey,
                     siteId,
                   }),
-                }).then((r) => {
-                  if (r.ok || r.status === 202) {
-                    sessionStorage.setItem(exposureKey, '1')
-                    setExposureRecorded(true)
-                  }
-                }).catch(() => {})
+                })
+                  .then((r) => {
+                    if (r.ok || r.status === 202) {
+                      sessionStorage.setItem(exposureKey, '1')
+                      setExposureRecorded(true)
+                    }
+                  })
+                  .catch(() => {})
               } else {
                 setExposureRecorded(true)
               }
@@ -165,9 +167,7 @@ export function PublicExperiment({ siteId }: { siteId?: string }) {
         </div>
         <div className="flex items-center gap-2 text-xs">
           <span
-            className={`h-2 w-2 rounded-full ${
-              consented ? 'bg-emerald-500' : 'bg-stone-400'
-            }`}
+            className={`h-2 w-2 rounded-full ${consented ? 'bg-emerald-500' : 'bg-stone-400'}`}
           />
           <span className="text-stone-600 dark:text-stone-300">
             {consented ? 'Consented Session' : 'Privacy Default (Tracking Off)'}
@@ -201,7 +201,8 @@ export function PublicExperiment({ siteId }: { siteId?: string }) {
                 Subscription Confirmed!
               </p>
               <p className="text-xs text-emerald-700 dark:text-emerald-400 mt-0.5">
-                Conversion recorded for goal: <code className="font-mono">{experiment.goalKey}</code>.
+                Conversion recorded for goal:{' '}
+                <code className="font-mono">{experiment.goalKey}</code>.
                 {consented
                   ? ' Attributed under first-party consent.'
                   : ' Completed in privacy mode without tracking.'}
@@ -231,13 +232,21 @@ export function PublicExperiment({ siteId }: { siteId?: string }) {
       )}
 
       <div className="mt-6 flex flex-wrap items-center gap-x-4 gap-y-1 text-[11px] text-stone-400 dark:text-stone-500">
-        <span>Component: <code>{assignedVariant.registeredComponent}</code></span>
+        <span>
+          Component: <code>{assignedVariant.registeredComponent}</code>
+        </span>
         <span>•</span>
-        <span>Variant ID: <code>{assignedVariant.id}</code></span>
+        <span>
+          Variant ID: <code>{assignedVariant.id}</code>
+        </span>
         <span>•</span>
-        <span>Assignment Key: <code>{data.assignment.dedupeKey.slice(0, 32)}…</code></span>
+        <span>
+          Assignment Key: <code>{data.assignment.dedupeKey.slice(0, 32)}…</code>
+        </span>
         <span>•</span>
-        <span>Privacy Status: <em>{privacyMode}</em></span>
+        <span>
+          Privacy Status: <em>{privacyMode}</em>
+        </span>
       </div>
     </section>
   )

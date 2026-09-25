@@ -1307,14 +1307,18 @@ export function MediaCommandCenter({ siteId }: { siteId: string }) {
                         </div>
                       </td>
                       <td style={{ padding: '0.5rem' }}>
-                        <a
-                          href={show.feedUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                          style={{ color: '#2563eb' }}
-                        >
-                          {show.feedUrl}
-                        </a>
+                        {show.feedUrl ? (
+                          <a
+                            href={show.feedUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            style={{ color: '#2563eb' }}
+                          >
+                            {show.feedUrl}
+                          </a>
+                        ) : (
+                          <span>Feed path unavailable until the show has a slug.</span>
+                        )}
                       </td>
                       <td style={{ padding: '0.5rem' }}>
                         {show.artworkAttached ? (

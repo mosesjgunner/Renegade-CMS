@@ -7,6 +7,20 @@ import {
   structuredDataSourceFields,
 } from './canonical-shared'
 import { searchProjectionHooks } from '../modules/public/search-projection'
+import {
+  assignRecordSemanticPath,
+  assertRecordSemanticPath,
+  recordPublishedPathHistory,
+  routeTemplatesForPayloadSite,
+} from '../modules/public/semantic-url-service'
+import { resolvePublicUrl } from '../modules/public/semantic-url'
+
+const relationId = (value: unknown): string =>
+  typeof value === 'string'
+    ? value
+    : value && typeof value === 'object' && 'id' in value
+      ? String((value as { id: unknown }).id)
+      : ''
 
 const staffOnly = ({ req }: { req: { user?: { role?: string } | null } }) =>
   ['owner', 'administrator', 'staff'].includes(String(req.user?.role))
@@ -49,22 +63,60 @@ const collection = (slug: string, fields: CollectionConfig['fields']): Collectio
   hooks: searchProjectionHooks(slug),
 })
 
-export const Books = collection('books', [
-  ...scoped(),
-  {
-    name: 'visibility',
-    type: 'select',
-    required: true,
-    defaultValue: 'public',
-    options: ['public', 'unlisted', 'members', 'private'],
+const booksSearchHooks = searchProjectionHooks('books')
+export const Books: CollectionConfig = {
+  ...collection('books', [
+    ...scoped(),
+    {
+      name: 'visibility',
+      type: 'select',
+      required: true,
+      defaultValue: 'public',
+      options: ['public', 'unlisted', 'members', 'private'],
+    },
+    { name: 'isbn', type: 'text' },
+    { name: 'purchaseLinks', type: 'json' },
+    { name: 'downloadLinks', type: 'json' },
+    { name: 'cover', type: 'relationship', relationTo: 'media-assets' },
+    { name: 'serializedRelease', type: 'checkbox', defaultValue: false },
+    { name: 'relatedMedia', type: 'relationship', relationTo: 'media-assets', hasMany: true },
+  ]),
+  hooks: {
+    ...booksSearchHooks,
+    beforeValidate: [
+      async ({ data, originalDoc, req, context }) => {
+        data = (await assignRecordSemanticPath({
+          payload: req.payload,
+          collection: 'books',
+          data: data as Record<string, unknown> | null | undefined,
+          originalDoc: originalDoc as Record<string, unknown> | null | undefined,
+          allowCanonicalPathChange: context?.semanticRouteChange === true,
+        })) as typeof data
+        await assertRecordSemanticPath({
+          payload: req.payload,
+          collection: 'books',
+          data: data as Record<string, unknown> | null | undefined,
+          originalDoc: originalDoc as Record<string, unknown> | null | undefined,
+        })
+        return data
+      },
+    ],
+    afterChange: [
+      ...booksSearchHooks.afterChange,
+      async ({ doc, previousDoc, operation, req }) => {
+        await recordPublishedPathHistory({
+          collection: 'books',
+          doc: doc as unknown as Record<string, unknown>,
+          previousDoc: previousDoc as unknown as Record<string, unknown>,
+          operation: operation as 'create' | 'update',
+          payload: req.payload,
+        })
+        return doc
+      },
+    ],
   },
-  { name: 'isbn', type: 'text' },
-  { name: 'purchaseLinks', type: 'json' },
-  { name: 'downloadLinks', type: 'json' },
-  { name: 'cover', type: 'relationship', relationTo: 'media-assets' },
-  { name: 'serializedRelease', type: 'checkbox', defaultValue: false },
-  { name: 'relatedMedia', type: 'relationship', relationTo: 'media-assets', hasMany: true },
-])
+  indexes: [{ fields: ['site', 'canonicalPath'] }],
+}
 export const BookParts = collection('book-parts', [
   { name: 'book', type: 'relationship', relationTo: 'books' as never, required: true, index: true },
   { name: 'title', type: 'text', required: true },
@@ -173,14 +225,25 @@ export const PodcastShows: CollectionConfig = {
   ]),
   hooks: {
     beforeChange: [
-      async ({ data, originalDoc }) => {
+      async ({ data, originalDoc, req }) => {
         if (
           data &&
           data.slug &&
           (!data.canonicalPath || (originalDoc && originalDoc.slug !== data.slug))
         ) {
-          data.canonicalPath = `/podcasts/${data.slug}`
+          const siteId = relationId(data.site ?? originalDoc?.site)
+          const templates = await routeTemplatesForPayloadSite(req.payload, siteId)
+          data.canonicalPath = resolvePublicUrl(
+            { kind: 'podcast', slug: String(data.slug) },
+            templates,
+          )
         }
+        await assertRecordSemanticPath({
+          payload: req.payload,
+          collection: 'podcast-shows',
+          data: data as Record<string, unknown> | null | undefined,
+          originalDoc: originalDoc as Record<string, unknown> | null | undefined,
+        })
         return data
       },
     ],
@@ -285,7 +348,12 @@ export const PodcastEpisodes: CollectionConfig = {
           data.guid = `urn:renegade:podcast:${showId ?? 'show'}:${randomUUID()}`
         }
         if (data.slug && (!data.canonicalPath || (originalDoc && originalDoc.slug !== data.slug))) {
-          data.canonicalPath = `/podcasts/episodes/${data.slug}`
+          const siteId = relationId(data.site ?? originalDoc?.site)
+          const templates = await routeTemplatesForPayloadSite(req.payload, siteId)
+          data.canonicalPath = resolvePublicUrl(
+            { kind: 'podcast-episode', slug: String(data.slug) },
+            templates,
+          )
         }
         if ((!data.enclosureBytes || !data.enclosureMimeType) && data.audio && req?.payload) {
           try {
@@ -308,6 +376,12 @@ export const PodcastEpisodes: CollectionConfig = {
             // Ignore asset lookup failure
           }
         }
+        await assertRecordSemanticPath({
+          payload: req.payload,
+          collection: 'podcast-episodes',
+          data: data as Record<string, unknown> | null | undefined,
+          originalDoc: originalDoc as Record<string, unknown> | null | undefined,
+        })
         return data
       },
     ],
@@ -426,8 +500,16 @@ export const Videos: CollectionConfig = {
   hooks: {
     beforeChange: [
       async ({ data, originalDoc, req }) => {
-        if (data?.slug && (!data.canonicalPath || originalDoc?.slug !== data.slug))
-          data.canonicalPath = `/videos/${data.slug}`
+        if (data?.slug && (!data.canonicalPath || originalDoc?.slug !== data.slug)) {
+          const templates = await routeTemplatesForPayloadSite(
+            req.payload,
+            relationId(data.site ?? originalDoc?.site),
+          )
+          data.canonicalPath = resolvePublicUrl(
+            { kind: 'video', slug: String(data.slug) },
+            templates,
+          )
+        }
         if (data?.status === 'published' && data.provider === 'native') {
           const videoAssetId =
             typeof data.videoAsset === 'string'
@@ -443,10 +525,29 @@ export const Videos: CollectionConfig = {
           if (videoAsset.processingState !== 'ready' && !Array.isArray(videoAsset.lastGoodOutputs))
             throw new Error('Video processing must have a ready or last-good playable output.')
         }
+        await assertRecordSemanticPath({
+          payload: req.payload,
+          collection: 'videos',
+          data: data as Record<string, unknown> | null | undefined,
+          originalDoc: originalDoc as Record<string, unknown> | null | undefined,
+        })
         return data
       },
     ],
     ...searchProjectionHooks('videos'),
+    afterChange: [
+      ...searchProjectionHooks('videos').afterChange,
+      async ({ doc, previousDoc, operation, req }) => {
+        await recordPublishedPathHistory({
+          collection: 'videos',
+          doc: doc as unknown as Record<string, unknown>,
+          previousDoc: previousDoc as unknown as Record<string, unknown>,
+          operation: operation as 'create' | 'update',
+          payload: req.payload,
+        })
+        return doc
+      },
+    ],
   },
 }
 

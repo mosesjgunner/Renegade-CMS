@@ -160,7 +160,9 @@ function MessagesContent() {
     if (!res.ok) {
       setStatus(body.error ?? 'Could not process message request decision.')
     } else {
-      setStatus(`Message request ${action === 'accept' ? 'accepted' : action === 'decline' ? 'declined' : 'blocked'}.`)
+      setStatus(
+        `Message request ${action === 'accept' ? 'accepted' : action === 'decline' ? 'declined' : 'blocked'}.`,
+      )
       void refresh(siteId)
       void loadMessages(siteId, selected)
     }
@@ -181,7 +183,10 @@ function MessagesContent() {
       ) : null}
       {siteId && (
         <>
-          <form onSubmit={start} className="mt-6 space-y-3 p-4 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900">
+          <form
+            onSubmit={start}
+            className="mt-6 space-y-3 p-4 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900"
+          >
             <h2 className="text-lg font-semibold">Start a conversation</h2>
             <label className="block text-sm">
               Recipients (member IDs or handles, comma-separated)
@@ -218,7 +223,9 @@ function MessagesContent() {
                   <button
                     type="button"
                     className={`btn text-left w-full flex items-center justify-between ${
-                      selected === conversation.id ? 'border-primary ring-1 ring-primary font-semibold' : ''
+                      selected === conversation.id
+                        ? 'border-primary ring-1 ring-primary font-semibold'
+                        : ''
                     }`}
                     aria-pressed={selected === conversation.id}
                     onClick={() => setSelected(conversation.id)}
@@ -242,7 +249,8 @@ function MessagesContent() {
             <section className="mt-8 border-t pt-6" aria-label="Messages">
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-semibold">
-                  {activeConv?.title || `${activeConv?.kind === 'group' ? 'Group' : 'Direct'} Conversation`}
+                  {activeConv?.title ||
+                    `${activeConv?.kind === 'group' ? 'Group' : 'Direct'} Conversation`}
                 </h2>
                 <button
                   type="button"
@@ -298,9 +306,14 @@ function MessagesContent() {
                   <p className="text-sm text-stone-500">No messages in this conversation yet.</p>
                 ) : (
                   messages.map((message) => (
-                    <li key={message.id} className="rounded-xl border p-4 bg-white dark:bg-stone-900 shadow-sm">
+                    <li
+                      key={message.id}
+                      className="rounded-xl border p-4 bg-white dark:bg-stone-900 shadow-sm"
+                    >
                       <div className="flex items-center justify-between text-xs text-stone-500">
-                        <span>{message.sender_id ? `Member ${message.sender_id.slice(0, 8)}` : 'System'}</span>
+                        <span>
+                          {message.sender_id ? `Member ${message.sender_id.slice(0, 8)}` : 'System'}
+                        </span>
                         <time dateTime={message.created_at}>
                           {new Date(message.created_at).toLocaleString()}
                         </time>
@@ -335,10 +348,14 @@ function MessagesContent() {
           )}
         </>
       )}
-      <section className="mt-12 pt-6 border-t text-xs text-stone-500" aria-label="Conversation security">
+      <section
+        className="mt-12 pt-6 border-t text-xs text-stone-500"
+        aria-label="Conversation security"
+      >
         <h2>Conversation security</h2>
         <p className="mt-1">
-          Messages use TLS in transit and server storage protection at rest. They are not end-to-end encrypted.
+          Messages use TLS in transit and server storage protection at rest. They are not end-to-end
+          encrypted.
         </p>
       </section>
     </main>
@@ -347,7 +364,9 @@ function MessagesContent() {
 
 export default function MessagesPage() {
   return (
-    <Suspense fallback={<div className="container mx-auto max-w-3xl px-6 py-12">Loading messages…</div>}>
+    <Suspense
+      fallback={<div className="container mx-auto max-w-3xl px-6 py-12">Loading messages…</div>}
+    >
       <MessagesContent />
     </Suspense>
   )

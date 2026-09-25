@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from 'react'
 import { useRouter } from 'next/navigation'
+import { resolvePublicUrl } from '../public/semantic-url'
 
 function csrfHeader(): Record<string, string> {
   const token = document.cookie
@@ -54,7 +55,8 @@ export function ForumThreadComposer({
       }
 
       setStatus('Topic created! Opening…')
-      const targetPath = data.discussion?.canonicalPath ?? `/forums/${forumSlug}`
+      const targetPath =
+        data.discussion?.canonicalPath ?? resolvePublicUrl({ kind: 'forum', slug: forumSlug })
       router.push(targetPath)
       router.refresh()
     } catch {
@@ -66,11 +68,7 @@ export function ForumThreadComposer({
   if (!isOpen) {
     return (
       <div className="my-6">
-        <button
-          className="btn btn-primary"
-          type="button"
-          onClick={() => setIsOpen(true)}
-        >
+        <button className="btn btn-primary" type="button" onClick={() => setIsOpen(true)}>
           + New Topic
         </button>
       </div>
@@ -113,11 +111,7 @@ export function ForumThreadComposer({
           />
         </label>
         <div className="flex items-center justify-between pt-2">
-          <button
-            className="btn btn-primary"
-            type="submit"
-            disabled={submitting}
-          >
+          <button className="btn btn-primary" type="submit" disabled={submitting}>
             {submitting ? 'Creating topic…' : 'Publish Topic'}
           </button>
           {status ? (

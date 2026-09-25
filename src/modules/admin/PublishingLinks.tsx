@@ -7,6 +7,7 @@ export default function PublishingLinks() {
       <Link href="/admin">Dashboard</Link>
       <Link href="/admin/posts">Posts</Link>
       <Link href="/admin/pages">Pages</Link>
+      <Link href="/admin/collections/page-layouts">Layouts</Link>
       <Link href="/admin/media-library">Media</Link>
       <Link href="/admin/collections/podcast-shows">Podcasts</Link>
       <Link href="/admin/navigation">Menus</Link>
@@ -16,6 +17,7 @@ export default function PublishingLinks() {
       <Link href="/admin/rendered-quality">Rendered Quality</Link>
       <Link href="/admin/workflow">Editorial Workflow</Link>
       <Link href="/admin/releases">Releases</Link>
+      <Link href="/admin/ai">AI Studio</Link>
       <Link href="/admin/social">Social Distribution</Link>
       <Link href="/admin/email-composer">Email Composer</Link>
       <Link href="/admin/audience">Audience Command Center</Link>

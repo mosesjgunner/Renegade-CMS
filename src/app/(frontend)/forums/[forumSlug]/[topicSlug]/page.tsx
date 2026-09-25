@@ -12,7 +12,9 @@ export const dynamic = 'force-dynamic'
 async function resolveThread(forumSlug: string, topicSlug: string) {
   const payload = await getPayload({ config })
   const requestHeaders = await headers()
-  const siteId = await communitySiteForHost(payload, requestHeaders.get('host')).catch(() => 'default')
+  const siteId = await communitySiteForHost(payload, requestHeaders.get('host')).catch(
+    () => 'default',
+  )
 
   const forumRes = await payload.find({
     collection: 'forums',
@@ -28,10 +30,7 @@ async function resolveThread(forumSlug: string, topicSlug: string) {
     await payload.find({
       collection: 'discussions',
       where: {
-        or: [
-          { canonicalPath: { equals: canonical } },
-          { id: { equals: topicSlug } },
-        ],
+        or: [{ canonicalPath: { equals: canonical } }, { id: { equals: topicSlug } }],
       },
       limit: 1,
       depth: 1,
@@ -57,10 +56,7 @@ async function resolveThread(forumSlug: string, topicSlug: string) {
   const postsRes = await payload.find({
     collection: 'discussion-posts',
     where: {
-      and: [
-        { discussion: { equals: discussion.id } },
-        { status: { not_equals: 'removed' } },
-      ],
+      and: [{ discussion: { equals: discussion.id } }, { status: { not_equals: 'removed' } }],
     },
     sort: 'displayOrder',
     limit: 100,
@@ -139,7 +135,9 @@ export default async function ForumThreadPage({
         <div className="mt-2 text-xs text-stone-500 flex items-center gap-3">
           <span>Started {new Date(discussion.createdAt).toLocaleDateString()}</span>
           <span>&middot;</span>
-          <span>{posts.length} {posts.length === 1 ? 'post' : 'posts'}</span>
+          <span>
+            {posts.length} {posts.length === 1 ? 'post' : 'posts'}
+          </span>
         </div>
       </header>
 

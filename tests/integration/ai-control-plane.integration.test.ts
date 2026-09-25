@@ -186,11 +186,15 @@ describe('AI control plane persistence', () => {
     } finally {
       await client.end()
     }
-    const { stdout: output } = await promisify(execFile)(process.execPath, [
-      path.resolve('node_modules/tsx/dist/cli.mjs'),
-      path.resolve('tests/integration/helpers/ai-restart-reader.ts'),
-      proposal.id,
-    ], { cwd: process.cwd(), env: process.env, encoding: 'utf8', timeout: 30_000 })
+    const { stdout: output } = await promisify(execFile)(
+      process.execPath,
+      [
+        path.resolve('node_modules/tsx/dist/cli.mjs'),
+        path.resolve('tests/integration/helpers/ai-restart-reader.ts'),
+        proposal.id,
+      ],
+      { cwd: process.cwd(), env: process.env, encoding: 'utf8', timeout: 30_000 },
+    )
     expect(output).toContain(`"status":"declined"`)
     expect(output).toContain(`"auditId":`)
   }, 45_000)

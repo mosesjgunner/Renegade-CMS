@@ -45,7 +45,13 @@ describe('Operational UX & Integrations Contract Proofs', () => {
 
       // Tampered payload fails verification
       expect(verifyWebhookSignature(raw + ' ', signature, secret)).toBe(false)
-      expect(verifyWebhookSignature(JSON.stringify({ event: 'order.paid', amount: 2000 }), signature, secret)).toBe(false)
+      expect(
+        verifyWebhookSignature(
+          JSON.stringify({ event: 'order.paid', amount: 2000 }),
+          signature,
+          secret,
+        ),
+      ).toBe(false)
 
       // Wrong secret fails verification
       expect(verifyWebhookSignature(raw, signature, 'wrong-secret')).toBe(false)
@@ -104,7 +110,9 @@ describe('Operational UX & Integrations Contract Proofs', () => {
         find: async (args: any) => {
           if (args.collection === 'webhook-subscriptions') {
             return {
-              docs: [{ id: 'sub-1', site: 'site-alpha', status: 'active', events: ['content.created'] }],
+              docs: [
+                { id: 'sub-1', site: 'site-alpha', status: 'active', events: ['content.created'] },
+              ],
             }
           }
           if (args.collection === 'webhook-deliveries') {
@@ -161,19 +169,32 @@ describe('Operational UX & Integrations Contract Proofs', () => {
       const auth = authenticateMachineCredential(credential.token, [credential.credential])
       expect(auth).not.toBeNull()
 
-      expect(canAccess(auth, 'content.read', { siteId: 'site-alpha', publicationId: 'pub-main' })).toBe(true)
-      expect(canAccess(auth, 'commerce.orders.read', { siteId: 'site-alpha', publicationId: 'pub-main' })).toBe(true)
+      expect(
+        canAccess(auth, 'content.read', { siteId: 'site-alpha', publicationId: 'pub-main' }),
+      ).toBe(true)
+      expect(
+        canAccess(auth, 'commerce.orders.read', {
+          siteId: 'site-alpha',
+          publicationId: 'pub-main',
+        }),
+      ).toBe(true)
     })
 
     it('strictly denies cross-tenant access even if permission scope matches', () => {
       const auth = authenticateMachineCredential(credential.token, [credential.credential])
 
       // Different site ID -> DENIED
-      expect(canAccess(auth, 'content.read', { siteId: 'site-beta', publicationId: 'pub-main' })).toBe(false)
+      expect(
+        canAccess(auth, 'content.read', { siteId: 'site-beta', publicationId: 'pub-main' }),
+      ).toBe(false)
       // Different publication ID -> DENIED
-      expect(canAccess(auth, 'content.read', { siteId: 'site-alpha', publicationId: 'pub-other' })).toBe(false)
+      expect(
+        canAccess(auth, 'content.read', { siteId: 'site-alpha', publicationId: 'pub-other' }),
+      ).toBe(false)
       // Missing scope -> DENIED
-      expect(canAccess(auth, 'content.draft.write', { siteId: 'site-alpha', publicationId: 'pub-main' })).toBe(false)
+      expect(
+        canAccess(auth, 'content.draft.write', { siteId: 'site-alpha', publicationId: 'pub-main' }),
+      ).toBe(false)
     })
   })
 
@@ -368,11 +389,15 @@ describe('Operational UX & Integrations Contract Proofs', () => {
       expect(rotated.credential.tokenHash).not.toBe(initial.credential.tokenHash)
 
       // New token authenticates successfully
-      const authenticatedWithNew = authenticateMachineCredential(rotated.token, [rotated.credential])
+      const authenticatedWithNew = authenticateMachineCredential(rotated.token, [
+        rotated.credential,
+      ])
       expect(authenticatedWithNew).not.toBeNull()
 
       // Old token fails authentication
-      const authenticatedWithOld = authenticateMachineCredential(initial.token, [rotated.credential])
+      const authenticatedWithOld = authenticateMachineCredential(initial.token, [
+        rotated.credential,
+      ])
       expect(authenticatedWithOld).toBeNull()
     })
 

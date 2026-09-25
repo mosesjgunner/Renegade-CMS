@@ -287,8 +287,7 @@ export function attributeCampaignFunnel(
       priorEvents = linked
       confidence = 'verified'
       uncertaintyRating = 'low'
-      uncertaintyStatement =
-        'Touchpoints verified with cryptographic salted identity match.'
+      uncertaintyStatement = 'Touchpoints verified with cryptographic salted identity match.'
     } else {
       confidence = 'inferred'
       uncertaintyRating = 'moderate'
@@ -306,7 +305,9 @@ export function attributeCampaignFunnel(
     eventId: event.id,
     eventType: event.eventType,
     occurredAt: event.occurredAt,
-    channel: event.context.channel ?? (event.context.utm?.utm_medium || event.context.referrer ? 'referral' : 'direct'),
+    channel:
+      event.context.channel ??
+      (event.context.utm?.utm_medium || event.context.referrer ? 'referral' : 'direct'),
     campaign: event.context.campaignId ?? event.context.utm?.utm_campaign,
     consentBasis: event.consentBasis,
   }))
@@ -314,8 +315,8 @@ export function attributeCampaignFunnel(
   const nonDirectTouchpoints = touchpoints.filter((tp) => !direct(tp.channel))
   const selectedTouchpoint =
     model === 'first-touch'
-      ? nonDirectTouchpoints[0] ?? touchpoints[0]
-      : [...nonDirectTouchpoints].reverse()[0] ?? touchpoints[touchpoints.length - 1]
+      ? (nonDirectTouchpoints[0] ?? touchpoints[0])
+      : ([...nonDirectTouchpoints].reverse()[0] ?? touchpoints[touchpoints.length - 1])
 
   const selectedEvent = priorEvents.find((e) => e.id === selectedTouchpoint?.eventId)
   const utm = selectedEvent?.context.utm
@@ -338,8 +339,12 @@ export function attributeCampaignFunnel(
     medium: utm?.utm_medium,
     content: utm?.utm_content,
     term: utm?.utm_term,
-    referralCode: typeof selectedEvent?.properties?.ref === 'string' ? selectedEvent.properties.ref : undefined,
-    affiliateId: typeof selectedEvent?.properties?.affiliateId === 'string' ? selectedEvent.properties.affiliateId : undefined,
+    referralCode:
+      typeof selectedEvent?.properties?.ref === 'string' ? selectedEvent.properties.ref : undefined,
+    affiliateId:
+      typeof selectedEvent?.properties?.affiliateId === 'string'
+        ? selectedEvent.properties.affiliateId
+        : undefined,
   }
 
   return {

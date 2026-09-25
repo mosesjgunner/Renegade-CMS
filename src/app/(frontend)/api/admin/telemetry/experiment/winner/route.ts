@@ -12,7 +12,10 @@ export async function POST(request: Request) {
   const auth = await payload.auth({ headers: request.headers })
 
   if (!isOperator(auth.user)) {
-    return NextResponse.json({ error: 'Staff access required for experiment decisions.' }, { status: 403 })
+    return NextResponse.json(
+      { error: 'Staff access required for experiment decisions.' },
+      { status: 403 },
+    )
   }
 
   const body = (await request.json().catch(() => ({}))) as {

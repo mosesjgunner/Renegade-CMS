@@ -1,17 +1,14 @@
 import { randomUUID } from 'node:crypto'
 import type { Payload } from 'payload'
 import { loadConfig } from '@/modules/core/config'
-import { browserPrivacySignals, privacyPolicyFromSettings, readConsent } from '@/modules/analytics/privacy'
+import {
+  browserPrivacySignals,
+  privacyPolicyFromSettings,
+  readConsent,
+} from '@/modules/analytics/privacy'
 import { analyticsAllowed, isBotOrInternal } from '@/modules/analytics/contracts'
-import {
-  deterministicAssignment,
-  type ExperimentState,
-  type Variant,
-} from './contracts'
-import {
-  createExperiencesRuntimeService,
-  type ExperienceDefinition,
-} from './service'
+import { deterministicAssignment, type ExperimentState, type Variant } from './contracts'
+import { createExperiencesRuntimeService, type ExperienceDefinition } from './service'
 
 export interface PublicExperimentVariantConfig extends Variant {
   name: string
@@ -33,7 +30,8 @@ export const CANONICAL_PUBLIC_EXPERIMENT: {
 } = {
   id: 'exp-homepage-hero-cta',
   name: 'Homepage Hero CTA & Reader Onboarding Optimization',
-  description: 'Testing Sovereign Dispatch CTA (Control) vs. Free Reader Network CTA (Treatment) for reader conversion.',
+  description:
+    'Testing Sovereign Dispatch CTA (Control) vs. Free Reader Network CTA (Treatment) for reader conversion.',
   state: 'running',
   assignmentSalt: 'renegade-hero-experiment-salt-2026',
   collectionEnabled: true,
@@ -57,7 +55,8 @@ export const CANONICAL_PUBLIC_EXPERIMENT: {
       allocation: 50,
       registeredComponent: 'publisher.cta',
       headline: 'Join the Sovereign Reader Network',
-      tagline: 'Full access to decentralised analysis, community discussions, and verified member feeds.',
+      tagline:
+        'Full access to decentralised analysis, community discussions, and verified member feeds.',
       ctaText: 'Join Reader Network',
       badge: 'Treatment (Community Focus)',
     },
@@ -96,7 +95,9 @@ export async function getActivePublicExperiment(payload: Payload, siteId?: strin
     const decisions = await payload.find({
       collection: 'experiment-decisions',
       where: {
-        experiment: { equals: dbExperiment?.id ? String(dbExperiment.id) : CANONICAL_PUBLIC_EXPERIMENT.id },
+        experiment: {
+          equals: dbExperiment?.id ? String(dbExperiment.id) : CANONICAL_PUBLIC_EXPERIMENT.id,
+        },
       },
       sort: '-decidedAt',
       limit: 1,
@@ -110,11 +111,13 @@ export async function getActivePublicExperiment(payload: Payload, siteId?: strin
     // Non-blocking decision check
   }
 
-  const state: ExperimentState = winnerDecision ? 'winner-selected' : ((dbExperiment?.state as ExperimentState) ?? CANONICAL_PUBLIC_EXPERIMENT.state)
+  const state: ExperimentState = winnerDecision
+    ? 'winner-selected'
+    : ((dbExperiment?.state as ExperimentState) ?? CANONICAL_PUBLIC_EXPERIMENT.state)
   const selectedVariantId = winnerDecision
-    ? (typeof winnerDecision.selectedVariant === 'string'
-        ? winnerDecision.selectedVariant
-        : (winnerDecision.selectedVariant as { id?: string } | undefined)?.id)
+    ? typeof winnerDecision.selectedVariant === 'string'
+      ? winnerDecision.selectedVariant
+      : (winnerDecision.selectedVariant as { id?: string } | undefined)?.id
     : undefined
 
   return {
@@ -144,16 +147,23 @@ export function resolvePublicExperimentVariant(input: {
   const control = input.experiment.variants.find((v) => v.isControl) ?? input.experiment.variants[0]
   const consent = readConsent(input.cookieHeader, input.secret)
   const signals = browserPrivacySignals(input.headers)
-  const allowed = consent && analyticsAllowed({ choices: consent.choices, policy: input.privacyPolicy, ...signals })
+  const allowed =
+    consent &&
+    analyticsAllowed({ choices: consent.choices, policy: input.privacyPolicy, ...signals })
   const bot = isBotOrInternal({
     userAgent: input.headers.get('user-agent') ?? undefined,
     internal: input.headers.get('x-renegade-internal') === '1',
   })
 
   // If winner has been approved by operator, winner is rendered for all
-  if (input.experiment.state === 'winner-selected' && input.experiment.winnerDecision?.selectedVariantId) {
+  if (
+    input.experiment.state === 'winner-selected' &&
+    input.experiment.winnerDecision?.selectedVariantId
+  ) {
     const winnerVariant =
-      input.experiment.variants.find((v) => v.id === input.experiment.winnerDecision?.selectedVariantId) ?? control
+      input.experiment.variants.find(
+        (v) => v.id === input.experiment.winnerDecision?.selectedVariantId,
+      ) ?? control
     return {
       variant: winnerVariant,
       assignment: {

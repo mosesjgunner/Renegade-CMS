@@ -38,34 +38,86 @@ export async function GET(request: Request) {
     const siteId = searchParams.get('siteId') || undefined
     const siteWhere = siteId ? { site: { equals: siteId } } : undefined
 
-    const [
-      apiClientsRes,
-      webhooksRes,
-      merchantsRes,
-      socialsRes,
-      podRes,
-      aiRes,
-      auditEventsRes,
-    ] = await Promise.all([
-      payload.find({ collection: 'api-clients' as never, where: siteWhere, limit: 100, depth: 0, overrideAccess: true }).catch(() => ({ docs: [] })),
-      payload.find({ collection: 'webhook-subscriptions' as never, where: siteWhere, limit: 100, depth: 0, overrideAccess: true }).catch(() => ({ docs: [] })),
-      payload.find({ collection: 'merchant-connections' as never, where: siteWhere, limit: 100, depth: 0, overrideAccess: true }).catch(() => ({ docs: [] })),
-      payload.find({ collection: 'social-accounts' as never, where: siteWhere, limit: 100, depth: 0, overrideAccess: true }).catch(() => ({ docs: [] })),
-      payload.find({ collection: 'pod-connections' as never, where: siteWhere, limit: 100, depth: 0, overrideAccess: true }).catch(() => ({ docs: [] })),
-      payload.find({ collection: 'ai-connections' as never, where: siteWhere, limit: 100, depth: 0, overrideAccess: true }).catch(() => ({ docs: [] })),
-      payload.find({ collection: 'integration-audit-events' as never, where: siteWhere, limit: 50, sort: '-occurredAt', depth: 0, overrideAccess: true }).catch(() => ({ docs: [] })),
-    ])
+    const [apiClientsRes, webhooksRes, merchantsRes, socialsRes, podRes, aiRes, auditEventsRes] =
+      await Promise.all([
+        payload
+          .find({
+            collection: 'api-clients' as never,
+            where: siteWhere,
+            limit: 100,
+            depth: 0,
+            overrideAccess: true,
+          })
+          .catch(() => ({ docs: [] })),
+        payload
+          .find({
+            collection: 'webhook-subscriptions' as never,
+            where: siteWhere,
+            limit: 100,
+            depth: 0,
+            overrideAccess: true,
+          })
+          .catch(() => ({ docs: [] })),
+        payload
+          .find({
+            collection: 'merchant-connections' as never,
+            where: siteWhere,
+            limit: 100,
+            depth: 0,
+            overrideAccess: true,
+          })
+          .catch(() => ({ docs: [] })),
+        payload
+          .find({
+            collection: 'social-accounts' as never,
+            where: siteWhere,
+            limit: 100,
+            depth: 0,
+            overrideAccess: true,
+          })
+          .catch(() => ({ docs: [] })),
+        payload
+          .find({
+            collection: 'pod-connections' as never,
+            where: siteWhere,
+            limit: 100,
+            depth: 0,
+            overrideAccess: true,
+          })
+          .catch(() => ({ docs: [] })),
+        payload
+          .find({
+            collection: 'ai-connections' as never,
+            where: siteWhere,
+            limit: 100,
+            depth: 0,
+            overrideAccess: true,
+          })
+          .catch(() => ({ docs: [] })),
+        payload
+          .find({
+            collection: 'integration-audit-events' as never,
+            where: siteWhere,
+            limit: 50,
+            sort: '-occurredAt',
+            depth: 0,
+            overrideAccess: true,
+          })
+          .catch(() => ({ docs: [] })),
+      ])
 
     const webhookIds = webhooksRes.docs.map((doc: any) => String(doc.id))
     const deliveriesWhere = webhookIds.length > 0 ? { subscription: { in: webhookIds } } : undefined
-    const deliveriesRes = await payload.find({
-      collection: 'webhook-deliveries' as never,
-      where: deliveriesWhere,
-      limit: 100,
-      sort: '-createdAt',
-      depth: 0,
-      overrideAccess: true,
-    }).catch(() => ({ docs: [] }))
+    const deliveriesRes = await payload
+      .find({
+        collection: 'webhook-deliveries' as never,
+        where: deliveriesWhere,
+        limit: 100,
+        sort: '-createdAt',
+        depth: 0,
+        overrideAccess: true,
+      })
+      .catch(() => ({ docs: [] }))
 
     const deliveries = (deliveriesRes.docs as any[]).map((doc) => {
       const diagnosis = diagnoseWebhookDelivery({
@@ -138,10 +190,15 @@ export async function GET(request: Request) {
         label: `Webhook: ${doc.target ? new URL(doc.target).pathname : 'Endpoint'}`,
         externalAccountId: String(doc.target),
         status,
-        healthState: status === 'active' ? 'healthy' : status === 'degraded' ? 'warning' : 'critical',
+        healthState:
+          status === 'active' ? 'healthy' : status === 'degraded' ? 'warning' : 'critical',
         scopes: Array.isArray(doc.events) ? doc.events : [],
         expiresAt: null,
-        lastSuccessAt: lastDelivered ? lastDelivered.eventId : doc.rotatedAt ? String(doc.rotatedAt) : null,
+        lastSuccessAt: lastDelivered
+          ? lastDelivered.eventId
+          : doc.rotatedAt
+            ? String(doc.rotatedAt)
+            : null,
         lastHealthCheckAt: doc.rotatedAt ? String(doc.rotatedAt) : null,
         nextSafeRepairAction: resolveNextSafeRepairAction({
           status,
@@ -161,7 +218,8 @@ export async function GET(request: Request) {
 
     // 3. Merchant Connections
     for (const doc of merchantsRes.docs as any[]) {
-      const status = doc.status === 'active' ? 'active' : doc.status === 'degraded' ? 'degraded' : 'disabled'
+      const status =
+        doc.status === 'active' ? 'active' : doc.status === 'degraded' ? 'degraded' : 'disabled'
       connections.push({
         id: String(doc.id),
         collection: 'merchant-connections',
@@ -190,7 +248,14 @@ export async function GET(request: Request) {
     // 4. Social Accounts
     for (const doc of socialsRes.docs as any[]) {
       const health = doc.credentialHealth
-      const status = health === 'healthy' ? 'active' : health === 'expired' ? 'expired' : health === 'revoked' ? 'revoked' : 'unconfigured'
+      const status =
+        health === 'healthy'
+          ? 'active'
+          : health === 'expired'
+            ? 'expired'
+            : health === 'revoked'
+              ? 'revoked'
+              : 'unconfigured'
       connections.push({
         id: String(doc.id),
         collection: 'social-accounts',
@@ -219,7 +284,8 @@ export async function GET(request: Request) {
 
     // 5. POD Connections
     for (const doc of podRes.docs as any[]) {
-      const status = doc.status === 'active' ? 'active' : doc.status === 'degraded' ? 'degraded' : 'disabled'
+      const status =
+        doc.status === 'active' ? 'active' : doc.status === 'degraded' ? 'degraded' : 'disabled'
       connections.push({
         id: String(doc.id),
         collection: 'pod-connections',
@@ -231,7 +297,10 @@ export async function GET(request: Request) {
         healthState: status === 'active' ? 'healthy' : 'warning',
         scopes: ['commerce.orders', 'fulfillment.sync'],
         expiresAt: null,
-        lastSuccessAt: doc.lastHealthStatus === 'ok' && doc.lastHealthCheckedAt ? String(doc.lastHealthCheckedAt) : null,
+        lastSuccessAt:
+          doc.lastHealthStatus === 'ok' && doc.lastHealthCheckedAt
+            ? String(doc.lastHealthCheckedAt)
+            : null,
         lastHealthCheckAt: doc.lastHealthCheckedAt ? String(doc.lastHealthCheckedAt) : null,
         nextSafeRepairAction: resolveNextSafeRepairAction({
           status,
@@ -248,7 +317,8 @@ export async function GET(request: Request) {
 
     // 6. AI Connections
     for (const doc of aiRes.docs as any[]) {
-      const status = doc.status === 'active' ? 'active' : doc.status === 'degraded' ? 'degraded' : 'disabled'
+      const status =
+        doc.status === 'active' ? 'active' : doc.status === 'degraded' ? 'degraded' : 'disabled'
       connections.push({
         id: String(doc.id),
         collection: 'ai-connections',
@@ -293,7 +363,12 @@ export async function GET(request: Request) {
     })
   } catch (error) {
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Failed to query operational integration records.' },
+      {
+        error:
+          error instanceof Error
+            ? error.message
+            : 'Failed to query operational integration records.',
+      },
       { status: 500 },
     )
   }
@@ -320,9 +395,8 @@ export async function POST(request: Request) {
           return NextResponse.json({ error: 'Client name is required.' }, { status: 422 })
         }
         const siteId = body.siteId || defaultSiteId
-        const scopes: readonly IntegrationScope[] = Array.isArray(body.scopes) && body.scopes.length > 0
-          ? body.scopes
-          : ['content.read']
+        const scopes: readonly IntegrationScope[] =
+          Array.isArray(body.scopes) && body.scopes.length > 0 ? body.scopes : ['content.read']
 
         const clientId = `client_${Date.now()}`
         const issued = issueMachineCredential({
@@ -351,37 +425,45 @@ export async function POST(request: Request) {
           overrideAccess: true,
         })
 
-        await payload.create({
-          collection: 'integration-audit-events' as never,
-          data: {
-            site: siteId,
-            action: 'client.issued',
-            client: (created as any).id,
-            subject: { name: body.name, scopes, tokenPrefix: issued.credential.tokenPrefix },
-            outcome: 'allowed',
-            occurredAt: new Date().toISOString(),
-          } as never,
-          overrideAccess: true,
-        }).catch(() => null)
+        await payload
+          .create({
+            collection: 'integration-audit-events' as never,
+            data: {
+              site: siteId,
+              action: 'client.issued',
+              client: (created as any).id,
+              subject: { name: body.name, scopes, tokenPrefix: issued.credential.tokenPrefix },
+              outcome: 'allowed',
+              occurredAt: new Date().toISOString(),
+            } as never,
+            overrideAccess: true,
+          })
+          .catch(() => null)
 
-        return NextResponse.json({
-          client: created,
-          token: issued.token,
-          tokenPrefix: issued.credential.tokenPrefix,
-          message: 'Machine credential issued successfully. Store token securely now; clear secret cannot be recovered.',
-        }, { status: 201 })
+        return NextResponse.json(
+          {
+            client: created,
+            token: issued.token,
+            tokenPrefix: issued.credential.tokenPrefix,
+            message:
+              'Machine credential issued successfully. Store token securely now; clear secret cannot be recovered.',
+          },
+          { status: 201 },
+        )
       }
 
       case 'rotate-client-secret': {
         if (!body.clientId) {
           return NextResponse.json({ error: 'clientId is required.' }, { status: 422 })
         }
-        const existing = await payload.findByID({
-          collection: 'api-clients' as never,
-          id: body.clientId,
-          depth: 0,
-          overrideAccess: true,
-        }).catch(() => null)
+        const existing = await payload
+          .findByID({
+            collection: 'api-clients' as never,
+            id: body.clientId,
+            depth: 0,
+            overrideAccess: true,
+          })
+          .catch(() => null)
         if (!existing) {
           return NextResponse.json({ error: 'API Client not found.' }, { status: 404 })
         }
@@ -410,18 +492,20 @@ export async function POST(request: Request) {
           overrideAccess: true,
         })
 
-        await payload.create({
-          collection: 'integration-audit-events' as never,
-          data: {
-            site: (existing as any).site,
-            action: 'client.secret_rotated',
-            client: body.clientId,
-            subject: { tokenPrefix: rotated.credential.tokenPrefix },
-            outcome: 'allowed',
-            occurredAt: new Date().toISOString(),
-          } as never,
-          overrideAccess: true,
-        }).catch(() => null)
+        await payload
+          .create({
+            collection: 'integration-audit-events' as never,
+            data: {
+              site: (existing as any).site,
+              action: 'client.secret_rotated',
+              client: body.clientId,
+              subject: { tokenPrefix: rotated.credential.tokenPrefix },
+              outcome: 'allowed',
+              occurredAt: new Date().toISOString(),
+            } as never,
+            overrideAccess: true,
+          })
+          .catch(() => null)
 
         return NextResponse.json({
           token: rotated.token,
@@ -434,12 +518,14 @@ export async function POST(request: Request) {
         if (!body.clientId) {
           return NextResponse.json({ error: 'clientId is required.' }, { status: 422 })
         }
-        const existing = await payload.findByID({
-          collection: 'api-clients' as never,
-          id: body.clientId,
-          depth: 0,
-          overrideAccess: true,
-        }).catch(() => null)
+        const existing = await payload
+          .findByID({
+            collection: 'api-clients' as never,
+            id: body.clientId,
+            depth: 0,
+            overrideAccess: true,
+          })
+          .catch(() => null)
         if (!existing) {
           return NextResponse.json({ error: 'API Client not found.' }, { status: 404 })
         }
@@ -453,38 +539,54 @@ export async function POST(request: Request) {
           overrideAccess: true,
         })
 
-        await payload.create({
-          collection: 'integration-audit-events' as never,
-          data: {
-            site: (existing as any).site,
-            action: 'client.revoked',
-            client: body.clientId,
-            subject: { tokenPrefix: (existing as any).tokenPrefix },
-            outcome: 'allowed',
-            occurredAt: new Date().toISOString(),
-          } as never,
-          overrideAccess: true,
-        }).catch(() => null)
+        await payload
+          .create({
+            collection: 'integration-audit-events' as never,
+            data: {
+              site: (existing as any).site,
+              action: 'client.revoked',
+              client: body.clientId,
+              subject: { tokenPrefix: (existing as any).tokenPrefix },
+              outcome: 'allowed',
+              occurredAt: new Date().toISOString(),
+            } as never,
+            overrideAccess: true,
+          })
+          .catch(() => null)
 
         return NextResponse.json({ success: true, message: 'Client credential revoked safely.' })
       }
 
       case 'create-webhook': {
-        if (!body.target || !body.secretRef || !Array.isArray(body.events) || body.events.length === 0) {
-          return NextResponse.json({ error: 'target URL, secretRef, and events are required.' }, { status: 422 })
+        if (
+          !body.target ||
+          !body.secretRef ||
+          !Array.isArray(body.events) ||
+          body.events.length === 0
+        ) {
+          return NextResponse.json(
+            { error: 'target URL, secretRef, and events are required.' },
+            { status: 422 },
+          )
         }
         const siteId = body.siteId || defaultSiteId
         const secret = await resolveWebhookSecret(String(body.secretRef))
         if (!secret) {
-          return NextResponse.json({ error: 'secretRef cannot be resolved in this environment.' }, { status: 422 })
+          return NextResponse.json(
+            { error: 'secretRef cannot be resolved in this environment.' },
+            { status: 422 },
+          )
         }
 
         try {
           await verifyWebhookEndpoint(String(body.target), secret)
         } catch (err) {
-          return NextResponse.json({
-            error: err instanceof Error ? err.message : 'Target endpoint verification failed.',
-          }, { status: 422 })
+          return NextResponse.json(
+            {
+              error: err instanceof Error ? err.message : 'Target endpoint verification failed.',
+            },
+            { status: 422 },
+          )
         }
 
         const created = await payload.create({
@@ -501,32 +603,43 @@ export async function POST(request: Request) {
           overrideAccess: true,
         })
 
-        await payload.create({
-          collection: 'integration-audit-events' as never,
-          data: {
-            site: siteId,
-            action: 'webhook.subscribed',
-            subject: { target: body.target, events: body.events, secretRef: body.secretRef },
-            outcome: 'allowed',
-            occurredAt: new Date().toISOString(),
-          } as never,
-          overrideAccess: true,
-        }).catch(() => null)
+        await payload
+          .create({
+            collection: 'integration-audit-events' as never,
+            data: {
+              site: siteId,
+              action: 'webhook.subscribed',
+              subject: { target: body.target, events: body.events, secretRef: body.secretRef },
+              outcome: 'allowed',
+              occurredAt: new Date().toISOString(),
+            } as never,
+            overrideAccess: true,
+          })
+          .catch(() => null)
 
-        return NextResponse.json({ subscription: created, message: 'Webhook subscription verified and registered.' }, { status: 201 })
+        return NextResponse.json(
+          { subscription: created, message: 'Webhook subscription verified and registered.' },
+          { status: 201 },
+        )
       }
 
       case 'rotate-webhook-secret': {
         if (!body.subscriptionId || !body.secretRef) {
-          return NextResponse.json({ error: 'subscriptionId and secretRef are required.' }, { status: 422 })
+          return NextResponse.json(
+            { error: 'subscriptionId and secretRef are required.' },
+            { status: 422 },
+          )
         }
-        const sub = await payload.findByID({
-          collection: 'webhook-subscriptions' as never,
-          id: body.subscriptionId,
-          depth: 0,
-          overrideAccess: true,
-        }).catch(() => null)
-        if (!sub) return NextResponse.json({ error: 'Webhook subscription not found.' }, { status: 404 })
+        const sub = await payload
+          .findByID({
+            collection: 'webhook-subscriptions' as never,
+            id: body.subscriptionId,
+            depth: 0,
+            overrideAccess: true,
+          })
+          .catch(() => null)
+        if (!sub)
+          return NextResponse.json({ error: 'Webhook subscription not found.' }, { status: 404 })
 
         const secret = await resolveWebhookSecret(String(body.secretRef))
         if (!secret) {
@@ -536,9 +649,12 @@ export async function POST(request: Request) {
         try {
           await verifyWebhookEndpoint(String((sub as any).target), secret)
         } catch (err) {
-          return NextResponse.json({
-            error: err instanceof Error ? err.message : 'New secret endpoint challenge failed.',
-          }, { status: 422 })
+          return NextResponse.json(
+            {
+              error: err instanceof Error ? err.message : 'New secret endpoint challenge failed.',
+            },
+            { status: 422 },
+          )
         }
 
         const updated = await payload.update({
@@ -553,24 +669,32 @@ export async function POST(request: Request) {
           overrideAccess: true,
         })
 
-        await payload.create({
-          collection: 'integration-audit-events' as never,
-          data: {
-            site: (sub as any).site,
-            action: 'webhook.secret_rotated',
-            subject: { subscriptionId: body.subscriptionId, secretRef: body.secretRef },
-            outcome: 'allowed',
-            occurredAt: new Date().toISOString(),
-          } as never,
-          overrideAccess: true,
-        }).catch(() => null)
+        await payload
+          .create({
+            collection: 'integration-audit-events' as never,
+            data: {
+              site: (sub as any).site,
+              action: 'webhook.secret_rotated',
+              subject: { subscriptionId: body.subscriptionId, secretRef: body.secretRef },
+              outcome: 'allowed',
+              occurredAt: new Date().toISOString(),
+            } as never,
+            overrideAccess: true,
+          })
+          .catch(() => null)
 
-        return NextResponse.json({ subscription: updated, message: 'Webhook secret rotated and verified.' })
+        return NextResponse.json({
+          subscription: updated,
+          message: 'Webhook secret rotated and verified.',
+        })
       }
 
       case 'toggle-webhook': {
         if (!body.subscriptionId || !body.status) {
-          return NextResponse.json({ error: 'subscriptionId and status are required.' }, { status: 422 })
+          return NextResponse.json(
+            { error: 'subscriptionId and status are required.' },
+            { status: 422 },
+          )
         }
         const updated = await payload.update({
           collection: 'webhook-subscriptions' as never,
@@ -582,7 +706,10 @@ export async function POST(request: Request) {
           overrideAccess: true,
         })
 
-        return NextResponse.json({ subscription: updated, message: `Webhook subscription is now ${body.status}.` })
+        return NextResponse.json({
+          subscription: updated,
+          message: `Webhook subscription is now ${body.status}.`,
+        })
       }
 
       case 'redeliver-webhook': {
@@ -591,43 +718,64 @@ export async function POST(request: Request) {
         }
         const redelivered = await redeliverWebhook(payload as any, body.deliveryId)
 
-        await payload.create({
-          collection: 'integration-audit-events' as never,
-          data: {
-            site: defaultSiteId,
-            action: 'webhook.manual_redelivery',
-            subject: { previousDeliveryId: body.deliveryId, newDeliveryId: redelivered.id },
-            outcome: 'allowed',
-            occurredAt: new Date().toISOString(),
-          } as never,
-          overrideAccess: true,
-        }).catch(() => null)
+        await payload
+          .create({
+            collection: 'integration-audit-events' as never,
+            data: {
+              site: defaultSiteId,
+              action: 'webhook.manual_redelivery',
+              subject: { previousDeliveryId: body.deliveryId, newDeliveryId: redelivered.id },
+              outcome: 'allowed',
+              occurredAt: new Date().toISOString(),
+            } as never,
+            overrideAccess: true,
+          })
+          .catch(() => null)
 
-        return NextResponse.json({ delivery: redelivered, message: 'Delivery re-queued with fresh idempotency key.' }, { status: 202 })
+        return NextResponse.json(
+          { delivery: redelivered, message: 'Delivery re-queued with fresh idempotency key.' },
+          { status: 202 },
+        )
       }
 
       case 'reconcile-provider': {
         if (!body.connectionId || !body.collection) {
-          return NextResponse.json({ error: 'connectionId and collection are required.' }, { status: 422 })
+          return NextResponse.json(
+            { error: 'connectionId and collection are required.' },
+            { status: 422 },
+          )
         }
 
-        const existing = await payload.findByID({
-          collection: body.collection as never,
-          id: body.connectionId,
-          depth: 0,
-          overrideAccess: true,
-        }).catch(() => null)
+        const existing = await payload
+          .findByID({
+            collection: body.collection as never,
+            id: body.connectionId,
+            depth: 0,
+            overrideAccess: true,
+          })
+          .catch(() => null)
 
         if (!existing) {
-          return NextResponse.json({ error: 'Connection record not found in provider collection.' }, { status: 404 })
+          return NextResponse.json(
+            { error: 'Connection record not found in provider collection.' },
+            { status: 404 },
+          )
         }
 
         // Dry-run reconciliation: inspects credentials and configuration without sending live external network calls,
         // charges, emails, or posts.
         const reconciliation = reconcileProviderState({
-          providerKey: String((existing as any).providerKey || (existing as any).network || 'generic'),
-          status: String((existing as any).status || (existing as any).credentialHealth || 'active'),
-          credentialRef: (existing as any).credentialReference || (existing as any).connectionReference || (existing as any).encryptedApiKey || null,
+          providerKey: String(
+            (existing as any).providerKey || (existing as any).network || 'generic',
+          ),
+          status: String(
+            (existing as any).status || (existing as any).credentialHealth || 'active',
+          ),
+          credentialRef:
+            (existing as any).credentialReference ||
+            (existing as any).connectionReference ||
+            (existing as any).encryptedApiKey ||
+            null,
           scopes: Array.isArray((existing as any).scopes) ? (existing as any).scopes : [],
           expiresAt: (existing as any).expiresAt || (existing as any).credentialExpiresAt || null,
         })
@@ -643,56 +791,68 @@ export async function POST(request: Request) {
         }
 
         if (Object.keys(updateData).length > 0) {
-          await payload.update({
-            collection: body.collection as never,
-            id: body.connectionId,
-            data: updateData as never,
-            overrideAccess: true,
-          }).catch(() => null)
+          await payload
+            .update({
+              collection: body.collection as never,
+              id: body.connectionId,
+              data: updateData as never,
+              overrideAccess: true,
+            })
+            .catch(() => null)
         }
 
-        await payload.create({
-          collection: 'integration-audit-events' as never,
-          data: {
-            site: (existing as any).site || defaultSiteId,
-            action: 'connection.reconciled',
-            subject: {
-              collection: body.collection,
-              connectionId: body.connectionId,
-              providerKey: (existing as any).providerKey || (existing as any).network,
-              dryRun: true,
-              reconciliation,
-            },
-            outcome: reconciliation.healthState === 'healthy' ? 'allowed' : 'failed',
-            occurredAt: new Date().toISOString(),
-          } as never,
-          overrideAccess: true,
-        }).catch(() => null)
+        await payload
+          .create({
+            collection: 'integration-audit-events' as never,
+            data: {
+              site: (existing as any).site || defaultSiteId,
+              action: 'connection.reconciled',
+              subject: {
+                collection: body.collection,
+                connectionId: body.connectionId,
+                providerKey: (existing as any).providerKey || (existing as any).network,
+                dryRun: true,
+                reconciliation,
+              },
+              outcome: reconciliation.healthState === 'healthy' ? 'allowed' : 'failed',
+              occurredAt: new Date().toISOString(),
+            } as never,
+            overrideAccess: true,
+          })
+          .catch(() => null)
 
         return NextResponse.json({
           reconciliation,
-          message: 'Provider connection reconciled in safe dry-run mode (zero external transactions).',
+          message:
+            'Provider connection reconciled in safe dry-run mode (zero external transactions).',
         })
       }
 
       case 'disconnect-provider': {
         if (!body.connectionId || !body.collection) {
-          return NextResponse.json({ error: 'connectionId and collection are required.' }, { status: 422 })
+          return NextResponse.json(
+            { error: 'connectionId and collection are required.' },
+            { status: 422 },
+          )
         }
 
-        const existing = await payload.findByID({
-          collection: body.collection as never,
-          id: body.connectionId,
-          depth: 0,
-          overrideAccess: true,
-        }).catch(() => null)
+        const existing = await payload
+          .findByID({
+            collection: body.collection as never,
+            id: body.connectionId,
+            depth: 0,
+            overrideAccess: true,
+          })
+          .catch(() => null)
 
         if (!existing) {
           return NextResponse.json({ error: 'Connection record not found.' }, { status: 404 })
         }
 
         const safeDisconnect = safeDisconnectProviderState({
-          providerKey: String((existing as any).providerKey || (existing as any).network || 'provider'),
+          providerKey: String(
+            (existing as any).providerKey || (existing as any).network || 'provider',
+          ),
           label: String((existing as any).label || (existing as any).displayName || 'Connection'),
         })
 
@@ -722,22 +882,24 @@ export async function POST(request: Request) {
           overrideAccess: true,
         })
 
-        await payload.create({
-          collection: 'integration-audit-events' as never,
-          data: {
-            site: (existing as any).site || defaultSiteId,
-            action: safeDisconnect.auditAction,
-            subject: {
-              collection: body.collection,
-              connectionId: body.connectionId,
-              label: (existing as any).label || (existing as any).displayName,
-              canonicalDataPreserved: true,
-            },
-            outcome: 'allowed',
-            occurredAt: safeDisconnect.revokedAt,
-          } as never,
-          overrideAccess: true,
-        }).catch(() => null)
+        await payload
+          .create({
+            collection: 'integration-audit-events' as never,
+            data: {
+              site: (existing as any).site || defaultSiteId,
+              action: safeDisconnect.auditAction,
+              subject: {
+                collection: body.collection,
+                connectionId: body.connectionId,
+                label: (existing as any).label || (existing as any).displayName,
+                canonicalDataPreserved: true,
+              },
+              outcome: 'allowed',
+              occurredAt: safeDisconnect.revokedAt,
+            } as never,
+            overrideAccess: true,
+          })
+          .catch(() => null)
 
         return NextResponse.json({
           success: true,

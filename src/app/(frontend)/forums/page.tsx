@@ -15,7 +15,9 @@ export const metadata: Metadata = {
 export default async function ForumsIndexPage() {
   const payload = await getPayload({ config })
   const requestHeaders = await headers()
-  const siteId = await communitySiteForHost(payload, requestHeaders.get('host')).catch(() => 'default')
+  const siteId = await communitySiteForHost(payload, requestHeaders.get('host')).catch(
+    () => 'default',
+  )
 
   const sectionsRes = await payload.find({
     collection: 'forum-sections',
@@ -61,7 +63,11 @@ export default async function ForumsIndexPage() {
             })
 
             return (
-              <section key={section.id} aria-labelledby={`sec-${section.id}`} className="rounded-xl border border-stone-200 dark:border-stone-800 overflow-hidden bg-white dark:bg-stone-900 shadow-sm">
+              <section
+                key={section.id}
+                aria-labelledby={`sec-${section.id}`}
+                className="rounded-xl border border-stone-200 dark:border-stone-800 overflow-hidden bg-white dark:bg-stone-900 shadow-sm"
+              >
                 <div className="bg-stone-50 dark:bg-stone-800/60 px-6 py-4 border-b border-stone-200 dark:border-stone-800">
                   <h2 id={`sec-${section.id}`} className="text-xl font-semibold">
                     {section.name}
@@ -74,13 +80,21 @@ export default async function ForumsIndexPage() {
                 </div>
                 <div className="divide-y divide-stone-100 dark:divide-stone-800">
                   {sectionForums.length === 0 ? (
-                    <p className="px-6 py-4 text-sm text-stone-500">No forums in this section yet.</p>
+                    <p className="px-6 py-4 text-sm text-stone-500">
+                      No forums in this section yet.
+                    </p>
                   ) : (
                     sectionForums.map((forum) => (
-                      <article key={forum.id} className="p-6 hover:bg-stone-50/50 dark:hover:bg-stone-800/30 transition flex flex-col md:flex-row md:items-center justify-between gap-4">
+                      <article
+                        key={forum.id}
+                        className="p-6 hover:bg-stone-50/50 dark:hover:bg-stone-800/30 transition flex flex-col md:flex-row md:items-center justify-between gap-4"
+                      >
                         <div>
                           <h3 className="text-lg font-semibold">
-                            <Link href={`/forums/${forum.slug}`} className="hover:underline text-stone-900 dark:text-stone-100">
+                            <Link
+                              href={`/forums/${forum.slug}`}
+                              className="hover:underline text-stone-900 dark:text-stone-100"
+                            >
                               {forum.name}
                             </Link>
                           </h3>
@@ -91,10 +105,7 @@ export default async function ForumsIndexPage() {
                           ) : null}
                         </div>
                         <div className="flex items-center gap-3">
-                          <Link
-                            href={`/forums/${forum.slug}`}
-                            className="btn btn-sm"
-                          >
+                          <Link href={`/forums/${forum.slug}`} className="btn btn-sm">
                             Browse topics &rarr;
                           </Link>
                         </div>

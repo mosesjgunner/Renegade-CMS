@@ -27,21 +27,21 @@ export async function GET(request: Request) {
     payload.find({
       collection: 'analytics-events',
       where: {
-        and: [
-          ...(siteId ? [{ site: { equals: siteId } }] : []),
-        ],
+        and: [...(siteId ? [{ site: { equals: siteId } }] : [])],
       },
       limit: 100,
       sort: '-occurredAt',
       depth: 0,
       overrideAccess: true,
     } as never),
-    payload.find({
-      collection: 'suppressions',
-      limit: 500,
-      depth: 0,
-      overrideAccess: true,
-    } as never).catch(() => ({ docs: [] })),
+    payload
+      .find({
+        collection: 'suppressions',
+        limit: 500,
+        depth: 0,
+        overrideAccess: true,
+      } as never)
+      .catch(() => ({ docs: [] })),
   ])
 
   const suppressionSet = new Set<string>()
@@ -132,7 +132,8 @@ export async function GET(request: Request) {
       attributedCampaign: campaign,
       confidence: 'verified',
       uncertaintyRating: 'low',
-      description: 'Ignores intervening direct navigations to credit the substantive inbound driver.',
+      description:
+        'Ignores intervening direct navigations to credit the substantive inbound driver.',
     },
     unattributedState: {
       description: 'Visitors without consent or with active DNT/GPC are not linked to this funnel.',

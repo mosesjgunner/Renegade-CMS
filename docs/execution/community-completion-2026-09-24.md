@@ -23,6 +23,7 @@ ADR-0009 and the existing member, profile, discussion, forum, messaging, notific
 ## 2. Completed UI & Service Wiring
 
 ### A. Member Settings & Account Lifecycle (`/members/settings`)
+
 - **Direct Magic Link**: Direct browser navigation to `/api/member-auth/magic-link/complete` consumes token, sets authenticated cookies, and redirects to `/members/settings`.
 - **Privacy & Notification Preferences**: Real-time preference toggles (`emailDigest`, `inAppNotifications`, `marketing`, `directMessages`, `eventReminders`) saved to database.
 - **Data Lifecycle Controls**:
@@ -32,16 +33,19 @@ ADR-0009 and the existing member, profile, discussion, forum, messaging, notific
   - **Account Deletion**: `POST /api/member-auth/delete` initiates cooling-off deletion schedule and revokes all active session cookies.
 
 ### B. Member Profiles & Interactions (`/members/[handle]`)
+
 - **Direct Messaging Trigger**: Direct "Send Message" link opens `/messages?targetMemberId={id}`.
 - **Moderation Reporting**: "Report Member" modal submits abuse reports to `/api/community/reports` with target `member_profile`.
 - **Relationship Management**: Block / Unblock actions update `relationships` table and immediately isolate communication.
 
 ### C. Direct & Group Messaging (`/messages`)
+
 - **Recipient Handle Resolution**: Type-ahead directory search resolves handles to canonical member IDs via `/api/community/profiles/resolve`.
 - **Message Requests Workflow**: Pending direct messages from new contacts display Accept, Decline, and Block & Report controls calling `/api/community/message-requests`.
 - **Conversation Threading**: Real-time conversation polling, message dispatch, and attachment presigning.
 
 ### D. Discussion Forums (`/forums`)
+
 - **Forum Directory (`/forums`)**: Categorized forum listing showing sections, descriptions, and topic counts.
 - **Topic Browser (`/forums/[forumSlug]`)**: Topic lists with author handles, reply counts, timestamps, and embedded `ForumThreadComposer`.
 - **Discussion Thread (`/forums/[forumSlug]/[topicSlug]`)**:
@@ -51,10 +55,12 @@ ADR-0009 and the existing member, profile, discussion, forum, messaging, notific
   - Reply composer (`POST /api/community/posts`).
 
 ### E. In-App Notifications (`/notifications`)
+
 - **Inbox Interface**: Displays unread and read alerts with unread count badges.
 - **Mark As Read**: Per-item and global "Mark all as read" via `PATCH /api/community/notifications`.
 
 ### F. Moderator Console (`/admin/moderation`)
+
 - Mounted in Payload Admin under `Community > Moderation Console` (`CommunityModerationCenter.tsx`) and linked in Publishing Links.
 - **Pending Reports & Cases**: Inspects target snapshots (comments, forum posts, profiles), review reason, and reporter notes.
 - **Sanction Application**: Supports `warn`, `quarantine`, `remove`, `lock_thread`, `suspend_posting`, `ban_member`, and `no_action` actions with mandatory audit reason logging.
@@ -65,11 +71,13 @@ ADR-0009 and the existing member, profile, discussion, forum, messaging, notific
 ## 3. Multi-Member Cross-Site Integration Verification
 
 All boundary conditions were executed and verified against persisted PostgreSQL database (`renegade-cms-postgres-1`) with three distinct members across sites and roles:
+
 - **Member 1 (Alice)**: Standard active member on Site A.
 - **Member 2 (Bob)**: Adverse/disruptive member on Site A & Site B.
 - **Member 3 (Charlie)**: Staff Moderator on Site A (`team-memberships` role `moderator`).
 
 ### Test Results Summary (`tests/integration/community-cross-site-boundaries.integration.test.ts`):
+
 1. **Object-ID Attacks**:
    - Bob prevented from injecting messages into Alice & Charlie's private conversation.
    - Bob prevented from querying Alice's notification inbox (`403`).
@@ -102,6 +110,7 @@ All boundary conditions were executed and verified against persisted PostgreSQL 
    - Member account deletion triggers privacy cooling-off with session revocation.
 
 **Baseline Test Suite**:
+
 - `tests/integration/comm-00-community-pass.integration.test.ts`: **11 passed / 11 total**
 - `tests/integration/community-cross-site-boundaries.integration.test.ts`: **7 passed / 7 total**
 - TypeScript typecheck: **0 errors**

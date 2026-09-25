@@ -189,12 +189,17 @@ export function diagnoseWebhookDelivery(input: {
 
   const delaySeconds = Math.min(3600, 2 ** Math.max(0, input.attempts) * 30)
 
-  if (statusCode === 401 || statusCode === 403 || /unauthorized|forbidden|signature|secret/i.test(text)) {
+  if (
+    statusCode === 401 ||
+    statusCode === 403 ||
+    /unauthorized|forbidden|signature|secret/i.test(text)
+  ) {
     return {
       category: 'auth_failure',
       statusCode: statusCode ?? 401,
       explanation: 'Receiver rejected authorization. Webhook secret mismatch or invalid signature.',
-      nextSafeRepairAction: 'Verify shared secret on receiver. Use "Rotate Secret" to sync a fresh secret.',
+      nextSafeRepairAction:
+        'Verify shared secret on receiver. Use "Rotate Secret" to sync a fresh secret.',
       canRedeliver: true,
       backoffDelaySeconds: isDeadLetter ? null : delaySeconds,
       isDeadLetter,
@@ -206,7 +211,8 @@ export function diagnoseWebhookDelivery(input: {
       category: 'rate_limited',
       statusCode: statusCode ?? 429,
       explanation: 'Receiver rate limit exceeded. Exponential backoff is pacing delivery attempts.',
-      nextSafeRepairAction: 'Wait for receiver capacity to recover or increase receiver rate limit.',
+      nextSafeRepairAction:
+        'Wait for receiver capacity to recover or increase receiver rate limit.',
       canRedeliver: true,
       backoffDelaySeconds: isDeadLetter ? null : delaySeconds,
       isDeadLetter,
@@ -230,7 +236,8 @@ export function diagnoseWebhookDelivery(input: {
       category: 'endpoint_error',
       statusCode: 404,
       explanation: 'Webhook receiver target URL was not found (HTTP 404).',
-      nextSafeRepairAction: 'Check receiver path in subscription configuration and update target URL.',
+      nextSafeRepairAction:
+        'Check receiver path in subscription configuration and update target URL.',
       canRedeliver: true,
       backoffDelaySeconds: isDeadLetter ? null : delaySeconds,
       isDeadLetter,
@@ -268,7 +275,8 @@ export function diagnoseWebhookDelivery(input: {
       category: 'dead_letter',
       statusCode,
       explanation: `Exceeded maximum bounded retries (${WEBHOOK_FAILURE_LIMIT}). Subscription disabled.`,
-      nextSafeRepairAction: 'Verify receiver endpoint health, re-enable subscription, and click Redeliver.',
+      nextSafeRepairAction:
+        'Verify receiver endpoint health, re-enable subscription, and click Redeliver.',
       canRedeliver: true,
       backoffDelaySeconds: null,
       isDeadLetter: true,
@@ -301,7 +309,10 @@ export function resolveNextSafeRepairAction(connection: {
     return 'Connection is disconnected or revoked. Issue a new credential to restore.'
   }
   if (connection.status === 'degraded') {
-    const detail = typeof connection.lastError === 'object' && connection.lastError ? connection.lastError.message : connection.lastError
+    const detail =
+      typeof connection.lastError === 'object' && connection.lastError
+        ? connection.lastError.message
+        : connection.lastError
     return `Provider is degraded${detail ? `: ${detail}` : ''}. Run safe reconciliation to check capabilities.`
   }
   if (connection.status === 'unconfigured' || connection.status === 'invalid') {
@@ -368,10 +379,7 @@ export function reconcileProviderState(input: {
   }
 }
 
-export function safeDisconnectProviderState(input: {
-  providerKey: string
-  label: string
-}) {
+export function safeDisconnectProviderState(input: { providerKey: string; label: string }) {
   return {
     status: 'disconnected' as const,
     revokedAt: new Date().toISOString(),
@@ -379,4 +387,3 @@ export function safeDisconnectProviderState(input: {
     message: `Provider ${input.label} (${input.providerKey}) was disconnected safely. Canonical data and audit records were preserved.`,
   }
 }
-

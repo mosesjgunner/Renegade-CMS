@@ -4,6 +4,10 @@ import type { GlobalConfig } from 'payload'
 
 import { seoFields, structuredDataSourceFields } from '../collections/canonical-shared'
 import { revalidateDiscoveryOutputs } from '../modules/public/revalidation'
+import {
+  validateRouteTemplates,
+  validateRouteTemplatesBySite,
+} from '../modules/public/semantic-url'
 
 const staffOrOwner = ({ req }: { req: { user?: { role?: string } | null } }) =>
   ['owner', 'administrator', 'staff'].includes(String(req.user?.role))
@@ -25,6 +29,15 @@ export const SiteSettings: GlobalConfig = {
     beforeValidate: [
       ({ data, originalDoc }) => {
         if (!data) return data
+        const routeTemplateError = validateRouteTemplates(data.semanticRouteTemplates)
+        if (routeTemplateError) throw new Error(routeTemplateError)
+        const siteRouteTemplateError = validateRouteTemplatesBySite(
+          data.semanticRouteTemplatesBySite,
+          (data.semanticRouteTemplates ?? originalDoc?.semanticRouteTemplates) as
+            | Record<string, string>
+            | undefined,
+        )
+        if (siteRouteTemplateError) throw new Error(siteRouteTemplateError)
         if (data.siteName) {
           data.defaultTitle = data.siteName
         } else if (data.defaultTitle) {
@@ -70,6 +83,22 @@ export const SiteSettings: GlobalConfig = {
       admin: {
         description:
           'Optional site-id to canonical-origin map for multisite installs. Origins must be absolute HTTPS URLs in production.',
+      },
+    },
+    {
+      name: 'semanticRouteTemplates',
+      type: 'json',
+      admin: {
+        description:
+          'Optional templates for routes served by the semantic catch-all. Fixed-renderer and unavailable entity routes retain their safe defaults. Site-specific templates can override supported defaults using approved variables.',
+      },
+    },
+    {
+      name: 'semanticRouteTemplatesBySite',
+      type: 'json',
+      admin: {
+        description:
+          'Optional route templates by site id. Each site can override supported semantic route types; unspecified types use safe defaults.',
       },
     },
     { name: 'locale', type: 'text', defaultValue: 'en' },

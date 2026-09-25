@@ -59,10 +59,7 @@ export async function GET(request: Request) {
   const posts = await payload.find({
     collection: 'discussion-posts',
     where: {
-      and: [
-        { discussion: { equals: discussionId } },
-        { status: { not_equals: 'removed' } },
-      ],
+      and: [{ discussion: { equals: discussionId } }, { status: { not_equals: 'removed' } }],
     },
     sort: 'displayOrder',
     limit: 100,

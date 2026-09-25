@@ -11,7 +11,11 @@ import {
 } from '../../src/modules/analytics/contracts'
 import { TELEMETRY_EVENT_INVENTORY } from '../../src/modules/analytics/inventory'
 import { TELEMETRY_METRIC_DEFINITIONS } from '../../src/modules/analytics/definitions'
-import { analyzeExperiment, approveWinner, deterministicAssignment } from '../../src/modules/experiences/contracts'
+import {
+  analyzeExperiment,
+  approveWinner,
+  deterministicAssignment,
+} from '../../src/modules/experiences/contracts'
 
 const makeEvent = (
   id: string,
@@ -82,14 +86,26 @@ describe('Telemetry & Experiment Contracts — Prompt 5', () => {
             siteId: 'site-1',
             channel: 'newsletter',
             campaignId: 'autumn-sovereign-launch',
-            utm: { utm_source: 'dispatch-42', utm_medium: 'email', utm_campaign: 'autumn-sovereign-launch' },
+            utm: {
+              utm_source: 'dispatch-42',
+              utm_medium: 'email',
+              utm_campaign: 'autumn-sovereign-launch',
+            },
           },
         }),
         makeEvent('view-1', 'page_view', '2026-09-01T10:00:05Z', {
-          context: { siteId: 'site-1', channel: 'newsletter', path: '/articles/sovereign-protocol' },
+          context: {
+            siteId: 'site-1',
+            channel: 'newsletter',
+            path: '/articles/sovereign-protocol',
+          },
         }),
         makeEvent('read-1', 'read_depth', '2026-09-01T10:02:30Z', {
-          context: { siteId: 'site-1', channel: 'newsletter', path: '/articles/sovereign-protocol' },
+          context: {
+            siteId: 'site-1',
+            channel: 'newsletter',
+            path: '/articles/sovereign-protocol',
+          },
         }),
         makeEvent('signup-1', 'signup', '2026-09-01T10:05:00Z', {
           context: { siteId: 'site-1', channel: 'direct', goal: 'newsletter-member-signup' },
@@ -130,7 +146,9 @@ describe('Telemetry & Experiment Contracts — Prompt 5', () => {
       expect(attribution.confidence).toBe('unlinked')
       expect(attribution.uncertaintyRating).toBe('high - consent absent')
       expect(attribution.attributedChannel).toBe('unattributed (consent absent)')
-      expect(attribution.uncertaintyStatement).toContain('Visitor has not granted analytics consent')
+      expect(attribution.uncertaintyStatement).toContain(
+        'Visitor has not granted analytics consent',
+      )
     })
 
     it('flags high uncertainty when consent is present but identity linkage is missing', () => {
@@ -148,7 +166,9 @@ describe('Telemetry & Experiment Contracts — Prompt 5', () => {
       expect(attribution.consentVerified).toBe(true)
       expect(attribution.confidence).toBe('unlinked')
       expect(attribution.uncertaintyRating).toBe('high - untracked identity')
-      expect(attribution.uncertaintyStatement).toContain('lacks persistent anonymous or session hashes')
+      expect(attribution.uncertaintyStatement).toContain(
+        'lacks persistent anonymous or session hashes',
+      )
     })
   })
 
@@ -156,9 +176,13 @@ describe('Telemetry & Experiment Contracts — Prompt 5', () => {
     it('strictly masks visitors present on the suppressions ledger', () => {
       const suppressions = new Set(['hash-suppressed-visitor-123', 'hash-opted-out-456'])
 
-      expect(maskSuppressedIdentity('hash-suppressed-visitor-123', suppressions)).toBe(SUPPRESSED_MASK)
+      expect(maskSuppressedIdentity('hash-suppressed-visitor-123', suppressions)).toBe(
+        SUPPRESSED_MASK,
+      )
       expect(maskSuppressedIdentity('hash-opted-out-456', suppressions)).toBe(SUPPRESSED_MASK)
-      expect(maskSuppressedIdentity('hash-normal-consented-visitor', suppressions)).toBe('hash-normal-consented-visitor')
+      expect(maskSuppressedIdentity('hash-normal-consented-visitor', suppressions)).toBe(
+        'hash-normal-consented-visitor',
+      )
       expect(maskSuppressedIdentity(null, suppressions)).toBe('anonymous')
     })
   })

@@ -74,6 +74,11 @@ export type OnboardingInput = {
   optionalConnections: (typeof optionalConnectionKeys)[number][]
   logoMediaId?: string
   starterContent: boolean
+  publishingDefaults?: {
+    indexingMode?: 'index' | 'noindex'
+    commentsPolicy?: 'closed' | 'open' | 'members'
+    visibility?: 'public' | 'members' | 'members-only'
+  }
 }
 
 const connectionCapabilities = {
@@ -117,6 +122,21 @@ export function validateOnboardingInput(input: OnboardingInput): OnboardingInput
   const optionalConnections = [...new Set(input.optionalConnections)].filter(
     (key): key is (typeof optionalConnectionKeys)[number] => optionalConnectionKeys.includes(key),
   )
+
+  const indexingMode = input.publishingDefaults?.indexingMode ?? 'index'
+  if (!['index', 'noindex'].includes(indexingMode)) {
+    throw new Error('Indexing mode must be "index" or "noindex".')
+  }
+  const commentsPolicy = input.publishingDefaults?.commentsPolicy ?? 'open'
+  if (!['closed', 'open', 'members'].includes(commentsPolicy)) {
+    throw new Error('Comments policy must be "closed", "open", or "members".')
+  }
+  const rawVisibility = input.publishingDefaults?.visibility ?? 'public'
+  if (!['public', 'members', 'members-only'].includes(rawVisibility)) {
+    throw new Error('Visibility must be "public", "members", or "members-only".')
+  }
+  const visibility = rawVisibility === 'members-only' ? 'members' : rawVisibility
+
   return {
     ...input,
     name,
@@ -125,6 +145,7 @@ export function validateOnboardingInput(input: OnboardingInput): OnboardingInput
     locale: input.locale.trim(),
     timezone: input.timezone.trim(),
     optionalConnections,
+    publishingDefaults: { indexingMode, commentsPolicy, visibility },
   }
 }
 
@@ -238,7 +259,11 @@ export async function provisionOnboardingSite(
       slug: 'main',
       canonicalBasePath: '/',
       status: 'active',
-      visibility: 'public',
+      visibility:
+        input.publishingDefaults?.visibility === 'members-only' ||
+        input.publishingDefaults?.visibility === 'members'
+          ? 'members'
+          : 'public',
       brand: brand.id,
       profile: profile.id,
       themePreset: input.themeId,
@@ -255,11 +280,17 @@ export async function provisionOnboardingSite(
     slug: 'site-settings',
     overrideAccess: true,
     data: {
+      siteName: input.name,
+      defaultTitle: input.name,
+      defaultDescription: input.description || undefined,
+      canonicalOrigin: input.primaryUrl,
+      locale: input.locale,
+      timezone: input.timezone,
+      indexingMode: input.publishingDefaults?.indexingMode ?? 'index',
+      seoNoIndex: (input.publishingDefaults?.indexingMode ?? 'index') === 'noindex',
       themeId: input.themeId,
       ownerKind: 'organization',
       organizationName: input.name,
-      defaultTitle: input.name,
-      defaultDescription: input.description || undefined,
       logo: input.logoMediaId || undefined,
       onboarding: {
         primaryUrl: input.primaryUrl,
@@ -303,6 +334,7 @@ async function provisionStarterContent(
     return
   }
   const recipe = recipeFor(input.starterType)
+  const defaultComments = input.publishingDefaults?.commentsPolicy ?? 'closed'
   const pages = [
     [
       '/',
@@ -335,7 +367,7 @@ async function provisionStarterContent(
         canonicalPath: path,
         summary,
         status,
-        commentsPolicy: 'closed',
+        commentsPolicy: defaultComments,
         importSourceSystem: 'onboarding-starter',
         importSourceIdentifier: `starter:${path}`,
         exportFormatVersion: 1,
@@ -356,7 +388,7 @@ async function provisionStarterContent(
       canonicalPath: '/articles/welcome-draft',
       summary: 'A private starter draft. Edit it or delete it whenever you are ready.',
       status: 'draft',
-      commentsPolicy: 'closed',
+      commentsPolicy: defaultComments,
       importSourceSystem: 'onboarding-starter',
       importSourceIdentifier: 'starter:welcome-draft',
       exportFormatVersion: 1,

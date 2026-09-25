@@ -1,4 +1,3 @@
-import { randomUUID } from 'node:crypto'
 import type { Payload } from 'payload'
 
 import {
@@ -33,6 +32,13 @@ import { emitCommunityEvent } from './realtime'
 import { loadProfileProjection } from './profile-projection'
 import { consumeApiRateLimit } from '../integrations/rate-limit'
 import { assertMemberCanPost, ModerationActionError } from './moderation-actions'
+import {
+  readRouteTemplates,
+  readRouteTemplatesBySite,
+  resolvePublicUrl,
+  normalizeSemanticSlug,
+  routeTemplatesForSite,
+} from '../public/semantic-url'
 
 export class CommunityError extends Error {
   status: number
@@ -1003,6 +1009,14 @@ export async function createForumThread(
   if (!forum) {
     throw new CommunityError('Forum not found', 404, 'FORUM_NOT_FOUND')
   }
+  const forumSite =
+    typeof forum.site === 'string'
+      ? forum.site
+      : forum.site && typeof forum.site === 'object' && 'id' in forum.site
+        ? String((forum.site as { id: unknown }).id)
+        : ''
+  if (forumSite && forumSite !== input.siteId)
+    throw new CommunityError('Forum does not belong to this site.', 404, 'FORUM_NOT_FOUND')
 
   const decision = evaluateCommunityPolicy(
     context,
@@ -1020,11 +1034,49 @@ export async function createForumThread(
     )
   }
 
-  const slug = `${input.title
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-|-$/g, '')}-${randomUUID().slice(0, 8)}`
-  const canonicalPath = `/forums/${forum.slug}/${slug}`
+  const baseSlug = normalizeSemanticSlug(input.title) || 'topic'
+  const settings = await payload.findGlobal({
+    slug: 'site-settings',
+    depth: 0,
+    overrideAccess: true,
+  } as never)
+  const settingsRecord = settings as unknown as Record<string, unknown> | null
+  const routeTemplates = routeTemplatesForSite(
+    input.siteId,
+    readRouteTemplates(settingsRecord?.semanticRouteTemplates),
+    readRouteTemplatesBySite(
+      settingsRecord?.semanticRouteTemplatesBySite,
+      readRouteTemplates(settingsRecord?.semanticRouteTemplates),
+    ),
+  )
+  let slug = baseSlug
+  let available = false
+  for (let suffix = 2; suffix < 1000; suffix++) {
+    const candidatePath = resolvePublicUrl(
+      { kind: 'discussion', forumSlug: String(forum.slug), slug },
+      routeTemplates,
+    )
+    const collision = await payload.find({
+      collection: 'discussions',
+      where: {
+        and: [{ site: { equals: input.siteId } }, { canonicalPath: { equals: candidatePath } }],
+      },
+      limit: 1,
+      depth: 0,
+      overrideAccess: true,
+    } as never)
+    if (!collision.docs.length) {
+      available = true
+      break
+    }
+    slug = `${baseSlug}-${suffix}`
+  }
+  if (!available)
+    throw new CommunityError('Could not allocate a unique topic URL.', 409, 'SLUG_CONFLICT')
+  const canonicalPath = resolvePublicUrl(
+    { kind: 'discussion', forumSlug: String(forum.slug), slug },
+    routeTemplates,
+  )
 
   const discussion = (await payload.create({
     collection: 'discussions',

@@ -58,7 +58,9 @@ export async function POST(request: Request) {
 
   const siteId = body.siteId ?? 'default-site'
   const subjectKey = consent.subject
-  const subjectHash = createHash('sha256').update(`${runtime.payloadSecret}:${subjectKey}`).digest('hex')
+  const subjectHash = createHash('sha256')
+    .update(`${runtime.payloadSecret}:${subjectKey}`)
+    .digest('hex')
 
   const dedupeSource = `exp-conversion:${body.experimentId}:${body.variantId}:${goalKey}:${subjectHash}`
   const now = new Date().toISOString()

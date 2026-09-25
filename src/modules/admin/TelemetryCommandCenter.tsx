@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import Link from 'next/link'
 
 interface DashboardData {
@@ -167,7 +167,7 @@ export function TelemetryCommandCenter() {
   const [approvingWinner, setApprovingWinner] = useState(false)
   const [approvalSuccess, setApprovalSuccess] = useState<string | null>(null)
 
-  const loadDashboard = async () => {
+  const loadDashboard = useCallback(async () => {
     setLoading(true)
     setError(null)
     try {
@@ -201,11 +201,11 @@ export function TelemetryCommandCenter() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [dateRange, selectedSite])
 
   useEffect(() => {
     void loadDashboard()
-  }, [selectedSite, dateRange])
+  }, [loadDashboard])
 
   const handleApproveWinner = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -304,7 +304,8 @@ export function TelemetryCommandCenter() {
             </span>
           </div>
           <p className="text-sm text-stone-500 dark:text-stone-400 mt-1">
-            Auditable first-party event streams, consent-governed funnels, deterministic experiments, and currency-separated financial views.
+            Auditable first-party event streams, consent-governed funnels, deterministic
+            experiments, and currency-separated financial views.
           </p>
         </div>
 
@@ -353,10 +354,14 @@ export function TelemetryCommandCenter() {
         <div className="rounded-xl border border-stone-200 bg-white p-3.5 shadow-sm dark:border-stone-800 dark:bg-stone-900">
           <p className="text-[11px] font-semibold uppercase text-stone-400">Freshness</p>
           <p className="text-lg font-bold text-stone-900 dark:text-white mt-0.5">
-            {sourceFreshness.freshnessMinutes !== null ? `${sourceFreshness.freshnessMinutes}m ago` : 'No events'}
+            {sourceFreshness.freshnessMinutes !== null
+              ? `${sourceFreshness.freshnessMinutes}m ago`
+              : 'No events'}
           </p>
           <p className="text-[10px] text-stone-500 truncate">
-            {sourceFreshness.lastEventReceivedAt ? new Date(sourceFreshness.lastEventReceivedAt).toLocaleTimeString() : 'N/A'}
+            {sourceFreshness.lastEventReceivedAt
+              ? new Date(sourceFreshness.lastEventReceivedAt).toLocaleTimeString()
+              : 'N/A'}
           </p>
         </div>
 
@@ -377,7 +382,9 @@ export function TelemetryCommandCenter() {
         </div>
 
         <div className="rounded-xl border border-stone-200 bg-white p-3.5 shadow-sm dark:border-stone-800 dark:bg-stone-900">
-          <p className="text-[11px] font-semibold uppercase text-stone-400">Bot / Crawler Filtered</p>
+          <p className="text-[11px] font-semibold uppercase text-stone-400">
+            Bot / Crawler Filtered
+          </p>
           <p className="text-lg font-bold text-stone-900 dark:text-white mt-0.5">
             {sourceFreshness.botFilteredCount.toLocaleString()}
           </p>
@@ -415,14 +422,21 @@ export function TelemetryCommandCenter() {
             </p>
             <p>{uncertaintyAndMissingData.disclosureStatement}</p>
             <p className="text-amber-800 dark:text-amber-300">
-              <strong>Missing data status:</strong> {uncertaintyAndMissingData.unconsentedEventsCount} unconsented interactions and {uncertaintyAndMissingData.missingUtmCount} direct landings lack attribution parameters. Conversions without cryptographic consent linkage are explicitly classified as <em>unattributed (consent absent)</em> rather than miscredited.
+              <strong>Missing data status:</strong>{' '}
+              {uncertaintyAndMissingData.unconsentedEventsCount} unconsented interactions and{' '}
+              {uncertaintyAndMissingData.missingUtmCount} direct landings lack attribution
+              parameters. Conversions without cryptographic consent linkage are explicitly
+              classified as <em>unattributed (consent absent)</em> rather than miscredited.
             </p>
           </div>
         </div>
       </section>
 
       {/* 4. Tab Navigation */}
-      <nav aria-label="Dashboard views" className="flex border-b border-stone-200 dark:border-stone-800 gap-6">
+      <nav
+        aria-label="Dashboard views"
+        className="flex border-b border-stone-200 dark:border-stone-800 gap-6"
+      >
         <button
           onClick={() => setActiveTab('funnels')}
           className={`pb-3 text-sm font-semibold border-b-2 transition ${
@@ -500,7 +514,8 @@ export function TelemetryCommandCenter() {
                     </h2>
                   </div>
                   <p className="text-xs text-stone-500 mt-1">
-                    End-to-end disclosed link touchpoints, reader engagement, and canonical conversion attribution.
+                    End-to-end disclosed link touchpoints, reader engagement, and canonical
+                    conversion attribution.
                   </p>
                 </div>
                 <div className="text-right">
@@ -560,7 +575,9 @@ export function TelemetryCommandCenter() {
                     <span>STEP 4</span>
                     <span>{funnel.conversionRate}%</span>
                   </div>
-                  <p className="font-bold text-emerald-950 dark:text-emerald-200">Goal Conversions</p>
+                  <p className="font-bold text-emerald-950 dark:text-emerald-200">
+                    Goal Conversions
+                  </p>
                   <p className="text-2xl font-extrabold text-emerald-700 dark:text-emerald-300 mt-2">
                     {funnel.conversions}
                   </p>
@@ -579,7 +596,10 @@ export function TelemetryCommandCenter() {
                   <div className="rounded-lg bg-white p-3 border border-stone-200 shadow-sm dark:bg-stone-900 dark:border-stone-700">
                     <p className="font-bold text-stone-900 dark:text-white">First-Touch Model</p>
                     <p className="text-stone-600 dark:text-stone-300 mt-1">
-                      Attributed Channel: <span className="font-semibold text-stone-900 dark:text-white">Newsletter (Dispatch #42)</span>
+                      Attributed Channel:{' '}
+                      <span className="font-semibold text-stone-900 dark:text-white">
+                        Newsletter (Dispatch #42)
+                      </span>
                     </p>
                     <span className="mt-2 inline-block rounded bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
                       Confidence: Verified Consented
@@ -590,9 +610,14 @@ export function TelemetryCommandCenter() {
                   </div>
 
                   <div className="rounded-lg bg-white p-3 border border-stone-200 shadow-sm dark:bg-stone-900 dark:border-stone-700">
-                    <p className="font-bold text-stone-900 dark:text-white">Last-Non-Direct Model</p>
+                    <p className="font-bold text-stone-900 dark:text-white">
+                      Last-Non-Direct Model
+                    </p>
                     <p className="text-stone-600 dark:text-stone-300 mt-1">
-                      Attributed Channel: <span className="font-semibold text-stone-900 dark:text-white">Newsletter</span>
+                      Attributed Channel:{' '}
+                      <span className="font-semibold text-stone-900 dark:text-white">
+                        Newsletter
+                      </span>
                     </p>
                     <span className="mt-2 inline-block rounded bg-emerald-100 px-2 py-0.5 text-[10px] font-semibold text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
                       Confidence: Verified Consented
@@ -605,13 +630,17 @@ export function TelemetryCommandCenter() {
                   <div className="rounded-lg bg-white p-3 border border-stone-200 shadow-sm dark:bg-stone-900 dark:border-stone-700">
                     <p className="font-bold text-stone-900 dark:text-white">Unconsented Fallback</p>
                     <p className="text-stone-600 dark:text-stone-300 mt-1">
-                      Status: <span className="font-semibold text-amber-700 dark:text-amber-400">Unattributed (Privacy Guard)</span>
+                      Status:{' '}
+                      <span className="font-semibold text-amber-700 dark:text-amber-400">
+                        Unattributed (Privacy Guard)
+                      </span>
                     </p>
                     <span className="mt-2 inline-block rounded bg-amber-100 px-2 py-0.5 text-[10px] font-semibold text-amber-800 dark:bg-amber-950 dark:text-amber-300">
                       Uncertainty: High (No Linkage)
                     </span>
                     <p className="text-[11px] text-stone-500 mt-2">
-                      Visitors with DNT/GPC or no consent are strictly excluded from campaign attribution.
+                      Visitors with DNT/GPC or no consent are strictly excluded from campaign
+                      attribution.
                     </p>
                   </div>
                 </div>
@@ -635,14 +664,20 @@ export function TelemetryCommandCenter() {
                         : 'bg-emerald-100 text-emerald-900 dark:bg-emerald-950 dark:text-emerald-300'
                     }`}
                   >
-                    {experiment.isWinnerApproved ? '★ WINNER SELECTED' : `STATUS: ${experiment.definition.state.toUpperCase()}`}
+                    {experiment.isWinnerApproved
+                      ? '★ WINNER SELECTED'
+                      : `STATUS: ${experiment.definition.state.toUpperCase()}`}
                   </span>
                   <h2 className="text-xl font-bold text-stone-900 dark:text-white">
                     {experiment.definition.name}
                   </h2>
                 </div>
                 <p className="text-xs text-stone-500 mt-1">
-                  Goal: <code className="font-mono text-red-600 dark:text-red-400">{experiment.definition.goalKey}</code> | Experiment ID: <code>{experiment.definition.id}</code>
+                  Goal:{' '}
+                  <code className="font-mono text-red-600 dark:text-red-400">
+                    {experiment.definition.goalKey}
+                  </code>{' '}
+                  | Experiment ID: <code>{experiment.definition.id}</code>
                 </p>
                 <p className="text-xs text-stone-600 dark:text-stone-300 mt-1">
                   {experiment.definition.description}
@@ -651,7 +686,9 @@ export function TelemetryCommandCenter() {
 
               {experiment.definition.winnerDecision && (
                 <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs dark:border-amber-900 dark:bg-amber-950/40">
-                  <p className="font-bold text-amber-900 dark:text-amber-200">Permanent Winner Deployed</p>
+                  <p className="font-bold text-amber-900 dark:text-amber-200">
+                    Permanent Winner Deployed
+                  </p>
                   <p className="text-amber-800 dark:text-amber-300">
                     Variant: <code>{experiment.definition.winnerDecision.selectedVariantId}</code>
                   </p>
@@ -665,7 +702,9 @@ export function TelemetryCommandCenter() {
             {/* Variant Cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
               {experiment.variantStats.map((variant) => {
-                const analysisResult = experiment.statisticalAnalysis.results.find((r) => r.id === variant.id)
+                const analysisResult = experiment.statisticalAnalysis.results.find(
+                  (r) => r.id === variant.id,
+                )
                 const isWinner =
                   experiment.definition.winnerDecision?.selectedVariantId === variant.id
 
@@ -695,7 +734,9 @@ export function TelemetryCommandCenter() {
                     </div>
 
                     <div className="mt-4 space-y-1 text-xs text-stone-600 dark:text-stone-300">
-                      <p><strong>Headline:</strong> "{variant.headline}"</p>
+                      <p>
+                        <strong>Headline:</strong> "{variant.headline}"
+                      </p>
                     </div>
 
                     <div className="grid grid-cols-3 gap-2 mt-4 pt-4 border-t border-stone-200/40 dark:border-stone-800 text-center">
@@ -706,7 +747,9 @@ export function TelemetryCommandCenter() {
                         </p>
                       </div>
                       <div>
-                        <p className="text-[10px] uppercase font-bold text-stone-400">Conversions</p>
+                        <p className="text-[10px] uppercase font-bold text-stone-400">
+                          Conversions
+                        </p>
                         <p className="text-xl font-black text-stone-900 dark:text-white">
                           {variant.conversions}
                         </p>
@@ -714,7 +757,10 @@ export function TelemetryCommandCenter() {
                       <div>
                         <p className="text-[10px] uppercase font-bold text-stone-400">CR (%)</p>
                         <p className="text-xl font-black text-emerald-600 dark:text-emerald-400">
-                          {analysisResult ? (analysisResult.conversionRate * 100).toFixed(1) : '0.0'}%
+                          {analysisResult
+                            ? (analysisResult.conversionRate * 100).toFixed(1)
+                            : '0.0'}
+                          %
                         </p>
                       </div>
                     </div>
@@ -739,7 +785,8 @@ export function TelemetryCommandCenter() {
                 </div>
               ) : (
                 <p className="text-xs text-stone-600 dark:text-stone-300">
-                  Sample size satisfies statistical power requirements. Winner selection is permitted under human review.
+                  Sample size satisfies statistical power requirements. Winner selection is
+                  permitted under human review.
                 </p>
               )}
             </div>
@@ -751,7 +798,9 @@ export function TelemetryCommandCenter() {
                   Human Winner Approval Workflow
                 </h4>
                 <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">
-                  In strict conformance with experimentation ethics, algorithms never automatically deploy winners. A human operator must review statistical evidence, select the variant, and record a documented rationale.
+                  In strict conformance with experimentation ethics, algorithms never automatically
+                  deploy winners. A human operator must review statistical evidence, select the
+                  variant, and record a documented rationale.
                 </p>
 
                 {approvalSuccess && (
@@ -797,7 +846,9 @@ export function TelemetryCommandCenter() {
                     disabled={approvingWinner || !approvalReason.trim()}
                     className="rounded-lg bg-stone-900 px-5 py-2 text-xs font-bold text-white shadow hover:bg-stone-800 disabled:opacity-50 dark:bg-stone-100 dark:text-stone-900 dark:hover:bg-white"
                   >
-                    {approvingWinner ? 'Recording Audit Approval…' : 'Approve & Permanently Deploy Winner'}
+                    {approvingWinner
+                      ? 'Recording Audit Approval…'
+                      : 'Approve & Permanently Deploy Winner'}
                   </button>
                 </form>
               </div>
@@ -812,7 +863,9 @@ export function TelemetryCommandCenter() {
           <div className="rounded-xl border border-blue-200 bg-blue-50/60 p-4 text-xs text-blue-900 dark:border-blue-900/60 dark:bg-blue-950/30 dark:text-blue-200">
             <p className="font-bold">Monetary Separation Integrity Principle</p>
             <p className="mt-0.5">
-              Distinct currencies (USD, EUR, GBP, etc.) are strictly segregated and NEVER combined into synthetic sums. Minor units (cents/pence) are preserved to guarantee reconciliation accuracy.
+              Distinct currencies (USD, EUR, GBP, etc.) are strictly segregated and NEVER combined
+              into synthetic sums. Minor units (cents/pence) are preserved to guarantee
+              reconciliation accuracy.
             </p>
           </div>
 
@@ -858,7 +911,9 @@ export function TelemetryCommandCenter() {
                   </div>
 
                   <div className="rounded-lg bg-stone-50 p-2.5 text-[11px] space-y-1 dark:bg-stone-800/50">
-                    <p className="font-bold text-stone-700 dark:text-stone-300">Reconciliation Status</p>
+                    <p className="font-bold text-stone-700 dark:text-stone-300">
+                      Reconciliation Status
+                    </p>
                     <div className="flex justify-between">
                       <span className="text-stone-500">Reconciled Canonical:</span>
                       <span className="font-mono text-emerald-600">{item.reconciledMinor}</span>
@@ -889,7 +944,8 @@ export function TelemetryCommandCenter() {
                   Inspectable Event Stream (Raw Grain)
                 </h3>
                 <p className="text-xs text-stone-500">
-                  Every metric traces directly to an immutable source record in the PostgreSQL ledger.
+                  Every metric traces directly to an immutable source record in the PostgreSQL
+                  ledger.
                 </p>
               </div>
               <span className="rounded bg-indigo-50 px-2.5 py-1 text-xs font-semibold text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800">
@@ -913,7 +969,9 @@ export function TelemetryCommandCenter() {
                 <tbody className="divide-y divide-stone-100 dark:divide-stone-800 font-mono text-[11px]">
                   {inspectableEvents.map((e) => (
                     <tr key={e.id} className="hover:bg-stone-50/60 dark:hover:bg-stone-800/40">
-                      <td className="p-2.5 text-stone-700 dark:text-stone-300">{e.id.slice(0, 16)}…</td>
+                      <td className="p-2.5 text-stone-700 dark:text-stone-300">
+                        {e.id.slice(0, 16)}…
+                      </td>
                       <td className="p-2.5">
                         <span className="rounded bg-stone-100 px-1.5 py-0.5 text-stone-800 dark:bg-stone-800 dark:text-stone-200">
                           {e.eventType}
@@ -968,7 +1026,8 @@ export function TelemetryCommandCenter() {
               Event Sources & Storage Grain Inventory
             </h3>
             <p className="text-xs text-stone-500 mb-4">
-              Formal inventory of event sources, retention schedules, identity models, and canonical reconciliation boundaries.
+              Formal inventory of event sources, retention schedules, identity models, and canonical
+              reconciliation boundaries.
             </p>
 
             <div className="overflow-x-auto">
@@ -992,10 +1051,16 @@ export function TelemetryCommandCenter() {
                       <td className="p-2.5 font-mono text-stone-600 dark:text-stone-300">
                         {item.collection}
                       </td>
-                      <td className="p-2.5 text-stone-600 dark:text-stone-400">{item.primaryGrain}</td>
-                      <td className="p-2.5 text-stone-600 dark:text-stone-400">{item.identityLinkage}</td>
+                      <td className="p-2.5 text-stone-600 dark:text-stone-400">
+                        {item.primaryGrain}
+                      </td>
+                      <td className="p-2.5 text-stone-600 dark:text-stone-400">
+                        {item.identityLinkage}
+                      </td>
                       <td className="p-2.5 font-mono">
-                        {typeof item.retentionDays === 'number' ? `${item.retentionDays}d` : item.retentionDays}
+                        {typeof item.retentionDays === 'number'
+                          ? `${item.retentionDays}d`
+                          : item.retentionDays}
                       </td>
                       <td className="p-2.5 text-stone-600 dark:text-stone-400">
                         {item.reconciliationTarget}
@@ -1013,7 +1078,8 @@ export function TelemetryCommandCenter() {
               Operator Metric Dictionary & Formal Definitions
             </h3>
             <p className="text-xs text-stone-500 mb-4">
-              Precise mathematical formulas, data sources, and uncertainty disclosures for every dashboard metric.
+              Precise mathematical formulas, data sources, and uncertainty disclosures for every
+              dashboard metric.
             </p>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -1026,10 +1092,12 @@ export function TelemetryCommandCenter() {
                   <p className="text-stone-600 dark:text-stone-300 mt-1">{m.definition}</p>
                   <div className="mt-2 space-y-1 text-[11px]">
                     <p>
-                      <strong>Formula:</strong> <code className="font-mono text-red-600 dark:text-red-400">{m.formula}</code>
+                      <strong>Formula:</strong>{' '}
+                      <code className="font-mono text-red-600 dark:text-red-400">{m.formula}</code>
                     </p>
                     <p>
-                      <strong>Grain:</strong> <span className="font-mono text-stone-500">{m.grain}</span>
+                      <strong>Grain:</strong>{' '}
+                      <span className="font-mono text-stone-500">{m.grain}</span>
                     </p>
                     <p className="text-stone-500 italic">
                       <strong>Uncertainty:</strong> {m.uncertaintyDisclosure}

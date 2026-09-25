@@ -33,9 +33,12 @@ export default function NotificationsPage() {
 
   const loadNotifications = useCallback(async (currentSiteId: string) => {
     try {
-      const res = await fetch(`/api/community/notifications?siteId=${encodeURIComponent(currentSiteId)}`, {
-        cache: 'no-store',
-      })
+      const res = await fetch(
+        `/api/community/notifications?siteId=${encodeURIComponent(currentSiteId)}`,
+        {
+          cache: 'no-store',
+        },
+      )
       if (!res.ok) {
         if (res.status === 401) {
           setStatusMessage('Sign in is required to view notifications.')
@@ -89,7 +92,9 @@ export default function NotificationsPage() {
       if (res.ok) {
         if (notificationId) {
           setNotifications((prev) =>
-            prev.map((n) => (n.id === notificationId ? { ...n, readAt: new Date().toISOString(), read: true } : n)),
+            prev.map((n) =>
+              n.id === notificationId ? { ...n, readAt: new Date().toISOString(), read: true } : n,
+            ),
           )
           setUnreadCount((c) => Math.max(0, c - 1))
         } else {
@@ -114,11 +119,7 @@ export default function NotificationsPage() {
           </p>
         </div>
         {unreadCount > 0 ? (
-          <button
-            type="button"
-            className="btn btn-sm"
-            onClick={() => void markRead()}
-          >
+          <button type="button" className="btn btn-sm" onClick={() => void markRead()}>
             Mark all read
           </button>
         ) : null}
@@ -169,7 +170,10 @@ export default function NotificationsPage() {
                       {n.kind || n.targetType || 'Update'}
                     </span>
                     {!isRead ? (
-                      <span className="inline-block h-2 w-2 rounded-full bg-blue-600" aria-label="Unread" />
+                      <span
+                        className="inline-block h-2 w-2 rounded-full bg-blue-600"
+                        aria-label="Unread"
+                      />
                     ) : null}
                   </div>
                   <p className="mt-1 text-sm text-stone-800 dark:text-stone-200 line-clamp-2">

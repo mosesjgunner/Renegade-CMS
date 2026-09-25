@@ -6,6 +6,7 @@ import { canDiscoverPublic, canRenderPublic, type PublicState } from './contract
 import { resolveSiteSettings, type ResolvedSiteSettings } from '../core/site-settings'
 import { mediaVariantUrl } from '../media/variant-contracts'
 import { registeredOnly } from './registered-collections'
+import { resolvePublicUrl, routeTemplatesForSite, type SemanticKind } from './semantic-url'
 import {
   composeSchemaGraph,
   globalSchemaRegistry,
@@ -507,8 +508,28 @@ export type RedirectRule = {
 export type RedirectResolution =
   | { target: string; statusCode: 301 | 302 | 307 | 308; ruleIds: string[] }
   | { error: 'loop' | 'hop-limit' | 'missing-target' }
-const normalPath = (value: string) =>
-  value.startsWith('/') && !value.startsWith('//') ? value : ''
+const normalPath = (value: string) => {
+  if (
+    !value.startsWith('/') ||
+    value.startsWith('//') ||
+    value.includes('\\') ||
+    value.includes('?') ||
+    value.includes('#') ||
+    /[\u0000-\u001f\u007f]/.test(value)
+  )
+    return ''
+  try {
+    const segments = value.split('/')
+    for (const segment of segments) {
+      const decoded = decodeURIComponent(segment)
+      if (decoded === '.' || decoded === '..' || decoded.includes('/') || decoded.includes('\\'))
+        return ''
+    }
+    return value
+  } catch {
+    return ''
+  }
+}
 
 export function validateRedirectRule(rule: RedirectRule): string | true {
   if (!normalPath(rule.fromPath) || !normalPath(rule.toPath))
@@ -750,19 +771,51 @@ export async function resolveDiscoveryDocument(
   const rawSlug =
     input.slug || (typeof input.record?.slug === 'string' ? input.record.slug : undefined)
 
-  const unresolvedPath = rawPath
-    ? rawPath.startsWith('/')
-      ? rawPath
-      : `/${rawPath}`
-    : rawSlug && (input.collection === 'content' || (!input.collection && input.record))
-      ? `/articles/${rawSlug}`
-      : rawSlug && input.collection === 'podcast-shows'
-        ? `/podcasts/${rawSlug}`
-        : rawSlug && input.collection === 'podcast-episodes'
-          ? `/podcasts/episodes/${rawSlug}`
-          : rawSlug && input.collection === 'videos'
-            ? `/videos/${rawSlug}`
-            : '/'
+  let unresolvedPath = '/'
+  if (rawPath) unresolvedPath = rawPath.startsWith('/') ? rawPath : `/${rawPath}`
+  else if (rawSlug) {
+    const contentType = String(input.record?.contentType ?? 'article')
+    const kind =
+      input.collection === 'podcast-shows'
+        ? 'podcast'
+        : input.collection === 'podcast-episodes'
+          ? 'podcast-episode'
+          : input.collection === 'videos'
+            ? 'video'
+            : input.collection === 'events'
+              ? 'event'
+              : input.collection === 'timelines'
+                ? 'timeline'
+                : input.collection === 'albums'
+                  ? 'album'
+                  : input.collection === 'books'
+                    ? 'book'
+                    : input.collection === 'products'
+                      ? 'product'
+                      : input.collection === 'discussions'
+                        ? 'discussion'
+                        : contentType === 'page'
+                          ? 'page'
+                          : 'article'
+    const recordValues: Record<string, string> = { slug: rawSlug }
+    if (kind === 'timeline' && typeof input.record?.eventSlug === 'string')
+      recordValues.eventSlug = input.record.eventSlug
+    if (kind === 'discussion' && typeof input.record?.forumSlug === 'string')
+      recordValues.forumSlug = input.record.forumSlug
+    try {
+      unresolvedPath = resolvePublicUrl(
+        { kind, ...recordValues } as never,
+        routeTemplatesForSite(
+          siteId,
+          settings.semanticRouteTemplates,
+          settings.semanticRouteTemplatesBySite,
+        ),
+      )
+    } catch {
+      // A timeline route needs its related event slug; collection lookup below can resolve by slug.
+      unresolvedPath = '/'
+    }
+  }
   const normalizedPath = normalizeDiscoveryPath(unresolvedPath)
 
   const publicUrl = new URL(normalizedPath, base).toString()
@@ -1175,7 +1228,21 @@ export async function resolveDiscoveryDocument(
       (input.collection === 'content' ||
         !input.collection ||
         contentDoc.canonicalPath === normalizedPath ||
-        (contentDoc.slug && normalizedPath === `/articles/${contentDoc.slug}`))
+        (contentDoc.slug &&
+          normalizedPath ===
+            resolvePublicUrl(
+              {
+                kind: contentDoc.contentType === 'page' ? 'page' : 'article',
+                slug: String(contentDoc.slug),
+                canonicalPath:
+                  typeof contentDoc.canonicalPath === 'string' ? contentDoc.canonicalPath : null,
+              },
+              routeTemplatesForSite(
+                siteId,
+                settings.semanticRouteTemplates,
+                settings.semanticRouteTemplatesBySite,
+              ),
+            )))
     ) {
       return buildContentDiscoveryDocument({
         content: contentDoc,
@@ -1220,6 +1287,58 @@ export async function resolveDiscoveryDocument(
     })
   }
 
+  // Topics reuse the existing editorial taxonomy. A taxonomy record becomes a
+  // public archive only while it has at least one published public article.
+  if (
+    (!input.collection || input.collection === 'topics') &&
+    registeredOnly(payload, ['topics'] as const).length > 0
+  ) {
+    const topicFound = await payload.find({
+      collection: 'topics',
+      where: {
+        and: [
+          ...(siteId ? [{ site: { equals: siteId } }] : []),
+          input.record && idOf(input.record.id)
+            ? { id: { equals: idOf(input.record.id) } }
+            : { canonicalPath: { equals: normalizedPath } },
+        ],
+      } as never,
+      limit: 1,
+      depth: 0,
+      overrideAccess: true,
+    } as never)
+    const topic = (topicFound.docs[0] as Record<string, any> | undefined) ?? input.record
+    if (topic && (input.collection === 'topics' || topic.canonicalPath === normalizedPath)) {
+      const related = await payload.find({
+        collection: 'content',
+        where: {
+          and: [
+            ...(siteId ? [{ site: { equals: siteId } }] : []),
+            { topics: { contains: String(topic.id) } },
+            { status: { in: ['published', 'updated'] } },
+            { visibility: { equals: 'public' } },
+            { moderationState: { equals: 'clear' } },
+            { removeFromDiscovery: { not_equals: true } },
+          ],
+        } as never,
+        limit: 1,
+        depth: 0,
+        overrideAccess: true,
+      } as never)
+      if (
+        (related.docs as unknown as PublicState[]).some((record) => canDiscoverPublic(record, now))
+      ) {
+        return buildGenericRecordDiscoveryDocument({
+          record: { ...topic, status: 'published', visibility: 'public' },
+          collection: 'topics',
+          settings,
+          base,
+          now,
+        })
+      }
+    }
+  }
+
   // CASE E.2: Registered Candidate Collections (books, events, timelines, albums, discussions, products)
   const candidateCollections = registeredOnly(payload, [
     'books',
@@ -1243,7 +1362,9 @@ export async function resolveDiscoveryDocument(
   for (const collection of candidateCollections) {
     if (input.collection && input.collection !== collection) continue
     const conditions: Array<Record<string, unknown>> = [
-      { canonicalPath: { equals: normalizedPath } },
+      input.collection && input.slug
+        ? { slug: { equals: input.slug } }
+        : { canonicalPath: { equals: normalizedPath } },
     ]
     if (siteId) conditions.push({ site: { equals: siteId } })
 
@@ -1270,17 +1391,17 @@ export async function resolveDiscoveryDocument(
   }
 
   // CASE F: Podcast Shows ('podcast-shows')
-  const podcastShowSlug =
-    normalizedPath.startsWith('/podcasts/') && !normalizedPath.startsWith('/podcasts/episodes/')
-      ? normalizedPath.replace('/podcasts/', '').replace(/\/$/, '')
-      : input.collection === 'podcast-shows'
-        ? input.slug
-        : undefined
-
-  if (podcastShowSlug) {
+  if (!input.collection || input.collection === 'podcast-shows') {
     const showFound = await payload.find({
       collection: 'podcast-shows',
-      where: { slug: { equals: podcastShowSlug } },
+      where: {
+        and: [
+          ...(siteId ? [{ site: { equals: siteId } }] : []),
+          input.collection === 'podcast-shows' && input.slug
+            ? { slug: { equals: input.slug } }
+            : { canonicalPath: { equals: normalizedPath } },
+        ],
+      },
       limit: 1,
       depth: 1,
       overrideAccess: true,
@@ -1297,16 +1418,17 @@ export async function resolveDiscoveryDocument(
   }
 
   // CASE G: Podcast Episodes ('podcast-episodes')
-  const podcastEpisodeSlug = normalizedPath.startsWith('/podcasts/episodes/')
-    ? normalizedPath.replace('/podcasts/episodes/', '').replace(/\/$/, '')
-    : input.collection === 'podcast-episodes'
-      ? input.slug
-      : undefined
-
-  if (podcastEpisodeSlug) {
+  if (!input.collection || input.collection === 'podcast-episodes') {
     const epFound = await payload.find({
       collection: 'podcast-episodes',
-      where: { slug: { equals: podcastEpisodeSlug } },
+      where: {
+        and: [
+          ...(siteId ? [{ site: { equals: siteId } }] : []),
+          input.collection === 'podcast-episodes' && input.slug
+            ? { slug: { equals: input.slug } }
+            : { canonicalPath: { equals: normalizedPath } },
+        ],
+      },
       limit: 1,
       depth: 2,
       overrideAccess: true,
@@ -1323,16 +1445,17 @@ export async function resolveDiscoveryDocument(
   }
 
   // CASE H: Videos ('videos')
-  const videoSlug = normalizedPath.startsWith('/videos/')
-    ? normalizedPath.replace('/videos/', '').replace(/\/$/, '')
-    : input.collection === 'videos'
-      ? input.slug
-      : undefined
-
-  if (videoSlug) {
+  if (!input.collection || input.collection === 'videos') {
     const vidFound = await payload.find({
       collection: 'videos',
-      where: { slug: { equals: videoSlug } },
+      where: {
+        and: [
+          ...(siteId ? [{ site: { equals: siteId } }] : []),
+          input.collection === 'videos' && input.slug
+            ? { slug: { equals: input.slug } }
+            : { canonicalPath: { equals: normalizedPath } },
+        ],
+      },
       limit: 1,
       depth: 2,
       overrideAccess: true,
@@ -1431,7 +1554,18 @@ async function buildContentDiscoveryDocument(input: {
       ? (content.discoveryOverrides as Record<string, any>)
       : {}
   const canonicalPath = normalizeDiscoveryPath(
-    String(content.canonicalPath || `/articles/${content.slug || content.id}`),
+    resolvePublicUrl(
+      {
+        kind: 'article',
+        slug: String(content.slug || ''),
+        canonicalPath: typeof content.canonicalPath === 'string' ? content.canonicalPath : null,
+      },
+      routeTemplatesForSite(
+        contentSiteId,
+        settings.semanticRouteTemplates,
+        settings.semanticRouteTemplatesBySite,
+      ),
+    ),
   )
   const publicUrl = new URL(canonicalPath, base).toString()
 
@@ -1716,21 +1850,6 @@ async function buildContentDiscoveryDocument(input: {
         path: String(content.parentPage.canonicalPath),
         url: `${base}${content.parentPage.canonicalPath}`,
       })
-    } else if (canonicalPath && canonicalPath !== '/') {
-      const parts = canonicalPath.split('/').filter(Boolean)
-      if (parts.length > 1) {
-        let currentPath = ''
-        for (let i = 0; i < parts.length - 1; i++) {
-          currentPath += `/${parts[i]}`
-          const segmentName =
-            parts[i].charAt(0).toUpperCase() + parts[i].slice(1).replace(/-/g, ' ')
-          breadcrumbs.push({
-            name: segmentName,
-            path: currentPath,
-            url: `${base}${currentPath}`,
-          })
-        }
-      }
     }
     breadcrumbs.push({ name: titleValue, path: canonicalPath, url: canonicalUrl })
   } else {
@@ -2080,7 +2199,14 @@ function buildPodcastShowDiscoveryDocument(input: {
   now: Date
 }): DiscoveryDocument {
   const { show, settings, base, now } = input
-  const canonicalPath = `/podcasts/${show.slug}`
+  const canonicalPath = resolvePublicUrl(
+    { kind: 'podcast', slug: String(show.slug) },
+    routeTemplatesForSite(
+      idOf(show.site),
+      settings.semanticRouteTemplates,
+      settings.semanticRouteTemplatesBySite,
+    ),
+  )
   const publicUrl = new URL(canonicalPath, base).toString()
   const isPublic = canRenderPublic(show, now)
   const isIndexable =
@@ -2101,7 +2227,7 @@ function buildPodcastShowDiscoveryDocument(input: {
   const artworkId = idOf(show.artwork)
   const artworkUrl = artworkId ? `${base}/media/${artworkId}` : null
 
-  const feedUrl = show.rssEnabled ? `${base}/podcasts/${show.slug}/feed.xml` : null
+  const feedUrl = show.rssEnabled ? `${base}${canonicalPath}/feed.xml` : null
 
   const siteIdentity = toSchemaSiteIdentity(settings, base)
   const breadcrumbs = [
@@ -2217,7 +2343,14 @@ function buildPodcastEpisodeDiscoveryDocument(input: {
   now: Date
 }): DiscoveryDocument {
   const { episode, settings, base, now } = input
-  const canonicalPath = `/podcasts/episodes/${episode.slug}`
+  const canonicalPath = resolvePublicUrl(
+    { kind: 'podcast-episode', slug: String(episode.slug) },
+    routeTemplatesForSite(
+      idOf(episode.site),
+      settings.semanticRouteTemplates,
+      settings.semanticRouteTemplatesBySite,
+    ),
+  )
   const publicUrl = new URL(canonicalPath, base).toString()
   const isPublic = canRenderPublic(episode, now)
   const isIndexable =
@@ -2245,12 +2378,22 @@ function buildPodcastEpisodeDiscoveryDocument(input: {
   const showSlug =
     showObj?.slug || (typeof episode.showSlug === 'string' ? episode.showSlug : undefined)
   const showTitle = showObj?.title || showObj?.name || 'Podcasts'
+  const showPath = showSlug
+    ? resolvePublicUrl(
+        { kind: 'podcast', slug: String(showSlug) },
+        routeTemplatesForSite(
+          idOf(episode.site),
+          settings.semanticRouteTemplates,
+          settings.semanticRouteTemplatesBySite,
+        ),
+      )
+    : null
 
   const siteIdentity = toSchemaSiteIdentity(settings, base)
   const breadcrumbs = [
     { name: 'Home', path: '/', url: `${base}/` },
     ...(showSlug
-      ? [{ name: showTitle, path: `/podcasts/${showSlug}`, url: `${base}/podcasts/${showSlug}` }]
+      ? [{ name: showTitle, path: showPath!, url: new URL(showPath!, base).toString() }]
       : [{ name: 'Podcasts', path: '/podcasts', url: `${base}/podcasts` }]),
     { name: titleValue, path: canonicalPath, url: publicUrl },
   ]
@@ -2279,6 +2422,7 @@ function buildPodcastEpisodeDiscoveryDocument(input: {
       episodeNumber: typeof episode.episodeNumber === 'number' ? episode.episodeNumber : undefined,
       seasonNumber: typeof episode.seasonNumber === 'number' ? episode.seasonNumber : undefined,
       showSlug,
+      showUrl: showPath ? new URL(showPath, base).toString() : undefined,
       showTitle,
       transcriptText:
         typeof episode.transcript === 'string' && episode.transcript.trim().length > 0
@@ -2361,7 +2505,14 @@ function buildVideoDiscoveryDocument(input: {
   now: Date
 }): DiscoveryDocument {
   const { video, settings, base, now } = input
-  const canonicalPath = `/videos/${video.slug}`
+  const canonicalPath = resolvePublicUrl(
+    { kind: 'video', slug: String(video.slug) },
+    routeTemplatesForSite(
+      idOf(video.site),
+      settings.semanticRouteTemplates,
+      settings.semanticRouteTemplatesBySite,
+    ),
+  )
   const publicUrl = new URL(canonicalPath, base).toString()
   const isPublic = canRenderPublic(video, now)
   const isIndexable =
@@ -2500,10 +2651,46 @@ function buildGenericRecordDiscoveryDocument(input: {
   now: Date
 }): DiscoveryDocument {
   const { record, collection, settings, base, now } = input
-  const canonicalPath = String(record.canonicalPath || `/${collection}/${record.slug || record.id}`)
+  const slug = typeof record.slug === 'string' ? record.slug : ''
+  const semanticKind =
+    (
+      {
+        events: 'event',
+        timelines: 'timeline',
+        albums: 'album',
+        books: 'book',
+        products: 'product',
+        discussions: 'discussion',
+        topics: 'topic',
+      } as Record<string, SemanticKind>
+    )[collection] ?? 'collection'
+  let canonicalPath = '/'
+  try {
+    canonicalPath = resolvePublicUrl(
+      {
+        kind: semanticKind,
+        slug,
+        canonicalPath: typeof record.canonicalPath === 'string' ? record.canonicalPath : null,
+        ...(collection === 'discussions' ? { forumSlug: String(record.forum?.slug ?? '') } : {}),
+        ...(collection === 'timelines'
+          ? { eventSlug: String(record.eventSlug ?? record.event?.slug ?? '') }
+          : {}),
+      } as never,
+      routeTemplatesForSite(
+        idOf(record.site),
+        settings.semanticRouteTemplates,
+        settings.semanticRouteTemplatesBySite,
+      ),
+    )
+  } catch {
+    canonicalPath = '/'
+  }
   const publicUrl = new URL(canonicalPath, base).toString()
   const isPublic =
-    canRenderPublic(record, now) && (collection !== 'products' || record.state === 'published')
+    canonicalPath !== '/' &&
+    Boolean(slug || record.canonicalPath) &&
+    canRenderPublic(record, now) &&
+    (collection !== 'products' || record.state === 'published')
   const isIndexable =
     isPublic &&
     settings.indexingMode !== 'noindex' &&
@@ -2540,7 +2727,9 @@ function buildGenericRecordDiscoveryDocument(input: {
             ? 'forum'
             : collection === 'products'
               ? 'product'
-              : 'article'
+              : collection === 'topics'
+                ? 'topic'
+                : 'article'
 
   const siteIdentity = toSchemaSiteIdentity(settings, base)
   const breadcrumbs = [
@@ -2913,7 +3102,58 @@ export async function getAllIndexableDiscoveryDocuments(
     if (d.indexability.indexable) documents.push(d)
   }
 
-  return documents.sort((a, b) => a.canonicalUrl.localeCompare(b.canonicalUrl))
+  // Resolve existing domain collections directly with the already-loaded site
+  // settings. This keeps sitemap generation from reloading settings per record.
+  const base =
+    (resolvedSiteId && settings.canonicalOriginsBySite[resolvedSiteId]) || settings.canonicalOrigin
+  const genericCollections = [
+    'books',
+    'events',
+    'timelines',
+    'albums',
+    'discussions',
+    'products',
+    'topics',
+  ]
+  const availableGenericCollections = registeredOnly(payload, genericCollections)
+  const genericResults = await Promise.all(
+    availableGenericCollections.map(async (collection) => {
+      const where: Record<string, unknown> = {
+        ...(resolvedSiteId ? { site: { equals: resolvedSiteId } } : {}),
+      }
+      return [collection, await findAll(collection, where)] as const
+    }),
+  )
+  const usedTopicIds = new Set(
+    content.docs.flatMap((doc, index) => {
+      if (!resolvedContentDocs[index]?.indexability.indexable) return []
+      const topics = (doc as Record<string, unknown>).topics
+      return Array.isArray(topics) ? topics.map((topic) => idOf(topic)) : []
+    }),
+  )
+  for (const [collection, result] of genericResults) {
+    for (const record of result.docs as Array<Record<string, any>>) {
+      if (collection === 'topics' && !usedTopicIds.has(String(record.id))) continue
+      const document = buildGenericRecordDiscoveryDocument({
+        record:
+          collection === 'topics'
+            ? { ...record, status: 'published', visibility: 'public' }
+            : record,
+        collection,
+        settings,
+        base,
+        now: new Date(),
+      })
+      if (document.indexability.indexable) documents.push(document)
+    }
+  }
+
+  const pathCounts = new Map<string, number>()
+  for (const document of documents)
+    pathCounts.set(document.canonicalPath, (pathCounts.get(document.canonicalPath) ?? 0) + 1)
+  return documents
+    .filter((document) => pathCounts.get(document.canonicalPath) === 1)
+    .sort((a, b) => a.canonicalUrl.localeCompare(b.canonicalUrl))
 }
 
 /** Queries all search documents projected from canonical discovery documents. */

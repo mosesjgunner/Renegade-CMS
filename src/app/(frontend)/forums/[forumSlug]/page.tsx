@@ -6,6 +6,7 @@ import config from '@payload-config'
 import { getPayload } from 'payload'
 import { communitySiteForHost } from '@/modules/community/site-scope'
 import { ForumThreadComposer } from '@/modules/community/ForumThreadComposer'
+import { resolvePublicUrl } from '@/modules/public/semantic-url'
 
 export const dynamic = 'force-dynamic'
 
@@ -39,15 +40,14 @@ export default async function ForumTopicsPage({
   const { forumSlug } = await params
   const payload = await getPayload({ config })
   const requestHeaders = await headers()
-  const siteId = await communitySiteForHost(payload, requestHeaders.get('host')).catch(() => 'default')
+  const siteId = await communitySiteForHost(payload, requestHeaders.get('host')).catch(
+    () => 'default',
+  )
 
   const forumRes = await payload.find({
     collection: 'forums',
     where: {
-      and: [
-        { site: { equals: siteId } },
-        { slug: { equals: forumSlug } },
-      ],
+      and: [{ site: { equals: siteId } }, { slug: { equals: forumSlug } }],
     },
     limit: 1,
     depth: 1,
@@ -111,15 +111,22 @@ export default async function ForumTopicsPage({
         ) : (
           <div className="rounded-xl border border-stone-200 dark:border-stone-800 overflow-hidden bg-white dark:bg-stone-900 divide-y divide-stone-100 dark:divide-stone-800 shadow-sm">
             {discussions.map((disc) => {
-              const targetHref = disc.canonicalPath || `/forums/${forum.slug}/${disc.id}`
+              const targetHref =
+                disc.canonicalPath || resolvePublicUrl({ kind: 'forum', slug: forum.slug })
               const isLocked = disc.status === 'locked'
 
               return (
-                <article key={disc.id} className="p-5 hover:bg-stone-50/50 dark:hover:bg-stone-800/30 transition flex items-center justify-between gap-4">
+                <article
+                  key={disc.id}
+                  className="p-5 hover:bg-stone-50/50 dark:hover:bg-stone-800/30 transition flex items-center justify-between gap-4"
+                >
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
                       <h3 className="text-base font-semibold truncate">
-                        <Link href={targetHref} className="hover:underline text-stone-900 dark:text-stone-100">
+                        <Link
+                          href={targetHref}
+                          className="hover:underline text-stone-900 dark:text-stone-100"
+                        >
                           {disc.title}
                         </Link>
                       </h3>
@@ -131,9 +138,7 @@ export default async function ForumTopicsPage({
                     </div>
                     <div className="mt-1 flex items-center gap-3 text-xs text-stone-500">
                       <span>Created {new Date(disc.createdAt).toLocaleDateString()}</span>
-                      {disc.visibility === 'members' ? (
-                        <span>&middot; Members Only</span>
-                      ) : null}
+                      {disc.visibility === 'members' ? <span>&middot; Members Only</span> : null}
                     </div>
                   </div>
                   <div>

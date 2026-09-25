@@ -3,10 +3,7 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import type { ConnectionGroup, ConnectionRecord } from './contracts'
-import {
-  INTEGRATION_SCOPES,
-  type WebhookDeliveryDiagnosis,
-} from '../integrations/service'
+import { INTEGRATION_SCOPES, type WebhookDeliveryDiagnosis } from '../integrations/service'
 
 export type OperationalConnection = Omit<ConnectionRecord, 'status'> & {
   status: ConnectionRecord['status'] | 'unconfigured'
@@ -92,22 +89,28 @@ export function ConnectionsCenter({
   const [connections, setConnections] = useState<OperationalConnection[]>([...initialConnections])
   const [deliveries, setDeliveries] = useState<WebhookDeliveryItem[]>([...initialDeliveries])
   const [auditEvents, setAuditEvents] = useState<IntegrationAuditItem[]>([...initialAuditEvents])
-  
-  const [activeTab, setActiveTab] = useState<'overview' | 'webhooks' | 'vault' | 'audit'>('overview')
+
+  const [activeTab, setActiveTab] = useState<'overview' | 'webhooks' | 'vault' | 'audit'>(
+    'overview',
+  )
   const [selectedGroup, setSelectedGroup] = useState<string>('all')
-  const [filterHealth, setFilterHealth] = useState<'all' | 'attention' | 'healthy' | 'unknown'>('all')
+  const [filterHealth, setFilterHealth] = useState<'all' | 'attention' | 'healthy' | 'unknown'>(
+    'all',
+  )
   const [searchQuery, setSearchQuery] = useState('')
-  
+
   const [selectedDelivery, setSelectedDelivery] = useState<WebhookDeliveryItem | null>(null)
   const [isRedelivering, setIsRedelivering] = useState<string | null>(null)
   const [isReconciling, setIsReconciling] = useState<string | null>(null)
   const [disconnectModal, setDisconnectModal] = useState<OperationalConnection | null>(null)
-  
+
   // Modals
   const [createClientModal, setCreateClientModal] = useState(false)
   const [newClientName, setNewClientName] = useState('')
   const [newClientScopes, setNewClientScopes] = useState<string[]>(['content.read'])
-  const [generatedToken, setGeneratedToken] = useState<{ token: string; prefix: string } | null>(null)
+  const [generatedToken, setGeneratedToken] = useState<{ token: string; prefix: string } | null>(
+    null,
+  )
 
   const [createWebhookModal, setCreateWebhookModal] = useState(false)
   const [webhookTarget, setWebhookTarget] = useState('')
@@ -117,7 +120,9 @@ export function ConnectionsCenter({
   const [rotateSecretModal, setRotateSecretModal] = useState<OperationalConnection | null>(null)
   const [rotateNewSecretRef, setRotateNewSecretRef] = useState('')
   const [busyAction, setBusyAction] = useState(false)
-  const [feedback, setFeedback] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
+  const [feedback, setFeedback] = useState<{ message: string; type: 'success' | 'error' } | null>(
+    null,
+  )
 
   const showFeedback = (message: string, type: 'success' | 'error') => {
     setFeedback({ message, type })
@@ -127,12 +132,27 @@ export function ConnectionsCenter({
   const getEffectiveGroup = (conn: OperationalConnection): ConnectionGroup => {
     if (conn.group) return conn.group
     if (groupFor) return groupFor(conn.providerKey)
-    if (conn.providerKey.startsWith('client-') || conn.providerKey === 'api-client') return 'Security'
-    if (conn.providerKey === 'webhook' || conn.collection === 'webhook-subscriptions') return 'Webhooks'
-    if (conn.providerKey.startsWith('social.') || ['mastodon', 'bluesky', 'x'].includes(conn.providerKey)) return 'Social'
-    if (['stripe', 'paypal', 'square', 'offline', 'merchant'].includes(conn.providerKey)) return 'Payments & Support'
-    if (conn.providerKey.startsWith('pod-') || ['printful', 'printify', 'gelato'].includes(conn.providerKey)) return 'Fulfillment'
-    if (conn.providerKey.startsWith('ai.') || ['openai', 'anthropic', 'google-genai', 'groq'].includes(conn.providerKey)) return 'AI'
+    if (conn.providerKey.startsWith('client-') || conn.providerKey === 'api-client')
+      return 'Security'
+    if (conn.providerKey === 'webhook' || conn.collection === 'webhook-subscriptions')
+      return 'Webhooks'
+    if (
+      conn.providerKey.startsWith('social.') ||
+      ['mastodon', 'bluesky', 'x'].includes(conn.providerKey)
+    )
+      return 'Social'
+    if (['stripe', 'paypal', 'square', 'offline', 'merchant'].includes(conn.providerKey))
+      return 'Payments & Support'
+    if (
+      conn.providerKey.startsWith('pod-') ||
+      ['printful', 'printify', 'gelato'].includes(conn.providerKey)
+    )
+      return 'Fulfillment'
+    if (
+      conn.providerKey.startsWith('ai.') ||
+      ['openai', 'anthropic', 'google-genai', 'groq'].includes(conn.providerKey)
+    )
+      return 'AI'
     return 'Security'
   }
 
@@ -146,13 +166,15 @@ export function ConnectionsCenter({
         body: JSON.stringify({
           action: 'reconcile-provider',
           connectionId: conn.id,
-          collection: conn.collection || (conn.providerKey === 'api-client' ? 'api-clients' : 'merchant-connections'),
+          collection:
+            conn.collection ||
+            (conn.providerKey === 'api-client' ? 'api-clients' : 'merchant-connections'),
           providerKey: conn.providerKey,
         }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Reconciliation failed.')
-      
+
       setConnections((prev) =>
         prev.map((c) =>
           c.id === conn.id
@@ -200,14 +222,18 @@ export function ConnectionsCenter({
                 ...c,
                 status: 'disconnected',
                 healthState: 'critical',
-                nextSafeRepairAction: 'Connection is disconnected. Re-issue credentials to reconnect.',
+                nextSafeRepairAction:
+                  'Connection is disconnected. Re-issue credentials to reconnect.',
                 canDisconnect: false,
               }
             : c,
         ),
       )
       setDisconnectModal(null)
-      showFeedback(data.message || 'Connection safely disconnected. Canonical data preserved.', 'success')
+      showFeedback(
+        data.message || 'Connection safely disconnected. Canonical data preserved.',
+        'success',
+      )
     } catch (err) {
       showFeedback(err instanceof Error ? err.message : 'Disconnect failed.', 'error')
     } finally {
@@ -319,7 +345,11 @@ export function ConnectionsCenter({
       const isClient = rotateSecretModal.collection === 'api-clients'
       const body = isClient
         ? { action: 'rotate-client-secret', clientId: rotateSecretModal.id }
-        : { action: 'rotate-webhook-secret', subscriptionId: rotateSecretModal.id, secretRef: rotateNewSecretRef }
+        : {
+            action: 'rotate-webhook-secret',
+            subscriptionId: rotateSecretModal.id,
+            secretRef: rotateNewSecretRef,
+          }
 
       const res = await fetch('/api/admin/integrations', {
         method: 'POST',
@@ -418,9 +448,15 @@ export function ConnectionsCenter({
   const filteredConnections = connections.filter((conn) => {
     const group = getEffectiveGroup(conn)
     if (selectedGroup !== 'all' && group !== selectedGroup) return false
-    if (filterHealth === 'attention' && conn.healthState !== 'warning' && conn.healthState !== 'critical') return false
+    if (
+      filterHealth === 'attention' &&
+      conn.healthState !== 'warning' &&
+      conn.healthState !== 'critical'
+    )
+      return false
     if (filterHealth === 'healthy' && conn.healthState !== 'healthy') return false
-    if (filterHealth === 'unknown' && !conn.isUnknown && conn.status !== 'unconfigured') return false
+    if (filterHealth === 'unknown' && !conn.isUnknown && conn.status !== 'unconfigured')
+      return false
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase()
       return (
@@ -436,9 +472,16 @@ export function ConnectionsCenter({
   const stats = {
     total: connections.length,
     healthy: connections.filter((c) => c.healthState === 'healthy' || c.status === 'active').length,
-    attention: connections.filter((c) => c.healthState === 'warning' || c.healthState === 'critical' || c.status === 'degraded' || c.status === 'expired').length,
+    attention: connections.filter(
+      (c) =>
+        c.healthState === 'warning' ||
+        c.healthState === 'critical' ||
+        c.status === 'degraded' ||
+        c.status === 'expired',
+    ).length,
     unknown: connections.filter((c) => c.isUnknown || c.status === 'unconfigured').length,
-    pendingRetries: deliveries.filter((d) => d.state === 'retrying' || d.state === 'dead-letter').length,
+    pendingRetries: deliveries.filter((d) => d.state === 'retrying' || d.state === 'dead-letter')
+      .length,
   }
 
   return (
@@ -473,7 +516,8 @@ export function ConnectionsCenter({
             </h1>
           </div>
           <p className="mt-1 text-sm text-stone-600 dark:text-stone-400">
-            Operational center for external APIs, webhooks, payment processors, and AI agents with zero secret leakage.
+            Operational center for external APIs, webhooks, payment processors, and AI agents with
+            zero secret leakage.
           </p>
         </div>
 
@@ -519,19 +563,27 @@ export function ConnectionsCenter({
         </div>
 
         <div className="p-4 rounded-xl bg-emerald-50/60 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800/40 flex flex-col">
-          <span className="text-xs font-medium text-emerald-800 dark:text-emerald-300">Verified Succeeded</span>
+          <span className="text-xs font-medium text-emerald-800 dark:text-emerald-300">
+            Verified Succeeded
+          </span>
           <span className="text-2xl font-bold text-emerald-700 dark:text-emerald-400 mt-1 font-mono">
             {stats.healthy}
           </span>
-          <span className="text-[11px] text-emerald-600 dark:text-emerald-500 mt-1">Active & health acknowledged</span>
+          <span className="text-[11px] text-emerald-600 dark:text-emerald-500 mt-1">
+            Active & health acknowledged
+          </span>
         </div>
 
         <div className="p-4 rounded-xl bg-amber-50/60 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800/40 flex flex-col">
-          <span className="text-xs font-medium text-amber-800 dark:text-amber-300">Needs Attention</span>
+          <span className="text-xs font-medium text-amber-800 dark:text-amber-300">
+            Needs Attention
+          </span>
           <span className="text-2xl font-bold text-amber-700 dark:text-amber-400 mt-1 font-mono">
             {stats.attention}
           </span>
-          <span className="text-[11px] text-amber-600 dark:text-amber-500 mt-1">Degraded, expired, or retrying</span>
+          <span className="text-[11px] text-amber-600 dark:text-amber-500 mt-1">
+            Degraded, expired, or retrying
+          </span>
         </div>
 
         <div className="p-4 rounded-xl bg-stone-50/80 dark:bg-stone-900/40 border border-stone-200 dark:border-stone-800 flex flex-col">
@@ -647,15 +699,22 @@ export function ConnectionsCenter({
           {filteredConnections.length === 0 ? (
             <div className="text-center py-12 bg-stone-50/50 dark:bg-stone-900/20 rounded-2xl border border-stone-200 dark:border-stone-800">
               <span className="text-3xl block mb-2">🔍</span>
-              <p className="text-sm font-semibold text-stone-800 dark:text-stone-200">No matching integrations found</p>
-              <p className="text-xs text-stone-500 mt-1">Adjust your filters or add a new connection.</p>
+              <p className="text-sm font-semibold text-stone-800 dark:text-stone-200">
+                No matching integrations found
+              </p>
+              <p className="text-xs text-stone-500 mt-1">
+                Adjust your filters or add a new connection.
+              </p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
               {filteredConnections.map((conn) => {
                 const group = getEffectiveGroup(conn)
                 const isHealthy = conn.healthState === 'healthy' || conn.status === 'active'
-                const isDegraded = conn.healthState === 'warning' || conn.status === 'degraded' || conn.status === 'expired'
+                const isDegraded =
+                  conn.healthState === 'warning' ||
+                  conn.status === 'degraded' ||
+                  conn.status === 'expired'
                 const isUnknown = conn.isUnknown || conn.status === 'unconfigured'
 
                 return (
@@ -718,7 +777,13 @@ export function ConnectionsCenter({
                       <div className="pt-2 border-t border-stone-100 dark:border-stone-800/60 text-[11px] space-y-1 font-mono">
                         <div className="flex items-center justify-between text-stone-500">
                           <span>What actually succeeded:</span>
-                          <span className={conn.lastSuccessAt ? 'text-emerald-600 dark:text-emerald-400 font-semibold' : 'text-stone-400'}>
+                          <span
+                            className={
+                              conn.lastSuccessAt
+                                ? 'text-emerald-600 dark:text-emerald-400 font-semibold'
+                                : 'text-stone-400'
+                            }
+                          >
                             {conn.lastSuccessAt
                               ? new Date(conn.lastSuccessAt).toLocaleString(undefined, {
                                   month: 'short',
@@ -746,7 +811,8 @@ export function ConnectionsCenter({
                           <span>🛠️ Next Safe Repair:</span>
                         </div>
                         <p className="text-stone-600 dark:text-stone-400 leading-snug">
-                          {conn.nextSafeRepairAction || 'No repair action needed; connection is stable.'}
+                          {conn.nextSafeRepairAction ||
+                            'No repair action needed; connection is stable.'}
                         </p>
                       </div>
                     </div>
@@ -804,7 +870,8 @@ export function ConnectionsCenter({
                   <span>📨</span> Webhook Delivery History & Diagnosis
                 </h2>
                 <p className="text-xs text-stone-500 mt-0.5">
-                  Inspection of outbound event envelopes, HTTP response status, redaction, and bounded retry timers.
+                  Inspection of outbound event envelopes, HTTP response status, redaction, and
+                  bounded retry timers.
                 </p>
               </div>
 
@@ -836,7 +903,10 @@ export function ConnectionsCenter({
                       const isRetrying = delivery.state === 'retrying'
 
                       return (
-                        <tr key={delivery.id} className="hover:bg-stone-50/50 dark:hover:bg-stone-800/40">
+                        <tr
+                          key={delivery.id}
+                          className="hover:bg-stone-50/50 dark:hover:bg-stone-800/40"
+                        >
                           <td className="py-3 pr-4">
                             <span className="font-bold text-stone-900 dark:text-stone-100 block">
                               {delivery.eventType}
@@ -868,11 +938,15 @@ export function ConnectionsCenter({
 
                           <td className="py-3 px-4 text-stone-500">
                             {delivery.nextAttemptAt ? (
-                              <span>Retry: {new Date(delivery.nextAttemptAt).toLocaleTimeString()}</span>
+                              <span>
+                                Retry: {new Date(delivery.nextAttemptAt).toLocaleTimeString()}
+                              </span>
                             ) : isDelivered ? (
                               <span className="text-emerald-600">Completed</span>
                             ) : isDeadLetter ? (
-                              <span className="text-rose-600 font-semibold">Exceeded max attempts</span>
+                              <span className="text-rose-600 font-semibold">
+                                Exceeded max attempts
+                              </span>
                             ) : (
                               'Pending'
                             )}
@@ -917,7 +991,9 @@ export function ConnectionsCenter({
             <div className="space-y-1 text-xs text-amber-900 dark:text-amber-200">
               <p className="font-bold">Zero-Secret Vault Guarantee</p>
               <p className="text-amber-800/80 dark:text-amber-300/80 leading-relaxed">
-                Machine API client tokens are hashed one-way using SHA-256 before persistence. Secret values are never returned by the database or transmitted in UI state. Webhook secrets must point to valid environment or vault references.
+                Machine API client tokens are hashed one-way using SHA-256 before persistence.
+                Secret values are never returned by the database or transmitted in UI state. Webhook
+                secrets must point to valid environment or vault references.
               </p>
             </div>
           </div>
@@ -952,7 +1028,9 @@ export function ConnectionsCenter({
                   </div>
 
                   <div className="space-y-1">
-                    <span className="text-[11px] font-semibold text-stone-500">Granted Scopes:</span>
+                    <span className="text-[11px] font-semibold text-stone-500">
+                      Granted Scopes:
+                    </span>
                     <div className="flex flex-wrap gap-1">
                       {client.scopes.map((scope) => (
                         <span
@@ -966,7 +1044,12 @@ export function ConnectionsCenter({
                   </div>
 
                   <div className="pt-2 border-t border-stone-100 dark:border-stone-800 text-[11px] text-stone-400 font-mono flex items-center justify-between">
-                    <span>Last used: {client.lastSuccessAt ? new Date(client.lastSuccessAt).toLocaleDateString() : 'Never'}</span>
+                    <span>
+                      Last used:{' '}
+                      {client.lastSuccessAt
+                        ? new Date(client.lastSuccessAt).toLocaleDateString()
+                        : 'Never'}
+                    </span>
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => {
@@ -1110,7 +1193,9 @@ export function ConnectionsCenter({
 
               {/* Diagnosis Explanation */}
               <div className="space-y-1">
-                <span className="font-bold text-stone-700 dark:text-stone-300">Failure Explanation:</span>
+                <span className="font-bold text-stone-700 dark:text-stone-300">
+                  Failure Explanation:
+                </span>
                 <p className="text-stone-600 dark:text-stone-400 leading-relaxed bg-stone-50 dark:bg-stone-950 p-2.5 rounded-lg border border-stone-200 dark:border-stone-800">
                   {selectedDelivery.diagnosis?.explanation || 'No error details recorded.'}
                 </p>
@@ -1122,7 +1207,8 @@ export function ConnectionsCenter({
                   🛠️ Next Safe Repair Action:
                 </span>
                 <p className="text-amber-800/90 dark:text-amber-300/90">
-                  {selectedDelivery.diagnosis?.nextSafeRepairAction || 'Verify endpoint availability.'}
+                  {selectedDelivery.diagnosis?.nextSafeRepairAction ||
+                    'Verify endpoint availability.'}
                 </p>
               </div>
 
@@ -1168,7 +1254,8 @@ export function ConnectionsCenter({
               Issue Machine API Client
             </h3>
             <p className="text-xs text-stone-500">
-              Machine credentials use bearer tokens scoped to specific system permissions. Tokens are hashed one-way.
+              Machine credentials use bearer tokens scoped to specific system permissions. Tokens
+              are hashed one-way.
             </p>
 
             {generatedToken ? (
@@ -1177,7 +1264,8 @@ export function ConnectionsCenter({
                   ⚠️ Save Your Machine Token Now
                 </span>
                 <p className="text-[11px] text-emerald-700 dark:text-emerald-400">
-                  This token will never be displayed again. Store it securely in your external client secret vault.
+                  This token will never be displayed again. Store it securely in your external
+                  client secret vault.
                 </p>
                 <div className="p-2.5 bg-white dark:bg-stone-900 rounded border border-emerald-200 dark:border-emerald-800 font-mono text-xs break-all select-all text-stone-900 dark:text-stone-100">
                   {generatedToken.token}
@@ -1213,7 +1301,10 @@ export function ConnectionsCenter({
                   </label>
                   <div className="grid grid-cols-2 gap-1.5 max-h-40 overflow-y-auto p-2 rounded-lg border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-950">
                     {INTEGRATION_SCOPES.map((scope) => (
-                      <label key={scope} className="flex items-center gap-1.5 text-[11px] font-mono">
+                      <label
+                        key={scope}
+                        className="flex items-center gap-1.5 text-[11px] font-mono"
+                      >
                         <input
                           type="checkbox"
                           checked={newClientScopes.includes(scope)}
@@ -1264,7 +1355,8 @@ export function ConnectionsCenter({
               Register Webhook Subscription
             </h3>
             <p className="text-xs text-stone-500">
-              Outbound webhooks deliver signed event payloads. Renegade verifies the endpoint with a challenge ping before activation.
+              Outbound webhooks deliver signed event payloads. Renegade verifies the endpoint with a
+              challenge ping before activation.
             </p>
 
             <div className="space-y-4 text-xs">
@@ -1302,7 +1394,13 @@ export function ConnectionsCenter({
                   Subscribed Events
                 </label>
                 <div className="flex flex-wrap gap-2">
-                  {['content.created', 'content.updated', 'order.paid', 'member.created', 'subscription.renewed'].map((ev) => (
+                  {[
+                    'content.created',
+                    'content.updated',
+                    'order.paid',
+                    'member.created',
+                    'subscription.renewed',
+                  ].map((ev) => (
                     <label key={ev} className="flex items-center gap-1 font-mono text-[11px]">
                       <input
                         type="checkbox"
@@ -1375,7 +1473,10 @@ export function ConnectionsCenter({
               </button>
               <button
                 onClick={handleRotateSecret}
-                disabled={busyAction || (rotateSecretModal.collection !== 'api-clients' && !rotateNewSecretRef.trim())}
+                disabled={
+                  busyAction ||
+                  (rotateSecretModal.collection !== 'api-clients' && !rotateNewSecretRef.trim())
+                }
                 className="btn btn-primary text-xs px-3 py-1.5 rounded-lg bg-stone-900 text-white dark:bg-stone-100 dark:text-stone-900 hover:opacity-90 disabled:opacity-50"
               >
                 {busyAction ? 'Rotating…' : 'Rotate Secret'}
@@ -1397,10 +1498,14 @@ export function ConnectionsCenter({
               Are you sure you want to disconnect <strong>{disconnectModal.label}</strong>?
             </p>
             <div className="p-3 rounded-xl bg-stone-50 dark:bg-stone-800/60 text-[11px] text-stone-600 dark:text-stone-300 space-y-1">
-              <p className="font-semibold text-stone-900 dark:text-stone-100">Guaranteed Safe Behavior:</p>
+              <p className="font-semibold text-stone-900 dark:text-stone-100">
+                Guaranteed Safe Behavior:
+              </p>
               <ul className="list-disc pl-4 space-y-0.5">
                 <li>Active secrets and tokens are wiped immediately.</li>
-                <li>Canonical data (orders, jobs, audit trail) is <strong>strictly preserved</strong>.</li>
+                <li>
+                  Canonical data (orders, jobs, audit trail) is <strong>strictly preserved</strong>.
+                </li>
                 <li>No external charges, refunds, or destructive remote posts occur.</li>
               </ul>
             </div>

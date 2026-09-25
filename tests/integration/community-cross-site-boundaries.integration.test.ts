@@ -28,7 +28,10 @@ import {
   queryDb,
 } from '../../src/modules/community/service'
 import type { CommunityActor, CommunityPolicyContext } from '../../src/modules/community/contracts'
-import { loadProfileProjection, ProfileAccessError } from '../../src/modules/community/profile-projection'
+import {
+  loadProfileProjection,
+  ProfileAccessError,
+} from '../../src/modules/community/profile-projection'
 import { ingestModerationReport } from '../../src/modules/community/moderation-reports'
 import {
   applyModerationAction,
@@ -180,7 +183,10 @@ describe('Community Domain Cross-Site, Multi-Member & Boundary Verification', ()
     )
 
     // 5. Register Member 3: Charlie (Staff / Moderator on Site A)
-    const charlieMagic = await issueMagicLink(payload as never, `charlie-mod-${suffix}@renegade.test`)
+    const charlieMagic = await issueMagicLink(
+      payload as never,
+      `charlie-mod-${suffix}@renegade.test`,
+    )
     const charlieConsumed = await consumeMagicLink(payload as never, charlieMagic.token!)
     charlieMemberId = charlieConsumed!.memberId
     charlieSessionToken = charlieConsumed!.sessionToken
@@ -221,11 +227,7 @@ describe('Community Domain Cross-Site, Multi-Member & Boundary Verification', ()
   afterAll(async () => {
     // Cleanup test data to prevent database pollution
     try {
-      await queryDb(
-        payload,
-        `DELETE FROM "community_audit_log" WHERE site_id = $1`,
-        [siteAId],
-      )
+      await queryDb(payload, `DELETE FROM "community_audit_log" WHERE site_id = $1`, [siteAId])
     } catch {
       // Ignored
     }
@@ -263,14 +265,14 @@ describe('Community Domain Cross-Site, Multi-Member & Boundary Verification', ()
     ).rejects.toThrow()
 
     // ATTACK 2: Bob tries to access Alice's private notification inbox
-    await expect(
-      getMemberNotifications(payload, aliceMemberId, bobContext),
-    ).rejects.toThrow('Cannot read another member notifications')
+    await expect(getMemberNotifications(payload, aliceMemberId, bobContext)).rejects.toThrow(
+      'Cannot read another member notifications',
+    )
 
     // ATTACK 3: Bob tries to access Alice's activity history
-    await expect(
-      getMemberActivityHistory(payload, aliceMemberId, bobContext),
-    ).rejects.toThrow('Cannot view another member history')
+    await expect(getMemberActivityHistory(payload, aliceMemberId, bobContext)).rejects.toThrow(
+      'Cannot view another member history',
+    )
 
     // ATTACK 4: Private Attachment Theft
     // Bob attempts to link Alice's private message attachment into his message
@@ -310,10 +312,11 @@ describe('Community Domain Cross-Site, Multi-Member & Boundary Verification', ()
 
   it('2. Blocked Relationships: Enforces strict isolation on messaging, projection, and notifications', async () => {
     // Alice blocks Bob on Site A
-    await blockMember(
-      payload,
-      { siteId: siteAId, subjectMemberId: aliceMemberId, targetMemberId: bobMemberId },
-    )
+    await blockMember(payload, {
+      siteId: siteAId,
+      subjectMemberId: aliceMemberId,
+      targetMemberId: bobMemberId,
+    })
 
     // A. Profile Projection: Bob viewing Alice's profile throws 404 ProfileAccessError
     await expect(

@@ -1,9 +1,7 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
-import {
-  TELEMETRY_METRIC_DEFINITIONS,
-} from '@/modules/analytics/definitions'
+import { TELEMETRY_METRIC_DEFINITIONS } from '@/modules/analytics/definitions'
 import { TELEMETRY_EVENT_INVENTORY } from '@/modules/analytics/inventory'
 import {
   maskSuppressedIdentity,
@@ -58,75 +56,75 @@ export async function GET(request: Request) {
   const endIso = endWindow.toISOString()
 
   // 3. Query canonical records in parallel
-  const [
-    eventsRes,
-    consentRes,
-    ordersRes,
-    snapshotsRes,
-    suppressionsRes,
-    activeExperiment,
-  ] = await Promise.all([
-    payload.find({
-      collection: 'analytics-events',
-      where: {
-        and: [
-          ...(activeSiteId ? [{ site: { equals: activeSiteId } }] : []),
-          { occurredAt: { greater_than_equal: startIso } },
-          { occurredAt: { less_than_equal: endIso } },
-        ],
-      },
-      limit: 1000,
-      sort: '-occurredAt',
-      depth: 0,
-      overrideAccess: true,
-    } as never),
-    payload.find({
-      collection: 'analytics-consent-records',
-      where: {
-        and: [
-          ...(activeSiteId ? [{ site: { equals: activeSiteId } }] : []),
-          { occurredAt: { greater_than_equal: startIso } },
-          { occurredAt: { less_than_equal: endIso } },
-        ],
-      },
-      limit: 500,
-      sort: '-occurredAt',
-      depth: 0,
-      overrideAccess: true,
-    } as never),
-    payload.find({
-      collection: 'orders',
-      where: {
-        and: [
-          ...(activeSiteId ? [{ site: { equals: activeSiteId } }] : []),
-          { createdAt: { greater_than_equal: startIso } },
-          { createdAt: { less_than_equal: endIso } },
-        ],
-      },
-      limit: 500,
-      depth: 1,
-      overrideAccess: true,
-    } as never).catch(() => ({ docs: [], totalDocs: 0 })),
-    payload.find({
-      collection: 'metric-snapshots',
-      where: {
-        and: [
-          ...(activeSiteId ? [{ site: { equals: activeSiteId } }] : []),
-          { windowStart: { greater_than_equal: startIso } },
-        ],
-      },
-      limit: 500,
-      depth: 0,
-      overrideAccess: true,
-    } as never).catch(() => ({ docs: [], totalDocs: 0 })),
-    payload.find({
-      collection: 'suppressions',
-      limit: 1000,
-      depth: 0,
-      overrideAccess: true,
-    } as never).catch(() => ({ docs: [], totalDocs: 0 })),
-    getActivePublicExperiment(payload, activeSiteId),
-  ])
+  const [eventsRes, consentRes, ordersRes, snapshotsRes, suppressionsRes, activeExperiment] =
+    await Promise.all([
+      payload.find({
+        collection: 'analytics-events',
+        where: {
+          and: [
+            ...(activeSiteId ? [{ site: { equals: activeSiteId } }] : []),
+            { occurredAt: { greater_than_equal: startIso } },
+            { occurredAt: { less_than_equal: endIso } },
+          ],
+        },
+        limit: 1000,
+        sort: '-occurredAt',
+        depth: 0,
+        overrideAccess: true,
+      } as never),
+      payload.find({
+        collection: 'analytics-consent-records',
+        where: {
+          and: [
+            ...(activeSiteId ? [{ site: { equals: activeSiteId } }] : []),
+            { occurredAt: { greater_than_equal: startIso } },
+            { occurredAt: { less_than_equal: endIso } },
+          ],
+        },
+        limit: 500,
+        sort: '-occurredAt',
+        depth: 0,
+        overrideAccess: true,
+      } as never),
+      payload
+        .find({
+          collection: 'orders',
+          where: {
+            and: [
+              ...(activeSiteId ? [{ site: { equals: activeSiteId } }] : []),
+              { createdAt: { greater_than_equal: startIso } },
+              { createdAt: { less_than_equal: endIso } },
+            ],
+          },
+          limit: 500,
+          depth: 1,
+          overrideAccess: true,
+        } as never)
+        .catch(() => ({ docs: [], totalDocs: 0 })),
+      payload
+        .find({
+          collection: 'metric-snapshots',
+          where: {
+            and: [
+              ...(activeSiteId ? [{ site: { equals: activeSiteId } }] : []),
+              { windowStart: { greater_than_equal: startIso } },
+            ],
+          },
+          limit: 500,
+          depth: 0,
+          overrideAccess: true,
+        } as never)
+        .catch(() => ({ docs: [], totalDocs: 0 })),
+      payload
+        .find({
+          collection: 'suppressions',
+          limit: 1000,
+          depth: 0,
+          overrideAccess: true,
+        } as never)
+        .catch(() => ({ docs: [], totalDocs: 0 })),
+      getActivePublicExperiment(payload, activeSiteId),
+    ])
 
   // Build suppression set for privacy masking
   const suppressionSet = new Set<string>()
@@ -165,11 +163,7 @@ export async function GET(request: Request) {
     : null
 
   const pipelineStatus: 'healthy' | 'lagging' | 'inactive' =
-    freshnessMinutes === null
-      ? 'inactive'
-      : freshnessMinutes <= 15
-        ? 'healthy'
-        : 'lagging'
+    freshnessMinutes === null ? 'inactive' : freshnessMinutes <= 15 ? 'healthy' : 'lagging'
 
   // 5. Consent & Privacy Breakdown
   const consentDocs = consentRes.docs as unknown as Array<Record<string, unknown>>
@@ -177,7 +171,7 @@ export async function GET(request: Request) {
   let personalizationGrantedCount = 0
   let marketingGrantedCount = 0
   let withdrawalCount = 0
-  let totalConsentRecords = consentDocs.length
+  const totalConsentRecords = consentDocs.length
 
   for (const c of consentDocs) {
     if (c.action === 'withdraw') {
@@ -189,9 +183,8 @@ export async function GET(request: Request) {
     if (categories?.marketing) marketingGrantedCount++
   }
 
-  const consentRate = totalConsentRecords > 0
-    ? Math.round((analyticsGrantedCount / totalConsentRecords) * 100)
-    : 100
+  const consentRate =
+    totalConsentRecords > 0 ? Math.round((analyticsGrantedCount / totalConsentRecords) * 100) : 100
 
   // 6. Aggregate Metrics
   const pageViews = domainEvents.filter((e) => e.eventType === 'page_view').length
@@ -317,15 +310,28 @@ export async function GET(request: Request) {
   }
 
   const campaignFunnels = Array.from(campaignMap.entries()).map(([campName, campEvents]) => {
-    const impressions = campEvents.filter((e) => e.eventType === 'page_view' || e.eventType === 'event_view').length || 142
+    const impressions =
+      campEvents.filter((e) => e.eventType === 'page_view' || e.eventType === 'event_view')
+        .length || 142
     const landings = campEvents.filter((e) => e.eventType === 'page_view').length || 118
-    const engagements = campEvents.filter((e) => e.eventType === 'read_depth' || e.eventType === 'click_internal').length || 64
-    const conversions = campEvents.filter((e) => e.eventType === 'signup' || e.eventType === 'form_submit' || e.eventType === 'payment_completed' || e.eventType === 'experiment_conversion').length || 28
+    const engagements =
+      campEvents.filter((e) => e.eventType === 'read_depth' || e.eventType === 'click_internal')
+        .length || 64
+    const conversions =
+      campEvents.filter(
+        (e) =>
+          e.eventType === 'signup' ||
+          e.eventType === 'form_submit' ||
+          e.eventType === 'payment_completed' ||
+          e.eventType === 'experiment_conversion',
+      ).length || 28
 
     const conversionRate = landings > 0 ? ((conversions / landings) * 100).toFixed(1) : '0.0'
 
     // Compute attribution models
-    const sampleConversion = campEvents.find((e) => e.eventType === 'signup' || e.eventType === 'experiment_conversion')
+    const sampleConversion = campEvents.find(
+      (e) => e.eventType === 'signup' || e.eventType === 'experiment_conversion',
+    )
     let attributionSample = null
     if (sampleConversion) {
       try {
@@ -354,10 +360,12 @@ export async function GET(request: Request) {
 
   // 10. Live Public Experiment Statistical Analysis
   const expExposures = domainEvents.filter(
-    (e) => e.eventType === 'experiment_exposure' && e.properties?.experimentId === activeExperiment.id,
+    (e) =>
+      e.eventType === 'experiment_exposure' && e.properties?.experimentId === activeExperiment.id,
   )
   const expConversions = domainEvents.filter(
-    (e) => e.eventType === 'experiment_conversion' && e.properties?.experimentId === activeExperiment.id,
+    (e) =>
+      e.eventType === 'experiment_conversion' && e.properties?.experimentId === activeExperiment.id,
   )
 
   const variantStats = activeExperiment.variants.map((v) => {
@@ -386,7 +394,7 @@ export async function GET(request: Request) {
       eventType: e.eventType,
       occurredAt: e.occurredAt,
       consentBasis: e.consentBasis,
-      channel: e.context.channel ?? (e.context.utm?.utm_medium ?? 'direct'),
+      channel: e.context.channel ?? e.context.utm?.utm_medium ?? 'direct',
       campaign: e.context.campaignId ?? e.context.utm?.utm_campaign,
       path: e.context.path,
       // Suppression protection: masked if on suppressions ledger
@@ -395,7 +403,7 @@ export async function GET(request: Request) {
         : maskSuppressedIdentity(e.identity.anonymousId, suppressionSet).slice(0, 16) + '…',
       reconciledRecord: e.properties?.experimentId
         ? `Experiment: ${e.properties.experimentId}`
-        : e.context.sourceEventId ?? 'First-Party Event',
+        : (e.context.sourceEventId ?? 'First-Party Event'),
       trusted: e.trusted,
     }
   })

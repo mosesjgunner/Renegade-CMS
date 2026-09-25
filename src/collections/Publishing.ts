@@ -1,4 +1,9 @@
-import type { CollectionBeforeDeleteHook, CollectionConfig, Field } from 'payload'
+import type {
+  CollectionBeforeChangeHook,
+  CollectionBeforeDeleteHook,
+  CollectionConfig,
+  Field,
+} from 'payload'
 import { assertEvent } from '../modules/events/contracts'
 import {
   assertEditorialPathAvailable,
@@ -12,6 +17,14 @@ import {
   safelyRecordIndexingChange,
 } from '../modules/public/indexing'
 import { resolveSiteSettings } from '../modules/core/site-settings'
+import { canDiscoverPublic } from '../modules/public/contracts'
+import {
+  assignRecordSemanticPath,
+  assertRecordSemanticPath,
+  recordPublishedPathHistory,
+  routeTemplatesForPayloadSite,
+} from '../modules/public/semantic-url-service'
+import { resolvePublicUrl } from '../modules/public/semantic-url'
 import { projectSearchDocument, removeSearchDocument } from '../modules/public/search-projection'
 
 import {
@@ -610,19 +623,64 @@ export const Categories: CollectionConfig = {
   indexes: [{ fields: ['site', 'publication', 'parent', 'slug'], unique: true }],
 }
 
-const simpleTaxonomy = (slug: string, label: string): CollectionConfig => ({
+const simpleTaxonomy = (slug: string, label: string, semanticUrl = false): CollectionConfig => ({
   slug,
   admin: { useAsTitle: 'name', group: 'Taxonomy' },
   access: { create: staffOnly, delete: staffOnly, read: () => true, update: staffOnly },
   hooks: {
-    beforeChange: [enforceTaxonomyTenantBoundary],
+    beforeChange: [
+      enforceTaxonomyTenantBoundary,
+      ...(semanticUrl
+        ? [
+            (async ({ data, originalDoc, req, context }) => {
+              data = (await assignRecordSemanticPath({
+                payload: req.payload,
+                collection: slug,
+                data: data as Record<string, unknown> | null | undefined,
+                originalDoc: originalDoc as Record<string, unknown> | null | undefined,
+                allowCanonicalPathChange: context?.semanticRouteChange === true,
+              })) as typeof data
+              await assertRecordSemanticPath({
+                payload: req.payload,
+                collection: slug,
+                data: data as Record<string, unknown> | null | undefined,
+                originalDoc: originalDoc as Record<string, unknown> | null | undefined,
+              })
+              return data
+            }) as CollectionBeforeChangeHook,
+          ]
+        : []),
+    ],
     beforeDelete: [refuseReferencedTaxonomyDeletion(slug)],
+    ...(semanticUrl
+      ? {
+          afterChange: [
+            async ({ doc, previousDoc, operation, req }) => {
+              await recordPublishedPathHistory({
+                collection: slug,
+                doc: doc as unknown as Record<string, unknown>,
+                previousDoc: previousDoc as unknown as Record<string, unknown>,
+                operation: operation as 'create' | 'update',
+                payload: req.payload,
+              })
+              await revalidateDiscoveryOutputs([
+                String(previousDoc?.canonicalPath ?? ''),
+                String(doc.canonicalPath ?? ''),
+              ])
+              return doc
+            },
+          ],
+        }
+      : {}),
   },
   fields: [
     ...taxonomyScope,
     { name: 'name', type: 'text', required: true },
     { name: 'slug', type: 'text', required: true, validate: canonicalSlug },
     { name: 'description', type: 'textarea' },
+    ...(semanticUrl
+      ? [{ name: 'canonicalPath', type: 'text' as const, admin: { readOnly: true } }]
+      : []),
     {
       name: 'sortOrder',
       type: 'number',
@@ -630,10 +688,13 @@ const simpleTaxonomy = (slug: string, label: string): CollectionConfig => ({
       admin: { description: `${label} ordering.` },
     },
   ],
-  indexes: [{ fields: ['site', 'publication', 'slug'], unique: true }],
+  indexes: [
+    { fields: ['site', 'publication', 'slug'], unique: true },
+    ...(semanticUrl ? [{ fields: ['site', 'canonicalPath'], unique: true }] : []),
+  ],
 })
 
-export const Topics = simpleTaxonomy('topics', 'Topic')
+export const Topics = simpleTaxonomy('topics', 'Topic', true)
 export const Tags = simpleTaxonomy('tags', 'Tag')
 export const Series = simpleTaxonomy('series', 'Series')
 
@@ -660,13 +721,34 @@ export const PublicRedirects: CollectionConfig = {
       ({ data }) => {
         const from = String(data?.fromPath ?? '')
         const to = String(data?.toPath ?? '')
-        if (
-          !from.startsWith('/') ||
-          from.startsWith('//') ||
-          !to.startsWith('/') ||
-          to.startsWith('//')
-        )
-          throw new Error('Redirect paths must remain on this site.')
+        const safePath = (path: string, pattern = false) => {
+          if (
+            !path.startsWith('/') ||
+            path.startsWith('//') ||
+            path.includes('\\') ||
+            path.includes('#') ||
+            (!pattern && path.includes('?')) ||
+            /[\u0000-\u001f\u007f]/.test(path)
+          )
+            return false
+          try {
+            return path.split('/').every((part) => {
+              const decoded = decodeURIComponent(part)
+              return (
+                decoded !== '.' &&
+                decoded !== '..' &&
+                !decoded.includes('/') &&
+                !decoded.includes('\\')
+              )
+            })
+          } catch {
+            return false
+          }
+        }
+        if (!safePath(from, data?.match === 'regex') || !safePath(to))
+          throw new Error(
+            'Redirect paths must be safe same-site paths without traversal, query, or fragment parts.',
+          )
         if (from === to) throw new Error('A redirect cannot target itself.')
         if (data?.match === 'regex')
           try {
@@ -729,6 +811,7 @@ export const Content: CollectionConfig = {
         const resolved = await deriveEditorialPath({
           data: (data ?? {}) as Record<string, unknown>,
           originalDoc: originalDoc as Record<string, unknown> | null,
+          semanticRouteChange: req.context?.semanticRouteChange === true,
           payload: req.payload as never,
         })
         await assertEditorialPathAvailable({
@@ -768,7 +851,14 @@ export const Content: CollectionConfig = {
         const toPath = typeof doc?.canonicalPath === 'string' ? doc.canonicalPath : ''
         const site = typeof doc?.site === 'string' ? doc.site : doc?.site?.id
         // Canonical path (normally derived from a slug) is the durable public URL contract.
-        if (!site || !fromPath || !toPath || fromPath === toPath) return doc
+        if (
+          !site ||
+          !fromPath ||
+          !toPath ||
+          fromPath === toPath ||
+          !canDiscoverPublic(previousDoc as unknown as Record<string, unknown>)
+        )
+          return doc
         const existing = await req.payload.find({
           collection: 'public-redirects',
           where: { and: [{ site: { equals: site } }, { fromPath: { equals: fromPath } }] },
@@ -790,6 +880,40 @@ export const Content: CollectionConfig = {
             },
             overrideAccess: true,
           } as never)
+        else {
+          const currentTarget = String(
+            (existing.docs[0] as unknown as Record<string, unknown>).toPath ?? '',
+          )
+          if (currentTarget !== toPath)
+            throw new Error(
+              `Cannot change ${fromPath}: an unrelated redirect already owns that path.`,
+            )
+        }
+        // Keep older exact paths direct to the current destination where possible.
+        const redirectChain = await req.payload.find({
+          collection: 'public-redirects',
+          where: {
+            and: [
+              { site: { equals: site } },
+              { toPath: { equals: fromPath } },
+              { match: { equals: 'exact' } },
+              { enabled: { equals: true } },
+            ],
+          },
+          limit: 500,
+          depth: 0,
+          overrideAccess: true,
+        } as never)
+        await Promise.all(
+          (redirectChain.docs as unknown as Array<Record<string, unknown>>).map((rule) =>
+            req.payload.update({
+              collection: 'public-redirects',
+              id: String(rule.id),
+              data: { toPath },
+              overrideAccess: true,
+            } as never),
+          ),
+        )
         return doc
       },
     ],
@@ -826,6 +950,11 @@ export const Content: CollectionConfig = {
       },
     },
     { name: 'canonicalPath', type: 'text', required: true, admin: { readOnly: true } },
+    {
+      name: 'semanticUrlPreview',
+      type: 'ui',
+      admin: { components: { Field: '@/modules/admin/SemanticURLPreview#SemanticURLPreview' } },
+    },
     {
       name: 'parentPage',
       type: 'relationship',
@@ -951,7 +1080,10 @@ export const Content: CollectionConfig = {
     },
     ...retentionFields(),
   ]),
-  indexes: [{ fields: ['publication', 'slug'], unique: true }],
+  indexes: [
+    { fields: ['publication', 'slug'], unique: true },
+    { fields: ['site', 'canonicalPath'] },
+  ],
 }
 
 export const ArticleFamilyContent: CollectionConfig = {
@@ -1218,9 +1350,34 @@ export const Events: CollectionConfig = {
   access: { create: staffOnly, delete: staffOnly, read: () => true, update: staffOnly },
   hooks: {
     beforeValidate: [
-      ({ data }) => {
+      async ({ data, originalDoc, req, context }) => {
         if (data) assertEvent(data as Parameters<typeof assertEvent>[0])
+        data = (await assignRecordSemanticPath({
+          payload: req.payload,
+          collection: 'events',
+          data: data as Record<string, unknown> | null | undefined,
+          originalDoc: originalDoc as Record<string, unknown> | null | undefined,
+          allowCanonicalPathChange: context?.semanticRouteChange === true,
+        })) as typeof data
+        await assertRecordSemanticPath({
+          payload: req.payload,
+          collection: 'events',
+          data: data as Record<string, unknown> | null | undefined,
+          originalDoc: originalDoc as Record<string, unknown> | null | undefined,
+        })
         return data
+      },
+    ],
+    afterChange: [
+      async ({ doc, previousDoc, operation, req }) => {
+        await recordPublishedPathHistory({
+          collection: 'events',
+          doc: doc as unknown as Record<string, unknown>,
+          previousDoc: previousDoc as unknown as Record<string, unknown>,
+          operation: operation as 'create' | 'update',
+          payload: req.payload,
+        })
+        return doc
       },
     ],
   },
@@ -1236,7 +1393,13 @@ export const Events: CollectionConfig = {
     },
     { name: 'title', type: 'text', required: true },
     { name: 'slug', type: 'text', required: true, validate: canonicalSlug },
-    { name: 'canonicalPath', type: 'text', required: true, unique: true },
+    {
+      name: 'canonicalPath',
+      type: 'text',
+      required: true,
+      unique: true,
+      admin: { readOnly: true },
+    },
     { name: 'summary', type: 'textarea' },
     {
       name: 'status',
@@ -1321,18 +1484,53 @@ export const Events: CollectionConfig = {
     ...milestoneSixPresentationHookFields(),
     ...retentionFields(),
   ],
-  indexes: [{ fields: ['publication', 'slug'], unique: true }],
+  indexes: [
+    { fields: ['publication', 'slug'], unique: true },
+    { fields: ['site', 'canonicalPath'], unique: true },
+  ],
 }
 
 export const Timelines: CollectionConfig = {
   slug: 'timelines',
   admin: { useAsTitle: 'title', group: 'Calendar' },
   access: { create: staffOnly, delete: staffOnly, read: () => true, update: staffOnly },
+  hooks: {
+    beforeValidate: [
+      async ({ data, originalDoc, req, context }) => {
+        data = (await assignRecordSemanticPath({
+          payload: req.payload,
+          collection: 'timelines',
+          data: data as Record<string, unknown> | null | undefined,
+          originalDoc: originalDoc as Record<string, unknown> | null | undefined,
+          allowCanonicalPathChange: context?.semanticRouteChange === true,
+        })) as typeof data
+        await assertRecordSemanticPath({
+          payload: req.payload,
+          collection: 'timelines',
+          data: data as Record<string, unknown> | null | undefined,
+          originalDoc: originalDoc as Record<string, unknown> | null | undefined,
+        })
+        return data
+      },
+    ],
+    afterChange: [
+      async ({ doc, previousDoc, operation, req }) => {
+        await recordPublishedPathHistory({
+          collection: 'timelines',
+          doc: doc as unknown as Record<string, unknown>,
+          previousDoc: previousDoc as unknown as Record<string, unknown>,
+          operation: operation as 'create' | 'update',
+          payload: req.payload,
+        })
+        return doc
+      },
+    ],
+  },
   fields: [
     ...ownerFields(),
     { name: 'title', type: 'text', required: true },
     { name: 'slug', type: 'text', required: true, validate: canonicalSlug },
-    { name: 'canonicalPath', type: 'text', required: true, unique: true },
+    { name: 'canonicalPath', type: 'text', admin: { readOnly: true } },
     { name: 'summary', type: 'textarea' },
     {
       name: 'status',
@@ -1372,7 +1570,10 @@ export const Timelines: CollectionConfig = {
     ...milestoneSixPresentationHookFields(),
     ...retentionFields(),
   ],
-  indexes: [{ fields: ['publication', 'slug'], unique: true }],
+  indexes: [
+    { fields: ['publication', 'slug'], unique: true },
+    { fields: ['site', 'canonicalPath'], unique: true },
+  ],
 }
 
 export const TimelineMemberships: CollectionConfig = {
@@ -1388,6 +1589,55 @@ export const TimelineMemberships: CollectionConfig = {
           data.membershipKey = `${timeline}:${event}`
         }
         return data
+      },
+    ],
+    afterChange: [
+      async ({ doc, req }) => {
+        const relationId = (value: unknown) =>
+          typeof value === 'string'
+            ? value
+            : value && typeof value === 'object' && 'id' in value
+              ? String((value as { id: unknown }).id)
+              : ''
+        const timelineId = relationId(doc.timeline)
+        if (!timelineId) return doc
+        const timeline = (await req.payload.findByID({
+          collection: 'timelines',
+          id: timelineId,
+          depth: 0,
+          overrideAccess: true,
+        } as never)) as unknown as Record<string, unknown>
+        const templates = await routeTemplatesForPayloadSite(req.payload, relationId(timeline.site))
+        const template = templates.timeline ?? '/events/{eventSlug}/{slug}'
+        if (!template.includes('{eventSlug}')) return doc
+        const memberships = await req.payload.find({
+          collection: 'timeline-memberships',
+          where: { timeline: { equals: timelineId } },
+          limit: 3,
+          depth: 1,
+          overrideAccess: true,
+        } as never)
+        const eventSlugs = (memberships.docs as unknown as Array<Record<string, unknown>>)
+          .map((membership) => {
+            const event = membership.event as Record<string, unknown> | string | undefined
+            return typeof event === 'object' && event && canDiscoverPublic(event)
+              ? String(event.slug ?? '')
+              : ''
+          })
+          .filter(Boolean)
+        if (eventSlugs.length !== 1) return doc
+        const canonicalPath = resolvePublicUrl(
+          { kind: 'timeline', eventSlug: eventSlugs[0]!, slug: String(timeline.slug) },
+          templates,
+        )
+        await req.payload.update({
+          collection: 'timelines',
+          id: timelineId,
+          data: { canonicalPath },
+          context: { semanticRouteChange: true },
+          overrideAccess: true,
+        } as never)
+        return doc
       },
     ],
   },
@@ -1459,12 +1709,44 @@ export const Albums: CollectionConfig = {
   slug: 'albums',
   admin: { useAsTitle: 'title', group: 'Media' },
   access: { create: staffOnly, delete: staffOnly, read: () => true, update: staffOnly },
+  hooks: {
+    beforeValidate: [
+      async ({ data, originalDoc, req, context }) => {
+        data = (await assignRecordSemanticPath({
+          payload: req.payload,
+          collection: 'albums',
+          data: data as Record<string, unknown> | null | undefined,
+          originalDoc: originalDoc as Record<string, unknown> | null | undefined,
+          allowCanonicalPathChange: context?.semanticRouteChange === true,
+        })) as typeof data
+        await assertRecordSemanticPath({
+          payload: req.payload,
+          collection: 'albums',
+          data: data as Record<string, unknown> | null | undefined,
+          originalDoc: originalDoc as Record<string, unknown> | null | undefined,
+        })
+        return data
+      },
+    ],
+    afterChange: [
+      async ({ doc, previousDoc, operation, req }) => {
+        await recordPublishedPathHistory({
+          collection: 'albums',
+          doc: doc as unknown as Record<string, unknown>,
+          previousDoc: previousDoc as unknown as Record<string, unknown>,
+          operation: operation as 'create' | 'update',
+          payload: req.payload,
+        })
+        return doc
+      },
+    ],
+  },
   fields: [
     ...ownerFields(),
     { name: 'kind', type: 'select', required: true, options: ['album', 'portfolio'] },
     { name: 'title', type: 'text', required: true },
     { name: 'slug', type: 'text', required: true, validate: canonicalSlug },
-    { name: 'canonicalPath', type: 'text', required: true, unique: true },
+    { name: 'canonicalPath', type: 'text', required: true },
     { name: 'description', type: 'textarea' },
     { name: 'cover', type: 'relationship', relationTo: 'media-assets' },
     {
@@ -1517,7 +1799,10 @@ export const Albums: CollectionConfig = {
     { name: 'exportRequestedAt', type: 'date' },
     ...retentionFields(),
   ],
-  indexes: [{ fields: ['publication', 'slug'], unique: true }],
+  indexes: [
+    { fields: ['publication', 'slug'], unique: true },
+    { fields: ['site', 'canonicalPath'], unique: true },
+  ],
 }
 
 export const MediaUsages: CollectionConfig = {

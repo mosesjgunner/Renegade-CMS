@@ -71,7 +71,11 @@ describe('Public Experiment & Consent-Safe Telemetry Integration — Prompt 5', 
 
     it('honors Global Privacy Control (GPC) and Do-Not-Track (DNT) headers even if cookie exists', () => {
       const cookie = consentSetCookie(
-        { subject: 'user-gpc-test', version: defaultPrivacyPolicy.consentVersion, choices: { necessary: true, analytics: true, personalization: true, marketing: true } },
+        {
+          subject: 'user-gpc-test',
+          version: defaultPrivacyPolicy.consentVersion,
+          choices: { necessary: true, analytics: true, personalization: true, marketing: true },
+        },
         secret,
         false,
       )
@@ -107,7 +111,11 @@ describe('Public Experiment & Consent-Safe Telemetry Integration — Prompt 5', 
       expect(granted.analytics).toBe(true)
 
       // 2. Withdrawal action
-      const withdrawn = normalizeConsentChoices({ analytics: false, personalization: false, marketing: false })
+      const withdrawn = normalizeConsentChoices({
+        analytics: false,
+        personalization: false,
+        marketing: false,
+      })
       expect(withdrawn.analytics).toBe(false)
       expect(withdrawn.necessary).toBe(true)
 
@@ -119,7 +127,11 @@ describe('Public Experiment & Consent-Safe Telemetry Integration — Prompt 5', 
     })
 
     it('filters out automated search engine bots and internal crawlers', () => {
-      expect(isBotOrInternal({ userAgent: 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)' })).toBe(true)
+      expect(
+        isBotOrInternal({
+          userAgent: 'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)',
+        }),
+      ).toBe(true)
       expect(isBotOrInternal({ userAgent: 'HeadlessChrome/108.0.5359.0' })).toBe(true)
       expect(isBotOrInternal({ userAgent: 'python-requests/2.28.1' })).toBe(false)
       expect(isBotOrInternal({ internal: true })).toBe(true)
@@ -223,7 +235,9 @@ describe('Public Experiment & Consent-Safe Telemetry Integration — Prompt 5', 
         occurredAt: '2026-09-01T10:05:05.000Z',
       })
       expect(convRepeat.deduplicated).toBe(true)
-      expect(analytics.events.filter((e) => e.eventType === 'experiment_conversion')).toHaveLength(1)
+      expect(analytics.events.filter((e) => e.eventType === 'experiment_conversion')).toHaveLength(
+        1,
+      )
 
       // 4. Statistical Analysis
       const analysis = runtime.analyze(definition, analytics.events)
@@ -236,7 +250,8 @@ describe('Public Experiment & Consent-Safe Telemetry Integration — Prompt 5', 
         experiment: definition,
         selectedVariantId: 'variant-treatment',
         actorId: 'operator-staff-1',
-        reason: 'Evaluated conversion rate and audience retention; treatment significantly outperforms control.',
+        reason:
+          'Evaluated conversion rate and audience retention; treatment significantly outperforms control.',
         humanApproved: true,
         decidedAt: '2026-09-01T12:00:00.000Z',
       })
@@ -260,7 +275,15 @@ describe('Public Experiment & Consent-Safe Telemetry Integration — Prompt 5', 
             approvedBy: decisions[0].actorId,
           },
         },
-        cookieHeader: consentSetCookie({ subject: 'any-new-visitor', version: defaultPrivacyPolicy.consentVersion, choices: { necessary: true, analytics: true, personalization: true, marketing: true } }, secret, false),
+        cookieHeader: consentSetCookie(
+          {
+            subject: 'any-new-visitor',
+            version: defaultPrivacyPolicy.consentVersion,
+            choices: { necessary: true, analytics: true, personalization: true, marketing: true },
+          },
+          secret,
+          false,
+        ),
         headers: new Headers(),
         secret,
         privacyPolicy: defaultPrivacyPolicy,
@@ -286,7 +309,11 @@ describe('Public Experiment & Consent-Safe Telemetry Integration — Prompt 5', 
             siteId: 'site-1',
             channel: 'newsletter',
             campaignId: 'autumn-sovereign-launch',
-            utm: { utm_source: 'newsletter-dispatch-42', utm_medium: 'email', utm_campaign: 'autumn-sovereign-launch' },
+            utm: {
+              utm_source: 'newsletter-dispatch-42',
+              utm_medium: 'email',
+              utm_campaign: 'autumn-sovereign-launch',
+            },
           },
           consentBasis: 'analytics-consent',
           schemaVersion: ANALYTICS_SCHEMA_VERSION,

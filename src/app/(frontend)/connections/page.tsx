@@ -93,7 +93,8 @@ export default async function ConnectionsPage() {
         overrideAccess: true,
       })
       for (const doc of merchants.docs as any[]) {
-        const status = doc.status === 'active' ? 'active' : doc.status === 'degraded' ? 'degraded' : 'disabled'
+        const status =
+          doc.status === 'active' ? 'active' : doc.status === 'degraded' ? 'degraded' : 'disabled'
         connections.push({
           id: String(doc.id),
           collection: 'merchant-connections',
@@ -138,7 +139,14 @@ export default async function ConnectionsPage() {
       })
       for (const doc of socials.docs as any[]) {
         const health = doc.credentialHealth
-        const status = health === 'healthy' ? 'active' : health === 'expired' ? 'expired' : health === 'revoked' ? 'revoked' : 'configured'
+        const status =
+          health === 'healthy'
+            ? 'active'
+            : health === 'expired'
+              ? 'expired'
+              : health === 'revoked'
+                ? 'revoked'
+                : 'configured'
         connections.push({
           id: String(doc.id),
           collection: 'social-accounts',
@@ -242,7 +250,8 @@ export default async function ConnectionsPage() {
           externalAccountId: String(doc.target),
           label: `Webhook: ${doc.target ? new URL(doc.target).pathname : 'Endpoint'}`,
           status,
-          healthState: status === 'active' ? 'healthy' : status === 'degraded' ? 'warning' : 'critical',
+          healthState:
+            status === 'active' ? 'healthy' : status === 'degraded' ? 'warning' : 'critical',
           encryptedSecretRef: doc.secretRef ?? null,
           scopes: Array.isArray(doc.events) ? doc.events.map(String) : [],
           expiresAt: null,
@@ -280,7 +289,8 @@ export default async function ConnectionsPage() {
         overrideAccess: true,
       })
       for (const doc of podConnections.docs as any[]) {
-        const status = doc.status === 'active' ? 'active' : doc.status === 'degraded' ? 'degraded' : 'disabled'
+        const status =
+          doc.status === 'active' ? 'active' : doc.status === 'degraded' ? 'degraded' : 'disabled'
         connections.push({
           id: String(doc.id),
           collection: 'pod-connections',
@@ -297,8 +307,13 @@ export default async function ConnectionsPage() {
           refreshMetadata: null,
           capabilities: [],
           lastHealthCheckAt: doc.lastHealthCheckedAt ? String(doc.lastHealthCheckedAt) : null,
-          lastSuccessAt: doc.lastHealthStatus === 'ok' && doc.lastHealthCheckedAt ? String(doc.lastHealthCheckedAt) : null,
-          lastError: doc.lastHealthReason ? { code: 'unavailable', message: doc.lastHealthReason, retryable: true } : null,
+          lastSuccessAt:
+            doc.lastHealthStatus === 'ok' && doc.lastHealthCheckedAt
+              ? String(doc.lastHealthCheckedAt)
+              : null,
+          lastError: doc.lastHealthReason
+            ? { code: 'unavailable', message: doc.lastHealthReason, retryable: true }
+            : null,
           auditEventIds: [],
           nextSafeRepairAction: resolveNextSafeRepairAction({
             status,
@@ -327,7 +342,11 @@ export default async function ConnectionsPage() {
       })
       deliveries = (deliveriesRes.docs as any[]).map((doc) => ({
         id: String(doc.id),
-        subscriptionId: String(typeof doc.subscription === 'object' && doc.subscription ? doc.subscription.id : doc.subscription),
+        subscriptionId: String(
+          typeof doc.subscription === 'object' && doc.subscription
+            ? doc.subscription.id
+            : doc.subscription,
+        ),
         eventId: String(doc.eventId),
         eventType: String(doc.eventType),
         state: doc.state,

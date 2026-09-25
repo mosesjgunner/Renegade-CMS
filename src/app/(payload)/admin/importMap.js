@@ -1,4 +1,5 @@
 import { MediaEditActionField as MediaEditActionField_b8fb06bf180aabcfc9a9d6262740382d } from '@/modules/admin/MediaEditActionField'
+import { AiMediaActionField as AiMediaActionField_4db112374481e7b6e11792b2a6848818 } from '@/modules/admin/AiProposalActionField'
 import { RscEntryLexicalCell as RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { RscEntryLexicalField as RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
 import { LexicalDiffComponent as LexicalDiffComponent_44fe37237e0ebf4470c9990d8cb7b07e } from '@payloadcms/richtext-lexical/rsc'
@@ -23,6 +24,9 @@ import { UnderlineFeatureClient as UnderlineFeatureClient_e70f5e05f09f93e00b997e
 import { BoldFeatureClient as BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { DiscoveryPanel as DiscoveryPanel_316962dfcaea97df226bfa41602339e9 } from '@/modules/admin/DiscoveryPanel'
+import { SemanticURLPreview as SemanticURLPreview_f958bb1a071e34731e46d51660a678dc } from '@/modules/admin/SemanticURLPreview'
+import { AiContentActionField as AiContentActionField_4db112374481e7b6e11792b2a6848818 } from '@/modules/admin/AiProposalActionField'
+import { AiDistributionActionField as AiDistributionActionField_4db112374481e7b6e11792b2a6848818 } from '@/modules/admin/AiProposalActionField'
 import { default as default_540c8fd8e80fc68e99ce7b541e67baa6 } from '../../../modules/admin/PublishingLinks'
 import { default as default_b2e9d352a88622b4016040a046ab3cc7 } from '../../../modules/admin/CapabilityCenterLink'
 import { default as default_4568b6c45b14a1b26da8fe5e64713f3d } from '../../../modules/admin/PublisherDashboard'
@@ -38,11 +42,14 @@ import { default as default_f83c4f7c0cdcbc6ec7b78312628cd683 } from '../../../mo
 import { default as default_39aa3fd1587c2b8ee4dc0f366466a053 } from '../../../modules/admin/ReleaseCenter'
 import { default as default_e75c2b8fe5fd91e268a943fe348e6b76 } from '../../../modules/admin/EmailComposer'
 import { default as default_ce6cee81687356be6c2aed9bcf1a86e2 } from '../../../modules/admin/AudienceCommandCenter'
+import { default as default_cdcc4abe0452dc0189a2217c0c556a53 } from '../../../modules/admin/CommunityModerationCenter'
+import { default as default_b38112a2c1e00aaa918e006e46305664 } from '../../../modules/admin/TelemetryCommandCenter'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
 /** @type import('payload').ImportMap */
 export const importMap = {
   "@/modules/admin/MediaEditActionField#MediaEditActionField": MediaEditActionField_b8fb06bf180aabcfc9a9d6262740382d,
+  "@/modules/admin/AiProposalActionField#AiMediaActionField": AiMediaActionField_4db112374481e7b6e11792b2a6848818,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalCell": RscEntryLexicalCell_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#RscEntryLexicalField": RscEntryLexicalField_44fe37237e0ebf4470c9990d8cb7b07e,
   "@payloadcms/richtext-lexical/rsc#LexicalDiffComponent": LexicalDiffComponent_44fe37237e0ebf4470c9990d8cb7b07e,
@@ -67,6 +74,9 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#BoldFeatureClient": BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#ItalicFeatureClient": ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@/modules/admin/DiscoveryPanel#DiscoveryPanel": DiscoveryPanel_316962dfcaea97df226bfa41602339e9,
+  "@/modules/admin/SemanticURLPreview#SemanticURLPreview": SemanticURLPreview_f958bb1a071e34731e46d51660a678dc,
+  "@/modules/admin/AiProposalActionField#AiContentActionField": AiContentActionField_4db112374481e7b6e11792b2a6848818,
+  "@/modules/admin/AiProposalActionField#AiDistributionActionField": AiDistributionActionField_4db112374481e7b6e11792b2a6848818,
   "./modules/admin/PublishingLinks#default": default_540c8fd8e80fc68e99ce7b541e67baa6,
   "./modules/admin/CapabilityCenterLink#default": default_b2e9d352a88622b4016040a046ab3cc7,
   "./modules/admin/PublisherDashboard#default": default_4568b6c45b14a1b26da8fe5e64713f3d,
@@ -82,5 +92,7 @@ export const importMap = {
   "./modules/admin/ReleaseCenter#default": default_39aa3fd1587c2b8ee4dc0f366466a053,
   "./modules/admin/EmailComposer#default": default_e75c2b8fe5fd91e268a943fe348e6b76,
   "./modules/admin/AudienceCommandCenter#default": default_ce6cee81687356be6c2aed9bcf1a86e2,
+  "./modules/admin/CommunityModerationCenter#default": default_cdcc4abe0452dc0189a2217c0c556a53,
+  "./modules/admin/TelemetryCommandCenter#default": default_b38112a2c1e00aaa918e006e46305664,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }

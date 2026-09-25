@@ -69,7 +69,9 @@ export function ForumThreadView({
       setReplying(false)
 
       // Refresh posts list
-      const fetchPosts = await fetch(`/api/community/posts?discussionId=${encodeURIComponent(discussionId)}`)
+      const fetchPosts = await fetch(
+        `/api/community/posts?discussionId=${encodeURIComponent(discussionId)}`,
+      )
       if (fetchPosts.ok) {
         const result = await fetchPosts.json()
         setPosts(result.posts ?? [])
@@ -152,8 +154,11 @@ export function ForumThreadView({
         {posts.map((post, idx) => {
           const author =
             typeof post.authorMember === 'object' && post.authorMember
-              ? (post.authorMember.displayName || post.authorMember.handle || 'Member')
-              : post.authorGuest?.name || (typeof post.authorMember === 'string' ? `Member ${post.authorMember.slice(0, 8)}` : 'Author')
+              ? post.authorMember.displayName || post.authorMember.handle || 'Member'
+              : post.authorGuest?.name ||
+                (typeof post.authorMember === 'string'
+                  ? `Member ${post.authorMember.slice(0, 8)}`
+                  : 'Author')
 
           const rx = reactions[post.id] ?? { count: 0, active: false }
 
@@ -199,7 +204,10 @@ export function ForumThreadView({
               </footer>
 
               {reportingPostId === post.id ? (
-                <form onSubmit={submitReport} className="mt-4 p-4 rounded-lg border bg-stone-50 dark:bg-stone-800/50 space-y-3">
+                <form
+                  onSubmit={submitReport}
+                  className="mt-4 p-4 rounded-lg border bg-stone-50 dark:bg-stone-800/50 space-y-3"
+                >
                   <h4 className="text-xs font-semibold uppercase tracking-wider text-stone-700 dark:text-stone-300">
                     Report Post #{post.displayOrder || idx + 1}
                   </h4>
@@ -253,7 +261,10 @@ export function ForumThreadView({
           This thread has been locked by moderators. Replies are disabled.
         </div>
       ) : (
-        <form onSubmit={handleReply} className="p-6 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 shadow-sm space-y-4">
+        <form
+          onSubmit={handleReply}
+          className="p-6 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 shadow-sm space-y-4"
+        >
           <h3 className="text-base font-semibold">Post a reply</h3>
           <textarea
             className="form-input block w-full"
@@ -263,11 +274,7 @@ export function ForumThreadView({
             value={replyBody}
             onChange={(e) => setReplyBody(e.target.value)}
           />
-          <button
-            className="btn btn-primary"
-            type="submit"
-            disabled={replying}
-          >
+          <button className="btn btn-primary" type="submit" disabled={replying}>
             {replying ? 'Posting reply…' : 'Submit Reply'}
           </button>
         </form>

@@ -356,6 +356,7 @@ export interface SchemaBuildInput {
     episodeNumber?: number
     seasonNumber?: number
     showSlug?: string
+    showUrl?: string
     showTitle?: string
     transcriptText?: string
   }
@@ -1089,9 +1090,11 @@ export function composeSchemaGraph(input: SchemaBuildInput): {
         isEligible = false
       }
 
-      const showUrl = podcastEpisode?.showSlug
-        ? `${base.replace(/\/$/, '')}/podcasts/${podcastEpisode.showSlug}`
-        : null
+      const showUrl =
+        podcastEpisode?.showUrl ||
+        (podcastEpisode?.showSlug
+          ? `${base.replace(/\/$/, '')}/podcasts/${podcastEpisode.showSlug}`
+          : null)
 
       if (!audio?.url) {
         issues.push({

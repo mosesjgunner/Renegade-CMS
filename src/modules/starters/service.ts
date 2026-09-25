@@ -90,13 +90,21 @@ export async function installStarter(
 
   // 1. Ensure site exists
   if (siteId) {
+    const existing = await payload.find({
+      collection: 'sites',
+      where: { id: { equals: siteId } },
+      limit: 1,
+      overrideAccess: true,
+    } as never)
+    const existingDoc = existing.docs[0] as { slug?: string; name?: string } | undefined
+    const currentSlug = existingDoc?.slug ?? starter.id
     await upsertRecord(
       payload,
       'sites',
       { id: { equals: siteId } },
       {
-        name: starter.name,
-        slug: starter.id,
+        name: existingDoc?.name ?? starter.name,
+        slug: currentSlug,
         description: starter.summary,
         lifecycle: 'active',
       },
@@ -777,8 +785,7 @@ export async function rollbackStarterLayout(
 ): Promise<{ success: boolean; message: string }> {
   const siteId = typeof input === 'string' ? input : input.siteId
   const path = typeof input === 'string' ? pathParam! : input.path
-  const targetRevision =
-    typeof input === 'string' ? targetRevisionParam! : input.targetRevision
+  const targetRevision = typeof input === 'string' ? targetRevisionParam! : input.targetRevision
 
   const existing = await (payload as any).find({
     collection: 'page-layouts',

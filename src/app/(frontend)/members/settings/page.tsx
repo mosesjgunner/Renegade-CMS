@@ -520,7 +520,8 @@ export default function MemberSettingsPage() {
       <section className="mt-8 rounded border p-4" aria-label="Account lifecycle and data">
         <h2 className="text-xl font-semibold">Privacy, Data & Account</h2>
         <p className="mt-2 text-sm text-stone-600 dark:text-stone-400">
-          Download a machine-readable copy of your profile, contributions, and messages, or manage your account lifecycle.
+          Download a machine-readable copy of your profile, contributions, and messages, or manage
+          your account lifecycle.
         </p>
         <div className="mt-4 flex flex-wrap gap-3">
           <button className="btn" type="button" onClick={() => void exportData()}>

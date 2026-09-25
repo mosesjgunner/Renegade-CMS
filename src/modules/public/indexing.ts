@@ -1,4 +1,19 @@
 import type { Payload } from 'payload'
+import { resolvePublicUrl } from './semantic-url'
+
+const editorialPath = (record: Record<string, unknown> | undefined) => {
+  if (!record) return ''
+  if (typeof record.canonicalPath === 'string' && record.canonicalPath) return record.canonicalPath
+  if (typeof record.slug !== 'string' || !record.slug) return ''
+  try {
+    return resolvePublicUrl({
+      kind: record.contentType === 'page' ? 'page' : 'article',
+      slug: record.slug,
+    })
+  } catch {
+    return ''
+  }
+}
 
 export type IndexingState = 'queued' | 'submitted' | 'acknowledged' | 'failed' | 'manual'
 export type IndexingChange = {
@@ -216,7 +231,7 @@ export function indexingChangesFor(
 ): IndexingChange[] {
   const siteId =
     typeof doc.site === 'string' ? doc.site : (doc.site as { id?: string } | undefined)?.id
-  const path = String(doc.canonicalPath || (doc.slug ? `/articles/${doc.slug}` : ''))
+  const path = editorialPath(doc)
   if (!siteId || !path) return []
   const wasPublic =
     previous && ['published', 'updated'].includes(String(previous.status)) && !previous.seoNoIndex
@@ -233,9 +248,7 @@ export function indexingChangesFor(
     reason,
     version: String(doc.updatedAt || new Date().toISOString()),
   }
-  const previousPath = String(
-    previous?.canonicalPath || (previous?.slug ? `/articles/${previous.slug}` : ''),
-  )
+  const previousPath = editorialPath(previous)
   if (wasPublic && isPublic && previousPath && previousPath !== path)
     return [
       { ...current, url: absolute(previousPath), action: 'remove', reason: 'slug' },

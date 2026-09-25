@@ -95,12 +95,19 @@ export default function GuidedSetupPage() {
       </div>
 
       {/* Production Starter Quick-Install Banner */}
-      <section aria-label="Production Starters" className="p-6 rounded-2xl bg-gradient-to-r from-stone-900 to-stone-800 text-white shadow-lg space-y-4">
+      <section
+        aria-label="Production Starters"
+        className="p-6 rounded-2xl bg-gradient-to-r from-stone-900 to-stone-800 text-white shadow-lg space-y-4"
+      >
         <div>
-          <span className="text-xs uppercase tracking-widest text-red-400 font-bold">Recommended</span>
+          <span className="text-xs uppercase tracking-widest text-red-400 font-bold">
+            Recommended
+          </span>
           <h2 className="text-xl font-bold mt-1">Complete Production Starters</h2>
           <p className="text-xs text-stone-300 mt-1 max-w-3xl">
-            Install an entire production-grade experience with realistic sample content, governed media, and published visitor journeys (home, articles, search, signup, members, and commerce/donations).
+            Install an entire production-grade experience with realistic sample content, governed
+            media, and published visitor journeys (home, articles, search, signup, members, and
+            commerce/donations).
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
@@ -108,10 +115,13 @@ export default function GuidedSetupPage() {
             <div>
               <div className="flex items-center justify-between">
                 <span className="font-bold text-sm">The Vanguard Chronicle</span>
-                <span className="text-[10px] bg-red-600/80 px-2 py-0.5 rounded text-white font-mono">Publication &amp; Community</span>
+                <span className="text-[10px] bg-red-600/80 px-2 py-0.5 rounded text-white font-mono">
+                  Publication &amp; Community
+                </span>
               </div>
               <p className="text-xs text-stone-300 mt-1">
-                Independent dispatches, investigative inquiries, community discussion hub, member profiles, and newsletter subscriptions.
+                Independent dispatches, investigative inquiries, community discussion hub, member
+                profiles, and newsletter subscriptions.
               </p>
             </div>
             <button
@@ -128,10 +138,13 @@ export default function GuidedSetupPage() {
             <div>
               <div className="flex items-center justify-between">
                 <span className="font-bold text-sm">Forward for the People</span>
-                <span className="text-[10px] bg-blue-600/80 px-2 py-0.5 rounded text-white font-mono">Campaign &amp; Commerce</span>
+                <span className="text-[10px] bg-blue-600/80 px-2 py-0.5 rounded text-white font-mono">
+                  Campaign &amp; Commerce
+                </span>
               </div>
               <p className="text-xs text-stone-300 mt-1">
-                Grassroots campaign hub, campaign store with merchandise, cart &amp; checkout, donations with FEC disclosures, and volunteer team.
+                Grassroots campaign hub, campaign store with merchandise, cart &amp; checkout,
+                donations with FEC disclosures, and volunteer team.
               </p>
             </div>
             <button

@@ -243,15 +243,25 @@ test('AI: operator connects a tested local adapter and editors review four workf
       ).text,
     ).toBe('Second draft copy')
 
-    await payload.update({ collection: 'users', id: user.id, data: { role: 'staff' }, overrideAccess: true })
+    await payload.update({
+      collection: 'users',
+      id: user.id,
+      data: { role: 'staff' },
+      overrideAccess: true,
+    })
     await page.reload()
     await page.getByLabel('Site').selectOption(String(site.id))
     await expect(page.getByRole('heading', { name: 'Configure a tested provider' })).toHaveCount(0)
-    await page.getByRole('combobox', { name: 'Provider', exact: true }).selectOption(String(connection.id))
+    await page
+      .getByRole('combobox', { name: 'Provider', exact: true })
+      .selectOption(String(connection.id))
     row = await request('media.alt-text', String(media.id))
     await row.getByRole('button', { name: 'Decline without changes' }).click()
     await expect(page.getByRole('status')).toContainText('Proposal declined')
-    expect((await payload.findByID({ collection: 'media-assets', id: media.id, overrideAccess: true })).altText).toBe('A river at dusk')
+    expect(
+      (await payload.findByID({ collection: 'media-assets', id: media.id, overrideAccess: true }))
+        .altText,
+    ).toBe('A river at dusk')
 
     const wrongSite = (
       await payload.find({
@@ -315,7 +325,12 @@ test('AI: operator connects a tested local adapter and editors review four workf
     await page.getByRole('button', { name: 'Preview source context' }).click()
     await page.getByRole('button', { name: 'Request proposal' }).click()
     await expect(page.getByRole('status')).toContainText('Proposal no-provider')
-    await payload.update({ collection: 'users', id: user.id, data: { role: 'owner' }, overrideAccess: true })
+    await payload.update({
+      collection: 'users',
+      id: user.id,
+      data: { role: 'owner' },
+      overrideAccess: true,
+    })
     await page.reload()
     await page.getByLabel('Site').selectOption(String(site.id))
     await page.getByRole('combobox', { name: 'Adapter', exact: true }).selectOption('ai.ollama')
@@ -324,8 +339,10 @@ test('AI: operator connects a tested local adapter and editors review four workf
     await page.getByLabel('endpoint').fill('http://127.0.0.1:65534')
     await page.getByRole('button', { name: 'Save and test connection' }).click()
     await expect(page.getByRole('status')).toContainText('Connection saved as degraded')
-    const activeConnection = page.getByRole('region', { name: 'Connection health' })
-      .locator('div.rounded.border.p-3').filter({ hasText: `Local test ${suffix}` })
+    const activeConnection = page
+      .getByRole('region', { name: 'Connection health' })
+      .locator('div.rounded.border.p-3')
+      .filter({ hasText: `Local test ${suffix}` })
     await activeConnection.getByRole('button', { name: 'Disable' }).click()
     await expect(activeConnection).toContainText('disabled')
   } finally {

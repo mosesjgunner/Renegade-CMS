@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import Link from 'next/link'
 import styles from './ThemeCenter.module.css'
 import { gt } from 'semver'
@@ -57,7 +57,7 @@ export default function ThemeCenter() {
   const [messageType, setMessageType] = useState<'info' | 'success' | 'error'>('info')
   const [busy, setBusy] = useState(false)
 
-  async function refresh(site?: string) {
+  const refresh = useCallback(async (site?: string) => {
     try {
       const siteQuery = site ? '?site=' + encodeURIComponent(site) : ''
       const [themesRes, startersRes] = await Promise.all([
@@ -78,28 +78,30 @@ export default function ThemeCenter() {
         setStarters(startersData.starters || [])
         setStarterStatus(startersData.status || null)
         setRollbackOptions(startersData.rollbackOptions || [])
-        if (startersData.rollbackOptions?.length && !selectedRollbackPath) {
-          setSelectedRollbackPath(startersData.rollbackOptions[0].path)
+        if (startersData.rollbackOptions?.length) {
+          setSelectedRollbackPath((prev) => (!prev ? startersData.rollbackOptions[0].path : prev))
         }
       }
     } catch {
       setMessage('Failed to load discovery data. Check network and database status.')
       setMessageType('error')
     }
-  }
+  }, [])
 
   useEffect(() => {
     let cancelled = false
     void refresh().then(() => {
-      if (!cancelled && !message) {
-        setMessage('Starter Studio ready. Select an archetype or customize your theme.')
-        setMessageType('info')
+      if (!cancelled) {
+        setMessage((prev) =>
+          !prev ? 'Starter Studio ready. Select an archetype or customize your theme.' : prev,
+        )
+        setMessageType((prev) => (!prev ? 'info' : prev))
       }
     })
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [refresh])
 
   async function handleStarterInstall(starterId: StarterId) {
     if (!model?.site) return
@@ -166,7 +168,9 @@ export default function ThemeCenter() {
   async function handleStarterRollback() {
     if (!model?.site || !selectedRollbackPath || selectedRollbackRev === '') return
     setBusy(true)
-    setMessage(`Rolling back layout for ${selectedRollbackPath} to revision ${selectedRollbackRev}...`)
+    setMessage(
+      `Rolling back layout for ${selectedRollbackPath} to revision ${selectedRollbackRev}...`,
+    )
     setMessageType('info')
 
     try {
@@ -238,18 +242,30 @@ export default function ThemeCenter() {
 
   return (
     <section aria-label="Starter and Theme Lifecycle" className={styles.center}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'between', gap: '1rem', flexWrap: 'wrap' }}>
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'between',
+          gap: '1rem',
+          flexWrap: 'wrap',
+        }}
+      >
         <div>
           <h2>Starter &amp; Theme Studio</h2>
           <p style={{ color: '#64748b', fontSize: '0.9375rem' }}>
-            Production starter experiences with complete visitor journeys, governed media, and visual builder integration.
+            Production starter experiences with complete visitor journeys, governed media, and
+            visual builder integration.
           </p>
         </div>
       </div>
 
       {model && (
         <div style={{ margin: '14px 0' }}>
-          <label htmlFor="theme-site-select" style={{ display: 'inline-block', marginRight: '10px' }}>
+          <label
+            htmlFor="theme-site-select"
+            style={{ display: 'inline-block', marginRight: '10px' }}
+          >
             Target Site:
           </label>
           <select
@@ -313,7 +329,9 @@ export default function ThemeCenter() {
       {activeTab === 'starters' && (
         <div id="panel-starters" role="tabpanel" aria-labelledby="tab-starters">
           <p style={{ fontSize: '0.9375rem' }}>
-            Install either complete starter experience directly into the active site without editing code. All templates, reusable patterns, global regions, and sample content install with verified public presentation snapshots.
+            Install either complete starter experience directly into the active site without editing
+            code. All templates, reusable patterns, global regions, and sample content install with
+            verified public presentation snapshots.
           </p>
 
           <div className={styles.startersGrid}>
@@ -325,11 +343,22 @@ export default function ThemeCenter() {
                   className={`${styles.starterCard} ${isActive ? styles.starterCardActive : ''}`}
                 >
                   <div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '8px' }}>
-                      <span className={`${styles.badge} ${isActive ? styles.badgeActive : styles.badgeAvailable}`}>
+                    <div
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'flex-start',
+                        marginBottom: '8px',
+                      }}
+                    >
+                      <span
+                        className={`${styles.badge} ${isActive ? styles.badgeActive : styles.badgeAvailable}`}
+                      >
                         {isActive ? '● Active Starter' : 'Available'}
                       </span>
-                      <span style={{ fontSize: '0.8125rem', fontFamily: 'monospace', color: '#64748b' }}>
+                      <span
+                        style={{ fontSize: '0.8125rem', fontFamily: 'monospace', color: '#64748b' }}
+                      >
                         Theme: {starter.themeId}
                       </span>
                     </div>
@@ -341,29 +370,89 @@ export default function ThemeCenter() {
                       {starter.summary}
                     </p>
 
-                    <div style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', margin: '10px 0' }}>
-                      <span style={{ fontSize: '0.75rem', background: '#f1f5f9', padding: '3px 8px', borderRadius: '4px', fontWeight: 600 }}>
+                    <div
+                      style={{ display: 'flex', flexWrap: 'wrap', gap: '6px', margin: '10px 0' }}
+                    >
+                      <span
+                        style={{
+                          fontSize: '0.75rem',
+                          background: '#f1f5f9',
+                          padding: '3px 8px',
+                          borderRadius: '4px',
+                          fontWeight: 600,
+                        }}
+                      >
                         {starter.pagesCount} Pages
                       </span>
-                      <span style={{ fontSize: '0.75rem', background: '#f1f5f9', padding: '3px 8px', borderRadius: '4px', fontWeight: 600 }}>
+                      <span
+                        style={{
+                          fontSize: '0.75rem',
+                          background: '#f1f5f9',
+                          padding: '3px 8px',
+                          borderRadius: '4px',
+                          fontWeight: 600,
+                        }}
+                      >
                         {starter.articlesCount} Dispatches
                       </span>
-                      <span style={{ fontSize: '0.75rem', background: '#f1f5f9', padding: '3px 8px', borderRadius: '4px', fontWeight: 600 }}>
+                      <span
+                        style={{
+                          fontSize: '0.75rem',
+                          background: '#f1f5f9',
+                          padding: '3px 8px',
+                          borderRadius: '4px',
+                          fontWeight: 600,
+                        }}
+                      >
                         {starter.templatesCount} Templates
                       </span>
-                      <span style={{ fontSize: '0.75rem', background: '#f1f5f9', padding: '3px 8px', borderRadius: '4px', fontWeight: 600 }}>
+                      <span
+                        style={{
+                          fontSize: '0.75rem',
+                          background: '#f1f5f9',
+                          padding: '3px 8px',
+                          borderRadius: '4px',
+                          fontWeight: 600,
+                        }}
+                      >
                         {starter.patternsCount} Patterns
                       </span>
-                      <span style={{ fontSize: '0.75rem', background: '#f1f5f9', padding: '3px 8px', borderRadius: '4px', fontWeight: 600 }}>
+                      <span
+                        style={{
+                          fontSize: '0.75rem',
+                          background: '#f1f5f9',
+                          padding: '3px 8px',
+                          borderRadius: '4px',
+                          fontWeight: 600,
+                        }}
+                      >
                         {starter.globalsCount} Globals
                       </span>
                       {starter.productsCount > 0 && (
-                        <span style={{ fontSize: '0.75rem', background: '#fee2e2', color: '#991b1b', padding: '3px 8px', borderRadius: '4px', fontWeight: 700 }}>
+                        <span
+                          style={{
+                            fontSize: '0.75rem',
+                            background: '#fee2e2',
+                            color: '#991b1b',
+                            padding: '3px 8px',
+                            borderRadius: '4px',
+                            fontWeight: 700,
+                          }}
+                        >
                           {starter.productsCount} Products
                         </span>
                       )}
                       {starter.donationsCount > 0 && (
-                        <span style={{ fontSize: '0.75rem', background: '#dcfce7', color: '#166534', padding: '3px 8px', borderRadius: '4px', fontWeight: 700 }}>
+                        <span
+                          style={{
+                            fontSize: '0.75rem',
+                            background: '#dcfce7',
+                            color: '#166534',
+                            padding: '3px 8px',
+                            borderRadius: '4px',
+                            fontWeight: 700,
+                          }}
+                        >
                           Donation Campaign
                         </span>
                       )}
@@ -389,11 +478,11 @@ export default function ThemeCenter() {
                       </button>
 
                       <Link
-                        href="/builder"
+                        href="/admin/collections/page-layouts"
                         className={styles.primaryBtn}
-                        aria-label={`Customize ${starter.name} in Visual Builder`}
+                        aria-label={`Customize ${starter.name} Layouts in Page Builder`}
                       >
-                        Customize Canvas →
+                        Customize Layouts →
                       </Link>
 
                       {isActive && (
@@ -421,12 +510,16 @@ export default function ThemeCenter() {
                 Layout Revision Rollback
               </h4>
               <p style={{ fontSize: '0.875rem', color: '#475569', marginBottom: '14px' }}>
-                Revert any page or global region layout to an earlier revision. Changes publish immediately with immutable snapshot protection.
+                Revert any page or global region layout to an earlier revision. Changes publish
+                immediately with immutable snapshot protection.
               </p>
 
               <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
                 <div>
-                  <label htmlFor="rollback-path-select" style={{ margin: '0 0 4px', fontSize: '0.8125rem' }}>
+                  <label
+                    htmlFor="rollback-path-select"
+                    style={{ margin: '0 0 4px', fontSize: '0.8125rem' }}
+                  >
                     Select Layout:
                   </label>
                   <select
@@ -449,7 +542,10 @@ export default function ThemeCenter() {
 
                 {selectedLayoutObj && (
                   <div>
-                    <label htmlFor="rollback-rev-select" style={{ margin: '0 0 4px', fontSize: '0.8125rem' }}>
+                    <label
+                      htmlFor="rollback-rev-select"
+                      style={{ margin: '0 0 4px', fontSize: '0.8125rem' }}
+                    >
                       Target Revision:
                     </label>
                     <select
@@ -461,7 +557,8 @@ export default function ThemeCenter() {
                       <option value="">Choose revision</option>
                       {selectedLayoutObj.history.map((h) => (
                         <option key={h.revision} value={h.revision}>
-                          Revision {h.revision} {h.action ? `(${h.action})` : ''} {h.savedAt ? `— ${new Date(h.savedAt).toLocaleDateString()}` : ''}
+                          Revision {h.revision} {h.action ? `(${h.action})` : ''}{' '}
+                          {h.savedAt ? `— ${new Date(h.savedAt).toLocaleDateString()}` : ''}
                         </option>
                       ))}
                     </select>
@@ -501,7 +598,8 @@ export default function ThemeCenter() {
       {activeTab === 'themes' && model && (
         <div id="panel-themes" role="tabpanel" aria-labelledby="tab-themes">
           <p>
-            Install first-party data packages in theme-packages, then refresh discovery. Changes affect presentation only; canonical content and URLs are preserved.
+            Install first-party data packages in theme-packages, then refresh discovery. Changes
+            affect presentation only; canonical content and URLs are preserved.
           </p>
           <p>
             Active:{' '}
@@ -570,7 +668,9 @@ export default function ThemeCenter() {
             />
           </label>
           <details style={{ margin: '14px 0' }}>
-            <summary style={{ cursor: 'pointer', fontWeight: 600 }}>Allowed design tokens and defaults</summary>
+            <summary style={{ cursor: 'pointer', fontWeight: 600 }}>
+              Allowed design tokens and defaults
+            </summary>
             <pre>{JSON.stringify(model.tokenDefaults, null, 2)}</pre>
           </details>
           <div>

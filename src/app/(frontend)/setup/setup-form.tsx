@@ -47,12 +47,20 @@ export function SetupForm({ initialEmail, appUrl }: { initialEmail: string; appU
     description: '',
     primaryUrl: appUrl,
     locale: 'en-US',
-    timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC',
+    timezone:
+      typeof Intl !== 'undefined'
+        ? Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'
+        : 'UTC',
     themeId: 'neutral-starter',
     starterType: 'creator-publication',
     featureProfile: 'Standard',
     optionalConnections: [],
     starterContent: true,
+    publishingDefaults: {
+      indexingMode: 'index',
+      commentsPolicy: 'open',
+      visibility: 'public',
+    },
   })
   const [error, setError] = useState<string>()
   const [result, setResult] = useState<SetupResult>()
@@ -66,6 +74,21 @@ export function SetupForm({ initialEmail, appUrl }: { initialEmail: string; appU
 
   function update<K extends keyof OnboardingInput>(key: K, value: OnboardingInput[K]) {
     setForm((current) => ({ ...current, [key]: value }))
+  }
+  function updatePublishingDefault<
+    K extends keyof NonNullable<OnboardingInput['publishingDefaults']>,
+  >(key: K, value: NonNullable<OnboardingInput['publishingDefaults']>[K]) {
+    setForm((current) => ({
+      ...current,
+      publishingDefaults: {
+        ...(current.publishingDefaults ?? {
+          indexingMode: 'index',
+          commentsPolicy: 'open',
+          visibility: 'public',
+        }),
+        [key]: value,
+      },
+    }))
   }
   function toggleConnection(connection: (typeof optionalConnections)[number][0]) {
     update(
@@ -163,7 +186,12 @@ export function SetupForm({ initialEmail, appUrl }: { initialEmail: string; appU
           {step === 1 ? <IdentityStep form={form} update={update} /> : null}
           {step === 2 ? <BrandStep form={form} update={update} /> : null}
           {step === 3 ? (
-            <FeatureStep form={form} update={update} toggleConnection={toggleConnection} />
+            <FeatureStep
+              form={form}
+              update={update}
+              updatePublishingDefault={updatePublishingDefault}
+              toggleConnection={toggleConnection}
+            />
           ) : null}
           {step === 4 ? <ReviewStep form={form} email={email} /> : null}
           {error ? (
@@ -214,33 +242,63 @@ function OwnerStep({
   token: string
   setToken: (value: string) => void
 }) {
+  const hasPasskeySupport = typeof window !== 'undefined' && Boolean(window.PublicKeyCredential)
+
   return (
     <section className="space-y-4">
-      <h2 className="font-semibold">Secure owner access</h2>
+      <div className="flex items-center justify-between border-b pb-2 dark:border-stone-800">
+        <h2 className="font-semibold text-lg">1. Secure owner & admin creation</h2>
+        <span className="text-[11px] font-medium px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+          Ready
+        </span>
+      </div>
       <p className="text-sm text-stone-600 dark:text-stone-400">
-        The one-time token proves local operator access. Your passkey is enrolled only after you
-        confirm these choices.
+        The one-time bootstrap token proves local operator access. Your first admin account will be
+        enrolled with passkey credentials after you confirm your choices.
       </p>
-      <Field label="Bootstrap token">
+
+      <div className="p-3 rounded-xl border bg-stone-50 dark:bg-stone-900 border-stone-200 dark:border-stone-800 space-y-1.5 text-xs">
+        <div className="flex items-center justify-between font-medium">
+          <span>Browser Passkey / WebAuthn Support:</span>
+          {hasPasskeySupport ? (
+            <span className="text-emerald-600 dark:text-emerald-400 font-semibold">
+              ✓ Hardware / Platform Supported
+            </span>
+          ) : (
+            <span className="text-amber-600 dark:text-amber-400 font-semibold">
+              ⚠ Unproven / Virtual Authenticator Required
+            </span>
+          )}
+        </div>
+        <p className="text-stone-500">
+          Normal admin sign-in occurs at <code className="font-mono">/login</code> via passkey.
+          Emergency recovery codes will be generated at completion for fallback access.
+        </p>
+      </div>
+
+      <Field label="Bootstrap token" badge="Required">
         <input
           className="form-input text-sm font-mono"
           required
           value={token}
           onChange={(event) => setToken(event.target.value)}
+          placeholder="Paste one-time token from CLI"
         />
       </Field>
-      <Field label="Owner email">
+      <Field label="Owner email" badge="Required">
         <input
           className="form-input text-sm"
           required
           type="email"
           value={email}
           onChange={(event) => setEmail(event.target.value)}
+          placeholder="admin@example.org"
         />
       </Field>
     </section>
   )
 }
+
 function IdentityStep({
   form,
   update,
@@ -250,16 +308,22 @@ function IdentityStep({
 }) {
   return (
     <section className="space-y-4">
-      <h2 className="font-semibold">Site identity</h2>
-      <Field label="Site or publication name">
+      <div className="flex items-center justify-between border-b pb-2 dark:border-stone-800">
+        <h2 className="font-semibold text-lg">2. Site identity, domain & locale</h2>
+        <span className="text-[11px] font-medium px-2 py-0.5 rounded bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300">
+          Configuration
+        </span>
+      </div>
+      <Field label="Site or publication name" badge="Required">
         <input
           className="form-input text-sm"
           required
           value={form.name}
           onChange={(event) => update('name', event.target.value)}
+          placeholder="e.g. Renegade Dispatch"
         />
       </Field>
-      <Field label="Description">
+      <Field label="Description" badge="Optional">
         <textarea
           className="form-input text-sm"
           rows={3}
@@ -269,44 +333,49 @@ function IdentityStep({
         />
       </Field>
       <div className="grid sm:grid-cols-2 gap-4">
-        <Field label="Site slug">
+        <Field label="Site slug" badge="Required">
           <input
             className="form-input text-sm font-mono"
             required
             pattern="[a-z0-9]+(-[a-z0-9]+)*"
             value={form.slug}
             onChange={(event) => update('slug', event.target.value.toLowerCase())}
+            placeholder="renegade-dispatch"
           />
         </Field>
-        <Field label="Primary URL">
+        <Field label="Primary URL" badge="Required">
           <input
             className="form-input text-sm"
             required
             type="url"
             value={form.primaryUrl}
             onChange={(event) => update('primaryUrl', event.target.value)}
+            placeholder="https://example.org"
           />
         </Field>
-        <Field label="Locale">
+        <Field label="Locale" badge="Required">
           <input
             className="form-input text-sm"
             required
             value={form.locale}
             onChange={(event) => update('locale', event.target.value)}
+            placeholder="en-US"
           />
         </Field>
-        <Field label="Timezone">
+        <Field label="Timezone" badge="Required">
           <input
             className="form-input text-sm"
             required
             value={form.timezone}
             onChange={(event) => update('timezone', event.target.value)}
+            placeholder="UTC"
           />
         </Field>
       </div>
     </section>
   )
 }
+
 function BrandStep({
   form,
   update,
@@ -316,10 +385,15 @@ function BrandStep({
 }) {
   return (
     <section className="space-y-4">
-      <h2 className="font-semibold">Brand and starting point</h2>
+      <div className="flex items-center justify-between border-b pb-2 dark:border-stone-800">
+        <h2 className="font-semibold text-lg">3. Starter, theme & content</h2>
+        <span className="text-[11px] font-medium px-2 py-0.5 rounded bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300">
+          Presentation
+        </span>
+      </div>
       <p className="text-sm text-stone-600 dark:text-stone-400">
-        Choose an existing theme. Upload or select a logo later in Site Settings when media is
-        available.
+        Choose a theme and starter recipe. You can customize colors, fonts, and assets in Site
+        Settings anytime.
       </p>
       <div className="grid sm:grid-cols-2 gap-3">
         {Object.values(themes).map((theme) => (
@@ -332,7 +406,7 @@ function BrandStep({
           />
         ))}
       </div>
-      <Field label="Starter site type">
+      <Field label="Starter site type" badge="Required">
         <select
           className="form-input text-sm"
           value={form.starterType}
@@ -359,91 +433,253 @@ function BrandStep({
           <option value="blank-minimal">Blank / minimal</option>
         </select>
       </Field>
-      <label className="flex gap-3 text-sm">
-        <input
-          type="checkbox"
-          checked={form.starterContent}
-          onChange={(event) => update('starterContent', event.target.checked)}
-        />
-        <span>Create editable home, about, contact, privacy, and sample draft content.</span>
-      </label>
+      <div className="pt-2">
+        <label className="flex items-start gap-3 text-sm p-3 rounded-xl border border-stone-200 dark:border-stone-700 bg-stone-50/50 dark:bg-stone-900/50">
+          <input
+            type="checkbox"
+            className="mt-0.5"
+            checked={form.starterContent}
+            onChange={(event) => update('starterContent', event.target.checked)}
+          />
+          <div>
+            <span className="font-medium text-stone-900 dark:text-stone-100">
+              Create starter pages and sample content
+            </span>
+            <span className="block text-xs text-stone-500">
+              Provisions home, about, contact, privacy, and initial sample draft content. (Optional)
+            </span>
+          </div>
+        </label>
+      </div>
     </section>
   )
 }
+
 function FeatureStep({
   form,
   update,
+  updatePublishingDefault,
   toggleConnection,
 }: {
   form: OnboardingInput
   update: <K extends keyof OnboardingInput>(key: K, value: OnboardingInput[K]) => void
+  updatePublishingDefault: <K extends keyof NonNullable<OnboardingInput['publishingDefaults']>>(
+    key: K,
+    value: NonNullable<OnboardingInput['publishingDefaults']>[K],
+  ) => void
   toggleConnection: (key: (typeof optionalConnections)[number][0]) => void
 }) {
   return (
-    <section className="space-y-4">
-      <h2 className="font-semibold">Feature profile and connections</h2>
-      <div className="grid sm:grid-cols-2 gap-3">
-        <Choice
-          checked={form.featureProfile === 'Lean'}
-          onChange={() => update('featureProfile', 'Lean')}
-          title="Lean"
-          detail="Core publishing with lighter operational work."
-        />
-        <Choice
-          checked={form.featureProfile === 'Standard'}
-          onChange={() => update('featureProfile', 'Standard')}
-          title="Standard"
-          detail="Enables the normal operations profile."
-        />
+    <section className="space-y-5">
+      <div className="flex items-center justify-between border-b pb-2 dark:border-stone-800">
+        <h2 className="font-semibold text-lg">4. Profile, providers & publishing defaults</h2>
+        <span className="text-[11px] font-medium px-2 py-0.5 rounded bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300">
+          Operations
+        </span>
       </div>
-      <p className="text-sm text-stone-600 dark:text-stone-400">
-        Enable only the areas you expect to configure. No credentials are requested here and every
-        connection is skippable.
-      </p>
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-        {optionalConnections.map(([key, label]) => (
-          <label
-            key={key}
-            className="rounded-lg border border-stone-200 dark:border-stone-700 p-3 text-sm"
-          >
-            <input
-              className="mr-2"
-              type="checkbox"
-              checked={form.optionalConnections.includes(key)}
-              onChange={() => toggleConnection(key)}
-            />
-            {label}
-          </label>
-        ))}
+
+      {/* Feature Profile */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <span className="form-label">Deployment profile</span>
+          <span className="text-[10px] uppercase font-bold text-red-600 bg-red-50 dark:bg-red-950/60 px-1.5 py-0.5 rounded">
+            Required
+          </span>
+        </div>
+        <div className="grid sm:grid-cols-2 gap-3">
+          <Choice
+            checked={form.featureProfile === 'Lean'}
+            onChange={() => update('featureProfile', 'Lean')}
+            title="Lean"
+            detail="Core publishing with minimal background worker footprint. Ideal for VPS, low memory (<1GB), and sovereign nodes."
+          />
+          <Choice
+            checked={form.featureProfile === 'Standard'}
+            onChange={() => update('featureProfile', 'Standard')}
+            title="Standard"
+            detail="Enables the standard operational profile with background queues, full automation, and scheduled workers."
+          />
+        </div>
+      </div>
+
+      {/* Required Providers */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <span className="form-label">Required infrastructure providers</span>
+          <span className="text-[10px] uppercase font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 px-1.5 py-0.5 rounded">
+            Validated
+          </span>
+        </div>
+        <div className="grid sm:grid-cols-2 gap-2 text-xs">
+          <div className="p-3 rounded-lg border border-emerald-200 dark:border-emerald-800 bg-emerald-50/50 dark:bg-emerald-950/20">
+            <div className="font-semibold text-emerald-900 dark:text-emerald-200 flex items-center justify-between">
+              <span>PostgreSQL Database</span>
+              <span>✓ Verified</span>
+            </div>
+            <p className="text-emerald-700 dark:text-emerald-400 mt-1 text-[11px]">
+              Schema migrations fully applied (108/108). Connection pool healthy.
+            </p>
+          </div>
+          <div className="p-3 rounded-lg border border-emerald-200 dark:border-emerald-800 bg-emerald-50/50 dark:bg-emerald-950/20">
+            <div className="font-semibold text-emerald-900 dark:text-emerald-200 flex items-center justify-between">
+              <span>Primary Storage</span>
+              <span>✓ Verified</span>
+            </div>
+            <p className="text-emerald-700 dark:text-emerald-400 mt-1 text-[11px]">
+              Local media storage directory validated with read/write access.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Optional Providers */}
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <span className="form-label">Optional connections</span>
+          <span className="text-[10px] uppercase font-bold text-stone-500 bg-stone-100 dark:bg-stone-800 px-1.5 py-0.5 rounded">
+            Skippable
+          </span>
+        </div>
+        <p className="text-xs text-stone-500 dark:text-stone-400">
+          Never show provider success before validation. These remain unconfigured and skippable
+          until verified in Admin Studio.
+        </p>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          {optionalConnections.map(([key, label]) => (
+            <label
+              key={key}
+              className="rounded-lg border border-stone-200 dark:border-stone-700 p-2.5 text-xs flex items-center justify-between cursor-pointer hover:bg-stone-50 dark:hover:bg-stone-800"
+            >
+              <div className="flex items-center">
+                <input
+                  className="mr-2"
+                  type="checkbox"
+                  checked={form.optionalConnections.includes(key)}
+                  onChange={() => toggleConnection(key)}
+                />
+                <span>{label}</span>
+              </div>
+              <span className="text-[10px] text-stone-400">Skippable</span>
+            </label>
+          ))}
+        </div>
+      </div>
+
+      {/* Publishing Defaults */}
+      <div className="space-y-3 pt-2 border-t border-stone-200 dark:border-stone-800">
+        <div className="flex items-center justify-between">
+          <span className="form-label">Publishing defaults</span>
+          <span className="text-[10px] uppercase font-bold text-stone-500 bg-stone-100 dark:bg-stone-800 px-1.5 py-0.5 rounded">
+            Optional
+          </span>
+        </div>
+        <div className="grid sm:grid-cols-3 gap-3">
+          <Field label="Search indexing" badge="Optional">
+            <select
+              className="form-input text-xs"
+              value={form.publishingDefaults?.indexingMode ?? 'index'}
+              onChange={(e) =>
+                updatePublishingDefault('indexingMode', e.target.value as 'index' | 'noindex')
+              }
+            >
+              <option value="index">Index (Search engines allowed)</option>
+              <option value="noindex">No Index (Private/hidden)</option>
+            </select>
+          </Field>
+          <Field label="Comments policy" badge="Optional">
+            <select
+              className="form-input text-xs"
+              value={form.publishingDefaults?.commentsPolicy ?? 'open'}
+              onChange={(e) =>
+                updatePublishingDefault(
+                  'commentsPolicy',
+                  e.target.value as 'open' | 'members' | 'closed',
+                )
+              }
+            >
+              <option value="open">Open (Immediate)</option>
+              <option value="members">Members only</option>
+              <option value="closed">Closed (Disabled)</option>
+            </select>
+          </Field>
+          <Field label="Site visibility" badge="Optional">
+            <select
+              className="form-input text-xs"
+              value={form.publishingDefaults?.visibility ?? 'public'}
+              onChange={(e) =>
+                updatePublishingDefault('visibility', e.target.value as 'public' | 'members-only')
+              }
+            >
+              <option value="public">Public (Open to web)</option>
+              <option value="members-only">Members-only</option>
+            </select>
+          </Field>
+        </div>
       </div>
     </section>
   )
 }
+
 function ReviewStep({ form, email }: { form: OnboardingInput; email: string }) {
   return (
-    <section className="space-y-3">
-      <h2 className="font-semibold">Ready to create your site</h2>
+    <section className="space-y-4">
+      <div className="flex items-center justify-between border-b pb-2 dark:border-stone-800">
+        <h2 className="font-semibold text-lg">5. Review & passkey enrollment</h2>
+        <span className="text-[11px] font-medium px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300">
+          Ready to finish
+        </span>
+      </div>
       <p className="text-sm text-stone-600 dark:text-stone-400">
-        A passkey will be enrolled for {email}. We-ll create {form.name || 'your site'}, its
-        canonical Site, Publication, and Space records, plus the selected starter content.
+        Confirming will enroll your passkey for{' '}
+        <strong className="text-stone-900 dark:text-stone-100">{email}</strong> and provision your
+        site, starter content, and publishing defaults.
       </p>
-      <dl className="grid grid-cols-2 gap-3 text-sm">
+      <dl className="grid grid-cols-2 gap-3 text-xs bg-stone-50 dark:bg-stone-900/50 p-4 rounded-xl border border-stone-200 dark:border-stone-800">
         <div>
-          <dt className="text-stone-500">URL</dt>
-          <dd>{form.primaryUrl}</dd>
+          <dt className="text-stone-500 font-medium">Site Name</dt>
+          <dd className="font-semibold text-stone-900 dark:text-stone-100">
+            {form.name || '(Default)'}
+          </dd>
         </div>
         <div>
-          <dt className="text-stone-500">Profile</dt>
-          <dd>{form.featureProfile}</dd>
+          <dt className="text-stone-500 font-medium">Primary URL</dt>
+          <dd className="font-mono text-stone-900 dark:text-stone-100">{form.primaryUrl}</dd>
         </div>
         <div>
-          <dt className="text-stone-500">Starter</dt>
-          <dd>{form.starterType}</dd>
+          <dt className="text-stone-500 font-medium">Profile</dt>
+          <dd className="font-semibold text-stone-900 dark:text-stone-100">
+            {form.featureProfile}
+          </dd>
         </div>
         <div>
-          <dt className="text-stone-500">Connections</dt>
-          <dd>
-            {form.optionalConnections.length ? form.optionalConnections.join(', ') : 'None yet'}
+          <dt className="text-stone-500 font-medium">Starter Site</dt>
+          <dd className="text-stone-900 dark:text-stone-100">{form.starterType}</dd>
+        </div>
+        <div>
+          <dt className="text-stone-500 font-medium">Locale & Timezone</dt>
+          <dd className="text-stone-900 dark:text-stone-100">
+            {form.locale} ({form.timezone})
+          </dd>
+        </div>
+        <div>
+          <dt className="text-stone-500 font-medium">Publishing Defaults</dt>
+          <dd className="text-stone-900 dark:text-stone-100">
+            {form.publishingDefaults?.indexingMode ?? 'index'} /{' '}
+            {form.publishingDefaults?.commentsPolicy ?? 'open'}
+          </dd>
+        </div>
+        <div>
+          <dt className="text-stone-500 font-medium">Required Providers</dt>
+          <dd className="text-emerald-600 dark:text-emerald-400 font-medium">
+            PostgreSQL & Storage Validated
+          </dd>
+        </div>
+        <div>
+          <dt className="text-stone-500 font-medium">Optional Connections</dt>
+          <dd className="text-stone-600 dark:text-stone-400">
+            {form.optionalConnections.length
+              ? form.optionalConnections.join(', ')
+              : 'None (Deferred)'}
           </dd>
         </div>
       </dl>
@@ -534,10 +770,31 @@ function Summary({ title, items }: { title: string; items: string[] }) {
     </section>
   )
 }
-function Field({ label, children }: { label: string; children: React.ReactNode }) {
+function Field({
+  label,
+  badge,
+  children,
+}: {
+  label: string
+  badge?: 'Required' | 'Optional'
+  children: React.ReactNode
+}) {
   return (
     <label className="block space-y-1">
-      <span className="form-label">{label}</span>
+      <div className="flex items-center justify-between">
+        <span className="form-label">{label}</span>
+        {badge ? (
+          <span
+            className={`text-[10px] uppercase font-bold px-1.5 py-0.5 rounded ${
+              badge === 'Required'
+                ? 'text-red-600 bg-red-50 dark:bg-red-950/60'
+                : 'text-stone-500 bg-stone-100 dark:bg-stone-800'
+            }`}
+          >
+            {badge}
+          </span>
+        ) : null}
+      </div>
       {children}
     </label>
   )

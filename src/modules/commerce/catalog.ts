@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto'
+import { validatePublicPath } from '../public/semantic-url'
 
 export const PRODUCT_CAPABILITIES = [
   'shippable',
@@ -208,8 +209,13 @@ export function validateCatalogProduct(product: CatalogProduct): readonly string
   if (unknownCapabilities.length)
     issues.push(`Unknown product capabilities: ${unknownCapabilities.join(', ')}.`)
   if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(product.slug)) issues.push('Product slug is invalid.')
-  if (product.canonicalPath !== `/store/${product.slug}`)
-    issues.push('Canonical path must be /store/<slug>.')
+  try {
+    validatePublicPath(product.canonicalPath)
+  } catch {
+    issues.push(
+      'Product canonical path must be a valid public path assigned by the route resolver.',
+    )
+  }
   if (product.seo?.canonicalUrl) {
     try {
       const canonical = new URL(product.seo.canonicalUrl)
