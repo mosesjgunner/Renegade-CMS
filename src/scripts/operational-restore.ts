@@ -1,4 +1,4 @@
-﻿import { spawn } from 'node:child_process'
+import { spawn } from 'node:child_process'
 import { createReadStream } from 'node:fs'
 import path from 'node:path'
 import { assertRestoreSafety, verifyOperationalBackup } from '../modules/operations/backup'
@@ -33,12 +33,21 @@ const composeArgs = [
   compose,
 ]
 await assertOperationalEnv(envFile)
-function run(commandArgs: string[], inputFile?: string) {
+function run(commandArgs: string[], inputFile?: string, quiet = false) {
   return new Promise<void>((resolve, reject) => {
+    const input = inputFile ? createReadStream(inputFile) : undefined
     const child = spawn('docker', commandArgs, {
-      stdio: [inputFile ? 'pipe' : 'inherit', 'inherit', 'inherit'],
+      stdio: [inputFile ? 'pipe' : 'ignore', quiet ? 'pipe' : 'inherit', 'inherit'],
     })
-    if (inputFile) createReadStream(inputFile).pipe(child.stdin!)
+    if (quiet) child.stdout!.resume()
+    if (input) {
+      input.on('error', reject)
+      child.stdin!.on('error', (error: NodeJS.ErrnoException) => {
+        if (error.code === 'EPIPE' && commandArgs.includes('--section=data')) return
+        if (error.code !== 'EPIPE') reject(error)
+      })
+      input.pipe(child.stdin!)
+    }
     child.on('error', reject)
     child.on('close', (code) =>
       code === 0
@@ -74,14 +83,7 @@ const images = (await capture([...composeArgs, 'config', '--images']))
   .filter(Boolean)
 const appImage = images.find((image) => !image.startsWith('postgres:'))
 if (!appImage) throw new Error('Restore could not determine the isolated application image.')
-await run(
-  ['run', '--rm', '-i', 'postgres:17.6-alpine', 'pg_restore', '-l'],
-  path.join(root, 'database.dump'),
-)
-await run(
-  ['run', '--rm', '-i', '--entrypoint', 'tar', appImage, '-tzf', '-'],
-  path.join(root, 'media.tar.gz'),
-)
+await validateArchiveFiles()
 const running = await capture([...composeArgs, 'ps', '--status', 'running', '--services'])
 if (
   running
@@ -117,22 +119,8 @@ const mediaFiles = await capture([
   'find /app/media -mindepth 1 -print -quit',
 ])
 if (mediaFiles) throw new Error('Restore refuses a media target that is not empty.')
-await run(
-  [
-    ...composeArgs,
-    'exec',
-    '-T',
-    'postgres',
-    'pg_restore',
-    '-U',
-    'renegade',
-    '-d',
-    'renegade',
-    '--no-owner',
-    '--no-privileges',
-  ],
-  path.join(root, 'database.dump'),
-)
+const restorePostgres = await capture([...composeArgs, 'ps', '-q', 'postgres'])
+await run(['cp', path.join(root, 'database.dump'), `${restorePostgres}:/tmp/renegade-restore.dump`])
 await run(
   [
     ...composeArgs,
@@ -140,16 +128,120 @@ await run(
     '--rm',
     '--no-deps',
     '--entrypoint',
-    'tar',
+    'sh',
     'renegade-web',
-    '-C',
-    '/app/media',
-    '-xzf',
-    '-',
+    '-c',
+    'cat > /tmp/renegade-restore-media.tar.gz && tar -xzf /tmp/renegade-restore-media.tar.gz -C /app/media',
   ],
   path.join(root, 'media.tar.gz'),
 )
-
+await run([
+  ...composeArgs,
+  'exec',
+  '-T',
+  'postgres',
+  'pg_restore',
+  '-U',
+  'renegade',
+  '-d',
+  'renegade',
+  '--section=pre-data',
+  '--no-owner',
+  '--no-privileges',
+  '/tmp/renegade-restore.dump',
+])
+await run([
+  ...composeArgs,
+  'exec',
+  '-T',
+  'postgres',
+  'pg_restore',
+  '-U',
+  'renegade',
+  '-d',
+  'renegade',
+  '--disable-triggers',
+  '--exit-on-error',
+  '--section=data',
+  '--no-owner',
+  '--no-privileges',
+  '/tmp/renegade-restore.dump',
+])
+const orphanSiteIDs = await capture([
+  ...composeArgs,
+  'exec',
+  '-T',
+  'postgres',
+  'psql',
+  '-U',
+  'renegade',
+  '-d',
+  'renegade',
+  '-Atc',
+  'SELECT DISTINCT e.site_id FROM activity_events e LEFT JOIN sites s ON s.id = e.site_id WHERE e.site_id IS NOT NULL AND s.id IS NULL',
+])
+const missingSiteIDs = orphanSiteIDs.split(/\r?\n/).filter(Boolean)
+async function validateArchiveFiles() {
+  await run(
+    [
+      'run',
+      '--rm',
+      '--entrypoint',
+      'sh',
+      '-v',
+      `${root}:/backup:ro`,
+      'postgres:17.6-alpine',
+      '-c',
+      'pg_restore -l /backup/database.dump >/dev/null && tar -tzf /backup/media.tar.gz >/dev/null',
+    ],
+    undefined,
+    true,
+  )
+}
+if (missingSiteIDs.length)
+  throw new Error(
+    `Restore stopped: ${missingSiteIDs.length} distinct activity-event site references have no matching site. Repair the source records and take a fresh backup before restoring.`,
+  )
+const orphanUserCheck = await capture([
+  ...composeArgs,
+  'exec',
+  '-T',
+  'postgres',
+  'psql',
+  '-U',
+  'renegade',
+  '-d',
+  'renegade',
+  '-Atc',
+  'SELECT (SELECT count(*) FROM admin_auth_audit_events e LEFT JOIN users u ON u.id=e.user_id WHERE e.user_id IS NOT NULL AND u.id IS NULL), (SELECT count(*) FROM admin_sessions s LEFT JOIN users u ON u.id=s.user_id WHERE s.user_id IS NOT NULL AND u.id IS NULL AND s.revoked_at IS NULL), (SELECT count(*) FROM admin_sessions s LEFT JOIN users u ON u.id=s.user_id WHERE s.user_id IS NOT NULL AND u.id IS NULL AND s.revoked_at IS NOT NULL)',
+])
+const [orphanAuditUsers, activeOrphanSessions, revokedOrphanSessions] = orphanUserCheck
+  .split('|')
+  .map(Number)
+if (orphanAuditUsers > 0 || activeOrphanSessions > 0 || revokedOrphanSessions > 0)
+  throw new Error(
+    `Restore stopped before constraints: ${orphanAuditUsers} audit rows reference missing users, ${activeOrphanSessions} active sessions reference missing users, and ${revokedOrphanSessions} revoked sessions reference missing users. Repair the source records and take a fresh backup; restore will not remap audit history or discard sessions.`,
+  )
+if (activeOrphanSessions > 0)
+  throw new Error(
+    `Restore stopped: ${activeOrphanSessions} active admin session rows reference missing users. Repair the source records before backup; active sessions are never discarded by restore.`,
+  )
+await run([
+  ...composeArgs,
+  'exec',
+  '-T',
+  'postgres',
+  'pg_restore',
+  '-U',
+  'renegade',
+  '-d',
+  'renegade',
+  '--exit-on-error',
+  '--section=post-data',
+  '--no-owner',
+  '--no-privileges',
+  '/tmp/renegade-restore.dump',
+])
 await run([...composeArgs, 'run', '--rm', 'migrate'])
 await run([...composeArgs, 'up', '-d', '--wait', 'renegade-web', 'renegade-worker'])
 await run([

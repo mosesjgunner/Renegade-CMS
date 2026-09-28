@@ -4,6 +4,7 @@ import { NextResponse } from 'next/server'
 import { bulkExecuteWorkflowItems } from '@/modules/editorial/cmos-persistence'
 import type { EditorialRole } from '@/modules/editorial/workflow'
 import type { Priority } from '@/modules/editorial/cmos-workflow'
+import { canManageAdminSite } from '@/modules/admin/site-access'
 
 export const runtime = 'nodejs'
 
@@ -18,10 +19,10 @@ export async function POST(request: Request) {
     const body = (await request.json()) as {
       articleIds: string[]
       action: 'approve' | 'request-changes' | 'withdraw' | 'reassign'
-      role?: EditorialRole
       comment?: string
       update?: { editorId?: string | null; priority?: Priority; dueDate?: string | null }
       now?: string
+      siteId?: string
     }
 
     if (!Array.isArray(body.articleIds) || body.articleIds.length === 0 || !body.action) {
@@ -33,9 +34,31 @@ export async function POST(request: Request) {
 
     const userRoleStr = String(auth.user.role)
     const actorRole: EditorialRole =
-      userRoleStr === 'owner' || userRoleStr === 'administrator'
-        ? body.role || 'publisher'
-        : 'editor'
+      userRoleStr === 'owner' || userRoleStr === 'administrator' ? 'publisher' : 'editor'
+    for (const articleId of [...new Set(body.articleIds)]) {
+      const article = await payload
+        .findByID({
+          collection: 'article-family-content',
+          id: articleId,
+          depth: 0,
+          overrideAccess: true,
+        })
+        .catch(() => null)
+      const articleSiteValue = (article as unknown as { site?: string | { id?: string } } | null)
+        ?.site
+      const articleSite =
+        typeof articleSiteValue === 'string' ? articleSiteValue : articleSiteValue?.id
+      if (!article || !canManageAdminSite(auth.user, articleSite))
+        return NextResponse.json(
+          { error: 'At least one article is outside your assigned sites.' },
+          { status: 403 },
+        )
+    }
+    if (auth.user.role === 'staff' && (!body.siteId || !canManageAdminSite(auth.user, body.siteId)))
+      return NextResponse.json(
+        { error: 'Choose an assigned site.' },
+        { status: body.siteId ? 403 : 400 },
+      )
 
     const result = await bulkExecuteWorkflowItems(payload, {
       articleIds: body.articleIds,
@@ -44,6 +67,7 @@ export async function POST(request: Request) {
       comment: body.comment,
       update: body.update,
       now: body.now,
+      siteId: body.siteId,
     })
 
     return NextResponse.json({ result })

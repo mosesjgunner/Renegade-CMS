@@ -1,8 +1,11 @@
 import type { CollectionConfig, GlobalConfig } from 'payload'
 
-const staffOnly = ({ req }: { req: { user?: { role?: string } | null } }) =>
-  ['owner', 'administrator', 'staff'].includes(String(req.user?.role))
-const internal = { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly }
+const internal = {
+  create: () => false,
+  delete: () => false,
+  read: () => false,
+  update: () => false,
+}
 const base = (slug: string, title: string): CollectionConfig => ({
   slug,
   admin: { useAsTitle: title, group: 'Network', hidden: true },
@@ -16,7 +19,10 @@ export const NetworkSettings: GlobalConfig = {
   slug: 'network-settings',
   label: 'Network',
   admin: { group: 'Settings' },
-  access: { read: staffOnly, update: ({ req }) => req.user?.role === 'owner' },
+  access: {
+    read: ({ req }) => req.user?.role === 'owner' || req.user?.role === 'administrator',
+    update: ({ req }) => req.user?.role === 'owner',
+  },
   fields: [
     text('canonicalOrigin'),
     { name: 'enabledProtocols', type: 'json', defaultValue: [] },
@@ -75,6 +81,7 @@ export const RemoteInstances: CollectionConfig = {
 }
 export const RemoteActors: CollectionConfig = {
   ...base('remote-actors', 'canonicalId'),
+  access: { create: () => false, delete: () => false, read: () => false, update: () => false },
   fields: [
     {
       name: 'instance',
@@ -92,6 +99,7 @@ export const RemoteActors: CollectionConfig = {
 }
 export const RemoteObjects: CollectionConfig = {
   ...base('remote-objects', 'canonicalId'),
+  access: { create: () => false, delete: () => false, read: () => false, update: () => false },
   fields: [
     {
       name: 'instance',
@@ -116,6 +124,7 @@ export const RemoteObjects: CollectionConfig = {
 }
 export const NetworkRelationships: CollectionConfig = {
   ...base('network-relationships', 'idempotencyKey'),
+  access: { create: () => false, delete: () => false, read: () => false, update: () => false },
   fields: [
     text('localSubjectType', true),
     text('localSubjectId', true),
@@ -148,6 +157,7 @@ export const NetworkRelationships: CollectionConfig = {
 }
 export const InboundNetworkActivities: CollectionConfig = {
   ...base('inbound-network-activities', 'dedupeKey'),
+  access: { create: () => false, delete: () => false, read: () => false, update: () => false },
   fields: [
     text('protocol', true),
     { name: 'remoteActor', type: 'relationship', relationTo: 'remote-actors' as never },
@@ -167,6 +177,7 @@ export const InboundNetworkActivities: CollectionConfig = {
 }
 export const OutboundNetworkDeliveries: CollectionConfig = {
   ...base('outbound-network-deliveries', 'idempotencyKey'),
+  access: { create: () => false, delete: () => false, read: () => false, update: () => false },
   fields: [
     text('protocol', true),
     {
@@ -191,6 +202,7 @@ export const OutboundNetworkDeliveries: CollectionConfig = {
 }
 export const NetworkDeliveryAttempts: CollectionConfig = {
   ...base('network-delivery-attempts', 'idempotencyKey'),
+  access: { create: () => false, delete: () => false, read: () => false, update: () => false },
   fields: [
     {
       name: 'delivery',
@@ -207,6 +219,12 @@ export const NetworkDeliveryAttempts: CollectionConfig = {
 }
 export const NetworkAccessDecisions: CollectionConfig = {
   ...base('network-access-decisions', 'subject'),
+  access: {
+    create: () => false,
+    delete: () => false,
+    read: ({ req }) => req.user?.role === 'owner' || req.user?.role === 'administrator',
+    update: () => false,
+  },
   fields: [
     text('subject', true),
     { name: 'subjectType', type: 'select', required: true, options: ['instance', 'actor'] },
@@ -219,6 +237,12 @@ export const NetworkAccessDecisions: CollectionConfig = {
 }
 export const NetworkAuditEvents: CollectionConfig = {
   ...base('network-audit-events', 'action'),
+  access: {
+    create: () => false,
+    delete: () => false,
+    read: ({ req }) => req.user?.role === 'owner' || req.user?.role === 'administrator',
+    update: () => false,
+  },
   fields: [
     text('action', true),
     text('subject', true),

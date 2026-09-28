@@ -26,17 +26,36 @@ export function renderPresentation(document: PresentationDocument, theme: ThemeM
             const component = Object.hasOwn(theme.componentRegistry, block.component)
               ? theme.componentRegistry[block.component]
               : undefined
-            const available =
-              component &&
-              definition.allowedComponents.includes(block.component) &&
-              component.version === block.componentVersion &&
-              !component.validate(block.props).length
+            const allowed = definition.allowedComponents.includes(block.component)
+            const validVersion = component && component.version === block.componentVersion
+            const validProps = component && !component.validate(block.props).length
+            const available = component && allowed && validVersion && validProps
+
+            if (available) {
+              return <Fragment key={block.id}>{component.render(block.props)}</Fragment>
+            }
+
+            const fallbackReason = !component
+              ? 'missing_from_registry'
+              : !allowed
+                ? 'incompatible_slot'
+                : !validVersion
+                  ? 'incompatible_version'
+                  : 'validation_failure'
+
+            const customFallback =
+              component && typeof component.fallback === 'function'
+                ? component.fallback(block, fallbackReason)
+                : null
+
             return (
               <Fragment key={block.id}>
-                {available ? (
-                  component.render(block.props)
-                ) : (
-                  <section data-unavailable-component={block.component}>
+                {customFallback ?? (
+                  <section
+                    data-unavailable-component={block.component}
+                    data-fallback-reason={fallbackReason}
+                    data-fallback="deterministic"
+                  >
                     This section is unavailable.
                   </section>
                 )}

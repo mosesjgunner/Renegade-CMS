@@ -14,7 +14,7 @@ export default async function AdminMigrationPage({
 }) {
   const payload = await getPayload({ config })
   const auth = await payload.auth({ headers: await headers() })
-  if (!['owner', 'administrator', 'staff'].includes(String(auth.user?.role))) notFound()
+  if (!['owner', 'administrator'].includes(String(auth.user?.role))) notFound()
 
   const { runId } = (await searchParams) ?? {}
   let initialReport = undefined

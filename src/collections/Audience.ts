@@ -1,4 +1,5 @@
 import type { CollectionConfig, Field } from 'payload'
+import { siteScopedAdminAccess, siteScopedRelationAdminAccess } from '../modules/admin/site-access'
 import { ownerFields, retentionFields } from './canonical-shared'
 import { validateFormSchema } from '../modules/audience/contracts'
 import { validateAutomation, validateSegmentTree } from '../modules/audience/engine'
@@ -8,7 +9,7 @@ const staffOnly = ({ req }: { req: { user?: { role?: string } | null } }) =>
 const base = (slug: string, title: string, group = 'Audience'): CollectionConfig => ({
   slug,
   admin: { useAsTitle: title, group },
-  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
+  access: siteScopedAdminAccess(),
   fields: [],
 })
 const scope = () => [...ownerFields()]
@@ -70,6 +71,10 @@ export const FormDefinitions: CollectionConfig = {
 }
 export const FormSchemas: CollectionConfig = {
   ...base('form-schemas', 'version'),
+  access: siteScopedRelationAdminAccess({
+    relationField: 'form',
+    targetCollection: 'form-definitions',
+  }),
   fields: [
     ref('form', 'form-definitions', true),
     { name: 'version', type: 'number', required: true },
@@ -121,6 +126,7 @@ export const FormSchemas: CollectionConfig = {
 }
 export const FormSubmissions: CollectionConfig = {
   ...base('form-submissions', 'id'),
+  access: siteScopedAdminAccess(),
   fields: [
     ...scope(),
     ref('form', 'form-definitions', true),
@@ -153,6 +159,10 @@ export const FormSubmissions: CollectionConfig = {
 }
 export const SubmissionAttachments: CollectionConfig = {
   ...base('submission-attachments', 'filename'),
+  access: siteScopedRelationAdminAccess({
+    relationField: 'submission',
+    targetCollection: 'form-submissions',
+  }),
   fields: [
     ref('submission', 'form-submissions', true),
     ref('media', 'media-assets'),
@@ -165,6 +175,7 @@ export const SubmissionAttachments: CollectionConfig = {
 }
 export const Contacts: CollectionConfig = {
   ...base('contacts', 'displayName', 'CRM'),
+  access: siteScopedAdminAccess(),
   fields: [
     ...scope(),
     { name: 'displayName', type: 'text', required: true },
@@ -186,6 +197,7 @@ export const Contacts: CollectionConfig = {
 }
 export const Organizations: CollectionConfig = {
   ...base('organizations', 'name', 'CRM'),
+  access: siteScopedAdminAccess(),
   fields: [
     ...scope(),
     { name: 'name', type: 'text', required: true },
@@ -197,6 +209,7 @@ export const Organizations: CollectionConfig = {
 }
 export const RelationshipRecords: CollectionConfig = {
   ...base('relationship-records', 'id', 'CRM'),
+  access: siteScopedAdminAccess(),
   fields: [
     ...scope(),
     ref('contact', 'contacts', true),
@@ -217,6 +230,7 @@ export const ContactTags: CollectionConfig = {
 }
 export const ContactTaggings: CollectionConfig = {
   ...base('contact-taggings', 'id', 'CRM'),
+  access: siteScopedRelationAdminAccess({ relationField: 'contact', targetCollection: 'contacts' }),
   fields: [
     ref('contact', 'contacts', true),
     ref('tag', 'contact-tags', true),
@@ -226,6 +240,7 @@ export const ContactTaggings: CollectionConfig = {
 }
 export const InteractionRecords: CollectionConfig = {
   ...base('interaction-records', 'occurredAt', 'CRM'),
+  access: siteScopedAdminAccess(),
   fields: [
     ...scope(),
     ref('contact', 'contacts'),
@@ -242,6 +257,7 @@ export const InteractionRecords: CollectionConfig = {
 }
 export const RelationshipNotes: CollectionConfig = {
   ...base('relationship-notes', 'id', 'CRM'),
+  access: siteScopedAdminAccess(),
   fields: [
     ...scope(),
     ref('contact', 'contacts'),
@@ -252,6 +268,7 @@ export const RelationshipNotes: CollectionConfig = {
 }
 export const DealsOrOpportunities: CollectionConfig = {
   ...base('deals-opportunities', 'title', 'CRM'),
+  access: siteScopedAdminAccess(),
   fields: [
     ...scope(),
     ref('contact', 'contacts'),
@@ -271,6 +288,7 @@ export const DealsOrOpportunities: CollectionConfig = {
 }
 export const OwnerAssignments: CollectionConfig = {
   ...base('owner-assignments', 'id', 'CRM'),
+  access: siteScopedAdminAccess(),
   fields: [
     ...scope(),
     ref('assignee', 'users'),
@@ -280,6 +298,7 @@ export const OwnerAssignments: CollectionConfig = {
 }
 export const NextActions: CollectionConfig = {
   ...base('next-actions', 'title', 'CRM'),
+  access: siteScopedAdminAccess(),
   fields: [
     ...scope(),
     { name: 'title', type: 'text', required: true },
@@ -290,6 +309,7 @@ export const NextActions: CollectionConfig = {
 }
 export const WorkflowItems: CollectionConfig = {
   ...base('workflow-items', 'title', 'Operations'),
+  access: siteScopedAdminAccess(),
   fields: [
     ...scope(),
     { name: 'title', type: 'text', required: true },
@@ -362,6 +382,7 @@ export const AudienceLists: CollectionConfig = {
 }
 export const AudienceSegments: CollectionConfig = {
   ...base('audience-segments', 'name'),
+  access: siteScopedAdminAccess(),
   fields: [
     ...scope(),
     { name: 'name', type: 'text', required: true },
@@ -387,6 +408,10 @@ export const AudienceSegments: CollectionConfig = {
 }
 export const AudienceMemberships: CollectionConfig = {
   ...base('audience-memberships', 'id'),
+  access: siteScopedRelationAdminAccess({
+    relationField: 'audienceList',
+    targetCollection: 'audience-lists',
+  }),
   fields: [
     ref('subscriber', 'subscribers', true),
     ref('audienceList', 'audience-lists', true),
@@ -398,6 +423,7 @@ export const AudienceMemberships: CollectionConfig = {
 }
 export const SubscriberConfirmationTokens: CollectionConfig = {
   ...base('subscriber-confirmation-tokens', 'tokenHash'),
+  access: { create: () => false, delete: () => false, read: () => false, update: () => false },
   fields: [
     ref('subscriber', 'subscribers', true),
     ref('audienceList', 'audience-lists'),
@@ -412,6 +438,7 @@ export const SubscriberConfirmationTokens: CollectionConfig = {
 }
 export const Subscribers: CollectionConfig = {
   ...base('subscribers', 'emailHash'),
+  access: siteScopedAdminAccess(),
   fields: [
     ...scope(),
     { name: 'email', type: 'email', required: true, access: { read: staffOnly } },
@@ -427,6 +454,7 @@ export const Subscribers: CollectionConfig = {
 }
 export const ConsentEvents: CollectionConfig = {
   ...base('consent-events', 'occurredAt'),
+  access: siteScopedAdminAccess(),
   fields: [
     ...scope(),
     ref('subscriber', 'subscribers'),
@@ -468,6 +496,10 @@ export const ConsentEvents: CollectionConfig = {
 }
 export const Preferences: CollectionConfig = {
   ...base('preferences', 'id'),
+  access: siteScopedRelationAdminAccess({
+    relationField: 'audienceList',
+    targetCollection: 'audience-lists',
+  }),
   fields: [
     ref('subscriber', 'subscribers', true),
     ref('audienceList', 'audience-lists'),
@@ -477,6 +509,7 @@ export const Preferences: CollectionConfig = {
 }
 export const Suppressions: CollectionConfig = {
   ...base('suppressions', 'emailHash'),
+  access: siteScopedAdminAccess(),
   fields: [
     ...scope(),
     { name: 'emailHash', type: 'text', required: true, index: true },
@@ -496,6 +529,7 @@ export const Suppressions: CollectionConfig = {
 }
 export const EmailMessages: CollectionConfig = {
   ...base('email-messages', 'subject', 'Audience'),
+  access: siteScopedAdminAccess(),
   hooks: {
     beforeChange: [
       ({ data, originalDoc, operation }) => {
@@ -578,6 +612,7 @@ export const EmailMessages: CollectionConfig = {
 }
 export const EmailTemplates: CollectionConfig = {
   ...base('email-templates', 'name', 'Audience'),
+  access: siteScopedAdminAccess(),
   fields: [
     ...scope(),
     { name: 'name', type: 'text', required: true },
@@ -613,6 +648,7 @@ export const EmailTemplates: CollectionConfig = {
 }
 export const DeliveryIdentities: CollectionConfig = {
   ...base('delivery-identities', 'emailHash'),
+  access: siteScopedAdminAccess(),
   fields: [
     ...scope(),
     { name: 'emailHash', type: 'text', required: true, index: true },
@@ -623,6 +659,10 @@ export const DeliveryIdentities: CollectionConfig = {
 }
 export const EmailDeliveries: CollectionConfig = {
   ...base('email-deliveries', 'idempotencyKey'),
+  access: siteScopedRelationAdminAccess({
+    relationField: 'message',
+    targetCollection: 'email-messages',
+  }),
   fields: [
     ref('message', 'email-messages', true),
     ref('subscriber', 'subscribers'),
@@ -667,6 +707,11 @@ export const EmailDeliveries: CollectionConfig = {
 /** Sanitized, idempotent operational evidence. Never persist a provider's raw payload. */
 export const EmailDeliveryEvents: CollectionConfig = {
   ...base('email-delivery-events', 'idempotencyKey', 'Audience'),
+  access: siteScopedRelationAdminAccess({
+    relationField: 'delivery',
+    targetCollection: 'email-deliveries',
+    targetSitePath: { anchorCollection: 'email-messages', targetRelationField: 'message' },
+  }),
   fields: [
     ref('delivery', 'email-deliveries', true),
     { name: 'idempotencyKey', type: 'text', required: true, unique: true, index: true },
@@ -683,6 +728,7 @@ export const EmailDeliveryEvents: CollectionConfig = {
 }
 export const ActivityEvents: CollectionConfig = {
   ...base('activity-events', 'type', 'Notifications'),
+  access: siteScopedAdminAccess(),
   fields: [
     ...scope(),
     { name: 'type', type: 'text', required: true, index: true },
@@ -695,6 +741,7 @@ export const ActivityEvents: CollectionConfig = {
 }
 export const Notifications: CollectionConfig = {
   ...base('notifications', 'id', 'Notifications'),
+  access: { create: () => false, delete: () => false, read: () => false, update: () => false },
   fields: [
     ref('activityEvent', 'activity-events', true),
     ref('recipientMember', 'members', true),
@@ -707,6 +754,7 @@ export const Notifications: CollectionConfig = {
 }
 export const NotificationPreferences: CollectionConfig = {
   ...base('notification-preferences', 'id', 'Notifications'),
+  access: { create: () => false, delete: () => false, read: () => false, update: () => false },
   fields: [
     ref('member', 'members', true),
     { name: 'rules', type: 'json', required: true },
@@ -715,6 +763,7 @@ export const NotificationPreferences: CollectionConfig = {
 }
 export const NotificationChannels: CollectionConfig = {
   ...base('notification-channels', 'address', 'Notifications'),
+  access: { create: () => false, delete: () => false, read: () => false, update: () => false },
   fields: [
     ref('member', 'members', true),
     status('kind', ['in-app', 'email', 'push'], 'in-app'),
@@ -725,6 +774,7 @@ export const NotificationChannels: CollectionConfig = {
 }
 export const DigestDefinitions: CollectionConfig = {
   ...base('digest-definitions', 'name', 'Notifications'),
+  access: siteScopedAdminAccess(),
   fields: [
     ...scope(),
     ref('member', 'members'),
@@ -738,6 +788,7 @@ export const DigestDefinitions: CollectionConfig = {
 }
 export const DigestRuns: CollectionConfig = {
   ...base('digest-runs', 'id', 'Notifications'),
+  access: { create: () => false, delete: () => false, read: () => false, update: () => false },
   fields: [
     ref('definition', 'digest-definitions', true),
     { name: 'sourceEventIds', type: 'json', required: true },
@@ -748,6 +799,7 @@ export const DigestRuns: CollectionConfig = {
 }
 export const DeliveryReceipts: CollectionConfig = {
   ...base('delivery-receipts', 'id', 'Notifications'),
+  access: { create: () => false, delete: () => false, read: () => false, update: () => false },
   fields: [
     ref('delivery', 'email-deliveries'),
     ref('notification', 'notifications'),
@@ -758,6 +810,7 @@ export const DeliveryReceipts: CollectionConfig = {
 }
 export const AutomationDefinitions: CollectionConfig = {
   ...base('automation-definitions', 'name', 'Operations'),
+  access: siteScopedAdminAccess(),
   fields: [
     ...scope(),
     { name: 'name', type: 'text', required: true },
@@ -792,6 +845,7 @@ export const AutomationDefinitions: CollectionConfig = {
 }
 export const AutomationRuns: CollectionConfig = {
   ...base('automation-runs', 'idempotencyKey', 'Operations'),
+  access: siteScopedAdminAccess(),
   fields: [
     ref('definition', 'automation-definitions', true),
     ref('sourceEvent', 'activity-events'),
@@ -806,6 +860,7 @@ export const AutomationRuns: CollectionConfig = {
 }
 export const AutomationFailures: CollectionConfig = {
   ...base('automation-failures', 'id', 'Operations'),
+  access: { create: () => false, delete: () => false, read: () => false, update: () => false },
   fields: [
     ref('run', 'automation-runs', true),
     { name: 'actionIndex', type: 'number', required: true },
@@ -816,6 +871,7 @@ export const AutomationFailures: CollectionConfig = {
 }
 export const RecipientSnapshots: CollectionConfig = {
   ...base('recipient-snapshots', 'hash', 'Audience'),
+  access: siteScopedAdminAccess(),
   fields: [
     ...scope(),
     ref('message', 'email-messages', true),
@@ -830,6 +886,7 @@ export const RecipientSnapshots: CollectionConfig = {
 }
 export const AudienceFrequencyPolicies: CollectionConfig = {
   ...base('audience-frequency-policies', 'purpose', 'Audience'),
+  access: siteScopedAdminAccess(),
   fields: [
     ...scope(),
     { name: 'purpose', type: 'text', required: true },
@@ -843,6 +900,7 @@ export const AudienceFrequencyPolicies: CollectionConfig = {
 
 export const TelecomMessages: CollectionConfig = {
   ...base('telecom-messages', 'title', 'Audience'),
+  access: siteScopedAdminAccess(),
   fields: [
     ...scope(),
     { name: 'title', type: 'text', required: true },
@@ -869,6 +927,7 @@ export const TelecomMessages: CollectionConfig = {
 
 export const TelecomDeliveries: CollectionConfig = {
   ...base('telecom-deliveries', 'idempotencyKey', 'Audience'),
+  access: siteScopedAdminAccess(),
   fields: [
     ...scope(),
     ref('message', 'telecom-messages', true),
@@ -912,6 +971,7 @@ export const TelecomDeliveries: CollectionConfig = {
 
 export const TelecomDeliveryEvents: CollectionConfig = {
   ...base('telecom-delivery-events', 'idempotencyKey', 'Audience'),
+  access: { create: () => false, delete: () => false, read: () => false, update: () => false },
   fields: [
     ref('delivery', 'telecom-deliveries', true),
     { name: 'idempotencyKey', type: 'text', required: true, unique: true, index: true },

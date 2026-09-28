@@ -100,7 +100,13 @@ export default async function SetupPage() {
     )
   }
 
-  return <SetupForm initialEmail={loadConfig().ownerEmail ?? ''} appUrl={loadConfig().appUrl} />
+  return (
+    <SetupForm
+      initialEmail={loadConfig().ownerEmail ?? ''}
+      appUrl={loadConfig().appUrl}
+      migrationState={{ applied: readiness.appliedMigrations, expected: readiness.totalMigrations }}
+    />
+  )
 }
 import type { Metadata } from 'next'
 

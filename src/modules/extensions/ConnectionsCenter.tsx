@@ -17,8 +17,12 @@ export type OperationalConnection = Omit<ConnectionRecord, 'status'> & {
   canRotateSecret?: boolean
   canDisconnect?: boolean
   failureCount?: number
-  target?: string
-  secretRef?: string
+  providerState?: 'configured' | 'validated' | 'enabled' | 'degraded' | 'unavailable'
+  credentialSourceLabel?: string
+  safeTestResult?: string
+  limitations?: string[]
+  runtimeCapability?: boolean
+  manageHref?: string
 }
 
 export type WebhookDeliveryItem = {
@@ -30,7 +34,6 @@ export type WebhookDeliveryItem = {
   attempts: number
   nextAttemptAt?: string | null
   redactedResponse?: string | null
-  lastError?: string | null
   diagnosis?: WebhookDeliveryDiagnosis
 }
 
@@ -79,12 +82,14 @@ export function ConnectionsCenter({
   auditEvents: initialAuditEvents = [],
   groupFor,
   isStaff = true,
+  siteId,
 }: {
   connections: readonly OperationalConnection[]
   deliveries?: readonly WebhookDeliveryItem[]
   auditEvents?: readonly IntegrationAuditItem[]
   groupFor?: (providerKey: string) => ConnectionGroup
   isStaff?: boolean
+  siteId?: string
 }) {
   const [connections, setConnections] = useState<OperationalConnection[]>([...initialConnections])
   const [deliveries, setDeliveries] = useState<WebhookDeliveryItem[]>([...initialDeliveries])
@@ -166,6 +171,7 @@ export function ConnectionsCenter({
         body: JSON.stringify({
           action: 'reconcile-provider',
           connectionId: conn.id,
+          siteId,
           collection:
             conn.collection ||
             (conn.providerKey === 'api-client' ? 'api-clients' : 'merchant-connections'),
@@ -208,6 +214,7 @@ export function ConnectionsCenter({
         body: JSON.stringify({
           action: 'disconnect-provider',
           connectionId: conn.id,
+          siteId,
           collection: conn.collection || 'api-clients',
           providerKey: conn.providerKey,
         }),
@@ -248,7 +255,7 @@ export function ConnectionsCenter({
       const res = await fetch('/api/admin/integrations', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ action: 'redeliver-webhook', deliveryId }),
+        body: JSON.stringify({ action: 'redeliver-webhook', deliveryId, siteId }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Redelivery request failed.')
@@ -293,6 +300,7 @@ export function ConnectionsCenter({
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({
           action: 'create-client',
+          siteId,
           name: newClientName,
           scopes: newClientScopes,
         }),
@@ -320,7 +328,7 @@ export function ConnectionsCenter({
           isUnknown: false,
           canRotateSecret: true,
           canDisconnect: true,
-          siteId: 'default',
+          siteId: siteId || 'default',
           auditEventIds: [],
           capabilities: [],
           encryptedSecretRef: null,
@@ -396,6 +404,7 @@ export function ConnectionsCenter({
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({
           action: 'create-webhook',
+          siteId,
           target: webhookTarget.trim(),
           secretRef: webhookSecretRef.trim(),
           events: webhookEvents,
@@ -424,7 +433,7 @@ export function ConnectionsCenter({
           isUnknown: false,
           canRotateSecret: true,
           canDisconnect: true,
-          siteId: 'default',
+          siteId: siteId || 'default',
           auditEventIds: [],
           capabilities: [],
           encryptedSecretRef: null,
@@ -716,6 +725,28 @@ export function ConnectionsCenter({
                   conn.status === 'degraded' ||
                   conn.status === 'expired'
                 const isUnknown = conn.isUnknown || conn.status === 'unconfigured'
+                const providerState =
+                  conn.providerState ??
+                  (conn.status === 'disabled' ||
+                  conn.status === 'disconnected' ||
+                  conn.status === 'revoked'
+                    ? 'unavailable'
+                    : isDegraded
+                      ? 'degraded'
+                      : conn.lastSuccessAt
+                        ? 'validated'
+                        : conn.status === 'active'
+                          ? 'enabled'
+                          : conn.encryptedSecretRef
+                            ? 'configured'
+                            : 'unavailable')
+                const credentialSource =
+                  conn.credentialSourceLabel ??
+                  (conn.collection === 'api-clients'
+                    ? 'Local one-way hash; token shown once'
+                    : conn.encryptedSecretRef
+                      ? 'Secret reference configured; value hidden'
+                      : 'No credential reference')
 
                 return (
                   <div
@@ -750,7 +781,7 @@ export function ConnectionsCenter({
                                   : 'bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300'
                           }`}
                         >
-                          {conn.status}
+                          {conn.providerState ?? conn.status}
                         </span>
                       </div>
 
@@ -776,7 +807,24 @@ export function ConnectionsCenter({
                       {/* Status Telemetry */}
                       <div className="pt-2 border-t border-stone-100 dark:border-stone-800/60 text-[11px] space-y-1 font-mono">
                         <div className="flex items-center justify-between text-stone-500">
-                          <span>What actually succeeded:</span>
+                          <span>Capability state:</span>
+                          <span>{providerState}</span>
+                        </div>
+                        <div className="flex items-center justify-between text-stone-500">
+                          <span>Credential source:</span>
+                          <span>{credentialSource}</span>
+                        </div>
+                        <div className="flex items-center justify-between text-stone-500">
+                          <span>Safe test:</span>
+                          <span>
+                            {conn.safeTestResult ||
+                              (conn.lastHealthCheckAt
+                                ? `Checked ${new Date(conn.lastHealthCheckAt).toLocaleString()}`
+                                : 'Not tested')}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between text-stone-500">
+                          <span>Last validation success:</span>
                           <span
                             className={
                               conn.lastSuccessAt
@@ -803,54 +851,79 @@ export function ConnectionsCenter({
                             </span>
                           </div>
                         )}
-                      </div>
-
-                      {/* Next Safe Repair Action Callout */}
-                      <div className="p-2.5 rounded-xl bg-stone-50 dark:bg-stone-950/60 border border-stone-200/80 dark:border-stone-800 text-[11px] space-y-1">
-                        <div className="flex items-center gap-1.5 text-stone-700 dark:text-stone-300 font-semibold">
-                          <span>🛠️ Next Safe Repair:</span>
-                        </div>
-                        <p className="text-stone-600 dark:text-stone-400 leading-snug">
-                          {conn.nextSafeRepairAction ||
-                            'No repair action needed; connection is stable.'}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Operational Action Buttons */}
-                    <div className="pt-3 border-t border-stone-100 dark:border-stone-800 flex items-center justify-between gap-2">
-                      <div className="flex items-center gap-1.5">
-                        <button
-                          onClick={() => handleReconcile(conn)}
-                          disabled={isReconciling === conn.id}
-                          className="text-[11px] font-semibold px-2.5 py-1 rounded bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 disabled:opacity-50 transition-colors"
-                          title="Reconcile provider connectivity safely without making external charges or posts"
-                        >
-                          {isReconciling === conn.id ? 'Checking…' : 'Reconcile'}
-                        </button>
-
-                        {conn.canRotateSecret && (
-                          <button
-                            onClick={() => {
-                              setRotateNewSecretRef('')
-                              setRotateSecretModal(conn)
-                            }}
-                            className="text-[11px] font-semibold px-2.5 py-1 rounded bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 transition-colors"
+                        {conn.limitations?.map((limitation) => (
+                          <div key={limitation} className="text-stone-500">
+                            Limitation: {limitation}
+                          </div>
+                        ))}
+                        {conn.manageHref && (
+                          <Link
+                            className="text-sky-700 dark:text-sky-300 underline"
+                            href={conn.manageHref}
                           >
-                            Rotate
-                          </button>
+                            Configure or manage capability
+                          </Link>
+                        )}
+                        {conn.lastError && (
+                          <div role="status" className="text-amber-600 dark:text-amber-400">
+                            Last error:{' '}
+                            {typeof conn.lastError === 'string'
+                              ? conn.lastError
+                              : conn.lastError.message}
+                          </div>
                         )}
                       </div>
 
-                      {conn.canDisconnect && (
-                        <button
-                          onClick={() => setDisconnectModal(conn)}
-                          className="text-[11px] font-semibold text-rose-600 dark:text-rose-400 hover:underline"
-                        >
-                          Disconnect
-                        </button>
+                      {/* Next Safe Repair Action Callout */}
+                      {!conn.runtimeCapability && (
+                        <div className="p-2.5 rounded-xl bg-stone-50 dark:bg-stone-950/60 border border-stone-200/80 dark:border-stone-800 text-[11px] space-y-1">
+                          <div className="flex items-center gap-1.5 text-stone-700 dark:text-stone-300 font-semibold">
+                            <span>🛠️ Next Safe Repair:</span>
+                          </div>
+                          <p className="text-stone-600 dark:text-stone-400 leading-snug">
+                            {conn.nextSafeRepairAction ||
+                              'No repair action needed; connection is stable.'}
+                          </p>
+                        </div>
                       )}
                     </div>
+
+                    {/* Operational Action Buttons */}
+                    {!conn.runtimeCapability && (
+                      <div className="pt-3 border-t border-stone-100 dark:border-stone-800 flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-1.5">
+                          <button
+                            onClick={() => handleReconcile(conn)}
+                            disabled={isReconciling === conn.id}
+                            className="text-[11px] font-semibold px-2.5 py-1 rounded bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 disabled:opacity-50 transition-colors"
+                            title="Reconcile provider connectivity safely without making external charges or posts"
+                          >
+                            {isReconciling === conn.id ? 'Checking…' : 'Reconcile'}
+                          </button>
+
+                          {conn.canRotateSecret && (
+                            <button
+                              onClick={() => {
+                                setRotateNewSecretRef('')
+                                setRotateSecretModal(conn)
+                              }}
+                              className="text-[11px] font-semibold px-2.5 py-1 rounded bg-stone-100 dark:bg-stone-800 hover:bg-stone-200 dark:hover:bg-stone-700 text-stone-800 dark:text-stone-200 transition-colors"
+                            >
+                              Rotate
+                            </button>
+                          )}
+                        </div>
+
+                        {conn.canDisconnect && (
+                          <button
+                            onClick={() => setDisconnectModal(conn)}
+                            className="text-[11px] font-semibold text-rose-600 dark:text-rose-400 hover:underline"
+                          >
+                            Disconnect
+                          </button>
+                        )}
+                      </div>
+                    )}
                   </div>
                 )
               })}

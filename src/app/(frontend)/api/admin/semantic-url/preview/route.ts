@@ -9,6 +9,7 @@ import {
   routeTemplatesForSite,
   type SemanticKind,
 } from '@/modules/public/semantic-url'
+import { canManageAdminSite } from '@/modules/admin/site-access'
 
 export const runtime = 'nodejs'
 
@@ -33,6 +34,8 @@ export async function POST(request: Request) {
       overrideAccess: true,
     } as never)) as unknown as Record<string, unknown>
     let siteId = typeof body.siteId === 'string' ? body.siteId : ''
+    if (siteId && !canManageAdminSite(auth.user, siteId))
+      return NextResponse.json({ error: 'Site access denied.' }, { status: 403 })
     let existing: Record<string, unknown> | null = null
     if (typeof body.id === 'string' && body.id) {
       try {
@@ -42,7 +45,13 @@ export async function POST(request: Request) {
           depth: 0,
           overrideAccess: true,
         } as never)) as unknown as Record<string, unknown>
-        if (!siteId) siteId = typeof existing.site === 'string' ? existing.site : ''
+        const existingSite =
+          typeof existing.site === 'string'
+            ? existing.site
+            : (existing.site as { id?: string } | undefined)?.id
+        if (!canManageAdminSite(auth.user, existingSite))
+          return NextResponse.json({ error: 'Content site access denied.' }, { status: 403 })
+        if (!siteId) siteId = existingSite ?? ''
       } catch {
         existing = null
       }

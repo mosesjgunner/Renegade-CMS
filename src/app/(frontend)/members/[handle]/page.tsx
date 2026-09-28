@@ -8,6 +8,7 @@ import { currentMember, readMemberSession } from '@/modules/identity/member-iden
 import { loadProfileProjection, ProfileAccessError } from '@/modules/community/profile-projection'
 import { ProfileRelationshipActions } from '@/modules/community/ProfileRelationshipActions'
 import { communitySiteForHost } from '@/modules/community/site-scope'
+import { PresentationSurface } from '@/modules/presentation/Surface'
 
 export const dynamic = 'force-dynamic'
 
@@ -53,40 +54,42 @@ export default async function MemberProfilePage({
   const { profile, redirected, siteId, viewerId } = await profileForRequest(handle)
   if (redirected) permanentRedirect(`/members/${profile.handle}`)
   return (
-    <main className="max-w-2xl mx-auto px-6 py-16">
-      {profile.coverUrl ? (
-        <img
-          src={profile.coverUrl}
-          alt={profile.coverAlt || ''}
-          className="mb-6 aspect-[3/1] w-full rounded-lg object-cover"
-        />
-      ) : null}
-      <h1 className="text-3xl font-bold">{profile.displayName}</h1>
-      {profile.avatarUrl ? (
-        <img
-          src={profile.avatarUrl}
-          alt={profile.avatarAlt || `${profile.displayName}'s avatar`}
-          className="mt-5 h-24 w-24 rounded-full object-cover"
-        />
-      ) : null}
-      {profile.bio ? <p className="mt-4 whitespace-pre-wrap">{profile.bio}</p> : null}
-      {profile.links?.length ? (
-        <ul className="mt-6 grid gap-2">
-          {profile.links.map(
-            (link, index) =>
-              link && (
-                <li key={index}>
-                  <a href={link.url} rel="noopener noreferrer me" target="_blank">
-                    {link.label}
-                  </a>
-                </li>
-              ),
-          )}
-        </ul>
-      ) : null}
-      {viewerId && viewerId !== profile.memberId ? (
-        <ProfileRelationshipActions siteId={siteId} targetMemberId={profile.memberId} />
-      ) : null}
-    </main>
+    <PresentationSurface surface="profile" record={profile as unknown as Record<string, unknown>}>
+      <main className="max-w-2xl mx-auto px-6 py-16">
+        {profile.coverUrl ? (
+          <img
+            src={profile.coverUrl}
+            alt={profile.coverAlt || ''}
+            className="mb-6 aspect-[3/1] w-full rounded-lg object-cover"
+          />
+        ) : null}
+        <h1 className="text-3xl font-bold">{profile.displayName}</h1>
+        {profile.avatarUrl ? (
+          <img
+            src={profile.avatarUrl}
+            alt={profile.avatarAlt || `${profile.displayName}'s avatar`}
+            className="mt-5 h-24 w-24 rounded-full object-cover"
+          />
+        ) : null}
+        {profile.bio ? <p className="mt-4 whitespace-pre-wrap">{profile.bio}</p> : null}
+        {profile.links?.length ? (
+          <ul className="mt-6 grid gap-2">
+            {profile.links.map(
+              (link, index) =>
+                link && (
+                  <li key={index}>
+                    <a href={link.url} rel="noopener noreferrer me" target="_blank">
+                      {link.label}
+                    </a>
+                  </li>
+                ),
+            )}
+          </ul>
+        ) : null}
+        {viewerId && viewerId !== profile.memberId ? (
+          <ProfileRelationshipActions siteId={siteId} targetMemberId={profile.memberId} />
+        ) : null}
+      </main>
+    </PresentationSurface>
   )
 }

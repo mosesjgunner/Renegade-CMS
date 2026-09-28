@@ -21,6 +21,7 @@
     "generate:types": "cross-env RENEGADE_MODULES=all RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT=true npm run payload -- generate:types",
     "generate:importmap": "cross-env RENEGADE_MODULES=all RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT=true npm run payload -- generate:importmap",
     "semantic-url:backfill": "tsx src/scripts/semantic-url-backfill.ts",
+    "intelligence:rebuild-graph": "cross-env RENEGADE_MODULES=intelligence tsx --env-file=.env src/scripts/rebuild-intelligence-graph.ts",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "lint": "eslint . --max-warnings=0",

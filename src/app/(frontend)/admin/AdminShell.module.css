@@ -1,0 +1,81 @@
+.layout {
+  display: grid;
+  grid-template-columns: 230px minmax(0, 1fr);
+  gap: 1.5rem;
+  max-width: 1480px;
+  margin: 0 auto;
+  padding: 1.25rem 1rem;
+}
+
+.sidebar {
+  position: sticky;
+  top: 4.5rem;
+  align-self: start;
+  max-height: calc(100vh - 5rem);
+  overflow-y: auto;
+}
+
+.main {
+  min-width: 0;
+}
+
+.skipLink {
+  position: absolute;
+  top: -100px;
+  left: 1rem;
+  background: var(--theme-primary-500, #38bdf8);
+  color: #09090b;
+  padding: 0.5rem 1rem;
+  font-weight: 700;
+  border-radius: 4px;
+  z-index: 9999;
+  text-decoration: none;
+  font-size: 0.875rem;
+  transition: top 0.15s ease;
+}
+
+.skipLink:focus-visible {
+  top: 1rem;
+  outline: 3px solid #ffffff;
+  outline-offset: 2px;
+}
+
+.layout :global(a:focus-visible),
+.layout :global(button:focus-visible),
+.layout :global(input:focus-visible),
+.layout :global(select:focus-visible),
+.layout :global(textarea:focus-visible),
+.layout :global([tabindex]:focus-visible) {
+  outline: 3px solid #38bdf8;
+  outline-offset: 3px;
+  box-shadow: 0 0 0 2px #09090b;
+}
+
+.layout :global(button),
+.layout :global(a) {
+  scroll-margin-block: 1rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .layout :global(*),
+  .layout :global(*::before),
+  .layout :global(*::after) {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media (max-width: 820px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.5rem;
+    padding: 0.5rem;
+  }
+
+  .sidebar {
+    position: static;
+    max-height: none;
+  }
+}

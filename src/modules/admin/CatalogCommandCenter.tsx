@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useMemo, useState } from 'react'
+import { useAdminSiteID } from './site-context'
 
 type Item = {
   document: Record<string, unknown>
@@ -8,12 +9,15 @@ type Item = {
 }
 
 export default function CatalogCommandCenter() {
+  const siteId = useAdminSiteID()
   const [items, setItems] = useState<Item[]>([])
   const [selected, setSelected] = useState<string[]>([])
   const [message, setMessage] = useState('Loading catalog…')
   const [importText, setImportText] = useState('[]')
   const refresh = async () => {
-    const response = await fetch('/api/admin/catalog')
+    const response = await fetch(
+      siteId ? `/api/admin/catalog?siteId=${encodeURIComponent(siteId)}` : '/api/admin/catalog',
+    )
     const body = await response.json()
     if (!response.ok) throw new Error(body.error)
     setItems(body.products)
@@ -21,7 +25,7 @@ export default function CatalogCommandCenter() {
   }
   useEffect(() => {
     void refresh().catch((error) => setMessage(String(error)))
-  }, [])
+  }, [siteId]) // eslint-disable-line react-hooks/exhaustive-deps
   const exportValue = useMemo(
     () =>
       JSON.stringify(
@@ -36,17 +40,23 @@ export default function CatalogCommandCenter() {
     const response = await fetch('/api/admin/catalog', {
       method: 'PATCH',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ productId, action }),
+      body: JSON.stringify({ productId, action, siteId }),
     })
     const body = await response.json()
     if (!response.ok) return setMessage(body.error)
     await refresh()
   }
   const archive = async () => {
+    if (
+      typeof window !== 'undefined' &&
+      !window.confirm(`Are you sure you want to archive ${selected.length} selected product(s)?`)
+    ) {
+      return
+    }
     const response = await fetch('/api/admin/catalog', {
       method: 'DELETE',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ productIds: selected }),
+      body: JSON.stringify({ productIds: selected, siteId }),
     })
     const body = await response.json()
     setMessage(
@@ -65,7 +75,14 @@ export default function CatalogCommandCenter() {
       const response = await fetch('/api/admin/catalog/import', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ products, mode, source: 'catalog-command-center' }),
+        body: JSON.stringify({
+          products: products.map((product: Record<string, unknown>) => ({
+            ...product,
+            siteId: product.siteId || siteId,
+          })),
+          mode,
+          source: 'catalog-command-center',
+        }),
       })
       const body = await response.json()
       setMessage(
@@ -168,7 +185,7 @@ export default function CatalogCommandCenter() {
                           target="_blank"
                           rel="noreferrer"
                         >
-                          Preview
+                          Preview <span className="sr-only">(opens in new tab)</span>
                         </a>
                         {state === 'draft' ? (
                           <button onClick={() => void transition(id, 'request-review')}>

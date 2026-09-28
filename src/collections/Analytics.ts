@@ -1,12 +1,37 @@
 import type { CollectionConfig } from 'payload'
 import { ownerFields, retentionFields } from './canonical-shared'
+import { siteScopedAdminAccess } from '../modules/admin/site-access'
 
 const staffOnly = ({ req }: { req: { user?: { role?: string } | null } }) =>
   ['owner', 'administrator', 'staff'].includes(String(req.user?.role))
 const base = (slug: string, title: string): CollectionConfig => ({
   slug,
   admin: { useAsTitle: title, group: 'Analytics' },
-  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
+  access:
+    slug === 'command-center-preferences'
+      ? {
+          create: ({ req, data }) =>
+            Boolean(
+              req.user &&
+                ['owner', 'administrator', 'staff'].includes(String(req.user.role)) &&
+                String((data as Record<string, unknown> | undefined)?.user ?? req.user.id) ===
+                  String(req.user.id),
+            ),
+          delete: () => false,
+          read: ({ req }) =>
+            Boolean(
+              req.user && ['owner', 'administrator', 'staff'].includes(String(req.user.role)),
+            ),
+          update: ({ req, data }) =>
+            Boolean(
+              req.user &&
+                ['owner', 'administrator', 'staff'].includes(String(req.user.role)) &&
+                (!data ||
+                  !Object.prototype.hasOwnProperty.call(data, 'user') ||
+                  String((data as Record<string, unknown>).user) === String(req.user.id)),
+            ),
+        }
+      : siteScopedAdminAccess(),
   fields: [],
 })
 export const AnalyticsEvents: CollectionConfig = {

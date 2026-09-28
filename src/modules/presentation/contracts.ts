@@ -5,7 +5,57 @@ import type { ComponentDefinition, LayoutBlock } from '../public/page-builder'
 export type { ThemeSlot } from '../public/contracts'
 
 export const RENEGADE_PRESENTATION_VERSION = '1.0.0'
-export type Surface = 'page' | 'article' | 'home' | 'archive' | 'search' | '404' | 'layout'
+export type Surface =
+  | 'page'
+  | 'article'
+  | 'home'
+  | 'archive'
+  | 'search'
+  | '404'
+  | 'layout'
+  | 'profile'
+  | 'book'
+  | 'podcast'
+  | 'podcast-episode'
+  | 'video'
+  | 'product'
+  | 'event'
+  | 'forum'
+  | 'custom-page'
+
+export type PrecedenceLevel =
+  | 'entry_override'
+  | 'conditional_variant'
+  | 'type_template'
+  | 'site_default'
+
+export type PrecedenceResolutionStep = {
+  level: PrecedenceLevel
+  candidateId?: string
+  status: 'selected' | 'miss' | 'incompatible' | 'skipped'
+  reason?: string
+}
+
+export type TemplateResolution = {
+  template: Template
+  theme: ThemeManifest
+  surface: Surface
+  selectedLevel: PrecedenceLevel
+  level: PrecedenceLevel
+  selectedTemplateId: string
+  entryOverride?: string | null
+  conditionalVariant?: string | null
+  typeTemplateId: string
+  siteDefaultId: string
+  resolutionPath: PrecedenceResolutionStep[]
+  precedenceChain: PrecedenceResolutionStep[]
+  componentFallbacks?: Array<{
+    slot: string
+    component: string
+    reason: string
+  }>
+}
+
 export type Template = {
   id: string
   version: string

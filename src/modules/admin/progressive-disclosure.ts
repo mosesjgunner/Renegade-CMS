@@ -28,10 +28,31 @@ export const CORE_COLLECTIONS = new Set([
   'form-submissions',
 ])
 
+/** Collections with an explicit destination in the grouped ADMIN-00 menu. */
+export const ADMIN_NAV_COLLECTIONS = new Set([
+  'users',
+  'sites',
+  'brands',
+  'authors',
+  'content',
+  'page-layouts',
+  'media-assets',
+  'sections',
+  'categories',
+  'topics',
+  'tags',
+  'discussions',
+  'subscribers',
+  'members',
+])
+
 export function applyProgressiveDisclosure(
   collections: readonly CollectionConfig[],
 ): CollectionConfig[] {
   return collections.map((collection) => {
+    if (ADMIN_NAV_COLLECTIONS.has(collection.slug)) {
+      return { ...collection, admin: { ...collection.admin, hidden: true } }
+    }
     if (CORE_COLLECTIONS.has(collection.slug) || collection.admin?.hidden) return collection
     return { ...collection, admin: { ...collection.admin, hidden: true } }
   })
@@ -40,7 +61,7 @@ export function applyProgressiveDisclosure(
 export function applyCoreGlobalGroups(globals: readonly GlobalConfig[]): GlobalConfig[] {
   return globals.map((global) =>
     global.slug === 'site-settings'
-      ? { ...global, admin: { ...global.admin, group: 'Settings' } }
+      ? { ...global, admin: { ...global.admin, group: 'Settings', hidden: true } }
       : global,
   )
 }

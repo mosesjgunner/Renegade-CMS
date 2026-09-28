@@ -4,6 +4,7 @@ import { getAllIndexableDiscoveryDocuments } from '../public/discovery'
 import { crawlerEntries, crawlerScale } from '../public/crawler'
 import { ManualWebmasterAdapter } from '../public/indexing'
 import { searchHealth, SEARCH_ADAPTER_THRESHOLD } from '../public/search-projection'
+import { getAdminSiteIDs } from './site-access'
 
 const stateOf = (event: Record<string, unknown>) => {
   const payload = event.payload as Record<string, unknown> | undefined
@@ -20,11 +21,26 @@ export default async function IndexingCenter({ initPageResult }: AdminViewServer
         <p>Staff access is required.</p>
       </main>
     )
-  const docs = await getAllIndexableDiscoveryDocuments(req.payload)
+  const url = new URL(req.url || 'http://localhost/admin/indexing')
+  const siteId = url.searchParams.get('siteId') || undefined
+  const grants = getAdminSiteIDs(req.user as { adminSites?: unknown; role?: string } | null)
+  if (role === 'staff' && (!siteId || !grants.includes(siteId)))
+    return (
+      <main>
+        <h1>Indexing Center</h1>
+        <p>Select an assigned site to view indexing state.</p>
+      </main>
+    )
+  const docs = await getAllIndexableDiscoveryDocuments(req.payload, siteId)
   const entries = crawlerEntries(docs)
   const recent = await req.payload.find({
     collection: 'execution-events',
-    where: { eventType: { equals: 'discovery.indexing.changed' } },
+    where: {
+      and: [
+        { eventType: { equals: 'discovery.indexing.changed' } },
+        ...(siteId ? [{ site: { equals: siteId } }] : []),
+      ],
+    },
     sort: '-createdAt',
     limit: 50,
     depth: 0,
@@ -100,7 +116,9 @@ export default async function IndexingCenter({ initPageResult }: AdminViewServer
         </tbody>
       </table>
       <p>
-        <Link href="/api/admin/indexing/search/reconcile">
+        <Link
+          href={`/api/admin/indexing/search/reconcile${siteId ? `?site=${encodeURIComponent(siteId)}` : ''}`}
+        >
           Reconcile search projection (staff only)
         </Link>
       </p>
@@ -110,7 +128,12 @@ export default async function IndexingCenter({ initPageResult }: AdminViewServer
       </p>
       <p>
         No provider credentials are configured. Manual exports are handoffs and are never labelled
-        submitted. <Link href="/api/admin/indexing/export">Download manual handoff JSON</Link>
+        submitted.{' '}
+        <Link
+          href={`/api/admin/indexing/export${siteId ? `?siteId=${encodeURIComponent(siteId)}` : ''}`}
+        >
+          Download manual handoff JSON
+        </Link>
       </p>
       <h2>Recent changes</h2>
       <table>

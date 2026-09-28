@@ -8,6 +8,7 @@ import { crossCheckDiscoveryOutputs } from '@/modules/public/discovery-cross-che
 import { analyzeCannibalization } from '@/modules/public/cannibalization'
 import { generateSeoAiSuggestions } from '@/modules/public/ai-boundary-suggestions'
 import { persistRenderedAuditLifecycle } from '@/modules/public/discovery-lifecycle'
+import { canManageAdminSite } from '@/modules/admin/site-access'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -31,9 +32,22 @@ export async function POST(request: Request) {
     depth: 0,
     overrideAccess: true,
   })
-  const defaultSiteId = sites.docs[0]?.id ? String(sites.docs[0].id) : 'default-site'
-
+  const assignedSiteIDs =
+    (user as unknown as { adminSites?: Array<string | { id: string }> }).adminSites?.map((site) =>
+      typeof site === 'string' ? site : site.id,
+    ) ?? []
+  const defaultSiteId =
+    user.role === 'staff'
+      ? assignedSiteIDs.length === 1
+        ? assignedSiteIDs[0]
+        : undefined
+      : sites.docs[0]?.id
+        ? String(sites.docs[0].id)
+        : 'default-site'
   const siteId = typeof body.siteId === 'string' ? body.siteId : defaultSiteId
+  if (!siteId) return Response.json({ error: 'Choose an assigned site.' }, { status: 400 })
+  if (!canManageAdminSite(user, siteId))
+    return Response.json({ error: 'Site access denied.' }, { status: 403 })
   const settings = await resolveSiteSettings(payload)
   const origin = (siteId && settings.canonicalOriginsBySite[siteId]) || settings.canonicalOrigin
 

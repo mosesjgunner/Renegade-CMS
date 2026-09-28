@@ -4,6 +4,7 @@ import { NextResponse } from 'next/server'
 import { executeWorkflowAction } from '@/modules/editorial/cmos-persistence'
 import type { EditorialRole } from '@/modules/editorial/workflow'
 import { WorkflowPermissionError, WorkflowStateError } from '@/modules/editorial/cmos-workflow'
+import { canManageAdminSite } from '@/modules/admin/site-access'
 
 export const runtime = 'nodejs'
 
@@ -42,33 +43,39 @@ export async function POST(request: Request) {
         watchers?: readonly string[]
       }
       now?: string
+      siteId?: string
     }
 
     if (!body.articleId || !body.action) {
       return NextResponse.json({ error: 'articleId and action are required.' }, { status: 400 })
     }
 
-    // Determine actor role from user or request override
-    const userRoleStr = String(auth.user.role)
-    let actorRole: EditorialRole = 'editor'
-    if (userRoleStr === 'owner' || userRoleStr === 'administrator') {
-      actorRole = body.role || 'publisher'
-    } else if (body.role) {
-      actorRole = body.role
-    } else {
-      actorRole = 'author'
-    }
+    const article = await payload
+      .findByID({
+        collection: 'article-family-content',
+        id: body.articleId,
+        depth: 0,
+        overrideAccess: true,
+      })
+      .catch(() => null)
+    const articleSiteValue = (article as unknown as { site?: string | { id?: string } } | null)
+      ?.site
+    const articleSite =
+      typeof articleSiteValue === 'string' ? articleSiteValue : articleSiteValue?.id
+    if (!article || !canManageAdminSite(auth.user, articleSite))
+      return NextResponse.json({ error: 'Article site access denied.' }, { status: 403 })
 
-    const actorId =
-      (userRoleStr === 'owner' || userRoleStr === 'administrator') && body.reviewerId
-        ? body.reviewerId
-        : String(auth.user.id)
+    // The authenticated account, never request fields, determines authority.
+    const userRoleStr = String(auth.user.role)
+    const actorRole: EditorialRole =
+      userRoleStr === 'owner' || userRoleStr === 'administrator' ? 'publisher' : 'editor'
+    const actorId = String(auth.user.id)
 
     const item = await executeWorkflowAction(payload, {
       articleId: body.articleId,
       action: body.action,
       actor: { id: actorId, role: actorRole },
-      actorSiteId: body.actorSiteId,
+      actorSiteId: String(articleSite),
       comment: body.comment,
       targetStatus: body.targetStatus,
       reason: body.reason,

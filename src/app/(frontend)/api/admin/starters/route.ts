@@ -13,6 +13,7 @@ import {
 } from '@/modules/starters/service'
 import type { StarterId } from '@/modules/starters/contracts'
 import { themePool, readThemeState, createThemePreview } from '@/modules/presentation/lifecycle'
+import { canManageAdminSite, getAdminSiteIDs } from '@/modules/admin/site-access'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -29,6 +30,7 @@ export async function GET(request: Request) {
 
   const sites = await (payload as any).find({
     collection: 'sites',
+    ...(user.role === 'staff' ? { where: { id: { in: getAdminSiteIDs(user) } } } : {}),
     limit: 100,
     depth: 0,
     overrideAccess: true,
@@ -40,6 +42,8 @@ export async function GET(request: Request) {
   if (!site) {
     return NextResponse.json({ error: 'No sites available.' }, { status: 400 })
   }
+  if (!canManageAdminSite(user, site))
+    return NextResponse.json({ error: 'Site access denied.' }, { status: 403 })
 
   const status = await getStarterStatus(payload, site)
   const pool = themePool(payload)
@@ -118,6 +122,8 @@ export async function POST(request: Request) {
     if (!siteId) {
       throw new Error('siteId is required.')
     }
+    if (!canManageAdminSite(user, siteId))
+      return NextResponse.json({ error: 'Site access denied.' }, { status: 403 })
 
     if (action === 'install') {
       if (!starterId || !starterDefinitions[starterId as StarterId]) {

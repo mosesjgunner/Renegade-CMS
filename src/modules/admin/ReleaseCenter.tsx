@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
+import { useAdminSiteID } from './site-context'
 
 import type {
   CoordinatedRelease,
@@ -26,6 +27,8 @@ const STATUS_COLORS: Record<string, { bg: string; text: string; border: string }
 }
 
 export default function ReleaseCenter() {
+  const siteId = useAdminSiteID()
+  const siteSuffix = siteId ? `?siteId=${encodeURIComponent(siteId)}` : ''
   const [releases, setReleases] = useState<CoordinatedRelease[]>([])
   const [selectedId, setSelectedId] = useState<string | null>(null)
   const [activeRelease, setActiveRelease] = useState<CoordinatedRelease | null>(null)
@@ -83,7 +86,7 @@ export default function ReleaseCenter() {
   const loadReleases = async () => {
     setLoading(true)
     try {
-      const res = await fetch('/api/admin/releases')
+      const res = await fetch(`/api/admin/releases${siteSuffix}`)
       const data = await res.json()
       if (res.ok) {
         setReleases(data.releases || [])
@@ -99,7 +102,7 @@ export default function ReleaseCenter() {
 
   const loadReleaseDetail = async (id: string) => {
     try {
-      const res = await fetch(`/api/admin/releases/${id}`)
+      const res = await fetch(`/api/admin/releases/${id}${siteSuffix}`)
       const data = await res.json()
       if (res.ok) {
         setActiveRelease(data.release)
@@ -111,7 +114,7 @@ export default function ReleaseCenter() {
 
   useEffect(() => {
     loadReleases()
-  }, [])
+  }, [siteSuffix]) // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (selectedId) {
@@ -119,13 +122,13 @@ export default function ReleaseCenter() {
     } else {
       setActiveRelease(null)
     }
-  }, [selectedId])
+  }, [selectedId]) // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleAction = async (action: string, payload: Record<string, unknown> = {}) => {
     if (!selectedId) return
     setError(null)
     try {
-      const res = await fetch(`/api/admin/releases/${selectedId}`, {
+      const res = await fetch(`/api/admin/releases/${selectedId}${siteSuffix}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ action, ...payload }),
@@ -151,6 +154,7 @@ export default function ReleaseCenter() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           name: createForm.name,
+          siteId,
           purpose: createForm.purpose,
           ownerTeam: createForm.ownerTeam,
           timeZone: createForm.timeZone,

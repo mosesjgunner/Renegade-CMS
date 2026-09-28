@@ -6,6 +6,7 @@ import {
   evaluateAudienceHealth,
   projectUnifiedAudienceCalendar,
 } from '@/modules/audience/command-center-service'
+import { canManageAdminSite } from '@/modules/admin/site-access'
 
 export const runtime = 'nodejs'
 
@@ -16,12 +17,17 @@ export async function GET(request: Request) {
   const payload = await getPayload({ config })
   const auth = await payload.auth({ headers: request.headers })
 
-  if (process.env.LOCAL_E2E_TEST_MODE !== 'true' && (!auth.user || !staffOnly(auth.user))) {
+  if (!auth.user || !staffOnly(auth.user)) {
     return NextResponse.json({ error: 'Staff access required.' }, { status: 403 })
   }
 
   const url = new URL(request.url)
   let siteId = url.searchParams.get('siteId')
+
+  if (auth.user.role === 'staff' && !siteId)
+    return NextResponse.json({ error: 'Choose an assigned site.' }, { status: 400 })
+  if (siteId && !canManageAdminSite(auth.user, siteId))
+    return NextResponse.json({ error: 'Site access denied.' }, { status: 403 })
 
   if (!siteId) {
     try {
@@ -72,6 +78,7 @@ export async function GET(request: Request) {
   try {
     const subscribers = await payload.find({
       collection: 'subscribers',
+      where: { site: { equals: resolvedSiteId } },
       limit: 0,
       overrideAccess: true,
     })

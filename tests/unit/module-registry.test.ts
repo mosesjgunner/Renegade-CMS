@@ -4,6 +4,7 @@ import { loadConfig } from '../../src/modules/core/config'
 import { registeredPayloadDomains } from '../../src/modules/payload-domains'
 import {
   COLLECTION_WARN_THRESHOLD,
+  DOCUMENT_LOCK_COLLECTIONS,
   OPTIONAL_MODULES,
   POSTGRES_FUNCTION_ARG_LIMIT,
   assertCollectionCountWithinLimit,
@@ -110,23 +111,28 @@ describe('progressive module registry', () => {
     }
   })
 
-  it('the count guard trips BEFORE exceeding the PostgreSQL argument limit', () => {
-    // Enabling everything would register more collections than PostgreSQL can
-    // handle in one function call — the guard must throw a clear error, not a 500.
+  it('keeps the full module set while limiting Payload document-lock targets', () => {
     const full = fullRegistrations()
-    expect(() => gatePayloadRegistrations(full, { enabled: parseEnabledModules('all') })).toThrow(
-      /PostgreSQL/i,
+    const warn = vi.fn()
+    const all = gatePayloadRegistrations(full, { enabled: parseEnabledModules('all'), warn })
+    expect(all.collections).toHaveLength(full.collections.length)
+    const lockable = all.collections.filter((collection) => collection.lockDocuments !== false)
+    expect(lockable.length).toBeLessThan(COLLECTION_WARN_THRESHOLD)
+    expect(lockable.length).toBeLessThan(POSTGRES_FUNCTION_ARG_LIMIT)
+    expect(lockable.every((collection) => DOCUMENT_LOCK_COLLECTIONS.has(collection.slug))).toBe(
+      true,
     )
+    expect(warn).not.toHaveBeenCalled()
+    const configuredSlugs = new Set(full.collections.map(({ slug }) => slug))
+    expect([...DOCUMENT_LOCK_COLLECTIONS].every((slug) => configuredSlugs.has(slug))).toBe(true)
 
-    // Exactly at the limit throws; one below only warns.
     expect(() => assertCollectionCountWithinLimit(POSTGRES_FUNCTION_ARG_LIMIT)).toThrow(
       /PostgreSQL/i,
     )
-    const warn = vi.fn()
-    assertCollectionCountWithinLimit(POSTGRES_FUNCTION_ARG_LIMIT - 1, { warn })
-    expect(warn).toHaveBeenCalledOnce()
+    const nearLimitWarning = vi.fn()
+    assertCollectionCountWithinLimit(POSTGRES_FUNCTION_ARG_LIMIT - 1, { warn: nearLimitWarning })
+    expect(nearLimitWarning).toHaveBeenCalledOnce()
   })
-
   it('warns as the count approaches the limit but does not throw', () => {
     const warn = vi.fn()
     assertCollectionCountWithinLimit(COLLECTION_WARN_THRESHOLD, { warn })
@@ -137,11 +143,10 @@ describe('progressive module registry', () => {
     expect(quiet).not.toHaveBeenCalled()
   })
 
-  it('allows the full set only with the explicit unsafe-count override (artifact generation)', () => {
+  it('allows the full module registration without the unsafe-count override', () => {
     const full = fullRegistrations()
     const all = gatePayloadRegistrations(full, {
       enabled: parseEnabledModules('all'),
-      allowUnsafeCollectionCount: true,
       warn: () => {},
     })
     expect(all.collections.length).toBe(full.collections.length)

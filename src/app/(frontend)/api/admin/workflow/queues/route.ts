@@ -2,6 +2,7 @@ import config from '@payload-config'
 import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
 import { getWorkflowQueuesForUser } from '@/modules/editorial/cmos-persistence'
+import { canManageAdminSite } from '@/modules/admin/site-access'
 
 export const runtime = 'nodejs'
 
@@ -14,6 +15,10 @@ export async function GET(request: Request) {
 
   const url = new URL(request.url)
   const siteId = url.searchParams.get('siteId') || undefined
+  if (auth.user.role === 'staff' && !siteId)
+    return NextResponse.json({ error: 'Choose an assigned site.' }, { status: 400 })
+  if (siteId && !canManageAdminSite(auth.user, siteId))
+    return NextResponse.json({ error: 'Site access denied.' }, { status: 403 })
   const now = url.searchParams.get('now') || undefined
 
   const userId = String(auth.user.id)

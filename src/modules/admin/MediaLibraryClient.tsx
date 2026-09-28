@@ -5,6 +5,7 @@ import { MediaPicker, type PickableMedia } from '../media/MediaPicker'
 import { MediaUploader } from '../media/MediaUploader'
 import { MediaGovernancePanel } from './MediaGovernancePanel'
 import { ImageEditorModal, type ImageEditorAsset } from '../media/image-editor'
+import styles from './MediaLibraryClient.module.css'
 
 type VariantData = {
   id: string
@@ -232,7 +233,7 @@ export function MediaLibraryClient({ siteId }: { siteId: string }) {
   }
 
   return (
-    <div id="media-library-client-root" style={{ marginTop: '1.5rem' }}>
+    <div id="media-library-client-root" className={styles.root} style={{ marginTop: '1.5rem' }}>
       <h2 style={{ fontSize: '1.5rem', fontWeight: 700, marginBottom: '0.25rem' }}>
         Media Library
       </h2>

@@ -1,5 +1,20 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
+vi.mock('payload', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('payload')>()
+  return {
+    ...actual,
+    getPayload: vi.fn(async () => ({
+      auth: vi.fn(async () => ({ user: null })),
+      find: vi.fn(async () => ({ docs: [] })),
+      findByID: vi.fn(async () => null),
+      create: vi.fn(async () => ({})),
+      update: vi.fn(async () => ({})),
+      db: { pool: { query: vi.fn(async () => ({ rows: [] })) } },
+    })),
+  }
+})
+
 import {
   CommentComposerError,
   consumeCommentRateLimit,

@@ -3,6 +3,7 @@ import config from '@payload-config'
 import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
 import { calculateDonationProgress } from '@/modules/commerce/donations'
+import { canManageAdminSite } from '@/modules/admin/site-access'
 
 const allowed = ['owner', 'administrator', 'staff']
 const rel = (value: any) => String(typeof value === 'object' && value ? value.id : (value ?? ''))
@@ -12,8 +13,15 @@ export async function GET(request: Request) {
   const auth = await payload.auth({ headers: request.headers })
   if (!allowed.includes(String((auth.user as any)?.role)))
     return NextResponse.json({ error: 'Unauthorized.' }, { status: 403 })
+  const siteId = new URL(request.url).searchParams.get('siteId')
+  if ((auth.user as any)?.role === 'staff' && !siteId)
+    return NextResponse.json({ error: 'Choose an assigned site.' }, { status: 400 })
+  if (siteId && !canManageAdminSite(auth.user, siteId))
+    return NextResponse.json({ error: 'Site access denied.' }, { status: 403 })
+  const where = siteId ? { site: { equals: siteId } } : undefined
   const donations = await payload.find({
     collection: 'donations',
+    ...(where ? { where } : {}),
     limit: 10000,
     depth: 0,
     overrideAccess: true,
@@ -21,6 +29,7 @@ export async function GET(request: Request) {
   })
   const campaigns = await payload.find({
     collection: 'donation-campaigns',
+    ...(where ? { where } : {}),
     limit: 5000,
     depth: 0,
     overrideAccess: true,
@@ -28,6 +37,7 @@ export async function GET(request: Request) {
   const allDonations = donations.docs as any[]
   const events = await payload.find({
     collection: 'donation-events',
+    ...(where ? { where } : {}),
     limit: 20000,
     depth: 0,
     overrideAccess: true,
@@ -133,6 +143,9 @@ export async function PATCH(request: Request) {
     .findByID({ collection: 'supporters', id: supporterId, depth: 0, overrideAccess: true })
     .catch(() => null)
   if (!supporter) return NextResponse.json({ error: 'Supporter not found.' }, { status: 404 })
+  const siteId = typeof supporter.site === 'string' ? supporter.site : supporter.site?.id
+  if (!canManageAdminSite(auth.user, siteId))
+    return NextResponse.json({ error: 'Site access denied.' }, { status: 403 })
   if (body.action === 'privacy') {
     if (!['public', 'anonymous', 'private'].includes(body.visibilityPreference))
       return NextResponse.json({ error: 'Invalid privacy preference.' }, { status: 400 })

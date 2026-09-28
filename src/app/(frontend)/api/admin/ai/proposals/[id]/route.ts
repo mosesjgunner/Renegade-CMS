@@ -9,6 +9,7 @@ import {
 } from '@/modules/ai/workflows'
 import { relationId } from '@/modules/ai/connections'
 import { decodeProposalValue } from '@/modules/ai/persistence'
+import { canManageAdminSite } from '@/modules/admin/site-access'
 
 export const runtime = 'nodejs'
 type Doc = Record<string, unknown> & { id: string }
@@ -27,6 +28,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   }
   if (!body.siteId || !['apply', 'decline'].includes(String(body.decision)))
     return fail('Site and decision are required.')
+  if (!canManageAdminSite(auth.user, body.siteId)) return fail('Site access denied.', 403)
   let proposal: Doc
   try {
     proposal = (await payload.findByID({

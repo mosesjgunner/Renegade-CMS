@@ -1,11 +1,12 @@
 import type { CollectionConfig } from 'payload'
 import { ownerFields } from './canonical-shared'
+import { siteScopedAdminAccess } from '../modules/admin/site-access'
 const staffOnly = ({ req }: { req: { user?: { role?: string } | null } }) =>
   ['owner', 'administrator', 'staff'].includes(String(req.user?.role))
 export const ContentReleases: CollectionConfig = {
   slug: 'content-releases',
   admin: { useAsTitle: 'title', group: 'Publishing' },
-  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
+  access: siteScopedAdminAccess(),
   fields: [
     ...ownerFields(),
     { name: 'title', type: 'text', required: true },

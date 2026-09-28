@@ -1,4 +1,5 @@
 import { spawn } from 'node:child_process'
+import fs from 'node:fs'
 import path from 'node:path'
 import process from 'node:process'
 
@@ -18,11 +19,17 @@ const env = {
   NODE_ENV: 'test',
   ALLOW_FIXTURE_SEED: 'true',
   ENABLE_TEST_ROUTES: 'true',
+  LOCAL_E2E_TEST_MODE: 'true',
   PORT: new URL(baseUrl).port || '3100',
 }
 
+const standaloneServer = path.resolve('.next/standalone/server.js')
 const nextCli = path.resolve('node_modules/next/dist/bin/next')
-const app = spawn(process.execPath, [nextCli, 'start'], {
+const useStandalone = fs.existsSync(standaloneServer)
+const serverScript = useStandalone ? standaloneServer : nextCli
+const serverArgs = useStandalone ? [] : ['start']
+
+const app = spawn(process.execPath, [serverScript, ...serverArgs], {
   env: env as NodeJS.ProcessEnv,
   stdio: 'pipe',
 })

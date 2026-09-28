@@ -20,11 +20,10 @@ import type { PayloadRegistrations } from './core/payload-domains'
  * The PostgreSQL guard
  * --------------------
  * PostgreSQL caps a single function call at 100 arguments. Payload's built-in
- * "locked documents" dashboard query builds one `json_build_array(...)` with an
- * argument per registered collection, so registering ~120+ collections makes
- * `/admin` fail with a cryptic 500 (SQLSTATE 54023). Registering the floor keeps
- * the count far below that. `assertCollectionCountWithinLimit` turns the failure
- * into a loud, explanatory error at config-build time instead of a runtime 500.
+ * locked-documents relationship includes one target per lockable collection.
+ * PostgreSQL rejects the generated function call above 100 targets. Keep locks
+ * on operator-edited records; event, audit, token, delivery, and worker records
+ * are managed through command centers or service APIs and do not need row locks.
  */
 
 export type ModuleId =
@@ -45,6 +44,7 @@ export type ModuleId =
   | 'experiences'
   | 'quality'
   | 'commerce'
+  | 'intelligence'
 
 export type ModuleManifestEntry = {
   id: ModuleId
@@ -320,21 +320,126 @@ export const OPTIONAL_MODULES: readonly ModuleManifestEntry[] = [
       'commerce-reconcile-payments',
     ],
   },
+  {
+    id: 'intelligence',
+    title: 'Discovery & Intelligence',
+    summary:
+      'Entities, claims, citations, analyses, findings, recommendations, and execution history.',
+    collections: [
+      'intelligence-entities',
+      'intelligence-claims',
+      'intelligence-citations',
+      'intelligence-analyses',
+      'intelligence-findings',
+      'intelligence-recommendations',
+      'intelligence-executions',
+    ],
+    tasks: ['intelligence-content-analysis'],
+  },
 ] as const
 
 const MODULE_IDS: ReadonlySet<string> = new Set(OPTIONAL_MODULES.map((entry) => entry.id))
 
 /** PostgreSQL caps a single function call at 100 arguments. */
 export const POSTGRES_FUNCTION_ARG_LIMIT = 100
-/** Warn once the registered collection count approaches the hard limit. */
+/** Warn once the locked-document target count approaches the hard limit. */
 export const COLLECTION_WARN_THRESHOLD = 90
+
+/** Collections edited directly by operators and therefore protected by Payload document locks. */
+export const DOCUMENT_LOCK_COLLECTIONS: ReadonlySet<string> = new Set([
+  'users',
+  'sites',
+  'page-layouts',
+  'brands',
+  'members',
+  'profiles',
+  'spaces',
+  'authors',
+  'publications',
+  'api-clients',
+  'webhook-subscriptions',
+  'media-assets',
+  'sections',
+  'categories',
+  'topics',
+  'tags',
+  'series',
+  'taxonomy-redirects',
+  'public-redirects',
+  'content-releases',
+  'content',
+  'article-family-content',
+  'team-memberships',
+  'team-invitations',
+  'editorial-assignments',
+  'editorial-discussions',
+  'editorial-comments',
+  'work-conversations',
+  'work-messages',
+  'albums',
+  'books',
+  'book-parts',
+  'book-chapters',
+  'book-editions',
+  'podcast-shows',
+  'podcast-seasons',
+  'podcast-episodes',
+  'video-channels',
+  'video-playlists',
+  'videos',
+  'video-captions',
+  'interviews',
+  'livestreams',
+  'transcript-revisions',
+  'graphic-documents',
+  'quick-capture-drafts',
+  'social-accounts',
+  'social-drafts',
+  'social-network-variants',
+  'campaigns',
+  'relationships',
+  'forum-sections',
+  'forums',
+  'discussions',
+  'discussion-posts',
+  'events',
+  'timelines',
+  'timeline-memberships',
+  'calendar-entries',
+  'sources',
+  'form-definitions',
+  'form-schemas',
+  'contacts',
+  'organizations',
+  'contact-tags',
+  'deals-opportunities',
+  'owner-assignments',
+  'next-actions',
+  'workflow-items',
+  'audience-lists',
+  'audience-segments',
+  'subscribers',
+  'email-messages',
+  'email-templates',
+  'delivery-identities',
+  'automation-definitions',
+  'audience-experiments',
+  'analytics-goals',
+  'command-center-preferences',
+  'experience-rules',
+  'experience-variants',
+  'experiments',
+  'experiment-variants',
+  'quality-policies',
+  'quality-rules',
+  'quality-exceptions',
+  'quality-waivers',
+])
 
 /**
  * Parse the enabled-module list from `RENEGADE_MODULES`.
  * - unset / empty      → floor only (no optional modules)
- * - "all"              → every optional module (used to regenerate the full-set
- *                        payload-types.ts / import map; exceeds the PG limit, so
- *                        it must be paired with the unsafe-count override)
+ * - "all"              -> every optional module; document locks stay in the operator allowlist
  * - "a, b , c"         → those modules (whitespace-tolerant, case-insensitive)
  * Unknown ids throw a clear error listing the valid module ids.
  */
@@ -395,8 +500,6 @@ function buildOwnership(): OwnershipMaps {
 export type GateOptions = {
   /** Enabled optional modules. */
   enabled: Set<ModuleId>
-  /** Bypass the hard PostgreSQL count guard. Reserved for full-set artifact generation. */
-  allowUnsafeCollectionCount?: boolean
   /** Injected for tests; defaults to console. */
   warn?: (message: string) => void
 }
@@ -428,25 +531,24 @@ export function assertManifestMatchesRegistrations(full: PayloadRegistrations): 
 
 /**
  * Fail loud before PostgreSQL's 100-argument limit turns into a cryptic /admin
- * 500. Throws above the hard limit; warns as the count approaches it.
+ * 500. `count` is lockable document relationship targets, not registered modules.
  */
 export function assertCollectionCountWithinLimit(
   count: number,
-  options: Pick<GateOptions, 'allowUnsafeCollectionCount' | 'warn'> = {},
+  options: Pick<GateOptions, 'warn'> = {},
 ): void {
   const warn = options.warn ?? ((message: string) => console.warn(message))
-  if (count >= POSTGRES_FUNCTION_ARG_LIMIT && !options.allowUnsafeCollectionCount)
+  if (count >= POSTGRES_FUNCTION_ARG_LIMIT)
     throw new Error(
-      `Renegade is configured to register ${count} collections, at or beyond PostgreSQL's ` +
-        `${POSTGRES_FUNCTION_ARG_LIMIT}-argument function limit. Payload's locked-documents ` +
-        `dashboard query would fail at runtime with a cryptic 500 (SQLSTATE 54023). ` +
-        `Enable fewer optional modules via RENEGADE_MODULES, or split the deployment.`,
+      `Renegade is configured with ${count} lockable collections, at or beyond PostgreSQL's ` +
+        `${POSTGRES_FUNCTION_ARG_LIMIT}-argument function limit for Payload's locked-documents relation. ` +
+        `Keep fewer than ${POSTGRES_FUNCTION_ARG_LIMIT} collections lockable.`,
     )
   if (count >= COLLECTION_WARN_THRESHOLD)
     warn(
-      `[renegade] ${count} collections registered — approaching PostgreSQL's ` +
+      `[renegade] ${count} lockable collections — approaching PostgreSQL's ` +
         `${POSTGRES_FUNCTION_ARG_LIMIT}-argument limit (warn threshold ${COLLECTION_WARN_THRESHOLD}). ` +
-        `Consider disabling optional modules via RENEGADE_MODULES.`,
+        `Reduce DOCUMENT_LOCK_COLLECTIONS; all registered product modules may remain enabled.`,
     )
 }
 
@@ -545,13 +647,20 @@ export function gatePayloadRegistrations(
 
   const keep = (owner: ModuleId | undefined): boolean => owner === undefined || enabled.has(owner)
 
-  const selectedCollections = full.collections.filter((collection) =>
-    keep(ownership.collections.get(collection.slug)),
-  )
+  const selectedCollections = full.collections
+    .filter((collection) => keep(ownership.collections.get(collection.slug)))
+    .map((collection) =>
+      collection.lockDocuments === false || DOCUMENT_LOCK_COLLECTIONS.has(collection.slug)
+        ? collection
+        : { ...collection, lockDocuments: false as const },
+    )
   const globals = full.globals.filter((global) => keep(ownership.globals.get(global.slug)))
   const tasks = full.tasks.filter((task) => keep(ownership.tasks.get(task.slug)))
 
-  assertCollectionCountWithinLimit(selectedCollections.length, options)
+  assertCollectionCountWithinLimit(
+    selectedCollections.filter((collection) => collection.lockDocuments !== false).length,
+    options,
+  )
 
   const registeredSlugs = new Set(selectedCollections.map((collection) => collection.slug))
   const collections = selectedCollections.map((collection) =>

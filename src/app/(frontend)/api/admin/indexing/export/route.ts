@@ -1,5 +1,6 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
+import { canManageAdminSite } from '@/modules/admin/site-access'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -9,6 +10,16 @@ export async function GET(request: Request) {
   const { user } = await payload.auth({ headers: request.headers })
   if (!user || !['owner', 'administrator', 'staff'].includes(String(user.role)))
     return Response.json({ error: 'Staff access required.' }, { status: 403 })
+  const siteId = new URL(request.url).searchParams.get('siteId')
+  const grantedSites = Array.isArray((user as { adminSites?: unknown }).adminSites)
+    ? (user as unknown as { adminSites: Array<string | { id?: string | number }> }).adminSites.map(
+        (site) => String(typeof site === 'object' ? site.id : site),
+      )
+    : []
+  if (user.role === 'staff' && (!siteId || !grantedSites.includes(siteId)))
+    return Response.json({ error: 'Choose an assigned site.' }, { status: siteId ? 403 : 400 })
+  if (siteId && !canManageAdminSite(user, siteId))
+    return Response.json({ error: 'Site access denied.' }, { status: 403 })
 
   const changes: Array<{
     idempotencyKey?: string | null
@@ -25,7 +36,12 @@ export async function GET(request: Request) {
   for (;;) {
     const events = await payload.find({
       collection: 'execution-events',
-      where: { eventType: { equals: 'discovery.indexing.changed' } },
+      where: {
+        and: [
+          { eventType: { equals: 'discovery.indexing.changed' } },
+          ...(siteId ? [{ site: { equals: siteId } }] : []),
+        ],
+      },
       sort: 'createdAt',
       limit: 250,
       page,
@@ -36,10 +52,21 @@ export async function GET(request: Request) {
     for (const raw of events.docs) {
       const event = raw as unknown as Record<string, unknown>
       const detail = event.payload as Record<string, unknown>
+      const eventSiteValue = event.site
+      const eventSiteId =
+        typeof eventSiteValue === 'object' && eventSiteValue
+          ? String((eventSiteValue as { id?: unknown }).id)
+          : eventSiteValue
+            ? String(eventSiteValue)
+            : detail?.siteId
+              ? String(detail.siteId)
+              : undefined
+      if (siteId && eventSiteId !== siteId) continue
+      if (user.role === 'staff' && (!eventSiteId || !grantedSites.includes(eventSiteId))) continue
       changes.push({
         idempotencyKey: event.idempotencyKey ? String(event.idempotencyKey) : null,
         occurredAt: String(event.occurredAt || event.createdAt),
-        siteId: detail?.siteId ? String(detail.siteId) : undefined,
+        siteId: eventSiteId,
         action: detail?.action ? String(detail.action) : undefined,
         url: detail?.url ? String(detail.url) : undefined,
         reason: detail?.reason ? String(detail.reason) : undefined,

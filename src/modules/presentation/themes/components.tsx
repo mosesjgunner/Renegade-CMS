@@ -80,8 +80,14 @@ const simple = (
         : null}
     </section>
   ),
-  fallback: (block) => (
-    <section data-unavailable-component={block.component}>This section is unavailable.</section>
+  fallback: (block, reason) => (
+    <section
+      data-unavailable-component={block.component}
+      data-fallback="deterministic"
+      {...(reason ? { 'data-fallback-reason': reason } : {})}
+    >
+      This section is unavailable.
+    </section>
   ),
 })
 

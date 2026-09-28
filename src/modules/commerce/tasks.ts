@@ -545,10 +545,23 @@ export const reconcilePaymentsTask = {
   retries: { attempts: 3, backoff: { delay: 5000, type: 'exponential' } },
   concurrency: () => 'commerce.reconcile-payments',
   schedule: [{ cron: '0 */5 * * * *', queue: 'commerce' }],
-  handler: async ({ req }: { req: any }) => {
+  handler: async ({
+    input,
+    req,
+  }: {
+    input?: { attemptId?: string; siteId?: string }
+    req: any
+  }) => {
+    const where: any = input?.attemptId
+      ? { id: { equals: input.attemptId } }
+      : input?.siteId
+        ? {
+            and: [{ state: { in: ['processing', 'unknown'] } }, { site: { equals: input.siteId } }],
+          }
+        : { state: { in: ['processing', 'unknown'] } }
     const pending = await req.payload.find({
       collection: 'payment-attempts',
-      where: { state: { in: ['processing', 'unknown'] } },
+      where,
       limit: 100,
       sort: 'createdAt',
       overrideAccess: true,

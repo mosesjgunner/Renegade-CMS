@@ -153,10 +153,23 @@ export default function SocialStudioPage() {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <Link href="/connections" className="btn btn-secondary text-xs">
-            Manage Network Connections
+          <Link href="/admin/social" className="btn btn-primary text-xs">
+            Open Admin Social Center →
+          </Link>
+          <Link href="/admin/providers" className="btn btn-secondary text-xs">
+            Manage Connections
           </Link>
         </div>
+      </div>
+
+      <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-3 text-xs text-amber-800 dark:text-amber-300">
+        ℹ️ <strong>Character Budget & Variant Simulator</strong>: Test network-specific text limits,
+        payload hashing, and formatting rules. To dispatch live posts to connected network accounts,
+        use the authenticated{' '}
+        <Link href="/admin/social" className="underline font-semibold">
+          Social Command Center
+        </Link>
+        .
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">

@@ -2,7 +2,12 @@ import { describe, expect, it } from 'vitest'
 
 import { Content, MediaAssets } from '../../src/collections/Publishing'
 
-const request = (role?: string) => ({ req: { user: role ? { role } : null } }) as never
+const request = (role?: string) =>
+  ({
+    req: {
+      user: role ? { role, ...(role === 'staff' ? { adminSites: [{ id: 'site-1' }] } : {}) } : null,
+    },
+  }) as never
 
 describe('Phase A access hardening', () => {
   it('does not expose raw content or media metadata to anonymous Payload requests', () => {
@@ -11,7 +16,7 @@ describe('Phase A access hardening', () => {
   })
 
   it('keeps the publisher-facing collection access available to staff', () => {
-    expect(Content.access?.read?.(request('staff'))).toBe(true)
+    expect(Content.access?.read?.(request('staff'))).toEqual({ site: { in: ['site-1'] } })
     expect(MediaAssets.access?.read?.(request('administrator'))).toBe(true)
   })
 })

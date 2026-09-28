@@ -7,6 +7,7 @@ import {
   validateRedirectRuleInput,
 } from '@/modules/public/redirect-manager'
 import type { PublicRedirect } from '@/payload-types'
+import { canManageAdminSite } from '@/modules/admin/site-access'
 
 export const runtime = 'nodejs'
 
@@ -19,6 +20,10 @@ export async function GET(request: Request) {
 
   const url = new URL(request.url)
   const siteId = url.searchParams.get('siteId') || undefined
+  if (auth.user.role === 'staff' && !siteId)
+    return NextResponse.json({ error: 'Choose an assigned site.' }, { status: 400 })
+  if (siteId && !canManageAdminSite(auth.user, siteId))
+    return NextResponse.json({ error: 'Site access denied.' }, { status: 403 })
 
   try {
     const rules = await listRedirectRules(payload, siteId)
@@ -50,13 +55,17 @@ export async function POST(request: Request) {
       enabled?: boolean
     }
 
+    const siteId = body.siteId
+    if (!siteId || !canManageAdminSite(auth.user, siteId))
+      return NextResponse.json({ error: 'Choose an assigned site.' }, { status: 403 })
     const sites = await payload.find({
       collection: 'sites',
       limit: 1,
       depth: 0,
       overrideAccess: true,
     })
-    const siteId = body.siteId || (sites.docs[0]?.id ? String(sites.docs[0].id) : 'default-site')
+    if (!sites.docs.some((site) => String(site.id) === siteId))
+      return NextResponse.json({ error: 'Site not found.' }, { status: 404 })
 
     const existingRules = await listRedirectRules(payload, siteId)
     const validation = validateRedirectRuleInput(body, existingRules.map(toRedirectInput))
@@ -65,6 +74,14 @@ export async function POST(request: Request) {
     }
 
     if (body.id) {
+      const existing = (await payload.findByID({
+        collection: 'public-redirects',
+        id: body.id,
+        depth: 0,
+        overrideAccess: true,
+      })) as unknown as PublicRedirect
+      if (!canManageAdminSite(auth.user, existing.site))
+        return NextResponse.json({ error: 'Site access denied.' }, { status: 403 })
       const updated = (await payload.update({
         collection: 'public-redirects',
         id: body.id,
@@ -120,6 +137,14 @@ export async function DELETE(request: Request) {
   }
 
   try {
+    const existing = (await payload.findByID({
+      collection: 'public-redirects',
+      id,
+      depth: 0,
+      overrideAccess: true,
+    })) as unknown as PublicRedirect
+    if (!canManageAdminSite(auth.user, existing.site))
+      return NextResponse.json({ error: 'Site access denied.' }, { status: 403 })
     await payload.delete({
       collection: 'public-redirects',
       id,

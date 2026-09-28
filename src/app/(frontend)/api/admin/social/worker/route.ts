@@ -6,7 +6,7 @@ import { type CanonicalSocialPost } from '@/modules/social/models'
 import { type AuthContext } from '@/modules/social/contracts'
 
 const staffOnly = (user: { role?: string } | null | undefined) =>
-  ['owner', 'administrator', 'publisher', 'staff'].includes(String(user?.role))
+  ['owner', 'administrator', 'staff'].includes(String(user?.role))
 
 export async function POST(request: Request) {
   try {

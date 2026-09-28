@@ -5,6 +5,7 @@ import type { CollectionConfig } from 'payload'
 
 import { retentionFields, siteScopeFields, visibilityOptions } from './canonical-shared'
 import { searchProjectionHooks } from '../modules/public/search-projection'
+import { adminSiteWhere, siteScopedAdminAccess, type StaffUser } from '../modules/admin/site-access'
 
 const staffOnly = ({ req }: { req: { user?: { role?: string } | null } }) =>
   ['owner', 'administrator', 'staff'].includes(String(req.user?.role))
@@ -14,11 +15,11 @@ export const PageLayouts: CollectionConfig = {
   slug: 'page-layouts',
   admin: { useAsTitle: 'path', group: 'Publishing' },
   access: {
-    create: staffOnly,
-    delete: staffOnly,
+    ...siteScopedAdminAccess(),
     read: ({ req }) =>
-      staffOnly({ req }) || { status: { equals: 'published' }, visibility: { equals: 'public' } },
-    update: staffOnly,
+      staffOnly({ req })
+        ? adminSiteWhere(req.user as StaffUser | null)
+        : { status: { equals: 'published' }, visibility: { equals: 'public' } },
   },
   hooks: {
     beforeChange: [

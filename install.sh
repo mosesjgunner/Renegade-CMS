@@ -151,9 +151,19 @@ echo "Preflight passed: ${ram_mb} MB RAM, ${disk_mb} MB disk, ${profile} profile
 "${compose[@]}" exec -T renegade-web node -e "fetch('http://127.0.0.1:3000/health/ready').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))" || fail 'web readiness check failed.'
 "${compose[@]}" exec -T renegade-worker node docker/worker-healthcheck.mjs || fail 'worker heartbeat check failed.'
 
+# Visit setup once so the first-run bootstrap token is created, then surface it
+# directly to the operator. The token remains single-use and expires in 15
+# minutes; this only removes the need to search container logs manually.
+"${compose[@]}" exec -T renegade-web node -e "fetch('http://127.0.0.1:3000/setup').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))" || fail 'setup bootstrap check failed.'
+setup_token="$("${compose[@]}" logs --no-color --since 2m renegade-web 2>/dev/null | sed -n 's/.*Renegade CMS setup token (expires in 15 minutes; use once): //p' | tail -n 1 | tr -d '\r')"
+
 echo
 echo 'Renegade CMS is ready.'
 echo "Setup URL: ${app_url%/}/setup"
-echo 'Open the setup URL, then retrieve the one-time bootstrap token locally with:'
-echo "  docker compose --project-name $instance --env-file .env.production -f compose.production.yaml logs renegade-web"
+if [[ -n "$setup_token" ]]; then
+  echo "Bootstrap token (single-use; expires in 15 minutes): $setup_token"
+else
+  echo 'The setup token was not captured automatically. Retrieve it locally with:'
+  echo "  docker compose --project-name $instance --env-file .env.production -f compose.production.yaml logs renegade-web"
+fi
 echo 'Use a reverse proxy (Caddy, Nginx, Traefik, or equivalent) for TLS and forward it only to the loopback listener. In trusted mode it must overwrite forwarded headers.'

@@ -8,6 +8,7 @@ import {
   cancelScheduledPublication,
 } from '@/modules/editorial/persistence'
 import type { EditorialActor } from '@/modules/editorial/workflow'
+import { canManageAdminSite } from '@/modules/admin/site-access'
 
 type Doc = Record<string, any>
 
@@ -20,6 +21,9 @@ const idOf = (value: unknown): string => {
 export async function POST(req: NextRequest) {
   try {
     const payload = await getPayload({ config: configPromise })
+    const auth = await payload.auth({ headers: req.headers })
+    if (!auth.user || !['owner', 'administrator', 'staff'].includes(String(auth.user.role)))
+      return NextResponse.json({ error: 'Staff access required.' }, { status: 403 })
     const body = await req.json()
     const {
       action,
@@ -28,8 +32,6 @@ export async function POST(req: NextRequest) {
       startsAt,
       timeZone = 'America/Chicago',
       expectedSequence,
-      actorUserId = 'user-publisher-1',
-      actorRole = 'publisher',
       reason,
       policy = 'block',
     } = body
@@ -38,7 +40,28 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'sourceId is required.' }, { status: 400 })
     }
 
-    const actor: EditorialActor = { id: actorUserId, role: actorRole as EditorialActor['role'] }
+    const actorUserId = String(auth.user.id)
+    const actor: EditorialActor = {
+      id: actorUserId,
+      role: ['owner', 'administrator'].includes(String(auth.user.role)) ? 'publisher' : 'editor',
+    }
+
+    if (sourceType === 'article') {
+      const article = await payload
+        .findByID({
+          collection: 'article-family-content',
+          id: sourceId,
+          depth: 0,
+          overrideAccess: true,
+        })
+        .catch(() => null)
+      const articleSiteValue = (article as unknown as { site?: string | { id?: string } } | null)
+        ?.site
+      const articleSite =
+        typeof articleSiteValue === 'string' ? articleSiteValue : articleSiteValue?.id
+      if (!article || !canManageAdminSite(auth.user, articleSite))
+        return NextResponse.json({ error: 'Article site access denied.' }, { status: 403 })
+    }
 
     if (action === 'cancel') {
       if (sourceType === 'article') {

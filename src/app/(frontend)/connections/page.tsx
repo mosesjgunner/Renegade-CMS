@@ -2,6 +2,7 @@
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import { headers } from 'next/headers'
+import { redirect } from 'next/navigation'
 import {
   ConnectionsCenter,
   type OperationalConnection,
@@ -13,6 +14,9 @@ import {
   diagnoseWebhookDelivery,
   resolveNextSafeRepairAction,
 } from '@/modules/integrations/service'
+import { canManageAdminSite, getAdminSiteIDs } from '@/modules/admin/site-access'
+import { loadConfig } from '@/modules/core/config'
+import { runtimeProviderInventory } from '@/modules/extensions/runtime-provider-inventory'
 
 export const dynamic = 'force-dynamic'
 
@@ -72,22 +76,38 @@ function determineGroup(providerKey: string): ConnectionGroup {
   return 'Security'
 }
 
-export default async function ConnectionsPage() {
+export default async function ConnectionsPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ siteId?: string }>
+}) {
   const connections: OperationalConnection[] = []
   let deliveries: WebhookDeliveryItem[] = []
   let auditEvents: IntegrationAuditItem[] = []
-  let isStaff = false
+  const payload = await getPayload({ config: configPromise })
+  const runtimeConfig = loadConfig()
+  const incomingHeaders = await headers()
+  const auth = await payload.auth({ headers: incomingHeaders }).catch(() => null)
+  const isStaff = ['owner', 'administrator', 'staff'].includes(String(auth?.user?.role))
+  if (!isStaff) {
+    redirect('/admin/login')
+  }
+
+  const query = await searchParams
+  const assignedSites = getAdminSiteIDs(auth?.user)
+  const siteId =
+    query.siteId ||
+    (auth?.user?.role === 'staff' && assignedSites.length === 1 ? assignedSites[0] : undefined)
+  if (auth?.user?.role === 'staff' && !siteId) redirect('/admin')
+  if (siteId && !canManageAdminSite(auth?.user, siteId)) redirect('/admin')
+  const siteWhere = siteId ? { site: { equals: siteId } } : undefined
 
   try {
-    const payload = await getPayload({ config: configPromise })
-    const incomingHeaders = await headers()
-    const auth = await payload.auth({ headers: incomingHeaders }).catch(() => null)
-    isStaff = ['owner', 'administrator', 'publisher', 'staff'].includes(String(auth?.user?.role))
-
     // 1. Merchant connections
     try {
       const merchants = await payload.find({
         collection: 'merchant-connections' as never,
+        ...(siteWhere ? { where: siteWhere } : {}),
         limit: 100,
         depth: 0,
         overrideAccess: true,
@@ -105,14 +125,17 @@ export default async function ConnectionsPage() {
           label: String(doc.label || doc.providerKey || 'Merchant Gateway'),
           status,
           healthState: status === 'active' ? 'healthy' : 'warning',
-          encryptedSecretRef: doc.credentialReference ?? null,
+          encryptedSecretRef: doc.credentialReference ? 'configured' : null,
+          credentialSourceLabel: doc.credentialReference
+            ? 'Secret-manager reference configured; value hidden'
+            : 'No credential reference',
           scopes: ['payments.checkout.one_time', 'payments.subscription.recurring'],
           expiresAt: null,
           refreshMetadata: null,
           capabilities: [],
-          lastHealthCheckAt: String(doc.updatedAt || doc.createdAt),
-          lastSuccessAt: status === 'active' ? String(doc.updatedAt || doc.createdAt) : null,
           lastError: null,
+          lastHealthCheckAt: null,
+          lastSuccessAt: null,
           auditEventIds: [],
           nextSafeRepairAction: resolveNextSafeRepairAction({
             status,
@@ -133,6 +156,7 @@ export default async function ConnectionsPage() {
     try {
       const socials = await payload.find({
         collection: 'social-accounts' as never,
+        ...(siteWhere ? { where: siteWhere } : {}),
         limit: 100,
         depth: 0,
         overrideAccess: true,
@@ -157,14 +181,23 @@ export default async function ConnectionsPage() {
           label: String(doc.displayName || doc.network || 'Social Account'),
           status,
           healthState: status === 'active' ? 'healthy' : 'warning',
-          encryptedSecretRef: doc.connectionReference ?? null,
+          encryptedSecretRef: doc.connectionReference ? 'configured' : null,
+          credentialSourceLabel: doc.connectionReference
+            ? 'OAuth credential reference configured; value hidden'
+            : 'No credential reference',
           scopes: ['social.publish.text'],
           expiresAt: doc.credentialExpiresAt ? String(doc.credentialExpiresAt) : null,
           refreshMetadata: null,
           capabilities: [],
+          lastError: doc.diagnostics?.lastError
+            ? {
+                code: 'unavailable',
+                message: String(doc.diagnostics.lastError).slice(0, 500),
+                retryable: false,
+              }
+            : null,
           lastHealthCheckAt: doc.lastVerifiedAt ? String(doc.lastVerifiedAt) : null,
           lastSuccessAt: doc.lastVerifiedAt ? String(doc.lastVerifiedAt) : null,
-          lastError: null,
           auditEventIds: [],
           nextSafeRepairAction: resolveNextSafeRepairAction({
             status,
@@ -186,6 +219,7 @@ export default async function ConnectionsPage() {
     try {
       const clients = await payload.find({
         collection: 'api-clients' as never,
+        ...(siteWhere ? { where: siteWhere } : {}),
         limit: 100,
         depth: 0,
         overrideAccess: true,
@@ -233,6 +267,7 @@ export default async function ConnectionsPage() {
     try {
       const webhooks = await payload.find({
         collection: 'webhook-subscriptions' as never,
+        ...(siteWhere ? { where: siteWhere } : {}),
         limit: 100,
         depth: 0,
         overrideAccess: true,
@@ -247,12 +282,15 @@ export default async function ConnectionsPage() {
           group: 'Webhooks',
           siteId: String(doc.site ?? 'default'),
           providerKey: 'webhook',
-          externalAccountId: String(doc.target),
+          externalAccountId: safeEndpointLabel(doc.target),
           label: `Webhook: ${doc.target ? new URL(doc.target).pathname : 'Endpoint'}`,
           status,
           healthState:
             status === 'active' ? 'healthy' : status === 'degraded' ? 'warning' : 'critical',
-          encryptedSecretRef: doc.secretRef ?? null,
+          encryptedSecretRef: doc.secretRef ? 'configured' : null,
+          credentialSourceLabel: doc.secretRef
+            ? 'Webhook secret reference configured; value hidden'
+            : 'No secret reference',
           scopes: Array.isArray(doc.events) ? doc.events.map(String) : [],
           expiresAt: null,
           refreshMetadata: null,
@@ -272,8 +310,6 @@ export default async function ConnectionsPage() {
           canRotateSecret: true,
           canDisconnect: doc.status === 'active',
           failureCount,
-          target: doc.target,
-          secretRef: doc.secretRef,
         })
       }
     } catch {
@@ -284,6 +320,7 @@ export default async function ConnectionsPage() {
     try {
       const podConnections = await payload.find({
         collection: 'pod-connections' as never,
+        ...(siteWhere ? { where: siteWhere } : {}),
         limit: 100,
         depth: 0,
         overrideAccess: true,
@@ -301,7 +338,10 @@ export default async function ConnectionsPage() {
           label: String(doc.label || 'Print On Demand'),
           status,
           healthState: status === 'active' ? 'healthy' : 'warning',
-          encryptedSecretRef: doc.encryptedApiKey ?? null,
+          encryptedSecretRef: doc.encryptedApiKey ? 'configured' : null,
+          credentialSourceLabel: doc.encryptedApiKey
+            ? 'Encrypted credential envelope; value hidden'
+            : 'No credential envelope',
           scopes: ['commerce.orders', 'fulfillment.sync'],
           expiresAt: null,
           refreshMetadata: null,
@@ -333,8 +373,22 @@ export default async function ConnectionsPage() {
 
     // 6. Webhook Deliveries
     try {
+      const webhooks = siteId
+        ? await payload.find({
+            collection: 'webhook-subscriptions' as never,
+            where: { site: { equals: siteId } },
+            limit: 500,
+            depth: 0,
+            overrideAccess: true,
+          })
+        : null
+      const scopedWebhookIDs =
+        (webhooks?.docs as Array<{ id: string | number }> | undefined)?.map((doc) =>
+          String(doc.id),
+        ) ?? []
       const deliveriesRes = await payload.find({
         collection: 'webhook-deliveries' as never,
+        ...(siteId ? { where: { subscription: { in: scopedWebhookIDs } } } : {}),
         limit: 50,
         sort: '-createdAt',
         depth: 0,
@@ -369,6 +423,7 @@ export default async function ConnectionsPage() {
     try {
       const auditRes = await payload.find({
         collection: 'integration-audit-events' as never,
+        ...(siteWhere ? { where: siteWhere } : {}),
         limit: 50,
         sort: '-occurredAt',
         depth: 0,
@@ -385,9 +440,151 @@ export default async function ConnectionsPage() {
     } catch {
       // module might be disabled in current profile
     }
+
+    // 8. AI provider connections. The encrypted credential envelope is only
+    // inspected for presence; neither the envelope nor its reference reaches the client.
+    try {
+      const aiResult = await payload.find({
+        collection: 'ai-connections' as never,
+        ...(siteWhere ? { where: siteWhere } : {}),
+        limit: 100,
+        depth: 0,
+        overrideAccess: true,
+      })
+      const aiDocs = aiResult.docs as any[]
+      const aiIDs = aiDocs.map((doc) => String(doc.id))
+      const credentialResult = aiIDs.length
+        ? await payload.find({
+            collection: 'ai-credentials' as never,
+            where: { connection: { in: aiIDs } },
+            limit: aiIDs.length,
+            depth: 0,
+            overrideAccess: true,
+          })
+        : { docs: [] }
+      const configuredCredentials = new Set(
+        (credentialResult.docs as any[]).map((doc) =>
+          String(typeof doc.connection === 'object' ? doc.connection?.id : doc.connection),
+        ),
+      )
+      for (const doc of aiDocs) {
+        const testedAt = doc.lastTestedAt ? String(doc.lastTestedAt) : null
+        const hasCredential = configuredCredentials.has(String(doc.id))
+        const state =
+          doc.status === 'degraded' || !hasCredential
+            ? 'degraded'
+            : testedAt
+              ? 'validated'
+              : 'configured'
+        connections.push({
+          id: String(doc.id),
+          collection: 'ai-connections',
+          group: 'AI',
+          siteId: String(doc.site ?? siteId ?? ''),
+          providerKey: String(doc.providerKey || 'ai.provider'),
+          externalAccountId: String(doc.model || 'configured model'),
+          label: String(doc.label || doc.providerKey || 'AI Provider'),
+          status: doc.status === 'active' ? 'active' : 'degraded',
+          providerState: state,
+          healthState:
+            state === 'degraded' ? 'warning' : state === 'validated' ? 'healthy' : 'unknown',
+          encryptedSecretRef: hasCredential ? 'configured' : null,
+          credentialSourceLabel: hasCredential
+            ? 'Encrypted credential record; key material remains server-side'
+            : 'Credential record unavailable',
+          scopes: Array.isArray(doc.allowedTasks) ? doc.allowedTasks.map(String) : [],
+          expiresAt: null,
+          refreshMetadata: null,
+          capabilities: [],
+          lastHealthCheckAt: testedAt,
+          lastSuccessAt: testedAt && doc.status === 'active' ? testedAt : null,
+          lastError: doc.lastError
+            ? {
+                code: 'unavailable',
+                message: String(doc.lastError).slice(0, 300),
+                retryable: false,
+              }
+            : null,
+          auditEventIds: [],
+          safeTestResult: testedAt
+            ? doc.status === 'active'
+              ? `Provider test passed ${new Date(testedAt).toLocaleString()}.`
+              : `Provider test failed ${new Date(testedAt).toLocaleString()}.`
+            : 'Not tested; no provider request was made from this overview.',
+          limitations: [
+            'AI usage is budgeted and task-scoped; image generation is unsupported by the current tested adapters.',
+          ],
+          canRotateSecret: false,
+          canDisconnect: false,
+          nextSafeRepairAction:
+            state === 'degraded'
+              ? 'Review the connection in AI Studio.'
+              : 'Manage this connection in AI Studio.',
+        })
+      }
+    } catch {
+      // AI module may be disabled in this deployment profile.
+    }
   } catch {
     // payload initialization fallback
   }
+
+  const configuredProviderKeys = connections
+    .filter((connection) =>
+      ['social-accounts', 'ai-connections', 'pod-connections'].includes(
+        String(connection.collection),
+      ),
+    )
+    .map((connection) => connection.providerKey)
+  const runtimeRows = runtimeProviderInventory(
+    runtimeConfig,
+    process.env,
+    configuredProviderKeys,
+  ).map(
+    (item) =>
+      ({
+        id: item.id,
+        collection: 'runtime-capability',
+        group: item.group,
+        siteId: siteId ?? '',
+        providerKey: item.providerKey,
+        externalAccountId: 'runtime configuration',
+        label: item.label,
+        status:
+          item.state === 'enabled'
+            ? ('active' as const)
+            : item.state === 'degraded'
+              ? ('degraded' as const)
+              : ('unconfigured' as const),
+        providerState: item.state,
+        healthState:
+          item.state === 'enabled'
+            ? ('healthy' as const)
+            : item.state === 'degraded'
+              ? ('warning' as const)
+              : ('unknown' as const),
+        encryptedSecretRef: null,
+        credentialSourceLabel: item.credentialSource,
+        scopes: [],
+        expiresAt: null,
+        refreshMetadata: null,
+        capabilities: [],
+        lastHealthCheckAt: null,
+        lastSuccessAt: null,
+        lastError: null,
+        auditEventIds: [],
+        safeTestResult: item.safeTestResult,
+        limitations: item.limitations,
+        runtimeCapability: true,
+        manageHref: item.manageHref
+          ? `${item.manageHref}${siteId ? `?siteId=${encodeURIComponent(siteId)}` : ''}`
+          : undefined,
+        canRotateSecret: false,
+        canDisconnect: false,
+        nextSafeRepairAction: 'Managed through deployment configuration.',
+      }) satisfies OperationalConnection,
+  )
+  connections.push(...runtimeRows)
 
   return (
     <ConnectionsCenter
@@ -396,6 +593,16 @@ export default async function ConnectionsPage() {
       auditEvents={auditEvents}
       groupFor={determineGroup}
       isStaff={isStaff}
+      siteId={siteId}
     />
   )
+}
+
+function safeEndpointLabel(value: unknown): string {
+  try {
+    const endpoint = new URL(String(value))
+    return `${endpoint.host}${endpoint.pathname}`
+  } catch {
+    return 'Endpoint configured'
+  }
 }

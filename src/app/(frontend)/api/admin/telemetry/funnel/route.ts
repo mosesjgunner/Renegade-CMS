@@ -7,8 +7,7 @@ import {
   type FirstPartyEvent,
 } from '@/modules/analytics/contracts'
 
-const isOperator = (user: { role?: string } | null | undefined) =>
-  ['owner', 'administrator', 'staff'].includes(String(user?.role))
+const isOperator = (user: { role?: string } | null | undefined) => user?.role === 'owner'
 
 export async function GET(request: Request) {
   const payload = await getPayload({ config })

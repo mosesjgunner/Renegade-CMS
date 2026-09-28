@@ -1,5 +1,6 @@
 'use client'
 import { useState } from 'react'
+import Link from 'next/link'
 import { graphicTemplatePresets, type GraphicTemplate } from '@/modules/graphics/service'
 
 const templates = Object.keys(graphicTemplatePresets) as GraphicTemplate[]
@@ -10,11 +11,18 @@ export default function GraphicsStudioPage() {
   const spec = graphicTemplatePresets[template]
   return (
     <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-6">
-      <header className="border-b border-stone-200 dark:border-stone-800 pb-5">
-        <h1 className="text-3xl font-extrabold font-display">Graphics Studio</h1>
-        <p className="text-sm text-stone-600">
-          Governed, template-based graphics — not a general-purpose design canvas.
-        </p>
+      <header className="border-b border-stone-200 dark:border-stone-800 pb-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-extrabold font-display">Graphics Studio</h1>
+          <p className="text-sm text-stone-600">
+            Governed, template-based graphics — not a general-purpose design canvas.
+          </p>
+        </div>
+        <div className="flex gap-2">
+          <Link href="/admin/media-library" className="btn btn-secondary text-xs">
+            Open Media Library & miniPaint →
+          </Link>
+        </div>
       </header>
       <section className="grid lg:grid-cols-2 gap-6">
         <div className="surface-card p-5 space-y-4">

@@ -7,6 +7,7 @@ import {
   catalogReadiness,
 } from '@/modules/commerce/catalog'
 import { publishProductRelease } from '@/modules/commerce/service'
+import { canManageAdminSite } from '@/modules/admin/site-access'
 
 export const runtime = 'nodejs'
 const staff = (role: unknown) => ['owner', 'administrator', 'staff'].includes(String(role))
@@ -61,6 +62,10 @@ export async function GET(request: Request) {
   if (!auth.user || !staff(auth.user.role))
     return NextResponse.json({ error: 'Staff access required.' }, { status: 403 })
   const siteId = new URL(request.url).searchParams.get('siteId')
+  if (auth.user.role === 'staff' && !siteId)
+    return NextResponse.json({ error: 'Choose an assigned site.' }, { status: 400 })
+  if (siteId && !canManageAdminSite(auth.user, siteId))
+    return NextResponse.json({ error: 'Site access denied.' }, { status: 403 })
   const result = await payload.find({
     collection: 'products',
     where: siteId ? { site: { equals: siteId } } : undefined,
@@ -87,6 +92,7 @@ export async function PATCH(request: Request) {
       action: 'request-review' | 'approve' | 'publish' | 'archive'
       revision?: string
       redirectTo?: string
+      siteId?: string
     }
     const current = (await payload.findByID({
       collection: 'products',
@@ -94,6 +100,17 @@ export async function PATCH(request: Request) {
       depth: 1,
       overrideAccess: true,
     } as never)) as unknown as Record<string, unknown>
+    if (!canManageAdminSite(auth.user, current.site))
+      return NextResponse.json({ error: 'Site access denied.' }, { status: 403 })
+    const currentSiteId =
+      current.site && typeof current.site === 'object'
+        ? String((current.site as { id?: unknown }).id ?? '')
+        : String(current.site ?? '')
+    if (body.siteId && currentSiteId !== body.siteId)
+      return NextResponse.json(
+        { error: 'Product does not belong to the selected site.' },
+        { status: 403 },
+      )
     const expected: Record<typeof body.action, string[]> = {
       'request-review': ['draft'],
       approve: ['review'],
@@ -192,6 +209,7 @@ export async function DELETE(request: Request) {
         depth: 0,
         overrideAccess: true,
       } as never)) as unknown as Record<string, unknown>
+      if (!canManageAdminSite(auth.user, product.site)) throw new Error('Site access denied.')
       const orders = await payload
         .count({
           collection: 'orders',

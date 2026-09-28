@@ -7,6 +7,7 @@ import {
   configuredPaymentProvider,
   PaymentProviderError,
 } from '@/modules/commerce/payment-provider'
+import { canManageAdminSite } from '@/modules/admin/site-access'
 
 const staffOnly = (user: { role?: string } | null | undefined) =>
   ['owner', 'administrator', 'staff'].includes(String(user?.role))
@@ -18,14 +19,60 @@ export async function POST(request: Request) {
   const db: any = payload
   const auth = await payload.auth({ headers: request.headers })
   if (!staffOnly(auth.user)) return NextResponse.json({ error: 'Unauthorized.' }, { status: 403 })
+  const assignedSite = new URL(request.url).searchParams.get('siteId')
+  if ((auth.user as any)?.role === 'staff' && !assignedSite)
+    return NextResponse.json({ error: 'Choose an assigned site.' }, { status: 400 })
+  if (assignedSite && !canManageAdminSite(auth.user, assignedSite))
+    return NextResponse.json({ error: 'Site access denied.' }, { status: 403 })
   const input = (await request.json()) as {
-    action?: 'preview' | 'request' | 'approve'
+    action?: 'preview' | 'request' | 'approve' | 'retry'
     orderId?: string
     amountMinor?: string
     reason?: string
     refundId?: string
   }
   const actorId = String((auth.user as any)?.id ?? '')
+  if (input.action === 'retry') {
+    const refund: any = await db.findByID({
+      collection: 'commerce-refunds',
+      id: String(input.refundId ?? ''),
+      depth: 1,
+      overrideAccess: true,
+    })
+    if (!refund) return NextResponse.json({ error: 'Refund not found.' }, { status: 404 })
+    if (!['failed', 'unknown'].includes(refund.state))
+      return NextResponse.json(
+        { error: 'Only failed or unknown refunds can be retried.' },
+        { status: 409 },
+      )
+    const retryOrder = await db
+      .findByID({
+        collection: 'orders',
+        id: relationId(refund.order),
+        depth: 0,
+        overrideAccess: true,
+      })
+      .catch(() => null)
+    if (
+      !retryOrder ||
+      !canManageAdminSite(auth.user, retryOrder.site) ||
+      (assignedSite && relationId(retryOrder.site) !== assignedSite)
+    )
+      return NextResponse.json({ error: 'Order site access denied.' }, { status: 403 })
+    await db.update({
+      collection: 'commerce-refunds',
+      id: refund.id,
+      data: {
+        state: 'previewed',
+        auditLog: [
+          ...(refund.auditLog ?? []),
+          { kind: 'retry-requested', actorId, at: new Date().toISOString() },
+        ],
+      },
+      overrideAccess: true,
+    })
+    return executeRefund(db, refund.id, true)
+  }
   if (input.action === 'approve') {
     const refund: any = await db.findByID({
       collection: 'commerce-refunds',
@@ -35,6 +82,20 @@ export async function POST(request: Request) {
     })
     if (!refund || refund.state !== 'awaiting-approval')
       return NextResponse.json({ error: 'Refund is not awaiting approval.' }, { status: 409 })
+    const approvalOrder = await db
+      .findByID({
+        collection: 'orders',
+        id: relationId(refund.order),
+        depth: 0,
+        overrideAccess: true,
+      })
+      .catch(() => null)
+    if (
+      !approvalOrder ||
+      !canManageAdminSite(auth.user, approvalOrder.site) ||
+      (assignedSite && relationId(approvalOrder.site) !== assignedSite)
+    )
+      return NextResponse.json({ error: 'Order site access denied.' }, { status: 403 })
     if (refund.requestedBy === actorId)
       return NextResponse.json(
         { error: 'A second operator must approve this refund.' },
@@ -64,6 +125,11 @@ export async function POST(request: Request) {
     })
     .catch(() => null)
   if (!order) return NextResponse.json({ error: 'Order not found.' }, { status: 404 })
+  if (
+    !canManageAdminSite(auth.user, order.site) ||
+    (assignedSite && relationId(order.site) !== assignedSite)
+  )
+    return NextResponse.json({ error: 'Order site access denied.' }, { status: 403 })
   const attempts = await db.find({
     collection: 'payment-attempts',
     where: { checkoutSession: { equals: relationId(order.checkoutSession) } },
@@ -152,15 +218,16 @@ export async function POST(request: Request) {
   return executeRefund(db, record.id)
 }
 
-async function executeRefund(payload: any, refundId: string) {
+async function executeRefund(payload: any, refundId: string, isRetry = false) {
   const refund: any = await payload.findByID({
     collection: 'commerce-refunds',
     id: refundId,
     depth: 1,
     overrideAccess: true,
   })
-  if (['processing', 'succeeded', 'failed', 'unknown'].includes(refund.state))
+  if (!isRetry && ['processing', 'succeeded', 'failed', 'unknown'].includes(refund.state))
     return NextResponse.json({ refund, replay: true })
+  if (isRetry && refund.state === 'succeeded') return NextResponse.json({ refund, replay: true })
   const attempt: any = refund.paymentAttempt
   const order: any = refund.order
   await payload.update({
@@ -244,6 +311,36 @@ async function executeRefund(payload: any, refundId: string) {
         },
         overrideAccess: true,
       })
+      if (full || refund.downstreamPolicy?.entitlement === 'revoke-after-provider-success') {
+        const grants = await payload.find({
+          collection: 'digital-delivery-grants',
+          where: { order: { equals: order.id } },
+          limit: 100,
+          overrideAccess: true,
+        })
+        for (const grant of grants.docs as any[]) {
+          await payload.update({
+            collection: 'digital-delivery-grants',
+            id: grant.id,
+            data: { state: 'revoked' },
+            overrideAccess: true,
+          })
+        }
+        const entitlements = await payload.find({
+          collection: 'entitlements',
+          where: { source: { in: [String(order.id), String(order.orderNumber)] } },
+          limit: 100,
+          overrideAccess: true,
+        })
+        for (const entitlement of entitlements.docs as any[]) {
+          await payload.update({
+            collection: 'entitlements',
+            id: entitlement.id,
+            data: { revokedAt: new Date().toISOString() },
+            overrideAccess: true,
+          })
+        }
+      }
       if (correctionReceipt?.recipient) {
         const key = `commerce-refund-receipt:${refund.id}`
         const messages = await payload.find({

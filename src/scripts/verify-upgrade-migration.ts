@@ -366,7 +366,6 @@ export async function verifyUpgradeMigration() {
   const previousDatabaseUrl = process.env.DATABASE_URL
   process.env.DATABASE_URL = url
   process.env.RENEGADE_MODULES = process.env.RENEGADE_MODULES || 'all'
-  process.env.RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT = 'true'
   try {
     const { default: config } = await import('../payload.config')
     const payload = await getPayload({ config })

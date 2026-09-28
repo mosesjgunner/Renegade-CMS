@@ -1,6 +1,7 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
+import { canManageAdminSite } from '@/modules/admin/site-access'
 import {
   importRedirectRules,
   parseRedirectsCsv,
@@ -17,6 +18,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Staff access required.' }, { status: 403 })
   }
 
+  const siteId = new URL(request.url).searchParams.get('siteId')
+  if (!siteId || !canManageAdminSite(auth.user, siteId))
+    return NextResponse.json({ error: 'Choose an assigned site.' }, { status: 403 })
+
   try {
     const contentType = request.headers.get('content-type') || ''
     const text = await request.text()
@@ -24,13 +29,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Import payload content is empty.' }, { status: 400 })
     }
 
-    const sites = await payload.find({
-      collection: 'sites',
-      limit: 1,
-      depth: 0,
-      overrideAccess: true,
-    })
-    const siteId = sites.docs[0]?.id ? String(sites.docs[0].id) : 'default-site'
+    const site = await payload
+      .findByID({ collection: 'sites', id: siteId, depth: 0, overrideAccess: true })
+      .catch(() => null)
+    if (!site) return NextResponse.json({ error: 'Site not found.' }, { status: 404 })
 
     let parsedRules: RedirectRuleInput[] = []
     let parseErrors: string[] = []

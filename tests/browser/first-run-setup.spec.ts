@@ -1,4 +1,6 @@
 import { randomUUID } from 'node:crypto'
+import { mkdir } from 'node:fs/promises'
+import path from 'node:path'
 import { expect, test } from '@playwright/test'
 import config from '@payload-config'
 import { getPayload } from 'payload'
@@ -57,7 +59,8 @@ test('a normal operator completes first-run setup, sees recovery codes once, and
     },
   })
 
-  const slug = `firstrun-${randomUUID().slice(0, 8)}`
+  const profile = process.env.E2E_INSTALL_PROFILE === 'Lean' ? 'Lean' : 'Standard'
+  const slug = `firstrun-${profile.toLowerCase()}-${randomUUID().slice(0, 8)}`
   const ownerEmail = `${slug}@owner.test`
 
   page.on('console', (msg) => console.log('[BROWSER CONSOLE]', msg.text()))
@@ -86,8 +89,22 @@ test('a normal operator completes first-run setup, sees recovery codes once, and
   // Step 3 - Brand & starter (defaults are valid).
   await page.getByRole('button', { name: 'Continue' }).click()
 
-  // Step 4 - Features (defaults are valid).
+  // Step 4 - Profile, providers and publishing defaults.
+  await expect(page.getByText('registered migrations applied.')).toBeVisible()
+  if (profile === 'Lean') await page.getByText('Lean', { exact: true }).click()
+  await expect(page.getByText('Primary Storage')).toBeVisible()
+  await expect(page.getByText('Configured', { exact: true })).toBeVisible()
+  await expect(page.getByText('Local storage is configured.', { exact: false })).toBeVisible()
   await page.getByRole('button', { name: 'Continue' }).click()
+
+  // Review the selected profile and customization before committing installation.
+  await expect(page.getByText(profile, { exact: true })).toBeVisible()
+  const evidenceDirectory = path.resolve('test-results/operator-evidence')
+  await mkdir(evidenceDirectory, { recursive: true })
+  await page.screenshot({
+    path: path.join(evidenceDirectory, `first-run-${profile.toLowerCase()}-review.png`),
+    fullPage: true,
+  })
 
   // Step 5 - Finish: enroll passkey & create the site.
   await page.getByRole('button', { name: 'Enroll passkey & create site' }).click()
@@ -97,6 +114,10 @@ test('a normal operator completes first-run setup, sees recovery codes once, and
     timeout: 20_000,
   })
   await expect(page.getByText('Save emergency recovery codes')).toBeVisible()
+  await page.screenshot({
+    path: path.join(evidenceDirectory, `first-run-${profile.toLowerCase()}-complete.png`),
+    fullPage: true,
+  })
   const codes = page.locator('ul.font-mono > li')
   expect(await codes.count()).toBeGreaterThan(0)
 
@@ -116,7 +137,7 @@ test('a normal operator completes first-run setup, sees recovery codes once, and
     } as never)
   ).docs[0] as { id: string } | undefined
   expect(member).toBeTruthy()
-  const profile = (
+  const ownerProfile = (
     await payload.find({
       collection: 'profiles',
       where: { member: { equals: member!.id } },
@@ -125,8 +146,8 @@ test('a normal operator completes first-run setup, sees recovery codes once, and
       overrideAccess: true,
     } as never)
   ).docs[0] as { handle?: string } | undefined
-  expect(profile?.handle).toBeTruthy()
-  expect(profile!.handle!).toMatch(CANONICAL_SLUG)
+  expect(ownerProfile?.handle).toBeTruthy()
+  expect(ownerProfile!.handle!).toMatch(CANONICAL_SLUG)
 
   // Revisiting /setup is now permanently locked - setup cannot be re-run from the browser.
   await page.goto('/setup')

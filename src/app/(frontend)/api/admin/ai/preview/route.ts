@@ -8,6 +8,7 @@ import {
   loadAiWorkflowTarget,
   type AiWorkflowTask,
 } from '@/modules/ai/workflows'
+import { canManageAdminSite } from '@/modules/admin/site-access'
 
 export const runtime = 'nodejs'
 
@@ -25,6 +26,8 @@ export async function POST(request: Request) {
     }
     if (!body.targetId || !body.siteId || !AI_WORKFLOW_TASKS.includes(body.task as AiWorkflowTask))
       throw new Error('Choose a workflow, target, and site.')
+    if (!canManageAdminSite(auth.user, body.siteId))
+      return NextResponse.json({ error: 'Site access denied.' }, { status: 403 })
     const task = body.task as AiWorkflowTask
     const target = await loadAiWorkflowTarget(payload, task, body.targetId, body.selection)
     if (target.siteId !== body.siteId)

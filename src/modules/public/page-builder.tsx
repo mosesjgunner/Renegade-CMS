@@ -94,7 +94,7 @@ export type ComponentDefinition = {
   fields: Record<string, PresentationField>
   validate: (props: Record<string, unknown>) => string[]
   render: (props: Record<string, unknown>) => ReactNode
-  fallback: (block: LayoutBlock) => ReactNode
+  fallback: (block: LayoutBlock, reason?: string) => ReactNode
 }
 
 export { starterComponents as componentRegistry } from '../presentation/themes/components'

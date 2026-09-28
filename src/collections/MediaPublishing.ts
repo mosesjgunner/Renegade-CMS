@@ -14,6 +14,7 @@ import {
   routeTemplatesForPayloadSite,
 } from '../modules/public/semantic-url-service'
 import { resolvePublicUrl } from '../modules/public/semantic-url'
+import { siteScopedAdminAccess, siteScopedPublishedReadAccess } from '../modules/admin/site-access'
 
 const relationId = (value: unknown): string =>
   typeof value === 'string'
@@ -55,13 +56,19 @@ const scoped = (canonicalContentType?: string) => [
   ...seoFields(),
   ...structuredDataSourceFields(),
 ]
-const collection = (slug: string, fields: CollectionConfig['fields']): CollectionConfig => ({
-  slug,
-  admin: { useAsTitle: 'title', group: 'Media publishing' },
-  access: { create: staffOnly, delete: staffOnly, read: () => true, update: staffOnly },
-  fields,
-  hooks: searchProjectionHooks(slug),
-})
+const collection = (slug: string, fields: CollectionConfig['fields']): CollectionConfig => {
+  const hasSite =
+    Array.isArray(fields) && fields.some((field) => 'name' in field && field.name === 'site')
+  return {
+    slug,
+    admin: { useAsTitle: 'title', group: 'Media publishing' },
+    access: hasSite
+      ? { ...siteScopedAdminAccess(), read: siteScopedPublishedReadAccess }
+      : { create: staffOnly, delete: staffOnly, read: () => true, update: staffOnly },
+    fields,
+    hooks: searchProjectionHooks(slug),
+  }
+}
 
 const booksSearchHooks = searchProjectionHooks('books')
 export const Books: CollectionConfig = {

@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { siteScopedPublicAdminAccess, siteScopedAdminAccess } from '../modules/admin/site-access'
 
 import {
   canonicalSlug,
@@ -24,7 +25,7 @@ const staffOnly = ({ req }: { req: { user?: { role?: string } | null } }) =>
 export const ForumSections: CollectionConfig = {
   slug: 'forum-sections',
   admin: { useAsTitle: 'name', group: 'Community' },
-  access: { create: staffOnly, delete: staffOnly, read: () => true, update: staffOnly },
+  access: siteScopedPublicAdminAccess(),
   fields: [
     ...siteScopeFields(),
     { name: 'name', type: 'text', required: true },
@@ -37,7 +38,7 @@ export const ForumSections: CollectionConfig = {
 export const Forums: CollectionConfig = {
   slug: 'forums',
   admin: { useAsTitle: 'name', group: 'Community' },
-  access: { create: staffOnly, delete: staffOnly, read: () => true, update: staffOnly },
+  access: siteScopedPublicAdminAccess(),
   fields: [
     ...siteScopeFields(),
     { name: 'section', type: 'relationship', relationTo: 'forum-sections', required: true },
@@ -53,7 +54,7 @@ export const Forums: CollectionConfig = {
 export const Discussions: CollectionConfig = {
   slug: 'discussions',
   admin: { useAsTitle: 'title', group: 'Community' },
-  access: { create: staffOnly, delete: staffOnly, read: () => true, update: staffOnly },
+  access: siteScopedPublicAdminAccess(),
   hooks: {
     beforeValidate: [
       async ({ data, originalDoc, req, context }) => {
@@ -143,7 +144,108 @@ export const Discussions: CollectionConfig = {
 export const DiscussionPosts: CollectionConfig = {
   slug: 'discussion-posts',
   admin: { useAsTitle: 'permalink', group: 'Community' },
-  access: { create: staffOnly, delete: staffOnly, read: () => true, update: staffOnly },
+  access: {
+    ...siteScopedAdminAccess(),
+    create: async ({ req, data }) => {
+      const user = req.user as { role?: string } | null
+      if (user?.role === 'owner' || user?.role === 'administrator') return true
+      const discussionId = (data as Record<string, unknown> | undefined)?.discussion
+      if (!discussionId) return false
+      const discussion = await req.payload
+        .findByID({
+          collection: 'discussions',
+          id: discussionId as never,
+          depth: 0,
+          overrideAccess: true,
+        })
+        .catch(() => null)
+      return Boolean(
+        discussion &&
+          req.user?.role === 'staff' &&
+          (req.user as unknown as { adminSites?: Array<string | { id: string }> }).adminSites?.some(
+            (site) =>
+              (typeof site === 'string' ? site : site.id) ===
+              String(typeof discussion.site === 'object' ? discussion.site.id : discussion.site),
+          ),
+      )
+    },
+    read: async ({ req }) => {
+      if (!req.user || !['owner', 'administrator', 'staff'].includes(String(req.user.role)))
+        return true
+      if (req.user.role !== 'staff') return true
+      const ids =
+        (req.user as unknown as { adminSites?: Array<string | { id: string }> }).adminSites?.map(
+          (site) => (typeof site === 'string' ? site : site.id),
+        ) ?? []
+      return ids.length
+        ? {
+            discussion: {
+              in: (
+                await req.payload.find({
+                  collection: 'discussions',
+                  where: { site: { in: ids } },
+                  limit: 5000,
+                  depth: 0,
+                  overrideAccess: true,
+                })
+              ).docs.map((doc) => doc.id),
+            },
+          }
+        : false
+    },
+    update: async ({ req, id, data }) => {
+      const user = req.user as { role?: string; adminSites?: Array<string | { id: string }> } | null
+      if (user?.role === 'owner' || user?.role === 'administrator') return true
+      if (user?.role !== 'staff') return false
+      const post = await req.payload
+        .findByID({
+          collection: 'discussion-posts',
+          id: id as never,
+          depth: 0,
+          overrideAccess: true,
+        })
+        .catch(() => null)
+      const discussionId =
+        typeof post?.discussion === 'object' && post.discussion
+          ? post.discussion.id
+          : post?.discussion
+      const discussion = discussionId
+        ? await req.payload
+            .findByID({
+              collection: 'discussions',
+              id: discussionId as never,
+              depth: 0,
+              overrideAccess: true,
+            })
+            .catch(() => null)
+        : null
+      const discussionSite = discussion?.site
+      const siteId =
+        typeof discussionSite === 'object' && discussionSite ? discussionSite.id : discussionSite
+      const nextDiscussionId = (data as Record<string, unknown> | undefined)?.discussion
+      if (nextDiscussionId) {
+        const nextDiscussion = await req.payload
+          .findByID({
+            collection: 'discussions',
+            id: nextDiscussionId as never,
+            depth: 0,
+            overrideAccess: true,
+          })
+          .catch(() => null)
+        const nextSite =
+          typeof nextDiscussion?.site === 'object' && nextDiscussion.site
+            ? nextDiscussion.site.id
+            : nextDiscussion?.site
+        if (String(nextSite) !== String(siteId)) return false
+      }
+      return Boolean(
+        siteId &&
+          user.adminSites?.some(
+            (site) => String(typeof site === 'object' ? site.id : site) === String(siteId),
+          ),
+      )
+    },
+  },
   fields: [
     {
       name: 'discussion',
@@ -198,7 +300,7 @@ export const DiscussionPosts: CollectionConfig = {
 export const CalendarEntries: CollectionConfig = {
   slug: 'calendar-entries',
   admin: { useAsTitle: 'title', group: 'Calendar' },
-  access: { create: staffOnly, delete: staffOnly, read: () => true, update: staffOnly },
+  access: siteScopedPublicAdminAccess(),
   hooks: {
     beforeValidate: [
       ({ data }) => {

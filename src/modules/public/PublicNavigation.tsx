@@ -10,7 +10,7 @@ function MenuLink({ item, nested = false }: { item: PublicMenuItem; nested?: boo
   const path = usePathname()
   const active = isActiveMenuItem(item, path)
   const external = !item.href.startsWith('/')
-  const className = `rounded px-3 py-2 text-sm ${active ? 'font-bold text-red-700 underline underline-offset-4' : 'text-stone-700 hover:text-red-700 dark:text-stone-200'} ${nested ? 'block' : ''}`
+  const className = `rounded px-3 py-2 text-sm ${active ? 'font-bold !text-red-700 underline underline-offset-4' : '!text-stone-700 hover:!text-red-700 dark:!text-stone-200'} ${nested ? 'block' : ''}`
   return external ? (
     <a href={item.href} className={className} target="_blank" rel="noreferrer">
       {item.label}
@@ -81,7 +81,7 @@ export function PublicNavigationBar({
         </nav>
         <button
           type="button"
-          className="rounded border px-3 py-2 text-sm md:hidden"
+          className="rounded border px-3 py-2 text-sm !text-stone-700 md:hidden dark:!text-stone-200"
           aria-expanded={open}
           aria-controls="mobile-navigation"
           onClick={() => setOpen(!open)}

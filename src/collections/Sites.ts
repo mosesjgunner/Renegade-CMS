@@ -1,9 +1,22 @@
 import type { CollectionConfig } from 'payload'
+import { adminSiteWhere, canManageAdminSite, type StaffUser } from '../modules/admin/site-access'
 
 export const Sites: CollectionConfig = {
   slug: 'sites',
   admin: { useAsTitle: 'name' },
-  access: { read: () => true },
+  access: {
+    read: ({ req }) => {
+      if (!req.user) return true
+      return adminSiteWhere(req.user as StaffUser)
+    },
+    create: ({ req }) => req.user?.role === 'owner' || req.user?.role === 'administrator',
+    update: async ({ req, id }) => {
+      if (req.user?.role === 'owner' || req.user?.role === 'administrator') return true
+      if (req.user?.role !== 'staff' || !id) return false
+      return canManageAdminSite(req.user as StaffUser, id)
+    },
+    delete: ({ req }) => req.user?.role === 'owner' || req.user?.role === 'administrator',
+  },
   hooks: {
     beforeValidate: [
       ({ data, originalDoc }) => {

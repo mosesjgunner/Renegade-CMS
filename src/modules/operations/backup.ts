@@ -28,7 +28,14 @@ export type OperationalBackupManifest = {
   files: BackupFile[]
   totals: { files: number; bytes: number }
   migrationState: string[]
-  installation: { storageDriver: 'local'; mediaDir: string; imageTag: string | null }
+  installation: {
+    storageDriver: 'local'
+    mediaDir: string
+    imageTag: string | null
+    deploymentProfile?: string | null
+    moduleProfile?: string
+    jobBackend?: string
+  }
   exclusions: readonly string[]
 }
 
@@ -86,6 +93,8 @@ export async function createOperationalBackupManifest(
       'provider credentials',
       'archive encryption keys',
       'rebuildable backup diagnostic status',
+      'ephemeral upload-session staging',
+      'rebuildable caches and worker lease locks',
     ],
   }
   assertManifestShape(manifest)

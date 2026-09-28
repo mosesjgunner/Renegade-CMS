@@ -3,17 +3,26 @@ import config from '@payload-config'
 import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
 import { receiptMessageSnapshot } from '@/modules/commerce/payment-operations'
+import { canManageAdminSite } from '@/modules/admin/site-access'
 
 export async function POST(request: Request, { params }: { params: Promise<{ orderId: string }> }) {
   const payload = await getPayload({ config })
   const auth = await payload.auth({ headers: request.headers })
   if (!['owner', 'administrator', 'staff'].includes(String((auth.user as any)?.role)))
     return NextResponse.json({ error: 'Unauthorized.' }, { status: 403 })
+  const siteId = new URL(request.url).searchParams.get('siteId')
+  if ((auth.user as any)?.role === 'staff' && !siteId)
+    return NextResponse.json({ error: 'Choose an assigned site.' }, { status: 400 })
+  if (siteId && !canManageAdminSite(auth.user, siteId))
+    return NextResponse.json({ error: 'Site access denied.' }, { status: 403 })
   const order: any = await payload
     .findByID({ collection: 'orders', id: (await params).orderId, depth: 0, overrideAccess: true })
     .catch(() => null)
   if (!order?.receipt?.receiptNumber)
     return NextResponse.json({ error: 'Issued receipt not found.' }, { status: 404 })
+  const orderSite = typeof order.site === 'string' ? order.site : order.site?.id
+  if (!canManageAdminSite(auth.user, orderSite) || (siteId && siteId !== orderSite))
+    return NextResponse.json({ error: 'Order site access denied.' }, { status: 403 })
   const email = String(order.partySnapshot?.email ?? '')
   if (!email)
     return NextResponse.json(

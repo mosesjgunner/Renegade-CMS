@@ -27,8 +27,8 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   const payload = await getPayload({ config })
   const auth = await payload.auth({ headers: request.headers })
-  if (!auth.user || !['owner', 'administrator', 'staff'].includes(String(auth.user.role))) {
-    return NextResponse.json({ error: 'Staff access required.' }, { status: 403 })
+  if (!auth.user || !['owner', 'administrator'].includes(String(auth.user.role))) {
+    return NextResponse.json({ error: 'Owner or administrator access required.' }, { status: 403 })
   }
 
   try {

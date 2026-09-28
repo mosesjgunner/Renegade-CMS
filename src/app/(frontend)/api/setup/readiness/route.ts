@@ -50,16 +50,16 @@ export async function GET() {
             : undefined,
       },
       email: {
-        name: 'Outbound Email (SMTP/Resend)',
+        name: 'Outbound Email (SMTP)',
         type: 'optional' as const,
         status:
-          process.env.RESEND_API_KEY || process.env.SMTP_HOST
-            ? ('configured' as const)
-            : ('unconfigured' as const),
+          runtimeConfig.email.mode === 'smtp' ? ('configured' as const) : ('unconfigured' as const),
         message:
-          process.env.RESEND_API_KEY || process.env.SMTP_HOST
-            ? 'Credentials detected in environment'
-            : 'Not configured (skippable, configurable later in Admin Studio)',
+          runtimeConfig.email.mode === 'smtp'
+            ? 'SMTP is configured; delivery health is available in provider administration.'
+            : runtimeConfig.email.mode === 'development'
+              ? 'Development mail capture is selected; messages are not sent externally.'
+              : 'SMTP is not configured (skippable, configurable later).',
       },
       analytics: {
         name: 'Analytics & Telemetry',
@@ -70,14 +70,8 @@ export async function GET() {
       ai: {
         name: 'AI Model Provider',
         type: 'optional' as const,
-        status:
-          process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY
-            ? ('configured' as const)
-            : ('unconfigured' as const),
-        message:
-          process.env.OPENAI_API_KEY || process.env.ANTHROPIC_API_KEY
-            ? 'API key detected'
-            : 'Not configured (skippable, configurable later in Admin Studio)',
+        status: 'unconfigured' as const,
+        message: 'AI providers are configured and tested per site in AI Studio.',
       },
     }
 

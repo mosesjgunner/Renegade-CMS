@@ -11,6 +11,7 @@ import {
   type CanonicalSocialPost,
 } from '../social/models'
 import { PLATFORM_MEDIA_RULES } from '../social/media-pipeline'
+import { useAdminSiteID } from './site-context'
 
 interface ConnectedAccountUI {
   id: string
@@ -60,6 +61,7 @@ const DEFAULT_ACCOUNTS: ConnectedAccountUI[] = [
 ]
 
 export default function SocialCommandCenter() {
+  const siteId = useAdminSiteID()
   const [accounts, setAccounts] = useState<ConnectedAccountUI[]>(DEFAULT_ACCOUNTS)
   const [selectedAccountIds, setSelectedAccountIds] = useState<string[]>([
     'acc-mastodon',
@@ -99,7 +101,7 @@ export default function SocialCommandCenter() {
 
   useEffect(() => {
     let cancelled = false
-    void fetch('/api/admin/social/accounts')
+    void fetch(`/api/admin/social/accounts${siteId ? `?siteId=${encodeURIComponent(siteId)}` : ''}`)
       .then(async (res) => {
         if (!res.ok) return
         const data = await res.json()
@@ -125,7 +127,7 @@ export default function SocialCommandCenter() {
     return () => {
       cancelled = true
     }
-  }, [])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   // Current active account & variant
   const activeAccount = accounts.find((a) => a.id === activeTabAccountId) || accounts[0]

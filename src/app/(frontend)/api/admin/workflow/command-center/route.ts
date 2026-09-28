@@ -5,6 +5,7 @@ import { getWorkflowQueuesForUser } from '@/modules/editorial/cmos-persistence'
 import { getUnresolvedComments } from '@/modules/editorial/comments'
 import { getLocalizationEngine } from '@/modules/editorial/localization/service'
 import { sanitizeErrorLog } from '@/modules/editorial/scheduler'
+import { canManageAdminSite } from '@/modules/admin/site-access'
 
 export const runtime = 'nodejs'
 
@@ -17,6 +18,10 @@ export async function GET(request: Request) {
 
   const url = new URL(request.url)
   const siteId = url.searchParams.get('siteId') || undefined
+  if (auth.user.role === 'staff' && !siteId)
+    return NextResponse.json({ error: 'Choose an assigned site.' }, { status: 400 })
+  if (siteId && !canManageAdminSite(auth.user, siteId))
+    return NextResponse.json({ error: 'Site access denied.' }, { status: 403 })
   const now = url.searchParams.get('now') || new Date().toISOString()
 
   const userId = String(auth.user.id)
@@ -47,7 +52,23 @@ export async function GET(request: Request) {
     })
 
     // 2. Unresolved Comments
-    const comments = getUnresolvedComments()
+    const allComments = getUnresolvedComments()
+    const comments: typeof allComments = []
+    if (siteId || auth.user.role !== 'staff') {
+      for (const comment of allComments) {
+        const article = await payload
+          .findByID({
+            collection: 'article-family-content',
+            id: comment.articleId,
+            depth: 0,
+            overrideAccess: true,
+          })
+          .catch(() => null)
+        const site = (article as unknown as { site?: string | { id?: string } } | null)?.site
+        const commentSiteId = typeof site === 'string' ? site : site?.id
+        if (siteId ? commentSiteId === siteId : auth.user.role !== 'staff') comments.push(comment)
+      }
+    }
 
     // 3. Due / Overdue items
     const allItems = [
@@ -161,6 +182,7 @@ export async function GET(request: Request) {
       ) => Promise<{ docs: Array<Record<string, unknown>> }>
       const releasesDocs = await finder({
         collection: 'content-releases',
+        ...(siteId ? { where: { site: { equals: siteId } } } : {}),
         limit: 10,
         sort: '-createdAt',
         overrideAccess: true,
@@ -189,6 +211,13 @@ export async function GET(request: Request) {
       ) => Promise<{ docs: Array<Record<string, unknown>> }>
       const jobsDocs = await finder({
         collection: 'scheduled-publish-jobs',
+        ...(siteId
+          ? {
+              where: {
+                article: { in: uniqueItems.map((item) => item.id) },
+              },
+            }
+          : {}),
         limit: 20,
         sort: '-scheduledFor',
         overrideAccess: true,

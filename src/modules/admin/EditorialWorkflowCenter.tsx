@@ -4,6 +4,8 @@ import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
 import type { Priority, WorkflowAuditEvent, WorkflowItem } from '../editorial/cmos-workflow'
 import type { CommentTarget, ReviewComment, RevisionComparisonDiff } from '../editorial/comments'
+import { useAdminSiteID } from './site-context'
+import EditorialClaimSchemaReview from './EditorialClaimSchemaReview'
 
 type TabKey =
   | 'my-work'
@@ -18,6 +20,7 @@ type TabKey =
   | 'blockers'
   | 'notification-failures'
   | 'audit'
+  | 'claim-schema-review'
 
 interface CommandCenterData {
   currentUser: {
@@ -141,6 +144,8 @@ interface CommandCenterData {
 }
 
 export default function EditorialWorkflowCenter() {
+  const siteId = useAdminSiteID()
+  const siteQuery = siteId ? `?siteId=${encodeURIComponent(siteId)}` : ''
   const [activeTab, setActiveTab] = useState<TabKey>('my-work')
   const [data, setData] = useState<CommandCenterData | null>(null)
   const [loading, setLoading] = useState<boolean>(true)
@@ -167,7 +172,7 @@ export default function EditorialWorkflowCenter() {
     let active = true
     const load = async () => {
       try {
-        const res = await fetch('/api/admin/workflow/command-center')
+        const res = await fetch(`/api/admin/workflow/command-center${siteQuery}`)
         if (!res.ok) throw new Error(`Failed to load Command Center: ${res.statusText}`)
         const json = await res.json()
         if (active) {
@@ -185,13 +190,13 @@ export default function EditorialWorkflowCenter() {
     return () => {
       active = false
     }
-  }, [])
+  }, [siteQuery])
 
   const fetchCommandCenterData = async () => {
     setLoading(true)
     setError(null)
     try {
-      const res = await fetch('/api/admin/workflow/command-center')
+      const res = await fetch(`/api/admin/workflow/command-center${siteQuery}`)
       if (!res.ok) throw new Error(`Failed to load Command Center: ${res.statusText}`)
       const json = await res.json()
       setData(json)
@@ -204,7 +209,9 @@ export default function EditorialWorkflowCenter() {
 
   const fetchAudit = async (articleId: string) => {
     try {
-      const res = await fetch(`/api/admin/workflow/audit?articleId=${articleId}`)
+      const res = await fetch(
+        `/api/admin/workflow/audit?articleId=${articleId}${siteId ? `&siteId=${encodeURIComponent(siteId)}` : ''}`,
+      )
       if (res.ok) {
         const d = await res.json()
         setAuditHistory(d.auditTrail || [])
@@ -276,6 +283,7 @@ export default function EditorialWorkflowCenter() {
           articleIds: selectedItemIds,
           action,
           comment: actionComment,
+          siteId,
         }),
       })
       if (!res.ok) throw new Error('Bulk operation failed.')
@@ -292,7 +300,7 @@ export default function EditorialWorkflowCenter() {
       const res = await fetch('/api/admin/workflow/comments', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'resolve', commentId }),
+        body: JSON.stringify({ action: 'resolve', commentId, articleId: selectedItemId }),
       })
       if (!res.ok) throw new Error('Failed to resolve comment.')
       await fetchCommandCenterData()
@@ -347,7 +355,7 @@ export default function EditorialWorkflowCenter() {
       const res = await fetch('/api/admin/workflow/comments', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'compare', revisionA: revA, revisionB: revB }),
+        body: JSON.stringify({ action: 'compare', revisionA: revA, revisionB: revB, siteId }),
       })
       const result = await res.json()
       if (result.diff) {
@@ -361,11 +369,15 @@ export default function EditorialWorkflowCenter() {
 
   if (loading && !data) {
     return (
-      <div className="p-8 max-w-7xl mx-auto flex items-center justify-center min-h-[400px]">
-        <div className="text-center space-y-3">
-          <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600" />
-          <p className="text-stone-500 font-medium">Loading Workflow Command Center...</p>
-        </div>
+      <div
+        role="status"
+        aria-live="polite"
+        className="p-8 max-w-7xl mx-auto flex items-center justify-center min-h-[400px]"
+      >
+        <p className="text-stone-700 dark:text-stone-300 font-medium">
+          Loading editorial queues and schedule health. Actions appear when the selected site
+          responds.
+        </p>
       </div>
     )
   }
@@ -392,7 +404,7 @@ export default function EditorialWorkflowCenter() {
   const totalBlockers = data?.blockers?.length || 0
   const totalStaleTranslations = data?.translations?.staleCount || 0
   const totalReleases = data?.releases?.length || 0
-  const isHealthy = data?.scheduledJobs?.health?.healthy ?? true
+  const isHealthy = data?.scheduledJobs?.health?.healthy
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
@@ -477,9 +489,9 @@ export default function EditorialWorkflowCenter() {
           <div className="p-2 bg-stone-50 dark:bg-stone-800/40 rounded-lg">
             <span className="text-xs text-stone-500 block">Worker</span>
             <span
-              className={`text-xs font-bold inline-block px-2 py-0.5 rounded mt-1 ${isHealthy ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'}`}
+              className={`text-xs font-bold inline-block px-2 py-1 rounded mt-1 ${isHealthy === true ? 'bg-emerald-100 text-emerald-800' : isHealthy === false ? 'bg-red-100 text-red-800' : 'bg-stone-200 text-stone-800'}`}
             >
-              {isHealthy ? 'Healthy' : 'Degraded'}
+              {isHealthy === true ? 'Healthy' : isHealthy === false ? 'Degraded' : 'Unknown'}
             </span>
           </div>
         </div>
@@ -487,10 +499,15 @@ export default function EditorialWorkflowCenter() {
 
       {error && (
         <div className="p-4 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/60 rounded-xl text-red-700 dark:text-red-300 text-sm flex items-center justify-between">
-          <span>{error}</span>
+          <span>
+            <strong>Workflow data needs attention.</strong> {error} Check the selected site and
+            route access, then retry loading.
+          </span>
           <button
+            type="button"
             onClick={() => setError(null)}
-            className="text-red-500 hover:text-red-700 font-bold ml-4"
+            aria-label="Dismiss workflow error"
+            className="min-h-11 min-w-11 text-red-800 dark:text-red-200 hover:text-red-900 font-bold ml-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500"
           >
             ×
           </button>
@@ -498,7 +515,11 @@ export default function EditorialWorkflowCenter() {
       )}
 
       {/* Main Tab Navigation */}
-      <div className="flex overflow-x-auto border-b border-stone-200 dark:border-stone-800 gap-1 pb-1">
+      <div
+        className="flex overflow-x-auto border-b border-stone-200 dark:border-stone-800 gap-1 pb-1"
+        role="tablist"
+        aria-label="Editorial workflow views"
+      >
         {[
           { key: 'my-work', label: 'Personal Queues', badge: totalMyWork },
           { key: 'team-queues', label: 'Team Queues', badge: totalAwaitingReview },
@@ -512,24 +533,27 @@ export default function EditorialWorkflowCenter() {
           { key: 'blockers', label: 'Blockers & Quality', badge: totalBlockers },
           { key: 'notification-failures', label: 'Outbox Failures' },
           { key: 'audit', label: 'Audit Trail' },
-        ].map((tab) => (
-          <button
-            key={tab.key}
-            onClick={() => setActiveTab(tab.key as TabKey)}
-            className={`px-4 py-2 text-sm font-medium rounded-lg whitespace-nowrap transition flex items-center gap-2 ${
-              activeTab === tab.key
-                ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-950/50 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-900/50'
-                : 'text-stone-600 hover:text-stone-900 dark:text-stone-400 dark:hover:text-stone-200'
-            }`}
-          >
-            <span>{tab.label}</span>
-            {tab.badge !== undefined && tab.badge > 0 && (
-              <span className="px-1.5 py-0.2 rounded-full text-xs font-semibold bg-stone-200 dark:bg-stone-700 text-stone-800 dark:text-stone-200">
-                {tab.badge}
-              </span>
-            )}
-          </button>
-        ))}
+          { key: 'claim-schema-review', label: 'Claim & Schema Review' },
+        ]
+          .filter((tab) => tab.key !== 'templates' || role === 'owner' || role === 'administrator')
+          .map((tab) => (
+            <button
+              key={tab.key}
+              type="button"
+              onClick={() => setActiveTab(tab.key as TabKey)}
+              role="tab"
+              aria-selected={activeTab === tab.key}
+              tabIndex={activeTab === tab.key ? 0 : -1}
+              className={`min-h-11 px-4 py-2 text-sm font-medium rounded-lg whitespace-nowrap transition flex items-center gap-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500 ${activeTab === tab.key ? 'bg-indigo-50 text-indigo-900 dark:bg-indigo-950/50 dark:text-indigo-100 border border-indigo-300 dark:border-indigo-700' : 'text-stone-700 hover:text-stone-950 dark:text-stone-300 dark:hover:text-white'}`}
+            >
+              <span>{tab.label}</span>
+              {tab.badge !== undefined && tab.badge > 0 && (
+                <span className="px-1.5 py-0.2 rounded-full text-xs font-semibold bg-stone-200 dark:bg-stone-700 text-stone-800 dark:text-stone-200">
+                  {tab.badge}
+                </span>
+              )}
+            </button>
+          ))}
       </div>
 
       {/* Tab Panels */}
@@ -584,6 +608,17 @@ export default function EditorialWorkflowCenter() {
                             Priority: {item.assignment.priority}
                           </span>
                           <div className="flex gap-2">
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                setSelectedItemId(item.id)
+                                setActiveTab('claim-schema-review')
+                              }}
+                              className="text-emerald-600 hover:text-emerald-800 font-semibold"
+                              title="Review factual claims and JSON-LD schema for this document"
+                            >
+                              Claims
+                            </button>
                             <button
                               onClick={(e) => {
                                 e.stopPropagation()
@@ -748,6 +783,16 @@ export default function EditorialWorkflowCenter() {
                             : '—'}
                         </td>
                         <td className="px-4 py-3 text-right space-x-2">
+                          <button
+                            onClick={() => {
+                              setSelectedItemId(item.id)
+                              setActiveTab('claim-schema-review')
+                            }}
+                            className="text-emerald-600 hover:text-emerald-800 font-semibold"
+                            title="Review factual claims and JSON-LD schema for this document"
+                          >
+                            Claims
+                          </button>
                           <button
                             onClick={() => handleCompareRevisions(item)}
                             className="text-indigo-600 hover:text-indigo-800 font-semibold"
@@ -1290,6 +1335,17 @@ export default function EditorialWorkflowCenter() {
             </div>
           </div>
         )}
+
+        {/* 12. CLAIM & SCHEMA REVIEW */}
+        {activeTab === 'claim-schema-review' && (
+          <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl p-6 shadow-sm">
+            <EditorialClaimSchemaReview
+              siteId={siteId || ''}
+              initialContentId={selectedItemId || undefined}
+              permissions={permissions}
+            />
+          </div>
+        )}
       </div>
 
       {/* Selected Item Floating Action Bar */}
@@ -1361,6 +1417,12 @@ export default function EditorialWorkflowCenter() {
               className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-xs font-bold transition"
             >
               Submit for Review
+            </button>
+            <button
+              onClick={() => setActiveTab('claim-schema-review')}
+              className="px-3 py-1.5 bg-sky-600 hover:bg-sky-700 text-white rounded-lg text-xs font-bold transition"
+            >
+              Review Claims & Schema
             </button>
             {permissions.canWaive && (
               <button

@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from 'next/server'
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import { reconcileScheduleWorkerJobs, sanitizeErrorLog } from '@/modules/editorial/scheduler'
+import { canManageAdminSite } from '@/modules/admin/site-access'
 
 type Doc = Record<string, any>
 
@@ -14,18 +15,44 @@ const idOf = (value: unknown): string => {
 export async function GET(req: NextRequest) {
   try {
     const payload = await getPayload({ config: configPromise })
+    const auth = await payload.auth({ headers: req.headers })
+    if (!auth.user || !['owner', 'administrator', 'staff'].includes(String(auth.user.role)))
+      return NextResponse.json({ error: 'Staff access required.' }, { status: 403 })
     const { searchParams } = new URL(req.url)
     const siteId = searchParams.get('siteId')
+    if (auth.user.role === 'staff' && !siteId)
+      return NextResponse.json({ error: 'Choose an assigned site.' }, { status: 400 })
+    if (siteId && !canManageAdminSite(auth.user, siteId))
+      return NextResponse.json({ error: 'Site access denied.' }, { status: 403 })
     const limit = parseInt(searchParams.get('limit') ?? '50', 10)
 
     const now = new Date()
     const nowIso = now.toISOString()
 
     // Query scheduled publish jobs
+    const articleIDs = siteId
+      ? (
+          await payload.find({
+            collection: 'article-family-content' as never,
+            where: { site: { equals: siteId } },
+            limit: 10000,
+            depth: 0,
+            overrideAccess: true,
+          } as never)
+        ).docs.map((article) => String(article.id))
+      : undefined
     const jobsResult = (await payload.find({
       collection: 'scheduled-publish-jobs',
+      ...(articleIDs
+        ? {
+            where: articleIDs.length
+              ? { article: { in: articleIDs } }
+              : { id: { equals: '__no_site_articles__' } },
+          }
+        : {}),
       limit,
       sort: '-scheduledFor',
+      depth: 1,
       overrideAccess: true,
     } as never)) as { docs: Doc[] }
 
@@ -92,13 +119,23 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const payload = await getPayload({ config: configPromise })
+    const auth = await payload.auth({ headers: req.headers })
+    if (!auth.user || !['owner', 'administrator', 'staff'].includes(String(auth.user.role)))
+      return NextResponse.json({ error: 'Staff access required.' }, { status: 403 })
     const body = await req.json()
-    const { action, jobId, workerId = 'worker-admin' } = body
+    const { action, jobId } = body
+    const workerId = String(auth.user.id)
+    const siteId = String(body.siteId ?? '')
+    if (auth.user.role === 'staff' && !siteId)
+      return NextResponse.json({ error: 'Choose an assigned site.' }, { status: 400 })
+    if (siteId && !canManageAdminSite(auth.user, siteId))
+      return NextResponse.json({ error: 'Site access denied.' }, { status: 403 })
 
     if (action === 'reconcile') {
       const result = await reconcileScheduleWorkerJobs(payload, {
         workerId,
         limit: 50,
+        ...(siteId ? { siteId } : {}),
       })
       return NextResponse.json({ ok: true, result })
     }
@@ -109,6 +146,31 @@ export async function POST(req: NextRequest) {
         { status: 400 },
       )
     }
+
+    const job = (await payload
+      .findByID({ collection: 'scheduled-publish-jobs', id: jobId, depth: 1, overrideAccess: true })
+      .catch(() => null)) as Doc | null
+    const article =
+      job?.article && typeof job.article === 'object'
+        ? job.article
+        : job?.article
+          ? ((await payload
+              .findByID({
+                collection: 'article-family-content' as never,
+                id: job.article,
+                depth: 0,
+                overrideAccess: true,
+              })
+              .catch(() => null)) as Doc | null)
+          : null
+    const jobSite = idOf(article?.site)
+    if (
+      !job ||
+      !article ||
+      !canManageAdminSite(auth.user, jobSite) ||
+      (siteId && jobSite !== siteId)
+    )
+      return NextResponse.json({ error: 'Job site access denied.' }, { status: 403 })
 
     if (action === 'retry') {
       await payload.update({

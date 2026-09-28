@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, useCallback } from 'react'
+import { useAdminSiteID } from './site-context'
 
 export type JobItem = {
   id: string
@@ -40,6 +41,8 @@ export type ScheduleHealthData = {
 }
 
 export function ScheduleHealthCenter() {
+  const siteId = useAdminSiteID()
+  const siteQuery = siteId ? `?siteId=${encodeURIComponent(siteId)}` : ''
   const [data, setData] = useState<ScheduleHealthData | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -50,16 +53,17 @@ export function ScheduleHealthCenter() {
     setLoading(true)
     setError(null)
     try {
-      const res = await fetch('/api/admin/schedule-health')
+      const res = await fetch(`/api/admin/schedule-health${siteQuery}`)
       if (!res.ok) throw new Error(`HTTP ${res.status}: Failed to fetch schedule health.`)
       const json = await res.json()
       setData(json)
+      setError(null)
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err))
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [siteQuery])
 
   useEffect(() => {
     fetchHealth()
@@ -67,11 +71,24 @@ export function ScheduleHealthCenter() {
 
   const handleAction = async (action: 'retry' | 'cancel' | 'reconcile', jobId?: string) => {
     setActionMessage(null)
+    setError(null)
+    if (
+      action === 'reconcile' &&
+      !window.confirm('Reconcile the scheduled publishing queue for the active site?')
+    )
+      return
+    if (
+      action === 'cancel' &&
+      !window.confirm(
+        'Cancel this scheduled publishing job? This does not unpublish an already published revision.',
+      )
+    )
+      return
     try {
-      const res = await fetch('/api/admin/schedule-health', {
+      const res = await fetch(`/api/admin/schedule-health${siteQuery}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action, jobId }),
+        body: JSON.stringify({ action, jobId, siteId }),
       })
       const json = await res.json()
       if (!res.ok) throw new Error(json.error || 'Action failed')
@@ -96,21 +113,23 @@ export function ScheduleHealthCenter() {
           <h1 className="text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-100">
             Schedule Health Center
           </h1>
-          <p className="text-sm text-stone-500">
+          <p className="text-sm text-stone-700 dark:text-stone-300">
             Operational queue visibility, worker lease health, retry controls, and revision
             integrity.
           </p>
         </div>
         <div className="flex gap-2">
           <button
+            type="button"
             onClick={() => handleAction('reconcile')}
-            className="px-3 py-1.5 text-xs font-semibold rounded-md bg-stone-900 text-white hover:bg-stone-800 transition"
+            className="min-h-11 px-3 py-1.5 text-xs font-semibold rounded-md bg-stone-900 text-white hover:bg-stone-800 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500"
           >
             Reconcile Queue
           </button>
           <button
+            type="button"
             onClick={fetchHealth}
-            className="px-3 py-1.5 text-xs font-medium rounded-md border border-stone-300 dark:border-stone-700 hover:bg-stone-100 dark:hover:bg-stone-800 transition"
+            className="min-h-11 px-3 py-1.5 text-xs font-medium rounded-md border border-stone-400 dark:border-stone-600 hover:bg-stone-100 dark:hover:bg-stone-800 transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500"
           >
             Refresh Status
           </button>
@@ -118,38 +137,46 @@ export function ScheduleHealthCenter() {
       </header>
 
       {actionMessage && (
-        <div className="p-3 text-xs font-medium text-emerald-800 bg-emerald-50 border border-emerald-200 rounded-md">
+        <div
+          role="status"
+          aria-live="polite"
+          className="p-3 text-xs font-medium text-emerald-900 bg-emerald-50 border border-emerald-300 rounded-md"
+        >
           {actionMessage}
         </div>
       )}
 
       {error && (
-        <div className="p-3 text-xs font-medium text-rose-800 bg-rose-50 border border-rose-200 rounded-md">
-          {error}
+        <div
+          role="alert"
+          className="p-3 text-xs font-medium text-rose-900 bg-rose-50 border border-rose-300 rounded-md"
+        >
+          <strong>Schedule health needs attention.</strong> {error} Check worker health and assigned
+          site, then refresh status.
         </div>
       )}
 
       {/* Health Stats Bar */}
       <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
         <div className="p-4 rounded-lg bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800">
-          <span className="text-xs text-stone-500 block">Worker Status</span>
-          <span className="text-sm font-bold text-emerald-600 dark:text-emerald-400 capitalize">
-            {data?.workerHealth.status ?? 'Unknown'}
+          <span className="text-xs text-stone-700 dark:text-stone-300 block">Worker Status</span>
+          <span className="text-sm font-bold capitalize">
+            {data?.workerHealth.status ?? 'Unknown — refresh to check'}
           </span>
-          <span className="text-[10px] text-stone-400 block mt-1">
-            Node: {data?.workerHealth.activeWorkerId}
+          <span className="text-xs text-stone-600 dark:text-stone-400 block mt-1">
+            Node: {data?.workerHealth.activeWorkerId ?? 'not reported'}
           </span>
         </div>
 
         <div className="p-4 rounded-lg bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800">
-          <span className="text-xs text-stone-500 block">Next Scheduled</span>
+          <span className="text-xs text-stone-700 dark:text-stone-300 block">Next Scheduled</span>
           <span className="text-xl font-bold text-stone-800 dark:text-stone-200">
             {data?.counts.nextJobs ?? 0}
           </span>
         </div>
 
         <div className="p-4 rounded-lg bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800">
-          <span className="text-xs text-stone-500 block">Late / Overdue</span>
+          <span className="text-xs text-stone-700 dark:text-stone-300 block">Late / Overdue</span>
           <span
             className={`text-xl font-bold ${(data?.counts.lateJobs ?? 0) > 0 ? 'text-amber-600' : 'text-stone-800 dark:text-stone-200'}`}
           >
@@ -158,7 +185,9 @@ export function ScheduleHealthCenter() {
         </div>
 
         <div className="p-4 rounded-lg bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800">
-          <span className="text-xs text-stone-500 block">Retrying / Failed</span>
+          <span className="text-xs text-stone-700 dark:text-stone-300 block">
+            Retrying / Failed
+          </span>
           <span
             className={`text-xl font-bold ${(data?.counts.failedJobs ?? 0) > 0 ? 'text-rose-600' : 'text-stone-800 dark:text-stone-200'}`}
           >
@@ -167,7 +196,7 @@ export function ScheduleHealthCenter() {
         </div>
 
         <div className="p-4 rounded-lg bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800">
-          <span className="text-xs text-stone-500 block">Completed</span>
+          <span className="text-xs text-stone-700 dark:text-stone-300 block">Completed</span>
           <span className="text-xl font-bold text-stone-800 dark:text-stone-200">
             {data?.counts.completedJobs ?? 0}
           </span>
@@ -175,16 +204,18 @@ export function ScheduleHealthCenter() {
       </div>
 
       {/* Filter Tabs */}
-      <div className="flex gap-2 border-b border-stone-200 dark:border-stone-800 pb-2">
+      <div
+        className="flex gap-2 border-b border-stone-200 dark:border-stone-800 pb-2"
+        role="group"
+        aria-label="Filter scheduled jobs"
+      >
         {(['all', 'queued', 'late', 'failed', 'completed'] as const).map((tab) => (
           <button
             key={tab}
+            type="button"
             onClick={() => setFilter(tab)}
-            className={`px-3 py-1.5 text-xs font-semibold rounded-md capitalize transition ${
-              filter === tab
-                ? 'bg-stone-800 text-white'
-                : 'text-stone-600 hover:bg-stone-100 dark:hover:bg-stone-800'
-            }`}
+            aria-pressed={filter === tab}
+            className={`min-h-11 min-w-11 px-3 py-1.5 text-xs font-semibold rounded-md capitalize transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500 ${filter === tab ? 'bg-stone-800 text-white' : 'text-stone-600 hover:bg-stone-100 dark:hover:bg-stone-800'}`}
           >
             {tab}
           </button>
@@ -194,27 +225,50 @@ export function ScheduleHealthCenter() {
       {/* Jobs Table */}
       <div className="overflow-x-auto border border-stone-200 dark:border-stone-800 rounded-lg">
         <table className="w-full text-left text-xs">
+          <caption className="sr-only">
+            Scheduled publishing jobs with revision, time, status, errors, and available controls
+          </caption>
           <thead className="bg-stone-100 dark:bg-stone-900 border-b border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-400 font-semibold uppercase tracking-wider">
             <tr>
-              <th className="p-3">Artifact & Title</th>
-              <th className="p-3">Exact Revision</th>
-              <th className="p-3">Scheduled UTC & Zone</th>
-              <th className="p-3">Status & Retries</th>
-              <th className="p-3">Last Error (Sanitized)</th>
-              <th className="p-3 text-right">Controls</th>
+              <th scope="col" className="p-3">
+                Artifact & Title
+              </th>
+              <th scope="col" className="p-3">
+                Exact Revision
+              </th>
+              <th scope="col" className="p-3">
+                Scheduled UTC & Zone
+              </th>
+              <th scope="col" className="p-3">
+                Status & Retries
+              </th>
+              <th scope="col" className="p-3">
+                Last Error (Sanitized)
+              </th>
+              <th scope="col" className="p-3 text-right">
+                Controls
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-stone-200 dark:divide-stone-800">
             {loading ? (
               <tr>
-                <td colSpan={6} className="p-6 text-center text-stone-400">
-                  Loading schedule health...
+                <td
+                  colSpan={6}
+                  className="p-6 text-center text-stone-600 dark:text-stone-300"
+                  role="status"
+                  aria-live="polite"
+                >
+                  Loading schedule health. Job counts and controls will appear when the queue
+                  responds.
                 </td>
               </tr>
             ) : filteredJobs.length === 0 ? (
               <tr>
-                <td colSpan={6} className="p-6 text-center text-stone-400">
-                  No scheduled publish jobs matching filter.
+                <td colSpan={6} className="p-6 text-center text-stone-600 dark:text-stone-300">
+                  {error
+                    ? 'Schedule health could not be loaded. Use Refresh Status to try again.'
+                    : `No ${filter === 'all' ? '' : `${filter} `}scheduled publish jobs found. New publishing schedules appear here after an editor schedules a revision.`}
                 </td>
               </tr>
             ) : (
@@ -224,7 +278,9 @@ export function ScheduleHealthCenter() {
                     <div className="text-stone-900 dark:text-stone-100 font-bold">
                       {job.articleTitle}
                     </div>
-                    <div className="text-[10px] text-stone-400 font-mono">ID: {job.articleId}</div>
+                    <div className="text-[10px] text-stone-600 dark:text-stone-400 font-mono">
+                      ID: {job.articleId}
+                    </div>
                   </td>
 
                   <td className="p-3 font-mono text-[11px]">
@@ -259,7 +315,7 @@ export function ScheduleHealthCenter() {
                               : 'bg-blue-100 text-blue-800'
                       }`}
                     >
-                      {job.status}
+                      {job.status} status
                     </span>
                     <div className="text-[10px] text-stone-400 mt-1">
                       Retries: {job.retryCount}/{job.maxRetries}
@@ -282,16 +338,20 @@ export function ScheduleHealthCenter() {
                   <td className="p-3 text-right space-x-1">
                     {job.rawStatus === 'failed' || job.status === 'late' ? (
                       <button
+                        type="button"
+                        aria-label={`Retry scheduled job for ${job.articleTitle}`}
+                        className="min-h-11 min-w-11 px-2 py-1 text-[11px] font-semibold rounded bg-stone-800 text-white hover:bg-stone-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500"
                         onClick={() => handleAction('retry', job.id)}
-                        className="px-2 py-1 text-[11px] font-semibold rounded bg-stone-800 text-white hover:bg-stone-700"
                       >
                         Retry
                       </button>
                     ) : null}
                     {job.rawStatus !== 'completed' && job.rawStatus !== 'cancelled' ? (
                       <button
+                        type="button"
+                        aria-label={`Cancel scheduled job for ${job.articleTitle}`}
+                        className="min-h-11 min-w-11 px-2 py-1 text-[11px] font-medium rounded border border-rose-400 text-rose-800 hover:bg-rose-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-sky-500"
                         onClick={() => handleAction('cancel', job.id)}
-                        className="px-2 py-1 text-[11px] font-medium rounded border border-rose-300 text-rose-700 hover:bg-rose-50"
                       >
                         Cancel
                       </button>

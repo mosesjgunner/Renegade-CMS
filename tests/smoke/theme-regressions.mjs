@@ -16,7 +16,6 @@ try {
       env: {
         ...process.env,
         RENEGADE_MODULES: 'all',
-        RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT: 'true',
       },
     },
   )

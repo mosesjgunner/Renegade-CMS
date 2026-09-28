@@ -503,10 +503,10 @@ test.describe('PRE-06 Presentation Pass Gate — Complete Browser & E2E Validati
       ).toBeVisible()
 
       // Presentation tab
-      await adminPage.getByRole('button', { name: /presentation/i }).click()
+      await adminPage.getByTestId('tab-presentation').click()
 
       // Quarantine tab
-      await adminPage.getByRole('button', { name: /quarantine/i }).click()
+      await adminPage.getByTestId('tab-quarantine').click()
 
       // Verify and Deliberately Activate
       const activateBtn = adminPage.getByRole('button', { name: /activate site/i })

@@ -23,6 +23,7 @@ export type JobLeaseOptions = {
 
 export type ReconcileOptions = JobLeaseOptions & {
   limit?: number
+  siteId?: string
 }
 
 export type SanitizedJobLog = {
@@ -247,6 +248,22 @@ export async function reconcileScheduleWorkerJobs(
   const nowMs = options.now ? new Date(options.now).getTime() : Date.now()
   const limit = options.limit ?? 50
 
+  // Scheduled jobs belong to their article. Resolve authorized article IDs first;
+  // scheduled-publish-jobs has no direct site field.
+  const siteArticles = options.siteId
+    ? (
+        await payload.find({
+          collection: 'article-family-content' as never,
+          where: { site: { equals: options.siteId } },
+          limit: 10000,
+          depth: 0,
+          overrideAccess: true,
+        } as never)
+      ).docs.map((article) => String(article.id))
+    : undefined
+  if (siteArticles && siteArticles.length === 0)
+    return { processedCount: 0, successCount: 0, failedCount: 0, jobs: [] }
+
   const pendingJobs = (
     (await payload.find({
       collection: 'scheduled-publish-jobs',
@@ -254,6 +271,7 @@ export async function reconcileScheduleWorkerJobs(
         and: [
           { status: { in: ['queued', 'processing'] } },
           { scheduledFor: { less_than_equal: new Date(nowMs + 30000).toISOString() } }, // clock drift buffer
+          ...(siteArticles ? [{ article: { in: siteArticles } }] : []),
         ],
       },
       limit,

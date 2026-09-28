@@ -1,6 +1,7 @@
 'use client'
 import QRCode from 'qrcode'
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
 
 export function PosQr({ uri }: { uri: string }) {
   const [svg, setSvg] = useState('')
@@ -22,7 +23,12 @@ export default function POS() {
   return (
     <main className="mx-auto max-w-md min-h-dvh p-4 space-y-4">
       <header>
-        <h1 className="text-2xl font-black">Point of sale</h1>
+        <div className="flex justify-between items-center">
+          <h1 className="text-2xl font-black">Point of sale</h1>
+          <Link href="/admin/commerce" className="text-xs text-sky-500 hover:underline">
+            ← Commerce Admin
+          </Link>
+        </div>
         <p className="text-sm">
           Choose products, then generate a payment-intent-bound crypto invoice.
         </p>

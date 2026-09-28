@@ -39,17 +39,23 @@ describe('Social Distribution Admin API Routes', () => {
       const req = new Request('http://localhost:3000/api/admin/social/dispatch', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ baseCopy: '' }),
+        body: JSON.stringify({ baseCopy: '', siteId: 'site-1' }),
       })
       const res = await dispatchPost(req)
       expect(res.status).toBe(400)
     })
 
     it('creates canonical post and stages deliveries across target networks', async () => {
+      mockFindDocs = [
+        { id: 'acc-mastodon-1', site: 'site-1' },
+        { id: 'acc-bsky-1', site: 'site-1' },
+        { id: 'acc-fb-1', site: 'site-1' },
+      ]
       const req = new Request('http://localhost:3000/api/admin/social/dispatch', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
+          siteId: 'site-1',
           title: 'Spring Campaign Launch',
           baseCopy: 'Exciting announcement across all networks!',
           canonicalUrl: 'https://renegadeparty.org/post-1',

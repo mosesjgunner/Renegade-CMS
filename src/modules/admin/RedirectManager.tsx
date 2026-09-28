@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useAdminSiteID } from './site-context'
 
 type PublicRedirectItem = {
   id: string
@@ -14,6 +15,8 @@ type PublicRedirectItem = {
 }
 
 export default function RedirectManager() {
+  const siteId = useAdminSiteID()
+  const siteSuffix = siteId ? `?siteId=${encodeURIComponent(siteId)}` : ''
   const [rules, setRules] = useState<PublicRedirectItem[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
@@ -37,7 +40,7 @@ export default function RedirectManager() {
     setLoading(true)
     setError(null)
     try {
-      const res = await fetch('/api/admin/redirects')
+      const res = await fetch(`/api/admin/redirects${siteSuffix}`)
       const data = await res.json()
       if (res.ok) {
         setRules(data.rules || [])
@@ -53,7 +56,7 @@ export default function RedirectManager() {
 
   useEffect(() => {
     let active = true
-    fetch('/api/admin/redirects')
+    fetch(`/api/admin/redirects${siteSuffix}`)
       .then((res) => {
         if (!res.ok) {
           throw new Error('Failed to load redirect rules.')
@@ -77,7 +80,7 @@ export default function RedirectManager() {
     return () => {
       active = false
     }
-  }, [])
+  }, [siteSuffix])
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -90,6 +93,7 @@ export default function RedirectManager() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           id: editingId || undefined,
+          siteId,
           fromPath,
           toPath,
           statusCode,
@@ -145,7 +149,7 @@ export default function RedirectManager() {
     setImportStatus(null)
 
     try {
-      const res = await fetch('/api/admin/redirects/import', {
+      const res = await fetch(`/api/admin/redirects/import${siteSuffix}`, {
         method: 'POST',
         headers: { 'Content-Type': 'text/csv' },
         body: importText,

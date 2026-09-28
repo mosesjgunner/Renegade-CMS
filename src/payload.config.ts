@@ -19,7 +19,6 @@ const config = loadConfig()
 // RENEGADE_MODULES. See src/modules/module-registry.ts for the full contract.
 const domainRegistrations = gatePayloadRegistrations(registeredPayloadDomains(config), {
   enabled: parseEnabledModules(process.env.RENEGADE_MODULES),
-  allowUnsafeCollectionCount: process.env.RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT === 'true',
 })
 const users = domainRegistrations.collections.find(({ slug }) => slug === 'users')
 

@@ -241,6 +241,9 @@ export async function getWorkflowQueuesForUser(
 ) {
   // Return all items in store
   const allItems = Array.from(workflowItemsStore.values())
+  if (!input.siteId && input.role !== 'publisher') {
+    return categorizeWorkflowQueues([], input.userId, input.now)
+  }
   const filtered = input.siteId ? allItems.filter((i) => i.siteId === input.siteId) : allItems
 
   return categorizeWorkflowQueues(filtered, input.userId, input.now)
@@ -255,11 +258,15 @@ export async function bulkExecuteWorkflowItems(
     comment?: string
     update?: { editorId?: string | null; priority?: Priority; dueDate?: string | null }
     now?: string
+    siteId?: string
   },
 ): Promise<BulkOperationResult> {
   const items: WorkflowItem[] = []
   for (const id of input.articleIds) {
-    items.push(await getWorkflowItemForArticle(payload, id))
+    const item = await getWorkflowItemForArticle(payload, id)
+    if (input.siteId && item.siteId !== input.siteId)
+      throw new WorkflowPermissionError('Bulk operation contains an item from another site.')
+    items.push(item)
   }
 
   const result = bulkExecuteWorkflowActions(items, input.action, input.actor, {

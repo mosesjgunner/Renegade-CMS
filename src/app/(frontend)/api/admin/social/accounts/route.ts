@@ -1,9 +1,10 @@
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
+import { canManageAdminSite } from '@/modules/admin/site-access'
 
 const staffOnly = (user: { role?: string } | null | undefined) =>
-  ['owner', 'administrator', 'publisher', 'staff'].includes(String(user?.role))
+  ['owner', 'administrator', 'staff'].includes(String(user?.role))
 
 export async function GET(request: Request) {
   try {
@@ -13,8 +14,15 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Unauthorized.' }, { status: 403 })
     }
 
+    const siteId = new URL(request.url).searchParams.get('siteId')
+    if (auth.user?.role === 'staff' && !siteId)
+      return NextResponse.json({ error: 'Choose an assigned site.' }, { status: 400 })
+    if (siteId && !canManageAdminSite(auth.user, siteId))
+      return NextResponse.json({ error: 'Site access denied.' }, { status: 403 })
+
     const accountsResult = await payload.find({
       collection: 'social-accounts' as never,
+      where: siteId ? { site: { equals: siteId } } : undefined,
       limit: 100,
       depth: 0,
       overrideAccess: true,

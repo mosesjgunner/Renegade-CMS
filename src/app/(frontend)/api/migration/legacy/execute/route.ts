@@ -10,13 +10,16 @@ import {
 } from '@/modules/portability/legacy-migration'
 
 const staff = (user: { role?: string } | null | undefined) =>
-  user?.role === 'owner' || user?.role === 'administrator' || user?.role === 'staff'
+  user?.role === 'owner' || user?.role === 'administrator'
 
 export async function POST(request: Request) {
   const payload = await getPayload({ config })
   const auth = await payload.auth({ headers: request.headers })
   if (!staff(auth.user)) {
-    return NextResponse.json({ error: 'Legacy migration requires staff access.' }, { status: 403 })
+    return NextResponse.json(
+      { error: 'Legacy migration requires owner or administrator access.' },
+      { status: 403 },
+    )
   }
 
   const body = (await request.json()) as {

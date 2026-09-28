@@ -1,4 +1,5 @@
 import type { CollectionConfig, Field } from 'payload'
+import { siteScopedAdminAccess } from '../modules/admin/site-access'
 
 const staffOnly = ({ req }: { req: { user?: { role?: string } | null } }) =>
   ['owner', 'administrator', 'staff'].includes(String(req.user?.role))
@@ -27,7 +28,7 @@ const scopeKeyHook = ({ data }: { data?: Record<string, unknown> }) => {
 const base = (slug: string, title: string): CollectionConfig => ({
   slug,
   admin: { useAsTitle: title, group: 'Team' },
-  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
+  access: siteScopedAdminAccess(),
   hooks: { beforeValidate: [scopeKeyHook] },
   fields: [],
 })

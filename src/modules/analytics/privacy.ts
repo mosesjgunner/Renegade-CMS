@@ -4,7 +4,10 @@ import type { PrivacyPolicy, ConsentChoices } from './contracts'
 import { defaultPrivacyPolicy, normalizeConsentChoices } from './contracts'
 
 const consentCookie = 'renegade-consent'
-const cookieMaxAge = 60 * 60 * 24 * 180
+// Consent is a durable visitor preference. It should not unexpectedly prompt
+// again after a normal browser or application restart. Clearing site data or
+// changing the consent version can still require a fresh choice.
+const cookieMaxAge = 60 * 60 * 24 * 3650
 type StoredConsent = { subject: string; version: string; choices: ConsentChoices }
 
 const encode = (value: StoredConsent, secret: string) => {

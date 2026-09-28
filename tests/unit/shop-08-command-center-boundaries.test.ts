@@ -25,9 +25,11 @@ describe('SHOP-08 affiliate command boundary', () => {
   })
 
   it('requires administrator authority for approval and export', async () => {
-    auth.mockResolvedValue({ user: { id: 'staff-1', role: 'staff' } })
+    auth.mockResolvedValue({
+      user: { id: 'staff-1', role: 'staff', adminSites: [{ id: 'site-1' }] },
+    })
     for (const action of ['approve-batch', 'export-batch']) {
-      const response = await POST(request({ action }))
+      const response = await POST(request({ action, siteId: 'site-1' }))
       expect(response.status).toBe(403)
     }
   })
@@ -37,6 +39,7 @@ describe('SHOP-08 affiliate command boundary', () => {
     const response = await POST(
       request({
         action: 'approve-batch',
+        siteId: 'site-1',
         operatorUser: { id: 'forged-operator', role: 'owner' },
         batch: {
           id: 'batch-1',
@@ -58,7 +61,9 @@ describe('SHOP-08 affiliate command boundary', () => {
 
   it('cannot assert an external payout result from client data', async () => {
     auth.mockResolvedValue({ user: { id: 'owner-1', role: 'owner' } })
-    const response = await POST(request({ action: 'reconcile-batch', success: true }))
+    const response = await POST(
+      request({ action: 'reconcile-batch', success: true, siteId: 'site-1' }),
+    )
     expect(response.status).toBe(409)
   })
 })

@@ -16,11 +16,12 @@ import {
   executeRelease,
   rollbackRelease,
 } from '@/modules/releases/service'
+import { canManageAdminSite } from '@/modules/admin/site-access'
 
 type Args = { params: Promise<{ id: string }> }
 
 const staffOnly = (user: { role?: string } | null | undefined) =>
-  ['owner', 'administrator', 'publisher', 'staff'].includes(String(user?.role))
+  ['owner', 'administrator', 'staff'].includes(String(user?.role))
 
 export async function GET(request: Request, { params }: Args) {
   try {
@@ -31,6 +32,12 @@ export async function GET(request: Request, { params }: Args) {
     }
 
     const { id } = await params
+    const current = await payload
+      .findByID({ collection: 'content-releases', id, depth: 0, overrideAccess: true })
+      .catch(() => null)
+    const siteId = typeof current?.site === 'string' ? current.site : current?.site?.id
+    if (!current || !canManageAdminSite(auth.user, siteId))
+      return NextResponse.json({ error: 'Release site access denied.' }, { status: 403 })
     const release = await getReleaseDetail(payload, id)
     return NextResponse.json({ release })
   } catch (error) {
@@ -50,6 +57,12 @@ export async function POST(request: Request, { params }: Args) {
     }
 
     const { id } = await params
+    const current = await payload
+      .findByID({ collection: 'content-releases', id, depth: 0, overrideAccess: true })
+      .catch(() => null)
+    const siteId = typeof current?.site === 'string' ? current.site : current?.site?.id
+    if (!current || !canManageAdminSite(auth.user, siteId))
+      return NextResponse.json({ error: 'Release site access denied.' }, { status: 403 })
     const body = await request.json()
     const action = body.action
     const actor = {

@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useMemo, useEffect } from 'react'
+import { useAdminSiteID } from './site-context'
 import {
   AUDIENCE_METRIC_DICTIONARY,
   type AudienceCommandCenterHealth,
@@ -288,6 +289,7 @@ const INITIAL_EXPERIMENTS: AudienceExperiment[] = [
 // ============================================================================
 
 export default function AudienceCommandCenter() {
+  const activeSiteId = useAdminSiteID()
   const [activeTab, setActiveTab] = useState<
     | 'overview'
     | 'campaigns'
@@ -303,7 +305,7 @@ export default function AudienceCommandCenter() {
     | 'reports'
   >('campaigns')
 
-  const [siteId, setSiteId] = useState('site-renegade-1')
+  const [siteId, setSiteId] = useState(activeSiteId || '')
   const [timeWindow, setTimeWindow] = useState<'24h' | '7d' | '30d' | 'qtd'>('7d')
   const [channelFilter, setChannelFilter] = useState<'all' | 'email' | 'sms' | 'rcs'>('all')
 
@@ -318,7 +320,9 @@ export default function AudienceCommandCenter() {
 
   useEffect(() => {
     let cancelled = false
-    void fetch('/api/admin/audience/command-center')
+    void fetch(
+      `/api/admin/audience/command-center${activeSiteId ? `?siteId=${encodeURIComponent(activeSiteId)}` : ''}`,
+    )
       .then(async (res) => {
         if (!res.ok) return
         const data = await res.json()
@@ -336,7 +340,7 @@ export default function AudienceCommandCenter() {
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [activeSiteId])
 
   // Attribution test state
   const [testUrlBase, setTestUrlBase] = useState('https://renegade.media/townhall-2026')

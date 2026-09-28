@@ -163,18 +163,17 @@ const pod: CatalogProduct = {
 }
 
 describe('SHOP-01 canonical catalog workflows', () => {
-  it('limits anonymous collection reads to published products', async () => {
+  it('keeps collection reads admin scoped and site bound', async () => {
     const read = Products.access?.read
     expect(typeof read).toBe('function')
     if (typeof read !== 'function') throw new Error('Product read access must be a function.')
-    expect(await read({ req: { user: null } } as never)).toEqual({
-      state: { equals: 'published' },
-    })
+    expect(await read({ req: { user: null } } as never)).toBe(false)
     expect(
       await read({
-        req: { user: { role: 'staff' } },
+        req: { user: { role: 'staff', adminSites: [{ id: 'site-1' }] } },
       } as never),
-    ).toBe(true)
+    ).toEqual({ site: { in: ['site-1'] } })
+    expect(await read({ req: { user: { role: 'staff' } } } as never)).toBe(false)
   })
   it('requires the governed workflow boundary for publication', () => {
     const validate = Products.hooks?.beforeValidate?.[0]
@@ -344,7 +343,14 @@ describe('SHOP-01 canonical catalog workflows', () => {
     expect(minorMoneyDecimal('1200', 'USD')).toBe('12.00')
     expect(minorMoneyDecimal('1200', 'JPY')).toBe('1200')
   })
-  it('registers Product schema and catalog search lifecycle hooks', () => {
+  it('keeps product records admin scoped and registers catalog search lifecycle hooks', () => {
+    expect(Products.access?.read?.({ req: { user: null } } as never)).toBe(false)
+    expect(
+      Products.access?.read?.({
+        req: { user: { role: 'staff', adminSites: [{ id: 'site-1' }] } },
+      } as never),
+    ).toEqual({ site: { in: ['site-1'] } })
+    expect(Products.access?.read?.({ req: { user: { role: 'staff' } } } as never)).toBe(false)
     const extension = globalSchemaRegistry.getExtension('products')
     expect(extension?.primarySchemaType).toBe('Product')
     const result = globalSchemaRegistry.buildExtensionNodes('products', {

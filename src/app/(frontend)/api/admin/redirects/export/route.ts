@@ -6,6 +6,7 @@ import {
   generateRedirectsJson,
   listRedirectRules,
 } from '@/modules/public/redirect-manager'
+import { canManageAdminSite } from '@/modules/admin/site-access'
 
 export const runtime = 'nodejs'
 
@@ -18,9 +19,14 @@ export async function GET(request: Request) {
 
   const url = new URL(request.url)
   const format = (url.searchParams.get('format') || 'csv').toLowerCase()
+  const siteId = url.searchParams.get('siteId') || undefined
+  if (auth.user.role === 'staff' && !siteId)
+    return NextResponse.json({ error: 'Choose an assigned site.' }, { status: 400 })
+  if (siteId && !canManageAdminSite(auth.user, siteId))
+    return NextResponse.json({ error: 'Site access denied.' }, { status: 403 })
 
   try {
-    const rules = await listRedirectRules(payload)
+    const rules = await listRedirectRules(payload, siteId)
 
     if (format === 'json') {
       const content = generateRedirectsJson(rules)

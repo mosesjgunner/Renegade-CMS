@@ -49,6 +49,14 @@ export type OperationsDiagnostics = {
     deploymentProfile?: AppConfig['deploymentProfile']
   }
   database: { status: 'healthy' | 'unavailable' }
+  runtime: { profile: string; moduleProfile: string; jobBackend: string }
+  backup: {
+    status: 'not_configured' | 'healthy' | 'failed'
+    lastSuccessfulAt: string | null
+    lastFailureAt: string | null
+    verified: boolean
+    archive: null | { path: string; createdAt: string; files: number; bytes: number }
+  }
   migrations: {
     status: 'current' | 'behind' | 'unavailable'
     applied: number
@@ -75,11 +83,6 @@ export type OperationsDiagnostics = {
   quality?: { lastScanAt: string | null; lastScanStatus: string | null; openIssues: number }
   email: EmailDeliveryHealth
   mediaStorage: { status: 'healthy' | 'unavailable'; driver: string }
-  backup: {
-    status: 'not_configured' | 'healthy' | 'failed'
-    lastSuccessfulAt: string | null
-    lastFailureAt: string | null
-  }
 }
 export type FailedJobDiagnostic = {
   id: string
@@ -268,6 +271,11 @@ export async function buildOperationsDiagnostics(
         deploymentProfile: config.deploymentProfile,
       },
       database: { status: 'healthy' },
+      runtime: {
+        profile: config.deploymentProfile,
+        moduleProfile: process.env.RENEGADE_MODULES?.trim() || 'floor',
+        jobBackend: process.env.JOBS_BACKEND?.trim() || 'Payload database jobs',
+      },
       migrations: {
         status: missing.length ? 'behind' : 'current',
         applied: names.size,
@@ -288,7 +296,9 @@ export async function buildOperationsDiagnostics(
       providers,
       email,
       mediaStorage,
-      backup: backupDiagnostic(await backupStatusFromMedia(config.storage.mediaDir)),
+      backup: {
+        ...backupDiagnostic(await backupStatusFromMedia(config.storage.mediaDir)),
+      },
     }
   } catch {
     return {
@@ -301,6 +311,11 @@ export async function buildOperationsDiagnostics(
         deploymentProfile: config.deploymentProfile,
       },
       database: { status: 'unavailable' },
+      runtime: {
+        profile: config.deploymentProfile,
+        moduleProfile: process.env.RENEGADE_MODULES?.trim() || 'floor',
+        jobBackend: process.env.JOBS_BACKEND?.trim() || 'Payload database jobs',
+      },
       migrations: {
         status: 'unavailable',
         applied: 0,
@@ -317,21 +332,54 @@ export async function buildOperationsDiagnostics(
         status: config.email.mode === 'disabled' ? 'disabled' : 'degraded',
       },
       mediaStorage: { status: 'unavailable', driver: config.storage.driver },
-      backup: { status: 'not_configured', lastSuccessfulAt: null, lastFailureAt: null },
+      backup: {
+        status: 'not_configured',
+        lastSuccessfulAt: null,
+        lastFailureAt: null,
+        verified: false,
+        archive: null,
+      },
       quality: { lastScanAt: null, lastScanStatus: null, openIssues: 0 },
     }
   }
 }
 function backupDiagnostic(value: unknown): OperationsDiagnostics['backup'] {
   if (!value || typeof value !== 'object')
-    return { status: 'not_configured', lastSuccessfulAt: null, lastFailureAt: null }
+    return {
+      status: 'not_configured',
+      lastSuccessfulAt: null,
+      lastFailureAt: null,
+      verified: false,
+      archive: null,
+    }
   const status = (value as { status?: unknown }).status
   const successful = iso((value as { lastSuccessfulAt?: unknown }).lastSuccessfulAt)
   const failed = iso((value as { lastFailureAt?: unknown }).lastFailureAt)
+  const item = value as {
+    archivePath?: unknown
+    archiveFiles?: unknown
+    archiveBytes?: unknown
+    verified?: unknown
+    lastSuccessfulAt?: unknown
+  }
+  const path = typeof item.archivePath === 'string' ? item.archivePath : null
+  const createdAt = iso(item.lastSuccessfulAt)
+  const files = Number(item.archiveFiles)
+  const bytes = Number(item.archiveBytes)
   return {
     status: status === 'healthy' || status === 'failed' ? status : 'not_configured',
     lastSuccessfulAt: successful,
     lastFailureAt: failed,
+    verified: item.verified === true,
+    archive:
+      status === 'healthy' &&
+      item.verified === true &&
+      path &&
+      createdAt &&
+      Number.isSafeInteger(files) &&
+      Number.isSafeInteger(bytes)
+        ? { path, createdAt, files, bytes }
+        : null,
   }
 }
 

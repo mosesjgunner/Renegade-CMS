@@ -4,6 +4,7 @@ import { notFound, permanentRedirect } from 'next/navigation'
 import type { Metadata } from 'next'
 
 import { VideoPlayer } from '@/modules/media/VideoPlayer'
+import { PresentationSurface } from '@/modules/presentation/Surface'
 import {
   discoveryToMetadata,
   resolveDiscoveryDocument,
@@ -79,34 +80,36 @@ export default async function VideoPage({ params }: { params: Promise<{ slug: st
   if (discovery.canonicalPath !== `/videos/${slug}`) permanentRedirect(discovery.canonicalPath)
 
   return (
-    <main className="mx-auto max-w-5xl space-y-8 px-6 py-12">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: serializeJsonLd(discovery.schema.jsonLd),
-        }}
-      />
-      <h1 className="text-4xl font-bold">{title}</h1>
-      <VideoPlayer
-        title={title}
-        src={`/video-media/${asset.id}/baseline.mp4`}
-        hlsSrc={
-          outputs.some((item) => item.filename === 'stream.m3u8')
-            ? `/video-media/${asset.id}/stream.m3u8`
-            : undefined
-        }
-        poster={poster ? `/video-media/${asset.id}/poster.jpg` : undefined}
-        captions={captions}
-      />
-      {video.body ? (
-        <article className="prose max-w-none whitespace-pre-wrap">{String(video.body)}</article>
-      ) : null}
-      {video.transcript ? (
-        <section aria-labelledby="transcript">
-          <h2 id="transcript">Transcript</h2>
-          <p>The publisher-provided transcript is available with this video.</p>
-        </section>
-      ) : null}
-    </main>
+    <PresentationSurface surface="video" record={video}>
+      <main className="mx-auto max-w-5xl space-y-8 px-6 py-12">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: serializeJsonLd(discovery.schema.jsonLd),
+          }}
+        />
+        <h1 className="text-4xl font-bold">{title}</h1>
+        <VideoPlayer
+          title={title}
+          src={`/video-media/${asset.id}/baseline.mp4`}
+          hlsSrc={
+            outputs.some((item) => item.filename === 'stream.m3u8')
+              ? `/video-media/${asset.id}/stream.m3u8`
+              : undefined
+          }
+          poster={poster ? `/video-media/${asset.id}/poster.jpg` : undefined}
+          captions={captions}
+        />
+        {video.body ? (
+          <article className="prose max-w-none whitespace-pre-wrap">{String(video.body)}</article>
+        ) : null}
+        {video.transcript ? (
+          <section aria-labelledby="transcript">
+            <h2 id="transcript">Transcript</h2>
+            <p>The publisher-provided transcript is available with this video.</p>
+          </section>
+        ) : null}
+      </main>
+    </PresentationSurface>
   )
 }

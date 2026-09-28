@@ -3,9 +3,10 @@ import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
 import { aggregateAnalytics } from '@/modules/social/analytics'
 import type { NormalizedAnalytics, SocialNetwork } from '@/modules/social/contracts'
+import { canManageAdminSite } from '@/modules/admin/site-access'
 
 const staffOnly = (user: { role?: string } | null | undefined) =>
-  ['owner', 'administrator', 'publisher', 'staff'].includes(String(user?.role))
+  ['owner', 'administrator', 'staff'].includes(String(user?.role))
 
 export async function GET(request: Request) {
   try {
@@ -17,10 +18,35 @@ export async function GET(request: Request) {
 
     const { searchParams } = new URL(request.url)
     const canonicalPostId = searchParams.get('canonicalPostId')
+    const siteId = searchParams.get('siteId')
+    if (auth.user?.role === 'staff' && !siteId)
+      return NextResponse.json({ error: 'Choose an assigned site.' }, { status: 400 })
+    if (siteId && !canManageAdminSite(auth.user, siteId))
+      return NextResponse.json({ error: 'Site access denied.' }, { status: 403 })
 
     const where: Record<string, any> = {}
     if (canonicalPostId) {
       where.canonicalPostId = { equals: canonicalPostId }
+    }
+    if (siteId) {
+      const accounts = await payload.find({
+        collection: 'social-accounts' as never,
+        where: { site: { equals: siteId } },
+        limit: 500,
+        depth: 0,
+        overrideAccess: true,
+      })
+      const accountIDs = (accounts.docs as Array<{ id: string | number }>).map((account) =>
+        String(account.id),
+      )
+      if (accountIDs.length === 0) {
+        return NextResponse.json({
+          canonicalPostId,
+          trackedDeliveriesCount: 0,
+          aggregate: aggregateAnalytics([]),
+        })
+      }
+      where.account = { in: accountIDs }
     }
 
     const externalPostsResult = await payload.find({

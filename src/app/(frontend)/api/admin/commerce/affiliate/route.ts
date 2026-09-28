@@ -20,6 +20,20 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json()
     const { action } = body
+    const siteId = typeof body.siteId === 'string' ? body.siteId : ''
+    if (
+      !siteId ||
+      (user?.role === 'staff' &&
+        !(user as unknown as { adminSites?: Array<string | { id: string }> }).adminSites?.some(
+          (site) => String(typeof site === 'object' ? site.id : site) === siteId,
+        ))
+    )
+      return NextResponse.json({ error: 'Choose an assigned site.' }, { status: 403 })
+    if (body.batch?.siteId && String(body.batch.siteId) !== siteId)
+      return NextResponse.json(
+        { error: 'Batch site does not match the selected site.' },
+        { status: 403 },
+      )
 
     if (
       ['approve-batch', 'export-batch'].includes(action) &&
@@ -41,16 +55,13 @@ export async function POST(request: NextRequest) {
     }
 
     if (action === 'summarize') {
-      const summaries = summarizeCommissionLiabilities(
-        body.ledgers ?? [],
-        body.siteId ?? 'default-site',
-      )
+      const summaries = summarizeCommissionLiabilities(body.ledgers ?? [], siteId)
       return NextResponse.json({ summaries, projectionOnly: true })
     }
 
     if (action === 'create-batch') {
       const result = createSettlementBatch({
-        siteId: body.siteId ?? 'default-site',
+        siteId,
         currency: body.currency ?? 'USD',
         ledgers: body.ledgers ?? [],
         holds: body.holds ?? [],

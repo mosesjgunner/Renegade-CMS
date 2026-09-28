@@ -34,5 +34,6 @@ ehthumbs.db
 
 # Scratch and temporary scripts
 scratch/
+tmp-backups/
 .next*
 

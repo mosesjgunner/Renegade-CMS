@@ -2,6 +2,8 @@ import config from '@payload-config'
 import { getPayload } from 'payload'
 import { revalidatePath } from 'next/cache'
 import { NextResponse } from 'next/server'
+import { canAccessAdminRole } from '@/modules/admin/access-policy'
+import { canManageAdminSite } from '@/modules/admin/site-access'
 
 import { normalizeNavigation, validateNavigation } from '@/modules/public/navigation'
 
@@ -10,13 +12,17 @@ export const runtime = 'nodejs'
 export async function GET(request: Request) {
   const payload = await getPayload({ config })
   const auth = await payload.auth({ headers: request.headers })
-  if (!auth.user || !['owner', 'administrator', 'staff'].includes(String(auth.user.role))) {
+  if (!auth.user || !canAccessAdminRole(auth.user.role)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
   const { searchParams } = new URL(request.url)
   const publicationId = searchParams.get('publicationId')
   const siteId = searchParams.get('siteId')
+  if (auth.user.role === 'staff' && !siteId && !publicationId)
+    return NextResponse.json({ error: 'Choose an assigned site.' }, { status: 400 })
+  if (siteId && !canManageAdminSite(auth.user, siteId))
+    return NextResponse.json({ error: 'Site access denied.' }, { status: 403 })
 
   const pubWhere: Record<string, unknown> = publicationId
     ? { id: { equals: publicationId } }
@@ -29,10 +35,15 @@ export async function GET(request: Request) {
     where: pubWhere as never,
     limit: 1,
     depth: 0,
-    overrideAccess: true,
+    overrideAccess: false,
+    user: auth.user,
   })
 
   const pub = publications.docs[0] as unknown as Record<string, unknown> | undefined
+  const resolvedSite =
+    typeof pub?.site === 'string' ? pub.site : (pub?.site as { id?: string } | undefined)?.id
+  if (resolvedSite && !canManageAdminSite(auth.user, resolvedSite))
+    return NextResponse.json({ error: 'Site access denied.' }, { status: 403 })
   const navigation = normalizeNavigation(pub?.navigation)
 
   // Also query published pages and articles for easy target selection
@@ -42,12 +53,13 @@ export async function GET(request: Request) {
     where: {
       and: [
         ...(site ? [{ site: { equals: site } }] : []),
-        { status: { in: ['published', 'active'] } },
+        { status: { in: ['published', 'updated'] } },
       ],
     } as never,
     limit: 100,
     depth: 0,
-    overrideAccess: true,
+    overrideAccess: false,
+    user: auth.user,
   })
 
   return NextResponse.json({
@@ -65,7 +77,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   const payload = await getPayload({ config })
   const auth = await payload.auth({ headers: request.headers })
-  if (!auth.user || !['owner', 'administrator', 'staff'].includes(String(auth.user.role))) {
+  if (!auth.user || !canAccessAdminRole(auth.user.role)) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
@@ -77,6 +89,10 @@ export async function POST(request: Request) {
     }
 
     const validated = validateNavigation(body.navigation)
+    if (auth.user.role === 'staff' && !body.siteId && !body.publicationId)
+      return NextResponse.json({ error: 'Choose an assigned site.' }, { status: 400 })
+    if (body.siteId && !canManageAdminSite(auth.user, body.siteId))
+      return NextResponse.json({ error: 'Site access denied.' }, { status: 403 })
 
     let targetPublicationId = body.publicationId
     if (!targetPublicationId) {
@@ -88,7 +104,8 @@ export async function POST(request: Request) {
         where: pubWhere as never,
         limit: 1,
         depth: 0,
-        overrideAccess: true,
+        overrideAccess: false,
+        user: auth.user,
       })
       targetPublicationId = pubs.docs[0]?.id ? String(pubs.docs[0].id) : undefined
     }
@@ -97,13 +114,29 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Publication not found.' }, { status: 404 })
     }
 
+    const publication = await payload
+      .findByID({
+        collection: 'publications',
+        id: targetPublicationId,
+        depth: 0,
+        overrideAccess: false,
+        user: auth.user,
+      })
+      .catch(() => null)
+    if (!publication) return NextResponse.json({ error: 'Publication not found.' }, { status: 404 })
+    const publicationSite =
+      typeof publication.site === 'string' ? publication.site : publication.site?.id
+    if (!canManageAdminSite(auth.user, publicationSite))
+      return NextResponse.json({ error: 'Site access denied.' }, { status: 403 })
+
     await payload.update({
       collection: 'publications',
       id: targetPublicationId,
       data: {
         navigation: validated,
       },
-      overrideAccess: true,
+      overrideAccess: false,
+      user: auth.user,
     })
 
     // Immediate revalidation of frontend layout

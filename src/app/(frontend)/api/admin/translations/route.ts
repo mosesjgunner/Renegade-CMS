@@ -13,10 +13,7 @@ export const runtime = 'nodejs'
 export async function GET(request: Request) {
   const payload = await getPayload({ config })
   const auth = await payload.auth({ headers: request.headers })
-  if (
-    !auth.user ||
-    !['owner', 'administrator', 'staff', 'editor', 'author'].includes(String(auth.user.role))
-  ) {
+  if (!auth.user || !['owner', 'administrator', 'staff'].includes(String(auth.user.role))) {
     return NextResponse.json({ error: 'Authorized access required.' }, { status: 403 })
   }
 
@@ -44,10 +41,7 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   const payload = await getPayload({ config })
   const auth = await payload.auth({ headers: request.headers })
-  if (
-    !auth.user ||
-    !['owner', 'administrator', 'staff', 'editor'].includes(String(auth.user.role))
-  ) {
+  if (!auth.user || !['owner', 'administrator', 'staff'].includes(String(auth.user.role))) {
     return NextResponse.json({ error: 'Staff or editor access required.' }, { status: 403 })
   }
 

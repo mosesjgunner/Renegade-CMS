@@ -20,6 +20,7 @@ if (!output || !has('--maintenance-window-confirmed'))
   )
 const compose = value('--compose-file', 'compose.production.yaml')!
 const envFile = value('--env-file', '.env.production')!
+const manifestOutput = value('--manifest-output')
 const backupRoot = path.resolve(
   output,
   `renegade-backup-${new Date().toISOString().replace(/[:.]/g, '-')}`,
@@ -34,14 +35,30 @@ const composeArgs = [
   compose,
 ]
 await assertOperationalEnv(envFile)
+await mkdir(path.dirname(backupRoot), { recursive: true })
 
-function run(command: string, commandArgs: string[], outputFile?: string, inputFile?: string) {
+function run(
+  command: string,
+  commandArgs: string[],
+  outputFile?: string,
+  inputFile?: string,
+  quiet = false,
+) {
   return new Promise<void>((resolve, reject) => {
+    const input = inputFile ? createReadStream(inputFile) : undefined
     const child = spawn(command, commandArgs, {
-      stdio: [inputFile ? 'pipe' : 'inherit', outputFile ? 'pipe' : 'inherit', 'inherit'],
+      stdio: [inputFile ? 'pipe' : 'ignore', outputFile || quiet ? 'pipe' : 'inherit', 'inherit'],
     })
-    if (outputFile) child.stdout!.pipe(createWriteStream(outputFile))
-    if (inputFile) createReadStream(inputFile).pipe(child.stdin!)
+    const output = outputFile ? createWriteStream(outputFile) : undefined
+    if (output) child.stdout!.pipe(output)
+    else if (quiet) child.stdout!.resume()
+    if (input) {
+      input.on('error', reject)
+      child.stdin!.on('error', (error: NodeJS.ErrnoException) => {
+        if (error.code !== 'EPIPE') reject(error)
+      })
+      input.pipe(child.stdin!)
+    }
     child.on('error', reject)
     child.on('close', (code) =>
       code === 0
@@ -186,6 +203,9 @@ try {
       storageDriver: 'local',
       mediaDir: '/app/media',
       imageTag: imageTag || null,
+      deploymentProfile: process.env.DEPLOYMENT_PROFILE || null,
+      moduleProfile: process.env.RENEGADE_MODULES || 'floor',
+      jobBackend: process.env.JOBS_BACKEND || 'Payload database jobs',
     },
   })
   await writeFile(
@@ -194,33 +214,39 @@ try {
     { mode: 0o600 },
   )
   await verifyOperationalBackup(backupRoot)
-  await run(
-    'docker',
-    [...composeArgs, 'exec', '-T', 'postgres', 'pg_restore', '-l'],
-    undefined,
-    path.join(backupRoot, 'database.dump'),
-  )
+  if (manifestOutput) {
+    await mkdir(path.dirname(path.resolve(manifestOutput)), { recursive: true })
+    await writeFile(
+      path.resolve(manifestOutput),
+      `${JSON.stringify({ archive: backupRoot, manifest }, null, 2)}\n`,
+      { mode: 0o600 },
+    )
+  }
   await run(
     'docker',
     [
-      ...composeArgs,
       'run',
       '--rm',
-      '--no-deps',
       '--entrypoint',
-      'tar',
-      'renegade-web',
-      '-tzf',
-      '-',
+      'sh',
+      '-v',
+      `${backupRoot}:/backup:ro`,
+      'postgres:17.6-alpine',
+      '-c',
+      'pg_restore -l /backup/database.dump >/dev/null && tar -tzf /backup/media.tar.gz >/dev/null',
     ],
     undefined,
-    path.join(backupRoot, 'media.tar.gz'),
+    undefined,
+    true,
   )
   const status = JSON.stringify({
     status: 'healthy',
-    lastSuccessfulAt: new Date().toISOString(),
+    lastSuccessfulAt: manifest.createdAt,
     backupFormat: 'renegade-operational-backup',
     verified: true,
+    archivePath: backupRoot,
+    archiveFiles: manifest.totals.files,
+    archiveBytes: manifest.totals.bytes,
   })
   await run('docker', [
     ...composeArgs,

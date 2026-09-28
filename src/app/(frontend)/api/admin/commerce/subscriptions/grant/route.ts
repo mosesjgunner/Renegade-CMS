@@ -7,6 +7,7 @@ import {
   queueBillingSystemNotice,
   recomputeSubscriptionEntitlements,
 } from '@/modules/commerce/subscription-service'
+import { canManageAdminSite } from '@/modules/admin/site-access'
 
 const staffOnly = (role: unknown) => ['owner', 'administrator', 'staff'].includes(String(role))
 const fingerprint = (
@@ -48,6 +49,8 @@ export async function POST(request: Request) {
     )
   const source = input.source === 'migration' ? 'migration' : 'complimentary'
   const siteId = String(input.siteId ?? '')
+  if (!canManageAdminSite(auth.user, siteId))
+    return NextResponse.json({ error: 'Site access denied.' }, { status: 403 })
   const plan: any = await (payload as any)
     .findByID({ collection: 'plan-revisions', id: planId, depth: 0, overrideAccess: true })
     .catch(() => null)

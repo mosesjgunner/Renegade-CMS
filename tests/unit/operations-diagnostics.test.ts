@@ -115,6 +115,11 @@ describe('operations diagnostics', () => {
         status: 'healthy',
         version: { app: '1', buildSha: null },
         database: { status: 'healthy' },
+        runtime: {
+          profile: 'Standard',
+          moduleProfile: 'floor',
+          jobBackend: 'Payload database jobs',
+        },
         migrations: { status: 'current', applied: 1, expected: 1, missing: [] },
         web: { status: 'healthy', observedAt: '2026-08-28T00:00:00.000Z' },
         worker: { status: 'healthy', observedAt: '2026-08-28T00:00:00.000Z', ageMs: 0 },
@@ -123,7 +128,13 @@ describe('operations diagnostics', () => {
         providers: [],
         email: { provider: 'smtp', status: 'healthy' },
         mediaStorage: { status: 'healthy', driver: 'local' },
-        backup: { status: 'not_configured', lastSuccessfulAt: null, lastFailureAt: null },
+        backup: {
+          status: 'not_configured',
+          lastSuccessfulAt: null,
+          lastFailureAt: null,
+          verified: false,
+          archive: null,
+        },
       },
       config,
     )

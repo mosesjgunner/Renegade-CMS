@@ -12,7 +12,11 @@ export function createUsersCollection(
     access: {
       create: ({ req }) => req.user?.role === 'owner',
       delete: ({ req }) => req.user?.role === 'owner',
-      read: ({ req }) => ['owner', 'administrator', 'staff'].includes(String(req.user?.role)),
+      read: ({ req }) => {
+        if (req.user?.role === 'owner' || req.user?.role === 'administrator') return true
+        if (req.user?.role === 'staff' && req.user.id) return { id: { equals: req.user.id } }
+        return false
+      },
       update: ({ req }) => req.user?.role === 'owner',
     },
     auth: {
@@ -33,6 +37,27 @@ export function createUsersCollection(
         required: true,
         defaultValue: 'owner',
         options: ['owner', 'administrator', 'staff'],
+        admin: {
+          description:
+            'Supported admin login roles. Publisher, editor, moderator, and commerce are workflow/member personas, not separate staff authentication roles.',
+        },
+      },
+      {
+        name: 'adminSites',
+        label: 'Admin site access',
+        type: 'relationship',
+        relationTo: 'sites',
+        hasMany: true,
+        admin: {
+          description:
+            'Sites this staff account can manage. Owner and administrator accounts can manage all sites.',
+          condition: (_data, siblingData) => siblingData?.role === 'staff',
+        },
+        access: {
+          create: ({ req }) => req.user?.role === 'owner',
+          read: ({ req }) => req.user?.role === 'owner',
+          update: ({ req }) => req.user?.role === 'owner',
+        },
       },
       // This links an enterprise administrator account to the canonical member identity.
       // It intentionally does not create a second authentication system.

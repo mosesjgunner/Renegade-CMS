@@ -6,6 +6,7 @@ import config from '@payload-config'
 import { getPayload } from 'payload'
 import { communitySiteForHost } from '@/modules/community/site-scope'
 import { ForumThreadView, type ForumPostData } from '@/modules/community/ForumThreadView'
+import { PresentationSurface } from '@/modules/presentation/Surface'
 
 export const dynamic = 'force-dynamic'
 
@@ -98,55 +99,57 @@ export default async function ForumThreadPage({
   const isLocked = discussion.status === 'locked'
 
   return (
-    <main className="container mx-auto max-w-4xl px-6 py-12">
-      <nav aria-label="Breadcrumb" className="mb-6 text-sm text-stone-500">
-        <ol className="flex items-center gap-2">
-          <li>
-            <Link href="/forums" className="hover:underline">
-              Forums
-            </Link>
-          </li>
-          <li aria-hidden="true">&rsaquo;</li>
-          {forum ? (
-            <>
-              <li>
-                <Link href={`/forums/${forum.slug}`} className="hover:underline">
-                  {forum.name}
-                </Link>
-              </li>
-              <li aria-hidden="true">&rsaquo;</li>
-            </>
-          ) : null}
-          <li className="text-stone-800 dark:text-stone-200 font-medium truncate max-w-xs">
-            {discussion.title}
-          </li>
-        </ol>
-      </nav>
+    <PresentationSurface surface="forum" record={discussion}>
+      <main className="container mx-auto max-w-4xl px-6 py-12">
+        <nav aria-label="Breadcrumb" className="mb-6 text-sm text-stone-500">
+          <ol className="flex items-center gap-2">
+            <li>
+              <Link href="/forums" className="hover:underline">
+                Forums
+              </Link>
+            </li>
+            <li aria-hidden="true">&rsaquo;</li>
+            {forum ? (
+              <>
+                <li>
+                  <Link href={`/forums/${forum.slug}`} className="hover:underline">
+                    {forum.name}
+                  </Link>
+                </li>
+                <li aria-hidden="true">&rsaquo;</li>
+              </>
+            ) : null}
+            <li className="text-stone-800 dark:text-stone-200 font-medium truncate max-w-xs">
+              {discussion.title}
+            </li>
+          </ol>
+        </nav>
 
-      <header className="mb-8 pb-4 border-b border-stone-200 dark:border-stone-800">
-        <div className="flex items-center gap-3">
-          <h1 className="text-3xl font-bold tracking-tight">{discussion.title}</h1>
-          {isLocked ? (
-            <span className="text-xs px-2.5 py-1 rounded bg-stone-200 dark:bg-stone-800 text-stone-700 dark:text-stone-300 font-medium">
-              Locked
+        <header className="mb-8 pb-4 border-b border-stone-200 dark:border-stone-800">
+          <div className="flex items-center gap-3">
+            <h1 className="text-3xl font-bold tracking-tight">{discussion.title}</h1>
+            {isLocked ? (
+              <span className="text-xs px-2.5 py-1 rounded bg-stone-200 dark:bg-stone-800 text-stone-700 dark:text-stone-300 font-medium">
+                Locked
+              </span>
+            ) : null}
+          </div>
+          <div className="mt-2 text-xs text-stone-500 flex items-center gap-3">
+            <span>Started {new Date(discussion.createdAt).toLocaleDateString()}</span>
+            <span>&middot;</span>
+            <span>
+              {posts.length} {posts.length === 1 ? 'post' : 'posts'}
             </span>
-          ) : null}
-        </div>
-        <div className="mt-2 text-xs text-stone-500 flex items-center gap-3">
-          <span>Started {new Date(discussion.createdAt).toLocaleDateString()}</span>
-          <span>&middot;</span>
-          <span>
-            {posts.length} {posts.length === 1 ? 'post' : 'posts'}
-          </span>
-        </div>
-      </header>
+          </div>
+        </header>
 
-      <ForumThreadView
-        siteId={siteId}
-        discussionId={String(discussion.id)}
-        isLocked={isLocked}
-        initialPosts={posts}
-      />
-    </main>
+        <ForumThreadView
+          siteId={siteId}
+          discussionId={String(discussion.id)}
+          isLocked={isLocked}
+          initialPosts={posts}
+        />
+      </main>
+    </PresentationSurface>
   )
 }

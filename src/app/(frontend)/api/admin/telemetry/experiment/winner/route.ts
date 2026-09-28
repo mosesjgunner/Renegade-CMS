@@ -4,8 +4,7 @@ import { NextResponse } from 'next/server'
 import { approveWinner } from '@/modules/experiences/contracts'
 import { getActivePublicExperiment } from '@/modules/experiences/public-experiment'
 
-const isOperator = (user: { role?: string } | null | undefined) =>
-  ['owner', 'administrator', 'staff'].includes(String(user?.role))
+const isOperator = (user: { role?: string } | null | undefined) => user?.role === 'owner'
 
 export async function POST(request: Request) {
   const payload = await getPayload({ config })

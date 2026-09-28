@@ -27,7 +27,6 @@ const start = (args, log, extra) => {
     env: {
       ...process.env,
       RENEGADE_MODULES: 'all',
-      RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT: 'true',
       LOCAL_E2E_TEST_MODE: 'true',
       APP_URL: origin,
       MEDIA_DIR: path.join(root, 'media'),

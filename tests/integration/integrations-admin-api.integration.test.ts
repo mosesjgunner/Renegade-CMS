@@ -140,6 +140,7 @@ describe('Operational Admin API (/api/admin/integrations)', () => {
         action: 'create-client',
         name: 'Analytics Importer',
         scopes: ['content.read', 'analytics.read'],
+        siteId: 'site-admin-1',
       }),
     })
 
@@ -282,6 +283,7 @@ describe('Operational Admin API (/api/admin/integrations)', () => {
       state: 'dead-letter',
       attempts: 5,
     })
+    mockSubscriptions.push({ id: 'sub-1', site: 'site-admin-1', status: 'active' })
 
     const req = new Request('http://localhost/api/admin/integrations', {
       method: 'POST',
@@ -289,6 +291,7 @@ describe('Operational Admin API (/api/admin/integrations)', () => {
       body: JSON.stringify({
         action: 'redeliver-webhook',
         deliveryId: 'del-failed',
+        siteId: 'site-admin-1',
       }),
     })
 

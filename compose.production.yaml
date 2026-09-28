@@ -8,6 +8,8 @@ services:
       POSTGRES_DB: renegade
       POSTGRES_USER: renegade
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env.production}
+    ports:
+      - '${POSTGRES_PORT_BIND:-127.0.0.1:5432}:5432'
     volumes:
       - renegade_postgres_data:/var/lib/postgresql/data
     healthcheck:

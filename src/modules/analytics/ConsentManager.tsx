@@ -15,6 +15,7 @@ const empty: Choices = {
   personalization: false,
   marketing: false,
 }
+const localConsentKey = (siteId?: string) => `renegade-consent-choice:${siteId ?? 'unscoped'}`
 const ids = () => ({ anonymousId: crypto.randomUUID(), sessionId: crypto.randomUUID() })
 const readCookie = (name: string) =>
   document.cookie
@@ -23,6 +24,21 @@ const readCookie = (name: string) =>
     ?.slice(name.length + 1)
 const cookie = (name: string, value: string, maxAge?: number) => {
   document.cookie = `${name}=${value}; Path=/; SameSite=Lax${maxAge ? `; Max-Age=${maxAge}` : '; Max-Age=0'}`
+}
+const readLocalConsent = (siteId?: string): Choices | null => {
+  try {
+    const value = localStorage.getItem(localConsentKey(siteId))
+    return value ? (JSON.parse(value) as Choices) : null
+  } catch {
+    return null
+  }
+}
+const writeLocalConsent = (siteId: string | undefined, value: Choices) => {
+  try {
+    localStorage.setItem(localConsentKey(siteId), JSON.stringify(value))
+  } catch {
+    // Storage may be disabled; the signed server cookie remains authoritative.
+  }
 }
 
 type Signals = { globalPrivacyControl?: boolean; doNotTrack?: boolean }
@@ -34,19 +50,21 @@ export function ConsentManager({ siteId }: { siteId?: string }) {
   const [signals, setSignals] = useState<Signals>({})
   const [editing, setEditing] = useState(false)
   useEffect(() => {
+    const stored = readLocalConsent(siteId)
     void fetch('/api/analytics/consent', { credentials: 'same-origin' })
       .then((r) => r.json())
       .then((value) => {
+        const persisted = value.choices ?? stored
         setPolicy(value.policy)
-        setChoices(value.choices)
-        setDraft(value.choices ?? empty)
+        setChoices(persisted)
+        setDraft(persisted ?? empty)
         if (value.signals) setSignals(value.signals)
       })
       .catch(() => {
-        setChoices(empty)
-        setDraft(empty)
+        setChoices(stored)
+        setDraft(stored ?? empty)
       })
-  }, [])
+  }, [siteId])
   const isGpc =
     Boolean(signals.globalPrivacyControl) ||
     (typeof navigator !== 'undefined' &&
@@ -55,13 +73,12 @@ export function ConsentManager({ siteId }: { siteId?: string }) {
     Boolean(signals.doNotTrack) ||
     (typeof navigator !== 'undefined' && navigator.doNotTrack === '1')
   const save = async (next: Choices) => {
-    console.log('Saving consent choices:', next)
     if (!siteId) {
-      console.log('No siteId, returning early')
       // Even without siteId, we should still update the UI
       setChoices(next)
       setDraft(next)
       setEditing(false)
+      writeLocalConsent(siteId, next)
       if (!next.analytics) {
         cookie('renegade-aid', '')
         cookie('renegade-sid', '')
@@ -75,38 +92,34 @@ export function ConsentManager({ siteId }: { siteId?: string }) {
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ siteId, choices: next }),
       })
-      console.log('Consent API response:', response)
       if (!response.ok) {
-        console.error('Failed to save consent choices:', response.statusText)
         // Still update the UI even if the API call fails
         setChoices(next)
         setDraft(next)
         setEditing(false)
+        writeLocalConsent(siteId, next)
         if (!next.analytics) {
           cookie('renegade-aid', '')
           cookie('renegade-sid', '')
         }
         return
       }
-      const data = await response.json().catch((error) => {
-        console.error('Failed to parse consent response:', error)
-        return {}
-      })
-      console.log('Consent data received:', data)
+      const data = await response.json().catch(() => ({}))
       setChoices(next)
       setDraft(next)
       setEditing(false)
+      writeLocalConsent(siteId, next)
       if (data.signals) setSignals(data.signals)
       if (!next.analytics) {
         cookie('renegade-aid', '')
         cookie('renegade-sid', '')
       }
-    } catch (error) {
-      console.error('Failed to save consent choices:', error)
+    } catch {
       // Still update the UI even if the API call fails
       setChoices(next)
       setDraft(next)
       setEditing(false)
+      writeLocalConsent(siteId, next)
       if (!next.analytics) {
         cookie('renegade-aid', '')
         cookie('renegade-sid', '')

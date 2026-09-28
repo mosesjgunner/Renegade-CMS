@@ -25,6 +25,9 @@ import * as aiProposals from './20260924_030000_ai_proposals'
 import * as aiLockedDocumentsRels from './20260924_040000_ai_locked_documents_rels'
 import * as aiBudgetReservation from './20260924_050000_ai_budget_reservation'
 import * as semanticRouteTemplates from './20260924_060000_semantic_route_templates'
+import * as aiProposalsApplication from './20260924_070000_ai_proposals_application'
+import * as adminSiteGrants from './20260925_000000_admin_site_grants'
+import * as intelligenceFoundation from './20260925_010000_intelligence_foundation'
 import * as aud01AudienceEvidence from './20260920_010000_aud_01_audience_evidence'
 import * as aud02Forms from './20260920_020000_aud_02_forms'
 import * as aud03EmailComposer from './20260920_030000_aud_03_email_composer'
@@ -635,5 +638,20 @@ export const migrations = [
     up: semanticRouteTemplates.up,
     down: semanticRouteTemplates.down,
     name: '20260924_060000_semantic_route_templates',
+  },
+  {
+    up: aiProposalsApplication.up,
+    down: aiProposalsApplication.down,
+    name: '20260924_070000_ai_proposals_application',
+  },
+  {
+    up: adminSiteGrants.up,
+    down: adminSiteGrants.down,
+    name: '20260925_000000_admin_site_grants',
+  },
+  {
+    up: intelligenceFoundation.up,
+    down: intelligenceFoundation.down,
+    name: '20260925_010000_intelligence_foundation',
   },
 ]

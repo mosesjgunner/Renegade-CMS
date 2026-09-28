@@ -1392,21 +1392,37 @@ export async function resolveDiscoveryDocument(
 
   // CASE F: Podcast Shows ('podcast-shows')
   if (!input.collection || input.collection === 'podcast-shows') {
-    const showFound = await payload.find({
-      collection: 'podcast-shows',
-      where: {
-        and: [
-          ...(siteId ? [{ site: { equals: siteId } }] : []),
-          input.collection === 'podcast-shows' && input.slug
-            ? { slug: { equals: input.slug } }
-            : { canonicalPath: { equals: normalizedPath } },
-        ],
-      },
-      limit: 1,
-      depth: 1,
-      overrideAccess: true,
-    } as never)
-    const showDoc = showFound.docs[0] as Record<string, any> | undefined
+    let showDoc =
+      input.record && (input.collection === 'podcast-shows' || 'rssEnabled' in input.record)
+        ? (input.record as Record<string, any>)
+        : undefined
+    if (!showDoc) {
+      const showFound = await payload.find({
+        collection: 'podcast-shows',
+        where: {
+          and: [
+            ...(siteId ? [{ site: { equals: siteId } }] : []),
+            input.collection === 'podcast-shows' && input.slug
+              ? { slug: { equals: input.slug } }
+              : { canonicalPath: { equals: normalizedPath } },
+          ],
+        },
+        limit: 1,
+        depth: 1,
+        overrideAccess: true,
+      } as never)
+      showDoc = showFound.docs[0] as Record<string, any> | undefined
+      if (!showDoc && siteId && input.slug) {
+        const fallback = await payload.find({
+          collection: 'podcast-shows',
+          where: { slug: { equals: input.slug } },
+          limit: 1,
+          depth: 1,
+          overrideAccess: true,
+        } as never)
+        showDoc = fallback.docs[0] as Record<string, any> | undefined
+      }
+    }
     if (showDoc) {
       return buildPodcastShowDiscoveryDocument({
         show: showDoc,
@@ -1419,21 +1435,37 @@ export async function resolveDiscoveryDocument(
 
   // CASE G: Podcast Episodes ('podcast-episodes')
   if (!input.collection || input.collection === 'podcast-episodes') {
-    const epFound = await payload.find({
-      collection: 'podcast-episodes',
-      where: {
-        and: [
-          ...(siteId ? [{ site: { equals: siteId } }] : []),
-          input.collection === 'podcast-episodes' && input.slug
-            ? { slug: { equals: input.slug } }
-            : { canonicalPath: { equals: normalizedPath } },
-        ],
-      },
-      limit: 1,
-      depth: 2,
-      overrideAccess: true,
-    } as never)
-    const epDoc = epFound.docs[0] as Record<string, any> | undefined
+    let epDoc =
+      input.record && (input.collection === 'podcast-episodes' || 'episodeType' in input.record)
+        ? (input.record as Record<string, any>)
+        : undefined
+    if (!epDoc) {
+      const epFound = await payload.find({
+        collection: 'podcast-episodes',
+        where: {
+          and: [
+            ...(siteId ? [{ site: { equals: siteId } }] : []),
+            input.collection === 'podcast-episodes' && input.slug
+              ? { slug: { equals: input.slug } }
+              : { canonicalPath: { equals: normalizedPath } },
+          ],
+        },
+        limit: 1,
+        depth: 2,
+        overrideAccess: true,
+      } as never)
+      epDoc = epFound.docs[0] as Record<string, any> | undefined
+      if (!epDoc && siteId && input.slug) {
+        const fallback = await payload.find({
+          collection: 'podcast-episodes',
+          where: { slug: { equals: input.slug } },
+          limit: 1,
+          depth: 2,
+          overrideAccess: true,
+        } as never)
+        epDoc = fallback.docs[0] as Record<string, any> | undefined
+      }
+    }
     if (epDoc) {
       return buildPodcastEpisodeDiscoveryDocument({
         episode: epDoc,

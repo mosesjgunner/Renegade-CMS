@@ -26,6 +26,12 @@ import {
 } from '../modules/public/semantic-url-service'
 import { resolvePublicUrl } from '../modules/public/semantic-url'
 import { projectSearchDocument, removeSearchDocument } from '../modules/public/search-projection'
+import {
+  siteScopedAdminAccess,
+  siteScopedPublicAdminAccess,
+  siteScopedRelationAdminAccess,
+} from '../modules/admin/site-access'
+import { queueOrTriggerContentIntelligence } from '../modules/intelligence/analysis-service'
 
 import {
   canonicalSlug,
@@ -216,8 +222,9 @@ export const MediaAssets: CollectionConfig = {
   admin: { useAsTitle: 'title', group: 'Media' },
   // Metadata includes the opaque storage location. Anonymous readers must use the
   // scoped public byte route, which independently verifies a published reference.
-  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
+  access: siteScopedAdminAccess(),
   hooks: {
+    beforeChange: [enforceSiteTenantBoundary([])],
     afterChange: [
       async ({ doc, previousDoc, req }) => {
         await revalidateDiscoveryOutputs()
@@ -402,7 +409,7 @@ export const MediaAssets: CollectionConfig = {
 export const MediaAssetVersions: CollectionConfig = {
   slug: 'media-asset-versions',
   admin: { useAsTitle: 'versionLabel', group: 'Media', hidden: true },
-  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
+  access: siteScopedAdminAccess(),
   fields: [
     ...siteScopeFields(),
     {
@@ -436,7 +443,7 @@ export const MediaAssetVersions: CollectionConfig = {
 export const MediaGovernanceIncidents: CollectionConfig = {
   slug: 'media-governance-incidents',
   admin: { useAsTitle: 'summary', group: 'Media' },
-  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
+  access: siteScopedAdminAccess(),
   fields: [
     ...siteScopeFields(),
     {
@@ -467,7 +474,7 @@ export const MediaGovernanceIncidents: CollectionConfig = {
 export const MediaBlobs: CollectionConfig = {
   slug: 'media-blobs',
   admin: { useAsTitle: 'checksum', group: 'Media', hidden: true },
-  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
+  access: siteScopedAdminAccess(),
   fields: [
     ...siteScopeFields(),
     { name: 'checksum', type: 'text', required: true, index: true },
@@ -490,7 +497,7 @@ export const MediaBlobs: CollectionConfig = {
 export const MediaVariants: CollectionConfig = {
   slug: 'media-variants',
   admin: { useAsTitle: 'label', group: 'Media' },
-  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
+  access: siteScopedAdminAccess(),
   fields: [
     ...siteScopeFields(),
     {
@@ -539,7 +546,7 @@ export const MediaVariants: CollectionConfig = {
 export const MediaUploadSessions: CollectionConfig = {
   slug: 'media-upload-sessions',
   admin: { useAsTitle: 'filename', group: 'Media', hidden: true },
-  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
+  access: siteScopedAdminAccess(),
   fields: [
     ...siteScopeFields(),
     { name: 'owner', type: 'relationship', relationTo: 'members', required: true, index: true },
@@ -568,7 +575,7 @@ export const MediaUploadSessions: CollectionConfig = {
 export const Sections: CollectionConfig = {
   slug: 'sections',
   admin: { useAsTitle: 'name', group: 'Taxonomy' },
-  access: { create: staffOnly, delete: staffOnly, read: () => true, update: staffOnly },
+  access: siteScopedPublicAdminAccess(),
   hooks: { beforeChange: [enforceTaxonomyTenantBoundary] },
   fields: [
     ...taxonomyScope,
@@ -583,9 +590,27 @@ export const Sections: CollectionConfig = {
 export const Categories: CollectionConfig = {
   slug: 'categories',
   admin: { useAsTitle: 'name', group: 'Taxonomy' },
-  access: { create: staffOnly, delete: staffOnly, read: () => true, update: staffOnly },
+  access: siteScopedPublicAdminAccess(),
   hooks: {
     beforeDelete: [refuseReferencedTaxonomyDeletion('categories')],
+    beforeValidate: [
+      async ({ data, originalDoc, req, context }) => {
+        if (!data) return data
+        if (!data.canonicalPath) {
+          data = (await assignRecordSemanticPath({
+            payload: req.payload,
+            collection: 'categories',
+            data: data as Record<string, unknown> | null | undefined,
+            originalDoc: originalDoc as Record<string, unknown> | null | undefined,
+            allowCanonicalPathChange: context?.semanticRouteChange === true,
+          })) as typeof data
+        }
+        if (!data?.canonicalPath && data?.slug) {
+          data.canonicalPath = `/category/${data.slug}`
+        }
+        return data
+      },
+    ],
     beforeChange: [
       enforceTaxonomyTenantBoundary,
       async ({ data, originalDoc, req }) => {
@@ -626,7 +651,7 @@ export const Categories: CollectionConfig = {
 const simpleTaxonomy = (slug: string, label: string, semanticUrl = false): CollectionConfig => ({
   slug,
   admin: { useAsTitle: 'name', group: 'Taxonomy' },
-  access: { create: staffOnly, delete: staffOnly, read: () => true, update: staffOnly },
+  access: siteScopedPublicAdminAccess(),
   hooks: {
     beforeChange: [
       enforceTaxonomyTenantBoundary,
@@ -701,7 +726,7 @@ export const Series = simpleTaxonomy('series', 'Series')
 export const TaxonomyRedirects: CollectionConfig = {
   slug: 'taxonomy-redirects',
   admin: { useAsTitle: 'fromPath', group: 'Taxonomy' },
-  access: { create: staffOnly, delete: staffOnly, read: () => true, update: staffOnly },
+  access: siteScopedPublicAdminAccess(),
   fields: [
     { name: 'site', type: 'relationship', relationTo: 'sites', required: true, index: true },
     { name: 'fromPath', type: 'text', required: true, unique: true },
@@ -715,7 +740,7 @@ export const TaxonomyRedirects: CollectionConfig = {
 export const PublicRedirects: CollectionConfig = {
   slug: 'public-redirects',
   admin: { useAsTitle: 'fromPath', group: 'Publishing' },
-  access: { create: staffOnly, delete: staffOnly, read: () => true, update: staffOnly },
+  access: siteScopedPublicAdminAccess(),
   hooks: {
     beforeValidate: [
       ({ data }) => {
@@ -804,7 +829,7 @@ export const Content: CollectionConfig = {
   },
   // Public pages query through the explicit publication renderer; Payload's raw
   // REST/GraphQL collection surface must not disclose drafts or private records.
-  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
+  access: siteScopedAdminAccess(),
   hooks: {
     beforeValidate: [
       async ({ data, originalDoc, req }) => {
@@ -845,6 +870,14 @@ export const Content: CollectionConfig = {
           collection: 'content',
           record: doc as Record<string, unknown>,
         })
+        const currentSite =
+          typeof doc?.site === 'string' ? doc.site : (doc?.site as { id?: string })?.id
+        if (currentSite && doc?.id) {
+          await queueOrTriggerContentIntelligence(req.payload, {
+            contentId: String(doc.id),
+            siteId: String(currentSite),
+          })
+        }
         if (operation !== 'update') return doc
         const fromPath =
           typeof previousDoc?.canonicalPath === 'string' ? previousDoc.canonicalPath : ''
@@ -1089,7 +1122,7 @@ export const Content: CollectionConfig = {
 export const ArticleFamilyContent: CollectionConfig = {
   slug: 'article-family-content',
   admin: { useAsTitle: 'articleKey', group: 'Publishing' },
-  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
+  access: siteScopedRelationAdminAccess({ relationField: 'content', targetCollection: 'content' }),
   fields: [
     {
       name: 'content',
@@ -1208,7 +1241,11 @@ export const ArticleFamilyContent: CollectionConfig = {
 export const MarkdownConversionReports: CollectionConfig = {
   slug: 'markdown-conversion-reports',
   admin: { useAsTitle: 'sourceChecksum', group: 'Publishing' },
-  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
+  access: siteScopedRelationAdminAccess({
+    relationField: 'article',
+    targetCollection: 'article-family-content',
+    targetSitePath: { anchorCollection: 'content', targetRelationField: 'content' },
+  }),
   fields: [
     {
       name: 'article',
@@ -1237,7 +1274,15 @@ export const RevisionRecords: CollectionConfig = {
   admin: { useAsTitle: 'sequence', group: 'Publishing' },
   // Revision records are append-only evidence. Restoration creates a new record
   // linked to the retained historical revision rather than mutating history.
-  access: { create: staffOnly, delete: () => false, read: staffOnly, update: () => false },
+  access: {
+    ...siteScopedRelationAdminAccess({
+      relationField: 'article',
+      targetCollection: 'article-family-content',
+      targetSitePath: { anchorCollection: 'content', targetRelationField: 'content' },
+    }),
+    delete: () => false,
+    update: () => false,
+  },
   fields: [
     {
       name: 'article',
@@ -1276,7 +1321,11 @@ export const RevisionRecords: CollectionConfig = {
 export const PreviewTokens: CollectionConfig = {
   slug: 'preview-tokens',
   admin: { useAsTitle: 'tokenHash', group: 'Publishing' },
-  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
+  access: siteScopedRelationAdminAccess({
+    relationField: 'article',
+    targetCollection: 'article-family-content',
+    targetSitePath: { anchorCollection: 'content', targetRelationField: 'content' },
+  }),
   fields: [
     {
       name: 'article',
@@ -1303,7 +1352,56 @@ export const PreviewTokens: CollectionConfig = {
 export const ScheduledPublishJobs: CollectionConfig = {
   slug: 'scheduled-publish-jobs',
   admin: { useAsTitle: 'idempotencyKey', group: 'Publishing' },
-  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
+  access: {
+    create: async ({ req, data }) => {
+      if (req.user?.role === 'owner' || req.user?.role === 'administrator') return true
+      const articleValue = data?.article as unknown
+      const articleId =
+        typeof articleValue === 'object' && articleValue
+          ? (articleValue as { id?: unknown }).id
+          : articleValue
+      if (req.user?.role !== 'staff' || !articleId) return false
+      const article = await req.payload
+        .findByID({
+          collection: 'article-family-content' as never,
+          id: articleId as never,
+          depth: 0,
+          overrideAccess: true,
+        })
+        .catch(() => null)
+      const articleSite = (article as unknown as { site?: unknown } | null)?.site
+      const siteId =
+        typeof articleSite === 'object' && articleSite
+          ? (articleSite as { id?: unknown }).id
+          : articleSite
+      return Boolean(
+        siteId &&
+          (req.user as unknown as { adminSites?: Array<string | { id: string }> }).adminSites?.some(
+            (site) => String(typeof site === 'object' ? site.id : site) === String(siteId),
+          ),
+      )
+    },
+    delete: () => false,
+    read: async ({ req }) => {
+      if (req.user?.role === 'owner' || req.user?.role === 'administrator') return true
+      const ids =
+        (
+          req.user as unknown as { adminSites?: Array<string | { id: string }> } | null
+        )?.adminSites?.map((site) => (typeof site === 'object' ? site.id : site)) ?? []
+      if (req.user?.role !== 'staff' || !ids.length) return false
+      const articles = await req.payload.find({
+        collection: 'article-family-content' as never,
+        where: { site: { in: ids } },
+        limit: 10000,
+        depth: 0,
+        overrideAccess: true,
+      } as never)
+      return articles.docs.length
+        ? { article: { in: articles.docs.map((article) => article.id) } }
+        : false
+    },
+    update: () => false,
+  },
   fields: [
     {
       name: 'article',
@@ -1347,7 +1445,7 @@ export const ScheduledPublishJobs: CollectionConfig = {
 export const Events: CollectionConfig = {
   slug: 'events',
   admin: { useAsTitle: 'title', group: 'Calendar' },
-  access: { create: staffOnly, delete: staffOnly, read: () => true, update: staffOnly },
+  access: siteScopedPublicAdminAccess(),
   hooks: {
     beforeValidate: [
       async ({ data, originalDoc, req, context }) => {
@@ -1493,7 +1591,7 @@ export const Events: CollectionConfig = {
 export const Timelines: CollectionConfig = {
   slug: 'timelines',
   admin: { useAsTitle: 'title', group: 'Calendar' },
-  access: { create: staffOnly, delete: staffOnly, read: () => true, update: staffOnly },
+  access: siteScopedPublicAdminAccess(),
   hooks: {
     beforeValidate: [
       async ({ data, originalDoc, req, context }) => {
@@ -1579,7 +1677,11 @@ export const Timelines: CollectionConfig = {
 export const TimelineMemberships: CollectionConfig = {
   slug: 'timeline-memberships',
   admin: { useAsTitle: 'membershipKey', group: 'Calendar' },
-  access: { create: staffOnly, delete: staffOnly, read: () => true, update: staffOnly },
+  access: siteScopedRelationAdminAccess({
+    relationField: 'timeline',
+    targetCollection: 'timelines',
+    publicRead: true,
+  }),
   hooks: {
     beforeValidate: [
       ({ data }) => {
@@ -1677,7 +1779,7 @@ export const TimelineMemberships: CollectionConfig = {
 export const Sources: CollectionConfig = {
   slug: 'sources',
   admin: { useAsTitle: 'title', group: 'Publishing' },
-  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
+  access: siteScopedAdminAccess(),
   fields: [
     ...siteScopeFields(),
     { name: 'title', type: 'text', required: true },
@@ -1708,7 +1810,7 @@ export const Sources: CollectionConfig = {
 export const Albums: CollectionConfig = {
   slug: 'albums',
   admin: { useAsTitle: 'title', group: 'Media' },
-  access: { create: staffOnly, delete: staffOnly, read: () => true, update: staffOnly },
+  access: siteScopedPublicAdminAccess(),
   hooks: {
     beforeValidate: [
       async ({ data, originalDoc, req, context }) => {
@@ -1808,7 +1910,7 @@ export const Albums: CollectionConfig = {
 export const MediaUsages: CollectionConfig = {
   slug: 'media-usages',
   admin: { useAsTitle: 'usageKey', group: 'Media' },
-  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
+  access: siteScopedAdminAccess(),
   fields: [
     { name: 'site', type: 'relationship', relationTo: 'sites', required: true, index: true },
     {

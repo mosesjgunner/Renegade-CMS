@@ -14,7 +14,7 @@ describe('progressive disclosure admin presentation', () => {
       { slug: 'products', fields: [] },
     ])
     expect(collections).toHaveLength(2)
-    expect(collections.find((item) => item.slug === 'content')?.admin?.hidden).not.toBe(true)
+    expect(collections.find((item) => item.slug === 'content')?.admin?.hidden).toBe(true)
     expect(collections.find((item) => item.slug === 'products')?.admin?.hidden).toBe(true)
   })
 

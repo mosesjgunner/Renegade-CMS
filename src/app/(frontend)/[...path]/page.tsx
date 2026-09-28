@@ -21,6 +21,8 @@ import { EditorialArticleView } from '@/modules/editorial/ArticleView'
 import { loadPublishedArticleByPath } from '@/modules/editorial/persistence'
 import { findIfRegistered, registeredOnly } from '@/modules/public/registered-collections'
 import { resolveSiteSettings } from '@/modules/core/site-settings'
+import { PresentationSurface } from '@/modules/presentation/Surface'
+import type { Surface } from '@/modules/presentation/contracts'
 import { CommentSection } from '@/modules/community/components/CommentSection'
 import { getPublicSsrComments } from '@/modules/community/thread-lifecycle'
 import { ProductDetail } from '@/modules/commerce/ProductView'
@@ -29,6 +31,7 @@ import { hasEntitlement } from '@/modules/commerce/subscription-service'
 import { currentMember, readMemberSession } from '@/modules/identity/member-identity'
 import { canReadEvent } from '@/modules/events/public'
 import { isSafeSemanticRequestPath } from '@/modules/public/semantic-url'
+import { log } from '@/modules/core/logging'
 
 type Args = {
   params: Promise<{ path: string[] }>
@@ -60,6 +63,18 @@ function kind(
   if (collection === 'discussions') return 'forum'
   if (collection === 'topics') return 'topic'
   return 'article'
+}
+
+function getSurfaceForCollection(collection: string, record: PublicRecord): Surface {
+  if (collection === 'events') return 'event'
+  if (collection === 'discussions') return 'forum'
+  if (collection === 'products') return 'product'
+  if (collection === 'topics') return 'archive'
+  if (collection === 'books') return 'book'
+  if (collection === 'content') {
+    return record.contentType === 'page' ? 'page' : 'article'
+  }
+  return collection as Surface
 }
 
 export const dynamic = 'force-dynamic'
@@ -95,6 +110,7 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
     () => null,
   )
   if (!siteId) notFound()
+  const settings = await resolveSiteSettings(payload)
 
   const publications = await payload.find({
     collection: 'publications',
@@ -165,13 +181,12 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
       const referer = reqHeaders.get('referer') ?? 'direct'
 
       // Log redirect event for analytics (in a real implementation, this would go to an analytics service)
-      console.log('Redirect event:', {
+      log('info', 'redirect.resolved', {
         from: path,
         to: resolution.target,
         statusCode: resolution.statusCode,
         userAgent,
         referer,
-        timestamp: new Date().toISOString(),
       })
     } catch {
       // Ignore analytics logging errors
@@ -233,7 +248,7 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
     if (!canRenderPublic(layoutRecord)) notFound()
     const discovery = await resolveDiscoveryDocument(payload, { path })
     return (
-      <>
+      <PresentationSurface surface="custom-page" record={layoutRecord} themeId={settings.themeId}>
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -241,7 +256,7 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
           }}
         />
         <PublicLayout record={layoutRecord} path={path} />
-      </>
+      </PresentationSurface>
     )
   }
 
@@ -274,7 +289,6 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
       )
         notFound()
     }
-    const settings = await resolveSiteSettings(payload)
     const discovery = await resolveDiscoveryDocument(payload, { path })
     return (
       <>
@@ -307,7 +321,11 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
         overrideAccess: true,
       } as never)
     ).docs as unknown as PublicRecord[]
-    return <BookReader book={book} chapters={chapters} />
+    return (
+      <PresentationSurface surface="book" record={book} themeId={settings.themeId}>
+        <BookReader book={book} chapters={chapters} />
+      </PresentationSurface>
+    )
   }
 
   const topicResult = await findIfRegistered(payload, {
@@ -347,28 +365,30 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
       siteId,
     })
     return (
-      <main className="mx-auto max-w-4xl space-y-8 px-6 py-12">
-        <link rel="canonical" href={discovery.canonicalUrl} />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: serializeJsonLd(discovery.schema.jsonLd) }}
-        />
-        <header className="space-y-3">
-          <p className="text-sm text-stone-500">Topic</p>
-          <h1 className="text-4xl font-bold">{String(topic.name)}</h1>
-          {typeof topic.description === 'string' ? <p>{topic.description}</p> : null}
-        </header>
-        <ul className="space-y-5">
-          {publicArticles.map((article) => (
-            <li key={String(article.id)} className="surface-card p-5">
-              <h2 className="text-xl font-semibold">
-                <Link href={String(article.canonicalPath)}>{label(article)}</Link>
-              </h2>
-              {typeof article.summary === 'string' ? <p>{article.summary}</p> : null}
-            </li>
-          ))}
-        </ul>
-      </main>
+      <PresentationSurface surface="archive" record={topic} themeId={settings.themeId}>
+        <main className="mx-auto max-w-4xl space-y-8 px-6 py-12">
+          <link rel="canonical" href={discovery.canonicalUrl} />
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: serializeJsonLd(discovery.schema.jsonLd) }}
+          />
+          <header className="space-y-3">
+            <p className="text-sm text-stone-500">Topic</p>
+            <h1 className="text-4xl font-bold">{String(topic.name)}</h1>
+            {typeof topic.description === 'string' ? <p>{topic.description}</p> : null}
+          </header>
+          <ul className="space-y-5">
+            {publicArticles.map((article) => (
+              <li key={String(article.id)} className="surface-card p-5">
+                <h2 className="text-xl font-semibold">
+                  <Link href={String(article.canonicalPath)}>{label(article)}</Link>
+                </h2>
+                {typeof article.summary === 'string' ? <p>{article.summary}</p> : null}
+              </li>
+            ))}
+          </ul>
+        </main>
+      </PresentationSurface>
     )
   }
   const chapterResult = await findIfRegistered(payload, {
@@ -407,12 +427,14 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
         } as never)
       : { docs: [] }
     return (
-      <BookReader
-        book={chapterBook}
-        chapter={chapter}
-        chapters={chapters}
-        article={(articleResult.docs[0] ?? null) as unknown as PublicRecord | null}
-      />
+      <PresentationSurface surface="book" record={chapterBook} themeId={settings.themeId}>
+        <BookReader
+          book={chapterBook}
+          chapter={chapter}
+          chapters={chapters}
+          article={(articleResult.docs[0] ?? null) as unknown as PublicRecord | null}
+        />
+      </PresentationSurface>
     )
   }
 
@@ -454,129 +476,134 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
     })
     if (collection === 'products') {
       return (
-        <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 space-y-8">
+        <PresentationSurface surface="product" record={record} themeId={settings.themeId}>
+          <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 space-y-8">
+            <link rel="canonical" href={discovery.canonicalUrl} />
+            <script
+              type="application/ld+json"
+              dangerouslySetInnerHTML={{ __html: serializeJsonLd(discovery.schema.jsonLd) }}
+            />
+            <ProductDetail product={record} />
+          </main>
+        </PresentationSurface>
+      )
+    }
+    const targetSurface = getSurfaceForCollection(collection, record)
+    return (
+      <PresentationSurface surface={targetSurface} record={record} themeId={settings.themeId}>
+        <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 space-y-8">
           <link rel="canonical" href={discovery.canonicalUrl} />
           <script
             type="application/ld+json"
             dangerouslySetInnerHTML={{ __html: serializeJsonLd(discovery.schema.jsonLd) }}
           />
-          <ProductDetail product={record} />
-        </main>
-      )
-    }
-    return (
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 space-y-8">
-        <link rel="canonical" href={discovery.canonicalUrl} />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: serializeJsonLd(discovery.schema.jsonLd) }}
-        />
-        <nav
-          aria-label="Breadcrumb"
-          className="flex items-center gap-2 text-xs font-semibold text-stone-500"
-        >
-          <Link href="/" className="hover:text-red-600 transition-colors">
-            Home
-          </Link>
-          <span>/</span>
-          <span className="badge badge-neutral">{kind(collection)}</span>
-          <span>/</span>
-          <span aria-current="page" className="text-stone-900 dark:text-stone-100">
-            {name}
-          </span>
-        </nav>
-        <article className="surface-card p-8 sm:p-10 space-y-6">
-          <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-stone-950 dark:text-stone-50 font-display">
-            {name}
-          </h1>
-          {typeof record.summary === 'string' ? (
-            <p className="text-lg sm:text-xl text-stone-600 dark:text-stone-300 font-display italic leading-relaxed">
-              {record.summary}
-            </p>
-          ) : null}
-          {articleBody ? (
-            <div className="prose dark:prose-invert max-w-none text-base sm:text-lg leading-relaxed text-stone-800 dark:text-stone-200 whitespace-pre-line">
-              {articleBody}
-            </div>
-          ) : typeof record.description === 'string' ? (
-            <div className="prose dark:prose-invert max-w-none text-base sm:text-lg leading-relaxed text-stone-800 dark:text-stone-200">
-              {record.description}
-            </div>
-          ) : null}
-          {collection === 'events' && typeof record.startsAt === 'string' ? (
-            <section aria-label="Event details" className="border-t pt-5 space-y-2">
-              <h2>Event details</h2>
-              <p>
-                <time dateTime={record.startsAt}>
-                  Starts{' '}
-                  {new Intl.DateTimeFormat(undefined, {
-                    dateStyle: 'full',
-                    timeStyle: record.allDay ? undefined : 'short',
-                    timeZone: String(record.timeZone ?? 'UTC'),
-                  }).format(new Date(record.startsAt))}
-                </time>{' '}
-                · {String(record.timeZone ?? 'UTC')}
+          <nav
+            aria-label="Breadcrumb"
+            className="flex items-center gap-2 text-xs font-semibold text-stone-500"
+          >
+            <Link href="/" className="hover:text-red-600 transition-colors">
+              Home
+            </Link>
+            <span>/</span>
+            <span className="badge badge-neutral">{kind(collection)}</span>
+            <span>/</span>
+            <span aria-current="page" className="text-stone-900 dark:text-stone-100">
+              {name}
+            </span>
+          </nav>
+          <article className="surface-card p-8 sm:p-10 space-y-6">
+            <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-stone-950 dark:text-stone-50 font-display">
+              {name}
+            </h1>
+            {typeof record.summary === 'string' ? (
+              <p className="text-lg sm:text-xl text-stone-600 dark:text-stone-300 font-display italic leading-relaxed">
+                {record.summary}
               </p>
-              {typeof record.endsAt === 'string' ? (
+            ) : null}
+            {articleBody ? (
+              <div className="prose dark:prose-invert max-w-none text-base sm:text-lg leading-relaxed text-stone-800 dark:text-stone-200 whitespace-pre-line">
+                {articleBody}
+              </div>
+            ) : typeof record.description === 'string' ? (
+              <div className="prose dark:prose-invert max-w-none text-base sm:text-lg leading-relaxed text-stone-800 dark:text-stone-200">
+                {record.description}
+              </div>
+            ) : null}
+            {collection === 'events' && typeof record.startsAt === 'string' ? (
+              <section aria-label="Event details" className="border-t pt-5 space-y-2">
+                <h2>Event details</h2>
                 <p>
-                  <time dateTime={record.endsAt}>
-                    Ends{' '}
+                  <time dateTime={record.startsAt}>
+                    Starts{' '}
                     {new Intl.DateTimeFormat(undefined, {
                       dateStyle: 'full',
                       timeStyle: record.allDay ? undefined : 'short',
                       timeZone: String(record.timeZone ?? 'UTC'),
-                    }).format(new Date(record.endsAt))}
-                  </time>
+                    }).format(new Date(record.startsAt))}
+                  </time>{' '}
+                  · {String(record.timeZone ?? 'UTC')}
                 </p>
-              ) : null}
-              {typeof record.venueName === 'string' ? (
+                {typeof record.endsAt === 'string' ? (
+                  <p>
+                    <time dateTime={record.endsAt}>
+                      Ends{' '}
+                      {new Intl.DateTimeFormat(undefined, {
+                        dateStyle: 'full',
+                        timeStyle: record.allDay ? undefined : 'short',
+                        timeZone: String(record.timeZone ?? 'UTC'),
+                      }).format(new Date(record.endsAt))}
+                    </time>
+                  </p>
+                ) : null}
+                {typeof record.venueName === 'string' ? (
+                  <p>
+                    {record.venueName}
+                    {typeof record.venueAddress === 'string' ? ` — ${record.venueAddress}` : ''}
+                  </p>
+                ) : null}
+                {typeof record.onlineUrl === 'string' ? (
+                  <p>
+                    <a href={record.onlineUrl}>Join online</a>
+                  </p>
+                ) : null}
+                {typeof record.organizerName === 'string' ? (
+                  <p>Organizer: {record.organizerName}</p>
+                ) : null}
+                {typeof record.registrationUrl === 'string' ? (
+                  <p>
+                    <a href={record.registrationUrl}>Register</a>
+                  </p>
+                ) : null}
                 <p>
-                  {record.venueName}
-                  {typeof record.venueAddress === 'string' ? ` — ${record.venueAddress}` : ''}
+                  <a href={`/events/${record.slug}/ics`}>Add to calendar (ICS)</a>
                 </p>
-              ) : null}
-              {typeof record.onlineUrl === 'string' ? (
-                <p>
-                  <a href={record.onlineUrl}>Join online</a>
-                </p>
-              ) : null}
-              {typeof record.organizerName === 'string' ? (
-                <p>Organizer: {record.organizerName}</p>
-              ) : null}
-              {typeof record.registrationUrl === 'string' ? (
-                <p>
-                  <a href={record.registrationUrl}>Register</a>
-                </p>
-              ) : null}
-              <p>
-                <a href={`/events/${record.slug}/ics`}>Add to calendar (ICS)</a>
-              </p>
-            </section>
-          ) : null}
-        </article>
-        {collection === 'content' || collection === 'discussions' ? (
-          <CommentSection
-            attachedToId={String(record.id)}
-            attachedToCollection={collection === 'content' ? 'content' : 'content'}
-            canonicalPath={path}
-            title={name}
-            siteId={
-              typeof record.site === 'string'
-                ? record.site
-                : String((record.site as { id?: string })?.id ?? 'default')
-            }
-            initialComments={await getPublicSsrComments(payload, {
-              canonicalContentId: String(record.id),
-              siteId:
+              </section>
+            ) : null}
+          </article>
+          {collection === 'content' || collection === 'discussions' ? (
+            <CommentSection
+              attachedToId={String(record.id)}
+              attachedToCollection={collection === 'content' ? 'content' : 'content'}
+              canonicalPath={path}
+              title={name}
+              siteId={
                 typeof record.site === 'string'
                   ? record.site
-                  : String((record.site as { id?: string })?.id ?? ''),
-              contentStatus: String(record.status ?? record._status ?? 'published'),
-              isIndexable: Boolean(discovery.indexability.indexable),
-            })}
-          />
-        ) : null}
-      </main>
+                  : String((record.site as { id?: string })?.id ?? 'default')
+              }
+              initialComments={await getPublicSsrComments(payload, {
+                canonicalContentId: String(record.id),
+                siteId:
+                  typeof record.site === 'string'
+                    ? record.site
+                    : String((record.site as { id?: string })?.id ?? ''),
+                contentStatus: String(record.status ?? record._status ?? 'published'),
+                isIndexable: Boolean(discovery.indexability.indexable),
+              })}
+            />
+          ) : null}
+        </main>
+      </PresentationSurface>
     )
   }
   notFound()

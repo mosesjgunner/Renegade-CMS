@@ -10,6 +10,7 @@ import {
   compareEditorialRevisions,
   type CommentTarget,
 } from '@/modules/editorial/comments'
+import { canManageAdminSite } from '@/modules/admin/site-access'
 
 export const runtime = 'nodejs'
 
@@ -24,6 +25,28 @@ export async function GET(request: Request) {
   const articleId = url.searchParams.get('articleId') || undefined
   const target = (url.searchParams.get('target') as CommentTarget) || undefined
   const all = url.searchParams.get('all') === 'true'
+
+  if (!articleId && auth.user.role === 'staff')
+    return NextResponse.json(
+      { error: 'An article in an assigned site is required.' },
+      { status: 400 },
+    )
+  if (articleId) {
+    const article = await payload
+      .findByID({
+        collection: 'article-family-content',
+        id: articleId,
+        depth: 0,
+        overrideAccess: true,
+      })
+      .catch(() => null)
+    const articleSiteValue = (article as unknown as { site?: string | { id?: string } } | null)
+      ?.site
+    const articleSite =
+      typeof articleSiteValue === 'string' ? articleSiteValue : articleSiteValue?.id
+    if (!article || !canManageAdminSite(auth.user, articleSite))
+      return NextResponse.json({ error: 'Article site access denied.' }, { status: 403 })
+  }
 
   if (articleId && all) {
     const comments = getCommentsForArticle(articleId)
@@ -46,6 +69,23 @@ export async function POST(request: Request) {
     const { action } = body
 
     if (action === 'create') {
+      const article = await payload
+        .findByID({
+          collection: 'article-family-content',
+          id: String(body.articleId ?? ''),
+          depth: 0,
+          overrideAccess: true,
+        })
+        .catch(() => null)
+      const articleSiteValue = (article as unknown as { site?: string | { id?: string } } | null)
+        ?.site
+      const articleSite =
+        typeof articleSiteValue === 'string' ? articleSiteValue : articleSiteValue?.id
+      if (!article || !canManageAdminSite(auth.user, articleSite))
+        return NextResponse.json({ error: 'Article site access denied.' }, { status: 403 })
+    }
+
+    if (action === 'create') {
       const comment = createReviewComment({
         articleId: body.articleId,
         articleTitle: body.articleTitle,
@@ -61,6 +101,25 @@ export async function POST(request: Request) {
     }
 
     if (action === 'resolve') {
+      const existing = getCommentsForArticle(String(body.articleId ?? '')).find(
+        (item) => item.id === String(body.commentId),
+      )
+      if (!existing)
+        return NextResponse.json({ error: 'Review comment not found.' }, { status: 404 })
+      const article = await payload
+        .findByID({
+          collection: 'article-family-content',
+          id: existing.articleId,
+          depth: 0,
+          overrideAccess: true,
+        })
+        .catch(() => null)
+      const articleSiteValue = (article as unknown as { site?: string | { id?: string } } | null)
+        ?.site
+      const articleSite =
+        typeof articleSiteValue === 'string' ? articleSiteValue : articleSiteValue?.id
+      if (!article || !canManageAdminSite(auth.user, articleSite))
+        return NextResponse.json({ error: 'Article site access denied.' }, { status: 403 })
       const comment = resolveReviewComment(
         body.commentId,
         { id: String(auth.user.id), name: auth.user.email, role: String(auth.user.role) },
@@ -70,11 +129,45 @@ export async function POST(request: Request) {
     }
 
     if (action === 'addressed') {
+      const existing = getCommentsForArticle(String(body.articleId ?? '')).find(
+        (item) => item.id === String(body.commentId),
+      )
+      if (!existing)
+        return NextResponse.json({ error: 'Review comment not found.' }, { status: 404 })
+      const article = await payload
+        .findByID({
+          collection: 'article-family-content',
+          id: existing.articleId,
+          depth: 0,
+          overrideAccess: true,
+        })
+        .catch(() => null)
+      const articleSiteValue = (article as unknown as { site?: string | { id?: string } } | null)
+        ?.site
+      const articleSite =
+        typeof articleSiteValue === 'string' ? articleSiteValue : articleSiteValue?.id
+      if (!article || !canManageAdminSite(auth.user, articleSite))
+        return NextResponse.json({ error: 'Article site access denied.' }, { status: 403 })
       const comment = markCommentAddressed(body.commentId)
       return NextResponse.json({ success: true, comment })
     }
 
     if (action === 'compare') {
+      const articleId = String(body.revisionA?.articleId ?? '')
+      const article = articleId
+        ? await payload
+            .findByID({
+              collection: 'article-family-content',
+              id: articleId,
+              depth: 0,
+              overrideAccess: true,
+            })
+            .catch(() => null)
+        : null
+      const site = (article as unknown as { site?: string | { id?: string } } | null)?.site
+      const siteId = typeof site === 'string' ? site : site?.id
+      if (!article || !canManageAdminSite(auth.user, siteId))
+        return NextResponse.json({ error: 'Article site access denied.' }, { status: 403 })
       const diff = compareEditorialRevisions(body.revisionA, body.revisionB)
       return NextResponse.json({ success: true, diff })
     }

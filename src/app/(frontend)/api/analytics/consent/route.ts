@@ -20,12 +20,21 @@ export async function GET(request: Request) {
   )
   const current = readConsent(request.headers.get('cookie'), runtime.payloadSecret)
   const signals = browserPrivacySignals(new Headers(request.headers))
-  return NextResponse.json({
+  const response = NextResponse.json({
     policy,
     choices: current?.choices ?? null,
     version: current?.version ?? policy.consentVersion,
     signals,
   })
+  // Refresh an existing consent decision so older 180-day cookies receive the
+  // durable lifetime without asking the visitor to choose again.
+  if (current) {
+    response.headers.set(
+      'set-cookie',
+      consentSetCookie(current, runtime.payloadSecret, runtime.secureCookies),
+    )
+  }
+  return response
 }
 export async function POST(request: Request) {
   const runtime = loadConfig()

@@ -142,6 +142,15 @@ export function MediaUploader({ siteId, onComplete, accept }: Props) {
         onKeyDown={(event) => {
           if (event.key === 'Enter' || event.key === ' ') input.current?.click()
         }}
+        style={{
+          color: '#ffffff',
+          backgroundColor: '#2563eb',
+          border: '1px solid #1d4ed8',
+          borderRadius: 6,
+          padding: '0.5rem 0.85rem',
+          fontWeight: 600,
+          cursor: 'pointer',
+        }}
       >
         Choose files or drop files here
       </button>
@@ -155,14 +164,36 @@ export function MediaUploader({ siteId, onComplete, accept }: Props) {
               {upload.name}: {upload.state === 'uploading' ? `${upload.progress}%` : upload.state}
             </span>
             {upload.state === 'uploading' && (
-              <button type="button" onClick={upload.cancel}>
+              <button
+                type="button"
+                onClick={upload.cancel}
+                style={{
+                  color: '#f4f4f5',
+                  backgroundColor: '#27272a',
+                  border: '1px solid #52525b',
+                  borderRadius: 4,
+                  padding: '0.25rem 0.5rem',
+                  cursor: 'pointer',
+                }}
+              >
                 Cancel
               </button>
             )}
             {upload.state === 'failed' && (
               <>
                 <span role="alert">{upload.error}</span>
-                <button type="button" onClick={upload.retry}>
+                <button
+                  type="button"
+                  onClick={upload.retry}
+                  style={{
+                    color: '#f4f4f5',
+                    backgroundColor: '#27272a',
+                    border: '1px solid #52525b',
+                    borderRadius: 4,
+                    padding: '0.25rem 0.5rem',
+                    cursor: 'pointer',
+                  }}
+                >
                   Retry
                 </button>
               </>

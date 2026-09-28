@@ -1,7 +1,5 @@
 import type { CollectionConfig, Field } from 'payload'
-
-const staff = ({ req }: { req: { user?: { role?: string } | null } }) =>
-  ['owner', 'administrator', 'staff'].includes(String(req.user?.role))
+import { siteScopedAdminAccess, siteScopedRelationAdminAccess } from '../modules/admin/site-access'
 
 const scopeFields: Field[] = [
   { name: 'site', type: 'relationship', relationTo: 'sites', required: true, index: true },
@@ -12,13 +10,14 @@ const scopeFields: Field[] = [
 const base = (slug: string, title: string): CollectionConfig => ({
   slug,
   admin: { useAsTitle: title, group: 'Integrations' },
-  access: { create: staff, delete: staff, read: staff, update: staff },
+  access: { create: () => false, delete: () => false, read: () => false, update: () => false },
   fields: [],
 })
 
 /** Machine credentials contain a one-way digest only. The clear token is never recoverable. */
 export const ApiClients: CollectionConfig = {
   ...base('api-clients', 'name'),
+  access: siteScopedAdminAccess(),
   fields: [
     ...scopeFields,
     { name: 'name', type: 'text', required: true },
@@ -34,6 +33,7 @@ export const ApiClients: CollectionConfig = {
 /** Webhook secrets resolve from a secret manager reference; they are never returned by Payload. */
 export const WebhookSubscriptions: CollectionConfig = {
   ...base('webhook-subscriptions', 'target'),
+  access: siteScopedAdminAccess(),
   fields: [
     ...scopeFields,
     { name: 'events', type: 'json', required: true, defaultValue: [] },
@@ -53,6 +53,11 @@ export const WebhookSubscriptions: CollectionConfig = {
 
 export const WebhookDeliveries: CollectionConfig = {
   ...base('webhook-deliveries', 'eventId'),
+  access: siteScopedRelationAdminAccess({
+    relationField: 'subscription',
+    targetCollection: 'webhook-subscriptions',
+    targetSitePath: { anchorCollection: 'webhook-subscriptions', targetRelationField: 'id' },
+  }),
   fields: [
     {
       name: 'subscription',
@@ -82,6 +87,7 @@ export const WebhookDeliveries: CollectionConfig = {
 
 export const IntegrationAuditEvents: CollectionConfig = {
   ...base('integration-audit-events', 'action'),
+  access: siteScopedAdminAccess(),
   fields: [
     ...scopeFields,
     { name: 'action', type: 'text', required: true, index: true },
@@ -95,6 +101,7 @@ export const IntegrationAuditEvents: CollectionConfig = {
 /** Durable API write deduplication. Responses are intentionally public-contract shaped. */
 export const ApiRequestRecords: CollectionConfig = {
   ...base('api-request-records', 'idempotencyKey'),
+  access: siteScopedAdminAccess(),
   fields: [
     ...scopeFields,
     { name: 'client', type: 'relationship', relationTo: 'api-clients' as never, required: true },

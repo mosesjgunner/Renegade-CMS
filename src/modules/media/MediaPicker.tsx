@@ -49,6 +49,14 @@ export function MediaPicker({ siteId, onSelect, selectedId, refreshKey = 0 }: Pr
             type="button"
             aria-pressed={selectedId === item.id}
             onClick={() => onSelect(item)}
+            style={{
+              color: '#f4f4f5',
+              backgroundColor: selectedId === item.id ? '#2563eb' : '#27272a',
+              border: '1px solid #52525b',
+              borderRadius: 4,
+              padding: '0.45rem 0.65rem',
+              cursor: 'pointer',
+            }}
           >
             {item.title} ({item.mimeType || 'unknown type'})
           </button>

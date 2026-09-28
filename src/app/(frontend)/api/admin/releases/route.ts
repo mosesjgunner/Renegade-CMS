@@ -3,9 +3,10 @@ import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
 
 import { createRelease } from '@/modules/releases/service'
+import { canManageAdminSite } from '@/modules/admin/site-access'
 
 const staffOnly = (user: { role?: string } | null | undefined) =>
-  ['owner', 'administrator', 'publisher', 'staff'].includes(String(user?.role))
+  ['owner', 'administrator', 'staff'].includes(String(user?.role))
 
 export async function GET(request: Request) {
   try {
@@ -18,6 +19,11 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url)
     const status = searchParams.get('status')
     const search = searchParams.get('search')
+    const siteId = searchParams.get('siteId')
+    if (auth.user?.role === 'staff' && !siteId)
+      return NextResponse.json({ error: 'Choose an assigned site.' }, { status: 400 })
+    if (siteId && !canManageAdminSite(auth.user, siteId))
+      return NextResponse.json({ error: 'Site access denied.' }, { status: 403 })
 
     const where: Record<string, any> = {}
     if (status && status !== 'all') {
@@ -30,6 +36,7 @@ export async function GET(request: Request) {
         { campaign: { contains: search } },
       ]
     }
+    if (siteId) where.site = { equals: siteId }
 
     const result = await payload.find({
       collection: 'content-releases' as never,
@@ -57,12 +64,15 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json()
+    const siteId = String(body.siteId || body.site || '')
+    if (!siteId || !canManageAdminSite(auth.user, siteId))
+      return NextResponse.json({ error: 'Choose an assigned site.' }, { status: 403 })
     const release = await createRelease(payload, {
       name: body.name || body.title,
       purpose: body.purpose || 'Coordinated campaign release',
       ownerId: String(auth.user?.id || 'system'),
       ownerTeam: body.ownerTeam || 'Editorial Operations',
-      siteId: body.siteId || body.site || 'site-primary',
+      siteId,
       publicationId: body.publicationId || body.publication,
       plannedInstant: body.plannedInstant || body.scheduledFor,
       timeZone: body.timeZone || 'UTC',

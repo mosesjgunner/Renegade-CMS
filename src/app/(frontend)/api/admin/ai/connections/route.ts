@@ -1,6 +1,7 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
+import { canManageAdminSite } from '@/modules/admin/site-access'
 import {
   credentialCipher,
   connectionCredential,
@@ -28,6 +29,7 @@ export async function GET(request: Request) {
   if (!session) return errorResponse('Editor access required.', 403)
   const siteId = new URL(request.url).searchParams.get('siteId')
   if (!siteId) return errorResponse('Choose a site.')
+  if (!canManageAdminSite(session.user, siteId)) return errorResponse('Site access denied.', 403)
   const found = await session.payload.find({
     collection: 'ai-connections' as never,
     where: { site: { equals: siteId } },
@@ -45,6 +47,8 @@ export async function POST(request: Request) {
     credentialCipher()
     const body = (await request.json()) as Record<string, unknown>
     const input = validateConnectionInput(body)
+    if (!canManageAdminSite(session.user, input.siteId))
+      return errorResponse('Site access denied.', 403)
     await session.payload.findByID({ collection: 'sites', id: input.siteId, overrideAccess: true })
     if (input.publicationId) {
       const publication = await session.payload.findByID({
@@ -119,6 +123,8 @@ export async function PATCH(request: Request) {
   const body = (await request.json()) as { id?: string; siteId?: string; action?: string }
   if (!body.id || !body.siteId || !['disable', 'enable', 'test'].includes(String(body.action)))
     return errorResponse('Connection, site, and action are required.')
+  if (!canManageAdminSite(session.user, body.siteId))
+    return errorResponse('Site access denied.', 403)
   let connection: Doc
   try {
     connection = (await session.payload.findByID({

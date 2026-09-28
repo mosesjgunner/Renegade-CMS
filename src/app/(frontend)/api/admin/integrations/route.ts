@@ -2,6 +2,7 @@
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
+import { canManageAdminSite } from '@/modules/admin/site-access'
 import {
   diagnoseWebhookDelivery,
   issueMachineCredential,
@@ -21,7 +22,7 @@ export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
 const staffOnly = (user: { role?: string } | null | undefined) =>
-  ['owner', 'administrator', 'publisher', 'staff'].includes(String(user?.role))
+  ['owner', 'administrator', 'staff'].includes(String(user?.role))
 
 const asId = (value: unknown) =>
   String(typeof value === 'object' && value ? (value as { id?: unknown }).id : (value ?? ''))
@@ -36,6 +37,10 @@ export async function GET(request: Request) {
 
     const { searchParams } = new URL(request.url)
     const siteId = searchParams.get('siteId') || undefined
+    if (auth.user?.role === 'staff' && !siteId)
+      return NextResponse.json({ error: 'Choose an assigned site.' }, { status: 400 })
+    if (siteId && !canManageAdminSite(auth.user, siteId))
+      return NextResponse.json({ error: 'Site access denied.' }, { status: 403 })
     const siteWhere = siteId ? { site: { equals: siteId } } : undefined
 
     const [apiClientsRes, webhooksRes, merchantsRes, socialsRes, podRes, aiRes, auditEventsRes] =
@@ -387,14 +392,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Missing operation action.' }, { status: 400 })
     }
 
-    const defaultSiteId = 'default'
-
     switch (body.action) {
       case 'create-client': {
         if (!body.name || typeof body.name !== 'string') {
           return NextResponse.json({ error: 'Client name is required.' }, { status: 422 })
         }
-        const siteId = body.siteId || defaultSiteId
+        const siteId = body.siteId || undefined
+        if (!siteId || !canManageAdminSite(auth.user, siteId))
+          return NextResponse.json({ error: 'Choose an assigned site.' }, { status: 403 })
         const scopes: readonly IntegrationScope[] =
           Array.isArray(body.scopes) && body.scopes.length > 0 ? body.scopes : ['content.read']
 
@@ -467,6 +472,8 @@ export async function POST(request: Request) {
         if (!existing) {
           return NextResponse.json({ error: 'API Client not found.' }, { status: 404 })
         }
+        if (!canManageAdminSite(auth.user, (existing as any).site))
+          return NextResponse.json({ error: 'Site access denied.' }, { status: 403 })
 
         const rotated = rotateMachineCredential({
           id: String((existing as any).id),
@@ -529,6 +536,8 @@ export async function POST(request: Request) {
         if (!existing) {
           return NextResponse.json({ error: 'API Client not found.' }, { status: 404 })
         }
+        if (!canManageAdminSite(auth.user, (existing as any).site))
+          return NextResponse.json({ error: 'Site access denied.' }, { status: 403 })
 
         await payload.update({
           collection: 'api-clients' as never,
@@ -569,7 +578,9 @@ export async function POST(request: Request) {
             { status: 422 },
           )
         }
-        const siteId = body.siteId || defaultSiteId
+        const siteId = body.siteId || undefined
+        if (!siteId || !canManageAdminSite(auth.user, siteId))
+          return NextResponse.json({ error: 'Choose an assigned site.' }, { status: 403 })
         const secret = await resolveWebhookSecret(String(body.secretRef))
         if (!secret) {
           return NextResponse.json(
@@ -640,6 +651,8 @@ export async function POST(request: Request) {
           .catch(() => null)
         if (!sub)
           return NextResponse.json({ error: 'Webhook subscription not found.' }, { status: 404 })
+        if (!canManageAdminSite(auth.user, (sub as any).site))
+          return NextResponse.json({ error: 'Site access denied.' }, { status: 403 })
 
         const secret = await resolveWebhookSecret(String(body.secretRef))
         if (!secret) {
@@ -696,6 +709,16 @@ export async function POST(request: Request) {
             { status: 422 },
           )
         }
+        const current = await payload
+          .findByID({
+            collection: 'webhook-subscriptions' as never,
+            id: body.subscriptionId,
+            depth: 0,
+            overrideAccess: true,
+          })
+          .catch(() => null)
+        if (!current || !canManageAdminSite(auth.user, (current as any).site))
+          return NextResponse.json({ error: 'Site access denied.' }, { status: 403 })
         const updated = await payload.update({
           collection: 'webhook-subscriptions' as never,
           id: body.subscriptionId,
@@ -716,13 +739,38 @@ export async function POST(request: Request) {
         if (!body.deliveryId) {
           return NextResponse.json({ error: 'deliveryId is required.' }, { status: 422 })
         }
+        const delivery = await payload
+          .findByID({
+            collection: 'webhook-deliveries' as never,
+            id: body.deliveryId,
+            depth: 1,
+            overrideAccess: true,
+          })
+          .catch(() => null)
+        const subscriptionId = asId((delivery as any)?.subscription)
+        const subscription = subscriptionId
+          ? await payload
+              .findByID({
+                collection: 'webhook-subscriptions' as never,
+                id: subscriptionId,
+                depth: 0,
+                overrideAccess: true,
+              })
+              .catch(() => null)
+          : null
+        if (
+          !subscription ||
+          !canManageAdminSite(auth.user, (subscription as any).site) ||
+          (body.siteId && asId((subscription as any).site) !== String(body.siteId))
+        )
+          return NextResponse.json({ error: 'Site access denied.' }, { status: 403 })
         const redelivered = await redeliverWebhook(payload as any, body.deliveryId)
 
         await payload
           .create({
             collection: 'integration-audit-events' as never,
             data: {
-              site: defaultSiteId,
+              site: (subscription as any).site,
               action: 'webhook.manual_redelivery',
               subject: { previousDeliveryId: body.deliveryId, newDeliveryId: redelivered.id },
               outcome: 'allowed',
@@ -761,6 +809,11 @@ export async function POST(request: Request) {
             { status: 404 },
           )
         }
+        if (
+          !canManageAdminSite(auth.user, (existing as any).site) ||
+          (body.siteId && asId((existing as any).site) !== String(body.siteId))
+        )
+          return NextResponse.json({ error: 'Site access denied.' }, { status: 403 })
 
         // Dry-run reconciliation: inspects credentials and configuration without sending live external network calls,
         // charges, emails, or posts.
@@ -805,7 +858,7 @@ export async function POST(request: Request) {
           .create({
             collection: 'integration-audit-events' as never,
             data: {
-              site: (existing as any).site || defaultSiteId,
+              site: (existing as any).site,
               action: 'connection.reconciled',
               subject: {
                 collection: body.collection,
@@ -848,6 +901,11 @@ export async function POST(request: Request) {
         if (!existing) {
           return NextResponse.json({ error: 'Connection record not found.' }, { status: 404 })
         }
+        if (
+          !canManageAdminSite(auth.user, (existing as any).site) ||
+          (body.siteId && asId((existing as any).site) !== String(body.siteId))
+        )
+          return NextResponse.json({ error: 'Site access denied.' }, { status: 403 })
 
         const safeDisconnect = safeDisconnectProviderState({
           providerKey: String(
@@ -886,7 +944,7 @@ export async function POST(request: Request) {
           .create({
             collection: 'integration-audit-events' as never,
             data: {
-              site: (existing as any).site || defaultSiteId,
+              site: (existing as any).site,
               action: safeDisconnect.auditAction,
               subject: {
                 collection: body.collection,

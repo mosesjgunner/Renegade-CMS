@@ -1,6 +1,6 @@
 'use client'
 
-import { FormEvent, useMemo, useState } from 'react'
+import { FormEvent, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 
 import { themes } from '@/modules/presentation/registry'
@@ -37,7 +37,15 @@ const optionalConnections = [
   ['networking', 'Networking'],
 ] as const
 
-export function SetupForm({ initialEmail, appUrl }: { initialEmail: string; appUrl: string }) {
+export function SetupForm({
+  initialEmail,
+  appUrl,
+  migrationState,
+}: {
+  initialEmail: string
+  appUrl: string
+  migrationState: { applied: number; expected: number }
+}) {
   const [step, setStep] = useState(0)
   const [email, setEmail] = useState(initialEmail)
   const [token, setToken] = useState('')
@@ -47,10 +55,9 @@ export function SetupForm({ initialEmail, appUrl }: { initialEmail: string; appU
     description: '',
     primaryUrl: appUrl,
     locale: 'en-US',
-    timezone:
-      typeof Intl !== 'undefined'
-        ? Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'
-        : 'UTC',
+    // Keep the first render deterministic. The browser timezone is applied after
+    // hydration so the server and client render the same HTML initially.
+    timezone: 'UTC',
     themeId: 'neutral-starter',
     starterType: 'creator-publication',
     featureProfile: 'Standard',
@@ -65,6 +72,13 @@ export function SetupForm({ initialEmail, appUrl }: { initialEmail: string; appU
   const [error, setError] = useState<string>()
   const [result, setResult] = useState<SetupResult>()
   const [busy, setBusy] = useState(false)
+
+  useEffect(() => {
+    const browserTimezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'
+    setForm((current) =>
+      current.timezone === 'UTC' ? { ...current, timezone: browserTimezone } : current,
+    )
+  }, [])
   const canContinue = useMemo(() => {
     if (step === 0) return Boolean(token && email)
     if (step === 1)
@@ -188,6 +202,7 @@ export function SetupForm({ initialEmail, appUrl }: { initialEmail: string; appU
           {step === 3 ? (
             <FeatureStep
               form={form}
+              migrationState={migrationState}
               update={update}
               updatePublishingDefault={updatePublishingDefault}
               toggleConnection={toggleConnection}
@@ -242,7 +257,11 @@ function OwnerStep({
   token: string
   setToken: (value: string) => void
 }) {
-  const hasPasskeySupport = typeof window !== 'undefined' && Boolean(window.PublicKeyCredential)
+  const [hasPasskeySupport, setHasPasskeySupport] = useState(false)
+
+  useEffect(() => {
+    setHasPasskeySupport(Boolean(window.PublicKeyCredential))
+  }, [])
 
   return (
     <section className="space-y-4">
@@ -262,11 +281,11 @@ function OwnerStep({
           <span>Browser Passkey / WebAuthn Support:</span>
           {hasPasskeySupport ? (
             <span className="text-emerald-600 dark:text-emerald-400 font-semibold">
-              ✓ Hardware / Platform Supported
+              âœ“ Hardware / Platform Supported
             </span>
           ) : (
             <span className="text-amber-600 dark:text-amber-400 font-semibold">
-              ⚠ Unproven / Virtual Authenticator Required
+              âš  Unproven / Virtual Authenticator Required
             </span>
           )}
         </div>
@@ -421,10 +440,10 @@ function BrandStep({
           }}
         >
           <option value="publication-community">
-            ★ Publication / Community Starter (The Vanguard Chronicle)
+            â˜… Publication / Community Starter (The Vanguard Chronicle)
           </option>
           <option value="campaign-commerce">
-            ★ Campaign / Commerce Starter (Forward for the People)
+            â˜… Campaign / Commerce Starter (Forward for the People)
           </option>
           <option value="creator-publication">Creator / publication</option>
           <option value="business">Business</option>
@@ -457,11 +476,13 @@ function BrandStep({
 
 function FeatureStep({
   form,
+  migrationState,
   update,
   updatePublishingDefault,
   toggleConnection,
 }: {
   form: OnboardingInput
+  migrationState: { applied: number; expected: number }
   update: <K extends keyof OnboardingInput>(key: K, value: OnboardingInput[K]) => void
   updatePublishingDefault: <K extends keyof NonNullable<OnboardingInput['publishingDefaults']>>(
     key: K,
@@ -507,26 +528,27 @@ function FeatureStep({
         <div className="flex items-center justify-between">
           <span className="form-label">Required infrastructure providers</span>
           <span className="text-[10px] uppercase font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/60 px-1.5 py-0.5 rounded">
-            Validated
+            Available
           </span>
         </div>
         <div className="grid sm:grid-cols-2 gap-2 text-xs">
           <div className="p-3 rounded-lg border border-emerald-200 dark:border-emerald-800 bg-emerald-50/50 dark:bg-emerald-950/20">
             <div className="font-semibold text-emerald-900 dark:text-emerald-200 flex items-center justify-between">
               <span>PostgreSQL Database</span>
-              <span>✓ Verified</span>
+              <span>Connected</span>
             </div>
             <p className="text-emerald-700 dark:text-emerald-400 mt-1 text-[11px]">
-              Schema migrations fully applied (108/108). Connection pool healthy.
+              Connection and installation schema are ready. {migrationState.applied}/
+              {migrationState.expected} registered migrations applied.
             </p>
           </div>
-          <div className="p-3 rounded-lg border border-emerald-200 dark:border-emerald-800 bg-emerald-50/50 dark:bg-emerald-950/20">
-            <div className="font-semibold text-emerald-900 dark:text-emerald-200 flex items-center justify-between">
+          <div className="p-3 rounded-lg border border-stone-300 dark:border-stone-700 bg-stone-50 dark:bg-stone-900/30">
+            <div className="font-semibold text-stone-800 dark:text-stone-200 flex items-center justify-between">
               <span>Primary Storage</span>
-              <span>✓ Verified</span>
+              <span>Configured</span>
             </div>
-            <p className="text-emerald-700 dark:text-emerald-400 mt-1 text-[11px]">
-              Local media storage directory validated with read/write access.
+            <p className="text-stone-700 dark:text-stone-300 mt-1 text-[11px]">
+              Local storage is configured. A successful media upload will confirm write access.
             </p>
           </div>
         </div>
@@ -670,8 +692,8 @@ function ReviewStep({ form, email }: { form: OnboardingInput; email: string }) {
         </div>
         <div>
           <dt className="text-stone-500 font-medium">Required Providers</dt>
-          <dd className="text-emerald-600 dark:text-emerald-400 font-medium">
-            PostgreSQL & Storage Validated
+          <dd className="text-stone-700 dark:text-stone-300 font-medium">
+            PostgreSQL connected; local storage configured
           </dd>
         </div>
         <div>
@@ -695,6 +717,25 @@ function Completion({
   }
 }) {
   const { onboarding } = result
+  function downloadRecoveryCodes() {
+    const contents = [
+      'Renegade CMS emergency recovery codes',
+      'Keep this file offline and never share these codes.',
+      '',
+      ...result.recoveryCodes,
+      '',
+    ].join('\n')
+    const blob = new Blob([contents], { type: 'text/plain;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = 'renegade-emergency-recovery-codes.txt'
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+    URL.revokeObjectURL(url)
+  }
+
   return (
     <main className="max-w-2xl mx-auto px-4 py-12 sm:py-20">
       <div className="surface-card p-8 sm:p-10 space-y-7 shadow-xl">
@@ -731,6 +772,13 @@ function Completion({
           <p className="text-sm text-stone-600 dark:text-stone-400 mb-3">
             Store these offline. Browser setup is now permanently locked.
           </p>
+          <button
+            type="button"
+            className="btn btn-secondary text-xs mb-3"
+            onClick={downloadRecoveryCodes}
+          >
+            Download recovery codes (.txt)
+          </button>
           <ul className="grid grid-cols-2 gap-2 font-mono text-xs">
             {result.recoveryCodes.map((code) => (
               <li key={code} className="rounded border p-2 text-center">

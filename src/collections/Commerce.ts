@@ -1,5 +1,11 @@
 import type { CollectionConfig, Field } from 'payload'
 import {
+  adminSiteWhere,
+  siteScopedAdminAccess,
+  siteScopedRelationAdminAccess,
+  type StaffUser,
+} from '../modules/admin/site-access'
+import {
   enforceSiteTenantBoundary,
   ownerFields,
   retentionFields,
@@ -16,15 +22,11 @@ import {
 
 const staff = ({ req }: { req: { user?: { role?: string } | null } }) =>
   ['owner', 'administrator', 'staff'].includes(String(req.user?.role))
-const publishedProductRead = ({ req }: { req: { user?: { role?: string } | null } }) =>
-  ['owner', 'administrator', 'staff'].includes(String(req.user?.role))
-    ? true
-    : { state: { equals: 'published' } }
 const base = (slug: string, title: string): CollectionConfig => ({
   slug,
   lockDocuments: false,
   admin: { useAsTitle: title, group: 'Commerce' },
-  access: { create: staff, delete: staff, read: staff, update: staff },
+  access: siteScopedAdminAccess(),
   fields: [],
 })
 const ref = (name: string, relationTo: string | string[], required = false): Field =>
@@ -92,7 +94,7 @@ export const PaymentMethodCapabilities: CollectionConfig = {
 }
 export const Products: CollectionConfig = {
   ...base('products', 'name'),
-  access: { create: staff, delete: staff, update: staff, read: publishedProductRead },
+  access: siteScopedAdminAccess(),
   hooks: {
     beforeValidate: [
       ({ data, originalDoc, operation, context }) => {
@@ -291,6 +293,7 @@ export const Products: CollectionConfig = {
 }
 export const Carts: CollectionConfig = {
   ...base('carts', 'id'),
+  access: siteScopedAdminAccess(),
   fields: [
     ...ownerFields(),
     ref('merchantConnection', 'merchant-connections', true),
@@ -313,6 +316,7 @@ export const Carts: CollectionConfig = {
 }
 export const Promotions: CollectionConfig = {
   ...base('promotions', 'code'),
+  access: siteScopedAdminAccess(),
   fields: [
     ...ownerFields(),
     { name: 'version', type: 'number', min: 1, defaultValue: 1, required: true },
@@ -342,6 +346,11 @@ export const Promotions: CollectionConfig = {
 }
 export const CheckoutProposals: CollectionConfig = {
   ...base('checkout-proposals', 'id'),
+  access: siteScopedRelationAdminAccess({
+    relationField: 'cart',
+    targetCollection: 'carts',
+    targetSitePath: { anchorCollection: 'carts', targetRelationField: 'id' },
+  }),
   fields: [
     ...ownerFields(),
     ref('cart', 'carts', true),
@@ -364,6 +373,7 @@ export const CheckoutProposals: CollectionConfig = {
 }
 export const InventoryReservations: CollectionConfig = {
   ...base('inventory-reservations', 'id'),
+  access: siteScopedAdminAccess(),
   fields: [
     ...ownerFields(),
     ref('cart', 'carts', true),
@@ -378,6 +388,7 @@ export const InventoryReservations: CollectionConfig = {
 }
 export const CheckoutSessions: CollectionConfig = {
   ...base('checkout-sessions', 'id'),
+  access: siteScopedAdminAccess(),
   fields: [
     ...ownerFields(),
     ref('cart', 'carts', true),
@@ -407,6 +418,7 @@ export const CheckoutSessions: CollectionConfig = {
 }
 export const PaymentAttempts: CollectionConfig = {
   ...base('payment-attempts', 'id'),
+  access: siteScopedAdminAccess(),
   fields: [
     ...ownerFields(),
     ref('checkoutSession', 'checkout-sessions', true),
@@ -455,6 +467,7 @@ export const PaymentAttempts: CollectionConfig = {
 }
 export const PaymentIntents: CollectionConfig = {
   ...base('payment-intents', 'id'),
+  access: siteScopedAdminAccess(),
   fields: [
     ...ownerFields(),
     ref('checkoutSession', 'checkout-sessions', true),
@@ -509,6 +522,7 @@ export const PaymentIntents: CollectionConfig = {
 }
 export const Orders: CollectionConfig = {
   ...base('orders', 'orderNumber'),
+  access: siteScopedAdminAccess(),
   fields: [
     ...ownerFields(),
     ref('checkoutSession', 'checkout-sessions', true),
@@ -557,6 +571,11 @@ export const Orders: CollectionConfig = {
 }
 export const PaymentWebhookEvents: CollectionConfig = {
   ...base('payment-webhook-events', 'providerEventId'),
+  access: siteScopedRelationAdminAccess({
+    relationField: 'merchantConnection',
+    targetCollection: 'merchant-connections',
+    targetSitePath: { anchorCollection: 'merchant-connections', targetRelationField: 'id' },
+  }),
   fields: [
     ref('merchantConnection', 'merchant-connections', true),
     { name: 'providerKey', type: 'text', required: true },
@@ -578,6 +597,7 @@ export const PaymentWebhookEvents: CollectionConfig = {
 }
 export const CommerceRefunds: CollectionConfig = {
   ...base('commerce-refunds', 'id'),
+  access: siteScopedAdminAccess(),
   fields: [
     ...ownerFields(),
     ref('order', 'orders', true),
@@ -603,6 +623,7 @@ export const CommerceRefunds: CollectionConfig = {
 }
 export const CommerceDisputes: CollectionConfig = {
   ...base('commerce-disputes', 'providerDisputeReference'),
+  access: siteScopedAdminAccess(),
   fields: [
     ...ownerFields(),
     ref('order', 'orders', true),
@@ -619,6 +640,7 @@ export const CommerceDisputes: CollectionConfig = {
 }
 export const CommerceReconciliationCases: CollectionConfig = {
   ...base('commerce-reconciliation-cases', 'legacyId'),
+  access: siteScopedAdminAccess(),
   timestamps: false,
   fields: [
     ref('site', 'sites', true),
@@ -634,6 +656,7 @@ export const CommerceReconciliationCases: CollectionConfig = {
 }
 export const Supporters: CollectionConfig = {
   ...base('supporters', 'displayName'),
+  access: siteScopedAdminAccess(),
   fields: [
     ...ownerFields(),
     { name: 'displayName', type: 'text' },
@@ -758,6 +781,7 @@ export const DonationCampaigns: CollectionConfig = {
 /** A donation intent is the frozen checkout request; provider truth stays in PaymentIntent. */
 export const DonationIntents: CollectionConfig = {
   ...base('donation-intents', 'id'),
+  access: siteScopedAdminAccess(),
   hooks: {
     beforeChange: [
       immutableFields([
@@ -820,7 +844,7 @@ export const DonationIntents: CollectionConfig = {
 /** Canonical contribution snapshot. Updates are prohibited; corrections append ledger events. */
 export const Donations: CollectionConfig = {
   ...base('donations', 'id'),
-  access: { create: staff, delete: () => false, read: staff, update: staff },
+  access: { ...siteScopedAdminAccess(), delete: () => false },
   hooks: {
     beforeChange: [
       ({ data, originalDoc, operation }) => {
@@ -892,7 +916,11 @@ export const Donations: CollectionConfig = {
 
 export const DonationEvents: CollectionConfig = {
   ...base('donation-events', 'eventKey'),
-  access: { create: staff, delete: () => false, read: staff, update: () => false },
+  access: siteScopedRelationAdminAccess({
+    relationField: 'donation',
+    targetCollection: 'donations',
+    targetSitePath: { anchorCollection: 'donations', targetRelationField: 'id' },
+  }),
   hooks: {
     beforeValidate: [
       ({ data }) => {
@@ -916,6 +944,7 @@ export const DonationEvents: CollectionConfig = {
 }
 export const Entitlements: CollectionConfig = {
   ...base('entitlements', 'entitlement'),
+  access: siteScopedAdminAccess(),
   fields: [
     ...ownerFields(),
     ref('supporter', 'supporters', true),
@@ -939,7 +968,7 @@ export const Entitlements: CollectionConfig = {
 /** Published agreements are immutable snapshots. A new price or policy is a new revision. */
 export const PlanRevisions: CollectionConfig = {
   ...base('plan-revisions', 'name'),
-  access: { create: staff, delete: () => false, read: staff, update: () => false },
+  access: { ...siteScopedAdminAccess(), delete: () => false, update: () => false },
   fields: [
     ...ownerFields(),
     { name: 'planKey', type: 'text', required: true, index: true },
@@ -980,6 +1009,7 @@ export const PlanRevisions: CollectionConfig = {
 
 export const Subscriptions: CollectionConfig = {
   ...base('subscriptions', 'id'),
+  access: siteScopedAdminAccess(),
   hooks: {
     beforeChange: [
       ({ data, originalDoc, operation, context }) => {
@@ -1051,7 +1081,10 @@ export const Subscriptions: CollectionConfig = {
 
 export const SubscriptionEvents: CollectionConfig = {
   ...base('subscription-events', 'eventKey'),
-  access: { create: () => false, delete: () => false, read: staff, update: () => false },
+  access: siteScopedRelationAdminAccess({
+    relationField: 'subscription',
+    targetCollection: 'subscriptions',
+  }),
   fields: [
     ...ownerFields(),
     ref('subscription', 'subscriptions', true),
@@ -1065,6 +1098,7 @@ export const SubscriptionEvents: CollectionConfig = {
 
 export const DigitalDeliveryGrants: CollectionConfig = {
   ...base('digital-delivery-grants', 'id'),
+  access: siteScopedAdminAccess(),
   fields: [
     ...ownerFields(),
     ref('product', 'products', true),
@@ -1083,7 +1117,10 @@ export const DigitalDeliveryGrants: CollectionConfig = {
 
 export const DigitalDownloadEvents: CollectionConfig = {
   ...base('digital-download-events', 'id'),
-  access: { create: staff, delete: () => false, read: staff, update: () => false },
+  access: siteScopedRelationAdminAccess({
+    relationField: 'grant',
+    targetCollection: 'digital-delivery-grants',
+  }),
   fields: [
     ...ownerFields(),
     ref('grant', 'digital-delivery-grants', true),
@@ -1097,6 +1134,7 @@ export const DigitalDownloadEvents: CollectionConfig = {
 
 export const CatalogImportRuns: CollectionConfig = {
   ...base('catalog-import-runs', 'checksum'),
+  access: siteScopedAdminAccess(),
   fields: [
     ...ownerFields(),
     { name: 'checksum', type: 'text', required: true, index: true },
@@ -1116,6 +1154,7 @@ export const CatalogImportRuns: CollectionConfig = {
 
 export const PodConnections: CollectionConfig = {
   ...base('pod-connections', 'label'),
+  access: siteScopedAdminAccess(),
   fields: [
     ...ownerFields(),
     { name: 'providerKey', type: 'text', required: true },
@@ -1142,6 +1181,7 @@ export const PodConnections: CollectionConfig = {
 
 export const PodJobs: CollectionConfig = {
   ...base('pod-jobs', 'idempotencyKey'),
+  access: siteScopedRelationAdminAccess({ relationField: 'order', targetCollection: 'orders' }),
   fields: [
     ...ownerFields(),
     ref('order', 'orders', true),
@@ -1184,6 +1224,7 @@ export const PodJobs: CollectionConfig = {
 
 export const ManualFulfillmentPackages: CollectionConfig = {
   ...base('manual-fulfillment-packages', 'id'),
+  access: siteScopedRelationAdminAccess({ relationField: 'order', targetCollection: 'orders' }),
   fields: [
     ...ownerFields(),
     ref('order', 'orders', true),

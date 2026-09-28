@@ -7,6 +7,7 @@ import {
   type EntitlementGrant,
   type Subscription,
 } from '@/modules/commerce/subscription-contract'
+import { canManageAdminSite } from '@/modules/admin/site-access'
 
 export async function GET(request: Request) {
   const payload = await getPayload({ config })
@@ -15,6 +16,10 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Unauthorized.' }, { status: 403 })
   const db: any = payload
   const siteId = new URL(request.url).searchParams.get('siteId')
+  if ((auth.user as any)?.role === 'staff' && !siteId)
+    return NextResponse.json({ error: 'Choose an assigned site.' }, { status: 400 })
+  if (siteId && !canManageAdminSite(auth.user, siteId))
+    return NextResponse.json({ error: 'Site access denied.' }, { status: 403 })
   const where = siteId ? { site: { equals: siteId } } : undefined
   const subscriptions = await db.find({
     collection: 'subscriptions',

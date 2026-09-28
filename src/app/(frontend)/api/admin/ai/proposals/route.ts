@@ -22,6 +22,7 @@ import {
   type AiBudgetLease,
 } from '@/modules/ai/budget-reservation'
 import type { ConnectionRecord } from '@/modules/extensions/contracts'
+import { canManageAdminSite } from '@/modules/admin/site-access'
 
 export const runtime = 'nodejs'
 type Doc = Record<string, unknown> & { id: string }
@@ -45,6 +46,7 @@ export async function POST(request: Request) {
     body = await request.json()
     if (!AI_WORKFLOW_TASKS.includes(body.task as AiWorkflowTask) || !body.targetId || !body.siteId)
       return fail('Choose a workflow, target, and site.')
+    if (!canManageAdminSite(auth.user, body.siteId)) return fail('Site access denied.', 403)
     task = body.task as AiWorkflowTask
     target = await loadAiWorkflowTarget(payload, task, body.targetId, body.selection)
   } catch (error) {
@@ -230,6 +232,7 @@ export async function GET(request: Request) {
   const url = new URL(request.url)
   const siteId = url.searchParams.get('siteId')
   if (!siteId) return fail('Choose a site.')
+  if (!canManageAdminSite(auth.user, siteId)) return fail('Site access denied.', 403)
   const results = await payload.find({
     collection: 'ai-proposals' as never,
     where: { site: { equals: siteId } },

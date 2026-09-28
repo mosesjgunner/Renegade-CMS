@@ -1,6 +1,7 @@
 import type { CollectionConfig } from 'payload'
 
 import { ownerFields } from './canonical-shared'
+import { siteScopedAdminAccess, siteScopedRelationAdminAccess } from '../modules/admin/site-access'
 
 const staffOnly = ({ req }: { req: { user?: { role?: string } | null } }) =>
   ['owner', 'administrator', 'staff'].includes(String(req.user?.role))
@@ -36,12 +37,13 @@ const networks = [
 const base = (slug: string, title: string): CollectionConfig => ({
   slug,
   admin: { useAsTitle: title, group: 'Social Studio' },
-  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
+  access: { create: () => false, delete: () => false, read: () => false, update: () => false },
   fields: [],
 })
 
 export const SocialAccounts: CollectionConfig = {
   ...base('social-accounts', 'displayName'),
+  access: siteScopedAdminAccess(),
   fields: [
     ...ownerFields(),
     { name: 'displayName', type: 'text', required: true },
@@ -92,6 +94,7 @@ export const SocialAccounts: CollectionConfig = {
 }
 export const SocialDrafts: CollectionConfig = {
   ...base('social-drafts', 'title'),
+  access: siteScopedAdminAccess(),
   fields: [
     ...ownerFields(),
     { name: 'title', type: 'text', required: true },
@@ -107,6 +110,11 @@ export const SocialDrafts: CollectionConfig = {
 }
 export const SocialNetworkVariants: CollectionConfig = {
   ...base('social-network-variants', 'label'),
+  access: siteScopedRelationAdminAccess({
+    relationField: 'draft',
+    targetCollection: 'social-drafts',
+    targetSitePath: { anchorCollection: 'social-drafts', targetRelationField: 'id' },
+  }),
   fields: [
     {
       name: 'draft',
@@ -144,6 +152,11 @@ export const SocialNetworkVariants: CollectionConfig = {
 }
 export const SocialQueueItems: CollectionConfig = {
   ...base('social-queue-items', 'idempotencyKey'),
+  access: siteScopedRelationAdminAccess({
+    relationField: 'variant',
+    targetCollection: 'social-network-variants',
+    targetSitePath: { anchorCollection: 'social-drafts', targetRelationField: 'draft' },
+  }),
   fields: [
     {
       name: 'variant',
@@ -187,6 +200,11 @@ export const SocialQueueItems: CollectionConfig = {
 }
 export const SocialPublishAttempts: CollectionConfig = {
   ...base('social-publish-attempts', 'idempotencyKey'),
+  access: siteScopedRelationAdminAccess({
+    relationField: 'variant',
+    targetCollection: 'social-network-variants',
+    targetSitePath: { anchorCollection: 'social-drafts', targetRelationField: 'draft' },
+  }),
   fields: [
     {
       name: 'queueItem',
@@ -218,6 +236,11 @@ export const SocialPublishAttempts: CollectionConfig = {
 }
 export const ExternalPosts: CollectionConfig = {
   ...base('external-posts', 'remoteId'),
+  access: siteScopedRelationAdminAccess({
+    relationField: 'variant',
+    targetCollection: 'social-network-variants',
+    targetSitePath: { anchorCollection: 'social-drafts', targetRelationField: 'draft' },
+  }),
   fields: [
     {
       name: 'variant',
@@ -246,6 +269,7 @@ export const ExternalPosts: CollectionConfig = {
 }
 export const Campaigns: CollectionConfig = {
   ...base('campaigns', 'title'),
+  access: siteScopedAdminAccess(),
   fields: [
     ...ownerFields(),
     { name: 'title', type: 'text', required: true },
@@ -307,6 +331,11 @@ export const Campaigns: CollectionConfig = {
 }
 export const SocialCalendarEntries: CollectionConfig = {
   ...base('calendar-entry-audits', 'action'),
+  access: siteScopedRelationAdminAccess({
+    relationField: 'calendarEntry',
+    targetCollection: 'calendar-entries',
+    targetSitePath: { anchorCollection: 'calendar-entries', targetRelationField: 'id' },
+  }),
   fields: [
     {
       name: 'calendarEntry',

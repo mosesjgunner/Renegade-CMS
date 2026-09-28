@@ -1,6 +1,7 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
+import { canManageAdminSite } from '@/modules/admin/site-access'
 import {
   catalogProductFromDocument,
   planCatalogImport,
@@ -24,6 +25,8 @@ export async function POST(request: Request) {
     const siteIds = [...new Set(body.products.map((item) => item.siteId))]
     if (siteIds.length !== 1 || !siteIds[0])
       throw new Error('One explicit site is required per import.')
+    if (!canManageAdminSite(auth.user, siteIds[0]))
+      return NextResponse.json({ error: 'Site access denied.' }, { status: 403 })
     const existingResult = await payload.find({
       collection: 'products',
       where: { site: { equals: siteIds[0] } },

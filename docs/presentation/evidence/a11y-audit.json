@@ -1,9 +1,9 @@
 {
-  "timestamp": "2026-09-24T05:15:59.039Z",
+  "timestamp": "2026-09-27T13:52:24.617Z",
   "standard": "WCAG 2.1 Level AA",
   "surfacesAudited": 7,
-  "totalPasses": 159,
-  "totalViolations": 7,
+  "totalPasses": 160,
+  "totalViolations": 6,
   "details": [
     {
       "path": "/",
@@ -34,7 +34,7 @@
     {
       "path": "/articles/decentralized-truth",
       "name": "Post: Truth",
-      "passes": 25,
+      "passes": 22,
       "violations": [
         {
           "id": "color-contrast",
@@ -47,7 +47,7 @@
     {
       "path": "/articles",
       "name": "Archive: Articles",
-      "passes": 21,
+      "passes": 24,
       "violations": [
         {
           "id": "color-contrast",
@@ -60,7 +60,7 @@
     {
       "path": "/search?q=Decentralized",
       "name": "Search",
-      "passes": 24,
+      "passes": 25,
       "violations": [
         {
           "id": "color-contrast",
@@ -74,14 +74,7 @@
       "path": "/pre-06-not-found-check",
       "name": "404 Template",
       "passes": 20,
-      "violations": [
-        {
-          "id": "color-contrast",
-          "impact": "serious",
-          "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
-          "helpUrl": "https://dequeuniversity.com/rules/axe/4.13/color-contrast?application=axeAPI"
-        }
-      ]
+      "violations": []
     },
     {
       "path": "/campaign-2026",

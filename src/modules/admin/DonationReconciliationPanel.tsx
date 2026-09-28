@@ -1,6 +1,16 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
+
+const queryForSite = (siteId?: string | null, extra?: string) => {
+  const params = new URLSearchParams()
+  if (siteId) params.set('siteId', siteId)
+  if (extra) {
+    const [key, value] = extra.split('=', 2)
+    params.set(key, value)
+  }
+  return params.toString() ? `?${params.toString()}` : ''
+}
 
 type Result = {
   metricsByCurrency: Record<
@@ -21,27 +31,32 @@ type Result = {
   }>
 }
 
-export function DonationReconciliationPanel() {
+export function DonationReconciliationPanel({ siteId }: { siteId?: string | null }) {
   const [data, setData] = useState<Result | null>(null)
   const [error, setError] = useState('')
   const [supporterId, setSupporterId] = useState('')
   const [notice, setNotice] = useState('')
-  const load = async () => {
-    const response = await fetch('/api/admin/commerce/donations', { cache: 'no-store' })
+  const load = useCallback(async () => {
+    const response = await fetch(`/api/admin/commerce/donations${queryForSite(siteId)}`, {
+      cache: 'no-store',
+    })
     const body = await response.json()
     if (!response.ok) setError(body.error ?? 'Donation reconciliation is unavailable.')
     else {
       setError('')
       setData(body)
     }
-  }
+  }, [siteId])
   useEffect(() => {
     void load()
-  }, [])
+  }, [load])
   async function exportReport(format: 'csv' | 'json') {
-    const response = await fetch(`/api/admin/commerce/donations?format=${format}`, {
-      cache: 'no-store',
-    })
+    const response = await fetch(
+      `/api/admin/commerce/donations${queryForSite(siteId, `format=${format}`)}`,
+      {
+        cache: 'no-store',
+      },
+    )
     if (!response.ok) {
       const body = await response.json().catch(() => ({}))
       setError(body.error ?? 'Donation export is unavailable.')
@@ -56,7 +71,7 @@ export function DonationReconciliationPanel() {
   }
   async function maskSupporter() {
     setNotice('')
-    const response = await fetch('/api/admin/commerce/donations', {
+    const response = await fetch(`/api/admin/commerce/donations${queryForSite(siteId)}`, {
       method: 'PATCH',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({ action: 'mask-retention', supporterId }),

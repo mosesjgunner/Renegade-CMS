@@ -276,9 +276,12 @@ test('PUB-06: complete 21-step RenegadeParty.org demo journey through supported 
 
   // Verify bytes exist on disk
   for (const asset of [logoAsset, socialAsset, heroAsset, inlineAsset]) {
-    const candidatePath1 = path.resolve('media', asset.storageLocation)
-    const candidatePath2 = path.resolve('.next/standalone/media', asset.storageLocation)
-    expect(existsSync(candidatePath1) || existsSync(candidatePath2)).toBe(true)
+    const mediaRoot = path.resolve(process.env.MEDIA_DIR ?? 'media')
+    const candidatePaths = [
+      path.resolve(mediaRoot, asset.storageLocation),
+      path.resolve('.next/standalone/media', asset.storageLocation),
+    ]
+    expect(candidatePaths.some((candidatePath) => existsSync(candidatePath))).toBe(true)
   }
 
   // --------------------------------------------------------------------------
