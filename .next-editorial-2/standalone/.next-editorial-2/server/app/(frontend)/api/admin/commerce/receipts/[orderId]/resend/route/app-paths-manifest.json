@@ -1,0 +1,3 @@
+{
+  "/(frontend)/api/admin/commerce/receipts/[orderId]/resend/route": "app/(frontend)/api/admin/commerce/receipts/[orderId]/resend/route.js"
+}

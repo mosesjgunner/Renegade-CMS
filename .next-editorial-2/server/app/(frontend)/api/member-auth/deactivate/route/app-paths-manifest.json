@@ -1,0 +1,3 @@
+{
+  "/(frontend)/api/member-auth/deactivate/route": "app/(frontend)/api/member-auth/deactivate/route.js"
+}

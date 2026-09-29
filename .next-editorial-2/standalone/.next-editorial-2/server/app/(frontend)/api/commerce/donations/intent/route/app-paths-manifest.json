@@ -1,0 +1,3 @@
+{
+  "/(frontend)/api/commerce/donations/intent/route": "app/(frontend)/api/commerce/donations/intent/route.js"
+}

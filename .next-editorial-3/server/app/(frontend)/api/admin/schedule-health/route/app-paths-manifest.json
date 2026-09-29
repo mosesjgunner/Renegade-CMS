@@ -1,0 +1,3 @@
+{
+  "/(frontend)/api/admin/schedule-health/route": "app/(frontend)/api/admin/schedule-health/route.js"
+}

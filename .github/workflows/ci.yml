@@ -22,6 +22,10 @@ jobs:
           --health-timeout 3s
           --health-retries 20
     env:
+      # The release suite includes loopback-only webhook fixtures. Those are
+      # intentionally accepted only by the test runtime, never by a normal
+      # development or production process.
+      NODE_ENV: test
       DATABASE_URL: postgresql://renegade:ci_test_only@127.0.0.1:5432/renegade_release_acceptance
       PAYLOAD_SECRET: ci-only-test-value-with-at-least-32-characters
       APP_URL: http://127.0.0.1:3100

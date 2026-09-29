@@ -1,0 +1,3 @@
+{
+  "/(frontend)/api/commerce/crypto/verify/route": "app/(frontend)/api/commerce/crypto/verify/route.js"
+}

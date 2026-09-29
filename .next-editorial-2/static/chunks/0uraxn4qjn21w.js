@@ -1,0 +1,1 @@
+(globalThis.TURBOPACK||(globalThis.TURBOPACK=[])).push(["object"==typeof document?document.currentScript:void 0,129431,e=>{"use strict";var t=e.i(618566);e.s(["useAdminSiteID",0,function(){var e;return e=(0,t.useSearchParams)(),e?.get("siteId")||null}])}]);

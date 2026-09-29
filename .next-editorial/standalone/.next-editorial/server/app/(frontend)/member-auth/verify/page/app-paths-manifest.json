@@ -1,0 +1,3 @@
+{
+  "/(frontend)/member-auth/verify/page": "app/(frontend)/member-auth/verify/page.js"
+}

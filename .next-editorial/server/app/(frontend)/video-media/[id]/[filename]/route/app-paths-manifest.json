@@ -1,0 +1,3 @@
+{
+  "/(frontend)/video-media/[id]/[filename]/route": "app/(frontend)/video-media/[id]/[filename]/route.js"
+}

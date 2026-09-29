@@ -1,0 +1,3 @@
+{
+  "/(frontend)/admin/providers/page": "app/(frontend)/admin/providers/page.js"
+}

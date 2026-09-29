@@ -1,0 +1,3 @@
+{
+  "/(frontend)/api/realtime/stream/route": "app/(frontend)/api/realtime/stream/route.js"
+}

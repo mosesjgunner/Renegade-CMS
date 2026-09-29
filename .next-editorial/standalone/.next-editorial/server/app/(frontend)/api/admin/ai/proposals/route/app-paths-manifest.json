@@ -1,0 +1,3 @@
+{
+  "/(frontend)/api/admin/ai/proposals/route": "app/(frontend)/api/admin/ai/proposals/route.js"
+}

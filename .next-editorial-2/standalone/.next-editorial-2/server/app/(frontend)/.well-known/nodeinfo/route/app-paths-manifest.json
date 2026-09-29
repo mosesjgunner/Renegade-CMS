@@ -1,0 +1,3 @@
+{
+  "/(frontend)/.well-known/nodeinfo/route": "app/(frontend)/.well-known/nodeinfo/route.js"
+}

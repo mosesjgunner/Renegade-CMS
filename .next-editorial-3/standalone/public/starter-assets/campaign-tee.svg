@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="600" height="600" role="img" aria-label="Solidarity Heavyweight Union-Printed Tee">
+  <rect width="600" height="600" fill="#f8f6f2" rx="16" />
+  <g transform="translate(100, 80)">
+    <!-- T-shirt silhouette -->
+    <path d="M 120 40 Q 200 80 280 40 L 360 100 L 310 180 L 260 150 L 260 420 L 140 420 L 140 150 L 90 180 L 40 100 Z" fill="#1c1917" stroke="#0c0a09" stroke-width="4" />
+    <path d="M 140 40 Q 200 90 260 40" fill="none" stroke="#292524" stroke-width="4" />
+    <!-- Chest Print Emblem -->
+    <rect x="160" y="160" width="80" height="70" rx="6" fill="#aa1d2f" />
+    <text x="200" y="190" font-family="system-ui, sans-serif" font-size="14" font-weight="900" fill="#ffffff" text-anchor="middle">SOLIDARITY</text>
+    <text x="200" y="210" font-family="system-ui, sans-serif" font-size="9" font-weight="bold" fill="#fecaca" text-anchor="middle">FOR ALL 2026</text>
+  </g>
+</svg>

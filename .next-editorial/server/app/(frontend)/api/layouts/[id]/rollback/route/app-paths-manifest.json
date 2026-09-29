@@ -1,0 +1,3 @@
+{
+  "/(frontend)/api/layouts/[id]/rollback/route": "app/(frontend)/api/layouts/[id]/rollback/route.js"
+}

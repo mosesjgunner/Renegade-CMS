@@ -1,0 +1,3 @@
+{
+  "/(frontend)/admin/catalog/preview/[id]/page": "app/(frontend)/admin/catalog/preview/[id]/page.js"
+}

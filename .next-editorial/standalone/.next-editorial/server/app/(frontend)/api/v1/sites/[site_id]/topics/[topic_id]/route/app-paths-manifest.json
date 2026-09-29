@@ -1,0 +1,3 @@
+{
+  "/(frontend)/api/v1/sites/[site_id]/topics/[topic_id]/route": "app/(frontend)/api/v1/sites/[site_id]/topics/[topic_id]/route.js"
+}

@@ -1,0 +1,3 @@
+{
+  "/(frontend)/api/admin/social/analytics/route": "app/(frontend)/api/admin/social/analytics/route.js"
+}

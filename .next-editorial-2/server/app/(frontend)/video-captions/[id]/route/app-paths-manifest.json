@@ -1,0 +1,3 @@
+{
+  "/(frontend)/video-captions/[id]/route": "app/(frontend)/video-captions/[id]/route.js"
+}

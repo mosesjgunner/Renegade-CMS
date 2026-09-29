@@ -1,0 +1,3 @@
+{
+  "/(frontend)/.well-known/webfinger/route": "app/(frontend)/.well-known/webfinger/route.js"
+}

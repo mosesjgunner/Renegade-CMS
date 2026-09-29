@@ -1,0 +1,3 @@
+{
+  "/(frontend)/api/community/moderation/route": "app/(frontend)/api/community/moderation/route.js"
+}

@@ -1,0 +1,3 @@
+{
+  "/(frontend)/api/commerce/referrals/claim/route": "app/(frontend)/api/commerce/referrals/claim/route.js"
+}

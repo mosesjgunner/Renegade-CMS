@@ -1,0 +1,22 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>CMoS Proof Login</title>
+  </head>
+  <body>
+    <div style="padding: 2rem; font-family: sans-serif">
+      <h2>Authenticating CMoS Admin Session...</h2>
+      <p id="msg">Setting authentication cookie and redirecting to Media Command Center...</p>
+    </div>
+    <script>
+      const token =
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb2xsZWN0aW9uIjoidXNlcnMiLCJlbWFpbCI6ImZvdW5kZXJAcmVuZWdhZGVwYXJ0eS5vcmciLCJpZCI6ImJjMjNhMTc1LWQ4ZGQtNDg3ZS04OTU3LTU5OGMxMmI0Y2ZiMCIsInNpZCI6Ijk2MDA2NjI1LThjZTAtNDg1Ni04ZGNmLWNiMmI1N2NiMDA3ZCIsImlhdCI6MTc4OTQ1MjIzOSwiZXhwIjoxNzg5NDgxMDM5fQ.ztRgqDeZJBDTPDHQUEUvPpUUWg02ZxYD17C9J4e0pBY'
+      document.cookie = 'renegade-passkey=' + token + '; path=/; max-age=28800; SameSite=Lax'
+      const targetUrl = '/admin/media-library?siteId=66838fdf-a634-451a-9710-62b3bab9aacd'
+      setTimeout(() => {
+        window.location.href = targetUrl
+      }, 300)
+    </script>
+  </body>
+</html>

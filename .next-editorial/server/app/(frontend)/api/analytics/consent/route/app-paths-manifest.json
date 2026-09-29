@@ -1,0 +1,3 @@
+{
+  "/(frontend)/api/analytics/consent/route": "app/(frontend)/api/analytics/consent/route.js"
+}

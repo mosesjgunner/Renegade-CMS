@@ -1,0 +1,3 @@
+{
+  "/(frontend)/events/feed.ics/route": "app/(frontend)/events/feed.ics/route.js"
+}

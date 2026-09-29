@@ -1,0 +1,3 @@
+{
+  "/(frontend)/admin/telemetry/page": "app/(frontend)/admin/telemetry/page.js"
+}

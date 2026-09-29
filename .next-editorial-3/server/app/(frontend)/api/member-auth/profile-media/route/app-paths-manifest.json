@@ -1,0 +1,3 @@
+{
+  "/(frontend)/api/member-auth/profile-media/route": "app/(frontend)/api/member-auth/profile-media/route.js"
+}

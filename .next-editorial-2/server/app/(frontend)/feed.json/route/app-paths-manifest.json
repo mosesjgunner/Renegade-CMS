@@ -1,0 +1,3 @@
+{
+  "/(frontend)/feed.json/route": "app/(frontend)/feed.json/route.js"
+}

@@ -1,0 +1,3 @@
+{
+  "/(frontend)/forums/[forumSlug]/[topicSlug]/page": "app/(frontend)/forums/[forumSlug]/[topicSlug]/page.js"
+}

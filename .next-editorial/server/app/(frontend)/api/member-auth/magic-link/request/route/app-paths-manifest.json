@@ -1,0 +1,3 @@
+{
+  "/(frontend)/api/member-auth/magic-link/request/route": "app/(frontend)/api/member-auth/magic-link/request/route.js"
+}

@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="en-US">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta http-equiv="x-ua-compatible" content="IE=edge" />
+	<title>miniPaint - image editor</title>
+	<meta name="description" content="miniPaint is free online image editor using HTML5. Edit, adjust your images, add effects online in your browser, without installing anything..." />
+	<meta name="keywords" content="photo, image, picture, transparent, layers, free, edit, html5, canvas, javascript, online, photoshop, gimp, effects, sharpen, blur, magic eraser tool, clone tool, rotate, resize, photoshop online, online tools, tilt shift, sprites, keypoints" />
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=0" />
+	<link rel="icon" sizes="192x192" href="images/favicon.png">
+	<!-- <link rel="manifest" href="dist/manifest.json"> -->
+	<!-- Google -->
+	<meta itemprop="name" content="miniPaint" />
+	<meta itemprop="description" content="miniPaint is free online image editor using HTML5. Edit, adjust your images, add effects online in your browser, without installing anything..." />
+	<meta itemprop="image" content="https://viliusle.github.io/miniPaint/images/preview.jpg" />
+	<!-- Twitter -->
+	<meta name="twitter:card" content="summary_large_image" />
+	<meta name="twitter:title" content="miniPaint" />
+	<meta name="twitter:description" content="miniPaint is free online image editor using HTML5. Edit, adjust your images, add effects online in your browser, without installing anything..." />
+	<meta name="twitter:image" content="https://viliusle.github.io/miniPaint/images/preview.jpg" />
+	<meta name="twitter:image:alt" content="miniPaint is free online image editor using HTML5. Edit, adjust your images, add effects online in your browser, without installing anything..." />
+	<!-- Facebook, Pinterest -->
+	<meta property="og:title" content="miniPaint" />
+	<meta property="og:type" content="article" />
+	<meta property="og:url" content="https://viliusle.github.io/miniPaint/" />
+	<meta property="og:image" content="https://viliusle.github.io/miniPaint/images/preview.jpg" />
+	<meta property="og:description" content="miniPaint is free online image editor using HTML5. Edit, adjust your images, add effects online in your browser, without installing anything..." />
+	<meta property="og:site_name" content="miniPaint" />
+	
+	<script src="dist/bundle.js"></script>
+	<link rel="stylesheet" href="cmos-overrides.css" />
+</head>
+<body>
+	<div class="wrapper">
+
+		<nav aria-label="Main Menu" class="main_menu" id="main_menu"></nav>
+		
+		<div class="submenu">
+			<a class="logo" href="#">miniPaint</a>
+			<div class="block attributes" id="action_attributes"></div>
+			<button class="undo_button" id="undo_button" type="button">
+				<span class="sr_only">Undo</span>
+			</button>
+		</div>
+		
+		<div class="sidebar_left" id="tools_container"></div>
+
+
+		<div class="middle_area" id="middle_area">
+
+			<canvas class="ruler_left" id="ruler_left"></canvas>
+			<canvas class="ruler_top" id="ruler_top"></canvas>
+
+			<div class="main_wrapper" id="main_wrapper">
+				<div class="canvas_wrapper" id="canvas_wrapper">
+					<div id="mouse"></div>
+					<div class="transparent-grid" id="canvas_minipaint_background"></div>
+					<canvas id="canvas_minipaint">
+						<div class="trn error">
+							Your browser does not support canvas or JavaScript is not enabled.
+						</div>
+					</canvas>
+				</div>
+			</div>
+		</div>
+
+		<div class="sidebar_right">
+			<div class="preview block">
+				<h2 class="trn toggle" data-target="toggle_preview">Preview</h2>
+				<div id="toggle_preview"></div>
+			</div>
+			
+			<div class="colors block">
+				<h2 class="trn toggle" data-target="toggle_colors">Colors</h2>
+				<div class="content" id="toggle_colors"></div>
+			</div>
+			
+			<div class="block" id="info_base">
+				<h2 class="trn toggle toggle-full" data-target="toggle_info">Information</h2>
+				<div class="content" id="toggle_info"></div>
+			</div>
+			
+			<div class="details block" id="details_base">
+				<h2 class="trn toggle toggle-full" data-target="toggle_details">Layer details</h2>
+				<div class="content details-content" id="toggle_details"></div>
+			</div>
+			
+			<div class="layers block">
+				<h2 class="trn">Layers</h2>
+				<div class="content" id="layers_base"></div>
+			</div>
+		</div>
+	</div>
+	<div class="mobile_menu">
+		<button class="left_mobile_menu" id="left_mobile_menu_button" type="button">
+			<span class="sr_only">Toggle Menu</span>
+		</button>
+		<button class="right_mobile_menu" id="mobile_menu_button" type="button">
+			<span class="sr_only">Toggle Menu</span>
+		</button>
+	</div>
+	<div class="hidden" id="tmp"></div>
+	<div id="popups"></div>
+	<script>
+		// CMoS Native Image Editor Bridge
+		(function() {
+			var cmosHistory = { dirty: false, canUndo: false, canRedo: false };
+			function reportState() {
+				var dimensions = window.Layers && window.Layers.get_dimensions ? window.Layers.get_dimensions() : {};
+				window.parent.postMessage({ type: 'cmos:image-editor:state', payload: {
+					dirty: cmosHistory.dirty, canUndo: cmosHistory.canUndo, canRedo: cmosHistory.canRedo,
+					width: dimensions.width, height: dimensions.height
+				} }, window.location.origin);
+			}
+			function observeHistory() {
+				var State = (window.app && window.app.State) || window.State;
+				if (!State || State.__cmosHistoryObserved) return;
+				State.__cmosHistoryObserved = true;
+				var originalDoAction = State.do_action;
+				State.do_action = function() {
+					var result = originalDoAction.apply(this, arguments);
+					cmosHistory.dirty = true; cmosHistory.canUndo = true; cmosHistory.canRedo = false;
+					reportState();
+					return result;
+				};
+			}
+			function notifyReady() {
+				if (window.Layers && (window.app || window.State)) {
+					observeHistory();
+					window.parent.postMessage({ type: 'cmos:image-editor:ready', payload: { version: 'minipaint-4' } }, window.location.origin);
+					return true;
+				}
+				return false;
+			}
+
+			window.addEventListener('load', function() {
+				if (!notifyReady()) {
+					var timer = setInterval(function() {
+						if (notifyReady()) clearInterval(timer);
+					}, 50);
+				}
+			});
+
+			window.addEventListener('message', function(event) {
+				if (event.origin !== window.location.origin) return;
+				var data = event.data;
+				if (!data || typeof data !== 'object' || !data.type) return;
+
+				if (data.type === 'cmos:image-editor:load') {
+					var imageUrl = data.payload.url;
+					var assetName = data.payload.name || 'image';
+					var State = (window.app && window.app.State) || window.State;
+					var Actions = (window.app && window.app.Actions) || window.Actions;
+					var img = new Image();
+					var isCrossOrigin = imageUrl.indexOf('http') === 0 && imageUrl.indexOf(window.location.origin) !== 0;
+					if (isCrossOrigin) {
+						img.crossOrigin = 'anonymous';
+					}
+					img.onload = function() {
+						try {
+							var imageWidth = img.naturalWidth || img.width;
+							var imageHeight = img.naturalHeight || img.height;
+							if (imageWidth * imageHeight > 50000000) {
+								throw new Error('This image exceeds the 50 megapixel editor limit.');
+							}
+							if (State && Actions) {
+								var new_layer = {
+									name: assetName,
+									type: 'image',
+									link: img,
+									width: imageWidth,
+									height: imageHeight,
+									width_original: imageWidth,
+									height_original: imageHeight,
+								};
+								State.do_action(
+									new Actions.Bundle_action('load_cmos_asset', 'Load CMoS Asset', [
+										new Actions.Reset_layers_action(),
+										new Actions.Insert_layer_action(new_layer),
+										new Actions.Autoresize_canvas_action(imageWidth, imageHeight, null, true, true)
+									])
+								);
+								window.parent.postMessage({
+									type: 'cmos:image-editor:loaded',
+									payload: {
+										width: imageWidth,
+										height: imageHeight,
+										layerCount: 1
+									}
+								}, window.location.origin);
+							}
+						} catch (err) {
+							window.parent.postMessage({
+								type: 'cmos:image-editor:error',
+								payload: { message: err ? err.message : 'Error applying image layer' }
+							}, window.location.origin);
+						}
+					};
+					img.onerror = function() {
+						window.parent.postMessage({
+							type: 'cmos:image-editor:error',
+							payload: { message: 'Failed to load image from ' + imageUrl }
+						}, window.location.origin);
+					};
+					img.src = imageUrl;
+				}
+
+				if (data.type === 'cmos:image-editor:command') {
+					var commandState = (window.app && window.app.State) || window.State;
+					var command = data.payload && data.payload.command;
+					if (command === 'mark-saved') {
+						cmosHistory.dirty = false; reportState(); return;
+					}
+					if (commandState && typeof commandState[command] === 'function') {
+						commandState[command]();
+						cmosHistory.dirty = true; cmosHistory.canUndo = command === 'redo'; cmosHistory.canRedo = command === 'undo';
+						reportState();
+					}
+				}
+
+				if (data.type === 'cmos:image-editor:export-request') {
+					var requestId = data.payload.requestId;
+					var mimeType = data.payload.mimeType || 'image/png';
+					var quality = data.payload.quality || 0.92;
+					try {
+						var Layers = window.Layers;
+						var dim = Layers.get_dimensions();
+						var canvas = document.createElement('canvas');
+						canvas.width = dim.width;
+						canvas.height = dim.height;
+						var ctx = canvas.getContext('2d');
+						Layers.convert_layers_to_canvas(ctx);
+						var dataUrl = canvas.toDataURL(mimeType, quality);
+						var projectJson = window.FileSave ? window.FileSave.export_as_json() : undefined;
+
+						window.parent.postMessage({
+							type: 'cmos:image-editor:export-response',
+							payload: {
+								requestId: requestId,
+								dataUrl: dataUrl,
+								width: dim.width,
+								height: dim.height,
+								mimeType: mimeType,
+								projectJson: projectJson
+							}
+						}, window.location.origin);
+					} catch (err) {
+						window.parent.postMessage({
+							type: 'cmos:image-editor:error',
+							payload: { message: err ? err.message : 'Export failed' }
+						}, window.location.origin);
+					}
+				}
+
+				if (data.type === 'cmos:image-editor:insert-layer' || data.type === 'cmos:image-editor:replace-layer') {
+					var isReplace = data.type === 'cmos:image-editor:replace-layer';
+					var actionId = data.payload && data.payload.actionId;
+					var layerName = (data.payload && data.payload.name) || (isReplace ? 'Modified Layer' : 'AI Layer');
+					var layerImageSrc = data.payload && data.payload.image;
+					var opacity = (data.payload && typeof data.payload.opacity === 'number') ? data.payload.opacity : 1;
+					var State = (window.app && window.app.State) || window.State;
+					var Actions = (window.app && window.app.Actions) || window.Actions;
+					var Layers = (window.app && window.app.Layers) || window.Layers;
+					if (!State || !Actions || !Layers) {
+						window.parent.postMessage({
+							type: 'cmos:image-editor:layer-response',
+							payload: { actionId: actionId, success: false, error: 'Editor not ready' }
+						}, window.location.origin);
+						return;
+					}
+					var layerImg = new Image();
+					layerImg.crossOrigin = 'anonymous';
+					layerImg.onload = function() {
+						try {
+							var w = layerImg.naturalWidth || layerImg.width;
+							var h = layerImg.naturalHeight || layerImg.height;
+							var new_layer = {
+								name: layerName,
+								type: 'image',
+								link: layerImg,
+								width: w,
+								height: h,
+								width_original: w,
+								height_original: h,
+								opacity: opacity * 100
+							};
+							if (isReplace) {
+								var activeLayer = Layers.get_active_layer ? Layers.get_active_layer() : null;
+								if (activeLayer) {
+									activeLayer.link = layerImg;
+									activeLayer.width = w;
+									activeLayer.height = h;
+									activeLayer.width_original = w;
+									activeLayer.height_original = h;
+									if (data.payload.name) activeLayer.name = data.payload.name;
+									if (Actions.Refresh_action) {
+										State.do_action(new Actions.Refresh_action());
+									} else if (Actions.Update_layer_action) {
+										State.do_action(new Actions.Update_layer_action(activeLayer.id, activeLayer));
+									}
+								} else {
+									State.do_action(new Actions.Insert_layer_action(new_layer));
+								}
+							} else {
+								State.do_action(new Actions.Insert_layer_action(new_layer));
+							}
+							cmosHistory.dirty = true; cmosHistory.canUndo = true; cmosHistory.canRedo = false;
+							reportState();
+							window.parent.postMessage({
+								type: 'cmos:image-editor:layer-response',
+								payload: { actionId: actionId, success: true, width: w, height: h }
+							}, window.location.origin);
+						} catch (err) {
+							window.parent.postMessage({
+								type: 'cmos:image-editor:layer-response',
+								payload: { actionId: actionId, success: false, error: err ? err.message : 'Failed to apply layer' }
+							}, window.location.origin);
+						}
+					};
+					layerImg.onerror = function() {
+						window.parent.postMessage({
+							type: 'cmos:image-editor:layer-response',
+							payload: { actionId: actionId, success: false, error: 'Failed to load image for layer' }
+						}, window.location.origin);
+					};
+					layerImg.src = layerImageSrc;
+				}
+			});
+		})();
+	</script>
+</body>
+</html>

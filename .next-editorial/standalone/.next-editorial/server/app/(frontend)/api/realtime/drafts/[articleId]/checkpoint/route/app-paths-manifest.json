@@ -1,0 +1,3 @@
+{
+  "/(frontend)/api/realtime/drafts/[articleId]/checkpoint/route": "app/(frontend)/api/realtime/drafts/[articleId]/checkpoint/route.js"
+}

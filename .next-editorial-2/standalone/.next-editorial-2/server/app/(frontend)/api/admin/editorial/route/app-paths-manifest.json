@@ -1,0 +1,3 @@
+{
+  "/(frontend)/api/admin/editorial/route": "app/(frontend)/api/admin/editorial/route.js"
+}

@@ -1,0 +1,3 @@
+{
+  "/(frontend)/api/member-auth/sessions/[id]/revoke/route": "app/(frontend)/api/member-auth/sessions/[id]/revoke/route.js"
+}
