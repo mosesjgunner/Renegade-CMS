@@ -11,6 +11,8 @@ const runtimeEnv = Object.fromEntries(
       return [line.slice(0, separator), line.slice(separator + 1)]
     }),
 )
+const e2ePort = process.env.E2E_PORT ?? '3110'
+const e2eAppUrl = `http://localhost:${e2ePort}`
 const e2eEnv = {
   ...runtimeEnv,
   // Allows destructive browser fixtures to run against a dedicated disposable database.
@@ -18,8 +20,9 @@ const e2eEnv = {
   // Use `localhost` (not the 127.0.0.1 literal) so browser WebAuthn accepts the
   // origin: an IP address is an invalid RP ID, but `localhost` is allowed. It
   // resolves to the same loopback address, so non-passkey specs are unaffected.
-  APP_URL: 'http://localhost:3110',
-  PORT: '3110',
+  APP_URL: e2eAppUrl,
+  E2E_APP_URL: e2eAppUrl,
+  PORT: e2ePort,
   HOSTNAME: 'localhost',
   LOCAL_E2E_TEST_MODE: 'true',
   RENEGADE_MODULES: 'all',
@@ -35,13 +38,13 @@ export default defineConfig({
   timeout: 30_000,
   workers: 1,
   use: {
-    baseURL: 'http://localhost:3110',
+    baseURL: e2eAppUrl,
     browserName: 'chromium',
     ...(process.env.PLAYWRIGHT_CHANNEL ? { channel: process.env.PLAYWRIGHT_CHANNEL } : {}),
   },
   webServer: {
     command: process.env.E2E_WEB_SERVER_COMMAND ?? 'node .next/standalone/server.js',
-    url: 'http://localhost:3110/health/ready',
+    url: `${e2eAppUrl}/health/ready`,
     reuseExistingServer: false,
     timeout: 120_000,
     env: { ...process.env, ...e2eEnv },

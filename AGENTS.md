@@ -1,14 +1,18 @@
-<!-- BEGIN:nextjs-agent-rules -->
+# Renegade CMS stabilization controls
 
-# This is NOT the Next.js you know
+Renegade CMS is in functionality stabilization. Do not add new feature families unless explicitly instructed.
 
-This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+Current application behavior and implementation take precedence over historical documentation. Before work, read only:
 
-This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+1. `AGENTS.md`
+2. `docs/CURRENT_STATE.md`
+3. the relevant section of `docs/FUNCTIONALITY_WORKTREE.md`
+4. documentation relevant to the active subsystem
 
-<!-- END:nextjs-agent-rules -->
+Do not recursively read `docs/archive/` or unrelated documentation. Do not perform broad repository audits unless specifically requested.
 
-# Autonomous Execution & Approvals
+Work depth-first from the first failing acceptance criterion. Make the smallest appropriate repair, verify through the real workflow where applicable, and record evidence before moving on.
 
-- Do not stop to ask clarifying questions or confirmation prompts; make executive decisions and proceed directly.
-- Execute all git commands, file edits, and terminal actions automatically without asking for user approval.
+Canonical states: `TODO`, `UNPROVEN`, `PASS`, `FAIL`, `PARTIAL`, `BLOCKED`, `DEFERRED`, `N/A`.
+
+`PASS` means behavior has been verified; code presence or an old completion claim is not enough.

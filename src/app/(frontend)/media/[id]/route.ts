@@ -50,6 +50,11 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 
   if (!media) return new NextResponse('Not found', { status: 404 })
 
+  // `publicMedia` follows a governed global replacement. Variant lookup must
+  // use that resolved asset too; otherwise an unchanged content reference
+  // keeps asking the retired asset for renditions after a replacement.
+  const resolvedMediaId = String(media.id || id)
+
   const storage = mediaStorage(appConfig)
 
   // 1. Variant resolution and serving
@@ -67,7 +72,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
         collection: 'media-variants',
         where: {
           and: [
-            { asset: { equals: id } },
+            { asset: { equals: resolvedMediaId } },
             { recipeKey: { equals: variantKey } },
             { processingState: { equals: 'ready' } },
           ],
@@ -140,7 +145,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
             'Content-Length': String(bytes.byteLength),
             'Cache-Control': 'public, max-age=31536000, immutable',
             ETag: checksum,
-            'Content-Location': `/media/${id}?variant=${encodeURIComponent(variantKey)}&format=${chosenVariant.format}&v=${chosenVariant.recipeVersion || standardRecipes[variantKey].version}`,
+            'Content-Location': `/media/${resolvedMediaId}?variant=${encodeURIComponent(variantKey)}&format=${chosenVariant.format}&v=${chosenVariant.recipeVersion || standardRecipes[variantKey].version}`,
             'X-Content-Type-Options': 'nosniff',
           }
 

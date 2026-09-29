@@ -252,32 +252,33 @@ describe('ADMIN-00 Map Navigation & Surface Coherence', () => {
     })
 
     describe('/admin/telemetry (Owner Only)', () => {
-      it('rejects unauthenticated requests with notFound', async () => {
+      it('redirects unauthorized requests to the safe admin landing page', async () => {
         authMock.mockResolvedValue({ user: null })
-        await expect(TelemetryPage()).rejects.toThrow('NEXT_NOT_FOUND')
-        expect(notFoundMock).toHaveBeenCalled()
+        await expect(TelemetryPage()).rejects.toThrow('NEXT_REDIRECT: /admin')
+        expect(redirectMock).toHaveBeenCalledWith('/admin')
       })
 
-      it('rejects non-owner roles (staff/administrator) with notFound', async () => {
+      it('redirects non-owner roles (staff/administrator) to the safe admin landing page', async () => {
         authMock.mockResolvedValue({ user: { id: 'staff-1', role: 'staff' } })
-        await expect(TelemetryPage()).rejects.toThrow('NEXT_NOT_FOUND')
-        expect(notFoundMock).toHaveBeenCalled()
+        await expect(TelemetryPage()).rejects.toThrow('NEXT_REDIRECT: /admin')
+        expect(redirectMock).toHaveBeenCalledWith('/admin')
       })
 
       it('allows owner to access system telemetry', async () => {
         authMock.mockResolvedValue({ user: { id: 'owner-1', role: 'owner' } })
         const result = await TelemetryPage()
         expect(result).toBeDefined()
-        expect(notFoundMock).not.toHaveBeenCalled()
+        expect(redirectMock).not.toHaveBeenCalled()
       })
     })
 
     describe('/admin/migration (Owner or Administrator)', () => {
-      it('denies staff migration access', async () => {
+      it('redirects staff migration access to the safe admin landing page', async () => {
         authMock.mockResolvedValue({ user: { id: 'staff-1', role: 'staff' } })
         await expect(AdminMigrationPage({ searchParams: Promise.resolve({}) })).rejects.toThrow(
-          'NEXT_NOT_FOUND',
+          'NEXT_REDIRECT: /admin',
         )
+        expect(redirectMock).toHaveBeenCalledWith('/admin')
       })
 
       it('allows administrator migration access', async () => {

@@ -10,68 +10,72 @@ import { normalizeNavigation, validateNavigation } from '@/modules/public/naviga
 export const runtime = 'nodejs'
 
 export async function GET(request: Request) {
-  const payload = await getPayload({ config })
-  const auth = await payload.auth({ headers: request.headers })
-  if (!auth.user || !canAccessAdminRole(auth.user.role)) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  try {
+    const payload = await getPayload({ config })
+    const auth = await payload.auth({ headers: request.headers })
+    if (!auth.user || !canAccessAdminRole(auth.user.role)) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const { searchParams } = new URL(request.url)
+    const publicationId = searchParams.get('publicationId')
+    const siteId = searchParams.get('siteId')
+    if (auth.user.role === 'staff' && !siteId && !publicationId)
+      return NextResponse.json({ error: 'Choose an assigned site.' }, { status: 400 })
+    if (siteId && !canManageAdminSite(auth.user, siteId))
+      return NextResponse.json({ error: 'Site access denied.' }, { status: 403 })
+
+    const pubWhere: Record<string, unknown> = publicationId
+      ? { id: { equals: publicationId } }
+      : siteId
+        ? { site: { equals: siteId } }
+        : { and: [{ status: { equals: 'active' } }, { visibility: { equals: 'public' } }] }
+
+    const publications = await payload.find({
+      collection: 'publications',
+      where: pubWhere as never,
+      limit: 1,
+      depth: 0,
+      overrideAccess: false,
+      user: auth.user,
+    })
+
+    const pub = publications.docs[0] as unknown as Record<string, unknown> | undefined
+    const resolvedSite =
+      typeof pub?.site === 'string' ? pub.site : (pub?.site as { id?: string } | undefined)?.id
+    if (resolvedSite && !canManageAdminSite(auth.user, resolvedSite))
+      return NextResponse.json({ error: 'Site access denied.' }, { status: 403 })
+    const navigation = normalizeNavigation(pub?.navigation)
+
+    // Also query published pages and articles for easy target selection
+    const site = typeof pub?.site === 'string' ? pub.site : (pub?.site as { id?: string })?.id
+    const targetContent = await payload.find({
+      collection: 'content',
+      where: {
+        and: [
+          ...(site ? [{ site: { equals: site } }] : []),
+          { status: { in: ['published', 'updated'] } },
+        ],
+      } as never,
+      limit: 100,
+      depth: 0,
+      overrideAccess: false,
+      user: auth.user,
+    })
+
+    return NextResponse.json({
+      publicationId: pub?.id ?? null,
+      navigation,
+      targets: targetContent.docs.map((doc) => ({
+        id: doc.id,
+        title: doc.title,
+        canonicalPath: doc.canonicalPath,
+        contentType: doc.contentType,
+      })),
+    })
+  } catch {
+    return NextResponse.json({ error: 'Navigation is temporarily unavailable.' }, { status: 500 })
   }
-
-  const { searchParams } = new URL(request.url)
-  const publicationId = searchParams.get('publicationId')
-  const siteId = searchParams.get('siteId')
-  if (auth.user.role === 'staff' && !siteId && !publicationId)
-    return NextResponse.json({ error: 'Choose an assigned site.' }, { status: 400 })
-  if (siteId && !canManageAdminSite(auth.user, siteId))
-    return NextResponse.json({ error: 'Site access denied.' }, { status: 403 })
-
-  const pubWhere: Record<string, unknown> = publicationId
-    ? { id: { equals: publicationId } }
-    : siteId
-      ? { site: { equals: siteId } }
-      : { and: [{ status: { equals: 'active' } }, { visibility: { equals: 'public' } }] }
-
-  const publications = await payload.find({
-    collection: 'publications',
-    where: pubWhere as never,
-    limit: 1,
-    depth: 0,
-    overrideAccess: false,
-    user: auth.user,
-  })
-
-  const pub = publications.docs[0] as unknown as Record<string, unknown> | undefined
-  const resolvedSite =
-    typeof pub?.site === 'string' ? pub.site : (pub?.site as { id?: string } | undefined)?.id
-  if (resolvedSite && !canManageAdminSite(auth.user, resolvedSite))
-    return NextResponse.json({ error: 'Site access denied.' }, { status: 403 })
-  const navigation = normalizeNavigation(pub?.navigation)
-
-  // Also query published pages and articles for easy target selection
-  const site = typeof pub?.site === 'string' ? pub.site : (pub?.site as { id?: string })?.id
-  const targetContent = await payload.find({
-    collection: 'content',
-    where: {
-      and: [
-        ...(site ? [{ site: { equals: site } }] : []),
-        { status: { in: ['published', 'updated'] } },
-      ],
-    } as never,
-    limit: 100,
-    depth: 0,
-    overrideAccess: false,
-    user: auth.user,
-  })
-
-  return NextResponse.json({
-    publicationId: pub?.id ?? null,
-    navigation,
-    targets: targetContent.docs.map((doc) => ({
-      id: doc.id,
-      title: doc.title,
-      canonicalPath: doc.canonicalPath,
-      contentType: doc.contentType,
-    })),
-  })
 }
 
 export async function POST(request: Request) {

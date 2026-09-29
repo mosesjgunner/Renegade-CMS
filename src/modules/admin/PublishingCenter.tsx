@@ -1,53 +1,19 @@
-import Link from 'next/link'
 import type { AdminViewServerProps } from 'payload'
+import { PublishingCenterClient } from './PublishingCenterClient'
 
-export default async function PublishingCenter({ initPageResult, params }: AdminViewServerProps) {
-  const seg = params?.segments?.[0]
+export default async function PublishingCenter({ params }: AdminViewServerProps) {
+  // Payload forwards Next's dynamic route params. In Next 16 these can be a
+  // promise at runtime even though Payload's current public type is synchronous.
+  // Reading it directly made both `/admin/posts` and `/admin/pages` select the
+  // article fallback before the segment was available.
+  const resolvedParams = await Promise.resolve(params)
+  const seg = resolvedParams?.segments?.[0]
   const kind = seg === 'pages' ? 'page' : seg === 'podcasts' ? 'podcast' : 'article'
-  const label = kind === 'page' ? 'Pages' : kind === 'podcast' ? 'Podcasts' : 'Posts'
-  const noun = kind === 'page' ? 'Page' : kind === 'podcast' ? 'Podcast' : 'Post'
-  const result = await initPageResult.req.payload.find({
-    collection: 'content',
-    where: { contentType: { equals: kind } },
-    depth: 0,
-    limit: 50,
-    req: initPageResult.req,
-  } as never)
-  return (
-    <main className="gutter--left gutter--right">
-      <h1>{label}</h1>
-      <p>
-        {kind === 'page'
-          ? 'Create durable site pages with a hierarchy and template intent.'
-          : kind === 'podcast'
-            ? 'Publish podcast shows and episodes integrated with the canonical workflow system.'
-            : 'Write and prepare publication posts with authors, taxonomy, media, and a release date.'}
-      </p>
-      <p>
-        {kind === 'podcast' ? (
-          <span className="space-x-3">
-            <Link href="/admin/collections/podcast-shows/create">Create Podcast Show</Link> ·{' '}
-            <Link href="/admin/collections/podcast-episodes/create">Create Episode</Link>
-          </span>
-        ) : (
-          <Link href={`/admin/collections/content/create?contentType=${kind}`}>Create {noun}</Link>
-        )}
-      </p>
-      {result.docs.length ? (
-        <ul>
-          {result.docs.map((doc: { id: string; title?: string | null }) => (
-            <li key={doc.id}>
-              <Link href={`/admin/collections/content/${doc.id}`}>
-                {doc.title || `Untitled ${noun}`}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p>
-          No {label.toLowerCase()} yet. Create your first {noun.toLowerCase()} to begin a draft.
-        </p>
-      )}
-    </main>
-  )
+  if (kind === 'podcast')
+    return (
+      <main className="gutter--left gutter--right">
+        <h1>Podcasts</h1>
+      </main>
+    )
+  return <PublishingCenterClient kind={kind} />
 }

@@ -55,7 +55,10 @@ export function createUsersCollection(
         },
         access: {
           create: ({ req }) => req.user?.role === 'owner',
-          read: ({ req }) => req.user?.role === 'owner',
+          // Staff collection reads are already restricted to the authenticated
+          // user. They must receive their own grants for server-side
+          // site-bound route enforcement to work; writes remain owner-only.
+          read: ({ req }) => ['owner', 'administrator', 'staff'].includes(String(req.user?.role)),
           update: ({ req }) => req.user?.role === 'owner',
         },
       },

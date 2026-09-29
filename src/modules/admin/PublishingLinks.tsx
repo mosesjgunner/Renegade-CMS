@@ -11,6 +11,11 @@ export interface NavItem {
   href: string
   badge?: string
   roles?: readonly string[]
+  /**
+   * A destination can remain part of the ADMIN-00 map before its backed
+   * Payload view is mounted.  It must not be rendered as a broken link.
+   */
+  unavailableReason?: string
 }
 
 export interface NavSection {
@@ -31,11 +36,11 @@ export const ADMIN_SECTIONS: NavSection[] = [
     items: [
       { label: 'Posts', href: '/admin/posts' },
       { label: 'Pages', href: '/admin/pages' },
-      { label: 'All Content', href: '/admin/collections/content' },
-      { label: 'Sections', href: '/admin/collections/sections' },
-      { label: 'Categories', href: '/admin/collections/categories' },
-      { label: 'Topics', href: '/admin/collections/topics' },
-      { label: 'Tags', href: '/admin/collections/tags' },
+      unavailable('All Content', '/admin/collections/content'),
+      unavailable('Sections', '/admin/collections/sections'),
+      unavailable('Categories', '/admin/collections/categories'),
+      unavailable('Topics', '/admin/collections/topics'),
+      unavailable('Tags', '/admin/collections/tags'),
     ],
   },
   {
@@ -43,8 +48,8 @@ export const ADMIN_SECTIONS: NavSection[] = [
     title: 'Media',
     items: [
       { label: 'Media Library', href: '/admin/media-library' },
-      { label: 'Assets', href: '/admin/collections/media-assets' },
-      { label: 'Podcasts', href: '/admin/collections/podcast-shows' },
+      unavailable('Assets', '/admin/collections/media-assets'),
+      unavailable('Podcasts', '/admin/collections/podcast-shows'),
     ],
   },
   {
@@ -52,7 +57,7 @@ export const ADMIN_SECTIONS: NavSection[] = [
     title: 'Presentation',
     items: [
       { label: 'Menus & Navigation', href: '/admin/navigation' },
-      { label: 'Page Layouts', href: '/admin/collections/page-layouts' },
+      unavailable('Page Layouts', '/admin/collections/page-layouts'),
       { label: 'Themes & Starters', href: '/admin/capabilities#theme-center', roles: ['owner'] },
     ],
   },
@@ -85,7 +90,7 @@ export const ADMIN_SECTIONS: NavSection[] = [
     items: [
       { label: 'Audience Center', href: '/admin/audience' },
       { label: 'Email Composer', href: '/admin/email-composer' },
-      { label: 'Subscribers', href: '/admin/collections/subscribers' },
+      unavailable('Subscribers', '/admin/collections/subscribers'),
     ],
   },
   {
@@ -93,8 +98,8 @@ export const ADMIN_SECTIONS: NavSection[] = [
     title: 'Community',
     items: [
       { label: 'Moderation Queue', href: '/admin/moderation' },
-      { label: 'Forums', href: '/admin/collections/forums' },
-      { label: 'Discussions', href: '/admin/collections/discussions' },
+      unavailable('Forums', '/admin/collections/forums'),
+      unavailable('Discussions', '/admin/collections/discussions'),
     ],
   },
   {
@@ -103,7 +108,7 @@ export const ADMIN_SECTIONS: NavSection[] = [
     items: [
       { label: 'Product Catalog', href: '/admin/catalog' },
       { label: 'Operations & Ledger', href: '/admin/commerce' },
-      { label: 'Products', href: '/admin/collections/products' },
+      unavailable('Products', '/admin/collections/products'),
       { label: 'POD & Fulfillment', href: '/admin/fulfillment' },
     ],
   },
@@ -116,9 +121,9 @@ export const ADMIN_SECTIONS: NavSection[] = [
     id: 'users',
     title: 'Users',
     items: [
-      { label: 'Staff Users', href: '/admin/collections/users' },
-      { label: 'Authors', href: '/admin/collections/authors' },
-      { label: 'Community Members', href: '/admin/collections/members' },
+      unavailable('Staff Users', '/admin/collections/users'),
+      unavailable('Authors', '/admin/collections/authors'),
+      unavailable('Community Members', '/admin/collections/members'),
     ],
   },
   {
@@ -138,9 +143,9 @@ export const ADMIN_SECTIONS: NavSection[] = [
     id: 'settings',
     title: 'Site Settings',
     items: [
-      { label: 'General Settings', href: '/admin/globals/site-settings' },
-      { label: 'Sites', href: '/admin/collections/sites' },
-      { label: 'Brands', href: '/admin/collections/brands' },
+      unavailable('General Settings', '/admin/globals/site-settings'),
+      unavailable('Sites', '/admin/collections/sites'),
+      unavailable('Brands', '/admin/collections/brands'),
     ],
   },
   {
@@ -234,6 +239,18 @@ export default function PublishingLinks({ initialRole }: { initialRole?: string 
                     selectedSite && itemPath.startsWith('/admin')
                       ? `${itemPath}${query.toString() ? `?${query.toString()}` : ''}${itemHash ? `#${itemHash}` : ''}`
                       : item.href
+                  if (item.unavailableReason) {
+                    return (
+                      <span
+                        key={item.href}
+                        className={`${styles.navLink} ${styles.navLinkUnavailable}`}
+                        aria-disabled="true"
+                        title={item.unavailableReason}
+                      >
+                        {item.label} <span className={styles.unavailableNote}>Unavailable</span>
+                      </span>
+                    )
+                  }
                   return (
                     <Link
                       key={item.href}
@@ -259,6 +276,14 @@ export default function PublishingLinks({ initialRole }: { initialRole?: string 
       </Link>
     </nav>
   )
+}
+
+function unavailable(label: string, href: string): NavItem {
+  return {
+    label,
+    href,
+    unavailableReason: 'This management view is not mounted in this build.',
+  }
 }
 
 function useAdminRole() {

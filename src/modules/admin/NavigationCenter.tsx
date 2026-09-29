@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from 'react'
+import { useSearchParams } from 'next/navigation'
 
 type MenuItem = {
   label: string
@@ -14,6 +15,13 @@ type NavigationData = {
   footer: MenuItem[]
 }
 
+type NavigationResponse = {
+  navigation?: NavigationData
+  targets?: Target[]
+  publicationId?: string | null
+  error?: string
+}
+
 type Target = {
   id: string
   title: string
@@ -22,6 +30,8 @@ type Target = {
 }
 
 export default function NavigationCenter() {
+  const searchParams = useSearchParams()
+  const siteId = searchParams.get('siteId')
   const [navigation, setNavigation] = useState<NavigationData>({
     primary: [],
     secondary: [],
@@ -34,8 +44,13 @@ export default function NavigationCenter() {
   const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null)
 
   useEffect(() => {
-    fetch('/api/admin/navigation')
-      .then((res) => res.json())
+    const query = siteId ? `?siteId=${encodeURIComponent(siteId)}` : ''
+    fetch(`/api/admin/navigation${query}`)
+      .then(async (res) => {
+        const data = (await res.json()) as NavigationResponse
+        if (!res.ok) throw new Error(data.error ?? 'Could not load navigation.')
+        return data
+      })
       .then((data) => {
         if (data.navigation) setNavigation(data.navigation)
         if (data.targets) setTargets(data.targets)
@@ -43,7 +58,7 @@ export default function NavigationCenter() {
       })
       .catch((err) => setMessage({ text: err.message, type: 'error' }))
       .finally(() => setLoading(false))
-  }, [])
+  }, [siteId])
 
   const handleSave = async () => {
     setSaving(true)
@@ -52,7 +67,7 @@ export default function NavigationCenter() {
       const res = await fetch('/api/admin/navigation', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ publicationId, navigation }),
+        body: JSON.stringify({ publicationId, siteId: siteId ?? undefined, navigation }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Failed to save navigation.')

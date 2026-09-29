@@ -1,7 +1,7 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import { headers } from 'next/headers'
-import { notFound } from 'next/navigation'
+import { redirect } from 'next/navigation'
 import LegacyMigrationReview from '@/modules/admin/LegacyMigrationReview'
 import { PayloadLegacyMigrationStore } from '@/modules/portability/legacy-migration'
 
@@ -14,7 +14,7 @@ export default async function AdminMigrationPage({
 }) {
   const payload = await getPayload({ config })
   const auth = await payload.auth({ headers: await headers() })
-  if (!['owner', 'administrator'].includes(String(auth.user?.role))) notFound()
+  if (!['owner', 'administrator'].includes(String(auth.user?.role))) redirect('/admin')
 
   const { runId } = (await searchParams) ?? {}
   let initialReport = undefined

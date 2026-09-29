@@ -9,7 +9,6 @@ import {
   type WebhookDeliveryItem,
   type IntegrationAuditItem,
 } from '@/modules/extensions/ConnectionsCenter'
-import type { ConnectionGroup } from '@/modules/extensions/contracts'
 import {
   diagnoseWebhookDelivery,
   resolveNextSafeRepairAction,
@@ -19,62 +18,6 @@ import { loadConfig } from '@/modules/core/config'
 import { runtimeProviderInventory } from '@/modules/extensions/runtime-provider-inventory'
 
 export const dynamic = 'force-dynamic'
-
-function determineGroup(providerKey: string): ConnectionGroup {
-  if (
-    providerKey.startsWith('social.') ||
-    [
-      'mastodon',
-      'bluesky',
-      'linkedin',
-      'facebook',
-      'instagram',
-      'threads',
-      'pinterest',
-      'youtube',
-      'tiktok',
-      'x',
-      'telegram',
-      'discord',
-    ].includes(providerKey)
-  ) {
-    return 'Social'
-  }
-  if (providerKey.startsWith('pod-') || ['printful', 'printify', 'gelato'].includes(providerKey)) {
-    return 'Fulfillment'
-  }
-  if (
-    ['stripe', 'paypal', 'square', 'razorpay', 'offline'].includes(providerKey) ||
-    providerKey.startsWith('payment-')
-  ) {
-    return 'Payments & Support'
-  }
-  if (['smtp', 'postmark', 'resend', 'sendgrid'].includes(providerKey)) {
-    return 'Email'
-  }
-  if (['twilio', 'jibe'].includes(providerKey)) {
-    return 'Messaging'
-  }
-  if (
-    providerKey.startsWith('ai.') ||
-    ['openai', 'anthropic', 'google-genai', 'groq'].includes(providerKey)
-  ) {
-    return 'AI'
-  }
-  if (
-    providerKey.startsWith('analytics.') ||
-    ['fathom', 'plausible', 'posthog'].includes(providerKey)
-  ) {
-    return 'Analytics'
-  }
-  if (providerKey.startsWith('client-') || providerKey === 'api-client') {
-    return 'Security'
-  }
-  if (providerKey === 'webhook') {
-    return 'Webhooks'
-  }
-  return 'Security'
-}
 
 export default async function ConnectionsPage({
   searchParams,
@@ -591,7 +534,6 @@ export default async function ConnectionsPage({
       connections={connections}
       deliveries={deliveries}
       auditEvents={auditEvents}
-      groupFor={determineGroup}
       isStaff={isStaff}
       siteId={siteId}
     />

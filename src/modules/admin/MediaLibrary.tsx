@@ -4,6 +4,11 @@ import { MediaLibraryClient } from './MediaLibraryClient'
 
 export default async function MediaLibrary({ initPageResult, searchParams }: AdminViewServerProps) {
   const user = initPageResult.req.user as { site?: { id?: string } } | undefined
+  // The library's core asset workflow is part of the default floor, while the
+  // command center depends on the optional media domain (including
+  // `media-jobs`). Do not render a control surface that its active Payload
+  // configuration cannot back.
+  const commandCenterAvailable = Boolean(initPageResult.req.payload.collections['media-jobs'])
   // Site selection is deliberately explicit; a staff user without a scoped site cannot upload into an accidental tenant.
   let siteId = String(user?.site?.id ?? '')
   let isLegacyView = false
@@ -40,7 +45,14 @@ export default async function MediaLibrary({ initPageResult, searchParams }: Adm
     <main>
       {siteId ? (
         <>
-          <MediaCommandCenter siteId={siteId} />
+          {commandCenterAvailable ? (
+            <MediaCommandCenter siteId={siteId} />
+          ) : (
+            <p role="status">
+              Media Command Center is unavailable because the optional Media module is not enabled
+              for this deployment. Core Media Library asset management remains available below.
+            </p>
+          )}
           <section className="mt-8 border-t pt-8" aria-label="Media Assets Management">
             <MediaLibraryClient siteId={siteId} />
           </section>

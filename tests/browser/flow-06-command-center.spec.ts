@@ -59,43 +59,43 @@ test('FLOW-06: Unified Workflow Command Center Browser & Multi-User Governance P
 
   // 4. Test Tab Navigation across sections
   // Team Queues
-  await page.getByRole('button', { name: 'Team Queues' }).click()
+  await page.getByRole('tab', { name: 'Team Queues' }).click()
   await expect(page.getByText('Category:')).toBeVisible()
 
   // Comments
-  await page.getByRole('button', { name: /Comments/ }).click()
+  await page.getByRole('tab', { name: /Comments/ }).click()
   await expect(page.getByRole('heading', { name: /Unresolved Review Comments/ })).toBeVisible()
 
   // Due / Overdue
-  await page.getByRole('button', { name: /Due \/ Overdue/ }).click()
+  await page.getByRole('tab', { name: /Due \/ Overdue/ }).click()
   await expect(page.getByText('SLA & Deadline Tracking')).toBeVisible()
 
   // Calendar
-  await page.getByRole('button', { name: 'Calendar' }).click()
+  await page.getByRole('tab', { name: 'Calendar' }).click()
   await expect(page.getByText('Editorial & Release Calendar')).toBeVisible()
 
   // Jobs & Health
-  await page.getByRole('button', { name: 'Jobs & Health' }).click()
+  await page.getByRole('tab', { name: 'Jobs & Health' }).click()
   await expect(page.getByText('Worker Status')).toBeVisible()
   await expect(page.getByText('Active Lease Locks')).toBeVisible()
 
   // Translations
-  await page.getByRole('button', { name: /Translations/ }).click()
+  await page.getByRole('tab', { name: /Translations/ }).click()
   await expect(page.getByText('Translation Groups & Quality Gates')).toBeVisible()
 
   // Releases
-  await page.getByRole('button', { name: /Releases/ }).click()
+  await page.getByRole('tab', { name: /Releases/ }).click()
   await expect(page.getByRole('heading', { name: 'Coordinated Releases' })).toBeVisible()
 
   // Blockers & Quality
-  await page.getByRole('button', { name: /Blockers & Quality/ }).click()
+  await page.getByRole('tab', { name: /Blockers & Quality/ }).click()
   await expect(page.getByText('Deterministic Quality Center & Rights Blockers')).toBeVisible()
 
   // Outbox Failures
-  await page.getByRole('button', { name: 'Outbox Failures' }).click()
+  await page.getByRole('tab', { name: 'Outbox Failures' }).click()
   await expect(page.getByText('Durable Notification Outbox Failures')).toBeVisible()
 
   // Audit Trail
-  await page.getByRole('button', { name: 'Audit Trail' }).click()
+  await page.getByRole('tab', { name: 'Audit Trail' }).click()
   await expect(page.getByText('Unified Immutable Audit Stream')).toBeVisible()
 })

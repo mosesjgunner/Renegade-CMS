@@ -222,17 +222,11 @@ export default async function PublisherDashboard({ initPageResult }: AdminViewSe
           border: '1px solid var(--theme-elevation-150, #27272a)',
         }}
       >
-        <Link
-          href={`/admin/collections/content/create?contentType=article${siteId ? `&siteId=${encodeURIComponent(siteId)}` : ''}`}
-          style={{ fontWeight: 600 }}
-        >
-          + Write Post
+        <Link href={`/admin/posts${siteQuery}`} style={{ fontWeight: 600 }}>
+          + Create Post
         </Link>
         <span style={{ color: '#52525b' }}>·</span>
-        <Link
-          href={`/admin/collections/content/create?contentType=page${siteId ? `&siteId=${encodeURIComponent(siteId)}` : ''}`}
-          style={{ fontWeight: 600 }}
-        >
+        <Link href={`/admin/pages${siteQuery}`} style={{ fontWeight: 600 }}>
           + Create Page
         </Link>
         <span style={{ color: '#52525b' }}>·</span>
@@ -878,12 +872,9 @@ export default async function PublisherDashboard({ initPageResult }: AdminViewSe
               <p style={{ fontSize: '0.85rem', color: '#a1a1aa', margin: '0 0 0.75rem 0' }}>
                 Set your site title, tagline, logo, color palette, and default SEO metadata.
               </p>
-              <Link
-                href={`/admin/globals/site-settings${siteQuery}`}
-                style={{ fontSize: '0.85rem', fontWeight: 600, color: '#38bdf8' }}
-              >
-                Configure Site Settings →
-              </Link>
+              <span style={{ fontSize: '0.85rem', color: '#a1a1aa' }}>
+                Settings editor unavailable in this build.
+              </span>
             </div>
 
             <div
@@ -923,12 +914,9 @@ export default async function PublisherDashboard({ initPageResult }: AdminViewSe
               <p style={{ fontSize: '0.85rem', color: '#a1a1aa', margin: '0 0 0.75rem 0' }}>
                 Create your first long-form post and essential landing pages (About, Contact).
               </p>
-              <Link
-                href={`/admin/collections/content/create?contentType=article${siteId ? `&siteId=${encodeURIComponent(siteId)}` : ''}`}
-                style={{ fontSize: '0.85rem', fontWeight: 600, color: '#38bdf8' }}
-              >
-                Write First Post →
-              </Link>
+              <span style={{ fontSize: '0.85rem', color: '#a1a1aa' }}>
+                Create the first draft in Posts or Pages.
+              </span>
             </div>
 
             <div
@@ -1056,34 +1044,23 @@ export default async function PublisherDashboard({ initPageResult }: AdminViewSe
                   }}
                 >
                   <div>
-                    <Link
-                      href={`/admin/collections/content/${row.id}${siteQuery}`}
-                      style={{ fontWeight: 600 }}
-                    >
-                      {label(row)}
-                    </Link>
+                    <span style={{ fontWeight: 600 }}>{label(row)}</span>
                     <div style={{ fontSize: '0.75rem', color: '#a1a1aa' }}>
                       {row.status} · Updated {date(row.updatedAt)}
                     </div>
                   </div>
                   <Link
-                    href={`/admin/collections/content/${row.id}${siteQuery}`}
-                    style={{ fontSize: '0.8rem', color: '#9ca3af' }}
+                    href={`/admin/${row.contentType === 'page' ? 'pages' : 'posts'}${siteQuery}`}
+                    style={{ fontSize: '0.8rem', color: '#38bdf8' }}
                   >
-                    Edit →
+                    Open editor
                   </Link>
                 </li>
               ))}
             </ul>
           ) : (
             <p style={{ color: '#a1a1aa', fontSize: '0.875rem', margin: 0 }}>
-              No active drafts.{' '}
-              <Link
-                href={`/admin/collections/content/create?contentType=article${siteId ? `&siteId=${encodeURIComponent(siteId)}` : ''}`}
-              >
-                Create a new post
-              </Link>{' '}
-              when ready.
+              No active drafts. Create a post or page to begin editorial review.
             </p>
           )}
         </section>
@@ -1136,12 +1113,7 @@ export default async function PublisherDashboard({ initPageResult }: AdminViewSe
                   }}
                 >
                   <div>
-                    <Link
-                      href={`/admin/collections/content/${row.id}${siteQuery}`}
-                      style={{ fontWeight: 600 }}
-                    >
-                      {label(row)}
-                    </Link>
+                    <span style={{ fontWeight: 600 }}>{label(row)}</span>
                     <div style={{ fontSize: '0.75rem', color: '#a1a1aa' }}>
                       Scheduled for: {date(row.publishedAt)}
                     </div>
@@ -1217,12 +1189,7 @@ export default async function PublisherDashboard({ initPageResult }: AdminViewSe
                   }}
                 >
                   <div>
-                    <Link
-                      href={`/admin/collections/content/${row.id}${siteQuery}`}
-                      style={{ fontWeight: 600 }}
-                    >
-                      {label(row)}
-                    </Link>
+                    <span style={{ fontWeight: 600 }}>{label(row)}</span>
                     <div style={{ fontSize: '0.75rem', color: '#a1a1aa' }}>
                       Published {date(row.publishedAt ?? row.updatedAt)}
                     </div>

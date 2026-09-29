@@ -27,13 +27,15 @@ import {
 type Doc = Record<string, any>
 
 export type EditorialArticleInput = {
+  /** Pages use the same canonical editorial workflow as articles. */
+  contentType?: 'article' | 'page'
   siteId: string
   publicationId: string
   ownerId?: string | null
   spaceId?: string | null
   title: string
   slug: string
-  canonicalPath: string
+  canonicalPath?: string
   summary?: string
   subtitle?: string
   excerpt?: string
@@ -95,7 +97,7 @@ export type EditorialPresentation = {
   updatedAt: string | null
   previewMode: 'desktop' | 'mobile'
   preview: boolean
-  heroMedia: { url: string; altText: string; width?: number; height?: number } | null
+  heroMedia: { id: string; altText: string; width?: number; height?: number } | null
 }
 
 type EditorialBundle = {
@@ -617,11 +619,11 @@ export async function createEditorialArticle(
       publication: input.publicationId,
       space: input.spaceId ?? null,
       owner: input.ownerId ?? null,
-      contentType: 'article',
+      contentType: input.contentType ?? 'article',
       title: input.title,
       subtitle: input.subtitle,
       slug: input.slug,
-      canonicalPath: input.canonicalPath,
+      ...(input.canonicalPath ? { canonicalPath: input.canonicalPath } : {}),
       summary: input.summary,
       excerpt: input.excerpt ?? input.summary,
       body: document.document,
@@ -1205,7 +1207,7 @@ export async function buildArticlePresentation(
     heroMedia:
       heroMedia && heroMedia.kind === 'image'
         ? {
-            url: `/media/${heroMedia.id}`,
+            id: String(heroMedia.id),
             altText: String(heroMedia.altText || heroMedia.title || ''),
             width: typeof heroMedia.width === 'number' ? heroMedia.width : undefined,
             height: typeof heroMedia.height === 'number' ? heroMedia.height : undefined,
