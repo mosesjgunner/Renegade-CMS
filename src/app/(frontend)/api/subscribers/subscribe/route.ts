@@ -9,12 +9,42 @@ export async function POST(request: Request) {
     return Response.json({ error: 'Please try again shortly.' }, { status: 429 })
   const body = (await request.json().catch(() => ({}))) as Record<string, string>
   try {
-    const result = await requestNewsletterSubscription(await getPayload({ config }), {
-      siteId: body.siteId ?? '',
-      listId: body.listId ?? '',
+    const payload = await getPayload({ config })
+    let siteId = body.siteId
+    let listId = body.listId
+
+    if (!siteId || !listId) {
+      const lists = await payload.find({
+        collection: 'audience-lists',
+        where: { status: { equals: 'active' } },
+        limit: 1,
+        depth: 0,
+        overrideAccess: true,
+      })
+      if (lists.docs[0]) {
+        if (!listId) listId = String(lists.docs[0].id)
+        if (!siteId) {
+          const s = lists.docs[0].site
+          siteId = typeof s === 'object' && s && 'id' in s ? String(s.id) : String(s)
+        }
+      } else {
+        const sites = await payload.find({
+          collection: 'sites',
+          limit: 1,
+          depth: 0,
+          overrideAccess: true,
+        })
+        if (sites.docs[0] && !siteId) siteId = String(sites.docs[0].id)
+      }
+    }
+
+    const result = await requestNewsletterSubscription(payload, {
+      siteId: siteId ?? '',
+      listId: listId ?? '',
       email: body.email ?? '',
       locale: body.locale ?? 'en',
-      consentWording: body.consentWording ?? '',
+      consentWording:
+        body.consentWording || 'I consent to receive newsletter updates from this publication.',
       source: 'public-subscribe',
     })
     return Response.json({ status: result.status }, { status: 202 })

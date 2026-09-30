@@ -60,7 +60,9 @@ export async function executeDatabaseStep(
         return {
           output: { alreadyPublished: true, revisionId },
           lastKnownGoodState,
-          url: item.canonicalUrl || `/articles/${article?.slug || item.targetId}`,
+          ...(item.canonicalUrl || article?.canonicalPath
+            ? { url: item.canonicalUrl || String(article.canonicalPath) }
+            : {}),
         }
       }
 
@@ -89,7 +91,9 @@ export async function executeDatabaseStep(
       return {
         output: { published: true, revisionId },
         lastKnownGoodState,
-        url: item.canonicalUrl || `/articles/${article?.slug || item.targetId}`,
+        ...(item.canonicalUrl || article?.canonicalPath
+          ? { url: item.canonicalUrl || String(article.canonicalPath) }
+          : {}),
       }
     }
   }
@@ -260,7 +264,9 @@ export async function executeDatabaseStep(
       return {
         output: { published: true, productId: item.targetId },
         lastKnownGoodState,
-        url: item.canonicalUrl || `/store/${product?.slug || item.targetId}`,
+        ...(item.canonicalUrl || product?.canonicalPath
+          ? { url: item.canonicalUrl || String(product.canonicalPath) }
+          : {}),
       }
     }
   }

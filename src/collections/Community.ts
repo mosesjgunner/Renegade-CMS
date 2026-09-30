@@ -12,6 +12,11 @@ import {
   assertCalendarRange,
   assertDiscussionShape,
 } from '../modules/publications/information-architecture'
+import {
+  assignRecordSemanticPath,
+  assertRecordSemanticPath,
+  recordPublishedPathHistory,
+} from '../modules/public/semantic-url-service'
 
 const staffOnly = ({ req }: { req: { user?: { role?: string } | null } }) =>
   ['owner', 'administrator', 'staff'].includes(String(req.user?.role))
@@ -51,12 +56,40 @@ export const Discussions: CollectionConfig = {
   access: { create: staffOnly, delete: staffOnly, read: () => true, update: staffOnly },
   hooks: {
     beforeValidate: [
-      ({ data }) => {
+      async ({ data, originalDoc, req, context }) => {
         if (data) assertDiscussionShape(data as Parameters<typeof assertDiscussionShape>[0])
+        if ((data?.kind ?? originalDoc?.kind) === 'attached') return data
+        data = (await assignRecordSemanticPath({
+          payload: req.payload,
+          collection: 'discussions',
+          data: data as Record<string, unknown> | null | undefined,
+          originalDoc: originalDoc as Record<string, unknown> | null | undefined,
+          allowCanonicalPathChange: context?.semanticRouteChange === true,
+        })) as typeof data
+        await assertRecordSemanticPath({
+          payload: req.payload,
+          collection: 'discussions',
+          data: data as Record<string, unknown> | null | undefined,
+          originalDoc: originalDoc as Record<string, unknown> | null | undefined,
+        })
         return data
       },
     ],
+    afterChange: [
+      async ({ doc, previousDoc, operation, req }) => {
+        if (doc.kind === 'attached') return doc
+        await recordPublishedPathHistory({
+          collection: 'discussions',
+          doc: doc as unknown as Record<string, unknown>,
+          previousDoc: previousDoc as unknown as Record<string, unknown>,
+          operation: operation as 'create' | 'update',
+          payload: req.payload,
+        })
+        return doc
+      },
+    ],
   },
+  indexes: [{ fields: ['site', 'canonicalPath'], unique: true }],
   fields: [
     ...ownerFields(),
     { name: 'kind', type: 'select', required: true, options: ['attached', 'thread'] },
@@ -74,7 +107,7 @@ export const Discussions: CollectionConfig = {
       admin: { condition: (_, siblingData) => siblingData.kind === 'attached' },
     },
     { name: 'promotedContent', type: 'relationship', relationTo: 'content' },
-    { name: 'canonicalPath', type: 'text', required: true, unique: true },
+    { name: 'canonicalPath', type: 'text', required: true },
     {
       name: 'status',
       type: 'select',

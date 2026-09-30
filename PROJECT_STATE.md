@@ -1,3 +1,70 @@
+## First-Time Operator and Visitor Sweep Passed — 2026-09-24
+
+- **Release Status**: **PARTIAL (Customer-Upgrade Proof Unavailable)**
+- **Audit Reference**: `docs/execution/first-time-operator-visitor-sweep-2026-09-24.md`
+- **Customer Upgrade Proof**: Unavailable. No pre-1.0 release artifact exists in the repository archive (`git tag -l` reveals zero antecedent release tags). Per release requirements, release label remains strictly PARTIAL until a real predecessor artifact is published and upgraded.
+- **Surface Sweep Scope**:
+  1. Isolated installation and lifecycle scripts (`npm.cmd install` across Lean `core,publishing` and Standard `all` profiles).
+  2. Database initialization and migrations (104 migrations verified).
+  3. First-run owner onboarding and WebAuthn passkey authentication.
+  4. Provider selection and capabilities (`/connections`, `CapabilityCenter`).
+  5. Customization and site settings (`SiteSettings` duplicate field resolution).
+  6. Editorial publishing (`/admin/posts`, `/admin/pages`, `/admin/catalog`).
+  7. Audience & Newsletter (`/subscribe` auto-resolution, `AudienceCommandCenter` honest provider health).
+  8. Community & Member experience (`/member-auth`, `/members/settings` unauthenticated state).
+  9. Commerce & Donations (`/donate`, `/checkout`, `/admin/commerce`, `/admin/fulfillment` empty states).
+  10. Analytics, backup & recovery (`/admin/analytics`, `pg_dump` rehearsal).
+- **Repairs Applied**:
+  - Broken navigation: Fixed `/admin` links in `CommerceOperations` and `ConnectionsCenter`; fixed broken `/admin/operations` link in `CapabilityCenter`.
+  - Confusing permissions: Removed `<ThemeCenter />` from access-denied state in `CapabilityCenter`.
+  - Duplicated settings: Hidden redundant `defaultTitle` and `defaultDescription` in `SiteSettings` with bidirectional sync on `siteName`, `siteDescription`, `indexingMode`, and `seoNoIndex`.
+  - Weak empty states: Added informative cards/rows in `FulfillmentCommandCenter` and `CatalogCommandCenter`.
+  - Misleading provider claims: Dynamic environment inspection in audience command center API; accounts fetch with simulation indicator in `SocialCommandCenter`.
+  - Visitor friction: Streamlined `/subscribe` form; added unauthenticated sign-in callout on `/members/settings`.
+  - Inaccessible controls: Added `aria-label` and screen-reader accessible names across `/search` and `/admin/navigation`.
+- **Verification Evidence**:
+  - `tsc --noEmit`: 0 errors.
+  - Unit tests: 150 test files passed, 997/997 tests passed.
+  - Integration suites: `installation.integration.test.ts`, `setup-first-run.integration.test.ts`, `upgrade-migration.integration.test.ts`, `shared-contract-commerce-shop.integration.test.ts`, `shared-contract-affiliate-pod.integration.test.ts`, `shared-contract-audience-community.integration.test.ts` all passed (100%).
+
+## Release Repair Pass & Immutable Candidate Gate Closed — 2026-09-24
+
+- **Release Status**: **PASSED — ALL GATES VERIFIED (BETA RELEASE READY)**
+- **Candidate Commit SHA**: `3bccfc019b81fef024b0b455db037997cf4105ae`
+- **Working Tree State**: Clean (`git status` reports `nothing to commit, working tree clean`).
+- **Release Proof Reference**: `docs/execution/final-release-proof-2026-09-24.md` (supersedes `docs/execution/final-release-proof-2026-09-23.md`).
+- **Repaired Defect Vectors**:
+  1. `events.required_entitlement`: Added migration `20260923_090000_events_required_entitlement.ts`; verified JSON entitlement storage and `/events` route HTTP 200.
+  2. `scheduled_publish_jobs.lease_owner`: Added migration `20260923_100000_flow_03_scheduler_runtime.ts`; verified worker lease acquisition and `enum_scheduled_publish_jobs_status` containing `'processing'`.
+  3. `sites_comment_reaction_codes`: Verified default seed codes (`thumbs_up`, `heart`, `insightful`, `applause`) and `Sites` collection `beforeValidate` hooks.
+  4. Tenant/ownership scope columns: Created and registered additive migration #102 (`20260924_000000_collection_scope_columns.ts`) for 8 collections (`email_templates`, `audience_experiments`, `promotions`, `checkout_proposals`, `inventory_reservations`, `pod_connections`, `pod_jobs`, `manual_fulfillment_packages`).
+  5. Readiness probe hardening: Hardened `/health/ready` to verify migration count convergence and critical table columns (returning 503 if pending or corrupted); verified with unit tests (`tests/unit/readiness-probe.unit.test.ts` 4/4 passing).
+- **Core Proofs & Evidence**:
+  - `tsc --noEmit`: 0 errors.
+  - `eslint`: 0 errors, 0 warnings.
+  - `prettier --check`: 100% compliant.
+  - Unit Suite: 148 test files passed, 987/987 unit tests passed (0 failures).
+  - Integration Suite: 35/35 test files passed, 196/196 tests passed (0 failures).
+  - Focused Contract Suites: 82/82 contract tests passed.
+  - Production Build: 119/119 static pages generated, 0 Puck leaks into client bundles.
+  - Migrations: 102/102 verified across fresh migrations and upgrade rehearsal from pre-Second-Pass baseline.
+  - Backup & Restore Rehearsal: Native `pg_dump` and `pg_restore` verified on candidate database; all 102 migrations and 306 tables verified; Next.js standalone runtime served all nine surfaces with HTTP 200.
+
+## Shared Contract Gate — Affiliate, POD Fulfillment & Worker Health Conformance Verified — 2026-09-24
+
+- **Gate Status**: **VERIFIED WITH CONFIGURED PROVIDER REQUIRED** (Deterministic local emulator adapter, local webhook signers, test accounts, and deterministic sinks verified; external live provider networks require live Printful API keys and production webhook secrets).
+- **Scope & Baseline**: Evaluated candidate baseline after SHOP-00–07, COMM-08, AUD-08, and the first six gates. Executed dedicated integration suite `tests/integration/shared-contract-affiliate-pod.integration.test.ts` (28/28 test cases passing across all 28 numbered requirements), along with unit suites `tests/unit/shop-06-affiliate-and-referrals.test.ts` (19/19) and `tests/unit/shop-03-pod-fulfillment.test.ts` (26/26). Total 73/73 tests passing.
+
+## Shared Contract Gate — Commerce Domain Integration Verified — 2026-09-23
+
+- **Gate Status**: **VERIFIED WITH CONFIGURED PROVIDER REQUIRED** (deterministic local payment adapters, local webhook signers, test accounts, and deterministic sinks verified; external live provider networks require live provider keys and production webhook secrets).
+- **Scope & Baseline**: Evaluated candidate baseline after SHOP-00–07, COMM-08, AUD-08, and the first six gates. Executed dedicated integration suite `tests/integration/shared-contract-commerce-shop.integration.test.ts` (34/34 test cases passing across all 31 numbered requirements).
+
+## Shared Contract Gate — Audience & Community Domain Integration Verified — 2026-09-23
+
+- **Gate Status**: **VERIFIED WITH CONFIGURED PROVIDER REQUIRED** (local/test provider and telecom emulator verified; live external networks require configured provider credentials).
+- **Scope & Baseline**: Evaluated candidate baseline after SHOP-00–07, COMM-08, AUD-08, and the first six gates. Executed dedicated integration suite `tests/integration/shared-contract-audience-community.integration.test.ts` (20/20 test cases passing across all 21 numbered requirements).
+
 ## Community Pass COMM-03D — Thread Lifecycle, Public Rendering Visibility, Subscriptions & Outbox Emission — 2026-09-21
 
 - **Staff Lifecycle Controls**: Implemented staff controls (`closed`, `frozen`, `premoderation_enabled`) in `src/modules/community/thread-lifecycle.ts` and `PATCH /api/v1/sites/:site_id/threads/:thread_id`.

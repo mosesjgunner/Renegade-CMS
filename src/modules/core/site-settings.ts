@@ -2,6 +2,11 @@ import { requestTheme } from '../presentation/request-theme'
 import type { Configuration } from '../presentation/lifecycle'
 import { DEFAULT_SITE_NAME } from '../presentation/themes/identity'
 import { resolveTheme } from '../presentation/registry'
+import {
+  readRouteTemplates,
+  readRouteTemplatesBySite,
+  type SemanticRouteTemplates,
+} from '../public/semantic-url'
 import type { Payload } from 'payload'
 
 export type ResolvedSiteSettings = {
@@ -21,6 +26,8 @@ export type ResolvedSiteSettings = {
   indexingMode: 'index' | 'noindex'
   launchState: 'live' | 'prelaunch' | 'maintenance'
   discoveryDefaults: Record<string, Record<string, unknown>>
+  semanticRouteTemplates?: SemanticRouteTemplates
+  semanticRouteTemplatesBySite?: Record<string, SemanticRouteTemplates>
   homepageSelection: {
     mode: 'default' | 'page' | 'layout'
     pageId?: string | null
@@ -131,6 +138,11 @@ export async function resolveSiteSettings(payload: Payload): Promise<ResolvedSit
       indexingMode,
       launchState,
       discoveryDefaults,
+      semanticRouteTemplates: readRouteTemplates(settings?.semanticRouteTemplates),
+      semanticRouteTemplatesBySite: readRouteTemplatesBySite(
+        settings?.semanticRouteTemplatesBySite,
+        readRouteTemplates(settings?.semanticRouteTemplates),
+      ),
       homepageSelection: {
         mode: homepageMode,
         pageId: homepagePageId,
@@ -167,6 +179,8 @@ export async function resolveSiteSettings(payload: Payload): Promise<ResolvedSit
       indexingMode: 'index',
       launchState: 'live',
       discoveryDefaults: {},
+      semanticRouteTemplates: {},
+      semanticRouteTemplatesBySite: {},
       homepageSelection: { mode: 'default' },
     }
   }

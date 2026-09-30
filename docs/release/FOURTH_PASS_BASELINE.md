@@ -245,7 +245,7 @@ Each major subsystem has been inspected and traced to real execution paths.
 ### 6.3 MEDIUM Issues (Hardening & Polish)
 
 1. **Log Files in Repository Root**: Root contains ephemeral logs (`release-checks.err.log`, `release-checks.out.log`, `upgrade-rehearsal.log`). These should be added to `.gitignore` and removed from tracking.
-2. **Root Workspace Prompt Document**: `renegade-cms-15-codex-prompts (1).md` in root directory is a historical prompt artifact; should be archived into `docs/` or cleaned up.
+2. **Root Workspace Prompt Document**: Archived into `docs/tasks/codex-15-milestones.md` to keep the root repository clean.
 3. **Database Test Environment URL Safety**: `src/scripts/verify-fresh-migration.ts` enforces `_release_acceptance` suffix on database name; documentation should clearly emphasize this requirement for developer testing.
 
 ### 6.4 LOW Issues (Documentation & Minor Cleanups)

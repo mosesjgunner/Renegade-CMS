@@ -105,6 +105,7 @@ const featured: Array<[string, string, string, Record<string, PresentationField>
 ]
 
 const legacy: Array<[string, string, string]> = [
+  ['publisher.editorial', 'Editorial article body', 'Content'],
   ['publisher.featured-article', 'Featured article', 'Content'],
   ['publisher.article-grid', 'Article grid', 'Queries'],
   ['publisher.profile-card', 'Profile card', 'People'],

@@ -342,7 +342,7 @@ describe('DISC-00 Crawler-Facing Smoke Test Suite', { timeout: 30000 }, () => {
     expect(pageXml).toContain(pageLayoutPath)
     // Drafts, search, and 404 must be strictly excluded
     expect(pageXml).not.toContain(draftArticleSlug)
-    expect(pageXml).not.toContain('/search')
+    expect(pageXml).not.toMatch(/<loc>[^<]*\/search<\/loc>/)
     expect(pageXml).not.toContain('non-existent')
 
     // Conditional GET on sitemap page

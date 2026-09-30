@@ -2,7 +2,12 @@ import config from '@payload-config'
 import { createLocalReq, getPayload } from 'payload'
 import { NextResponse } from 'next/server'
 
-import { publishLayout, validateLayout, type PageLayout } from '@/modules/public/page-builder'
+import {
+  publishLayout,
+  validateLayout,
+  type LayoutBlock,
+  type PageLayout,
+} from '@/modules/public/page-builder'
 import { resolveTheme } from '@/modules/presentation/registry'
 import { checkLayoutDeletionSafeguards } from '@/modules/presentation/composition'
 
@@ -39,18 +44,28 @@ export async function PATCH(request: Request, { params }: Args) {
     typeof existing.site === 'string'
       ? existing.site
       : String((existing.site as { id?: unknown } | undefined)?.id ?? '')
-  if (body.layout.id !== id || body.layout.siteId !== existingSite)
+  const candidateSite =
+    body.layout.siteId ??
+    (typeof (body.layout as { site?: unknown }).site === 'string'
+      ? (body.layout as { site?: unknown }).site
+      : String(
+          ((body.layout as { site?: unknown }).site as { id?: unknown } | undefined)?.id ?? '',
+        ))
+  if (body.layout.id !== id || (candidateSite && candidateSite !== existingSite))
     return NextResponse.json(
       { error: 'Layout scope does not match the stored document.' },
       { status: 400 },
     )
-  if (body.expectedRevision !== Number(existing.revision))
+  if (body.expectedRevision !== undefined && body.expectedRevision !== Number(existing.revision))
     return NextResponse.json(
       { error: 'Draft revision conflict.', current: existing },
       { status: 409 },
     )
   const existingUnknown = Array.isArray(existing.unknownBlocks) ? existing.unknownBlocks : []
-  if (JSON.stringify(body.layout.unknownBlocks ?? []) !== JSON.stringify(existingUnknown))
+  if (
+    body.layout.unknownBlocks &&
+    JSON.stringify(body.layout.unknownBlocks ?? []) !== JSON.stringify(existingUnknown)
+  )
     return NextResponse.json(
       { error: 'Unavailable component data is server-controlled.' },
       { status: 400 },
@@ -59,6 +74,14 @@ export async function PATCH(request: Request, { params }: Args) {
     ...body.layout,
     id,
     siteId: existingSite,
+    version: Number(
+      body.layout.version ??
+        (body.layout as { layoutVersion?: unknown }).layoutVersion ??
+        stored.layoutVersion ??
+        stored.version ??
+        1,
+    ) as 1,
+    themeId: String(body.layout.themeId ?? stored.themeId ?? 'neutral-starter'),
     name: body.layout.name ?? (typeof stored.name === 'string' ? stored.name : undefined),
     path: String(existing.path),
     status: existing.status === 'published' ? 'published' : 'draft',
@@ -77,6 +100,11 @@ export async function PATCH(request: Request, { params }: Args) {
     isRetired: body.layout.isRetired ?? stored.isRetired === true,
     category:
       body.layout.category ?? (typeof stored.category === 'string' ? stored.category : undefined),
+    blocks: Array.isArray(body.layout.blocks)
+      ? body.layout.blocks
+      : Array.isArray(existing.blocks)
+        ? (existing.blocks as LayoutBlock[])
+        : [],
     revision: Number(existing.revision) + 1,
     publishedRevision:
       typeof existing.publishedRevision === 'number' ? existing.publishedRevision : undefined,

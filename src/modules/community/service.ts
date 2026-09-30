@@ -1,4 +1,3 @@
-import { randomUUID } from 'node:crypto'
 import type { Payload } from 'payload'
 
 import {
@@ -33,6 +32,13 @@ import { emitCommunityEvent } from './realtime'
 import { loadProfileProjection } from './profile-projection'
 import { consumeApiRateLimit } from '../integrations/rate-limit'
 import { assertMemberCanPost, ModerationActionError } from './moderation-actions'
+import {
+  readRouteTemplates,
+  readRouteTemplatesBySite,
+  resolvePublicUrl,
+  normalizeSemanticSlug,
+  routeTemplatesForSite,
+} from '../public/semantic-url'
 
 export class CommunityError extends Error {
   status: number
@@ -391,26 +397,64 @@ export async function getOrCreateAttachedDiscussion(
     overrideAccess: true,
   })
 
-  if (discussions.docs[0]) {
-    const existing = discussions.docs[0] as unknown as CommunityDiscussionRecord
+  let existing = discussions.docs[0] as unknown as CommunityDiscussionRecord | undefined
+  if (!existing && input.canonicalPath) {
+    const byPath = await payload.find({
+      collection: 'discussions',
+      where: {
+        and: [
+          { site: { equals: input.siteId } },
+          { canonicalPath: { equals: input.canonicalPath } },
+        ],
+      },
+      limit: 1,
+      depth: 0,
+      overrideAccess: true,
+    })
+    if (byPath.docs[0]) {
+      existing = byPath.docs[0] as unknown as CommunityDiscussionRecord
+    }
+  }
+
+  if (existing) {
     // If canonical path or title changed on parent content, update metadata without orphaning thread
     if (existing.canonicalPath !== input.canonicalPath || existing.title !== input.title) {
       if (typeof payload.update === 'function') {
+        const updateData: Record<string, unknown> = { title: input.title }
+        let newPath = existing.canonicalPath
+        if (existing.canonicalPath !== input.canonicalPath) {
+          const conflicting = await payload.find({
+            collection: 'discussions',
+            where: {
+              and: [
+                { canonicalPath: { equals: input.canonicalPath } },
+                { id: { not_equals: existing.id } },
+              ],
+            },
+            limit: 1,
+            overrideAccess: true,
+          })
+          const isConflict = (conflicting.docs ?? []).some(
+            (doc: unknown) => String((doc as { id?: unknown }).id) !== String(existing.id),
+          )
+          if (!isConflict) {
+            updateData.canonicalPath = input.canonicalPath
+            newPath = input.canonicalPath
+          }
+        }
         await payload.update({
           collection: 'discussions',
           id: existing.id,
-          data: {
-            canonicalPath: input.canonicalPath,
-            title: input.title,
-          },
+          data: updateData,
           overrideAccess: true,
         })
+        return {
+          ...existing,
+          canonicalPath: newPath,
+          title: input.title,
+        }
       }
-      return {
-        ...existing,
-        canonicalPath: input.canonicalPath,
-        title: input.title,
-      }
+      return existing
     }
     return existing
   }
@@ -490,8 +534,24 @@ export async function addComment(
     limit: 0,
     overrideAccess: true,
   })
-  const nextOrder = countRes.totalDocs + 1
-  const permalink = `${discussion.canonicalPath}#comment-${nextOrder}`
+  let nextOrder = countRes.totalDocs + 1
+  let permalink = `${discussion.canonicalPath}#comment-${nextOrder}`
+  let collision = await payload.find({
+    collection: 'discussion-posts',
+    where: { permalink: { equals: permalink } },
+    limit: 1,
+    overrideAccess: true,
+  })
+  while (collision.totalDocs > 0) {
+    nextOrder++
+    permalink = `${discussion.canonicalPath}#comment-${nextOrder}`
+    collision = await payload.find({
+      collection: 'discussion-posts',
+      where: { permalink: { equals: permalink } },
+      limit: 1,
+      overrideAccess: true,
+    })
+  }
 
   const post = (await payload.create({
     collection: 'discussion-posts' as any,
@@ -949,6 +1009,14 @@ export async function createForumThread(
   if (!forum) {
     throw new CommunityError('Forum not found', 404, 'FORUM_NOT_FOUND')
   }
+  const forumSite =
+    typeof forum.site === 'string'
+      ? forum.site
+      : forum.site && typeof forum.site === 'object' && 'id' in forum.site
+        ? String((forum.site as { id: unknown }).id)
+        : ''
+  if (forumSite && forumSite !== input.siteId)
+    throw new CommunityError('Forum does not belong to this site.', 404, 'FORUM_NOT_FOUND')
 
   const decision = evaluateCommunityPolicy(
     context,
@@ -966,11 +1034,49 @@ export async function createForumThread(
     )
   }
 
-  const slug = `${input.title
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-|-$/g, '')}-${randomUUID().slice(0, 8)}`
-  const canonicalPath = `/forums/${forum.slug}/${slug}`
+  const baseSlug = normalizeSemanticSlug(input.title) || 'topic'
+  const settings = await payload.findGlobal({
+    slug: 'site-settings',
+    depth: 0,
+    overrideAccess: true,
+  } as never)
+  const settingsRecord = settings as unknown as Record<string, unknown> | null
+  const routeTemplates = routeTemplatesForSite(
+    input.siteId,
+    readRouteTemplates(settingsRecord?.semanticRouteTemplates),
+    readRouteTemplatesBySite(
+      settingsRecord?.semanticRouteTemplatesBySite,
+      readRouteTemplates(settingsRecord?.semanticRouteTemplates),
+    ),
+  )
+  let slug = baseSlug
+  let available = false
+  for (let suffix = 2; suffix < 1000; suffix++) {
+    const candidatePath = resolvePublicUrl(
+      { kind: 'discussion', forumSlug: String(forum.slug), slug },
+      routeTemplates,
+    )
+    const collision = await payload.find({
+      collection: 'discussions',
+      where: {
+        and: [{ site: { equals: input.siteId } }, { canonicalPath: { equals: candidatePath } }],
+      },
+      limit: 1,
+      depth: 0,
+      overrideAccess: true,
+    } as never)
+    if (!collision.docs.length) {
+      available = true
+      break
+    }
+    slug = `${baseSlug}-${suffix}`
+  }
+  if (!available)
+    throw new CommunityError('Could not allocate a unique topic URL.', 409, 'SLUG_CONFLICT')
+  const canonicalPath = resolvePublicUrl(
+    { kind: 'discussion', forumSlug: String(forum.slug), slug },
+    routeTemplates,
+  )
 
   const discussion = (await payload.create({
     collection: 'discussions',

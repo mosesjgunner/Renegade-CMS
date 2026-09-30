@@ -1,6 +1,6 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
-import { notFound } from 'next/navigation'
+import { notFound, permanentRedirect } from 'next/navigation'
 import type { Metadata } from 'next'
 
 import { VideoPlayer } from '@/modules/media/VideoPlayer'
@@ -25,6 +25,7 @@ export async function generateMetadata({
     slug,
     path: `/videos/${slug}`,
   })
+  if (discovery.canonicalPath !== `/videos/${slug}`) permanentRedirect(discovery.canonicalPath)
   return discoveryToMetadata(discovery)
 }
 
@@ -75,6 +76,7 @@ export default async function VideoPage({ params }: { params: Promise<{ slug: st
     path: `/videos/${slug}`,
     record: video,
   })
+  if (discovery.canonicalPath !== `/videos/${slug}`) permanentRedirect(discovery.canonicalPath)
 
   return (
     <main className="mx-auto max-w-5xl space-y-8 px-6 py-12">

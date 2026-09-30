@@ -184,7 +184,9 @@ describe('DISC-06 Discovery Pass Gate — Comprehensive End-to-End Proof', () =>
     const metadata = discoveryToMetadata(doc!)
     expect(metadata.alternates?.canonical).toBe(doc?.canonicalUrl)
     expect(metadata.openGraph?.title).toBe(`Meta Inspect ${suffix}`)
-    expect((metadata.twitter as any)?.card).toBe('summary_large_image')
+    expect((metadata.twitter as any)?.card).toBe(
+      doc?.socialImage.url || doc?.socialImage.variantUrl ? 'summary_large_image' : 'summary',
+    )
 
     const jsonLd = discoveryToJsonLd(doc!) as any
     expect(jsonLd['@context']).toBe('https://schema.org')

@@ -10,7 +10,11 @@ test('COMM-02 three clean browsers enforce profile audiences, follows, blocks an
 }) => {
   test.setTimeout(180_000)
   const payload = await getPayload({ config })
-  const settings = await payload.findGlobal({ slug: 'site-settings', overrideAccess: true })
+  const settings = await payload.findGlobal({
+    slug: 'site-settings',
+    depth: 0,
+    overrideAccess: true,
+  })
   const original = settings.canonicalOriginsBySite
   const sites = await payload.find({
     collection: 'sites',
@@ -97,6 +101,7 @@ test('COMM-02 three clean browsers enforce profile audiences, follows, blocks an
     await expect(stranger.getByText(`Private bio ${marker} 0`)).toHaveCount(0)
 
     await follower.getByRole('button', { name: 'Block' }).click()
+    await expect(follower.getByRole('status')).toHaveText('Block enabled.')
     const blocked = await follower.request.get(
       `/api/community/profiles/${handles[0]}?siteId=${siteId}`,
     )

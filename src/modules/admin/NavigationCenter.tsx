@@ -295,6 +295,7 @@ export default function NavigationCenter() {
                         onClick={() => moveItem(key, index, 'up')}
                         disabled={index === 0}
                         title="Move Up"
+                        aria-label="Move item up"
                         style={{ padding: '0.25rem 0.5rem', cursor: 'pointer' }}
                       >
                         ▲
@@ -304,6 +305,7 @@ export default function NavigationCenter() {
                         onClick={() => moveItem(key, index, 'down')}
                         disabled={index === navigation[key].length - 1}
                         title="Move Down"
+                        aria-label="Move item down"
                         style={{ padding: '0.25rem 0.5rem', cursor: 'pointer' }}
                       >
                         ▼
@@ -449,6 +451,7 @@ export default function NavigationCenter() {
                           <input
                             type="text"
                             placeholder="Sub-item Label"
+                            aria-label="Sub-item Label"
                             value={child.label}
                             onChange={(e) =>
                               updateChildItem(key, index, childIndex, 'label', e.target.value)
@@ -464,6 +467,7 @@ export default function NavigationCenter() {
                           <input
                             type="text"
                             placeholder="Sub-item Path (/about or https://...)"
+                            aria-label="Sub-item Path"
                             value={child.href}
                             onChange={(e) =>
                               updateChildItem(key, index, childIndex, 'href', e.target.value)

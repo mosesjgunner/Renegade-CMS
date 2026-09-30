@@ -55,6 +55,8 @@ export default buildConfig({
         },
         emailComposer: { Component: './modules/admin/EmailComposer', path: '/email-composer' },
         audience: { Component: './modules/admin/AudienceCommandCenter', path: '/audience' },
+        moderation: { Component: './modules/admin/CommunityModerationCenter', path: '/moderation' },
+        telemetry: { Component: './modules/admin/TelemetryCommandCenter', path: '/telemetry' },
       },
     },
   },

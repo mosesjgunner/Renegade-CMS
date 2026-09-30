@@ -57,6 +57,8 @@ export async function seed(payload: Payload): Promise<void> {
       slug: 'demo-publication',
       description: 'A neutral fixture proving the portable publishing foundation.',
       lifecycle: 'active',
+      communityRegistrationPolicy: 'open',
+      commentReactionCodes: ['thumbs_up', 'heart', 'insightful', 'applause'],
     },
   })
 

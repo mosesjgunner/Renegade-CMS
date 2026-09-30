@@ -6,6 +6,10 @@ test.describe('FLOW-03 Calendar & Scheduling Browser Suite', () => {
   }) => {
     // 1. Visit Calendar page
     await page.goto('/calendar')
+    const privacyReject = page.getByRole('button', { name: 'Reject non-essential' })
+    if (await privacyReject.isVisible({ timeout: 1000 }).catch(() => false)) {
+      await privacyReject.click()
+    }
 
     // 2. Header and Title check
     await expect(page.getByRole('heading', { name: 'Calendar Center' })).toBeVisible()
@@ -31,7 +35,7 @@ test.describe('FLOW-03 Calendar & Scheduling Browser Suite', () => {
     // 5. Switch back to Month View
     await page.getByRole('button', { name: 'Month View' }).click()
     await expect(page.getByText('Sun')).toBeVisible()
-    await expect(page.getByText('Mon')).toBeVisible()
+    await expect(page.getByText('Mon', { exact: true })).toBeVisible()
   })
 
   test('calendar export API returns valid iCalendar (.ics) feed', async ({ request }) => {

@@ -8,6 +8,11 @@ import {
 import { assertCatalogReady, catalogProductFromDocument } from '../modules/commerce/catalog'
 import { searchProjectionHooks } from '../modules/public/search-projection'
 import { assertCampaignTransition, assertDonationTransition } from '../modules/commerce/donations'
+import {
+  assignRecordSemanticPath,
+  assertRecordSemanticPath,
+  recordPublishedPathHistory,
+} from '../modules/public/semantic-url-service'
 
 const staff = ({ req }: { req: { user?: { role?: string } | null } }) =>
   ['owner', 'administrator', 'staff'].includes(String(req.user?.role))
@@ -102,39 +107,33 @@ export const Products: CollectionConfig = {
           assertCatalogReady(catalogProductFromDocument(data))
         return data
       },
+      async ({ data, originalDoc, req, context }) => {
+        data = (await assignRecordSemanticPath({
+          payload: req.payload,
+          collection: 'products',
+          data: data as Record<string, unknown> | null | undefined,
+          originalDoc: originalDoc as Record<string, unknown> | null | undefined,
+          allowCanonicalPathChange: context?.semanticRouteChange === true,
+        })) as typeof data
+        await assertRecordSemanticPath({
+          payload: req.payload,
+          collection: 'products',
+          data: data as Record<string, unknown> | null | undefined,
+          originalDoc: originalDoc as Record<string, unknown> | null | undefined,
+        })
+        return data
+      },
     ],
     afterChange: [
       ...searchProjectionHooks('products').afterChange,
       async ({ doc, previousDoc, operation, req }) => {
-        if (operation !== 'update') return doc
-        const fromPath = String(previousDoc?.canonicalPath ?? '')
-        const toPath = String(doc?.canonicalPath ?? '')
-        const site =
-          typeof doc?.site === 'object' && doc.site
-            ? String(doc.site.id ?? '')
-            : String(doc?.site ?? '')
-        if (!site || !fromPath || !toPath || fromPath === toPath) return doc
-        const existing = await req.payload.find({
-          collection: 'public-redirects',
-          where: { and: [{ site: { equals: site } }, { fromPath: { equals: fromPath } }] },
-          limit: 1,
-          depth: 0,
-          overrideAccess: true,
-        } as never)
-        if (!existing.docs.length)
-          await req.payload.create({
-            collection: 'public-redirects',
-            data: {
-              site,
-              fromPath,
-              toPath,
-              match: 'exact',
-              statusCode: '308',
-              preserveQuery: true,
-              enabled: true,
-            },
-            overrideAccess: true,
-          } as never)
+        await recordPublishedPathHistory({
+          collection: 'products',
+          doc: doc as unknown as Record<string, unknown>,
+          previousDoc: previousDoc as unknown as Record<string, unknown>,
+          operation: operation as 'create' | 'update',
+          payload: req.payload,
+        })
         return doc
       },
     ],
@@ -762,6 +761,7 @@ export const DonationIntents: CollectionConfig = {
   hooks: {
     beforeChange: [
       immutableFields([
+        'idempotencyKey',
         'site',
         'campaign',
         'campaignVersion',
@@ -792,6 +792,7 @@ export const DonationIntents: CollectionConfig = {
   fields: [
     ...ownerFields(),
     ref('campaign', 'donation-campaigns', true),
+    { name: 'idempotencyKey', type: 'text', unique: true, index: true },
     { name: 'campaignVersion', type: 'number', required: true },
     { name: 'designation', type: 'text' },
     { name: 'donorSnapshot', type: 'json', required: true },

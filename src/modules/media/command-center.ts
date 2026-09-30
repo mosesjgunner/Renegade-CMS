@@ -12,6 +12,8 @@ import {
   updateMediaMetadata,
 } from './workflow'
 import { queueVideoProcessing } from './video-workflow'
+import { resolvePublicUrl } from '../public/semantic-url'
+import { routeTemplatesForPayloadSite } from '../public/semantic-url-service'
 
 export type HonestMediaState =
   | 'uploaded'
@@ -374,6 +376,7 @@ export async function getMediaCommandCenterOverview(
   config: AppConfig,
   siteId: string,
 ): Promise<CommandCenterOverview> {
+  const routeTemplates = await routeTemplatesForPayloadSite(payload, siteId)
   const [
     storage,
     worker,
@@ -632,7 +635,13 @@ export async function getMediaCommandCenterOverview(
     const publishedCount = showEpisodes.filter((ep) => ep.status === 'published').length
     const artwork = Boolean(show.artwork)
     const slug = String(show.slug ?? '')
-    const feedUrl = `/podcasts/${slug}/feed.xml`
+    const canonicalPath =
+      typeof show.canonicalPath === 'string' && show.canonicalPath
+        ? show.canonicalPath
+        : slug
+          ? resolvePublicUrl({ kind: 'podcast', slug }, routeTemplates)
+          : ''
+    const feedUrl = canonicalPath ? `${canonicalPath}/feed.xml` : ''
 
     let feedValid = true
     let feedError: string | null = null
@@ -708,8 +717,16 @@ export async function getMediaCommandCenterOverview(
       transcriptAttached,
       chaptersCount,
       isReadyForFeed,
-      url: `/podcasts/episodes/${String(ep.slug ?? '')}`,
-      playerUrl: `/podcasts/episodes/${String(ep.slug ?? '')}`,
+      url:
+        (typeof ep.canonicalPath === 'string' && ep.canonicalPath) ||
+        (ep.slug
+          ? resolvePublicUrl({ kind: 'podcast-episode', slug: String(ep.slug) }, routeTemplates)
+          : ''),
+      playerUrl:
+        (typeof ep.canonicalPath === 'string' && ep.canonicalPath) ||
+        (ep.slug
+          ? resolvePublicUrl({ kind: 'podcast-episode', slug: String(ep.slug) }, routeTemplates)
+          : ''),
       issues,
     })
   }
@@ -745,7 +762,9 @@ export async function getMediaCommandCenterOverview(
       isPlayerReady,
       failure: failureObj?.message ?? null,
       cancelRequested: Boolean(va.cancelRequested),
-      url: `/videos/${String(va.slug ?? va.id)}`,
+      url:
+        (typeof va.canonicalPath === 'string' && va.canonicalPath) ||
+        (va.slug ? resolvePublicUrl({ kind: 'video', slug: String(va.slug) }, routeTemplates) : ''),
     }
   })
 

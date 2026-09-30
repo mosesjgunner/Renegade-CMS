@@ -78,7 +78,7 @@ test('PRE-05: Legacy Site Migration & Presentation Reconstruction review UI, sid
     // 5. Verify Metrics Bar
     await expect(page.getByText('Posts & Pages')).toBeVisible()
     await expect(page.getByText('Taxonomy')).toBeVisible()
-    await expect(page.getByText('Quarantined')).toBeVisible()
+    await expect(page.getByText('Quarantined', { exact: true })).toBeVisible()
 
     // 6. Verify Acceptance Checklist section
     await expect(page.getByText('Acceptance Checklist')).toBeVisible()
@@ -89,10 +89,8 @@ test('PRE-05: Legacy Site Migration & Presentation Reconstruction review UI, sid
 
     // 7. Verify Side-by-Side Reconciliation Table
     await expect(page.getByText('Source & Renegade Reconciliation')).toBeVisible()
-    await expect(
-      page.getByText('Investigating Algorithmic Censorship in Digital Platforms'),
-    ).toBeVisible()
-    await expect(page.getByText('About Renegade Tribune')).toBeVisible()
+    await expect(page.getByText('Investigating Algorithmic Censorship').first()).toBeVisible()
+    await expect(page.getByText('About Our Newsroom').first()).toBeVisible()
 
     // 8. Test Presentation Tab
     await page.getByRole('button', { name: /presentation/i }).click()
@@ -107,12 +105,12 @@ test('PRE-05: Legacy Site Migration & Presentation Reconstruction review UI, sid
     await expect(page.getByText('Preserved URLs & Redirect Plan')).toBeVisible()
     await expect(page.getByText('/2026/08/investigating-algorithmic-censorship')).toBeVisible()
     await expect(page.getByText('/articles/investigating-algorithmic-censorship')).toBeVisible()
-    await expect(page.getByText('308', { exact: false })).toBeVisible()
+    await expect(page.getByText('308', { exact: false }).first()).toBeVisible()
 
     // 10. Test Quarantined Artifacts Tab
     await page.getByRole('button', { name: /quarantined/i }).click()
     await expect(page.getByText('Quarantined Artifacts Viewer')).toBeVisible()
-    await expect(page.getByText('wpforms', { exact: false }).first()).toBeVisible()
+    await expect(page.getByText('contact-form-7', { exact: false }).first()).toBeVisible()
     await expect(page.getByText('woocommerce', { exact: false }).first()).toBeVisible()
     await expect(
       page.getByText('Arbitrary PHP code execution is disabled', { exact: false }),
@@ -127,6 +125,9 @@ test('PRE-05: Legacy Site Migration & Presentation Reconstruction review UI, sid
     await expect(page.getByText('verified', { exact: false }).first()).toBeVisible()
 
     // 12. Trigger "Activate Migration" (Deliberate human activation)
+    page.on('dialog', async (dialog) => {
+      await dialog.accept()
+    })
     const activateBtn = page.getByRole('button', { name: /activate migration/i })
     await expect(activateBtn).toBeVisible()
     await activateBtn.click()

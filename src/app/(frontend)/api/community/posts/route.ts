@@ -46,3 +46,26 @@ export async function POST(request: Request) {
     return Response.json({ error: 'Failed to reply' }, { status: 500 })
   }
 }
+
+export async function GET(request: Request) {
+  const payload = await getPayload({ config })
+  const url = new URL(request.url)
+  const discussionId = url.searchParams.get('discussionId') ?? ''
+
+  if (!discussionId) {
+    return Response.json({ error: 'discussionId is required' }, { status: 400 })
+  }
+
+  const posts = await payload.find({
+    collection: 'discussion-posts',
+    where: {
+      and: [{ discussion: { equals: discussionId } }, { status: { not_equals: 'removed' } }],
+    },
+    sort: 'displayOrder',
+    limit: 100,
+    depth: 1,
+    overrideAccess: true,
+  })
+
+  return Response.json({ posts: posts.docs })
+}

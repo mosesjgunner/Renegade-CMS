@@ -39,11 +39,12 @@ export default async function MediaLibrary({ initPageResult, searchParams }: Adm
   return (
     <main>
       {siteId ? (
-        isLegacyView ? (
-          <MediaLibraryClient siteId={siteId} />
-        ) : (
+        <>
           <MediaCommandCenter siteId={siteId} />
-        )
+          <section className="mt-8 border-t pt-8" aria-label="Media Assets Management">
+            <MediaLibraryClient siteId={siteId} />
+          </section>
+        </>
       ) : (
         <p role="alert">Select a site from your publisher context before managing media.</p>
       )}

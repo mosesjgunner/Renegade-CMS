@@ -421,7 +421,7 @@ export class PayloadLegacyMigrationStore implements LegacyMigrationStore {
     parentId?: string
     description?: string
   }): Promise<{ id: string }> {
-    const canonicalPath = `/topics/${data.slug}`
+    const canonicalPath = `/categories/${data.slug}`
     const created = await this.payload.create({
       collection: 'categories',
       overrideAccess: true,

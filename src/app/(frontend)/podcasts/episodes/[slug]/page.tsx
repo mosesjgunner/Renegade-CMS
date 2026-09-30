@@ -26,10 +26,18 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const payload = await getPayload({ config })
   const { slug } = await params
+  const episode = await payload.find({
+    collection: 'podcast-episodes',
+    where: { slug: { equals: slug } },
+    limit: 1,
+    depth: 0,
+    overrideAccess: true,
+  } as never)
   const discovery = await resolveDiscoveryDocument(payload, {
     collection: 'podcast-episodes',
     slug,
     path: `/podcasts/episodes/${slug}`,
+    siteId: value((episode.docs[0] as { site?: unknown } | undefined)?.site) || undefined,
   })
   return discoveryToMetadata(discovery)
 }
@@ -126,6 +134,7 @@ export default async function PodcastEpisodePage({
     collection: 'podcast-episodes',
     slug,
     path: `/podcasts/episodes/${slug}`,
+    siteId: value(episode.site) || undefined,
   })
 
   const downloadableFiles = Array.isArray(episode.downloadableFiles)

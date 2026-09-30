@@ -32,9 +32,11 @@ function matches(record: MockRecord, where: Record<string, unknown>): boolean {
 
 function payloadDouble() {
   const records: MockRecord[] = []
+  const globals: Record<string, unknown> = {}
   let id = 0
   return {
     records,
+    globals,
     find: async ({
       collection,
       where,
@@ -63,7 +65,10 @@ function payloadDouble() {
       Object.assign(record, data)
       return record
     },
-    updateGlobal: async () => ({}),
+    updateGlobal: async ({ slug, data }: { slug: string; data: Record<string, unknown> }) => {
+      globals[slug] = data
+      return data
+    },
   }
 }
 
@@ -96,5 +101,38 @@ describe('first-run onboarding', () => {
     expect(
       payload.records.filter((record) => record.collection === 'analytics-events'),
     ).toHaveLength(0)
+  })
+
+  it('validates and applies publishing defaults during site provisioning', async () => {
+    const validated = validateOnboardingInput(
+      input({
+        publishingDefaults: {
+          indexingMode: 'noindex',
+          commentsPolicy: 'closed',
+          visibility: 'members-only',
+        },
+      }),
+    )
+    expect(validated.publishingDefaults).toEqual({
+      indexingMode: 'noindex',
+      commentsPolicy: 'closed',
+      visibility: 'members',
+    })
+
+    const payload = payloadDouble()
+    await provisionOnboardingSite(payload as never, 'owner@example.test', validated)
+
+    const siteSettings = payload.globals['site-settings'] as Record<string, unknown>
+    expect(siteSettings?.indexingMode).toBe('noindex')
+    expect(siteSettings?.seoNoIndex).toBe(true)
+
+    const publication = payload.records.find((r) => r.collection === 'publications')
+    expect(publication?.visibility).toBe('members')
+
+    const pages = payload.records.filter((r) => r.collection === 'content')
+    expect(pages.length).toBeGreaterThan(0)
+    for (const page of pages) {
+      expect(page.commentsPolicy).toBe('closed')
+    }
   })
 })

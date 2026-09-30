@@ -737,11 +737,23 @@ describe('Shared Contract Proof: Audience, Community, Permissions/Privacy & Resi
       // Get or create discussion attached to test article
       const articleRes = await payload.find({
         collection: 'content',
-        where: { site: { equals: siteId } },
+        where: {
+          and: [{ site: { equals: siteId } }, { slug: { equals: 'decentralized-truth' } }],
+        },
         limit: 1,
         overrideAccess: true,
       } as never)
-      const articleId = String(articleRes.docs[0].id)
+      const articleDoc =
+        articleRes.docs[0] ||
+        (
+          await payload.find({
+            collection: 'content',
+            where: { site: { equals: siteId } },
+            limit: 1,
+            overrideAccess: true,
+          } as never)
+        ).docs[0]
+      const articleId = String(articleDoc.id)
 
       // Rich-text sanitization test: script tags & polyglots stripped
       const dangerousPayload =

@@ -277,11 +277,18 @@ export function assertDonationIntent(input: DonationIntent, campaign: Campaign):
     throw new Error('Donation intent must reference the exact campaign revision and site.')
   if (!campaign.recurrence.includes(input.recurrence) || input.money.currency !== campaign.currency)
     throw new Error('Donation intent currency or recurrence is not supported by the campaign.')
+  // Campaign amounts are suggested choices; the public form also accepts a custom
+  // positive amount within the server's campaign ceiling.
   if (
     campaign.allowedAmounts.length &&
-    !campaign.allowedAmounts.includes(input.money.baseAmountMinor)
+    BigInt(input.money.baseAmountMinor) >
+      BigInt(
+        campaign.allowedAmounts.reduce((maximum, amount) =>
+          BigInt(amount) > BigInt(maximum) ? amount : maximum,
+        ),
+      )
   )
-    throw new Error('Donation amount is not allowed by the campaign.')
+    throw new Error('Donation amount exceeds the campaign maximum.')
   if (input.designation && !campaign.designations.some((item) => item.key === input.designation))
     throw new Error('Donation designation is not available on the campaign.')
   if (!['public', 'anonymous', 'private'].includes(input.recognition))

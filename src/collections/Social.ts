@@ -125,6 +125,13 @@ export const SocialNetworkVariants: CollectionConfig = {
     { name: 'label', type: 'text', required: true },
     { name: 'network', type: 'select', required: true, options: networks },
     { name: 'text', type: 'textarea', required: true },
+    {
+      name: 'aiDistributionProposals',
+      type: 'ui',
+      admin: {
+        components: { Field: '@/modules/admin/AiProposalActionField#AiDistributionActionField' },
+      },
+    },
     { name: 'linkUrl', type: 'text' },
     { name: 'attachments', type: 'relationship', relationTo: 'media-assets', hasMany: true },
     { name: 'validation', type: 'json', defaultValue: [] },

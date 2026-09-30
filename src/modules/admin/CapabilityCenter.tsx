@@ -71,7 +71,6 @@ export default async function CapabilityCenter({ initPageResult }: AdminViewServ
     return (
       <main className="gutter--left gutter--right">
         <h1>Capability Center</h1>
-        <ThemeCenter />
         <p>Owner access is required.</p>
       </main>
     )
@@ -132,7 +131,7 @@ export default async function CapabilityCenter({ initPageResult }: AdminViewServ
       </p>
       <p>
         <Link href="/admin/globals/site-settings">Configure optional capabilities</Link> ·{' '}
-        <Link href="/admin/operations">Operational overview</Link>
+        <Link href="#operational-overview">Operational overview</Link>
       </p>
       <section style={{ marginTop: 28 }}>
         <h2>Runtime identity</h2>
@@ -199,7 +198,7 @@ export default async function CapabilityCenter({ initPageResult }: AdminViewServ
           <Link href="/connections">Connections, AI & providers</Link>
         </p>
       </section>
-      <section style={{ marginTop: 32 }}>
+      <section style={{ marginTop: 32 }} id="operational-overview">
         <h2>Operational overview</h2>
         <p>Safe status only; credentials and provider secrets are never displayed.</p>
         <div

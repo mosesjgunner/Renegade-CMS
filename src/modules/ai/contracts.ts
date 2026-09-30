@@ -32,6 +32,8 @@ export type AiTaskKey =
   | 'intelligence.product'
   | 'discussion.intelligence'
   | 'image.assist'
+  | 'media.alt-text'
+  | 'distribution.copy-variants'
 export type AiTaskDefinition = {
   key: AiTaskKey
   capability: 'ai.text.rewrite' | 'ai.text.structured' | 'ai.image.assist'
@@ -79,6 +81,8 @@ const structuredKeys = [
   'intelligence.timeline',
   'intelligence.product',
   'discussion.intelligence',
+  'media.alt-text',
+  'distribution.copy-variants',
 ] as const
 const task = (
   key: AiTaskKey,
@@ -116,7 +120,9 @@ export const AI_TASKS: Readonly<Record<AiTaskKey, AiTaskDefinition>> = Object.fr
       'ai.text.structured',
       key === 'discussion.intelligence'
         ? ['discussion-visible-posts', 'sources']
-        : ['article', 'sources'],
+        : key === 'media.alt-text' || key === 'distribution.copy-variants'
+          ? ['article']
+          : ['article', 'sources'],
     ),
   ]),
   ['image.assist', task('image.assist', 'ai.image.assist', ['article', 'brand'])],
@@ -128,10 +134,17 @@ export type AiContextControls = {
   includePrivateNotes?: boolean
 }
 export type AiContext = {
+  articleId?: string
+  revisionId?: string
   article?: string
   selection?: string
   brandVoice?: string
-  sources?: readonly { id: string; text: string }[]
+  sources?: readonly {
+    id: string
+    text: string
+    visibility?: 'public' | 'private'
+    status?: 'published' | 'draft'
+  }[]
   privateNotes?: string
   visiblePosts?: readonly {
     id: string
@@ -141,7 +154,7 @@ export type AiContext = {
   }[]
 }
 export type AiProposal = {
-  status: 'ready' | 'no-provider' | 'no-budget' | 'cancelled' | 'failed'
+  status: 'ready' | 'no-provider' | 'no-budget' | 'busy' | 'cancelled' | 'timed-out' | 'failed'
   task: AiTaskKey
   original: string | null
   output: unknown
@@ -157,16 +170,26 @@ export type AiAdapter = {
     model: string
     prompt: string
     signal: AbortSignal
+    maxOutputTokens?: number
+    structured: boolean
   }): Promise<{ output: unknown; inputTokens: number; outputTokens: number }>
 }
 export type AiExecution = {
   connection: ConnectionRecord
+  siteId?: string
+  publicationId?: string
+  spaceId?: string
   model: string
   task: AiTaskKey
   context: AiContext
   controls: AiContextControls
   permissions: readonly string[]
   budget: AiBudget
+  maxInputTokens?: number
+  maxOutputTokens?: number
+  timeoutMs?: number
+  allowedTasks?: readonly AiTaskKey[]
+  allowedModels?: readonly string[]
   cancel?: AbortSignal
   pricePer1kTokensUsd?: { input: number; output: number }
 }

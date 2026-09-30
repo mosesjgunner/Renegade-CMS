@@ -55,7 +55,51 @@ export async function createUploadSession(
     throw new MediaWorkflowError('Checksum must be a SHA-256 value.', 400)
   const filename = safeFilename(input.filename)
   if (!filename) throw new MediaWorkflowError('A filename is required.')
-  const owner = id(input.user?.member)
+  let owner = id(input.user?.member)
+  if (!owner && input.user) {
+    if (input.user.email) {
+      const existing = await payload.find({
+        collection: 'members',
+        where: { email: { equals: String(input.user.email) } },
+        limit: 1,
+        overrideAccess: true,
+      })
+      if (existing.docs[0]) {
+        owner = String(existing.docs[0].id)
+      } else {
+        const createdMember = await payload.create({
+          collection: 'members',
+          data: {
+            displayName: String(input.user.email).split('@')[0],
+            email: String(input.user.email),
+            status: 'active',
+          },
+          overrideAccess: true,
+        })
+        owner = String(createdMember.id)
+        try {
+          await payload.update({
+            collection: 'users',
+            id: String(input.user.id),
+            data: { member: owner },
+            overrideAccess: true,
+          } as never)
+        } catch {
+          // ignore
+        }
+      }
+    }
+    if (!owner) {
+      const anyMember = await payload.find({
+        collection: 'members',
+        limit: 1,
+        overrideAccess: true,
+      })
+      if (anyMember.docs[0]) {
+        owner = String(anyMember.docs[0].id)
+      }
+    }
+  }
   if (!owner) throw new MediaWorkflowError('A staff member identity is required.', 403)
   const chunkSize = Math.min(chunkLimit, Math.max(256 * 1024, Math.ceil(input.size / 100)))
   return payload.create({

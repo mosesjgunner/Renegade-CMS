@@ -218,10 +218,14 @@ const assertCreateInput = (input: HostedCheckoutRequest) => {
     throw new Error('A bounded idempotency key is required.')
   for (const url of [input.successUrl, input.cancelUrl]) {
     const parsed = new URL(url)
+    const localTestHttp =
+      process.env.LOCAL_E2E_TEST_MODE === 'true' &&
+      parsed.protocol === 'http:' &&
+      ['localhost', '127.0.0.1'].includes(parsed.hostname)
     if (
-      !['https:', ...(process.env.NODE_ENV === 'production' ? [] : ['http:'])].includes(
-        parsed.protocol,
-      )
+      parsed.protocol !== 'https:' &&
+      !localTestHttp &&
+      !(process.env.NODE_ENV !== 'production' && parsed.protocol === 'http:')
     )
       throw new Error('Checkout return URLs must use an allowed web protocol.')
     if (parsed.username || parsed.password)

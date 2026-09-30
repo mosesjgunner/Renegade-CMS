@@ -356,6 +356,7 @@ export interface SchemaBuildInput {
     episodeNumber?: number
     seasonNumber?: number
     showSlug?: string
+    showUrl?: string
     showTitle?: string
     transcriptText?: string
   }
@@ -876,6 +877,17 @@ export function composeSchemaGraph(input: SchemaBuildInput): {
   const issues: SchemaValidationIssue[] = []
   const nodes: SchemaNode[] = []
 
+  let cleanEntityTitle = title
+  if (cleanEntityTitle && site.siteName) {
+    const suffixes = [` — ${site.siteName}`, ` - ${site.siteName}`, ` | ${site.siteName}`]
+    for (const suffix of suffixes) {
+      if (cleanEntityTitle.endsWith(suffix)) {
+        cleanEntityTitle = cleanEntityTitle.slice(0, -suffix.length).trim()
+        break
+      }
+    }
+  }
+
   // 2. Build core foundation nodes
   const identityNode = buildIdentityNode(site)
   const websiteNode = buildWebSiteNode(site)
@@ -979,7 +991,7 @@ export function composeSchemaGraph(input: SchemaBuildInput): {
         const articleNode = buildArticleNode({
           canonicalUrl,
           base,
-          headline: title,
+          headline: cleanEntityTitle || title,
           description,
           publishedAt: dates?.publishedAt,
           modifiedAt: dates?.modifiedAt,
@@ -1078,9 +1090,11 @@ export function composeSchemaGraph(input: SchemaBuildInput): {
         isEligible = false
       }
 
-      const showUrl = podcastEpisode?.showSlug
-        ? `${base.replace(/\/$/, '')}/podcasts/${podcastEpisode.showSlug}`
-        : null
+      const showUrl =
+        podcastEpisode?.showUrl ||
+        (podcastEpisode?.showSlug
+          ? `${base.replace(/\/$/, '')}/podcasts/${podcastEpisode.showSlug}`
+          : null)
 
       if (!audio?.url) {
         issues.push({
@@ -1294,9 +1308,18 @@ export function composeSchemaGraph(input: SchemaBuildInput): {
   }
 
   // Top-level object structure with @graph
+  const entityName = primaryType === 'WebSite' ? site.siteName : cleanEntityTitle || title
   const graph: SchemaGraph = {
     '@context': 'https://schema.org',
     '@type': fallbackType || primaryType,
+    ...(entityName ? { name: entityName } : {}),
+    ...(primaryType === 'WebSite'
+      ? {
+          name: site.siteName,
+          description: site.siteDescription,
+          url: `${site.base.replace(/\/$/, '')}/`,
+        }
+      : {}),
     '@graph': nodes,
   }
 

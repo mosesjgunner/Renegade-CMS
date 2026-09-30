@@ -166,6 +166,203 @@ export function attributePath(
     },
   ]
 }
+
+export type DisclosedLinkInfo = Readonly<{
+  campaign?: string
+  source?: string
+  medium?: string
+  content?: string
+  term?: string
+  referralCode?: string
+  affiliateId?: string
+}>
+
+export type AttributionConfidence = 'verified' | 'observed' | 'inferred' | 'unlinked'
+export type UncertaintyRating =
+  | 'none'
+  | 'low'
+  | 'moderate'
+  | 'high - consent absent'
+  | 'high - untracked identity'
+
+export type CampaignFunnelAttribution = Readonly<{
+  conversionEventId: string
+  conversionGoal: string
+  canonicalOutcomeId?: string
+  canonicalTarget?: 'order' | 'contribution' | 'subscriber' | 'member' | 'submission'
+  model: 'first-touch' | 'last-non-direct'
+  attributedChannel: string
+  attributedCampaign?: string
+  disclosedLink?: DisclosedLinkInfo
+  touchpoints: readonly {
+    eventId: string
+    eventType: EventType
+    occurredAt: string
+    channel: string
+    campaign?: string
+    consentBasis: ConsentBasis
+  }[]
+  confidence: AttributionConfidence
+  uncertaintyRating: UncertaintyRating
+  uncertaintyStatement: string
+  consentVerified: boolean
+}>
+
+export const SUPPRESSED_MASK = '[SUPPRESSED VISITOR]'
+
+export function maskSuppressedIdentity(
+  identityKey?: string | null,
+  suppressionSet?: ReadonlySet<string>,
+): string {
+  if (!identityKey) return 'anonymous'
+  if (suppressionSet?.has(identityKey)) return SUPPRESSED_MASK
+  return identityKey
+}
+
+export function attributeCampaignFunnel(
+  events: readonly FirstPartyEvent[],
+  conversionEventId: string,
+  canonicalOutcome?: {
+    id: string
+    target: 'order' | 'contribution' | 'subscriber' | 'member' | 'submission'
+  },
+  model: 'first-touch' | 'last-non-direct' = 'last-non-direct',
+): CampaignFunnelAttribution {
+  const conversion = events.find((event) => event.id === conversionEventId)
+  if (!conversion) throw new Error('Conversion event is required for funnel attribution.')
+
+  const goal = goalForEvent(conversion) ?? conversion.context.goal ?? conversion.eventType
+  const isConsented = conversion.consentBasis === 'analytics-consent'
+
+  // If consent is absent or denied, NEVER claim certainty
+  if (!isConsented && !conversion.trusted) {
+    return {
+      conversionEventId: conversion.id,
+      conversionGoal: goal,
+      canonicalOutcomeId: canonicalOutcome?.id,
+      canonicalTarget: canonicalOutcome?.target,
+      model,
+      attributedChannel: 'unattributed (consent absent)',
+      attributedCampaign: undefined,
+      disclosedLink: undefined,
+      touchpoints: [
+        {
+          eventId: conversion.id,
+          eventType: conversion.eventType,
+          occurredAt: conversion.occurredAt,
+          channel: 'unattributed',
+          consentBasis: conversion.consentBasis,
+        },
+      ],
+      confidence: 'unlinked',
+      uncertaintyRating: 'high - consent absent',
+      uncertaintyStatement:
+        'Visitor has not granted analytics consent or tracking is off (DNT/GPC). Identity linkage is strictly prohibited; touchpoints cannot be credited with certainty.',
+      consentVerified: false,
+    }
+  }
+
+  // Filter touchpoints: identity-matched prior events if identity exists, else proximity
+  const conversionAnon = conversion.identity.anonymousId
+  const conversionSession = conversion.identity.sessionId
+  const conversionMember = conversion.identity.memberId
+
+  let priorEvents = events
+    .filter((event) => event.occurredAt <= conversion.occurredAt)
+    .sort((a, b) => a.occurredAt.localeCompare(b.occurredAt))
+
+  let confidence: AttributionConfidence = 'observed'
+  let uncertaintyRating: UncertaintyRating = 'low'
+  let uncertaintyStatement =
+    'Consented first-party journey verified against immutable event stream.'
+
+  if (conversionAnon || conversionSession || conversionMember) {
+    const linked = priorEvents.filter((event) => {
+      if (conversionMember && event.identity.memberId === conversionMember) return true
+      if (conversionAnon && event.identity.anonymousId === conversionAnon) return true
+      if (conversionSession && event.identity.sessionId === conversionSession) return true
+      return false
+    })
+    if (linked.length > 0) {
+      priorEvents = linked
+      confidence = 'verified'
+      uncertaintyRating = 'low'
+      uncertaintyStatement = 'Touchpoints verified with cryptographic salted identity match.'
+    } else {
+      confidence = 'inferred'
+      uncertaintyRating = 'moderate'
+      uncertaintyStatement =
+        'Identity match not found across historical stream; touchpoints inferred from path.'
+    }
+  } else {
+    confidence = 'unlinked'
+    uncertaintyRating = 'high - untracked identity'
+    uncertaintyStatement =
+      'Event has consent but lacks persistent anonymous or session hashes; path cannot be linked with certainty.'
+  }
+
+  const touchpoints = priorEvents.map((event) => ({
+    eventId: event.id,
+    eventType: event.eventType,
+    occurredAt: event.occurredAt,
+    channel:
+      event.context.channel ??
+      (event.context.utm?.utm_medium || event.context.referrer ? 'referral' : 'direct'),
+    campaign: event.context.campaignId ?? event.context.utm?.utm_campaign,
+    consentBasis: event.consentBasis,
+  }))
+
+  const nonDirectTouchpoints = touchpoints.filter((tp) => !direct(tp.channel))
+  const selectedTouchpoint =
+    model === 'first-touch'
+      ? (nonDirectTouchpoints[0] ?? touchpoints[0])
+      : ([...nonDirectTouchpoints].reverse()[0] ?? touchpoints[touchpoints.length - 1])
+
+  const selectedEvent = priorEvents.find((e) => e.id === selectedTouchpoint?.eventId)
+  const utm = selectedEvent?.context.utm
+
+  const journeyCampaign = priorEvents
+    .map((e) => e.context.campaignId ?? e.context.utm?.utm_campaign)
+    .filter(Boolean)
+    .pop()
+  const journeySource = priorEvents
+    .map((e) => e.context.utm?.utm_source)
+    .filter(Boolean)
+    .pop()
+
+  const resolvedCampaign = selectedTouchpoint?.campaign ?? journeyCampaign
+  const resolvedSource = utm?.utm_source ?? journeySource ?? selectedEvent?.context.channel
+
+  const disclosedLink: DisclosedLinkInfo = {
+    campaign: resolvedCampaign,
+    source: resolvedSource,
+    medium: utm?.utm_medium,
+    content: utm?.utm_content,
+    term: utm?.utm_term,
+    referralCode:
+      typeof selectedEvent?.properties?.ref === 'string' ? selectedEvent.properties.ref : undefined,
+    affiliateId:
+      typeof selectedEvent?.properties?.affiliateId === 'string'
+        ? selectedEvent.properties.affiliateId
+        : undefined,
+  }
+
+  return {
+    conversionEventId: conversion.id,
+    conversionGoal: goal,
+    canonicalOutcomeId: canonicalOutcome?.id,
+    canonicalTarget: canonicalOutcome?.target,
+    model,
+    attributedChannel: selectedTouchpoint?.channel ?? 'direct',
+    attributedCampaign: resolvedCampaign,
+    disclosedLink,
+    touchpoints,
+    confidence,
+    uncertaintyRating,
+    uncertaintyStatement,
+    consentVerified: true,
+  }
+}
 const goalMap: Partial<Record<EventType, string>> = {
   signup: 'newsletter-member-signup',
   payment_completed: 'one-time-contribution',

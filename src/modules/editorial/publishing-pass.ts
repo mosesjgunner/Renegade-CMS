@@ -3,17 +3,14 @@
  * and editorial body; article-family-content is the workflow/revision index.
  * Page layouts are a separate presentation projection and must never own prose.
  */
-const RESERVED_PATHS = new Set([
-  'admin',
-  'api',
-  'preview',
-  'search',
-  'setup',
-  'login',
-  'logout',
-  'media',
-  'articles',
-])
+import {
+  normalizeSemanticSlug,
+  readRouteTemplates,
+  readRouteTemplatesBySite,
+  resolvePublicUrl,
+  routeTemplatesForSite,
+  validatePublicPath,
+} from '../public/semantic-url'
 
 const idOf = (value: unknown): string =>
   typeof value === 'string'
@@ -23,26 +20,21 @@ const idOf = (value: unknown): string =>
       : ''
 
 export function editorialSlug(value: unknown): string {
-  return String(value ?? '')
-    .normalize('NFKD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/(^-|-$)/g, '')
+  return normalizeSemanticSlug(String(value ?? ''))
 }
 
 export function assertEditorialPath(path: string): void {
-  if (!/^\/(?:[a-z0-9]+(?:-[a-z0-9]+)*\/)*[a-z0-9]+(?:-[a-z0-9]+)*$/.test(path))
-    throw new Error('Canonical paths use lowercase URL segments separated by single hyphens.')
-  const first = path.split('/')[1]
-  if (RESERVED_PATHS.has(first))
-    throw new Error(`/${first} is reserved and cannot be used for content.`)
+  validatePublicPath(path)
 }
 
 export async function deriveEditorialPath(input: {
   data: Record<string, unknown>
   originalDoc?: Record<string, unknown> | null
-  payload: { findByID: (args: Record<string, unknown>) => Promise<Record<string, unknown>> }
+  semanticRouteChange?: boolean
+  payload: {
+    findByID: (args: Record<string, unknown>) => Promise<Record<string, unknown>>
+    findGlobal?: (args: Record<string, unknown>) => Promise<Record<string, unknown>>
+  }
 }): Promise<Record<string, unknown>> {
   const data = input.data
   const original = input.originalDoc
@@ -54,7 +46,7 @@ export async function deriveEditorialPath(input: {
       const previous = key === 'parentPage' ? idOf(original[key]) : original[key]
       return next !== previous
     })
-  if (!pathInputsChanged && original?.canonicalPath) return data
+  if (!pathInputsChanged && !input.semanticRouteChange && original?.canonicalPath) return data
   const contentType = String(data.contentType ?? input.originalDoc?.contentType ?? 'article')
   const title = String(data.title ?? input.originalDoc?.title ?? '')
   const slug = editorialSlug(data.slug ?? input.originalDoc?.slug ?? title)
@@ -74,7 +66,27 @@ export async function deriveEditorialPath(input: {
     return data
   }
 
-  let path = contentType === 'page' ? `/${slug}` : `/articles/${slug}`
+  let routeTemplates: Record<string, string> = {}
+  if (input.payload.findGlobal) {
+    const settings = await input.payload.findGlobal({
+      slug: 'site-settings',
+      depth: 0,
+      overrideAccess: true,
+    })
+    const siteId = idOf(data.site ?? original?.site)
+    routeTemplates = routeTemplatesForSite(
+      siteId,
+      readRouteTemplates(settings.semanticRouteTemplates),
+      readRouteTemplatesBySite(
+        settings.semanticRouteTemplatesBySite,
+        readRouteTemplates(settings.semanticRouteTemplates),
+      ),
+    )
+  }
+  const path = resolvePublicUrl(
+    { kind: contentType === 'page' ? 'page' : 'article', slug },
+    routeTemplates,
+  )
   const parentId = idOf(data.parentPage ?? input.originalDoc?.parentPage)
   if (contentType === 'page' && parentId) {
     const parent = await input.payload.findByID({ collection: 'content', id: parentId, depth: 0 })
@@ -82,7 +94,6 @@ export async function deriveEditorialPath(input: {
     const site = idOf(data.site ?? input.originalDoc?.site)
     if (site && idOf(parent.site) !== site)
       throw new Error('A page parent must belong to the same site.')
-    path = `${String(parent.canonicalPath).replace(/\/$/, '')}/${slug}`
   }
   data.canonicalPath = path
   return data
@@ -111,6 +122,83 @@ export async function assertEditorialPathAvailable(input: {
     overrideAccess: true,
   })
   if (matches.docs.length) throw new Error(`Another record in this site already uses ${path}.`)
+
+  const sharedPayload = input.payload as typeof input.payload & {
+    collections?: Record<string, unknown>
+  }
+  const otherCollections = [
+    'events',
+    'timelines',
+    'albums',
+    'books',
+    'products',
+    'discussions',
+    'forums',
+    'categories',
+    'sections',
+    'podcast-shows',
+    'podcast-episodes',
+    'videos',
+    'topics',
+  ].filter((collection) => !sharedPayload.collections || collection in sharedPayload.collections)
+  const [otherCollision, redirectCollision, layoutCollision, formCollision] = await Promise.all([
+    Promise.all(
+      otherCollections.map(async (collection) => {
+        try {
+          const result = await input.payload.find({
+            collection,
+            where: { and: [{ site: { equals: site } }, { canonicalPath: { equals: path } }] },
+            depth: 0,
+            limit: 1,
+            overrideAccess: true,
+          })
+          return result.docs.length ? collection : null
+        } catch {
+          return null
+        }
+      }),
+    ).then((collections) => collections.find(Boolean)),
+    input.payload
+      .find({
+        collection: 'public-redirects',
+        where: {
+          and: [
+            { site: { equals: site } },
+            { fromPath: { equals: path } },
+            { enabled: { equals: true } },
+          ],
+        },
+        depth: 0,
+        limit: 1,
+        overrideAccess: true,
+      })
+      .then((result) => Boolean(result.docs.length))
+      .catch(() => false),
+    input.payload
+      .find({
+        collection: 'page-layouts',
+        where: { and: [{ site: { equals: site } }, { path: { equals: path } }] },
+        depth: 0,
+        limit: 1,
+        overrideAccess: true,
+      })
+      .then((result) => Boolean(result.docs.length))
+      .catch(() => false),
+    input.payload
+      .find({
+        collection: 'form-definitions',
+        where: { and: [{ site: { equals: site } }, { publicPath: { equals: path } }] },
+        depth: 0,
+        limit: 1,
+        overrideAccess: true,
+      })
+      .then((result) => Boolean(result.docs.length))
+      .catch(() => false),
+  ])
+  if (otherCollision) throw new Error(`The path ${path} is already used by ${otherCollision}.`)
+  if (redirectCollision) throw new Error(`The path ${path} is reserved by an existing redirect.`)
+  if (layoutCollision) throw new Error(`The path ${path} is already used by a page layout.`)
+  if (formCollision) throw new Error(`The path ${path} is already used by a public form.`)
 }
 
 export const archiveQueryContract = {

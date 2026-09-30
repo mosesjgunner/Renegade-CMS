@@ -441,7 +441,7 @@ test.describe('PRE-06 Presentation Pass Gate — Complete Browser & E2E Validati
 
     // 3. Search results invariant
     await anonPage.goto('/search?q=Decentralized')
-    await expect(anonPage.getByText('Decentralized Truth in Governance')).toBeVisible()
+    await expect(anonPage.getByText('Decentralized Truth in Governance').first()).toBeVisible()
 
     // -------------------------------------------------------------------------
     // 11. Theme Upgrade and Rollback

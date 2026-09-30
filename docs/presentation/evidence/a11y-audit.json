@@ -1,9 +1,9 @@
 {
-  "timestamp": "2026-09-12T22:26:28.620Z",
+  "timestamp": "2026-09-24T05:15:59.039Z",
   "standard": "WCAG 2.1 Level AA",
   "surfacesAudited": 7,
-  "totalPasses": 148,
-  "totalViolations": 8,
+  "totalPasses": 159,
+  "totalViolations": 7,
   "details": [
     {
       "path": "/",
@@ -21,7 +21,7 @@
     {
       "path": "/platform",
       "name": "Page: Platform",
-      "passes": 22,
+      "passes": 25,
       "violations": [
         {
           "id": "color-contrast",
@@ -34,7 +34,7 @@
     {
       "path": "/articles/decentralized-truth",
       "name": "Post: Truth",
-      "passes": 22,
+      "passes": 25,
       "violations": [
         {
           "id": "color-contrast",
@@ -60,7 +60,7 @@
     {
       "path": "/search?q=Decentralized",
       "name": "Search",
-      "passes": 23,
+      "passes": 24,
       "violations": [
         {
           "id": "color-contrast",
@@ -73,26 +73,20 @@
     {
       "path": "/pre-06-not-found-check",
       "name": "404 Template",
-      "passes": 19,
+      "passes": 20,
       "violations": [
         {
           "id": "color-contrast",
           "impact": "serious",
           "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
           "helpUrl": "https://dequeuniversity.com/rules/axe/4.13/color-contrast?application=axeAPI"
-        },
-        {
-          "id": "document-title",
-          "impact": "serious",
-          "description": "Ensure each HTML document contains a non-empty <title> element",
-          "helpUrl": "https://dequeuniversity.com/rules/axe/4.13/document-title?application=axeAPI"
         }
       ]
     },
     {
       "path": "/campaign-2026",
       "name": "Campaign Page",
-      "passes": 20,
+      "passes": 23,
       "violations": [
         {
           "id": "color-contrast",

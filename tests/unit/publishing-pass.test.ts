@@ -10,7 +10,7 @@ describe('PUB-02 canonical content paths', () => {
   const parent = { id: 'parent', contentType: 'page', site: 'site-a', canonicalPath: '/company' }
   const payload = { findByID: async () => parent }
 
-  it('derives readable post and hierarchical page paths without a second page model', async () => {
+  it('uses short page paths without exposing the editorial parent hierarchy', async () => {
     expect(editorialSlug('Hello, Renegade CMS!')).toBe('hello-renegade-cms')
     await expect(
       deriveEditorialPath({
@@ -23,7 +23,7 @@ describe('PUB-02 canonical content paths', () => {
         data: { title: 'Team', contentType: 'page', site: 'site-a', parentPage: 'parent' },
         payload,
       }),
-    ).resolves.toMatchObject({ canonicalPath: '/company/team' })
+    ).resolves.toMatchObject({ canonicalPath: '/team' })
   })
 
   it('refuses implementation and system URL spaces', () => {

@@ -82,10 +82,12 @@ export async function safeFetch(
   const timeoutMs = options.timeoutMs ?? REQUEST_TIMEOUT_MS
   let url = await assertSafeOutboundUrl(input, options.resolve, options)
   for (let redirect = 0; redirect <= MAX_REDIRECTS; redirect += 1) {
+    const timeoutSignal = AbortSignal.timeout(timeoutMs)
+    const signal = init.signal ? AbortSignal.any([init.signal, timeoutSignal]) : timeoutSignal
     const response = await fetcher(url, {
       ...init,
       redirect: 'manual',
-      signal: AbortSignal.timeout(timeoutMs),
+      signal,
     })
     if (![301, 302, 303, 307, 308].includes(response.status)) {
       if (Number(response.headers.get('content-length') ?? 0) > maxBytes)

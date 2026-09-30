@@ -54,3 +54,50 @@ export async function POST(request: Request) {
     return Response.json({ error: 'Failed to submit report' }, { status: 500 })
   }
 }
+
+export async function GET(request: Request) {
+  const payload = await getPayload({ config })
+  const url = new URL(request.url)
+  const siteId = url.searchParams.get('siteId') ?? request.headers.get('x-site-id') ?? 'default'
+
+  const actor = await resolveCommunityActor(payload, request.headers, siteId)
+  if (actor.kind === 'anonymous' || (!actor.isStaff && !actor.isModerator)) {
+    return Response.json({ error: 'Staff or moderator authorization required' }, { status: 403 })
+  }
+
+  try {
+    const pool = (payload.db as any).pool
+    const query = pool?.query?.bind(pool)
+    if (!query) {
+      return Response.json({ error: 'Database access unavailable' }, { status: 500 })
+    }
+
+    const reportsRes = await query(
+      `SELECT r.id, r.site_id AS "siteId", r.reporter_id AS "reporterId", r.target_type AS "targetType",
+              r.target_id AS "targetId", r.reason, r.details, r.status, r.parent_case_id AS "parentCaseId",
+              r.target_snapshot_payload AS "snapshot", r.created_at AS "createdAt"
+       FROM community_reports r
+       WHERE r.site_id = $1
+       ORDER BY r.created_at DESC
+       LIMIT 100`,
+      [siteId],
+    )
+
+    const casesRes = await query(
+      `SELECT c.id, c.site_id AS "siteId", c.target_type AS "targetType", c.target_id AS "targetId",
+              c.status, c.created_at AS "createdAt", c.last_reported_at AS "lastReportedAt"
+       FROM moderation_cases c
+       WHERE c.site_id = $1
+       ORDER BY c.last_reported_at DESC
+       LIMIT 100`,
+      [siteId],
+    )
+
+    return Response.json({
+      reports: reportsRes.rows,
+      cases: casesRes.rows,
+    })
+  } catch (err: unknown) {
+    return Response.json({ error: 'Failed to fetch moderation reports' }, { status: 500 })
+  }
+}

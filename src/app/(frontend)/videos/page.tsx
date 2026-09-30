@@ -19,7 +19,12 @@ export default async function VideoArchive() {
       <ul className="mt-8 space-y-4">
         {videos.docs.map((item) => (
           <li key={item.id}>
-            <Link href={`/videos/${String((item as unknown as { slug: string }).slug)}`}>
+            <Link
+              href={String(
+                (item as unknown as { canonicalPath?: string; slug: string }).canonicalPath ||
+                  `/videos/${String((item as unknown as { slug: string }).slug)}`,
+              )}
+            >
               {String((item as unknown as { title: string }).title)}
             </Link>
           </li>

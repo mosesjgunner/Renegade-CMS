@@ -821,10 +821,16 @@ test('PUB-06: complete 21-step RenegadeParty.org demo journey through supported 
   const sitemapResp = await page.request.get('/sitemap.xml')
   expect(sitemapResp.status()).toBe(200)
   const sitemapText = await sitemapResp.text()
-  expect(sitemapText).toContain('/platform')
-  expect(sitemapText).toContain('/principles')
-  expect(sitemapText).toContain('/articles/decentralized-truth')
-  expect(sitemapText).not.toContain('/articles/grassroots-strategy-memo')
+  let xmlToCheck = sitemapText
+  if (sitemapText.includes('<sitemapindex')) {
+    const subResp = await page.request.get('/sitemaps/1.xml')
+    expect(subResp.status()).toBe(200)
+    xmlToCheck = await subResp.text()
+  }
+  expect(xmlToCheck).toContain('/platform')
+  expect(xmlToCheck).toContain('/principles')
+  expect(xmlToCheck).toContain('/articles/decentralized-truth')
+  expect(xmlToCheck).not.toContain('/articles/grassroots-strategy-memo')
 
   // 7. Robots (/robots.txt)
   const robotsResp = await page.request.get('/robots.txt')
@@ -853,7 +859,9 @@ test('PUB-06: complete 21-step RenegadeParty.org demo journey through supported 
   // --------------------------------------------------------------------------
   await page.goto(`/search?q=Decentralized+truth&site=${siteId}`)
   await expect(page.getByRole('heading', { name: 'Search', level: 1 })).toBeVisible()
-  const searchResultLink = page.getByRole('link', { name: 'Decentralized Truth in Governance' })
+  const searchResultLink = page
+    .getByRole('link', { name: 'Decentralized Truth in Governance' })
+    .first()
   await expect(searchResultLink).toBeVisible()
   await expect(searchResultLink).toHaveAttribute('href', '/articles/decentralized-truth')
 

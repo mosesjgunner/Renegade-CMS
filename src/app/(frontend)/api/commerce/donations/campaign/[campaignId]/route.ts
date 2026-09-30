@@ -2,11 +2,12 @@ import config from '@payload-config'
 import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
 import { calculateDonationProgress, donationDisclosures } from '@/modules/commerce/donations'
+import { catalogSiteForHost } from '@/modules/commerce/site-scope'
 
 const id = (value: any) => String(typeof value === 'object' && value ? value.id : (value ?? ''))
 
 export async function GET(
-  _request: Request,
+  request: Request,
   { params }: { params: Promise<{ campaignId: string }> },
 ) {
   const payload: any = await getPayload({ config })
@@ -14,7 +15,8 @@ export async function GET(
   const campaign = await payload
     .findByID({ collection: 'donation-campaigns', id: campaignId, depth: 0, overrideAccess: true })
     .catch(() => null)
-  if (!campaign || campaign.lifecycle !== 'active')
+  const siteId = await catalogSiteForHost(payload, request.headers.get('host')).catch(() => null)
+  if (!campaign || campaign.lifecycle !== 'active' || !siteId || id(campaign.site) !== siteId)
     return NextResponse.json({ error: 'Campaign unavailable.' }, { status: 404 })
   const rows = await payload.find({
     collection: 'donations',

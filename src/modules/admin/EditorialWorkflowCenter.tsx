@@ -8,6 +8,7 @@ import type { CommentTarget, ReviewComment, RevisionComparisonDiff } from '../ed
 type TabKey =
   | 'my-work'
   | 'team-queues'
+  | 'templates'
   | 'comments'
   | 'due-overdue'
   | 'calendar'
@@ -401,7 +402,7 @@ export default function EditorialWorkflowCenter() {
           <div>
             <div className="flex items-center gap-3">
               <h1 className="text-2xl font-bold tracking-tight text-stone-900 dark:text-stone-100">
-                Workflow Command Center
+                Editorial Workflow Command Center
               </h1>
               <span className="px-2.5 py-0.5 rounded-full text-xs font-semibold bg-indigo-100 text-indigo-800 dark:bg-indigo-900/50 dark:text-indigo-300 capitalize">
                 Role: {role}
@@ -499,8 +500,9 @@ export default function EditorialWorkflowCenter() {
       {/* Main Tab Navigation */}
       <div className="flex overflow-x-auto border-b border-stone-200 dark:border-stone-800 gap-1 pb-1">
         {[
-          { key: 'my-work', label: 'My Work', badge: totalMyWork },
+          { key: 'my-work', label: 'Personal Queues', badge: totalMyWork },
           { key: 'team-queues', label: 'Team Queues', badge: totalAwaitingReview },
+          { key: 'templates', label: 'Workflow Templates' },
           { key: 'comments', label: 'Comments', badge: totalComments },
           { key: 'due-overdue', label: 'Due / Overdue', badge: totalOverdue },
           { key: 'calendar', label: 'Calendar' },
@@ -773,6 +775,30 @@ export default function EditorialWorkflowCenter() {
                   )}
                 </tbody>
               </table>
+            </div>
+          </div>
+        )}
+
+        {/* WORKFLOW TEMPLATES */}
+        {activeTab === 'templates' && (
+          <div className="bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl p-6 shadow-sm space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-bold text-stone-900 dark:text-stone-100">
+                  Built-in Simple Editorial Workflow
+                </h3>
+                <p className="text-xs text-stone-500 mt-1">
+                  Immutable built-in DAG template enforcing peer review and non-self-approval.
+                </p>
+              </div>
+              <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-950/60 dark:text-emerald-300">
+                VALIDATED (NO DEAD ENDS)
+              </span>
+            </div>
+            <div className="border-t border-stone-100 dark:border-stone-800 pt-4 text-xs text-stone-600 dark:text-stone-400 space-y-2">
+              <p>Stages: Draft → Review → Approved → Scheduled → Published</p>
+              <p>Self-Approval: Forbidden</p>
+              <p>Service Level SLA: 48 hours</p>
             </div>
           </div>
         )}

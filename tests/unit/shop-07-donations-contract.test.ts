@@ -57,6 +57,18 @@ describe('SHOP-07 donation contracts', () => {
       paymentIntentId: 'payment-1',
     }
     expect(assertDonationIntent(intent, campaign)).toMatchObject({ campaignVersion: 2 })
+    expect(() =>
+      assertDonationIntent(
+        { ...intent, money: { ...intent.money, baseAmountMinor: '1200' } },
+        campaign,
+      ),
+    ).not.toThrow()
+    expect(() =>
+      assertDonationIntent(
+        { ...intent, money: { ...intent.money, baseAmountMinor: '2501' } },
+        campaign,
+      ),
+    ).toThrow('campaign maximum')
     expect(() => assertDonationIntent({ ...intent, campaignVersion: 1 }, campaign)).toThrow()
     expect(() =>
       assertDonationIntent({ ...intent, money: { ...intent.money, currency: 'CAD' } }, campaign),

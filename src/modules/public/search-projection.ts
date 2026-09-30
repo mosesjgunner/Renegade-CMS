@@ -1,4 +1,5 @@
 import type { Payload } from 'payload'
+import { resolveSiteSettings } from '../core/site-settings'
 
 import {
   discoveryToSearchDocument,
@@ -83,7 +84,7 @@ export async function projectSearchDocument(
      ON CONFLICT (collection, canonical_id) DO UPDATE SET
        site_id=EXCLUDED.site_id, canonical_revision_id=EXCLUDED.canonical_revision_id, canonical_url=EXCLUDED.canonical_url, path=EXCLUDED.path, content_type=EXCLUDED.content_type, title=EXCLUDED.title, excerpt=EXCLUDED.excerpt, body=EXCLUDED.body, author=EXCLUDED.author, taxonomy=EXCLUDED.taxonomy, published_at=EXCLUDED.published_at, modified_at=EXCLUDED.modified_at, language=EXCLUDED.language, media_hints=EXCLUDED.media_hints, visibility=EXCLUDED.visibility, index_version=EXCLUDED.index_version, indexed_at=now()`,
     [
-      projection.siteId,
+      siteId || projection.siteId,
       input.collection,
       canonicalId,
       projection.canonicalRevisionId,
@@ -196,9 +197,16 @@ export async function querySearchProjection(
   const page = Math.max(1, input.page || 1)
   const pageSize = Math.max(1, Math.min(50, input.pageSize || 10))
   if (!query) return { hits: [] as ProjectedSearchDocument[], total: 0, page, pageCount: 0 }
+  const settings = await resolveSiteSettings(payload).catch(() => null)
+  const siteOrigin = settings?.canonicalOriginsBySite?.[input.siteId] || settings?.canonicalOrigin
   const values: unknown[] = [input.siteId, query]
+  let sitePredicate = 'site_id = $1'
+  if (siteOrigin) {
+    values.push(siteOrigin)
+    sitePredicate = `(site_id = $1 OR site_id = $${values.length})`
+  }
   const predicates = [
-    'site_id = $1',
+    sitePredicate,
     "visibility = 'public'",
     'index_version = ' + SEARCH_INDEX_VERSION,
     "search_vector @@ websearch_to_tsquery('simple', $2)",

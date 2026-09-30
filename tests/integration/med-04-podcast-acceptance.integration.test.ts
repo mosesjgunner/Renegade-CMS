@@ -16,8 +16,12 @@ import { GET as mediaGet } from '../../src/app/(frontend)/media/[id]/route'
 import { GET as feedGet } from '../../src/app/(frontend)/podcasts/[slug]/feed.xml/route'
 import { GET as transcriptGet } from '../../src/app/(frontend)/podcasts/episodes/[slug]/transcript/route'
 import { GET as chaptersGet } from '../../src/app/(frontend)/podcasts/episodes/[slug]/chapters.json/route'
-import PodcastShowPage from '../../src/app/(frontend)/podcasts/[slug]/page'
-import EpisodePage from '../../src/app/(frontend)/podcasts/episodes/[slug]/page'
+import PodcastShowPage, {
+  generateMetadata as generateShowMetadata,
+} from '../../src/app/(frontend)/podcasts/[slug]/page'
+import EpisodePage, {
+  generateMetadata as generateEpisodeMetadata,
+} from '../../src/app/(frontend)/podcasts/episodes/[slug]/page'
 import { seed } from '../../src/scripts/seed'
 
 /**
@@ -407,6 +411,28 @@ describe('MED-04 Podcast Publishing Workflow End-to-End Acceptance', () => {
     expect(ep2.id).toBeDefined()
     expect(ep2.guid).toMatch(/^urn:renegade:podcast:/)
 
+    // Regression check: create a newer active publication on a separate site.
+    // Discovery resolution on podcast show/episode must not be hijacked by the newer publication.
+    const foreignSite = await payload.create({
+      collection: 'sites',
+      data: {
+        name: `Foreign Site ${runId}`,
+        slug: `foreign-site-${runId}`,
+      } as any,
+      overrideAccess: true,
+    })
+    await payload.create({
+      collection: 'publications',
+      data: {
+        name: `Foreign Publication ${runId}`,
+        slug: `foreign-pub-${runId}`,
+        site: foreignSite.id,
+        status: 'active',
+        visibility: 'public',
+      } as any,
+      overrideAccess: true,
+    })
+
     // 6. Test Public Show Page (`/podcasts/[slug]`)
     const showPageElement = await PodcastShowPage({
       params: Promise.resolve({ slug: showSlug }),
@@ -417,6 +443,11 @@ describe('MED-04 Podcast Publishing Workflow End-to-End Acceptance', () => {
     expect(showPageJson).toContain(`Episode 1: The Sovereign Web ${runId}`)
     // Strictly excludes draft/scheduled Episode 2
     expect(showPageJson).not.toContain(`Episode 2: Post-SaaS Architectures ${runId}`)
+    expect(showPageJson).toContain('PodcastSeries') // Schema.org JSON-LD
+    const showMetadata = await generateShowMetadata({
+      params: Promise.resolve({ slug: showSlug }),
+    })
+    expect(showMetadata.title).toContain(`The Renegade Chronicle ${runId}`)
 
     // 7. Test Episode Access Gating & Preview
     // Anonymous public access to scheduled/draft Episode 2 throws notFound()
@@ -450,6 +481,10 @@ describe('MED-04 Podcast Publishing Workflow End-to-End Acceptance', () => {
     expect(ep1PageJson).toContain('Introduction')
     expect(ep1PageJson).toContain('Decentralized Audio')
     expect(ep1PageJson).toContain('PodcastEpisode') // Schema.org JSON-LD
+    const ep1Metadata = await generateEpisodeMetadata({
+      params: Promise.resolve({ slug: ep1Slug }),
+    })
+    expect(ep1Metadata.title).toContain(`Episode 1: The Sovereign Web ${runId}`)
 
     // 8. Test Accessible HTML Transcript Endpoint
     const transcriptReq = new Request(

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="240" height="240" role="img" aria-label="Jordan Blake Avatar">
+  <defs>
+    <linearGradient id="avatarCamp" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fee2e2" />
+      <stop offset="100%" stop-color="#ffedd5" />
+    </linearGradient>
+  </defs>
+  <rect width="240" height="240" rx="120" fill="url(#avatarCamp)" />
+  <circle cx="120" cy="95" r="45" fill="#aa1d2f" />
+  <path d="M 50 200 C 65 155, 175 155, 190 200 Z" fill="#881322" />
+  <text x="120" y="105" font-family="system-ui, sans-serif" font-size="28" font-weight="900" fill="#ffffff" text-anchor="middle">JB</text>
+</svg>

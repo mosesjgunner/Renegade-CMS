@@ -35,3 +35,23 @@ export async function POST(request: Request) {
     },
   )
 }
+
+export async function GET(request: Request) {
+  const url = new URL(request.url)
+  const token = url.searchParams.get('token') ?? ''
+  const payload = await getPayload({ config })
+  const policy = await resolveCommunityRegistrationPolicy(payload as never)
+  const result = await consumeMagicLink(payload as never, token, new Date(), { policy })
+  if (!result) {
+    return Response.redirect(new URL('/member-auth?error=invalid-token', request.url))
+  }
+  if (result.pendingApproval) {
+    return Response.redirect(new URL('/member-auth?status=pending-approval', request.url))
+  }
+  const secure = loadConfig().secureCookies
+  const csrfToken = issueCsrfToken()
+  const redirectResponse = Response.redirect(new URL('/members/settings', request.url), 302)
+  redirectResponse.headers.append('set-cookie', memberSessionCookie(result.sessionToken, secure))
+  redirectResponse.headers.append('set-cookie', csrfCookie(csrfToken, secure))
+  return redirectResponse
+}

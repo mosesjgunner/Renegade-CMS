@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { randomUUID } from 'node:crypto'
+import { createHmac, randomBytes, randomUUID } from 'node:crypto'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { getPayload, type Payload } from 'payload'
 
@@ -8,6 +8,8 @@ import {
   provisionOnboardingSite,
   type OnboardingInput,
 } from '../../src/modules/operations/onboarding'
+import { authenticateWithRecoveryCode } from '../../src/modules/operations/installation'
+import { loadConfig } from '../../src/modules/core/config'
 
 // Regression guard for the first-run installer. `provisionOnboardingSite` is the
 // step that `completeInstallation` runs after a passkey is verified, and it is the
@@ -163,5 +165,116 @@ describe('first-run onboarding provisioning', () => {
 
     expect(second.id).toBe(first.id)
     expect(second.handle).toBe(first.handle)
+  })
+
+  it('exercises full Lean profile lifecycle with publishing defaults', async () => {
+    const instance = await getPayloadInstance()
+    const slug = `lean-${randomUUID().slice(0, 8)}`
+    const ownerEmail = `${slug}@owner.test`
+
+    const startTime = performance.now()
+    const provisioned = await provisionOnboardingSite(instance, ownerEmail, {
+      ...onboardingInput(slug, 'Lean Sovereign Node'),
+      featureProfile: 'Lean',
+      starterType: 'creator-publication',
+      starterContent: true,
+      publishingDefaults: {
+        indexingMode: 'noindex',
+        commentsPolicy: 'members',
+        visibility: 'members-only',
+      },
+    })
+    const durationMs = Math.round(performance.now() - startTime)
+
+    expect(durationMs).toBeLessThan(10_000)
+    expect(provisioned.site.id).toBeDefined()
+    expect(provisioned.publication.id).toBeDefined()
+    expect(provisioned.configuredCapabilities).toContain('publication.content')
+
+    const siteSettings = (await instance.findGlobal({
+      slug: 'site-settings',
+      overrideAccess: true,
+    } as never)) as any
+
+    expect(siteSettings.indexingMode).toBe('noindex')
+    expect(siteSettings.seoNoIndex).toBe(true)
+    expect(siteSettings.onboarding?.featureProfile).toBe('Lean')
+  })
+
+  it('exercises full Standard profile lifecycle with publishing defaults', async () => {
+    const instance = await getPayloadInstance()
+    const slug = `standard-${randomUUID().slice(0, 8)}`
+    const ownerEmail = `${slug}@owner.test`
+
+    const startTime = performance.now()
+    const provisioned = await provisionOnboardingSite(instance, ownerEmail, {
+      ...onboardingInput(slug, 'Standard Publishing Publication'),
+      featureProfile: 'Standard',
+      starterType: 'publication-community',
+      starterContent: true,
+      publishingDefaults: {
+        indexingMode: 'index',
+        commentsPolicy: 'open',
+        visibility: 'public',
+      },
+    })
+    const durationMs = Math.round(performance.now() - startTime)
+
+    expect(durationMs).toBeLessThan(10_000)
+    expect(provisioned.site.id).toBeDefined()
+    expect(provisioned.publication.id).toBeDefined()
+
+    const siteSettings = (await instance.findGlobal({
+      slug: 'site-settings',
+      overrideAccess: true,
+    } as never)) as any
+
+    expect(siteSettings.indexingMode).toBe('index')
+    expect(siteSettings.seoNoIndex).toBe(false)
+    expect(siteSettings.onboarding?.featureProfile).toBe('Standard')
+  })
+
+  it('authenticates emergency recovery code, burns it single-use, and rejects replay', async () => {
+    const instance = await getPayloadInstance()
+    const pool = (instance.db as any).pool
+    const config = loadConfig()
+
+    const ownerEmail = `recovery-test-${randomUUID().slice(0, 8)}@owner.test`
+    const userRes = await pool.query(
+      `INSERT INTO users (email, role) VALUES ($1, 'owner') RETURNING id`,
+      [ownerEmail],
+    )
+    const userId = userRes.rows[0].id
+
+    const recoveryCode = randomBytes(10).toString('hex').toUpperCase()
+    const codeHash = createHmac('sha256', config.payloadSecret).update(recoveryCode).digest('hex')
+
+    await pool.query(`INSERT INTO recovery_codes (user_id, code_hash) VALUES ($1, $2)`, [
+      userId,
+      codeHash,
+    ])
+
+    // 1. Valid authentication
+    const session = await authenticateWithRecoveryCode(instance, config, {
+      email: ownerEmail,
+      recoveryCode,
+    })
+    expect(session.token).toBeDefined()
+    expect(session.expirationSeconds).toBeGreaterThan(0)
+
+    // 2. Verify code was marked used
+    const codeRow = await pool.query(
+      `SELECT used_at FROM recovery_codes WHERE user_id = $1 AND code_hash = $2`,
+      [userId, codeHash],
+    )
+    expect(codeRow.rows[0]?.used_at).not.toBeNull()
+
+    // 3. Replay must fail
+    await expect(
+      authenticateWithRecoveryCode(instance, config, {
+        email: ownerEmail,
+        recoveryCode,
+      }),
+    ).rejects.toThrow('Invalid or already used recovery code.')
   })
 })

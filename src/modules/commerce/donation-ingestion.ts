@@ -49,7 +49,7 @@ export async function ingestDonationEvidence(payload: PayloadLike, evidence: Don
     throw new Error('Donation evidence timestamps must be valid.')
   const evidenceHash = sha256({ ...evidence, evidence: evidence.evidence ?? {} })
   const eventKey = `provider:${evidence.providerKey}:${evidence.providerEventId}`
-  const priorEvent = await findOne(payload, 'donation-events', { eventKey })
+  const priorEvent = await findOne(payload, 'donation-events', { eventKey: { equals: eventKey } })
   let eventAlreadyRecorded = false
   if (priorEvent) {
     if (priorEvent.evidence?.evidenceHash && priorEvent.evidence.evidenceHash !== evidenceHash)
@@ -128,7 +128,7 @@ export async function ingestDonationEvidence(payload: PayloadLike, evidence: Don
         overrideAccess: true,
       })
     } catch (error) {
-      const raced = await findOne(payload, 'donation-events', { eventKey })
+      const raced = await findOne(payload, 'donation-events', { eventKey: { equals: eventKey } })
       if (raced) {
         if (raced.evidence?.evidenceHash && raced.evidence.evidenceHash !== evidenceHash)
           throw new Error('Provider event replay contains different evidence.')
@@ -282,7 +282,9 @@ export async function reverseDonation(
     overrideAccess: true,
   })
   if (!donation) throw new Error('Donation was not found.')
-  const prior = await findOne(payload, 'donation-events', { eventKey: input.eventKey })
+  const prior = await findOne(payload, 'donation-events', {
+    eventKey: { equals: input.eventKey },
+  })
   if (prior) return { outcome: 'duplicate' as const, donationId: donation.id }
   if (
     input.kind === 'partially-refunded' &&

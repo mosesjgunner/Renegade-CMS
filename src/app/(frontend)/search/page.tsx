@@ -100,12 +100,16 @@ export default async function SearchPage({
 
           <form method="GET" action="/search" className="mt-6 flex gap-2">
             <input type="hidden" name="site" value={siteId} />
+            <label htmlFor="q" className="sr-only">
+              Search {settings.siteName}
+            </label>
             <input
               id="q"
               name="q"
               type="search"
               defaultValue={q}
               placeholder="Search keywords, topics, or phrases…"
+              aria-label="Search keywords, topics, or phrases"
               className="flex-1 rounded-md border border-stone-300 bg-white px-4 py-2.5 text-stone-900 shadow-sm focus:border-red-600 focus:outline-none focus:ring-1 focus:ring-red-600 dark:border-stone-700 dark:bg-stone-900 dark:text-white"
             />
             <button

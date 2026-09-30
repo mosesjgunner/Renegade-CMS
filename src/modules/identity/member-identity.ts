@@ -731,46 +731,54 @@ export async function exportMemberData(
       limit: 500,
       overrideAccess: true,
     }),
-    store.find({
-      collection: 'supporters',
-      where: { member: { equals: memberId } },
-      limit: 100,
-      depth: 0,
-      overrideAccess: true,
-    }),
+    !(store as any).collections || Boolean((store as any).collections?.['supporters'])
+      ? store.find({
+          collection: 'supporters',
+          where: { member: { equals: memberId } },
+          limit: 100,
+          depth: 0,
+          overrideAccess: true,
+        })
+      : Promise.resolve({ docs: [] }),
   ])
   const supporterIds = supporters.docs.map((supporter) => String(supporter.id))
   const [subscriptions, entitlements] = supporterIds.length
     ? await Promise.all([
-        store.find({
-          collection: 'subscriptions',
-          where: { supporter: { in: supporterIds } },
-          limit: 1000,
-          depth: 0,
-          overrideAccess: true,
-        }),
-        store.find({
-          collection: 'entitlements',
-          where: { supporter: { in: supporterIds } },
-          limit: 2000,
-          depth: 0,
-          overrideAccess: true,
-        }),
+        !(store as any).collections || Boolean((store as any).collections?.['subscriptions'])
+          ? store.find({
+              collection: 'subscriptions',
+              where: { supporter: { in: supporterIds } },
+              limit: 1000,
+              depth: 0,
+              overrideAccess: true,
+            })
+          : Promise.resolve({ docs: [] }),
+        !(store as any).collections || Boolean((store as any).collections?.['entitlements'])
+          ? store.find({
+              collection: 'entitlements',
+              where: { supporter: { in: supporterIds } },
+              limit: 2000,
+              depth: 0,
+              overrideAccess: true,
+            })
+          : Promise.resolve({ docs: [] }),
       ])
     : [{ docs: [] }, { docs: [] }]
   const relationships: Array<Record<string, unknown>> = []
-  for (let page = 1; ; page++) {
-    const batch = await store.find({
-      collection: 'relationships',
-      where: { subject: { equals: memberId } },
-      limit: 500,
-      page,
-      sort: 'id',
-      depth: 0,
-      overrideAccess: true,
-    })
-    relationships.push(...batch.docs)
-    if (batch.docs.length < 500) break
+  if (!(store as any).collections || Boolean((store as any).collections?.['relationships'])) {
+    for (let page = 1; ; page++) {
+      const batch = await store.find({
+        collection: 'relationships',
+        where: { subject: { equals: memberId } },
+        limit: 500,
+        page,
+        sort: 'id',
+        depth: 0,
+        overrideAccess: true,
+      })
+      relationships.push(...batch.docs)
+      if (batch.docs.length < 500) break
+    }
   }
   return {
     member: {
