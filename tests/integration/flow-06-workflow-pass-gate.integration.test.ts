@@ -564,7 +564,7 @@ describe('FLOW-06 Comprehensive Workflow Pass Gate — End-to-End Proof', () => 
       actor: publisherJordan,
       ruleId: 'rule-media-rights',
       reason: 'Authorized temporary waiver for promotional campaign media',
-      expiresAt: '2026-10-01T00:00:00.000Z',
+      expiresAt: new Date(Date.now() + 86400000 * 30).toISOString(),
     })
     expect(waiverResult.snapshotId).toBeDefined()
     expect(waiverResult.overallStatus).toBe('passed')

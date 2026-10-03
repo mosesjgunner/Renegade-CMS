@@ -51,7 +51,7 @@ const native: CatalogProduct = {
         observedAt: '2026-09-01T00:00:00.000Z',
       },
       startsAt: '2026-09-01T00:00:00.000Z',
-      endsAt: '2026-10-01T00:00:00.000Z',
+      endsAt: '2027-10-01T00:00:00.000Z',
       segmentPolicy: { mode: 'public' },
       taxDisplay: 'exclusive',
     },
@@ -229,11 +229,17 @@ describe('SHOP-01 canonical catalog workflows', () => {
       })?.version,
     ).toBe(2)
     expect(
-      resolveActiveOffer(native, {
-        variantSku: 'GUIDE-PDF',
-        currency: 'USD',
-        now: '2026-11-01T00:00:00.000Z',
-      }),
+      resolveActiveOffer(
+        {
+          ...native,
+          offers: [{ ...native.offers[0], endsAt: '2026-10-01T00:00:00.000Z' }],
+        },
+        {
+          variantSku: 'GUIDE-PDF',
+          currency: 'USD',
+          now: '2026-11-01T00:00:00.000Z',
+        },
+      ),
     ).toBeNull()
   })
   it('requires evidence for compare-at pricing and capability-specific recurring terms', () => {

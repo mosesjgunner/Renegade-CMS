@@ -35,4 +35,5 @@ ehthumbs.db
 # Scratch and temporary scripts
 scratch/
 .next*
+.freebuff/
 
