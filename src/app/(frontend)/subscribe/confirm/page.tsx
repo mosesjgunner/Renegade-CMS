@@ -11,7 +11,7 @@ function ConfirmSubscriptionContent() {
     const response = await fetch('/api/subscribers/confirm', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ token: query.get('token') }),
+      body: JSON.stringify({ token: query?.get('token') }),
     })
     const body = await response.json()
     setMessage(body.error ?? 'Your subscription is confirmed.')

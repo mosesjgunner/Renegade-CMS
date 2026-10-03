@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 
 export default function VerifyMemberLink() {
-  const token = useSearchParams().get('token')
+  const token = useSearchParams()?.get('token')
   const [message, setMessage] = useState('Signing you in…')
   useEffect(() => {
     void fetch('/api/member-auth/magic-link/complete', {

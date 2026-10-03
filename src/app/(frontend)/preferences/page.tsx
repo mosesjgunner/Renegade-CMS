@@ -12,7 +12,7 @@ function PreferenceCenter() {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({
-        token: query.get('token'),
+        token: query?.get('token'),
         choices: [{ channel: 'email', purpose: 'marketing', granted: marketing }],
       }),
     })

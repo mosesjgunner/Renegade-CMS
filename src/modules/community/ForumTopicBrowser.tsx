@@ -23,9 +23,9 @@ export function ForumTopicBrowser({
 }) {
   const router = useRouter()
   const params = useSearchParams()
-  const sort = (params.get('sort') ?? 'latest_activity') as TopicSort
+  const sort = (params?.get('sort') ?? 'latest_activity') as TopicSort
   const changeSort = (next: string) => {
-    const query = new URLSearchParams(params.toString())
+    const query = new URLSearchParams(params?.toString())
     query.set('sort', next)
     router.push(`?${query.toString()}`)
   }

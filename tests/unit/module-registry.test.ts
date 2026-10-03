@@ -110,13 +110,22 @@ describe('progressive module registry', () => {
     }
   })
 
-  it('the count guard trips BEFORE exceeding the PostgreSQL argument limit', () => {
-    // Enabling everything would register more collections than PostgreSQL can
-    // handle in one function call — the guard must throw a clear error, not a 500.
+  it('keeps the full module set registered while bounding Payload lock metadata', () => {
     const full = fullRegistrations()
-    expect(() => gatePayloadRegistrations(full, { enabled: parseEnabledModules('all') })).toThrow(
-      /PostgreSQL/i,
-    )
+    const all = gatePayloadRegistrations(full, {
+      enabled: parseEnabledModules('all'),
+      warn: () => {},
+    })
+    expect(all.collections.length).toBe(full.collections.length)
+    expect(
+      all.collections.filter((collection) => collection.lockDocuments !== false).length,
+    ).toBeLessThan(POSTGRES_FUNCTION_ARG_LIMIT)
+    expect(
+      all.collections.find((collection) => collection.slug === 'products')?.lockDocuments,
+    ).toBe(false)
+    expect(
+      all.collections.find((collection) => collection.slug === 'content')?.lockDocuments,
+    ).not.toBe(false)
 
     // Exactly at the limit throws; one below only warns.
     expect(() => assertCollectionCountWithinLimit(POSTGRES_FUNCTION_ARG_LIMIT)).toThrow(
@@ -135,16 +144,6 @@ describe('progressive module registry', () => {
     const quiet = vi.fn()
     assertCollectionCountWithinLimit(COLLECTION_WARN_THRESHOLD - 1, { warn: quiet })
     expect(quiet).not.toHaveBeenCalled()
-  })
-
-  it('allows the full set only with the explicit unsafe-count override (artifact generation)', () => {
-    const full = fullRegistrations()
-    const all = gatePayloadRegistrations(full, {
-      enabled: parseEnabledModules('all'),
-      allowUnsafeCollectionCount: true,
-      warn: () => {},
-    })
-    expect(all.collections.length).toBe(full.collections.length)
   })
 
   it('prunes relationship fields that point at gated-off collections, and restores them when the owning module is enabled', () => {

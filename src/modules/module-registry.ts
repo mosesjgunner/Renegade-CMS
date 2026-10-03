@@ -21,10 +21,10 @@ import type { PayloadRegistrations } from './core/payload-domains'
  * --------------------
  * PostgreSQL caps a single function call at 100 arguments. Payload's built-in
  * "locked documents" dashboard query builds one `json_build_array(...)` with an
- * argument per registered collection, so registering ~120+ collections makes
- * `/admin` fail with a cryptic 500 (SQLSTATE 54023). Registering the floor keeps
- * the count far below that. `assertCollectionCountWithinLimit` turns the failure
- * into a loud, explanatory error at config-build time instead of a runtime 500.
+ * argument per lockable collection. Optional modules remain fully registered,
+ * but their documents do not need Payload's editor-lock metadata; core publishing
+ * collections retain locking and stay below the limit. The guard measures that
+ * actual lockable set and turns a future regression into a clear config error.
  */
 
 export type ModuleId =
@@ -333,8 +333,8 @@ export const COLLECTION_WARN_THRESHOLD = 90
  * Parse the enabled-module list from `RENEGADE_MODULES`.
  * - unset / empty      → floor only (no optional modules)
  * - "all"              → every optional module (used to regenerate the full-set
- *                        payload-types.ts / import map; exceeds the PG limit, so
- *                        it must be paired with the unsafe-count override)
+ *                        payload-types.ts / import map; optional collection
+ *                        locks are disabled automatically to keep the runtime safe)
  * - "a, b , c"         → those modules (whitespace-tolerant, case-insensitive)
  * Unknown ids throw a clear error listing the valid module ids.
  */
@@ -395,7 +395,7 @@ function buildOwnership(): OwnershipMaps {
 export type GateOptions = {
   /** Enabled optional modules. */
   enabled: Set<ModuleId>
-  /** Bypass the hard PostgreSQL count guard. Reserved for full-set artifact generation. */
+  /** Compatibility override for custom registrations that intentionally retain many locks. */
   allowUnsafeCollectionCount?: boolean
   /** Injected for tests; defaults to console. */
   warn?: (message: string) => void
@@ -428,7 +428,8 @@ export function assertManifestMatchesRegistrations(full: PayloadRegistrations): 
 
 /**
  * Fail loud before PostgreSQL's 100-argument limit turns into a cryptic /admin
- * 500. Throws above the hard limit; warns as the count approaches it.
+ * 500. `count` is the number of lockable collections, not total registrations.
+ * Throws above the hard limit; warns as the count approaches it.
  */
 export function assertCollectionCountWithinLimit(
   count: number,
@@ -440,13 +441,13 @@ export function assertCollectionCountWithinLimit(
       `Renegade is configured to register ${count} collections, at or beyond PostgreSQL's ` +
         `${POSTGRES_FUNCTION_ARG_LIMIT}-argument function limit. Payload's locked-documents ` +
         `dashboard query would fail at runtime with a cryptic 500 (SQLSTATE 54023). ` +
-        `Enable fewer optional modules via RENEGADE_MODULES, or split the deployment.`,
+        `Disable locking for additional collections or split the deployment.`,
     )
   if (count >= COLLECTION_WARN_THRESHOLD)
     warn(
-      `[renegade] ${count} collections registered — approaching PostgreSQL's ` +
+      `[renegade] ${count} lockable collections — approaching PostgreSQL's ` +
         `${POSTGRES_FUNCTION_ARG_LIMIT}-argument limit (warn threshold ${COLLECTION_WARN_THRESHOLD}). ` +
-        `Consider disabling optional modules via RENEGADE_MODULES.`,
+        `Consider keeping optional module collections lock-free.`,
     )
 }
 
@@ -551,13 +552,27 @@ export function gatePayloadRegistrations(
   const globals = full.globals.filter((global) => keep(ownership.globals.get(global.slug)))
   const tasks = full.tasks.filter((task) => keep(ownership.tasks.get(task.slug)))
 
-  assertCollectionCountWithinLimit(selectedCollections.length, options)
-
   const registeredSlugs = new Set(selectedCollections.map((collection) => collection.slug))
-  const collections = selectedCollections.map((collection) =>
-    pruneEntityRelationships(collection, registeredSlugs),
+  const collections = selectedCollections.map((collection) => {
+    const pruned = pruneEntityRelationships(collection, registeredSlugs)
+    // Payload's locked-documents relation is the PostgreSQL bottleneck. Core
+    // publishing entities retain collaborative locking; optional module data
+    // remains fully available but does not participate in that relation.
+    return ownership.collections.has(collection.slug)
+      ? { ...pruned, lockDocuments: false as const }
+      : pruned
+  })
+  const prunedGlobals = globals.map((global) => {
+    const pruned = pruneEntityRelationships(global, registeredSlugs)
+    return ownership.globals.has(global.slug)
+      ? { ...pruned, lockDocuments: false as const }
+      : pruned
+  })
+
+  assertCollectionCountWithinLimit(
+    collections.filter((collection) => collection.lockDocuments !== false).length,
+    options,
   )
-  const prunedGlobals = globals.map((global) => pruneEntityRelationships(global, registeredSlugs))
 
   return { collections, globals: prunedGlobals, tasks }
 }

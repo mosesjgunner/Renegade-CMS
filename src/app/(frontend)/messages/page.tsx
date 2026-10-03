@@ -29,7 +29,7 @@ function csrfHeader(): Record<string, string> {
 
 function MessagesContent() {
   const searchParams = useSearchParams()
-  const initialRecipient = searchParams.get('targetMemberId') ?? ''
+  const initialRecipient = searchParams?.get('targetMemberId') ?? ''
 
   const [siteId, setSiteId] = useState('')
   const [currentMemberId, setCurrentMemberId] = useState('')

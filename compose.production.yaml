@@ -42,8 +42,11 @@ services:
       DEPLOYMENT_PROFILE: ${DEPLOYMENT_PROFILE:-Standard}
       ENABLE_TEST_ROUTES: 'false'
       LOCAL_E2E_TEST_MODE: ${LOCAL_E2E_TEST_MODE:-false}
-      RENEGADE_MODULES: ${RENEGADE_MODULES:-all}
-      RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT: ${RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT:-true}
+      # Optional modules are opt-in. When enabled, the app keeps optional
+      # collections available while disabling their Payload lock metadata so
+      # the locked-documents query remains below PostgreSQL's limit.
+      RENEGADE_MODULES: ${RENEGADE_MODULES:-}
+      RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT: ${RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT:-false}
     command: ['npm', 'run', 'db:migrate']
     depends_on:
       postgres:

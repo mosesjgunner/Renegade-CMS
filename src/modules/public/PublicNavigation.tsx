@@ -8,7 +8,7 @@ import { isActiveMenuItem, type PublicMenuItem, type PublicNavigation } from './
 
 function MenuLink({ item, nested = false }: { item: PublicMenuItem; nested?: boolean }) {
   const path = usePathname()
-  const active = isActiveMenuItem(item, path)
+  const active = isActiveMenuItem(item, path ?? '/')
   const external = !item.href.startsWith('/')
   const className = `rounded px-3 py-2 text-sm ${active ? 'font-bold text-red-700 underline underline-offset-4' : 'text-stone-700 hover:text-red-700 dark:text-stone-200'} ${nested ? 'block' : ''}`
   return external ? (
