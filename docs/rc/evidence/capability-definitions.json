@@ -1,0 +1,83 @@
+[
+  {
+    "key": "core.publishing",
+    "domainId": "core",
+    "required": true
+  },
+  {
+    "key": "editorial.workflow",
+    "domainId": "editorial",
+    "required": true
+  },
+  {
+    "key": "media.processing",
+    "domainId": "media",
+    "required": false,
+    "requiresWorker": true
+  },
+  {
+    "key": "social.distribution",
+    "domainId": "social",
+    "required": false,
+    "providerCapability": "social.publish.text",
+    "requiresWorker": true
+  },
+  {
+    "key": "audience.transactional-email",
+    "domainId": "audience",
+    "required": false,
+    "providerCapability": "email.transactional"
+  },
+  {
+    "key": "commerce.checkout",
+    "domainId": "commerce",
+    "required": false,
+    "providerCapability": "payments.checkout.one_time"
+  },
+  {
+    "key": "analytics.reporting",
+    "domainId": "analytics",
+    "required": false
+  },
+  {
+    "key": "experiences.experiments",
+    "domainId": "experiences",
+    "required": false
+  },
+  {
+    "key": "quality.scanning",
+    "domainId": "quality",
+    "required": false,
+    "requiresWorker": true
+  },
+  {
+    "key": "portability.import-export",
+    "domainId": "core",
+    "required": false
+  },
+  {
+    "key": "extensions.connections",
+    "domainId": "extensions",
+    "required": false
+  },
+  {
+    "key": "networking.federation",
+    "domainId": "networking",
+    "required": false,
+    "providerCapability": "federation.activitypub.actor",
+    "configurationRequired": true
+  },
+  {
+    "key": "collaboration.realtime",
+    "domainId": "collaboration",
+    "required": false,
+    "configurationRequired": true,
+    "requiresWorker": true
+  },
+  {
+    "key": "ai.assistance",
+    "domainId": "ai",
+    "required": false,
+    "providerCapability": "ai.text.rewrite"
+  }
+]

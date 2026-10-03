@@ -1,0 +1,19 @@
+# Security ledger
+
+Source candidate: `e24fc53d9e370e28f01398c561b0f5adc4884756`. Reconciled 2026-10-03. Initial working tree was clean. This documentation freeze binds the source candidate; its artifact commit is discoverable with git log -- docs/rc. It does not establish runtime release readiness.
+
+| Boundary                              | Source / contract                                                   | Status  | First known issue or mandatory proof                                                                               |
+| ------------------------------------- | ------------------------------------------------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------ |
+| Admin identity / passkeys             | src/modules/operations/passkey-auth.ts; src/app/(frontend)/api/auth | BLOCKER | Replay/origin/recovery/session/CSRF and owner/administrator/staff browser matrix pending                           |
+| Multi-site access                     | Collection access callbacks; route actor/site resolvers             | BLOCKER | Audience first-site overrideAccess fallback and unscoped subscriber total require repair/audit                     |
+| Member privacy                        | src/modules/community/policy.ts; src/collections/Identity.ts        | BLOCKER | Member identity distinct from Payload admin; profile visibility, block/mute/export/deletion negative proof pending |
+| Provider secrets / outbound egress    | src/modules/ai; src/modules/extensions; provider adapters           | BLOCKER | Credential encryption/redaction/rotation and allowlisted egress must be exercised; no secret values printed        |
+| Webhook / payment / delivery outcomes | Commerce, telecom, social and network handlers                      | BLOCKER | Signature/replay/idempotency/unknown outcome/retry limits and receipt audit pending                                |
+| Media / uploads / editor              | Media routes and image-editor adapters                              | BLOCKER | Private byte access, MIME/size, references/replacement/deletion and cross-site assets pending                      |
+| Publication / builder / AI            | Canonical content and layout services; proposal gateway             | BLOCKER | Draft isolation, publish authorization, human approval, sanitization and transaction rollback pending              |
+| Test bypass isolation                 | LOCAL_E2E_TEST_MODE and ENABLE_TEST_ROUTES guards                   | BLOCKER | Development fixtures must not bypass production authorization; production negative acceptance pending              |
+| Operational recovery                  | src/scripts/operational-\*; docker/worker-healthcheck.mjs           | BLOCKER | Secret-safe manifests, restore consistency, restart leases and audit recovery pending                              |
+
+Example credentials/tokens are inventoried by source search in evidence/stale-truth.md; matches in fixtures/build defaults are not automatically leaked production secrets. No credential-bearing environment file was copied.
+
+Source-confirmed review priority: `/connections` obtains operational connection, delivery and audit data using overrideAccess without rejecting an unauthenticated actor before the queries/render. Its `isStaff` flag controls management UI, while account identifiers remain renderable. Treat disclosure and tenant scope as BLOCKER; no live exploit or browser claim is made here. Audience's first-site fallback and unscoped subscriber count are a separate tenant-boundary blocker. Frontend `/admin/*` wrappers must also be tested separately from the Payload catchall because several render client components without an explicit page-level authentication guard.

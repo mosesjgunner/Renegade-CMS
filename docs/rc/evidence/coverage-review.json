@@ -1,0 +1,16 @@
+{
+  "sourceSha": "e24fc53d9e370e28f01398c561b0f5adc4884756",
+  "registrationStatusRows": 240,
+  "catalogDefinitions": 14,
+  "extraCapabilityRows": 7,
+  "deferredReferenceCapabilities": 2,
+  "filesystemRoutes": 258,
+  "routeRows": 510,
+  "providerSourceRows": 26,
+  "shippingUnknownStatuses": 0,
+  "coverageIssues": [],
+  "migrationStatusRows": 108,
+  "applied": 108,
+  "pending": 0,
+  "registeredNamesMissingFromStatus": []
+}

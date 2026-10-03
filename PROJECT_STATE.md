@@ -1,3 +1,5 @@
+> Historical release snapshot. Current release truth for source SHA e24fc53d9e370e28f01398c561b0f5adc4884756 is the [RC ledger](docs/rc/README.md). Prior VERIFIED/PASS labels and test/migration counts below do not establish current readiness. RC release verdict: BLOCKED; see the ledger and dependency-ordered blockers.
+
 ## First-Time Operator and Visitor Sweep Passed — 2026-09-24
 
 - **Release Status**: **PARTIAL (Customer-Upgrade Proof Unavailable)**

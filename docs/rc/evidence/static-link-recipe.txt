@@ -1,0 +1,20 @@
+﻿import fs from 'node:fs'
+const walk=d=>fs.readdirSync(d,{withFileTypes:true}).flatMap(e=>e.isDirectory()?walk(d+'/'+e.name):[d+'/'+e.name])
+const inv=JSON.parse(fs.readFileSync('docs/rc/evidence/sanitized-config.json','utf8'))['Standard/all']
+const routeFiles=walk('src/app').filter(f=>/\/(page|route)\.(tsx|ts)$/.test(f))
+const routes=routeFiles.map(f=>'/'+f.replace(/^src\/app\//,'').replace(/\/(page|route)\.(tsx|ts)$/,'').split('/').filter(s=>!/^\(.*\)$/.test(s)).join('/'))
+const config=fs.readFileSync('src/payload.config.ts','utf8')
+for(const m of config.matchAll(/path: '([^']+)'/g))routes.push('/admin'+(m[1]==='/'?'':m[1]))
+const builtins=['/admin','/admin/login','/admin/logout','/admin/account','/admin/create-first-user','/admin/forgot','/admin/reset']
+const found=[]
+for(const f of walk('src').filter(f=>/\.(ts|tsx)$/.test(f))){
+ const text=fs.readFileSync(f,'utf8')
+ for(const m of text.matchAll(/(?:href="|href: '|href: "|href=\{')((?:\/admin)[^'"{}]*)/g)){
+  const url=m[1].split('?')[0].split('#')[0]
+  const col=url.match(/^\/admin\/(collections|globals)\/([^/]+)/)
+  const valid=col?inv[col[1]].includes(col[2]):builtins.includes(url)||routes.some(r=>r===url||(!r.includes('...')&&r.includes('[')&&r.split('/').length===url.split('/').length&&r.split('/').every((s,i)=>s.startsWith('[')||s===url.split('/')[i])))
+  if(!valid)found.push({file:f,url})
+ }
+}
+fs.writeFileSync('docs/rc/evidence/static-admin-link-audit.json',JSON.stringify({scope:'Static literal admin hrefs; dynamic expressions require browser review. All-module targets checked; Lean gating separately recorded as RC-03.',unresolved:found},null,2)+'\n')
+console.log(JSON.stringify(found))

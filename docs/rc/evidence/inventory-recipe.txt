@@ -1,0 +1,28 @@
+﻿import fs from 'node:fs'
+import { loadConfig } from './src/modules/core/config'
+import { payloadDomains, registeredPayloadDomains } from './src/modules/payload-domains'
+import { gatePayloadRegistrations, parseEnabledModules, OPTIONAL_MODULES } from './src/modules/module-registry'
+import { migrations } from './src/migrations'
+import { CAPABILITY_DEFINITIONS } from './src/modules/core/capabilities'
+const config = loadConfig({ NODE_ENV: 'development', DATABASE_URL: 'postgresql://inventory:inventory@localhost/inventory', PAYLOAD_SECRET: 'inventory-only-not-a-runtime-secret-0123456789', APP_URL: 'http://localhost:3000' })
+const full = registeredPayloadDomains(config)
+const slim = (r: typeof full) => ({ collections: r.collections.map(c => ({slug:c.slug, hidden: typeof c.admin?.hidden === 'function' ? 'conditional' : c.admin?.hidden ?? false, access: Object.keys(c.access ?? {})})), globals:r.globals.map(g=>({slug:g.slug, access:Object.keys(g.access ?? {})})), tasks:r.tasks.map(t=>({slug:t.slug})) })
+fs.mkdirSync('docs/rc/evidence', { recursive:true })
+fs.writeFileSync('docs/rc/evidence/inventory.json', JSON.stringify({sha:'e24fc53d9e370e28f01398c561b0f5adc4884756', migrationCount:migrations.length, migrations:migrations.map(m=>m.name), domains:payloadDomains(config).map(d=>({id:d.id,collections:(d.collections??[]).map(c=>c.slug),globals:(d.globals??[]).map(g=>g.slug),tasks:(d.tasks??[]).map(t=>t.slug)})), modules:OPTIONAL_MODULES, lean:slim(gatePayloadRegistrations(full,{enabled:parseEnabledModules(undefined)})), all:slim(gatePayloadRegistrations(full,{enabled:parseEnabledModules('all')}))},null,2)+'\n')
+console.log('Inventory written; migrations:',migrations.length)
+const sanitized: Record<string, unknown> = {}
+process.env.NODE_ENV = 'development'
+process.env.DATABASE_URL = config.databaseUrl
+process.env.PAYLOAD_SECRET = config.payloadSecret
+process.env.APP_URL = config.appUrl
+for (const profile of ['Lean', 'Standard']) {
+  process.env.DEPLOYMENT_PROFILE = profile
+  for (const modules of ['', 'all']) {
+    process.env.RENEGADE_MODULES = modules
+    const built = await (await import(`./src/payload.config.ts?inventory=${profile}-${modules || 'floor'}`)).default
+    sanitized[`${profile}/${modules || 'floor'}`] = { collections: built.collections.map((c: {slug: string}) => c.slug), globals: built.globals.map((g: {slug: string}) => g.slug), tasks: built.jobs.tasks.map((t: {slug: string}) => t.slug) }
+  }
+}
+fs.writeFileSync('docs/rc/evidence/sanitized-config.json', JSON.stringify(sanitized,null,2)+'\n')
+fs.writeFileSync('docs/rc/evidence/capability-definitions.json', JSON.stringify(CAPABILITY_DEFINITIONS,null,2)+'\n')
+console.log('Sanitized configs written')

@@ -1,0 +1,123 @@
+﻿
+> renegade-cms@0.1.0 db:status
+> npm run payload -- migrate:status
+
+
+> renegade-cms@0.1.0 payload
+> cross-env NODE_OPTIONS=--no-deprecation payload migrate:status
+
+[18:28:11] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[18:28:11] [32mINFO[39m: [36mReading migration files from C:\Projects\RENEGADE CMS\Renegade-CMS\src\migrations[39m
+┌──────────────────────────────────────────────────────────────┬───────┬─────┐
+│[37m [0m[01m                                                        Name[0m │[37m [0m[01mBatch[0m │[37m [0m[01mRan[0m │
+├──────────────────────────────────────────────────────────────┼───────┼─────┤
+│[37m [0m[32m                          20260812_010209_initial_foundation[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                         20260812_034055_m02_operations_jobs[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                  20260812_080000_m02_first_run_installation[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                  20260812_081000_m02_single_use_setup_token[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m          20260813_054441_canonical_information_architecture[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m         20260814_120000_m03_5_event_timeline_reconciliation[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                               20260818_000000_site_settings[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m             20260818_010000_reconcile_seo_canonical_columns[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                    20260818_062327_m04_c_editorial_workflow[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                                20260822_010232_page_layouts[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                 20260822_012313_m07_a_passwordless_identity[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                                             20260825_171336[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                                             20260825_171738[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                         20260825_173116_social_distribution[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                           20260825_180000_calendar_graphics[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                          20260826_053416_second_pass_schema[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                   20260829_110000_content_release_execution[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                             20260829_120000_quality_runtime[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                20260829_130000_progressive_disclosure_admin[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                         20260829_140000_onboarding_settings[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                                20260829_150000_integrations[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                        20260829_160000_activitypub_delivery[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                          20260829_170000_network_experience[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                               20260829_180000_collaboration[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                      20260830_090000_realtime_collaboration[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                      20260830_100000_media_storage_workflow[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                             20260830_110000_discoverability[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m               20260830_120000_discoverability_lock_relation[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                        20260830_130000_admin_auth_hardening[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                20260831_090000_phase_b_execution_foundation[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                   20260831_100000_analytics_privacy_runtime[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                             20260831_110000_events_workflow[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                  20260831_120000_media_publishing_workflows[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                        20260831_130000_books_quality_center[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                         20260831_140000_public_api_webhooks[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m           20260831_150000_phase_b_locked_document_relations[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m       20260831_160000_phase_b_book_lifecycle_reconciliation[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m         20260831_170000_phase_b_scoped_media_reconciliation[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m             20260831_180000_phase_b_video_captions_relation[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m            20260831_190000_phase_b_integrations_id_defaults[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                  20260831_200000_member_identity_foundation[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m              20260902_000000_pub_02_content_publishing_pass[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m           20260902_010000_pub_01_canonical_tenant_isolation[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                     20260902_020000_pub_04_publishing_floor[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                      20260912_000000_pre_00_theme_selection[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                      20260912_010000_pre_01_theme_lifecycle[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m               20260912_020000_pre_01_presentation_snapshots[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                        20260912_030000_pre_03_visual_editor[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                 20260912_040000_pre_04_reusable_composition[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                20260912_050000_pre_05_legacy_site_migration[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                       20260912_060000_med_00_media_contract[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                      20260912_070000_med_01_upload_sessions[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                       20260913_080000_med_02_dam_governance[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                       20260913_090000_med_03_image_variants[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                     20260913_100000_med_04_podcast_workflow[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                       20260914_110000_med_05_video_workflow[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                  20260914_120000_disc_01_discovery_workflow[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                   20260914_121000_disc_01_shared_seo_fields[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                   20260915_130000_disc_04_search_projection[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m             20260916_070000_editorial_quality_gate_snapshot[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                   20260920_000000_aud_00_delivery_snapshots[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                    20260920_010000_aud_01_audience_evidence[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                                20260920_020000_aud_02_forms[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                       20260920_030000_aud_03_email_composer[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                       20260920_050000_aud_05_email_delivery[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                              20260920_060000_aud_06_telecom[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                     20260920_070000_aud_07_audience_command[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                   20260920_080000_aud_08_audience_pass_gate[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                    20260920_090000_comm_00_community_domain[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m               20260920_100000_comm_01_member_auth_lifecycle[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                  20260921_000000_comm_02_profile_projection[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m        20260921_010000_comm_02_profile_media_usage_relation[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                   20260921_020000_comm_03a_comment_identity[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                  20260921_030000_comm_03c_comment_reactions[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m        20260921_040000_comm_03d_thread_lifecycle_and_outbox[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                       20260921_050000_comm_04a_forum_spaces[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                 20260922_000000_comm_04b_forum_topics_posts[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m          20260922_010000_comm_04c_forum_browsing_read_state[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m             20260922_020000_comm_04d_forum_topic_operations[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m        20260922_030000_comm_05a_moderation_registry_reports[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m       20260922_040000_comm_05b_moderation_actions_sanctions[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m           20260922_050000_comm_05c_moderation_appeals_audit[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m               20260922_060000_comm_05d_abuse_triage_console[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                      20260922_070000_comm_07a_conversations[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                   20260922_080000_comm_07b_message_requests[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                20260922_090000_comm_07c_message_attachments[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m               20260922_100000_comm_07d_group_administration[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                  20260922_110000_comm_06b_inbox_projections[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m20260922_120000_comm_06c_notification_preferences_and_outbox[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                 20260922_130000_commerce_canonical_contract[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                   20260923_010000_shop_01_catalog_workflows[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m        20260923_020000_shop_02_carts_and_checkout_proposals[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                  20260923_030000_shop_04_payment_operations[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                       20260923_040000_shop_05_subscriptions[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m             20260923_050000_shop_06_affiliate_and_referrals[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                           20260923_060000_shop_07_donations[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                  20260923_070000_shop_07_donation_lifecycle[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                 20260923_080000_shop_03_pod_and_fulfillment[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                 20260923_090000_events_required_entitlement[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                   20260923_100000_flow_03_scheduler_runtime[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                     20260923_110000_content_release_runtime[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                    20260924_000000_collection_scope_columns[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m               20260924_010000_donation_checkout_idempotency[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                           20260924_020000_commerce_job_enum[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                                20260924_030000_ai_proposals[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                    20260924_040000_ai_locked_documents_rels[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                       20260924_050000_ai_budget_reservation[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+│[37m [0m[32m                    20260924_060000_semantic_route_templates[0m │[37m [0m[32m    1[0m │[37m [0m[32mYes[0m │
+└──────────────────────────────────────────────────────────────┴───────┴─────┘
+[18:28:12] [32mINFO[39m: [36mDone.[39m
