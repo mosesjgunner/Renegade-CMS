@@ -22,6 +22,7 @@ export type ReleaseTargetType =
   | 'redirect'
   | 'product'
   | 'distribution'
+  | 'newsletter'
 
 export type ReleaseItemStatus =
   | 'pending'

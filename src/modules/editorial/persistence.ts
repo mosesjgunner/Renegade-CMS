@@ -291,12 +291,26 @@ export const loadBundleByArticleId = async (
   payload: Payload,
   articleId: string,
 ): Promise<EditorialBundle> => {
-  const article = (await payload.findByID({
+  let article = (await payload.findByID({
     collection: 'article-family-content',
     id: articleId,
     depth: 2,
     overrideAccess: true,
-  } as never)) as Doc
+  } as never).catch(() => null)) as Doc
+
+  if (!article) {
+    article = (await findOne(
+      payload,
+      'article-family-content',
+      { content: { equals: articleId } },
+      2,
+    )) as Doc
+  }
+
+  if (!article) {
+    throw new Error(`Article companion document for ID "${articleId}" not found.`)
+  }
+
   const content = (await payload.findByID({
     collection: 'content',
     id: idOf(article.content),
@@ -306,7 +320,7 @@ export const loadBundleByArticleId = async (
   const revisions = (
     (await payload.find({
       collection: 'revision-records',
-      where: { article: { equals: articleId } },
+      where: { article: { equals: article.id } },
       sort: 'sequence',
       limit: 100,
       depth: 1,

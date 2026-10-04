@@ -51,12 +51,26 @@ export async function createRelease(
     throw new Error('Release plannedInstant must be a valid ISO instant.')
   }
 
+  let validOwnerMemberId: string | undefined = undefined
+  if (input.ownerId) {
+    try {
+      const member = (await payload.findByID({
+        collection: 'members' as never,
+        id: input.ownerId,
+        overrideAccess: true,
+      })) as { id?: string | number } | null
+      if (member?.id) validOwnerMemberId = String(member.id)
+    } catch {
+      // Not a valid members ID, leave undefined so DB FK doesn't fail
+    }
+  }
+
   const data: Record<string, any> = {
     title: input.name,
     name: input.name,
     purpose: input.purpose,
     ownerTeam: input.ownerTeam,
-    owner: input.ownerId,
+    owner: validOwnerMemberId,
     site: input.siteId,
     publication: input.publicationId,
     plannedInstant,

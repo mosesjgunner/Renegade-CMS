@@ -40,12 +40,34 @@ export async function executeDatabaseStep(
   if (targetType === 'article') {
     // 1. Article / Post
     if (payload.findByID) {
-      const article = (await payload.findByID({
+      let article = (await payload.findByID({
         collection: 'article-family-content' as never,
         id: item.targetId,
         depth: 0,
         overrideAccess: true,
-      } as never)) as unknown as Doc
+      } as never).catch(() => null)) as unknown as Doc
+
+      let isContentDoc = false
+      if (!article && payload.find) {
+        const found = (await payload.find({
+          collection: 'article-family-content' as never,
+          where: { content: { equals: item.targetId } },
+          limit: 1,
+          depth: 0,
+          overrideAccess: true,
+        } as never).catch(() => null)) as unknown as { docs: Doc[] }
+        article = found?.docs?.[0]
+      }
+
+      if (!article) {
+        article = (await payload.findByID({
+          collection: 'content' as never,
+          id: item.targetId,
+          depth: 0,
+          overrideAccess: true,
+        } as never).catch(() => null)) as unknown as Doc
+        if (article) isContentDoc = true
+      }
 
       const lastKnownGoodState = {
         previousPublishedRevision: idOf(article?.latestPublishedRevision),
@@ -55,7 +77,7 @@ export async function executeDatabaseStep(
       // Check if already published with target revision
       if (
         (article?.lifecycle === 'published' || article?.status === 'published') &&
-        idOf(article?.latestPublishedRevision) === revisionId
+        (!revisionId || idOf(article?.latestPublishedRevision) === revisionId)
       ) {
         return {
           output: { alreadyPublished: true, revisionId },
@@ -75,17 +97,34 @@ export async function executeDatabaseStep(
           idempotencyKey: `release:${release.id}:${itemId}`,
         })
       } catch (err) {
-        // Fallback direct update if scheduled-publish-job contract was not standalone
-        await payload.update({
-          collection: 'article-family-content' as never,
-          id: item.targetId,
-          data: {
-            status: 'published',
-            lifecycle: 'published',
-            latestPublishedRevision: revisionId,
-          },
-          overrideAccess: true,
-        } as never)
+        // Fallback direct update
+        if (isContentDoc) {
+          await payload.update({
+            collection: 'content' as never,
+            id: item.targetId,
+            data: { status: 'published' },
+            overrideAccess: true,
+          } as never).catch(() => null)
+        } else {
+          await payload.update({
+            collection: 'article-family-content' as never,
+            id: article ? idOf(article.id) : item.targetId,
+            data: {
+              status: 'published',
+              lifecycle: 'published',
+              latestPublishedRevision: revisionId,
+            },
+            overrideAccess: true,
+          } as never).catch(() => null)
+          if (article?.content) {
+            await payload.update({
+              collection: 'content' as never,
+              id: idOf(article.content),
+              data: { status: 'published' },
+              overrideAccess: true,
+            } as never).catch(() => null)
+          }
+        }
       }
 
       return {
@@ -289,6 +328,41 @@ export async function executeDatabaseStep(
     }
   }
 
+  if (targetType === 'newsletter') {
+    // 8. Newsletter / Email Message Artifact
+    if (payload.findByID) {
+      const email = (await payload.findByID({
+        collection: 'email-messages' as never,
+        id: item.targetId,
+        depth: 0,
+        overrideAccess: true,
+      } as never).catch(() => null)) as unknown as Doc
+
+      const lastKnownGoodState = {
+        previousStatus: String(email?.status || 'draft'),
+      }
+
+      await payload.update({
+        collection: 'email-messages' as never,
+        id: item.targetId,
+        data: {
+          status: 'scheduled',
+          scheduledAt: release.plannedInstant || release.scheduledFor || new Date().toISOString(),
+        },
+        overrideAccess: true,
+      } as never).catch(() => null)
+
+      return {
+        output: { scheduled: true, emailId: item.targetId },
+        lastKnownGoodState,
+      }
+    }
+    return {
+      output: { scheduled: true, emailId: item.targetId },
+      lastKnownGoodState: { previousStatus: 'draft' },
+    }
+  }
+
   return {
     output: { executed: true, targetId: item.targetId },
     lastKnownGoodState: {},
@@ -313,20 +387,44 @@ async function compensateStep(
         ? String(state.previousPublishedRevision)
         : null
       const prevStatus = String(state.previousStatus || 'approved')
-      await payload.update({
-        collection: 'article-family-content' as never,
-        id: item.targetId,
-        data: {
-          status: prevStatus,
-          lifecycle: prevStatus,
-          latestPublishedRevision: prevRev,
-        },
-        overrideAccess: true,
-      } as never)
+      try {
+        await payload.update({
+          collection: 'article-family-content' as never,
+          id: item.targetId,
+          data: {
+            status: prevStatus,
+            lifecycle: prevStatus,
+            latestPublishedRevision: prevRev,
+          },
+          overrideAccess: true,
+        } as never)
+      } catch {
+        await payload.update({
+          collection: 'content' as never,
+          id: item.targetId,
+          data: { status: prevStatus },
+          overrideAccess: true,
+        } as never).catch(() => null)
+      }
       return {
         compensated: true,
         details: { restoredPublishedRevision: prevRev, status: prevStatus },
       }
+    }
+  }
+
+  if (item.targetType === 'newsletter') {
+    if (payload.update) {
+      const prevStatus = String(state.previousStatus || 'draft')
+      await payload.update({
+        collection: 'email-messages' as never,
+        id: item.targetId,
+        data: {
+          status: prevStatus,
+        },
+        overrideAccess: true,
+      } as never).catch(() => null)
+      return { compensated: true, details: { restoredStatus: prevStatus } }
     }
   }
 

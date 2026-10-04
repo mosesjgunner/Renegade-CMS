@@ -4,6 +4,7 @@ import {
   bulkExecuteWorkflowActions,
   categorizeWorkflowQueues,
   CMoSWorkflowEngine,
+  evaluateQueueMembership,
   validateWorkflowTemplate,
   WorkflowPermissionError,
   WorkflowStateError,
@@ -72,9 +73,14 @@ export async function getWorkflowItemForArticle(
     // Fallback if not found in DB
   }
 
-  const siteId = (doc?.site as string) || (doc?.siteId as string) || 'default-site'
+  const siteId =
+    typeof doc?.site === 'object' && doc?.site !== null
+      ? String((doc.site as Record<string, unknown>).id)
+      : (doc?.site as string) || (doc?.siteId as string) || 'default-site'
   const ownerId =
-    (doc?.owner as string) || (doc?.ownerId as string) || actorUserId || 'author-default'
+    typeof doc?.owner === 'object' && doc?.owner !== null
+      ? String((doc.owner as Record<string, unknown>).id)
+      : (doc?.owner as string) || (doc?.ownerId as string) || actorUserId || 'author-default'
   const status = (doc?.status as string) || 'draft'
   const currentRevisionId = (doc?.currentRevisionId as string) || 'rev-1'
 
@@ -113,6 +119,8 @@ export async function getWorkflowItemForArticle(
     queueMembership: 'assigned',
     updatedAt: new Date().toISOString(),
   }
+
+  newItem.queueMembership = evaluateQueueMembership(newItem, actorUserId)
 
   workflowItemsStore.set(articleId, newItem)
   return newItem
@@ -227,7 +235,33 @@ export async function executeWorkflowAction(
         status: updatedItem.status,
       },
       overrideAccess: true,
-    } as never)
+    } as never).catch(() => null)
+
+    await payload.update({
+      collection: 'article-family-content' as never,
+      id: input.articleId,
+      data: {
+        lifecycle: updatedItem.status,
+      },
+      overrideAccess: true,
+    } as never).catch(() => null)
+
+    if (payload.find) {
+      const companions = (await payload.find({
+        collection: 'article-family-content' as never,
+        where: { content: { equals: input.articleId } },
+        limit: 1,
+        overrideAccess: true,
+      } as never).catch(() => null)) as unknown as { docs: Array<{ id: string }> }
+      if (companions?.docs?.[0]) {
+        await payload.update({
+          collection: 'article-family-content' as never,
+          id: companions.docs[0].id,
+          data: { lifecycle: updatedItem.status },
+          overrideAccess: true,
+        } as never).catch(() => null)
+      }
+    }
   } catch {
     // Safe ignore if database is in mock or article is virtual
   }
@@ -239,6 +273,26 @@ export async function getWorkflowQueuesForUser(
   payload: Payload,
   input: { userId: string; role: string; siteId?: string | null; now?: string },
 ) {
+  // Hydrate from DB if articles exist
+  try {
+    const docsResult = await payload.find({
+      collection: 'content',
+      limit: 100,
+      overrideAccess: true,
+      ...(input.siteId ? { where: { site: { equals: input.siteId } } } : {}),
+    } as never)
+    if (docsResult && Array.isArray(docsResult.docs)) {
+      for (const doc of docsResult.docs) {
+        const id = String((doc as unknown as { id: unknown }).id)
+        if (!workflowItemsStore.has(id)) {
+          await getWorkflowItemForArticle(payload, id, input.userId)
+        }
+      }
+    }
+  } catch {
+    // Fall back to memory store
+  }
+
   // Return all items in store
   const allItems = Array.from(workflowItemsStore.values())
   const filtered = input.siteId ? allItems.filter((i) => i.siteId === input.siteId) : allItems
@@ -270,11 +324,17 @@ export async function bulkExecuteWorkflowItems(
 
   // Save succeeded items
   for (const res of result.results) {
-    if (res.success) {
-      const item = workflowItemsStore.get(res.itemId)
-      if (item && res.status) {
-        item.status = res.status
-        saveWorkflowItem(item)
+    if (res.success && res.updatedItem) {
+      saveWorkflowItem(res.updatedItem)
+      try {
+        await payload.update({
+          collection: 'content',
+          id: res.itemId,
+          data: { status: res.updatedItem.status },
+          overrideAccess: true,
+        } as never)
+      } catch {
+        // ignore
       }
     }
   }

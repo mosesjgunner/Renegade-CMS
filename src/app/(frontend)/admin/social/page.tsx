@@ -1,10 +1,6 @@
-import UnavailableWorkspace from '@/modules/admin/UnavailableWorkspace'
+import SocialCommandCenter from '@/modules/admin/SocialCommandCenter'
 
 export default function SocialAdminPage() {
-  return (
-    <UnavailableWorkspace
-      title="Social distribution"
-      reason="Social command-center execution is unavailable pending persisted account and dispatch verification."
-    />
-  )
+  return <SocialCommandCenter />
 }
+

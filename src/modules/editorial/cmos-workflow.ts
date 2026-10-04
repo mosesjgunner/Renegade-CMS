@@ -674,6 +674,7 @@ export interface BulkOperationResult {
     itemId: string
     success: boolean
     status?: WorkflowStatus
+    updatedItem?: WorkflowItem
     error?: string
   }>
 }
@@ -693,6 +694,7 @@ export function bulkExecuteWorkflowActions(
     itemId: string
     success: boolean
     status?: WorkflowStatus
+    updatedItem?: WorkflowItem
     error?: string
   }> = []
   let succeededCount = 0
@@ -715,7 +717,7 @@ export function bulkExecuteWorkflowActions(
 
       const updated = engine.getItem()
       succeededCount++
-      results.push({ itemId: item.id, success: true, status: updated.status })
+      results.push({ itemId: item.id, success: true, status: updated.status, updatedItem: updated })
     } catch (err: unknown) {
       failedCount++
       const message = err instanceof Error ? err.message : String(err)

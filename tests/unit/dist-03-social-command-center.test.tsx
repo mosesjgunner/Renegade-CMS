@@ -16,7 +16,7 @@ import { PinterestAdapter } from '@/modules/social/adapters/pinterest'
 
 describe('Part 3 (Pass DIST-03): Social Command Center UI & Meta/Visual Architecture', () => {
   describe('1. SocialCommandCenter UI Rendering', () => {
-    it('renders the Social Command Center with canonical editor, tabs, and preview card', () => {
+    it('renders the Social Command Center with distribution truth and zero-configured accounts', () => {
       const html = renderToStaticMarkup(<SocialCommandCenter />)
 
       // Header & Subtitle
@@ -29,17 +29,37 @@ describe('Part 3 (Pass DIST-03): Social Command Center UI & Meta/Visual Architec
       expect(html).toContain('Pre-Flight Validation Gates')
       expect(html).toContain('Client Rendering Fidelity')
 
-      // Connected Accounts & Tabs
-      expect(html).toContain('@renegade@mastodon.social')
-      expect(html).toContain('renegadeparty.bsky.social')
-      expect(html).toContain('Renegade Sovereign Media')
-      expect(html).toContain('Renegade CMS Official')
-      expect(html).toContain('@renegade.cms')
-      expect(html).toContain('Renegade Discovery')
+      // Truthful Unconfigured Accounts State
+      expect(html).toContain('Connected Distribution Targets (0)')
+      expect(html).toContain('0 Connected Accounts Configured')
+
+      // Provider Truth Matrix
+      expect(html).toContain('Distribution Provider Truth')
+      expect(html).toContain('Bluesky')
+      expect(html).toContain('Native Live Post')
+      expect(html).toContain('Manual Handoff')
+      expect(html).toContain('Unavailable')
 
       // Dynamic Character Counter & Actions
       expect(html).toContain('characters')
       expect(html).toContain('Dispatch Multi-Network Post')
+    })
+
+    it('renders configured accounts and channels when provided', () => {
+      const html = renderToStaticMarkup(
+        <SocialCommandCenter
+          initialAccounts={[
+            { id: 'acc-mastodon', network: 'mastodon', handle: '@renegade@mastodon.social', status: 'active' },
+            { id: 'acc-bluesky', network: 'bluesky', handle: 'renegadeparty.bsky.social', status: 'active' },
+            { id: 'acc-linkedin', network: 'linkedin', handle: 'Renegade Sovereign Media', status: 'active' },
+          ]}
+        />,
+      )
+
+      expect(html).toContain('Connected Distribution Targets (3)')
+      expect(html).toContain('@renegade@mastodon.social')
+      expect(html).toContain('renegadeparty.bsky.social')
+      expect(html).toContain('Renegade Sovereign Media')
     })
   })
 

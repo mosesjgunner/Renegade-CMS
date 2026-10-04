@@ -21,53 +21,27 @@ interface ConnectedAccountUI {
   tokenExpiresInDays?: number
 }
 
-const DEFAULT_ACCOUNTS: ConnectedAccountUI[] = [
-  {
-    id: 'acc-mastodon',
-    network: 'mastodon',
-    handle: '@renegade@mastodon.social',
-    status: 'active',
-  },
-  { id: 'acc-bluesky', network: 'bluesky', handle: 'renegadeparty.bsky.social', status: 'active' },
-  {
-    id: 'acc-linkedin',
-    network: 'linkedin',
-    handle: 'Renegade Sovereign Media',
-    status: 'active',
-    tokenExpiresInDays: 45,
-  },
-  { id: 'acc-facebook', network: 'facebook', handle: 'Renegade CMS Official', status: 'active' },
-  {
-    id: 'acc-instagram',
-    network: 'instagram',
-    handle: '@renegade.cms',
-    status: 'active',
-    tokenExpiresInDays: 28,
-  },
-  {
-    id: 'acc-threads',
-    network: 'threads',
-    handle: '@renegade.cms',
-    status: 'active',
-    tokenExpiresInDays: 28,
-  },
-  { id: 'acc-pinterest', network: 'pinterest', handle: 'Renegade Discovery', status: 'active' },
-  { id: 'acc-youtube', network: 'youtube', handle: 'Renegade Media Studio', status: 'active' },
-  { id: 'acc-tiktok', network: 'tiktok', handle: '@renegade.media', status: 'active' },
-  { id: 'acc-x', network: 'x', handle: '@RenegadeCMoS', status: 'active' },
-  { id: 'acc-telegram', network: 'telegram', handle: '@renegade_broadcast', status: 'active' },
-  { id: 'acc-discord', network: 'discord', handle: '#announcements (Renegade)', status: 'active' },
-]
+const FALLBACK_PREVIEW_ACCOUNT: ConnectedAccountUI = {
+  id: 'preview-bluesky',
+  network: 'bluesky',
+  handle: '@unconfigured (Bluesky Live Provider)',
+  status: 'active',
+}
 
-export default function SocialCommandCenter() {
-  const [accounts, setAccounts] = useState<ConnectedAccountUI[]>(DEFAULT_ACCOUNTS)
-  const [selectedAccountIds, setSelectedAccountIds] = useState<string[]>([
-    'acc-mastodon',
-    'acc-bluesky',
-    'acc-linkedin',
-    'acc-instagram',
-  ])
-  const [activeTabAccountId, setActiveTabAccountId] = useState<string>('acc-mastodon')
+const DEFAULT_ACCOUNTS: ConnectedAccountUI[] = []
+
+export interface SocialCommandCenterProps {
+  initialAccounts?: ConnectedAccountUI[]
+}
+
+export default function SocialCommandCenter({ initialAccounts }: SocialCommandCenterProps = {}) {
+  const [accounts, setAccounts] = useState<ConnectedAccountUI[]>(initialAccounts ?? DEFAULT_ACCOUNTS)
+  const [selectedAccountIds, setSelectedAccountIds] = useState<string[]>(
+    initialAccounts ? initialAccounts.map((a) => a.id) : [],
+  )
+  const [activeTabAccountId, setActiveTabAccountId] = useState<string>(
+    initialAccounts?.[0]?.id ?? 'preview-bluesky',
+  )
 
   // Canonical Post State
   const [canonicalPost, setCanonicalPost] = useState<CanonicalSocialPost>(() =>
@@ -80,7 +54,9 @@ export default function SocialCommandCenter() {
         'We are thrilled to unveil Renegade CMoS: decentralized, multi-network distribution built for creators and sovereign publications. Read the full announcement: https://renegadeparty.org/launch-2026',
       canonicalUrl: 'https://renegadeparty.org/launch-2026',
       authorId: 'user-admin',
-      targetAccounts: DEFAULT_ACCOUNTS.map((a) => ({ accountId: a.id, network: a.network })),
+      targetAccounts: initialAccounts
+        ? initialAccounts.map((a) => ({ accountId: a.id, network: a.network }))
+        : [{ accountId: 'preview-bluesky', network: 'bluesky' }],
     }),
   )
 
@@ -95,7 +71,7 @@ export default function SocialCommandCenter() {
   const [statusFilter, setStatusFilter] = useState<string>('all')
   const [isProcessingQueue, setIsProcessingQueue] = useState<boolean>(false)
   const [workerResult, setWorkerResult] = useState<string | null>(null)
-  const [isSimulation, setIsSimulation] = useState<boolean>(true)
+  const [isSimulation, setIsSimulation] = useState<boolean>(false)
 
   useEffect(() => {
     let cancelled = false
@@ -116,11 +92,15 @@ export default function SocialCommandCenter() {
           setActiveTabAccountId(liveAccounts[0].id)
           setIsSimulation(false)
         } else {
-          setIsSimulation(true)
+          setAccounts([])
+          setSelectedAccountIds([])
+          setIsSimulation(false)
         }
       })
       .catch(() => {
-        setIsSimulation(true)
+        setAccounts([])
+        setSelectedAccountIds([])
+        setIsSimulation(false)
       })
     return () => {
       cancelled = true
@@ -128,7 +108,8 @@ export default function SocialCommandCenter() {
   }, [])
 
   // Current active account & variant
-  const activeAccount = accounts.find((a) => a.id === activeTabAccountId) || accounts[0]
+  const activeAccount =
+    accounts.find((a) => a.id === activeTabAccountId) || accounts[0] || FALLBACK_PREVIEW_ACCOUNT
   const activeVariant = canonicalPost.variants.find((v) => v.accountId === activeAccount.id)
 
   const effectiveCopy = activeVariant
@@ -339,23 +320,6 @@ export default function SocialCommandCenter() {
         </div>
       </div>
 
-      {isSimulation ? (
-        <div
-          style={{
-            padding: '10px 14px',
-            backgroundColor: '#fffbeb',
-            border: '1px solid #fde68a',
-            borderRadius: '6px',
-            color: '#92400e',
-            fontSize: '13px',
-            marginBottom: '16px',
-          }}
-        >
-          <strong>Simulation Mode:</strong> No live social network accounts configured in
-          Collections &rarr; Social Accounts. Displaying simulated platform preview channels.
-        </div>
-      ) : null}
-
       {/* Connected Accounts Strip */}
       <div style={{ marginBottom: '24px' }}>
         <h2
@@ -370,58 +334,102 @@ export default function SocialCommandCenter() {
         >
           Connected Distribution Targets ({accounts.length})
         </h2>
-        <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
-          {accounts.map((acc) => {
-            const isSelected = selectedAccountIds.includes(acc.id)
-            return (
-              <div
-                key={acc.id}
-                onClick={() => {
-                  if (isSelected) {
-                    setSelectedAccountIds(selectedAccountIds.filter((id) => id !== acc.id))
-                  } else {
-                    setSelectedAccountIds([...selectedAccountIds, acc.id])
-                  }
-                }}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                  padding: '8px 12px',
-                  borderRadius: '8px',
-                  border: isSelected ? '2px solid #2563eb' : '1px solid #d1d5db',
-                  backgroundColor: isSelected ? '#eff6ff' : '#ffffff',
-                  cursor: 'pointer',
-                  userSelect: 'none',
-                }}
-              >
-                <span
+        {accounts.length === 0 ? (
+          <div
+            style={{
+              padding: '12px 16px',
+              backgroundColor: '#f8fafc',
+              border: '1px dashed #cbd5e1',
+              borderRadius: '8px',
+              color: '#64748b',
+              fontSize: '13px',
+            }}
+          >
+            <strong>0 Connected Accounts Configured.</strong> To distribute live, configure accounts in{' '}
+            <code>Collections &rarr; Social Accounts</code>. Bluesky is the sole supported live-post provider; commercial networks (X, Threads, Instagram, LinkedIn, etc.) use manual operator handoff.
+          </div>
+        ) : (
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+            {accounts.map((acc) => {
+              const isSelected = selectedAccountIds.includes(acc.id)
+              return (
+                <div
+                  key={acc.id}
+                  onClick={() => {
+                    if (isSelected) {
+                      setSelectedAccountIds(selectedAccountIds.filter((id) => id !== acc.id))
+                    } else {
+                      setSelectedAccountIds([...selectedAccountIds, acc.id])
+                    }
+                  }}
                   style={{
-                    padding: '2px 6px',
-                    borderRadius: '4px',
-                    backgroundColor: '#1e293b',
-                    color: '#fff',
-                    fontSize: '11px',
-                    fontWeight: 'bold',
-                    textTransform: 'uppercase',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                    padding: '8px 12px',
+                    borderRadius: '8px',
+                    border: isSelected ? '2px solid #2563eb' : '1px solid #d1d5db',
+                    backgroundColor: isSelected ? '#eff6ff' : '#ffffff',
+                    cursor: 'pointer',
+                    userSelect: 'none',
                   }}
                 >
-                  {acc.network}
-                </span>
-                <span style={{ fontSize: '13px', fontWeight: 500, color: '#111827' }}>
-                  {acc.handle}
-                </span>
-                <span
-                  style={{
-                    width: '8px',
-                    height: '8px',
-                    borderRadius: '50%',
-                    backgroundColor: acc.status === 'active' ? '#10b981' : '#ef4444',
-                  }}
-                />
-              </div>
-            )
-          })}
+                  <span
+                    style={{
+                      padding: '2px 6px',
+                      borderRadius: '4px',
+                      backgroundColor: '#1e293b',
+                      color: '#fff',
+                      fontSize: '11px',
+                      fontWeight: 'bold',
+                      textTransform: 'uppercase',
+                    }}
+                  >
+                    {acc.network}
+                  </span>
+                  <span style={{ fontSize: '13px', fontWeight: 500, color: '#111827' }}>
+                    {acc.handle}
+                  </span>
+                  <span
+                    style={{
+                      width: '8px',
+                      height: '8px',
+                      borderRadius: '50%',
+                      backgroundColor: acc.status === 'active' ? '#10b981' : '#ef4444',
+                    }}
+                  />
+                </div>
+              )
+            })}
+          </div>
+        )}
+      </div>
+
+      {/* Provider Capabilities Truth Matrix */}
+      <div
+        style={{
+          marginBottom: '24px',
+          padding: '14px 16px',
+          backgroundColor: '#f0fdf4',
+          border: '1px solid #bbf7d0',
+          borderRadius: '8px',
+          fontSize: '13px',
+          color: '#166534',
+        }}
+      >
+        <div style={{ fontWeight: 600, marginBottom: '6px' }}>
+          Distribution Provider Truth &amp; Capabilities
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '8px', marginTop: '8px' }}>
+          <div style={{ padding: '8px 12px', backgroundColor: '#ffffff', borderRadius: '6px', border: '1px solid #dcfce7' }}>
+            <span style={{ fontWeight: 600, color: '#15803d' }}>Bluesky:</span> <strong>Native Live Post</strong> (Direct AT Protocol API, authenticated sessions, rate-limit retries)
+          </div>
+          <div style={{ padding: '8px 12px', backgroundColor: '#ffffff', borderRadius: '6px', border: '1px solid #f1f5f9' }}>
+            <span style={{ fontWeight: 600, color: '#475569' }}>X, Threads, FB, IG, LinkedIn, YT, TikTok:</span> <strong>Manual Handoff</strong> (Format validation, copy-to-clipboard, image exports)
+          </div>
+          <div style={{ padding: '8px 12px', backgroundColor: '#ffffff', borderRadius: '6px', border: '1px solid #fee2e2' }}>
+            <span style={{ fontWeight: 600, color: '#991b1b' }}>ActivityPub / Federation:</span> <strong>Unavailable</strong> (Protocol unconfigured / pending implementation)
+          </div>
         </div>
       </div>
 
