@@ -8,6 +8,7 @@ import type { Payload } from 'payload'
  */
 
 export function isRegisteredCollection(payload: Payload, slug: string): boolean {
+  if (['timelines', 'timeline-memberships', 'calendar-entries'].includes(slug)) return false
   const collections = payload.collections as Record<string, unknown> | undefined
   if (!collections) return true
   return Boolean(collections[slug])

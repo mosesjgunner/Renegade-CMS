@@ -1493,8 +1493,8 @@ export const Events: CollectionConfig = {
 
 export const Timelines: CollectionConfig = {
   slug: 'timelines',
-  admin: { useAsTitle: 'title', group: 'Calendar' },
-  access: { create: staffOnly, delete: staffOnly, read: () => true, update: staffOnly },
+  admin: { useAsTitle: 'title', group: 'Calendar', hidden: true },
+  access: { create: () => false, delete: () => false, read: () => false, update: () => false },
   hooks: {
     beforeValidate: [
       async ({ data, originalDoc, req, context }) => {
@@ -1579,8 +1579,8 @@ export const Timelines: CollectionConfig = {
 
 export const TimelineMemberships: CollectionConfig = {
   slug: 'timeline-memberships',
-  admin: { useAsTitle: 'membershipKey', group: 'Calendar' },
-  access: { create: staffOnly, delete: staffOnly, read: () => true, update: staffOnly },
+  admin: { useAsTitle: 'membershipKey', group: 'Calendar', hidden: true },
+  access: { create: () => false, delete: () => false, read: () => false, update: () => false },
   hooks: {
     beforeValidate: [
       ({ data }) => {

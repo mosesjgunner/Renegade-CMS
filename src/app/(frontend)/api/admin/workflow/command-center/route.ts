@@ -1,3 +1,4 @@
+import { readFile } from 'node:fs/promises'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
@@ -173,7 +174,8 @@ export async function GET(request: Request) {
         releaseRevision: r.releaseRevision,
         artifactCount: ((r.artifacts || r.executionItems || []) as unknown[]).length,
         scheduledFor: r.scheduledFor || r.plannedInstant,
-        gatePassed: (r.gateSnapshot as Record<string, unknown> | undefined)?.status === 'passed',
+        gatePassed:
+          (r.gateSnapshot as Record<string, unknown> | undefined)?.overallStatus === 'passed',
         directLink: `/admin/releases?id=${encodeURIComponent(String(r.id))}`,
       }))
     } catch {
@@ -264,6 +266,17 @@ export async function GET(request: Request) {
     }
     recentAudit.sort((a, b) => new Date(b.at).getTime() - new Date(a.at).getTime())
 
+    let workerHealthy: boolean | null = null
+    const heartbeatFile = process.env.WORKER_HEARTBEAT_FILE
+    if (heartbeatFile) {
+      const heartbeat = await readFile(heartbeatFile, 'utf8')
+        .then((value) => JSON.parse(value) as { observedAt?: string })
+        .catch(() => null)
+      workerHealthy = Boolean(
+        heartbeat?.observedAt && Date.now() - Date.parse(heartbeat.observedAt) < 45_000,
+      )
+    }
+
     return NextResponse.json({
       currentUser: {
         id: userId,
@@ -278,7 +291,7 @@ export async function GET(request: Request) {
       calendar: calendarEntries,
       scheduledJobs: {
         health: {
-          healthy: true,
+          healthy: workerHealthy,
           activeLocks: activeLockCount,
           clockSkewSeconds: 30,
           catchUpMode: 'publish-immediately',

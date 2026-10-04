@@ -90,7 +90,8 @@ export const OPTIONAL_MODULES: readonly ModuleManifestEntry[] = [
   {
     id: 'events',
     title: 'Events & calendars',
-    summary: 'Events, timelines, and calendar entries with ICS output.',
+    summary:
+      'Events with future occurrence dates. Timelines, full interactive calendar and feeds are deferred for RC.',
     collections: ['events', 'timelines', 'timeline-memberships', 'calendar-entries'],
   },
   {

@@ -34,60 +34,70 @@ const simple = (
   validate: () => [],
   render: (props) => {
     const level = text(props, 'headingLevel', id === 'publisher.hero' ? 'h1' : 'h2')
-    const Heading = (['h1', 'h2', 'h3', 'h4'].includes(level) ? level : 'h2') as 'h1' | 'h2' | 'h3' | 'h4'
+    const Heading = (['h1', 'h2', 'h3', 'h4'].includes(level) ? level : 'h2') as
+      | 'h1'
+      | 'h2'
+      | 'h3'
+      | 'h4'
     return (
-    <section
-      data-block={label}
-      data-align={text(props, 'alignment', 'left')}
-      data-spacing={text(props, 'spacing', 'normal')}
-      data-width={text(props, 'width', 'standard')}
-      data-bg={text(props, 'background', 'canvas')}
-      data-emphasis={text(props, 'emphasis', 'normal')}
-    >
-      <Heading>{text(props, 'title', label)}</Heading>
-      {Array.isArray(props.queryResults) ? <ul>
-        {(props.queryResults as Array<{ id: string; title: string; href: string }>).map((item) =>
-          <li key={item.id}><a href={item.href}>{item.title}</a></li>,
-        )}
-      </ul> : null}
-      {typeof props.body === 'string' ? <p>{props.body}</p> : null}
-      {props.link && typeof props.link === 'object' ? (
-        <a href={String((props.link as { href?: string }).href ?? '/')}>
-          {String((props.link as { label?: string }).label ?? 'Learn more')}
-        </a>
-      ) : null}
-      {props.media && typeof props.media === 'object'
-        ? (() => {
-            const href = String((props.media as { href?: string }).href ?? '')
-            const label = String((props.media as { label?: string }).label ?? '')
-            const mediaMatch = href.match(/\/media\/([a-f0-9-]+)/i)
-            const mediaId = mediaMatch ? mediaMatch[1] : null
-            const namedVariant = id === 'publisher.hero' ? 'hero' : 'inline'
-            const isPriority = id === 'publisher.hero'
+      <section
+        data-block={label}
+        data-align={text(props, 'alignment', 'left')}
+        data-spacing={text(props, 'spacing', 'normal')}
+        data-width={text(props, 'width', 'standard')}
+        data-bg={text(props, 'background', 'canvas')}
+        data-emphasis={text(props, 'emphasis', 'normal')}
+      >
+        <Heading>{text(props, 'title', label)}</Heading>
+        {Array.isArray(props.queryResults) ? (
+          <ul>
+            {(props.queryResults as Array<{ id: string; title: string; href: string }>).map(
+              (item) => (
+                <li key={item.id}>
+                  <a href={item.href}>{item.title}</a>
+                </li>
+              ),
+            )}
+          </ul>
+        ) : null}
+        {typeof props.body === 'string' ? <p>{props.body}</p> : null}
+        {props.link && typeof props.link === 'object' ? (
+          <a href={String((props.link as { href?: string }).href ?? '/')}>
+            {String((props.link as { label?: string }).label ?? 'Learn more')}
+          </a>
+        ) : null}
+        {props.media && typeof props.media === 'object'
+          ? (() => {
+              const href = String((props.media as { href?: string }).href ?? '')
+              const label = String((props.media as { label?: string }).label ?? '')
+              const mediaMatch = href.match(/\/media\/([a-f0-9-]+)/i)
+              const mediaId = mediaMatch ? mediaMatch[1] : null
+              const namedVariant = id === 'publisher.hero' ? 'hero' : 'inline'
+              const isPriority = id === 'publisher.hero'
 
-            if (mediaId) {
+              if (mediaId) {
+                return (
+                  <ResponsiveMedia
+                    media={{ id: mediaId, altText: label }}
+                    variant={namedVariant}
+                    priority={isPriority}
+                    className="max-w-full h-auto rounded-lg"
+                  />
+                )
+              }
+
               return (
-                <ResponsiveMedia
-                  media={{ id: mediaId, altText: label }}
-                  variant={namedVariant}
-                  priority={isPriority}
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={href}
+                  alt={label}
                   className="max-w-full h-auto rounded-lg"
+                  loading={isPriority ? 'eager' : 'lazy'}
                 />
               )
-            }
-
-            return (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={href}
-                alt={label}
-                className="max-w-full h-auto rounded-lg"
-                loading={isPriority ? 'eager' : 'lazy'}
-              />
-            )
-          })()
-        : null}
-    </section>
+            })()
+          : null}
+      </section>
     )
   },
   fallback: (block) => (
@@ -142,7 +152,6 @@ const legacy: Array<[string, string, string]> = [
   ['publisher.unanswered-and-solved-threads', 'Unanswered and solved threads', 'Community'],
   ['publisher.event-card', 'Event card', 'Events'],
   ['publisher.event-list', 'Event list', 'Events'],
-  ['publisher.timeline', 'Timeline', 'Events'],
   ['publisher.chart-and-stat', 'Chart and stat', 'Data'],
   ['publisher.comparison-table', 'Comparison table', 'Data'],
   ['publisher.faq', 'FAQ', 'Content'],

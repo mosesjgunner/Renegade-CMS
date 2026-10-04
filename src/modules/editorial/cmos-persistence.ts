@@ -16,6 +16,13 @@ import {
 } from './cmos-workflow'
 import type { EditorialActor } from './workflow'
 
+const canonicalStatus = (status: WorkflowItem['status']) =>
+  status === 'changes-requested'
+    ? 'rejected'
+    : ['cancelled', 'failed'].includes(status)
+      ? 'draft'
+      : status
+
 // In-memory persistent store for Workflow Templates (seeded with built-in simple template)
 const workflowTemplatesStore = new Map<string, WorkflowTemplate>()
 workflowTemplatesStore.set(BUILTIN_SIMPLE_WORKFLOW_TEMPLATE.id, BUILTIN_SIMPLE_WORKFLOW_TEMPLATE)
@@ -57,9 +64,6 @@ export async function getWorkflowItemForArticle(
 ): Promise<WorkflowItem> {
   // Check if item exists in store
   const existing = workflowItemsStore.get(articleId)
-  if (existing) {
-    return existing
-  }
 
   // Fetch article from Payload DB if available
   let doc: Record<string, unknown> | null = null
@@ -73,6 +77,42 @@ export async function getWorkflowItemForArticle(
     // Fallback if not found in DB
   }
 
+  if (!doc && existing) return existing
+  const persisted = (doc?.auditMetadata as { cmosWorkflow?: WorkflowItem } | undefined)
+    ?.cmosWorkflow
+  let revision: Record<string, unknown> | undefined
+  if (doc && payload.find) {
+    const companions = await payload.find({
+      collection: 'article-family-content' as never,
+      where: { content: { equals: articleId } },
+      limit: 1,
+      depth: 0,
+      overrideAccess: true,
+    } as never)
+    revision = companions.docs[0] as unknown as Record<string, unknown> | undefined
+  }
+  if (persisted) {
+    const item = {
+      ...persisted,
+      status: (doc?.status === canonicalStatus(persisted.status)
+        ? persisted.status
+        : doc?.status || persisted.status) as WorkflowItem['status'],
+    }
+    if (revision) {
+      item.currentRevisionId = String(revision.currentRevision || item.currentRevisionId)
+      item.currentRevisionSequence = Number(
+        revision.currentRevisionSequence || item.currentRevisionSequence,
+      )
+      item.currentRevisionHash = String(revision.documentHash || item.currentRevisionHash)
+      item.latestPublishedRevisionId = revision.latestPublishedRevision
+        ? String(revision.latestPublishedRevision)
+        : null
+    }
+    item.queueMembership = evaluateQueueMembership(item, actorUserId)
+    workflowItemsStore.set(articleId, item)
+    return item
+  }
+
   const siteId =
     typeof doc?.site === 'object' && doc?.site !== null
       ? String((doc.site as Record<string, unknown>).id)
@@ -82,7 +122,7 @@ export async function getWorkflowItemForArticle(
       ? String((doc.owner as Record<string, unknown>).id)
       : (doc?.owner as string) || (doc?.ownerId as string) || actorUserId || 'author-default'
   const status = (doc?.status as string) || 'draft'
-  const currentRevisionId = (doc?.currentRevisionId as string) || 'rev-1'
+  const currentRevisionId = String(revision?.currentRevision || doc?.currentRevisionId || 'rev-1')
 
   const newItem: WorkflowItem = {
     id: articleId,
@@ -99,8 +139,8 @@ export async function getWorkflowItemForArticle(
       watchers: [],
     },
     currentRevisionId,
-    currentRevisionSequence: 1,
-    currentRevisionHash: `sha256-v1:${articleId}-rev1`,
+    currentRevisionSequence: Number(revision?.currentRevisionSequence || 1),
+    currentRevisionHash: String(revision?.documentHash || `sha256-v1:${articleId}-rev1`),
     latestPublishedRevisionId: null,
     staleApproval: false,
     staleReason: null,
@@ -215,8 +255,8 @@ export async function executeWorkflowAction(
     case 'save-draft':
       updatedItem = engine.markNewDraftSaved(
         input.actor,
-        item.currentRevisionSequence + 1,
-        `sha256-v1:${item.id}-rev${item.currentRevisionSequence + 1}`,
+        item.currentRevisionSequence,
+        item.currentRevisionHash,
         { now: input.now },
       )
       break
@@ -224,47 +264,25 @@ export async function executeWorkflowAction(
       throw new WorkflowStateError(`Unsupported action "${input.action}".`)
   }
 
+  // Persist before returning success. Canonical content hooks synchronize its editorial companion.
+  const doc = await payload.findByID({
+    collection: 'content',
+    id: input.articleId,
+    depth: 0,
+    overrideAccess: true,
+  } as never)
+  const auditMetadata =
+    (doc as unknown as { auditMetadata?: Record<string, unknown> } | null)?.auditMetadata || {}
+  await payload.update({
+    collection: 'content',
+    id: input.articleId,
+    data: {
+      status: canonicalStatus(updatedItem.status),
+      auditMetadata: { ...auditMetadata, cmosWorkflow: updatedItem },
+    },
+    overrideAccess: true,
+  } as never)
   saveWorkflowItem(updatedItem)
-
-  // Sync back to Payload DB if available
-  try {
-    await payload.update({
-      collection: 'content',
-      id: input.articleId,
-      data: {
-        status: updatedItem.status,
-      },
-      overrideAccess: true,
-    } as never).catch(() => null)
-
-    await payload.update({
-      collection: 'article-family-content' as never,
-      id: input.articleId,
-      data: {
-        lifecycle: updatedItem.status,
-      },
-      overrideAccess: true,
-    } as never).catch(() => null)
-
-    if (payload.find) {
-      const companions = (await payload.find({
-        collection: 'article-family-content' as never,
-        where: { content: { equals: input.articleId } },
-        limit: 1,
-        overrideAccess: true,
-      } as never).catch(() => null)) as unknown as { docs: Array<{ id: string }> }
-      if (companions?.docs?.[0]) {
-        await payload.update({
-          collection: 'article-family-content' as never,
-          id: companions.docs[0].id,
-          data: { lifecycle: updatedItem.status },
-          overrideAccess: true,
-        } as never).catch(() => null)
-      }
-    }
-  } catch {
-    // Safe ignore if database is in mock or article is virtual
-  }
 
   return updatedItem
 }
@@ -284,9 +302,7 @@ export async function getWorkflowQueuesForUser(
     if (docsResult && Array.isArray(docsResult.docs)) {
       for (const doc of docsResult.docs) {
         const id = String((doc as unknown as { id: unknown }).id)
-        if (!workflowItemsStore.has(id)) {
-          await getWorkflowItemForArticle(payload, id, input.userId)
-        }
+        await getWorkflowItemForArticle(payload, id, input.userId)
       }
     }
   } catch {
@@ -325,16 +341,31 @@ export async function bulkExecuteWorkflowItems(
   // Save succeeded items
   for (const res of result.results) {
     if (res.success && res.updatedItem) {
-      saveWorkflowItem(res.updatedItem)
       try {
+        const doc = await payload.findByID({
+          collection: 'content',
+          id: res.itemId,
+          depth: 0,
+          overrideAccess: true,
+        } as never)
+        const auditMetadata =
+          (doc as unknown as { auditMetadata?: Record<string, unknown> } | null)?.auditMetadata ||
+          {}
         await payload.update({
           collection: 'content',
           id: res.itemId,
-          data: { status: res.updatedItem.status },
+          data: {
+            status: canonicalStatus(res.updatedItem.status),
+            auditMetadata: { ...auditMetadata, cmosWorkflow: res.updatedItem },
+          },
           overrideAccess: true,
         } as never)
-      } catch {
-        // ignore
+        saveWorkflowItem(res.updatedItem)
+      } catch (error) {
+        res.success = false
+        res.error = error instanceof Error ? error.message : 'Workflow persistence failed.'
+        result.succeededCount--
+        result.failedCount++
       }
     }
   }

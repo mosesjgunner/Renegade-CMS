@@ -1014,7 +1014,9 @@ export default function ReleaseCenter() {
                                 ? `Rev ${a.pinnedRevisionSequence}`
                                 : 'Snapshot')}
                             <div style={{ color: '#94a3b8', fontSize: '10px' }}>
-                              {a.pinnedHash.slice(0, 12)}...
+                              {a.pinnedHash
+                                ? `${a.pinnedHash.slice(0, 12)}...`
+                                : 'No hash supplied'}
                             </div>
                           </td>
                           <td style={{ padding: '10px 14px' }}>

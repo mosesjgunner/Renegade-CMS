@@ -33,6 +33,14 @@ export const CORE_COLLECTIONS = new Set([
   'quality-exceptions',
   'quality-waivers',
   'quality-reports',
+  // Enabled orchestration modules need ordinary operator configuration and recovery surfaces.
+  'events',
+  'social-accounts',
+  'social-drafts',
+  'social-network-variants',
+  'social-queue-items',
+  'social-publish-attempts',
+  'external-posts',
 ])
 
 export function applyProgressiveDisclosure(

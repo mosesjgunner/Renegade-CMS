@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { TaskConfig } from 'payload'
+import type { Payload, TaskConfig } from 'payload'
+import { withExecutionLock } from '../operations/execution-lock'
 import {
   normalizeProviderError,
   retryDelayMs,
@@ -35,9 +36,16 @@ export const socialPublishTask = {
     req,
   }: {
     input: { queueItemId: string; workerId: string }
-    req: any
-  }) => {
-    const queue = (await req.payload.findByID({
+    req: { payload: Payload }
+  }) => executeSocialQueueItem(req.payload, input),
+} as unknown as TaskConfig
+
+export async function executeSocialQueueItem(
+  payload: Payload,
+  input: { queueItemId: string; workerId: string },
+) {
+  return withExecutionLock(payload, `social:${input.queueItemId}`, async () => {
+    const queue = (await payload.findByID({
       collection: 'social-queue-items' as never,
       id: input.queueItemId,
       depth: 2,
@@ -48,7 +56,7 @@ export const socialPublishTask = {
       account = queue.account as any,
       now = new Date().toISOString(),
       attempt = Number(queue.attemptCount ?? 0) + 1
-    const existing = (await req.payload.find({
+    const existing = (await payload.find({
       collection: 'external-posts' as never,
       where: { variant: { equals: id(variant.id) } },
       limit: 1,
@@ -56,7 +64,7 @@ export const socialPublishTask = {
       overrideAccess: true,
     } as never)) as any
     if (existing.docs.length) {
-      await req.payload.update({
+      await payload.update({
         collection: 'social-queue-items' as never,
         id: queue.id,
         data: { status: 'published', leaseUntil: null } as never,
@@ -64,7 +72,7 @@ export const socialPublishTask = {
       } as never)
       return { output: {} }
     }
-    await req.payload.update({
+    await payload.update({
       collection: 'social-queue-items' as never,
       id: queue.id,
       data: {
@@ -79,7 +87,7 @@ export const socialPublishTask = {
     let rightsIssue: string | undefined
     try {
       const attachmentIds = Array.isArray(variant.attachments) ? variant.attachments.map(id) : []
-      await assertMediaIdsPublishable(req.payload, attachmentIds)
+      await assertMediaIdsPublishable(payload, attachmentIds)
     } catch (error) {
       rightsIssue = error instanceof Error ? error.message : 'Attached media cannot publish.'
     }
@@ -107,7 +115,7 @@ export const socialPublishTask = {
             accountId: id(account),
             credentials: credentialsForSocialAccount(account.connectionReference),
           })
-    await req.payload.create({
+    await payload.create({
       collection: 'social-publish-attempts' as never,
       data: {
         queueItem: queue.id,
@@ -123,7 +131,7 @@ export const socialPublishTask = {
       overrideAccess: true,
     } as never)
     if (result.status === 'published') {
-      await req.payload.create({
+      await payload.create({
         collection: 'external-posts' as never,
         data: {
           variant: variant.id,
@@ -134,13 +142,13 @@ export const socialPublishTask = {
         } as never,
         overrideAccess: true,
       } as never)
-      await req.payload.update({
+      await payload.update({
         collection: 'social-network-variants' as never,
         id: variant.id,
         data: { status: 'published' } as never,
         overrideAccess: true,
       } as never)
-      await req.payload.update({
+      await payload.update({
         collection: 'social-queue-items' as never,
         id: queue.id,
         data: { status: 'published', leaseUntil: null, nextAttemptAt: null } as never,
@@ -155,7 +163,7 @@ export const socialPublishTask = {
     const nextAttemptAt = retry
       ? new Date(Date.now() + retryDelayMs(result.error, attempt)).toISOString()
       : null
-    await req.payload.update({
+    await payload.update({
       collection: 'social-queue-items' as never,
       id: queue.id,
       data: {
@@ -167,7 +175,7 @@ export const socialPublishTask = {
       overrideAccess: true,
     } as never)
     if (!retry)
-      await req.payload.update({
+      await payload.update({
         collection: 'social-network-variants' as never,
         id: variant.id,
         data: { status: 'failed' } as never,
@@ -176,7 +184,7 @@ export const socialPublishTask = {
     if (retry)
       throw new Error('Retryable social provider failure; next attempt at ' + nextAttemptAt)
     return { output: {} }
-  },
-} as unknown as TaskConfig
+  })
+}
 
 export const socialTasks = [socialPublishTask]

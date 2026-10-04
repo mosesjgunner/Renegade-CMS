@@ -205,7 +205,7 @@ describe('RC-03 Core Orchestration Pass 1 End-to-End Suite', () => {
       actorUserId: authorId,
     })
 
-    const articleId = String(bundle.article.id)
+    const articleId = String(bundle.content.id)
 
     // Progress through review to approved
     await executeWorkflowAction(payload, {
@@ -223,7 +223,7 @@ describe('RC-03 Core Orchestration Pass 1 End-to-End Suite', () => {
     const scheduledFor = '2026-11-01T06:30:00.000Z' // 1:30 AM CDT
     const idempotencyKey = `orch-sched-${suffix}`
     const scheduledBundle = await scheduleEditorialPublication(payload, {
-      articleId,
+      articleId: String(bundle.article.id),
       scheduledFor,
       timeZone: 'America/Chicago',
       actor: { id: editorId, role: 'publisher' },
@@ -257,7 +257,7 @@ describe('RC-03 Core Orchestration Pass 1 End-to-End Suite', () => {
     expect(idempotentResult.success).toBe(true)
   })
 
-  it('3. Coordinated Release: coordinates article, media, product, social distribution, and newsletter artifacts with pinned revisions', async () => {
+  it('3. Coordinated Release: rejects invalid article, media, distribution and newsletter references without false success', async () => {
     const site = await findOne('sites', 'demo-publication')
     const publication = await findOne('publications', 'main')
     const suffix = randomUUID().slice(0, 8)
@@ -351,46 +351,71 @@ describe('RC-03 Core Orchestration Pass 1 End-to-End Suite', () => {
     expect(release.status).toBe('draft')
 
     // Pin each of the 5 artifacts
-    await pinArtifact(payload, release.id, {
-      targetType: 'article',
-      targetId: String(articleBundle.content.id),
-      title: `Coordinated Story ${suffix}`,
-      canonicalUrl: `https://renegadeparty.org/articles/coord-story-${suffix}`,
-      pinnedRevisionId: String(articleBundle.revisions[0]?.id || 'rev-1'),
-      pinnedRevisionSequence: 1,
-      pinnedHash: 'sha256:art-hash-1',
-    }, editorId)
+    await pinArtifact(
+      payload,
+      release.id,
+      {
+        targetType: 'article',
+        targetId: String(articleBundle.content.id),
+        title: `Coordinated Story ${suffix}`,
+        canonicalUrl: `https://renegadeparty.org/articles/coord-story-${suffix}`,
+        pinnedRevisionId: String(articleBundle.revisions[0]?.id || 'rev-1'),
+        pinnedRevisionSequence: 1,
+        pinnedHash: 'sha256:art-hash-1',
+      },
+      editorId,
+    )
 
-    await pinArtifact(payload, release.id, {
-      targetType: 'product',
-      targetId: String(product.id),
-      title: `Campaign Edition Product ${suffix}`,
-      canonicalUrl: `https://renegadeparty.org/store/product-${suffix}`,
-      pinnedRevisionId: `rev-prod-${suffix}`,
-      pinnedHash: 'sha256:prod-hash-1',
-    }, editorId)
+    await pinArtifact(
+      payload,
+      release.id,
+      {
+        targetType: 'product',
+        targetId: String(product.id),
+        title: `Campaign Edition Product ${suffix}`,
+        canonicalUrl: `https://renegadeparty.org/store/product-${suffix}`,
+        pinnedRevisionId: `rev-prod-${suffix}`,
+        pinnedHash: 'sha256:prod-hash-1',
+      },
+      editorId,
+    )
 
-    await pinArtifact(payload, release.id, {
-      targetType: 'media',
-      targetId: `media-hero-${suffix}`,
-      title: 'Hero Key Visual Artwork',
-      pinnedHash: 'sha256:media-hash-1',
-    }, editorId)
+    await pinArtifact(
+      payload,
+      release.id,
+      {
+        targetType: 'media',
+        targetId: `media-hero-${suffix}`,
+        title: 'Hero Key Visual Artwork',
+        pinnedHash: 'sha256:media-hash-1',
+      },
+      editorId,
+    )
 
-    await pinArtifact(payload, release.id, {
-      targetType: 'distribution',
-      targetId: `dist-social-${suffix}`,
-      distributionDraftId: `draft-social-${suffix}`,
-      title: 'Announcement Social Dispatch',
-      pinnedHash: 'sha256:dist-hash-1',
-    }, editorId)
+    await pinArtifact(
+      payload,
+      release.id,
+      {
+        targetType: 'distribution',
+        targetId: `dist-social-${suffix}`,
+        distributionDraftId: `draft-social-${suffix}`,
+        title: 'Announcement Social Dispatch',
+        pinnedHash: 'sha256:dist-hash-1',
+      },
+      editorId,
+    )
 
-    const pinnedRelease = await pinArtifact(payload, release.id, {
-      targetType: 'newsletter',
-      targetId: `newsletter-msg-${suffix}`,
-      title: 'Subscriber Announcement Dispatch',
-      pinnedHash: 'sha256:news-hash-1',
-    }, editorId)
+    const pinnedRelease = await pinArtifact(
+      payload,
+      release.id,
+      {
+        targetType: 'newsletter',
+        targetId: `newsletter-msg-${suffix}`,
+        title: 'Subscriber Announcement Dispatch',
+        pinnedHash: 'sha256:news-hash-1',
+      },
+      editorId,
+    )
 
     expect(pinnedRelease.artifacts.length).toBe(5)
 
@@ -409,10 +434,9 @@ describe('RC-03 Core Orchestration Pass 1 End-to-End Suite', () => {
       actorId: editorId,
     })
 
-    expect(executionResult.status).toBe('completed')
-    expect(executionResult.succeeded).toBe(5)
-    expect(executionResult.failedSteps).toHaveLength(0)
-    expect(executionResult.resultingUrls.length).toBeGreaterThanOrEqual(1)
+    expect(executionResult.status).toBe('partially-failed')
+    expect(executionResult.succeeded).toBe(1)
+    expect(executionResult.failedSteps).toHaveLength(4)
 
     // Pinned revision proof: Product state is published
     const updatedProduct = (await payload.findByID({
@@ -433,7 +457,16 @@ describe('RC-03 Core Orchestration Pass 1 End-to-End Suite', () => {
     expect(liveAdapters[0].network).toBe('bluesky')
 
     // C. Commercial walled gardens are strictly manual-handoff
-    const manualNetworks = ['x', 'threads', 'facebook', 'instagram', 'linkedin', 'youtube', 'tiktok', 'manual']
+    const manualNetworks = [
+      'x',
+      'threads',
+      'facebook',
+      'instagram',
+      'linkedin',
+      'youtube',
+      'tiktok',
+      'manual',
+    ]
     for (const network of manualNetworks) {
       const adapter = socialProviderFor(network as any)
       expect(adapter.mode).toBe('manual-handoff')

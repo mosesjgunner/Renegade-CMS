@@ -1,11 +1,6 @@
+import { withExecutionLock } from '../operations/execution-lock'
 import type { Payload } from 'payload'
-import { loadBundleByArticleId, persistWorkflow, hydrateWorkflow } from './persistence'
-import type { EditorialActor } from './workflow'
-import {
-  assertMediaIdsPublishable,
-  assertUsageTargetsPublishable,
-  reconcileMediaUsages,
-} from '../media/workflow'
+import { publishScheduledArticle } from './persistence'
 
 export type CatchUpPolicyMode = 'publish-immediately' | 'expire-and-fail' | 'manual-reconcile'
 
@@ -71,6 +66,16 @@ export function sanitizeErrorLog(errorStr: string | null | undefined): string | 
  * revision immutability verification, and idempotent finalization.
  */
 export async function executeScheduledPublishJob(
+  payload: Payload,
+  jobId: string,
+  options: JobLeaseOptions,
+) {
+  return withExecutionLock(payload, `scheduled-job:${jobId}`, () =>
+    executeScheduledPublishJobUnlocked(payload, jobId, options),
+  )
+}
+
+async function executeScheduledPublishJobUnlocked(
   payload: Payload,
   jobId: string,
   options: JobLeaseOptions,
@@ -164,33 +169,11 @@ export async function executeScheduledPublishJob(
   const articleId = idOf(job.article)
 
   try {
-    // 3. Verify Exact Revision Immutability
-    const bundle = await loadBundleByArticleId(payload, articleId)
-    const scheduledRevisionId = idOf(job.revision)
-
-    if (!bundle.revisions.some((rev: Doc) => String(rev.id) === scheduledRevisionId)) {
-      throw new Error(`Scheduled target revision "${scheduledRevisionId}" no longer exists.`)
-    }
-
-    // Ensure usage & media readiness
-    await reconcileMediaUsages(payload, idOf(bundle.content.site))
-    await assertUsageTargetsPublishable(payload, [articleId, idOf(bundle.content.id)])
-    const heroMediaId = idOf(bundle.content.heroMedia)
-    if (heroMediaId) await assertMediaIdsPublishable(payload, [heroMediaId])
-
-    // Execute state transition strictly publishing the approved revision `scheduledRevisionId`
-    const actor: EditorialActor = { id: options.workerId, role: 'publisher' }
-    const workflow = hydrateWorkflow(bundle)
-
-    const published = workflow.publishScheduled(actor, String(job.idempotencyKey), nowIso)
-    const latestPublishedRevisionId = published
-      ? scheduledRevisionId
-      : idOf(bundle.article.latestPublishedRevision)
-
-    await persistWorkflow(payload, bundle, workflow, {
-      reason: 'published',
-      actorUserId: options.workerId,
-      latestPublishedRevisionId,
+    await publishScheduledArticle(payload, {
+      articleId,
+      actor: { id: options.workerId, role: 'publisher' },
+      idempotencyKey: String(job.idempotencyKey),
+      now: nowIso,
     })
 
     // 4. Finalize Job

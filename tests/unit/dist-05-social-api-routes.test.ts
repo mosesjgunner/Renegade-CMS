@@ -45,7 +45,7 @@ describe('Social Distribution Admin API Routes', () => {
       expect(res.status).toBe(400)
     })
 
-    it('creates canonical post and stages deliveries across target networks', async () => {
+    it('truthfully defers the non-persisting composer dispatch', async () => {
       const req = new Request('http://localhost:3000/api/admin/social/dispatch', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -67,13 +67,9 @@ describe('Social Distribution Admin API Routes', () => {
       })
 
       const res = await dispatchPost(req)
-      expect(res.status).toBe(200)
+      expect(res.status).toBe(410)
       const data = await res.json()
-      expect(data.success).toBe(true)
-      expect(data.canonicalPost.title).toBe('Spring Campaign Launch')
-      expect(data.canonicalPost.variantsCount).toBe(3)
-      expect(data.stagedDeliveries).toHaveLength(3)
-      expect(data.stagedDeliveries[0].status).toBe('pending')
+      expect(data.error).toContain('persisted Social Drafts')
     })
   })
 

@@ -20,6 +20,9 @@ const idOf = (value: unknown): string => {
 export async function POST(req: NextRequest) {
   try {
     const payload = await getPayload({ config: configPromise })
+    const auth = await payload.auth({ headers: req.headers })
+    if (!auth.user || !['owner', 'administrator', 'staff'].includes(String(auth.user.role)))
+      return NextResponse.json({ error: 'Staff access required.' }, { status: 403 })
     const body = await req.json()
     const {
       action,
@@ -28,8 +31,7 @@ export async function POST(req: NextRequest) {
       startsAt,
       timeZone = 'America/Chicago',
       expectedSequence,
-      actorUserId = 'user-publisher-1',
-      actorRole = 'publisher',
+
       reason,
       policy = 'block',
     } = body
@@ -38,7 +40,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'sourceId is required.' }, { status: 400 })
     }
 
-    const actor: EditorialActor = { id: actorUserId, role: actorRole as EditorialActor['role'] }
+    const actorUserId = String(auth.user.id)
+    const actor: EditorialActor = {
+      id: actorUserId,
+      role: ['owner', 'administrator'].includes(String(auth.user.role)) ? 'publisher' : 'editor',
+    }
 
     if (action === 'cancel') {
       if (sourceType === 'article') {

@@ -62,7 +62,7 @@ interface CommandCenterData {
   }>
   scheduledJobs: {
     health: {
-      healthy: boolean
+      healthy: boolean | null
       activeLocks: number
       clockSkewSeconds: number
       catchUpMode: string
@@ -392,7 +392,7 @@ export default function EditorialWorkflowCenter() {
   const totalBlockers = data?.blockers?.length || 0
   const totalStaleTranslations = data?.translations?.staleCount || 0
   const totalReleases = data?.releases?.length || 0
-  const isHealthy = data?.scheduledJobs?.health?.healthy ?? true
+  const isHealthy = data?.scheduledJobs?.health?.healthy ?? null
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
@@ -479,7 +479,7 @@ export default function EditorialWorkflowCenter() {
             <span
               className={`text-xs font-bold inline-block px-2 py-0.5 rounded mt-1 ${isHealthy ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'}`}
             >
-              {isHealthy ? 'Healthy' : 'Degraded'}
+              {isHealthy === null ? 'Unverified' : isHealthy ? 'Healthy' : 'Degraded'}
             </span>
           </div>
         </div>
@@ -936,12 +936,9 @@ export default function EditorialWorkflowCenter() {
               <h3 className="text-base font-bold text-stone-900 dark:text-stone-100">
                 Editorial & Release Calendar
               </h3>
-              <Link
-                href="/calendar"
-                className="text-xs text-indigo-600 hover:text-indigo-800 font-semibold"
-              >
-                Open Full Interactive Calendar ↗
-              </Link>
+              <span className="text-xs text-stone-500">
+                Full interactive calendar deferred for RC
+              </span>
             </div>
             <div className="space-y-3">
               {(data?.calendar || []).length === 0 ? (
@@ -985,7 +982,11 @@ export default function EditorialWorkflowCenter() {
                 <span
                   className={`text-lg font-bold block mt-1 ${isHealthy ? 'text-emerald-600' : 'text-red-600'}`}
                 >
-                  {isHealthy ? 'Healthy & Active' : 'Degraded / Interrupted'}
+                  {isHealthy === null
+                    ? 'Heartbeat unavailable'
+                    : isHealthy
+                      ? 'Healthy & Active'
+                      : 'Degraded / Interrupted'}
                 </span>
               </div>
               <div className="bg-white dark:bg-stone-900 p-4 rounded-xl border border-stone-200 dark:border-stone-800 shadow-sm">

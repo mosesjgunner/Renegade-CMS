@@ -89,6 +89,7 @@ export const networkDeliveryTask = {
         },
         { allowPrivate: process.env.NETWORK_ALLOW_PRIVATE_DEVELOPMENT === 'true', retries: 0 },
       )
+      if (!response.ok) throw new Error(`Remote inbox returned ${response.status}.`)
       await req.payload.create({
         collection: 'network-delivery-attempts',
         data: {
@@ -101,7 +102,6 @@ export const networkDeliveryTask = {
         },
         overrideAccess: true,
       })
-      if (!response.ok) throw new Error(`Remote inbox returned ${response.status}.`)
       await req.payload.update({
         collection: 'outbound-network-deliveries',
         id: delivery.id,

@@ -48,21 +48,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'articleId and action are required.' }, { status: 400 })
     }
 
-    // Determine actor role from user or request override
     const userRoleStr = String(auth.user.role)
-    let actorRole: EditorialRole = 'editor'
-    if (userRoleStr === 'owner' || userRoleStr === 'administrator') {
-      actorRole = body.role || 'publisher'
-    } else if (body.role) {
-      actorRole = body.role
-    } else {
-      actorRole = 'author'
-    }
-
-    const actorId =
-      (userRoleStr === 'owner' || userRoleStr === 'administrator') && body.reviewerId
-        ? body.reviewerId
-        : String(auth.user.id)
+    const actorRole: EditorialRole =
+      userRoleStr === 'staff'
+        ? 'editor'
+        : ['submit', 'withdraw', 'save-draft'].includes(body.action)
+          ? 'editor'
+          : 'publisher'
+    const actorId = String(auth.user.id)
 
     const item = await executeWorkflowAction(payload, {
       articleId: body.articleId,

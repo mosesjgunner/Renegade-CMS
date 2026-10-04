@@ -1,3 +1,4 @@
+import { withExecutionLock } from '../operations/execution-lock'
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createHash, randomBytes } from 'node:crypto'
 
@@ -291,12 +292,14 @@ export const loadBundleByArticleId = async (
   payload: Payload,
   articleId: string,
 ): Promise<EditorialBundle> => {
-  let article = (await payload.findByID({
-    collection: 'article-family-content',
-    id: articleId,
-    depth: 2,
-    overrideAccess: true,
-  } as never).catch(() => null)) as Doc
+  let article = (await payload
+    .findByID({
+      collection: 'article-family-content',
+      id: articleId,
+      depth: 2,
+      overrideAccess: true,
+    } as never)
+    .catch(() => null)) as Doc
 
   if (!article) {
     article = (await findOne(
@@ -922,6 +925,64 @@ export async function scheduleEditorialPublication(
 }
 
 export async function publishScheduledArticle(
+  payload: Payload,
+  input: {
+    articleId: string
+    actor: EditorialActor
+    idempotencyKey: string
+    actorUserId?: string | null
+    now?: string
+  },
+): Promise<boolean> {
+  const bundle = await loadBundleByArticleId(payload, input.articleId)
+  return withExecutionLock(payload, `publication:${bundle.content.id}`, () =>
+    publishScheduledArticleUnlocked(payload, input),
+  )
+}
+
+export async function publishReleaseArticle(
+  payload: Payload,
+  input: { articleId: string; revisionId: string; actorId: string; key: string },
+): Promise<boolean> {
+  const initial = await loadBundleByArticleId(payload, input.articleId)
+  return withExecutionLock(payload, `publication:${initial.content.id}`, async () => {
+    const bundle = await loadBundleByArticleId(payload, input.articleId)
+    if (
+      !input.revisionId ||
+      !bundle.revisions.some((revision) => String(revision.id) === input.revisionId)
+    )
+      throw new Error('The pinned publication revision does not exist.')
+    const workflow = hydrateWorkflow(bundle)
+    if (idOf(bundle.article.latestPublishedRevision) === input.revisionId) {
+      if (bundle.content.status !== 'published')
+        await persistWorkflow(payload, bundle, workflow, {
+          reason: 'published',
+          actorUserId: input.actorId,
+          latestPublishedRevisionId: input.revisionId,
+        })
+      return false
+    }
+    if (
+      !['approved', 'scheduled'].includes(bundle.article.lifecycle) ||
+      idOf(bundle.article.currentRevision) !== input.revisionId
+    )
+      throw new Error('The pinned revision must be the approved current revision.')
+    await reconcileMediaUsages(payload, idOf(bundle.content.site))
+    await assertUsageTargetsPublishable(payload, [
+      String(bundle.article.id),
+      String(bundle.content.id),
+    ])
+    const published = workflow.publishScheduled({ id: input.actorId, role: 'publisher' }, input.key)
+    await persistWorkflow(payload, bundle, workflow, {
+      reason: 'published',
+      actorUserId: input.actorId,
+      latestPublishedRevisionId: input.revisionId,
+    })
+    return published
+  })
+}
+
+async function publishScheduledArticleUnlocked(
   payload: Payload,
   input: {
     articleId: string

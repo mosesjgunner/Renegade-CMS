@@ -197,8 +197,8 @@ export const DiscussionPosts: CollectionConfig = {
 
 export const CalendarEntries: CollectionConfig = {
   slug: 'calendar-entries',
-  admin: { useAsTitle: 'title', group: 'Calendar' },
-  access: { create: staffOnly, delete: staffOnly, read: () => true, update: staffOnly },
+  admin: { useAsTitle: 'title', group: 'Calendar', hidden: true },
+  access: { create: () => false, delete: () => false, read: () => false, update: () => false },
   hooks: {
     beforeValidate: [
       ({ data }) => {

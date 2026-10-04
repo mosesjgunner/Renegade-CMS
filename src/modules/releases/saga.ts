@@ -10,7 +10,9 @@ import type {
   ReleaseStatus,
 } from './contracts'
 
-import { publishScheduledArticle } from '../editorial/persistence'
+import { loadBundleByArticleId, publishReleaseArticle } from '../editorial/persistence'
+import { withExecutionLock } from '../operations/execution-lock'
+import { executeReleaseDistribution } from '../social/release-distribution'
 import { rollbackLayout } from '../presentation/composition'
 import { publishProductRelease } from '../commerce/service'
 
@@ -38,102 +40,21 @@ export async function executeDatabaseStep(
   const itemId = item.id || item.key || `${targetType}:${item.targetId}`
 
   if (targetType === 'article') {
-    // 1. Article / Post
-    if (payload.findByID) {
-      let article = (await payload.findByID({
-        collection: 'article-family-content' as never,
-        id: item.targetId,
-        depth: 0,
-        overrideAccess: true,
-      } as never).catch(() => null)) as unknown as Doc
-
-      let isContentDoc = false
-      if (!article && payload.find) {
-        const found = (await payload.find({
-          collection: 'article-family-content' as never,
-          where: { content: { equals: item.targetId } },
-          limit: 1,
-          depth: 0,
-          overrideAccess: true,
-        } as never).catch(() => null)) as unknown as { docs: Doc[] }
-        article = found?.docs?.[0]
-      }
-
-      if (!article) {
-        article = (await payload.findByID({
-          collection: 'content' as never,
-          id: item.targetId,
-          depth: 0,
-          overrideAccess: true,
-        } as never).catch(() => null)) as unknown as Doc
-        if (article) isContentDoc = true
-      }
-
-      const lastKnownGoodState = {
-        previousPublishedRevision: idOf(article?.latestPublishedRevision),
-        previousStatus: String(article?.lifecycle || article?.status || 'draft'),
-      }
-
-      // Check if already published with target revision
-      if (
-        (article?.lifecycle === 'published' || article?.status === 'published') &&
-        (!revisionId || idOf(article?.latestPublishedRevision) === revisionId)
-      ) {
-        return {
-          output: { alreadyPublished: true, revisionId },
-          lastKnownGoodState,
-          ...(item.canonicalUrl || article?.canonicalPath
-            ? { url: item.canonicalUrl || String(article.canonicalPath) }
-            : {}),
-        }
-      }
-
-      // Publish approved scheduled article
-      try {
-        await publishScheduledArticle(payload, {
-          articleId: item.targetId,
-          actor: { id: actorId, role: 'publisher' },
-          actorUserId: actorId,
-          idempotencyKey: `release:${release.id}:${itemId}`,
-        })
-      } catch (err) {
-        // Fallback direct update
-        if (isContentDoc) {
-          await payload.update({
-            collection: 'content' as never,
-            id: item.targetId,
-            data: { status: 'published' },
-            overrideAccess: true,
-          } as never).catch(() => null)
-        } else {
-          await payload.update({
-            collection: 'article-family-content' as never,
-            id: article ? idOf(article.id) : item.targetId,
-            data: {
-              status: 'published',
-              lifecycle: 'published',
-              latestPublishedRevision: revisionId,
-            },
-            overrideAccess: true,
-          } as never).catch(() => null)
-          if (article?.content) {
-            await payload.update({
-              collection: 'content' as never,
-              id: idOf(article.content),
-              data: { status: 'published' },
-              overrideAccess: true,
-            } as never).catch(() => null)
-          }
-        }
-      }
-
-      return {
-        output: { published: true, revisionId },
-        lastKnownGoodState,
-        ...(item.canonicalUrl || article?.canonicalPath
-          ? { url: item.canonicalUrl || String(article.canonicalPath) }
-          : {}),
-      }
+    const bundle = await loadBundleByArticleId(payload, item.targetId)
+    const lastKnownGoodState = {
+      previousPublishedRevision: idOf(bundle.article.latestPublishedRevision),
+      previousStatus: bundle.article.lifecycle,
+    }
+    const published = await publishReleaseArticle(payload, {
+      articleId: item.targetId,
+      revisionId: revisionId || '',
+      actorId,
+      key: `release:${release.id}:${itemId}`,
+    })
+    return {
+      output: { published: true, alreadyPublished: !published, revisionId },
+      lastKnownGoodState,
+      url: item.canonicalUrl,
     }
   }
 
@@ -221,7 +142,10 @@ export async function executeDatabaseStep(
       const existing = (await payload.find({
         collection: 'public-redirects' as never,
         where: {
-          and: [{ site: { equals: release.siteId } }, { fromPath: { equals: rule.fromPath } }],
+          and: [
+            { site: { equals: idOf((release as unknown as Doc).site ?? release.siteId) } },
+            { fromPath: { equals: rule.fromPath } },
+          ],
         },
         limit: 1,
         depth: 0,
@@ -258,7 +182,7 @@ export async function executeDatabaseStep(
         const created = (await payload.create({
           collection: 'public-redirects' as never,
           data: {
-            site: release.siteId,
+            site: idOf((release as unknown as Doc).site ?? release.siteId),
             fromPath: rule.fromPath,
             toPath: rule.toPath,
             statusCode: rule.statusCode,
@@ -311,7 +235,14 @@ export async function executeDatabaseStep(
   }
 
   if (targetType === 'media') {
-    // 6. Media Asset Reference
+    const { assertMediaIdsPublishable } = await import('../media/workflow')
+    await payload.findByID({
+      collection: 'media-assets',
+      id: item.targetId,
+      depth: 0,
+      overrideAccess: true,
+    })
+    await assertMediaIdsPublishable(payload, [item.targetId])
     return {
       output: { active: true, mediaId: item.targetId },
       lastKnownGoodState: { mediaId: item.targetId },
@@ -319,24 +250,20 @@ export async function executeDatabaseStep(
   }
 
   if (targetType === 'distribution') {
-    // 7. Social Distribution Release Artifact
-    const distributionDraftId = item.distributionDraftId || item.targetId
-    return {
-      output: { distributed: true, distributionDraftId, targetId: item.targetId },
-      lastKnownGoodState: { distributionDraftId },
-      url: item.canonicalUrl,
-    }
+    return executeReleaseDistribution(payload, release, item, actorId)
   }
 
   if (targetType === 'newsletter') {
     // 8. Newsletter / Email Message Artifact
     if (payload.findByID) {
-      const email = (await payload.findByID({
-        collection: 'email-messages' as never,
-        id: item.targetId,
-        depth: 0,
-        overrideAccess: true,
-      } as never).catch(() => null)) as unknown as Doc
+      const email = (await payload
+        .findByID({
+          collection: 'email-messages' as never,
+          id: item.targetId,
+          depth: 0,
+          overrideAccess: true,
+        } as never)
+        .catch(() => null)) as unknown as Doc
 
       const lastKnownGoodState = {
         previousStatus: String(email?.status || 'draft'),
@@ -350,7 +277,7 @@ export async function executeDatabaseStep(
           scheduledAt: release.plannedInstant || release.scheduledFor || new Date().toISOString(),
         },
         overrideAccess: true,
-      } as never).catch(() => null)
+      } as never)
 
       return {
         output: { scheduled: true, emailId: item.targetId },
@@ -399,12 +326,14 @@ async function compensateStep(
           overrideAccess: true,
         } as never)
       } catch {
-        await payload.update({
-          collection: 'content' as never,
-          id: item.targetId,
-          data: { status: prevStatus },
-          overrideAccess: true,
-        } as never).catch(() => null)
+        await payload
+          .update({
+            collection: 'content' as never,
+            id: item.targetId,
+            data: { status: prevStatus },
+            overrideAccess: true,
+          } as never)
+          .catch(() => null)
       }
       return {
         compensated: true,
@@ -416,14 +345,16 @@ async function compensateStep(
   if (item.targetType === 'newsletter') {
     if (payload.update) {
       const prevStatus = String(state.previousStatus || 'draft')
-      await payload.update({
-        collection: 'email-messages' as never,
-        id: item.targetId,
-        data: {
-          status: prevStatus,
-        },
-        overrideAccess: true,
-      } as never).catch(() => null)
+      await payload
+        .update({
+          collection: 'email-messages' as never,
+          id: item.targetId,
+          data: {
+            status: prevStatus,
+          },
+          overrideAccess: true,
+        } as never)
+        .catch(() => null)
       return { compensated: true, details: { restoredStatus: prevStatus } }
     }
   }
@@ -510,6 +441,15 @@ async function compensateStep(
  * Never marks partial success as complete.
  */
 export async function executeReleaseSaga(
+  payload: Payload,
+  input: { releaseId: string; actorId: string; workerId?: string; isRetry?: boolean },
+): Promise<ReleaseExecutionResult> {
+  return withExecutionLock(payload, `release:${input.releaseId}`, () =>
+    executeReleaseSagaUnlocked(payload, input),
+  )
+}
+
+async function executeReleaseSagaUnlocked(
   payload: Payload,
   input: {
     releaseId: string
@@ -628,6 +568,12 @@ export async function executeReleaseSaga(
         completedAt: at,
       })
     }
+    await payload.update({
+      collection: 'content-releases' as never,
+      id: release.id,
+      data: { artifacts: items, executionItems: items, sagaSteps, resultingUrls },
+      overrideAccess: true,
+    } as never)
   }
 
   const succeededCount = items.filter((i) => i.status === 'succeeded').length

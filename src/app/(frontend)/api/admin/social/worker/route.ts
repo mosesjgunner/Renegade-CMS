@@ -1,9 +1,7 @@
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
-import { processQueueBatch, type QueueBatchSummary } from '@/modules/social/worker'
-import { type CanonicalSocialPost } from '@/modules/social/models'
-import { type AuthContext } from '@/modules/social/contracts'
+import { executeSocialQueueItem } from '@/modules/social/tasks'
 
 const staffOnly = (user: { role?: string } | null | undefined) =>
   ['owner', 'administrator', 'publisher', 'staff'].includes(String(user?.role))
@@ -23,24 +21,36 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized.' }, { status: 403 })
     }
 
-    const body = (await request.json().catch(() => ({}))) as {
-      posts?: CanonicalSocialPost[]
-      workerId?: string
-      maxItems?: number
-    }
-
-    const workerId = body.workerId || `worker-${Date.now()}`
-    const incomingPosts = body.posts || []
-    const authMap = new Map<string, AuthContext>()
-
-    // Execute the batch processing pass
-    const summary: QueueBatchSummary = await processQueueBatch(incomingPosts, authMap, undefined, {
-      workerId,
+    const queues = await payload.find({
+      collection: 'social-queue-items',
+      where: {
+        and: [
+          { status: { equals: 'scheduled' } },
+          { scheduledFor: { less_than_equal: new Date().toISOString() } },
+        ],
+      },
+      limit: 20,
+      depth: 0,
+      overrideAccess: true,
     })
-
+    let succeededCount = 0
+    for (const queue of queues.docs) {
+      if (queue.nextAttemptAt && Date.parse(queue.nextAttemptAt) > Date.now()) continue
+      await executeSocialQueueItem(payload, {
+        queueItemId: String(queue.id),
+        workerId: 'admin-recovery',
+      }).catch(() => undefined)
+      const updated = await payload.findByID({
+        collection: 'social-queue-items',
+        id: queue.id,
+        depth: 0,
+        overrideAccess: true,
+      })
+      if (updated.status === 'published') succeededCount++
+    }
     return NextResponse.json({
       success: true,
-      summary,
+      summary: { processedCount: queues.docs.length, succeededCount },
     })
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : String(err)

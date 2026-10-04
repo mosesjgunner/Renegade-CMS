@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto'
 import {
   normalizeProviderError,
   type AdapterResult,
@@ -83,6 +84,7 @@ export const blueskyAdapter: SocialProviderAdapter = {
         service.replace(/\/$/, '') + '/xrpc/com.atproto.server.createSession',
         {
           method: 'POST',
+          signal: AbortSignal.timeout(30_000),
           headers: { 'content-type': 'application/json' },
           body: JSON.stringify({ identifier, password }),
         },
@@ -97,8 +99,47 @@ export const blueskyAdapter: SocialProviderAdapter = {
             message: 'Bluesky returned an incomplete session.',
           }),
         }
+      const rkey = createHash('sha256')
+        .update(variant.idempotencyKey || variant.id)
+        .digest('hex')
+        .slice(0, 32)
+      const recordUrl = new URL(service.replace(/\/$/, '') + '/xrpc/com.atproto.repo.getRecord')
+      recordUrl.searchParams.set('repo', auth.did)
+      recordUrl.searchParams.set('collection', 'app.bsky.feed.post')
+      recordUrl.searchParams.set('rkey', rkey)
+      const existing = await fetch(recordUrl, {
+        signal: AbortSignal.timeout(30_000),
+        headers: { authorization: 'Bearer ' + auth.accessJwt },
+      })
+      if (existing.ok) {
+        const record = (await existing.json()) as { uri?: string; value?: { text?: string } }
+        if (!record.uri || record.value?.text !== variant.text)
+          return {
+            status: 'failed',
+            error: normalizeProviderError({
+              kind: 'validation',
+              message: 'Provider idempotency key is occupied by different content.',
+            }),
+          }
+        return {
+          status: 'published',
+          remoteId: record.uri,
+          remoteUrl: 'https://bsky.app/profile/' + auth.did + '/post/' + rkey,
+        }
+      }
+      const missing =
+        existing.status === 404 ||
+        (existing.status === 400 &&
+          (
+            await existing
+              .clone()
+              .json()
+              .catch(() => null)
+          )?.error === 'RecordNotFound')
+      if (!missing) return { status: 'failed', error: await providerError(existing) }
       const post = await fetch(service.replace(/\/$/, '') + '/xrpc/com.atproto.repo.createRecord', {
         method: 'POST',
+        signal: AbortSignal.timeout(30_000),
         headers: {
           authorization: 'Bearer ' + auth.accessJwt,
           'content-type': 'application/json',
@@ -106,6 +147,7 @@ export const blueskyAdapter: SocialProviderAdapter = {
         body: JSON.stringify({
           repo: auth.did,
           collection: 'app.bsky.feed.post',
+          rkey,
           record: {
             $type: 'app.bsky.feed.post',
             text: variant.text,

@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 
 import type {
   CoordinatedRelease,
@@ -25,6 +25,27 @@ import {
   waiveGateRule,
 } from '../../src/modules/releases/service'
 import { executeReleaseSaga, rollbackReleaseSaga } from '../../src/modules/releases/saga'
+
+// Saga unit tests isolate publication; real canonical publication is proved by RC03 acceptance.
+vi.mock('../../src/modules/editorial/persistence', () => ({
+  loadBundleByArticleId: async (payload: any, articleId: string) => ({
+    article: await payload.findByID({ collection: 'article-family-content', id: articleId }),
+    content: {},
+    revisions: [],
+  }),
+  publishReleaseArticle: async (payload: any, input: any) => {
+    await payload.update({
+      collection: 'article-family-content',
+      id: input.articleId,
+      data: {
+        lifecycle: 'published',
+        status: 'published',
+        latestPublishedRevision: input.revisionId,
+      },
+    })
+    return true
+  },
+}))
 
 type MockDoc = Record<string, any>
 

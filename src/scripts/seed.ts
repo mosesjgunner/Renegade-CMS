@@ -1,6 +1,5 @@
 import type { Payload, SanitizedConfig, Where } from 'payload'
 import { getPayload } from 'payload'
-import { isRegisteredCollection } from '../modules/public/registered-collections'
 
 type Collection = Parameters<Payload['find']>[0]['collection']
 
@@ -11,7 +10,8 @@ type UpsertArgs = {
 }
 
 async function upsert(payload: Payload, { collection, data, where }: UpsertArgs) {
-  if (!isRegisteredCollection(payload, String(collection))) {
+  // Fixture seeding checks registration, independently of public RC deferrals.
+  if (payload.collections && !payload.collections[collection]) {
     return { id: 'seed-unregistered' }
   }
   const existing = await payload.find({

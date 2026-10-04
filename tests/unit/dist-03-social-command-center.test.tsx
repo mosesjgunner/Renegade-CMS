@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { renderToStaticMarkup } from 'react-dom/server'
 import SocialCommandCenter from '@/modules/admin/SocialCommandCenter'
 import {
@@ -13,6 +13,8 @@ import { FacebookAdapter } from '@/modules/social/adapters/facebook'
 import { InstagramAdapter } from '@/modules/social/adapters/instagram'
 import { ThreadsAdapter } from '@/modules/social/adapters/threads'
 import { PinterestAdapter } from '@/modules/social/adapters/pinterest'
+
+vi.mock('next/navigation', () => ({ useRouter: () => ({ push: vi.fn() }) }))
 
 describe('Part 3 (Pass DIST-03): Social Command Center UI & Meta/Visual Architecture', () => {
   describe('1. SocialCommandCenter UI Rendering', () => {
@@ -42,16 +44,31 @@ describe('Part 3 (Pass DIST-03): Social Command Center UI & Meta/Visual Architec
 
       // Dynamic Character Counter & Actions
       expect(html).toContain('characters')
-      expect(html).toContain('Dispatch Multi-Network Post')
+      expect(html).toContain('Create Persisted Distribution Draft')
     })
 
     it('renders configured accounts and channels when provided', () => {
       const html = renderToStaticMarkup(
         <SocialCommandCenter
           initialAccounts={[
-            { id: 'acc-mastodon', network: 'mastodon', handle: '@renegade@mastodon.social', status: 'active' },
-            { id: 'acc-bluesky', network: 'bluesky', handle: 'renegadeparty.bsky.social', status: 'active' },
-            { id: 'acc-linkedin', network: 'linkedin', handle: 'Renegade Sovereign Media', status: 'active' },
+            {
+              id: 'acc-mastodon',
+              network: 'mastodon',
+              handle: '@renegade@mastodon.social',
+              status: 'active',
+            },
+            {
+              id: 'acc-bluesky',
+              network: 'bluesky',
+              handle: 'renegadeparty.bsky.social',
+              status: 'active',
+            },
+            {
+              id: 'acc-linkedin',
+              network: 'linkedin',
+              handle: 'Renegade Sovereign Media',
+              status: 'active',
+            },
           ]}
         />,
       )

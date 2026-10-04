@@ -1,5 +1,8 @@
 'use client'
 
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+
 import React, { useState, useMemo, useEffect } from 'react'
 import { type SocialNetwork, type SocialState } from '../social/contracts'
 import {
@@ -35,7 +38,10 @@ export interface SocialCommandCenterProps {
 }
 
 export default function SocialCommandCenter({ initialAccounts }: SocialCommandCenterProps = {}) {
-  const [accounts, setAccounts] = useState<ConnectedAccountUI[]>(initialAccounts ?? DEFAULT_ACCOUNTS)
+  const router = useRouter()
+  const [accounts, setAccounts] = useState<ConnectedAccountUI[]>(
+    initialAccounts ?? DEFAULT_ACCOUNTS,
+  )
   const [selectedAccountIds, setSelectedAccountIds] = useState<string[]>(
     initialAccounts ? initialAccounts.map((a) => a.id) : [],
   )
@@ -150,7 +156,7 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
       const res = await fetch('/api/admin/social/worker', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ posts: [canonicalPost] }),
+        body: JSON.stringify({}),
       })
       const data = await res.json()
       if (res.ok) {
@@ -313,9 +319,9 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
               opacity: validationFindings.isValid ? 1 : 0.6,
             }}
             disabled={!validationFindings.isValid}
-            onClick={() => alert('Social dispatch scheduled successfully across target accounts!')}
+            onClick={() => router.push('/admin/collections/social-drafts')}
           >
-            Dispatch Multi-Network Post
+            Create Persisted Distribution Draft
           </button>
         </div>
       </div>
@@ -345,8 +351,10 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
               fontSize: '13px',
             }}
           >
-            <strong>0 Connected Accounts Configured.</strong> To distribute live, configure accounts in{' '}
-            <code>Collections &rarr; Social Accounts</code>. Bluesky is the sole supported live-post provider; commercial networks (X, Threads, Instagram, LinkedIn, etc.) use manual operator handoff.
+            <strong>0 Connected Accounts Configured.</strong> To distribute live, configure accounts
+            in <code>Collections &rarr; Social Accounts</code>. Bluesky is the sole supported
+            live-post provider; commercial networks (X, Threads, Instagram, LinkedIn, etc.) use
+            manual operator handoff.
           </div>
         ) : (
           <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
@@ -405,6 +413,11 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
         )}
       </div>
 
+      <p>
+        <Link href="/admin/collections/social-queue-items">Delivery queue and recovery state</Link>{' '}
+        ? <Link href="/admin/collections/social-publish-attempts">Provider attempt failures</Link> ?{' '}
+        <Link href="/admin/collections/social-accounts">Provider configuration</Link>
+      </p>
       {/* Provider Capabilities Truth Matrix */}
       <div
         style={{
@@ -420,15 +433,49 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
         <div style={{ fontWeight: 600, marginBottom: '6px' }}>
           Distribution Provider Truth &amp; Capabilities
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '8px', marginTop: '8px' }}>
-          <div style={{ padding: '8px 12px', backgroundColor: '#ffffff', borderRadius: '6px', border: '1px solid #dcfce7' }}>
-            <span style={{ fontWeight: 600, color: '#15803d' }}>Bluesky:</span> <strong>Native Live Post</strong> (Direct AT Protocol API, authenticated sessions, rate-limit retries)
+        <div
+          style={{
+            display: 'grid',
+            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+            gap: '8px',
+            marginTop: '8px',
+          }}
+        >
+          <div
+            style={{
+              padding: '8px 12px',
+              backgroundColor: '#ffffff',
+              borderRadius: '6px',
+              border: '1px solid #dcfce7',
+            }}
+          >
+            <span style={{ fontWeight: 600, color: '#15803d' }}>Bluesky:</span>{' '}
+            <strong>Native Live Post</strong> (Direct AT Protocol API, authenticated sessions,
+            rate-limit retries)
           </div>
-          <div style={{ padding: '8px 12px', backgroundColor: '#ffffff', borderRadius: '6px', border: '1px solid #f1f5f9' }}>
-            <span style={{ fontWeight: 600, color: '#475569' }}>X, Threads, FB, IG, LinkedIn, YT, TikTok:</span> <strong>Manual Handoff</strong> (Format validation, copy-to-clipboard, image exports)
+          <div
+            style={{
+              padding: '8px 12px',
+              backgroundColor: '#ffffff',
+              borderRadius: '6px',
+              border: '1px solid #f1f5f9',
+            }}
+          >
+            <span style={{ fontWeight: 600, color: '#475569' }}>
+              X, Threads, FB, IG, LinkedIn, YT, TikTok:
+            </span>{' '}
+            <strong>Manual Handoff</strong> (Format validation, copy-to-clipboard, image exports)
           </div>
-          <div style={{ padding: '8px 12px', backgroundColor: '#ffffff', borderRadius: '6px', border: '1px solid #fee2e2' }}>
-            <span style={{ fontWeight: 600, color: '#991b1b' }}>ActivityPub / Federation:</span> <strong>Unavailable</strong> (Protocol unconfigured / pending implementation)
+          <div
+            style={{
+              padding: '8px 12px',
+              backgroundColor: '#ffffff',
+              borderRadius: '6px',
+              border: '1px solid #fee2e2',
+            }}
+          >
+            <span style={{ fontWeight: 600, color: '#991b1b' }}>ActivityPub / Federation:</span>{' '}
+            <strong>Unavailable</strong> (Protocol unconfigured / pending implementation)
           </div>
         </div>
       </div>

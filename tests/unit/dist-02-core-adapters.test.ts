@@ -481,15 +481,9 @@ describe('Pass DIST-02: Open Protocols, Core 5 Adapters & Media Adaptation Pipel
         updatedAt: new Date().toISOString(),
       }
 
-      const result = await executeDatabaseStep(
-        mockPayload as Payload,
-        release,
-        distributionItem,
-        'user-publisher',
-      )
-      expect(result.output.distributed).toBe(true)
-      expect(result.output.distributionDraftId).toBe('draft-dist-autumn')
-      expect(result.url).toBe('https://renegadeparty.org/campaigns/autumn')
+      await expect(
+        executeDatabaseStep(mockPayload as Payload, release, distributionItem, 'user-publisher'),
+      ).rejects.toThrow('Distribution draft requires operator approval.')
     })
   })
 })

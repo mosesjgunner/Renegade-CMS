@@ -193,9 +193,12 @@ export default async function CapabilityCenter({ initPageResult }: AdminViewServ
         </p>
         <p>
           <Link href="/admin/collections/content-releases">Coordinated releases</Link> ·{' '}
-          <Link href="/admin/collections/calendar-entries">Calendar operations</Link> ·{' '}
-          <Link href="/admin/collections/members">Enterprise identity & federation</Link> ·{' '}
-          <Link href="/connections">Connections, AI & providers</Link>
+          <span aria-disabled="true">Interactive calendar (deferred for RC)</span> ·{' '}
+          <Link href="/admin/collections/members">
+            Enterprise identity (federation requires configured signing; remote interoperability
+            unverified)
+          </Link>{' '}
+          · <Link href="/connections">Connections, AI & providers</Link>
         </p>
       </section>
       <section style={{ marginTop: 32 }} id="operational-overview">
