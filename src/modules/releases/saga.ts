@@ -21,8 +21,8 @@ const idOf = (value: unknown): string =>
   typeof value === 'string' ? value : String((value as Doc)?.id ?? (value as Doc)?.value ?? '')
 
 /**
- * Executes a single artifact within the Database Transaction Boundary.
- * Prior to mutating, captures lastKnownGoodState so that compensation/rollback is exact.
+ * Executes one persisted artifact step. The release execution lock serializes runners;
+ * steps persist independently and capture available prior state for compensation.
  */
 export async function executeDatabaseStep(
   payload: Payload,

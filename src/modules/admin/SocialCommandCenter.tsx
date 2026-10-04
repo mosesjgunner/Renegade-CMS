@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
 import React, { useState, useMemo, useEffect } from 'react'
-import { type SocialNetwork, type SocialState } from '../social/contracts'
+import { type SocialNetwork } from '../social/contracts'
 import {
   createCanonicalSocialPost,
   overrideVariantCopy,
@@ -27,8 +27,8 @@ interface ConnectedAccountUI {
 const FALLBACK_PREVIEW_ACCOUNT: ConnectedAccountUI = {
   id: 'preview-bluesky',
   network: 'bluesky',
-  handle: '@unconfigured (Bluesky Live Provider)',
-  status: 'active',
+  handle: '@unconfigured (local preview)',
+  status: 'reconnect_required',
 }
 
 const DEFAULT_ACCOUNTS: ConnectedAccountUI[] = []
@@ -55,10 +55,9 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
       id: 'post-draft-current',
       siteId: 'site-alpha',
       publicationId: 'pub-main',
-      title: 'Spring 2026 Sovereign Publishing Launch',
-      baseCopy:
-        'We are thrilled to unveil Renegade CMoS: decentralized, multi-network distribution built for creators and sovereign publications. Read the full announcement: https://renegadeparty.org/launch-2026',
-      canonicalUrl: 'https://renegadeparty.org/launch-2026',
+      title: '',
+      baseCopy: '',
+      canonicalUrl: '',
       authorId: 'user-admin',
       targetAccounts: initialAccounts
         ? initialAccounts.map((a) => ({ accountId: a.id, network: a.network }))
@@ -66,18 +65,14 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
     }),
   )
 
-  const [imageUrl, setImageUrl] = useState<string>(
-    'https://renegadeparty.org/media/hero-launch.jpg',
-  )
+  const [imageUrl, setImageUrl] = useState<string>('')
   const [imageRole, setImageRole] = useState<'image' | 'video'>('image')
   const [pinterestBoardId, setPinterestBoardId] = useState<string>('board-announcements')
   const [telegramChatId, setTelegramChatId] = useState<string>('@renegade_broadcast')
   const [discordWebhookUrl, setDiscordWebhookUrl] = useState<string>('')
   const [contentWarning, setContentWarning] = useState<string>('')
-  const [statusFilter, setStatusFilter] = useState<string>('all')
   const [isProcessingQueue, setIsProcessingQueue] = useState<boolean>(false)
   const [workerResult, setWorkerResult] = useState<string | null>(null)
-  const [isSimulation, setIsSimulation] = useState<boolean>(false)
 
   useEffect(() => {
     let cancelled = false
@@ -96,17 +91,14 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
           setAccounts(liveAccounts)
           setSelectedAccountIds(liveAccounts.map((a) => a.id))
           setActiveTabAccountId(liveAccounts[0].id)
-          setIsSimulation(false)
         } else {
           setAccounts([])
           setSelectedAccountIds([])
-          setIsSimulation(false)
         }
       })
       .catch(() => {
         setAccounts([])
         setSelectedAccountIds([])
-        setIsSimulation(false)
       })
     return () => {
       cancelled = true
@@ -278,8 +270,8 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
             Social Distribution Command Center
           </h1>
           <p style={{ margin: 0, color: '#6b7280', fontSize: '14px' }}>
-            Unified multi-channel distribution engine across commercial walled gardens and open
-            federated protocols.
+            Persisted drafts, delivery queue, and provider recovery. This local preview is not
+            saved; create and approve a Social Draft for coordinated release delivery.
           </p>
         </div>
         <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
@@ -315,10 +307,8 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
               border: 'none',
               borderRadius: '6px',
               fontWeight: 600,
-              cursor: validationFindings.isValid ? 'pointer' : 'not-allowed',
-              opacity: validationFindings.isValid ? 1 : 0.6,
+              cursor: 'pointer',
             }}
-            disabled={!validationFindings.isValid}
             onClick={() => router.push('/admin/collections/social-drafts')}
           >
             Create Persisted Distribution Draft
@@ -338,7 +328,7 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
             marginBottom: '8px',
           }}
         >
-          Connected Distribution Targets ({accounts.length})
+          Configured Distribution Targets ({accounts.length})
         </h2>
         {accounts.length === 0 ? (
           <div
@@ -351,10 +341,10 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
               fontSize: '13px',
             }}
           >
-            <strong>0 Connected Accounts Configured.</strong> To distribute live, configure accounts
-            in <code>Collections &rarr; Social Accounts</code>. Bluesky is the sole supported
-            live-post provider; commercial networks (X, Threads, Instagram, LinkedIn, etc.) use
-            manual operator handoff.
+            <strong>0 Accounts Configured.</strong> To distribute, configure accounts in{' '}
+            <code>Collections &rarr; Social Accounts</code>. Bluesky is the sole supported native
+            adapter proved against a local provider harness. Live remote acceptance is unverified;
+            other networks require separate manual handoff.
           </div>
         ) : (
           <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
@@ -383,6 +373,11 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
                   }}
                 >
                   <span
+                    title={
+                      acc.status === 'active'
+                        ? 'Credentials healthy; delivery not verified'
+                        : 'Reconnection required'
+                    }
                     style={{
                       padding: '2px 6px',
                       borderRadius: '4px',
@@ -450,8 +445,8 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
             }}
           >
             <span style={{ fontWeight: 600, color: '#15803d' }}>Bluesky:</span>{' '}
-            <strong>Native Live Post</strong> (Direct AT Protocol API, authenticated sessions,
-            rate-limit retries)
+            <strong>Native adapter</strong> (Local provider failure/recovery proved; live remote
+            acceptance unverified)
           </div>
           <div
             style={{
@@ -464,7 +459,7 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
             <span style={{ fontWeight: 600, color: '#475569' }}>
               X, Threads, FB, IG, LinkedIn, YT, TikTok:
             </span>{' '}
-            <strong>Manual Handoff</strong> (Format validation, copy-to-clipboard, image exports)
+            <strong>Manual Handoff</strong> (Separate operator delivery; no native delivery claim)
           </div>
           <div
             style={{
@@ -475,7 +470,7 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
             }}
           >
             <span style={{ fontWeight: 600, color: '#991b1b' }}>ActivityPub / Federation:</span>{' '}
-            <strong>Unavailable</strong> (Protocol unconfigured / pending implementation)
+            <strong>Remote interoperability deferred</strong> (Local signing/outbox/failure only)
           </div>
         </div>
       </div>
@@ -502,7 +497,7 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
                 color: '#374151',
               }}
             >
-              Canonical Base Copy (Source of Truth)
+              Canonical Base Copy (Unsaved Local Preview)
             </label>
             <textarea
               rows={4}
@@ -915,7 +910,7 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
                   textTransform: 'uppercase',
                 }}
               >
-                Live {activeAccount.network.toUpperCase()} Preview
+                Local {activeAccount.network.toUpperCase()} Preview
               </span>
               <span style={{ fontSize: '11px', color: '#9ca3af' }}>Client Rendering Fidelity</span>
             </div>

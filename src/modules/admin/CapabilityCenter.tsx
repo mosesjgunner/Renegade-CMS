@@ -55,9 +55,10 @@ const capabilityRoutes: Record<string, { label: string; href: string; descriptio
     description: 'Policies, scans, issues, and waivers.',
   },
   'networking.federation': {
-    label: 'Optional network',
+    label: 'Experimental network',
     href: '/admin/collections/network-relationships',
-    description: 'Remote discovery, relationships, moderation, inboxes, and delivery diagnostics.',
+    description:
+      'Local signing, outbox, and failure diagnostics. Remote interoperability is deferred for RC.',
   },
 }
 

@@ -189,7 +189,7 @@ test('RC-03 cross-surface orchestration, pending-worker restart, partial failure
     }
     await page.goto('/admin/social')
     await expect(
-      page.getByText('Connected Distribution Targets (2)', { exact: true }),
+      page.getByText('Configured Distribution Targets (2)', { exact: true }),
     ).toBeVisible()
     await expect(
       page.getByRole('link', { name: 'Provider configuration', exact: true }),

@@ -89,7 +89,7 @@ export const OPTIONAL_MODULES: readonly ModuleManifestEntry[] = [
   },
   {
     id: 'events',
-    title: 'Events & calendars',
+    title: 'Events (calendar deferred)',
     summary:
       'Events with future occurrence dates. Timelines, full interactive calendar and feeds are deferred for RC.',
     collections: ['events', 'timelines', 'timeline-memberships', 'calendar-entries'],
@@ -155,8 +155,9 @@ export const OPTIONAL_MODULES: readonly ModuleManifestEntry[] = [
   },
   {
     id: 'network',
-    title: 'Federation (ActivityPub)',
-    summary: 'Federated networking: remote actors, objects, and inbound/outbound delivery.',
+    title: 'Experimental federation (ActivityPub)',
+    summary:
+      'Local signing, outbox, and failure diagnostics. Remote interoperability is deferred for RC.',
     collections: [
       'network-signing-keys',
       'remote-instances',

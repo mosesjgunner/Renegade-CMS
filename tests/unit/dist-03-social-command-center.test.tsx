@@ -23,7 +23,8 @@ describe('Part 3 (Pass DIST-03): Social Command Center UI & Meta/Visual Architec
 
       // Header & Subtitle
       expect(html).toContain('Social Distribution Command Center')
-      expect(html).toContain('Unified multi-channel distribution engine')
+      expect(html).toContain('Persisted drafts, delivery queue, and provider recovery')
+      expect(html).toContain('This local preview is not saved')
 
       // Key UI Sections
       expect(html).toContain('Canonical Base Copy')
@@ -32,15 +33,17 @@ describe('Part 3 (Pass DIST-03): Social Command Center UI & Meta/Visual Architec
       expect(html).toContain('Client Rendering Fidelity')
 
       // Truthful Unconfigured Accounts State
-      expect(html).toContain('Connected Distribution Targets (0)')
-      expect(html).toContain('0 Connected Accounts Configured')
+      expect(html).toContain('Configured Distribution Targets (0)')
+      expect(html).toContain('0 Accounts Configured')
 
       // Provider Truth Matrix
       expect(html).toContain('Distribution Provider Truth')
       expect(html).toContain('Bluesky')
-      expect(html).toContain('Native Live Post')
+      expect(html).toContain('Native adapter')
+      expect(html).toContain('live remote')
       expect(html).toContain('Manual Handoff')
-      expect(html).toContain('Unavailable')
+      expect(html).toContain('Remote interoperability deferred')
+      expect(html).not.toContain('renegadeparty.org/launch-2026')
 
       // Dynamic Character Counter & Actions
       expect(html).toContain('characters')
@@ -73,7 +76,7 @@ describe('Part 3 (Pass DIST-03): Social Command Center UI & Meta/Visual Architec
         />,
       )
 
-      expect(html).toContain('Connected Distribution Targets (3)')
+      expect(html).toContain('Configured Distribution Targets (3)')
       expect(html).toContain('@renegade@mastodon.social')
       expect(html).toContain('renegadeparty.bsky.social')
       expect(html).toContain('Renegade Sovereign Media')
