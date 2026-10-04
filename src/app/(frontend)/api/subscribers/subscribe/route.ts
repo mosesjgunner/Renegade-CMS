@@ -38,6 +38,44 @@ export async function POST(request: Request) {
       }
     }
 
+    if (!listId && siteId) {
+      const activeLists = await payload.find({
+        collection: 'audience-lists',
+        where: { and: [{ site: { equals: siteId } }, { status: { equals: 'active' } }] },
+        limit: 1,
+        depth: 0,
+        overrideAccess: true,
+      })
+      if (activeLists.docs[0]) {
+        listId = String(activeLists.docs[0].id)
+      } else {
+        const createdList = (await payload.create({
+          collection: 'audience-lists',
+          data: {
+            site: siteId,
+            name: 'Newsletter',
+            status: 'active',
+            doubleOptIn: true,
+          },
+          overrideAccess: true,
+        })) as { id: string | number }
+        listId = String(createdList.id)
+      }
+    }
+
+    if (listId && !siteId) {
+      const listDoc = (await payload.findByID({
+        collection: 'audience-lists',
+        id: listId,
+        depth: 0,
+        overrideAccess: true,
+      })) as { site?: unknown }
+      if (listDoc?.site) {
+        const s = listDoc.site
+        siteId = typeof s === 'object' && s && 'id' in s ? String(s.id) : String(s)
+      }
+    }
+
     const result = await requestNewsletterSubscription(payload, {
       siteId: siteId ?? '',
       listId: listId ?? '',

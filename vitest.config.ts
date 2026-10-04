@@ -23,6 +23,7 @@ export default defineConfig({
         process.env.DATABASE_URL ??
         'postgresql://renegade:renegade_dev_only@localhost:5432/renegade',
       PAYLOAD_SECRET: process.env.PAYLOAD_SECRET ?? 'unit-test-secret-with-at-least-32-characters',
+      RENEGADE_MODULES: process.env.RENEGADE_MODULES ?? 'all',
     },
   },
 })

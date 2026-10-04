@@ -345,7 +345,7 @@ export async function confirmDoubleOptIn(payload: Store, token: string) {
   const subDoc = (await payload.update({
     collection: 'subscribers',
     id: relationId(confirmation.subscriber),
-    data: { status: 'active', verifiedAt: timestamp },
+    data: { status: 'active', verifiedAt: timestamp, globalUnsubscribedAt: null },
     overrideAccess: true,
   })) as Doc
   if (confirmation.audienceList) {
@@ -367,13 +367,38 @@ export async function confirmDoubleOptIn(payload: Store, token: string) {
       })
   }
   const siteId = relationId(confirmation.site) ?? relationId(subDoc?.site)
+  const emailHash = subDoc?.emailHash
+  let wasResubscribe = false
+  if (emailHash && siteId) {
+    const unsubSuppressions = await payload.find({
+      collection: 'suppressions',
+      where: {
+        and: [
+          { site: { equals: siteId } },
+          { emailHash: { equals: emailHash } },
+          { reason: { equals: 'unsubscribe' } },
+        ],
+      },
+      overrideAccess: true,
+    })
+    if (unsubSuppressions.docs.length > 0) {
+      wasResubscribe = true
+      for (const sup of unsubSuppressions.docs) {
+        await payload.delete({
+          collection: 'suppressions',
+          id: sup.id,
+          overrideAccess: true,
+        })
+      }
+    }
+  }
   await payload.create({
     collection: 'consent-events',
     data: {
       site: siteId,
       subscriber: relationId(confirmation.subscriber),
       audienceList: relationId(confirmation.audienceList),
-      event: 'double-opt-in-confirmed',
+      event: wasResubscribe ? 'resubscribe' : 'double-opt-in-confirmed',
       basis: 'consent',
       wording: confirmation.consentWording,
       locale: confirmation.locale,
@@ -726,10 +751,19 @@ export async function requestNewsletterSubscription(
     depth: 0,
     overrideAccess: true,
   })) as Doc
-  if (!list || list.status !== 'active' || String(list.site) !== input.siteId)
+  const listSiteId =
+    typeof list?.site === 'object' && list.site && 'id' in list.site
+      ? String(list.site.id)
+      : String(list?.site ?? '')
+  if (!list || list.status !== 'active' || (input.siteId && listSiteId !== input.siteId))
     throw new Error('Newsletter unavailable.')
-  if (await isSubscriberSuppressed(payload, input.siteId, audienceDigest(email)))
-    throw new Error('This address has been unsubscribed.')
+  const suppressionRecord = await subscriberSuppressionReason(
+    payload,
+    input.siteId,
+    audienceDigest(email),
+  )
+  if (suppressionRecord && suppressionRecord.reason !== 'unsubscribe')
+    throw new Error('This address cannot be subscribed.')
   if (list.doubleOptIn !== false)
     return { ...(await requestDoubleOptIn(payload, input)), status: 'pending' as const }
   const result = await requestDoubleOptIn(payload, input)
@@ -737,7 +771,7 @@ export async function requestNewsletterSubscription(
   await payload.update({
     collection: 'subscribers',
     id: result.subscriber.id,
-    data: { status: 'active', verifiedAt: timestamp },
+    data: { status: 'active', verifiedAt: timestamp, globalUnsubscribedAt: null },
     overrideAccess: true,
   })
   const memberships = await payload.find({
@@ -753,13 +787,34 @@ export async function requestNewsletterSubscription(
       data: { status: 'active', confirmedAt: timestamp },
       overrideAccess: true,
     })
+  if (suppressionRecord?.reason === 'unsubscribe') {
+    const unsubSuppressions = await payload.find({
+      collection: 'suppressions',
+      where: {
+        and: [
+          { site: { equals: input.siteId } },
+          { emailHash: { equals: audienceDigest(email) } },
+          { reason: { equals: 'unsubscribe' } },
+        ],
+      },
+      overrideAccess: true,
+    })
+    for (const sup of unsubSuppressions.docs) {
+      await payload.delete({
+        collection: 'suppressions',
+        id: sup.id,
+        overrideAccess: true,
+      })
+    }
+  }
   await payload.create({
     collection: 'consent-events',
     data: {
       site: input.siteId,
       subscriber: result.subscriber.id,
       audienceList: input.listId,
-      event: 'resubscribe',
+      event:
+        suppressionRecord?.reason === 'unsubscribe' ? 'resubscribe' : 'double-opt-in-confirmed',
       basis: 'consent',
       wording: input.consentWording,
       locale: input.locale,
@@ -1013,7 +1068,7 @@ export async function recordAudienceChoices(
     depth: 0,
     overrideAccess: true,
   })) as Doc
-  if (!subscriber || String(subscriber.site) !== input.siteId)
+  if (!subscriber || relationId(subscriber.site) !== input.siteId)
     throw new Error('Audience subject is unavailable.')
   for (const choice of input.choices) {
     if (!choice.purpose.trim()) throw new Error('A consent purpose is required.')
@@ -1063,7 +1118,7 @@ export async function issueAudienceAccessToken(
     depth: 0,
     overrideAccess: true,
   })) as Doc
-  if (!subscriber || String(subscriber.site) !== input.siteId)
+  if (!subscriber || relationId(subscriber.site) !== input.siteId)
     throw new Error('Cross-site token issuance denied.')
   const nonce = newOpaqueToken()
   const exp = Math.floor(Date.now() / 1000) + (input.ttlSeconds ?? 7 * 24 * 60 * 60)
@@ -1113,8 +1168,8 @@ export async function authorizeAudienceAccess(
     record.revokedAt ||
     record.usedAt ||
     record.purpose !== purpose ||
-    String(record.site) !== claims.siteId ||
-    String(record.subscriber) !== claims.subscriberId ||
+    (record.site && relationId(record.site) !== claims.siteId) ||
+    relationId(record.subscriber) !== claims.subscriberId ||
     new Date(record.expiresAt) <= new Date()
   )
     return null
@@ -1132,7 +1187,7 @@ export async function deriveAudienceEligibility(
     depth: 0,
     overrideAccess: true,
   })) as Doc
-  if (!subscriber || String(subscriber.site) !== siteId)
+  if (!subscriber || relationId(subscriber.site) !== siteId)
     throw new Error('Audience subject is unavailable.')
   const events = await payload.find({
     collection: 'consent-events',
