@@ -1,0 +1,77 @@
+{
+  "date": "2026-10-04",
+  "testedSourceSHA": "97ce2c1e4a253289d0d4f9da66c154afce74c6e9",
+  "runtimeBuildSHA": "d65647040c7c1b4d70d5cd853cc1670117fcca7f",
+  "verdict": "PASS within RC03 orchestration scope",
+  "unit": {
+    "files": 17,
+    "passed": 107,
+    "failed": 0,
+    "skipped": 0
+  },
+  "integration": {
+    "files": 6,
+    "passed": 18,
+    "failed": 0,
+    "skipped": 0
+  },
+  "browser": {
+    "passed": 1,
+    "failed": 0,
+    "skipped": 0,
+    "pageErrors": []
+  },
+  "exitCodes": {
+    "unit": 0,
+    "integration": 0,
+    "browser": 0,
+    "typecheck": 0,
+    "lint": 0,
+    "build": 0,
+    "format": 0
+  },
+  "calendar": "Events occurrence/admin/public proved; interactive calendar/feed/timelines deferred",
+  "federation": "Local signing/outbox/failure proved; remote interoperability deferred",
+  "provider": "Actual Bluesky adapter with local HTTP harness; live remote acceptance unverified",
+  "blockers": [],
+  "sourceFiles": {
+    "src/modules/admin/CapabilityCenter.tsx": "8aaf5c784198e1b60f411dc347eb7df3275fe0e32b1198076c92bd42368307fe",
+    "src/modules/admin/SocialCommandCenter.tsx": "00422cf73fc3c8857edc84db06eea857308ece485e1d2a9063aa11a616cc158e",
+    "src/modules/module-registry.ts": "d664ee664d6c29cab4805796e6f5fb7397cb3576242494c4b2cc6da8fc11ef99",
+    "src/modules/releases/saga.ts": "39e9db767c9e00c09335c731fe74d71f47a5744ac4519ad295ac42e5295c7f54",
+    "tests/rc03/orchestration.spec.ts": "29a9fe603a703aea7df916ed2887f3bc769a342d7e36a7e09dc8d3953e97d5a3",
+    "tests/unit/dist-03-social-command-center.test.tsx": "0bbb9234d40e6924645698560be6559b2d0274e3549691cd5f7e1d75fe43516f"
+  },
+  "artifacts": {
+    "browser-results.json": "bc14dea24cf89497321cce9b5aa48f23d8a5f38c9bbe22ce265f93b782e406cd",
+    "browser.log": "6b9c6cebfb356de7930f11a94c1c23a8aae9fbb0984e5300c9e93fda299ba7fa",
+    "build.log": "edd712176b129e8b4dcbadb873249b52c5c953ffcccd759dcd8e1ef3fc028363",
+    "failed-label-trace.zip": "53ae27a33829725ab6be4aa009a54528cff260f51f62609b5f42d2094c0f184a",
+    "federation-boundary.json": "f4135053f8dd999074b832f974205184258e65e230e0aaa1121f4de35563b8eb",
+    "first-browser-failure.log": "6da779493992dc3a0d7bd85045ecfbc3599c391144fa443a5ecfcf5d1113a5f1",
+    "first-integration-failure.log": "f3a90b9c1fca6b65403d9f0b6dfcf84aeca0f25ee196ac7b756cbb166d166dc1",
+    "first-unit-failure.log": "016cd5878e7d35e0055376d19369446d9f6998aaf09e9ca2265a3ebd63297716",
+    "fixture.json": "4b6f8e34674d923bab2724e7c67f42e9d0d383577778adcee69802719b33b1f4",
+    "format.log": "fbdd37869c73ce85afb11ffefa058e0181874c073fdfee7d7a4b5086b7ea3b1b",
+    "https-proxy.log": "94cdf2d3580b6f4524704dc3312e0444c907254b7c78ede85d18eb4acc57e9ee",
+    "integration-fixture.json": "46f18c0a98f4eee27c082a9de505463d8b6f85d4ed14b4c7fd7c2da2812d2098",
+    "integration-migration.log": "ad0ad041dcdea5f117c5258da3f723b6e8bdf16f9f2c5e0c89dec562b8c3942d",
+    "integration.log": "ffcbdec2e50095b0f31163c87a7989c0166a83fdcc3a16f435c61390534f1a2e",
+    "lint.log": "60f0158f9051e2c449acc821f633fa2d5fd27553c41019acd05bdb787340393a",
+    "migration.log": "b571609f0b7c69ec69ddb958d483e022556101df21b0fd1ea44bf0fea0fdb30c",
+    "orchestration-trace.zip": "e8556e74625fb868282576a1926a0b19b5c6e744663f2cf0889b1b86b4da3cf5",
+    "orchestration.json": "6d17e9be4f87d9ddc7855875f399c84c388492a539e287040812c3b6555f70d1",
+    "partial-delivery.png": "12f6dff5c592445cc23ac6d27817b1c30bfc506608f642c69b81ec1b531ee288",
+    "partial-worker-restart.json": "c2b084b8ab4a834d422b8d59061723e645fbae8e6be179480780685ef823e59d",
+    "pending-review.png": "11181620289f48d59b4b01004d111f004fa57589491854e9ecd7205813d6fb9f",
+    "pending-worker-restart.json": "4954617732f22a29a6c701c445afd4c713c4a9be9a556210292c0a367e543f83",
+    "provider-configuration.png": "aac96e9a3e0eb53325fa416e0a79ed7a00ac79d07ac809ef97a419291d9486a9",
+    "provider-fixture.log": "48a1de9230a43f814a7999c64025b7de0ed3658e10bbfcfbcbd89ed6efc348c8",
+    "recovered-release.png": "bfe2ca470cbc33da57480e449cd08f1684547b56896acb0fc100feb09699e564",
+    "scheduled-release.png": "f79eab26ed27218be01b58f89cd53d833eda9a0e1e4fc7c4fae2e4c13cdb70ef",
+    "typecheck.log": "1b12d8ed7540406606106f644c188c703b3404c7d2b3e69bebe468bef4b09d1b",
+    "unit.log": "d8c0d30d880394c20e949a2051e2d22d29d409ff756f2b3fb0a244edbbf4a26c",
+    "web.log": "9a8d6e394052cc4b93584492b4a689ff66b6a2bde348f21dcd29a69b26df6afb",
+    "worker.log": "7d52aec184337c71c6022e404aafaddaedb52ff98d7642cc6d43d32200dda2c6"
+  }
+}

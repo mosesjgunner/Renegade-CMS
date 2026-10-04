@@ -1,4 +1,6 @@
-> Current orchestration gate: **RC-03 PASS 2 PASS**, source `bb93ea8b562bc91e71e64afeabb6d7ead6607bc2`. [Evidence](evidence/RC-03.md). Partial provider failure, failed-only recovery and worker restart/idempotency proved on the RC-02 publication copy. Calendar/timeline deferred; federation limited to local signing/outbox/failure. Broader RC-01 release blockers remain open. Sol Light: small cleanup only.
+> Current orchestration gate: **RC-03 PASS 3 PASS**, source `97ce2c1e4a253289d0d4f9da66c154afce74c6e9`. [Final gate evidence](evidence/RC-03-PASS3.md). Small cleanup reconciled operator claims; final browser, 107 unit and 18 integration tests, typecheck, lint and build pass. Calendar/feed/timelines and remote federation remain deferred. Broader RC-01 release blockers remain open. NEXT: RC-04 and RC-05.
+
+ Current orchestration gate: **RC-03 PASS 2 PASS**, source `bb93ea8b562bc91e71e64afeabb6d7ead6607bc2`. [Evidence](evidence/RC-03.md). Partial provider failure, failed-only recovery and worker restart/idempotency proved on the RC-02 publication copy. Calendar/timeline deferred; federation limited to local signing/outbox/failure. Broader RC-01 release blockers remain open. Sol Light: small cleanup only.
 
 > Current core-site gate: **RC-02 PASS**, source `b684ee11460637bf2177f349057f14d6e804bbbd`. [Evidence](evidence/RC-02.md). RC-00/RC-01 source and blockers below are historical broader scope, which remains open.
 

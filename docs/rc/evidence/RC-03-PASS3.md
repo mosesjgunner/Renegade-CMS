@@ -1,0 +1,21 @@
+# RC-03 Pass 3 cleanup and final gate — PASS — 2026-10-04
+
+Source: `97ce2c1e4a253289d0d4f9da66c154afce74c6e9`. Builds on completed [Pass 1 and Pass 2](RC-03.md). This closes RC-03 orchestration only; aggregate release and the broader RC-01 blockers remain open. Next: RC-04 and RC-05, without automatically executing either gate.
+
+Cleanup removed unused social preview state/type and sample launch content. Configured accounts no longer imply connected delivery; preview copy explicitly says it is unsaved. Bluesky native adapter copy names the local harness proof and unverified live remote acceptance. Manual handoff and experimental federation are distinct. Module/capability labels state calendar and remote federation deferrals. The saga comment describes independently persisted steps and execution locking rather than an enclosing database transaction. No orchestration redesign, schema changes, or test weakening.
+
+## Final gate evidence
+
+All final runs pass with no skipped tests: 107 unit tests in 17 files; 18 PostgreSQL integration tests in six files; one production Chromium operator journey. Typecheck, zero-warning lint, touched-file formatting, and production standalone build pass. Logs and artifacts are in [rc-03-pass3](rc-03-pass3/checks.json). Pass 2 artifacts and checks remain unchanged in `rc-03/`.
+
+The ordinary owner recovery login and native review/release interfaces exercise review, changes requested, revised rich text, audited emergency approval after self-approval denial, release approval, future scheduling, and worker execution. Approved article revision and public 308 redirect succeed alongside one destination; a second destination fails truthfully. Release Center exposes the partial state, provider error and failed-step retry. Concurrent recovery after a lost provider response yields artifact attempts `[1,1,1,4]`, one remote creation per destination, two external receipts, and exactly one canonical publication audit. Pending and partial restarts replace actual worker/web processes without repeating successful side effects. Command Center exposes review and scheduled state. Independent reviewer policy is covered by focused tests, not a multi-user browser claim.
+
+DST scheduling and competing fresh process execution pass. Local federation produces one deduplicated outbox delivery, three independently verified signed requests and retained intentional 503 failures. Future event occurrence, native event editing and published public rendering pass. Calendar/feed/timelines remain deliberately deferred and disabled; event occurrence dates do not advertise automatic event publication. Composer dispatch and remote federation interoperability remain deferred. Bluesky uses the actual adapter with an explicit local harness; live commercial provider acceptance is not claimed. Other coordinated artifact families retain separate acceptance gates.
+
+## Initial failures retained
+
+The first unit and browser runs caught exact assertions still using the old “Connected Distribution Targets” label. Assertions were updated to require the truthful “Configured” label; the failed unit/browser logs and browser trace are retained. The first integration invocation preloaded the DNS fixture only in the parent process; persisted attempts showed `ENOTFOUND dispatch.rc02.test` and zero signatures. Final invocation passes `NODE_OPTIONS=--import=./src/scripts/rc02-network.mjs` to child workers. Both invalidating acceptance runs were repeated on fresh disposable RC-02 database copies. No default destructive browser setup or existing local data reset was used.
+
+Runtime build and final unit checks cover cleanup commit `d65647040c7c1b4d70d5cd853cc1670117fcca7f`. Final source adds only formatting of the browser fixture. Browser and integration ran against identical runtime code; final typecheck, lint and formatting ran after that formatting commit. Source and artifact hashes are recorded in checks.json. PowerShell's redirected-stderr NativeCommandError for expected warnings is not a nonzero process exit; recorded final command exit codes are zero.
+
+Blockers within RC-03's supported scope: none. Broader authorization, tenant, module, provider and aggregate release proof remains outside this PASS.

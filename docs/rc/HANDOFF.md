@@ -1,3 +1,7 @@
+# RC-03 Pass 3 final handoff ? PASS ? 2026-10-04
+
+Source `97ce2c1e4a253289d0d4f9da66c154afce74c6e9`. [Final evidence](evidence/RC-03-PASS3.md) records the cleanup, complete regression and retained initial failures. No RC-03 blocker remains within the supported article/redirect/persisted Bluesky orchestration scope. Calendar/feed/timelines, composer dispatch and remote federation remain deferred; live remote provider acceptance and broader RC-01 gates are not promoted. NEXT: RC-04 and RC-05; do not execute them automatically.
+
 # RC-03 Pass 2 handoff ? PASS ? 2026-10-04
 
 Tested source `bb93ea8b562bc91e71e64afeabb6d7ead6607bc2`, extending Pass 1 `454595da98d493d11f6fc207ed68857a1959ad7a`. The real RC-02 publication copy passes the ordinary owner orchestration journey, scheduled worker execution, deliberately partial provider failure, failed-only retry and pending/partial worker restarts. Article publication and each remote destination occur once. Single-owner approval uses the supported audited emergency override after self approval is denied. See [RC-03 evidence](evidence/RC-03.md), retained trace, operator screenshots, restart receipts and checks.json.

@@ -1,0 +1,15 @@
+{
+  "request": {
+    "label": "pending-worker-restart",
+    "at": "2026-10-04T21:41:42.773Z"
+  },
+  "previous": {
+    "web": 32972,
+    "worker": 25596
+  },
+  "current": {
+    "web": 17824,
+    "worker": 14096
+  },
+  "restartedAt": "2026-10-04T21:41:43.353Z"
+}

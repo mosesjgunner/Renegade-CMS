@@ -1,0 +1,1637 @@
+{
+  "articleId": "f6ba44fc-9bd0-4491-b6a4-feb41b7d2c0f",
+  "releaseId": "25949ff7-8b09-4a86-8323-f5a52deb82cd",
+  "scheduledFor": "2026-10-04T21:42:26.348Z",
+  "partial": {
+    "id": "25949ff7-8b09-4a86-8323-f5a52deb82cd",
+    "site": {
+      "id": "ef4d1fb8-989c-4df0-abb0-9ac8b218dcc0",
+      "name": "Renegade Party Dispatch",
+      "slug": "renegadeparty",
+      "description": "Independent civic reporting, local organizing and public accountability.",
+      "lifecycle": "active",
+      "communityRegistrationPolicy": "open",
+      "commentReactionCodes": [
+        "thumbs_up",
+        "heart",
+        "insightful",
+        "applause"
+      ],
+      "updatedAt": "2026-10-04T04:05:53.935Z",
+      "createdAt": "2026-10-04T04:05:53.935Z"
+    },
+    "publication": {
+      "id": "88dd0221-94fe-41fc-bff2-6beccd8ba062",
+      "site": "ef4d1fb8-989c-4df0-abb0-9ac8b218dcc0",
+      "owner": "7f9ad54d-b1ab-48d4-8e7f-c1b43e06a382",
+      "space": "3d6a2e4a-4990-46bb-b9b3-b3dcd8d48f71",
+      "name": "Renegade Party Dispatch",
+      "slug": "main",
+      "canonicalBasePath": "/",
+      "status": "active",
+      "visibility": "public",
+      "brand": "07f82a9d-007a-4449-a07b-b2ad86b2dec3",
+      "profile": "d05bbe9c-eb15-428d-ad98-a12630523a75",
+      "brandOverrides": null,
+      "themePreset": "neutral-starter",
+      "moderationPolicy": null,
+      "featurePolicy": null,
+      "capabilities": [
+        {
+          "id": "6ac1d0a2b228794f408ca419",
+          "key": "publication.content",
+          "status": "enabled"
+        }
+      ],
+      "quotaPolicy": null,
+      "navigation": {
+        "footer": [
+          {
+            "href": "/about",
+            "label": "Our charter",
+            "children": []
+          },
+          {
+            "href": "/articles",
+            "label": "Reporting",
+            "children": []
+          },
+          {
+            "href": "/events/open-civic-assembly",
+            "label": "Assembly",
+            "children": []
+          }
+        ],
+        "primary": [
+          {
+            "href": "/about",
+            "label": "Our charter",
+            "children": []
+          },
+          {
+            "href": "/articles",
+            "label": "Reporting",
+            "children": []
+          },
+          {
+            "href": "/events/open-civic-assembly",
+            "label": "Assembly",
+            "children": []
+          }
+        ],
+        "secondary": []
+      },
+      "feeds": null,
+      "seoDefaults": null,
+      "suspendedAt": null,
+      "archivedAt": null,
+      "archiveMessage": null,
+      "updatedAt": "2026-10-04T04:06:06.561Z",
+      "createdAt": "2026-10-04T04:05:54.030Z"
+    },
+    "space": null,
+    "owner": null,
+    "title": "RC03 orchestration 1791150094885",
+    "name": "RC03 orchestration 1791150094885",
+    "purpose": "Coordinated campaign release",
+    "ownerTeam": "Editorial Operations",
+    "content": null,
+    "article": null,
+    "product": null,
+    "productRevision": null,
+    "plannedInstant": "2026-10-04T21:42:26.348Z",
+    "scheduledFor": "2026-10-04T21:42:26.348Z",
+    "timeZone": "America/Chicago",
+    "labels": [],
+    "campaign": null,
+    "dependencies": [],
+    "releaseRevision": 5,
+    "status": "partially-failed",
+    "lastScheduleMutationId": "mut-25949ff7-8b09-4a86-8323-f5a52deb82cd-1791150102323",
+    "artifacts": [
+      {
+        "id": "article:f6ba44fc-9bd0-4491-b6a4-feb41b7d2c0f",
+        "title": "RC03 accountable release 1791150094885",
+        "status": "succeeded",
+        "attempts": 1,
+        "targetId": "f6ba44fc-9bd0-4491-b6a4-feb41b7d2c0f",
+        "updatedAt": "2026-10-04T21:42:27.542Z",
+        "executedAt": "2026-10-04T21:42:27.542Z",
+        "pinnedHash": "sha256:8213fc1107a838fec2d6345b5016adb0ea8b8b3f83977fd88058c66489dcf299",
+        "stepOutput": {
+          "published": true,
+          "revisionId": "e2a5a3ec-1791-4dfa-a97a-c43d5dad8779",
+          "alreadyPublished": false
+        },
+        "targetType": "article",
+        "canonicalUrl": "/articles/rc03-release-1791150094885",
+        "pinnedRevisionId": "e2a5a3ec-1791-4dfa-a97a-c43d5dad8779",
+        "lastKnownGoodState": {
+          "previousStatus": "approved",
+          "previousPublishedRevision": ""
+        }
+      },
+      {
+        "id": "redirect:rc03-1791150094885",
+        "title": "Coordinated public redirect",
+        "status": "succeeded",
+        "attempts": 1,
+        "targetId": "rc03-1791150094885",
+        "updatedAt": "2026-10-04T21:42:28.549Z",
+        "executedAt": "2026-10-04T21:42:28.549Z",
+        "stepOutput": {
+          "toPath": "/articles/rc03-release-1791150094885",
+          "fromPath": "/rc03-1791150094885",
+          "redirectId": "e9eaddd0-5bc4-433f-99e5-efff5c7d4c5d"
+        },
+        "targetType": "redirect",
+        "redirectRule": {
+          "match": "exact",
+          "toPath": "/articles/rc03-release-1791150094885",
+          "enabled": true,
+          "fromPath": "/rc03-1791150094885",
+          "statusCode": 308
+        },
+        "lastKnownGoodState": {
+          "created": true,
+          "previousId": "e9eaddd0-5bc4-433f-99e5-efff5c7d4c5d"
+        }
+      },
+      {
+        "id": "distribution:07173ae1-2da6-4f2d-84d5-d659625cf175",
+        "title": "RC03 good downstream",
+        "status": "succeeded",
+        "attempts": 1,
+        "targetId": "07173ae1-2da6-4f2d-84d5-d659625cf175",
+        "updatedAt": "2026-10-04T21:42:28.593Z",
+        "executedAt": "2026-10-04T21:42:28.593Z",
+        "pinnedHash": "rc03-1791150094885-0",
+        "stepOutput": {
+          "succeeded": 1,
+          "distributed": true,
+          "distributionDraftId": "07173ae1-2da6-4f2d-84d5-d659625cf175"
+        },
+        "targetType": "distribution",
+        "lastKnownGoodState": {
+          "distributionDraftId": "07173ae1-2da6-4f2d-84d5-d659625cf175"
+        },
+        "distributionDraftId": "07173ae1-2da6-4f2d-84d5-d659625cf175"
+      },
+      {
+        "id": "distribution:4da1f3c0-8373-4981-82ec-a3d058dab49d",
+        "error": "RC03 bad destination: RC03 destination disabled; repair provider then retry failed delivery.",
+        "title": "RC03 bad downstream",
+        "status": "failed",
+        "attempts": 1,
+        "targetId": "4da1f3c0-8373-4981-82ec-a3d058dab49d",
+        "updatedAt": "2026-10-04T21:42:28.860Z",
+        "pinnedHash": "rc03-1791150094885-1",
+        "targetType": "distribution",
+        "distributionDraftId": "4da1f3c0-8373-4981-82ec-a3d058dab49d"
+      }
+    ],
+    "gateSnapshot": {
+      "rules": [
+        {
+          "name": "Staff Release Authorization",
+          "ruleId": "rule-permissions",
+          "status": "passed",
+          "message": "Actor role 'owner' is authorized for release operations.",
+          "evidence": {
+            "actorId": "681045f7-a650-4d7c-b67c-b1f0274d69a1",
+            "actorRole": "owner"
+          },
+          "severity": "blocker",
+          "ruleVersion": "v1.0"
+        },
+        {
+          "name": "Editorial Approvals Verification",
+          "ruleId": "rule-approvals",
+          "status": "passed",
+          "message": "All included content, pages, and products have verified approved revisions.",
+          "evidence": {
+            "artifactCount": 4
+          },
+          "severity": "blocker",
+          "ruleVersion": "v1.0"
+        },
+        {
+          "name": "Unresolved Review Comments Check",
+          "ruleId": "rule-unresolved-comments",
+          "status": "passed",
+          "message": "No unresolved blocking review comments found on included artifacts.",
+          "severity": "blocker",
+          "ruleVersion": "v1.0"
+        },
+        {
+          "name": "URL & Canonical Route Conflict Detection",
+          "ruleId": "rule-url-canonical-conflicts",
+          "status": "passed",
+          "message": "All published paths and canonical URLs are mutually exclusive.",
+          "severity": "blocker",
+          "ruleVersion": "v1.0"
+        },
+        {
+          "name": "Redirect Integrity & Circular Loop Check",
+          "ruleId": "rule-redirects",
+          "status": "passed",
+          "message": "All declared redirects pass syntax, status, and loop checks.",
+          "severity": "blocker",
+          "ruleVersion": "v1.0"
+        },
+        {
+          "name": "Quality Center Severity Threshold Gate",
+          "ruleId": "rule-quality-center",
+          "status": "passed",
+          "message": "Zero publication-blocking quality issues detected on release targets.",
+          "severity": "blocker",
+          "ruleVersion": "v1.0"
+        },
+        {
+          "name": "Media Rights & Asset Readiness",
+          "ruleId": "rule-media-readiness",
+          "status": "passed",
+          "message": "All pinned media assets have verified rights clearance and readiness.",
+          "severity": "blocker",
+          "ruleVersion": "v1.0"
+        },
+        {
+          "name": "Scheduled Release Dependency Gate",
+          "ruleId": "rule-scheduled-dependencies",
+          "status": "passed",
+          "message": "All prerequisite release dependencies are completed or co-scheduled.",
+          "severity": "blocker",
+          "ruleVersion": "v1.0"
+        },
+        {
+          "name": "Operations Queue & Worker Health",
+          "ruleId": "rule-worker-health",
+          "status": "passed",
+          "message": "Operations queue worker is active and healthy.",
+          "severity": "warning",
+          "ruleVersion": "v1.0"
+        },
+        {
+          "name": "Migration & Schema Config Policy",
+          "ruleId": "rule-migration-policy",
+          "status": "passed",
+          "message": "No prohibited schema migrations or policy violations present.",
+          "severity": "blocker",
+          "ruleVersion": "v1.0"
+        },
+        {
+          "name": "Localization Quality & Translation Integrity",
+          "ruleId": "rule-localization-quality",
+          "status": "passed",
+          "message": "All localized content items have verified completeness, active source alignment, and human approvals.",
+          "severity": "blocker",
+          "ruleVersion": "v1.0"
+        }
+      ],
+      "isValid": true,
+      "snapshotId": "gate-snap-1791150102210",
+      "evaluatedAt": "2026-10-04T21:41:42.204Z",
+      "blockerCount": 0,
+      "warningCount": 0,
+      "overallStatus": "passed",
+      "evaluatedFingerprint": "6221febc6de8d09b70fcaba3f737317cdf559b815d47e1e32c9901749738a051"
+    },
+    "approvals": [
+      {
+        "id": "9318b128-20c9-4fe1-a5ac-7b12b2f1df88",
+        "actorId": "681045f7-a650-4d7c-b67c-b1f0274d69a1",
+        "comment": "Approved via Command Center",
+        "decision": "approved",
+        "actorRole": "owner",
+        "decidedAt": "2026-10-04T21:41:42.210Z",
+        "releaseRevision": 5,
+        "gateSnapshotFingerprint": "6221febc6de8d09b70fcaba3f737317cdf559b815d47e1e32c9901749738a051"
+      }
+    ],
+    "sagaSteps": [
+      {
+        "output": {
+          "published": true,
+          "revisionId": "e2a5a3ec-1791-4dfa-a97a-c43d5dad8779",
+          "alreadyPublished": false
+        },
+        "status": "succeeded",
+        "stepId": "step-article:f6ba44fc-9bd0-4491-b6a4-feb41b7d2c0f-1",
+        "attempts": 1,
+        "boundary": "transactional_db",
+        "artifactId": "article:f6ba44fc-9bd0-4491-b6a4-feb41b7d2c0f",
+        "targetType": "article",
+        "completedAt": "2026-10-04T21:42:27.542Z"
+      },
+      {
+        "output": {
+          "toPath": "/articles/rc03-release-1791150094885",
+          "fromPath": "/rc03-1791150094885",
+          "redirectId": "e9eaddd0-5bc4-433f-99e5-efff5c7d4c5d"
+        },
+        "status": "succeeded",
+        "stepId": "step-redirect:rc03-1791150094885-1",
+        "attempts": 1,
+        "boundary": "transactional_db",
+        "artifactId": "redirect:rc03-1791150094885",
+        "targetType": "redirect",
+        "completedAt": "2026-10-04T21:42:28.549Z"
+      },
+      {
+        "output": {
+          "succeeded": 1,
+          "distributed": true,
+          "distributionDraftId": "07173ae1-2da6-4f2d-84d5-d659625cf175"
+        },
+        "status": "succeeded",
+        "stepId": "step-distribution:07173ae1-2da6-4f2d-84d5-d659625cf175-1",
+        "attempts": 1,
+        "boundary": "transactional_db",
+        "artifactId": "distribution:07173ae1-2da6-4f2d-84d5-d659625cf175",
+        "targetType": "distribution",
+        "completedAt": "2026-10-04T21:42:28.593Z"
+      },
+      {
+        "error": "RC03 bad destination: RC03 destination disabled; repair provider then retry failed delivery.",
+        "status": "failed",
+        "stepId": "step-distribution:4da1f3c0-8373-4981-82ec-a3d058dab49d-1",
+        "attempts": 1,
+        "boundary": "transactional_db",
+        "artifactId": "distribution:4da1f3c0-8373-4981-82ec-a3d058dab49d",
+        "targetType": "distribution",
+        "completedAt": "2026-10-04T21:42:28.860Z"
+      }
+    ],
+    "resultingUrls": [
+      "/articles/rc03-release-1791150094885",
+      "/rc03-1791150094885"
+    ],
+    "leaseOwner": null,
+    "leaseExpiresAt": null,
+    "scheduleAudit": [
+      {
+        "at": "2026-10-04T21:41:42.336Z",
+        "after": {
+          "timeZone": "America/Chicago",
+          "scheduledFor": "2026-10-04T21:42:26.348Z"
+        },
+        "jobId": "e0fb2eb6-4264-4639-b786-34606afcda6b",
+        "action": "release.scheduled",
+        "before": {
+          "timeZone": "America/Chicago",
+          "scheduledFor": "2026-10-04T21:42:26.348Z"
+        },
+        "actorId": "681045f7-a650-4d7c-b67c-b1f0274d69a1"
+      }
+    ],
+    "executionJob": {
+      "id": "e0fb2eb6-4264-4639-b786-34606afcda6b",
+      "input": {
+        "actorId": "681045f7-a650-4d7c-b67c-b1f0274d69a1",
+        "releaseId": "25949ff7-8b09-4a86-8323-f5a52deb82cd",
+        "scheduleMutationId": "mut-25949ff7-8b09-4a86-8323-f5a52deb82cd-1791150102323"
+      },
+      "completedAt": "2026-10-04T21:42:29.109Z",
+      "totalTried": 1,
+      "hasError": false,
+      "error": null,
+      "log": [
+        {
+          "id": "6ac2c845b35fb33710c455b2",
+          "executedAt": "2026-10-04T21:42:27.478Z",
+          "completedAt": "2026-10-04T21:42:29.101Z",
+          "taskSlug": "content-release-execute",
+          "taskID": "1",
+          "input": {
+            "actorId": "681045f7-a650-4d7c-b67c-b1f0274d69a1",
+            "releaseId": "25949ff7-8b09-4a86-8323-f5a52deb82cd",
+            "scheduleMutationId": "mut-25949ff7-8b09-4a86-8323-f5a52deb82cd-1791150102323"
+          },
+          "output": {
+            "status": "partial-failure",
+            "releaseId": "25949ff7-8b09-4a86-8323-f5a52deb82cd",
+            "succeeded": 3,
+            "unresolved": 1
+          },
+          "state": "succeeded",
+          "error": null
+        }
+      ],
+      "taskSlug": "content-release-execute",
+      "queue": "operations",
+      "waitUntil": "2026-10-04T21:42:26.348Z",
+      "processing": false,
+      "concurrencyKey": "content-release:25949ff7-8b09-4a86-8323-f5a52deb82cd",
+      "meta": null,
+      "updatedAt": "2026-10-04T21:42:29.110Z",
+      "createdAt": "2026-10-04T21:41:42.329Z",
+      "taskStatus": {
+        "content-release-execute": {
+          "1": {
+            "complete": true,
+            "input": {
+              "actorId": "681045f7-a650-4d7c-b67c-b1f0274d69a1",
+              "releaseId": "25949ff7-8b09-4a86-8323-f5a52deb82cd",
+              "scheduleMutationId": "mut-25949ff7-8b09-4a86-8323-f5a52deb82cd-1791150102323"
+            },
+            "output": {
+              "status": "partial-failure",
+              "releaseId": "25949ff7-8b09-4a86-8323-f5a52deb82cd",
+              "succeeded": 3,
+              "unresolved": 1
+            },
+            "taskSlug": "content-release-execute",
+            "totalTried": 1
+          }
+        }
+      }
+    },
+    "executionItems": [
+      {
+        "id": "article:f6ba44fc-9bd0-4491-b6a4-feb41b7d2c0f",
+        "title": "RC03 accountable release 1791150094885",
+        "status": "succeeded",
+        "attempts": 1,
+        "targetId": "f6ba44fc-9bd0-4491-b6a4-feb41b7d2c0f",
+        "updatedAt": "2026-10-04T21:42:27.542Z",
+        "executedAt": "2026-10-04T21:42:27.542Z",
+        "pinnedHash": "sha256:8213fc1107a838fec2d6345b5016adb0ea8b8b3f83977fd88058c66489dcf299",
+        "stepOutput": {
+          "published": true,
+          "revisionId": "e2a5a3ec-1791-4dfa-a97a-c43d5dad8779",
+          "alreadyPublished": false
+        },
+        "targetType": "article",
+        "canonicalUrl": "/articles/rc03-release-1791150094885",
+        "pinnedRevisionId": "e2a5a3ec-1791-4dfa-a97a-c43d5dad8779",
+        "lastKnownGoodState": {
+          "previousStatus": "approved",
+          "previousPublishedRevision": ""
+        }
+      },
+      {
+        "id": "redirect:rc03-1791150094885",
+        "title": "Coordinated public redirect",
+        "status": "succeeded",
+        "attempts": 1,
+        "targetId": "rc03-1791150094885",
+        "updatedAt": "2026-10-04T21:42:28.549Z",
+        "executedAt": "2026-10-04T21:42:28.549Z",
+        "stepOutput": {
+          "toPath": "/articles/rc03-release-1791150094885",
+          "fromPath": "/rc03-1791150094885",
+          "redirectId": "e9eaddd0-5bc4-433f-99e5-efff5c7d4c5d"
+        },
+        "targetType": "redirect",
+        "redirectRule": {
+          "match": "exact",
+          "toPath": "/articles/rc03-release-1791150094885",
+          "enabled": true,
+          "fromPath": "/rc03-1791150094885",
+          "statusCode": 308
+        },
+        "lastKnownGoodState": {
+          "created": true,
+          "previousId": "e9eaddd0-5bc4-433f-99e5-efff5c7d4c5d"
+        }
+      },
+      {
+        "id": "distribution:07173ae1-2da6-4f2d-84d5-d659625cf175",
+        "title": "RC03 good downstream",
+        "status": "succeeded",
+        "attempts": 1,
+        "targetId": "07173ae1-2da6-4f2d-84d5-d659625cf175",
+        "updatedAt": "2026-10-04T21:42:28.593Z",
+        "executedAt": "2026-10-04T21:42:28.593Z",
+        "pinnedHash": "rc03-1791150094885-0",
+        "stepOutput": {
+          "succeeded": 1,
+          "distributed": true,
+          "distributionDraftId": "07173ae1-2da6-4f2d-84d5-d659625cf175"
+        },
+        "targetType": "distribution",
+        "lastKnownGoodState": {
+          "distributionDraftId": "07173ae1-2da6-4f2d-84d5-d659625cf175"
+        },
+        "distributionDraftId": "07173ae1-2da6-4f2d-84d5-d659625cf175"
+      },
+      {
+        "id": "distribution:4da1f3c0-8373-4981-82ec-a3d058dab49d",
+        "error": "RC03 bad destination: RC03 destination disabled; repair provider then retry failed delivery.",
+        "title": "RC03 bad downstream",
+        "status": "failed",
+        "attempts": 1,
+        "targetId": "4da1f3c0-8373-4981-82ec-a3d058dab49d",
+        "updatedAt": "2026-10-04T21:42:28.860Z",
+        "pinnedHash": "rc03-1791150094885-1",
+        "targetType": "distribution",
+        "distributionDraftId": "4da1f3c0-8373-4981-82ec-a3d058dab49d"
+      }
+    ],
+    "executionAudit": [
+      {
+        "at": "2026-10-04T21:41:41.454Z",
+        "action": "release.created",
+        "actorId": "681045f7-a650-4d7c-b67c-b1f0274d69a1",
+        "details": {
+          "name": "RC03 orchestration 1791150094885",
+          "purpose": "Coordinated campaign release"
+        }
+      },
+      {
+        "at": "2026-10-04T21:41:41.638Z",
+        "action": "release.artifact.pinned",
+        "actorId": "681045f7-a650-4d7c-b67c-b1f0274d69a1",
+        "details": {
+          "artifactId": "article:f6ba44fc-9bd0-4491-b6a4-feb41b7d2c0f",
+          "pinnedHash": "sha256:8213fc1107a838fec2d6345b5016adb0ea8b8b3f83977fd88058c66489dcf299",
+          "targetType": "article",
+          "releaseRevision": 2
+        }
+      },
+      {
+        "at": "2026-10-04T21:41:41.711Z",
+        "action": "release.artifact.pinned",
+        "actorId": "681045f7-a650-4d7c-b67c-b1f0274d69a1",
+        "details": {
+          "artifactId": "redirect:rc03-1791150094885",
+          "targetType": "redirect",
+          "releaseRevision": 3
+        }
+      },
+      {
+        "at": "2026-10-04T21:41:41.785Z",
+        "action": "release.artifact.pinned",
+        "actorId": "681045f7-a650-4d7c-b67c-b1f0274d69a1",
+        "details": {
+          "artifactId": "distribution:07173ae1-2da6-4f2d-84d5-d659625cf175",
+          "pinnedHash": "rc03-1791150094885-0",
+          "targetType": "distribution",
+          "releaseRevision": 4
+        }
+      },
+      {
+        "at": "2026-10-04T21:41:41.833Z",
+        "action": "release.artifact.pinned",
+        "actorId": "681045f7-a650-4d7c-b67c-b1f0274d69a1",
+        "details": {
+          "artifactId": "distribution:4da1f3c0-8373-4981-82ec-a3d058dab49d",
+          "pinnedHash": "rc03-1791150094885-1",
+          "targetType": "distribution",
+          "releaseRevision": 5
+        }
+      },
+      {
+        "at": "2026-10-04T21:41:42.210Z",
+        "action": "release.approved",
+        "actorId": "681045f7-a650-4d7c-b67c-b1f0274d69a1",
+        "details": {
+          "comment": "Approved via Command Center",
+          "approvalId": "9318b128-20c9-4fe1-a5ac-7b12b2f1df88"
+        }
+      },
+      {
+        "at": "2026-10-04T21:41:42.336Z",
+        "jobId": "e0fb2eb6-4264-4639-b786-34606afcda6b",
+        "action": "release.execution.queued",
+        "actorId": "681045f7-a650-4d7c-b67c-b1f0274d69a1"
+      },
+      {
+        "at": "2026-10-04T21:42:29.076Z",
+        "action": "release.execution.completed",
+        "status": "partially-failed",
+        "actorId": "681045f7-a650-4d7c-b67c-b1f0274d69a1",
+        "details": {
+          "failedSteps": [
+            {
+              "error": "RC03 bad destination: RC03 destination disabled; repair provider then retry failed delivery.",
+              "artifactId": "distribution:4da1f3c0-8373-4981-82ec-a3d058dab49d"
+            }
+          ],
+          "succeededCount": 3,
+          "unresolvedCount": 1
+        }
+      }
+    ],
+    "updatedAt": "2026-10-04T21:42:29.079Z",
+    "createdAt": "2026-10-04T21:41:41.469Z"
+  },
+  "final": {
+    "id": "25949ff7-8b09-4a86-8323-f5a52deb82cd",
+    "site": {
+      "id": "ef4d1fb8-989c-4df0-abb0-9ac8b218dcc0",
+      "name": "Renegade Party Dispatch",
+      "slug": "renegadeparty",
+      "description": "Independent civic reporting, local organizing and public accountability.",
+      "lifecycle": "active",
+      "communityRegistrationPolicy": "open",
+      "commentReactionCodes": [
+        "thumbs_up",
+        "heart",
+        "insightful",
+        "applause"
+      ],
+      "updatedAt": "2026-10-04T04:05:53.935Z",
+      "createdAt": "2026-10-04T04:05:53.935Z"
+    },
+    "publication": {
+      "id": "88dd0221-94fe-41fc-bff2-6beccd8ba062",
+      "site": "ef4d1fb8-989c-4df0-abb0-9ac8b218dcc0",
+      "owner": "7f9ad54d-b1ab-48d4-8e7f-c1b43e06a382",
+      "space": "3d6a2e4a-4990-46bb-b9b3-b3dcd8d48f71",
+      "name": "Renegade Party Dispatch",
+      "slug": "main",
+      "canonicalBasePath": "/",
+      "status": "active",
+      "visibility": "public",
+      "brand": "07f82a9d-007a-4449-a07b-b2ad86b2dec3",
+      "profile": "d05bbe9c-eb15-428d-ad98-a12630523a75",
+      "brandOverrides": null,
+      "themePreset": "neutral-starter",
+      "moderationPolicy": null,
+      "featurePolicy": null,
+      "capabilities": [
+        {
+          "id": "6ac1d0a2b228794f408ca419",
+          "key": "publication.content",
+          "status": "enabled"
+        }
+      ],
+      "quotaPolicy": null,
+      "navigation": {
+        "footer": [
+          {
+            "href": "/about",
+            "label": "Our charter",
+            "children": []
+          },
+          {
+            "href": "/articles",
+            "label": "Reporting",
+            "children": []
+          },
+          {
+            "href": "/events/open-civic-assembly",
+            "label": "Assembly",
+            "children": []
+          }
+        ],
+        "primary": [
+          {
+            "href": "/about",
+            "label": "Our charter",
+            "children": []
+          },
+          {
+            "href": "/articles",
+            "label": "Reporting",
+            "children": []
+          },
+          {
+            "href": "/events/open-civic-assembly",
+            "label": "Assembly",
+            "children": []
+          }
+        ],
+        "secondary": []
+      },
+      "feeds": null,
+      "seoDefaults": null,
+      "suspendedAt": null,
+      "archivedAt": null,
+      "archiveMessage": null,
+      "updatedAt": "2026-10-04T04:06:06.561Z",
+      "createdAt": "2026-10-04T04:05:54.030Z"
+    },
+    "space": null,
+    "owner": null,
+    "title": "RC03 orchestration 1791150094885",
+    "name": "RC03 orchestration 1791150094885",
+    "purpose": "Coordinated campaign release",
+    "ownerTeam": "Editorial Operations",
+    "content": null,
+    "article": null,
+    "product": null,
+    "productRevision": null,
+    "plannedInstant": "2026-10-04T21:42:26.348Z",
+    "scheduledFor": "2026-10-04T21:42:26.348Z",
+    "timeZone": "America/Chicago",
+    "labels": [],
+    "campaign": null,
+    "dependencies": [],
+    "releaseRevision": 5,
+    "status": "completed",
+    "lastScheduleMutationId": "mut-25949ff7-8b09-4a86-8323-f5a52deb82cd-1791150102323",
+    "artifacts": [
+      {
+        "id": "article:f6ba44fc-9bd0-4491-b6a4-feb41b7d2c0f",
+        "title": "RC03 accountable release 1791150094885",
+        "status": "succeeded",
+        "attempts": 1,
+        "targetId": "f6ba44fc-9bd0-4491-b6a4-feb41b7d2c0f",
+        "updatedAt": "2026-10-04T21:42:27.542Z",
+        "executedAt": "2026-10-04T21:42:27.542Z",
+        "pinnedHash": "sha256:8213fc1107a838fec2d6345b5016adb0ea8b8b3f83977fd88058c66489dcf299",
+        "stepOutput": {
+          "published": true,
+          "revisionId": "e2a5a3ec-1791-4dfa-a97a-c43d5dad8779",
+          "alreadyPublished": false
+        },
+        "targetType": "article",
+        "canonicalUrl": "/articles/rc03-release-1791150094885",
+        "pinnedRevisionId": "e2a5a3ec-1791-4dfa-a97a-c43d5dad8779",
+        "lastKnownGoodState": {
+          "previousStatus": "approved",
+          "previousPublishedRevision": ""
+        }
+      },
+      {
+        "id": "redirect:rc03-1791150094885",
+        "title": "Coordinated public redirect",
+        "status": "succeeded",
+        "attempts": 1,
+        "targetId": "rc03-1791150094885",
+        "updatedAt": "2026-10-04T21:42:28.549Z",
+        "executedAt": "2026-10-04T21:42:28.549Z",
+        "stepOutput": {
+          "toPath": "/articles/rc03-release-1791150094885",
+          "fromPath": "/rc03-1791150094885",
+          "redirectId": "e9eaddd0-5bc4-433f-99e5-efff5c7d4c5d"
+        },
+        "targetType": "redirect",
+        "redirectRule": {
+          "match": "exact",
+          "toPath": "/articles/rc03-release-1791150094885",
+          "enabled": true,
+          "fromPath": "/rc03-1791150094885",
+          "statusCode": 308
+        },
+        "lastKnownGoodState": {
+          "created": true,
+          "previousId": "e9eaddd0-5bc4-433f-99e5-efff5c7d4c5d"
+        }
+      },
+      {
+        "id": "distribution:07173ae1-2da6-4f2d-84d5-d659625cf175",
+        "title": "RC03 good downstream",
+        "status": "succeeded",
+        "attempts": 1,
+        "targetId": "07173ae1-2da6-4f2d-84d5-d659625cf175",
+        "updatedAt": "2026-10-04T21:42:28.593Z",
+        "executedAt": "2026-10-04T21:42:28.593Z",
+        "pinnedHash": "rc03-1791150094885-0",
+        "stepOutput": {
+          "succeeded": 1,
+          "distributed": true,
+          "distributionDraftId": "07173ae1-2da6-4f2d-84d5-d659625cf175"
+        },
+        "targetType": "distribution",
+        "lastKnownGoodState": {
+          "distributionDraftId": "07173ae1-2da6-4f2d-84d5-d659625cf175"
+        },
+        "distributionDraftId": "07173ae1-2da6-4f2d-84d5-d659625cf175"
+      },
+      {
+        "id": "distribution:4da1f3c0-8373-4981-82ec-a3d058dab49d",
+        "title": "RC03 bad downstream",
+        "status": "succeeded",
+        "attempts": 4,
+        "targetId": "4da1f3c0-8373-4981-82ec-a3d058dab49d",
+        "updatedAt": "2026-10-04T21:42:35.087Z",
+        "executedAt": "2026-10-04T21:42:35.087Z",
+        "pinnedHash": "rc03-1791150094885-1",
+        "stepOutput": {
+          "succeeded": 1,
+          "distributed": true,
+          "distributionDraftId": "4da1f3c0-8373-4981-82ec-a3d058dab49d"
+        },
+        "targetType": "distribution",
+        "lastKnownGoodState": {
+          "distributionDraftId": "4da1f3c0-8373-4981-82ec-a3d058dab49d"
+        },
+        "distributionDraftId": "4da1f3c0-8373-4981-82ec-a3d058dab49d"
+      }
+    ],
+    "gateSnapshot": {
+      "rules": [
+        {
+          "name": "Staff Release Authorization",
+          "ruleId": "rule-permissions",
+          "status": "passed",
+          "message": "Actor role 'owner' is authorized for release operations.",
+          "evidence": {
+            "actorId": "681045f7-a650-4d7c-b67c-b1f0274d69a1",
+            "actorRole": "owner"
+          },
+          "severity": "blocker",
+          "ruleVersion": "v1.0"
+        },
+        {
+          "name": "Editorial Approvals Verification",
+          "ruleId": "rule-approvals",
+          "status": "passed",
+          "message": "All included content, pages, and products have verified approved revisions.",
+          "evidence": {
+            "artifactCount": 4
+          },
+          "severity": "blocker",
+          "ruleVersion": "v1.0"
+        },
+        {
+          "name": "Unresolved Review Comments Check",
+          "ruleId": "rule-unresolved-comments",
+          "status": "passed",
+          "message": "No unresolved blocking review comments found on included artifacts.",
+          "severity": "blocker",
+          "ruleVersion": "v1.0"
+        },
+        {
+          "name": "URL & Canonical Route Conflict Detection",
+          "ruleId": "rule-url-canonical-conflicts",
+          "status": "passed",
+          "message": "All published paths and canonical URLs are mutually exclusive.",
+          "severity": "blocker",
+          "ruleVersion": "v1.0"
+        },
+        {
+          "name": "Redirect Integrity & Circular Loop Check",
+          "ruleId": "rule-redirects",
+          "status": "passed",
+          "message": "All declared redirects pass syntax, status, and loop checks.",
+          "severity": "blocker",
+          "ruleVersion": "v1.0"
+        },
+        {
+          "name": "Quality Center Severity Threshold Gate",
+          "ruleId": "rule-quality-center",
+          "status": "passed",
+          "message": "Zero publication-blocking quality issues detected on release targets.",
+          "severity": "blocker",
+          "ruleVersion": "v1.0"
+        },
+        {
+          "name": "Media Rights & Asset Readiness",
+          "ruleId": "rule-media-readiness",
+          "status": "passed",
+          "message": "All pinned media assets have verified rights clearance and readiness.",
+          "severity": "blocker",
+          "ruleVersion": "v1.0"
+        },
+        {
+          "name": "Scheduled Release Dependency Gate",
+          "ruleId": "rule-scheduled-dependencies",
+          "status": "passed",
+          "message": "All prerequisite release dependencies are completed or co-scheduled.",
+          "severity": "blocker",
+          "ruleVersion": "v1.0"
+        },
+        {
+          "name": "Operations Queue & Worker Health",
+          "ruleId": "rule-worker-health",
+          "status": "passed",
+          "message": "Operations queue worker is active and healthy.",
+          "severity": "warning",
+          "ruleVersion": "v1.0"
+        },
+        {
+          "name": "Migration & Schema Config Policy",
+          "ruleId": "rule-migration-policy",
+          "status": "passed",
+          "message": "No prohibited schema migrations or policy violations present.",
+          "severity": "blocker",
+          "ruleVersion": "v1.0"
+        },
+        {
+          "name": "Localization Quality & Translation Integrity",
+          "ruleId": "rule-localization-quality",
+          "status": "passed",
+          "message": "All localized content items have verified completeness, active source alignment, and human approvals.",
+          "severity": "blocker",
+          "ruleVersion": "v1.0"
+        }
+      ],
+      "isValid": true,
+      "snapshotId": "gate-snap-1791150102210",
+      "evaluatedAt": "2026-10-04T21:41:42.204Z",
+      "blockerCount": 0,
+      "warningCount": 0,
+      "overallStatus": "passed",
+      "evaluatedFingerprint": "6221febc6de8d09b70fcaba3f737317cdf559b815d47e1e32c9901749738a051"
+    },
+    "approvals": [
+      {
+        "id": "9318b128-20c9-4fe1-a5ac-7b12b2f1df88",
+        "actorId": "681045f7-a650-4d7c-b67c-b1f0274d69a1",
+        "comment": "Approved via Command Center",
+        "decision": "approved",
+        "actorRole": "owner",
+        "decidedAt": "2026-10-04T21:41:42.210Z",
+        "releaseRevision": 5,
+        "gateSnapshotFingerprint": "6221febc6de8d09b70fcaba3f737317cdf559b815d47e1e32c9901749738a051"
+      }
+    ],
+    "sagaSteps": [
+      {
+        "output": {
+          "published": true,
+          "revisionId": "e2a5a3ec-1791-4dfa-a97a-c43d5dad8779",
+          "alreadyPublished": false
+        },
+        "status": "succeeded",
+        "stepId": "step-article:f6ba44fc-9bd0-4491-b6a4-feb41b7d2c0f-1",
+        "attempts": 1,
+        "boundary": "transactional_db",
+        "artifactId": "article:f6ba44fc-9bd0-4491-b6a4-feb41b7d2c0f",
+        "targetType": "article",
+        "completedAt": "2026-10-04T21:42:27.542Z"
+      },
+      {
+        "output": {
+          "toPath": "/articles/rc03-release-1791150094885",
+          "fromPath": "/rc03-1791150094885",
+          "redirectId": "e9eaddd0-5bc4-433f-99e5-efff5c7d4c5d"
+        },
+        "status": "succeeded",
+        "stepId": "step-redirect:rc03-1791150094885-1",
+        "attempts": 1,
+        "boundary": "transactional_db",
+        "artifactId": "redirect:rc03-1791150094885",
+        "targetType": "redirect",
+        "completedAt": "2026-10-04T21:42:28.549Z"
+      },
+      {
+        "output": {
+          "succeeded": 1,
+          "distributed": true,
+          "distributionDraftId": "07173ae1-2da6-4f2d-84d5-d659625cf175"
+        },
+        "status": "succeeded",
+        "stepId": "step-distribution:07173ae1-2da6-4f2d-84d5-d659625cf175-1",
+        "attempts": 1,
+        "boundary": "transactional_db",
+        "artifactId": "distribution:07173ae1-2da6-4f2d-84d5-d659625cf175",
+        "targetType": "distribution",
+        "completedAt": "2026-10-04T21:42:28.593Z"
+      },
+      {
+        "error": "RC03 bad destination: RC03 destination disabled; repair provider then retry failed delivery.",
+        "status": "failed",
+        "stepId": "step-distribution:4da1f3c0-8373-4981-82ec-a3d058dab49d-1",
+        "attempts": 1,
+        "boundary": "transactional_db",
+        "artifactId": "distribution:4da1f3c0-8373-4981-82ec-a3d058dab49d",
+        "targetType": "distribution",
+        "completedAt": "2026-10-04T21:42:28.860Z"
+      },
+      {
+        "error": "RC03 bad destination: RC03 destination disabled; repair provider then retry failed delivery.",
+        "status": "failed",
+        "stepId": "step-distribution:4da1f3c0-8373-4981-82ec-a3d058dab49d-2",
+        "attempts": 2,
+        "boundary": "transactional_db",
+        "artifactId": "distribution:4da1f3c0-8373-4981-82ec-a3d058dab49d",
+        "targetType": "distribution",
+        "completedAt": "2026-10-04T21:42:31.197Z"
+      },
+      {
+        "error": "RC03 bad destination: Accepted post response lost; recover using the stable record key.",
+        "status": "failed",
+        "stepId": "step-distribution:4da1f3c0-8373-4981-82ec-a3d058dab49d-3",
+        "attempts": 3,
+        "boundary": "transactional_db",
+        "artifactId": "distribution:4da1f3c0-8373-4981-82ec-a3d058dab49d",
+        "targetType": "distribution",
+        "completedAt": "2026-10-04T21:42:34.706Z"
+      },
+      {
+        "output": {
+          "succeeded": 1,
+          "distributed": true,
+          "distributionDraftId": "4da1f3c0-8373-4981-82ec-a3d058dab49d"
+        },
+        "status": "succeeded",
+        "stepId": "step-distribution:4da1f3c0-8373-4981-82ec-a3d058dab49d-4",
+        "attempts": 4,
+        "boundary": "transactional_db",
+        "artifactId": "distribution:4da1f3c0-8373-4981-82ec-a3d058dab49d",
+        "targetType": "distribution",
+        "completedAt": "2026-10-04T21:42:35.087Z"
+      }
+    ],
+    "resultingUrls": [
+      "/articles/rc03-release-1791150094885",
+      "/rc03-1791150094885"
+    ],
+    "leaseOwner": null,
+    "leaseExpiresAt": null,
+    "scheduleAudit": [
+      {
+        "at": "2026-10-04T21:41:42.336Z",
+        "after": {
+          "timeZone": "America/Chicago",
+          "scheduledFor": "2026-10-04T21:42:26.348Z"
+        },
+        "jobId": "e0fb2eb6-4264-4639-b786-34606afcda6b",
+        "action": "release.scheduled",
+        "before": {
+          "timeZone": "America/Chicago",
+          "scheduledFor": "2026-10-04T21:42:26.348Z"
+        },
+        "actorId": "681045f7-a650-4d7c-b67c-b1f0274d69a1"
+      }
+    ],
+    "executionJob": {
+      "id": "e0fb2eb6-4264-4639-b786-34606afcda6b",
+      "input": {
+        "actorId": "681045f7-a650-4d7c-b67c-b1f0274d69a1",
+        "releaseId": "25949ff7-8b09-4a86-8323-f5a52deb82cd",
+        "scheduleMutationId": "mut-25949ff7-8b09-4a86-8323-f5a52deb82cd-1791150102323"
+      },
+      "completedAt": "2026-10-04T21:42:29.109Z",
+      "totalTried": 1,
+      "hasError": false,
+      "error": null,
+      "log": [
+        {
+          "id": "6ac2c845b35fb33710c455b2",
+          "executedAt": "2026-10-04T21:42:27.478Z",
+          "completedAt": "2026-10-04T21:42:29.101Z",
+          "taskSlug": "content-release-execute",
+          "taskID": "1",
+          "input": {
+            "actorId": "681045f7-a650-4d7c-b67c-b1f0274d69a1",
+            "releaseId": "25949ff7-8b09-4a86-8323-f5a52deb82cd",
+            "scheduleMutationId": "mut-25949ff7-8b09-4a86-8323-f5a52deb82cd-1791150102323"
+          },
+          "output": {
+            "status": "partial-failure",
+            "releaseId": "25949ff7-8b09-4a86-8323-f5a52deb82cd",
+            "succeeded": 3,
+            "unresolved": 1
+          },
+          "state": "succeeded",
+          "error": null
+        }
+      ],
+      "taskSlug": "content-release-execute",
+      "queue": "operations",
+      "waitUntil": "2026-10-04T21:42:26.348Z",
+      "processing": false,
+      "concurrencyKey": "content-release:25949ff7-8b09-4a86-8323-f5a52deb82cd",
+      "meta": null,
+      "updatedAt": "2026-10-04T21:42:29.110Z",
+      "createdAt": "2026-10-04T21:41:42.329Z",
+      "taskStatus": {
+        "content-release-execute": {
+          "1": {
+            "complete": true,
+            "input": {
+              "actorId": "681045f7-a650-4d7c-b67c-b1f0274d69a1",
+              "releaseId": "25949ff7-8b09-4a86-8323-f5a52deb82cd",
+              "scheduleMutationId": "mut-25949ff7-8b09-4a86-8323-f5a52deb82cd-1791150102323"
+            },
+            "output": {
+              "status": "partial-failure",
+              "releaseId": "25949ff7-8b09-4a86-8323-f5a52deb82cd",
+              "succeeded": 3,
+              "unresolved": 1
+            },
+            "taskSlug": "content-release-execute",
+            "totalTried": 1
+          }
+        }
+      }
+    },
+    "executionItems": [
+      {
+        "id": "article:f6ba44fc-9bd0-4491-b6a4-feb41b7d2c0f",
+        "title": "RC03 accountable release 1791150094885",
+        "status": "succeeded",
+        "attempts": 1,
+        "targetId": "f6ba44fc-9bd0-4491-b6a4-feb41b7d2c0f",
+        "updatedAt": "2026-10-04T21:42:27.542Z",
+        "executedAt": "2026-10-04T21:42:27.542Z",
+        "pinnedHash": "sha256:8213fc1107a838fec2d6345b5016adb0ea8b8b3f83977fd88058c66489dcf299",
+        "stepOutput": {
+          "published": true,
+          "revisionId": "e2a5a3ec-1791-4dfa-a97a-c43d5dad8779",
+          "alreadyPublished": false
+        },
+        "targetType": "article",
+        "canonicalUrl": "/articles/rc03-release-1791150094885",
+        "pinnedRevisionId": "e2a5a3ec-1791-4dfa-a97a-c43d5dad8779",
+        "lastKnownGoodState": {
+          "previousStatus": "approved",
+          "previousPublishedRevision": ""
+        }
+      },
+      {
+        "id": "redirect:rc03-1791150094885",
+        "title": "Coordinated public redirect",
+        "status": "succeeded",
+        "attempts": 1,
+        "targetId": "rc03-1791150094885",
+        "updatedAt": "2026-10-04T21:42:28.549Z",
+        "executedAt": "2026-10-04T21:42:28.549Z",
+        "stepOutput": {
+          "toPath": "/articles/rc03-release-1791150094885",
+          "fromPath": "/rc03-1791150094885",
+          "redirectId": "e9eaddd0-5bc4-433f-99e5-efff5c7d4c5d"
+        },
+        "targetType": "redirect",
+        "redirectRule": {
+          "match": "exact",
+          "toPath": "/articles/rc03-release-1791150094885",
+          "enabled": true,
+          "fromPath": "/rc03-1791150094885",
+          "statusCode": 308
+        },
+        "lastKnownGoodState": {
+          "created": true,
+          "previousId": "e9eaddd0-5bc4-433f-99e5-efff5c7d4c5d"
+        }
+      },
+      {
+        "id": "distribution:07173ae1-2da6-4f2d-84d5-d659625cf175",
+        "title": "RC03 good downstream",
+        "status": "succeeded",
+        "attempts": 1,
+        "targetId": "07173ae1-2da6-4f2d-84d5-d659625cf175",
+        "updatedAt": "2026-10-04T21:42:28.593Z",
+        "executedAt": "2026-10-04T21:42:28.593Z",
+        "pinnedHash": "rc03-1791150094885-0",
+        "stepOutput": {
+          "succeeded": 1,
+          "distributed": true,
+          "distributionDraftId": "07173ae1-2da6-4f2d-84d5-d659625cf175"
+        },
+        "targetType": "distribution",
+        "lastKnownGoodState": {
+          "distributionDraftId": "07173ae1-2da6-4f2d-84d5-d659625cf175"
+        },
+        "distributionDraftId": "07173ae1-2da6-4f2d-84d5-d659625cf175"
+      },
+      {
+        "id": "distribution:4da1f3c0-8373-4981-82ec-a3d058dab49d",
+        "title": "RC03 bad downstream",
+        "status": "succeeded",
+        "attempts": 4,
+        "targetId": "4da1f3c0-8373-4981-82ec-a3d058dab49d",
+        "updatedAt": "2026-10-04T21:42:35.087Z",
+        "executedAt": "2026-10-04T21:42:35.087Z",
+        "pinnedHash": "rc03-1791150094885-1",
+        "stepOutput": {
+          "succeeded": 1,
+          "distributed": true,
+          "distributionDraftId": "4da1f3c0-8373-4981-82ec-a3d058dab49d"
+        },
+        "targetType": "distribution",
+        "lastKnownGoodState": {
+          "distributionDraftId": "4da1f3c0-8373-4981-82ec-a3d058dab49d"
+        },
+        "distributionDraftId": "4da1f3c0-8373-4981-82ec-a3d058dab49d"
+      }
+    ],
+    "executionAudit": [
+      {
+        "at": "2026-10-04T21:41:41.454Z",
+        "action": "release.created",
+        "actorId": "681045f7-a650-4d7c-b67c-b1f0274d69a1",
+        "details": {
+          "name": "RC03 orchestration 1791150094885",
+          "purpose": "Coordinated campaign release"
+        }
+      },
+      {
+        "at": "2026-10-04T21:41:41.638Z",
+        "action": "release.artifact.pinned",
+        "actorId": "681045f7-a650-4d7c-b67c-b1f0274d69a1",
+        "details": {
+          "artifactId": "article:f6ba44fc-9bd0-4491-b6a4-feb41b7d2c0f",
+          "pinnedHash": "sha256:8213fc1107a838fec2d6345b5016adb0ea8b8b3f83977fd88058c66489dcf299",
+          "targetType": "article",
+          "releaseRevision": 2
+        }
+      },
+      {
+        "at": "2026-10-04T21:41:41.711Z",
+        "action": "release.artifact.pinned",
+        "actorId": "681045f7-a650-4d7c-b67c-b1f0274d69a1",
+        "details": {
+          "artifactId": "redirect:rc03-1791150094885",
+          "targetType": "redirect",
+          "releaseRevision": 3
+        }
+      },
+      {
+        "at": "2026-10-04T21:41:41.785Z",
+        "action": "release.artifact.pinned",
+        "actorId": "681045f7-a650-4d7c-b67c-b1f0274d69a1",
+        "details": {
+          "artifactId": "distribution:07173ae1-2da6-4f2d-84d5-d659625cf175",
+          "pinnedHash": "rc03-1791150094885-0",
+          "targetType": "distribution",
+          "releaseRevision": 4
+        }
+      },
+      {
+        "at": "2026-10-04T21:41:41.833Z",
+        "action": "release.artifact.pinned",
+        "actorId": "681045f7-a650-4d7c-b67c-b1f0274d69a1",
+        "details": {
+          "artifactId": "distribution:4da1f3c0-8373-4981-82ec-a3d058dab49d",
+          "pinnedHash": "rc03-1791150094885-1",
+          "targetType": "distribution",
+          "releaseRevision": 5
+        }
+      },
+      {
+        "at": "2026-10-04T21:41:42.210Z",
+        "action": "release.approved",
+        "actorId": "681045f7-a650-4d7c-b67c-b1f0274d69a1",
+        "details": {
+          "comment": "Approved via Command Center",
+          "approvalId": "9318b128-20c9-4fe1-a5ac-7b12b2f1df88"
+        }
+      },
+      {
+        "at": "2026-10-04T21:41:42.336Z",
+        "jobId": "e0fb2eb6-4264-4639-b786-34606afcda6b",
+        "action": "release.execution.queued",
+        "actorId": "681045f7-a650-4d7c-b67c-b1f0274d69a1"
+      },
+      {
+        "at": "2026-10-04T21:42:29.076Z",
+        "action": "release.execution.completed",
+        "status": "partially-failed",
+        "actorId": "681045f7-a650-4d7c-b67c-b1f0274d69a1",
+        "details": {
+          "failedSteps": [
+            {
+              "error": "RC03 bad destination: RC03 destination disabled; repair provider then retry failed delivery.",
+              "artifactId": "distribution:4da1f3c0-8373-4981-82ec-a3d058dab49d"
+            }
+          ],
+          "succeededCount": 3,
+          "unresolvedCount": 1
+        }
+      },
+      {
+        "at": "2026-10-04T21:42:31.446Z",
+        "action": "release.execution.retried",
+        "status": "partially-failed",
+        "actorId": "681045f7-a650-4d7c-b67c-b1f0274d69a1",
+        "details": {
+          "failedSteps": [
+            {
+              "error": "RC03 bad destination: RC03 destination disabled; repair provider then retry failed delivery.",
+              "artifactId": "distribution:4da1f3c0-8373-4981-82ec-a3d058dab49d"
+            }
+          ],
+          "succeededCount": 3,
+          "unresolvedCount": 1
+        }
+      },
+      {
+        "at": "2026-10-04T21:42:34.970Z",
+        "action": "release.execution.retried",
+        "status": "partially-failed",
+        "actorId": "681045f7-a650-4d7c-b67c-b1f0274d69a1",
+        "details": {
+          "failedSteps": [
+            {
+              "error": "RC03 bad destination: Accepted post response lost; recover using the stable record key.",
+              "artifactId": "distribution:4da1f3c0-8373-4981-82ec-a3d058dab49d"
+            }
+          ],
+          "succeededCount": 3,
+          "unresolvedCount": 1
+        }
+      },
+      {
+        "at": "2026-10-04T21:42:35.374Z",
+        "action": "release.execution.retried",
+        "status": "completed",
+        "actorId": "681045f7-a650-4d7c-b67c-b1f0274d69a1",
+        "details": {
+          "failedSteps": [],
+          "succeededCount": 4,
+          "unresolvedCount": 0
+        }
+      },
+      {
+        "at": "2026-10-04T21:42:35.450Z",
+        "action": "release.execution.retried",
+        "status": "completed",
+        "actorId": "681045f7-a650-4d7c-b67c-b1f0274d69a1",
+        "details": {
+          "failedSteps": [],
+          "succeededCount": 4,
+          "unresolvedCount": 0
+        }
+      }
+    ],
+    "updatedAt": "2026-10-04T21:42:35.455Z",
+    "createdAt": "2026-10-04T21:41:41.469Z"
+  },
+  "boundary": {
+    "creates": {
+      "did:plc:good": 1,
+      "did:plc:bad": 1
+    },
+    "requests": {
+      "did:plc:good": 1,
+      "did:plc:bad": 3
+    },
+    "mode": "healthy",
+    "records": [
+      "did:plc:good/7f730223bcb834f25d01454930326518",
+      "did:plc:bad/61a71b7054ac8f7c9565a3b9d28d4c82"
+    ]
+  },
+  "event": {
+    "id": "f7a6f196-fc9e-48ea-bae1-81afaa3a1ee0",
+    "site": {
+      "id": "ef4d1fb8-989c-4df0-abb0-9ac8b218dcc0",
+      "name": "Renegade Party Dispatch",
+      "slug": "renegadeparty",
+      "description": "Independent civic reporting, local organizing and public accountability.",
+      "lifecycle": "active",
+      "communityRegistrationPolicy": "open",
+      "commentReactionCodes": [
+        "thumbs_up",
+        "heart",
+        "insightful",
+        "applause"
+      ],
+      "updatedAt": "2026-10-04T04:05:53.935Z",
+      "createdAt": "2026-10-04T04:05:53.935Z"
+    },
+    "publication": {
+      "id": "88dd0221-94fe-41fc-bff2-6beccd8ba062",
+      "site": {
+        "id": "ef4d1fb8-989c-4df0-abb0-9ac8b218dcc0",
+        "name": "Renegade Party Dispatch",
+        "slug": "renegadeparty",
+        "description": "Independent civic reporting, local organizing and public accountability.",
+        "lifecycle": "active",
+        "communityRegistrationPolicy": "open",
+        "commentReactionCodes": [
+          "thumbs_up",
+          "heart",
+          "insightful",
+          "applause"
+        ],
+        "updatedAt": "2026-10-04T04:05:53.935Z",
+        "createdAt": "2026-10-04T04:05:53.935Z"
+      },
+      "owner": {
+        "id": "7f9ad54d-b1ab-48d4-8e7f-c1b43e06a382",
+        "displayName": "Renegade Party Dispatch",
+        "email": "editor@renegadeparty.test",
+        "status": "active",
+        "disabledAt": null,
+        "archivedAt": null,
+        "restrictedAt": null,
+        "suspendedAt": null,
+        "deactivatedAt": null,
+        "deletionPendingAt": null,
+        "deletedAt": null,
+        "exportRequestedAt": null,
+        "deletionRequestedAt": null,
+        "verifiedEmailAt": null,
+        "moderationReason": null,
+        "stateReason": null,
+        "updatedAt": "2026-10-04T04:05:53.955Z",
+        "createdAt": "2026-10-04T04:05:53.954Z"
+      },
+      "space": {
+        "id": "3d6a2e4a-4990-46bb-b9b3-b3dcd8d48f71",
+        "site": "ef4d1fb8-989c-4df0-abb0-9ac8b218dcc0",
+        "member": "7f9ad54d-b1ab-48d4-8e7f-c1b43e06a382",
+        "profile": "d05bbe9c-eb15-428d-ad98-a12630523a75",
+        "handle": "renegadeparty",
+        "canonicalPath": "/members/renegadeparty",
+        "displayName": "Renegade Party Dispatch Space",
+        "avatar": null,
+        "cover": null,
+        "bio": "Independent civic reporting, local organizing and public accountability.",
+        "visibility": "public",
+        "fieldAudience": null,
+        "layoutTheme": null,
+        "capabilities": [
+          {
+            "id": "6ac1d0a1b228794f408ca418",
+            "key": "space.blog",
+            "status": "enabled"
+          }
+        ],
+        "quotaPolicy": null,
+        "providerOwnership": {
+          "local": true
+        },
+        "moderationState": "clear",
+        "suspendedAt": null,
+        "transferToMember": null,
+        "transferState": "none",
+        "updatedAt": "2026-10-04T04:05:53.983Z",
+        "createdAt": "2026-10-04T04:05:53.982Z"
+      },
+      "name": "Renegade Party Dispatch",
+      "slug": "main",
+      "canonicalBasePath": "/",
+      "status": "active",
+      "visibility": "public",
+      "brand": {
+        "id": "07f82a9d-007a-4449-a07b-b2ad86b2dec3",
+        "site": "ef4d1fb8-989c-4df0-abb0-9ac8b218dcc0",
+        "name": "Renegade Party Dispatch",
+        "legalName": null,
+        "kind": "organization",
+        "tagline": null,
+        "mission": null,
+        "description": "Independent civic reporting, local organizing and public accountability.",
+        "bio": null,
+        "logo": null,
+        "favicon": null,
+        "colors": null,
+        "typography": {
+          "theme": "neutral-starter"
+        },
+        "contactDefaults": null,
+        "socialDefaults": null,
+        "primaryAuthor": null,
+        "audience": null,
+        "voice": null,
+        "vocabulary": null,
+        "avoidedPhrases": null,
+        "graphicStyle": null,
+        "seoDefaults": null,
+        "socialDefaultsOverride": null,
+        "newsletterDefaults": null,
+        "disclosures": null,
+        "structuredDataDefaults": null,
+        "updatedAt": "2026-10-04T04:05:54.006Z",
+        "createdAt": "2026-10-04T04:05:54.006Z"
+      },
+      "profile": {
+        "id": "d05bbe9c-eb15-428d-ad98-a12630523a75",
+        "member": "7f9ad54d-b1ab-48d4-8e7f-c1b43e06a382",
+        "displayName": "Renegade Party Dispatch",
+        "handle": "renegadeparty",
+        "handleChangedAt": null,
+        "handleHistory": null,
+        "avatar": null,
+        "cover": null,
+        "avatarAlt": null,
+        "coverAlt": null,
+        "locale": null,
+        "timeZone": null,
+        "discoveryOptOut": false,
+        "bio": "Independent civic reporting, local organizing and public accountability.",
+        "links": null,
+        "preferences": null,
+        "visibility": "public",
+        "fieldAudience": {
+          "bio": "public",
+          "email": "private"
+        },
+        "layoutTheme": null,
+        "updatedAt": "2026-10-04T04:05:53.967Z",
+        "createdAt": "2026-10-04T04:05:53.967Z"
+      },
+      "brandOverrides": null,
+      "themePreset": "neutral-starter",
+      "moderationPolicy": null,
+      "featurePolicy": null,
+      "capabilities": [
+        {
+          "id": "6ac1d0a2b228794f408ca419",
+          "key": "publication.content",
+          "status": "enabled"
+        }
+      ],
+      "quotaPolicy": null,
+      "navigation": {
+        "footer": [
+          {
+            "href": "/about",
+            "label": "Our charter",
+            "children": []
+          },
+          {
+            "href": "/articles",
+            "label": "Reporting",
+            "children": []
+          },
+          {
+            "href": "/events/open-civic-assembly",
+            "label": "Assembly",
+            "children": []
+          }
+        ],
+        "primary": [
+          {
+            "href": "/about",
+            "label": "Our charter",
+            "children": []
+          },
+          {
+            "href": "/articles",
+            "label": "Reporting",
+            "children": []
+          },
+          {
+            "href": "/events/open-civic-assembly",
+            "label": "Assembly",
+            "children": []
+          }
+        ],
+        "secondary": []
+      },
+      "feeds": null,
+      "seoDefaults": null,
+      "suspendedAt": null,
+      "archivedAt": null,
+      "archiveMessage": null,
+      "updatedAt": "2026-10-04T04:06:06.561Z",
+      "createdAt": "2026-10-04T04:05:54.030Z"
+    },
+    "space": null,
+    "owner": null,
+    "requiredEntitlement": null,
+    "title": "RC03 future assembly 1791150094885",
+    "slug": "rc03-assembly-1791150094885",
+    "canonicalPath": "/events/rc03-assembly-1791150094885",
+    "summary": "A future civic assembly following the recovered release.",
+    "status": "draft",
+    "allDay": false,
+    "startsAt": "2026-11-01T06:30:00.000Z",
+    "endsAt": "2026-11-01T08:30:00.000Z",
+    "timeZone": "America/Chicago",
+    "visibility": "public",
+    "venueName": "Civic hall",
+    "venueRegion": null,
+    "venueAddress": null,
+    "attendanceMode": "in-person",
+    "onlineUrl": null,
+    "organizerName": null,
+    "organizerUrl": null,
+    "capacity": null,
+    "registrationUrl": null,
+    "recurrence": null,
+    "recurrenceOverrides": null,
+    "categories": [],
+    "relatedContent": [],
+    "heroMedia": null,
+    "calendarEntry": null,
+    "audience": null,
+    "seoTitle": null,
+    "seoDescription": null,
+    "seoCanonicalURL": null,
+    "seoImageAlt": null,
+    "seoKeywords": null,
+    "seoFocusKeyphrase": null,
+    "seoNoIndex": false,
+    "discoveryOverrides": null,
+    "structuredDataMode": "none",
+    "structuredDataPrimaryType": null,
+    "structuredDataSourceCollection": null,
+    "structuredDataSourceIdentifier": null,
+    "structuredDataManual": null,
+    "structuredDataVersion": 1,
+    "knowledgeGraphProjectionStatus": "disabled",
+    "knowledgeGraphNodeKey": null,
+    "knowledgeGraphProjectionBoundary": null,
+    "importSourceSystem": null,
+    "importSourceIdentifier": null,
+    "importSourceChecksum": null,
+    "exportFormatVersion": 1,
+    "exportOwnership": null,
+    "publicRenderStrategy": "default",
+    "publicRenderVariant": null,
+    "publicRenderContext": null,
+    "eventCardVariant": null,
+    "eventListVariant": null,
+    "timelineEmbedVariant": null,
+    "timelineBlockVariant": null,
+    "retentionMode": "permanent",
+    "retentionExpiresAt": null,
+    "retentionHold": "none",
+    "removeFromDiscovery": false,
+    "tombstoneLabel": null,
+    "updatedAt": "2026-10-04T21:42:36.479Z",
+    "createdAt": "2026-10-04T21:42:36.479Z"
+  },
+  "canonicalPublishAudit": [
+    {
+      "at": "2026-10-04T21:42:27.995Z",
+      "action": "publication.published",
+      "detail": {
+        "key": "release:25949ff7-8b09-4a86-8323-f5a52deb82cd:article:f6ba44fc-9bd0-4491-b6a4-feb41b7d2c0f"
+      },
+      "actorId": "681045f7-a650-4d7c-b67c-b1f0274d69a1"
+    }
+  ],
+  "pageErrors": []
+}

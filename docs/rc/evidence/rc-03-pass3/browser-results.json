@@ -1,0 +1,154 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "--config",
+      "playwright.rc03.config.ts"
+    ],
+    "configFile": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\playwright.rc03.config.ts",
+    "rootDir": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/rc03",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Projects/RENEGADE CMS/Renegade-CMS/test-results/rc03",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/rc03",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 600000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "docs/rc/evidence/rc-03/browser-results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.62.1",
+    "workers": 1,
+    "webServer": {
+      "command": "node src/scripts/rc03-runtime.mjs",
+      "url": "https://dispatch.rc02.test:3129/api/setup/readiness",
+      "reuseExistingServer": false,
+      "ignoreHTTPSErrors": true,
+      "timeout": 120000,
+      "env": {
+        "DATABASE_URL": "postgresql://renegade_rc02_1791086734920_release_acceptance:c8483251d22084b240a1011fd43f3cb58986d81543f72b3793aee994c0026d00@localhost:5432/renegade_rc03_1791150076143_release_acceptance",
+        "PAYLOAD_SECRET": "53455fab81015b6720760631ffc1e32f5199c85a05c575292e22cb653117deec7e2f01f91c86c3b5d8ae0ee1dc47676a",
+        "APP_URL": "https://dispatch.rc02.test:3129",
+        "PORT": "3128",
+        "HOSTNAME": "127.0.0.1",
+        "NODE_ENV": "production",
+        "PROXY_MODE": "trusted",
+        "TRUSTED_PROXY_HOPS": "1",
+        "DEPLOYMENT_PROFILE": "Standard",
+        "RENEGADE_MODULES": "all",
+        "RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT": "false",
+        "LOCAL_E2E_TEST_MODE": "false",
+        "ENABLE_TEST_ROUTES": "false",
+        "RENEGADE_NEXT_DIST_DIR": ".next",
+        "DISABLE_PAYLOAD_HMR": "true",
+        "MEDIA_DIR": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\scratch\\renegade_rc02_1791086734920_release_acceptance-media",
+        "NODE_EXTRA_CA_CERTS": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\scratch\\rc02-tls\\cert.pem",
+        "EMAIL_MODE": "disabled",
+        "SOCIAL_BLUESKY_RC03_GOOD_IDENTIFIER": "good.test",
+        "SOCIAL_BLUESKY_RC03_GOOD_APP_PASSWORD": "fixture-password",
+        "SOCIAL_BLUESKY_RC03_GOOD_SERVICE": "http://127.0.0.1:3130",
+        "SOCIAL_BLUESKY_RC03_BAD_IDENTIFIER": "bad.test",
+        "SOCIAL_BLUESKY_RC03_BAD_APP_PASSWORD": "fixture-password",
+        "SOCIAL_BLUESKY_RC03_BAD_SERVICE": "http://127.0.0.1:3130",
+        "NODE_OPTIONS": "--max-old-space-size=768 --import=file:///C:/Projects/RENEGADE%20CMS/Renegade-CMS/src/scripts/rc02-network.mjs"
+      }
+    }
+  },
+  "suites": [
+    {
+      "title": "orchestration.spec.ts",
+      "file": "orchestration.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "RC-03 cross-surface orchestration, pending-worker restart, partial failure and receipt recovery",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 600000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 67811,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-04T21:41:31.001Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "467a89efc21ff4d9eea0-92a784248257a60b6296",
+          "file": "orchestration.spec.ts",
+          "line": 4,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-04T21:41:26.411Z",
+    "duration": 73243.066,
+    "expected": 1,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}
