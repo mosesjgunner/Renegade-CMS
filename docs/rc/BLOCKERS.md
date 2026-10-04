@@ -1,3 +1,5 @@
+> Current orchestration gate: **RC-03 PASS 2 PASS**, source `bb93ea8b562bc91e71e64afeabb6d7ead6607bc2`. [Evidence](evidence/RC-03.md). Partial provider failure, failed-only recovery and worker restart/idempotency proved on the RC-02 publication copy. Calendar/timeline deferred; federation limited to local signing/outbox/failure. Broader RC-01 release blockers remain open. Sol Light: small cleanup only.
+
 ## RC-02 acceptance ? PASS ? 2026-10-03
 
 No remaining blocker in the core site-build journey. Frozen source `b684ee11460637bf2177f349057f14d6e804bbbd` passed a fresh production Standard/all install, all required checks and actual web/worker restart. [Evidence](evidence/RC-02.md). Two Rendered Quality informational suggestions are recorded, with no warnings/blocking findings.

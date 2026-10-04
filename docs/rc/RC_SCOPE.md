@@ -31,3 +31,11 @@ Resource profile (Lean/Standard/Media/Scale) controls heavy-work guidance; RENEG
 ## RC-02 current narrow claim ? 2026-10-03
 
 Source `b684ee11460637bf2177f349057f14d6e804bbbd` passed fresh production Standard/all complete site-build acceptance. The narrow claim ?usable to build and launch a serious self-hosted publishing site? is approved by [RC-02 evidence](evidence/RC-02.md). This updates the earlier no-approved-workflow baseline only for the exact core workflows in the RC-02 ledger appendix. Broader modules/providers/roles and aggregate RC-01 release remain blocked.
+
+## RC-03 Pass 2 scope boundary ? 2026-10-04
+
+This pass preserves RC-02's narrow site-build claim and tests only the orchestration path described in [RC-03 evidence](evidence/RC-03.md). Exact current results live in `evidence/rc-03/checks.json`. Article revision publication, coordinated redirects and persisted Bluesky delivery/recovery are the supported acceptance subset. Bluesky proof uses a configured local provider harness through the real adapter; live remote commercial acceptance is not asserted.
+
+Events support creation, future occurrence dates/time zones, native admin and public rendering. Event auto-publication scheduling is not advertised by this proof. Workflow/release future publication and DST behavior remain supported. Full interactive calendar, calendar feed, timelines and memberships are **DEFERRED**: native collections deny product access and are hidden, public helpers exclude them, `/calendar` explains deferral, `/api/calendar/export` returns 410, and the starter timeline component is removed. Records/schema are preserved. Composer preview dispatch is **DEFERRED** and returns 410; persisted approved Social Drafts and their release/outbox route are the supported path.
+
+Federation is **DEGRADED BUT SAFE** only at the proved local signing/outbox/failure boundary. Interoperable remote federation remains **DEFERRED**; no successful remote acceptance has been proved. The broader RC-01 role/tenant/module/provider gates remain open.

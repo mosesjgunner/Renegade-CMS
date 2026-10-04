@@ -1,3 +1,5 @@
+> Current orchestration gate: **RC-03 PASS 2 PASS**, source `bb93ea8b562bc91e71e64afeabb6d7ead6607bc2`. [Evidence](rc/evidence/RC-03.md). Partial provider failure, failed-only recovery and worker restart/idempotency proved on the RC-02 publication copy. Calendar/timeline deferred; federation limited to local signing/outbox/failure. Broader RC-01 release blockers remain open. Sol Light: small cleanup only.
+
 > RC-02 PASS on source `b684ee11460637bf2177f349057f14d6e804bbbd`: complete fresh Standard/all site-build journey and restart verified. [Evidence](rc/evidence/RC-02.md). NEXT: RC-03. Broader RC-01/release blockers remain open.
 
 > Historical release snapshot. Current release truth for source SHA e24fc53d9e370e28f01398c561b0f5adc4884756 is the [RC ledger](rc/README.md). Prior VERIFIED/PASS labels and test/migration counts below do not establish current readiness. RC release verdict: BLOCKED; see the ledger and dependency-ordered blockers.

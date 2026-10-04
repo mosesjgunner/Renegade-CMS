@@ -1,0 +1,15 @@
+{
+  "request": {
+    "label": "partial-worker-restart",
+    "at": "2026-10-04T21:18:07.131Z"
+  },
+  "previous": {
+    "web": 12732,
+    "worker": 27172
+  },
+  "current": {
+    "web": 30716,
+    "worker": 32536
+  },
+  "restartedAt": "2026-10-04T21:18:07.772Z"
+}

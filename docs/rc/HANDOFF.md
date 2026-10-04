@@ -1,3 +1,11 @@
+# RC-03 Pass 2 handoff ? PASS ? 2026-10-04
+
+Tested source `bb93ea8b562bc91e71e64afeabb6d7ead6607bc2`, extending Pass 1 `454595da98d493d11f6fc207ed68857a1959ad7a`. The real RC-02 publication copy passes the ordinary owner orchestration journey, scheduled worker execution, deliberately partial provider failure, failed-only retry and pending/partial worker restarts. Article publication and each remote destination occur once. Single-owner approval uses the supported audited emergency override after self approval is denied. See [RC-03 evidence](evidence/RC-03.md), retained trace, operator screenshots, restart receipts and checks.json.
+
+Events creation/future occurrence/admin/public rendering are proved. Interactive calendar/feed and timelines are DEFERRED and their product entry points disabled. Federation is DEGRADED to local signing/outbox/failure proof; remote interoperability is DEFERRED. Provider proof uses a local harness through the real adapter. Other release artifact families and broader RC-01 role/tenant/provider/module gates retain their own blockers.
+
+Sol Light handoff: cleanup, naming, unused preview/calendar helpers and small presentation/documentation regression fixes only. No RC-03 implementation blocker remains within the tested scope. Do not widen this PASS to the aggregate release or automatically execute the next RC gate.
+
 # RC-02 handoff ? PASS ? 2026-10-03
 
 Tested source `b684ee11460637bf2177f349057f14d6e804bbbd` on local branch `rc02-site-build-candidate`; active branch/index preserved. Fresh production Standard/all journey passed, including private-draft search isolation and real web/worker restart. All required checks passed (100 unit, 24 integration, bundle/typecheck/lint/build, consolidated browser). See [RC-02 evidence](evidence/RC-02.md) for trace, records, media and HTTP assertions.

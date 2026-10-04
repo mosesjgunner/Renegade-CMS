@@ -1,0 +1,25 @@
+
+ RUN  v3.2.4 C:/Projects/RENEGADE CMS/Renegade-CMS
+
+ ✓ tests/unit/editorial-workflow.test.ts (4 tests) 24ms
+ ✓ tests/unit/flow-00-workflow-contract.test.ts (6 tests) 35ms
+ ✓ tests/unit/network-foundation.test.ts (4 tests) 73ms
+ ✓ tests/unit/dist-03-social-command-center.test.tsx (5 tests) 24ms
+ ✓ tests/unit/flow-03-scheduling-calendar.test.ts (16 tests) 41ms
+ ✓ tests/unit/dist-05-social-api-routes.test.ts (6 tests) 14ms
+ ✓ tests/unit/dist-02-core-adapters.test.ts (10 tests) 28ms
+ ✓ tests/unit/releases-service.test.ts (2 tests) 126ms
+ ✓ tests/unit/dist-07-queue-worker.test.ts (5 tests) 17ms
+ ✓ tests/unit/flow-04-coordinated-releases.test.ts (9 tests) 194ms
+ ✓ tests/unit/activitypub.test.ts (7 tests) 25ms
+ ✓ tests/unit/flow-01-cmos-workflow.test.ts (16 tests) 11ms
+ ✓ tests/unit/social-contracts.test.ts (4 tests) 7ms
+ ✓ tests/unit/comm-06c-digests-and-outbox.test.ts (4 tests) 9ms
+ ✓ tests/unit/editorial-workflow-permissions.test.ts (1 test) 5ms
+ ✓ tests/unit/network-experience.test.ts (4 tests) 9ms
+ ✓ tests/unit/progressive-disclosure.test.ts (4 tests) 6ms
+
+ Test Files  17 passed (17)
+      Tests  107 passed (107)
+   Start at  16:15:20
+   Duration  3.03s (transform 2.30s, setup 0ms, collect 5.73s, tests 648ms, environment 7ms, prepare 2.99s)

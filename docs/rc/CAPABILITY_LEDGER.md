@@ -369,3 +369,20 @@ Tested source `b684ee11460637bf2177f349057f14d6e804bbbd`; fresh production Stand
 | rc02.public-restart | VERIFIED | Anonymous desktop/mobile, private/admin exclusions, public bundle without Puck/editor, real web/worker restart with fresh browse/media/discovery |
 
 Narrow approved claim: ?usable to build and launch a serious self-hosted publishing site.? No universal provider, author archive, transcript, multi-role or aggregate release claim follows. No feature was removed to lower this gate.
+
+## RC-03 Pass 2 current scope appendix ? 2026-10-04
+
+This appendix supersedes historical rows only for the exact paths and deferrals below. Execution verdict/counts are in [RC-03 evidence](evidence/RC-03.md) and `evidence/rc-03/checks.json`; untested collection CRUD, roles, tenants and providers remain BLOCKER.
+
+| Capability/path | Current boundary |
+| --- | --- |
+| Editorial workflow/release orchestration | Ordinary RC-02 owner surfaces; requested changes, native revision, denied self approval, audited emergency approval, future worker execution and recovery |
+| Article/redirect release artifacts | Exact canonical revision and coordinated public redirect; partial provider failure must preserve success |
+| Social drafts/variants/queue/attempts/external posts | Real adapter and outbox against configured local two-destination harness; failed-only retry and lost-response recovery; no live remote production claim |
+| collections:events | Creation, future occurrence date/time zone, native admin and public rendering; no event auto-publication worker claim |
+| collections:calendar-entries, collections:timelines, collections:timeline-memberships | DEFERRED; hidden and deny product CRUD; public helpers exclude them |
+| `/calendar`, `/api/calendar/export`, starter `publisher.timeline` | Interactive calendar/feed/timeline DEFERRED; explicit page, 410 feed, component removed |
+| Preview composer `/api/admin/social/dispatch` | DEFERRED (410); use approved persisted drafts and release/outbox instead |
+| catalog:networking.federation | DEGRADED BUT SAFE local signing/outbox/failure only; remote interoperability DEFERRED |
+
+The existing calendar audit/contract registrations receive no launch claim from this appendix. Native enabled social operator configuration and recovery collections, and Events, remain visible under progressive disclosure; deferred collections remain hidden.

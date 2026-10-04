@@ -1,0 +1,27 @@
+{
+  "deliveryId": "2ca75e72-4eb2-4585-82ce-3db3525c6af0",
+  "duplicateDeliveryId": "2ca75e72-4eb2-4585-82ce-3db3525c6af0",
+  "signaturesVerified": 3,
+  "status": "failed",
+  "attempts": [
+    {
+      "attempt": 3,
+      "outcome": {
+        "error": "Error: Remote inbox returned 503."
+      }
+    },
+    {
+      "attempt": 2,
+      "outcome": {
+        "error": "Error: Remote inbox returned 503."
+      }
+    },
+    {
+      "attempt": 1,
+      "outcome": {
+        "error": "Error: Remote inbox returned 503."
+      }
+    }
+  ],
+  "boundary": "Local signing/outbox/failure only; no remote federation acceptance."
+}

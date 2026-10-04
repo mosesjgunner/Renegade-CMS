@@ -1,0 +1,108 @@
+
+ RUN  v3.2.4 C:/Projects/RENEGADE CMS/Renegade-CMS
+
+[16:19:05] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+ ✓ tests/integration/rc03-restart-recovery.integration.test.ts (2 tests) 26824ms
+   ✓ RC03 real durable jobs and local federation boundary > durable pending publication survives competing fresh job runners and publishes one canonical revision  21611ms
+   ✓ RC03 real durable jobs and local federation boundary > queues one local signed outbox message and truthfully retains a deliberate inbox failure  5030ms
+[16:19:35] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[16:19:35] [32mINFO[39m:
+    [35mevent[39m: "operations.job.heartbeat"
+    [35mobservedAt[39m: "2026-10-04T21:19:35.213Z"
+    [35mversion[39m: "0.1.0-dev"
+[16:19:35] [33mWARN[39m:
+    [35mevent[39m: "operations.job.forced_failure"
+    [35mjobId[39m: "ea4dd835-e5b3-4833-84a7-f1469691e7b7"
+    [35mmarker[39m: "47ae7338-f270-48ce-8df8-5fa7d64f3f11"
+    [35mattempt[39m: 1
+[16:19:35] [31mERROR[39m:
+    [35mevent[39m: "operations.job.attempt_failed"
+    [35mjobId[39m: "ea4dd835-e5b3-4833-84a7-f1469691e7b7"
+    [35mattempt[39m: 1
+[16:19:35] [33mWARN[39m:
+    [35mevent[39m: "operations.job.forced_failure"
+    [35mjobId[39m: "ea4dd835-e5b3-4833-84a7-f1469691e7b7"
+    [35mmarker[39m: "47ae7338-f270-48ce-8df8-5fa7d64f3f11"
+    [35mattempt[39m: 2
+[16:19:35] [31mERROR[39m:
+    [35mevent[39m: "operations.job.attempt_failed"
+    [35mjobId[39m: "ea4dd835-e5b3-4833-84a7-f1469691e7b7"
+    [35mattempt[39m: 2
+[16:19:35] [33mWARN[39m:
+    [35mevent[39m: "operations.job.forced_failure"
+    [35mjobId[39m: "ea4dd835-e5b3-4833-84a7-f1469691e7b7"
+    [35mmarker[39m: "47ae7338-f270-48ce-8df8-5fa7d64f3f11"
+    [35mattempt[39m: 3
+[16:19:35] [31mERROR[39m:
+    [35mevent[39m: "operations.job.attempt_failed"
+    [35mjobId[39m: "ea4dd835-e5b3-4833-84a7-f1469691e7b7"
+    [35mattempt[39m: 3
+ ✓ tests/integration/operations-jobs.integration.test.ts (3 tests) 19127ms
+   ✓ PostgreSQL operations jobs > uses bounded exponential retry and retains terminal failure evidence  511ms
+   ✓ PostgreSQL operations jobs > runs a future-scheduled job after the queueing process has exited  18237ms
+[16:19:57] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[16:20:00] [32mINFO[39m: [36mCanonical neutral demo information architecture is ready.[39m
+node : stderr | tests/integration/rc03-core-orchestration.integration.test.ts > RC-03 Core Orchestration Pass 1
+End-to-End Suite > 2. Scheduled Publication: timezone-aware future scheduling, worker execution, lease locking &
+idempotency
+At line:2 char:62
++ ... twork.mjs'; node --env-file=.env.rc03-integration node_modules/vitest ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (stderr | tests/...g & idempotency:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+Failed to revalidate paths: Error: Invariant: static generation store missing in revalidatePath
+/articles/sched-art-fd66cf6a
+    at revalidate (C:\Projects\RENEGADE
+CMS\Renegade-CMS\node_modules\next\src\server\web\spec-extension\revalidate.ts:135:11)
+    at revalidatePath (C:\Projects\RENEGADE
+CMS\Renegade-CMS\node_modules\next\src\server\web\spec-extension\revalidate.ts:125:10)
+    at persistWorkflow (C:\Projects\RENEGADE CMS\Renegade-CMS\src\modules\editorial\persistence.ts:553:7)
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at publishScheduledArticleUnlocked (C:\Projects\RENEGADE
+CMS\Renegade-CMS\src\modules\editorial\persistence.ts:1018:3)
+    at withExecutionLock (C:\Projects\RENEGADE CMS\Renegade-CMS\src\modules\operations\execution-lock.ts:26:12)
+    at executeScheduledPublishJobUnlocked (C:\Projects\RENEGADE
+CMS\Renegade-CMS\src\modules\editorial\scheduler.ts:172:5)
+    at withExecutionLock (C:\Projects\RENEGADE CMS\Renegade-CMS\src\modules\operations\execution-lock.ts:26:12)
+    at C:\Projects\RENEGADE CMS\Renegade-CMS\tests\integration\rc03-core-orchestration.integration.test.ts:245:24
+    at file:///C:/Projects/RENEGADE%20CMS/Renegade-CMS/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20
+
+ ✓ tests/integration/rc03-core-orchestration.integration.test.ts (4 tests) 9701ms
+   ✓ RC-03 Core Orchestration Pass 1 End-to-End Suite > 1. Editorial Workflow: draft -> request review -> reject -> revise -> approve with permission boundaries & audit trail  2603ms
+   ✓ RC-03 Core Orchestration Pass 1 End-to-End Suite > 2. Scheduled Publication: timezone-aware future scheduling, worker execution, lease locking & idempotency  2275ms
+   ✓ RC-03 Core Orchestration Pass 1 End-to-End Suite > 3. Coordinated Release: rejects invalid article, media, distribution and newsletter references without false success  1554ms
+[16:20:10] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+stderr | tests/integration/flow-03-scheduler-api.integration.test.ts > FLOW-03 Scheduling & Calendar Integration Suite
+> 3. Worker lease locking & idempotent execution publishes ONLY the target approved revision
+Failed to revalidate paths: Error: Invariant: static generation store missing in revalidatePath
+/articles/flow-03-sched-927d6117
+    at revalidate (C:\Projects\RENEGADE
+CMS\Renegade-CMS\node_modules\next\src\server\web\spec-extension\revalidate.ts:135:11)
+    at revalidatePath (C:\Projects\RENEGADE
+CMS\Renegade-CMS\node_modules\next\src\server\web\spec-extension\revalidate.ts:125:10)
+    at persistWorkflow (C:\Projects\RENEGADE CMS\Renegade-CMS\src\modules\editorial\persistence.ts:553:7)
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at publishScheduledArticleUnlocked (C:\Projects\RENEGADE
+CMS\Renegade-CMS\src\modules\editorial\persistence.ts:1018:3)
+    at withExecutionLock (C:\Projects\RENEGADE CMS\Renegade-CMS\src\modules\operations\execution-lock.ts:26:12)
+    at executeScheduledPublishJobUnlocked (C:\Projects\RENEGADE
+CMS\Renegade-CMS\src\modules\editorial\scheduler.ts:172:5)
+    at withExecutionLock (C:\Projects\RENEGADE CMS\Renegade-CMS\src\modules\operations\execution-lock.ts:26:12)
+    at C:\Projects\RENEGADE CMS\Renegade-CMS\tests\integration\flow-03-scheduler-api.integration.test.ts:172:21
+    at file:///C:/Projects/RENEGADE%20CMS/Renegade-CMS/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20
+
+ ✓ tests/integration/flow-03-scheduler-api.integration.test.ts (5 tests) 4317ms
+   ✓ FLOW-03 Scheduling & Calendar Integration Suite > 1. Schedules an article around a DST edge in test timezone America/Chicago  614ms
+   ✓ FLOW-03 Scheduling & Calendar Integration Suite > 2. Creating a newer draft (rev sequence N+1) post-schedule does NOT alter scheduled target revision  548ms
+   ✓ FLOW-03 Scheduling & Calendar Integration Suite > 3. Worker lease locking & idempotent execution publishes ONLY the target approved revision  1057ms
+[16:20:18] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[16:20:21] [32mINFO[39m: [36mCanonical neutral demo information architecture is ready.[39m
+ ✓ tests/integration/content-release-acceptance.integration.test.ts (1 test) 3713ms
+   ✓ coordinated content release acceptance > durably schedules and releases an approved product once  697ms
+ ✓ tests/integration/flow-01-workflow-api.integration.test.ts (3 tests) 11ms
+
+ Test Files  6 passed (6)
+      Tests  18 passed (18)
+   Start at  16:19:00
+   Duration  82.01s (transform 1.38s, setup 0ms, collect 15.57s, tests 63.69s, environment 2ms, prepare 711ms)

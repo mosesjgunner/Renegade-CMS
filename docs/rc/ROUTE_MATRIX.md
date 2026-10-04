@@ -603,3 +603,7 @@ Source `b684ee11460637bf2177f349057f14d6e804bbbd`. [Executed assertions/trace](e
 | Fresh public requests after web + worker restart | Page/article/event/media/sitemap/feed usable |
 
 Author byline and Person schema passed; no clickable author archive is advertised in the current renderer. Transcript search is not claimed for the created article/event content.
+
+## RC-03 Pass 2 route boundary
+
+Current acceptance is limited to `/admin/workflow`, native content revision editing, `/admin/releases`, `/admin/social`, native social account configuration, Events admin and canonical public content/redirect/event routes. Unsupported calendar/timeline product collection operations return 403, `/api/calendar/export` returns 410, and `/calendar` shows its explicit RC deferral. See [RC-03 evidence](evidence/RC-03.md) for execution verdict. Historical full-role/tenant route matrix remains open.

@@ -1,0 +1,49 @@
+(node:27588) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:27588) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[16:17:09] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[16:17:10] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[16:17:10] [32mINFO[39m:
+    [35mevent[39m: "operations.job.heartbeat"
+    [35mobservedAt[39m: "2026-10-04T21:17:10.050Z"
+    [35mversion[39m: "0.1.0-dev"
+[16:17:11] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+(node:27172) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:27172) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[16:17:25] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[16:17:26] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[16:17:27] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[16:17:30] [32mINFO[39m: [36mRunning 3 jobs.[39m
+    [35mnew[39m: 3
+    [35mretrying[39m: 0
+[16:17:41] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[16:17:50] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[16:18:00] [32mINFO[39m: [36mRunning 4 jobs.[39m
+    [35mnew[39m: 4
+    [35mretrying[39m: 0
+Failed to revalidate paths: Error: Invariant: static generation store missing in revalidatePath /articles/rc03-release-1791148628311
+    at revalidate [90m(C:\Projects\RENEGADE CMS\Renegade-CMS\[39mnode_modules\[4mnext[24m\src\server\web\spec-extension\revalidate.ts:135:11[90m)[39m
+    at revalidatePath [90m(C:\Projects\RENEGADE CMS\Renegade-CMS\[39mnode_modules\[4mnext[24m\src\server\web\spec-extension\revalidate.ts:125:10[90m)[39m
+    at persistWorkflow [90m(C:\Projects\RENEGADE CMS\Renegade-CMS\[39msrc\modules\editorial\persistence.ts:553:7[90m)[39m
+[90m    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)[39m
+    at async <anonymous> [90m(C:\Projects\RENEGADE CMS\Renegade-CMS\[39msrc\modules\editorial\persistence.ts:976:5[90m)[39m
+    at async withExecutionLock [90m(C:\Projects\RENEGADE CMS\Renegade-CMS\[39msrc\modules\operations\execution-lock.ts:26:12[90m)[39m
+    at async executeDatabaseStep [90m(C:\Projects\RENEGADE CMS\Renegade-CMS\[39msrc\modules\releases\saga.ts:48:23[90m)[39m
+    at async executeReleaseSagaUnlocked [90m(C:\Projects\RENEGADE CMS\Renegade-CMS\[39msrc\modules\releases\saga.ts:509:21[90m)[39m
+    at async withExecutionLock [90m(C:\Projects\RENEGADE CMS\Renegade-CMS\[39msrc\modules\operations\execution-lock.ts:26:12[90m)[39m
+    at async executeContentRelease [90m(C:\Projects\RENEGADE CMS\Renegade-CMS\[39msrc\modules\releases\service.ts:806:18[90m)[39m
