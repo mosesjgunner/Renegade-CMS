@@ -55,8 +55,22 @@ export async function persistRenderedAuditLifecycle(
   let updated = 0
   let resolved = 0
 
+  // Several links on a page can produce the same rule finding. Persist one
+  // lifecycle record per key while retaining every distinct piece of evidence.
+  const grouped = new Map<string, RenderedAuditIssue>()
+  const severityRank = { informational: 0, warning: 1, publication_blocking: 2 }
   for (const item of issues) {
-    const dedupeKey = `disc-05:${item.ruleId}:${item.url}`
+    const key = `disc-05:${item.ruleId}:${item.url}`
+    const previous = grouped.get(key)
+    grouped.set(key, previous ? {
+      ...previous,
+      evidence: [...new Set([previous.evidence, item.evidence])].join('\n'),
+      severity: severityRank[item.severity] > severityRank[previous.severity]
+        ? item.severity : previous.severity,
+    } : item)
+  }
+
+  for (const [dedupeKey, item] of grouped) {
     activeDedupeKeys.add(dedupeKey)
 
     const existingIssue = existingMap.get(dedupeKey)
@@ -127,7 +141,7 @@ export async function persistRenderedAuditLifecycle(
     }
   }
 
-  const activeCount = issues.length
+  const activeCount = grouped.size
 
   return {
     scanId: scanDoc.id,

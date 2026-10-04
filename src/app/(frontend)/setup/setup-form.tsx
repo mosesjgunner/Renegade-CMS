@@ -1,6 +1,6 @@
 'use client'
 
-import { FormEvent, useMemo, useState } from 'react'
+import { FormEvent, useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 
 import { themes } from '@/modules/presentation/registry'
@@ -242,7 +242,10 @@ function OwnerStep({
   token: string
   setToken: (value: string) => void
 }) {
-  const hasPasskeySupport = typeof window !== 'undefined' && Boolean(window.PublicKeyCredential)
+  const [hasPasskeySupport, setHasPasskeySupport] = useState(false)
+  useEffect(() => {
+    setHasPasskeySupport(Boolean(window.PublicKeyCredential))
+  }, [])
 
   return (
     <section className="space-y-4">

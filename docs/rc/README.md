@@ -1,3 +1,5 @@
+> Current core-site gate: **RC-02 PASS**, source `b684ee11460637bf2177f349057f14d6e804bbbd`. [Evidence](evidence/RC-02.md). RC-00/RC-01 source and blockers below are historical broader scope, which remains open.
+
 # Current release truth
 
 Source candidate: `e24fc53d9e370e28f01398c561b0f5adc4884756`. Reconciled 2026-10-03. Initial working tree was clean. This documentation freeze binds the source candidate; its artifact commit is discoverable with git log -- docs/rc. It does not establish runtime release readiness.

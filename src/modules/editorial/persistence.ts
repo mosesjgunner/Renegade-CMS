@@ -18,6 +18,7 @@ import {
 } from './workflow'
 import { OPERATIONS_QUEUE } from '../operations/tasks'
 import { canRenderPublic } from '../public/contracts'
+import { publicRelatedContent } from './related-content'
 import {
   assertMediaIdsPublishable,
   assertUsageTargetsPublishable,
@@ -95,7 +96,8 @@ export type EditorialPresentation = {
   updatedAt: string | null
   previewMode: 'desktop' | 'mobile'
   preview: boolean
-  heroMedia: { url: string; altText: string; width?: number; height?: number } | null
+  heroMedia: { id: string; url: string; altText: string; width?: number; height?: number } | null
+  relatedContent: Array<{ id: string; title: string; href: string }>
 }
 
 type EditorialBundle = {
@@ -378,8 +380,7 @@ export async function ensureEditorialCompanion(payload: Payload, content: Doc, r
           lifecycle: content.status ?? 'draft',
           ...(content.status === 'published'
             ? {
-                latestPublishedRevision:
-                  existing.latestPublishedRevision ?? existing.currentRevision,
+                latestPublishedRevision: existing.currentRevision,
                 firstPublishedAt:
                   existing.firstPublishedAt ?? content.publishedAt ?? new Date().toISOString(),
               }
@@ -1202,9 +1203,11 @@ export async function buildArticlePresentation(
     updatedAt: bundle.content.updatedAtEditorial ? String(bundle.content.updatedAtEditorial) : null,
     previewMode: input.previewMode ?? 'desktop',
     preview: Boolean(input.preview),
+    relatedContent: publicRelatedContent(bundle.content.relatedContent, bundle.content.site),
     heroMedia:
       heroMedia && heroMedia.kind === 'image'
         ? {
+            id: String(heroMedia.id),
             url: `/media/${heroMedia.id}`,
             altText: String(heroMedia.altText || heroMedia.title || ''),
             width: typeof heroMedia.width === 'number' ? heroMedia.width : undefined,

@@ -150,7 +150,8 @@ export async function PATCH(request: Request, { params }: Args) {
       if (!target || relationId((target as { site?: unknown }).site) !== existingSite)
         return NextResponse.json({ error: `${name} must reference this site.` }, { status: 422 })
       const canonical = target as unknown as Record<string, unknown>
-      const expectedHref = field.type === 'media' ? canonical.url : canonical.canonicalPath
+      const expectedHref =
+        field.type === 'media' ? `/media/${canonical.id}` : canonical.canonicalPath
       if (typeof expectedHref !== 'string' || value.href !== expectedHref)
         return NextResponse.json(
           { error: `${name} does not match its canonical record.` },

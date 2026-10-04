@@ -6,6 +6,7 @@ import type { Metadata } from 'next'
 
 import { canRenderPublic, type PublicState } from '@/modules/public/contracts'
 import { PublicLayout } from '@/modules/public/PublicLayout'
+import { hydratePublicLayoutRecord } from '@/modules/presentation/public-queries'
 import { resolveSiteSettings } from '@/modules/core/site-settings'
 import { loadPublishedArticleByPath } from '@/modules/editorial/persistence'
 import { EditorialArticleView } from '@/modules/editorial/ArticleView'
@@ -29,6 +30,13 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function HomePage() {
   const payload = await getPayload({ config })
   const settings = await resolveSiteSettings(payload)
+  const discoveryDoc = await resolveDiscoveryDocument(payload, { path: '/' })
+  const schema = (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: serializeJsonLd(discoveryDoc.schema.jsonLd) }}
+    />
+  )
 
   const publications = await payload.find({
     collection: 'publications',
@@ -66,7 +74,7 @@ export default async function HomePage() {
       // Fall through if selected page is unpublished or not found
     }
     if (editorial) {
-      return <EditorialArticleView themeId={settings.themeId} article={editorial} />
+      return <>{schema}<EditorialArticleView themeId={settings.themeId} article={editorial} /></>
     }
   }
 
@@ -86,7 +94,7 @@ export default async function HomePage() {
       // Fall through if layout not found
     }
     if (layoutToRender) {
-      return <PublicLayout record={layoutToRender} path="/" />
+      return <>{schema}<PublicLayout record={await hydratePublicLayoutRecord(payload, layoutToRender)} path="/" /></>
     }
   }
 
@@ -99,7 +107,7 @@ export default async function HomePage() {
       // No root content article
     }
     if (rootPage) {
-      return <EditorialArticleView themeId={settings.themeId} article={rootPage} />
+      return <>{schema}<EditorialArticleView themeId={settings.themeId} article={rootPage} /></>
     }
 
     const layouts = await payload.find({
@@ -111,7 +119,7 @@ export default async function HomePage() {
     })
     const layout = layouts.docs[0] as unknown as (PublicState & Record<string, unknown>) | undefined
     if (layout && canRenderPublic(layout)) {
-      return <PublicLayout record={layout} path="/" />
+      return <>{schema}<PublicLayout record={await hydratePublicLayoutRecord(payload, layout)} path="/" /></>
     }
   }
 
@@ -131,15 +139,10 @@ export default async function HomePage() {
     overrideAccess: true,
   })
 
-  const discoveryDoc = await resolveDiscoveryDocument(payload, { path: '/' })
-
   return (
     <PresentationSurface themeId={settings.themeId} surface="home">
       <>
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: serializeJsonLd(discoveryDoc.schema.jsonLd) }}
-        />
+        {schema}
         <main className="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8 py-12 md:py-20">
           {/* Starter Hero */}
           <section className="text-center py-12 md:py-16 border-b border-stone-200 dark:border-stone-800">

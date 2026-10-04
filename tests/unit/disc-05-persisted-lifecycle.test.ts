@@ -8,6 +8,30 @@ import type { RenderedAuditIssue } from '../../src/modules/public/discovery-audi
 import type { Payload } from 'payload'
 
 describe('DISC-05 Persisted Lifecycle Fields & Quality Center Store', () => {
+  it('groups repeated rule findings without violating uniqueness or losing evidence', async () => {
+    const created: Record<string, unknown>[] = []
+    const payload = {
+      create: vi.fn(async ({ collection, data }) => {
+        if (collection === 'quality-scans') return { id: 'scan', ...data }
+        if (created.some((row) => row.dedupeKey === data.dedupeKey))
+          throw new Error('Duplicate lifecycle key')
+        created.push(data)
+        return { id: 'issue', ...data }
+      }),
+      find: vi.fn(async () => ({ docs: [] })),
+    } as unknown as Payload
+    const issue: RenderedAuditIssue = {
+      url: 'https://example.test/article', ruleId: 'DISC-05-LINK', ruleVersion: '1.0.0',
+      severity: 'warning', evidence: 'First broken link', repairTarget: 'body',
+    }
+    const result = await persistRenderedAuditLifecycle(payload, 'site', [
+      issue, { ...issue, evidence: 'Second broken link', severity: 'publication_blocking' },
+    ])
+    expect(result).toMatchObject({ created: 1, active: 1, totalIssues: 2 })
+    expect(created[0]).toMatchObject({
+      message: 'First broken link\nSecond broken link', severity: 'publication_blocking',
+    })
+  })
   it('persists findings into quality scans and issues with firstSeenAt and lastSeenAt tracking', async () => {
     const existingIssues: Record<string, unknown>[] = []
     const createdIssues: Record<string, unknown>[] = []

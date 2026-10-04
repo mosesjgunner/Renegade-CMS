@@ -304,27 +304,21 @@ export async function GET(request: Request) {
     }
   }
 
-  // If no campaigns found in events, seed canonical demonstrated campaign
-  if (campaignMap.size === 0) {
-    campaignMap.set('autumn-sovereign-launch', [])
-  }
-
   const campaignFunnels = Array.from(campaignMap.entries()).map(([campName, campEvents]) => {
-    const impressions =
-      campEvents.filter((e) => e.eventType === 'page_view' || e.eventType === 'event_view')
-        .length || 142
-    const landings = campEvents.filter((e) => e.eventType === 'page_view').length || 118
-    const engagements =
-      campEvents.filter((e) => e.eventType === 'read_depth' || e.eventType === 'click_internal')
-        .length || 64
-    const conversions =
-      campEvents.filter(
-        (e) =>
-          e.eventType === 'signup' ||
-          e.eventType === 'form_submit' ||
-          e.eventType === 'payment_completed' ||
-          e.eventType === 'experiment_conversion',
-      ).length || 28
+    const impressions = campEvents.filter(
+      (e) => e.eventType === 'page_view' || e.eventType === 'event_view',
+    ).length
+    const landings = campEvents.filter((e) => e.eventType === 'page_view').length
+    const engagements = campEvents.filter(
+      (e) => e.eventType === 'read_depth' || e.eventType === 'click_internal',
+    ).length
+    const conversions = campEvents.filter(
+      (e) =>
+        e.eventType === 'signup' ||
+        e.eventType === 'form_submit' ||
+        e.eventType === 'payment_completed' ||
+        e.eventType === 'experiment_conversion',
+    ).length
 
     const conversionRate = landings > 0 ? ((conversions / landings) * 100).toFixed(1) : '0.0'
 
@@ -348,11 +342,17 @@ export async function GET(request: Request) {
       engagements,
       conversions,
       conversionRate,
-      disclosedLinksCount: campEvents.filter((e) => e.context.utm?.utm_source).length || 85,
+      disclosedLinksCount: campEvents.filter((e) => e.context.utm?.utm_source).length,
       channelsBreakdown: {
-        newsletter: Math.round(landings * 0.52),
-        social_disclosed: Math.round(landings * 0.31),
-        referral: Math.round(landings * 0.17),
+        newsletter: campEvents.filter(
+          (e) => e.eventType === 'page_view' && e.context.utm?.utm_medium === 'email',
+        ).length,
+        social_disclosed: campEvents.filter(
+          (e) => e.eventType === 'page_view' && e.context.utm?.utm_medium === 'social',
+        ).length,
+        referral: campEvents.filter(
+          (e) => e.eventType === 'page_view' && e.context.utm?.utm_medium === 'referral',
+        ).length,
       },
       attributionSample,
     }

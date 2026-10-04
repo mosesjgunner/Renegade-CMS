@@ -1,0 +1,212 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "--config",
+      "playwright.rc02.config.ts"
+    ],
+    "configFile": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\playwright.rc02.config.ts",
+    "rootDir": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/rc02",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Projects/RENEGADE CMS/Renegade-CMS/test-results/rc02",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/rc02",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 600000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "docs/rc/evidence/rc-02/browser-results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.62.1",
+    "workers": 1,
+    "webServer": {
+      "command": "node src/scripts/rc02-runtime.mjs",
+      "url": "https://dispatch.rc02.test:3129/api/setup/readiness",
+      "reuseExistingServer": false,
+      "ignoreHTTPSErrors": true,
+      "timeout": 120000,
+      "env": {
+        "DATABASE_URL": "postgresql://renegade_rc02_1791086734920_release_acceptance:c8483251d22084b240a1011fd43f3cb58986d81543f72b3793aee994c0026d00@localhost:5432/renegade_rc02_1791086734920_release_acceptance",
+        "PAYLOAD_SECRET": "53455fab81015b6720760631ffc1e32f5199c85a05c575292e22cb653117deec7e2f01f91c86c3b5d8ae0ee1dc47676a",
+        "APP_URL": "https://dispatch.rc02.test:3129",
+        "PORT": "3128",
+        "HOSTNAME": "127.0.0.1",
+        "NODE_ENV": "production",
+        "PROXY_MODE": "trusted",
+        "TRUSTED_PROXY_HOPS": "1",
+        "DEPLOYMENT_PROFILE": "Standard",
+        "RENEGADE_MODULES": "all",
+        "RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT": "false",
+        "LOCAL_E2E_TEST_MODE": "false",
+        "ENABLE_TEST_ROUTES": "false",
+        "RENEGADE_NEXT_DIST_DIR": ".next",
+        "DISABLE_PAYLOAD_HMR": "true",
+        "MEDIA_DIR": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\scratch\\renegade_rc02_1791086734920_release_acceptance-media",
+        "NODE_EXTRA_CA_CERTS": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\scratch\\rc02-tls\\cert.pem",
+        "EMAIL_MODE": "disabled",
+        "NODE_OPTIONS": "--max-old-space-size=768 --import=file:///C:/Projects/RENEGADE%20CMS/Renegade-CMS/src/scripts/rc02-network.mjs"
+      }
+    }
+  },
+  "suites": [
+    {
+      "title": "site-build.spec.ts",
+      "file": "site-build.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "RC-02: ordinary operator builds Renegade Party Dispatch from an empty install",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 600000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 41220,
+                  "errors": [],
+                  "stdout": [
+                    {
+                      "buffer": "WzIzOjA1OjQ4XSAbWzMzbVdBUk4bWzM5bTogG1szNm1ObyBlbWFpbCBhZGFwdGVyIHByb3ZpZGVkLiBFbWFpbCB3aWxsIGJlIHdyaXR0ZW4gdG8gY29uc29sZS4gTW9yZSBpbmZvIGF0IGh0dHBzOi8vcGF5bG9hZGNtcy5jb20vZG9jcy9lbWFpbC9vdmVydmlldy4bWzM5bQo="
+                    }
+                  ],
+                  "stderr": [],
+                  "retry": 0,
+                  "steps": [
+                    {
+                      "title": "Owner enrollment and blank Standard onboarding",
+                      "duration": 6122
+                    },
+                    {
+                      "title": "Site settings through the normal admin form",
+                      "duration": 2105
+                    },
+                    {
+                      "title": "Activate a theme and configure supported tokens in Theme Studio",
+                      "duration": 1057
+                    },
+                    {
+                      "title": "Upload original image and metadata through the normal media API",
+                      "duration": 573
+                    },
+                    {
+                      "title": "Create coherent editorial records through authenticated product REST",
+                      "duration": 7950
+                    },
+                    {
+                      "title": "Build homepage using Puck and publish a reusable composition",
+                      "duration": 1741
+                    },
+                    {
+                      "title": "Reusable templates, patterns and published global regions",
+                      "duration": 438
+                    },
+                    {
+                      "title": "Media usage tracking and nondestructive replacement",
+                      "duration": 420
+                    },
+                    {
+                      "title": "Theme preview and switching preserve canonical editorial records",
+                      "duration": 1743
+                    },
+                    {
+                      "title": "Anonymous public site, metadata, discovery and responsive media",
+                      "duration": 6359
+                    },
+                    {
+                      "title": "Published edit, revision history and exact slug redirect",
+                      "duration": 2050
+                    },
+                    {
+                      "title": "Rendered Quality performs real HTTP checks against this site",
+                      "duration": 1884
+                    },
+                    {
+                      "title": "Actual web and worker process restart, then fresh anonymous browse",
+                      "duration": 7688
+                    }
+                  ],
+                  "startTime": "2026-10-04T04:05:48.492Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\test-results\\rc02\\site-build-RC-02-ordinary--62930-patch-from-an-empty-install\\trace.zip"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "ddf9e0cd01877a1bb162-0ce1cbdf71d8ad8c68f1",
+          "file": "site-build.spec.ts",
+          "line": 9,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-04T04:05:41.848Z",
+    "duration": 49249.817,
+    "expected": 1,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

@@ -1,0 +1,2294 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "--config",
+      "playwright.rc01.config.ts",
+      "--max-failures=1"
+    ],
+    "configFile": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\playwright.rc01.config.ts",
+    "rootDir": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/rc01",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 1,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Projects/RENEGADE CMS/Renegade-CMS/test-results/rc01",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "setup",
+        "name": "setup",
+        "testDir": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/rc01",
+        "testIgnore": [],
+        "testMatch": [
+          "setup.spec.ts"
+        ],
+        "timeout": 90000
+      },
+      {
+        "outputDir": "C:/Projects/RENEGADE CMS/Renegade-CMS/test-results/rc01",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "admin-matrix",
+        "name": "admin-matrix",
+        "testDir": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/rc01",
+        "testIgnore": [],
+        "testMatch": [
+          "routes.spec.ts"
+        ],
+        "timeout": 90000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "docs/rc/evidence/rc-01/browser-results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.62.1",
+    "workers": 1,
+    "webServer": {
+      "command": "node node_modules/next/dist/bin/next dev --port 3127",
+      "url": "http://localhost:3127/api/setup/readiness",
+      "reuseExistingServer": false,
+      "timeout": 120000,
+      "env": {
+        "DATABASE_URL": "postgresql://renegade:renegade_dev_only@localhost:5432/renegade_rc01_20261003_v2_release_acceptance",
+        "PAYLOAD_SECRET": "rc01-isolated-local-session-secret-0123456789",
+        "APP_URL": "http://localhost:3127",
+        "PORT": "3127",
+        "HOSTNAME": "localhost",
+        "NODE_ENV": "development",
+        "DEPLOYMENT_PROFILE": "Standard",
+        "RENEGADE_MODULES": "all",
+        "RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT": "false",
+        "LOCAL_E2E_TEST_MODE": "false",
+        "ENABLE_TEST_ROUTES": "false",
+        "MEDIA_DIR": "./scratch/rc01-media",
+        "EMAIL_MODE": "disabled"
+      }
+    }
+  },
+  "suites": [
+    {
+      "title": "setup.spec.ts",
+      "file": "setup.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "a normal operator completes first-run setup, sees recovery codes once, and setup then locks",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 90000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "setup",
+              "projectName": "setup",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 8319,
+                  "errors": [],
+                  "stdout": [
+                    {
+                      "buffer": "WzE5OjE2OjM1XSAbWzMzbVdBUk4bWzM5bTogG1szNm1ObyBlbWFpbCBhZGFwdGVyIHByb3ZpZGVkLiBFbWFpbCB3aWxsIGJlIHdyaXR0ZW4gdG8gY29uc29sZS4gTW9yZSBpbmZvIGF0IGh0dHBzOi8vcGF5bG9hZGNtcy5jb20vZG9jcy9lbWFpbC9vdmVydmlldy4bWzM5bQo="
+                    },
+                    {
+                      "text": "[BROWSER CONSOLE] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold\n"
+                    },
+                    {
+                      "text": "[BROWSER CONSOLE] [HMR] connected\n"
+                    },
+                    {
+                      "text": "[BROWSER CONSOLE] [Fast Refresh] rebuilding\n"
+                    },
+                    {
+                      "text": "[BROWSER CONSOLE] [Fast Refresh] done in 417ms\n"
+                    },
+                    {
+                      "text": "[BROWSER CONSOLE] [Fast Refresh] rebuilding\n"
+                    },
+                    {
+                      "text": "[BROWSER CONSOLE] [Fast Refresh] done in 186ms\n"
+                    },
+                    {
+                      "text": "[BROWSER CONSOLE] %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold\n"
+                    },
+                    {
+                      "text": "[BROWSER CONSOLE] [HMR] connected\n"
+                    }
+                  ],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-04T00:16:34.992Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "cca0b3e1305f7160eea0-de64f9a8bafdda793697",
+          "file": "setup.spec.ts",
+          "line": 22,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "routes.spec.ts",
+      "file": "routes.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "ordinary owner navigation",
+          "file": "routes.spec.ts",
+          "line": 21,
+          "column": 6,
+          "specs": [
+            {
+              "title": "rendered navigation is covered by the configuration inventory",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4471,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-04T00:16:43.912Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "rendered-navigation",
+                          "contentType": "application/json",
+                          "body": "WwogIHsKICAgICJocmVmIjogIi9hZG1pbiIsCiAgICAidGV4dCI6ICJEYXNoYm9hcmQiCiAgfSwKICB7CiAgICAiaHJlZiI6ICIvYWRtaW4vcG9zdHMiLAogICAgInRleHQiOiAiUG9zdHMiCiAgfSwKICB7CiAgICAiaHJlZiI6ICIvYWRtaW4vcGFnZXMiLAogICAgInRleHQiOiAiUGFnZXMiCiAgfSwKICB7CiAgICAiaHJlZiI6ICIvYWRtaW4vY29sbGVjdGlvbnMvcGFnZS1sYXlvdXRzIiwKICAgICJ0ZXh0IjogIkxheW91dHMiCiAgfSwKICB7CiAgICAiaHJlZiI6ICIvYWRtaW4vbWVkaWEtbGlicmFyeSIsCiAgICAidGV4dCI6ICJNZWRpYSIKICB9LAogIHsKICAgICJocmVmIjogIi9hZG1pbi9jb2xsZWN0aW9ucy9wb2RjYXN0LXNob3dzIiwKICAgICJ0ZXh0IjogIlBvZGNhc3RzIgogIH0sCiAgewogICAgImhyZWYiOiAiL2FkbWluL25hdmlnYXRpb24iLAogICAgInRleHQiOiAiTWVudXMiCiAgfSwKICB7CiAgICAiaHJlZiI6ICIvYWRtaW4vaW5kZXhpbmciLAogICAgInRleHQiOiAiSW5kZXhpbmciCiAgfSwKICB7CiAgICAiaHJlZiI6ICIvYWRtaW4vcmVkaXJlY3RzIiwKICAgICJ0ZXh0IjogIlJlZGlyZWN0cyIKICB9LAogIHsKICAgICJocmVmIjogIi9hZG1pbi9yZW5kZXJlZC1xdWFsaXR5IiwKICAgICJ0ZXh0IjogIlJlbmRlcmVkIFF1YWxpdHkiCiAgfSwKICB7CiAgICAiaHJlZiI6ICIvYWRtaW4vd29ya2Zsb3ciLAogICAgInRleHQiOiAiRWRpdG9yaWFsIFdvcmtmbG93IgogIH0sCiAgewogICAgImhyZWYiOiAiL2FkbWluL3JlbGVhc2VzIiwKICAgICJ0ZXh0IjogIlJlbGVhc2VzIgogIH0sCiAgewogICAgImhyZWYiOiAiL2FkbWluL2FpIiwKICAgICJ0ZXh0IjogIkFJIFN0dWRpbyIKICB9LAogIHsKICAgICJocmVmIjogIi9hZG1pbi9zb2NpYWwiLAogICAgInRleHQiOiAiU29jaWFsIERpc3RyaWJ1dGlvbiIKICB9LAogIHsKICAgICJocmVmIjogIi9hZG1pbi9lbWFpbC1jb21wb3NlciIsCiAgICAidGV4dCI6ICJFbWFpbCBDb21wb3NlciIKICB9LAogIHsKICAgICJocmVmIjogIi9hZG1pbi9hdWRpZW5jZSIsCiAgICAidGV4dCI6ICJBdWRpZW5jZSIKICB9LAogIHsKICAgICJocmVmIjogIi9hZG1pbi9tb2RlcmF0aW9uIiwKICAgICJ0ZXh0IjogIkNvbW11bml0eSBNb2RlcmF0aW9uIgogIH0sCiAgewogICAgImhyZWYiOiAiL2FkbWluL3RlbGVtZXRyeSIsCiAgICAidGV4dCI6ICJUZWxlbWV0cnkgJiBFeHBlcmltZW50cyIKICB9LAogIHsKICAgICJocmVmIjogIi9hZG1pbi9jYXRhbG9nIiwKICAgICJ0ZXh0IjogIkNhdGFsb2ciCiAgfSwKICB7CiAgICAiaHJlZiI6ICIvYWRtaW4vY29tbWVyY2UiLAogICAgInRleHQiOiAiQ29tbWVyY2UgT3BlcmF0aW9ucyIKICB9LAogIHsKICAgICJocmVmIjogIi9hZG1pbi9mdWxmaWxsbWVudCIsCiAgICAidGV4dCI6ICJQT0QgJiBGdWxmaWxsbWVudCIKICB9LAogIHsKICAgICJocmVmIjogIi8iLAogICAgInRleHQiOiAiVmlldyBTaXRlIgogIH0sCiAgewogICAgImhyZWYiOiAiL2FkbWluL2NhcGFiaWxpdGllcyIsCiAgICAidGV4dCI6ICJDYXBhYmlsaXR5IENlbnRlciIKICB9LAogIHsKICAgICJocmVmIjogIi9hZG1pbi9zZWN1cml0eSIsCiAgICAidGV4dCI6ICJTZWN1cml0eSIKICB9LAogIHsKICAgICJocmVmIjogIi9hZG1pbi9jb2xsZWN0aW9ucy9zaXRlcyIsCiAgICAidGV4dCI6ICJTaXRlcyIKICB9LAogIHsKICAgICJocmVmIjogIi9hZG1pbi9jb2xsZWN0aW9ucy91c2VycyIsCiAgICAidGV4dCI6ICJVc2VycyIKICB9LAogIHsKICAgICJocmVmIjogIi9hZG1pbi9nbG9iYWxzL3NpdGUtc2V0dGluZ3MiLAogICAgInRleHQiOiAiU2l0ZSBTZXR0aW5ncyIKICB9LAogIHsKICAgICJocmVmIjogIi9hZG1pbi9nbG9iYWxzL25ldHdvcmstc2V0dGluZ3MiLAogICAgInRleHQiOiAiTmV0d29yayIKICB9LAogIHsKICAgICJocmVmIjogIi9hZG1pbi9jb2xsZWN0aW9ucy9wYWdlLWxheW91dHMiLAogICAgInRleHQiOiAiUGFnZSBMYXlvdXRzIgogIH0sCiAgewogICAgImhyZWYiOiAiL2FkbWluL2NvbGxlY3Rpb25zL2JyYW5kcyIsCiAgICAidGV4dCI6ICJCcmFuZHMiCiAgfSwKICB7CiAgICAiaHJlZiI6ICIvYWRtaW4vY29sbGVjdGlvbnMvYXV0aG9ycyIsCiAgICAidGV4dCI6ICJBdXRob3JzIgogIH0sCiAgewogICAgImhyZWYiOiAiL2FkbWluL2NvbGxlY3Rpb25zL3B1YmxpY2F0aW9ucyIsCiAgICAidGV4dCI6ICJQdWJsaWNhdGlvbnMiCiAgfSwKICB7CiAgICAiaHJlZiI6ICIvYWRtaW4vY29sbGVjdGlvbnMvY29udGVudCIsCiAgICAidGV4dCI6ICJBbGwgY29udGVudCIKICB9LAogIHsKICAgICJocmVmIjogIi9hZG1pbi9jb2xsZWN0aW9ucy9tZWRpYS1hc3NldHMiLAogICAgInRleHQiOiAiTWVkaWEgQXNzZXRzIgogIH0sCiAgewogICAgImhyZWYiOiAiL2FkbWluL2NvbGxlY3Rpb25zL3NlY3Rpb25zIiwKICAgICJ0ZXh0IjogIlNlY3Rpb25zIgogIH0sCiAgewogICAgImhyZWYiOiAiL2FkbWluL2NvbGxlY3Rpb25zL2NhdGVnb3JpZXMiLAogICAgInRleHQiOiAiQ2F0ZWdvcmllcyIKICB9LAogIHsKICAgICJocmVmIjogIi9hZG1pbi9jb2xsZWN0aW9ucy90b3BpY3MiLAogICAgInRleHQiOiAiVG9waWNzIgogIH0sCiAgewogICAgImhyZWYiOiAiL2FkbWluL2NvbGxlY3Rpb25zL3RhZ3MiLAogICAgInRleHQiOiAiVGFncyIKICB9LAogIHsKICAgICJocmVmIjogIi9hZG1pbi9jb2xsZWN0aW9ucy9kaXNjdXNzaW9ucyIsCiAgICAidGV4dCI6ICJEaXNjdXNzaW9ucyIKICB9LAogIHsKICAgICJocmVmIjogIi9hZG1pbi9jb2xsZWN0aW9ucy9kaXNjdXNzaW9uLXBvc3RzIiwKICAgICJ0ZXh0IjogIkRpc2N1c3Npb24gUG9zdHMiCiAgfSwKICB7CiAgICAiaHJlZiI6ICIvYWRtaW4vY29sbGVjdGlvbnMvZm9ybS1kZWZpbml0aW9ucyIsCiAgICAidGV4dCI6ICJGb3JtIERlZmluaXRpb25zIgogIH0sCiAgewogICAgImhyZWYiOiAiL2FkbWluL2NvbGxlY3Rpb25zL2Zvcm0tc3VibWlzc2lvbnMiLAogICAgInRleHQiOiAiRm9ybSBTdWJtaXNzaW9ucyIKICB9LAogIHsKICAgICJocmVmIjogIi9hZG1pbi9jb2xsZWN0aW9ucy9zdWJzY3JpYmVycyIsCiAgICAidGV4dCI6ICJTdWJzY3JpYmVycyIKICB9LAogIHsKICAgICJocmVmIjogIi9hZG1pbi9jb2xsZWN0aW9ucy9jb250YWN0cyIsCiAgICAidGV4dCI6ICJDb250YWN0cyIKICB9LAogIHsKICAgICJocmVmIjogIi9hZG1pbi9sb2dvdXQiLAogICAgInRleHQiOiAiIgogIH0KXQ=="
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "598fdabf36083b33787e-4878d41b3cd34b2bf7cf",
+              "file": "routes.spec.ts",
+              "line": 23,
+              "column": 3
+            },
+            {
+              "title": "owner loads /admin",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2913,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-04T00:16:48.503Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "errors",
+                          "contentType": "application/json",
+                          "body": "W10="
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "598fdabf36083b33787e-b7fad8da68f00bea682c",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/capabilities",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3313,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-04T00:16:51.424Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "errors",
+                          "contentType": "application/json",
+                          "body": "W10="
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "598fdabf36083b33787e-287a69768f6e17b00d7f",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/security",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2403,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-04T00:16:54.747Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "errors",
+                          "contentType": "application/json",
+                          "body": "W10="
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "598fdabf36083b33787e-528d3a5c76f14cf9e542",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/posts",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2156,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-04T00:16:57.159Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "errors",
+                          "contentType": "application/json",
+                          "body": "W10="
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "598fdabf36083b33787e-f38ecba2ce5b2700600e",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/pages",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2192,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-04T00:16:59.323Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "errors",
+                          "contentType": "application/json",
+                          "body": "W10="
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "598fdabf36083b33787e-c2206f86841acb469f88",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/navigation",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2121,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-04T00:17:01.524Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "errors",
+                          "contentType": "application/json",
+                          "body": "W10="
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "598fdabf36083b33787e-3b56ab99b975b47470af",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/media-library",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2823,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-04T00:17:03.653Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "errors",
+                          "contentType": "application/json",
+                          "body": "W10="
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "598fdabf36083b33787e-3896f1fa4634d86819d0",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/indexing",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2675,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-04T00:17:06.483Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "errors",
+                          "contentType": "application/json",
+                          "body": "W10="
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "598fdabf36083b33787e-adffdc9aca6f090291d1",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/redirects",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2886,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-04T00:17:09.165Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "errors",
+                          "contentType": "application/json",
+                          "body": "W10="
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "598fdabf36083b33787e-ee060f8d0ebe405a5184",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/rendered-quality",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2031,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-04T00:17:12.060Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "errors",
+                          "contentType": "application/json",
+                          "body": "W10="
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "598fdabf36083b33787e-cfbdc51281ea588bf639",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/workflow",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2549,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-04T00:17:14.098Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "errors",
+                          "contentType": "application/json",
+                          "body": "W10="
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "598fdabf36083b33787e-77a40efa912a84760565",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/releases",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1908,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-04T00:17:16.656Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "errors",
+                          "contentType": "application/json",
+                          "body": "W10="
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "598fdabf36083b33787e-9845b2f681325d8a7f63",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/email-composer",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2233,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-04T00:17:18.571Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "errors",
+                          "contentType": "application/json",
+                          "body": "W10="
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "598fdabf36083b33787e-2eaf3d71eafd000b45fa",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/audience",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1907,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-04T00:17:20.811Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "errors",
+                          "contentType": "application/json",
+                          "body": "W10="
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "598fdabf36083b33787e-ec60d8e1658aedce0a9e",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/moderation",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 2446,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  - 1\u001b[39m\n\u001b[31m+ Received  + 6\u001b[39m\n\n\u001b[32m- Array []\u001b[39m\n\u001b[31m+ Array [\u001b[39m\n\u001b[31m+   \"403 http://localhost:3127/api/community/reports?siteId=default\",\u001b[39m\n\u001b[31m+   \"403 http://localhost:3127/api/community/moderation?siteId=default\",\u001b[39m\n\u001b[31m+   \"403 http://localhost:3127/api/community/reports?siteId=default\",\u001b[39m\n\u001b[31m+   \"403 http://localhost:3127/api/community/moderation?siteId=default\",\u001b[39m\n\u001b[31m+ ]\u001b[39m",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  - 1\u001b[39m\n\u001b[31m+ Received  + 6\u001b[39m\n\n\u001b[32m- Array []\u001b[39m\n\u001b[31m+ Array [\u001b[39m\n\u001b[31m+   \"403 http://localhost:3127/api/community/reports?siteId=default\",\u001b[39m\n\u001b[31m+   \"403 http://localhost:3127/api/community/moderation?siteId=default\",\u001b[39m\n\u001b[31m+   \"403 http://localhost:3127/api/community/reports?siteId=default\",\u001b[39m\n\u001b[31m+   \"403 http://localhost:3127/api/community/moderation?siteId=default\",\u001b[39m\n\u001b[31m+ ]\u001b[39m\n    at C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\tests\\rc01\\routes.spec.ts:67:22",
+                        "location": {
+                          "file": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\tests\\rc01\\routes.spec.ts",
+                          "column": 22,
+                          "line": 67
+                        },
+                        "snippet": "  65 |       await expect(page.locator('body')).not.toContainText('Internal Server Error')\n  66 |       await expect(page.locator('body')).not.toContainText('This page could not be found')\n> 67 |       expect(errors).toEqual([])\n     |                      ^\n  68 |       await page.screenshot({\n  69 |         path: `docs/rc/evidence/rc-01/${route.replaceAll('/', '_')}.png`,\n  70 |         fullPage: true,"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\tests\\rc01\\routes.spec.ts",
+                            "column": 22,
+                            "line": 67
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  - 1\u001b[39m\n\u001b[31m+ Received  + 6\u001b[39m\n\n\u001b[32m- Array []\u001b[39m\n\u001b[31m+ Array [\u001b[39m\n\u001b[31m+   \"403 http://localhost:3127/api/community/reports?siteId=default\",\u001b[39m\n\u001b[31m+   \"403 http://localhost:3127/api/community/moderation?siteId=default\",\u001b[39m\n\u001b[31m+   \"403 http://localhost:3127/api/community/reports?siteId=default\",\u001b[39m\n\u001b[31m+   \"403 http://localhost:3127/api/community/moderation?siteId=default\",\u001b[39m\n\u001b[31m+ ]\u001b[39m\n\n  65 |       await expect(page.locator('body')).not.toContainText('Internal Server Error')\n  66 |       await expect(page.locator('body')).not.toContainText('This page could not be found')\n> 67 |       expect(errors).toEqual([])\n     |                      ^\n  68 |       await page.screenshot({\n  69 |         path: `docs/rc/evidence/rc-01/${route.replaceAll('/', '_')}.png`,\n  70 |         fullPage: true,\n    at C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\tests\\rc01\\routes.spec.ts:67:22"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-04T00:17:22.724Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "errors",
+                          "contentType": "application/json",
+                          "body": "WyI0MDMgaHR0cDovL2xvY2FsaG9zdDozMTI3L2FwaS9jb21tdW5pdHkvcmVwb3J0cz9zaXRlSWQ9ZGVmYXVsdCIsIjQwMyBodHRwOi8vbG9jYWxob3N0OjMxMjcvYXBpL2NvbW11bml0eS9tb2RlcmF0aW9uP3NpdGVJZD1kZWZhdWx0IiwiNDAzIGh0dHA6Ly9sb2NhbGhvc3Q6MzEyNy9hcGkvY29tbXVuaXR5L3JlcG9ydHM/c2l0ZUlkPWRlZmF1bHQiLCI0MDMgaHR0cDovL2xvY2FsaG9zdDozMTI3L2FwaS9jb21tdW5pdHkvbW9kZXJhdGlvbj9zaXRlSWQ9ZGVmYXVsdCJd"
+                        },
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\test-results\\rc01\\routes-ordinary-owner-navi-cac34-wner-loads-admin-moderation-admin-matrix\\test-failed-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\test-results\\rc01\\routes-ordinary-owner-navi-cac34-wner-loads-admin-moderation-admin-matrix\\error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\test-results\\rc01\\routes-ordinary-owner-navi-cac34-wner-loads-admin-moderation-admin-matrix\\trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\tests\\rc01\\routes.spec.ts",
+                        "column": 22,
+                        "line": 67
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "598fdabf36083b33787e-7a21d2fabf39e99f557e",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/telemetry",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-ffd7d9eeecfb5ae578fb",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/collections/page-layouts",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-9b840aba3e760ab211c1",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/collections/podcast-shows",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-1abbd3db0c00abedbb6c",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/globals/site-settings",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-442036ab2782dc3b0b79",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/ai",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-2b8e6ed388337011dc56",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/social",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-dbac2782d343b9f77fd8",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/catalog",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-902140bd0b02dd18dac3",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/commerce",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-bedc05c206afd8af4833",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/fulfillment",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-4fa1b73ed817dd2f6477",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/collections/users",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-ce108021982459551485",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/collections/sites",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-10237e18aa137d1d45e7",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/collections/brands",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-9c731a6f448b472baa31",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/collections/authors",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-97053b84ece88538a968",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/collections/publications",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-5d7ca9ba38def73cf8ed",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/collections/media-assets",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-69d8426466c00ee12921",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/collections/sections",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-6faf17c490b869591218",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/collections/categories",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-de76e4262f44583ce4c6",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/collections/topics",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-9e68393bdfe36bc9a13c",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/collections/tags",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-4ed40d03893d585e6848",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/collections/content",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-5ab4c8d21ea28e2f4079",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/collections/discussions",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-ecf998f0f92bd20e50fa",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/collections/discussion-posts",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-81687cd32d3eca0e1476",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/collections/form-definitions",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-6e3572f439eda22bc1e5",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/collections/form-submissions",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-420a4a55bc639d9c42ff",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/collections/contacts",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-1c57fe4beacf3d541ccb",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/collections/subscribers",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-58706fade62ed8da017d",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/globals/network-settings",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-a3eed02b084087165e69",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            }
+          ]
+        },
+        {
+          "title": "unauthenticated admin boundary",
+          "file": "routes.spec.ts",
+          "line": 76,
+          "column": 6,
+          "specs": [
+            {
+              "title": "anonymous cannot mount /admin",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-8200f03f2aeccda21f30",
+              "file": "routes.spec.ts",
+              "line": 78,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/capabilities",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-4cd4c8066d96b4e7d5ea",
+              "file": "routes.spec.ts",
+              "line": 78,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/security",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-de7375b5a4ead0e65008",
+              "file": "routes.spec.ts",
+              "line": 78,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/posts",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-8d56b91aa84bbbcb0870",
+              "file": "routes.spec.ts",
+              "line": 78,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/pages",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-45469c8726f013d5403e",
+              "file": "routes.spec.ts",
+              "line": 78,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/navigation",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-7b0afd743b653e91c288",
+              "file": "routes.spec.ts",
+              "line": 78,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/media-library",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-84ecadff5bed2339b896",
+              "file": "routes.spec.ts",
+              "line": 78,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/indexing",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-87e033d7008ee37d79d7",
+              "file": "routes.spec.ts",
+              "line": 78,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/redirects",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-541268a345afa03975c7",
+              "file": "routes.spec.ts",
+              "line": 78,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/rendered-quality",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-ab2b4966cb62140c7e17",
+              "file": "routes.spec.ts",
+              "line": 78,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/workflow",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-08bba5bae7fafd013b76",
+              "file": "routes.spec.ts",
+              "line": 78,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/releases",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-112b3685f61e7728e567",
+              "file": "routes.spec.ts",
+              "line": 78,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/email-composer",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-8ca545648dbce17297f7",
+              "file": "routes.spec.ts",
+              "line": 78,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/audience",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-941337b957b767296607",
+              "file": "routes.spec.ts",
+              "line": 78,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/moderation",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-b098cbf2a51a65d8a9c9",
+              "file": "routes.spec.ts",
+              "line": 78,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/telemetry",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-89de9d59c4d7f3f086d0",
+              "file": "routes.spec.ts",
+              "line": 78,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/collections/page-layouts",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-19adb081e2f219eea977",
+              "file": "routes.spec.ts",
+              "line": 78,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/collections/podcast-shows",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-d805b6bbc7e6889c4f48",
+              "file": "routes.spec.ts",
+              "line": 78,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/globals/site-settings",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-d4bda00d4efc8daa500f",
+              "file": "routes.spec.ts",
+              "line": 78,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/ai",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-5c28a2d5585c052d0897",
+              "file": "routes.spec.ts",
+              "line": 78,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/social",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-ae12d7c2963426aa12ca",
+              "file": "routes.spec.ts",
+              "line": 78,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/catalog",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-c57133aab0e9383c8f3a",
+              "file": "routes.spec.ts",
+              "line": 78,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/commerce",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-5c5d37005a1a895a3fcc",
+              "file": "routes.spec.ts",
+              "line": 78,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/fulfillment",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-518a46470535b2e1fa4d",
+              "file": "routes.spec.ts",
+              "line": 78,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/collections/users",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-833ef285b965ba612719",
+              "file": "routes.spec.ts",
+              "line": 78,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/collections/sites",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-b267f6a14b2f0c2dcf4a",
+              "file": "routes.spec.ts",
+              "line": 78,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/collections/brands",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-3ce67827861d8beabcdd",
+              "file": "routes.spec.ts",
+              "line": 78,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/collections/authors",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-b43d1b8b61c8e4bbaf6e",
+              "file": "routes.spec.ts",
+              "line": 78,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/collections/publications",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-46da0cbf9fbb4fbb85e5",
+              "file": "routes.spec.ts",
+              "line": 78,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/collections/media-assets",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-19502bd42d266c43db4b",
+              "file": "routes.spec.ts",
+              "line": 78,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/collections/sections",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-3edc71918d67d1e11727",
+              "file": "routes.spec.ts",
+              "line": 78,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/collections/categories",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-f8565d55a77decffb9a4",
+              "file": "routes.spec.ts",
+              "line": 78,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/collections/topics",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-ace61c8d4d6b1b65007a",
+              "file": "routes.spec.ts",
+              "line": 78,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/collections/tags",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-a0f93a93f7fe8a71b106",
+              "file": "routes.spec.ts",
+              "line": 78,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/collections/content",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-78a51f9600bf3ee02dea",
+              "file": "routes.spec.ts",
+              "line": 78,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/collections/discussions",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-b21014feb922d9c01849",
+              "file": "routes.spec.ts",
+              "line": 78,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/collections/discussion-posts",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-218645fd306de3971cdd",
+              "file": "routes.spec.ts",
+              "line": 78,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/collections/form-definitions",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-e958aa8a1dce354ea5e5",
+              "file": "routes.spec.ts",
+              "line": 78,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/collections/form-submissions",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-5bfc1f474afe1d0f6d68",
+              "file": "routes.spec.ts",
+              "line": 78,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/collections/contacts",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-dba58d6d87c30563108a",
+              "file": "routes.spec.ts",
+              "line": 78,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/collections/subscribers",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-9456c3a3a14e8bec0db5",
+              "file": "routes.spec.ts",
+              "line": 78,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/globals/network-settings",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-003df7db074350bd8acc",
+              "file": "routes.spec.ts",
+              "line": 78,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mutate content",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "admin-matrix",
+                  "projectName": "admin-matrix",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-3bda03186d5e8d01bdeb",
+              "file": "routes.spec.ts",
+              "line": 83,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "message": "\u001b[31mTesting stopped early after 1 maximum allowed failures.\u001b[39m"
+    }
+  ],
+  "stats": {
+    "startTime": "2026-10-04T00:16:28.104Z",
+    "duration": 57518.591,
+    "expected": 16,
+    "skipped": 70,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

@@ -1,4 +1,4 @@
-import type { Payload } from 'payload'
+import type { Payload, PayloadRequest } from 'payload'
 import { resolveSiteSettings } from '../core/site-settings'
 
 import {
@@ -58,12 +58,19 @@ export function searchProjectionFromDiscovery(
 /** Upserts the public projection. It is derived data only: canonical state remains in Payload. */
 export async function projectSearchDocument(
   payload: Payload,
-  input: { collection: string; record: Record<string, unknown> },
+  input: { collection: string; record: Record<string, unknown>; req?: Partial<PayloadRequest> },
 ): Promise<'upserted' | 'removed'> {
   const siteId = idOf(input.record.site)
   const canonicalId = String(input.record.id || '')
   if (!canonicalId) return 'removed'
-  const doc = await resolveDiscoveryDocument(payload, {
+  // Lifecycle hooks run before commit. Read companions and revisions in that
+  // same request transaction so republishing indexes the new public pointer.
+  const scopedPayload = input.req ? Object.assign(Object.create(payload), {
+    find: (args: Parameters<Payload['find']>[0]) => payload.find({ ...args, req: input.req }),
+    findByID: (args: Parameters<Payload['findByID']>[0]) => payload.findByID({ ...args, req: input.req }),
+    findGlobal: (args: Parameters<Payload['findGlobal']>[0]) => payload.findGlobal({ ...args, req: input.req }),
+  }) as Payload : payload
+  const doc = await resolveDiscoveryDocument(scopedPayload, {
     collection: input.collection,
     record: input.record,
     path: String(input.record.canonicalPath || ''),
@@ -120,7 +127,7 @@ export async function removeSearchDocument(
 export const searchProjectionHooks = (collection: string) => ({
   afterChange: [
     async ({ doc, req }: { doc: Record<string, unknown>; req: { payload: Payload } }) => {
-      await projectSearchDocument(req.payload, { collection, record: doc })
+      await projectSearchDocument(req.payload, { collection, record: doc, req })
       return doc
     },
   ],

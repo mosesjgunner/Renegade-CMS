@@ -54,7 +54,7 @@ export default function CommunityModerationCenter() {
   const [cases, setCases] = useState<ModerationCase[]>([])
   const [actions, setActions] = useState<ModerationActionRecord[]>([])
   const [auditLog, setAuditLog] = useState<AuditRecord[]>([])
-  const [auditValid, setAuditValid] = useState<boolean>(true)
+  const [auditValid, setAuditValid] = useState<boolean>(false)
   const [activeTab, setActiveTab] = useState<'reports' | 'audit'>('reports')
 
   // Selected report / case for action
@@ -64,6 +64,7 @@ export default function CommunityModerationCenter() {
   const [actionReason, setActionReason] = useState('')
   const [statusMessage, setStatusMessage] = useState('')
   const [busy, setBusy] = useState(false)
+  const [dataUnavailable, setDataUnavailable] = useState(false)
 
   const loadData = useCallback(async (currentSite: string) => {
     try {
@@ -75,6 +76,20 @@ export default function CommunityModerationCenter() {
           credentials: 'same-origin',
         }),
       ])
+
+      if (!reportsRes.ok || !modRes.ok) {
+        setDataUnavailable(true)
+        setReports([])
+        setCases([])
+        setActions([])
+        setAuditLog([])
+        setAuditValid(false)
+        setStatusMessage(
+          'Moderation data is unavailable. Verify your site and moderation permissions before taking action.',
+        )
+        return
+      }
+      setDataUnavailable(false)
 
       if (reportsRes.ok) {
         const rData = await reportsRes.json()
@@ -89,6 +104,7 @@ export default function CommunityModerationCenter() {
         setAuditValid(Boolean(mData.auditValid))
       }
     } catch {
+      setDataUnavailable(true)
       setStatusMessage('Could not load moderation console data.')
     }
   }, [])
@@ -137,6 +153,18 @@ export default function CommunityModerationCenter() {
       setStatusMessage('Network error applying action.')
       setBusy(false)
     }
+  }
+
+  if (dataUnavailable) {
+    return (
+      <main className="gutter--left gutter--right">
+        <h1>Community Moderation</h1>
+        <p role="alert">{statusMessage}</p>
+        <button type="button" onClick={() => void loadData(siteId)}>
+          Retry moderation access
+        </button>
+      </main>
+    )
   }
 
   return (

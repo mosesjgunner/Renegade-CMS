@@ -1,4 +1,22 @@
+## RC-02 acceptance ? PASS ? 2026-10-03
+
+No remaining blocker in the core site-build journey. Frozen source `b684ee11460637bf2177f349057f14d6e804bbbd` passed a fresh production Standard/all install, all required checks and actual web/worker restart. [Evidence](evidence/RC-02.md). Two Rendered Quality informational suggestions are recorded, with no warnings/blocking findings.
+
+This closes RC-02 only. The historical RC-01 findings below remain open; their old instruction not to advance was superseded by explicit user authorization for RC-02. The active working branch is intentionally preserved; the tested immutable source is on `rc02-site-build-candidate`.
+
 # Dependency-ordered blockers
+
+## RC-01 current blockers — 2026-10-03
+
+Base HEAD: `6818864c9e601860d6a7c7874ae02fd0b7fdb48d`. RC-01 verdict: BLOCKED; no advance to RC-02.
+
+1. **RC01-MODERATION:** Ordinary owner opens /admin/moderation; requests to /api/community/reports?siteId=default and /api/community/moderation?siteId=default return 403. Community actor resolution accepts member sessions, while setup creates an admin passkey session. Do not weaken authentication or add a global role bypass. Resolve actual authorized site selection and a scoped admin-to-community policy, then test denied and cross-site cases. Final failing trace and JSON are preserved under evidence/rc-01.
+2. **RC01-ACTIONS-ROLES:** Full matrix stopped at that failure (16 passed, one failed, 156 not run). Four-role route enumeration exists; administrator/staff/anonymous matrix cases and mutation-denial cases are unexecuted. Every advertised CRUD, delete/archive, preview, publish/dispatch/execute, validation, empty/provider state requires ordinary-path proof. The route appendix explicitly marks all 42 configured/visible targets and 15 additional static workspace link candidates BLOCKER.
+3. **RC01-UNAVAILABLE:** Audience reporting, Social and Fulfillment command centers explicitly report unavailable; complete persisted/scoped implementation and verify it before promoting them. Their old demo components are not shipping entry points. Non-admin social-studio/graphics-studio, connections reads, POD adapter synthesized responses and other RC-00 provider findings remain blockers until independently repaired/proved. No claim of universal zero fake metrics is made.
+4. **RC01-LEAN-DISCOVERY:** Before-nav optional collection links now follow actual registrations, but custom Payload views remain unconditional and Capability Center/nested/frontend entry points still require Lean and permissions acceptance. Standard/all source visibility is not complete rendered-action proof.
+5. **RC01-CANDIDATE:** Repairs are uncommitted against the base SHA, not a frozen clean runtime candidate. Installation-policy/dependency findings from RC-00 remain open; this task did not rerun npm ci or the full RC suite.
+
+The historical dependency list below is retained; the navigation invalid-content-status 500 and setup passkey-support hydration mismatch were repaired with focused proof. These repairs do not close the blockers above.
 
 Source candidate: `e24fc53d9e370e28f01398c561b0f5adc4884756`. Reconciled 2026-10-03. Initial working tree was clean. This documentation freeze binds the source candidate; its artifact commit is discoverable with git log -- docs/rc. It does not establish runtime release readiness.
 

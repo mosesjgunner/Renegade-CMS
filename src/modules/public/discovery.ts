@@ -5,6 +5,8 @@ import type { Payload } from 'payload'
 import { canDiscoverPublic, canRenderPublic, type PublicState } from './contracts'
 import { resolveSiteSettings, type ResolvedSiteSettings } from '../core/site-settings'
 import { mediaVariantUrl } from '../media/variant-contracts'
+import { eventSchemaNodes } from '../events/schema'
+import { isPublicPageLayout } from './layout-visibility'
 import { registeredOnly } from './registered-collections'
 import { resolvePublicUrl, routeTemplatesForSite, type SemanticKind } from './semantic-url'
 import {
@@ -81,6 +83,16 @@ if (!globalSchemaRegistry.getExtension('products')) {
         },
       ]
     },
+  })
+}
+
+if (!globalSchemaRegistry.getExtension('events')) {
+  globalSchemaRegistry.register({
+    id: 'core:event-v1',
+    targetContentType: 'events',
+    primarySchemaType: 'Event',
+    requiredFields: ['name', 'startDate', 'location'],
+    buildNodes: ({ canonicalUrl, record }) => eventSchemaNodes(canonicalUrl, record),
   })
 }
 
@@ -1306,52 +1318,54 @@ export async function resolveDiscoveryDocument(
 
   // Topics reuse the existing editorial taxonomy. A taxonomy record becomes a
   // public archive only while it has at least one published public article.
-  if (
-    (!input.collection || input.collection === 'topics') &&
-    registeredOnly(payload, ['topics'] as const).length > 0
-  ) {
-    const topicFound = await payload.find({
-      collection: 'topics',
-      where: {
-        and: [
-          ...(siteId ? [{ site: { equals: siteId } }] : []),
-          input.record && idOf(input.record.id)
-            ? { id: { equals: idOf(input.record.id) } }
-            : { canonicalPath: { equals: normalizedPath } },
-        ],
-      } as never,
-      limit: 1,
-      depth: 0,
-      overrideAccess: true,
-    } as never)
-    const topic = (topicFound.docs[0] as Record<string, any> | undefined) ?? input.record
-    if (topic && (input.collection === 'topics' || topic.canonicalPath === normalizedPath)) {
-      const related = await payload.find({
-        collection: 'content',
+  for (const taxonomyCollection of registeredOnly(payload, ['topics', 'categories'] as const)) {
+    if (!input.collection || input.collection === taxonomyCollection) {
+      const topicFound = await payload.find({
+        collection: taxonomyCollection,
         where: {
           and: [
             ...(siteId ? [{ site: { equals: siteId } }] : []),
-            { topics: { contains: String(topic.id) } },
-            { status: { in: ['published', 'updated'] } },
-            { visibility: { equals: 'public' } },
-            { moderationState: { equals: 'clear' } },
-            { removeFromDiscovery: { not_equals: true } },
+            input.record && idOf(input.record.id)
+              ? { id: { equals: idOf(input.record.id) } }
+              : { canonicalPath: { equals: normalizedPath } },
           ],
         } as never,
         limit: 1,
         depth: 0,
         overrideAccess: true,
       } as never)
+      const topic = (topicFound.docs[0] as Record<string, any> | undefined) ?? input.record
       if (
-        (related.docs as unknown as PublicState[]).some((record) => canDiscoverPublic(record, now))
+        topic &&
+        (input.collection === taxonomyCollection || topic.canonicalPath === normalizedPath)
       ) {
-        return buildGenericRecordDiscoveryDocument({
-          record: { ...topic, status: 'published', visibility: 'public' },
-          collection: 'topics',
-          settings,
-          base,
-          now,
-        })
+        const related = await payload.find({
+          collection: 'content',
+          where: {
+            and: [
+              ...(siteId ? [{ site: { equals: siteId } }] : []),
+              { [taxonomyCollection]: { contains: String(topic.id) } },
+              { status: { in: ['published', 'updated'] } },
+              { removeFromDiscovery: { not_equals: true } },
+            ],
+          } as never,
+          limit: 1,
+          depth: 0,
+          overrideAccess: true,
+        } as never)
+        if (
+          (related.docs as unknown as PublicState[]).some((record) =>
+            canDiscoverPublic(record, now),
+          )
+        ) {
+          return buildGenericRecordDiscoveryDocument({
+            record: { ...topic, status: 'published', visibility: 'public' },
+            collection: taxonomyCollection,
+            settings,
+            base,
+            now,
+          })
+        }
       }
     }
   }
@@ -1634,18 +1648,21 @@ async function buildContentDiscoveryDocument(input: {
     } as never)
     const fam = articleFamily.docs[0] as Record<string, any> | undefined
     if (fam) {
-      if (typeof fam.plainTextProjection === 'string' && fam.plainTextProjection) {
-        plainTextBody = fam.plainTextProjection
-      }
       publishedRevisionId = idOf(fam.latestPublishedRevision) || null
       if (publishedRevisionId) {
+        // A saved edit must not replace the body used by public search.
+        plainTextBody = ''
         const rev = await payload.findByID({
-          collection: 'article-family-revisions',
+          collection: 'revision-records',
           id: publishedRevisionId,
           depth: 0,
           overrideAccess: true,
         } as never)
         publishedRevision = rev as Record<string, any> | undefined
+        plainTextBody = typeof publishedRevision?.document?.plainTextProjection === 'string'
+          ? publishedRevision.document.plainTextProjection : ''
+      } else if (content.status !== 'updated' && typeof fam.plainTextProjection === 'string') {
+        plainTextBody = fam.plainTextProjection
       }
     }
   } catch {
@@ -2109,7 +2126,7 @@ function buildLayoutDiscoveryDocument(input: {
   const { layout, settings, base, now } = input
   const canonicalPath = String(layout.path || '/')
   const publicUrl = new URL(canonicalPath, base).toString()
-  const isPublic = canRenderPublic(layout, now)
+  const isPublic = canRenderPublic(layout, now) && isPublicPageLayout(layout)
   const isIndexable =
     isPublic &&
     settings.indexingMode !== 'noindex' &&
@@ -2120,7 +2137,7 @@ function buildLayoutDiscoveryDocument(input: {
   const titleSource: DiscoverySourceProvenance = layout.seoTitle
     ? 'explicit_override'
     : 'content_derived'
-  const descValue = layout.seoDescription || null
+  const descValue = layout.seoDescription || settings.siteDescription || null
   const descSource: DiscoverySourceProvenance = layout.seoDescription
     ? 'explicit_override'
     : 'site_default'
@@ -2679,6 +2696,7 @@ function buildGenericRecordDiscoveryDocument(input: {
         products: 'product',
         discussions: 'discussion',
         topics: 'topic',
+        categories: 'topic',
       } as Record<string, SemanticKind>
     )[collection] ?? 'collection'
   let canonicalPath = '/'
@@ -2726,7 +2744,7 @@ function buildGenericRecordDiscoveryDocument(input: {
       : typeof record.description === 'string'
         ? record.description
         : null
-  const descValue = record.seoDescription || rawDesc
+  const descValue = record.seoDescription || rawDesc || settings.siteDescription || null
   const descSource: DiscoverySourceProvenance = record.seoDescription
     ? 'explicit_override'
     : rawDesc
@@ -2744,7 +2762,7 @@ function buildGenericRecordDiscoveryDocument(input: {
             ? 'forum'
             : collection === 'products'
               ? 'product'
-              : collection === 'topics'
+              : collection === 'topics' || collection === 'categories'
                 ? 'topic'
                 : 'article'
 
@@ -2776,7 +2794,7 @@ function buildGenericRecordDiscoveryDocument(input: {
     canonicalUrl: record.seoCanonicalURL || publicUrl,
     canonicalPath,
     base,
-    contentType: ext ? 'page' : kind === 'event' || kind === 'product' ? 'page' : 'article',
+    contentType: kind === 'topic' ? 'archive' : ext ? 'page' : kind === 'event' || kind === 'product' ? 'page' : 'article',
     title: titleValue,
     description: descValue,
     site: siteIdentity,
@@ -3031,6 +3049,7 @@ export async function getAllIndexableDiscoveryDocuments(
 
   const resolvedLayouts = await Promise.all(
     layouts.docs.map(async (layout) => {
+      if (!isPublicPageLayout(layout as unknown as Record<string, unknown>)) return null
       const layoutPath = String((layout as any).path || '')
       if (
         layoutPath &&
@@ -3131,6 +3150,7 @@ export async function getAllIndexableDiscoveryDocuments(
     'discussions',
     'products',
     'topics',
+    'categories',
   ]
   const availableGenericCollections = registeredOnly(payload, genericCollections)
   const genericResults = await Promise.all(
@@ -3148,12 +3168,20 @@ export async function getAllIndexableDiscoveryDocuments(
       return Array.isArray(topics) ? topics.map((topic) => idOf(topic)) : []
     }),
   )
+  const usedCategoryIds = new Set(
+    content.docs.flatMap((doc, index) => {
+      if (!resolvedContentDocs[index]?.indexability.indexable) return []
+      const categories = (doc as Record<string, unknown>).categories
+      return Array.isArray(categories) ? categories.map((category) => idOf(category)) : []
+    }),
+  )
   for (const [collection, result] of genericResults) {
     for (const record of result.docs as Array<Record<string, any>>) {
       if (collection === 'topics' && !usedTopicIds.has(String(record.id))) continue
+      if (collection === 'categories' && !usedCategoryIds.has(String(record.id))) continue
       const document = buildGenericRecordDiscoveryDocument({
         record:
-          collection === 'topics'
+          collection === 'topics' || collection === 'categories'
             ? { ...record, status: 'published', visibility: 'public' }
             : record,
         collection,

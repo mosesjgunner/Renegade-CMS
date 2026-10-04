@@ -5,6 +5,7 @@ import { notFound, permanentRedirect, redirect } from 'next/navigation'
 import { headers as requestHeaders } from 'next/headers'
 
 import { canDiscoverPublic, canRenderPublic, type PublicState } from '@/modules/public/contracts'
+import { isPublicPageLayout } from '@/modules/public/layout-visibility'
 import type { Metadata } from 'next'
 import {
   discoveryToMetadata,
@@ -14,6 +15,7 @@ import {
   type RedirectRule,
 } from '@/modules/public/discovery'
 import { PublicLayout } from '@/modules/public/PublicLayout'
+import { hydratePublicLayoutRecord } from '@/modules/presentation/public-queries'
 import { PublicForm } from '@/modules/audience/PublicForm'
 import type { FormField } from '@/modules/audience/contracts'
 import { BookReader, isReleasedChapter, relatedId } from '@/modules/media/books'
@@ -230,7 +232,7 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
   } as never)
   const layoutRecord = layoutResult.docs[0] as unknown as PublicRecord | undefined
   if (layoutRecord) {
-    if (!canRenderPublic(layoutRecord)) notFound()
+    if (!canRenderPublic(layoutRecord) || !isPublicPageLayout(layoutRecord)) notFound()
     const discovery = await resolveDiscoveryDocument(payload, { path })
     return (
       <>
@@ -240,7 +242,7 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
             __html: serializeJsonLd(discovery.schema.jsonLd),
           }}
         />
-        <PublicLayout record={layoutRecord} path={path} />
+        <PublicLayout record={await hydratePublicLayoutRecord(payload, layoutRecord)} path={path} />
       </>
     )
   }
@@ -310,66 +312,68 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
     return <BookReader book={book} chapters={chapters} />
   }
 
-  const topicResult = await findIfRegistered(payload, {
-    collection: 'topics',
-    where: { and: [{ canonicalPath: { equals: path } }, { site: { equals: siteId } }] },
-    limit: 1,
-    depth: 0,
-    overrideAccess: true,
-  } as never)
-  const topic = topicResult.docs[0] as unknown as PublicRecord | undefined
-  if (topic) {
-    const articles = await payload.find({
-      collection: 'content',
-      where: {
-        and: [
-          { site: { equals: siteId } },
-          { topics: { contains: String(topic.id) } },
-          { status: { in: ['published', 'updated'] } },
-          { visibility: { equals: 'public' } },
-          { moderationState: { equals: 'clear' } },
-          { removeFromDiscovery: { not_equals: true } },
-        ],
-      } as never,
-      sort: '-publishedAt',
-      limit: 50,
+  for (const taxonomyCollection of ['topics', 'categories'] as const) {
+    const topicResult = await findIfRegistered(payload, {
+      collection: taxonomyCollection,
+      where: { and: [{ canonicalPath: { equals: path } }, { site: { equals: siteId } }] },
+      limit: 1,
       depth: 0,
       overrideAccess: true,
     } as never)
-    const publicArticles = (articles.docs as unknown as PublicRecord[]).filter((article) =>
-      canDiscoverPublic(article),
-    )
-    if (!publicArticles.length) notFound()
-    const discovery = await resolveDiscoveryDocument(payload, {
-      collection: 'topics',
-      record: { ...topic, status: 'published', visibility: 'public' },
-      path,
-      siteId,
-    })
-    return (
-      <main className="mx-auto max-w-4xl space-y-8 px-6 py-12">
-        <link rel="canonical" href={discovery.canonicalUrl} />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: serializeJsonLd(discovery.schema.jsonLd) }}
-        />
-        <header className="space-y-3">
-          <p className="text-sm text-stone-500">Topic</p>
-          <h1 className="text-4xl font-bold">{String(topic.name)}</h1>
-          {typeof topic.description === 'string' ? <p>{topic.description}</p> : null}
-        </header>
-        <ul className="space-y-5">
-          {publicArticles.map((article) => (
-            <li key={String(article.id)} className="surface-card p-5">
-              <h2 className="text-xl font-semibold">
-                <Link href={String(article.canonicalPath)}>{label(article)}</Link>
-              </h2>
-              {typeof article.summary === 'string' ? <p>{article.summary}</p> : null}
-            </li>
-          ))}
-        </ul>
-      </main>
-    )
+    const topic = topicResult.docs[0] as unknown as PublicRecord | undefined
+    if (topic) {
+      const articles = await payload.find({
+        collection: 'content',
+        where: {
+          and: [
+            { site: { equals: siteId } },
+            { [taxonomyCollection]: { contains: String(topic.id) } },
+            { status: { in: ['published', 'updated'] } },
+            { removeFromDiscovery: { not_equals: true } },
+          ],
+        } as never,
+        sort: '-publishedAt',
+        limit: 50,
+        depth: 0,
+        overrideAccess: true,
+      } as never)
+      const publicArticles = (articles.docs as unknown as PublicRecord[]).filter((article) =>
+        canDiscoverPublic(article),
+      )
+      if (!publicArticles.length) notFound()
+      const discovery = await resolveDiscoveryDocument(payload, {
+        collection: taxonomyCollection,
+        record: { ...topic, status: 'published', visibility: 'public' },
+        path,
+        siteId,
+      })
+      return (
+        <main className="mx-auto max-w-4xl space-y-8 px-6 py-12">
+          <link rel="canonical" href={discovery.canonicalUrl} />
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: serializeJsonLd(discovery.schema.jsonLd) }}
+          />
+          <header className="space-y-3">
+            <p className="text-sm text-stone-500">
+              {taxonomyCollection === 'categories' ? 'Category' : 'Topic'}
+            </p>
+            <h1 className="text-4xl font-bold">{String(topic.name)}</h1>
+            {typeof topic.description === 'string' ? <p>{topic.description}</p> : null}
+          </header>
+          <ul className="space-y-5">
+            {publicArticles.map((article) => (
+              <li key={String(article.id)} className="surface-card p-5">
+                <h2 className="text-xl font-semibold">
+                  <Link href={String(article.canonicalPath)}>{label(article)}</Link>
+                </h2>
+                {typeof article.summary === 'string' ? <p>{article.summary}</p> : null}
+              </li>
+            ))}
+          </ul>
+        </main>
+      )
+    }
   }
   const chapterResult = await findIfRegistered(payload, {
     collection: 'book-chapters',

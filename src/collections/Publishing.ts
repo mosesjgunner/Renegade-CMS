@@ -844,6 +844,7 @@ export const Content: CollectionConfig = {
         await projectSearchDocument(req.payload, {
           collection: 'content',
           record: doc as Record<string, unknown>,
+          req,
         })
         if (operation !== 'update') return doc
         const fromPath =

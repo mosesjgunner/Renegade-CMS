@@ -1,0 +1,954 @@
+{
+  "sha": "6818864c9e601860d6a7c7874ae02fd0b7fdb48d",
+  "profile": "Standard",
+  "modules": "floor",
+  "views": [
+    {
+      "key": "dashboard",
+      "Component": "./modules/admin/PublisherDashboard",
+      "path": "/"
+    },
+    {
+      "key": "capabilities",
+      "Component": "./modules/admin/CapabilityCenter",
+      "path": "/capabilities"
+    },
+    {
+      "key": "security",
+      "Component": "./modules/admin/SecurityCenter",
+      "path": "/security"
+    },
+    {
+      "key": "posts",
+      "Component": "./modules/admin/PublishingCenter",
+      "path": "/posts"
+    },
+    {
+      "key": "pages",
+      "Component": "./modules/admin/PublishingCenter",
+      "path": "/pages"
+    },
+    {
+      "key": "navigation",
+      "Component": "./modules/admin/NavigationCenter",
+      "path": "/navigation"
+    },
+    {
+      "key": "mediaLibrary",
+      "Component": "./modules/admin/MediaLibrary",
+      "path": "/media-library"
+    },
+    {
+      "key": "indexing",
+      "Component": "./modules/admin/IndexingCenter",
+      "path": "/indexing"
+    },
+    {
+      "key": "redirects",
+      "Component": "./modules/admin/RedirectManager",
+      "path": "/redirects"
+    },
+    {
+      "key": "renderedQuality",
+      "Component": "./modules/admin/RenderedQualityCenter",
+      "path": "/rendered-quality"
+    },
+    {
+      "key": "workflow",
+      "Component": "./modules/admin/EditorialWorkflowCenter",
+      "path": "/workflow"
+    },
+    {
+      "key": "releases",
+      "Component": "./modules/admin/ReleaseCenter",
+      "path": "/releases"
+    },
+    {
+      "key": "emailComposer",
+      "Component": "./modules/admin/EmailComposer",
+      "path": "/email-composer"
+    },
+    {
+      "key": "audience",
+      "Component": "./modules/admin/AudienceCommandCenter",
+      "path": "/audience"
+    },
+    {
+      "key": "moderation",
+      "Component": "./modules/admin/CommunityModerationCenter",
+      "path": "/moderation"
+    },
+    {
+      "key": "telemetry",
+      "Component": "./modules/admin/TelemetryCommandCenter",
+      "path": "/telemetry"
+    }
+  ],
+  "beforeNavLinks": [
+    "./modules/admin/PublishingLinks",
+    "./modules/admin/CapabilityCenterLink"
+  ],
+  "links": [
+    {
+      "href": "/admin",
+      "label": "Dashboard",
+      "source": "PublishingLinks"
+    },
+    {
+      "href": "/admin/posts",
+      "label": "Posts",
+      "source": "PublishingLinks"
+    },
+    {
+      "href": "/admin/pages",
+      "label": "Pages",
+      "source": "PublishingLinks"
+    },
+    {
+      "href": "/admin/collections/page-layouts",
+      "label": "Layouts",
+      "source": "PublishingLinks"
+    },
+    {
+      "href": "/admin/media-library",
+      "label": "Media",
+      "source": "PublishingLinks"
+    },
+    {
+      "href": "/admin/navigation",
+      "label": "Menus",
+      "source": "PublishingLinks"
+    },
+    {
+      "href": "/admin/indexing",
+      "label": "Indexing",
+      "source": "PublishingLinks"
+    },
+    {
+      "href": "/admin/redirects",
+      "label": "Redirects",
+      "source": "PublishingLinks"
+    },
+    {
+      "href": "/admin/rendered-quality",
+      "label": "Rendered Quality",
+      "source": "PublishingLinks"
+    },
+    {
+      "href": "/admin/workflow",
+      "label": "Editorial Workflow",
+      "source": "PublishingLinks"
+    },
+    {
+      "href": "/admin/ai",
+      "label": "AI Studio",
+      "source": "PublishingLinks"
+    },
+    {
+      "href": "/admin/audience",
+      "label": "Audience",
+      "source": "PublishingLinks"
+    },
+    {
+      "href": "/admin/fulfillment",
+      "label": "POD &amp; Fulfillment",
+      "source": "PublishingLinks"
+    },
+    {
+      "href": "/",
+      "label": "View Site",
+      "source": "PublishingLinks"
+    },
+    {
+      "href": "/admin/capabilities",
+      "label": "Capability Center",
+      "source": "CapabilityCenterLink"
+    },
+    {
+      "href": "/admin/security",
+      "label": "Security",
+      "source": "CapabilityCenterLink"
+    }
+  ],
+  "frontendCommandCenters": [
+    {
+      "href": "/admin/workflow",
+      "label": "Editorial Workflow",
+      "source": "PublishingLinks"
+    },
+    {
+      "href": "/admin/ai",
+      "label": "AI Studio",
+      "source": "PublishingLinks"
+    },
+    {
+      "href": "/admin/audience",
+      "label": "Audience",
+      "source": "PublishingLinks"
+    },
+    {
+      "href": "/admin/fulfillment",
+      "label": "POD &amp; Fulfillment",
+      "source": "PublishingLinks"
+    },
+    {
+      "href": "/",
+      "label": "View Site",
+      "source": "PublishingLinks"
+    }
+  ],
+  "workspaceLinkCandidates": [
+    {
+      "href": "/admin/collections/content/create?contentType=article",
+      "source": "src/modules/admin/PublisherDashboard"
+    },
+    {
+      "href": "/admin/collections/content/create?contentType=page",
+      "source": "src/modules/admin/PublisherDashboard"
+    },
+    {
+      "href": "/admin/collections/media-assets/create",
+      "source": "src/modules/admin/PublisherDashboard"
+    },
+    {
+      "href": "/admin/navigation",
+      "source": "src/modules/admin/PublisherDashboard"
+    },
+    {
+      "href": "/admin/globals/site-settings",
+      "source": "src/modules/admin/PublisherDashboard"
+    },
+    {
+      "href": "/admin/navigation",
+      "source": "src/modules/admin/PublisherDashboard"
+    },
+    {
+      "href": "/admin/capabilities",
+      "source": "src/modules/admin/PublisherDashboard"
+    },
+    {
+      "href": "/admin/globals/site-settings",
+      "source": "src/modules/admin/CapabilityCenter"
+    },
+    {
+      "href": "/admin/globals/site-settings",
+      "source": "src/modules/admin/CapabilityCenter"
+    },
+    {
+      "href": "/admin/collections/content-releases",
+      "source": "src/modules/admin/CapabilityCenter"
+    },
+    {
+      "href": "/admin/collections/calendar-entries",
+      "source": "src/modules/admin/CapabilityCenter"
+    },
+    {
+      "href": "/admin/collections/members",
+      "source": "src/modules/admin/CapabilityCenter"
+    },
+    {
+      "href": "/connections",
+      "source": "src/modules/admin/CapabilityCenter"
+    },
+    {
+      "href": "/admin/collections/podcast-shows/create",
+      "source": "src/modules/admin/PublishingCenter"
+    },
+    {
+      "href": "/admin/collections/podcast-episodes/create",
+      "source": "src/modules/admin/PublishingCenter"
+    },
+    {
+      "href": "/admin/collections/podcast-shows/create",
+      "source": "src/modules/admin/PublishingCenter"
+    },
+    {
+      "href": "/admin/collections/podcast-episodes/create",
+      "source": "src/modules/admin/PublishingCenter"
+    },
+    {
+      "href": "/sitemap.xml",
+      "source": "src/modules/admin/IndexingCenter"
+    },
+    {
+      "href": "/feed.xml",
+      "source": "src/modules/admin/IndexingCenter"
+    },
+    {
+      "href": "/feed.json",
+      "source": "src/modules/admin/IndexingCenter"
+    },
+    {
+      "href": "/robots.txt",
+      "source": "src/modules/admin/IndexingCenter"
+    },
+    {
+      "href": "/admin/releases",
+      "source": "src/modules/admin/EditorialWorkflowCenter"
+    },
+    {
+      "href": "/calendar",
+      "source": "src/modules/admin/EditorialWorkflowCenter"
+    },
+    {
+      "href": "/admin/releases",
+      "source": "src/modules/admin/EditorialWorkflowCenter"
+    },
+    {
+      "href": "/admin/collections/email-messages",
+      "source": "src/modules/admin/EmailComposer"
+    },
+    {
+      "href": "/admin/collections/subscribers",
+      "source": "src/modules/admin/AudienceCommandCenter"
+    },
+    {
+      "href": "/admin/capabilities",
+      "source": "src/modules/admin/AudienceCommandCenter"
+    }
+  ],
+  "collections": [
+    {
+      "slug": "users",
+      "href": "/admin/collections/users",
+      "hidden": false,
+      "labels": {
+        "plural": "Users",
+        "singular": "User"
+      }
+    },
+    {
+      "slug": "sites",
+      "href": "/admin/collections/sites",
+      "hidden": false,
+      "labels": {
+        "plural": "Sites",
+        "singular": "Site"
+      }
+    },
+    {
+      "slug": "page-layouts",
+      "href": "/admin/collections/page-layouts",
+      "hidden": false,
+      "labels": {
+        "plural": "Page Layouts",
+        "singular": "Page Layout"
+      }
+    },
+    {
+      "slug": "execution-events",
+      "href": "/admin/collections/execution-events",
+      "hidden": true,
+      "labels": {
+        "plural": "Execution Events",
+        "singular": "Execution Event"
+      }
+    },
+    {
+      "slug": "ai-connections",
+      "href": "/admin/collections/ai-connections",
+      "hidden": true,
+      "labels": {
+        "plural": "Ai Connections",
+        "singular": "Ai Connection"
+      }
+    },
+    {
+      "slug": "ai-credentials",
+      "href": "/admin/collections/ai-credentials",
+      "hidden": true,
+      "labels": {
+        "plural": "Ai Credentials",
+        "singular": "Ai Credential"
+      }
+    },
+    {
+      "slug": "ai-proposals",
+      "href": "/admin/collections/ai-proposals",
+      "hidden": true,
+      "labels": {
+        "plural": "Ai Proposals",
+        "singular": "Ai Proposal"
+      }
+    },
+    {
+      "slug": "brands",
+      "href": "/admin/collections/brands",
+      "hidden": false,
+      "labels": {
+        "plural": "Brands",
+        "singular": "Brand"
+      }
+    },
+    {
+      "slug": "members",
+      "href": "/admin/collections/members",
+      "hidden": true,
+      "labels": {
+        "plural": "Members",
+        "singular": "Member"
+      }
+    },
+    {
+      "slug": "linked-identities",
+      "href": "/admin/collections/linked-identities",
+      "hidden": true,
+      "labels": {
+        "plural": "Linked Identities",
+        "singular": "Linked Identity"
+      }
+    },
+    {
+      "slug": "member-sessions",
+      "href": "/admin/collections/member-sessions",
+      "hidden": true,
+      "labels": {
+        "plural": "Member Sessions",
+        "singular": "Member Session"
+      }
+    },
+    {
+      "slug": "identity-tokens",
+      "href": "/admin/collections/identity-tokens",
+      "hidden": true,
+      "labels": {
+        "plural": "Identity Tokens",
+        "singular": "Identity Token"
+      }
+    },
+    {
+      "slug": "member-recovery-codes",
+      "href": "/admin/collections/member-recovery-codes",
+      "hidden": true,
+      "labels": {
+        "plural": "Member Recovery Codes",
+        "singular": "Member Recovery Code"
+      }
+    },
+    {
+      "slug": "identity-audit-events",
+      "href": "/admin/collections/identity-audit-events",
+      "hidden": true,
+      "labels": {
+        "plural": "Identity Audit Events",
+        "singular": "Identity Audit Event"
+      }
+    },
+    {
+      "slug": "member-site-roles",
+      "href": "/admin/collections/member-site-roles",
+      "hidden": true,
+      "labels": {
+        "plural": "Member Site Roles",
+        "singular": "Member Site Role"
+      }
+    },
+    {
+      "slug": "profiles",
+      "href": "/admin/collections/profiles",
+      "hidden": true,
+      "labels": {
+        "plural": "Profiles",
+        "singular": "Profile"
+      }
+    },
+    {
+      "slug": "spaces",
+      "href": "/admin/collections/spaces",
+      "hidden": true,
+      "labels": {
+        "plural": "Spaces",
+        "singular": "Space"
+      }
+    },
+    {
+      "slug": "authors",
+      "href": "/admin/collections/authors",
+      "hidden": false,
+      "labels": {
+        "plural": "Authors",
+        "singular": "Author"
+      }
+    },
+    {
+      "slug": "publications",
+      "href": "/admin/collections/publications",
+      "hidden": false,
+      "labels": {
+        "plural": "Publications",
+        "singular": "Publication"
+      }
+    },
+    {
+      "slug": "media-assets",
+      "href": "/admin/collections/media-assets",
+      "hidden": false,
+      "labels": {
+        "plural": "Media Assets",
+        "singular": "Media Asset"
+      }
+    },
+    {
+      "slug": "media-asset-versions",
+      "href": "/admin/collections/media-asset-versions",
+      "hidden": true,
+      "labels": {
+        "plural": "Media Asset Versions",
+        "singular": "Media Asset Version"
+      }
+    },
+    {
+      "slug": "media-governance-incidents",
+      "href": "/admin/collections/media-governance-incidents",
+      "hidden": true,
+      "labels": {
+        "plural": "Media Governance Incidents",
+        "singular": "Media Governance Incident"
+      }
+    },
+    {
+      "slug": "media-blobs",
+      "href": "/admin/collections/media-blobs",
+      "hidden": true,
+      "labels": {
+        "plural": "Media Blobs",
+        "singular": "Media Blob"
+      }
+    },
+    {
+      "slug": "media-variants",
+      "href": "/admin/collections/media-variants",
+      "hidden": true,
+      "labels": {
+        "plural": "Media Variants",
+        "singular": "Media Variant"
+      }
+    },
+    {
+      "slug": "media-upload-sessions",
+      "href": "/admin/collections/media-upload-sessions",
+      "hidden": true,
+      "labels": {
+        "plural": "Media Upload Sessions",
+        "singular": "Media Upload Session"
+      }
+    },
+    {
+      "slug": "sections",
+      "href": "/admin/collections/sections",
+      "hidden": false,
+      "labels": {
+        "plural": "Sections",
+        "singular": "Section"
+      }
+    },
+    {
+      "slug": "categories",
+      "href": "/admin/collections/categories",
+      "hidden": false,
+      "labels": {
+        "plural": "Categories",
+        "singular": "Category"
+      }
+    },
+    {
+      "slug": "topics",
+      "href": "/admin/collections/topics",
+      "hidden": false,
+      "labels": {
+        "plural": "Topics",
+        "singular": "Topic"
+      }
+    },
+    {
+      "slug": "tags",
+      "href": "/admin/collections/tags",
+      "hidden": false,
+      "labels": {
+        "plural": "Tags",
+        "singular": "Tag"
+      }
+    },
+    {
+      "slug": "series",
+      "href": "/admin/collections/series",
+      "hidden": true,
+      "labels": {
+        "plural": "Series",
+        "singular": "Series"
+      }
+    },
+    {
+      "slug": "taxonomy-redirects",
+      "href": "/admin/collections/taxonomy-redirects",
+      "hidden": true,
+      "labels": {
+        "plural": "Taxonomy Redirects",
+        "singular": "Taxonomy Redirect"
+      }
+    },
+    {
+      "slug": "public-redirects",
+      "href": "/admin/collections/public-redirects",
+      "hidden": true,
+      "labels": {
+        "plural": "Public Redirects",
+        "singular": "Public Redirect"
+      }
+    },
+    {
+      "slug": "content",
+      "href": "/admin/collections/content",
+      "hidden": false,
+      "labels": {
+        "plural": "All content",
+        "singular": "Post or Page"
+      }
+    },
+    {
+      "slug": "article-family-content",
+      "href": "/admin/collections/article-family-content",
+      "hidden": true,
+      "labels": {
+        "plural": "Article Family Contents",
+        "singular": "Article Family Content"
+      }
+    },
+    {
+      "slug": "markdown-conversion-reports",
+      "href": "/admin/collections/markdown-conversion-reports",
+      "hidden": true,
+      "labels": {
+        "plural": "Markdown Conversion Reports",
+        "singular": "Markdown Conversion Report"
+      }
+    },
+    {
+      "slug": "revision-records",
+      "href": "/admin/collections/revision-records",
+      "hidden": true,
+      "labels": {
+        "plural": "Revision Records",
+        "singular": "Revision Record"
+      }
+    },
+    {
+      "slug": "preview-tokens",
+      "href": "/admin/collections/preview-tokens",
+      "hidden": true,
+      "labels": {
+        "plural": "Preview Tokens",
+        "singular": "Preview Token"
+      }
+    },
+    {
+      "slug": "scheduled-publish-jobs",
+      "href": "/admin/collections/scheduled-publish-jobs",
+      "hidden": true,
+      "labels": {
+        "plural": "Scheduled Publish Jobs",
+        "singular": "Scheduled Publish Job"
+      }
+    },
+    {
+      "slug": "media-usages",
+      "href": "/admin/collections/media-usages",
+      "hidden": true,
+      "labels": {
+        "plural": "Media Usages",
+        "singular": "Media Usage"
+      }
+    },
+    {
+      "slug": "email-templates",
+      "href": "/admin/collections/email-templates",
+      "hidden": true,
+      "labels": {
+        "plural": "Email Templates",
+        "singular": "Email Template"
+      }
+    },
+    {
+      "slug": "email-delivery-events",
+      "href": "/admin/collections/email-delivery-events",
+      "hidden": true,
+      "labels": {
+        "plural": "Email Delivery Events",
+        "singular": "Email Delivery Event"
+      }
+    },
+    {
+      "slug": "telecom-messages",
+      "href": "/admin/collections/telecom-messages",
+      "hidden": true,
+      "labels": {
+        "plural": "Telecom Messages",
+        "singular": "Telecom Message"
+      }
+    },
+    {
+      "slug": "telecom-deliveries",
+      "href": "/admin/collections/telecom-deliveries",
+      "hidden": true,
+      "labels": {
+        "plural": "Telecom Deliveries",
+        "singular": "Telecom Delivery"
+      }
+    },
+    {
+      "slug": "telecom-delivery-events",
+      "href": "/admin/collections/telecom-delivery-events",
+      "hidden": true,
+      "labels": {
+        "plural": "Telecom Delivery Events",
+        "singular": "Telecom Delivery Event"
+      }
+    },
+    {
+      "slug": "automation-runs",
+      "href": "/admin/collections/automation-runs",
+      "hidden": true,
+      "labels": {
+        "plural": "Automation Runs",
+        "singular": "Automation Run"
+      }
+    },
+    {
+      "slug": "automation-failures",
+      "href": "/admin/collections/automation-failures",
+      "hidden": true,
+      "labels": {
+        "plural": "Automation Failures",
+        "singular": "Automation Failure"
+      }
+    },
+    {
+      "slug": "recipient-snapshots",
+      "href": "/admin/collections/recipient-snapshots",
+      "hidden": true,
+      "labels": {
+        "plural": "Recipient Snapshots",
+        "singular": "Recipient Snapshot"
+      }
+    },
+    {
+      "slug": "audience-frequency-policies",
+      "href": "/admin/collections/audience-frequency-policies",
+      "hidden": true,
+      "labels": {
+        "plural": "Audience Frequency Policies",
+        "singular": "Audience Frequency Policy"
+      }
+    },
+    {
+      "slug": "audience-experiments",
+      "href": "/admin/collections/audience-experiments",
+      "hidden": true,
+      "labels": {
+        "plural": "Audience Experiments",
+        "singular": "Audience Experiment"
+      }
+    },
+    {
+      "slug": "digital-delivery-grants",
+      "href": "/admin/collections/digital-delivery-grants",
+      "hidden": true,
+      "labels": {
+        "plural": "Digital Delivery Grants",
+        "singular": "Digital Delivery Grant"
+      }
+    },
+    {
+      "slug": "digital-download-events",
+      "href": "/admin/collections/digital-download-events",
+      "hidden": true,
+      "labels": {
+        "plural": "Digital Download Events",
+        "singular": "Digital Download Event"
+      }
+    },
+    {
+      "slug": "catalog-import-runs",
+      "href": "/admin/collections/catalog-import-runs",
+      "hidden": true,
+      "labels": {
+        "plural": "Catalog Import Runs",
+        "singular": "Catalog Import Run"
+      }
+    },
+    {
+      "slug": "promotions",
+      "href": "/admin/collections/promotions",
+      "hidden": true,
+      "labels": {
+        "plural": "Promotions",
+        "singular": "Promotion"
+      }
+    },
+    {
+      "slug": "checkout-proposals",
+      "href": "/admin/collections/checkout-proposals",
+      "hidden": true,
+      "labels": {
+        "plural": "Checkout Proposals",
+        "singular": "Checkout Proposal"
+      }
+    },
+    {
+      "slug": "inventory-reservations",
+      "href": "/admin/collections/inventory-reservations",
+      "hidden": true,
+      "labels": {
+        "plural": "Inventory Reservations",
+        "singular": "Inventory Reservation"
+      }
+    },
+    {
+      "slug": "plan-revisions",
+      "href": "/admin/collections/plan-revisions",
+      "hidden": true,
+      "labels": {
+        "plural": "Plan Revisions",
+        "singular": "Plan Revision"
+      }
+    },
+    {
+      "slug": "subscriptions",
+      "href": "/admin/collections/subscriptions",
+      "hidden": true,
+      "labels": {
+        "plural": "Subscriptions",
+        "singular": "Subscription"
+      }
+    },
+    {
+      "slug": "subscription-events",
+      "href": "/admin/collections/subscription-events",
+      "hidden": true,
+      "labels": {
+        "plural": "Subscription Events",
+        "singular": "Subscription Event"
+      }
+    },
+    {
+      "slug": "donation-campaigns",
+      "href": "/admin/collections/donation-campaigns",
+      "hidden": true,
+      "labels": {
+        "plural": "Donation Campaigns",
+        "singular": "Donation Campaign"
+      }
+    },
+    {
+      "slug": "donation-intents",
+      "href": "/admin/collections/donation-intents",
+      "hidden": true,
+      "labels": {
+        "plural": "Donation Intents",
+        "singular": "Donation Intent"
+      }
+    },
+    {
+      "slug": "donations",
+      "href": "/admin/collections/donations",
+      "hidden": true,
+      "labels": {
+        "plural": "Donations",
+        "singular": "Donation"
+      }
+    },
+    {
+      "slug": "donation-events",
+      "href": "/admin/collections/donation-events",
+      "hidden": true,
+      "labels": {
+        "plural": "Donation Events",
+        "singular": "Donation Event"
+      }
+    },
+    {
+      "slug": "pod-connections",
+      "href": "/admin/collections/pod-connections",
+      "hidden": true,
+      "labels": {
+        "plural": "Pod Connections",
+        "singular": "Pod Connection"
+      }
+    },
+    {
+      "slug": "pod-jobs",
+      "href": "/admin/collections/pod-jobs",
+      "hidden": true,
+      "labels": {
+        "plural": "Pod Jobs",
+        "singular": "Pod Job"
+      }
+    },
+    {
+      "slug": "manual-fulfillment-packages",
+      "href": "/admin/collections/manual-fulfillment-packages",
+      "hidden": true,
+      "labels": {
+        "plural": "Manual Fulfillment Packages",
+        "singular": "Manual Fulfillment Package"
+      }
+    },
+    {
+      "slug": "payload-kv",
+      "href": "/admin/collections/payload-kv",
+      "hidden": true,
+      "labels": {
+        "plural": "Payload Kvs",
+        "singular": "Payload Kv"
+      }
+    },
+    {
+      "slug": "payload-jobs",
+      "href": "/admin/collections/payload-jobs",
+      "hidden": true,
+      "labels": {
+        "plural": "Payload Jobs",
+        "singular": "Payload Job"
+      }
+    },
+    {
+      "slug": "payload-locked-documents",
+      "href": "/admin/collections/payload-locked-documents",
+      "hidden": true,
+      "labels": {
+        "plural": "Payload Locked Documents",
+        "singular": "Payload Locked Document"
+      }
+    },
+    {
+      "slug": "payload-preferences",
+      "href": "/admin/collections/payload-preferences",
+      "hidden": true,
+      "labels": {
+        "plural": "Payload Preferences",
+        "singular": "Payload Preference"
+      }
+    },
+    {
+      "slug": "payload-migrations",
+      "href": "/admin/collections/payload-migrations",
+      "hidden": true,
+      "labels": {
+        "plural": "Payload Migrations",
+        "singular": "Payload Migration"
+      }
+    }
+  ],
+  "globals": [
+    {
+      "slug": "site-settings",
+      "href": "/admin/globals/site-settings",
+      "hidden": false
+    },
+    {
+      "slug": "payload-jobs-stats",
+      "href": "/admin/globals/payload-jobs-stats",
+      "hidden": true
+    }
+  ]
+}

@@ -43,6 +43,26 @@ export const QualityRules: CollectionConfig = {
 }
 export const QualityScans: CollectionConfig = {
   ...base('quality-scans', 'id'),
+  hooks: {
+    afterChange: [
+      async ({ doc, operation, req }) => {
+        if (operation !== 'create' || doc.status !== 'queued' || doc.job) return doc
+        const job = await req.payload.jobs.queue({
+          task: 'quality-scan',
+          input: { scanId: String(doc.id) },
+          queue: 'operations',
+          req,
+        } as never)
+        return req.payload.update({
+          collection: 'quality-scans',
+          id: doc.id,
+          data: { job: job.id },
+          overrideAccess: true,
+          req,
+        } as never)
+      },
+    ],
+  },
   fields: [
     ...ownerFields(),
     rel('policy', 'quality-policies'),

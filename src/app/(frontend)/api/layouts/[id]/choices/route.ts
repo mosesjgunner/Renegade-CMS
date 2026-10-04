@@ -35,7 +35,7 @@ export async function GET(request: Request, { params }: Args) {
           id: String(row.id),
           siteId: site,
           label: String(row.altText ?? row.filename ?? 'Media'),
-          href: String(row.url ?? ''),
+          href: `/media/${row.id}`,
         }
       }),
     })

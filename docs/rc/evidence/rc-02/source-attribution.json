@@ -1,0 +1,27 @@
+{
+  "candidateSha": "b684ee11460637bf2177f349057f14d6e804bbbd",
+  "candidateRef": "refs/heads/rc02-site-build-candidate",
+  "sourceComparisonExit": 0,
+  "baseHead": "6818864c9e601860d6a7c7874ae02fd0b7fdb48d",
+  "activeBranchAndIndexPreserved": true,
+  "database": "renegade_rc02_1791086734920_release_acceptance",
+  "profile": "Standard",
+  "modules": "all",
+  "runtime": "production standalone plus operations worker",
+  "testRoutes": false,
+  "localE2ETestMode": false,
+  "unsafeCollectionOverride": false,
+  "ordinaryDataCreation": "authenticated product UI and REST; installer bootstrap only internal write",
+  "traceSha256": "85977963e767b98012a65095cfdf867f2b5507b42c62691adf592f980b5f0d9a",
+  "traceZipCrcFailure": null,
+  "traceEntries": 749,
+  "recordsByCollection": {
+    "media-assets": 3,
+    "categories": 1,
+    "topics": 1,
+    "authors": 1,
+    "content": 4,
+    "events": 1,
+    "page-layouts": 6
+  }
+}

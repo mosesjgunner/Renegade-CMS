@@ -35,7 +35,11 @@ export default function NavigationCenter() {
 
   useEffect(() => {
     fetch('/api/admin/navigation')
-      .then((res) => res.json())
+      .then(async (res) => {
+        const data = await res.json()
+        if (!res.ok) throw new Error(data.error || 'Could not load menus.')
+        return data
+      })
       .then((data) => {
         if (data.navigation) setNavigation(data.navigation)
         if (data.targets) setTargets(data.targets)

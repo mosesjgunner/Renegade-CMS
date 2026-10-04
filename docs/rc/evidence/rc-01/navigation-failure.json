@@ -1,0 +1,2029 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "--config",
+      "playwright.rc01.config.ts",
+      "routes.spec.ts",
+      "--max-failures=1"
+    ],
+    "configFile": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\playwright.rc01.config.ts",
+    "rootDir": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/rc01",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 1,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Projects/RENEGADE CMS/Renegade-CMS/test-results/rc01",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/rc01",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 90000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "docs/rc/evidence/rc-01/browser-results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.62.1",
+    "workers": 1,
+    "webServer": {
+      "command": "node node_modules/next/dist/bin/next dev --port 3127",
+      "url": "http://localhost:3127/api/setup/readiness",
+      "reuseExistingServer": false,
+      "timeout": 120000,
+      "env": {
+        "DATABASE_URL": "postgresql://renegade:renegade_dev_only@localhost:5432/renegade_rc01_20261003_release_acceptance",
+        "PAYLOAD_SECRET": "rc01-isolated-local-session-secret-0123456789",
+        "APP_URL": "http://localhost:3127",
+        "PORT": "3127",
+        "HOSTNAME": "localhost",
+        "NODE_ENV": "development",
+        "DEPLOYMENT_PROFILE": "Standard",
+        "RENEGADE_MODULES": "all",
+        "RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT": "false",
+        "LOCAL_E2E_TEST_MODE": "false",
+        "ENABLE_TEST_ROUTES": "false",
+        "MEDIA_DIR": "./scratch/rc01-media",
+        "EMAIL_MODE": "disabled"
+      }
+    }
+  },
+  "suites": [
+    {
+      "title": "routes.spec.ts",
+      "file": "routes.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "ordinary owner navigation",
+          "file": "routes.spec.ts",
+          "line": 17,
+          "column": 6,
+          "specs": [
+            {
+              "title": "rendered navigation is covered by the configuration inventory",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 12130,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-04T00:13:30.696Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "rendered-navigation",
+                          "contentType": "application/json",
+                          "body": "WwogIHsKICAgICJocmVmIjogIi9hZG1pbiIsCiAgICAidGV4dCI6ICJEYXNoYm9hcmQiCiAgfSwKICB7CiAgICAiaHJlZiI6ICIvYWRtaW4vcG9zdHMiLAogICAgInRleHQiOiAiUG9zdHMiCiAgfSwKICB7CiAgICAiaHJlZiI6ICIvYWRtaW4vcGFnZXMiLAogICAgInRleHQiOiAiUGFnZXMiCiAgfSwKICB7CiAgICAiaHJlZiI6ICIvYWRtaW4vY29sbGVjdGlvbnMvcGFnZS1sYXlvdXRzIiwKICAgICJ0ZXh0IjogIkxheW91dHMiCiAgfSwKICB7CiAgICAiaHJlZiI6ICIvYWRtaW4vbWVkaWEtbGlicmFyeSIsCiAgICAidGV4dCI6ICJNZWRpYSIKICB9LAogIHsKICAgICJocmVmIjogIi9hZG1pbi9jb2xsZWN0aW9ucy9wb2RjYXN0LXNob3dzIiwKICAgICJ0ZXh0IjogIlBvZGNhc3RzIgogIH0sCiAgewogICAgImhyZWYiOiAiL2FkbWluL25hdmlnYXRpb24iLAogICAgInRleHQiOiAiTWVudXMiCiAgfSwKICB7CiAgICAiaHJlZiI6ICIvYWRtaW4vaW5kZXhpbmciLAogICAgInRleHQiOiAiSW5kZXhpbmciCiAgfSwKICB7CiAgICAiaHJlZiI6ICIvYWRtaW4vZ2xvYmFscy9zaXRlLXNldHRpbmdzIiwKICAgICJ0ZXh0IjogIlNpdGUgU2V0dGluZ3MiCiAgfSwKICB7CiAgICAiaHJlZiI6ICIvYWRtaW4vcmVkaXJlY3RzIiwKICAgICJ0ZXh0IjogIlJlZGlyZWN0cyIKICB9LAogIHsKICAgICJocmVmIjogIi9hZG1pbi9yZW5kZXJlZC1xdWFsaXR5IiwKICAgICJ0ZXh0IjogIlJlbmRlcmVkIFF1YWxpdHkiCiAgfSwKICB7CiAgICAiaHJlZiI6ICIvYWRtaW4vd29ya2Zsb3ciLAogICAgInRleHQiOiAiRWRpdG9yaWFsIFdvcmtmbG93IgogIH0sCiAgewogICAgImhyZWYiOiAiL2FkbWluL3JlbGVhc2VzIiwKICAgICJ0ZXh0IjogIlJlbGVhc2VzIgogIH0sCiAgewogICAgImhyZWYiOiAiL2FkbWluL2FpIiwKICAgICJ0ZXh0IjogIkFJIFN0dWRpbyIKICB9LAogIHsKICAgICJocmVmIjogIi9hZG1pbi9zb2NpYWwiLAogICAgInRleHQiOiAiU29jaWFsIERpc3RyaWJ1dGlvbiIKICB9LAogIHsKICAgICJocmVmIjogIi9hZG1pbi9lbWFpbC1jb21wb3NlciIsCiAgICAidGV4dCI6ICJFbWFpbCBDb21wb3NlciIKICB9LAogIHsKICAgICJocmVmIjogIi9hZG1pbi9hdWRpZW5jZSIsCiAgICAidGV4dCI6ICJBdWRpZW5jZSBDb21tYW5kIENlbnRlciIKICB9LAogIHsKICAgICJocmVmIjogIi9hZG1pbi9tb2RlcmF0aW9uIiwKICAgICJ0ZXh0IjogIkNvbW11bml0eSBNb2RlcmF0aW9uIgogIH0sCiAgewogICAgImhyZWYiOiAiL2FkbWluL3RlbGVtZXRyeSIsCiAgICAidGV4dCI6ICJUZWxlbWV0cnkgJiBFeHBlcmltZW50cyIKICB9LAogIHsKICAgICJocmVmIjogIi9hZG1pbi9jYXRhbG9nIiwKICAgICJ0ZXh0IjogIkNhdGFsb2ciCiAgfSwKICB7CiAgICAiaHJlZiI6ICIvYWRtaW4vY29tbWVyY2UiLAogICAgInRleHQiOiAiQ29tbWVyY2UgT3BlcmF0aW9ucyIKICB9LAogIHsKICAgICJocmVmIjogIi9hZG1pbi9mdWxmaWxsbWVudCIsCiAgICAidGV4dCI6ICJQT0QgJiBGdWxmaWxsbWVudCIKICB9LAogIHsKICAgICJocmVmIjogIi8iLAogICAgInRleHQiOiAiVmlldyBTaXRlIgogIH0sCiAgewogICAgImhyZWYiOiAiL2FkbWluL2NhcGFiaWxpdGllcyIsCiAgICAidGV4dCI6ICJDYXBhYmlsaXR5IENlbnRlciIKICB9LAogIHsKICAgICJocmVmIjogIi9hZG1pbi9zZWN1cml0eSIsCiAgICAidGV4dCI6ICJTZWN1cml0eSIKICB9LAogIHsKICAgICJocmVmIjogIi9hZG1pbi9jb2xsZWN0aW9ucy9zaXRlcyIsCiAgICAidGV4dCI6ICJTaXRlcyIKICB9LAogIHsKICAgICJocmVmIjogIi9hZG1pbi9jb2xsZWN0aW9ucy91c2VycyIsCiAgICAidGV4dCI6ICJVc2VycyIKICB9LAogIHsKICAgICJocmVmIjogIi9hZG1pbi9nbG9iYWxzL3NpdGUtc2V0dGluZ3MiLAogICAgInRleHQiOiAiU2l0ZSBTZXR0aW5ncyIKICB9LAogIHsKICAgICJocmVmIjogIi9hZG1pbi9nbG9iYWxzL25ldHdvcmstc2V0dGluZ3MiLAogICAgInRleHQiOiAiTmV0d29yayIKICB9LAogIHsKICAgICJocmVmIjogIi9hZG1pbi9jb2xsZWN0aW9ucy9wYWdlLWxheW91dHMiLAogICAgInRleHQiOiAiUGFnZSBMYXlvdXRzIgogIH0sCiAgewogICAgImhyZWYiOiAiL2FkbWluL2NvbGxlY3Rpb25zL2JyYW5kcyIsCiAgICAidGV4dCI6ICJCcmFuZHMiCiAgfSwKICB7CiAgICAiaHJlZiI6ICIvYWRtaW4vY29sbGVjdGlvbnMvYXV0aG9ycyIsCiAgICAidGV4dCI6ICJBdXRob3JzIgogIH0sCiAgewogICAgImhyZWYiOiAiL2FkbWluL2NvbGxlY3Rpb25zL3B1YmxpY2F0aW9ucyIsCiAgICAidGV4dCI6ICJQdWJsaWNhdGlvbnMiCiAgfSwKICB7CiAgICAiaHJlZiI6ICIvYWRtaW4vY29sbGVjdGlvbnMvY29udGVudCIsCiAgICAidGV4dCI6ICJBbGwgY29udGVudCIKICB9LAogIHsKICAgICJocmVmIjogIi9hZG1pbi9jb2xsZWN0aW9ucy9tZWRpYS1hc3NldHMiLAogICAgInRleHQiOiAiTWVkaWEgQXNzZXRzIgogIH0sCiAgewogICAgImhyZWYiOiAiL2FkbWluL2NvbGxlY3Rpb25zL3NlY3Rpb25zIiwKICAgICJ0ZXh0IjogIlNlY3Rpb25zIgogIH0sCiAgewogICAgImhyZWYiOiAiL2FkbWluL2NvbGxlY3Rpb25zL2NhdGVnb3JpZXMiLAogICAgInRleHQiOiAiQ2F0ZWdvcmllcyIKICB9LAogIHsKICAgICJocmVmIjogIi9hZG1pbi9jb2xsZWN0aW9ucy90b3BpY3MiLAogICAgInRleHQiOiAiVG9waWNzIgogIH0sCiAgewogICAgImhyZWYiOiAiL2FkbWluL2NvbGxlY3Rpb25zL3RhZ3MiLAogICAgInRleHQiOiAiVGFncyIKICB9LAogIHsKICAgICJocmVmIjogIi9hZG1pbi9jb2xsZWN0aW9ucy9kaXNjdXNzaW9ucyIsCiAgICAidGV4dCI6ICJEaXNjdXNzaW9ucyIKICB9LAogIHsKICAgICJocmVmIjogIi9hZG1pbi9jb2xsZWN0aW9ucy9kaXNjdXNzaW9uLXBvc3RzIiwKICAgICJ0ZXh0IjogIkRpc2N1c3Npb24gUG9zdHMiCiAgfSwKICB7CiAgICAiaHJlZiI6ICIvYWRtaW4vY29sbGVjdGlvbnMvZm9ybS1kZWZpbml0aW9ucyIsCiAgICAidGV4dCI6ICJGb3JtIERlZmluaXRpb25zIgogIH0sCiAgewogICAgImhyZWYiOiAiL2FkbWluL2NvbGxlY3Rpb25zL2Zvcm0tc3VibWlzc2lvbnMiLAogICAgInRleHQiOiAiRm9ybSBTdWJtaXNzaW9ucyIKICB9LAogIHsKICAgICJocmVmIjogIi9hZG1pbi9jb2xsZWN0aW9ucy9zdWJzY3JpYmVycyIsCiAgICAidGV4dCI6ICJTdWJzY3JpYmVycyIKICB9LAogIHsKICAgICJocmVmIjogIi9hZG1pbi9jb2xsZWN0aW9ucy9jb250YWN0cyIsCiAgICAidGV4dCI6ICJDb250YWN0cyIKICB9LAogIHsKICAgICJocmVmIjogIi9hZG1pbi9sb2dvdXQiLAogICAgInRleHQiOiAiIgogIH0KXQ=="
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "598fdabf36083b33787e-0bcaf1d07d787f45e227",
+              "file": "routes.spec.ts",
+              "line": 19,
+              "column": 3
+            },
+            {
+              "title": "owner loads /admin",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2908,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-04T00:13:42.944Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "errors",
+                          "contentType": "application/json",
+                          "body": "W10="
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "598fdabf36083b33787e-857514513c5b2eff971e",
+              "file": "routes.spec.ts",
+              "line": 34,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/capabilities",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4772,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-04T00:13:45.863Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "errors",
+                          "contentType": "application/json",
+                          "body": "W10="
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "598fdabf36083b33787e-7256a316f43f3ca3346f",
+              "file": "routes.spec.ts",
+              "line": 34,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/security",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3589,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-04T00:13:50.649Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "errors",
+                          "contentType": "application/json",
+                          "body": "W10="
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "598fdabf36083b33787e-2412c37a66eee5e4581f",
+              "file": "routes.spec.ts",
+              "line": 34,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/posts",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3906,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-04T00:13:54.248Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "errors",
+                          "contentType": "application/json",
+                          "body": "W10="
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "598fdabf36083b33787e-28502318af90c31ba090",
+              "file": "routes.spec.ts",
+              "line": 34,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/pages",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3140,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-04T00:13:58.163Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "errors",
+                          "contentType": "application/json",
+                          "body": "W10="
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "598fdabf36083b33787e-c01e74710256398033ad",
+              "file": "routes.spec.ts",
+              "line": 34,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/navigation",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 3290,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  - 1\u001b[39m\n\u001b[31m+ Received  + 4\u001b[39m\n\n\u001b[32m- Array []\u001b[39m\n\u001b[31m+ Array [\u001b[39m\n\u001b[31m+   \"500 http://localhost:3127/api/admin/navigation\",\u001b[39m\n\u001b[31m+   \"500 http://localhost:3127/api/admin/navigation\",\u001b[39m\n\u001b[31m+ ]\u001b[39m",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  - 1\u001b[39m\n\u001b[31m+ Received  + 4\u001b[39m\n\n\u001b[32m- Array []\u001b[39m\n\u001b[31m+ Array [\u001b[39m\n\u001b[31m+   \"500 http://localhost:3127/api/admin/navigation\",\u001b[39m\n\u001b[31m+   \"500 http://localhost:3127/api/admin/navigation\",\u001b[39m\n\u001b[31m+ ]\u001b[39m\n    at C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\tests\\rc01\\routes.spec.ts:44:22",
+                        "location": {
+                          "file": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\tests\\rc01\\routes.spec.ts",
+                          "column": 22,
+                          "line": 44
+                        },
+                        "snippet": "  42 |       await expect(page.locator('body')).not.toContainText('Internal Server Error')\n  43 |       await expect(page.locator('body')).not.toContainText('This page could not be found')\n> 44 |       expect(errors).toEqual([])\n     |                      ^\n  45 |       await page.screenshot({ path: `docs/rc/evidence/rc-01/${route.replaceAll('/', '_')}.png`, fullPage: true })\n  46 |     })\n  47 |   }"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\tests\\rc01\\routes.spec.ts",
+                            "column": 22,
+                            "line": 44
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  - 1\u001b[39m\n\u001b[31m+ Received  + 4\u001b[39m\n\n\u001b[32m- Array []\u001b[39m\n\u001b[31m+ Array [\u001b[39m\n\u001b[31m+   \"500 http://localhost:3127/api/admin/navigation\",\u001b[39m\n\u001b[31m+   \"500 http://localhost:3127/api/admin/navigation\",\u001b[39m\n\u001b[31m+ ]\u001b[39m\n\n  42 |       await expect(page.locator('body')).not.toContainText('Internal Server Error')\n  43 |       await expect(page.locator('body')).not.toContainText('This page could not be found')\n> 44 |       expect(errors).toEqual([])\n     |                      ^\n  45 |       await page.screenshot({ path: `docs/rc/evidence/rc-01/${route.replaceAll('/', '_')}.png`, fullPage: true })\n  46 |     })\n  47 |   }\n    at C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\tests\\rc01\\routes.spec.ts:44:22"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-04T00:14:01.312Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "errors",
+                          "contentType": "application/json",
+                          "body": "WyI1MDAgaHR0cDovL2xvY2FsaG9zdDozMTI3L2FwaS9hZG1pbi9uYXZpZ2F0aW9uIiwiNTAwIGh0dHA6Ly9sb2NhbGhvc3Q6MzEyNy9hcGkvYWRtaW4vbmF2aWdhdGlvbiJd"
+                        },
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\test-results\\rc01\\routes-ordinary-owner-navi-7d33c-wner-loads-admin-navigation\\test-failed-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\test-results\\rc01\\routes-ordinary-owner-navi-7d33c-wner-loads-admin-navigation\\error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\test-results\\rc01\\routes-ordinary-owner-navi-7d33c-wner-loads-admin-navigation\\trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\tests\\rc01\\routes.spec.ts",
+                        "column": 22,
+                        "line": 44
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "598fdabf36083b33787e-1edd9ea4047af10d16ca",
+              "file": "routes.spec.ts",
+              "line": 34,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/media-library",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-10736a58447ff0ece2a8",
+              "file": "routes.spec.ts",
+              "line": 34,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/indexing",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-f153b98ea038e0544697",
+              "file": "routes.spec.ts",
+              "line": 34,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/redirects",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-a3ccd722148df913f007",
+              "file": "routes.spec.ts",
+              "line": 34,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/rendered-quality",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-2ba1f70dff02c3b71709",
+              "file": "routes.spec.ts",
+              "line": 34,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/workflow",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-c09560ee391fcbaf8043",
+              "file": "routes.spec.ts",
+              "line": 34,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/releases",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-cd8479e67740de7a64f6",
+              "file": "routes.spec.ts",
+              "line": 34,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/email-composer",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-2368dc6605e6fcaea773",
+              "file": "routes.spec.ts",
+              "line": 34,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/audience",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-4180c1550b1c6873948c",
+              "file": "routes.spec.ts",
+              "line": 34,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/moderation",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-92935abc5130f9876d9e",
+              "file": "routes.spec.ts",
+              "line": 34,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/telemetry",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-e18110ea231ec0a43180",
+              "file": "routes.spec.ts",
+              "line": 34,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/collections/page-layouts",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-331858cdc66df0e8e38d",
+              "file": "routes.spec.ts",
+              "line": 34,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/collections/podcast-shows",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-6c69508b16cbeb42fb27",
+              "file": "routes.spec.ts",
+              "line": 34,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/globals/site-settings",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-a4863976f2f47c5a0dff",
+              "file": "routes.spec.ts",
+              "line": 34,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/ai",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-b484579fd04ede2fc917",
+              "file": "routes.spec.ts",
+              "line": 34,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/social",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-39f71af8e42a6e29e380",
+              "file": "routes.spec.ts",
+              "line": 34,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/catalog",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-19c002a107ba1018fb60",
+              "file": "routes.spec.ts",
+              "line": 34,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/commerce",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-053d9718cb6a82298ba1",
+              "file": "routes.spec.ts",
+              "line": 34,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/fulfillment",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-19b5e9205dd3904196d5",
+              "file": "routes.spec.ts",
+              "line": 34,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/collections/users",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-4bed2d2f5e95bba3a5de",
+              "file": "routes.spec.ts",
+              "line": 34,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/collections/sites",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-2149bcfb3650cf1e2142",
+              "file": "routes.spec.ts",
+              "line": 34,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/collections/brands",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-7b645deb70c2144c61cb",
+              "file": "routes.spec.ts",
+              "line": 34,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/collections/authors",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-35f0cc3adf59f2f8fd17",
+              "file": "routes.spec.ts",
+              "line": 34,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/collections/publications",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-9ddf214951ef0f63cae7",
+              "file": "routes.spec.ts",
+              "line": 34,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/collections/media-assets",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-8ca209f4d69c2337b2d3",
+              "file": "routes.spec.ts",
+              "line": 34,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/collections/sections",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-33ebc5c00c64dbcff68f",
+              "file": "routes.spec.ts",
+              "line": 34,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/collections/categories",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-7a30d1ce3d59eda52770",
+              "file": "routes.spec.ts",
+              "line": 34,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/collections/topics",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-e0efbe15ea56161b499a",
+              "file": "routes.spec.ts",
+              "line": 34,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/collections/tags",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-0ff01d2eb2292370c7d8",
+              "file": "routes.spec.ts",
+              "line": 34,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/collections/content",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-d1d94d836fa027a96158",
+              "file": "routes.spec.ts",
+              "line": 34,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/collections/discussions",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-c49a8cbf5c243c562098",
+              "file": "routes.spec.ts",
+              "line": 34,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/collections/discussion-posts",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-0884ae67dccfe01ffc01",
+              "file": "routes.spec.ts",
+              "line": 34,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/collections/form-definitions",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-1628d771475ba3104cb1",
+              "file": "routes.spec.ts",
+              "line": 34,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/collections/form-submissions",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-99abc99a89f940afffbf",
+              "file": "routes.spec.ts",
+              "line": 34,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/collections/contacts",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-70817b93840361e766cc",
+              "file": "routes.spec.ts",
+              "line": 34,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/collections/subscribers",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-0d5c6f19756f7a5b898d",
+              "file": "routes.spec.ts",
+              "line": 34,
+              "column": 5
+            },
+            {
+              "title": "owner loads /admin/globals/network-settings",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-869c96e1c8303c2cfe4d",
+              "file": "routes.spec.ts",
+              "line": 34,
+              "column": 5
+            }
+          ]
+        },
+        {
+          "title": "unauthenticated admin boundary",
+          "file": "routes.spec.ts",
+          "line": 50,
+          "column": 6,
+          "specs": [
+            {
+              "title": "anonymous cannot mount /admin",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-da784ca6bc122d8e4915",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/capabilities",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-977ffbeec378f7b7d091",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/security",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-7d83f3c6c666c262fb4d",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/posts",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-9da5057fbd79401136ea",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/pages",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-33b7390f3b758b5bb9a8",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/navigation",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-f60a10fd3b97b9a21b2e",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/media-library",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-967dd3f65f5fe6ab07cc",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/indexing",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-a92bc2ace6ebe43269bd",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/redirects",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-d2c0cd46212551fb0bb5",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/rendered-quality",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-2762855b2e053955435d",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/workflow",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-e3815aef94aebf32238e",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/releases",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-35d0733ab3895f0815e2",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/email-composer",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-4f613cc2ac320cd0721a",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/audience",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-d8e1aa3494d0b7dac6f2",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/moderation",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-4698e2fb5fa1c26d9b17",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/telemetry",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-dfe2358f1aaf422f9b03",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/collections/page-layouts",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-f35075abe67c4224b2fd",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/collections/podcast-shows",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-0ee7ff213c23ca376231",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/globals/site-settings",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-4de42623a29d8c46706d",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/ai",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-07b357f280eaabbe1e15",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/social",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-4d8839766fe981794c38",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/catalog",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-c11346f1cae59dfc5998",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/commerce",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-342f1f5eb0235302fd91",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/fulfillment",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-343c26b4df0c10905b6c",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/collections/users",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-bb9370de53060d4a8dd1",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/collections/sites",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-5394f33ea3d1b3a4414c",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/collections/brands",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-c517ee79894a2abd705b",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/collections/authors",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-ea3ea7971f48cb8558e5",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/collections/publications",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-15f92b30b270bf19ce4a",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/collections/media-assets",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-a57c8bdc202cfb1745b8",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/collections/sections",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-ec5cede9f73dc1facdc7",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/collections/categories",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-3da0572b55d8cb757e10",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/collections/topics",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-2cafab5dc25eb16e0ded",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/collections/tags",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-f95fd1f76669fbe74a85",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/collections/content",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-ef43a0d5b93b241dc5f7",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/collections/discussions",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-9eb24359c63525206f06",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/collections/discussion-posts",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-d287db640ee0e30cd543",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/collections/form-definitions",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-2a718d0606558270589b",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/collections/form-submissions",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-1f01844ca36c4f67324c",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/collections/contacts",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-c1eb5e7adf728fcf23da",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/collections/subscribers",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-aded03914acd3abc61c2",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mount /admin/globals/network-settings",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-371e221071d353ec7b1e",
+              "file": "routes.spec.ts",
+              "line": 52,
+              "column": 5
+            },
+            {
+              "title": "anonymous cannot mutate content",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "598fdabf36083b33787e-9e408b481f681b77dc7a",
+              "file": "routes.spec.ts",
+              "line": 57,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "message": "\u001b[31mTesting stopped early after 1 maximum allowed failures.\u001b[39m"
+    }
+  ],
+  "stats": {
+    "startTime": "2026-10-04T00:13:25.307Z",
+    "duration": 39939.487,
+    "expected": 6,
+    "skipped": 79,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

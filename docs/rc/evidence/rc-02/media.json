@@ -1,0 +1,339 @@
+{
+  "sourceSha256": "16b989fd2ac7b2bbf09e1befd6abaaf633edfbb9ed1f1d3083e27700a81cc7d6",
+  "asset": {
+    "id": "32363a56-af1a-4308-9652-ac76db8ef487",
+    "site": {
+      "id": "ef4d1fb8-989c-4df0-abb0-9ac8b218dcc0",
+      "name": "Renegade Party Dispatch",
+      "slug": "renegadeparty",
+      "description": "Independent civic reporting, local organizing and public accountability.",
+      "lifecycle": "active",
+      "communityRegistrationPolicy": "open",
+      "commentReactionCodes": [
+        "thumbs_up",
+        "heart",
+        "insightful",
+        "applause"
+      ],
+      "updatedAt": "2026-10-04T04:05:53.935Z",
+      "createdAt": "2026-10-04T04:05:53.935Z"
+    },
+    "publication": {
+      "id": "88dd0221-94fe-41fc-bff2-6beccd8ba062",
+      "site": {
+        "id": "ef4d1fb8-989c-4df0-abb0-9ac8b218dcc0",
+        "name": "Renegade Party Dispatch",
+        "slug": "renegadeparty",
+        "description": "Independent civic reporting, local organizing and public accountability.",
+        "lifecycle": "active",
+        "communityRegistrationPolicy": "open",
+        "commentReactionCodes": [
+          "thumbs_up",
+          "heart",
+          "insightful",
+          "applause"
+        ],
+        "updatedAt": "2026-10-04T04:05:53.935Z",
+        "createdAt": "2026-10-04T04:05:53.935Z"
+      },
+      "owner": {
+        "id": "7f9ad54d-b1ab-48d4-8e7f-c1b43e06a382",
+        "displayName": "Renegade Party Dispatch",
+        "email": "editor@renegadeparty.test",
+        "status": "active",
+        "disabledAt": null,
+        "archivedAt": null,
+        "restrictedAt": null,
+        "suspendedAt": null,
+        "deactivatedAt": null,
+        "deletionPendingAt": null,
+        "deletedAt": null,
+        "exportRequestedAt": null,
+        "deletionRequestedAt": null,
+        "verifiedEmailAt": null,
+        "moderationReason": null,
+        "stateReason": null,
+        "updatedAt": "2026-10-04T04:05:53.955Z",
+        "createdAt": "2026-10-04T04:05:53.954Z"
+      },
+      "space": {
+        "id": "3d6a2e4a-4990-46bb-b9b3-b3dcd8d48f71",
+        "site": "ef4d1fb8-989c-4df0-abb0-9ac8b218dcc0",
+        "member": "7f9ad54d-b1ab-48d4-8e7f-c1b43e06a382",
+        "profile": "d05bbe9c-eb15-428d-ad98-a12630523a75",
+        "handle": "renegadeparty",
+        "canonicalPath": "/members/renegadeparty",
+        "displayName": "Renegade Party Dispatch Space",
+        "avatar": null,
+        "cover": null,
+        "bio": "Independent civic reporting, local organizing and public accountability.",
+        "visibility": "public",
+        "fieldAudience": null,
+        "layoutTheme": null,
+        "capabilities": [
+          {
+            "id": "6ac1d0a1b228794f408ca418",
+            "key": "space.blog",
+            "status": "enabled"
+          }
+        ],
+        "quotaPolicy": null,
+        "providerOwnership": {
+          "local": true
+        },
+        "moderationState": "clear",
+        "suspendedAt": null,
+        "transferToMember": null,
+        "transferState": "none",
+        "updatedAt": "2026-10-04T04:05:53.983Z",
+        "createdAt": "2026-10-04T04:05:53.982Z"
+      },
+      "name": "Renegade Party Dispatch",
+      "slug": "main",
+      "canonicalBasePath": "/",
+      "status": "active",
+      "visibility": "public",
+      "brand": {
+        "id": "07f82a9d-007a-4449-a07b-b2ad86b2dec3",
+        "site": "ef4d1fb8-989c-4df0-abb0-9ac8b218dcc0",
+        "name": "Renegade Party Dispatch",
+        "legalName": null,
+        "kind": "organization",
+        "tagline": null,
+        "mission": null,
+        "description": "Independent civic reporting, local organizing and public accountability.",
+        "bio": null,
+        "logo": null,
+        "favicon": null,
+        "colors": null,
+        "typography": {
+          "theme": "neutral-starter"
+        },
+        "contactDefaults": null,
+        "socialDefaults": null,
+        "primaryAuthor": null,
+        "audience": null,
+        "voice": null,
+        "vocabulary": null,
+        "avoidedPhrases": null,
+        "graphicStyle": null,
+        "seoDefaults": null,
+        "socialDefaultsOverride": null,
+        "newsletterDefaults": null,
+        "disclosures": null,
+        "structuredDataDefaults": null,
+        "updatedAt": "2026-10-04T04:05:54.006Z",
+        "createdAt": "2026-10-04T04:05:54.006Z"
+      },
+      "profile": {
+        "id": "d05bbe9c-eb15-428d-ad98-a12630523a75",
+        "member": "7f9ad54d-b1ab-48d4-8e7f-c1b43e06a382",
+        "displayName": "Renegade Party Dispatch",
+        "handle": "renegadeparty",
+        "handleChangedAt": null,
+        "handleHistory": null,
+        "avatar": null,
+        "cover": null,
+        "avatarAlt": null,
+        "coverAlt": null,
+        "locale": null,
+        "timeZone": null,
+        "discoveryOptOut": false,
+        "bio": "Independent civic reporting, local organizing and public accountability.",
+        "links": null,
+        "preferences": null,
+        "visibility": "public",
+        "fieldAudience": {
+          "bio": "public",
+          "email": "private"
+        },
+        "layoutTheme": null,
+        "updatedAt": "2026-10-04T04:05:53.967Z",
+        "createdAt": "2026-10-04T04:05:53.967Z"
+      },
+      "brandOverrides": null,
+      "themePreset": "neutral-starter",
+      "moderationPolicy": null,
+      "featurePolicy": null,
+      "capabilities": [
+        {
+          "id": "6ac1d0a2b228794f408ca419",
+          "key": "publication.content",
+          "status": "enabled"
+        }
+      ],
+      "quotaPolicy": null,
+      "navigation": [
+        {
+          "href": "/",
+          "label": "Home"
+        },
+        {
+          "href": "/about",
+          "label": "About"
+        },
+        {
+          "href": "/contact",
+          "label": "Contact"
+        }
+      ],
+      "feeds": null,
+      "seoDefaults": null,
+      "suspendedAt": null,
+      "archivedAt": null,
+      "archiveMessage": null,
+      "updatedAt": "2026-10-04T04:05:54.030Z",
+      "createdAt": "2026-10-04T04:05:54.030Z"
+    },
+    "space": null,
+    "owner": {
+      "id": "7f9ad54d-b1ab-48d4-8e7f-c1b43e06a382",
+      "displayName": "Renegade Party Dispatch",
+      "email": "editor@renegadeparty.test",
+      "status": "active",
+      "disabledAt": null,
+      "archivedAt": null,
+      "restrictedAt": null,
+      "suspendedAt": null,
+      "deactivatedAt": null,
+      "deletionPendingAt": null,
+      "deletedAt": null,
+      "exportRequestedAt": null,
+      "deletionRequestedAt": null,
+      "verifiedEmailAt": null,
+      "moderationReason": null,
+      "stateReason": null,
+      "updatedAt": "2026-10-04T04:05:53.955Z",
+      "createdAt": "2026-10-04T04:05:53.954Z"
+    },
+    "title": "Liberty and civic assembly",
+    "kind": "image",
+    "storageLocation": "ef4d1fb8-989c-4df0-abb0-9ac8b218dcc0/b67dc3fe-e635-4b9b-b360-9706ecd95956.png",
+    "storageProvider": "local",
+    "originalBlob": {
+      "id": "6d08a68b-41f7-4099-a548-291a32614287",
+      "site": {
+        "id": "ef4d1fb8-989c-4df0-abb0-9ac8b218dcc0",
+        "name": "Renegade Party Dispatch",
+        "slug": "renegadeparty",
+        "description": "Independent civic reporting, local organizing and public accountability.",
+        "lifecycle": "active",
+        "communityRegistrationPolicy": "open",
+        "commentReactionCodes": [
+          "thumbs_up",
+          "heart",
+          "insightful",
+          "applause"
+        ],
+        "updatedAt": "2026-10-04T04:05:53.935Z",
+        "createdAt": "2026-10-04T04:05:53.935Z"
+      },
+      "publication": {
+        "id": "88dd0221-94fe-41fc-bff2-6beccd8ba062",
+        "site": "ef4d1fb8-989c-4df0-abb0-9ac8b218dcc0",
+        "owner": "7f9ad54d-b1ab-48d4-8e7f-c1b43e06a382",
+        "space": "3d6a2e4a-4990-46bb-b9b3-b3dcd8d48f71",
+        "name": "Renegade Party Dispatch",
+        "slug": "main",
+        "canonicalBasePath": "/",
+        "status": "active",
+        "visibility": "public",
+        "brand": "07f82a9d-007a-4449-a07b-b2ad86b2dec3",
+        "profile": "d05bbe9c-eb15-428d-ad98-a12630523a75",
+        "brandOverrides": null,
+        "themePreset": "neutral-starter",
+        "moderationPolicy": null,
+        "featurePolicy": null,
+        "capabilities": [
+          {
+            "id": "6ac1d0a2b228794f408ca419",
+            "key": "publication.content",
+            "status": "enabled"
+          }
+        ],
+        "quotaPolicy": null,
+        "navigation": [
+          {
+            "href": "/",
+            "label": "Home"
+          },
+          {
+            "href": "/about",
+            "label": "About"
+          },
+          {
+            "href": "/contact",
+            "label": "Contact"
+          }
+        ],
+        "feeds": null,
+        "seoDefaults": null,
+        "suspendedAt": null,
+        "archivedAt": null,
+        "archiveMessage": null,
+        "updatedAt": "2026-10-04T04:05:54.030Z",
+        "createdAt": "2026-10-04T04:05:54.030Z"
+      },
+      "space": null,
+      "checksum": "sha256:16b989fd2ac7b2bbf09e1befd6abaaf633edfbb9ed1f1d3083e27700a81cc7d6",
+      "storageKey": "ef4d1fb8-989c-4df0-abb0-9ac8b218dcc0/b67dc3fe-e635-4b9b-b360-9706ecd95956.png",
+      "storageProvider": "local",
+      "mimeType": "image/png",
+      "sizeBytes": 73970,
+      "state": "ready",
+      "updatedAt": "2026-10-04T04:05:58.136Z",
+      "createdAt": "2026-10-04T04:05:58.136Z"
+    },
+    "originalFilename": "liberty-banner.png",
+    "mimeType": "image/png",
+    "sizeBytes": 73970,
+    "checksum": "sha256:16b989fd2ac7b2bbf09e1befd6abaaf633edfbb9ed1f1d3083e27700a81cc7d6",
+    "width": 1200,
+    "height": 600,
+    "durationSeconds": null,
+    "audioMetadata": null,
+    "videoMetadata": null,
+    "altText": "Liberty Bell banner for civic reporting",
+    "focalPoint": {
+      "x": null,
+      "y": null
+    },
+    "aspectRatio": null,
+    "dominantColor": null,
+    "colorPalette": null,
+    "cropSettings": null,
+    "caption": "A publication banner for the Renegade Party Dispatch.",
+    "description": null,
+    "creatorCredit": null,
+    "credits": null,
+    "source": null,
+    "copyrightOwner": null,
+    "license": null,
+    "licenseType": null,
+    "licenseUrl": null,
+    "rightsSourceUrl": null,
+    "rightsExpiresAt": null,
+    "embargoUntil": null,
+    "usageRestrictions": null,
+    "consentReference": null,
+    "modelReleaseReference": null,
+    "propertyReleaseReference": null,
+    "governanceEnabled": false,
+    "customMetadata": null,
+    "processingState": "ready",
+    "publicPolicy": "published-use",
+    "tags": [],
+    "collections": [],
+    "variants": [],
+    "replaceGloballyWith": null,
+    "originalExportAllowed": true,
+    "rightsStatus": "approved",
+    "retentionMode": "permanent",
+    "retentionExpiresAt": null,
+    "retentionHold": "none",
+    "removeFromDiscovery": false,
+    "tombstoneLabel": null,
+    "updatedAt": "2026-10-04T04:05:58.162Z",
+    "createdAt": "2026-10-04T04:05:58.162Z"
+  }
+}

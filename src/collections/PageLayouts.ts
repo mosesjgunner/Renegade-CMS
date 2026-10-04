@@ -1,7 +1,7 @@
 import { snapshotLayout } from '../modules/presentation/snapshots'
 import { themes } from '../modules/presentation/registry'
 import { validateLayout, type PageLayout } from '../modules/public/page-builder'
-import type { CollectionConfig } from 'payload'
+import type { CollectionConfig, Where } from 'payload'
 
 import { retentionFields, siteScopeFields, visibilityOptions } from './canonical-shared'
 import { searchProjectionHooks } from '../modules/public/search-projection'
@@ -16,8 +16,17 @@ export const PageLayouts: CollectionConfig = {
   access: {
     create: staffOnly,
     delete: staffOnly,
-    read: ({ req }) =>
-      staffOnly({ req }) || { status: { equals: 'published' }, visibility: { equals: 'public' } },
+    read: ({ req }) => {
+      if (staffOnly({ req })) return true
+      const where: Where = {
+        and: [
+          { status: { equals: 'published' } },
+          { visibility: { equals: 'public' } },
+          { or: [{ surface: { equals: 'page' } }, { surface: { exists: false } }] },
+        ],
+      }
+      return where
+    },
     update: staffOnly,
   },
   hooks: {

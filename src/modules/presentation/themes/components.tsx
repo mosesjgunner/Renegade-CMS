@@ -6,6 +6,7 @@ const text = (props: Record<string, unknown>, key: string, fallback: string) =>
 
 const common = {
   title: { type: 'text', label: 'Heading', maxLength: 160 },
+  headingLevel: { type: 'select', label: 'Heading level', options: ['h1', 'h2', 'h3', 'h4'] },
   alignment: { type: 'alignment', label: 'Alignment', options: ['left', 'center', 'right'] },
   spacing: { type: 'token', label: 'Theme spacing', options: ['compact', 'normal', 'relaxed'] },
   width: { type: 'select', label: 'Section width', options: ['standard', 'wide', 'full'] },
@@ -31,7 +32,10 @@ const simple = (
   capabilities: [],
   fields,
   validate: () => [],
-  render: (props) => (
+  render: (props) => {
+    const level = text(props, 'headingLevel', id === 'publisher.hero' ? 'h1' : 'h2')
+    const Heading = (['h1', 'h2', 'h3', 'h4'].includes(level) ? level : 'h2') as 'h1' | 'h2' | 'h3' | 'h4'
+    return (
     <section
       data-block={label}
       data-align={text(props, 'alignment', 'left')}
@@ -40,7 +44,12 @@ const simple = (
       data-bg={text(props, 'background', 'canvas')}
       data-emphasis={text(props, 'emphasis', 'normal')}
     >
-      <h2>{text(props, 'title', label)}</h2>
+      <Heading>{text(props, 'title', label)}</Heading>
+      {Array.isArray(props.queryResults) ? <ul>
+        {(props.queryResults as Array<{ id: string; title: string; href: string }>).map((item) =>
+          <li key={item.id}><a href={item.href}>{item.title}</a></li>,
+        )}
+      </ul> : null}
       {typeof props.body === 'string' ? <p>{props.body}</p> : null}
       {props.link && typeof props.link === 'object' ? (
         <a href={String((props.link as { href?: string }).href ?? '/')}>
@@ -79,7 +88,8 @@ const simple = (
           })()
         : null}
     </section>
-  ),
+    )
+  },
   fallback: (block) => (
     <section data-unavailable-component={block.component}>This section is unavailable.</section>
   ),

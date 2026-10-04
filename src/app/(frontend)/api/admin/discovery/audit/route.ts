@@ -3,6 +3,7 @@ import { getPayload } from 'payload'
 
 import { resolveSiteSettings } from '@/modules/core/site-settings'
 import { runRenderedAudit } from '@/modules/public/discovery-audit'
+import { allowConfiguredSelfAudit } from '@/modules/public/local-audit-origin'
 import { getAllIndexableDiscoveryDocuments } from '@/modules/public/discovery'
 import { crossCheckDiscoveryOutputs } from '@/modules/public/discovery-cross-checks'
 import { analyzeCannibalization } from '@/modules/public/cannibalization'
@@ -46,7 +47,7 @@ export async function POST(request: Request) {
         typeof body.concurrency === 'number' && Number.isInteger(body.concurrency)
           ? body.concurrency
           : 4,
-      allowPrivate: false,
+      allowPrivate: allowConfiguredSelfAudit(origin, process.env.APP_URL),
     })
 
     // 1. Sitemap & Feed Cross-checks

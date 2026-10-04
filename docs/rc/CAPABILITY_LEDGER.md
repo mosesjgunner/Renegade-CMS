@@ -342,3 +342,30 @@ Payload adds five internal collections (kv, jobs, preferences, locked documents 
 | ---------------------------- | ---------- | -------------------------------------------- | --------------------- | -------------------------------------------------------------------------------------------------------------------- |
 | extension-reference-adapters | extensions | src/modules/extensions/reference-adapters.ts | DEFERRED/EXPERIMENTAL | Only tests import these adapters; accepted objects are reference SDK behavior, not shipping storage/email transport. |
 | example-extension            | extensions | src/modules/extensions/example-extension.ts  | DEFERRED/EXPERIMENTAL | Reference extension example with no shipping route/caller; cannot be marketed as an installed capability.            |
+
+## RC-01 dispositions — 2026-10-03
+
+No capability is promoted to VERIFIED. [RC-01 evidence](evidence/RC-01.md) and the current admin appendix in [ROUTE_MATRIX](ROUTE_MATRIX.md) classify every configured/visible route as BLOCKER until its advertised actions and negative roles pass. Owner page loads alone do not change the registration statuses above.
+
+- Audience command-center reporting: BLOCKER / explicitly unavailable. Removed synthetic health, campaigns, funnels and experiments from the shipping component; authenticated reporting API returns 503 without operational reads. Registered subscriber management remains available through ordinary navigation when newsletter is enabled.
+- Social command center: BLOCKER / explicitly unavailable. Shipping admin page no longer mounts sample accounts or local queue execution. Existing social services, APIs and non-admin studios remain separate unverified BLOCKER scope.
+- Fulfillment command center: BLOCKER / explicitly unavailable. Shipping admin page no longer mounts fabricated jobs, packages, mappings or provider health. Dormant components and provider adapters are not validated by this containment.
+- Moderation: BLOCKER. Current owner passkey session receives 403 from member-auth community APIs; literal default site selection remains wrong. Failed reads now show an error instead of successful empty reports or valid audit state.
+- Telemetry: BLOCKER. Removed fabricated campaign/count fallbacks and fixed-percentage channel allocation. Authenticated data/tenant/provider/experiment acceptance has not run beyond the moderation stop.
+- All other visible collections/globals/custom views/frontend command centers: BLOCKER for missing ordinary actions and negative role/tenant proof, as individually enumerated in the route appendix. Hidden collections remain shipping registrations when enabled; visibility alone is not deliberate deferral.
+
+
+## RC-02 site-build acceptance ? VERIFIED ? 2026-10-03
+
+Tested source `b684ee11460637bf2177f349057f14d6e804bbbd`; fresh production Standard/all owner journey. [Evidence](evidence/RC-02.md). These exact core workflows are VERIFIED on this candidate; historical registration-wide BLOCKER rows and RC-01 role/provider/action scopes remain conservative and are not implicitly promoted.
+
+| Capability | Status | Executed boundary |
+| --- | --- | --- |
+| rc02.install-settings | VERIFIED | Empty installer, owner/passkey/admin, identity/origin/locale/timezone/indexing |
+| rc02.presentation | VERIFIED | Theme/tokens, Puck/query homepage, pattern/template/global regions; canonical content immutable across preview/switch |
+| rc02.publishing | VERIFIED | Page, two articles, event, rich text/media/taxonomy/author/related content, saved preview, review/approve/publish, revisions and protected published edits |
+| rc02.media | VERIFIED | Binary upload/stored SHA-256, descriptive/rights fields, 20 derivatives, rendered WebP/AVIF, usage/new-asset replacement |
+| rc02.discovery | VERIFIED | Navigation/index/category/topic/byline, SEO/schema, sitemap/robots/feeds, title/body/taxonomy search with draft isolation, Quality/Rendered Quality, exact redirect/404 |
+| rc02.public-restart | VERIFIED | Anonymous desktop/mobile, private/admin exclusions, public bundle without Puck/editor, real web/worker restart with fresh browse/media/discovery |
+
+Narrow approved claim: ?usable to build and launch a serious self-hosted publishing site.? No universal provider, author archive, transcript, multi-role or aggregate release claim follows. No feature was removed to lower this gate.

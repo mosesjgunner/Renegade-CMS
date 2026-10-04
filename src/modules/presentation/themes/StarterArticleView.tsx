@@ -1,5 +1,6 @@
 import type { EditorialPresentation } from '../../editorial/persistence'
 import { SafeRichText } from '../../editorial/RichText'
+import { ResponsiveMedia } from '../../media/responsive'
 
 export function StarterArticleView({ article }: { article: EditorialPresentation }) {
   return (
@@ -78,13 +79,11 @@ export function StarterArticleView({ article }: { article: EditorialPresentation
           </div>
         ) : null}
         {article.heroMedia ? (
-          <img
-            src={article.heroMedia.url}
-            alt={article.heroMedia.altText}
-            width={article.heroMedia.width ?? 1200}
-            height={article.heroMedia.height ?? 675}
+          <ResponsiveMedia
+            media={article.heroMedia}
+            variant="hero"
+            priority
             className="w-full rounded-xl border border-stone-200 object-cover dark:border-stone-800"
-            loading="lazy"
           />
         ) : null}
       </header>
@@ -129,6 +128,21 @@ export function StarterArticleView({ article }: { article: EditorialPresentation
       </article>
 
       {/* Taxonomy Tags */}
+      {article.relatedContent.length ? (
+        <nav aria-label="Related reporting" className="surface-card p-6 space-y-3">
+          <h2>Related reporting</h2>
+          <ul>
+            {article.relatedContent.map((item) => (
+              <li key={item.id}>
+                <a href={item.href} className="underline">
+                  {item.title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+      ) : null}
+
       {article.taxonomy.sections.length ||
       article.taxonomy.categories.length ||
       article.taxonomy.topics.length ||

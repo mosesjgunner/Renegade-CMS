@@ -26,6 +26,13 @@ export const CORE_COLLECTIONS = new Set([
   'contacts',
   'form-definitions',
   'form-submissions',
+  'quality-policies',
+  'quality-rules',
+  'quality-scans',
+  'quality-issues',
+  'quality-exceptions',
+  'quality-waivers',
+  'quality-reports',
 ])
 
 export function applyProgressiveDisclosure(

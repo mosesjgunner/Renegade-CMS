@@ -27,3 +27,7 @@ Unconditional real-customer upgrade proof, universal provider support, and produ
 An advertised feature must be VERIFIED, VERIFIED WITH CONFIGURED PROVIDER REQUIRED, or DEGRADED BUT SAFE. A visible nonfunctional or unsafe feature is BLOCKER unless deliberately hidden/deferred. A hidden/deferred experimental feature may remain implemented but cannot be marketed as RC-ready. Production claims must match observed boundaries. Baseline checks, test source files and historical reports do not confer workflow verification. Registration keys and extra capability IDs in CAPABILITY_LEDGER.md are the status authority; route/provider/security tables inherit their conservative BLOCKER status.
 
 Resource profile (Lean/Standard/Media/Scale) controls heavy-work guidance; RENEGADE_MODULES independently controls registrations. Standard does not mean all modules automatically. Counts report Lean floor, Standard floor and explicitly enabled all separately.
+
+## RC-02 current narrow claim ? 2026-10-03
+
+Source `b684ee11460637bf2177f349057f14d6e804bbbd` passed fresh production Standard/all complete site-build acceptance. The narrow claim ?usable to build and launch a serious self-hosted publishing site? is approved by [RC-02 evidence](evidence/RC-02.md). This updates the earlier no-approved-workflow baseline only for the exact core workflows in the RC-02 ledger appendix. Broader modules/providers/roles and aggregate RC-01 release remain blocked.

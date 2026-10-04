@@ -1,0 +1,466 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "--config",
+      "playwright.rc01.config.ts",
+      "--project",
+      "focused-boundaries",
+      "--no-deps",
+      "--max-failures=1"
+    ],
+    "configFile": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\playwright.rc01.config.ts",
+    "rootDir": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/rc01",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 1,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Projects/RENEGADE CMS/Renegade-CMS/test-results/rc01",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "setup",
+        "name": "setup",
+        "testDir": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/rc01",
+        "testIgnore": [],
+        "testMatch": [
+          "setup.spec.ts"
+        ],
+        "timeout": 90000
+      },
+      {
+        "outputDir": "C:/Projects/RENEGADE CMS/Renegade-CMS/test-results/rc01",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "admin-matrix",
+        "name": "admin-matrix",
+        "testDir": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/rc01",
+        "testIgnore": [],
+        "testMatch": [
+          "routes.spec.ts"
+        ],
+        "timeout": 90000
+      },
+      {
+        "outputDir": "C:/Projects/RENEGADE CMS/Renegade-CMS/test-results/rc01",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "focused-boundaries",
+        "name": "focused-boundaries",
+        "testDir": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/rc01",
+        "testIgnore": [],
+        "testMatch": [
+          "boundaries.spec.ts"
+        ],
+        "timeout": 90000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "docs/rc/evidence/rc-01/browser-results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.62.1",
+    "workers": 1,
+    "webServer": {
+      "command": "node node_modules/next/dist/bin/next dev --port 3127",
+      "url": "http://localhost:3127/api/setup/readiness",
+      "reuseExistingServer": false,
+      "timeout": 120000,
+      "env": {
+        "DATABASE_URL": "postgresql://renegade:renegade_dev_only@localhost:5432/renegade_rc01_20261003_v3_release_acceptance",
+        "PAYLOAD_SECRET": "rc01-isolated-local-session-secret-0123456789",
+        "APP_URL": "http://localhost:3127",
+        "PORT": "3127",
+        "HOSTNAME": "localhost",
+        "NODE_ENV": "development",
+        "DEPLOYMENT_PROFILE": "Standard",
+        "RENEGADE_MODULES": "all",
+        "RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT": "false",
+        "LOCAL_E2E_TEST_MODE": "false",
+        "ENABLE_TEST_ROUTES": "false",
+        "MEDIA_DIR": "./scratch/rc01-media",
+        "EMAIL_MODE": "disabled"
+      }
+    }
+  },
+  "suites": [
+    {
+      "title": "boundaries.spec.ts",
+      "file": "boundaries.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "authenticated integration boundaries",
+          "file": "boundaries.spec.ts",
+          "line": 3,
+          "column": 6,
+          "specs": [
+            {
+              "title": "menus load canonical published targets without invalid enum values",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "focused-boundaries",
+                  "projectName": "focused-boundaries",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 174,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-04T00:29:53.642Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a0a85330a59013ae9a19-902a73eeb5584e07df43",
+              "file": "boundaries.spec.ts",
+              "line": 5,
+              "column": 3
+            },
+            {
+              "title": "audience reports unavailable without fabricated campaigns",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "focused-boundaries",
+                  "projectName": "focused-boundaries",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 61,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-04T00:29:53.841Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a0a85330a59013ae9a19-7bd1261b8c2da6fe1509",
+              "file": "boundaries.spec.ts",
+              "line": 19,
+              "column": 3
+            },
+            {
+              "title": "moderation exposes its blocked authorization state instead of an empty successful report",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "focused-boundaries",
+                  "projectName": "focused-boundaries",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 5083,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-04T00:29:53.908Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a0a85330a59013ae9a19-6a991647c711ab2c52ad",
+              "file": "boundaries.spec.ts",
+              "line": 26,
+              "column": 3
+            },
+            {
+              "title": "social does not mount demo operational controls",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "focused-boundaries",
+                  "projectName": "focused-boundaries",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1779,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-04T00:29:59.079Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a0a85330a59013ae9a19-eda11253a1dd9366c674",
+              "file": "boundaries.spec.ts",
+              "line": 40,
+              "column": 5
+            },
+            {
+              "title": "fulfillment does not mount demo operational controls",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "focused-boundaries",
+                  "projectName": "focused-boundaries",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1352,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-04T00:30:00.869Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a0a85330a59013ae9a19-71beeaa77052eb2e8659",
+              "file": "boundaries.spec.ts",
+              "line": 40,
+              "column": 5
+            }
+          ]
+        },
+        {
+          "title": "anonymous integration boundaries",
+          "file": "boundaries.spec.ts",
+          "line": 49,
+          "column": 6,
+          "specs": [
+            {
+              "title": "social redirects before privileged client mounting",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "focused-boundaries",
+                  "projectName": "focused-boundaries",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1144,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-04T00:30:02.231Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a0a85330a59013ae9a19-933392b9f798499c1d44",
+              "file": "boundaries.spec.ts",
+              "line": 51,
+              "column": 5
+            },
+            {
+              "title": "fulfillment redirects before privileged client mounting",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "focused-boundaries",
+                  "projectName": "focused-boundaries",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 975,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-04T00:30:03.382Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a0a85330a59013ae9a19-53a6d4a87a4071b5d502",
+              "file": "boundaries.spec.ts",
+              "line": 51,
+              "column": 5
+            },
+            {
+              "title": "audience redirects before privileged client mounting",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "focused-boundaries",
+                  "projectName": "focused-boundaries",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1198,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-04T00:30:04.364Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a0a85330a59013ae9a19-4307ca95a51018e52685",
+              "file": "boundaries.spec.ts",
+              "line": 51,
+              "column": 5
+            },
+            {
+              "title": "audience API denies anonymous access",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 90000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "focused-boundaries",
+                  "projectName": "focused-boundaries",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 30,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-04T00:30:05.570Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "a0a85330a59013ae9a19-42d5de983e2ff5910eec",
+              "file": "boundaries.spec.ts",
+              "line": 61,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-04T00:29:50.002Z",
+    "duration": 15901.602,
+    "expected": 9,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

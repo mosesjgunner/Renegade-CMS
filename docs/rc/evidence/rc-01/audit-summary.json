@@ -1,0 +1,31 @@
+{
+  "baseSha": "6818864c9e601860d6a7c7874ae02fd0b7fdb48d",
+  "workingTree": true,
+  "configuredRoutes": 42,
+  "additionalWorkspaceCandidates": 15,
+  "ownerLoadPasses": [
+    "/admin",
+    "/admin/capabilities",
+    "/admin/security",
+    "/admin/posts",
+    "/admin/pages",
+    "/admin/navigation",
+    "/admin/media-library",
+    "/admin/indexing",
+    "/admin/redirects",
+    "/admin/rendered-quality",
+    "/admin/workflow",
+    "/admin/releases",
+    "/admin/email-composer",
+    "/admin/audience"
+  ],
+  "verdict": "BLOCKED",
+  "stats": {
+    "startTime": "2026-10-04T00:22:17.362Z",
+    "duration": 59449.761999999995,
+    "expected": 16,
+    "skipped": 156,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

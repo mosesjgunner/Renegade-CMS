@@ -80,6 +80,8 @@ export function DiscoveryPanel() {
   const { id, lastUpdateTime } = useDocumentInfo()
   const [inspection, setInspection] = useState<Inspection | null>(null)
   const [error, setError] = useState('')
+  const [previewUrl, setPreviewUrl] = useState('')
+  const [previewBusy, setPreviewBusy] = useState(false)
   useEffect(() => {
     if (!id) return
     let active = true
@@ -109,6 +111,39 @@ export function DiscoveryPanel() {
   }
   return (
     <section aria-label="Discovery preview" style={{ display: 'grid', gap: 16 }}>
+      <div>
+        <button
+          type="button"
+          disabled={previewBusy}
+          onClick={async () => {
+            setPreviewBusy(true)
+            try {
+              const response = await fetch('/api/admin/content/preview', {
+                method: 'POST',
+                headers: { 'content-type': 'application/json' },
+                body: JSON.stringify({ id: String(id) }),
+              })
+              const body = await response.json()
+              if (!response.ok) throw new Error(body.error)
+              setPreviewUrl(body.url)
+            } catch (reason) {
+              setError(reason instanceof Error ? reason.message : 'Preview unavailable.')
+            } finally {
+              setPreviewBusy(false)
+            }
+          }}
+        >
+          Create saved draft preview
+        </button>
+        {previewUrl && (
+          <p>
+            <a href={previewUrl} target="_blank" rel="noreferrer">
+              Open saved draft preview
+            </a>{' '}
+            (expires in 30 minutes)
+          </p>
+        )}
+      </div>
       <div style={{ padding: 12, border: '1px solid var(--theme-elevation-150)', borderRadius: 6 }}>
         <strong>
           {inspection.document.indexability.indexable ? 'Indexable' : 'Not indexable'}

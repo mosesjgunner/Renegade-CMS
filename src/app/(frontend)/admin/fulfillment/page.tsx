@@ -1,5 +1,10 @@
-import { FulfillmentCommandCenter } from '@/modules/admin/FulfillmentCommandCenter'
+import UnavailableWorkspace from '@/modules/admin/UnavailableWorkspace'
 
 export default function FulfillmentAdminPage() {
-  return <FulfillmentCommandCenter />
+  return (
+    <UnavailableWorkspace
+      title="POD & Fulfillment"
+      reason="Fulfillment command-center actions are unavailable pending persisted mappings, jobs, and provider verification."
+    />
+  )
 }

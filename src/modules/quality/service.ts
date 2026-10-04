@@ -457,6 +457,8 @@ export async function queueQualityScan(
     },
     overrideAccess: true,
   } as never)) as unknown as Doc
+  // The normal collection create path queues the same worker task.
+  if (scan.job) return scan
   const job = (await payload.jobs.queue({
     task: 'quality-scan',
     input: { scanId: String(scan.id) },

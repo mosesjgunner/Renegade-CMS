@@ -42,7 +42,7 @@ export async function GET(request: Request) {
     where: {
       and: [
         ...(site ? [{ site: { equals: site } }] : []),
-        { status: { in: ['published', 'active'] } },
+        { status: { in: ['published', 'updated'] } },
       ],
     } as never,
     limit: 100,

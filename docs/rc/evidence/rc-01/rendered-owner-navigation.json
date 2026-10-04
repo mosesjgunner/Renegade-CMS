@@ -1,0 +1,182 @@
+[
+  {
+    "href": "/admin",
+    "text": "Dashboard"
+  },
+  {
+    "href": "/admin/posts",
+    "text": "Posts"
+  },
+  {
+    "href": "/admin/pages",
+    "text": "Pages"
+  },
+  {
+    "href": "/admin/collections/page-layouts",
+    "text": "Layouts"
+  },
+  {
+    "href": "/admin/media-library",
+    "text": "Media"
+  },
+  {
+    "href": "/admin/collections/podcast-shows",
+    "text": "Podcasts"
+  },
+  {
+    "href": "/admin/navigation",
+    "text": "Menus"
+  },
+  {
+    "href": "/admin/indexing",
+    "text": "Indexing"
+  },
+  {
+    "href": "/admin/redirects",
+    "text": "Redirects"
+  },
+  {
+    "href": "/admin/rendered-quality",
+    "text": "Rendered Quality"
+  },
+  {
+    "href": "/admin/workflow",
+    "text": "Editorial Workflow"
+  },
+  {
+    "href": "/admin/releases",
+    "text": "Releases"
+  },
+  {
+    "href": "/admin/ai",
+    "text": "AI Studio"
+  },
+  {
+    "href": "/admin/social",
+    "text": "Social Distribution"
+  },
+  {
+    "href": "/admin/email-composer",
+    "text": "Email Composer"
+  },
+  {
+    "href": "/admin/audience",
+    "text": "Audience"
+  },
+  {
+    "href": "/admin/moderation",
+    "text": "Community Moderation"
+  },
+  {
+    "href": "/admin/telemetry",
+    "text": "Telemetry & Experiments"
+  },
+  {
+    "href": "/admin/catalog",
+    "text": "Catalog"
+  },
+  {
+    "href": "/admin/commerce",
+    "text": "Commerce Operations"
+  },
+  {
+    "href": "/admin/fulfillment",
+    "text": "POD & Fulfillment"
+  },
+  {
+    "href": "/",
+    "text": "View Site"
+  },
+  {
+    "href": "/admin/capabilities",
+    "text": "Capability Center"
+  },
+  {
+    "href": "/admin/security",
+    "text": "Security"
+  },
+  {
+    "href": "/admin/collections/sites",
+    "text": "Sites"
+  },
+  {
+    "href": "/admin/collections/users",
+    "text": "Users"
+  },
+  {
+    "href": "/admin/globals/site-settings",
+    "text": "Site Settings"
+  },
+  {
+    "href": "/admin/globals/network-settings",
+    "text": "Network"
+  },
+  {
+    "href": "/admin/collections/page-layouts",
+    "text": "Page Layouts"
+  },
+  {
+    "href": "/admin/collections/brands",
+    "text": "Brands"
+  },
+  {
+    "href": "/admin/collections/authors",
+    "text": "Authors"
+  },
+  {
+    "href": "/admin/collections/publications",
+    "text": "Publications"
+  },
+  {
+    "href": "/admin/collections/content",
+    "text": "All content"
+  },
+  {
+    "href": "/admin/collections/media-assets",
+    "text": "Media Assets"
+  },
+  {
+    "href": "/admin/collections/sections",
+    "text": "Sections"
+  },
+  {
+    "href": "/admin/collections/categories",
+    "text": "Categories"
+  },
+  {
+    "href": "/admin/collections/topics",
+    "text": "Topics"
+  },
+  {
+    "href": "/admin/collections/tags",
+    "text": "Tags"
+  },
+  {
+    "href": "/admin/collections/discussions",
+    "text": "Discussions"
+  },
+  {
+    "href": "/admin/collections/discussion-posts",
+    "text": "Discussion Posts"
+  },
+  {
+    "href": "/admin/collections/form-definitions",
+    "text": "Form Definitions"
+  },
+  {
+    "href": "/admin/collections/form-submissions",
+    "text": "Form Submissions"
+  },
+  {
+    "href": "/admin/collections/subscribers",
+    "text": "Subscribers"
+  },
+  {
+    "href": "/admin/collections/contacts",
+    "text": "Contacts"
+  },
+  {
+    "href": "/admin/logout",
+    "text": ""
+  }
+]

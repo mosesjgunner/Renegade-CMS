@@ -2,6 +2,19 @@ import { describe, expect, it, vi } from 'vitest'
 import { inspectRenderedHtml, runRenderedAudit } from '../../src/modules/public/discovery-audit'
 
 describe('DISC-05 rendered audit', () => {
+  it('checks uncrawled navigation links over HTTP and excludes resource hints and fragment duplicates', async () => {
+    const fetcher = vi.fn<typeof fetch>(async (url) => new Response(
+      '<title>Dispatch public page</title><h1 id="intro">Dispatch</h1><link rel="stylesheet" href="/style.css"><a href="#intro">Intro</a><a href="/search">Search</a><a href="/missing">Missing</a>',
+      { status: String(url).endsWith('/missing') ? 404 : 200 },
+    ))
+    const result = await runRenderedAudit({ origin: 'https://example.test', paths: ['/'],
+      fetcher, resolve: async () => [{ address: '93.184.216.34' }],
+    })
+    expect(fetcher).toHaveBeenCalledTimes(3)
+    expect(result.graph.map((link) => link.status)).toEqual([200, 200, 404])
+    expect(result.issues.filter((item) => item.ruleId === 'DISC-05-INTERNAL-LINK-UNREACHABLE'))
+      .toEqual([expect.objectContaining({ evidence: expect.stringContaining('/missing') })])
+  })
   it('uses rendered output for deterministic repairable findings', () => {
     const page = inspectRenderedHtml(
       'https://example.test/a',

@@ -1,3 +1,5 @@
+> RC-02 PASS on source `b684ee11460637bf2177f349057f14d6e804bbbd`: complete fresh Standard/all site-build journey and restart verified. [Evidence](rc/evidence/RC-02.md). NEXT: RC-03. Broader RC-01/release blockers remain open.
+
 > Historical release snapshot. Current release truth for source SHA e24fc53d9e370e28f01398c561b0f5adc4884756 is the [RC ledger](rc/README.md). Prior VERIFIED/PASS labels and test/migration counts below do not establish current readiness. RC release verdict: BLOCKED; see the ledger and dependency-ordered blockers.
 
 ## Shared Contract Gate — Affiliate, POD Fulfillment & Worker Health Conformance Verified — 2026-09-24

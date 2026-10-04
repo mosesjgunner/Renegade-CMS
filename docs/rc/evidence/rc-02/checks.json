@@ -1,0 +1,25 @@
+{
+  "unit": {
+    "files": 19,
+    "passed": 100
+  },
+  "integration": {
+    "files": 6,
+    "passed": 24
+  },
+  "verify:presentation-bundles": "PASS",
+  "typecheck": "PASS",
+  "lint": "PASS",
+  "build": "PASS",
+  "RC-02 browser": {
+    "startTime": "2026-10-04T04:05:41.848Z",
+    "duration": 49249.817,
+    "expected": 1,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "checksExit": 0,
+  "testsExit": 0,
+  "browserExit": 0
+}
