@@ -18,7 +18,8 @@ export async function GET(request: Request) {
   if (!siteId) return Response.json({ error: 'Community site unavailable.' }, { status: 404 })
   const profile = await payload.find({
     collection: 'profiles',
-    where: { and: [{ member: { equals: memberId } }, { site: { equals: siteId } }] },
+    // Profiles belong to the global member identity; site-scoped profiles use spaces.
+    where: { member: { equals: memberId } },
     limit: 1,
     depth: 0,
     overrideAccess: true,

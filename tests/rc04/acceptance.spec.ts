@@ -8,9 +8,12 @@ const workerMode = () =>
     ? JSON.parse(readFileSync('scratch/rc04-worker-restart.json', 'utf8')).mode
     : 'starting'
 const decoded = (raw: string) =>
-  raw
-    .replace(/=\r\n/g, '')
-    .replace(/=([0-9A-F]{2})/gi, (_, code) => String.fromCharCode(parseInt(code, 16)))
+  Buffer.from(
+    raw
+      .replace(/=\r\n/g, '')
+      .replace(/=([0-9A-F]{2})/gi, (_, code) => String.fromCharCode(parseInt(code, 16))),
+    'latin1',
+  ).toString('utf8')
 function mails(email: string) {
   return readdirSync('scratch/rc04-mail')
     .filter((name) => name.endsWith('.json'))
@@ -192,6 +195,7 @@ test('visitor newsletter, real MIME, suppression, re-subscribe and operator deli
     expect(newsletter.raw).toContain('MIME-Version: 1.0')
     expect(newsletter.raw).toMatch(/Content-Type: multipart\/alternative/)
     expect(newsletter.raw).toMatch(/charset=utf-8/i)
+    expect(decoded(newsletter.raw)).toContain('RC04 café and civic updates')
     expect(newsletter.raw).toContain('List-Unsubscribe-Post: List-Unsubscribe=One-Click')
     const preference = link(newsletter, '/subscribe/preferences')
     const unsubscribe = link(newsletter, '/unsubscribe')
@@ -621,7 +625,7 @@ test('real members, forum reply notification, preferences, moderation, private m
       'GET',
       `/api/community/posts?siteId=${site.id}&discussionId=${thread.discussion.id}`,
       undefined,
-      404,
+      403,
     )
     const privateView = await alice.goto(thread.discussion.canonicalPath)
     expect(privateView?.status()).toBe(404)
