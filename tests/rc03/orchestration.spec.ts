@@ -391,7 +391,9 @@ test('RC-03 cross-surface orchestration, pending-worker restart, partial failure
     ).doc
     await api('PATCH', `/api/events/${event.id}`, { status: 'published' })
     await page.goto(`/admin/collections/events/${event.id}`)
-    await expect(page.getByRole('textbox', { name: 'Title *', exact: true })).toHaveValue(event.title)
+    await expect(page.getByRole('textbox', { name: 'Title *', exact: true })).toHaveValue(
+      event.title,
+    )
     await page.goto(event.canonicalPath)
     await expect(page.getByRole('heading', { name: event.title, exact: true })).toBeVisible()
     await api(
