@@ -322,7 +322,7 @@ test('visitor newsletter, real MIME, suppression, re-subscribe and operator deli
     await page.goto('/admin/email-composer')
     await page.getByLabel('Delivery ID').fill(disabled.id!)
     await page.getByRole('button', { name: 'Retry delivery' }).click()
-    await expect(page.getByRole('status')).toContainText('Retry queued')
+    await expect(page.locator('main p[role="status"]')).toContainText('Retry queued')
     await delivered(email, 'RC04 unconfigured recovery')
     await expect
       .poll(
@@ -592,7 +592,9 @@ test('real members, forum reply notification, preferences, moderation, private m
       .getByLabel('Audit Reason (required)', { exact: true })
       .fill('Acceptance evidence')
     await moderator.getByRole('button', { name: 'Execute Decision', exact: true }).click()
-    await expect(moderator.getByRole('status')).toContainText('successfully applied')
+    await expect(
+      moderator.getByRole('status').filter({ hasText: 'successfully applied' }),
+    ).toBeVisible()
     await moderator.screenshot({ path: `${evidence}/moderation-action.png`, fullPage: true })
     const audit = await api(moderator, 'GET', `/api/community/moderation?siteId=${site.id}`)
     expect(audit.auditLog.length).toBeGreaterThan(0)
