@@ -5,6 +5,7 @@ import {
   replyToForumThread,
   resolveCommunityActor,
   CommunityError,
+  listDiscussionComments,
 } from '@/modules/community/service'
 
 export async function POST(request: Request) {
@@ -56,16 +57,15 @@ export async function GET(request: Request) {
     return Response.json({ error: 'discussionId is required' }, { status: 400 })
   }
 
-  const posts = await payload.find({
-    collection: 'discussion-posts',
-    where: {
-      and: [{ discussion: { equals: discussionId } }, { status: { not_equals: 'removed' } }],
-    },
-    sort: 'displayOrder',
-    limit: 100,
-    depth: 1,
-    overrideAccess: true,
-  })
-
-  return Response.json({ posts: posts.docs })
+  const siteId = url.searchParams.get('siteId') ?? ''
+  if (!siteId) return Response.json({ error: 'siteId is required' }, { status: 400 })
+  const actor = await resolveCommunityActor(payload, request.headers, siteId)
+  try {
+    const posts = await listDiscussionComments(payload, discussionId, { siteId, actor })
+    return Response.json({ posts }, { headers: { 'cache-control': 'private, no-store' } })
+  } catch (error) {
+    if (error instanceof CommunityError)
+      return Response.json({ error: error.message }, { status: error.status })
+    return Response.json({ error: 'Discussion unavailable' }, { status: 404 })
+  }
 }

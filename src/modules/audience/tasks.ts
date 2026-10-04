@@ -134,7 +134,7 @@ export const emailDeliveryTask = {
       })
       return { output: {} }
     }
-    const rendered = snapshot.messageDesign
+    let rendered = snapshot.messageDesign
       ? renderEmailDesign(snapshot.messageDesign, {
           origin: process.env.APP_URL ?? 'http://localhost:3000',
           recipient: snapshot.recipientPreview,
@@ -146,7 +146,7 @@ export const emailDeliveryTask = {
     let unsubscribeToken = delivery.unsubscribeToken as string | undefined
     if (category === 'marketing' && !unsubscribeToken && delivery.subscriber) {
       unsubscribeToken = await issueAudienceAccessToken(req.payload, {
-        siteId: String(message.site),
+        siteId,
         subscriberId: String((delivery.subscriber as Doc).id ?? delivery.subscriber),
         purpose: 'unsubscribe',
       })
@@ -160,12 +160,45 @@ export const emailDeliveryTask = {
     const unsubscribeUrl = unsubscribeToken
       ? `${new URL('/unsubscribe', process.env.APP_URL ?? 'http://localhost:3000').toString()}?token=${encodeURIComponent(unsubscribeToken)}`
       : undefined
+    const preferenceToken =
+      category === 'marketing' && delivery.subscriber
+        ? await issueAudienceAccessToken(req.payload, {
+            siteId,
+            subscriberId: String((delivery.subscriber as Doc).id ?? delivery.subscriber),
+            purpose: 'preferences',
+          })
+        : undefined
+    const preferenceUrl = preferenceToken
+      ? `${new URL('/subscribe/preferences', process.env.APP_URL ?? 'http://localhost:3000')}?token=${encodeURIComponent(preferenceToken)}`
+      : undefined
+    if (snapshot.messageDesign && unsubscribeUrl && preferenceUrl) {
+      rendered = renderEmailDesign(
+        {
+          ...snapshot.messageDesign,
+          blocks: snapshot.messageDesign.blocks.map((block: Doc) =>
+            block.type === 'legal' ? { ...block, preferenceUrl, unsubscribeUrl } : block,
+          ),
+        },
+        {
+          origin: process.env.APP_URL ?? 'http://localhost:3000',
+          recipient: snapshot.recipientPreview,
+        },
+      )
+    }
+    const footerText =
+      unsubscribeUrl && !snapshot.messageDesign
+        ? `\n\nUnsubscribe: ${unsubscribeUrl}\nManage preferences: ${preferenceUrl}`
+        : ''
+    const footerHtml =
+      unsubscribeUrl && !snapshot.messageDesign
+        ? `<footer><a href="${unsubscribeUrl}">Unsubscribe</a> · <a href="${preferenceUrl}">Manage preferences</a></footer>`
+        : ''
     const result = await adapter.send({
       from: loadConfig().email.from ?? '',
       to: delivery.recipientEmail,
       subject: String(snapshot.subject ?? 'Renegade notification'),
-      text: rendered.text,
-      html: rendered.html,
+      text: rendered.text + footerText,
+      html: rendered.html ? rendered.html + footerHtml : undefined,
       idempotencyKey: delivery.idempotencyKey,
       category,
       replyTo: snapshot.senderIdentity?.replyTo,
@@ -173,7 +206,7 @@ export const emailDeliveryTask = {
       headers:
         category === 'marketing' && unsubscribeUrl
           ? {
-              'List-Unsubscribe': `<${unsubscribeUrl}>`,
+              'List-Unsubscribe': `<${new URL('/api/subscribers/unsubscribe', process.env.APP_URL ?? 'http://localhost:3000')}?token=${encodeURIComponent(unsubscribeToken!)}>`,
               'List-Unsubscribe-Post': 'List-Unsubscribe=One-Click',
               'X-Renegade-Purpose': String(snapshot.purpose ?? 'newsletter'),
             }
@@ -190,7 +223,9 @@ export const emailDeliveryTask = {
           acceptedAt: new Date().toISOString(),
           rfcMessageId: `<${createHash('sha256').update(String(delivery.idempotencyKey)).digest('hex').slice(0, 32)}@renegade.local>`,
           renderHash: createHash('sha256')
-            .update(`${rendered.text}\n${rendered.html ?? ''}`)
+            .update(
+              `${rendered.text + footerText}\n${rendered.html ? rendered.html + footerHtml : ''}`,
+            )
             .digest('base64url'),
           outcome: { acceptedAt: new Date().toISOString(), delivery: 'not-observed' },
         },

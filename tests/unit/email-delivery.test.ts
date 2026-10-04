@@ -30,6 +30,20 @@ const request = {
 }
 
 describe('email delivery adapters', () => {
+  it('classifies actual SMTP recipient envelope rejections by their status rather than as authentication failures', () => {
+    expect(normalizeEmailError({ code: 'EENVELOPE', responseCode: 451 })).toMatchObject({
+      kind: 'retryable',
+      code: 'temporary_provider_error',
+    })
+    expect(normalizeEmailError({ code: 'EENVELOPE', responseCode: 550 })).toMatchObject({
+      kind: 'permanent',
+      code: 'permanent_recipient_error',
+    })
+    expect(normalizeEmailError({ code: 'EAUTH', responseCode: 535 })).toMatchObject({
+      kind: 'permanent',
+      code: 'authentication_failed',
+    })
+  })
   it('captures development mail and makes disabled mode an explicit non-retryable outcome', async () => {
     resetLocalMailSink()
     await expect(

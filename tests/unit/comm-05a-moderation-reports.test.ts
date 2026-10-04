@@ -96,6 +96,8 @@ describe('COMM-05A moderation policy registry and report evidence', () => {
   it('uses site-bound target lookups for cross-site report rejection', async () => {
     const source = await import('@/modules/community/moderation-reports')
     expect(source.moderationTargetTypes).toEqual([
+      'post',
+      'discussion',
       'comment',
       'forum_post',
       'forum_topic',

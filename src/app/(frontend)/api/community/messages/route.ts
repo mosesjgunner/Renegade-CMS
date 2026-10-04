@@ -30,7 +30,7 @@ export async function GET(request: Request) {
     })
     return Response.json({ messages }, { headers: { 'cache-control': 'private, no-store' } })
   } catch (err: unknown) {
-    if (err instanceof CommunityError) {
+    if (err instanceof CommunityError || err instanceof ConversationError) {
       return Response.json({ error: err.message, code: err.code }, { status: err.status })
     }
     return Response.json({ error: 'Failed to retrieve messages' }, { status: 500 })

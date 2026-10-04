@@ -4,7 +4,11 @@ import { authorizeAudienceAccess, suppressSubscriber } from '@/modules/audience/
 export async function POST(request: Request) {
   const body = (await request.json().catch(() => ({}))) as { token?: string }
   const payload = await getPayload({ config })
-  const claims = await authorizeAudienceAccess(payload, body.token ?? '', 'unsubscribe')
+  const claims = await authorizeAudienceAccess(
+    payload,
+    body.token ?? new URL(request.url).searchParams.get('token') ?? '',
+    'unsubscribe',
+  )
   if (!claims) return Response.json({ error: 'Invalid unsubscribe link.' }, { status: 400 })
   const subscriber = await payload.findByID({
     collection: 'subscribers',

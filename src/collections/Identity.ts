@@ -275,7 +275,7 @@ export const Profiles: CollectionConfig = {
 export const Spaces: CollectionConfig = {
   slug: 'spaces',
   admin: { useAsTitle: 'handle', group: 'Community' },
-  access: { create: staffOnly, delete: staffOnly, read: () => true, update: staffOnly },
+  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
   hooks: { beforeChange: [enforceSiteTenantBoundary([])] },
   fields: [
     { name: 'site', type: 'relationship', relationTo: 'sites', required: true, index: true },

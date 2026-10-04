@@ -45,7 +45,6 @@ import {
   WorkflowItems,
 } from '../../collections/Audience'
 import type { DomainDefinition } from '../core/payload-domains'
-import { telecomTasks } from '../telecom/tasks'
 import { audienceTasks } from './tasks'
 
 export const audienceDomain: DomainDefinition = {
@@ -96,5 +95,6 @@ export const audienceDomain: DomainDefinition = {
     AudienceFrequencyPolicies,
     AudienceExperiments,
   ],
-  tasks: [...audienceTasks, ...telecomTasks],
+  // Telecom remains a contract-tested deferred capability; no shipping dispatcher may send it.
+  tasks: audienceTasks,
 }

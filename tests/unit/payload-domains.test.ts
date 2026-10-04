@@ -60,8 +60,6 @@ describe('Payload domain registration', () => {
         'social-publish',
         'audience-email-delivery',
         'audience-newsletter-dispatch',
-        'audience-telecom-delivery',
-        'audience-telecom-dispatch',
         'commerce-abandon-checkouts',
         'commerce-process-payment-event',
         'commerce-reconcile-payments',

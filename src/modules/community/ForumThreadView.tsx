@@ -70,7 +70,7 @@ export function ForumThreadView({
 
       // Refresh posts list
       const fetchPosts = await fetch(
-        `/api/community/posts?discussionId=${encodeURIComponent(discussionId)}`,
+        `/api/community/posts?siteId=${encodeURIComponent(siteId)}&discussionId=${encodeURIComponent(discussionId)}`,
       )
       if (fetchPosts.ok) {
         const result = await fetchPosts.json()
@@ -121,7 +121,7 @@ export function ForumThreadView({
         headers: { 'content-type': 'application/json', ...csrfHeader() },
         body: JSON.stringify({
           siteId,
-          targetType: 'forum_post',
+          targetType: 'post',
           targetId: reportingPostId,
           reason: reportReason,
           details: reportDetails,

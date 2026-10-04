@@ -312,7 +312,11 @@ export async function requestDoubleOptIn(
       wording: input.consentWording,
       locale: input.locale,
       occurredAt: now(),
-      evidence: { source: input.source, membership: membership.id },
+      evidence: {
+        source: input.source,
+        membership: membership.id,
+        wordingVersion: 'newsletter-v1',
+      },
     },
     overrideAccess: true,
   })
@@ -335,6 +339,25 @@ export async function confirmDoubleOptIn(payload: Store, token: string) {
   const confirmation = found.docs[0] as Doc | undefined
   if (!confirmation || confirmation.usedAt || new Date(confirmation.expiresAt) <= new Date())
     throw new Error('This confirmation link is invalid or has already been used.')
+  const subject = await payload.findByID({
+    collection: 'subscribers',
+    id: relationId(confirmation.subscriber),
+    depth: 0,
+    overrideAccess: true,
+  })
+  const prohibited = await payload.find({
+    collection: 'suppressions',
+    where: {
+      and: [
+        { site: { equals: relationId(confirmation.site) ?? relationId(subject.site) } },
+        { emailHash: { equals: subject.emailHash } },
+        { reason: { not_equals: 'unsubscribe' } },
+      ],
+    },
+    limit: 1,
+    overrideAccess: true,
+  })
+  if (prohibited.docs.length) throw new Error('This address cannot be subscribed.')
   const timestamp = now()
   await payload.update({
     collection: 'subscriber-confirmation-tokens',
@@ -530,7 +553,7 @@ export async function canDeliverToSubscriber(
   })) as Doc
   if (
     subscriber.status !== 'active' ||
-    String(subscriber.site) !== input.siteId ||
+    relationId(subscriber.site) !== input.siteId ||
     String(subscriber.email).trim().toLowerCase() !== input.recipientEmail.trim().toLowerCase()
   )
     return false
@@ -602,7 +625,14 @@ export async function queueNewsletterDeliveries(payload: Store, messageId: strin
       for (const membership of memberships.docs as Doc[]) {
         const subscriber = membership.subscriber as Doc
         if (!subscriber?.email || subscriber.status !== 'active') continue
-        if (await isSubscriberSuppressed(payload, String(message.site), subscriber.emailHash))
+        if (relationId(subscriber.site) !== relationId(message.site)) continue
+        if (
+          await isSubscriberSuppressed(
+            payload,
+            relationId(message.site) ?? '',
+            subscriber.emailHash,
+          )
+        )
           continue
         const key = deliveryIdempotencyKey(messageId, subscriber.id)
         const exists = await payload.find({
@@ -626,6 +656,9 @@ export async function queueNewsletterDeliveries(payload: Store, messageId: strin
                 blocks: message.blocks,
                 kind: message.kind,
                 reviewedAt: message.reviewedAt,
+                messageDesign: message.messageDesign,
+                purpose: message.purpose,
+                senderIdentity: message.senderIdentity,
               },
             },
             overrideAccess: true,

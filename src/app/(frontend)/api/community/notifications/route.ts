@@ -35,12 +35,24 @@ export async function GET(request: Request) {
       actor,
     })
 
+    const projected = canonicalNotifications.map((item) => {
+      const event = item.activityEvent as { type?: string; payload?: Record<string, unknown> }
+      return {
+        id: item.id,
+        kind: event?.type,
+        snapshot: event?.payload,
+        createdAt: item.createdAt,
+        read: item.status === 'read',
+      }
+    })
     return Response.json({
-      notifications:
-        inboxResult.notifications.length > 0 ? inboxResult.notifications : canonicalNotifications,
+      notifications: inboxResult.notifications.length > 0 ? inboxResult.notifications : projected,
       inboxNotifications: inboxResult.notifications,
       canonicalNotifications,
-      unreadCount: inboxResult.unreadCount,
+      unreadCount:
+        inboxResult.notifications.length > 0
+          ? inboxResult.unreadCount
+          : projected.filter((item) => !item.read).length,
     })
   } catch (err: unknown) {
     if (err instanceof CommunityError) {
@@ -75,20 +87,23 @@ export async function PATCH(request: Request) {
       // Ignored if table not matching
     }
 
-    if (notificationId) {
-      try {
+    const owned = await getMemberNotifications(payload, actor.memberId, { siteId, actor })
+    for (const item of owned) {
+      if (!notificationId || String(item.id) === notificationId) {
         await payload.update({
           collection: 'notifications' as any,
-          id: notificationId,
-          data: { read: true },
+          id: String(item.id),
+          data: { status: 'read' },
           overrideAccess: true,
         })
-      } catch {
-        // Ignored if not found in payload collection
       }
     }
 
-    return Response.json({ success: true, unreadCount })
+    const remaining = await getMemberNotifications(payload, actor.memberId, { siteId, actor })
+    return Response.json({
+      success: true,
+      unreadCount: unreadCount + remaining.filter((item) => item.status !== 'read').length,
+    })
   } catch (err: unknown) {
     if (err instanceof CommunityError) {
       return Response.json({ error: err.message, code: err.code }, { status: err.status })

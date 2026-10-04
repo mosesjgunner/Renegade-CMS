@@ -85,7 +85,7 @@ export async function GET(request: Request) {
 
     const casesRes = await query(
       `SELECT c.id, c.site_id AS "siteId", c.target_type AS "targetType", c.target_id AS "targetId",
-              c.status, c.created_at AS "createdAt", c.last_reported_at AS "lastReportedAt"
+              c.status, c.opened_at AS "createdAt", c.last_reported_at AS "lastReportedAt"
        FROM moderation_cases c
        WHERE c.site_id = $1
        ORDER BY c.last_reported_at DESC

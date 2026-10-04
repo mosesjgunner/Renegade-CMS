@@ -49,7 +49,7 @@ type AuditRecord = {
 }
 
 export default function CommunityModerationCenter() {
-  const [siteId, setSiteId] = useState('default')
+  const [siteId, setSiteId] = useState('')
   const [reports, setReports] = useState<Report[]>([])
   const [cases, setCases] = useState<ModerationCase[]>([])
   const [actions, setActions] = useState<ModerationActionRecord[]>([])
@@ -110,8 +110,25 @@ export default function CommunityModerationCenter() {
   }, [])
 
   useEffect(() => {
-    void loadData(siteId)
+    if (siteId) void loadData(siteId)
   }, [siteId, loadData])
+
+  useEffect(() => {
+    void fetch('/api/member-auth/me')
+      .then(async (response) => {
+        if (response.ok) setSiteId(String((await response.json()).siteId))
+        else {
+          setDataUnavailable(true)
+          setStatusMessage(
+            'Sign in with a member identity granted moderator access for this site. Admin login alone does not grant community moderation.',
+          )
+        }
+      })
+      .catch(() => {
+        setDataUnavailable(true)
+        setStatusMessage('Could not resolve your community identity.')
+      })
+  }, [])
 
   async function handleApplyAction(e: FormEvent) {
     e.preventDefault()
@@ -131,6 +148,7 @@ export default function CommunityModerationCenter() {
           targetId: selectedReport.targetId,
           action: actionChoice,
           scope: scopeChoice,
+          scopeId: scopeChoice === 'object' ? selectedReport.targetId : null,
           reason: actionReason.trim(),
         }),
       })
@@ -160,6 +178,7 @@ export default function CommunityModerationCenter() {
       <main className="gutter--left gutter--right">
         <h1>Community Moderation</h1>
         <p role="alert">{statusMessage}</p>
+        <a href="/member-auth">Member sign-in</a>
         <button type="button" onClick={() => void loadData(siteId)}>
           Retry moderation access
         </button>
@@ -319,7 +338,6 @@ export default function CommunityModerationCenter() {
                     onChange={(e) => setScopeChoice(e.target.value)}
                   >
                     <option value="object">Object (Target Only)</option>
-                    <option value="space">Space / Section</option>
                     <option value="site_global">Site Global</option>
                   </select>
                 </label>

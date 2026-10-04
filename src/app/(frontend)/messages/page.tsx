@@ -354,8 +354,8 @@ function MessagesContent() {
       >
         <h2>Conversation security</h2>
         <p className="mt-1">
-          Messages use TLS in transit and server storage protection at rest. They are not end-to-end
-          encrypted.
+          Messages are private to conversation participants. Transport and storage protection depend
+          on your deployment. End-to-end encryption is not provided.
         </p>
       </section>
     </main>

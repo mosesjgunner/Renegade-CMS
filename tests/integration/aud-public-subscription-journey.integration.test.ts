@@ -38,6 +38,11 @@ describe('RC-04 Public Subscription Journey & Audience System Integration', () =
     payload = await getPayload({ config })
     demo = await ensureRenegadePartyDemo(payload)
     siteId = demo.siteId
+    await payload.updateGlobal({
+      slug: 'site-settings',
+      data: { canonicalOriginsBySite: { [siteId]: 'http://localhost:3000' } },
+      overrideAccess: true,
+    })
     resetLocalMailSink()
   })
 

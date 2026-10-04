@@ -66,6 +66,7 @@ describe('newsletter snapshot acceptance boundaries', () => {
     const memberships = Array.from({ length: 1002 }, (_, index) => ({
       id: `membership-${index}`,
       subscriber: {
+        site: 'site-1',
         id: `subscriber-${index}`,
         email: `reader-${index}@example.test`,
         emailHash: audienceDigest(`reader-${index}@example.test`),

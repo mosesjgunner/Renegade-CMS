@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 
 type Frequency = 'immediate' | 'daily_digest' | 'weekly_digest' | 'off'
 type Channel = 'in_app' | 'email' | 'sms'
-const channels: Channel[] = ['in_app', 'email', 'sms']
+const channels: Channel[] = ['in_app']
 
 export function NotificationPreferences({ siteId }: { siteId: string }) {
   const [values, setValues] = useState<Partial<Record<Channel, Frequency>>>({})
@@ -47,12 +47,14 @@ export function NotificationPreferences({ siteId }: { siteId: string }) {
           >
             {!values[channel] && <option value="">Loading</option>}
             <option value="immediate">Immediately</option>
-            <option value="daily_digest">Daily digest</option>
-            <option value="weekly_digest">Weekly digest</option>
             <option value="off">Off</option>
           </select>
         </label>
       ))}
+      <p>
+        Email, SMS and digest delivery for community notifications are deferred. Notifications
+        remain in your member inbox.
+      </p>
       <p role="status">{status}</p>
     </section>
   )

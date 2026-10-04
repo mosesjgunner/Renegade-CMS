@@ -1,4 +1,5 @@
 import * as rc03NetworkOutboxIds from './20261004_160000_rc03_network_outbox_ids'
+import * as rc04CanonicalModeration from './20261004_180000_rc04_canonical_moderation'
 import * as pre05LegacySiteMigration from './20260912_050000_pre_05_legacy_site_migration'
 import * as med00 from './20260912_060000_med_00_media_contract'
 import * as med01UploadSessions from './20260912_070000_med_01_upload_sessions'
@@ -641,5 +642,10 @@ export const migrations = [
     up: rc03NetworkOutboxIds.up,
     down: rc03NetworkOutboxIds.down,
     name: '20261004_160000_rc03_network_outbox_ids',
+  },
+  {
+    up: rc04CanonicalModeration.up,
+    down: rc04CanonicalModeration.down,
+    name: '20261004_180000_rc04_canonical_moderation',
   },
 ]

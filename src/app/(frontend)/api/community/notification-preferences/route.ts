@@ -38,6 +38,11 @@ export async function PATCH(request: Request) {
     !frequencies.includes(body.frequency as NotificationFrequency)
   )
     return Response.json({ error: 'Invalid notification preference' }, { status: 400 })
+  if (body.channel !== 'in_app' || !['immediate', 'off'].includes(String(body.frequency)))
+    return Response.json(
+      { error: 'External notifications and digests are deferred.' },
+      { status: 410 },
+    )
   await setMemberNotificationPreference(payload, {
     siteId,
     memberId: actor.memberId,

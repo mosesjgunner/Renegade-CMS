@@ -3,6 +3,8 @@ import type { Payload } from 'payload'
 import { CommunityError } from './service'
 
 export const moderationTargetTypes = [
+  'post',
+  'discussion',
   'comment',
   'forum_post',
   'forum_topic',
@@ -52,11 +54,13 @@ async function transaction<T>(payload: Payload, work: (query: Query) => Promise<
 }
 
 const targetSql: Record<ModerationTargetType, string> = {
+  post: `SELECT p.id, p.body, p.status, p.moderation_state AS "moderationState", p.author_member_id AS "authorId", p.discussion_id AS "discussionId" FROM discussion_posts p JOIN discussions d ON d.id=p.discussion_id WHERE p.id=$1 AND d.site_id=$2`,
+  discussion: `SELECT id,title,status,visibility,owner_id AS "authorId" FROM discussions WHERE id=$1 AND site_id=$2`,
   comment: `SELECT c.id, c.body_raw AS body, c.body_html AS "bodyHtml", c.status, c.created_at AS "createdAt", c.updated_at AS "updatedAt", c.author_id AS "authorId", t.id AS "threadId", t.canonical_content_id AS "canonicalContentId" FROM comments c JOIN comment_threads t ON t.id=c.thread_id WHERE c.id=$1 AND t.site_id=$2`,
   forum_post: `SELECT p.id, p.body_raw AS body, p.body_html AS "bodyHtml", p.created_at AS "createdAt", p.updated_at AS "updatedAt", p.author_id AS "authorId", p.sequence_number AS "sequenceNumber", t.id AS "topicId", t.title AS "topicTitle" FROM forum_posts p JOIN forum_topics t ON t.id=p.topic_id WHERE p.id=$1 AND t.site_id=$2`,
   forum_topic: `SELECT t.id, t.title, t.created_at AS "createdAt", t.updated_at AS "updatedAt", t.author_id AS "authorId", t.space_id AS "spaceId", t.is_locked AS "isLocked", t.is_archived AS "isArchived" FROM forum_topics t WHERE t.id=$1 AND t.site_id=$2`,
   member_profile: `SELECT p.id, p.member_id AS "memberId", p.display_name AS "displayName", p.handle, p.bio, p.visibility, p.updated_at AS "updatedAt" FROM profiles p JOIN member_site_roles r ON r.member_id=p.member_id WHERE p.id=$1 AND r.site_id=$2`,
-  message: `SELECT m.id, m.body_html AS "bodyHtml", m.sequence_number AS "sequenceNumber", m.created_at AS "createdAt", m.sender_id AS "senderId", m.conversation_id AS "conversationId" FROM messages m JOIN conversations c ON c.id=m.conversation_id WHERE m.id=$1 AND c.site_id=$2`,
+  message: `SELECT m.id, m.body_html AS "bodyHtml", m.sequence_number AS "sequenceNumber", m.created_at AS "createdAt", m.sender_id AS "senderId", m.conversation_id AS "conversationId" FROM messages m JOIN conversations c ON c.id=m.conversation_id WHERE m.id=$1 AND c.site_id=$2 AND EXISTS (SELECT 1 FROM conversation_memberships cm WHERE cm.conversation_id=c.id AND cm.member_id=$3 AND cm.left_at IS NULL AND m.sequence_number >= cm.visible_from_sequence)`,
 }
 
 async function resolveSnapshot(
@@ -64,8 +68,14 @@ async function resolveSnapshot(
   siteId: string,
   type: ModerationTargetType,
   id: string,
+  reporterId: string,
 ) {
-  const row = (await query<Record<string, unknown>>(targetSql[type], [id, siteId])).rows[0]
+  const row = (
+    await query<Record<string, unknown>>(
+      targetSql[type],
+      type === 'message' ? [id, siteId, reporterId] : [id, siteId],
+    )
+  ).rows[0]
   if (!row) throw new CommunityError('Report target not found.', 404, 'REPORT_TARGET_NOT_FOUND')
   // A copy is intentional: evidence must not track later edits or tombstones.
   return JSON.parse(
@@ -120,7 +130,13 @@ export async function ingestModerationReport(
   if (!input.reason.trim())
     throw new CommunityError('A report reason is required.', 422, 'REPORT_REASON_REQUIRED')
   return transaction(payload, async (query) => {
-    const snapshot = await resolveSnapshot(query, input.siteId, input.targetType, input.targetId)
+    const snapshot = await resolveSnapshot(
+      query,
+      input.siteId,
+      input.targetType,
+      input.targetId,
+      input.reporterId,
+    )
     const hash = snapshotHash(snapshot)
     // Serialize concurrent reports for this exact site/target without making a 24-hour unique index impossible to expire.
     await query('SELECT pg_advisory_xact_lock(hashtextextended($1, 0))', [

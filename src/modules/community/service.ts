@@ -31,6 +31,7 @@ import {
 import { emitCommunityEvent } from './realtime'
 import { loadProfileProjection } from './profile-projection'
 import { consumeApiRateLimit } from '../integrations/rate-limit'
+import { getMemberNotificationPreference } from './notification-delivery'
 import { assertMemberCanPost, ModerationActionError } from './moderation-actions'
 import {
   readRouteTemplates,
@@ -115,14 +116,30 @@ export async function resolveCommunityActor(
     return { kind: 'anonymous', isStaff: false, isModerator: false }
   }
 
-  // Check moderator role via team-memberships or relationships
+  // Community authority is granted for this site, independently of admin identity.
   let isModerator = false
   if (siteId) {
-    try {
+    const roles = await payload.find({
+      collection: 'member-site-roles',
+      where: {
+        and: [
+          { site: { equals: siteId } },
+          { member: { equals: memberId } },
+          { role: { in: ['moderator', 'community-manager'] } },
+        ],
+      },
+      limit: 1,
+      depth: 0,
+      overrideAccess: true,
+    })
+    isModerator = roles.docs.length > 0
+    if (!isModerator) {
       const memberships = await payload.find({
         collection: 'team-memberships',
         where: {
           and: [
+            { site: { equals: siteId } },
+            { scopeKind: { equals: 'site' } },
             { member: { equals: memberId } },
             { status: { equals: 'active' } },
             { role: { in: ['owner', 'administrator', 'moderator'] } },
@@ -132,11 +149,8 @@ export async function resolveCommunityActor(
         depth: 0,
         overrideAccess: true,
       })
-      if (memberships.docs.length > 0) isModerator = true
-    } catch {
-      // module might not be enabled
+      isModerator = memberships.docs.length > 0
     }
-
     if (!isModerator) {
       try {
         const rels = await payload.find({
@@ -144,6 +158,7 @@ export async function resolveCommunityActor(
           where: {
             and: [
               { subject: { equals: memberId } },
+              { site: { equals: siteId } },
               { role: { in: ['owner', 'moderator'] } },
               { status: { equals: 'active' } },
             ],
@@ -642,6 +657,7 @@ export async function listDiscussionComments(
       visibility: String(discussion.visibility ?? 'public'),
       moderationState: String(discussion.moderationState ?? 'clear'),
       status: String(discussion.status ?? 'open'),
+      ownerId: String(discussion.owner ?? ''),
     },
     'read',
   )
@@ -810,7 +826,22 @@ export async function listDiscussionComments(
     }
   }
 
-  return visible
+  return visible.map((post) => ({
+    ...post,
+    authorMember:
+      typeof post.authorMember === 'object' && post.authorMember
+        ? String((post.authorMember as { id?: string }).id ?? '')
+        : post.authorMember,
+    discussion: discussionId,
+    parent:
+      typeof post.parent === 'object' && post.parent
+        ? String((post.parent as { id?: string }).id ?? '')
+        : post.parent,
+    quote:
+      typeof post.quote === 'object' && post.quote
+        ? String((post.quote as { id?: string }).id ?? '')
+        : post.quote,
+  }))
 }
 
 /**
@@ -1156,6 +1187,18 @@ export async function replyToForumThread(
   if (!discussion) {
     throw new CommunityError('Thread not found', 404, 'THREAD_NOT_FOUND')
   }
+  if (String(discussion.site) !== context.siteId)
+    throw new CommunityError('Thread not found', 404, 'THREAD_NOT_FOUND')
+  const readable = evaluateCommunityPolicy(
+    context,
+    {
+      siteId: String(discussion.site),
+      visibility: String(discussion.visibility ?? 'public'),
+      ownerId: String(discussion.owner ?? ''),
+    },
+    'read',
+  )
+  if (!readable.allowed) throw new CommunityError('Thread unavailable', 403, 'THREAD_PRIVATE')
 
   const decision = evaluateCommunityPolicy(
     context,
@@ -1864,6 +1907,17 @@ export async function dispatchCommunityNotification(
     payloadData: Record<string, unknown>
   },
 ): Promise<void> {
+  if (
+    hasSanctionReadBoundary(payload) &&
+    (await getMemberNotificationPreference(
+      payload,
+      input.siteId,
+      input.recipientMemberId,
+      'in_app',
+      input.type,
+    )) === 'off'
+  )
+    return
   // A block or one-way mute suppresses both future and queued notification payloads.
   if (input.actorMemberId) {
     const [rel, muted] = await Promise.all([

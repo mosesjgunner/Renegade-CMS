@@ -6,6 +6,8 @@ import config from '@payload-config'
 import { getPayload } from 'payload'
 import { communitySiteForHost } from '@/modules/community/site-scope'
 import { ForumThreadView, type ForumPostData } from '@/modules/community/ForumThreadView'
+import { resolveCommunityActor, listDiscussionComments } from '@/modules/community/service'
+import { evaluateCommunityPolicy } from '@/modules/community/policy'
 
 export const dynamic = 'force-dynamic'
 
@@ -18,7 +20,7 @@ async function resolveThread(forumSlug: string, topicSlug: string) {
 
   const forumRes = await payload.find({
     collection: 'forums',
-    where: { slug: { equals: forumSlug } },
+    where: { and: [{ site: { equals: siteId } }, { slug: { equals: forumSlug } }] },
     limit: 1,
     depth: 0,
     overrideAccess: true,
@@ -26,49 +28,45 @@ async function resolveThread(forumSlug: string, topicSlug: string) {
   const forum = forumRes.docs[0]
 
   const canonical = `/forums/${forumSlug}/${topicSlug}`
-  let discussion = (
+  const discussion = (
     await payload.find({
       collection: 'discussions',
       where: {
-        or: [{ canonicalPath: { equals: canonical } }, { id: { equals: topicSlug } }],
+        and: [
+          { site: { equals: siteId } },
+          { forum: { equals: forum?.id ?? '' } },
+          { canonicalPath: { equals: canonical } },
+        ],
       },
       limit: 1,
-      depth: 1,
+      depth: 0,
       overrideAccess: true,
     })
   ).docs[0]
 
-  if (!discussion) {
-    const partialMatch = (
-      await payload.find({
-        collection: 'discussions',
-        where: { canonicalPath: { contains: topicSlug } },
-        limit: 1,
-        depth: 1,
-        overrideAccess: true,
-      })
-    ).docs[0]
-    discussion = partialMatch
-  }
-
   if (!discussion) return null
-
-  const postsRes = await payload.find({
-    collection: 'discussion-posts',
-    where: {
-      and: [{ discussion: { equals: discussion.id } }, { status: { not_equals: 'removed' } }],
-    },
-    sort: 'displayOrder',
-    limit: 100,
-    depth: 1,
-    overrideAccess: true,
-  })
+  const actor = await resolveCommunityActor(payload, requestHeaders, siteId)
+  if (
+    !evaluateCommunityPolicy(
+      { siteId, actor },
+      {
+        siteId,
+        ownerId: String(discussion.owner ?? ''),
+        visibility: String(discussion.visibility),
+        moderationState: String(discussion.moderationState),
+        status: String(discussion.status),
+      },
+      'read',
+    ).allowed
+  )
+    return null
+  const posts = await listDiscussionComments(payload, discussion.id, { siteId, actor })
 
   return {
     siteId,
     forum,
     discussion,
-    posts: postsRes.docs as unknown as ForumPostData[],
+    posts: posts as unknown as ForumPostData[],
   }
 }
 

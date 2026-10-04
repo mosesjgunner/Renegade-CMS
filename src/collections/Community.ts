@@ -53,7 +53,7 @@ export const Forums: CollectionConfig = {
 export const Discussions: CollectionConfig = {
   slug: 'discussions',
   admin: { useAsTitle: 'title', group: 'Community' },
-  access: { create: staffOnly, delete: staffOnly, read: () => true, update: staffOnly },
+  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
   hooks: {
     beforeValidate: [
       async ({ data, originalDoc, req, context }) => {
@@ -143,7 +143,7 @@ export const Discussions: CollectionConfig = {
 export const DiscussionPosts: CollectionConfig = {
   slug: 'discussion-posts',
   admin: { useAsTitle: 'permalink', group: 'Community' },
-  access: { create: staffOnly, delete: staffOnly, read: () => true, update: staffOnly },
+  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
   fields: [
     {
       name: 'discussion',

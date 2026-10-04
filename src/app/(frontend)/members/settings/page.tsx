@@ -122,23 +122,6 @@ export default function MemberSettingsPage() {
     a.remove()
     setMessage('Member data export downloaded.')
   }
-  async function deleteAccount() {
-    if (
-      !window.confirm(
-        'Are you sure you want to request permanent account deletion? This starts a cooling-off period before full data anonymization.',
-      )
-    )
-      return
-    const response = await fetch('/api/member-auth/delete', {
-      method: 'POST',
-      headers: csrfHeader(),
-    })
-    setMessage(
-      response.ok
-        ? 'Account deletion requested. You have been signed out.'
-        : 'Could not request account deletion.',
-    )
-  }
   async function reactivateAccount() {
     const response = await fetch('/api/member-auth/reactivate', {
       method: 'POST',
@@ -520,8 +503,9 @@ export default function MemberSettingsPage() {
       <section className="mt-8 rounded border p-4" aria-label="Account lifecycle and data">
         <h2 className="text-xl font-semibold">Privacy, Data & Account</h2>
         <p className="mt-2 text-sm text-stone-600 dark:text-stone-400">
-          Download a machine-readable copy of your profile, contributions, and messages, or manage
-          your account lifecycle.
+          Download your account, profile, billing, relationships and identity audit data.
+          Contribution and message export is deferred. Permanent deletion is deferred; deactivation
+          remains available.
         </p>
         <div className="mt-4 flex flex-wrap gap-3">
           <button className="btn" type="button" onClick={() => void exportData()}>
@@ -532,13 +516,6 @@ export default function MemberSettingsPage() {
           </button>
           <button className="btn" type="button" onClick={() => void deactivate()}>
             Deactivate account
-          </button>
-          <button
-            className="btn btn-danger text-red-600 border-red-300 hover:bg-red-50 dark:hover:bg-red-950/30"
-            type="button"
-            onClick={() => void deleteAccount()}
-          >
-            Delete account
           </button>
         </div>
       </section>

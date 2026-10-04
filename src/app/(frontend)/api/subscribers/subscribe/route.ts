@@ -2,6 +2,8 @@ import config from '@payload-config'
 import { getPayload } from 'payload'
 import { requestNewsletterSubscription } from '@/modules/audience/service'
 import { takeAudiencePublicRequest } from '@/modules/audience/public-rate-limit'
+import { communitySiteForHost } from '@/modules/community/site-scope'
+import { normalizeEmailAddress } from '@/modules/audience/contracts'
 
 export async function POST(request: Request) {
   const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown'
@@ -10,31 +12,25 @@ export async function POST(request: Request) {
   const body = (await request.json().catch(() => ({}))) as Record<string, string>
   try {
     const payload = await getPayload({ config })
-    let siteId = body.siteId
+    if (typeof body.email !== 'string') throw new Error('Enter a valid email address.')
+    normalizeEmailAddress(body.email)
+    let siteId = await communitySiteForHost(
+      payload,
+      request.headers.get('host') ?? new URL(request.url).host,
+      body.siteId,
+    )
     let listId = body.listId
 
     if (!siteId || !listId) {
       const lists = await payload.find({
         collection: 'audience-lists',
-        where: { status: { equals: 'active' } },
+        where: { and: [{ site: { equals: siteId } }, { status: { equals: 'active' } }] },
         limit: 1,
         depth: 0,
         overrideAccess: true,
       })
       if (lists.docs[0]) {
         if (!listId) listId = String(lists.docs[0].id)
-        if (!siteId) {
-          const s = lists.docs[0].site
-          siteId = typeof s === 'object' && s && 'id' in s ? String(s.id) : String(s)
-        }
-      } else {
-        const sites = await payload.find({
-          collection: 'sites',
-          limit: 1,
-          depth: 0,
-          overrideAccess: true,
-        })
-        if (sites.docs[0] && !siteId) siteId = String(sites.docs[0].id)
       }
     }
 
@@ -81,8 +77,7 @@ export async function POST(request: Request) {
       listId: listId ?? '',
       email: body.email ?? '',
       locale: body.locale ?? 'en',
-      consentWording:
-        body.consentWording || 'I consent to receive newsletter updates from this publication.',
+      consentWording: 'I consent to receive newsletter updates from this publication.',
       source: 'public-subscribe',
     })
     return Response.json({ status: result.status }, { status: 202 })

@@ -14,14 +14,15 @@ export async function GET(request: Request) {
   const payload = await getPayload({ config })
   const memberId = await currentMember(payload as never, readMemberSession(request.headers))
   if (!memberId) return Response.json({ error: 'Authentication required.' }, { status: 401 })
+  const siteId = await communitySiteForHost(payload, request.headers.get('host')).catch(() => null)
+  if (!siteId) return Response.json({ error: 'Community site unavailable.' }, { status: 404 })
   const profile = await payload.find({
     collection: 'profiles',
-    where: { member: { equals: memberId } },
+    where: { and: [{ member: { equals: memberId } }, { site: { equals: siteId } }] },
     limit: 1,
     depth: 0,
     overrideAccess: true,
   } as never)
-  const siteId = await communitySiteForHost(payload, request.headers.get('host')).catch(() => null)
   const existingCsrf = request.headers
     .get('cookie')
     ?.split(';')

@@ -113,6 +113,8 @@ export async function verifyCommunityAuditChain(payload: Payload, siteId: string
 }
 async function target(query: Query, input: Input): Promise<Target> {
   const sql: Record<string, string> = {
+    post: 'SELECT p.author_member_id AS "authorId" FROM discussion_posts p JOIN discussions d ON d.id=p.discussion_id WHERE p.id=$1 AND d.site_id=$2',
+    discussion: 'SELECT owner_id AS "authorId" FROM discussions WHERE id=$1 AND site_id=$2',
     comment:
       'SELECT c.author_id AS "authorId", c.thread_id AS "threadId" FROM comments c JOIN comment_threads t ON t.id=c.thread_id WHERE c.id=$1 AND t.site_id=$2',
     forum_post:
@@ -175,8 +177,8 @@ export async function applyModerationAction(payload: Payload, input: Input) {
   const result = await transaction(payload, async (query) => {
     const currentCase = (
       await query<{ id: string }>(
-        'SELECT id FROM moderation_cases WHERE id=$1 AND site_id=$2 FOR UPDATE',
-        [input.caseId, input.siteId],
+        'SELECT id FROM moderation_cases WHERE id=$1 AND site_id=$2 AND target_type=$3 AND target_id=$4 FOR UPDATE',
+        [input.caseId, input.siteId, input.targetType, input.targetId],
       )
     ).rows[0]
     if (!currentCase)
@@ -193,7 +195,12 @@ export async function applyModerationAction(payload: Payload, input: Input) {
         'MODERATION_SCOPE_TARGET_MISMATCH',
       )
     if (input.action === 'lock_thread') {
-      if (input.targetType === 'comment')
+      if (input.targetType === 'discussion')
+        await query(
+          "UPDATE discussions SET status='locked', updated_at=now() WHERE id=$1 AND site_id=$2",
+          [input.targetId, input.siteId],
+        )
+      else if (input.targetType === 'comment')
         await query('UPDATE comment_threads SET is_closed=true, updated_at=now() WHERE id=$1', [
           item.threadId,
         ])
@@ -210,7 +217,21 @@ export async function applyModerationAction(payload: Payload, input: Input) {
         )
     }
     if (input.action === 'quarantine' || input.action === 'remove') {
-      if (input.targetType === 'comment')
+      if (input.targetType === 'post')
+        await query(
+          'UPDATE discussion_posts SET status=$1, moderation_state=$2, updated_at=now() WHERE id=$3',
+          [
+            input.action === 'remove' ? 'removed' : 'hidden',
+            input.action === 'remove' ? 'removed' : 'restricted',
+            input.targetId,
+          ],
+        )
+      else if (input.targetType === 'discussion')
+        await query(
+          'UPDATE discussions SET moderation_state=$1, updated_at=now() WHERE id=$2 AND site_id=$3',
+          [input.action === 'remove' ? 'removed' : 'restricted', input.targetId, input.siteId],
+        )
+      else if (input.targetType === 'comment')
         await query('UPDATE comments SET status=$1, updated_at=now() WHERE id=$2', [
           input.action === 'remove' ? 'deleted' : 'rejected',
           input.targetId,

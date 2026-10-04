@@ -1,14 +1,32 @@
 import type { CollectionConfig, Field } from 'payload'
+import { APIError } from 'payload'
 import { ownerFields, retentionFields } from './canonical-shared'
-import { validateFormSchema } from '../modules/audience/contracts'
+import { validateFormSchema, validateEmailBlocks } from '../modules/audience/contracts'
+import { approvedRenderSnapshot, validateEmailDesign } from '../modules/audience/email-composer'
 import { validateAutomation, validateSegmentTree } from '../modules/audience/engine'
 
 const staffOnly = ({ req }: { req: { user?: { role?: string } | null } }) =>
   ['owner', 'administrator', 'staff'].includes(String(req.user?.role))
+const deferredAudienceCollections = new Set([
+  'form-definitions',
+  'form-schemas',
+  'form-submissions',
+  'submission-attachments',
+  'automation-definitions',
+  'automation-runs',
+  'automation-failures',
+  'digest-definitions',
+  'digest-runs',
+  'telecom-messages',
+  'telecom-deliveries',
+  'telecom-delivery-events',
+])
 const base = (slug: string, title: string, group = 'Audience'): CollectionConfig => ({
   slug,
-  admin: { useAsTitle: title, group },
-  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
+  admin: { useAsTitle: title, group, hidden: deferredAudienceCollections.has(slug) },
+  access: deferredAudienceCollections.has(slug)
+    ? { create: () => false, delete: () => false, read: () => false, update: () => false }
+    : { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
   fields: [],
 })
 const scope = () => [...ownerFields()]
@@ -510,6 +528,26 @@ export const EmailMessages: CollectionConfig = {
         ].some(
           (key) => key in data && JSON.stringify(data[key]) !== JSON.stringify(originalDoc[key]),
         )
+        if (!material && data.status === 'scheduled') {
+          if (originalDoc.status !== 'review')
+            throw new APIError('Submit the message for review before scheduling.', 400)
+          const errors = validateEmailBlocks(originalDoc.blocks ?? [])
+          if (originalDoc.messageDesign)
+            errors.push(...validateEmailDesign(originalDoc.messageDesign, originalDoc.kind))
+          if (errors.length) throw new APIError(errors.join(' '), 400)
+          if (!data.scheduledFor || !Number.isFinite(new Date(data.scheduledFor).getTime()))
+            throw new APIError('A valid scheduled time is required.', 400)
+          return {
+            ...data,
+            reviewedAt: new Date().toISOString(),
+            approvedRender: originalDoc.messageDesign
+              ? approvedRenderSnapshot(originalDoc.messageDesign, {
+                  origin: process.env.APP_URL ?? 'http://localhost:3000',
+                  subject: originalDoc.subject,
+                })
+              : null,
+          }
+        }
         return material
           ? {
               ...data,

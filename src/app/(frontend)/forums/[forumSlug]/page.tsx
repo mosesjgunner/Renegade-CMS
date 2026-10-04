@@ -7,6 +7,8 @@ import { getPayload } from 'payload'
 import { communitySiteForHost } from '@/modules/community/site-scope'
 import { ForumThreadComposer } from '@/modules/community/ForumThreadComposer'
 import { resolvePublicUrl } from '@/modules/public/semantic-url'
+import { resolveCommunityActor } from '@/modules/community/service'
+import { evaluateCommunityPolicy } from '@/modules/community/policy'
 
 export const dynamic = 'force-dynamic'
 
@@ -17,9 +19,11 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { forumSlug } = await params
   const payload = await getPayload({ config })
+  const requestHeaders = await headers()
+  const siteId = await communitySiteForHost(payload, requestHeaders.get('host')).catch(() => '')
   const res = await payload.find({
     collection: 'forums',
-    where: { slug: { equals: forumSlug } },
+    where: { and: [{ site: { equals: siteId } }, { slug: { equals: forumSlug } }] },
     limit: 1,
     depth: 0,
     overrideAccess: true,
@@ -50,7 +54,7 @@ export default async function ForumTopicsPage({
       and: [{ site: { equals: siteId } }, { slug: { equals: forumSlug } }],
     },
     limit: 1,
-    depth: 1,
+    depth: 0,
     overrideAccess: true,
   })
 
@@ -73,7 +77,23 @@ export default async function ForumTopicsPage({
     overrideAccess: true,
   })
 
-  const discussions = discussionsRes.docs
+  const actor = await resolveCommunityActor(payload, requestHeaders, siteId)
+  const discussions = discussionsRes.docs.filter(
+    (discussion) =>
+      evaluateCommunityPolicy(
+        { siteId, actor },
+        {
+          siteId,
+          ownerId: String(
+            typeof discussion.owner === 'object' ? discussion.owner?.id : (discussion.owner ?? ''),
+          ),
+          visibility: String(discussion.visibility),
+          moderationState: String(discussion.moderationState),
+          status: String(discussion.status),
+        },
+        'read',
+      ).allowed,
+  )
 
   return (
     <main className="container mx-auto max-w-5xl px-6 py-12">

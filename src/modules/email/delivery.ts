@@ -341,7 +341,7 @@ export function normalizeEmailError(error: unknown): EmailDeliveryFailure {
   const value = error as { code?: string; responseCode?: number; message?: string }
   const code = String(value?.code ?? '').toUpperCase()
   const responseCode = Number(value?.responseCode ?? 0)
-  if (['EAUTH', 'EENVELOPE'].includes(code) || [534, 535].includes(responseCode))
+  if (code === 'EAUTH' || [534, 535].includes(responseCode))
     return failure('permanent', 'authentication_failed', 'SMTP authentication failed.')
   if (
     ['ETLS', 'ESOCKET', 'ERR_TLS_CERT_ALTNAME_INVALID', 'DEPTH_ZERO_SELF_SIGNED_CERT'].includes(

@@ -15,6 +15,10 @@ export default function AudienceCommandCenter() {
         </p>
       )}
       <p>
+        Public forms, automations, community digests and telecom dispatch are deferred for this
+        release. Existing records are retained.
+      </p>
+      <p>
         <Link href="/admin/capabilities">Review capabilities and connections</Link>
       </p>
     </main>

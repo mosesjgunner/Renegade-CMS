@@ -1,6 +1,6 @@
 import type { Payload } from 'payload'
 import { sanitizeCommentHtml } from './comment-composer'
-import { checkBlockBetween } from './service'
+import { checkBlockBetween, dispatchCommunityNotification } from './service'
 import { blockMember } from './service'
 import { ingestModerationReport } from './moderation-reports'
 import { linkMessageAttachments } from './message-attachments'
@@ -231,80 +231,99 @@ export async function sendConversationMessage(
     throw new ConversationError('Message contains no allowed content', 422, 'EMPTY_MESSAGE')
   if (!input.idempotencyKey.trim())
     throw new ConversationError('idempotencyKey is required', 400, 'IDEMPOTENCY_KEY_REQUIRED')
-  return transaction(payload, async (query) => {
-    const membership = await query(
-      'SELECT c.request_state, c.request_recipient_member_id, c.status FROM conversation_memberships cm JOIN conversations c ON c.id=cm.conversation_id WHERE cm.conversation_id=$1 AND cm.member_id=$2 AND cm.left_at IS NULL AND c.site_id=$3 FOR SHARE',
-      [input.conversationId, input.senderId, input.siteId],
-    )
-    if (!membership.rows[0])
-      throw new ConversationError('Active membership is required', 403, 'NOT_CONVERSATION_MEMBER')
-    const conversation = membership.rows[0] as Record<string, unknown>
-    if (conversation.status === 'archived')
-      throw new ConversationError(
-        'Archived conversations are read-only',
-        409,
-        'CONVERSATION_ARCHIVED',
+  const result = await transaction<Record<string, unknown> & { duplicate: boolean }>(
+    payload,
+    async (query) => {
+      const membership = await query(
+        'SELECT c.request_state, c.request_recipient_member_id, c.status FROM conversation_memberships cm JOIN conversations c ON c.id=cm.conversation_id WHERE cm.conversation_id=$1 AND cm.member_id=$2 AND cm.left_at IS NULL AND c.site_id=$3 FOR SHARE',
+        [input.conversationId, input.senderId, input.siteId],
       )
-    if (conversation.request_state === 'declined')
-      throw new ConversationError(
-        'This message request was declined',
-        403,
-        'MESSAGE_REQUEST_DECLINED',
+      if (!membership.rows[0])
+        throw new ConversationError('Active membership is required', 403, 'NOT_CONVERSATION_MEMBER')
+      const conversation = membership.rows[0] as Record<string, unknown>
+      if (conversation.status === 'archived')
+        throw new ConversationError(
+          'Archived conversations are read-only',
+          409,
+          'CONVERSATION_ARCHIVED',
+        )
+      if (conversation.request_state === 'declined')
+        throw new ConversationError(
+          'This message request was declined',
+          403,
+          'MESSAGE_REQUEST_DECLINED',
+        )
+      if (
+        conversation.request_state === 'pending_request' &&
+        conversation.request_recipient_member_id === input.senderId
       )
-    if (
-      conversation.request_state === 'pending_request' &&
-      conversation.request_recipient_member_id === input.senderId
-    )
-      throw new ConversationError(
-        'Accept the request before replying',
-        403,
-        'MESSAGE_REQUEST_PENDING',
+        throw new ConversationError(
+          'Accept the request before replying',
+          403,
+          'MESSAGE_REQUEST_PENDING',
+        )
+      const peers = await query<{ member_id: string }>(
+        'SELECT member_id FROM conversation_memberships WHERE conversation_id=$1 AND member_id<>$2 AND left_at IS NULL',
+        [input.conversationId, input.senderId],
       )
-    const peers = await query<{ member_id: string }>(
+      for (const peer of peers.rows)
+        if (
+          peer.member_id &&
+          (await checkBlockBetween(payload, input.senderId, peer.member_id, input.siteId)).isBlocked
+        )
+          throw new ConversationError(
+            'Blocked members cannot send messages',
+            403,
+            'BLOCKED_COMMUNICATION',
+          )
+      const duplicate = await query<Record<string, unknown>>(
+        'SELECT * FROM messages WHERE conversation_id=$1 AND idempotency_key=$2',
+        [input.conversationId, input.idempotencyKey],
+      )
+      if (duplicate.rows[0]) return { ...duplicate.rows[0], duplicate: true }
+      const sequence = await query<{ sequence_number: number }>(
+        'UPDATE conversations SET next_message_sequence=next_message_sequence+1, last_message_at=now(), updated_at=now() WHERE id=$1 RETURNING next_message_sequence - 1 AS sequence_number',
+        [input.conversationId],
+      )
+      if (!sequence.rows[0])
+        throw new ConversationError('Conversation unavailable', 404, 'CONVERSATION_UNAVAILABLE')
+      const row = (
+        await query<Record<string, unknown>>(
+          'INSERT INTO messages (conversation_id,sender_id,idempotency_key,sequence_number,body_html) VALUES ($1,$2,$3,$4,$5) RETURNING *',
+          [
+            input.conversationId,
+            input.senderId,
+            input.idempotencyKey,
+            sequence.rows[0].sequence_number,
+            bodyHtml,
+          ],
+        )
+      ).rows[0]
+      await linkMessageAttachments(query, {
+        siteId: input.siteId,
+        memberId: input.senderId,
+        messageId: String(row.id),
+        attachmentIds: input.attachmentIds,
+      })
+      return { ...row, duplicate: false }
+    },
+  )
+  if (!result.duplicate && payload.collections?.notifications) {
+    const recipients = await (payload as PoolPayload).db!.pool!.query!<{ member_id: string }>(
       'SELECT member_id FROM conversation_memberships WHERE conversation_id=$1 AND member_id<>$2 AND left_at IS NULL',
       [input.conversationId, input.senderId],
     )
-    for (const peer of peers.rows)
-      if (
-        peer.member_id &&
-        (await checkBlockBetween(payload, input.senderId, peer.member_id, input.siteId)).isBlocked
-      )
-        throw new ConversationError(
-          'Blocked members cannot send messages',
-          403,
-          'BLOCKED_COMMUNICATION',
-        )
-    const duplicate = await query<Record<string, unknown>>(
-      'SELECT * FROM messages WHERE conversation_id=$1 AND idempotency_key=$2',
-      [input.conversationId, input.idempotencyKey],
-    )
-    if (duplicate.rows[0]) return { ...duplicate.rows[0], duplicate: true }
-    const sequence = await query<{ sequence_number: number }>(
-      'UPDATE conversations SET next_message_sequence=next_message_sequence+1, last_message_at=now(), updated_at=now() WHERE id=$1 RETURNING next_message_sequence - 1 AS sequence_number',
-      [input.conversationId],
-    )
-    if (!sequence.rows[0])
-      throw new ConversationError('Conversation unavailable', 404, 'CONVERSATION_UNAVAILABLE')
-    const row = (
-      await query<Record<string, unknown>>(
-        'INSERT INTO messages (conversation_id,sender_id,idempotency_key,sequence_number,body_html) VALUES ($1,$2,$3,$4,$5) RETURNING *',
-        [
-          input.conversationId,
-          input.senderId,
-          input.idempotencyKey,
-          sequence.rows[0].sequence_number,
-          bodyHtml,
-        ],
-      )
-    ).rows[0]
-    await linkMessageAttachments(query, {
-      siteId: input.siteId,
-      memberId: input.senderId,
-      messageId: String(row.id),
-      attachmentIds: input.attachmentIds,
-    })
-    return { ...row, duplicate: false }
-  })
+    for (const recipient of recipients.rows)
+      await dispatchCommunityNotification(payload, {
+        siteId: input.siteId,
+        recipientMemberId: recipient.member_id,
+        actorMemberId: input.senderId,
+        type: 'direct_message.received',
+        object: { conversationId: input.conversationId, messageId: result.id },
+        payloadData: { body: 'New private message. Sign in to view it.' },
+      })
+  }
+  return result
 }
 
 export async function actOnMessageRequest(
@@ -404,7 +423,8 @@ export async function listConversationMessages(
   payload: Payload,
   input: { siteId: string; conversationId: string; memberId: string },
 ) {
-  const query = (payload as PoolPayload).db?.pool?.query
+  const pool = (payload as PoolPayload).db?.pool
+  const query = pool?.query?.bind(pool)
   if (!query) throw new Error('Database query execution not available')
   const membership = await query(
     'SELECT cm.visible_from_sequence FROM conversation_memberships cm JOIN conversations c ON c.id=cm.conversation_id WHERE cm.conversation_id=$1 AND cm.member_id=$2 AND cm.left_at IS NULL AND c.site_id=$3',

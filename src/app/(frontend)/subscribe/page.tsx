@@ -67,7 +67,6 @@ export default function SubscribePage() {
             <input
               type="checkbox"
               required
-              defaultChecked
               aria-label="Consent to receive emails"
               className="mt-0.5 rounded border-stone-300 text-red-600 focus:ring-red-600"
             />

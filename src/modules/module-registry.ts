@@ -195,7 +195,7 @@ export const OPTIONAL_MODULES: readonly ModuleManifestEntry[] = [
   {
     id: 'forms',
     title: 'Forms',
-    summary: 'Public form definitions, schemas, submissions, and attachments.',
+    summary: 'Deferred public forms; schemas and records are retained without product access.',
     collections: ['form-definitions', 'form-schemas', 'form-submissions', 'submission-attachments'],
   },
   {
@@ -239,7 +239,7 @@ export const OPTIONAL_MODULES: readonly ModuleManifestEntry[] = [
   {
     id: 'notifications',
     title: 'Notifications & digests',
-    summary: 'Activity feeds, notifications, digests, and automation definitions.',
+    summary: 'In-app notifications. External digests and automation execution are deferred.',
     collections: [
       'activity-events',
       'notifications',
