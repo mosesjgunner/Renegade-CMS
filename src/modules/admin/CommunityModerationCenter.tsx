@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useState, type FormEvent } from 'react'
+import Link from 'next/link'
 
 type Report = {
   id: string
@@ -178,7 +179,7 @@ export default function CommunityModerationCenter() {
       <main className="gutter--left gutter--right">
         <h1>Community Moderation</h1>
         <p role="alert">{statusMessage}</p>
-        <a href="/member-auth">Member sign-in</a>
+        <Link href="/member-auth">Member sign-in</Link>
         <button type="button" onClick={() => void loadData(siteId)}>
           Retry moderation access
         </button>

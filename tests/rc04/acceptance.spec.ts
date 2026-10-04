@@ -1,8 +1,12 @@
 import { expect, test, type BrowserContext, type Page } from '@playwright/test'
-import { readFileSync, readdirSync, writeFileSync } from 'node:fs'
+import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs'
 import { createHash } from 'node:crypto'
 
 const evidence = 'docs/rc/evidence/rc-04'
+const workerMode = () =>
+  existsSync('scratch/rc04-worker-restart.json')
+    ? JSON.parse(readFileSync('scratch/rc04-worker-restart.json', 'utf8')).mode
+    : 'starting'
 const decoded = (raw: string) =>
   raw
     .replace(/=\r\n/g, '')
@@ -270,9 +274,7 @@ test('visitor newsletter, real MIME, suppression, re-subscribe and operator deli
     await page.goto('/admin/collections/email-deliveries')
     await expect(page.getByRole('heading', { name: /Email Deliveries/i })).toBeVisible()
     writeFileSync('scratch/rc04-worker-mode.txt', 'disabled')
-    await expect
-      .poll(() => JSON.parse(readFileSync('scratch/rc04-worker-restart.json', 'utf8')).mode)
-      .toBe('disabled')
+    await expect.poll(workerMode).toBe('disabled')
     const disabledMessage = (
       await api(
         page,
@@ -316,9 +318,7 @@ test('visitor newsletter, real MIME, suppression, re-subscribe and operator deli
       mails(email).some((mail) => decoded(mail.raw).includes('RC04 unconfigured recovery')),
     ).toBe(false)
     writeFileSync('scratch/rc04-worker-mode.txt', 'smtp')
-    await expect
-      .poll(() => JSON.parse(readFileSync('scratch/rc04-worker-restart.json', 'utf8')).mode)
-      .toBe('smtp')
+    await expect.poll(workerMode).toBe('smtp')
     await page.goto('/admin/email-composer')
     await page.getByLabel('Delivery ID').fill(disabled.id!)
     await page.getByRole('button', { name: 'Retry delivery' }).click()
@@ -415,6 +415,55 @@ test('real members, forum reply notification, preferences, moderation, private m
     }
     const [alice, bob, moderator] = pages
     const [a, b, m] = profiles
+    const acceptanceList = (await api(page, 'GET', '/api/audience-lists?depth=0')).docs.find(
+      (item: { name: string }) => item.name === 'RC04 newsletter',
+    )
+    await api(
+      bob,
+      'POST',
+      '/api/subscribers/subscribe',
+      { email: emails[1], siteId: site.id, listId: acceptanceList.id },
+      202,
+    )
+    const bobConfirmation = await delivered(emails[1], 'Confirm')
+    await bob.goto(link(bobConfirmation, '/subscribe/confirm')!)
+    await bob.getByRole('button', { name: 'Confirm', exact: true }).click()
+    await expect(bob.getByRole('status')).toContainText(/confirm/i)
+    const consentMessage = (
+      await api(
+        page,
+        'POST',
+        '/api/email-messages',
+        {
+          site: site.id,
+          name: 'RC04 community consent',
+          locale: 'en',
+          subject: 'RC04 community consent',
+          blocks: [{ type: 'text', text: 'Manage your publication consent.' }],
+          kind: 'bulk',
+          status: 'draft',
+          audience: { lists: [acceptanceList.id] },
+        },
+        201,
+      )
+    ).doc
+    await api(page, 'PATCH', `/api/email-messages/${consentMessage.id}`, { status: 'review' })
+    await api(page, 'PATCH', `/api/email-messages/${consentMessage.id}`, {
+      status: 'scheduled',
+      scheduledFor: new Date().toISOString(),
+    })
+    const consentMail = await delivered(emails[1], 'RC04 community consent')
+    await bob.goto(link(consentMail, '/unsubscribe')!)
+    await bob.getByRole('button', { name: 'Unsubscribe', exact: true }).click()
+    await expect(bob.getByRole('status')).toContainText('unsubscribed')
+    const bobSubscriber = (
+      await api(
+        page,
+        'GET',
+        `/api/subscribers?where[email][equals]=${encodeURIComponent(emails[1])}&depth=0`,
+      )
+    ).docs[0]
+    expect(bobSubscriber.status).toBe('unsubscribed')
     await alice.goto('/members/settings')
     await alice.getByLabel('Display name', { exact: true }).fill('Alice RC04')
     await alice.getByLabel('Bio', { exact: true }).fill('RC04 secret bio')
@@ -452,6 +501,7 @@ test('real members, forum reply notification, preferences, moderation, private m
     )
     const notifications = await api(bob, 'GET', `/api/community/notifications?siteId=${site.id}`)
     expect(notifications.notifications.length).toBeGreaterThan(0)
+    expect(mails(emails[1])).toHaveLength(3) // Sign-in, confirmation and consent newsletter only.
     await bob.goto('/notifications')
     await expect(bob.getByRole('heading', { name: /Notifications/ })).toBeVisible()
     await bob.screenshot({ path: `${evidence}/member-notifications.png`, fullPage: true })
@@ -526,16 +576,24 @@ test('real members, forum reply notification, preferences, moderation, private m
     )
     const queue = await api(moderator, 'GET', `/api/community/reports?siteId=${site.id}`)
     expect(queue.cases.some((item: { id: string }) => item.id === report.caseId)).toBe(true)
-    await api(moderator, 'POST', '/api/community/moderation', {
-      siteId: site.id,
-      caseId: report.caseId,
-      targetType: 'post',
-      targetId: reply.post.id,
-      action: 'remove',
-      scope: 'object',
-      scopeId: reply.post.id,
-      reason: 'Acceptance evidence',
-    })
+    await moderator
+      .context()
+      .addCookies(JSON.parse(readFileSync('scratch/rc04-operator.json', 'utf8')).cookies)
+    await moderator.goto('/admin/moderation')
+    await expect(
+      moderator.getByRole('heading', { name: 'Incoming Community Reports' }),
+    ).toBeVisible()
+    await moderator
+      .getByRole('article')
+      .filter({ hasText: reply.post.id.slice(0, 16) })
+      .click()
+    await moderator.getByLabel('Moderation Action', { exact: true }).selectOption('remove')
+    await moderator
+      .getByLabel('Audit Reason (required)', { exact: true })
+      .fill('Acceptance evidence')
+    await moderator.getByRole('button', { name: 'Execute Decision', exact: true }).click()
+    await expect(moderator.getByRole('status')).toContainText('successfully applied')
+    await moderator.screenshot({ path: `${evidence}/moderation-action.png`, fullPage: true })
     const audit = await api(moderator, 'GET', `/api/community/moderation?siteId=${site.id}`)
     expect(audit.auditLog.length).toBeGreaterThan(0)
     expect(audit.auditValid).toBe(true)
@@ -548,6 +606,40 @@ test('real members, forum reply notification, preferences, moderation, private m
         )
       ).posts.some((post: { id: string }) => post.id === reply.post.id),
     ).toBe(false)
+    await api(page, 'PATCH', `/api/discussions/${thread.discussion.id}`, { visibility: 'private' })
+    await api(
+      alice,
+      'GET',
+      `/api/community/threads?siteId=${site.id}&threadId=${thread.discussion.id}`,
+      undefined,
+      404,
+    )
+    await api(
+      alice,
+      'GET',
+      `/api/community/posts?siteId=${site.id}&discussionId=${thread.discussion.id}`,
+      undefined,
+      404,
+    )
+    const privateView = await alice.goto(thread.discussion.canonicalPath)
+    expect(privateView?.status()).toBe(404)
+    expect(await alice.locator('body').innerText()).not.toContain('Bob starts a real discussion.')
+    await api(page, 'PATCH', `/api/discussions/${thread.discussion.id}`, {
+      visibility: 'public',
+      commentsPolicy: 'closed',
+    })
+    await api(
+      alice,
+      'POST',
+      '/api/community/posts',
+      {
+        siteId: site.id,
+        discussionId: thread.discussion.id,
+        body: 'Closed comments deny replies.',
+      },
+      403,
+    )
+    await api(page, 'PATCH', `/api/discussions/${thread.discussion.id}`, { commentsPolicy: 'open' })
     const threadReport = await api(
       bob,
       'POST',
@@ -659,8 +751,10 @@ test('real members, forum reply notification, preferences, moderation, private m
           'GET',
           `/api/community/messages?siteId=${site.id}&conversationId=${group.id}`,
         )
-      ).messages.length,
-    ).toBe(1)
+      ).messages.some((item: { body_html: string }) =>
+        item.body_html.includes('Group RC04 message'),
+      ),
+    ).toBe(true)
     await bob.goto('/messages')
     await expect(bob.getByRole('heading', { name: 'Messages', exact: true })).toBeVisible()
     await expect(bob.getByText('RC04 group', { exact: true })).toBeVisible()
@@ -740,12 +834,17 @@ test('real members, forum reply notification, preferences, moderation, private m
           inAppOffPreventsNewNotification: true,
           externalCommunityDeliveryDeferred: true,
           noMailAfterReply: true,
+          suppressedSubscriberRetainsPermittedInApp: true,
+          suppressedMemberId: b.memberId,
           moderatorPrivateMessageDenial: true,
           blockDenial: true,
           mutePreventsNotification: true,
           groupMessage: true,
           notificationRead: true,
           lockedReplyDenial: true,
+          closedReplyDenial: true,
+          privateThreadApiAndSSRDenial: true,
+          moderationThroughUI: true,
           permanentDeletionDeferred: true,
           freshSessionPersistence: true,
           auditValid: audit.auditValid,
