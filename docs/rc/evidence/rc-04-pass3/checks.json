@@ -1,0 +1,46 @@
+{
+  "sourceSha": "fb8c9d7c3211f4c257ad569edb366d089074e492",
+  "verdict": "PASS within the final bounded RC-04 scope",
+  "unit": {
+    "passed": 270,
+    "failed": 0,
+    "files": 36,
+    "result": "unit-results.json"
+  },
+  "integration": {
+    "passed": 52,
+    "failed": 0,
+    "files": 5,
+    "result": "integration-results.json",
+    "database": "new migrated disposable fixture database"
+  },
+  "browser": {
+    "passed": 3,
+    "failed": 0,
+    "skipped": 0,
+    "flaky": 0,
+    "nativeExitCode": 0,
+    "result": "browser-results.json",
+    "command": "npx.cmd playwright test --config=playwright.rc04.config.ts --max-failures=1"
+  },
+  "typecheck": { "exitCode": 0, "log": "typecheck.txt" },
+  "lint": { "exitCode": 0, "warnings": 0, "log": "lint.txt" },
+  "build": { "exitCode": 0, "log": "build.txt" },
+  "localRestart": {
+    "url": "http://localhost:3000",
+    "homepageStatus": 200,
+    "readinessStatus": 200,
+    "mode": "standard standalone",
+    "existingDatabasePreserved": true
+  },
+  "providerRequired": ["production email", "live SMS/RCS"],
+  "deferred": [
+    "forms and audience automation",
+    "telecom dispatch",
+    "external community notifications and digests",
+    "per-event relationship switches",
+    "permanent account deletion",
+    "complete contribution and message export",
+    "private attachment upload, scanning and download"
+  ]
+}

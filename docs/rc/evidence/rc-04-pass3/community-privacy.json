@@ -1,0 +1,31 @@
+{
+  "siteId": "ef4d1fb8-989c-4df0-abb0-9ac8b218dcc0",
+  "memberIds": [
+    "3ea8b77c-321c-475e-b8a0-990ab7dcb3bd",
+    "24e85b04-ea9b-4db7-83c6-01de8a0c0d7e",
+    "d104a586-45c2-4899-b8fe-38411104e3af"
+  ],
+  "threadId": "362024f1-1a05-4208-93b3-8f49c5613384",
+  "replyId": "ae1f57b5-20ae-49e5-8389-21cabba1a42f",
+  "reportId": "8aceb1b5-9657-4f84-a699-dc119bf7590e",
+  "conversationId": "01a109f7-0411-7255-875d-c97ab523bc8b",
+  "inAppOffPreventsNewNotification": true,
+  "externalCommunityDeliveryDeferred": true,
+  "noMailAfterReply": true,
+  "suppressedSubscriberRetainsPermittedInApp": true,
+  "suppressedMemberId": "24e85b04-ea9b-4db7-83c6-01de8a0c0d7e",
+  "moderatorPrivateMessageDenial": true,
+  "blockDenial": true,
+  "mutePreventsNotification": true,
+  "groupMessage": true,
+  "notificationRead": true,
+  "lockedReplyDenial": true,
+  "closedReplyDenial": true,
+  "privateThreadApiAndSSRDenial": true,
+  "moderationThroughUI": true,
+  "renderedForumAndRemovedPostExclusion": true,
+  "suspendedPostingDenial": true,
+  "permanentDeletionDeferred": true,
+  "freshSessionPersistence": true,
+  "auditValid": true
+}

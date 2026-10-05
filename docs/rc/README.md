@@ -2,7 +2,7 @@
 
 > Current orchestration gate: **RC-03 PASS 3 PASS**, source `97ce2c1e4a253289d0d4f9da66c154afce74c6e9`. [Final gate evidence](evidence/RC-03-PASS3.md). Small cleanup reconciled operator claims; final browser, 107 unit and 18 integration tests, typecheck, lint and build pass. Calendar/feed/timelines and remote federation remain deferred. Broader RC-01 release blockers remain open. NEXT: RC-04 and RC-05.
 
- Current orchestration gate: **RC-03 PASS 2 PASS**, source `bb93ea8b562bc91e71e64afeabb6d7ead6607bc2`. [Evidence](evidence/RC-03.md). Partial provider failure, failed-only recovery and worker restart/idempotency proved on the RC-02 publication copy. Calendar/timeline deferred; federation limited to local signing/outbox/failure. Broader RC-01 release blockers remain open. Sol Light: small cleanup only.
+Current orchestration gate: **RC-03 PASS 2 PASS**, source `bb93ea8b562bc91e71e64afeabb6d7ead6607bc2`. [Evidence](evidence/RC-03.md). Partial provider failure, failed-only recovery and worker restart/idempotency proved on the RC-02 publication copy. Calendar/timeline deferred; federation limited to local signing/outbox/failure. Broader RC-01 release blockers remain open. Sol Light: small cleanup only.
 
 > Current core-site gate: **RC-02 PASS**, source `b684ee11460637bf2177f349057f14d6e804bbbd`. [Evidence](evidence/RC-02.md). RC-00/RC-01 source and blockers below are historical broader scope, which remains open.
 
@@ -32,3 +32,5 @@ This directory supersedes release-readiness prose elsewhere for the source candi
 | docs/execution/first-time-operator-visitor-sweep-2026-09-24.md | 997 tests / 104 migrations; PARTIAL customer-upgrade unavailable                            | Historical report with no current candidate proof; later counts do not reconcile HEAD automatically                   |
 
 The two execution reports are marked historical by this external catalog; their bytes are preserved. The similarly named docs/PROJECT_STATE.md, if present, is also a historical state record rather than an alternate release authority.
+
+> Current audience/community gate: **RC-04 FINAL PASS (bounded scope)**, tested source `fb8c9d7c3211f4c257ad569edb366d089074e492`. [Final evidence](evidence/RC-04-PASS3.md). Cleanup reconciled readiness and moderation status copy; 270 unit tests, 52 integration tests, three browser journeys, typecheck, lint and production build pass. Live email/SMS-RCS remain provider-required and documented unsupported surfaces remain deferred. NEXT: RC-06 after RC-05 merges.

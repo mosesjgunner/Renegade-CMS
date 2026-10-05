@@ -2,7 +2,7 @@
 
 > Current orchestration gate: **RC-03 PASS 3 PASS**, source `97ce2c1e4a253289d0d4f9da66c154afce74c6e9`. [Final gate evidence](rc/evidence/RC-03-PASS3.md). Small cleanup reconciled operator claims; final browser, 107 unit and 18 integration tests, typecheck, lint and build pass. Calendar/feed/timelines and remote federation remain deferred. Broader RC-01 release blockers remain open. NEXT: RC-04 and RC-05.
 
- Current orchestration gate: **RC-03 PASS 2 PASS**, source `bb93ea8b562bc91e71e64afeabb6d7ead6607bc2`. [Evidence](rc/evidence/RC-03.md). Partial provider failure, failed-only recovery and worker restart/idempotency proved on the RC-02 publication copy. Calendar/timeline deferred; federation limited to local signing/outbox/failure. Broader RC-01 release blockers remain open. Sol Light: small cleanup only.
+Current orchestration gate: **RC-03 PASS 2 PASS**, source `bb93ea8b562bc91e71e64afeabb6d7ead6607bc2`. [Evidence](rc/evidence/RC-03.md). Partial provider failure, failed-only recovery and worker restart/idempotency proved on the RC-02 publication copy. Calendar/timeline deferred; federation limited to local signing/outbox/failure. Broader RC-01 release blockers remain open. Sol Light: small cleanup only.
 
 > RC-02 PASS on source `b684ee11460637bf2177f349057f14d6e804bbbd`: complete fresh Standard/all site-build journey and restart verified. [Evidence](rc/evidence/RC-02.md). NEXT: RC-03. Broader RC-01/release blockers remain open.
 
@@ -407,3 +407,5 @@ Implemented and verified the end-to-end theme lifecycle from PRE-00 contracts ac
 ## Final Release-Proof Gate — BROKEN — 2026-09-23
 
 The final release-proof gate did not accept the candidate. Base SHA `8eaa32b895599fa1b6ae1fcac44d89d6bbab0082` does not identify the dirty tested tree. Clean install, format, lint, typecheck, production build, 970 unit tests, 82 focused shared-contract tests, and fresh/supported-upgrade migrations passed. Full integration failed (17 files; 6 tests), and the freshly migrated database cannot seed or render `/events` because `events.required_entitlement` is absent despite 98 applied migration records. An isolated database dump restored successfully, but nine-surface/media restore and actual restart/provider proof remain open. **First launch blocker: fresh-install schema mismatch. Do not launch.** Full evidence and limits: `docs/execution/final-release-proof-2026-09-23.md`.
+
+> **RC-04 FINAL PASS**, tested source `fb8c9d7c3211f4c257ad569edb366d089074e492`. [Final evidence](rc/evidence/RC-04-PASS3.md). Capability copy and moderation audit status were reconciled; 270 unit tests, 52 integration tests, three browser journeys, typecheck, zero-warning lint and production build pass. Live email/SMS-RCS remain provider-required; the documented unsupported surfaces remain deferred. NEXT: RC-06 after RC-05 merges.

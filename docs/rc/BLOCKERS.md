@@ -4,7 +4,7 @@ Source `3a3260f120f500a48d51a5251a7fd3b900ba6e93` has no remaining blocker in th
 
 > Current orchestration gate: **RC-03 PASS 3 PASS**, source `97ce2c1e4a253289d0d4f9da66c154afce74c6e9`. [Final gate evidence](evidence/RC-03-PASS3.md). Small cleanup reconciled operator claims; final browser, 107 unit and 18 integration tests, typecheck, lint and build pass. Calendar/feed/timelines and remote federation remain deferred. Broader RC-01 release blockers remain open. NEXT: RC-04 and RC-05.
 
- Current orchestration gate: **RC-03 PASS 2 PASS**, source `bb93ea8b562bc91e71e64afeabb6d7ead6607bc2`. [Evidence](evidence/RC-03.md). Partial provider failure, failed-only recovery and worker restart/idempotency proved on the RC-02 publication copy. Calendar/timeline deferred; federation limited to local signing/outbox/failure. Broader RC-01 release blockers remain open. Sol Light: small cleanup only.
+Current orchestration gate: **RC-03 PASS 2 PASS**, source `bb93ea8b562bc91e71e64afeabb6d7ead6607bc2`. [Evidence](evidence/RC-03.md). Partial provider failure, failed-only recovery and worker restart/idempotency proved on the RC-02 publication copy. Calendar/timeline deferred; federation limited to local signing/outbox/failure. Broader RC-01 release blockers remain open. Sol Light: small cleanup only.
 
 ## RC-02 acceptance ? PASS ? 2026-10-03
 
@@ -42,3 +42,7 @@ Additional source-confirmed dependencies of RC-02/04/05:
 - `/social-studio` reports “Scheduled” or “Queued for dispatch” by setting client state; its submit handler does not persist or enqueue the post. `/graphics-studio` save sets descriptive text without creating the named records. These visible actions remain BLOCKER until implemented or deliberately hidden/deferred.
 - FulfillmentCommandCenter's mappings tab mounts `PodMappingCenter` without initial persisted mappings or a save callback. Its default approved sample mapping is therefore reachable source behavior, not a dormant fixture.
 - `npm ci` exits 1 under the installed npm 11.17.0 allowScripts policy despite populating dependencies. The log also reports 51 dependency audit findings, including 15 high and 2 critical. Triage applicability and resolve the reproducible installation gate; do not run an unreviewed `audit fix --force` as part of documentation reconciliation.
+
+## RC-04 final result — 2026-10-04
+
+No blocker remains within the supported RC-04 subset on tested source `fb8c9d7c3211f4c257ad569edb366d089074e492`; see [final evidence](evidence/RC-04-PASS3.md). Live providers, the explicitly deferred surfaces, and broader RC-01 release gates remain outside this verdict.

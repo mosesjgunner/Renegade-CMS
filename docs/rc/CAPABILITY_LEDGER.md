@@ -4,16 +4,16 @@
 
 Source `3a3260f120f500a48d51a5251a7fd3b900ba6e93`; [executed evidence](evidence/RC-04-PASS2.md). Older registration-wide rows remain conservative for unexecuted scope.
 
-| Capability | Status | Executed boundary |
-| --- | --- | --- |
-| rc04.newsletter-consent | VERIFIED | Visitor form, fixed consent/version, delivered DOI, token preferences, unsubscribe/one-click suppression, confirmed re-subscribe, duplicate/malformed/rate-limit behavior |
-| rc04.local-email-recovery | DEGRADED BUT SAFE | Real SMTP MIME, saved message design, review/schedule, 451 retry, disabled transport failure, operator retry and outcomes/suppression inspection |
-| rc04.member-profile-privacy | VERIFIED | Real email authentication, profile/privacy edit, foreign private profile denial, scoped owned export, logout/fresh-session persistence |
-| rc04.canonical-community-moderation | VERIFIED | Thread/reply/follow, rendered public content and removed-post exclusion, private thread API/SSR denial, member report, moderator UI action/audit, ordinary-member denial, closed/locked/suspended posting |
-| rc04.messages-inapp-notifications | VERIFIED | Direct/group product REST and rendered messaging/notification pages, foreign conversation and guessed attachment denial, notification read, in-app off, mute/block, suppressed subscriber with permitted internal notification and no external communication |
-| rc04.forms-automation-telecom-dispatch | DEFERRED | Hidden/denied native collections; forms 410; no shipping telecom dispatch tasks; emulator/service contracts only |
-| rc04.external-community-notifications | DEFERRED | Email/SMS/digest and per-event switches 410; misleading controls removed |
-| rc04.complete-export-deletion-private-uploads | DEFERRED | Full contribution/message export excluded from claim; deletion/private-upload entry points 410; future configured private storage acceptance required |
+| Capability                                    | Status            | Executed boundary                                                                                                                                                                                                                                            |
+| --------------------------------------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| rc04.newsletter-consent                       | VERIFIED          | Visitor form, fixed consent/version, delivered DOI, token preferences, unsubscribe/one-click suppression, confirmed re-subscribe, duplicate/malformed/rate-limit behavior                                                                                    |
+| rc04.local-email-recovery                     | DEGRADED BUT SAFE | Real SMTP MIME, saved message design, review/schedule, 451 retry, disabled transport failure, operator retry and outcomes/suppression inspection                                                                                                             |
+| rc04.member-profile-privacy                   | VERIFIED          | Real email authentication, profile/privacy edit, foreign private profile denial, scoped owned export, logout/fresh-session persistence                                                                                                                       |
+| rc04.canonical-community-moderation           | VERIFIED          | Thread/reply/follow, rendered public content and removed-post exclusion, private thread API/SSR denial, member report, moderator UI action/audit, ordinary-member denial, closed/locked/suspended posting                                                    |
+| rc04.messages-inapp-notifications             | VERIFIED          | Direct/group product REST and rendered messaging/notification pages, foreign conversation and guessed attachment denial, notification read, in-app off, mute/block, suppressed subscriber with permitted internal notification and no external communication |
+| rc04.forms-automation-telecom-dispatch        | DEFERRED          | Hidden/denied native collections; forms 410; no shipping telecom dispatch tasks; emulator/service contracts only                                                                                                                                             |
+| rc04.external-community-notifications         | DEFERRED          | Email/SMS/digest and per-event switches 410; misleading controls removed                                                                                                                                                                                     |
+| rc04.complete-export-deletion-private-uploads | DEFERRED          | Full contribution/message export excluded from claim; deletion/private-upload entry points 410; future configured private storage acceptance required                                                                                                        |
 
 No production email/SMS-RCS, general message-read receipts, private byte transport, remote provider, broad role matrix, tenant-wide or aggregate release claim follows from these rows.
 
@@ -371,19 +371,18 @@ No capability is promoted to VERIFIED. [RC-01 evidence](evidence/RC-01.md) and t
 - Telemetry: BLOCKER. Removed fabricated campaign/count fallbacks and fixed-percentage channel allocation. Authenticated data/tenant/provider/experiment acceptance has not run beyond the moderation stop.
 - All other visible collections/globals/custom views/frontend command centers: BLOCKER for missing ordinary actions and negative role/tenant proof, as individually enumerated in the route appendix. Hidden collections remain shipping registrations when enabled; visibility alone is not deliberate deferral.
 
-
 ## RC-02 site-build acceptance ? VERIFIED ? 2026-10-03
 
 Tested source `b684ee11460637bf2177f349057f14d6e804bbbd`; fresh production Standard/all owner journey. [Evidence](evidence/RC-02.md). These exact core workflows are VERIFIED on this candidate; historical registration-wide BLOCKER rows and RC-01 role/provider/action scopes remain conservative and are not implicitly promoted.
 
-| Capability | Status | Executed boundary |
-| --- | --- | --- |
-| rc02.install-settings | VERIFIED | Empty installer, owner/passkey/admin, identity/origin/locale/timezone/indexing |
-| rc02.presentation | VERIFIED | Theme/tokens, Puck/query homepage, pattern/template/global regions; canonical content immutable across preview/switch |
-| rc02.publishing | VERIFIED | Page, two articles, event, rich text/media/taxonomy/author/related content, saved preview, review/approve/publish, revisions and protected published edits |
-| rc02.media | VERIFIED | Binary upload/stored SHA-256, descriptive/rights fields, 20 derivatives, rendered WebP/AVIF, usage/new-asset replacement |
-| rc02.discovery | VERIFIED | Navigation/index/category/topic/byline, SEO/schema, sitemap/robots/feeds, title/body/taxonomy search with draft isolation, Quality/Rendered Quality, exact redirect/404 |
-| rc02.public-restart | VERIFIED | Anonymous desktop/mobile, private/admin exclusions, public bundle without Puck/editor, real web/worker restart with fresh browse/media/discovery |
+| Capability            | Status   | Executed boundary                                                                                                                                                       |
+| --------------------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| rc02.install-settings | VERIFIED | Empty installer, owner/passkey/admin, identity/origin/locale/timezone/indexing                                                                                          |
+| rc02.presentation     | VERIFIED | Theme/tokens, Puck/query homepage, pattern/template/global regions; canonical content immutable across preview/switch                                                   |
+| rc02.publishing       | VERIFIED | Page, two articles, event, rich text/media/taxonomy/author/related content, saved preview, review/approve/publish, revisions and protected published edits              |
+| rc02.media            | VERIFIED | Binary upload/stored SHA-256, descriptive/rights fields, 20 derivatives, rendered WebP/AVIF, usage/new-asset replacement                                                |
+| rc02.discovery        | VERIFIED | Navigation/index/category/topic/byline, SEO/schema, sitemap/robots/feeds, title/body/taxonomy search with draft isolation, Quality/Rendered Quality, exact redirect/404 |
+| rc02.public-restart   | VERIFIED | Anonymous desktop/mobile, private/admin exclusions, public bundle without Puck/editor, real web/worker restart with fresh browse/media/discovery                        |
 
 Narrow approved claim: ?usable to build and launch a serious self-hosted publishing site.? No universal provider, author archive, transcript, multi-role or aggregate release claim follows. No feature was removed to lower this gate.
 
@@ -391,15 +390,19 @@ Narrow approved claim: ?usable to build and launch a serious self-hosted publish
 
 This appendix supersedes historical rows only for the exact paths and deferrals below. Execution verdict/counts are in [RC-03 evidence](evidence/RC-03.md) and `evidence/rc-03/checks.json`; untested collection CRUD, roles, tenants and providers remain BLOCKER.
 
-| Capability/path | Current boundary |
-| --- | --- |
-| Editorial workflow/release orchestration | Ordinary RC-02 owner surfaces; requested changes, native revision, denied self approval, audited emergency approval, future worker execution and recovery |
-| Article/redirect release artifacts | Exact canonical revision and coordinated public redirect; partial provider failure must preserve success |
-| Social drafts/variants/queue/attempts/external posts | Real adapter and outbox against configured local two-destination harness; failed-only retry and lost-response recovery; no live remote production claim |
-| collections:events | Creation, future occurrence date/time zone, native admin and public rendering; no event auto-publication worker claim |
-| collections:calendar-entries, collections:timelines, collections:timeline-memberships | DEFERRED; hidden and deny product CRUD; public helpers exclude them |
-| `/calendar`, `/api/calendar/export`, starter `publisher.timeline` | Interactive calendar/feed/timeline DEFERRED; explicit page, 410 feed, component removed |
-| Preview composer `/api/admin/social/dispatch` | DEFERRED (410); use approved persisted drafts and release/outbox instead |
-| catalog:networking.federation | DEGRADED BUT SAFE local signing/outbox/failure only; remote interoperability DEFERRED |
+| Capability/path                                                                       | Current boundary                                                                                                                                          |
+| ------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Editorial workflow/release orchestration                                              | Ordinary RC-02 owner surfaces; requested changes, native revision, denied self approval, audited emergency approval, future worker execution and recovery |
+| Article/redirect release artifacts                                                    | Exact canonical revision and coordinated public redirect; partial provider failure must preserve success                                                  |
+| Social drafts/variants/queue/attempts/external posts                                  | Real adapter and outbox against configured local two-destination harness; failed-only retry and lost-response recovery; no live remote production claim   |
+| collections:events                                                                    | Creation, future occurrence date/time zone, native admin and public rendering; no event auto-publication worker claim                                     |
+| collections:calendar-entries, collections:timelines, collections:timeline-memberships | DEFERRED; hidden and deny product CRUD; public helpers exclude them                                                                                       |
+| `/calendar`, `/api/calendar/export`, starter `publisher.timeline`                     | Interactive calendar/feed/timeline DEFERRED; explicit page, 410 feed, component removed                                                                   |
+| Preview composer `/api/admin/social/dispatch`                                         | DEFERRED (410); use approved persisted drafts and release/outbox instead                                                                                  |
+| catalog:networking.federation                                                         | DEGRADED BUT SAFE local signing/outbox/failure only; remote interoperability DEFERRED                                                                     |
 
 The existing calendar audit/contract registrations receive no launch claim from this appendix. Native enabled social operator configuration and recovery collections, and Events, remain visible under progressive disclosure; deferred collections remain hidden.
+
+## RC-04 final verification — 2026-10-04
+
+The bounded statuses below are final for tested source `fb8c9d7c3211f4c257ad569edb366d089074e492`; [Pass 3 evidence](evidence/RC-04-PASS3.md). Cleanup changed no capability scope. Newsletter/local SMTP, member identity, canonical forums/moderation, direct/group messaging and in-app notifications remain verified within their stated boundaries. Production email and live SMS/RCS remain provider-required; all listed RC-04 deferrals remain deferred.
