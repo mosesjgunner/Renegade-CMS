@@ -389,8 +389,12 @@ export default function CommunityModerationCenter() {
                   : 'Chain verification warning: mismatch detected.'}
               </p>
             </div>
-            <span className="px-2.5 py-1 rounded bg-emerald-600 text-white text-xs font-semibold">
-              Verified
+            <span
+              className={`px-2.5 py-1 rounded text-white text-xs font-semibold ${
+                auditValid ? 'bg-emerald-600' : 'bg-amber-600'
+              }`}
+            >
+              {auditValid ? 'Verified' : 'Review required'}
             </span>
           </div>
 
