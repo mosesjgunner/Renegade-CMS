@@ -769,6 +769,13 @@ test('real members, forum reply notification, preferences, moderation, private m
       },
       403,
     )
+    await api(
+      alice,
+      'POST',
+      '/api/v1/attachments/presign',
+      { siteId: site.id, filename: 'private.pdf', mimeType: 'application/pdf', size: 64 },
+      410,
+    )
     const group = (
       await api(
         alice,
