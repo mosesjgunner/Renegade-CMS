@@ -591,7 +591,7 @@ test('real members, forum reply notification, preferences, moderation, private m
       .getByRole('article')
       .filter({ hasText: reply.post.id.slice(0, 16) })
       .click()
-    await moderator.getByLabel('Moderation Action', { exact: true }).selectOption('remove')
+    await moderator.getByRole('combobox', { name: /Moderation Action/ }).selectOption('remove')
     await moderator
       .getByLabel('Audit Reason (required)', { exact: true })
       .fill('Acceptance evidence')
