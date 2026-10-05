@@ -171,6 +171,21 @@ test('visitor newsletter, real MIME, suppression, re-subscribe and operator deli
       plainTextStrategy: 'generated',
       personalization: { missingValue: 'fallback', fallbacks: {} },
     }
+    await api(
+      page,
+      'POST',
+      '/api/email-messages',
+      {
+        site: site.id,
+        subject: 'Unreviewed scheduled creation',
+        blocks: [{ type: 'text', text: 'Must not queue.' }],
+        kind: 'bulk',
+        status: 'scheduled',
+        scheduledFor: new Date().toISOString(),
+        audience: { lists: [list.id] },
+      },
+      400,
+    )
     const message = (
       await api(
         page,

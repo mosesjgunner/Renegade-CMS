@@ -516,7 +516,9 @@ export const EmailMessages: CollectionConfig = {
   ...base('email-messages', 'subject', 'Audience'),
   hooks: {
     beforeChange: [
-      ({ data, originalDoc, operation }) => {
+      ({ data, originalDoc, operation, req }) => {
+        if (operation === 'create' && req.user && data.status === 'scheduled')
+          throw new APIError('Save a draft and submit it for review before scheduling.', 400)
         if (operation !== 'update' || !originalDoc) return data
         const material = [
           'subject',
