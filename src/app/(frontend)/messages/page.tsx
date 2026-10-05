@@ -354,6 +354,7 @@ function MessagesContent() {
       >
         <h2>Conversation security</h2>
         <p className="mt-1">
+          Private attachment upload and download are deferred pending configured storage acceptance.
           Messages are private to conversation participants. Transport and storage protection depend
           on your deployment. End-to-end encryption is not provided.
         </p>

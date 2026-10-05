@@ -90,6 +90,13 @@ export async function resolveCommunityActor(
   let sessionToken: string | undefined
   if (typeof headersOrTokenOrReq === 'string') {
     sessionToken = headersOrTokenOrReq
+  } else if (
+    headersOrTokenOrReq &&
+    'get' in headersOrTokenOrReq &&
+    typeof headersOrTokenOrReq.get === 'function'
+  ) {
+    // Next's read-only Headers adapter has its own internal `headers` property.
+    sessionToken = readMemberSession(headersOrTokenOrReq as Headers)
   } else if (headersOrTokenOrReq && 'headers' in headersOrTokenOrReq) {
     sessionToken = readMemberSession(headersOrTokenOrReq.headers as Headers)
   } else if (headersOrTokenOrReq) {
