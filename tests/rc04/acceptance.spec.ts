@@ -99,6 +99,7 @@ test('visitor newsletter, real MIME, suppression, re-subscribe and operator deli
   context,
 }) => {
   const errors: string[] = []
+  let visitor: BrowserContext | undefined
   page.on('pageerror', (error) => errors.push(error.message))
   await context.tracing.start({ screenshots: true, snapshots: true, sources: true })
   try {
@@ -114,10 +115,11 @@ test('visitor newsletter, real MIME, suppression, re-subscribe and operator deli
         201,
       )
     ).doc
-    const visitor = await browser.newContext({
+    visitor = await browser.newContext({
       baseURL: process.env.APP_URL,
       ignoreHTTPSErrors: true,
     })
+    await visitor.tracing.start({ screenshots: true, snapshots: true, sources: true })
     const publicPage = await visitor.newPage()
     const email = `rc04-reader-${Date.now()}@example.test`
     await publicPage.goto('/subscribe')
@@ -371,10 +373,13 @@ test('visitor newsletter, real MIME, suppression, re-subscribe and operator deli
       `${evidence}/delivered-newsletter-redacted.eml`,
       newsletter.raw.replace(/token(?:=3D|=)[A-Za-z0-9_.-]+/g, 'token=[REDACTED]'),
     )
-    await visitor.close()
     expect(errors).toEqual([])
   } finally {
     writeFileSync('scratch/rc04-smtp-mode.txt', 'accept')
+    if (visitor) {
+      await visitor.tracing.stop({ path: `${evidence}/visitor-trace.zip` })
+      await visitor.close()
+    }
     await context.tracing.stop({ path: `${evidence}/audience-trace.zip` })
   }
 })
