@@ -1,0 +1,216 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "--config=playwright.rc04.config.ts",
+      "--max-failures=1"
+    ],
+    "configFile": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\playwright.rc04.config.ts",
+    "rootDir": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/rc04",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 1,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Projects/RENEGADE CMS/Renegade-CMS/test-results/rc04",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/rc04",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 600000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "docs/rc/evidence/rc-04/browser-results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.62.1",
+    "workers": 1,
+    "webServer": {
+      "command": "node src/scripts/rc04-runtime.mjs",
+      "url": "https://dispatch.rc02.test:3129/api/setup/readiness",
+      "timeout": 120000,
+      "reuseExistingServer": false,
+      "ignoreHTTPSErrors": true,
+      "env": {
+        "DATABASE_URL": "postgresql://renegade_rc02_1791086734920_release_acceptance:c8483251d22084b240a1011fd43f3cb58986d81543f72b3793aee994c0026d00@localhost:5432/renegade_rc04_1791155454825_release_acceptance",
+        "PAYLOAD_SECRET": "53455fab81015b6720760631ffc1e32f5199c85a05c575292e22cb653117deec7e2f01f91c86c3b5d8ae0ee1dc47676a",
+        "APP_URL": "https://dispatch.rc02.test:3129",
+        "PORT": "3128",
+        "HOSTNAME": "127.0.0.1",
+        "NODE_ENV": "production",
+        "PROXY_MODE": "trusted",
+        "TRUSTED_PROXY_HOPS": "1",
+        "DEPLOYMENT_PROFILE": "Standard",
+        "RENEGADE_MODULES": "all",
+        "RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT": "false",
+        "LOCAL_E2E_TEST_MODE": "false",
+        "ENABLE_TEST_ROUTES": "false",
+        "RENEGADE_NEXT_DIST_DIR": ".next",
+        "DISABLE_PAYLOAD_HMR": "true",
+        "MEDIA_DIR": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\scratch\\renegade_rc02_1791086734920_release_acceptance-media",
+        "NODE_EXTRA_CA_CERTS": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\scratch\\rc02-tls\\cert.pem",
+        "EMAIL_MODE": "smtp",
+        "EMAIL_FROM": "newsletter@renegadeparty.test",
+        "SMTP_HOST": "127.0.0.1",
+        "SMTP_PORT": "3132",
+        "SMTP_SECURE": "false",
+        "TELECOM_MODE": "emulator"
+      }
+    }
+  },
+  "suites": [
+    {
+      "title": "acceptance.spec.ts",
+      "file": "acceptance.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "visitor newsletter, real MIME, suppression, re-subscribe and operator delivery recovery",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 600000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 79396,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('heading', { name: /Email Deliveries/i })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('heading', { name: /Email Deliveries/i })\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('heading', { name: /Email Deliveries/i })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('heading', { name: /Email Deliveries/i })\u001b[22m\n\n    at C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\tests\\rc04\\acceptance.spec.ts:271:76",
+                    "location": {
+                      "file": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\tests\\rc04\\acceptance.spec.ts",
+                      "column": 76,
+                      "line": 271
+                    },
+                    "snippet": "  269 |       .toBe('accepted')\n  270 |     await page.goto('/admin/collections/email-deliveries')\n> 271 |     await expect(page.getByRole('heading', { name: /Email Deliveries/i })).toBeVisible()\n      |                                                                            ^\n  272 |     writeFileSync('scratch/rc04-worker-mode.txt', 'disabled')\n  273 |     await expect\n  274 |       .poll(() => JSON.parse(readFileSync('scratch/rc04-worker-restart.json', 'utf8')).mode)"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\tests\\rc04\\acceptance.spec.ts",
+                        "column": 76,
+                        "line": 271
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('heading', { name: /Email Deliveries/i })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('heading', { name: /Email Deliveries/i })\u001b[22m\n\n\n  269 |       .toBe('accepted')\n  270 |     await page.goto('/admin/collections/email-deliveries')\n> 271 |     await expect(page.getByRole('heading', { name: /Email Deliveries/i })).toBeVisible()\n      |                                                                            ^\n  272 |     writeFileSync('scratch/rc04-worker-mode.txt', 'disabled')\n  273 |     await expect\n  274 |       .poll(() => JSON.parse(readFileSync('scratch/rc04-worker-restart.json', 'utf8')).mode)\n    at C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\tests\\rc04\\acceptance.spec.ts:271:76"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-04T23:11:21.068Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\test-results\\rc04\\acceptance-visitor-newslet-64748--operator-delivery-recovery\\test-failed-1.png"
+                    },
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\test-results\\rc04\\acceptance-visitor-newslet-64748--operator-delivery-recovery\\test-failed-2.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\test-results\\rc04\\acceptance-visitor-newslet-64748--operator-delivery-recovery\\error-context.md"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\tests\\rc04\\acceptance.spec.ts",
+                    "column": 76,
+                    "line": 271
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "6bf654160f377cf56a60-db7b332fb7401925ee5c",
+          "file": "acceptance.spec.ts",
+          "line": 89,
+          "column": 1
+        },
+        {
+          "title": "real members, forum reply notification, preferences, moderation, private messages and session persistence",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 600000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "6bf654160f377cf56a60-7be255022a6954e1ade1",
+          "file": "acceptance.spec.ts",
+          "line": 359,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "message": "\u001b[31mTesting stopped early after 1 maximum allowed failures.\u001b[39m"
+    }
+  ],
+  "stats": {
+    "startTime": "2026-10-04T23:11:12.906Z",
+    "duration": 88744.558,
+    "expected": 0,
+    "skipped": 1,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

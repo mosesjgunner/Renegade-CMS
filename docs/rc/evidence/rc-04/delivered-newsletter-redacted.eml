@@ -1,0 +1,49 @@
+X-Renegade-Idempotency-Key:
+ email:c009b2be-e05c-4536-9f26-0b0cfeb7ddfe:ec8272b2-dee1-4206-a3e0-394187b9465d
+List-Unsubscribe:
+ <https://dispatch.rc02.test:3129/api/subscribers/unsubscribe?token=[REDACTED]>
+List-Unsubscribe-Post: List-Unsubscribe=One-Click
+X-Renegade-Purpose: newsletter
+From: newsletter@renegadeparty.test
+To: rc04-reader-1791166140717@example.test
+Subject: =?UTF-8?Q?RC04_caf=C3=A9_newsletter?=
+Message-ID: <76fa9a5e7f7e8cf1ab82d6f8fcb2d6ac@renegade.local>
+Date: Mon, 05 Oct 2026 02:09:31 +0000
+MIME-Version: 1.0
+Content-Type: multipart/alternative;
+ boundary="--_NmP-b57b2371b9db475e-Part_1"
+
+----_NmP-b57b2371b9db475e-Part_1
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+RC04 caf=C3=A9 and civic updates A real supported email design. Read the =
+publication 123 Civic Street, Test City Manage preferences =C2=B7 =
+Unsubscribe
+----_NmP-b57b2371b9db475e-Part_1
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+<!doctype html><html><body style=3D"margin:0;background:#ffffff;color:#1720=
+33"><main role=3D"main" style=3D"max-width:600px;margin:0 =
+auto;padding:24px;font-family:Arial, sans-serif"><h1 style=3D"margin:0 0 =
+16px;font-size:28px;line-height:1.2">RC04 caf=C3=A9 and civic =
+updates</h1><p style=3D"margin:0 0 16px;line-height:1.55">A real supported =
+email design.</p><p><a href=3D"https://dispatch.rc02.test:3129/" =
+style=3D"background:#164e9b;color:#ffffff;padding:12px =
+18px;display:inline-block;text-decoration:none;border-radius:4px">Read the =
+publication</a></p><footer><p>123 Civic Street, Test City</p><p><a =
+href=3D"https://dispatch.rc02.test:3129/subscribe/preferences?=
+token=[REDACTED]=
+jYzAiLCJzdWJzY3JpYmVySWQiOiJlYzgyNzJiMi1kZWUxLTQyMDYtYTNlMC0zOTQxODdiOTQ2NW=
+QiLCJwdXJwb3NlIjoicHJlZmVyZW5jZXMiLCJleHAiOjE3OTE3NzA5NzEsIm5vbmNlIjoiSjhYa=
+kRuSlNEbFRMWjZkZ2RqUWFPUWcwQV9lRWdna0d1QXlEYy10bHpDUSJ9.=
+8r5qOHZ4qB-JbRk99GwubakJNN4p-lWLgCKngvxMF0o">Manage preferences</a> =C2=B7 =
+<a href=3D"https://dispatch.rc02.test:3129/unsubscribe?=
+token=[REDACTED]=
+jYzAiLCJzdWJzY3JpYmVySWQiOiJlYzgyNzJiMi1kZWUxLTQyMDYtYTNlMC0zOTQxODdiOTQ2NW=
+QiLCJwdXJwb3NlIjoidW5zdWJzY3JpYmUiLCJleHAiOjE3OTE3NzA5NzEsIm5vbmNlIjoiRHhkc=
+DBJZmVlQTRxNlJJWXZTMHIxYndJaGFONnlHZktxOWJGRWJud3FlcyJ9.=
+io5vfHGuwxJCtIyFnEsg4YhXtB9ko4yLgN6bEH8gktY">Unsubscribe</a></p></footer></=
+main></body></html>
+----_NmP-b57b2371b9db475e-Part_1--

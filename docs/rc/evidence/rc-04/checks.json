@@ -1,0 +1,89 @@
+{
+  "sourceSha": "3a3260f120f500a48d51a5251a7fd3b900ba6e93",
+  "baselineSha": "35f17573a97f7a40aaf9127788ab8deca95db956",
+  "verdict": "PASS within the supported RC-04 Pass 2 subset",
+  "capturedAt": "2026-10-05T02:11:10.6438110Z",
+  "unit": {
+    "passed": 270,
+    "files": 36,
+    "failed": 0,
+    "result": "unit-results.json"
+  },
+  "integration": {
+    "passed": 52,
+    "files": 5,
+    "failed": 0,
+    "result": "integration-results.json"
+  },
+  "browser": {
+    "startTime": "2026-10-05T02:08:52.680Z",
+    "duration": 137876.443,
+    "expected": 3,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0,
+    "nativeExitCode": 0,
+    "command": "npx.cmd playwright test --config=playwright.rc04.config.ts --max-failures=1",
+    "result": "browser-results.json"
+  },
+  "typecheck": {
+    "command": "npm.cmd run typecheck",
+    "exitCode": 0,
+    "log": "typecheck.txt"
+  },
+  "lint": {
+    "command": "npm.cmd run lint",
+    "exitCode": 0,
+    "log": "lint.txt"
+  },
+  "build": {
+    "command": "npm.cmd run build",
+    "exitCode": 0,
+    "log": "build.txt"
+  },
+  "focusedTestCommands": "npx.cmd vitest run <the explicit testResults[].name files in the corresponding result JSON> --reporter=json --outputFile=<result>; integration adds --no-file-parallelism",
+  "traceIntegrity": {
+    "archives": 19,
+    "crcPassed": true,
+    "manifest": "trace-integrity.json"
+  },
+  "browserObservations": {
+    "contexts": 8,
+    "serverOrPageErrors": 0,
+    "consoleErrors": "Expected denied/deferred resource errors retained; see browser-observations.json",
+    "manifest": "browser-observations.json"
+  },
+  "fixtureBoundary": {
+    "browser": "Disposable migrated copy of RC-02 publication, not fresh installation",
+    "integration": "Separate empty migrated disposable fixture database",
+    "originalDatabasePreserved": true,
+    "browserRecords": "UI or product REST; no internal services or SQL inserts"
+  },
+  "providerBoundary": {
+    "smtp": "Real adapter and worker; local SMTP DATA capture, deliberate 451, disabled transport and operator retry",
+    "productionDeliveryProven": false,
+    "telecom": "Contract/emulator only; shipping dispatch deferred"
+  },
+  "deferred": [
+    "forms/automation",
+    "telecom dispatch",
+    "external community notifications/digests",
+    "per-event relationship preference controls",
+    "permanent deletion",
+    "complete contribution/message export",
+    "private attachment upload/scanning/download launch"
+  ],
+  "broaderGatesRemainOpen": [
+    "RC-01 complete role and tenant matrix",
+    "unexecuted module/provider workflows",
+    "customer upgrade and restore",
+    "live provider interoperability"
+  ],
+  "standardLocalRestart": {
+    "url": "http://localhost:3000",
+    "homepageStatus": 200,
+    "readinessStatus": 200,
+    "mode": "standard standalone",
+    "existingDatabasePreserved": true
+  }
+}

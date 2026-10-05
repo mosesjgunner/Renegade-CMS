@@ -1,0 +1,20 @@
+(node:33608) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+▲ Next.js 16.3.0
+- Local:         http://127.0.0.1:3128
+- Network:       http://127.0.0.1:3128
+✓ Ready in 0ms
+✓ Running next.config took 7ms
+[18:21:10] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+⨯ o: The following path cannot be queried: site
+    at r7 [90m(C:\Projects\RENEGADE CMS\Renegade-CMS\.next\standalone\[39m.next\server\chunks\_1rmkefd._.js:111:78043[90m)[39m
+    at async r7 [90m(C:\Projects\RENEGADE CMS\Renegade-CMS\.next\standalone\[39m.next\server\chunks\_1rmkefd._.js:111:78005[90m)[39m
+    at async oP [90m(C:\Projects\RENEGADE CMS\Renegade-CMS\.next\standalone\[39m.next\server\chunks\_1rmkefd._.js:111:141220[90m)[39m
+    at async d [90m(C:\Projects\RENEGADE CMS\Renegade-CMS\.next\standalone\[39m.next\server\chunks\[root-of-the-server]__1td6pxn._.js:1:5920[90m)[39m
+    at async Z [90m(C:\Projects\RENEGADE CMS\Renegade-CMS\.next\standalone\[39m.next\server\chunks\[root-of-the-server]__1td6pxn._.js:1:9585[90m)[39m {
+  data: [ { path: [32m'site'[39m } ],
+  isOperational: [33mtrue[39m,
+  isPublic: [33mtrue[39m,
+  status: [33m400[39m,
+  [cause]: [ { path: [32m'site'[39m } ]
+}

@@ -1,0 +1,174 @@
+[21:09:01] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[21:09:02] [32mINFO[39m: [36mRunning 6 jobs.[39m
+    [35mnew[39m: 6
+    [35mretrying[39m: 0
+[21:09:02] [32mINFO[39m:
+    [35mevent[39m: "operations.job.heartbeat"
+    [35mobservedAt[39m: "2026-10-05T02:09:02.303Z"
+    [35mversion[39m: "0.1.0-dev"
+[21:09:10] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[21:09:20] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[21:09:30] [32mINFO[39m: [36mRunning 3 jobs.[39m
+    [35mnew[39m: 3
+    [35mretrying[39m: 0
+[21:09:31] [32mINFO[39m: [36mRunning 1 jobs.[39m
+    [35mnew[39m: 1
+    [35mretrying[39m: 0
+[21:09:32] [32mINFO[39m: [36mRunning 1 jobs.[39m
+    [35mnew[39m: 1
+    [35mretrying[39m: 0
+[21:09:40] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[21:09:50] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[21:10:00] [32mINFO[39m: [36mRunning 4 jobs.[39m
+    [35mnew[39m: 4
+    [35mretrying[39m: 0
+[21:10:00] [32mINFO[39m:
+    [35mevent[39m: "operations.job.heartbeat"
+    [35mobservedAt[39m: "2026-10-05T02:10:00.492Z"
+    [35mversion[39m: "0.1.0-dev"
+[21:10:01] [32mINFO[39m: [36mRunning 1 jobs.[39m
+    [35mnew[39m: 1
+    [35mretrying[39m: 0
+[21:10:01] [31mERROR[39m: [36mError running task 1. Attempt 1[39m
+    [35mjob[39m: {
+      "id": "98191220-08be-41e2-b66f-16c81fe52208",
+      "input": {
+        "deliveryId": "e5494938-92c0-4df1-848b-a91f91ee9979"
+      },
+      "completedAt": null,
+      "totalTried": 0,
+      "hasError": false,
+      "error": null,
+      "log": [],
+      "taskSlug": "audience-email-delivery",
+      "queue": "operations",
+      "waitUntil": "2026-10-05T02:10:02.244Z",
+      "processing": true,
+      "concurrencyKey": "audience.email:e5494938-92c0-4df1-848b-a91f91ee9979",
+      "meta": null,
+      "updatedAt": "2026-10-05T02:10:01.653Z",
+      "createdAt": "2026-10-05T02:10:00.545Z",
+      "taskStatus": {}
+    }
+    [35mtaskSlug[39m: "audience-email-delivery"
+    err: {
+      "type": "TaskError",
+      "message": "Email delivery retryable: temporary_provider_error",
+      "stack":
+          Error: Email delivery retryable: temporary_provider_error
+              at Object.audience-email-delivery (C:\Projects\RENEGADE CMS\Renegade-CMS\node_modules\payload\src\queues\operations\runJobs\runJob\getRunTaskFunction.ts:153:15)
+              at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+              at async handler (C:\Projects\RENEGADE CMS\Renegade-CMS\node_modules\payload\src\queues\operations\runJobs\index.ts:348:13)
+              at async runJob (C:\Projects\RENEGADE CMS\Renegade-CMS\node_modules\payload\src\queues\operations\runJobs\runJob\index.ts:46:5)
+              at async runSingleJob (C:\Projects\RENEGADE CMS\Renegade-CMS\node_modules\payload\src\queues\operations\runJobs\index.ts:422:24)
+              at async Promise.all (index 0)
+              at async runJobs (C:\Projects\RENEGADE CMS\Renegade-CMS\node_modules\payload\src\queues\operations\runJobs\index.ts:503:21)
+              at async Object.run (C:\Projects\RENEGADE CMS\Renegade-CMS\node_modules\payload\src\queues\localAPI.ts:304:12)
+              at async Timeout.cycle (C:\Projects\RENEGADE CMS\Renegade-CMS\src\scripts\run-jobs-worker.ts:23:7)
+      "args": {
+        "type": "Object",
+        "message": "Email delivery retryable: temporary_provider_error",
+        "stack":
+
+        "executedAt": "2026-10-05T02:10:01.659Z",
+        "input": {
+          "deliveryId": "e5494938-92c0-4df1-848b-a91f91ee9979"
+        },
+        "job": {
+          "id": "98191220-08be-41e2-b66f-16c81fe52208",
+          "input": {
+            "deliveryId": "e5494938-92c0-4df1-848b-a91f91ee9979"
+          },
+          "completedAt": null,
+          "totalTried": 0,
+          "hasError": false,
+          "error": null,
+          "log": [],
+          "taskSlug": "audience-email-delivery",
+          "queue": "operations",
+          "waitUntil": "2026-10-05T02:10:02.244Z",
+          "processing": true,
+          "concurrencyKey": "audience.email:e5494938-92c0-4df1-848b-a91f91ee9979",
+          "meta": null,
+          "updatedAt": "2026-10-05T02:10:01.653Z",
+          "createdAt": "2026-10-05T02:10:00.545Z",
+          "taskStatus": {}
+        },
+        "output": {},
+        "retriesConfig": {
+          "attempts": 3,
+          "backoff": {
+            "delay": 500,
+            "type": "exponential"
+          }
+        },
+        "taskConfig": {
+          "slug": "audience-email-delivery",
+          "label": "Audience email delivery",
+          "inputSchema": [
+            {
+              "name": "deliveryId",
+              "type": "text",
+              "required": true
+            }
+          ],
+          "outputSchema": [],
+          "retries": {
+            "attempts": 3,
+            "backoff": {
+              "delay": 500,
+              "type": "exponential"
+            }
+          }
+        },
+        "taskID": "1",
+        "taskSlug": "audience-email-delivery",
+        "taskStatus": null,
+        "workflowConfig": {
+          "slug": "singleTask"
+        }
+      }
+    }
+[21:10:02] [32mINFO[39m: [36mRunning 1 jobs.[39m
+    [35mnew[39m: 0
+    [35mretrying[39m: 1
+[21:10:09] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[21:10:10] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[21:10:20] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[21:10:30] [32mINFO[39m: [36mRunning 3 jobs.[39m
+    [35mnew[39m: 3
+    [35mretrying[39m: 0
+[21:10:31] [32mINFO[39m: [36mRunning 1 jobs.[39m
+    [35mnew[39m: 1
+    [35mretrying[39m: 0
+[21:10:37] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[21:10:38] [32mINFO[39m: [36mRunning 1 jobs.[39m
+    [35mnew[39m: 1
+    [35mretrying[39m: 0
+[21:10:40] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[21:10:43] [32mINFO[39m: [36mRunning 1 jobs.[39m
+    [35mnew[39m: 1
+    [35mretrying[39m: 0
+[21:10:50] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[21:11:00] [32mINFO[39m: [36mRunning 3 jobs.[39m
+    [35mnew[39m: 3
+    [35mretrying[39m: 0
+[21:11:01] [32mINFO[39m: [36mRunning 1 jobs.[39m
+    [35mnew[39m: 1
+    [35mretrying[39m: 0

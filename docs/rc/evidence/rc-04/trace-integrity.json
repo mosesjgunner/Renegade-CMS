@@ -1,0 +1,97 @@
+{
+  "audience-trace.zip": {
+    "sha256": "95c74d5c0d32ea1199cba9288f7d7cd7b95da968674f58583a22f543cb773fa5",
+    "bytes": 2963988,
+    "crc": "passed"
+  },
+  "community-trace.zip": {
+    "sha256": "0ec9d17e436c09c9343de793a1655068b847d0f26c4d93ff9a6d4756715db1da",
+    "bytes": 31569,
+    "crc": "passed"
+  },
+  "header-unfolding-failure-trace.zip": {
+    "sha256": "ad2fd3c81c196323e035a1d92f7f460078d30664545dd445bc669c136c520a9a",
+    "bytes": 2524735,
+    "crc": "passed"
+  },
+  "hidden-email-operator-failure-trace.zip": {
+    "sha256": "6ef77506d66d2dd9cd4c751ff33842c1e23273d4557dcb27f89b1318ffe9216d",
+    "bytes": 1586771,
+    "crc": "passed"
+  },
+  "initial-harness-trace.zip": {
+    "sha256": "e240605cc288e76219f636ad4e8ab7c1740f0a07c4693e6a32439ae4586197fe",
+    "bytes": 13592,
+    "crc": "passed"
+  },
+  "invalid-design-trace.zip": {
+    "sha256": "b9f40a7859242152f4ce31b025402e38e7fc9b411684fa86fff4092b45e6e127",
+    "bytes": 1474806,
+    "crc": "passed"
+  },
+  "link-extraction-failure-trace.zip": {
+    "sha256": "5650d4f98bc9c26bffc32de136e1d2d12e92a3fb54f9553f2c805d8093d1ee72",
+    "bytes": 1469456,
+    "crc": "passed"
+  },
+  "member-0-trace.zip": {
+    "sha256": "6bbd8c96b823ef29602beb3fb2e3a4c28542ce25f987e4666f57a7c7fc4630c6",
+    "bytes": 1247257,
+    "crc": "passed"
+  },
+  "member-1-trace.zip": {
+    "sha256": "8f152f32c86ad4f7dd0a6a849dc3aff515127db58cb9257371480f6b98b99b39",
+    "bytes": 1158499,
+    "crc": "passed"
+  },
+  "member-2-trace.zip": {
+    "sha256": "b7a00235dca66ecc51285a9f48825c61e6075af2e2458dc7574cf145dd2c8196",
+    "bytes": 1012820,
+    "crc": "passed"
+  },
+  "member-3-trace.zip": {
+    "sha256": "b897a294ccff8a74d70836eabcf5066d3d588f087389ce3892f4180c6cd76d49",
+    "bytes": 617560,
+    "crc": "passed"
+  },
+  "member-profile-query-failure-trace.zip": {
+    "sha256": "5fcbf4e5f169d0b9bcec9401212aa992bcb8e1e3af0dccb95e0d0e19ed505c49",
+    "bytes": 15505,
+    "crc": "passed"
+  },
+  "moderation-selector-failure-trace.zip": {
+    "sha256": "d1f7ab4514e9ec95d022e9db9d04dd7422d620b3da3a27f8ec142bfe5db960b8",
+    "bytes": 24991,
+    "crc": "passed"
+  },
+  "public-abuse-trace.zip": {
+    "sha256": "b26191873727dfb34a862cbb96bb09a0f3118b41790120481f0e2cf3b80394aa",
+    "bytes": 18812,
+    "crc": "passed"
+  },
+  "server-headers-failure-trace.zip": {
+    "sha256": "68e137ca479b2f275941bfbaf570d15ceb5da558ce9251cca037d9fd309887d6",
+    "bytes": 26969,
+    "crc": "passed"
+  },
+  "smtp-envelope-failure-trace.zip": {
+    "sha256": "232eca756498032bea0d6b7866601824cbc1b2ac4a8075203dc5f529de17ccd3",
+    "bytes": 875568,
+    "crc": "passed"
+  },
+  "status-locator-failure-trace.zip": {
+    "sha256": "0d48eac94db383c69c3c61e01fba591700d7c0a00740ea5346956f698402e1cb",
+    "bytes": 2702963,
+    "crc": "passed"
+  },
+  "visitor-trace.zip": {
+    "sha256": "c7a71c0df8d07943fa196f31a6379456944e1c3d43bcdfb774ae1433379ac145",
+    "bytes": 1443873,
+    "crc": "passed"
+  },
+  "worker-harness-failure-trace.zip": {
+    "sha256": "7c02e04c3ea8f986b4d23a7c05b00894b07bdb6b691504df42b0e5bc66fe6f14",
+    "bytes": 1622267,
+    "crc": "passed"
+  }
+}

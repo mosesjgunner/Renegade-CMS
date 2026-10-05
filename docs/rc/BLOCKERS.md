@@ -1,3 +1,7 @@
+## RC-04 Pass 2 result — 2026-10-04
+
+Source `3a3260f120f500a48d51a5251a7fd3b900ba6e93` has no remaining blocker in the supported newsletter/local-email/canonical-forum/member-privacy/moderation/direct-group-message/in-app-notification acceptance subset. [Evidence](evidence/RC-04-PASS2.md). Unsupported audience/community entry points are explicitly deferred; live providers, configured private storage, and all broader RC-01 role/tenant/module, upgrade and restore gates below remain open. This pass does not confer aggregate release readiness.
+
 > Current orchestration gate: **RC-03 PASS 3 PASS**, source `97ce2c1e4a253289d0d4f9da66c154afce74c6e9`. [Final gate evidence](evidence/RC-03-PASS3.md). Small cleanup reconciled operator claims; final browser, 107 unit and 18 integration tests, typecheck, lint and build pass. Calendar/feed/timelines and remote federation remain deferred. Broader RC-01 release blockers remain open. NEXT: RC-04 and RC-05.
 
  Current orchestration gate: **RC-03 PASS 2 PASS**, source `bb93ea8b562bc91e71e64afeabb6d7ead6607bc2`. [Evidence](evidence/RC-03.md). Partial provider failure, failed-only recovery and worker restart/idempotency proved on the RC-02 publication copy. Calendar/timeline deferred; federation limited to local signing/outbox/failure. Broader RC-01 release blockers remain open. Sol Light: small cleanup only.

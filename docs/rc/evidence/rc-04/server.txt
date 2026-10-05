@@ -1,0 +1,28 @@
+[1m[38;2;173;127;168m▲ Next.js 16.3.0[39m[22m
+- Local:         http://127.0.0.1:3128
+- Network:       http://127.0.0.1:3128
+[32m[1m✓[22m[39m Ready in 0ms
+[32m[1m✓[22m[39m Running next.config took 9ms
+[21:08:55] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[21:09:03] [31mERROR[39m: [36mSave a draft and submit it for review before scheduling.[39m
+    err: {
+      "type": "c",
+      "message": "Save a draft and submit it for review before scheduling.",
+      "stack":
+          c: Save a draft and submit it for review before scheduling.
+              at V.hooks.beforeChange (C:\Projects\RENEGADE CMS\Renegade-CMS\.next\standalone\.next\server\chunks\_1rmkefd._.js:305:26880)
+              at sO (C:\Projects\RENEGADE CMS\Renegade-CMS\.next\standalone\.next\server\chunks\_1rmkefd._.js:111:123611)
+              at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+              at async t_ (C:\Projects\RENEGADE CMS\Renegade-CMS\.next\standalone\.next\server\chunks\_1rmkefd._.js:82:345675)
+              at async y (C:\Projects\RENEGADE CMS\Renegade-CMS\.next\standalone\.next\server\chunks\_0_cd-fp._.js:1:8534)
+              at async C:\Projects\RENEGADE CMS\Renegade-CMS\.next\standalone\.next\server\chunks\_0_cd-fp._.js:1:16938
+              at async rW.do (C:\Projects\RENEGADE CMS\Renegade-CMS\.next\standalone\node_modules\next\dist\compiled\next-server\app-route-turbo.runtime.prod.js:5:23405)
+              at async rW.handle (C:\Projects\RENEGADE CMS\Renegade-CMS\.next\standalone\node_modules\next\dist\compiled\next-server\app-route-turbo.runtime.prod.js:5:28909)
+              at async X (C:\Projects\RENEGADE CMS\Renegade-CMS\.next\standalone\.next\server\chunks\_0_cd-fp._.js:1:21134)
+              at async rW.handleResponse (C:\Projects\RENEGADE CMS\Renegade-CMS\.next\standalone\node_modules\next\dist\compiled\next-server\app-route-turbo.runtime.prod.js:1:129300)
+      "data": null,
+      "isOperational": true,
+      "isPublic": true,
+      "status": 400,
+      "name": "c"
+    }

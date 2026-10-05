@@ -1,0 +1,22 @@
+(node:27752) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+▲ Next.js 16.3.0
+- Local:         http://127.0.0.1:3128
+- Network:       http://127.0.0.1:3128
+✓ Ready in 0ms
+✓ Running next.config took 6ms
+[20:39:58] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+⨯ TypeError: a.get is not a function
+    at <unknown> [90m(C:\Projects\RENEGADE CMS\Renegade-CMS\.next\standalone\[39m.next\server\chunks\ssr\src_modules_07x06ft._.js:1:32265[90m)[39m
+    at m [90m(C:\Projects\RENEGADE CMS\Renegade-CMS\.next\standalone\[39m.next\server\chunks\ssr\_13skz4h._.js:309:112287[90m)[39m
+    at o [90m(C:\Projects\RENEGADE CMS\Renegade-CMS\.next\standalone\[39m.next\server\chunks\ssr\_1zbrjik._.js:1:10635[90m)[39m
+    at async Module.p [as generateMetadata] [90m(C:\Projects\RENEGADE CMS\Renegade-CMS\.next\standalone\[39m.next\server\chunks\ssr\_1zbrjik._.js:1:11043[90m)[39m {
+  digest: [32m'1577000306'[39m
+}
+⨯ TypeError: a.get is not a function
+    at <unknown> [90m(C:\Projects\RENEGADE CMS\Renegade-CMS\.next\standalone\[39m.next\server\chunks\ssr\src_modules_07x06ft._.js:1:32265[90m)[39m
+    at m [90m(C:\Projects\RENEGADE CMS\Renegade-CMS\.next\standalone\[39m.next\server\chunks\ssr\_13skz4h._.js:309:112287[90m)[39m
+    at o [90m(C:\Projects\RENEGADE CMS\Renegade-CMS\.next\standalone\[39m.next\server\chunks\ssr\_1zbrjik._.js:1:10635[90m)[39m
+    at async q [90m(C:\Projects\RENEGADE CMS\Renegade-CMS\.next\standalone\[39m.next\server\chunks\ssr\_1zbrjik._.js:1:11214[90m)[39m {
+  digest: [32m'1894324021'[39m
+}

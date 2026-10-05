@@ -1,5 +1,22 @@
 # Capability ledger
 
+## RC-04 Pass 2 verified subset — 2026-10-04
+
+Source `3a3260f120f500a48d51a5251a7fd3b900ba6e93`; [executed evidence](evidence/RC-04-PASS2.md). Older registration-wide rows remain conservative for unexecuted scope.
+
+| Capability | Status | Executed boundary |
+| --- | --- | --- |
+| rc04.newsletter-consent | VERIFIED | Visitor form, fixed consent/version, delivered DOI, token preferences, unsubscribe/one-click suppression, confirmed re-subscribe, duplicate/malformed/rate-limit behavior |
+| rc04.local-email-recovery | DEGRADED BUT SAFE | Real SMTP MIME, saved message design, review/schedule, 451 retry, disabled transport failure, operator retry and outcomes/suppression inspection |
+| rc04.member-profile-privacy | VERIFIED | Real email authentication, profile/privacy edit, foreign private profile denial, scoped owned export, logout/fresh-session persistence |
+| rc04.canonical-community-moderation | VERIFIED | Thread/reply/follow, rendered public content and removed-post exclusion, private thread API/SSR denial, member report, moderator UI action/audit, ordinary-member denial, closed/locked/suspended posting |
+| rc04.messages-inapp-notifications | VERIFIED | Direct/group product REST and rendered messaging/notification pages, foreign conversation and guessed attachment denial, notification read, in-app off, mute/block, suppressed subscriber with permitted internal notification and no external communication |
+| rc04.forms-automation-telecom-dispatch | DEFERRED | Hidden/denied native collections; forms 410; no shipping telecom dispatch tasks; emulator/service contracts only |
+| rc04.external-community-notifications | DEFERRED | Email/SMS/digest and per-event switches 410; misleading controls removed |
+| rc04.complete-export-deletion-private-uploads | DEFERRED | Full contribution/message export excluded from claim; deletion/private-upload entry points 410; future configured private storage acceptance required |
+
+No production email/SMS-RCS, general message-read receipts, private byte transport, remote provider, broad role matrix, tenant-wide or aggregate release claim follows from these rows.
+
 Source candidate: `e24fc53d9e370e28f01398c561b0f5adc4884756`. Reconciled 2026-10-03. Initial working tree was clean. This documentation freeze binds the source candidate; its artifact commit is discoverable with git log -- docs/rc. It does not establish runtime release readiness.
 
 This is the canonical status authority. Every composed registration has one row and exactly one status. BLOCKER means visible/runtime capability lacks current-SHA workflow proof or has a known defect; it does not assert all code is broken. No old PASS is inherited. No shipping capability is UNKNOWN. Hidden records remain dependencies of their visible workflows, so hiding a collection alone is not deferral.

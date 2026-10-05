@@ -1,5 +1,13 @@
 # RC scope and claim policy
 
+## RC-04 Pass 2 current bounded scope — 2026-10-04
+
+Source `3a3260f120f500a48d51a5251a7fd3b900ba6e93` passes the ordinary boundaries in [RC-04 evidence](evidence/RC-04-PASS2.md). Newsletter signup/consent/confirmation/preferences/suppression/re-subscribe, local MIME delivery and recovery, canonical forums and moderation, member profile privacy, owned account export, direct/group messages and in-app notification controls are the supported subset. This is an existing-publication copy journey, not a fresh-install/upgrade/restore claim. Local SMTP is DEGRADED BUT SAFE; live delivery is PROVIDER-REQUIRED.
+
+Forms/automation and telecom dispatch are **DEFERRED**: native collections deny product access and are hidden, forms return 410, and telecom tasks are not registered for shipping dispatch. External community email/SMS/digests and per-event relationship switches return 410 and are removed from active controls. Permanent deletion and private upload presigning return 410. Full contribution/message export and private attachment launch are explicitly deferred in settings/messages copy. Records and internal contracts are preserved. No encrypted-message or production provider-success claim is made.
+
+These entries supersede historical audience/community prose only for this exact subset. The broader RC-01 owner/administrator/staff, tenant/module/provider and operational gates remain open.
+
 Source candidate: `e24fc53d9e370e28f01398c561b0f5adc4884756`. Reconciled 2026-10-03. Initial working tree was clean. This documentation freeze binds the source candidate; its artifact commit is discoverable with git log -- docs/rc. It does not establish runtime release readiness.
 
 ## A. Advertised RC capabilities

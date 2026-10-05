@@ -1,5 +1,13 @@
 # Security ledger
 
+## RC-04 Pass 2 executed privacy subset — 2026-10-04
+
+Source `3a3260f120f500a48d51a5251a7fd3b900ba6e93`; [evidence](evidence/RC-04-PASS2.md). Real member sessions prove private profile and private thread API/SSR denial, foreign conversation denial even for a moderator, guessed attachment association denial, ordinary-member moderation denial, mute/block effects, owned export and logout/fresh-session persistence. Canonical post projections flatten member relationships; public native identity/community reads require staff access. Moderator authority is site-scoped and distinct from the admin cookie.
+
+A genuine unsubscribed newsletter recipient receives an allowed internal reply notification, while no external communication is generated. In-app off and mute prevent subsequent notifications; enabling external community channels returns 410. DOI cannot clear non-unsubscribe suppressions. Malformed signup returns 400 and repeated requests hit the implemented process-local 429 window behind the tested proxy that replaces forwarded client-address headers. This does not assert distributed rate limiting or arbitrary deployment proxy safety.
+
+Permanent deletion, full contribution/message export, per-event switches and private attachment launch are deferred. New private uploads return 410, and no end-to-end encryption claim is made. Remaining broad role/tenant/provider, private byte and operational gates below are not cleared.
+
 Source candidate: `e24fc53d9e370e28f01398c561b0f5adc4884756`. Reconciled 2026-10-03. Initial working tree was clean. This documentation freeze binds the source candidate; its artifact commit is discoverable with git log -- docs/rc. It does not establish runtime release readiness.
 
 | Boundary                              | Source / contract                                                   | Status  | First known issue or mandatory proof                                                                               |

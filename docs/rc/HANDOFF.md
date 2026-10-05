@@ -1,3 +1,11 @@
+## RC-04 Pass 2 handoff — bounded PASS — 2026-10-04
+
+Tested source `3a3260f120f500a48d51a5251a7fd3b900ba6e93`. [Evidence](evidence/RC-04-PASS2.md) and `evidence/rc-04/checks.json` bind the real visitor/member/operator subset. There are no remaining blockers within those supported journeys. Leave only stale-copy/navigation inventory reconciliation, small regressions and final candidate verification to the low-cost pass; do not add deferred functionality or execute RC-05 automatically.
+
+Deferred: public forms/automation, telecom dispatch, external community notifications/digests, per-event relationship switches, permanent account deletion, full contribution/message export, and private attachment launch. Their misleading entry points are removed or return 410; native deferred audience collections deny access. Live email/SMS-RCS and configured private storage acceptance require their own provider proof. Existing records are preserved.
+
+Moderation authority comes from the signed-in member's site-scoped grant. Admin login alone does not grant community moderation. The full RC-01 owner/administrator/staff matrix, broader tenant/module/provider coverage, upgrade and restore gates remain independent blockers. Local mail acceptance is not inbox delivery or production acceptance.
+
 # RC-03 Pass 3 final handoff ? PASS ? 2026-10-04
 
 Source `97ce2c1e4a253289d0d4f9da66c154afce74c6e9`. [Final evidence](evidence/RC-03-PASS3.md) records the cleanup, complete regression and retained initial failures. No RC-03 blocker remains within the supported article/redirect/persisted Bluesky orchestration scope. Calendar/feed/timelines, composer dispatch and remote federation remain deferred; live remote provider acceptance and broader RC-01 gates are not promoted. NEXT: RC-04 and RC-05; do not execute them automatically.

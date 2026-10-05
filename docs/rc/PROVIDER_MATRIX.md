@@ -1,5 +1,11 @@
 # Provider matrix
 
+## RC-04 Pass 2 provider limit — 2026-10-04
+
+Source `3a3260f120f500a48d51a5251a7fd3b900ba6e93`; [evidence](evidence/RC-04-PASS2.md). Loopback SMTP received actual MIME through the real adapter and deliberately rejected RCPT with 451. Disabled transport produced failure, then an operator retry used SMTP after worker configuration recovery. Accepted means transport acceptance; inbox delivery and live mail infrastructure remain **PROVIDER-REQUIRED**.
+
+SMS/RCS STOP/HELP/opt-in/opt-out/quiet-hours/emulator results are contract/integration proof only. Shipping telecom dispatch is **DEFERRED**, its tasks unregistered and native entry points hidden/denied; live Twilio/remote acceptance remains **PROVIDER-REQUIRED**. Successful private attachment storage/scanning/byte retrieval needs a separate configured-storage gate; new private uploads are **DEFERRED** and return 410. No live provider credentials were deliberately supplied for this pass.
+
 Source candidate: `e24fc53d9e370e28f01398c561b0f5adc4884756`. Reconciled 2026-10-03. Initial working tree was clean. This documentation freeze binds the source candidate; its artifact commit is discoverable with git log -- docs/rc. It does not establish runtime release readiness.
 
 Every provider/adapter source below is inventoried, including shared contracts and local adapters. A provider name in a connection categorizer is not proof of an implemented transport. Configuration was not inspected for secrets and no external request was made. Configured credentials alone do not prove DNS, delivery, charge, fulfillment or health. Local emulators cannot establish production-provider readiness.
