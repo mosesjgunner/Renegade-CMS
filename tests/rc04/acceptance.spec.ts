@@ -500,12 +500,36 @@ test('real members, forum reply notification, preferences, moderation, private m
       )
     ).docs[0]
     expect(bobSubscriber.status).toBe('unsubscribed')
+    let releaseProfile!: () => void
+    const profileGate = new Promise<void>((resolve) => {
+      releaseProfile = resolve
+    })
+    await alice.route('**/api/member-auth/me', async (route) => {
+      const response = await route.fetch()
+      await profileGate
+      await route.fulfill({ response })
+    })
     await alice.goto('/members/settings')
+    try {
+      await expect(
+        alice.getByRole('status').filter({ hasText: 'Loading your profile' }),
+      ).toBeVisible()
+      await expect(alice.getByLabel('Display name', { exact: true })).toHaveCount(0)
+    } finally {
+      releaseProfile()
+    }
+    await expect(alice.getByLabel('Display name', { exact: true })).toBeVisible()
+    await alice.unroute('**/api/member-auth/me')
     await alice.getByLabel('Display name', { exact: true }).fill('Alice RC04')
     await alice.getByLabel('Bio', { exact: true }).fill('RC04 secret bio')
     await alice.getByLabel('Visibility', { exact: true }).selectOption('private')
     await alice.getByRole('button', { name: 'Save profile', exact: true }).click()
     await expect(alice.getByText('Profile saved.', { exact: true })).toBeVisible()
+    expect((await api(alice, 'GET', '/api/member-auth/me')).profile).toMatchObject({
+      displayName: 'Alice RC04',
+      bio: 'RC04 secret bio',
+      visibility: 'private',
+    })
     await api(
       alice,
       'PATCH',

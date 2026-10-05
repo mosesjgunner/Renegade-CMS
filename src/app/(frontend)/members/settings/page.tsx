@@ -18,6 +18,8 @@ export default function MemberSettingsPage() {
   const [profile, setProfile] = useState<Record<string, unknown>>({})
   const [initialHandle, setInitialHandle] = useState('')
   const [siteId, setSiteId] = useState('')
+  const [profileLoaded, setProfileLoaded] = useState(false)
+  const [profileLoadFailed, setProfileLoadFailed] = useState(false)
   const [message, setMessage] = useState('')
   const [imageMessage, setImageMessage] = useState('')
   const [history, setHistory] = useState<
@@ -35,16 +37,23 @@ export default function MemberSettingsPage() {
     })
   }
   useEffect(() => {
-    void fetch('/api/member-auth/me').then(async (r) => {
-      if (!r.ok) return setMessage('Sign in required.')
-      const data = await r.json()
-      setProfile(data.profile ?? {})
-      setInitialHandle(String(data.profile?.handle ?? ''))
-      setSiteId(data.siteId ?? '')
-      void fetch('/api/member-auth/profile').then(async (response) => {
-        if (response.ok) setHistory((await response.json()).history ?? [])
+    void fetch('/api/member-auth/me')
+      .then(async (r) => {
+        if (r.status === 401) return setMessage('Sign in required.')
+        if (!r.ok) throw new Error('Profile unavailable.')
+        const data = await r.json()
+        if (!data.profile) throw new Error('Profile unavailable.')
+        setProfile(data.profile)
+        setInitialHandle(String(data.profile.handle ?? ''))
+        setSiteId(data.siteId ?? '')
+        setProfileLoaded(true)
+        void fetch('/api/member-auth/profile')
+          .then(async (response) => {
+            if (response.ok) setHistory((await response.json()).history ?? [])
+          })
+          .catch(() => setHistory([]))
       })
-    })
+      .catch(() => setProfileLoadFailed(true))
   }, [])
   async function save(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -172,6 +181,24 @@ export default function MemberSettingsPage() {
             </Link>
           </div>
         </div>
+      </main>
+    )
+  }
+
+  if (!profileLoaded) {
+    return (
+      <main className="max-w-xl mx-auto px-6 py-16">
+        <h1 className="text-3xl font-bold">Member settings</h1>
+        {profileLoadFailed ? (
+          <>
+            <p role="alert">Could not load your profile. Try again.</p>
+            <button type="button" onClick={() => window.location.reload()}>
+              Retry profile loading
+            </button>
+          </>
+        ) : (
+          <p role="status">Loading your profile…</p>
+        )}
       </main>
     )
   }
