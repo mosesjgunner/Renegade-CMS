@@ -1,0 +1,87 @@
+{
+  "audience-trace.zip": {
+    "httpStatuses": {
+      "307": 1,
+      "200": 383,
+      "201": 4,
+      "400": 1,
+      "-1": 5
+    },
+    "pageErrors": [],
+    "console": []
+  },
+  "visitor-trace.zip": {
+    "httpStatuses": {
+      "307": 1,
+      "200": 135,
+      "202": 3
+    },
+    "pageErrors": [],
+    "console": []
+  },
+  "community-trace.zip": {
+    "httpStatuses": {
+      "200": 8,
+      "201": 4
+    },
+    "pageErrors": [],
+    "console": []
+  },
+  "member-0-trace.zip": {
+    "httpStatuses": {
+      "307": 1,
+      "200": 119,
+      "410": 3,
+      "201": 7,
+      "403": 7,
+      "404": 2,
+      "401": 1
+    },
+    "pageErrors": [],
+    "console": [
+      {
+        "type": "error",
+        "text": "Failed to load resource: the server responded with a status of 404 (Not Found)"
+      }
+    ]
+  },
+  "member-1-trace.zip": {
+    "httpStatuses": {
+      "307": 1,
+      "200": 208,
+      "202": 1,
+      "404": 1,
+      "201": 3,
+      "410": 1
+    },
+    "pageErrors": [],
+    "console": []
+  },
+  "member-2-trace.zip": {
+    "httpStatuses": {
+      "307": 1,
+      "200": 96,
+      "403": 1
+    },
+    "pageErrors": [],
+    "console": []
+  },
+  "member-3-trace.zip": {
+    "httpStatuses": {
+      "307": 1,
+      "200": 87
+    },
+    "pageErrors": [],
+    "console": []
+  },
+  "public-abuse-trace.zip": {
+    "httpStatuses": {
+      "400": 7,
+      "429": 3,
+      "410": 2,
+      "403": 1
+    },
+    "pageErrors": [],
+    "console": []
+  }
+}

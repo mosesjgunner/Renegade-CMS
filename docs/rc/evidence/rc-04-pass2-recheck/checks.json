@@ -1,0 +1,72 @@
+{
+  "date": "2026-10-04",
+  "sourceSha": "d1cb789908c11f3624cba6468d59c8ec556a029f",
+  "initialHead": "6c31cc1c889a5c7087657b5e2de1aa39116c5de9",
+  "attribution": "Working-tree recheck; pre-existing source changes preserved and captured, not a clean immutable candidate claim",
+  "sourcePatchSha256": "6aacb2870e6043a089745c908dd8515986e2bc5b40dea76ddac4587b94fa4ff1",
+  "sourceManifest": "source-manifest.json",
+  "verdict": "PASS within supported RC-04 subset",
+  "unit": {
+    "passed": 270,
+    "failed": 0,
+    "files": 36
+  },
+  "integration": {
+    "passed": 52,
+    "failed": 0,
+    "files": 5,
+    "fixture": {
+      "template": null,
+      "database": "renegade_rc04_1791172567773_release_acceptance",
+      "originalPreserved": true,
+      "freshInstall": true
+    }
+  },
+  "browser": {
+    "startTime": "2026-10-05T04:03:07.632Z",
+    "duration": 121915.614,
+    "expected": 3,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0,
+    "nativeExitCode": 0,
+    "fixture": {
+      "template": "renegade_rc02_1791086734920_release_acceptance",
+      "database": "renegade_rc04_1791172931924_release_acceptance",
+      "originalPreserved": true,
+      "freshInstall": false
+    }
+  },
+  "typecheck": {
+    "exitCode": 0
+  },
+  "lint": {
+    "exitCode": 0,
+    "warnings": 0
+  },
+  "build": {
+    "exitCode": 0
+  },
+  "initialBrowserFailure": "failure/browser-results.json; saved profile values lost to initial loading race; final run is separate fresh copy",
+  "historicalEvidenceRestored": true,
+  "productionDeliveryProven": false,
+  "providerRequired": [
+    "production email",
+    "live SMS/RCS"
+  ],
+  "deferred": [
+    "forms/automation",
+    "telecom dispatch",
+    "external community notifications/digests",
+    "per-event relationship switches",
+    "permanent deletion",
+    "complete contribution/message export",
+    "private attachment upload/scanning/download"
+  ],
+  "remainingGates": [
+    "clean candidate freeze",
+    "broader role/tenant/module acceptance",
+    "live providers",
+    "upgrade/restore"
+  ]
+}

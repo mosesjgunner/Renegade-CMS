@@ -1,0 +1,42 @@
+[
+  {
+    "archive": "audience-trace.zip",
+    "crcPassed": true,
+    "sha256": "83e8a24674b899e4605ddd8cd55471469622f51777b2a64f724f353bbf725245"
+  },
+  {
+    "archive": "visitor-trace.zip",
+    "crcPassed": true,
+    "sha256": "f33768443ebbade5775eeb3936d761dd1fd4edc6018cb32025fdee55f9c495c6"
+  },
+  {
+    "archive": "community-trace.zip",
+    "crcPassed": true,
+    "sha256": "6127e360a499fe437f79346caa96c6cf421707d67dd3810f360c2145b9d34a0c"
+  },
+  {
+    "archive": "member-0-trace.zip",
+    "crcPassed": true,
+    "sha256": "470d62f918ce0a88cbd5b48a61771cf186662e5e1fd6773a58534844c24f9ab0"
+  },
+  {
+    "archive": "member-1-trace.zip",
+    "crcPassed": true,
+    "sha256": "9887d89b96d2dd04f643434307c74a2bcc6095efc9620cd57f1b0b3e4852e9b7"
+  },
+  {
+    "archive": "member-2-trace.zip",
+    "crcPassed": true,
+    "sha256": "56f006acde59e43d5d9d15e2748c184d645f840a05bfc69eb735132e1bde8eae"
+  },
+  {
+    "archive": "member-3-trace.zip",
+    "crcPassed": true,
+    "sha256": "f6e99f584e112f1a7416c276715d826475b72e0ae8be9f42d220e996dcd47206"
+  },
+  {
+    "archive": "public-abuse-trace.zip",
+    "crcPassed": true,
+    "sha256": "224c38fc0cd7f81533af464a1da60d18c16f075422da47455ad4817a4ff6a5c6"
+  }
+]

@@ -1,0 +1,874 @@
+diff --git a/playwright.rc02.config.ts b/playwright.rc02.config.ts
+index 9786dbc..af036a1 100644
+--- a/playwright.rc02.config.ts
++++ b/playwright.rc02.config.ts
+@@ -34,10 +34,12 @@ export default defineConfig({
+     baseURL: env.APP_URL,
+     browserName: 'chromium',
+     ignoreHTTPSErrors: true,
+-    launchOptions: { args: [
+-      '--host-resolver-rules=MAP dispatch.rc02.test 127.0.0.1',
+-      `--ignore-certificate-errors-spki-list=${certificatePin}`,
+-    ] },
++    launchOptions: {
++      args: [
++        '--host-resolver-rules=MAP dispatch.rc02.test 127.0.0.1',
++        `--ignore-certificate-errors-spki-list=${certificatePin}`,
++      ],
++    },
+     trace: 'on',
+     screenshot: 'only-on-failure',
+     actionTimeout: 20_000,
+diff --git a/src/app/(frontend)/admin/social/page.tsx b/src/app/(frontend)/admin/social/page.tsx
+index 6f3ee4c..237d331 100644
+--- a/src/app/(frontend)/admin/social/page.tsx
++++ b/src/app/(frontend)/admin/social/page.tsx
+@@ -3,4 +3,3 @@ import SocialCommandCenter from '@/modules/admin/SocialCommandCenter'
+ export default function SocialAdminPage() {
+   return <SocialCommandCenter />
+ }
+-
+diff --git a/src/app/(frontend)/api/admin/catalog/import/route.ts b/src/app/(frontend)/api/admin/catalog/import/route.ts
+index eae7a9f..c0e8301 100644
+--- a/src/app/(frontend)/api/admin/catalog/import/route.ts
++++ b/src/app/(frontend)/api/admin/catalog/import/route.ts
+@@ -98,6 +98,24 @@ export async function POST(request: Request) {
+   }
+ }
+ 
++function inferProductKind(
++  capabilities: readonly string[] = [],
++):
++  | 'physical'
++  | 'digital'
++  | 'pod-reference'
++  | 'subscription'
++  | 'membership'
++  | 'donation'
++  | 'affiliate' {
++  if (capabilities.includes('pod')) return 'pod-reference'
++  if (capabilities.includes('affiliate')) return 'affiliate'
++  if (capabilities.includes('donation')) return 'donation'
++  if (capabilities.includes('subscription')) return 'subscription'
++  if (capabilities.includes('digital-entitlement')) return 'digital'
++  return 'physical'
++}
++
+ function toPayloadProduct(product: CatalogProduct) {
+   return {
+     site: product.siteId,
+@@ -106,6 +124,7 @@ function toPayloadProduct(product: CatalogProduct) {
+     name: product.name,
+     summary: product.summary,
+     description: product.description,
++    kind: inferProductKind(product.capabilities),
+     // Imported provider data is never publication authority. Every applied
+     // record re-enters the local review workflow as a draft.
+     state: 'draft',
+diff --git a/src/app/(frontend)/page.tsx b/src/app/(frontend)/page.tsx
+index 3d80201..52bc342 100644
+--- a/src/app/(frontend)/page.tsx
++++ b/src/app/(frontend)/page.tsx
+@@ -74,7 +74,12 @@ export default async function HomePage() {
+       // Fall through if selected page is unpublished or not found
+     }
+     if (editorial) {
+-      return <>{schema}<EditorialArticleView themeId={settings.themeId} article={editorial} /></>
++      return (
++        <>
++          {schema}
++          <EditorialArticleView themeId={settings.themeId} article={editorial} />
++        </>
++      )
+     }
+   }
+ 
+@@ -94,7 +99,15 @@ export default async function HomePage() {
+       // Fall through if layout not found
+     }
+     if (layoutToRender) {
+-      return <>{schema}<PublicLayout record={await hydratePublicLayoutRecord(payload, layoutToRender)} path="/" /></>
++      return (
++        <>
++          {schema}
++          <PublicLayout
++            record={await hydratePublicLayoutRecord(payload, layoutToRender)}
++            path="/"
++          />
++        </>
++      )
+     }
+   }
+ 
+@@ -107,7 +120,12 @@ export default async function HomePage() {
+       // No root content article
+     }
+     if (rootPage) {
+-      return <>{schema}<EditorialArticleView themeId={settings.themeId} article={rootPage} /></>
++      return (
++        <>
++          {schema}
++          <EditorialArticleView themeId={settings.themeId} article={rootPage} />
++        </>
++      )
+     }
+ 
+     const layouts = await payload.find({
+@@ -119,7 +137,12 @@ export default async function HomePage() {
+     })
+     const layout = layouts.docs[0] as unknown as (PublicState & Record<string, unknown>) | undefined
+     if (layout && canRenderPublic(layout)) {
+-      return <>{schema}<PublicLayout record={await hydratePublicLayoutRecord(payload, layout)} path="/" /></>
++      return (
++        <>
++          {schema}
++          <PublicLayout record={await hydratePublicLayoutRecord(payload, layout)} path="/" />
++        </>
++      )
+     }
+   }
+ 
+diff --git a/src/modules/admin/CatalogCommandCenter.tsx b/src/modules/admin/CatalogCommandCenter.tsx
+index cbc7407..5e49c2d 100644
+--- a/src/modules/admin/CatalogCommandCenter.tsx
++++ b/src/modules/admin/CatalogCommandCenter.tsx
+@@ -68,12 +68,12 @@ export default function CatalogCommandCenter() {
+         body: JSON.stringify({ products, mode, source: 'catalog-command-center' }),
+       })
+       const body = await response.json()
++      if (response.ok && mode === 'apply') await refresh()
+       setMessage(
+         response.ok
+           ? `${mode}: ${body.plan.creates.length} create, ${body.plan.updates.length} update, ${body.plan.unchanged.length} unchanged, ${body.plan.errors.length} errors${body.replay ? ' (replay)' : ''}.`
+           : body.error,
+       )
+-      if (response.ok && mode === 'apply') await refresh()
+     } catch (error) {
+       setMessage(error instanceof Error ? error.message : 'Invalid import JSON.')
+     }
+diff --git a/src/modules/presentation/public-queries.ts b/src/modules/presentation/public-queries.ts
+index 3e02bb1..c996567 100644
+--- a/src/modules/presentation/public-queries.ts
++++ b/src/modules/presentation/public-queries.ts
+@@ -9,9 +9,13 @@ export async function hydratePublicLayoutRecord(payload: Payload, record: Record
+   if (!snapshot) return record
+   const site = typeof record.site === 'string' ? record.site : (record.site as { id?: string })?.id
+   if (snapshot.document.siteId !== site) throw new Error('Published presentation scope mismatch.')
+-  return { ...record, publishedPresentation: { ...snapshot,
+-    document: await hydratePublicQueries(payload, snapshot.document),
+-  } }
++  return {
++    ...record,
++    publishedPresentation: {
++      ...snapshot,
++      document: await hydratePublicQueries(payload, snapshot.document),
++    },
++  }
+ }
+ 
+ /** Resolve public query blocks on a copy, never in the stored presentation. */
+@@ -19,34 +23,75 @@ export async function hydratePublicQueries(payload: Payload, document: Presentat
+   const next = structuredClone(document)
+   for (const blocks of Object.values(next.slots)) {
+     for (const block of blocks ?? []) {
+-      if (block.hidden || !['publisher.article-list', 'publisher.feature-grid', 'publisher.article-grid', 'publisher.event-list'].includes(block.component)) continue
+-      const query = block.props.query && typeof block.props.query === 'object'
+-        ? block.props.query as Record<string, unknown> : {}
+-      const collection = String(query.collection ?? (block.component === 'publisher.event-list' ? 'events' : 'content'))
++      if (
++        block.hidden ||
++        ![
++          'publisher.article-list',
++          'publisher.feature-grid',
++          'publisher.article-grid',
++          'publisher.event-list',
++        ].includes(block.component)
++      )
++        continue
++      const query =
++        block.props.query && typeof block.props.query === 'object'
++          ? (block.props.query as Record<string, unknown>)
++          : {}
++      const collection = String(
++        query.collection ?? (block.component === 'publisher.event-list' ? 'events' : 'content'),
++      )
+       block.props.queryResults = []
+-      if (!['content', 'events', 'albums', 'discussions'].includes(collection) || !isRegisteredCollection(payload, collection)) continue
++      if (
++        !['content', 'events', 'albums', 'discussions'].includes(collection) ||
++        !isRegisteredCollection(payload, collection)
++      )
++        continue
+       const limit = Math.min(24, Math.max(1, Math.trunc(Number(query.limit)) || 6))
+-      const statuses = collection === 'content' ? ['published', 'updated', 'scheduled']
+-        : collection === 'events' ? ['published', 'scheduled']
+-        : collection === 'discussions' ? ['open'] : undefined
++      const statuses =
++        collection === 'content'
++          ? ['published', 'updated', 'scheduled']
++          : collection === 'events'
++            ? ['published', 'scheduled']
++            : collection === 'discussions'
++              ? ['open']
++              : undefined
+       const result = await payload.find({
+         collection,
+-        where: { and: [{ site: { equals: document.siteId } }, ...(statuses ? [{ status: { in: statuses } }] : [])] },
++        where: {
++          and: [
++            { site: { equals: document.siteId } },
++            ...(statuses ? [{ status: { in: statuses } }] : []),
++          ],
++        },
+         limit: limit * 4,
+-        sort: query.sort === 'oldest' ? 'createdAt' : query.sort === 'title' ? 'title' : '-createdAt',
++        sort:
++          query.sort === 'oldest' ? 'createdAt' : query.sort === 'title' ? 'title' : '-createdAt',
+         depth: 1,
+         overrideAccess: true,
+       } as never)
+       block.props.queryResults = (result.docs as unknown as Record<string, unknown>[])
+         .filter((row) => {
+           const site = typeof row.site === 'string' ? row.site : (row.site as { id?: string })?.id
+-          const forum = row.forum && typeof row.forum === 'object' ? row.forum as Record<string, unknown> : undefined
+-          return site === document.siteId && canDiscoverPublic(row) && !row.requiredEntitlement &&
+-            (!forum || canDiscoverPublic(forum)) && typeof row.canonicalPath === 'string' &&
+-            row.canonicalPath.startsWith('/') && !row.canonicalPath.startsWith('//')
++          const forum =
++            row.forum && typeof row.forum === 'object'
++              ? (row.forum as Record<string, unknown>)
++              : undefined
++          return (
++            site === document.siteId &&
++            canDiscoverPublic(row) &&
++            !row.requiredEntitlement &&
++            (!forum || canDiscoverPublic(forum)) &&
++            typeof row.canonicalPath === 'string' &&
++            row.canonicalPath.startsWith('/') &&
++            !row.canonicalPath.startsWith('//')
++          )
+         })
+         .slice(0, limit)
+-        .map((row) => ({ id: String(row.id), title: String(row.title ?? row.name), href: row.canonicalPath }))
++        .map((row) => ({
++          id: String(row.id),
++          title: String(row.title ?? row.name),
++          href: row.canonicalPath,
++        }))
+     }
+   }
+   return next
+diff --git a/src/modules/public/discovery-audit.ts b/src/modules/public/discovery-audit.ts
+index 7531935..d950f00 100644
+--- a/src/modules/public/discovery-audit.ts
++++ b/src/modules/public/discovery-audit.ts
+@@ -123,7 +123,8 @@ export function inspectRenderedHtml(
+     const attribute: 'href' | 'src' = /^<link\b/i.test(tag) ? 'href' : 'src'
+     const raw = attr(tag, attribute)
+     const target = raw && absolute(raw, finalUrl)
+-    if (target && /^https?:/i.test(target)) links.push({ target, text: text(tag), attribute, resource: true })
++    if (target && /^https?:/i.test(target))
++      links.push({ target, text: text(tag), attribute, resource: true })
+   }
+   const issues: RenderedAuditIssue[] = []
+   if (!title)
+@@ -363,41 +364,58 @@ export async function runRenderedAudit(options: AuditOptions): Promise<RenderedA
+     return target.toString()
+   }
+   const checked = new Map(pages.map((p) => [withoutFragment(p.finalUrl), p.status]))
+-  const linkTargets = [...new Set(pages.flatMap((p) => p.links)
+-    .filter((link) => !link.resource && link.attribute === 'href' && new URL(link.target).origin === origin)
+-    .map((link) => withoutFragment(link.target)))]
+-    .filter((target) => !checked.has(target)).slice(0, maxPages)
++  const linkTargets = [
++    ...new Set(
++      pages
++        .flatMap((p) => p.links)
++        .filter(
++          (link) =>
++            !link.resource && link.attribute === 'href' && new URL(link.target).origin === origin,
++        )
++        .map((link) => withoutFragment(link.target)),
++    ),
++  ]
++    .filter((target) => !checked.has(target))
++    .slice(0, maxPages)
+   let linkCursor = 0
+   const checkLinks = async () => {
+     while (linkCursor < linkTargets.length) {
+       const target = linkTargets[linkCursor++]
+-      try { checked.set(target, (await request(target, options)).status) }
+-      catch { checked.set(target, 0) }
++      try {
++        checked.set(target, (await request(target, options)).status)
++      } catch {
++        checked.set(target, 0)
++      }
+     }
+   }
+   await Promise.all(Array.from({ length: concurrency }, checkLinks))
+   for (const p of pages)
+     for (const link of p.links)
+-      if (
+-        new URL(link.target).origin === origin &&
+-        !link.resource &&
+-        link.attribute === 'href'
+-      ) {
++      if (new URL(link.target).origin === origin && !link.resource && link.attribute === 'href') {
+         link.status = checked.get(withoutFragment(link.target))
+-        if (link.status === 0 || (link.status !== undefined && link.status >= 400)) p.issues.push(
+-          issue(
+-            p.url,
+-            'DISC-05-INTERNAL-LINK-UNREACHABLE',
+-            'warning',
+-            `Rendered internal link returned HTTP ${link.status}: ${link.target}`,
+-            'body',
+-          ),
+-        )
++        if (link.status === 0 || (link.status !== undefined && link.status >= 400))
++          p.issues.push(
++            issue(
++              p.url,
++              'DISC-05-INTERNAL-LINK-UNREACHABLE',
++              'warning',
++              `Rendered internal link returned HTTP ${link.status}: ${link.target}`,
++              'body',
++            ),
++          )
+       }
+   const graph = pages.flatMap((page) =>
+     page.links
+-      .filter((link) => !link.resource && link.attribute === 'href' && new URL(link.target).origin === origin)
+-      .map((link) => ({ source: page.finalUrl, target: link.target, anchor: link.text, status: link.status })),
++      .filter(
++        (link) =>
++          !link.resource && link.attribute === 'href' && new URL(link.target).origin === origin,
++      )
++      .map((link) => ({
++        source: page.finalUrl,
++        target: link.target,
++        anchor: link.text,
++        status: link.status,
++      })),
+   )
+   return {
+     pages: pages.sort((a, b) => a.url.localeCompare(b.url)),
+diff --git a/src/modules/public/discovery-lifecycle.ts b/src/modules/public/discovery-lifecycle.ts
+index ff35b1f..9eeb339 100644
+--- a/src/modules/public/discovery-lifecycle.ts
++++ b/src/modules/public/discovery-lifecycle.ts
+@@ -62,12 +62,19 @@ export async function persistRenderedAuditLifecycle(
+   for (const item of issues) {
+     const key = `disc-05:${item.ruleId}:${item.url}`
+     const previous = grouped.get(key)
+-    grouped.set(key, previous ? {
+-      ...previous,
+-      evidence: [...new Set([previous.evidence, item.evidence])].join('\n'),
+-      severity: severityRank[item.severity] > severityRank[previous.severity]
+-        ? item.severity : previous.severity,
+-    } : item)
++    grouped.set(
++      key,
++      previous
++        ? {
++            ...previous,
++            evidence: [...new Set([previous.evidence, item.evidence])].join('\n'),
++            severity:
++              severityRank[item.severity] > severityRank[previous.severity]
++                ? item.severity
++                : previous.severity,
++          }
++        : item,
++    )
+   }
+ 
+   for (const [dedupeKey, item] of grouped) {
+diff --git a/src/modules/public/discovery.ts b/src/modules/public/discovery.ts
+index a7269bc..c0b7048 100644
+--- a/src/modules/public/discovery.ts
++++ b/src/modules/public/discovery.ts
+@@ -1659,8 +1659,10 @@ async function buildContentDiscoveryDocument(input: {
+           overrideAccess: true,
+         } as never)
+         publishedRevision = rev as Record<string, any> | undefined
+-        plainTextBody = typeof publishedRevision?.document?.plainTextProjection === 'string'
+-          ? publishedRevision.document.plainTextProjection : ''
++        plainTextBody =
++          typeof publishedRevision?.document?.plainTextProjection === 'string'
++            ? publishedRevision.document.plainTextProjection
++            : ''
+       } else if (content.status !== 'updated' && typeof fam.plainTextProjection === 'string') {
+         plainTextBody = fam.plainTextProjection
+       }
+@@ -2794,7 +2796,14 @@ function buildGenericRecordDiscoveryDocument(input: {
+     canonicalUrl: record.seoCanonicalURL || publicUrl,
+     canonicalPath,
+     base,
+-    contentType: kind === 'topic' ? 'archive' : ext ? 'page' : kind === 'event' || kind === 'product' ? 'page' : 'article',
++    contentType:
++      kind === 'topic'
++        ? 'archive'
++        : ext
++          ? 'page'
++          : kind === 'event' || kind === 'product'
++            ? 'page'
++            : 'article',
+     title: titleValue,
+     description: descValue,
+     site: siteIdentity,
+diff --git a/src/modules/public/local-audit-origin.ts b/src/modules/public/local-audit-origin.ts
+index 6753c29..0d4d3fd 100644
+--- a/src/modules/public/local-audit-origin.ts
++++ b/src/modules/public/local-audit-origin.ts
+@@ -1,15 +1,9 @@
+ /** Private self-auditing is limited to the server-configured application origin. */
+-export function allowConfiguredSelfAudit(
+-  origin: string,
+-  appUrl: string | undefined,
+-): boolean {
++export function allowConfiguredSelfAudit(origin: string, appUrl: string | undefined): boolean {
+   if (!appUrl) return false
+   try {
+     const target = new URL(origin)
+-    return (
+-      target.origin === new URL(appUrl).origin &&
+-      ['http:', 'https:'].includes(target.protocol)
+-    )
++    return target.origin === new URL(appUrl).origin && ['http:', 'https:'].includes(target.protocol)
+   } catch {
+     return false
+   }
+diff --git a/src/modules/public/search-projection.ts b/src/modules/public/search-projection.ts
+index c5d302b..1992bee 100644
+--- a/src/modules/public/search-projection.ts
++++ b/src/modules/public/search-projection.ts
+@@ -65,11 +65,15 @@ export async function projectSearchDocument(
+   if (!canonicalId) return 'removed'
+   // Lifecycle hooks run before commit. Read companions and revisions in that
+   // same request transaction so republishing indexes the new public pointer.
+-  const scopedPayload = input.req ? Object.assign(Object.create(payload), {
+-    find: (args: Parameters<Payload['find']>[0]) => payload.find({ ...args, req: input.req }),
+-    findByID: (args: Parameters<Payload['findByID']>[0]) => payload.findByID({ ...args, req: input.req }),
+-    findGlobal: (args: Parameters<Payload['findGlobal']>[0]) => payload.findGlobal({ ...args, req: input.req }),
+-  }) as Payload : payload
++  const scopedPayload = input.req
++    ? (Object.assign(Object.create(payload), {
++        find: (args: Parameters<Payload['find']>[0]) => payload.find({ ...args, req: input.req }),
++        findByID: (args: Parameters<Payload['findByID']>[0]) =>
++          payload.findByID({ ...args, req: input.req }),
++        findGlobal: (args: Parameters<Payload['findGlobal']>[0]) =>
++          payload.findGlobal({ ...args, req: input.req }),
++      }) as Payload)
++    : payload
+   const doc = await resolveDiscoveryDocument(scopedPayload, {
+     collection: input.collection,
+     record: input.record,
+diff --git a/src/scripts/rc02-runtime.mjs b/src/scripts/rc02-runtime.mjs
+index 406427f..2916f7a 100644
+--- a/src/scripts/rc02-runtime.mjs
++++ b/src/scripts/rc02-runtime.mjs
+@@ -39,10 +39,7 @@ function launch(label, args) {
+   return child
+ }
+ function start() {
+-  web = launch('web', [
+-    '--max-old-space-size=1536',
+-    '.next/standalone/server.js',
+-  ])
++  web = launch('web', ['--max-old-space-size=1536', '.next/standalone/server.js'])
+   worker = launch('worker', [
+     '--max-old-space-size=512',
+     '--import',
+diff --git a/src/scripts/verify-shop01-browser.ts b/src/scripts/verify-shop01-browser.ts
+index 919df62..71cdb17 100644
+--- a/src/scripts/verify-shop01-browser.ts
++++ b/src/scripts/verify-shop01-browser.ts
+@@ -45,6 +45,15 @@ export async function verifyShop01Browser() {
+         )
+       },
+     )
++    const existingOld = await payload.find({
++      collection: 'products',
++      where: { slug: { in: ['field-kit', 'organizing-lamp', 'renegade-shirt'] } },
++      limit: 100,
++      overrideAccess: true,
++    } as never)
++    for (const oldDoc of existingOld.docs) {
++      await payload.delete({ collection: 'products', id: (oldDoc as any).id, overrideAccess: true } as never)
++    }
+     const now = new Date().toISOString()
+     const products = [
+       {
+@@ -180,8 +189,8 @@ export async function verifyShop01Browser() {
+     await page.getByLabel('Catalog JSON').fill(JSON.stringify(products))
+     await page.getByRole('button', { name: 'Apply validated import' }).click()
+     await page.getByText('apply: 3 create, 0 update, 0 unchanged, 0 errors.').waitFor()
+-    for (const name of products.map((product) => product.name)) {
+-      const row = page.getByRole('row', { name: new RegExp(name) })
++    for (const product of products) {
++      const row = page.getByRole('row', { name: new RegExp(`${product.canonicalPath}\\b`) })
+       await row.getByRole('button', { name: 'Request review' }).click()
+       await row.getByRole('button', { name: 'Approve' }).click()
+       await row.getByRole('button', { name: 'Publish' }).click()
+@@ -197,13 +206,22 @@ export async function verifyShop01Browser() {
+     await page.goto(`${baseURL}/store/renegade-shirt`)
+     await page.getByText('Availability confirmed at provider handoff').waitFor()
+     const schema = await page.locator('script[type="application/ld+json"]').textContent()
+-    if (!schema?.includes('Product') || !schema.includes('2800'))
++    if (!schema?.includes('Product') || (!schema.includes('2800') && !schema.includes('28.00')))
+       throw new Error('Product schema is absent.')
+     const denied = await page.request.get(`${baseURL}/api/commerce/download/not-a-valid-grant`)
+     if (denied.status() !== 404) throw new Error('Private download denial failed.')
+     console.log('SHOP-01 browser acceptance passed.')
+     await browser.close()
+   } finally {
++    const cleanup = await payload.find({
++      collection: 'products',
++      where: { slug: { in: ['field-kit', 'organizing-lamp', 'renegade-shirt'] } },
++      limit: 100,
++      overrideAccess: true,
++    } as never).catch(() => ({ docs: [] }))
++    for (const oldDoc of cleanup.docs) {
++      await payload.delete({ collection: 'products', id: (oldDoc as any).id, overrideAccess: true } as never).catch(() => undefined)
++    }
+     await payload.db.destroy?.()
+   }
+ }
+diff --git a/tests/integration/pub-04-publishing-floor.integration.test.ts b/tests/integration/pub-04-publishing-floor.integration.test.ts
+index 544d5f0..844148a 100644
+--- a/tests/integration/pub-04-publishing-floor.integration.test.ts
++++ b/tests/integration/pub-04-publishing-floor.integration.test.ts
+@@ -8,7 +8,11 @@ import { normalizeNavigation, validateNavigation } from '../../src/modules/publi
+ import { mediaStorage, inspectMedia } from '../../src/modules/media/storage'
+ import { deleteOrphanedMedia, publicMedia } from '../../src/modules/media/workflow'
+ import { loadConfig } from '../../src/modules/core/config'
+-import { queryLocalSearch, resolveDiscoveryDocument, type SearchDocument } from '../../src/modules/public/discovery'
++import {
++  queryLocalSearch,
++  resolveDiscoveryDocument,
++  type SearchDocument,
++} from '../../src/modules/public/discovery'
+ import { querySearchProjection } from '../../src/modules/public/search-projection'
+ import sitemap from '../../src/modules/public/sitemap-compat'
+ import robots from '../../src/app/(frontend)/robots'
+@@ -64,29 +68,57 @@ describe('PUB-04 publishing floor integration contract', () => {
+ 
+   it('keeps saved edits out of the public body index and indexes them immediately upon republish', async () => {
+     const token = `privaterevision${randomUUID().replaceAll('-', '')}`
+-    const body = (value: string) => ({ root: { type: 'root', version: 1, children: [
+-      { type: 'paragraph', version: 1, children: [{ type: 'text', version: 1, text: value }] },
+-    ] } })
+-    const article = await payload.create({ collection: 'content', overrideAccess: true,
+-      data: { site: siteId, publication: publicationId, contentType: 'article',
+-        title: 'Revision privacy reporting', slug: `revision-${randomUUID()}`, status: 'published',
++    const body = (value: string) => ({
++      root: {
++        type: 'root',
++        version: 1,
++        children: [
++          { type: 'paragraph', version: 1, children: [{ type: 'text', version: 1, text: value }] },
++        ],
++      },
++    })
++    const article = await payload.create({
++      collection: 'content',
++      overrideAccess: true,
++      data: {
++        site: siteId,
++        publication: publicationId,
++        contentType: 'article',
++        title: 'Revision privacy reporting',
++        slug: `revision-${randomUUID()}`,
++        status: 'published',
+         body: body('The original public reporting.'),
+       } as never,
+     })
+-    await payload.update({ collection: 'content', id: article.id, overrideAccess: true,
++    await payload.update({
++      collection: 'content',
++      id: article.id,
++      overrideAccess: true,
+       data: { body: body(`Saved private reporting ${token}`), status: 'updated' } as never,
+     })
+-    const saved = await payload.update({ collection: 'content', id: article.id, overrideAccess: true,
++    const saved = await payload.update({
++      collection: 'content',
++      id: article.id,
++      overrideAccess: true,
+       data: { summary: 'Metadata saved while the body remains unpublished.' },
+     })
+-    const doc = await resolveDiscoveryDocument(payload, { collection: 'content', record: saved as unknown as Record<string, unknown>, siteId })
++    const doc = await resolveDiscoveryDocument(payload, {
++      collection: 'content',
++      record: saved as unknown as Record<string, unknown>,
++      siteId,
++    })
+     expect(doc.search.bodyProjection).not.toContain(token)
+     expect(doc.search.bodyProjection).toContain('original public reporting')
+     expect((await querySearchProjection(payload, { siteId, query: token })).hits).toHaveLength(0)
+-    await payload.update({ collection: 'content', id: article.id, overrideAccess: true,
++    await payload.update({
++      collection: 'content',
++      id: article.id,
++      overrideAccess: true,
+       data: { status: 'published' },
+     })
+-    expect((await querySearchProjection(payload, { siteId, query: token })).hits.map((hit) => hit.id)).toContain(String(article.id))
++    expect(
++      (await querySearchProjection(payload, { siteId, query: token })).hits.map((hit) => hit.id),
++    ).toContain(String(article.id))
+   })
+ 
+   it('Requirement 1: updates and resolves site settings through normal admin controls', async () => {
+diff --git a/tests/rc02/site-build.spec.ts b/tests/rc02/site-build.spec.ts
+index f4eba90..abeee4e 100644
+--- a/tests/rc02/site-build.spec.ts
++++ b/tests/rc02/site-build.spec.ts
+@@ -757,12 +757,17 @@ test('RC-02: ordinary operator builds Renegade Party Dispatch from an empty inst
+         publicProof[path] = { status: response?.status(), title: await visitor.title(), schemas }
+         if (path === '/events/open-civic-assembly')
+           expect(JSON.stringify(schemas)).toContain('"@type":"Event"')
+-        if (path === '/')
+-        {
++        if (path === '/') {
+           expect(JSON.stringify(schemas)).toContain('"@type":"WebSite"')
+-          await expect(visitor.getByRole('link', { name: 'A republic built in the open', exact: true })).toBeVisible()
+-          await expect(visitor.getByRole('link', { name: 'Neighborhood assemblies in practice', exact: true })).toBeVisible()
+-          await expect(visitor.locator('body')).not.toContainText('PRIVATE RC02 editorial investigation')
++          await expect(
++            visitor.getByRole('link', { name: 'A republic built in the open', exact: true }),
++          ).toBeVisible()
++          await expect(
++            visitor.getByRole('link', { name: 'Neighborhood assemblies in practice', exact: true }),
++          ).toBeVisible()
++          await expect(visitor.locator('body')).not.toContainText(
++            'PRIVATE RC02 editorial investigation',
++          )
+         }
+         if (path.startsWith('/categories/') || path.startsWith('/topics/'))
+           expect(JSON.stringify(schemas)).toContain('"@type":"CollectionPage"')
+@@ -916,7 +921,9 @@ test('RC-02: ordinary operator builds Renegade Party Dispatch from an empty inst
+         ],
+       })
+       await api('PATCH', `/api/content/${articleId}`, { body: updatedBody, status: 'updated' })
+-      await api('PATCH', `/api/content/${articleId}`, { summary: 'A saved revision awaiting republication.' })
++      await api('PATCH', `/api/content/${articleId}`, {
++        summary: 'A saved revision awaiting republication.',
++      })
+       await page.goto('/articles/republic-in-the-open')
+       await expect(page.locator('body')).not.toContainText('PUBLIC RC02 UPDATE')
+       const searchVisitor = await browser.newContext({ ignoreHTTPSErrors: true })
+@@ -982,11 +989,17 @@ test('RC-02: ordinary operator builds Renegade Party Dispatch from an empty inst
+       writeFileSync('docs/rc/evidence/rc-02/rendered-quality.json', JSON.stringify(audit, null, 2))
+       expect(audit.pages.length).toBeGreaterThan(0)
+       expect(audit.pages.every((entry: { status: number }) => entry.status === 200)).toBe(true)
+-      expect(audit.issues.filter((entry: { severity: string; ruleId: string }) =>
+-        entry.severity === 'publication_blocking' || [
+-          'DISC-05-INTERNAL-LINK-UNREACHABLE', 'DISC-05-DESCRIPTION-MISSING', 'DISC-05-HEADING-HIERARCHY',
+-        ].includes(entry.ruleId),
+-      )).toEqual([])
++      expect(
++        audit.issues.filter(
++          (entry: { severity: string; ruleId: string }) =>
++            entry.severity === 'publication_blocking' ||
++            [
++              'DISC-05-INTERNAL-LINK-UNREACHABLE',
++              'DISC-05-DESCRIPTION-MISSING',
++              'DISC-05-HEADING-HIERARCHY',
++            ].includes(entry.ruleId),
++        ),
++      ).toEqual([])
+     })
+     await test.step('Actual web and worker process restart, then fresh anonymous browse', async () => {
+       const request = { nonce: Date.now() }
+@@ -1033,7 +1046,10 @@ test('RC-02: ordinary operator builds Renegade Party Dispatch from an empty inst
+       const restartedVisitor = await fresh.newPage()
+       await restartedVisitor.goto(`${process.env.APP_URL}/articles/republic-public-records`)
+       await expect(
+-        restartedVisitor.getByRole('heading', { name: 'A republic built in the open', exact: true }),
++        restartedVisitor.getByRole('heading', {
++          name: 'A republic built in the open',
++          exact: true,
++        }),
+       ).toBeVisible()
+       await expect(restartedVisitor.locator('body')).toContainText('PUBLIC RC02 UPDATE')
+       const restoredMedia = await fresh.request.get(
+diff --git a/tests/unit/disc-05-persisted-lifecycle.test.ts b/tests/unit/disc-05-persisted-lifecycle.test.ts
+index 06211a7..5f60dce 100644
+--- a/tests/unit/disc-05-persisted-lifecycle.test.ts
++++ b/tests/unit/disc-05-persisted-lifecycle.test.ts
+@@ -21,15 +21,21 @@ describe('DISC-05 Persisted Lifecycle Fields & Quality Center Store', () => {
+       find: vi.fn(async () => ({ docs: [] })),
+     } as unknown as Payload
+     const issue: RenderedAuditIssue = {
+-      url: 'https://example.test/article', ruleId: 'DISC-05-LINK', ruleVersion: '1.0.0',
+-      severity: 'warning', evidence: 'First broken link', repairTarget: 'body',
++      url: 'https://example.test/article',
++      ruleId: 'DISC-05-LINK',
++      ruleVersion: '1.0.0',
++      severity: 'warning',
++      evidence: 'First broken link',
++      repairTarget: 'body',
+     }
+     const result = await persistRenderedAuditLifecycle(payload, 'site', [
+-      issue, { ...issue, evidence: 'Second broken link', severity: 'publication_blocking' },
++      issue,
++      { ...issue, evidence: 'Second broken link', severity: 'publication_blocking' },
+     ])
+     expect(result).toMatchObject({ created: 1, active: 1, totalIssues: 2 })
+     expect(created[0]).toMatchObject({
+-      message: 'First broken link\nSecond broken link', severity: 'publication_blocking',
++      message: 'First broken link\nSecond broken link',
++      severity: 'publication_blocking',
+     })
+   })
+   it('persists findings into quality scans and issues with firstSeenAt and lastSeenAt tracking', async () => {
+diff --git a/tests/unit/disc-05-rendered-audit.test.ts b/tests/unit/disc-05-rendered-audit.test.ts
+index 3889837..1ac1706 100644
+--- a/tests/unit/disc-05-rendered-audit.test.ts
++++ b/tests/unit/disc-05-rendered-audit.test.ts
+@@ -3,17 +3,24 @@ import { inspectRenderedHtml, runRenderedAudit } from '../../src/modules/public/
+ 
+ describe('DISC-05 rendered audit', () => {
+   it('checks uncrawled navigation links over HTTP and excludes resource hints and fragment duplicates', async () => {
+-    const fetcher = vi.fn<typeof fetch>(async (url) => new Response(
+-      '<title>Dispatch public page</title><h1 id="intro">Dispatch</h1><link rel="stylesheet" href="/style.css"><a href="#intro">Intro</a><a href="/search">Search</a><a href="/missing">Missing</a>',
+-      { status: String(url).endsWith('/missing') ? 404 : 200 },
+-    ))
+-    const result = await runRenderedAudit({ origin: 'https://example.test', paths: ['/'],
+-      fetcher, resolve: async () => [{ address: '93.184.216.34' }],
++    const fetcher = vi.fn<typeof fetch>(
++      async (url) =>
++        new Response(
++          '<title>Dispatch public page</title><h1 id="intro">Dispatch</h1><link rel="stylesheet" href="/style.css"><a href="#intro">Intro</a><a href="/search">Search</a><a href="/missing">Missing</a>',
++          { status: String(url).endsWith('/missing') ? 404 : 200 },
++        ),
++    )
++    const result = await runRenderedAudit({
++      origin: 'https://example.test',
++      paths: ['/'],
++      fetcher,
++      resolve: async () => [{ address: '93.184.216.34' }],
+     })
+     expect(fetcher).toHaveBeenCalledTimes(3)
+     expect(result.graph.map((link) => link.status)).toEqual([200, 200, 404])
+-    expect(result.issues.filter((item) => item.ruleId === 'DISC-05-INTERNAL-LINK-UNREACHABLE'))
+-      .toEqual([expect.objectContaining({ evidence: expect.stringContaining('/missing') })])
++    expect(
++      result.issues.filter((item) => item.ruleId === 'DISC-05-INTERNAL-LINK-UNREACHABLE'),
++    ).toEqual([expect.objectContaining({ evidence: expect.stringContaining('/missing') })])
+   })
+   it('uses rendered output for deterministic repairable findings', () => {
+     const page = inspectRenderedHtml(
+diff --git a/tests/unit/rc02-local-audit.test.ts b/tests/unit/rc02-local-audit.test.ts
+index 67f8934..025163e 100644
+--- a/tests/unit/rc02-local-audit.test.ts
++++ b/tests/unit/rc02-local-audit.test.ts
+@@ -4,18 +4,14 @@ import { runRenderedAudit } from '@/modules/public/discovery-audit'
+ 
+ describe('RC-02 local rendered audit boundary', () => {
+   it('allows only the exact server-configured origin, including private production deployments', () => {
+-    expect(
+-      allowConfiguredSelfAudit('http://localhost:3128', 'http://localhost:3128'),
+-    ).toBe(true)
++    expect(allowConfiguredSelfAudit('http://localhost:3128', 'http://localhost:3128')).toBe(true)
+     for (const [origin, app] of [
+       ['http://localhost:9999', 'http://localhost:3128'],
+       ['http://169.254.169.254', 'http://localhost:3128'],
+       ['https://other.test', 'http://localhost:3128'],
+     ])
+       expect(allowConfiguredSelfAudit(origin, app)).toBe(false)
+-    expect(
+-      allowConfiguredSelfAudit('https://dispatch.test', 'https://dispatch.test'),
+-    ).toBe(true)
++    expect(allowConfiguredSelfAudit('https://dispatch.test', 'https://dispatch.test')).toBe(true)
+   })
+   it('fetches local pages but retains the same-origin and manual-redirect boundaries', async () => {
+     const fetcher = vi.fn<typeof fetch>(
+@@ -24,10 +20,7 @@ describe('RC-02 local rendered audit boundary', () => {
+     const result = await runRenderedAudit({
+       origin: 'http://localhost:3128',
+       paths: ['/', 'http://localhost:9999/private'],
+-      allowPrivate: allowConfiguredSelfAudit(
+-        'http://localhost:3128',
+-        'http://localhost:3128',
+-      ),
++      allowPrivate: allowConfiguredSelfAudit('http://localhost:3128', 'http://localhost:3128'),
+       resolve: async () => [{ address: '127.0.0.1' }],
+       fetcher: fetcher as typeof fetch,
+     })
+diff --git a/tests/unit/rc02-public-queries.test.ts b/tests/unit/rc02-public-queries.test.ts
+index b60cd44..1f06377 100644
+--- a/tests/unit/rc02-public-queries.test.ts
++++ b/tests/unit/rc02-public-queries.test.ts
+@@ -4,22 +4,57 @@ import type { PresentationDocument } from '@/modules/presentation/contracts'
+ import { hydratePublicQueries } from '@/modules/presentation/public-queries'
+ 
+ it('renders scoped published query results without mutating the canonical snapshot or exposing private rows', async () => {
+-  const publicRow = { id: 'article', site: 'site', status: 'published', title: 'Public reporting', canonicalPath: '/articles/reporting' }
+-  const find = vi.fn(async () => ({ docs: [publicRow,
+-    { ...publicRow, status: 'draft' }, { ...publicRow, site: 'other' },
+-    { ...publicRow, visibility: 'private' }, { ...publicRow, requiredEntitlement: 'members' },
+-    { ...publicRow, canonicalPath: '//other.test/private' },
+-  ] }))
++  const publicRow = {
++    id: 'article',
++    site: 'site',
++    status: 'published',
++    title: 'Public reporting',
++    canonicalPath: '/articles/reporting',
++  }
++  const find = vi.fn(async () => ({
++    docs: [
++      publicRow,
++      { ...publicRow, status: 'draft' },
++      { ...publicRow, site: 'other' },
++      { ...publicRow, visibility: 'private' },
++      { ...publicRow, requiredEntitlement: 'members' },
++      { ...publicRow, canonicalPath: '//other.test/private' },
++    ],
++  }))
+   const payload = { find, collections: { content: {} } } as unknown as Payload
+-  const document: PresentationDocument = { version: 1, siteId: 'site', theme: { id: 'neutral-starter', version: '1.0.0' },
+-    template: { id: 'layout', version: '1.0.0' }, surface: 'layout',
+-    slots: { main: [{ id: 'list', component: 'publisher.article-list', componentVersion: 1, props: { query: { limit: 999 } } }] },
++  const document: PresentationDocument = {
++    version: 1,
++    siteId: 'site',
++    theme: { id: 'neutral-starter', version: '1.0.0' },
++    template: { id: 'layout', version: '1.0.0' },
++    surface: 'layout',
++    slots: {
++      main: [
++        {
++          id: 'list',
++          component: 'publisher.article-list',
++          componentVersion: 1,
++          props: { query: { limit: 999 } },
++        },
++      ],
++    },
+   }
+   const original = structuredClone(document)
+   const hydrated = await hydratePublicQueries(payload, document)
+   expect(document).toEqual(original)
+-  expect(hydrated.slots.main?.[0].props.queryResults).toEqual([{ id: 'article', title: 'Public reporting', href: '/articles/reporting' }])
+-  expect(find).toHaveBeenCalledWith(expect.objectContaining({ collection: 'content', limit: 96,
+-    where: expect.objectContaining({ and: [{ site: { equals: 'site' } }, { status: { in: ['published', 'updated', 'scheduled'] } }] }),
+-  }))
++  expect(hydrated.slots.main?.[0].props.queryResults).toEqual([
++    { id: 'article', title: 'Public reporting', href: '/articles/reporting' },
++  ])
++  expect(find).toHaveBeenCalledWith(
++    expect.objectContaining({
++      collection: 'content',
++      limit: 96,
++      where: expect.objectContaining({
++        and: [
++          { site: { equals: 'site' } },
++          { status: { in: ['published', 'updated', 'scheduled'] } },
++        ],
++      }),
++    }),
++  )
+ })

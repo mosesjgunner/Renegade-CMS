@@ -1,0 +1,19 @@
+{
+  "siteId": "ef4d1fb8-989c-4df0-abb0-9ac8b218dcc0",
+  "subscriberId": "6f584f0b-4fac-4980-be2b-e9fe7f6cd440",
+  "messageId": "b93831ef-cd36-4486-b320-f64885f9dbc0",
+  "failureDeliveryId": "d7595336-1092-49b0-bc2d-ca0d5a2973e5",
+  "disabledDeliveryId": "cdf95a59-2c44-4c3d-b830-424136141314",
+  "disabledTransportNoFalseSuccess": true,
+  "operatorRetryAfterConfiguration": true,
+  "mimeSha256": "2e9324660e4c8db7ce5ba874d140d3c392df6d88482c5c17812afb69a63dced2",
+  "mime": {
+    "multipart": true,
+    "utf8": true,
+    "oneClick": true,
+    "preferences": true
+  },
+  "suppressionThenConfirmedResubscribe": true,
+  "localSmtpOnly": true,
+  "pageErrors": []
+}
