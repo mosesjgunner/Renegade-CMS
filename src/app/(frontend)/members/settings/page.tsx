@@ -60,7 +60,6 @@ export default function MemberSettingsPage() {
       'coverAlt',
       'locale',
       'timeZone',
-      'relationshipNotifications',
     ]
     const changes = Object.fromEntries(
       editable
@@ -358,41 +357,10 @@ export default function MemberSettingsPage() {
             />
           </label>
         </fieldset>
-        <fieldset className="grid gap-2 rounded border p-3">
-          <legend>Relationship notifications</legend>
-          <p>
-            These control relationship events in the community. They do not publish or reveal
-            contact details.
-          </p>
-          {(
-            [
-              ['follows', 'New followers'],
-              ['messages', 'Direct messages'],
-              ['mentions', 'Mentions'],
-            ] as const
-          ).map(([key, label]) => (
-            <label key={key} className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                checked={
-                  (profile.relationshipNotifications as Record<string, boolean> | undefined)?.[
-                    key
-                  ] !== false
-                }
-                onChange={(event) =>
-                  setProfile({
-                    ...profile,
-                    relationshipNotifications: {
-                      ...((profile.relationshipNotifications as object) ?? {}),
-                      [key]: event.target.checked,
-                    },
-                  })
-                }
-              />
-              {label}
-            </label>
-          ))}
-        </fieldset>
+        <p>
+          Per-event follower, mention and direct-message notification switches are deferred. Use the
+          in-app notification preference below to control community notifications.
+        </p>
         <label>
           Locale
           <input

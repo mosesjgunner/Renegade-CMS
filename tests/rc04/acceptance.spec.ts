@@ -327,12 +327,24 @@ test('visitor newsletter, real MIME, suppression, re-subscribe and operator deli
     await page.getByLabel('Delivery ID').fill(disabled.id!)
     await page.getByRole('button', { name: 'Retry delivery' }).click()
     await expect(page.locator('main p[role="status"]')).toContainText('Retry queued')
-    await delivered(email, 'RC04 unconfigured recovery')
+    const recoveredMail = await delivered(email, 'RC04 unconfigured recovery')
     await expect
       .poll(
         async () => (await api(page, 'GET', `/api/email-deliveries/${disabled.id}?depth=0`)).status,
       )
       .toBe('accepted')
+    const oneClickHeader = recoveredMail.raw
+      .replace(/\r\n[ \t]+/g, '')
+      .match(/List-Unsubscribe: <([^>]+)>/i)![1]
+    const oneClick = await publicPage.request.post(oneClickHeader, {
+      data: 'List-Unsubscribe=One-Click',
+      headers: { 'content-type': 'application/x-www-form-urlencoded' },
+    })
+    expect(oneClick.status()).toBe(200)
+    expect((await oneClick.json()).status).toBe('unsubscribed')
+    await page.goto('/admin/collections/suppressions')
+    await expect(page.getByRole('heading', { name: /Suppressions/ })).toBeVisible()
+    await page.screenshot({ path: `${evidence}/operator-suppressions.png`, fullPage: true })
     await publicPage.screenshot({ path: `${evidence}/audience-confirmed.png`, fullPage: true })
     writeFileSync(
       `${evidence}/audience-email.json`,
@@ -474,6 +486,13 @@ test('real members, forum reply notification, preferences, moderation, private m
     await alice.getByLabel('Visibility', { exact: true }).selectOption('private')
     await alice.getByRole('button', { name: 'Save profile', exact: true }).click()
     await expect(alice.getByText('Profile saved.', { exact: true })).toBeVisible()
+    await api(
+      alice,
+      'PATCH',
+      '/api/member-auth/profile',
+      { relationshipNotifications: { messages: false } },
+      410,
+    )
     await api(bob, 'GET', `/api/community/profiles/${a.profile.handle}`, undefined, 404)
     const thread = await api(
       bob,
