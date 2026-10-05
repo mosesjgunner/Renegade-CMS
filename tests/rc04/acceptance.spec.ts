@@ -612,6 +612,12 @@ test('real members, forum reply notification, preferences, moderation, private m
         )
       ).posts.some((post: { id: string }) => post.id === reply.post.id),
     ).toBe(false)
+    await bob.goto(thread.discussion.canonicalPath)
+    await expect(
+      bob.getByRole('heading', { name: thread.discussion.title, exact: true }),
+    ).toBeVisible()
+    await expect(bob.getByText('Bob starts a real discussion.', { exact: true })).toBeVisible()
+    expect(await bob.locator('body').innerText()).not.toContain('Alice replies across surfaces.')
     await api(page, 'PATCH', `/api/discussions/${thread.discussion.id}`, { visibility: 'private' })
     await api(
       alice,
@@ -794,6 +800,31 @@ test('real members, forum reply notification, preferences, moderation, private m
         .length,
     ).toBe(mutedCount)
     await api(alice, 'POST', '/api/member-auth/delete', {}, 410)
+    await api(moderator, 'POST', '/api/community/moderation', {
+      siteId: site.id,
+      caseId: report.caseId,
+      targetType: 'post',
+      targetId: reply.post.id,
+      action: 'suspend_posting',
+      scope: 'site_global',
+      reason: 'Acceptance suspended posting',
+    })
+    const suspended = await api(
+      alice,
+      'POST',
+      '/api/community/threads',
+      {
+        siteId: site.id,
+        forumId: forum.id,
+        title: 'Suspension blocks new threads',
+        body: 'This must not be created.',
+      },
+      403,
+    )
+    expect(suspended.code).toBe('MEMBER_POSTING_SUSPENDED')
+    expect(
+      (await api(moderator, 'GET', `/api/community/moderation?siteId=${site.id}`)).auditValid,
+    ).toBe(true)
     const exported = await api(alice, 'GET', `/api/member-auth/export?memberId=${b.memberId}`)
     expect(JSON.stringify(exported)).not.toContain(emails[1])
     await api(bob, 'POST', '/api/community/relationships', {
@@ -851,6 +882,8 @@ test('real members, forum reply notification, preferences, moderation, private m
           closedReplyDenial: true,
           privateThreadApiAndSSRDenial: true,
           moderationThroughUI: true,
+          renderedForumAndRemovedPostExclusion: true,
+          suspendedPostingDenial: true,
           permanentDeletionDeferred: true,
           freshSessionPersistence: true,
           auditValid: audit.auditValid,
