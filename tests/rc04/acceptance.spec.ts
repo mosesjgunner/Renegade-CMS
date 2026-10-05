@@ -335,7 +335,7 @@ test('visitor newsletter, real MIME, suppression, re-subscribe and operator deli
       .toBe('accepted')
     const oneClickHeader = recoveredMail.raw
       .replace(/\r\n[ \t]+/g, '')
-      .match(/List-Unsubscribe: <([^>]+)>/i)![1]
+      .match(/List-Unsubscribe:\s*<([^>]+)>/i)![1]
     const oneClick = await publicPage.request.post(oneClickHeader, {
       data: 'List-Unsubscribe=One-Click',
       headers: { 'content-type': 'application/x-www-form-urlencoded' },
