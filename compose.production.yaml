@@ -29,6 +29,8 @@ services:
       NODE_ENV: production
       DATABASE_URL: postgresql://renegade:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env.production}@postgres:5432/renegade
       PAYLOAD_SECRET: ${PAYLOAD_SECRET:?Set PAYLOAD_SECRET in .env.production}
+      AI_CREDENTIAL_KEY_BASE64URL: ${AI_CREDENTIAL_KEY_BASE64URL:-}
+      RENEGADE_POD_ENCRYPTION_KEY: ${RENEGADE_POD_ENCRYPTION_KEY:-}
       APP_URL: ${APP_URL:?Set APP_URL in .env.production}
       PROXY_MODE: ${PROXY_MODE:?Set PROXY_MODE in .env.production}
       TRUSTED_PROXY_HOPS: ${TRUSTED_PROXY_HOPS:-1}
@@ -37,7 +39,7 @@ services:
       EMAIL_MODE: ${EMAIL_MODE:-disabled}
       LOG_LEVEL: ${LOG_LEVEL:-info}
       APP_VERSION: ${APP_VERSION:-0.1.0}
-      BUILD_SHA: ${BUILD_SHA:-unknown}
+      BUILD_SHA: ${BUILD_SHA}
       RENEGADE_IMAGE_TAG: ${RENEGADE_IMAGE_TAG:-local}
       DEPLOYMENT_PROFILE: ${DEPLOYMENT_PROFILE:-Standard}
       ENABLE_TEST_ROUTES: 'false'
@@ -103,6 +105,9 @@ services:
     build:
       context: .
       target: media-heavy
+      args:
+        APP_VERSION: ${APP_VERSION:-0.1.0}
+        BUILD_SHA: ${BUILD_SHA:?Set BUILD_SHA to the exact full source commit}
     image: ${RENEGADE_MEDIA_HEAVY_IMAGE:-renegade-cms-media-heavy}:${RENEGADE_IMAGE_TAG:-local}
     restart: unless-stopped
     environment:

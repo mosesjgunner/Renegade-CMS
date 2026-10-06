@@ -8,6 +8,9 @@ node_modules
 media
 *.log
 coverage
+scratch
+test-results
+playwright-report
 .worktrees
 .phase-a
 **/.git
