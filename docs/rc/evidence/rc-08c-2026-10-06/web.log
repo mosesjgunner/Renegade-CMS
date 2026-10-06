@@ -1,0 +1,27 @@
+(node:32752) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+▲ Next.js 16.3.8
+- Local:         http://127.0.0.1:3128
+- Network:       http://127.0.0.1:3128
+✓ Ready in 0ms
+✓ Running next.config took 6ms
+[11:41:24] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[11:41:40] [31mERROR[39m: [36mCannot read properties of undefined (reading 'id')[39m
+    err: {
+      "type": "TypeError",
+      "message": "Cannot read properties of undefined (reading 'id')",
+      "stack":
+          TypeError: Cannot read properties of undefined (reading 'id')
+              at k (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\.next\standalone\.next\server\chunks\ssr\_1364u5f._.js:84:136162)
+              at x (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\.next\standalone\.next\server\chunks\ssr\node_modules_09y0-ng._.js:1:7929)
+              at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+              at async Promise.all (index 2)
+              at async y (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\.next\standalone\.next\server\chunks\ssr\node_modules_09y0-ng._.js:1:16169)
+              at async z (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\.next\standalone\.next\server\chunks\ssr\node_modules_09y0-ng._.js:1:20049)
+    }
+▲ Next.js 16.3.8
+- Local:         http://127.0.0.1:3128
+- Network:       http://127.0.0.1:3128
+✓ Ready in 0ms
+✓ Running next.config took 6ms
+[11:43:58] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m

@@ -1,0 +1,158 @@
+(node:6400) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:6400) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[11:41:27] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[11:41:30] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[11:41:40] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[11:43:52] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[11:43:53] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[11:44:01] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[11:44:11] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[11:44:20] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[11:44:21] [32mINFO[39m: [36mRunning 1 jobs.[39m
+    [35mnew[39m: 1
+    [35mretrying[39m: 0
+[11:44:30] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[11:44:40] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[11:44:50] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[11:45:00] [32mINFO[39m: [36mRunning 7 jobs.[39m
+    [35mnew[39m: 7
+    [35mretrying[39m: 0
+[11:45:00] [32mINFO[39m:
+    [35mevent[39m: "operations.job.heartbeat"
+    [35mobservedAt[39m: "2026-10-06T16:45:00.312Z"
+    [35mversion[39m: "0.1.0-dev"
+[11:45:10] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[11:45:20] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[11:45:30] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[11:45:40] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[11:45:50] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[11:46:00] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[11:46:10] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[11:46:20] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[11:46:30] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[11:46:40] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[11:46:50] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[11:47:00] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[11:47:10] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[11:47:20] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[11:47:31] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[11:47:41] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[11:47:51] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[11:48:01] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[11:48:11] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[11:48:21] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[11:48:30] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[11:48:40] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[11:48:50] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[11:49:00] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[11:49:10] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[11:49:20] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[11:49:30] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[11:49:40] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[11:49:50] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[11:50:00] [32mINFO[39m: [36mRunning 6 jobs.[39m
+    [35mnew[39m: 6
+    [35mretrying[39m: 0
+[11:50:00] [32mINFO[39m:
+    [35mevent[39m: "operations.job.heartbeat"
+    [35mobservedAt[39m: "2026-10-06T16:50:00.420Z"
+    [35mversion[39m: "0.1.0-dev"
+[11:50:10] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[11:50:20] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[11:50:30] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[11:50:40] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[11:50:44] [32mINFO[39m: [36mRunning 1 jobs.[39m
+    [35mnew[39m: 1
+    [35mretrying[39m: 0
+[11:50:50] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[11:51:00] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
