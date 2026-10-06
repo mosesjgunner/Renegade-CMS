@@ -46,6 +46,7 @@ Additional source-confirmed dependencies of RC-02/04/05:
 ## RC-04 final result — 2026-10-04
 
 No blocker remains within the supported RC-04 subset on tested source `fb8c9d7c3211f4c257ad569edb366d089074e492`; see [final evidence](evidence/RC-04-PASS3.md). Live providers, the explicitly deferred surfaces, and broader RC-01 release gates remain outside this verdict.
+
 ## RC-07 Pass 2 — BLOCKED — 2026-10-05
 
 Both running projects report `BUILD_SHA=unknown`; deployed image revision is
