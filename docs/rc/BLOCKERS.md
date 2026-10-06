@@ -1,3 +1,5 @@
+> RC-08 current gate — **FAIL / NOT READY**, 2026-10-06. Tested clean candidate `07e75a47dec8424d26d7829ec9daba7e34c4c859`: npm ci, format, lint and typecheck pass; full unit gate reports 1,106 passed / 1 failed. First blocker: **RC08-UNIT-RELEASE**. Integration, migrations, build, golden browser/security and restore are unexecuted. [Current evidence](evidence/RC-08-2026-10-06.md); [repair card](repairs/RC08-05-unit-release.md). Earlier candidate/dirty-tree findings below are historical and do not describe this restart.
+
 ## RC-04 Pass 2 result — 2026-10-04
 
 Source `3a3260f120f500a48d51a5251a7fd3b900ba6e93` has no remaining blocker in the supported newsletter/local-email/canonical-forum/member-privacy/moderation/direct-group-message/in-app-notification acceptance subset. [Evidence](evidence/RC-04-PASS2.md). Unsupported audience/community entry points are explicitly deferred; live providers, configured private storage, and all broader RC-01 role/tenant/module, upgrade and restore gates below remain open. This pass does not confer aggregate release readiness.
