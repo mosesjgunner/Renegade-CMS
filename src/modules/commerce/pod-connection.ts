@@ -54,11 +54,12 @@ export function redactSecret(secret: string): string {
 }
 
 function resolveKey(explicitKey?: string): Buffer {
-  const raw =
-    explicitKey ||
-    process.env.RENEGADE_POD_ENCRYPTION_KEY ||
-    process.env.RENEGADE_ENCRYPTION_KEY ||
-    'renegade-default-32-byte-secret-dev-key!!'
+  const configured =
+    explicitKey || process.env.RENEGADE_POD_ENCRYPTION_KEY || process.env.RENEGADE_ENCRYPTION_KEY
+  if (!configured && process.env.NODE_ENV === 'production') {
+    throw new Error('Configure RENEGADE_POD_ENCRYPTION_KEY before using POD credentials.')
+  }
+  const raw = configured || 'renegade-default-32-byte-secret-dev-key!!'
   if (raw.length === 64 && /^[0-9a-fA-F]+$/.test(raw)) {
     return Buffer.from(raw, 'hex')
   }
