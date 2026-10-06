@@ -77,7 +77,9 @@ export default async function ConnectionsPage() {
   const payload = await getPayload({ config: configPromise })
   const incomingHeaders = await headers()
   const auth = await payload.auth({ headers: incomingHeaders }).catch(() => null)
-  const isStaff = ['owner', 'administrator', 'publisher', 'staff'].includes(String(auth?.user?.role))
+  const isStaff = ['owner', 'administrator', 'publisher', 'staff'].includes(
+    String(auth?.user?.role),
+  )
   if (!isStaff) {
     redirect('/login')
   }
@@ -87,7 +89,6 @@ export default async function ConnectionsPage() {
   let auditEvents: IntegrationAuditItem[] = []
 
   try {
-
     // 1. Merchant connections
     try {
       const merchants = await payload.find({

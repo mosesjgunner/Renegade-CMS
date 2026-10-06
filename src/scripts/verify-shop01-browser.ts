@@ -52,7 +52,11 @@ export async function verifyShop01Browser() {
       overrideAccess: true,
     } as never)
     for (const oldDoc of existingOld.docs) {
-      await payload.delete({ collection: 'products', id: (oldDoc as any).id, overrideAccess: true } as never)
+      await payload.delete({
+        collection: 'products',
+        id: (oldDoc as any).id,
+        overrideAccess: true,
+      } as never)
     }
     const now = new Date().toISOString()
     const products = [
@@ -213,14 +217,18 @@ export async function verifyShop01Browser() {
     console.log('SHOP-01 browser acceptance passed.')
     await browser.close()
   } finally {
-    const cleanup = await payload.find({
-      collection: 'products',
-      where: { slug: { in: ['field-kit', 'organizing-lamp', 'renegade-shirt'] } },
-      limit: 100,
-      overrideAccess: true,
-    } as never).catch(() => ({ docs: [] }))
+    const cleanup = await payload
+      .find({
+        collection: 'products',
+        where: { slug: { in: ['field-kit', 'organizing-lamp', 'renegade-shirt'] } },
+        limit: 100,
+        overrideAccess: true,
+      } as never)
+      .catch(() => ({ docs: [] }))
     for (const oldDoc of cleanup.docs) {
-      await payload.delete({ collection: 'products', id: (oldDoc as any).id, overrideAccess: true } as never).catch(() => undefined)
+      await payload
+        .delete({ collection: 'products', id: (oldDoc as any).id, overrideAccess: true } as never)
+        .catch(() => undefined)
     }
     await payload.db.destroy?.()
   }

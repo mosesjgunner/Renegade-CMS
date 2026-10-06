@@ -1,6 +1,11 @@
 import { randomBytes } from 'node:crypto'
 import { writeFileSync } from 'node:fs'
-import { renderProductionConfig, validateProductionInstallInput, hasInstallerManagedConfig, hasUnsafeProductionConfig } from '../src/modules/operations/production-installer.ts'
+import {
+  renderProductionConfig,
+  validateProductionInstallInput,
+  hasInstallerManagedConfig,
+  hasUnsafeProductionConfig,
+} from '../src/modules/operations/production-installer.ts'
 import { assertOperationalEnv } from '../src/scripts/operational-env.ts'
 
 const instanceA = {
@@ -40,8 +45,10 @@ console.log('Generated .env.myhigherpower')
 // Validate both
 validateProductionInstallInput(instanceA)
 validateProductionInstallInput(instanceB)
-if (!hasInstallerManagedConfig(configA) || hasUnsafeProductionConfig(configA)) throw new Error('configA invalid')
-if (!hasInstallerManagedConfig(configB) || hasUnsafeProductionConfig(configB)) throw new Error('configB invalid')
+if (!hasInstallerManagedConfig(configA) || hasUnsafeProductionConfig(configA))
+  throw new Error('configA invalid')
+if (!hasInstallerManagedConfig(configB) || hasUnsafeProductionConfig(configB))
+  throw new Error('configB invalid')
 await assertOperationalEnv('.env.renegadeparty')
 await assertOperationalEnv('.env.myhigherpower')
 console.log('Both instance configs validated successfully.')

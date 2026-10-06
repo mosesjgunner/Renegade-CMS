@@ -35,6 +35,7 @@ Repair scoped admin/community authorization and ordinary authorized-site discove
 ## RC-04 final handoff — PASS — 2026-10-04
 
 Tested source `fb8c9d7c3211f4c257ad569edb366d089074e492`; [final evidence](evidence/RC-04-PASS3.md). RC-04 has no remaining blocker inside its supported subset. Preserve the provider-required and deferred boundaries recorded in RC_SCOPE. Do not treat this as aggregate release readiness. NEXT: RC-06 after RC-05 merges.
+
 ## RC-07 Pass 2 handoff — BLOCKED — 2026-10-05
 
 See [RC-07 evidence](evidence/RC-07-PASS2.md). Both existing projects remain

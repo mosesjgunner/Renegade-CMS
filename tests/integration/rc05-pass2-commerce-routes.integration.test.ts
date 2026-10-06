@@ -6,7 +6,10 @@ import { getPayload } from 'payload'
 import { ensureRenegadePartyDemo } from '../helpers/renegadeparty-demo'
 
 // Commerce routes under test
-import { POST as cartRoute, GET as getCartRoute } from '../../src/app/(frontend)/api/commerce/cart/route'
+import {
+  POST as cartRoute,
+  GET as getCartRoute,
+} from '../../src/app/(frontend)/api/commerce/cart/route'
 import { POST as proposalRoute } from '../../src/app/(frontend)/api/commerce/proposal/route'
 import { POST as initiateCheckoutRoute } from '../../src/app/(frontend)/api/commerce/checkout/initiate/route'
 import { POST as confirmTestPaymentRoute } from '../../src/app/(frontend)/api/commerce/checkout/test/confirm/route'
@@ -214,7 +217,9 @@ describe('RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security
       }),
     )
     expect(confirmRes.status).toBe(303)
-    expect(confirmRes.headers.get('location')).toContain(`/checkout/return?session=${checkoutData.sessionId}`)
+    expect(confirmRes.headers.get('location')).toContain(
+      `/checkout/return?session=${checkoutData.sessionId}`,
+    )
 
     // 5. Verify webhook inbox entry and task execution
     const inboxDocs = await payload.find({
@@ -255,7 +260,9 @@ describe('RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security
       depth: 0,
       overrideAccess: true,
     })
-    const updatedVariant = (updatedProduct.variants as any[])?.find((v) => v.sku === `JKT-${suffix}-M`)
+    const updatedVariant = (updatedProduct.variants as any[])?.find(
+      (v) => v.sku === `JKT-${suffix}-M`,
+    )
     expect(updatedVariant?.inventoryQuantity).toBe(9)
 
     // Verify email receipt delivery queued
@@ -547,7 +554,8 @@ describe('RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security
         method: 'POST',
         headers: {
           'content-type': 'application/json',
-          'x-commerce-signature': '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef',
+          'x-commerce-signature':
+            '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef',
         },
         body: rawPayload,
       }),
