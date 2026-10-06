@@ -104,11 +104,25 @@ export async function resolveCommunityActor(
     sessionToken = readMemberSession(headersOrTokenOrReq as Headers)
   }
 
-  if (!sessionToken) {
-    return { kind: 'anonymous', isStaff: false, isModerator: false }
+  let memberId = sessionToken ? await currentMember(payload as never, sessionToken) : null
+  // An admin passkey authenticates identity only. Its linked canonical member
+  // still needs the same site-specific moderation grants as a member session.
+  if (!sessionToken && headersOrTokenOrReq && typeof headersOrTokenOrReq !== 'string') {
+    const incomingHeaders =
+      'get' in headersOrTokenOrReq
+        ? (headersOrTokenOrReq as Headers)
+        : (headersOrTokenOrReq as Request).headers
+    const auth = await payload.auth({ headers: incomingHeaders }).catch(() => null)
+    const linked = auth?.user?.member
+    if (auth?.user && ['owner', 'administrator', 'staff'].includes(String(auth.user.role))) {
+      memberId =
+        typeof linked === 'string'
+          ? linked
+          : linked && typeof linked === 'object'
+            ? String(linked.id)
+            : null
+    }
   }
-
-  const memberId = await currentMember(payload as never, sessionToken)
   if (!memberId) {
     return { kind: 'anonymous', isStaff: false, isModerator: false }
   }

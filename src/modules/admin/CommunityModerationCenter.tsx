@@ -115,13 +115,13 @@ export default function CommunityModerationCenter() {
   }, [siteId, loadData])
 
   useEffect(() => {
-    void fetch('/api/member-auth/me')
+    void fetch('/api/community/moderation-sites')
       .then(async (response) => {
         if (response.ok) setSiteId(String((await response.json()).siteId))
         else {
           setDataUnavailable(true)
           setStatusMessage(
-            'Sign in with a member identity granted moderator access for this site. Admin login alone does not grant community moderation.',
+            'Your signed-in identity needs a moderation grant for this publication site.',
           )
         }
       })

@@ -198,6 +198,19 @@ export async function provisionOnboardingSite(
     { email: { equals: ownerEmail } },
     { displayName: input.name, email: ownerEmail, status: 'active' },
   )
+  await upsert(
+    payload,
+    'team-memberships',
+    { scopeKey: { equals: `site:${site.id}` }, member: { equals: member.id } },
+    {
+      scopeKind: 'site',
+      site: site.id,
+      member: member.id,
+      role: 'owner',
+      grants: [],
+      status: 'active',
+    },
+  )
   const profileHandle = await resolveUniqueProfileHandle(payload, input.slug, member.id)
   const profile = await upsert(
     payload,
