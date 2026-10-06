@@ -293,7 +293,7 @@ export const Carts: CollectionConfig = {
   ...base('carts', 'id'),
   fields: [
     ...ownerFields(),
-    ref('merchantConnection', 'merchant-connections', true),
+    ref('merchantConnection', 'merchant-connections'),
     { name: 'version', type: 'number', min: 1, defaultValue: 1, required: true },
     { name: 'guestTokenHash', type: 'text', index: true },
     ref('member', 'members'),

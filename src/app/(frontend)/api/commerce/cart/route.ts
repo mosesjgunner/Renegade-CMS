@@ -248,10 +248,19 @@ export async function POST(request: Request) {
       const offer = product.offers?.find((o: any) => o.status === 'active')
       const currency = offer ? offer.currency : 'USD'
 
+      const merchants = await (payload as any).find({
+        collection: 'merchant-connections',
+        where: { and: [{ site: { equals: siteId } }, { status: { equals: 'active' } }] },
+        limit: 1,
+        overrideAccess: true,
+      })
+      const merchantId = merchants.docs[0]?.id
+
       const created = await (payload as any).create({
         collection: 'carts',
         data: {
           site: siteId,
+          merchantConnection: merchantId || undefined,
           member: memberId || undefined,
           guestTokenHash: guestHash,
           currency,

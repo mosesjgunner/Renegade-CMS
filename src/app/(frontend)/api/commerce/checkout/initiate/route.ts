@@ -550,6 +550,7 @@ export async function POST(request: Request) {
     })
   }
   const response = NextResponse.json({
+    sessionId: session.id,
     intentId: intent.id,
     attemptId: attempt.id,
     state: action.state,

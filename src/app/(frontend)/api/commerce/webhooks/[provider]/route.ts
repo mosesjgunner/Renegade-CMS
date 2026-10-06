@@ -354,32 +354,52 @@ export async function POST(
     typeof attempt.merchantConnection === 'object'
       ? String(attempt.merchantConnection.id)
       : String(attempt.merchantConnection)
-  const inbox: any = await db.create({
-    collection: 'payment-webhook-events',
-    data: {
-      merchantConnection: merchantId,
-      providerKey: provider,
-      providerEventId: event.providerEventId,
-      payloadHash: createHash('sha256').update(raw).digest('hex'),
-      verifiedAt: new Date().toISOString(),
-      occurredAt: event.occurredAt,
-      sequence: event.sequence,
-      normalizedKind: event.kind,
-      providerReference: attempt.providerReference,
-      sanitizedEvidence: {
-        ...event.sanitizedEvidence,
-        attemptId: String(attempt.id),
-        ...(event.providerPaymentReference
-          ? { providerPaymentReference: event.providerPaymentReference }
-          : {}),
-        ...(event.amountMinor ? { amountMinor: event.amountMinor } : {}),
-        ...(event.currency ? { currency: event.currency } : {}),
+  let inbox: any
+  try {
+    inbox = await db.create({
+      collection: 'payment-webhook-events',
+      data: {
+        merchantConnection: merchantId,
+        providerKey: provider,
+        providerEventId: event.providerEventId,
+        payloadHash: createHash('sha256').update(raw).digest('hex'),
+        verifiedAt: new Date().toISOString(),
+        occurredAt: event.occurredAt,
+        sequence: event.sequence,
+        normalizedKind: event.kind,
+        providerReference: attempt.providerReference,
+        sanitizedEvidence: {
+          ...event.sanitizedEvidence,
+          attemptId: String(attempt.id),
+          ...(event.providerPaymentReference
+            ? { providerPaymentReference: event.providerPaymentReference }
+            : {}),
+          ...(event.amountMinor ? { amountMinor: event.amountMinor } : {}),
+          ...(event.currency ? { currency: event.currency } : {}),
+        },
+        processingState: 'received',
+        attempts: 0,
       },
-      processingState: 'received',
-      attempts: 0,
-    },
-    overrideAccess: true,
-  })
+      overrideAccess: true,
+    })
+  } catch (err: any) {
+    const replayCheck = await db.find({
+      collection: 'payment-webhook-events',
+      where: {
+        and: [
+          { providerKey: { equals: provider } },
+          { providerEventId: { equals: event.providerEventId } },
+        ],
+      },
+      limit: 1,
+      overrideAccess: true,
+    })
+    if (replayCheck.docs.length) {
+      return NextResponse.json({ received: true, replay: true })
+    }
+    throw err
+  }
+
   await (payload.jobs as any).queue({
     task: 'commerce-process-payment-event',
     input: { webhookEventId: String(inbox.id) },
