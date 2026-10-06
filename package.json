@@ -26,7 +26,7 @@
     "lint": "eslint . --max-warnings=0",
     "typecheck": "tsc --noEmit",
     "test": "vitest run tests/unit",
-    "test:integration": "cross-env ALLOW_FIXTURE_SEED=true RENEGADE_MODULES=all RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT=true vitest run tests/integration --no-file-parallelism",
+    "test:integration": "node scripts/run-integration.mjs",
     "test:browser": "cross-env RENEGADE_MODULES=all RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT=true playwright test",
     "test:migrations:fresh": "tsx src/scripts/verify-fresh-migration.ts",
     "test:migrations:upgrade": "tsx src/scripts/verify-upgrade-migration.ts",
@@ -68,9 +68,10 @@
     "react-dom": "19.2.8",
     "semver": "^7.8.5",
     "server-only": "0.0.1",
-    "sharp": "^0.35.4"
+    "sharp": "0.35.5"
   },
   "devDependencies": {
+    "@peculiar/x509": "1.14.3",
     "@playwright/test": "^1.62.1",
     "@tailwindcss/postcss": "4.3.3",
     "@types/node": "24.3.0",

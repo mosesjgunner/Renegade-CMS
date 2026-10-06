@@ -1,10 +1,11 @@
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+import '../../src/scripts/rc02-network.mjs'
 import { getPayload, type Payload } from 'payload'
 import { execFile } from 'node:child_process'
 import { promisify } from 'node:util'
 import { randomUUID, generateKeyPairSync, verify } from 'node:crypto'
 import { createServer } from 'node:https'
-import { readFileSync, writeFileSync } from 'node:fs'
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import config from '../../src/payload.config'
 import {
   createEditorialArticle,
@@ -209,8 +210,9 @@ describe('RC03 real durable jobs and local federation boundary', () => {
       expect(attempts.docs.some((attempt) => JSON.stringify(attempt.outcome).includes('503'))).toBe(
         true,
       )
+      mkdirSync('scratch/integration-evidence', { recursive: true })
       writeFileSync(
-        'docs/rc/evidence/rc-03/federation-boundary.json',
+        'scratch/integration-evidence/federation-boundary.json',
         JSON.stringify(
           {
             deliveryId: first.id,

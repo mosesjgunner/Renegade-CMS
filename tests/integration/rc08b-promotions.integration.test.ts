@@ -1,4 +1,5 @@
 import { audienceDigest } from '../../src/modules/audience/contracts'
+import { createEditorialArticle } from '../../src/modules/editorial/persistence'
 import { setMemberRelation } from '../../src/modules/community/profile-projection'
 import '../../src/scripts/rc02-network.mjs'
 import { createServer } from 'node:https'
@@ -68,15 +69,47 @@ const schema = {
   ],
 }
 beforeAll(async () => {
-  if (
-    !/renegade_rc08b_\d+_release_acceptance$/.test(
-      new URL(process.env.DATABASE_URL!).pathname.slice(1),
-    )
-  )
-    throw Error('RC08B disposable DB required')
+  if (!/^[a-z0-9_]+_release_acceptance$/.test(new URL(process.env.DATABASE_URL!).pathname.slice(1)))
+    throw Error('Dedicated release acceptance DB required')
   payload = await getPayload({ config })
-  site = (await payload.find({ collection: 'sites', limit: 1, overrideAccess: true })).docs[0]
-  owner = (await payload.find({ collection: 'users', limit: 1, overrideAccess: true })).docs[0]
+  site = await payload.create({
+    collection: 'sites',
+    data: {
+      name: 'RC08B integration source',
+      slug: `rc08b-source-${suffix}`,
+      lifecycle: 'active',
+      communityRegistrationPolicy: 'open',
+      commentReactionCodes: ['heart'],
+    },
+    overrideAccess: true,
+  })
+  owner = await payload.create({
+    collection: 'users',
+    data: { email: `rc08b-owner-${suffix}@example.test`, role: 'owner' },
+    overrideAccess: true,
+  })
+  const publication = await payload.create({
+    collection: 'publications',
+    data: {
+      site: site.id,
+      name: 'RC08B integration publication',
+      slug: `main-${suffix}`,
+      canonicalBasePath: '/',
+      status: 'active',
+      visibility: 'public',
+    },
+    overrideAccess: true,
+  })
+  await createEditorialArticle(payload, {
+    siteId: site.id,
+    publicationId: publication.id,
+    title: 'RC08B canonical comment source',
+    slug: `rc08b-source-${suffix}`,
+    canonicalPath: `/articles/rc08b-source-${suffix}`,
+    sourceMarkdown: 'Canonical source for persisted comment and export acceptance.',
+    actor: { id: owner.id, role: 'author' },
+    actorUserId: owner.id,
+  })
   other = await payload.create({
     collection: 'sites',
     data: {

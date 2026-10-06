@@ -1,3 +1,4 @@
+import { telecomRecipient } from '../helpers/telecom-recipient'
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createHash, randomBytes, randomUUID } from 'node:crypto'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
@@ -522,7 +523,9 @@ describe('Shared Contract Proof: Audience, Community, Permissions/Privacy & Resi
 
       // Configure emulator recipient capabilities
       setEmulatorRecipientCapability(phoneRcs, { rcsSupported: true })
+      const recipientRcs = await telecomRecipient(payload, siteId, phoneRcs)
       setEmulatorRecipientCapability(phoneSmsOnly, { rcsSupported: false })
+      const recipientSms = await telecomRecipient(payload, siteId, phoneSmsOnly)
 
       // Create telecom message with RCS rich card and SMS fallback text
       const rcsContent: RcsContent = {
@@ -585,6 +588,7 @@ describe('Shared Contract Proof: Audience, Community, Permissions/Privacy & Resi
         data: {
           site: siteId,
           message: telecomMsg.id,
+          subscriber: recipientRcs,
           recipientPhone: phoneRcs,
           recipientPhoneHash: telecomDigest(phoneRcs),
           channel: 'rcs',
@@ -610,6 +614,7 @@ describe('Shared Contract Proof: Audience, Community, Permissions/Privacy & Resi
         data: {
           site: siteId,
           message: telecomMsg.id,
+          subscriber: recipientSms,
           recipientPhone: phoneSmsOnly,
           recipientPhoneHash: telecomDigest(phoneSmsOnly),
           channel: 'rcs',

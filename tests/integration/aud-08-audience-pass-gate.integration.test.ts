@@ -1,3 +1,4 @@
+import { telecomRecipient } from '../helpers/telecom-recipient'
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createHash, randomBytes, randomUUID } from 'node:crypto'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
@@ -1046,6 +1047,7 @@ describe('AUD-08 Audience Pass Gate — Comprehensive End-to-End Acceptance Inte
     // Case A: RCS-capable recipient routes direct to RCS
     const phoneA = `+1555${Math.floor(1000000 + Math.random() * 9000000)}`
     setEmulatorRecipientCapability(phoneA, { rcsSupported: true })
+    const recipientA = await telecomRecipient(payload, siteId, phoneA)
     const telecomMsg = (await payload.create({
       collection: 'telecom-messages',
       data: {
@@ -1066,6 +1068,7 @@ describe('AUD-08 Audience Pass Gate — Comprehensive End-to-End Acceptance Inte
       data: {
         site: siteId,
         message: telecomMsg.id,
+        subscriber: recipientA,
         recipientPhone: phoneA,
         recipientPhoneHash: telecomDigest(phoneA),
         channel: 'rcs',
@@ -1102,6 +1105,7 @@ describe('AUD-08 Audience Pass Gate — Comprehensive End-to-End Acceptance Inte
     // Case B: RCS-incapable recipient with fallback permitted
     const phoneB = `+1555${Math.floor(1000000 + Math.random() * 9000000)}`
     setEmulatorRecipientCapability(phoneB, { rcsSupported: false })
+    const recipientB = await telecomRecipient(payload, siteId, phoneB)
 
     await payload.create({
       collection: 'consent-events',
@@ -1121,6 +1125,7 @@ describe('AUD-08 Audience Pass Gate — Comprehensive End-to-End Acceptance Inte
       data: {
         site: siteId,
         message: telecomMsg.id,
+        subscriber: recipientB,
         recipientPhone: phoneB,
         recipientPhoneHash: telecomDigest(phoneB),
         channel: 'rcs',
@@ -1142,6 +1147,7 @@ describe('AUD-08 Audience Pass Gate — Comprehensive End-to-End Acceptance Inte
     // Case C: RCS-incapable recipient with fallback prohibited
     const phoneC = '+15551110003'
     setEmulatorRecipientCapability(phoneC, { rcsSupported: false })
+    const recipientC = await telecomRecipient(payload, siteId, phoneC)
 
     const noFallbackMsg = (await payload.create({
       collection: 'telecom-messages',
@@ -1161,6 +1167,7 @@ describe('AUD-08 Audience Pass Gate — Comprehensive End-to-End Acceptance Inte
       data: {
         site: siteId,
         message: noFallbackMsg.id,
+        subscriber: recipientC,
         recipientPhone: phoneC,
         recipientPhoneHash: telecomDigest(phoneC),
         channel: 'rcs',
