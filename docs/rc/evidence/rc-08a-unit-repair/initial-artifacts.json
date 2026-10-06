@@ -1,0 +1,116 @@
+[
+  {
+    "id": "article:post-spring-launch",
+    "targetType": "article",
+    "targetId": "post-spring-launch",
+    "title": "Spring Launch 2026",
+    "canonicalUrl": "/articles/spring-launch-2026",
+    "pinnedRevisionId": "rev-post-1",
+    "pinnedRevisionSequence": 1,
+    "pinnedHash": "hash-post-1",
+    "status": "failed",
+    "attempts": 1,
+    "updatedAt": "2026-10-06T05:25:56.315Z",
+    "error": "Cannot read properties of null (reading 'id')"
+  },
+  {
+    "id": "article:post-press-release",
+    "targetType": "article",
+    "targetId": "post-press-release",
+    "title": "Official Press Release",
+    "canonicalUrl": "/articles/company-announcement",
+    "pinnedRevisionId": "rev-post-2",
+    "pinnedRevisionSequence": 1,
+    "pinnedHash": "hash-post-2",
+    "status": "failed",
+    "attempts": 1,
+    "updatedAt": "2026-10-06T05:25:56.316Z",
+    "error": "Cannot read properties of null (reading 'id')"
+  },
+  {
+    "id": "page:page-spring-overview",
+    "targetType": "page",
+    "targetId": "page-spring-overview",
+    "title": "Spring Overview Page",
+    "canonicalUrl": "/spring-overview",
+    "pinnedRevisionSequence": 2,
+    "pinnedHash": "hash-page-2",
+    "status": "succeeded",
+    "attempts": 1,
+    "updatedAt": "2026-10-06T05:25:56.316Z",
+    "lastKnownGoodState": {
+      "previousRevision": 2,
+      "previousPublishedRevision": 1,
+      "previousStatus": "draft",
+      "previousBlocks": [
+        {
+          "blockType": "hero",
+          "title": "Spring Overview v2"
+        }
+      ]
+    },
+    "stepOutput": {
+      "published": true,
+      "revision": 2
+    },
+    "executedAt": "2026-10-06T05:25:56.316Z"
+  },
+  {
+    "id": "presentation:global-nav-header",
+    "targetType": "presentation",
+    "targetId": "global-nav-header",
+    "title": "Global Navigation Header",
+    "pinnedRevisionSequence": 3,
+    "pinnedHash": "hash-header-3",
+    "status": "succeeded",
+    "attempts": 1,
+    "updatedAt": "2026-10-06T05:25:56.436Z",
+    "lastKnownGoodState": {
+      "previousRevision": 3,
+      "previousBlocks": [
+        {
+          "blockType": "nav-header",
+          "links": ["Home", "Spring Specials", "About"]
+        }
+      ],
+      "previousPublishedRevision": 2
+    },
+    "stepOutput": {
+      "published": true,
+      "surface": "global",
+      "slot": "header"
+    },
+    "executedAt": "2026-10-06T05:25:56.436Z"
+  },
+  {
+    "id": "media:media-spring-hero",
+    "targetType": "media",
+    "targetId": "media-spring-hero",
+    "title": "Spring Hero Photography 8K",
+    "pinnedHash": "hash-media-sha256",
+    "mediaRightsStatus": "approved",
+    "mediaRightsExpiresAt": "2027-01-01T00:00:00.000Z",
+    "status": "failed",
+    "attempts": 1,
+    "updatedAt": "2026-10-06T05:25:56.437Z",
+    "error": "Cannot read properties of null (reading 'rightsStatus')"
+  },
+  {
+    "id": "redirect:red-spring-legacy",
+    "targetType": "redirect",
+    "targetId": "red-spring-legacy",
+    "title": "Spring Specials Legacy Redirect",
+    "pinnedHash": "hash-red-1",
+    "redirectRule": {
+      "fromPath": "/spring-2025",
+      "toPath": "/spring-overview",
+      "statusCode": "301",
+      "match": "exact",
+      "enabled": true
+    },
+    "status": "failed",
+    "attempts": 1,
+    "updatedAt": "2026-10-06T05:25:56.437Z",
+    "error": "Database deadlock on public-redirects table"
+  }
+]

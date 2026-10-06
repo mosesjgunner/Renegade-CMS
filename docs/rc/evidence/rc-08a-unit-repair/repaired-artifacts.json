@@ -1,0 +1,141 @@
+[
+  {
+    "id": "article:mock-article-family-content-1791264406887-7snv",
+    "targetType": "article",
+    "targetId": "mock-article-family-content-1791264406887-7snv",
+    "title": "Spring Launch 2026",
+    "canonicalUrl": "/articles/spring-launch-2026",
+    "pinnedRevisionId": "5d519163-b093-431f-a3db-ec55951eb4b1",
+    "pinnedRevisionSequence": 1,
+    "pinnedHash": "sha256:94764b6dfcd53f97d0aae2a115555c92c83afa17eb6a12d08749f358ac417b8c",
+    "status": "succeeded",
+    "attempts": 1,
+    "updatedAt": "2026-10-06T05:26:46.907Z",
+    "lastKnownGoodState": {
+      "previousPublishedRevision": "",
+      "previousStatus": "approved"
+    },
+    "stepOutput": {
+      "published": true,
+      "alreadyPublished": false,
+      "revisionId": "5d519163-b093-431f-a3db-ec55951eb4b1"
+    },
+    "executedAt": "2026-10-06T05:26:46.907Z"
+  },
+  {
+    "id": "article:mock-article-family-content-1791264406889-0oc1",
+    "targetType": "article",
+    "targetId": "mock-article-family-content-1791264406889-0oc1",
+    "title": "Official Press Release",
+    "canonicalUrl": "/articles/company-announcement",
+    "pinnedRevisionId": "b0c3e64d-beae-4322-b7ee-ec750e82c01e",
+    "pinnedRevisionSequence": 1,
+    "pinnedHash": "sha256:df5126c85509eaead7e61749eb0d1add89442e832640d134646362dc0955292c",
+    "status": "succeeded",
+    "attempts": 1,
+    "updatedAt": "2026-10-06T05:26:46.991Z",
+    "lastKnownGoodState": {
+      "previousPublishedRevision": "",
+      "previousStatus": "approved"
+    },
+    "stepOutput": {
+      "published": true,
+      "alreadyPublished": false,
+      "revisionId": "b0c3e64d-beae-4322-b7ee-ec750e82c01e"
+    },
+    "executedAt": "2026-10-06T05:26:46.991Z"
+  },
+  {
+    "id": "page:page-spring-overview",
+    "targetType": "page",
+    "targetId": "page-spring-overview",
+    "title": "Spring Overview Page",
+    "canonicalUrl": "/spring-overview",
+    "pinnedRevisionSequence": 2,
+    "pinnedHash": "hash-page-2",
+    "status": "succeeded",
+    "attempts": 1,
+    "updatedAt": "2026-10-06T05:26:46.994Z",
+    "lastKnownGoodState": {
+      "previousRevision": 2,
+      "previousPublishedRevision": 1,
+      "previousStatus": "draft",
+      "previousBlocks": [
+        {
+          "blockType": "hero",
+          "title": "Spring Overview v2"
+        }
+      ]
+    },
+    "stepOutput": {
+      "published": true,
+      "revision": 2
+    },
+    "executedAt": "2026-10-06T05:26:46.994Z"
+  },
+  {
+    "id": "presentation:global-nav-header",
+    "targetType": "presentation",
+    "targetId": "global-nav-header",
+    "title": "Global Navigation Header",
+    "pinnedRevisionSequence": 3,
+    "pinnedHash": "hash-header-3",
+    "status": "succeeded",
+    "attempts": 1,
+    "updatedAt": "2026-10-06T05:26:46.995Z",
+    "lastKnownGoodState": {
+      "previousRevision": 3,
+      "previousBlocks": [
+        {
+          "blockType": "nav-header",
+          "links": ["Home", "Spring Specials", "About"]
+        }
+      ],
+      "previousPublishedRevision": 2
+    },
+    "stepOutput": {
+      "published": true,
+      "surface": "global",
+      "slot": "header"
+    },
+    "executedAt": "2026-10-06T05:26:46.995Z"
+  },
+  {
+    "id": "media:media-spring-hero",
+    "targetType": "media",
+    "targetId": "media-spring-hero",
+    "title": "Spring Hero Photography 8K",
+    "pinnedHash": "hash-media-sha256",
+    "mediaRightsStatus": "approved",
+    "mediaRightsExpiresAt": "2027-01-01T00:00:00.000Z",
+    "status": "succeeded",
+    "attempts": 1,
+    "updatedAt": "2026-10-06T05:26:46.996Z",
+    "lastKnownGoodState": {
+      "mediaId": "media-spring-hero"
+    },
+    "stepOutput": {
+      "active": true,
+      "mediaId": "media-spring-hero"
+    },
+    "executedAt": "2026-10-06T05:26:46.996Z"
+  },
+  {
+    "id": "redirect:red-spring-legacy",
+    "targetType": "redirect",
+    "targetId": "red-spring-legacy",
+    "title": "Spring Specials Legacy Redirect",
+    "pinnedHash": "hash-red-1",
+    "redirectRule": {
+      "fromPath": "/spring-2025",
+      "toPath": "/spring-overview",
+      "statusCode": "301",
+      "match": "exact",
+      "enabled": true
+    },
+    "status": "failed",
+    "attempts": 1,
+    "updatedAt": "2026-10-06T05:26:46.998Z",
+    "error": "Database deadlock on public-redirects table"
+  }
+]

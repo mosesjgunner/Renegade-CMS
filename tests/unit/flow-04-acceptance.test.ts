@@ -11,7 +11,23 @@ import {
 } from '../../src/modules/releases/service'
 import { executeReleaseSaga, rollbackReleaseSaga } from '../../src/modules/releases/saga'
 
+import {
+  createEditorialArticle,
+  decideEditorialReview,
+  requestEditorialReview,
+} from '../../src/modules/editorial/persistence'
+
 type MockDoc = Record<string, any>
+
+// The services query canonical relationships as well as release gates.
+function matchesWhere(doc: MockDoc, where: MockDoc): boolean {
+  return Object.entries(where).every(([field, condition]) => {
+    if (field === 'and') return condition.every((entry: MockDoc) => matchesWhere(doc, entry))
+    if ('equals' in condition) return doc[field] === condition.equals
+    if ('in' in condition) return condition.in.includes(doc[field])
+    throw new Error(`Unsupported acceptance query: ${field}`)
+  })
+}
 
 function createAcceptanceMockPayload() {
   const store: Record<string, Record<string, MockDoc>> = {
@@ -30,42 +46,29 @@ function createAcceptanceMockPayload() {
     create: async ({ collection, data }: { collection: string; data: MockDoc }) => {
       const id =
         data.id || `mock-${collection}-${Date.now()}-${Math.random().toString(36).slice(2, 6)}`
-      const doc = { ...data, id }
+      const doc = structuredClone({ ...data, id })
       if (!store[collection]) store[collection] = {}
       store[collection][id] = doc
-      return doc
+      return structuredClone(doc)
     },
     findByID: async ({ collection, id }: { collection: string; id: string }) => {
-      return store[collection]?.[id] || null
+      const doc = store[collection]?.[id]
+      if (!doc) throw new Error(`Missing ${collection} record: ${id}`)
+      return structuredClone(doc)
     },
     find: async ({ collection, where }: { collection: string; where?: any }) => {
       const docs = Object.values(store[collection] || {})
-      if (!where) return { docs }
+      if (!where) return { docs: structuredClone(docs) }
 
-      const filtered = docs.filter((d) => {
-        if (where.slug?.equals) return d.slug === where.slug.equals
-        if (where.site?.equals) return d.site === where.site.equals
-        if (where.fromPath?.equals) return d.fromPath === where.fromPath.equals
-        if (where.and) {
-          return where.and.every((cond: any) => {
-            if (cond.site?.equals) return d.site === cond.site.equals
-            if (cond.fromPath?.equals) return d.fromPath === cond.fromPath.equals
-            if (cond.targetId?.in) return cond.targetId.in.includes(d.targetId)
-            if (cond.severity?.equals) return d.severity === cond.severity.equals
-            if (cond.status?.in) return cond.status.in.includes(d.status)
-            return true
-          })
-        }
-        return true
-      })
-      return { docs: filtered }
+      return { docs: structuredClone(docs.filter((doc) => matchesWhere(doc, where))) }
     },
     update: async ({ collection, id, data }: { collection: string; id: string; data: MockDoc }) => {
       if (!store[collection]) store[collection] = {}
-      const existing = store[collection][id] || { id }
-      const updated = { ...existing, ...data }
+      const existing = store[collection][id]
+      if (!existing) throw new Error(`Missing ${collection} record: ${id}`)
+      const updated = structuredClone({ ...existing, ...data })
       store[collection][id] = updated
-      return updated
+      return structuredClone(updated)
     },
     jobs: {
       queue: async ({ task, input, waitUntil }: any) => {
@@ -91,28 +94,81 @@ describe('FLOW-04 Coordinated Release Workflow End-to-End Acceptance Scenario', 
     // -------------------------------------------------------------------------
     // STAGE 1: Seed Initial Database Entities
     // -------------------------------------------------------------------------
-    // Multiple Posts / Articles
+    // Create canonical content, companion and immutable revision records through
+    // the real persistence service, then obtain an independent editorial approval.
+    const articles = []
+    for (const [slug, title] of [
+      ['spring-launch-2026', 'Spring Launch 2026'],
+      ['company-announcement', 'Official Press Release'],
+    ]) {
+      const created = await createEditorialArticle(payload, {
+        siteId: 'site-demo',
+        publicationId: 'pub-main',
+        ownerId: 'user-author-9',
+        title,
+        slug,
+        canonicalPath: `/articles/${slug}`,
+        sourceMarkdown: `# ${title}\n\nApproved campaign announcement.`,
+        actor: { id: 'user-author-9', role: 'author' },
+        actorUserId: 'user-author-9',
+      })
+      await requestEditorialReview(payload, {
+        articleId: created.article.id,
+        actor: { id: 'user-author-9', role: 'author' },
+        actorUserId: 'user-author-9',
+      })
+      articles.push(
+        await decideEditorialReview(payload, {
+          articleId: created.article.id,
+          actor: { id: 'user-editor-2', role: 'editor' },
+          actorUserId: 'user-editor-2',
+          approved: true,
+          comment: 'Reviewed the exact campaign revision for coordinated publication.',
+        }),
+      )
+    }
+    const [springArticle, pressArticle] = articles
+
     await payload.create({
-      collection: 'article-family-content',
+      collection: 'media-blobs',
       data: {
-        id: 'post-spring-launch',
-        slug: 'spring-launch-2026',
-        title: 'Spring Launch 2026',
-        status: 'draft',
-        lifecycle: 'draft',
-        latestPublishedRevision: null,
+        id: 'blob-spring-hero',
+        site: 'site-demo',
+        publication: 'pub-main',
+        checksum: 'hash-media-sha256',
+        storageKey: 'site-demo/spring-hero.jpg',
+        storageProvider: 'local',
+        mimeType: 'image/jpeg',
+        sizeBytes: 1024,
+        state: 'ready',
       },
     })
     await payload.create({
-      collection: 'article-family-content',
+      collection: 'media-assets',
       data: {
-        id: 'post-press-release',
-        slug: 'company-announcement',
-        title: 'Official Press Release',
-        status: 'draft',
-        lifecycle: 'draft',
-        latestPublishedRevision: null,
+        id: 'media-spring-hero',
+        site: 'site-demo',
+        publication: 'pub-main',
+        owner: 'user-author-9',
+        title: 'Spring Hero Photography 8K',
+        kind: 'image',
+        originalBlob: 'blob-spring-hero',
+        storageLocation: 'site-demo/spring-hero.jpg',
+        storageProvider: 'local',
+        mimeType: 'image/jpeg',
+        sizeBytes: 1024,
+        checksum: 'hash-media-sha256',
+        altText: 'Spring campaign landscape',
+        creatorCredit: 'Campaign photographer',
+        rightsStatus: 'approved',
+        rightsExpiresAt: '2027-01-01T00:00:00.000Z',
       },
+    })
+    // Include a real editorial reference so publication exercises the usage graph gate.
+    await payload.update({
+      collection: 'content',
+      id: springArticle.content.id,
+      data: { heroMedia: 'media-spring-hero' },
     })
 
     // Multiple Pages & Global Presentation
@@ -120,6 +176,8 @@ describe('FLOW-04 Coordinated Release Workflow End-to-End Acceptance Scenario', 
       collection: 'page-layouts',
       data: {
         id: 'page-spring-overview',
+        site: 'site-demo',
+        publication: 'pub-main',
         path: '/spring-overview',
         surface: 'page',
         revision: 2,
@@ -136,6 +194,8 @@ describe('FLOW-04 Coordinated Release Workflow End-to-End Acceptance Scenario', 
       collection: 'page-layouts',
       data: {
         id: 'global-nav-header',
+        site: 'site-demo',
+        publication: 'pub-main',
         path: '__global__/header',
         surface: 'global',
         slot: 'header',
@@ -183,12 +243,12 @@ describe('FLOW-04 Coordinated Release Workflow End-to-End Acceptance Scenario', 
       release.id,
       {
         targetType: 'article',
-        targetId: 'post-spring-launch',
+        targetId: springArticle.article.id,
         title: 'Spring Launch 2026',
         canonicalUrl: '/articles/spring-launch-2026',
-        pinnedRevisionId: 'rev-post-1',
+        pinnedRevisionId: springArticle.article.currentRevision,
         pinnedRevisionSequence: 1,
-        pinnedHash: 'hash-post-1',
+        pinnedHash: springArticle.article.documentHash,
       },
       'user-publisher-1',
     )
@@ -199,12 +259,12 @@ describe('FLOW-04 Coordinated Release Workflow End-to-End Acceptance Scenario', 
       release.id,
       {
         targetType: 'article',
-        targetId: 'post-press-release',
+        targetId: pressArticle.article.id,
         title: 'Official Press Release',
         canonicalUrl: '/articles/company-announcement',
-        pinnedRevisionId: 'rev-post-2',
+        pinnedRevisionId: pressArticle.article.currentRevision,
         pinnedRevisionSequence: 1,
-        pinnedHash: 'hash-post-2',
+        pinnedHash: pressArticle.article.documentHash,
       },
       'user-publisher-1',
     )
@@ -287,7 +347,7 @@ describe('FLOW-04 Coordinated Release Workflow End-to-End Acceptance Scenario', 
       collection: 'quality-issues',
       data: {
         id: 'issue-legal-compliance-01',
-        targetId: 'post-spring-launch',
+        targetId: springArticle.article.id,
         severity: 'publication_blocking',
         status: 'open',
         message:
@@ -443,6 +503,31 @@ describe('FLOW-04 Coordinated Release Workflow End-to-End Acceptance Scenario', 
       }
     }
 
+    // Canonical publication persisted the exact approved revisions and one audit
+    // per article, even after failed-only retry. Both articles remain distinct.
+    for (const bundle of articles) {
+      const article = await payload.findByID({
+        collection: 'article-family-content',
+        id: bundle.article.id,
+      })
+      expect(article.latestPublishedRevision).toBe(bundle.article.currentRevision)
+      expect(
+        article.workflowAudit.filter((event: any) => event.action === 'publication.published'),
+      ).toHaveLength(1)
+      expect(article.reviewDecisions).toEqual(bundle.article.reviewDecisions)
+      const content = await payload.findByID({ collection: 'content', id: bundle.content.id })
+      expect(content.status).toBe('published')
+      expect(content.site).toBe('site-demo')
+      expect(content.publication).toBe('pub-main')
+    }
+    const usages = await payload.find({
+      collection: 'media-usages',
+      where: { targetId: { in: [springArticle.content.id] } },
+    })
+    expect(usages.docs).toHaveLength(1)
+    expect(usages.docs[0].media).toBe('media-spring-hero')
+    expect(redirectAttempts).toBe(2)
+
     // Verify resulting public URLs
     expect(finalRelease.resultingUrls).toContain('/articles/spring-launch-2026')
     expect(finalRelease.resultingUrls).toContain('/articles/company-announcement')
@@ -466,13 +551,13 @@ describe('FLOW-04 Coordinated Release Workflow End-to-End Acceptance Scenario', 
     // 1. Articles reverted to draft (or previous status)
     const post1 = await payload.findByID({
       collection: 'article-family-content',
-      id: 'post-spring-launch',
+      id: springArticle.article.id,
     })
     expect(post1.latestPublishedRevision).toBeNull()
 
     const post2 = await payload.findByID({
       collection: 'article-family-content',
-      id: 'post-press-release',
+      id: pressArticle.article.id,
     })
     expect(post2.latestPublishedRevision).toBeNull()
 
@@ -501,5 +586,12 @@ describe('FLOW-04 Coordinated Release Workflow End-to-End Acceptance Scenario', 
     )
     expect(rollbackAudit.details.reason).toContain('embargo broken by competitor')
     expect(rollbackAudit.details.compensatedCount).toBe(6)
+    expect(rollbackAudit.details.compensationEvents).toHaveLength(6)
+    expect(
+      new Set(rollbackAudit.details.compensationEvents.map((event: any) => event.artifactId)).size,
+    ).toBe(6)
+    expect(finalDoc.artifacts.every((item: any) => item.status === 'compensated')).toBe(true)
+    expect(post1.lifecycle).toBe('approved')
+    expect(post2.lifecycle).toBe('approved')
   })
 })

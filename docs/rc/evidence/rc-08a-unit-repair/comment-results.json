@@ -1,0 +1,352 @@
+{
+  "numTotalTestSuites": 8,
+  "numPassedTestSuites": 8,
+  "numFailedTestSuites": 0,
+  "numPendingTestSuites": 0,
+  "numTotalTests": 26,
+  "numPassedTests": 26,
+  "numFailedTests": 0,
+  "numPendingTests": 0,
+  "numTodoTests": 0,
+  "snapshot": {
+    "added": 0,
+    "failure": false,
+    "filesAdded": 0,
+    "filesRemoved": 0,
+    "filesRemovedList": [],
+    "filesUnmatched": 0,
+    "filesUpdated": 0,
+    "matched": 0,
+    "total": 0,
+    "unchecked": 0,
+    "uncheckedKeysByFile": [],
+    "unmatched": 0,
+    "updated": 0,
+    "didUpdate": false
+  },
+  "startTime": 1791264525646,
+  "success": true,
+  "testResults": [
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edit Window, & Idempotency",
+            "1. Rich-Text Sanitization & Anti-XSS Protection"
+          ],
+          "fullName": "COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edit Window, & Idempotency 1. Rich-Text Sanitization & Anti-XSS Protection strips script tags and executable contents completely",
+          "status": "passed",
+          "title": "strips script tags and executable contents completely",
+          "duration": 1.3573999999999842,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edit Window, & Idempotency",
+            "1. Rich-Text Sanitization & Anti-XSS Protection"
+          ],
+          "fullName": "COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edit Window, & Idempotency 1. Rich-Text Sanitization & Anti-XSS Protection strips style tags, inline style attributes, and CSS background injection",
+          "status": "passed",
+          "title": "strips style tags, inline style attributes, and CSS background injection",
+          "duration": 0.46340000000003556,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edit Window, & Idempotency",
+            "1. Rich-Text Sanitization & Anti-XSS Protection"
+          ],
+          "fullName": "COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edit Window, & Idempotency 1. Rich-Text Sanitization & Anti-XSS Protection strips image, iframe, svg, and object tags with event handlers",
+          "status": "passed",
+          "title": "strips image, iframe, svg, and object tags with event handlers",
+          "duration": 0.2296000000000049,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edit Window, & Idempotency",
+            "1. Rich-Text Sanitization & Anti-XSS Protection"
+          ],
+          "fullName": "COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edit Window, & Idempotency 1. Rich-Text Sanitization & Anti-XSS Protection strips dangerous href protocols: javascript, vbscript, and data URIs",
+          "status": "passed",
+          "title": "strips dangerous href protocols: javascript, vbscript, and data URIs",
+          "duration": 0.45580000000001064,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edit Window, & Idempotency",
+            "1. Rich-Text Sanitization & Anti-XSS Protection"
+          ],
+          "fullName": "COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edit Window, & Idempotency 1. Rich-Text Sanitization & Anti-XSS Protection strips event handlers on allowed tags",
+          "status": "passed",
+          "title": "strips event handlers on allowed tags",
+          "duration": 0.18279999999998608,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edit Window, & Idempotency",
+            "1. Rich-Text Sanitization & Anti-XSS Protection"
+          ],
+          "fullName": "COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edit Window, & Idempotency 1. Rich-Text Sanitization & Anti-XSS Protection handles polyglot, comment, and malformed HTML payloads safely without execution",
+          "status": "passed",
+          "title": "handles polyglot, comment, and malformed HTML payloads safely without execution",
+          "duration": 0.28870000000000573,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edit Window, & Idempotency",
+            "1. Rich-Text Sanitization & Anti-XSS Protection"
+          ],
+          "fullName": "COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edit Window, & Idempotency 1. Rich-Text Sanitization & Anti-XSS Protection preserves all allowed markup and safe link protocols (http, https, mailto)",
+          "status": "passed",
+          "title": "preserves all allowed markup and safe link protocols (http, https, mailto)",
+          "duration": 0.24630000000001928,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edit Window, & Idempotency",
+            "2. Mentions Extraction and Site-Scoped Resolution"
+          ],
+          "fullName": "COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edit Window, & Idempotency 2. Mentions Extraction and Site-Scoped Resolution extracts mentions matching @([a-zA-Z0-9_\\-.]{3,30})",
+          "status": "passed",
+          "title": "extracts mentions matching @([a-zA-Z0-9_\\-.]{3,30})",
+          "duration": 0.6018000000000256,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edit Window, & Idempotency",
+            "2. Mentions Extraction and Site-Scoped Resolution"
+          ],
+          "fullName": "COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edit Window, & Idempotency 2. Mentions Extraction and Site-Scoped Resolution resolves mentions only against active members scoped to the same site",
+          "status": "passed",
+          "title": "resolves mentions only against active members scoped to the same site",
+          "duration": 0.6748000000000047,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edit Window, & Idempotency",
+            "2. Mentions Extraction and Site-Scoped Resolution"
+          ],
+          "fullName": "COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edit Window, & Idempotency 2. Mentions Extraction and Site-Scoped Resolution leaves unresolved mentions as inert plain text without links or side effects",
+          "status": "passed",
+          "title": "leaves unresolved mentions as inert plain text without links or side effects",
+          "duration": 0.6881999999999948,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edit Window, & Idempotency",
+            "2. Mentions Extraction and Site-Scoped Resolution"
+          ],
+          "fullName": "COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edit Window, & Idempotency 2. Mentions Extraction and Site-Scoped Resolution does NOT resolve cross-site handles: cross-site handles remain inert plain text",
+          "status": "passed",
+          "title": "does NOT resolve cross-site handles: cross-site handles remain inert plain text",
+          "duration": 2.551399999999944,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edit Window, & Idempotency",
+            "2. Mentions Extraction and Site-Scoped Resolution"
+          ],
+          "fullName": "COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edit Window, & Idempotency 2. Mentions Extraction and Site-Scoped Resolution links resolved mentions to /members/{handle} without double-linking inside existing <a> tags or <code>",
+          "status": "passed",
+          "title": "links resolved mentions to /members/{handle} without double-linking inside existing <a> tags or <code>",
+          "duration": 0.17480000000000473,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edit Window, & Idempotency",
+            "3. Idempotency Key & Concurrency Deduplication"
+          ],
+          "fullName": "COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edit Window, & Idempotency 3. Idempotency Key & Concurrency Deduplication requires Idempotency-Key header",
+          "status": "passed",
+          "title": "requires Idempotency-Key header",
+          "duration": 2.190999999999974,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edit Window, & Idempotency",
+            "3. Idempotency Key & Concurrency Deduplication"
+          ],
+          "fullName": "COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edit Window, & Idempotency 3. Idempotency Key & Concurrency Deduplication maps idempotency key deterministically to valid client_mutation_id UUID",
+          "status": "passed",
+          "title": "maps idempotency key deterministically to valid client_mutation_id UUID",
+          "duration": 1.0451999999999657,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edit Window, & Idempotency",
+            "3. Idempotency Key & Concurrency Deduplication"
+          ],
+          "fullName": "COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edit Window, & Idempotency 3. Idempotency Key & Concurrency Deduplication duplicate idempotency key under concurrency creates exactly one comment",
+          "status": "passed",
+          "title": "duplicate idempotency key under concurrency creates exactly one comment",
+          "duration": 3.0197000000000003,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edit Window, & Idempotency",
+            "3. Idempotency Key & Concurrency Deduplication"
+          ],
+          "fullName": "COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edit Window, & Idempotency 3. Idempotency Key & Concurrency Deduplication duplicate request within 60 seconds returns original comment without second insert",
+          "status": "passed",
+          "title": "duplicate request within 60 seconds returns original comment without second insert",
+          "duration": 0.4076000000000022,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edit Window, & Idempotency",
+            "4. Comment Edit Window (15-Minute Rule & Staff Moderation)"
+          ],
+          "fullName": "COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edit Window, & Idempotency 4. Comment Edit Window (15-Minute Rule & Staff Moderation) allows author edits within 15 minutes and records revision",
+          "status": "passed",
+          "title": "allows author edits within 15 minutes and records revision",
+          "duration": 0.4682000000000244,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edit Window, & Idempotency",
+            "4. Comment Edit Window (15-Minute Rule & Staff Moderation)"
+          ],
+          "fullName": "COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edit Window, & Idempotency 4. Comment Edit Window (15-Minute Rule & Staff Moderation) allows author edits at exactly 14m59s",
+          "status": "passed",
+          "title": "allows author edits at exactly 14m59s",
+          "duration": 0.20810000000000173,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edit Window, & Idempotency",
+            "4. Comment Edit Window (15-Minute Rule & Staff Moderation)"
+          ],
+          "fullName": "COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edit Window, & Idempotency 4. Comment Edit Window (15-Minute Rule & Staff Moderation) rejects author edits after 15 minutes (at 15m01s)",
+          "status": "passed",
+          "title": "rejects author edits after 15 minutes (at 15m01s)",
+          "duration": 0.2692000000000121,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edit Window, & Idempotency",
+            "4. Comment Edit Window (15-Minute Rule & Staff Moderation)"
+          ],
+          "fullName": "COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edit Window, & Idempotency 4. Comment Edit Window (15-Minute Rule & Staff Moderation) rejects other non-author members within 15 minutes",
+          "status": "passed",
+          "title": "rejects other non-author members within 15 minutes",
+          "duration": 0.2551000000000272,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edit Window, & Idempotency",
+            "4. Comment Edit Window (15-Minute Rule & Staff Moderation)"
+          ],
+          "fullName": "COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edit Window, & Idempotency 4. Comment Edit Window (15-Minute Rule & Staff Moderation) rejects staff edits after 15 minutes if staff lacks staff:community_moderate",
+          "status": "passed",
+          "title": "rejects staff edits after 15 minutes if staff lacks staff:community_moderate",
+          "duration": 0.23099999999999454,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edit Window, & Idempotency",
+            "4. Comment Edit Window (15-Minute Rule & Staff Moderation)"
+          ],
+          "fullName": "COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edit Window, & Idempotency 4. Comment Edit Window (15-Minute Rule & Staff Moderation) allows staff edits after 15 minutes with staff:community_moderate",
+          "status": "passed",
+          "title": "allows staff edits after 15 minutes with staff:community_moderate",
+          "duration": 0.23829999999998108,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edit Window, & Idempotency",
+            "5. Rolling 60-Second Comment Rate Limiting"
+          ],
+          "fullName": "COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edit Window, & Idempotency 5. Rolling 60-Second Comment Rate Limiting allows 5 comments within 60 seconds, rejects the 6th with 429",
+          "status": "passed",
+          "title": "allows 5 comments within 60 seconds, rejects the 6th with 429",
+          "duration": 0.20350000000001955,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edit Window, & Idempotency",
+            "5. Rolling 60-Second Comment Rate Limiting"
+          ],
+          "fullName": "COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edit Window, & Idempotency 5. Rolling 60-Second Comment Rate Limiting postThreadComment throws CommentComposerError 429 on 6th comment",
+          "status": "passed",
+          "title": "postThreadComment throws CommentComposerError 429 on 6th comment",
+          "duration": 1.087699999999984,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edit Window, & Idempotency",
+            "6. HTTP Route Handlers"
+          ],
+          "fullName": "COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edit Window, & Idempotency 6. HTTP Route Handlers POST /api/v1/sites/:site_id/threads/:thread_id/comments requires Idempotency-Key",
+          "status": "passed",
+          "title": "POST /api/v1/sites/:site_id/threads/:thread_id/comments requires Idempotency-Key",
+          "duration": 437.7671,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edit Window, & Idempotency",
+            "6. HTTP Route Handlers"
+          ],
+          "fullName": "COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edit Window, & Idempotency 6. HTTP Route Handlers POST /api/v1/sites/:site_id/threads/:thread_id/comments rejects empty body",
+          "status": "passed",
+          "title": "POST /api/v1/sites/:site_id/threads/:thread_id/comments rejects empty body",
+          "duration": 1.9814999999999827,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791264526163,
+      "endTime": 1791264526620.9814,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/comm-03b-comment-composer.test.ts"
+    }
+  ]
+}

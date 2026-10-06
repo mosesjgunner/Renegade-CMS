@@ -14,6 +14,17 @@ import {
 } from '@/modules/community/comment-composer'
 import type { CommunityActor } from '@/modules/community/contracts'
 
+const routeMocks = vi.hoisted(() => ({
+  getPayload: vi.fn(),
+  resolveCommunityActor: vi.fn(),
+}))
+vi.mock('@payload-config', () => ({ default: {} }))
+vi.mock('payload', () => ({ getPayload: routeMocks.getPayload }))
+vi.mock('@/modules/community/service', async (importOriginal) => ({
+  ...(await importOriginal<typeof import('@/modules/community/service')>()),
+  resolveCommunityActor: routeMocks.resolveCommunityActor,
+}))
+
 const siteId = '00000000-0000-7000-8000-000000000001'
 const siteOther = '00000000-0000-7000-8000-000000000099'
 const threadId = '00000000-0000-7000-8000-000000000002'
@@ -619,6 +630,18 @@ describe('COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edi
   // 6. HTTP Route Handlers
   // =========================================================================
   describe('6. HTTP Route Handlers', () => {
+    beforeEach(() => {
+      routeMocks.getPayload.mockReset()
+      routeMocks.resolveCommunityActor.mockReset()
+      routeMocks.getPayload.mockResolvedValue(mockPayloadWithQuery(vi.fn()))
+      routeMocks.resolveCommunityActor.mockResolvedValue({
+        kind: 'member',
+        memberId: authorId,
+        isStaff: false,
+        isModerator: false,
+      } satisfies CommunityActor)
+    })
+
     it('POST /api/v1/sites/:site_id/threads/:thread_id/comments requires Idempotency-Key', async () => {
       const { POST } = await import(
         '@/app/(frontend)/api/v1/sites/[site_id]/threads/[thread_id]/comments/route'
@@ -640,6 +663,7 @@ describe('COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edi
       expect(res.status).toBe(400)
       const data = await res.json()
       expect(data.error?.code).toBe('IDEMPOTENCY_KEY_REQUIRED')
+      expect(routeMocks.getPayload).not.toHaveBeenCalled()
     }, 30_000)
 
     it('POST /api/v1/sites/:site_id/threads/:thread_id/comments rejects empty body', async () => {
@@ -654,7 +678,6 @@ describe('COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edi
           headers: {
             'content-type': 'application/json',
             'idempotency-key': 'idem-test-empty',
-            'x-member-id': authorId,
           },
           body: JSON.stringify({ body: '   ' }),
         },
@@ -667,6 +690,11 @@ describe('COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edi
       expect(res.status).toBe(422)
       const data = await res.json()
       expect(data.error?.code).toBe('EMPTY_COMMENT_BODY')
+      expect(routeMocks.resolveCommunityActor).toHaveBeenCalledWith(
+        await routeMocks.getPayload.mock.results[0].value,
+        req.headers,
+        siteId,
+      )
     })
   })
 })

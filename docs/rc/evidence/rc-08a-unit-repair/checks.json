@@ -1,0 +1,71 @@
+{
+  "baseHead": "8ce1485d34bc7ed96532a4265a563df509a61d32",
+  "date": "2026-10-06",
+  "timezone": "America/Chicago",
+  "scope": "RC-08A unit repair only",
+  "sourceSha256": {
+    "tests/unit/flow-04-acceptance.test.ts": "3ec0c148272ded08992a1a67f55d8baed7916856b496ddad2431cf98cd640ddb",
+    "tests/unit/comm-03b-comment-composer.test.ts": "598686ea9bd9272179c1fa7afb6753745d60d5fd50e5af15ec6459e7adad6e23"
+  },
+  "checks": [
+    {
+      "command": "npx.cmd vitest run tests/unit/flow-04-acceptance.test.ts -t 'passes complete 8-stage'",
+      "exitCode": 0,
+      "passedFiles": 1,
+      "passedTests": 1,
+      "failedTests": 0,
+      "pendingTests": 0,
+      "todoTests": 0,
+      "success": true,
+      "receipt": "focused-results.json"
+    },
+    {
+      "command": "npx.cmd vitest run tests/unit/flow-04-acceptance.test.ts",
+      "exitCode": 0,
+      "passedFiles": 1,
+      "passedTests": 1,
+      "failedTests": 0,
+      "pendingTests": 0,
+      "todoTests": 0,
+      "success": true,
+      "receipt": "file-results.json"
+    },
+    {
+      "command": "npx.cmd vitest run tests/unit/comm-03b-comment-composer.test.ts",
+      "exitCode": 0,
+      "passedFiles": 1,
+      "passedTests": 26,
+      "failedTests": 0,
+      "pendingTests": 0,
+      "todoTests": 0,
+      "success": true,
+      "receipt": "comment-results.json"
+    },
+    {
+      "command": "npm.cmd test",
+      "exitCode": 0,
+      "passedFiles": 169,
+      "passedTests": 1107,
+      "failedTests": 0,
+      "pendingTests": 0,
+      "todoTests": 0,
+      "success": true,
+      "receipt": "unit-results.json"
+    },
+    {
+      "command": "npm.cmd run lint",
+      "exitCode": 0,
+      "receipt": "lint.txt"
+    },
+    {
+      "command": "npm.cmd run typecheck",
+      "exitCode": 0,
+      "receipt": "typecheck.txt"
+    },
+    {
+      "command": "npm.cmd run format:check",
+      "exitCode": 0,
+      "receipt": "format.txt"
+    }
+  ]
+}

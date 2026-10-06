@@ -1,3 +1,5 @@
+> RC-08A unit repair - **PASS**, 2026-10-06, based on clean HEAD `8ce1485d34bc7ed96532a4265a563df509a61d32`. The dedicated repair closes RC08-UNIT-RELEASE at the unit level: **169 files / 1,107 tests passed**, plus format, zero-warning lint and typecheck. [Repair evidence](evidence/RC-08A-2026-10-06.md). Aggregate RC-08 remains **NOT READY**; restart on the repair commit with fresh dependencies before later integration/migration/build/browser/security/restore gates. The failed clean-candidate report below is retained as historical evidence.
+
 > RC-08 current gate — **FAIL / NOT READY**, 2026-10-06. Tested clean candidate `07e75a47dec8424d26d7829ec9daba7e34c4c859`: npm ci, format, lint and typecheck pass; full unit gate reports 1,106 passed / 1 failed. First blocker: **RC08-UNIT-RELEASE**. Integration, migrations, build, golden browser/security and restore are unexecuted. [Current evidence](evidence/RC-08-2026-10-06.md); [repair card](repairs/RC08-05-unit-release.md). Earlier candidate/dirty-tree findings below are historical and do not describe this restart.
 
 ## RC-04 Pass 2 result — 2026-10-04

@@ -20,3 +20,16 @@ successes, public URLs, six compensations and retained audit assertions. Run the
 focused case and full unit suite, then restart RC-08 in a clean checkout at the
 new immutable SHA with fresh dependencies. Run all later gates, ordinary A–T,
 negative security and second-environment restore. No unexecuted gate is passed.
+
+## RC-08A repair - 2026-10-06
+
+**Unit repair complete.** [Diagnosis and current verification](../evidence/RC-08A-2026-10-06.md)
+identify incomplete canonical content/revision/approval/media fixtures and a
+mock query/persistence mismatch. No production code or guard changed. The full
+unit suite passes 169 files / 1,107 tests, with format/lint/typecheck passing.
+The additional comment route unit fixture was isolated from real Payload startup.
+All original acceptance assertions remain; per-artifact failure receipts are retained.
+
+The dedicated repair commit is discoverable with `git log -- tests/unit/flow-04-acceptance.test.ts`.
+Restart the broader RC-08 gate in a clean checkout at that immutable SHA with
+fresh dependencies; later acceptance remains unexecuted by this unit-only pass.
