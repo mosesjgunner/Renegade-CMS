@@ -20,8 +20,8 @@ export const PRINTFUL_CAPABILITIES: PodProviderCapabilityMatrix = {
   supportedPrintAreas: ['front', 'back', 'sleeve_left', 'sleeve_right'],
   supportsCancellation: true,
   supportsPartialShipments: true,
-  supportsLivePreflight: true,
-  supportsLiveCostEstimation: true,
+  supportsLivePreflight: false,
+  supportsLiveCostEstimation: false,
   supportsAutomaticReprint: false,
   supportsReturnRouting: true,
   supportsPoBoxDelivery: false,
@@ -203,46 +203,9 @@ export class PrintfulPodAdapter implements PodProviderAdapter {
   }
 
   async getTemplates(remoteVariantId: string): Promise<readonly PodTemplate[]> {
-    return [
-      {
-        id: `printful-tpl-${remoteVariantId}-front`,
-        variantId: remoteVariantId,
-        printArea: 'front',
-        templateWidthMm: 304,
-        templateHeightMm: 406,
-        minDpi: 150,
-        recommendedDpi: 300,
-        printAreaBounds: {
-          topMm: 50,
-          leftMm: 50,
-          widthMm: 280,
-          heightMm: 380,
-        },
-        formatRequirements: {
-          allowedMimeTypes: ['image/png', 'image/tiff', 'application/pdf'],
-          maxSizeBytes: 50 * 1024 * 1024,
-        },
-      },
-      {
-        id: `printful-tpl-${remoteVariantId}-back`,
-        variantId: remoteVariantId,
-        printArea: 'back',
-        templateWidthMm: 304,
-        templateHeightMm: 406,
-        minDpi: 150,
-        recommendedDpi: 300,
-        printAreaBounds: {
-          topMm: 50,
-          leftMm: 50,
-          widthMm: 280,
-          heightMm: 380,
-        },
-        formatRequirements: {
-          allowedMimeTypes: ['image/png', 'image/tiff', 'application/pdf'],
-          maxSizeBytes: 50 * 1024 * 1024,
-        },
-      },
-    ]
+    // No provider template discovery is implemented. Never manufacture dimensions.
+    void remoteVariantId
+    return []
   }
 
   async validateFile(file: {
@@ -280,50 +243,33 @@ export class PrintfulPodAdapter implements PodProviderAdapter {
     content: Buffer | Uint8Array
     hash: string
   }): Promise<{ remoteFileId: string; downloadUrl: string }> {
-    return {
-      remoteFileId: `pf-file-${file.hash.slice(0, 16)}`,
-      downloadUrl: `https://files.printful.com/files/${file.hash.slice(0, 16)}`,
-    }
+    void file
+    throw new PodProviderError(
+      'configuration',
+      'Printful file upload is unavailable: no provider upload response is implemented.',
+      false,
+      true,
+    )
   }
 
   async preflight(input: PodPreflightInput): Promise<PodPreflightResult> {
-    const issues: string[] = []
-    const widthInches = input.placement.widthMm / 25.4
-    const effectiveDpi = Math.round(input.artwork.widthPx / Math.max(0.1, widthInches))
-
-    if (effectiveDpi < 150) {
-      issues.push(
-        `Effective DPI is ${effectiveDpi}, below the required 150 DPI for Printful direct-to-garment printing.`,
-      )
-    }
-
-    const now = new Date().toISOString()
-    return {
-      passed: issues.length === 0,
-      effectiveDpi,
-      issues,
-      mockupUrl: `https://files.printful.com/mockups/${input.variantId}-${input.printArea}.png`,
-      provenance: {
-        source: 'provider',
-        generatedAt: now,
-        hash: input.artwork.hash,
-      },
-    }
+    void input
+    throw new PodProviderError(
+      'configuration',
+      'Printful live preflight and mockup generation are unavailable.',
+      false,
+      true,
+    )
   }
 
   async estimateCost(input: PodCostEstimateInput): Promise<PodCostEstimate> {
-    const productionCostMinor = (1200n * BigInt(input.quantity)).toString()
-    const shippingCostMinor = input.recipientAddress.country.toUpperCase() === 'US' ? '499' : '999'
-    return {
-      productionCostMinor,
-      shippingCostMinor,
-      taxCostMinor: '0',
-      totalCostMinor: (BigInt(productionCostMinor) + BigInt(shippingCostMinor)).toString(),
-      currency: 'USD',
-      available: true,
-      estimatedDaysMin: 4,
-      estimatedDaysMax: 8,
-    }
+    void input
+    throw new PodProviderError(
+      'configuration',
+      'Printful live price and shipping estimation are unavailable.',
+      false,
+      true,
+    )
   }
 
   async createOrder(input: PodCreateOrderInput): Promise<PodOrderResult> {

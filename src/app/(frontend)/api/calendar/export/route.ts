@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+import { GET as eventFeed } from '../../../events/feed.ics/route'
 /**
  * Generates an iCalendar (RFC 5545 .ics) feed string from a list of scheduled entries.
  */
@@ -57,9 +57,7 @@ export function generateICalendarFeed(
   return lines.join('\r\n')
 }
 
-export async function GET() {
-  return NextResponse.json(
-    { error: 'Interactive calendar feeds are deferred for RC.' },
-    { status: 410 },
-  )
+/** This compatibility route exports published public events, never private editorial schedules. */
+export async function GET(request: Request) {
+  return eventFeed(request)
 }

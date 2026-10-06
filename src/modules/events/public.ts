@@ -4,6 +4,9 @@ import { headers as requestHeaders } from 'next/headers'
 import { hasEntitlement } from '../commerce/subscription-service'
 import { currentMember, readMemberSession } from '../identity/member-identity'
 import { publicEventOccurrences, type EventRecord } from './contracts'
+import { canDiscoverPublic } from '../public/contracts'
+import { isRegisteredCollection } from '../public/registered-collections'
+import { publicSiteForHost } from '../public/site-scope'
 
 type Raw = Record<string, unknown>
 
@@ -35,15 +38,7 @@ const relationId = (value: unknown) =>
 
 export async function currentPublicSiteId() {
   const payload = await getPayload({ config })
-  const publications = await payload.find({
-    collection: 'publications',
-    where: { and: [{ status: { equals: 'active' } }, { visibility: { equals: 'public' } }] },
-    limit: 1,
-    depth: 0,
-    overrideAccess: true,
-  } as never)
-  const publication = publications.docs[0] as unknown as Raw | undefined
-  return publication ? relationId(publication.site) : ''
+  return publicSiteForHost(payload, (await requestHeaders()).get('host'))
 }
 
 export function asEvent(raw: Raw): EventRecord {
@@ -70,20 +65,37 @@ export async function findPublicEvents(input: {
   category?: string
   page?: number
   pageSize?: number
+  /** Public feeds never serialize entitlement-protected records, even for a signed-in subscriber. */
+  publicFeed?: boolean
+  all?: boolean
 }) {
   const payload = await getPayload({ config })
   const siteId = await currentPublicSiteId()
-  const records = await payload.find({
-    collection: 'events',
-    where: { site: { equals: siteId } },
-    limit: 1000,
-    depth: 0,
-    overrideAccess: true,
-  } as never)
+  const records: Raw[] = []
+  if (siteId && isRegisteredCollection(payload, 'events')) {
+    for (let page = 1; ; page++) {
+      const batch = await payload.find({
+        collection: 'events',
+        where: { site: { equals: siteId } },
+        page,
+        limit: 250,
+        sort: 'id',
+        depth: 0,
+        overrideAccess: true,
+      } as never)
+      records.push(...(batch.docs as unknown as Raw[]))
+      if (!batch.hasNextPage) break
+    }
+  }
   const visible = (
     await Promise.all(
-      (records.docs as unknown as Raw[]).map(async (event) =>
-        (await canReadEvent(payload, event, siteId)) ? event : null,
+      records.map(async (event) =>
+        relationId(event.site) === siteId &&
+        canDiscoverPublic(event) &&
+        (!input.publicFeed || !event.requiredEntitlement) &&
+        (await canReadEvent(payload, event, siteId))
+          ? event
+          : null,
       ),
     )
   ).filter((event): event is Raw => event !== null)
@@ -99,7 +111,9 @@ export async function findPublicEvents(input: {
   const pageSize = Math.max(1, Math.min(input.pageSize ?? 20, 100))
   const page = Math.max(1, input.page ?? 1)
   return {
-    occurrences: occurrences.slice((page - 1) * pageSize, page * pageSize),
+    occurrences: input.all
+      ? occurrences
+      : occurrences.slice((page - 1) * pageSize, page * pageSize),
     total: occurrences.length,
     page,
     pageCount: Math.ceil(occurrences.length / pageSize),
@@ -107,9 +121,10 @@ export async function findPublicEvents(input: {
   }
 }
 
-export async function findPublicEvent(slug: string) {
+export async function findPublicEvent(slug: string, publicFeed = false) {
   const payload = await getPayload({ config })
   const siteId = await currentPublicSiteId()
+  if (!siteId || !isRegisteredCollection(payload, 'events')) return null
   const result = await payload.find({
     collection: 'events',
     where: { and: [{ site: { equals: siteId } }, { slug: { equals: slug } }] },
@@ -118,5 +133,11 @@ export async function findPublicEvent(slug: string) {
     overrideAccess: true,
   } as never)
   const record = result.docs[0] as unknown as Raw | undefined
-  return record && (await canReadEvent(payload, record, siteId)) ? asEvent(record) : null
+  return record &&
+    relationId(record.site) === siteId &&
+    canDiscoverPublic(record) &&
+    (!publicFeed || !record.requiredEntitlement) &&
+    (await canReadEvent(payload, record, siteId))
+    ? asEvent(record)
+    : null
 }

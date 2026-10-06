@@ -106,17 +106,36 @@ function resolveWallTime(target: Record<string, number>, timeZone: string) {
     target.minute,
     target.second,
   )
-  // Derive the likely zone offset first. This avoids formatting thousands of
-  // candidates per occurrence while retaining a bounded DST ambiguity search.
-  const nominalDate = new Date(nominal)
-  const parts = zonedParts(nominalDate, timeZone)
-  const offset =
-    Date.UTC(parts.year, parts.month - 1, parts.day, parts.hour, parts.minute, parts.second) -
-    nominal
-  for (const adjustment of [0, -60, 60, -120, 120, -30, 30]) {
-    const candidate = new Date(nominal - offset + adjustment * 60_000)
-    const part = zonedParts(candidate, timeZone)
-    if (Object.keys(target).every((key) => part[key] === target[key])) return candidate
+  const offsets = new Set<number>()
+  for (let hours = -36; hours <= 36; hours += 6) {
+    const instant = nominal + hours * 3_600_000
+    const part = zonedParts(new Date(instant), timeZone)
+    offsets.add(
+      Date.UTC(part.year, part.month - 1, part.day, part.hour, part.minute, part.second) - instant,
+    )
+  }
+  const candidates = [...offsets].map((offset) => nominal - offset).sort((a, b) => a - b)
+  for (const instant of candidates) {
+    const part = zonedParts(new Date(instant), timeZone)
+    if (Object.keys(target).every((key) => part[key] === target[key])) return new Date(instant)
+  }
+  // A nonexistent local time advances to the first valid wall minute after the gap.
+  for (let minutes = 1; minutes <= 180; minutes++) {
+    const wall = new Date(nominal + minutes * 60_000)
+    const advanced: Record<string, number> = {
+      year: wall.getUTCFullYear(),
+      month: wall.getUTCMonth() + 1,
+      day: wall.getUTCDate(),
+      hour: wall.getUTCHours(),
+      minute: wall.getUTCMinutes(),
+      second: wall.getUTCSeconds(),
+    }
+    for (const offset of offsets) {
+      const instant = wall.getTime() - offset
+      const part = zonedParts(new Date(instant), timeZone)
+      if (Object.keys(advanced).every((key) => part[key] === advanced[key]))
+        return new Date(instant)
+    }
   }
   throw new Error('Unable to resolve event wall time in timezone.')
 }
@@ -128,7 +147,13 @@ function addOccurrence(start: Date, timeZone: string, recurrence: EventRecurrenc
   )
   if (recurrence.frequency === 'daily') wall.setUTCDate(wall.getUTCDate() + amount)
   if (recurrence.frequency === 'weekly') wall.setUTCDate(wall.getUTCDate() + amount * 7)
-  if (recurrence.frequency === 'monthly') wall.setUTCMonth(wall.getUTCMonth() + amount)
+  if (recurrence.frequency === 'monthly') {
+    wall.setUTCDate(1)
+    wall.setUTCMonth(wall.getUTCMonth() + amount)
+    wall.setUTCDate(parts.day)
+    if (wall.getUTCDate() !== parts.day || wall.getUTCMonth() !== (parts.month - 1 + amount) % 12)
+      return null
+  }
   return resolveWallTime(
     {
       year: wall.getUTCFullYear(),
@@ -161,21 +186,43 @@ export function expandEvent(
     ? Math.min(recurrence.count ?? MAX_EVENT_OCCURRENCES, MAX_EVENT_OCCURRENCES)
     : 1
   const output: EventOccurrence[] = []
-  for (let index = 0; index < count; index++) {
+  let generated = 0
+  for (
+    let index = 0;
+    index < count * (recurrence?.frequency === 'monthly' ? 12 : 1) && generated < count;
+    index++
+  ) {
     const start = recurrence ? addOccurrence(base, event.timeZone, recurrence, index) : base
+    if (!start) continue
+    generated += 1
     if (recurrence?.until && start > new Date(recurrence.until)) break
-    if (start > rangeEnd && !recurrence) break
-    if (start > rangeEnd && recurrence) break
     const iso = start.toISOString()
-    if (start < rangeStart || recurrence?.excludedStartsAt?.includes(iso)) continue
+    if (recurrence?.excludedStartsAt?.includes(iso)) continue
     const override = event.recurrenceOverrides?.[iso]
     if (override?.status === 'cancelled') continue
-    output.push({
+    // Occurrence edits cannot replace the series identity, site or canonical route.
+    const edited = {
       ...event,
       ...override,
-      occurrenceStartsAt: iso,
-      occurrenceEndsAt:
-        duration == null ? null : new Date(start.getTime() + duration).toISOString(),
+      id: event.id,
+      site: event.site,
+      slug: event.slug,
+      canonicalPath: event.canonicalPath,
+      recurrence: event.recurrence,
+    }
+    const occurrenceStart = override?.startsAt ? new Date(override.startsAt) : start
+    const occurrenceEnd =
+      override?.endsAt !== undefined
+        ? override.endsAt
+        : duration == null
+          ? null
+          : new Date(occurrenceStart.getTime() + duration).toISOString()
+    assertEvent({ ...edited, startsAt: occurrenceStart.toISOString(), endsAt: occurrenceEnd })
+    if (occurrenceStart < rangeStart || occurrenceStart > rangeEnd) continue
+    output.push({
+      ...edited,
+      occurrenceStartsAt: occurrenceStart.toISOString(),
+      occurrenceEndsAt: occurrenceEnd,
     })
   }
   return output
@@ -189,11 +236,16 @@ export function publicEventOccurrences(
   return events
     .filter((event) => canDiscoverPublic(event) && event.status !== 'cancelled')
     .flatMap((event) => expandEvent(event, rangeStart, rangeEnd))
+    .filter((event) => canDiscoverPublic(event) && event.status !== 'cancelled')
     .sort((a, b) => a.occurrenceStartsAt.localeCompare(b.occurrenceStartsAt))
 }
 
 const escapeIcs = (value: string) =>
-  value.replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\r?\n/g, '\\n')
+  value
+    .replace(/\\/g, '\\\\')
+    .replace(/;/g, '\\;')
+    .replace(/,/g, '\\,')
+    .replace(/\r\n|\r|\n/g, '\\n')
 const icsDate = (value: string) => value.replace(/[-:]/g, '').replace(/\.\d{3}/, '')
 export function eventIcs(event: EventOccurrence, url: string) {
   const lines = [
@@ -204,9 +256,16 @@ export function eventIcs(event: EventOccurrence, url: string) {
     'BEGIN:VEVENT',
     `UID:${escapeIcs(`${event.id}-${event.occurrenceStartsAt}`)}`,
     `DTSTAMP:${icsDate(new Date().toISOString())}`,
-    `DTSTART:${icsDate(event.occurrenceStartsAt)}`,
+    event.allDay
+      ? `DTSTART;VALUE=DATE:${new Intl.DateTimeFormat('en-CA', { timeZone: event.timeZone, year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(event.occurrenceStartsAt)).replace(/-/g, '')}`
+      : `DTSTART:${icsDate(event.occurrenceStartsAt)}`,
   ]
-  if (event.occurrenceEndsAt) lines.push(`DTEND:${icsDate(event.occurrenceEndsAt)}`)
+  if (event.occurrenceEndsAt)
+    lines.push(
+      event.allDay
+        ? `DTEND;VALUE=DATE:${new Intl.DateTimeFormat('en-CA', { timeZone: event.timeZone, year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date(event.occurrenceEndsAt)).replace(/-/g, '')}`
+        : `DTEND:${icsDate(event.occurrenceEndsAt)}`,
+    )
   lines.push(
     `SUMMARY:${escapeIcs(event.title)}`,
     `URL:${escapeIcs(url)}`,
@@ -219,8 +278,42 @@ export function eventIcs(event: EventOccurrence, url: string) {
     )
   if (event.organizerName)
     lines.push(
-      `ORGANIZER;CN=${escapeIcs(event.organizerName)}:${escapeIcs(event.organizerUrl ?? '')}`,
+      `ORGANIZER;CN="${event.organizerName
+        .replace(/\^/g, '^^')
+        .replace(/"/g, "^'")
+        .replace(/\r\n|\r|\n/g, '^n')}":${escapeIcs(event.organizerUrl ?? '')}`,
     )
   lines.push('END:VEVENT', 'END:VCALENDAR', '')
-  return lines.join('\r\n')
+  return lines.map(foldIcsLine).join('\r\n')
+}
+
+/** Fold at 75 UTF-8 octets without splitting a Unicode code point (RFC 5545 section 3.1). */
+export function foldIcsLine(line: string): string {
+  let folded = '',
+    length = 0
+  for (const character of line) {
+    const bytes = Buffer.byteLength(character, 'utf8')
+    if (length + bytes > 75) {
+      folded += '\r\n '
+      length = 1
+    }
+    folded += character
+    length += bytes
+  }
+  return folded
+}
+
+export function eventsIcs(events: readonly EventOccurrence[], origin: string) {
+  return [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//Renegade CMS//Events Feed//EN',
+    'CALSCALE:GREGORIAN',
+    ...events.flatMap((event) => {
+      const lines = eventIcs(event, new URL(event.canonicalPath, origin).href).split('\r\n')
+      return lines.slice(lines.indexOf('BEGIN:VEVENT'), lines.indexOf('END:VEVENT') + 1)
+    }),
+    'END:VCALENDAR',
+    '',
+  ].join('\r\n')
 }

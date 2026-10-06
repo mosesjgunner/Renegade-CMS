@@ -1,3 +1,4 @@
+import { publicTimelineEntries } from '@/modules/events/timeline'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import Link from 'next/link'
@@ -17,7 +18,7 @@ import {
 import { PublicLayout } from '@/modules/public/PublicLayout'
 import { hydratePublicLayoutRecord } from '@/modules/presentation/public-queries'
 import { PublicForm } from '@/modules/audience/PublicForm'
-import type { FormField } from '@/modules/audience/contracts'
+import { loadPublicForm } from '@/modules/audience/form-runtime'
 import { BookReader, isReleasedChapter, relatedId } from '@/modules/media/books'
 import { EditorialArticleView } from '@/modules/editorial/ArticleView'
 import { loadPublishedArticleByPath } from '@/modules/editorial/persistence'
@@ -198,16 +199,10 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
     title?: string
     copy?: string
     visibility: string
-    activeSchema?: {
-      schema?: { fields?: FormField[] }
-      consentText?: string
-      state?: string
-    }
   }
   if (form) {
-    const schema = form.activeSchema
-    if (form.visibility !== 'public' || schema?.state !== 'published' || !schema.schema?.fields)
-      notFound()
+    const loaded = await loadPublicForm(payload, form.id, siteId)
+    if (!loaded) notFound()
     return (
       <main className="max-w-xl mx-auto px-6 py-20">
         <section className="surface-card p-8 space-y-6">
@@ -215,8 +210,8 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
           {form.copy ? <p className="text-stone-700">{form.copy}</p> : null}
           <PublicForm
             formId={form.id}
-            fields={schema.schema.fields}
-            consentText={schema.consentText}
+            fields={loaded.snapshot.fields}
+            consentText={loaded.snapshot.consentText}
           />
         </section>
       </main>
@@ -434,6 +429,36 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
     if (!canRenderPublic(record)) notFound()
     if (collection === 'events' && !(await canReadEvent(payload, record, siteId))) notFound()
 
+    if (collection === 'timelines') {
+      const entries = await publicTimelineEntries(payload, record, siteId)
+      return (
+        <main className="mx-auto max-w-4xl px-6 py-12 space-y-6">
+          <h1>{label(record)}</h1>
+          {typeof record.summary === 'string' ? <p>{record.summary}</p> : null}
+          {entries.length ? (
+            <ol className="space-y-6">
+              {entries.map((entry) => (
+                <li key={String(entry.id)}>
+                  <h2>
+                    <Link href={String(entry.canonicalPath)}>{String(entry.title)}</Link>
+                  </h2>
+                  <time dateTime={String(entry.startsAt)}>
+                    {new Intl.DateTimeFormat('en-US', {
+                      dateStyle: 'full',
+                      timeStyle: 'short',
+                      timeZone: String(entry.timeZone ?? 'UTC'),
+                    }).format(new Date(String(entry.startsAt)))}
+                  </time>
+                  {entry.summary ? <p>{String(entry.summary)}</p> : null}
+                </li>
+              ))}
+            </ol>
+          ) : (
+            <p>No public events are available in this timeline.</p>
+          )}
+        </main>
+      )
+    }
     const name = label(record)
     let articleBody: string | null = null
     if (collection === 'content') {

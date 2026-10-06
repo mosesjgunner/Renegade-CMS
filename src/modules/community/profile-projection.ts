@@ -1,6 +1,7 @@
 import type { Payload } from 'payload'
 
 import { publicMedia } from '../media/workflow'
+import { dispatchCommunityNotification } from './service'
 
 export const PROFILE_PROJECTION_VERSION = 1
 export type ProfileAudience = 'public' | 'members' | 'followers' | 'private'
@@ -324,4 +325,17 @@ export async function setMemberRelation(
         active: false,
       }),
     ])
+  if (
+    input.kind === 'follow' &&
+    input.active &&
+    !found.docs.some((doc) => (doc as unknown as Doc).status === 'active')
+  )
+    await dispatchCommunityNotification(payload, {
+      siteId: input.siteId,
+      recipientMemberId: input.targetId,
+      actorMemberId: input.subjectId,
+      type: 'relationship.follow',
+      object: { memberId: input.subjectId },
+      payloadData: {},
+    })
 }

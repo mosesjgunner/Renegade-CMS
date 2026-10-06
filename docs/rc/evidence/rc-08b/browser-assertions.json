@@ -1,0 +1,18 @@
+{
+  "siteId": "ef4d1fb8-989c-4df0-abb0-9ac8b218dcc0",
+  "otherSiteId": "af64207d-e976-4f87-967a-1ac1f5f001ad",
+  "eventId": "9ce91332-af20-4422-954c-a80d6924825e",
+  "formId": "e3e83c30-6378-473f-8024-8e554afca109",
+  "submissionId": "e1e29490-5272-4ba8-8127-75c51e2fa1c2",
+  "memberId": "2bc0f1ee-ecdb-4966-aa94-d3cb581a3957",
+  "peerId": "5f79cb03-eb80-4322-b0cf-7902ffd00cb7",
+  "restart": {
+    "epoch": "1791268209578",
+    "previousWebPid": 31348,
+    "previousWorkerPid": 20072,
+    "webPid": 31836,
+    "workerPid": 11316
+  },
+  "consoleErrors": [],
+  "boundary": "Local HTTPS and SMTP; no live provider or aggregate release claim"
+}

@@ -86,19 +86,21 @@ export async function getMemberNotificationPreference(
   channel: NotificationChannel,
   kind = 'all',
 ): Promise<NotificationFrequency> {
-  const rows = await executeDbQuery<{ frequency: string }>(
+  const rows = await executeDbQuery<{ frequency: string; rules?: Record<string, unknown> }>(
     payload,
-    `SELECT frequency FROM notification_preferences 
+    `SELECT frequency, rules FROM notification_preferences 
      WHERE site_id=$1 AND member_id=$2 AND channel=$3 AND (kind=$4 OR kind='all')
      ORDER BY (kind=$4) DESC LIMIT 1`,
     [siteId, memberId, channel, kind],
   )
   if (rows.length && rows[0]?.frequency) {
+    if (channel !== 'in_app' && rows[0].rules?.deliveryConsentRevision !== 'rc08b-email-v1')
+      return 'off'
     return rows[0].frequency as NotificationFrequency
   }
   // Default preferences
   if (channel === 'in_app') return 'immediate'
-  if (channel === 'email') return 'daily_digest'
+  if (channel === 'email') return 'off'
   return 'off'
 }
 
@@ -139,12 +141,14 @@ export async function writeAudienceDeliveryOutbox(
     channel: 'email' | 'sms'
     envelope: OutboxEnvelope
     scheduledFor?: string
+    idempotencyKey?: string
   },
 ): Promise<string> {
   const rows = await executeDbQuery<{ id: string }>(
     payload,
-    `INSERT INTO audience_delivery_outbox (site_id, recipient_id, channel, envelope, scheduled_for)
-     VALUES ($1, $2, $3, $4::jsonb, COALESCE($5::timestamptz, now()))
+    `INSERT INTO audience_delivery_outbox (site_id, recipient_id, channel, envelope, scheduled_for, idempotency_key)
+     VALUES ($1, $2, $3, $4::jsonb, COALESCE($5::timestamptz, now()), $6)
+     ON CONFLICT (idempotency_key) DO UPDATE SET idempotency_key=EXCLUDED.idempotency_key
      RETURNING id`,
     [
       input.siteId,
@@ -152,6 +156,7 @@ export async function writeAudienceDeliveryOutbox(
       input.channel,
       JSON.stringify(input.envelope),
       input.scheduledFor ?? null,
+      input.idempotencyKey ?? null,
     ],
   )
   return rows[0]?.id ?? ''
@@ -171,11 +176,11 @@ export async function routeNotificationToOutbox(
   },
 ): Promise<{ enqueued: Array<{ channel: string; outboxId: string; frequency: string }> }> {
   const mandatory = isMandatoryNotice(input.kind)
-  const channels: Array<'email' | 'sms'> = ['email', 'sms']
+  const channels: Array<'email' | 'sms'> = ['email']
   const enqueued: Array<{ channel: string; outboxId: string; frequency: string }> = []
 
   for (const channel of channels) {
-    let frequency = await getMemberNotificationPreference(
+    const frequency = await getMemberNotificationPreference(
       payload,
       input.siteId,
       input.recipientId,
@@ -184,9 +189,8 @@ export async function routeNotificationToOutbox(
     )
 
     // Mandatory notices bypass voluntary frequency toggles
-    if (mandatory) {
-      frequency = 'immediate'
-    }
+    // Moderation notices remain in-app; voluntary external email requires explicit consent.
+    if (mandatory && frequency === 'off') continue
 
     if (frequency === 'off') {
       continue
@@ -235,78 +239,28 @@ export async function compileNotificationDigest(
   },
 ): Promise<AudienceDeliveryRecord | null> {
   const channel = input.channel ?? 'email'
-
-  // Look up notifications for recipient in the window
-  const rows = await executeDbQuery<{
-    id: string
-    kind: string
-    target_type: string
-    target_id: string
-    created_at: string
-  }>(
+  if (channel !== 'email') return null
+  const frequency = await getMemberNotificationPreference(
     payload,
-    `SELECT id, kind, target_type, target_id, created_at
-     FROM inbox_notifications
-     WHERE site_id=$1 AND recipient_member_id=$2
-       AND created_at >= $3::timestamptz AND created_at < $4::timestamptz
-     ORDER BY created_at ASC`,
-    [input.siteId, input.recipientId, input.windowRange.startAt, input.windowRange.endAt],
+    input.siteId,
+    input.recipientId,
+    'email',
   )
-
-  if (!rows.length) {
-    return null
-  }
-
-  const siteName = input.siteName ?? 'Renegade'
-  const privateCount = rows.filter((r) => isPrivateMessageKind(r.kind)).length
-  const publicCount = rows.length - privateCount
-
-  const itemsSummary: string[] = []
-  if (publicCount > 0) {
-    itemsSummary.push(`${publicCount} community notification${publicCount > 1 ? 's' : ''}`)
-  }
-  if (privateCount > 0) {
-    itemsSummary.push(`${privateCount} private message${privateCount > 1 ? 's' : ''}`)
-  }
-
-  const subject = `Your ${siteName} digest: ${rows.length} new update${rows.length > 1 ? 's' : ''}`
-  const bodyText =
-    `Here is your summary of activity on ${siteName} between ${input.windowRange.startAt} and ${input.windowRange.endAt}:\n` +
-    itemsSummary.map((item) => `- ${item}`).join('\n') +
-    '\n\nSign in to view your inbox.'
-  const bodyHtml =
-    `<h2>${subject}</h2><p>Here is your activity summary:</p><ul>` +
-    itemsSummary.map((item) => `<li>${item}</li>`).join('') +
-    '</ul><p><a href="/notifications">View your notifications</a></p>'
-
-  const envelope: OutboxEnvelope = {
-    subject,
-    bodyHtml,
-    bodyText,
-    kind: 'community_digest',
-    windowRange: input.windowRange,
-    metadata: {
-      totalItems: rows.length,
-      privateItems: privateCount,
-      publicItems: publicCount,
-    },
-  }
-
-  const outboxId = await writeAudienceDeliveryOutbox(payload, {
-    siteId: input.siteId,
-    recipientId: input.recipientId,
-    channel,
-    envelope,
-  })
-
-  return {
-    id: outboxId,
-    site_id: input.siteId,
-    recipient_id: input.recipientId,
-    channel,
-    envelope,
-    status: 'pending',
-    scheduled_for: new Date().toISOString(),
-    created_at: new Date().toISOString(),
-  }
+  if (!['daily_digest', 'weekly_digest'].includes(frequency)) return null
+  const { queueCommunityWindow } = await import('./external-notifications')
+  const ids = await queueCommunityWindow(
+    payload,
+    input.siteId,
+    input.recipientId,
+    frequency,
+    input.windowRange.startAt,
+    input.windowRange.endAt,
+  )
+  if (!ids?.[0]) return null
+  const rows = await executeDbQuery<AudienceDeliveryRecord>(
+    payload,
+    'SELECT * FROM audience_delivery_outbox WHERE id=$1 AND site_id=$2 AND recipient_id=$3',
+    [ids[0], input.siteId, input.recipientId],
+  )
+  return rows[0] ?? null
 }

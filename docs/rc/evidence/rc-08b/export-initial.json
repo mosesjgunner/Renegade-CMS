@@ -1,0 +1,130 @@
+{
+  "numTotalTestSuites": 2,
+  "numPassedTestSuites": 2,
+  "numFailedTestSuites": 0,
+  "numPendingTestSuites": 0,
+  "numTotalTests": 10,
+  "numPassedTests": 10,
+  "numFailedTests": 0,
+  "numPendingTests": 0,
+  "numTodoTests": 0,
+  "snapshot": {
+    "added": 0,
+    "failure": false,
+    "filesAdded": 0,
+    "filesRemoved": 0,
+    "filesRemovedList": [],
+    "filesUnmatched": 0,
+    "filesUpdated": 0,
+    "matched": 0,
+    "total": 0,
+    "unchecked": 0,
+    "uncheckedKeysByFile": [],
+    "unmatched": 0,
+    "updated": 0,
+    "didUpdate": false
+  },
+  "startTime": 1791266121398,
+  "success": true,
+  "testResults": [
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["member identity"],
+          "fullName": "member identity normalizes valid emails without accepting malformed addresses",
+          "status": "passed",
+          "title": "normalizes valid emails without accepting malformed addresses",
+          "duration": 0.870900000000006,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["member identity"],
+          "fullName": "member identity issues a hashed, expiring, single-use magic link and a revocable session",
+          "status": "passed",
+          "title": "issues a hashed, expiring, single-use magic link and a revocable session",
+          "duration": 1.6785999999999603,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["member identity"],
+          "fullName": "member identity keeps wallet authentication capability-gated until its browser matrix is installed",
+          "status": "passed",
+          "title": "keeps wallet authentication capability-gated until its browser matrix is installed",
+          "duration": 0.682700000000068,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["member identity"],
+          "fullName": "member identity rejects suspended members even if they retain an unexpired link or session",
+          "status": "passed",
+          "title": "rejects suspended members even if they retain an unexpired link or session",
+          "duration": 0.33550000000002456,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["member identity"],
+          "fullName": "member identity uses a distinct HttpOnly member session and requires a matching CSRF double-submit token",
+          "status": "passed",
+          "title": "uses a distinct HttpOnly member session and requires a matching CSRF double-submit token",
+          "duration": 0.9067000000000007,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["member identity"],
+          "fullName": "member identity revokes all sessions and records the lifecycle reason when staff suspends a member",
+          "status": "passed",
+          "title": "revokes all sessions and records the lifecycle reason when staff suspends a member",
+          "duration": 0.893799999999942,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["member identity"],
+          "fullName": "member identity anonymizes the profile and revokes access when deletion is finalized",
+          "status": "passed",
+          "title": "anonymizes the profile and revokes access when deletion is finalized",
+          "duration": 0.6692000000000462,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["member identity"],
+          "fullName": "member identity changes handles only after the cooldown and preserves redirect history",
+          "status": "passed",
+          "title": "changes handles only after the cooldown and preserves redirect history",
+          "duration": 0.9537000000000262,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["member identity"],
+          "fullName": "member identity exports and archives relationship graphs beyond one result page",
+          "status": "passed",
+          "title": "exports and archives relationship graphs beyond one result page",
+          "duration": 5.59579999999994,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["member identity"],
+          "fullName": "member identity persists only a hashed, expiring passkey challenge for enrollment and sign-in",
+          "status": "passed",
+          "title": "persists only a hashed, expiring passkey challenge for enrollment and sign-in",
+          "duration": 1.2695999999999685,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791266122279,
+      "endTime": 1791266122293.2695,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/member-identity.test.ts"
+    }
+  ]
+}

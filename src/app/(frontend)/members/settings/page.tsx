@@ -69,6 +69,7 @@ export default function MemberSettingsPage() {
       'coverAlt',
       'locale',
       'timeZone',
+      'relationshipNotifications',
     ]
     const changes = Object.fromEntries(
       editable
@@ -384,10 +385,31 @@ export default function MemberSettingsPage() {
             />
           </label>
         </fieldset>
-        <p>
-          Per-event follower, mention and direct-message notification switches are deferred. Use the
-          in-app notification preference below to control community notifications.
-        </p>
+        <fieldset>
+          <legend>In-app event notifications</legend>
+          {(['follows', 'mentions', 'messages'] as const).map((key) => {
+            const switches = (profile.relationshipNotifications ?? {}) as Record<string, boolean>
+            return (
+              <label key={key}>
+                <input
+                  type="checkbox"
+                  checked={switches[key] !== false}
+                  onChange={(event) =>
+                    setProfile({
+                      ...profile,
+                      relationshipNotifications: { ...switches, [key]: event.target.checked },
+                    })
+                  }
+                />
+                {key === 'follows'
+                  ? 'New followers'
+                  : key === 'mentions'
+                    ? 'Mentions'
+                    : 'Direct and group messages'}
+              </label>
+            )
+          })}
+        </fieldset>
         <label>
           Locale
           <input
@@ -498,9 +520,10 @@ export default function MemberSettingsPage() {
       <section className="mt-8 rounded border p-4" aria-label="Account lifecycle and data">
         <h2 className="text-xl font-semibold">Privacy, Data & Account</h2>
         <p className="mt-2 text-sm text-stone-600 dark:text-stone-400">
-          Download your account, profile, billing, relationships and identity audit data.
-          Contribution and message export is deferred. Permanent deletion is deferred; deactivation
-          remains available.
+          Download your account, profile, billing, relationships and identity audit data. Export
+          includes your contributions and conversation history you can access, plus messages you
+          sent. Private attachment bytes are unavailable. Permanent deletion is deferred;
+          deactivation remains available.
         </p>
         <div className="mt-4 flex flex-wrap gap-3">
           <button className="btn" type="button" onClick={() => void exportData()}>

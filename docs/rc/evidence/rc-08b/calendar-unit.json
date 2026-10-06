@@ -1,0 +1,175 @@
+{
+  "numTotalTestSuites": 3,
+  "numPassedTestSuites": 3,
+  "numFailedTestSuites": 0,
+  "numPendingTestSuites": 0,
+  "numTotalTests": 14,
+  "numPassedTests": 14,
+  "numFailedTests": 0,
+  "numPendingTests": 0,
+  "numTodoTests": 0,
+  "snapshot": {
+    "added": 0,
+    "failure": false,
+    "filesAdded": 0,
+    "filesRemoved": 0,
+    "filesRemovedList": [],
+    "filesUnmatched": 0,
+    "filesUpdated": 0,
+    "matched": 0,
+    "total": 0,
+    "unchecked": 0,
+    "uncheckedKeysByFile": [],
+    "unmatched": 0,
+    "updated": 0,
+    "didUpdate": false
+  },
+  "startTime": 1791265919519,
+  "success": true,
+  "testResults": [
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["event workflow contracts"],
+          "fullName": "event workflow contracts preserves local wall time over the DST boundary and produces portable ICS",
+          "status": "passed",
+          "title": "preserves local wall time over the DST boundary and produces portable ICS",
+          "duration": 18.02199999999999,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["event workflow contracts"],
+          "fullName": "event workflow contracts bounds recurrence, supports edit-one cancellation, and excludes drafts and other tenants",
+          "status": "passed",
+          "title": "bounds recurrence, supports edit-one cancellation, and excludes drafts and other tenants",
+          "duration": 10.394200000000012,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["event workflow contracts"],
+          "fullName": "event workflow contracts rejects malformed dates, invalid zones, and incomplete online events",
+          "status": "passed",
+          "title": "rejects malformed dates, invalid zones, and incomplete online events",
+          "duration": 0.45130000000000337,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["event workflow contracts"],
+          "fullName": "event workflow contracts resolves nonexistent spring time and chooses the earlier fall overlap",
+          "status": "passed",
+          "title": "resolves nonexistent spring time and chooses the earlier fall overlap",
+          "duration": 5.481599999999958,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["event workflow contracts"],
+          "fullName": "event workflow contracts folds multibyte text and prevents newline injection while composing multiple events",
+          "status": "passed",
+          "title": "folds multibyte text and prevents newline injection while composing multiple events",
+          "duration": 0.9331999999999994,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["event workflow contracts"],
+          "fullName": "event workflow contracts excludes private overrides from public occurrence projections",
+          "status": "passed",
+          "title": "excludes private overrides from public occurrence projections",
+          "duration": 0.3613000000000284,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791265920093,
+      "endTime": 1791265920128.3613,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/events-contracts.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [],
+          "fullName": "binds the event query to the host site and excludes foreign, draft, private and protected bytes",
+          "status": "passed",
+          "title": "binds the event query to the host site and excludes foreign, draft, private and protected bytes",
+          "duration": 15.932099999999991,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "denies unsafe single event ICS lookup {\"status\":\"draft\"}",
+          "status": "passed",
+          "title": "denies unsafe single event ICS lookup {\"status\":\"draft\"}",
+          "duration": 0.3428000000000111,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "denies unsafe single event ICS lookup {\"visibility\":\"private\"}",
+          "status": "passed",
+          "title": "denies unsafe single event ICS lookup {\"visibility\":\"private\"}",
+          "duration": 0.15779999999995198,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "denies unsafe single event ICS lookup {\"site\":\"site-b\"}",
+          "status": "passed",
+          "title": "denies unsafe single event ICS lookup {\"site\":\"site-b\"}",
+          "duration": 0.13929999999999154,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "denies unsafe single event ICS lookup {\"status\":\"cancelled\"}",
+          "status": "passed",
+          "title": "denies unsafe single event ICS lookup {\"status\":\"cancelled\"}",
+          "duration": 0.1383000000000152,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "denies unsafe single event ICS lookup {\"requiredEntitlement\":{\"resource\":\"members\",\"capability\":\"read\"}}",
+          "status": "passed",
+          "title": "denies unsafe single event ICS lookup {\"requiredEntitlement\":{\"resource\":\"members\",\"capability\":\"read\"}}",
+          "duration": 0.10340000000002192,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "fails closed for an unknown host on a multi-site install",
+          "status": "passed",
+          "title": "fails closed for an unknown host on a multi-site install",
+          "duration": 0.2604999999999791,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "paginates canonical records rather than truncating at a thousand",
+          "status": "passed",
+          "title": "paginates canonical records rather than truncating at a thousand",
+          "duration": 0.9413000000000125,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791265920098,
+      "endTime": 1791265920115.9414,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc08b-event-privacy.test.ts"
+    }
+  ]
+}

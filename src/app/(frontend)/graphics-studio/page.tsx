@@ -1,4 +1,5 @@
 'use client'
+import Link from 'next/link'
 import { useState } from 'react'
 import { graphicTemplatePresets, type GraphicTemplate } from '@/modules/graphics/service'
 
@@ -6,7 +7,7 @@ const templates = Object.keys(graphicTemplatePresets) as GraphicTemplate[]
 export default function GraphicsStudioPage() {
   const [template, setTemplate] = useState<GraphicTemplate>('article-social')
   const [text, setText] = useState('Independent publishing, on your terms.')
-  const [status, setStatus] = useState('Select an approved Media asset before saving.')
+  const status = 'Local layout preview. Governed graphics generation and saving are unavailable.'
   const spec = graphicTemplatePresets[template]
   return (
     <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-6">
@@ -36,7 +37,9 @@ export default function GraphicsStudioPage() {
             <option>Default brand tokens</option>
           </select>
           <label className="form-label">Approved source asset</label>
-          <button className="btn btn-secondary w-full">Choose from Media (rights checked)</button>
+          <Link className="btn btn-secondary w-full" href="/admin/media-library">
+            Open Media Library
+          </Link>
           <label className="form-label">Text</label>
           <textarea
             className="form-textarea"
@@ -44,22 +47,6 @@ export default function GraphicsStudioPage() {
             onChange={(event) => setText(event.target.value)}
             rows={4}
           />
-          <div className="flex gap-3">
-            <button
-              className="btn btn-secondary"
-              onClick={() => setStatus('Template regenerated from the same governed source.')}
-            >
-              Regenerate
-            </button>
-            <button
-              className="btn btn-primary"
-              onClick={() =>
-                setStatus('Save creates a GraphicDocument, MediaDerivative, and AssetUsage record.')
-              }
-            >
-              Save to Media
-            </button>
-          </div>
           <p role="status" className="text-sm">
             {status}
           </p>

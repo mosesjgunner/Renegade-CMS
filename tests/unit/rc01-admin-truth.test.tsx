@@ -37,9 +37,13 @@ describe('RC-01 truthful admin boundaries', () => {
     expect(html).toContain('href="/admin/releases"')
     expect(html).not.toContain('href="/admin/globals/site-settings"')
   })
-  it('reports audience unavailability without invented delivery or provider success', () => {
+  it('shows pending intake data without invented delivery or provider success', () => {
     const html = renderToStaticMarkup(<AudienceCommandCenter />)
-    expect(html).toContain('Audience reporting is unavailable')
+    expect(html).toContain('Audience intake')
+    expect(html).toContain('Loading saved intake state.')
+    expect(html).toContain(
+      'General-purpose audience automations and telecom operator dispatch remain unavailable.',
+    )
     expect(html).not.toContain('14250')
     expect(html).not.toContain('SMTP (Direct-to-MX TLS)')
   })

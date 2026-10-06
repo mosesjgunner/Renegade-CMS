@@ -1,3 +1,4 @@
+import { guardTimelineWrite, timelineAccess } from '../modules/events/timeline'
 import type {
   CollectionBeforeChangeHook,
   CollectionBeforeDeleteHook,
@@ -1493,9 +1494,15 @@ export const Events: CollectionConfig = {
 
 export const Timelines: CollectionConfig = {
   slug: 'timelines',
-  admin: { useAsTitle: 'title', group: 'Calendar', hidden: true },
-  access: { create: () => false, delete: () => false, read: () => false, update: () => false },
+  admin: { useAsTitle: 'title', group: 'Calendar' },
+  access: {
+    create: staffOnly,
+    delete: timelineAccess(false),
+    read: timelineAccess(false),
+    update: timelineAccess(false),
+  },
   hooks: {
+    beforeChange: [guardTimelineWrite(false)],
     beforeValidate: [
       async ({ data, originalDoc, req, context }) => {
         data = (await assignRecordSemanticPath({
@@ -1579,14 +1586,20 @@ export const Timelines: CollectionConfig = {
 
 export const TimelineMemberships: CollectionConfig = {
   slug: 'timeline-memberships',
-  admin: { useAsTitle: 'membershipKey', group: 'Calendar', hidden: true },
-  access: { create: () => false, delete: () => false, read: () => false, update: () => false },
+  admin: { useAsTitle: 'membershipKey', group: 'Calendar' },
+  access: {
+    create: staffOnly,
+    delete: timelineAccess(true),
+    read: timelineAccess(true),
+    update: timelineAccess(true),
+  },
   hooks: {
+    beforeChange: [guardTimelineWrite(true)],
     beforeValidate: [
       ({ data }) => {
         if (data?.timeline && data?.event) {
-          const timeline = typeof data.timeline === 'string' ? data.timeline : data.timeline.value
-          const event = typeof data.event === 'string' ? data.event : data.event.value
+          const timeline = typeof data.timeline === 'string' ? data.timeline : data.timeline.id
+          const event = typeof data.event === 'string' ? data.event : data.event.id
           data.membershipKey = `${timeline}:${event}`
         }
         return data

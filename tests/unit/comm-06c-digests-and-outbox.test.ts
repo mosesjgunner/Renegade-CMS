@@ -15,6 +15,7 @@ const recipientId = '00000000-0000-7000-8000-000000000002'
 
 function createMockPayload(queryHandler: (text: string, values?: unknown[]) => Promise<unknown[]>) {
   return {
+    find: vi.fn(async () => ({ docs: [], hasNextPage: false })),
     db: {
       pool: {
         query: vi.fn(async (text: string, values: unknown[] = []) => ({
@@ -33,19 +34,35 @@ describe('COMM-06C notification preferences, digests & audience outbox', () => {
       kind: 'comment.created.v1',
       target_type: 'comment',
       target_id: `comment-${i + 1}`,
+      payload: { site_id: siteId, target_type: 'comment', target_id: `comment-${i + 1}` },
+      snapshot: {},
       created_at: new Date(Date.now() - (10 - i) * 60000).toISOString(),
     }))
 
     const payload = createMockPayload(async (text, values = []) => {
       // Member preference query: daily_digest for email
       if (text.includes('FROM notification_preferences')) {
-        return [{ frequency: 'daily_digest' }]
+        return [{ frequency: 'daily_digest', rules: { deliveryConsentRevision: 'rc08b-email-v1' } }]
       }
       // Outbox insertion query
       if (text.includes('INSERT INTO audience_delivery_outbox')) {
         const id = `outbox-${outboxRows.length + 1}`
         outboxRows.push({ id, values })
         return [{ id }]
+      }
+      if (text.includes('FROM comments')) return [{ status: 'visible', deleted_at: null }]
+      if (text.includes('SELECT * FROM audience_delivery_outbox')) {
+        const row = outboxRows[0] as { id: string; values: unknown[] }
+        return [
+          {
+            id: row.id,
+            site_id: siteId,
+            recipient_id: recipientId,
+            channel: 'email',
+            envelope: JSON.parse(String(row.values[3])),
+            status: 'pending',
+          },
+        ]
       }
       // Inbox notifications in digest window
       if (text.includes('FROM inbox_notifications')) {
@@ -82,8 +99,9 @@ describe('COMM-06C notification preferences, digests & audience outbox', () => {
 
     expect(digest).not.toBeNull()
     expect(digest?.channel).toBe('email')
-    expect(digest?.envelope.kind).toBe('community_digest')
-    expect(digest?.envelope.metadata?.totalItems).toBe(10)
+    expect(digest?.envelope.kind).toBe('community-notification')
+    expect(digest?.envelope.metadata?.frequency).toBe('daily_digest')
+    expect(digest?.envelope.bodyText).not.toContain('comment-')
     // Exactly 1 digest envelope written to outbox
     expect(outboxRows).toHaveLength(1)
   })
@@ -97,7 +115,12 @@ describe('COMM-06C notification preferences, digests & audience outbox', () => {
     const payload = createMockPayload(async (text, values = []) => {
       if (text.includes('FROM notification_preferences')) {
         const channel = values[2]
-        return [{ frequency: channel === 'email' ? 'immediate' : 'off' }]
+        return [
+          {
+            frequency: channel === 'email' ? 'immediate' : 'off',
+            rules: { deliveryConsentRevision: 'rc08b-email-v1' },
+          },
+        ]
       }
       if (text.includes('INSERT INTO audience_delivery_outbox')) {
         const id = `outbox-tx-${outboxRows.length + 1}`
@@ -131,7 +154,7 @@ describe('COMM-06C notification preferences, digests & audience outbox', () => {
     expect(commentSubject).toBe('New reply to your comment on Renegade CMS')
   })
 
-  it('mandatory moderation notices still route transactionally even if member turned notifications off', async () => {
+  it('mandatory moderation notices do not bypass explicit external opt-out', async () => {
     const outboxRows: unknown[] = []
 
     const payload = createMockPayload(async (text, values = []) => {
@@ -158,15 +181,7 @@ describe('COMM-06C notification preferences, digests & audience outbox', () => {
       targetId: 'case-999',
     })
 
-    // Mandatory notice bypassed the 'off' preference and dispatched immediate transactional email
-    expect(result.enqueued).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          channel: 'email',
-          frequency: 'immediate',
-        }),
-      ]),
-    )
-    expect(outboxRows).toHaveLength(2) // email + sms both route immediately for mandatory safety notice
+    expect(result.enqueued).toEqual([])
+    expect(outboxRows).toHaveLength(0)
   })
 })

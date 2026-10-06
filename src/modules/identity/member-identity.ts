@@ -1,6 +1,8 @@
 import { createHash, randomBytes, timingSafeEqual } from 'node:crypto'
 
 import { consumeApiRateLimit } from '../integrations/rate-limit'
+import { exportCommunityData } from './community-export'
+import type { Payload } from 'payload'
 
 export const MEMBER_SESSION_COOKIE = 'renegade-member'
 export const MEMBER_CSRF_COOKIE = 'renegade-member-csrf'
@@ -711,28 +713,41 @@ export async function exportMemberData(
     id: memberId,
     overrideAccess: true,
   })
+  const all = async (args: Parameters<IdentityStore['find']>[0]) => {
+    const docs: Array<Record<string, unknown>> = []
+    for (let page = 1; ; page++) {
+      const batch = await store.find({ ...args, page, limit: 500, sort: 'id', depth: 0 })
+      docs.push(...batch.docs)
+      if (batch.docs.length < 500) return { docs }
+    }
+  }
   const [profiles, identities, sessions, auditEvents, supporters] = await Promise.all([
-    store.find({
+    all({
       collection: 'profiles',
       where: { member: { equals: memberId } },
       limit: 1,
       overrideAccess: true,
     }),
-    store.find({
+    all({
       collection: 'linked-identities',
       where: { member: { equals: memberId } },
       limit: 200,
       overrideAccess: true,
     }),
-    listMemberSessions(store, memberId),
-    store.find({
+    all({
+      collection: 'member-sessions',
+      where: { member: { equals: memberId } },
+      limit: 500,
+      overrideAccess: true,
+    }).then((result) => result.docs),
+    all({
       collection: 'identity-audit-events',
       where: { member: { equals: memberId } },
       limit: 500,
       overrideAccess: true,
     }),
     !(store as any).collections || Boolean((store as any).collections?.['supporters'])
-      ? store.find({
+      ? all({
           collection: 'supporters',
           where: { member: { equals: memberId } },
           limit: 100,
@@ -745,7 +760,7 @@ export async function exportMemberData(
   const [subscriptions, entitlements] = supporterIds.length
     ? await Promise.all([
         !(store as any).collections || Boolean((store as any).collections?.['subscriptions'])
-          ? store.find({
+          ? all({
               collection: 'subscriptions',
               where: { supporter: { in: supporterIds } },
               limit: 1000,
@@ -754,7 +769,7 @@ export async function exportMemberData(
             })
           : Promise.resolve({ docs: [] }),
         !(store as any).collections || Boolean((store as any).collections?.['entitlements'])
-          ? store.find({
+          ? all({
               collection: 'entitlements',
               where: { supporter: { in: supporterIds } },
               limit: 2000,
@@ -780,7 +795,38 @@ export async function exportMemberData(
       if (batch.docs.length < 500) break
     }
   }
+  const community = (store as unknown as Payload).db
+    ? await exportCommunityData(store as unknown as Payload, memberId)
+    : null
+  const registered = (store as unknown as Payload).collections
+  const legacyPosts = registered?.['discussion-posts']
+    ? (
+        await all({
+          collection: 'discussion-posts',
+          where: { authorMember: { equals: memberId } },
+          limit: 500,
+          overrideAccess: true,
+        })
+      ).docs.map((post) => ({
+        id: post.id,
+        discussion: post.discussion,
+        body: post.body,
+        status: post.status,
+        permalink: post.permalink,
+        createdAt: post.createdAt,
+        updatedAt: post.updatedAt,
+      }))
+    : []
   return {
+    schemaVersion: 2,
+    scope: {
+      contributions: community ? 'included' : 'database-unavailable',
+      messages: community ? 'owned-and-currently-readable-history' : 'database-unavailable',
+      attachmentBytes: 'not-included',
+      privateStorageKeys: 'not-included',
+    },
+    ...(community ?? {}),
+    legacyContributions: legacyPosts,
     member: {
       displayName: member.displayName,
       email: member.email,

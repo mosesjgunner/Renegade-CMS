@@ -149,6 +149,7 @@ describe('AUD-06 Telecom Capability and Safety Boundaries', () => {
       const hasSmsConsent = await hasTelecomConsent(mockPayload, {
         siteId: 'site-1',
         phoneHash: 'sample-phone-hash',
+        subscriberId: 'subscriber-1',
         purpose: 'marketing',
       })
 

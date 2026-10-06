@@ -25,14 +25,6 @@ export async function PATCH(request: Request) {
   if (!memberId) return Response.json({ error: 'Authentication required.' }, { status: 401 })
   try {
     const changes = await request.json().catch(() => ({}))
-    if (changes && typeof changes === 'object' && 'relationshipNotifications' in changes)
-      return Response.json(
-        {
-          error:
-            'Per-event relationship notifications are deferred. Use the in-app notification preference.',
-        },
-        { status: 410 },
-      )
     const profile = await saveMemberProfile(
       payload,
       memberId,

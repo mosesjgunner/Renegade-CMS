@@ -1,0 +1,157 @@
+{
+  "numTotalTestSuites": 4,
+  "numPassedTestSuites": 4,
+  "numFailedTestSuites": 0,
+  "numPendingTestSuites": 0,
+  "numTotalTests": 12,
+  "numPassedTests": 12,
+  "numFailedTests": 0,
+  "numPendingTests": 0,
+  "numTodoTests": 0,
+  "snapshot": {
+    "added": 0,
+    "failure": false,
+    "filesAdded": 0,
+    "filesRemoved": 0,
+    "filesRemovedList": [],
+    "filesUnmatched": 0,
+    "filesUpdated": 0,
+    "matched": 0,
+    "total": 0,
+    "unchecked": 0,
+    "uncheckedKeysByFile": [],
+    "unmatched": 0,
+    "updated": 0,
+    "didUpdate": false
+  },
+  "startTime": 1791268526492,
+  "success": true,
+  "testResults": [
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["COMM-06C notification preferences, digests & audience outbox"],
+          "fullName": "COMM-06C notification preferences, digests & audience outbox daily digest preference creates zero immediate emails for 10 comments, then one digest at scheduled run",
+          "status": "passed",
+          "title": "daily digest preference creates zero immediate emails for 10 comments, then one digest at scheduled run",
+          "duration": 624.8749,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["COMM-06C notification preferences, digests & audience outbox"],
+          "fullName": "COMM-06C notification preferences, digests & audience outbox marketing unsubscribe does not block transactional community notifications",
+          "status": "passed",
+          "title": "marketing unsubscribe does not block transactional community notifications",
+          "duration": 0.49699999999995725,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["COMM-06C notification preferences, digests & audience outbox"],
+          "fullName": "COMM-06C notification preferences, digests & audience outbox private message email subject and preheader are strictly generic",
+          "status": "passed",
+          "title": "private message email subject and preheader are strictly generic",
+          "duration": 0.16230000000007294,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["COMM-06C notification preferences, digests & audience outbox"],
+          "fullName": "COMM-06C notification preferences, digests & audience outbox mandatory moderation notices do not bypass explicit external opt-out",
+          "status": "passed",
+          "title": "mandatory moderation notices do not bypass explicit external opt-out",
+          "duration": 0.5900000000000318,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791268527098,
+      "endTime": 1791268527724.59,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/comm-06c-digests-and-outbox.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["RC-01 truthful admin boundaries"],
+          "fullName": "RC-01 truthful admin boundaries does not advertise optional workspaces in a floor runtime",
+          "status": "passed",
+          "title": "does not advertise optional workspaces in a floor runtime",
+          "duration": 12.212000000000046,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["RC-01 truthful admin boundaries"],
+          "fullName": "RC-01 truthful admin boundaries offers the precise registered workspace in an enabled runtime",
+          "status": "passed",
+          "title": "offers the precise registered workspace in an enabled runtime",
+          "duration": 1.2239999999999895,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["RC-01 truthful admin boundaries"],
+          "fullName": "RC-01 truthful admin boundaries shows pending intake data without invented delivery or provider success",
+          "status": "passed",
+          "title": "shows pending intake data without invented delivery or provider success",
+          "duration": 1.0518999999999892,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["RC-01 truthful admin boundaries"],
+          "fullName": "RC-01 truthful admin boundaries denies unauthorized reporting before operational reads",
+          "status": "passed",
+          "title": "denies unauthorized reporting before operational reads",
+          "duration": 52.781499999999994,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["RC-01 truthful admin boundaries"],
+          "fullName": "RC-01 truthful admin boundaries denies unauthorized reporting before operational reads",
+          "status": "passed",
+          "title": "denies unauthorized reporting before operational reads",
+          "duration": 0.6610999999999763,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["RC-01 truthful admin boundaries"],
+          "fullName": "RC-01 truthful admin boundaries reports an explicit unavailable boundary for owner",
+          "status": "passed",
+          "title": "reports an explicit unavailable boundary for owner",
+          "duration": 1.3344000000000165,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["RC-01 truthful admin boundaries"],
+          "fullName": "RC-01 truthful admin boundaries reports an explicit unavailable boundary for administrator",
+          "status": "passed",
+          "title": "reports an explicit unavailable boundary for administrator",
+          "duration": 0.4866000000000099,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["RC-01 truthful admin boundaries"],
+          "fullName": "RC-01 truthful admin boundaries reports an explicit unavailable boundary for staff",
+          "status": "passed",
+          "title": "reports an explicit unavailable boundary for staff",
+          "duration": 0.5346999999999866,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791268527130,
+      "endTime": 1791268527199.5347,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc01-admin-truth.test.tsx"
+    }
+  ]
+}

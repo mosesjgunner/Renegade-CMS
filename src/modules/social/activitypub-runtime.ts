@@ -49,11 +49,16 @@ export async function resolveRemoteActor(
   })
   const actor = (await fetchRemoteJson(canonicalId, { allowPrivateDevelopment })) as {
     id?: string
-    publicKey?: { id?: string; publicKeyPem?: string }
+    publicKey?: { id?: string; owner?: string; publicKeyPem?: string }
     preferredUsername?: string
     inbox?: string
   }
-  if (!actor?.id || actor.id !== canonicalId || !actor?.publicKey?.publicKeyPem)
+  if (
+    !actor?.id ||
+    actor.id !== canonicalId ||
+    !actor?.publicKey?.publicKeyPem ||
+    actor.publicKey.owner !== canonicalId
+  )
     throw new Error('Remote actor document is not usable.')
   const origin = new URL(canonicalId).origin
   const instance = await payload.find({
@@ -103,6 +108,17 @@ export async function verifyInboundActivity(input: {
   if (input.request.headers.get('digest') !== digestForBody(input.body))
     throw new Error('Federation digest does not match request body.')
   const signature = parseHttpSignature(input.request.headers.get('signature'))
+  if (
+    signature.algorithm !== 'rsa-sha256' ||
+    ['(request-target)', 'host', 'date', 'digest'].some(
+      (header) => !signature.headers.includes(header),
+    ) ||
+    new Set(signature.headers).size !== signature.headers.length
+  )
+    throw new Error('Federation signatures must cover request target, host, date and digest.')
+  const signedDate = Date.parse(input.request.headers.get('date') ?? '')
+  if (!Number.isFinite(signedDate) || Math.abs(Date.now() - signedDate) > 5 * 60_000)
+    throw new Error('Federation signature date is outside the permitted window.')
   const remoteActor = await resolveRemoteActor(
     input.payload,
     activity.actor!,

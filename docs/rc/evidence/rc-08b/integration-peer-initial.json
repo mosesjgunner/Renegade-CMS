@@ -1,0 +1,105 @@
+{
+  "numTotalTestSuites": 2,
+  "numPassedTestSuites": 0,
+  "numFailedTestSuites": 2,
+  "numPendingTestSuites": 0,
+  "numTotalTests": 7,
+  "numPassedTests": 6,
+  "numFailedTests": 1,
+  "numPendingTests": 0,
+  "numTodoTests": 0,
+  "snapshot": {
+    "added": 0,
+    "failure": false,
+    "filesAdded": 0,
+    "filesRemoved": 0,
+    "filesRemovedList": [],
+    "filesUnmatched": 0,
+    "filesUpdated": 0,
+    "matched": 0,
+    "total": 0,
+    "unchecked": 0,
+    "uncheckedKeysByFile": [],
+    "unmatched": 0,
+    "updated": 0,
+    "didUpdate": false
+  },
+  "startTime": 1791267834544,
+  "success": false,
+  "testResults": [
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["RC08B persisted promotion boundaries"],
+          "fullName": "RC08B persisted promotion boundaries reads real future occurrences, excludes foreign/private/draft/deleted records and survives a new query",
+          "status": "passed",
+          "title": "reads real future occurrences, excludes foreign/private/draft/deleted records and survives a new query",
+          "duration": 403.20470000000023,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["RC08B persisted promotion boundaries"],
+          "fullName": "RC08B persisted promotion boundaries creates and edits a real timeline through scoped operator access, rejects foreign memberships, and hides deleted/private events",
+          "status": "passed",
+          "title": "creates and edits a real timeline through scoped operator access, rejects foreign memberships, and hides deleted/private events",
+          "duration": 399.9870000000001,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["RC08B persisted promotion boundaries"],
+          "fullName": "RC08B persisted promotion boundaries persists consent, scopes replay by form/site, recovers a failed task and never repeats completed side effects",
+          "status": "passed",
+          "title": "persists consent, scopes replay by form/site, recovers a failed task and never repeats completed side effects",
+          "duration": 474.9324999999999,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["RC08B persisted promotion boundaries"],
+          "fullName": "RC08B persisted promotion boundaries enforces persisted message switches at notification creation, with owner-only preferences",
+          "status": "passed",
+          "title": "enforces persisted message switches at notification creation, with owner-only preferences",
+          "duration": 129.29460000000017,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["RC08B persisted promotion boundaries"],
+          "fullName": "RC08B persisted promotion boundaries deduplicates explicit email windows, delivers through the transport, and cancels queued updates after opt-out",
+          "status": "passed",
+          "title": "deduplicates explicit email windows, delivers through the transport, and cancels queued updates after opt-out",
+          "duration": 302.27409999999963,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["RC08B persisted promotion boundaries"],
+          "fullName": "RC08B persisted promotion boundaries interoperates with an independent HTTPS peer: discovery, signed failure/retry, replay and tampering denial",
+          "status": "failed",
+          "title": "interoperates with an independent HTTPS peer: discovery, signed failure/retry, replay and tampering denial",
+          "duration": 100.32390000000032,
+          "failureMessages": [
+            "Error: Failed query: insert into \"remote_actors\" (\"id\", \"instance_id\", \"canonical_id\", \"handle\", \"profile\", \"moderation_note\", \"last_fetched_at\", \"updated_at\", \"created_at\") values (default, $1, $2, $3, $4, default, $5, $6, $7) returning \"id\", \"instance_id\", \"canonical_id\", \"handle\", \"profile\", \"moderation_note\", \"last_fetched_at\", \"updated_at\", \"created_at\"\nparams: 6741ba1d-2c45-4bcb-b8dd-4c06f63379cf,https://dispatch.rc02.test:3134/actor,independent-peer,{\"name\":\"\",\"summary\":\"\",\"inbox\":\"https://dispatch.rc02.test:3134/inbox\",\"publicKey\":{\"id\":\"https://dispatch.rc02.test:3134/actor#key\",\"owner\":\"https://dispatch.rc02.test:3134/actor\",\"publicKeyPem\":\"-----BEGIN PUBLIC KEY-----\\nMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAtT78QtG7jp56JBpBEvgp\\nH9W7AW/oJR1hG69fyCmbritFlOJktOSJZhizJc8eIAVziZTDbE8jcpQhDPXWOD7a\\nYMOaitQgRuyIaw6uJcZCQJD7YLAcETtiT1rqO5JSKyn52gwknfFjigUgHI3mkJxy\\nEs/XMCI9n5/te/07QkqOOMKw7/d884VnYTptf2c3wtKIiBQO7m8QYpmDVYwElhKE\\nZHA9CMTvZddsirdYCt8KZ5WKAGL9Rn7v9Fxbjl4GGnyknVhAAvOU5D4EoFFz2MSf\\n9ZykeE8qh9z++3qn4Repbg8Qh3UWPm6mTyPXKlvFOn2QhENLXGM91b+EaNFljaYW\\nxQIDAQAB\\n-----END PUBLIC KEY-----\\n\"}},2026-10-06T06:24:00.279Z,2026-10-06T06:24:00.280Z,2026-10-06T06:24:00.280Z\n    at NodePgPreparedQuery.queryWithCache (file:///C:/Projects/RENEGADE%20CMS/Renegade-CMS/node_modules/drizzle-orm/pg-core/session.js:41:15)\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at file:///C:/Projects/RENEGADE%20CMS/Renegade-CMS/node_modules/drizzle-orm/node-postgres/session.js:117:22\n    at Object.insert (file:///C:/Projects/RENEGADE%20CMS/Renegade-CMS/node_modules/@payloadcms/drizzle/dist/postgres/insert.js:7:18)\n    at upsertRow (file:///C:/Projects/RENEGADE%20CMS/Renegade-CMS/node_modules/@payloadcms/drizzle/dist/upsertRow/index.js:199:29)\n    at Object.create (file:///C:/Projects/RENEGADE%20CMS/Renegade-CMS/node_modules/@payloadcms/drizzle/dist/create.js:9:20)\n    at createOperation (file:///C:/Projects/RENEGADE%20CMS/Renegade-CMS/node_modules/payload/dist/collections/operations/create.js:194:19)\n    at Module.resolveRemoteActor (C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\src\\modules\\social\\activitypub-runtime.ts:93:7)\n    at C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\tests\\integration\\rc08b-promotions.integration.test.ts:158:20\n    at file:///C:/Projects/RENEGADE%20CMS/Renegade-CMS/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+          ],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["RC08B persisted promotion boundaries"],
+          "fullName": "RC08B persisted promotion boundaries exports canonical contributions and private owned/readable history without foreign contact or moderation data",
+          "status": "passed",
+          "title": "exports canonical contributions and private owned/readable history without foreign contact or moderation data",
+          "duration": 191.01029999999992,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791267838478,
+      "endTime": 1791267840480.0103,
+      "status": "failed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/integration/rc08b-promotions.integration.test.ts"
+    }
+  ]
+}

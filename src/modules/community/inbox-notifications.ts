@@ -3,6 +3,8 @@ import type { Payload } from 'payload'
 import { executeDbQuery } from './comment-composer'
 import { resolveForumSpaceAccess } from './forum-space-access'
 import { checkBlockBetween, checkMuteFrom } from './service'
+import { eventNotificationEnabled } from './event-notification-preferences'
+import { getMemberNotificationPreference } from './notification-delivery'
 
 type EventPayload = Record<string, unknown>
 export type InboxEvent = { id: string; eventType: string; payload: EventPayload }
@@ -99,7 +101,7 @@ export async function resolveInboxCandidates(
   return [...members.values()]
 }
 
-async function targetIsDeliverable(payload: Payload, event: InboxEvent) {
+export async function targetIsDeliverable(payload: Payload, event: InboxEvent) {
   const p = event.payload
   const type = String(
     p.target_type ??
@@ -110,34 +112,36 @@ async function targetIsDeliverable(payload: Payload, event: InboxEvent) {
     p.target_id ?? p.targetId ?? p.comment_id ?? p.commentId ?? p.post_id ?? p.postId ?? '',
   )
   if (!id) return false
+  const site = String(p.site_id ?? p.siteId ?? '')
+  if (!site) return false
   if (type === 'comment') {
     const rows = await executeDbQuery<{ status: string; deleted_at: string | null }>(
       payload,
-      'SELECT status, deleted_at FROM comments WHERE id=$1',
-      [id],
+      'SELECT status, deleted_at FROM comments WHERE id=$1 AND thread_id IN (SELECT id FROM comment_threads WHERE site_id=$2)',
+      [id, site],
     )
     return rows[0]?.status === 'visible' && !rows[0]?.deleted_at
   }
   if (type === 'forum_post') {
     const rows = await executeDbQuery<{ quarantined: boolean }>(
       payload,
-      'SELECT p.is_quarantined AS quarantined FROM forum_posts p WHERE p.id=$1',
-      [id],
+      'SELECT p.is_quarantined AS quarantined FROM forum_posts p JOIN forum_topics t ON t.id=p.topic_id WHERE p.id=$1 AND t.site_id=$2 AND NOT t.is_quarantined',
+      [id, site],
     )
     return Boolean(rows[0]) && !rows[0]!.quarantined
   }
   if (type === 'forum_topic') {
     const rows = await executeDbQuery<{ quarantined: boolean }>(
       payload,
-      'SELECT is_quarantined AS quarantined FROM forum_topics WHERE id=$1',
-      [id],
+      'SELECT is_quarantined AS quarantined FROM forum_topics WHERE id=$1 AND site_id=$2',
+      [id, site],
     )
     return Boolean(rows[0]) && !rows[0]!.quarantined
   }
   return true // moderation/member targets contain no content text snapshot.
 }
 
-async function recipientCanRead(
+export async function recipientCanRead(
   payload: Payload,
   siteId: string,
   spaceId: string,
@@ -171,6 +175,32 @@ export async function projectInboxEvent(payload: Payload, event: InboxEvent): Pr
   let delivered = 0
   for (const candidate of await resolveInboxCandidates(payload, event)) {
     if (candidate.memberId === actorId) continue
+    if (
+      !(await eventNotificationEnabled(
+        payload,
+        candidate.memberId,
+        event.eventType,
+        candidate.reason,
+      ))
+    )
+      continue
+    const inAppEnabled =
+      (await getMemberNotificationPreference(
+        payload,
+        siteId,
+        candidate.memberId,
+        'in_app',
+        event.eventType,
+      )) !== 'off'
+    const emailEnabled =
+      (await getMemberNotificationPreference(
+        payload,
+        siteId,
+        candidate.memberId,
+        'email',
+        event.eventType,
+      )) !== 'off'
+    if (!inAppEnabled && !emailEnabled) continue
     if (actorId) {
       const [block, muted] = await Promise.all([
         checkBlockBetween(payload, candidate.memberId, actorId, siteId),
@@ -191,10 +221,10 @@ export async function projectInboxEvent(payload: Payload, event: InboxEvent): Pr
     const inserted = await executeDbQuery<{ id: string }>(
       payload,
       `WITH inserted AS (
-      INSERT INTO inbox_notifications (site_id,recipient_member_id,actor_member_id,source_event_id,kind,target_type,target_id,snapshot)
-      VALUES ($1,$2,$3,$4,$5,$6,$7,$8::jsonb) ON CONFLICT (source_event_id,recipient_member_id) DO NOTHING RETURNING id
+      INSERT INTO inbox_notifications (site_id,recipient_member_id,actor_member_id,source_event_id,kind,target_type,target_id,snapshot,channels)
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8::jsonb,$9::jsonb) ON CONFLICT (source_event_id,recipient_member_id) DO NOTHING RETURNING id,channels
     ), counter AS (
-      INSERT INTO member_notification_counters (site_id,member_id,unread_count) SELECT $1,$2,1 FROM inserted
+      INSERT INTO member_notification_counters (site_id,member_id,unread_count) SELECT $1,$2,1 FROM inserted WHERE channels ? 'in_app'
       ON CONFLICT (site_id,member_id) DO UPDATE SET unread_count=member_notification_counters.unread_count+1,updated_at=now()
     ) SELECT id FROM inserted`,
       [
@@ -206,6 +236,7 @@ export async function projectInboxEvent(payload: Payload, event: InboxEvent): Pr
         targetType,
         targetId,
         JSON.stringify(snapshot),
+        JSON.stringify([...(inAppEnabled ? ['in_app'] : []), ...(emailEnabled ? ['email'] : [])]),
       ],
     )
     delivered += inserted.length
@@ -257,7 +288,7 @@ export async function listInbox(
   const rows = await executeDbQuery<Row>(
     payload,
     `SELECT id,kind,target_type AS "targetType",target_id AS "targetId",snapshot,read_at AS "readAt",created_at AS "createdAt"
-    FROM inbox_notifications WHERE site_id=$1 AND recipient_member_id=$2
+    FROM inbox_notifications WHERE site_id=$1 AND recipient_member_id=$2 AND channels ? 'in_app'
     AND ($3::timestamptz IS NULL OR (created_at,id) < ($3::timestamptz,$4::uuid)) ORDER BY created_at DESC,id DESC LIMIT $5`,
     [input.siteId, input.memberId, cursor?.createdAt ?? null, cursor?.id ?? null, limit + 1],
   )
@@ -284,7 +315,7 @@ export async function markInboxRead(
     : [input.siteId, input.memberId]
   const rows = await executeDbQuery<{ unread_count: number }>(
     payload,
-    `WITH changed AS (UPDATE inbox_notifications SET read_at=now() WHERE site_id=$1 AND recipient_member_id=$2 AND read_at IS NULL ${where} RETURNING id), counter AS (
+    `WITH changed AS (UPDATE inbox_notifications SET read_at=now() WHERE site_id=$1 AND recipient_member_id=$2 AND channels ? 'in_app' AND read_at IS NULL ${where} RETURNING id), counter AS (
     UPDATE member_notification_counters SET unread_count=GREATEST(0,unread_count-(SELECT count(*) FROM changed)),updated_at=now() WHERE site_id=$1 AND member_id=$2 RETURNING unread_count
   ) SELECT unread_count FROM counter`,
     values,

@@ -1,0 +1,112 @@
+{
+  "numTotalTestSuites": 4,
+  "numPassedTestSuites": 4,
+  "numFailedTestSuites": 0,
+  "numPendingTestSuites": 0,
+  "numTotalTests": 8,
+  "numPassedTests": 8,
+  "numFailedTests": 0,
+  "numPendingTests": 0,
+  "numTodoTests": 0,
+  "snapshot": {
+    "added": 0,
+    "failure": false,
+    "filesAdded": 0,
+    "filesRemoved": 0,
+    "filesRemovedList": [],
+    "filesUnmatched": 0,
+    "filesUpdated": 0,
+    "matched": 0,
+    "total": 0,
+    "unchecked": 0,
+    "uncheckedKeysByFile": [],
+    "unmatched": 0,
+    "updated": 0,
+    "didUpdate": false
+  },
+  "startTime": 1791265967178,
+  "success": true,
+  "testResults": [
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["COMM-06B inbox keyset cursor"],
+          "fullName": "COMM-06B inbox keyset cursor round-trips a stable created-at/id boundary",
+          "status": "passed",
+          "title": "round-trips a stable created-at/id boundary",
+          "duration": 1.1299999999999955,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["COMM-06B inbox keyset cursor"],
+          "fullName": "COMM-06B inbox keyset cursor rejects malformed cursors instead of falling back to offset pagination",
+          "status": "passed",
+          "title": "rejects malformed cursors instead of falling back to offset pagination",
+          "duration": 0.23959999999999582,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["COMM-06B snapshot sanitization"],
+          "fullName": "COMM-06B snapshot sanitization strips private or quarantined content text snippets from notifications",
+          "status": "passed",
+          "title": "strips private or quarantined content text snippets from notifications",
+          "duration": 0.5697000000000116,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["COMM-06B recipient policy & inbox projection"],
+          "fullName": "COMM-06B recipient policy & inbox projection blocked actor generates zero inbox notifications",
+          "status": "passed",
+          "title": "blocked actor generates zero inbox notifications",
+          "duration": 1.2826000000000022,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["COMM-06B recipient policy & inbox projection"],
+          "fullName": "COMM-06B recipient policy & inbox projection revoked private-space access halts notification creation",
+          "status": "passed",
+          "title": "revoked private-space access halts notification creation",
+          "duration": 0.37750000000005457,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["COMM-06B recipient policy & inbox projection"],
+          "fullName": "COMM-06B recipient policy & inbox projection quarantined target drops pending delivery",
+          "status": "passed",
+          "title": "quarantined target drops pending delivery",
+          "duration": 0.17210000000000036,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["COMM-06B recipient policy & inbox projection"],
+          "fullName": "COMM-06B recipient policy & inbox projection 5,000-notification inbox paginates efficiently using keyset pagination",
+          "status": "passed",
+          "title": "5,000-notification inbox paginates efficiently using keyset pagination",
+          "duration": 7.628900000000044,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["COMM-06B recipient policy & inbox projection"],
+          "fullName": "COMM-06B recipient policy & inbox projection mark read and mark all read update counters correctly and atomically",
+          "status": "passed",
+          "title": "mark read and mark all read update counters correctly and atomically",
+          "duration": 0.35389999999995325,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791265968277,
+      "endTime": 1791265968289.354,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/comm-06b-inbox-notifications.test.ts"
+    }
+  ]
+}

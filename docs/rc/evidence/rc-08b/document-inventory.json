@@ -1,0 +1,296 @@
+[
+  {
+    "file": "docs/rc/BLOCKERS.md",
+    "sha256": "8118706e7474a566149d3b83e112e62c343b2eb77b2bb8fc4feab30e4a1ddf83",
+    "lines": 65,
+    "claims": [
+      "Source `3a3260f120f500a48d51a5251a7fd3b900ba6e93` has no remaining blocker in the supported newsletter/local-email/canonical-forum/member-privacy/moderation/direct-group-message/in-app-notification acceptance subset. [Evidence](evidence/RC-04-PASS2.md). Unsupported audience/community entry points are explicitly deferred; live providers, configured private storage, and all broader RC-01 role/tenant/module, upgrade and restore gates below remain open. This pass does not confer aggregate release readiness.",
+      "> Current orchestration gate: **RC-03 PASS 3 PASS**, source `97ce2c1e4a253289d0d4f9da66c154afce74c6e9`. [Final gate evidence](evidence/RC-03-PASS3.md). Small cleanup reconciled operator claims; final browser, 107 unit and 18 integration tests, typecheck, lint and build pass. Calendar/feed/timelines and remote federation remain deferred. Broader RC-01 release blockers remain open. NEXT: RC-04 and RC-05.",
+      "Current orchestration gate: **RC-03 PASS 2 PASS**, source `bb93ea8b562bc91e71e64afeabb6d7ead6607bc2`. [Evidence](evidence/RC-03.md). Partial provider failure, failed-only recovery and worker restart/idempotency proved on the RC-02 publication copy. Calendar/timeline deferred; federation limited to local signing/outbox/failure. Broader RC-01 release blockers remain open. Sol Light: small cleanup only.",
+      "3. **RC01-UNAVAILABLE:** Audience reporting, Social and Fulfillment command centers explicitly report unavailable; complete persisted/scoped implementation and verify it before promoting them. Their old demo components are not shipping entry points. Non-admin social-studio/graphics-studio, connections reads, POD adapter synthesized responses and other RC-00 provider findings remain blockers until independently repaired/proved. No claim of universal zero fake metrics is made.",
+      "3. **RC-03 visible optional-module safety.** PublishingLinks unconditionally links podcasts; Lean does not register podcast-shows. All custom views remain mounted independently of module gating. Prove graceful unavailable states or hide/defer entry points. Inspect frontend/custom-view duplicate URLs for actual route precedence.",
+      "- `/social-studio` reports “Scheduled” or “Queued for dispatch” by setting client state; its submit handler does not persist or enqueue the post. `/graphics-studio` save sets descriptive text without creating the named records. These visible actions remain BLOCKER until implemented or deliberately hidden/deferred.",
+      "No blocker remains within the supported RC-04 subset on tested source `fb8c9d7c3211f4c257ad569edb366d089074e492`; see [final evidence](evidence/RC-04-PASS3.md). Live providers, the explicitly deferred surfaces, and broader RC-01 release gates remain outside this verdict."
+    ]
+  },
+  {
+    "file": "docs/rc/CAPABILITY_LEDGER.md",
+    "sha256": "bea20b5669829e25854f2663646ac2f214d0e646349faa5b07a1ad6c827b389f",
+    "lines": 409,
+    "claims": [
+      "| rc04.forms-automation-telecom-dispatch        | DEFERRED          | Hidden/denied native collections; forms 410; no shipping telecom dispatch tasks; emulator/service contracts only                                                                                                                                             |",
+      "| rc04.external-community-notifications         | DEFERRED          | Email/SMS/digest and per-event switches 410; misleading controls removed                                                                                                                                                                                     |",
+      "| rc04.complete-export-deletion-private-uploads | DEFERRED          | Full contribution/message export excluded from claim; deletion/private-upload entry points 410; future configured private storage acceptance required                                                                                                        |",
+      "Statuses: VERIFIED; VERIFIED WITH CONFIGURED PROVIDER REQUIRED; DEGRADED BUT SAFE; BLOCKER; DEFERRED/EXPERIMENTAL; ABSENT FUTURE SCOPE. The first three require observed current-candidate evidence. RC-00 does not execute acceptance, so implemented shipping capabilities are conservatively BLOCKER.",
+      "| extension-reference-adapters | extensions | src/modules/extensions/reference-adapters.ts | DEFERRED/EXPERIMENTAL | Only tests import these adapters; accepted objects are reference SDK behavior, not shipping storage/email transport. |",
+      "| example-extension            | extensions | src/modules/extensions/example-extension.ts  | DEFERRED/EXPERIMENTAL | Reference extension example with no shipping route/caller; cannot be marketed as an installed capability.            |",
+      "- Audience command-center reporting: BLOCKER / explicitly unavailable. Removed synthetic health, campaigns, funnels and experiments from the shipping component; authenticated reporting API returns 503 without operational reads. Registered subscriber management remains available through ordinary navigation when newsletter is enabled.",
+      "- Social command center: BLOCKER / explicitly unavailable. Shipping admin page no longer mounts sample accounts or local queue execution. Existing social services, APIs and non-admin studios remain separate unverified BLOCKER scope.",
+      "- Fulfillment command center: BLOCKER / explicitly unavailable. Shipping admin page no longer mounts fabricated jobs, packages, mappings or provider health. Dormant components and provider adapters are not validated by this containment.",
+      "| collections:calendar-entries, collections:timelines, collections:timeline-memberships | DEFERRED; hidden and deny product CRUD; public helpers exclude them                                                                                       |",
+      "| `/calendar`, `/api/calendar/export`, starter `publisher.timeline`                     | Interactive calendar/feed/timeline DEFERRED; explicit page, 410 feed, component removed                                                                   |",
+      "| Preview composer `/api/admin/social/dispatch`                                         | DEFERRED (410); use approved persisted drafts and release/outbox instead                                                                                  |",
+      "| catalog:networking.federation                                                         | DEGRADED BUT SAFE local signing/outbox/failure only; remote interoperability DEFERRED                                                                     |",
+      "The existing calendar audit/contract registrations receive no launch claim from this appendix. Native enabled social operator configuration and recovery collections, and Events, remain visible under progressive disclosure; deferred collections remain hidden.",
+      "The bounded statuses below are final for tested source `fb8c9d7c3211f4c257ad569edb366d089074e492`; [Pass 3 evidence](evidence/RC-04-PASS3.md). Cleanup changed no capability scope. Newsletter/local SMTP, member identity, canonical forums/moderation, direct/group messaging and in-app notifications remain verified within their stated boundaries. Production email and live SMS/RCS remain provider-required; all listed RC-04 deferrals remain deferred."
+    ]
+  },
+  {
+    "file": "docs/rc/evidence/RC-00.md",
+    "sha256": "d86ebc06cb9eb66bc24d24549c08afdb46b83402a5691b767205a74893dfebe7",
+    "lines": 66,
+    "claims": [
+      "coverage-review.json confirms exactly one status row for each of 240 sanitized registrations (207 collections, 3 globals, 30 tasks), all 14 Capability Center definitions, seven cross-domain workflow capabilities and two deferred reference capabilities. All 258 filesystem page/route handlers occur in the route matrix; it contains 510 rows including custom views, navigation and collection/global families. All 108 registered migration names occur as applied in the status output. There are zero coverage issues or UNKNOWN shipping statuses. static-admin-link-audit.json identifies no unresolved literal admin href target in the all-module configurat"
+    ]
+  },
+  {
+    "file": "docs/rc/evidence/RC-01.md",
+    "sha256": "5d8b4a43e14b10cf7c7a2039b135ff8d6b6508ce941a641034972601c198545f",
+    "lines": 38,
+    "claims": [
+      "Owner loads passed: Dashboard, Capability Center, Security, Posts, Pages, Menus, Media Library, Indexing, Redirects, Rendered Quality, Workflow, Releases, Email Composer and explicit unavailable Audience. These are load checks, not record lifecycle/publish proof.",
+      "- Removed demo audience operational UI and reporting API values; provider/delivery reporting is unavailable (authenticated 503, anonymous 403).",
+      "- Shipping Social/Fulfillment admin pages show explicit unavailable state without mounting seeded operational components. They are BLOCKER, not RC-ready.",
+      "| Focused Chromium/API integration            | 9 passed         | Menus, unavailable states, anonymous mounting/API; real disposable DB |"
+    ]
+  },
+  {
+    "file": "docs/rc/evidence/RC-02.md",
+    "sha256": "401f57100c0e27ab5ead6bd16f7d8c7f3e58b38968aa24db5d02b2dbe62e6f98",
+    "lines": 50,
+    "claims": [
+      "No RC-02 core-path blocker remains. Broader RC-01 moderation/role/action/provider/Lean/unavailable-workspace findings remain open. **NEXT: RC-03**, requiring its own explicit scope; it was not executed here."
+    ]
+  },
+  {
+    "file": "docs/rc/evidence/RC-03-PASS3.md",
+    "sha256": "0dbcfa305017e36ab156ce91ff4271c76ae71b30913ddabc1b9952129cac2b62",
+    "lines": 22,
+    "claims": [
+      "DST scheduling and competing fresh process execution pass. Local federation produces one deduplicated outbox delivery, three independently verified signed requests and retained intentional 503 failures. Future event occurrence, native event editing and published public rendering pass. Calendar/feed/timelines remain deliberately deferred and disabled; event occurrence dates do not advertise automatic event publication. Composer dispatch and remote federation interoperability remain deferred. Bluesky uses the actual adapter with an explicit local harness; live commercial provider acceptance is not claimed. Other coordinated artifact families re"
+    ]
+  },
+  {
+    "file": "docs/rc/evidence/RC-03.md",
+    "sha256": "18ec9b8ac751b4cf7221c4b3f9304106e82ccf244190357edc0e65cd7a46cb3f",
+    "lines": 39,
+    "claims": [
+      "Events support ordinary creation, future occurrence dates with an IANA zone, native admin rendering and published public rendering. Future occurrence dates do not imply a separate event auto-publication worker. Interactive calendar/feed and timeline/membership rendering are **DEFERRED**: demo calendar replaced by an explicit deferred page, unsupported feed returns 410, collections are hidden and deny product CRUD, public collection helpers exclude them, and the starter timeline component is removed. Existing records/schema remain intact. Workflow scheduling and DST checks remain supported.",
+      "Federation is **DEGRADED** to the exact local signing/outbox/failure boundary: one durable outbox ID for a duplicate envelope, three independently verified signed HTTPS requests, deliberate inbox 503 and retained actionable attempts. No real remote acceptance/interoperability harness was run. Interoperable federation is **DEFERRED**."
+    ]
+  },
+  {
+    "file": "docs/rc/evidence/rc-04-pass2-recheck/failure/screenshots/acceptance-real-members-fo-f26d3-ges-and-session-persistence/error-context.md",
+    "sha256": "7724c33178caecd804e7b3c14be17cd5902361772eed4be1c81e7621ac13d90a",
+    "lines": 219,
+    "claims": [
+      "  848 |     await api(alice, 'POST', '/api/member-auth/delete', {}, 410)",
+      "  950 | test('public malformed input, abuse limits and deferred form boundary', async ({",
+      "  976 |     await api(page, 'GET', '/api/forms/deferred-example', undefined, 410)",
+      "  977 |     await api(page, 'POST', '/api/forms/deferred-example', {}, 410)",
+      "  985 |           deferredFormGET: 410,",
+      "  986 |           deferredFormPOST: 410,"
+    ]
+  },
+  {
+    "file": "docs/rc/evidence/RC-04-PASS2-RECHECK.md",
+    "sha256": "fa4cafa4966724c1dc3d6610e3059448c2f721925f66e90f6f27c471d6255fa9",
+    "lines": 32,
+    "claims": [
+      "- Eight final trace archives passed CRC inspection; their SHA-256 hashes and HTTP/console observations are retained. No page errors were observed. Expected denied/deferred responses and deliberate SMTP failures remain in the logs.",
+      "Canonical public forum comments expose open/members/closed policies; premoderation contracts are not promoted as a new accepted public path. Message read receipts are not claimed by notification read/unread proof. Private attachment launch is deferred; successful configured upload/download is not inferred from denial tests. Telecom STOP/HELP/opt-in/opt-out/quiet-hour/emulator assertions remain contract/integration proof, with shipping dispatch deferred.",
+      "Production email and live SMS/RCS remain **PROVIDER-REQUIRED**. Forms/automation, telecom dispatch, external community notifications/digests, per-event switches, permanent deletion, complete contribution/message export and private attachment upload/scanning/download remain **DEFERRED** with their existing hidden/denied/410 boundaries preserved. No encryption or distributed rate-limit claim is made."
+    ]
+  },
+  {
+    "file": "docs/rc/evidence/RC-04-PASS2.md",
+    "sha256": "08e8caefbc2761adf22513ba76f95c29cf655751618abb5c77d578aebd3468da",
+    "lines": 45,
+    "claims": [
+      "- Notifications project read/unread state correctly, enforce owned notification updates, respect in-app off and block/mute, and keep private-message notification bodies generic. External community email/SMS/digests return a deferred state.",
+      "Forms and automation remain contract-only. Their native collections are hidden and deny product access; public forms return 410. Community external notifications and digests are deferred and cannot be selected as active delivery channels. Telecom dispatch collections are hidden/denied and telecom tasks are removed from shipping registration; source services and emulator contracts remain for future validation.",
+      "Permanent member deletion returns 410 and its misleading control is removed. The account export is limited to its actual identity/profile/billing/relationships/audit scope; complete contribution/message export is deferred. Private attachment authorization is exercised as a denial boundary. New private uploads return 410 at `/api/v1/attachments/presign`; existing records and internal scanner/authorization contracts are preserved. Successful private upload/scanning/download requires future configured storage acceptance and is not advertised as launch-ready. No end-to-end encryption claim is made.",
+      "Per-event follower/mention/direct-message switches were only stored rather than enforced. Those controls are removed, profile API attempts return 410, and settings direct members to the enforced in-app channel preference. Stored legacy preference records are preserved.",
+      "The focused suites cover 270 unit tests in 36 files and 52 integration tests in five files. The browser gate comprises three sequential journeys with no skipped cases. Typecheck, lint and the production standalone build are separate checks. The browser additionally asserts unreviewed scheduling rejection, actual one-click unsubscribe, suppressed-member in-app notification, preference-off suppression, public removed-post exclusion, private thread API/SSR denial, closed and locked reply denial, suspended thread creation denial, direct/group messaging, foreign conversation/attachment denial, mute/block, owned export, explicit deferred deletion/u"
+    ]
+  },
+  {
+    "file": "docs/rc/evidence/RC-04-PASS3.md",
+    "sha256": "506bb01a587b6d267fd34ae5070b7eff024cd0688ea74fceba40fa735fbd64cc",
+    "lines": 26,
+    "claims": [
+      "The audit covered all 51 implementation and test files changed between RC-04 Pass 1 and the final Pass 2 source. Focused lint and formatting checks found no unused imports, temporary debugging, stale TODOs or formatting failures. The moderation console now labels a failed audit-chain check as `Review required` instead of displaying `Verified`. The surfaced `FEATURE_READINESS` snapshot now reflects the accepted forum, newsletter and consent journeys and explicitly retains the provider and deferred boundaries.",
+      "Production inbox delivery and live SMS/RCS remain provider-required. Forms/automation, telecom dispatch, external community notifications/digests, per-event relationship switches, permanent deletion, complete contribution/message export and private attachment upload/scanning/download remain deferred. No encryption, distributed rate-limit, fresh-install, upgrade, restore or aggregate release-readiness claim is made."
+    ]
+  },
+  {
+    "file": "docs/rc/evidence/RC-05-PASS3.md",
+    "sha256": "3abd495397003fff65303b018a2a8a1d3c9a9258a42c0f9b910df96efefb9640",
+    "lines": 42,
+    "claims": [
+      "- Subscription, donation, affiliate payout and POD capabilities have no current RC-05 accepted or deliberately deferred subset. Unit success does not promote their status or establish product deferral.",
+      "Claim reconciliation confirms the local checkout page explicitly says no real money is charged; the Stripe adapter accepts test keys only; CommerceOperations displays provider keys, states and quarantined reconciliation cases; recurring-donation campaign pages state that online recurring checkout is unavailable. The current frontend `/admin/fulfillment` route renders an unavailable workspace. The demo FulfillmentCommandCenter still mounts PodMappingCenter in its own source, but that fact alone does not prove the current frontend route exposes the sample mapping. The historical provider-matrix findings remain open: Printful `uploadPrintFile` s"
+    ]
+  },
+  {
+    "file": "docs/rc/evidence/RC-06-PASS2.md",
+    "sha256": "7410c0d8a4a9e8c6a052f19b6725e03887253941110b1a4eef4b21bc6136aac3",
+    "lines": 50,
+    "claims": []
+  },
+  {
+    "file": "docs/rc/evidence/RC-07-PASS2.md",
+    "sha256": "bfc4f889a27716242cce300c82de88ccf7c964a1e87ea1c1ddeb65dfd8634316",
+    "lines": 92,
+    "claims": []
+  },
+  {
+    "file": "docs/rc/evidence/RC-08-2026-10-06.md",
+    "sha256": "cfcb59f89a95995b19a2e9e6f27b84baa66d4ba406eb2de97c7bb453fbb9e5e1",
+    "lines": 111,
+    "claims": ["surfaces are not automatically deferred. Package version remains 0.1.0;"]
+  },
+  {
+    "file": "docs/rc/evidence/RC-08.md",
+    "sha256": "f24ad6e0fe5de4719fedb48c3f1978b4cee9df473a2d6cb8becdf16e410e33b7",
+    "lines": 81,
+    "claims": ["surfaces are not automatically deferred."]
+  },
+  {
+    "file": "docs/rc/evidence/RC-08A-2026-10-06.md",
+    "sha256": "600a0b02b223559ae43403935582836ff13d4c5f9dd729445e0250a1754b6700",
+    "lines": 117,
+    "claims": ["Tests used an isolated DATABASE_URL pointing at an unavailable loopback scratch"]
+  },
+  {
+    "file": "docs/rc/evidence/stale-truth.md",
+    "sha256": "ab59cf5990f2a887248dd4aa596f88ae7483782efd116992fb598580305b47e0",
+    "lines": 167,
+    "claims": []
+  },
+  {
+    "file": "docs/rc/HANDOFF.md",
+    "sha256": "68983ca5a34258a522eb09110b7979a8d9d9dbcc03b1ee7525bd38b7e39647f7",
+    "lines": 49,
+    "claims": [
+      "Tested source `3a3260f120f500a48d51a5251a7fd3b900ba6e93`. [Evidence](evidence/RC-04-PASS2.md) and `evidence/rc-04/checks.json` bind the real visitor/member/operator subset. There are no remaining blockers within those supported journeys. Leave only stale-copy/navigation inventory reconciliation, small regressions and final candidate verification to the low-cost pass; do not add deferred functionality or execute RC-05 automatically.",
+      "Deferred: public forms/automation, telecom dispatch, external community notifications/digests, per-event relationship switches, permanent account deletion, full contribution/message export, and private attachment launch. Their misleading entry points are removed or return 410; native deferred audience collections deny access. Live email/SMS-RCS and configured private storage acceptance require their own provider proof. Existing records are preserved.",
+      "Source `97ce2c1e4a253289d0d4f9da66c154afce74c6e9`. [Final evidence](evidence/RC-03-PASS3.md) records the cleanup, complete regression and retained initial failures. No RC-03 blocker remains within the supported article/redirect/persisted Bluesky orchestration scope. Calendar/feed/timelines, composer dispatch and remote federation remain deferred; live remote provider acceptance and broader RC-01 gates are not promoted. NEXT: RC-04 and RC-05; do not execute them automatically.",
+      "Events creation/future occurrence/admin/public rendering are proved. Interactive calendar/feed and timelines are DEFERRED and their product entry points disabled. Federation is DEGRADED to local signing/outbox/failure proof; remote interoperability is DEFERRED. Provider proof uses a local harness through the real adapter. Other release artifact families and broader RC-01 role/tenant/provider/module gates retain their own blockers.",
+      "Repair scoped admin/community authorization and ordinary authorized-site discovery without a bypass, then create a fresh disposable database and rerun the matrix. Preserve existing local data. Use prepare-rc01-instance.mjs and playwright.rc01.config.ts, not default destructive global setup or LOCAL_E2E_TEST_MODE. Continue missing CRUD/preview/publish/provider/error/role acceptance only after the first failure is repaired. Audience/Social/Fulfillment command centers report explicitly unavailable; restoration is a release blocker. Lean direct-view safety, non-admin studios/connections, remaining provider synthesis, tenant boundaries and clean-c",
+      "Tested source `fb8c9d7c3211f4c257ad569edb366d089074e492`; [final evidence](evidence/RC-04-PASS3.md). RC-04 has no remaining blocker inside its supported subset. Preserve the provider-required and deferred boundaries recorded in RC_SCOPE. Do not treat this as aggregate release readiness. NEXT: RC-06 after RC-05 merges."
+    ]
+  },
+  {
+    "file": "docs/rc/PROVIDER_MATRIX.md",
+    "sha256": "4692602de6f42d876933ba70c5935c447c7d701f5262bb0825e5bc819a9a7d6c",
+    "lines": 45,
+    "claims": [
+      "SMS/RCS STOP/HELP/opt-in/opt-out/quiet-hours/emulator results are contract/integration proof only. Shipping telecom dispatch is **DEFERRED**, its tasks unregistered and native entry points hidden/denied; live Twilio/remote acceptance remains **PROVIDER-REQUIRED**. Successful private attachment storage/scanning/byte retrieval needs a separate configured-storage gate; new private uploads are **DEFERRED** and return 410. No live provider credentials were deliberately supplied for this pass.",
+      "| src/modules/extensions/reference-adapters.ts                 | extensions   | Source-specific configuration and capabilities; distinguish local runtime from external transport                      | DEFERRED/EXPERIMENTAL | Test-only reference adapters; source search finds no shipping caller. Do not market accepted return objects as filesystem/email transport proof.                  |",
+      "Bluesky native session/getRecord/createRecord adapter and persisted outbox are exercised with a local explicit provider harness: first destination succeeds, second fails, remote commit with lost response recovers without another creation. This is configured-provider transport/failure acceptance, not live commercial account acceptance. Federation proves three locally verified signed HTTPS failures and one deduplicated durable outbox envelope; interoperable remote acceptance is DEFERRED. See [RC-03 evidence](evidence/RC-03.md)."
+    ]
+  },
+  {
+    "file": "docs/rc/RC-08B-DEFERRAL-LEDGER.md",
+    "sha256": "9f285fe9ec0245a2c905032b958974f334387f7c06c92fddd3cfcd3a627b6d51",
+    "lines": 43,
+    "claims": [
+      "# RC-08B deferred capability investigation",
+      "| Event feeds | `/events/feed.ics`, `/events/[slug]/ics`, `/api/calendar/export` | events contracts/public; existing persisted event model; general export 410 | events-workflow, public experience tests | None | No draft/private/cross-site feed bytes; no shared caching of entitlement-dependent data | RC-03 deferred interactive feeds though event ICS exists. Need complete pagination, safe single-event reads, valid ICS and DST; medium | SMALL REPAIR | IMPLEMENT |",
+      "| Separate composer dispatch | `/api/admin/social/dispatch` 410; persisted Social Drafts/release path | social drafts, release artifacts, provider deliveries | rc03-core-orchestration, social suites | Configured social adapter | Review/revision pins, authorized account ownership, durable retry | RC-03 leaves alternate composer dispatch deferred. Existing reviewed release path is supported; separate bypass must not dispatch unreviewed copy. Need bind composer to existing draft/review system; medium | SUBSTANTIVE REPAIR | IMPLEMENT |",
+      "| Public forms | `/api/forms/[formId]` 410; hidden native collections; PublicForm | `audience/service.ts`, `Audience.ts`; form definitions/schemas/submissions | aud-02 forms, aud-08 audience integration | None for persisted intake | Host/site and schema ownership; consent; abuse/body limit; opaque key scoping | RC-04 did not accept operator/visitor path. Submission dedup currently global; public route absent. Need scoped operator access and validated route; medium | SUBSTANTIVE REPAIR | IMPLEMENT |",
+      "| Live SMS/RCS | telecom provider configuration | `telecom/real-provider.ts`; persisted provider outcomes | telecom adapter/emulator suites | Live sender/account, RCS registration/recipient carrier | Receipt signature/replay, verified capability/fallback, no fabricated remote IDs | RC-04 emulator only. RCS lookup currently conservative SMS fallback; live carrier proof unavailable without provider. Keep local contracts distinct | PROVIDER-BOUND | KEEP DEFERRED WITH EVIDENCE |",
+      "| External community notifications | preferences API returns 410 for external channels | `community/notification-delivery.ts`; SQL audience_delivery_outbox/preferences, separate audience transport tables | comm-06c notification preferences | SMTP/SMS transport | Opt-in, suppression, block/mute and privacy recheck at send; cross-site recipient | RC-04 no shipping consumption proof. Existing outbox has no established bridge to audience transport and defaults email to digest; large | SUBSTANTIVE REPAIR | IMPLEMENT |",
+      "| Community digests | external preferences 410; hidden digest definitions/runs | compileNotificationDigest; inbox/outbox, digest runs | comm-06c / aud-07 | Email transport for external subset | Window uniqueness, kind preferences, mute/block, suppression, retry without duplicates | RC-04 deferred; compiler blindly inserts each run, no durable dedup/dispatch. Large | SUBSTANTIVE REPAIR | IMPLEMENT |",
+      "| Per-event notification switches | profile route 410; settings controls removed | Identity profiles notification JSON, community producers/inbox | comm-02 profiles, comm-06b inbox | None for in-app | Member ownership, explicit defaults, producer/projector enforcement, site/mute/block | RC-04 found switches stored without enforcement. Need enforce follower/mention/direct-message at actual insert; medium | SUBSTANTIVE REPAIR | IMPLEMENT |",
+      "| Permanent account deletion | delete route 410; deactivation supported | identity request/finalize deletion; member/profile, sessions, grants, relationships | member identity lifecycle suites | None; finance retention rules | Recent reauthentication, retryable graph anonymization, audit/legal retention, media/message/shared references | RC-04 finalizer only clears member/profile and grants: identity/contact/audit/media/contribution/message graph remains. Need explicit retention graph and durable job; large | ARCHITECTURAL | KEEP DEFERRED WITH EVIDENCE |",
+      "| Private attachments | presign 410; authorized download contracts; messages UI deferred | message-attachments + media/storage; SQL message attachments, S3 community namespace | comm-07c-message-attachments | Private S3-compatible bucket/policy + scanner + backup | Private namespace cannot use public media policy; MIME/size/malware, association/site authorization, replacement/deletion, backup private bytes | RC-04 no configured storage acceptance. Current shared media storage/presign does not independently prove bucket privacy; no malware engine or private-byte restore proof. Dedicated policy/config and external storage evidence required | AR",
+      "The repository scan includes deferred/disabled/unavailable/410/TODO/stub/mock/emulator/hidden/non-persisting patterns. Results and current document/source inventories will be retained under `evidence/rc-08b/`; individual matching lines require adjudication, since SMTP `deferred` is a real delivery outcome and disabled buttons can be legitimate pending state.",
+      "| Reference extension and adapters | `extensions/example-extension.ts`, `reference-adapters.ts`; examples imported by tests, no installed shipping route | INTENTIONALLY UNSUPPORTED | KEEP DEFERRED WITH EVIDENCE |",
+      "| External calendar synchronization | CalendarEntries recurrence description expressly excludes external synchronization; no provider synchronization system | PROVIDER-BOUND | KEEP DEFERRED WITH EVIDENCE |",
+      "| Audience/fulfillment reporting dashboards | Current command centers explicitly unavailable; historical demo metrics are not acceptance evidence. Need authorized persisted queries and ordinary actions | SUBSTANTIVE REPAIR | IMPLEMENT |",
+      "| Provider DNS/inbox verification | SMTP configuration and local DATA acceptance do not prove production DNS or inbox arrival | PROVIDER-BOUND | KEEP DEFERRED WITH EVIDENCE |",
+      "| End-to-end encryption | No implemented client key lifecycle; never promised by supported messaging subset | INTENTIONALLY UNSUPPORTED | KEEP DEFERRED WITH EVIDENCE |"
+    ]
+  },
+  {
+    "file": "docs/rc/RC_SCOPE.md",
+    "sha256": "69a110d84b39cc218f6d81435163a76a7cd7e8d246b6fa6da13c234aae89e0e6",
+    "lines": 58,
+    "claims": [
+      "RC-05 is **FAIL** on inspected HEAD `e25f1b554eeae6e898d754822c64181f4b8040cc` with pre-existing changes; see [final evidence](evidence/RC-05-PASS3.md). No commerce subset is promoted by this pass. Local/test payments do not establish real settlement; affiliate contracts do not establish payout automation; POD emulators and synthesized Printful outcomes do not establish manufacture or shipping. Subscription, donation and affiliate workflows remain blocked pending acceptance. Recurring-donation online checkout and the current frontend fulfillment workspace explicitly report unavailable, but this pass does not establish comprehensive product de",
+      "Forms/automation and telecom dispatch are **DEFERRED**: native collections deny product access and are hidden, forms return 410, and telecom tasks are not registered for shipping dispatch. External community email/SMS/digests and per-event relationship switches return 410 and are removed from active controls. Permanent deletion and private upload presigning return 410. Full contribution/message export and private attachment launch are explicitly deferred in settings/messages copy. Records and internal contracts are preserved. No encrypted-message or production provider-success claim is made.",
+      "Optional module registrations are excluded from default Lean by environment gating, but they remain candidate shipping scope when enabled and are therefore inventoried as BLOCKER, not silently deferred. Test-only reference adapters (extensions/reference-adapters.ts) and the extension example (extensions/example-extension.ts) are explicitly DEFERRED/EXPERIMENTAL; source search found no shipping caller. No visible broken feature is granted deferral. Experimental extension/reference/local simulation components are not RC-ready marketing promises. Deliberate deferral requires hiding every entry point, rejecting unsupported APIs/jobs, and updating",
+      "An advertised feature must be VERIFIED, VERIFIED WITH CONFIGURED PROVIDER REQUIRED, or DEGRADED BUT SAFE. A visible nonfunctional or unsafe feature is BLOCKER unless deliberately hidden/deferred. A hidden/deferred experimental feature may remain implemented but cannot be marketed as RC-ready. Production claims must match observed boundaries. Baseline checks, test source files and historical reports do not confer workflow verification. Registration keys and extra capability IDs in CAPABILITY_LEDGER.md are the status authority; route/provider/security tables inherit their conservative BLOCKER status.",
+      "Events support creation, future occurrence dates/time zones, native admin and public rendering. Event auto-publication scheduling is not advertised by this proof. Workflow/release future publication and DST behavior remain supported. Full interactive calendar, calendar feed, timelines and memberships are **DEFERRED**: native collections deny product access and are hidden, public helpers exclude them, `/calendar` explains deferral, `/api/calendar/export` returns 410, and the starter timeline component is removed. Records/schema are preserved. Composer preview dispatch is **DEFERRED** and returns 410; persisted approved Social Drafts and their ",
+      "Federation is **DEGRADED BUT SAFE** only at the proved local signing/outbox/failure boundary. Interoperable remote federation remains **DEFERRED**; no successful remote acceptance has been proved. The broader RC-01 role/tenant/module/provider gates remain open.",
+      "Source `fb8c9d7c3211f4c257ad569edb366d089074e492` receives the final RC-04 PASS for the audience, local-email, member identity, canonical community, moderation, direct/group messaging, in-app notification and cross-surface privacy boundaries recorded in [Pass 3 evidence](evidence/RC-04-PASS3.md). Production email and live SMS/RCS remain provider-required. Forms/automation, telecom dispatch, external community notifications/digests, per-event switches, permanent deletion, complete contribution/message export and private attachment launch remain deferred. The broader release, role/tenant, upgrade and restore gates remain open."
+    ]
+  },
+  {
+    "file": "docs/rc/README.md",
+    "sha256": "caf9ec3274081e313d6980170eceb5ea9d228299973bf0b78ea90eecc1933dbc",
+    "lines": 43,
+    "claims": [
+      "> Current audience/community gate: **RC-04 PASS 2 PASS (bounded scope)**, source `3a3260f120f500a48d51a5251a7fd3b900ba6e93`. [Evidence](evidence/RC-04-PASS2.md). Three real browser/API journeys, 270 unit tests, 52 integration tests, typecheck, lint and production build pass. Local SMTP proof includes MIME, failure, disabled transport and operator recovery; it is not production delivery proof. Forms/automation, telecom dispatch, external community notifications/digests, per-event switches, permanent deletion, complete export and private attachment launch are explicitly deferred. Broader RC-01 gates remain open. NEXT: RC-04 cleanup/final gate o",
+      "> Current orchestration gate: **RC-03 PASS 3 PASS**, source `97ce2c1e4a253289d0d4f9da66c154afce74c6e9`. [Final gate evidence](evidence/RC-03-PASS3.md). Small cleanup reconciled operator claims; final browser, 107 unit and 18 integration tests, typecheck, lint and build pass. Calendar/feed/timelines and remote federation remain deferred. Broader RC-01 release blockers remain open. NEXT: RC-04 and RC-05.",
+      "Current orchestration gate: **RC-03 PASS 2 PASS**, source `bb93ea8b562bc91e71e64afeabb6d7ead6607bc2`. [Evidence](evidence/RC-03.md). Partial provider failure, failed-only recovery and worker restart/idempotency proved on the RC-02 publication copy. Calendar/timeline deferred; federation limited to local signing/outbox/failure. Broader RC-01 release blockers remain open. Sol Light: small cleanup only.",
+      "| docs/execution/first-time-operator-visitor-sweep-2026-09-24.md | 997 tests / 104 migrations; PARTIAL customer-upgrade unavailable                            | Historical report with no current candidate proof; later counts do not reconcile HEAD automatically                   |",
+      "> Current audience/community gate: **RC-04 FINAL PASS (bounded scope)**, tested source `fb8c9d7c3211f4c257ad569edb366d089074e492`. [Final evidence](evidence/RC-04-PASS3.md). Cleanup reconciled readiness and moderation status copy; 270 unit tests, 52 integration tests, three browser journeys, typecheck, lint and production build pass. Live email/SMS-RCS remain provider-required and documented unsupported surfaces remain deferred. NEXT: RC-06 after RC-05 merges."
+    ]
+  },
+  {
+    "file": "docs/rc/repairs/RC08-01-candidate.md",
+    "sha256": "1c1fcf2596f105e0a48ea168833492d17d76a6cc48c64719a0921e8ecbba8a8f",
+    "lines": 21,
+    "claims": []
+  },
+  {
+    "file": "docs/rc/repairs/RC08-02-commerce.md",
+    "sha256": "9017a7c57f6a0b42f1558c83455411216d71ad6aaa3d2540d7ff3b81ab1efe4f",
+    "lines": 16,
+    "claims": []
+  },
+  {
+    "file": "docs/rc/repairs/RC08-03-security-recovery.md",
+    "sha256": "c3ab40ac42d99285909e79944f412fdde11b376b6497c354ab244ca4d93b76a9",
+    "lines": 19,
+    "claims": ["customer-upgrade proof as unavailable if no legitimate predecessor exists; run the"]
+  },
+  {
+    "file": "docs/rc/repairs/RC08-04-claims.md",
+    "sha256": "ee115c91facdb530646f1773c60ecfc35bbd53b7dc82968f03db20a62d60fdf4",
+    "lines": 15,
+    "claims": ["release blocker; deferred/partial features and configured-provider requirements"]
+  },
+  {
+    "file": "docs/rc/repairs/RC08-05-unit-release.md",
+    "sha256": "f3891d6b1a61c56c7e47a9483e7a27d384a86494d40b79c25bac054ef2e6a53b",
+    "lines": 36,
+    "claims": []
+  },
+  {
+    "file": "docs/rc/repairs/RC08-06-current-security.md",
+    "sha256": "1316cc77b0ad2c99f4ffdd9c985da66f015522a573c1b57024ecdc93597cd5c9",
+    "lines": 21,
+    "claims": []
+  },
+  {
+    "file": "docs/rc/ROUTE_MATRIX.md",
+    "sha256": "9656f6ebf2d79841eb143fe71a28de35d313a00bfccda81fc6816060236c1edd",
+    "lines": 609,
+    "claims": [
+      "Current acceptance is limited to `/admin/workflow`, native content revision editing, `/admin/releases`, `/admin/social`, native social account configuration, Events admin and canonical public content/redirect/event routes. Unsupported calendar/timeline product collection operations return 403, `/api/calendar/export` returns 410, and `/calendar` shows its explicit RC deferral. See [RC-03 evidence](evidence/RC-03.md) for execution verdict. Historical full-role/tenant route matrix remains open."
+    ]
+  },
+  {
+    "file": "docs/rc/SECURITY_LEDGER.md",
+    "sha256": "2028072de168554a85e6ca77a4b2ea09ff61e5d29e81106ef3a2ecc633fc1c98",
+    "lines": 34,
+    "claims": [
+      "A genuine unsubscribed newsletter recipient receives an allowed internal reply notification, while no external communication is generated. In-app off and mute prevent subsequent notifications; enabling external community channels returns 410. DOI cannot clear non-unsubscribe suppressions. Malformed signup returns 400 and repeated requests hit the implemented process-local 429 window behind the tested proxy that replaces forwarded client-address headers. This does not assert distributed rate limiting or arbitrary deployment proxy safety.",
+      "Permanent deletion, full contribution/message export, per-event switches and private attachment launch are deferred. New private uploads return 410, and no end-to-end encryption claim is made. Remaining broad role/tenant/provider, private byte and operational gates below are not cleared."
+    ]
+  }
+]

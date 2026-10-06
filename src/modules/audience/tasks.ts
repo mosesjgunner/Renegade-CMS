@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { TaskConfig } from 'payload'
+import { communityEmailTask } from '../community/external-notifications'
+import { formIntakeTask } from './form-tasks'
 import { createHash } from 'node:crypto'
 
 import { loadConfig } from '../core/config'
@@ -286,4 +288,9 @@ export const newsletterDispatchTask = {
     return { output: {} }
   },
 } as unknown as TaskConfig
-export const audienceTasks = [emailDeliveryTask, newsletterDispatchTask]
+export const audienceTasks = [
+  emailDeliveryTask,
+  newsletterDispatchTask,
+  formIntakeTask,
+  communityEmailTask,
+]

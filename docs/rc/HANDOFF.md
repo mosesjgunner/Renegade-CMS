@@ -1,3 +1,22 @@
+## RC-08B Deferred Capability Promotion handoff — PASS — 2026-10-06
+
+Following the RC-08A unit repair, this pass investigated every deferred, disabled, unavailable, and 410 capability in the codebase. Fourteen capabilities were successfully promoted and verified with executable evidence:
+
+- **Event calendar UI & public feeds**: `/calendar`, `/events/feed.ics`, `/events/[slug]/ics`, `/api/calendar/export` restored with site isolation, timezone/DST correctness, and draft/entitlement exclusion.
+- **Event timelines**: `timelines` & `timeline-memberships` collections restored with scoped operator permissions and public timeline projections.
+- **Social composer**: Bound to reviewed drafts pipeline; unreviewed direct dispatch bypass removed.
+- **ActivityPub federation**: Verified against independent local HTTPS peer (discovery, signatures, outbox retries, replay denial, tamper denial).
+- **Public forms & automations**: `/forms/[slug]`, `/api/forms/[formId]`, versioned consent snapshots, rate limiting, and durable idempotent action execution.
+- **Telecom dispatch**: Twilio adapter + deterministic emulator, strict consent, quiet hours with DST, unsubscription keywords, phone normalization.
+- **Community notifications & digests**: Outbox transport bridge, explicit opt-in, delivery deduplication across windows, per-event notification switches.
+- **Member exports**: Full contribution and message/conversation exports with pagination, ownership isolation, and removal handling.
+- **Audience Command Center**: Repaired to query real persisted subscribers, deliveries, and forms.
+
+Surfaces truthfully kept deferred: live SMS/RCS carrier delivery (provider credentials required), permanent account deletion (multi-table tax/audit retention graph required), and private community attachments (dedicated private S3 policy and malware scanner required).
+Misleading demo surfaces (graphics studio fake save, Printful fake IDs/mockups, fulfillment fake metrics) removed.
+
+Checks passed: 171 unit test files (1,126 tests), 10 integration tests, Playwright browser test (57.5s), typecheck (0 errors), lint (0 warnings). [Evidence](evidence/RC-08B-2026-10-06.md); [deferral ledger](RC-08B-DEFERRAL-LEDGER.md). NEXT: RC-08C final aggregate release gate.
+
 ## RC-04 Pass 2 handoff — bounded PASS — 2026-10-04
 
 Tested source `3a3260f120f500a48d51a5251a7fd3b900ba6e93`. [Evidence](evidence/RC-04-PASS2.md) and `evidence/rc-04/checks.json` bind the real visitor/member/operator subset. There are no remaining blockers within those supported journeys. Leave only stale-copy/navigation inventory reconciliation, small regressions and final candidate verification to the low-cost pass; do not add deferred functionality or execute RC-05 automatically.

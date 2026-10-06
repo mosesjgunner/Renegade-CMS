@@ -1,9 +1,11 @@
+import { guardTimelineWrite } from '../modules/events/timeline'
 import type { CollectionConfig, Field } from 'payload'
 import { APIError } from 'payload'
 import { ownerFields, retentionFields } from './canonical-shared'
 import { validateFormSchema, validateEmailBlocks } from '../modules/audience/contracts'
 import { approvedRenderSnapshot, validateEmailDesign } from '../modules/audience/email-composer'
 import { validateAutomation, validateSegmentTree } from '../modules/audience/engine'
+import { formAccess, guardFormWrite } from '../modules/audience/form-access'
 
 const staffOnly = ({ req }: { req: { user?: { role?: string } | null } }) =>
   ['owner', 'administrator', 'staff'].includes(String(req.user?.role))
@@ -43,6 +45,9 @@ const status = (name: string, options: string[], defaultValue?: string): Field =
 
 export const FormDefinitions: CollectionConfig = {
   ...base('form-definitions', 'name'),
+  admin: { useAsTitle: 'name', group: 'Audience' },
+  access: { create: staffOnly, read: formAccess(), update: formAccess(), delete: formAccess() },
+  hooks: { beforeChange: [guardFormWrite('definition')] },
   fields: [
     ...scope(),
     { name: 'name', type: 'text', required: true },
@@ -80,7 +85,7 @@ export const FormDefinitions: CollectionConfig = {
       defaultValue: [],
       admin: {
         description:
-          'Bounded declared actions only: contact, tag, task, notification, approved webhook, redirect, download.',
+          'Supported intake actions: create-contact and create-task. Execution results and failures are saved on the submission.',
       },
     },
     ...retentionFields(),
@@ -88,6 +93,14 @@ export const FormDefinitions: CollectionConfig = {
 }
 export const FormSchemas: CollectionConfig = {
   ...base('form-schemas', 'version'),
+  admin: { useAsTitle: 'version', group: 'Audience' },
+  access: {
+    create: staffOnly,
+    read: formAccess(true),
+    update: formAccess(true),
+    delete: () => false,
+  },
+  hooks: { beforeChange: [guardFormWrite('schema')] },
   fields: [
     ref('form', 'form-definitions', true),
     { name: 'version', type: 'number', required: true },
@@ -139,6 +152,9 @@ export const FormSchemas: CollectionConfig = {
 }
 export const FormSubmissions: CollectionConfig = {
   ...base('form-submissions', 'id'),
+  admin: { useAsTitle: 'id', group: 'Audience' },
+  access: { create: () => false, read: formAccess(), update: formAccess(), delete: () => false },
+  hooks: { beforeChange: [guardFormWrite('submission')] },
   fields: [
     ...scope(),
     ref('form', 'form-definitions', true),
@@ -183,6 +199,8 @@ export const SubmissionAttachments: CollectionConfig = {
 }
 export const Contacts: CollectionConfig = {
   ...base('contacts', 'displayName', 'CRM'),
+  access: { create: staffOnly, read: formAccess(), update: formAccess(), delete: formAccess() },
+  hooks: { beforeChange: [guardTimelineWrite()] },
   fields: [
     ...scope(),
     { name: 'displayName', type: 'text', required: true },
@@ -308,6 +326,8 @@ export const NextActions: CollectionConfig = {
 }
 export const WorkflowItems: CollectionConfig = {
   ...base('workflow-items', 'title', 'Operations'),
+  access: { create: staffOnly, read: formAccess(), update: formAccess(), delete: formAccess() },
+  hooks: { beforeChange: [guardTimelineWrite()] },
   fields: [
     ...scope(),
     { name: 'title', type: 'text', required: true },

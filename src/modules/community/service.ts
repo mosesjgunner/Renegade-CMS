@@ -32,6 +32,7 @@ import { emitCommunityEvent } from './realtime'
 import { loadProfileProjection } from './profile-projection'
 import { consumeApiRateLimit } from '../integrations/rate-limit'
 import { getMemberNotificationPreference } from './notification-delivery'
+import { eventNotificationEnabled } from './event-notification-preferences'
 import { assertMemberCanPost, ModerationActionError } from './moderation-actions'
 import {
   readRouteTemplates,
@@ -1914,17 +1915,26 @@ export async function dispatchCommunityNotification(
     payloadData: Record<string, unknown>
   },
 ): Promise<void> {
-  if (
-    hasSanctionReadBoundary(payload) &&
+  if (!(await eventNotificationEnabled(payload, input.recipientMemberId, input.type))) return
+  const inAppEnabled =
+    !hasSanctionReadBoundary(payload) ||
     (await getMemberNotificationPreference(
       payload,
       input.siteId,
       input.recipientMemberId,
       'in_app',
       input.type,
-    )) === 'off'
-  )
-    return
+    )) !== 'off'
+  const emailEnabled =
+    hasSanctionReadBoundary(payload) &&
+    (await getMemberNotificationPreference(
+      payload,
+      input.siteId,
+      input.recipientMemberId,
+      'email',
+      input.type,
+    )) !== 'off'
+  if (!inAppEnabled && !emailEnabled) return
   // A block or one-way mute suppresses both future and queued notification payloads.
   if (input.actorMemberId) {
     const [rel, muted] = await Promise.all([
@@ -1953,7 +1963,7 @@ export async function dispatchCommunityNotification(
       activityEvent: activity.id,
       recipientMember: input.recipientMemberId,
       status: 'unread',
-      channels: ['in-app'],
+      channels: [...(inAppEnabled ? ['in-app'] : []), ...(emailEnabled ? ['email'] : [])],
     },
     overrideAccess: true,
   })
@@ -2005,6 +2015,7 @@ export async function getMemberNotifications(
   const visible: Array<Record<string, unknown>> = []
   const relationCache = new Map<string, boolean>()
   for (const notification of res.docs as unknown as Array<Record<string, unknown>>) {
+    if (Array.isArray(notification.channels) && !notification.channels.includes('in-app')) continue
     const relation = notification.activityEvent
     const activity =
       relation && typeof relation === 'object'

@@ -1,39 +1,64 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import type { FormField } from './contracts'
 
 type Props = { formId: string; fields: readonly FormField[]; consentText?: string }
 
 export function PublicForm({ formId, fields, consentText }: Props) {
   const [message, setMessage] = useState('')
+  const [pending, setPending] = useState(false)
+  const requestKey = useRef<string | null>(null)
+  const answers = useRef('')
+  const [currentValues, setCurrentValues] = useState<Record<string, unknown>>({})
   async function submit(form: FormData) {
     const values: Record<string, FormDataEntryValue | boolean> = Object.fromEntries(form)
     for (const field of fields.filter((item) => item.type === 'checkbox'))
       values[field.key] = form.get(field.key) === 'on'
-    const response = await fetch(`/api/forms/${formId}`, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json' },
-      credentials: 'same-origin',
-      body: JSON.stringify({
-        values,
-        honeypot: values.website,
-        idempotencyKey: crypto.randomUUID(),
-      }),
-    })
-    const body = await response.json()
-    setMessage(
-      body.error ??
-        (body.errors
-          ? Object.values(body.errors)
-              .filter((value): value is string => typeof value === 'string')
-              .join(' ')
-          : 'Thanks — your submission was received.'),
-    )
+    if (pending) return
+    const encoded = JSON.stringify(values)
+    if (answers.current !== encoded || !requestKey.current) {
+      requestKey.current = crypto.randomUUID()
+      answers.current = encoded
+    }
+    setPending(true)
+    try {
+      const response = await fetch(`/api/forms/${formId}`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({
+          values,
+          honeypot: values.website,
+          idempotencyKey: requestKey.current,
+        }),
+      })
+      const body = await response.json()
+      if (response.ok) requestKey.current = null
+      setMessage(
+        body.error ??
+          (body.errors
+            ? Object.values(body.errors)
+                .filter((value): value is string => typeof value === 'string')
+                .join(' ')
+            : 'Thanks — your submission was received.'),
+      )
+    } catch {
+      setMessage('Connection interrupted. Retry to check the same submission.')
+    } finally {
+      setPending(false)
+    }
   }
   return (
     <form
       action={submit}
+      onChange={(event) => {
+        const control = event.target as unknown as HTMLInputElement
+        setCurrentValues((previous) => ({
+          ...previous,
+          [control.name]: control.type === 'checkbox' ? control.checked : control.value,
+        }))
+      }}
       className="grid gap-4"
       noValidate
       aria-describedby={consentText ? 'form-consent' : undefined}
@@ -45,7 +70,12 @@ export function PublicForm({ formId, fields, consentText }: Props) {
         </label>
       </div>
       {fields
-        .filter((field) => field.type !== 'hidden')
+        .filter(
+          (field) =>
+            field.type !== 'hidden' &&
+            (!field.visibleWhen ||
+              currentValues[field.visibleWhen.field] === field.visibleWhen.equals),
+        )
         .map((field) => (
           <label key={field.key} className="grid gap-1">
             <span>
@@ -86,8 +116,8 @@ export function PublicForm({ formId, fields, consentText }: Props) {
           {consentText}
         </p>
       ) : null}
-      <button className="btn btn-primary" type="submit">
-        Submit
+      <button className="btn btn-primary" type="submit" disabled={pending}>
+        {pending ? 'Submitting?' : 'Submit'}
       </button>
       {message ? (
         <p role="status" aria-live="polite">

@@ -1,0 +1,80 @@
+{
+  "numTotalTestSuites": 2,
+  "numPassedTestSuites": 0,
+  "numFailedTestSuites": 2,
+  "numPendingTestSuites": 0,
+  "numTotalTests": 4,
+  "numPassedTests": 2,
+  "numFailedTests": 2,
+  "numPendingTests": 0,
+  "numTodoTests": 0,
+  "snapshot": {
+    "added": 0,
+    "failure": false,
+    "filesAdded": 0,
+    "filesRemoved": 0,
+    "filesRemovedList": [],
+    "filesUnmatched": 0,
+    "filesUpdated": 0,
+    "matched": 0,
+    "total": 0,
+    "unchecked": 0,
+    "uncheckedKeysByFile": [],
+    "unmatched": 0,
+    "updated": 0,
+    "didUpdate": false
+  },
+  "startTime": 1791266519961,
+  "success": false,
+  "testResults": [
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["RC08B persisted promotion boundaries"],
+          "fullName": "RC08B persisted promotion boundaries reads real future occurrences, excludes foreign/private/draft/deleted records and survives a new query",
+          "status": "passed",
+          "title": "reads real future occurrences, excludes foreign/private/draft/deleted records and survives a new query",
+          "duration": 306.2000000000003,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["RC08B persisted promotion boundaries"],
+          "fullName": "RC08B persisted promotion boundaries persists consent, scopes replay by form/site, recovers a failed task and never repeats completed side effects",
+          "status": "failed",
+          "title": "persists consent, scopes replay by form/site, recovers a failed task and never repeats completed side effects",
+          "duration": 122.97029999999995,
+          "failureMessages": [
+            "Error: A versioned consent wording is required.\n    at assertReviewedLocalizedConsent (C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\src\\modules\\audience\\contracts.ts:185:11)\n    at Module.submitPublicForm (C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\src\\modules\\audience\\service.ts:51:3)\n    at C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\tests\\integration\\rc08b-promotions.integration.test.ts:61:40\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at file:///C:/Projects/RENEGADE%20CMS/Renegade-CMS/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+          ],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["RC08B persisted promotion boundaries"],
+          "fullName": "RC08B persisted promotion boundaries enforces persisted message switches at notification creation, with owner-only preferences",
+          "status": "passed",
+          "title": "enforces persisted message switches at notification creation, with owner-only preferences",
+          "duration": 90.36339999999973,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["RC08B persisted promotion boundaries"],
+          "fullName": "RC08B persisted promotion boundaries exports canonical contributions and private owned/readable history without foreign contact or moderation data",
+          "status": "failed",
+          "title": "exports canonical contributions and private owned/readable history without foreign contact or moderation data",
+          "duration": 62.764000000000124,
+          "failureMessages": [
+            "TypeError: createDirectConversation is not a function\n    at C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\tests\\integration\\rc08b-promotions.integration.test.ts:102:32\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at file:///C:/Projects/RENEGADE%20CMS/Renegade-CMS/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+          ],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791266523643,
+      "endTime": 1791266524225.764,
+      "status": "failed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/integration/rc08b-promotions.integration.test.ts"
+    }
+  ]
+}

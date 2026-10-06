@@ -1,0 +1,2302 @@
+[
+  {
+    "file": "src/app/(frontend)/admin/fulfillment/page.tsx",
+    "line": 1,
+    "text": "import UnavailableWorkspace from '@/modules/admin/UnavailableWorkspace'"
+  },
+  {
+    "file": "src/app/(frontend)/admin/fulfillment/page.tsx",
+    "line": 5,
+    "text": "<UnavailableWorkspace"
+  },
+  {
+    "file": "src/app/(frontend)/admin/fulfillment/page.tsx",
+    "line": 7,
+    "text": "reason=\"Fulfillment command-center actions are unavailable pending persisted mappings, jobs, and provider verification.\""
+  },
+  {
+    "file": "src/app/(frontend)/api/admin/ai/proposals/route.ts",
+    "line": 88,
+    "text": "return fail('Connection credential is unavailable. Ask an operator to reconnect.', 503)"
+  },
+  {
+    "file": "src/app/(frontend)/api/admin/audience/command-center/route.ts",
+    "line": 14,
+    "text": "'Audience reporting unavailable: delivery evidence and site permissions require validation.',"
+  },
+  {
+    "file": "src/app/(frontend)/api/admin/audience/retry/route.ts",
+    "line": 38,
+    "text": "return Response.json({ error: 'Delivery unavailable.' }, { status: 400 })"
+  },
+  {
+    "file": "src/app/(frontend)/api/admin/commerce/dashboard/route.ts",
+    "line": 93,
+    "text": "health: 'unavailable',"
+  },
+  {
+    "file": "src/app/(frontend)/api/admin/commerce/dashboard/route.ts",
+    "line": 94,
+    "text": "reason: error instanceof Error ? error.message : 'unavailable',"
+  },
+  {
+    "file": "src/app/(frontend)/api/admin/content/preview/route.ts",
+    "line": 54,
+    "text": "return NextResponse.json({ error: 'Content preview is unavailable.' }, { status: 404 })"
+  },
+  {
+    "file": "src/app/(frontend)/api/admin/social/dispatch/route.ts",
+    "line": 40,
+    "text": "'Composer dispatch is deferred for RC. Create and approve persisted Social Drafts and pin them to a coordinated release.',"
+  },
+  {
+    "file": "src/app/(frontend)/api/admin/social/dispatch/route.ts",
+    "line": 42,
+    "text": "{ status: 410 },"
+  },
+  {
+    "file": "src/app/(frontend)/api/auth/passkey/complete/route.ts",
+    "line": 30,
+    "text": "error instanceof InstallationError ? error.message : 'Passkey sign-in is unavailable.',"
+  },
+  {
+    "file": "src/app/(frontend)/api/auth/passkey/options/route.ts",
+    "line": 15,
+    "text": "error instanceof InstallationError ? error.message : 'Passkey sign-in is unavailable.',"
+  },
+  {
+    "file": "src/app/(frontend)/api/auth/passkeys/route.ts",
+    "line": 61,
+    "text": "const message = error instanceof Error ? error.message : 'Security settings are unavailable.'"
+  },
+  {
+    "file": "src/app/(frontend)/api/calendar/export/route.ts",
+    "line": 62,
+    "text": "{ error: 'Interactive calendar feeds are deferred for RC.' },"
+  },
+  {
+    "file": "src/app/(frontend)/api/calendar/export/route.ts",
+    "line": 63,
+    "text": "{ status: 410 },"
+  },
+  {
+    "file": "src/app/(frontend)/api/commerce/cart/route.ts",
+    "line": 207,
+    "text": "if (!variant || variant.status === 'unavailable' || variant.status === 'archived') {"
+  },
+  {
+    "file": "src/app/(frontend)/api/commerce/checkout/initiate/route.ts",
+    "line": 420,
+    "text": "{ error: error instanceof Error ? error.message : 'Provider is unavailable.' },"
+  },
+  {
+    "file": "src/app/(frontend)/api/commerce/donations/campaign/[campaignId]/route.ts",
+    "line": 20,
+    "text": "return NextResponse.json({ error: 'Campaign unavailable.' }, { status: 404 })"
+  },
+  {
+    "file": "src/app/(frontend)/api/commerce/donations/intent/route.ts",
+    "line": 125,
+    "text": "return NextResponse.json({ error: 'Fee coverage is unavailable.' }, { status: 422 })"
+  },
+  {
+    "file": "src/app/(frontend)/api/commerce/donations/intent/route.ts",
+    "line": 200,
+    "text": "if (!(await provider.readiness()).ready) throw new Error('Hosted test payment is unavailable.')"
+  },
+  {
+    "file": "src/app/(frontend)/api/commerce/donations/intent/route.ts",
+    "line": 202,
+    "text": "return NextResponse.json({ error: 'Hosted test payment is unavailable.' }, { status: 503 })"
+  },
+  {
+    "file": "src/app/(frontend)/api/commerce/download/[grantKey]/route.ts",
+    "line": 69,
+    "text": "{ error: 'Download is unavailable.' },"
+  },
+  {
+    "file": "src/app/(frontend)/api/commerce/download/[grantKey]/route.ts",
+    "line": 101,
+    "text": "{ error: 'Download is unavailable.' },"
+  },
+  {
+    "file": "src/app/(frontend)/api/commerce/download/[grantKey]/route.ts",
+    "line": 109,
+    "text": "{ error: 'Download is unavailable.' },"
+  },
+  {
+    "file": "src/app/(frontend)/api/commerce/download/[grantKey]/route.ts",
+    "line": 132,
+    "text": "{ error: 'Download is unavailable.' },"
+  },
+  {
+    "file": "src/app/(frontend)/api/commerce/proposal/route.ts",
+    "line": 16,
+    "text": "TaxCalculationUnavailableError,"
+  },
+  {
+    "file": "src/app/(frontend)/api/commerce/proposal/route.ts",
+    "line": 226,
+    "text": "if (err instanceof TaxCalculationUnavailableError) {"
+  },
+  {
+    "file": "src/app/(frontend)/api/commerce/proposal/route.ts",
+    "line": 228,
+    "text": "{ error: err.message, code: 'tax_calculation_unavailable' },"
+  },
+  {
+    "file": "src/app/(frontend)/api/commerce/subscriptions/checkout/route.ts",
+    "line": 195,
+    "text": "{ error: error instanceof Error ? error.message : 'Subscription checkout unavailable.' },"
+  },
+  {
+    "file": "src/app/(frontend)/api/commerce/subscriptions/route.ts",
+    "line": 45,
+    "text": "return NextResponse.json({ error: 'Subscription service unavailable.' }, { status: 503 })"
+  },
+  {
+    "file": "src/app/(frontend)/api/commerce/subscriptions/route.ts",
+    "line": 137,
+    "text": "{ error: error instanceof Error ? error.message : 'Subscription portal unavailable.' },"
+  },
+  {
+    "file": "src/app/(frontend)/api/community/directory/route.ts",
+    "line": 35,
+    "text": "return Response.json({ error: 'Site unavailable.' }, { status: 404, headers })"
+  },
+  {
+    "file": "src/app/(frontend)/api/community/moderation/route.ts",
+    "line": 72,
+    "text": "return Response.json({ error: 'Database access unavailable' }, { status: 500 })"
+  },
+  {
+    "file": "src/app/(frontend)/api/community/notification-preferences/route.ts",
+    "line": 43,
+    "text": "{ error: 'External notifications and digests are deferred.' },"
+  },
+  {
+    "file": "src/app/(frontend)/api/community/notification-preferences/route.ts",
+    "line": 44,
+    "text": "{ status: 410 },"
+  },
+  {
+    "file": "src/app/(frontend)/api/community/posts/route.ts",
+    "line": 69,
+    "text": "return Response.json({ error: 'Discussion unavailable' }, { status: 404 })"
+  },
+  {
+    "file": "src/app/(frontend)/api/community/profiles/[handle]/route.ts",
+    "line": 27,
+    "text": "{ error: error instanceof ProfileAccessError ? error.message : 'Profile unavailable.' },"
+  },
+  {
+    "file": "src/app/(frontend)/api/community/relationships/route.ts",
+    "line": 27,
+    "text": "return Response.json({ error: 'Site unavailable.' }, { status: 404, headers })"
+  },
+  {
+    "file": "src/app/(frontend)/api/community/relationships/route.ts",
+    "line": 113,
+    "text": "return Response.json({ error: 'Site unavailable.' }, { status: 404, headers })"
+  },
+  {
+    "file": "src/app/(frontend)/api/community/reports/route.ts",
+    "line": 72,
+    "text": "return Response.json({ error: 'Database access unavailable' }, { status: 500 })"
+  },
+  {
+    "file": "src/app/(frontend)/api/email/webhook/route.ts",
+    "line": 19,
+    "text": "event?: 'delivered' | 'deferred' | 'bounce' | 'complaint' | 'unsubscribe' | 'suppression'"
+  },
+  {
+    "file": "src/app/(frontend)/api/email/webhook/route.ts",
+    "line": 29,
+    "text": "!['delivered', 'deferred', 'bounce', 'complaint', 'unsubscribe', 'suppression'].includes("
+  },
+  {
+    "file": "src/app/(frontend)/api/forms/[formId]/route.ts",
+    "line": 1,
+    "text": "/** Public forms remain deferred until their complete operator/visitor path is accepted. */"
+  },
+  {
+    "file": "src/app/(frontend)/api/forms/[formId]/route.ts",
+    "line": 3,
+    "text": "return Response.json({ error: 'Public forms are deferred for this release.' }, { status: 410 })"
+  },
+  {
+    "file": "src/app/(frontend)/api/forms/[formId]/route.ts",
+    "line": 6,
+    "text": "return Response.json({ error: 'Public forms are deferred for this release.' }, { status: 410 })"
+  },
+  {
+    "file": "src/app/(frontend)/api/layouts/[id]/route.ts",
+    "line": 70,
+    "text": "{ error: 'Unavailable component data is server-controlled.' },"
+  },
+  {
+    "file": "src/app/(frontend)/api/layouts/[id]/route.ts",
+    "line": 115,
+    "text": "(error) => !error.startsWith('Unavailable component preserved:'),"
+  },
+  {
+    "file": "src/app/(frontend)/api/media/command-center/route.ts",
+    "line": 32,
+    "text": "{ error: error instanceof Error ? error.message : 'Media Command Center unavailable.' },"
+  },
+  {
+    "file": "src/app/(frontend)/api/media/governance/route.ts",
+    "line": 35,
+    "text": "{ error: error instanceof Error ? error.message : 'Media governance unavailable.' },"
+  },
+  {
+    "file": "src/app/(frontend)/api/media/route.ts",
+    "line": 46,
+    "text": "{ error: error instanceof Error ? error.message : 'Media library unavailable.' },"
+  },
+  {
+    "file": "src/app/(frontend)/api/media/[id]/variants/route.ts",
+    "line": 191,
+    "text": "throw new MediaWorkflowError('The media worker queue is unavailable.', 503)"
+  },
+  {
+    "file": "src/app/(frontend)/api/member-auth/delete/route.ts",
+    "line": 4,
+    "text": "{ error: 'Permanent deletion is deferred. Deactivation is available in member settings.' },"
+  },
+  {
+    "file": "src/app/(frontend)/api/member-auth/delete/route.ts",
+    "line": 5,
+    "text": "{ status: 410 },"
+  },
+  {
+    "file": "src/app/(frontend)/api/member-auth/me/route.ts",
+    "line": 18,
+    "text": "if (!siteId) return Response.json({ error: 'Community site unavailable.' }, { status: 404 })"
+  },
+  {
+    "file": "src/app/(frontend)/api/member-auth/profile/route.ts",
+    "line": 32,
+    "text": "'Per-event relationship notifications are deferred. Use the in-app notification preference.',"
+  },
+  {
+    "file": "src/app/(frontend)/api/member-auth/profile/route.ts",
+    "line": 34,
+    "text": "{ status: 410 },"
+  },
+  {
+    "file": "src/app/(frontend)/api/realtime/stream/route.ts",
+    "line": 98,
+    "text": "controller.error(new Error('Realtime stream unavailable.'))"
+  },
+  {
+    "file": "src/app/(frontend)/api/setup/complete/route.ts",
+    "line": 57,
+    "text": "const message = isInstallationError ? error.message : 'Setup is unavailable.'"
+  },
+  {
+    "file": "src/app/(frontend)/api/setup/complete/route.ts",
+    "line": 58,
+    "text": "const status = isInstallationError && error.code === 'INSTALLATION_COMPLETE' ? 410 : 400"
+  },
+  {
+    "file": "src/app/(frontend)/api/setup/options/route.ts",
+    "line": 30,
+    "text": "const message = error instanceof InstallationError ? error.message : 'Setup is unavailable.'"
+  },
+  {
+    "file": "src/app/(frontend)/api/setup/options/route.ts",
+    "line": 32,
+    "text": "error instanceof InstallationError && error.code === 'INSTALLATION_COMPLETE' ? 410 : 400"
+  },
+  {
+    "file": "src/app/(frontend)/api/setup/readiness/route.ts",
+    "line": 108,
+    "text": "recovery: 'PostgreSQL is unavailable. Start container with \"docker compose up -d\".',"
+  },
+  {
+    "file": "src/app/(frontend)/api/setup/readiness/route.ts",
+    "line": 114,
+    "text": "message: 'Storage validation deferred until database is connected.',"
+  },
+  {
+    "file": "src/app/(frontend)/api/subscribers/subscribe/route.ts",
+    "line": 86,
+    "text": "{ error: error instanceof Error ? error.message : 'Subscription unavailable.' },"
+  },
+  {
+    "file": "src/app/(frontend)/api/v1/attachments/presign/route.ts",
+    "line": 6,
+    "text": "'Private message attachment uploads are deferred pending configured storage acceptance.',"
+  },
+  {
+    "file": "src/app/(frontend)/api/v1/attachments/presign/route.ts",
+    "line": 8,
+    "text": "{ status: 410, headers: { 'cache-control': 'private, no-store' } },"
+  },
+  {
+    "file": "src/app/(frontend)/api/v1/moderation/cases/batch/route.ts",
+    "line": 29,
+    "text": "return Response.json({ error: 'Moderation database unavailable' }, { status: 503 })"
+  },
+  {
+    "file": "src/app/(frontend)/api/v1/[...segments]/route.ts",
+    "line": 54,
+    "text": "'Only API version v1 is supported. Deprecated versions return 410 after their published sunset date.',"
+  },
+  {
+    "file": "src/app/(frontend)/api/v1/[...segments]/route.ts",
+    "line": 256,
+    "text": "return problem(422, 'secret_unavailable', 'secret_ref cannot be resolved by this deployment.')"
+  },
+  {
+    "file": "src/app/(frontend)/api/v1/[...segments]/route.ts",
+    "line": 385,
+    "text": "return problem(422, 'secret_unavailable', 'secret_ref cannot be resolved by this deployment.')"
+  },
+  {
+    "file": "src/app/(frontend)/calendar/page.tsx",
+    "line": 6,
+    "text": "<h1>Interactive calendar deferred for RC</h1>"
+  },
+  {
+    "file": "src/app/(frontend)/connections/page.tsx",
+    "line": 24,
+    "text": "'mastodon',"
+  },
+  {
+    "file": "src/app/(frontend)/connections/page.tsx",
+    "line": 320,
+    "text": "? { code: 'unavailable', message: doc.lastHealthReason, retryable: true }"
+  },
+  {
+    "file": "src/app/(frontend)/feed.xml/route.ts",
+    "line": 36,
+    "text": "return new Response('Feed unavailable when site indexing is disabled.', { status: 404 })"
+  },
+  {
+    "file": "src/app/(frontend)/health/ready/route.ts",
+    "line": 64,
+    "text": "{ status: 'not_ready', checks: { database: 'unavailable' } },"
+  },
+  {
+    "file": "src/app/(frontend)/media/[id]/route.ts",
+    "line": 174,
+    "text": "return new NextResponse('Variant is processing or unavailable', {"
+  },
+  {
+    "file": "src/app/(frontend)/members/page.tsx",
+    "line": 18,
+    "text": "{siteId ? <MemberDirectory siteId={siteId} /> : <p>Directory unavailable.</p>}"
+  },
+  {
+    "file": "src/app/(frontend)/members/settings/page.tsx",
+    "line": 43,
+    "text": "if (!r.ok) throw new Error('Profile unavailable.')"
+  },
+  {
+    "file": "src/app/(frontend)/members/settings/page.tsx",
+    "line": 45,
+    "text": "if (!data.profile) throw new Error('Profile unavailable.')"
+  },
+  {
+    "file": "src/app/(frontend)/members/settings/page.tsx",
+    "line": 388,
+    "text": "Per-event follower, mention and direct-message notification switches are deferred. Use the"
+  },
+  {
+    "file": "src/app/(frontend)/members/settings/page.tsx",
+    "line": 502,
+    "text": "Contribution and message export is deferred. Permanent deletion is deferred; deactivation"
+  },
+  {
+    "file": "src/app/(frontend)/messages/page.tsx",
+    "line": 357,
+    "text": "Private attachment upload and download are deferred pending configured storage acceptance."
+  },
+  {
+    "file": "src/app/(frontend)/podcasts/episodes/[slug]/page.tsx",
+    "line": 270,
+    "text": "Audio asset is currently unavailable for this episode."
+  },
+  {
+    "file": "src/app/(frontend)/podcasts/episodes/[slug]/transcript/route.ts",
+    "line": 89,
+    "text": "${rows || '<p>Transcript unavailable.</p>'}"
+  },
+  {
+    "file": "src/app/(frontend)/setup/page.tsx",
+    "line": 89,
+    "text": "Setup Unavailable"
+  },
+  {
+    "file": "src/app/(frontend)/setup/setup-form.tsx",
+    "line": 685,
+    "text": ": 'None (Deferred)'}"
+  },
+  {
+    "file": "src/app/(frontend)/social-studio/page.tsx",
+    "line": 26,
+    "text": "name: 'Mastodon / ActivityPub',"
+  },
+  {
+    "file": "src/app/(frontend)/social-studio/page.tsx",
+    "line": 125,
+    "text": "selectedNetwork !== 'Mastodon / ActivityPub'"
+  },
+  {
+    "file": "src/app/(frontend)/subscribe/preferences/page.tsx",
+    "line": 19,
+    "text": "setStatus(response.ok ? 'Preferences saved.' : 'This preference link is unavailable.')"
+  },
+  {
+    "file": "src/app/(frontend)/[...path]/page.tsx",
+    "line": 143,
+    "text": "// Best-effort telemetry must not make a redirect unavailable."
+  },
+  {
+    "file": "src/collections/Ai.ts",
+    "line": 9,
+    "text": "admin: { hidden: true },"
+  },
+  {
+    "file": "src/collections/Ai.ts",
+    "line": 41,
+    "text": "admin: { hidden: true },"
+  },
+  {
+    "file": "src/collections/Ai.ts",
+    "line": 57,
+    "text": "admin: { hidden: true },"
+  },
+  {
+    "file": "src/collections/Audience.ts",
+    "line": 10,
+    "text": "const deferredAudienceCollections = new Set(["
+  },
+  {
+    "file": "src/collections/Audience.ts",
+    "line": 26,
+    "text": "admin: { useAsTitle: title, group, hidden: deferredAudienceCollections.has(slug) },"
+  },
+  {
+    "file": "src/collections/Audience.ts",
+    "line": 27,
+    "text": "access: deferredAudienceCollections.has(slug)"
+  },
+  {
+    "file": "src/collections/Audience.ts",
+    "line": 679,
+    "text": "'deferred',"
+  },
+  {
+    "file": "src/collections/Audience.ts",
+    "line": 717,
+    "text": "['accepted', 'delivered', 'deferred', 'bounce', 'complaint', 'unsubscribe', 'suppression'],"
+  },
+  {
+    "file": "src/collections/Commerce.ts",
+    "line": 88,
+    "text": "select('health', ['healthy', 'degraded', 'unavailable'], 'healthy'),"
+  },
+  {
+    "file": "src/collections/Commerce.ts",
+    "line": 209,
+    "text": "options: ['active', 'unavailable', 'archived'],"
+  },
+  {
+    "file": "src/collections/Community.ts",
+    "line": 200,
+    "text": "admin: { useAsTitle: 'title', group: 'Calendar', hidden: true },"
+  },
+  {
+    "file": "src/collections/Community.ts",
+    "line": 244,
+    "text": "'One record is a series boundary; external calendar sync is intentionally deferred.',"
+  },
+  {
+    "file": "src/collections/Execution.ts",
+    "line": 13,
+    "text": "admin: { useAsTitle: 'eventType', group: 'System', hidden: true },"
+  },
+  {
+    "file": "src/collections/Identity.ts",
+    "line": 106,
+    "text": "admin: { useAsTitle: 'role', group: 'Community', hidden: true },"
+  },
+  {
+    "file": "src/collections/Identity.ts",
+    "line": 125,
+    "text": "admin: { useAsTitle: 'externalSubject', group: 'Community', hidden: true },"
+  },
+  {
+    "file": "src/collections/Identity.ts",
+    "line": 146,
+    "text": "admin: { useAsTitle: 'id', group: 'Community', hidden: true },"
+  },
+  {
+    "file": "src/collections/Identity.ts",
+    "line": 165,
+    "text": "admin: { useAsTitle: 'purpose', group: 'Community', hidden: true },"
+  },
+  {
+    "file": "src/collections/Identity.ts",
+    "line": 191,
+    "text": "admin: { useAsTitle: 'id', group: 'Community', hidden: true },"
+  },
+  {
+    "file": "src/collections/Identity.ts",
+    "line": 201,
+    "text": "admin: { useAsTitle: 'event', group: 'Community', hidden: true },"
+  },
+  {
+    "file": "src/collections/MediaPublishing.ts",
+    "line": 52,
+    "text": "options: ['draft', 'scheduled', 'published', 'updated', 'unavailable'],"
+  },
+  {
+    "file": "src/collections/MediaPublishing.ts",
+    "line": 488,
+    "text": "options: ['available', 'unavailable', 'removed'],"
+  },
+  {
+    "file": "src/collections/Network.ts",
+    "line": 8,
+    "text": "admin: { useAsTitle: title, group: 'Network', hidden: true },"
+  },
+  {
+    "file": "src/collections/PageLayouts.ts",
+    "line": 63,
+    "text": "(error) => !error.startsWith('Unavailable component preserved:'),"
+  },
+  {
+    "file": "src/collections/Publishing.ts",
+    "line": 318,
+    "text": "{ name: 'credits', type: 'text', admin: { hidden: true } }, // legacy export alias"
+  },
+  {
+    "file": "src/collections/Publishing.ts",
+    "line": 404,
+    "text": "admin: { useAsTitle: 'versionLabel', group: 'Media', hidden: true },"
+  },
+  {
+    "file": "src/collections/Publishing.ts",
+    "line": 469,
+    "text": "admin: { useAsTitle: 'checksum', group: 'Media', hidden: true },"
+  },
+  {
+    "file": "src/collections/Publishing.ts",
+    "line": 541,
+    "text": "admin: { useAsTitle: 'filename', group: 'Media', hidden: true },"
+  },
+  {
+    "file": "src/collections/Publishing.ts",
+    "line": 1496,
+    "text": "admin: { useAsTitle: 'title', group: 'Calendar', hidden: true },"
+  },
+  {
+    "file": "src/collections/Publishing.ts",
+    "line": 1582,
+    "text": "admin: { useAsTitle: 'membershipKey', group: 'Calendar', hidden: true },"
+  },
+  {
+    "file": "src/collections/Social.ts",
+    "line": 22,
+    "text": "'mastodon',"
+  },
+  {
+    "file": "src/collections/Social.ts",
+    "line": 61,
+    "text": "options: ['available', 'limited', 'approval-required', 'manual-handoff', 'unavailable'],"
+  },
+  {
+    "file": "src/globals/SiteSettings.ts",
+    "line": 93,
+    "text": "'Optional templates for routes served by the semantic catch-all. Fixed-renderer and unavailable entity routes retain their safe defaults. Site-specific templates can override supported defaults using approved variables.',"
+  },
+  {
+    "file": "src/globals/SiteSettings.ts",
+    "line": 261,
+    "text": "admin: { hidden: true },"
+  },
+  {
+    "file": "src/globals/SiteSettings.ts",
+    "line": 263,
+    "text": "{ name: 'defaultDescription', type: 'textarea', admin: { hidden: true } },"
+  },
+  {
+    "file": "src/modules/admin/AudienceCommandCenter.tsx",
+    "line": 9,
+    "text": "Audience reporting is unavailable while delivery evidence and site permissions are being"
+  },
+  {
+    "file": "src/modules/admin/AudienceCommandCenter.tsx",
+    "line": 18,
+    "text": "Public forms, automations, community digests and telecom dispatch are deferred for this"
+  },
+  {
+    "file": "src/modules/admin/CapabilityCenter.tsx",
+    "line": 61,
+    "text": "'Local signing, outbox, and failure diagnostics. Remote interoperability is deferred for RC.',"
+  },
+  {
+    "file": "src/modules/admin/CapabilityCenter.tsx",
+    "line": 120,
+    "text": ".filter((item) => item.reason?.code === 'worker_unavailable')"
+  },
+  {
+    "file": "src/modules/admin/CapabilityCenter.tsx",
+    "line": 121,
+    "text": ".map((item) => [item.key, 'unavailable']),"
+  },
+  {
+    "file": "src/modules/admin/CapabilityCenter.tsx",
+    "line": 197,
+    "text": "<span aria-disabled=\"true\">Interactive calendar (deferred for RC)</span> ·{' '}"
+  },
+  {
+    "file": "src/modules/admin/CommerceOperations.tsx",
+    "line": 59,
+    "text": "if (!response.ok) setError(body.error ?? 'Commerce operations are unavailable.')"
+  },
+  {
+    "file": "src/modules/admin/CommunityModerationCenter.tsx",
+    "line": 68,
+    "text": "const [dataUnavailable, setDataUnavailable] = useState(false)"
+  },
+  {
+    "file": "src/modules/admin/CommunityModerationCenter.tsx",
+    "line": 82,
+    "text": "setDataUnavailable(true)"
+  },
+  {
+    "file": "src/modules/admin/CommunityModerationCenter.tsx",
+    "line": 89,
+    "text": "'Moderation data is unavailable. Verify your site and moderation permissions before taking action.',"
+  },
+  {
+    "file": "src/modules/admin/CommunityModerationCenter.tsx",
+    "line": 93,
+    "text": "setDataUnavailable(false)"
+  },
+  {
+    "file": "src/modules/admin/CommunityModerationCenter.tsx",
+    "line": 108,
+    "text": "setDataUnavailable(true)"
+  },
+  {
+    "file": "src/modules/admin/CommunityModerationCenter.tsx",
+    "line": 122,
+    "text": "setDataUnavailable(true)"
+  },
+  {
+    "file": "src/modules/admin/CommunityModerationCenter.tsx",
+    "line": 129,
+    "text": "setDataUnavailable(true)"
+  },
+  {
+    "file": "src/modules/admin/CommunityModerationCenter.tsx",
+    "line": 177,
+    "text": "if (dataUnavailable) {"
+  },
+  {
+    "file": "src/modules/admin/DiscoveryPanel.tsx",
+    "line": 91,
+    "text": "if (!response.ok) throw new Error(body.error || 'Preview unavailable.')"
+  },
+  {
+    "file": "src/modules/admin/DiscoveryPanel.tsx",
+    "line": 96,
+    "text": "active && setError(reason instanceof Error ? reason.message : 'Preview unavailable.'),"
+  },
+  {
+    "file": "src/modules/admin/DiscoveryPanel.tsx",
+    "line": 130,
+    "text": "setError(reason instanceof Error ? reason.message : 'Preview unavailable.')"
+  },
+  {
+    "file": "src/modules/admin/DonationReconciliationPanel.tsx",
+    "line": 32,
+    "text": "if (!response.ok) setError(body.error ?? 'Donation reconciliation is unavailable.')"
+  },
+  {
+    "file": "src/modules/admin/DonationReconciliationPanel.tsx",
+    "line": 47,
+    "text": "setError(body.error ?? 'Donation export is unavailable.')"
+  },
+  {
+    "file": "src/modules/admin/EditorialWorkflowCenter.tsx",
+    "line": 940,
+    "text": "Full interactive calendar deferred for RC"
+  },
+  {
+    "file": "src/modules/admin/EditorialWorkflowCenter.tsx",
+    "line": 986,
+    "text": "? 'Heartbeat unavailable'"
+  },
+  {
+    "file": "src/modules/admin/EmailComposer.tsx",
+    "line": 51,
+    "text": "and SMS community notifications are deferred."
+  },
+  {
+    "file": "src/modules/admin/FulfillmentCommandCenter.tsx",
+    "line": 35,
+    "text": "providerKey: 'pod-emulator',"
+  },
+  {
+    "file": "src/modules/admin/FulfillmentCommandCenter.tsx",
+    "line": 137,
+    "text": "providerKey: 'pod-emulator',"
+  },
+  {
+    "file": "src/modules/admin/FulfillmentCommandCenter.tsx",
+    "line": 138,
+    "text": "label: 'Local POD Emulator',"
+  },
+  {
+    "file": "src/modules/admin/MediaCommandCenter.tsx",
+    "line": 1320,
+    "text": "<span>Feed path unavailable until the show has a slug.</span>"
+  },
+  {
+    "file": "src/modules/admin/PodMappingCenter.tsx",
+    "line": 23,
+    "text": "providerKey: 'pod-emulator',"
+  },
+  {
+    "file": "src/modules/admin/PodMappingCenter.tsx",
+    "line": 40,
+    "text": "url: 'https://emulator.renegade.internal/mockups/tee-m-blk.png',"
+  },
+  {
+    "file": "src/modules/admin/progressive-disclosure.ts",
+    "line": 65,
+    "text": "return { ...collection, admin: { ...collection.admin, hidden: true } }"
+  },
+  {
+    "file": "src/modules/admin/progressive-disclosure.ts",
+    "line": 88,
+    "text": "if (capability.status === 'disabled' || capability.status === 'unavailable') return 'disabled'"
+  },
+  {
+    "file": "src/modules/admin/SemanticURLPreview.tsx",
+    "line": 33,
+    "text": "if (!response.ok) throw new Error(body.error || 'URL preview is unavailable.')"
+  },
+  {
+    "file": "src/modules/admin/SemanticURLPreview.tsx",
+    "line": 41,
+    "text": "error: error instanceof Error ? error.message : 'URL preview is unavailable.',"
+  },
+  {
+    "file": "src/modules/admin/SocialCommandCenter.tsx",
+    "line": 124,
+    "text": ": activeAccount.network === 'mastodon' ||"
+  },
+  {
+    "file": "src/modules/admin/SocialCommandCenter.tsx",
+    "line": 210,
+    "text": ": acc.network === 'mastodon' || acc.network === 'threads' || acc.network === 'pinterest'"
+  },
+  {
+    "file": "src/modules/admin/SocialCommandCenter.tsx",
+    "line": 473,
+    "text": "<strong>Remote interoperability deferred</strong> (Local signing/outbox/failure only)"
+  },
+  {
+    "file": "src/modules/admin/SocialCommandCenter.tsx",
+    "line": 713,
+    "text": "{activeAccount.network === 'mastodon' && ("
+  },
+  {
+    "file": "src/modules/admin/SocialCommandCenter.tsx",
+    "line": 963,
+    "text": "{/* Spoiler Banner for Mastodon */}"
+  },
+  {
+    "file": "src/modules/admin/SocialCommandCenter.tsx",
+    "line": 964,
+    "text": "{activeAccount.network === 'mastodon' && contentWarning && ("
+  },
+  {
+    "file": "src/modules/admin/UnavailableWorkspace.tsx",
+    "line": 3,
+    "text": "export default function UnavailableWorkspace({ title, reason }: { title: string; reason: string }) {"
+  },
+  {
+    "file": "src/modules/ai/connections.ts",
+    "line": 69,
+    "text": "if (!envelope) throw new Error('AI connection credential is unavailable. Reconnect the provider.')"
+  },
+  {
+    "file": "src/modules/ai/contracts.ts",
+    "line": 49,
+    "text": "fallback: 'unavailable-state' | 'manual-copyable-prompt'"
+  },
+  {
+    "file": "src/modules/ai/contracts.ts",
+    "line": 103,
+    "text": "fallback: capability === 'ai.image.assist' ? 'manual-copyable-prompt' : 'unavailable-state',"
+  },
+  {
+    "file": "src/modules/ai/gateway.ts",
+    "line": 406,
+    "text": "if (!response.ok) throw new Error(`provider unavailable (${response.status})`)"
+  },
+  {
+    "file": "src/modules/ai/gateway.ts",
+    "line": 440,
+    "text": "if (!response.ok) throw new Error(`provider unavailable (${response.status})`)"
+  },
+  {
+    "file": "src/modules/audience/command-center-contracts.ts",
+    "line": 190,
+    "text": "key: 'deferred_transient',"
+  },
+  {
+    "file": "src/modules/audience/command-center-contracts.ts",
+    "line": 191,
+    "text": "label: 'Deferred / Retryable',"
+  },
+  {
+    "file": "src/modules/audience/command-center-contracts.ts",
+    "line": 197,
+    "text": "formula: 'COUNT(deliveries WHERE status = \"deferred\")',"
+  },
+  {
+    "file": "src/modules/audience/payload-domain.ts",
+    "line": 98,
+    "text": "// Telecom remains a contract-tested deferred capability; no shipping dispatcher may send it."
+  },
+  {
+    "file": "src/modules/audience/service.ts",
+    "line": 119,
+    "text": "if (typeof email !== 'string') throw new Error('Configured identity value is unavailable.')"
+  },
+  {
+    "file": "src/modules/audience/service.ts",
+    "line": 692,
+    "text": "event: 'delivered' | 'deferred' | 'bounce' | 'complaint' | 'unsubscribe' | 'suppression'"
+  },
+  {
+    "file": "src/modules/audience/service.ts",
+    "line": 721,
+    "text": ": input.event === 'deferred'"
+  },
+  {
+    "file": "src/modules/audience/service.ts",
+    "line": 722,
+    "text": "? 'deferred'"
+  },
+  {
+    "file": "src/modules/audience/service.ts",
+    "line": 792,
+    "text": "throw new Error('Newsletter unavailable.')"
+  },
+  {
+    "file": "src/modules/audience/service.ts",
+    "line": 1105,
+    "text": "throw new Error('Audience subject is unavailable.')"
+  },
+  {
+    "file": "src/modules/audience/service.ts",
+    "line": 1224,
+    "text": "throw new Error('Audience subject is unavailable.')"
+  },
+  {
+    "file": "src/modules/collaboration/service.ts",
+    "line": 250,
+    "text": "throw new Error('Invitation is unavailable.')"
+  },
+  {
+    "file": "src/modules/collaboration/service.ts",
+    "line": 551,
+    "text": "throw new Error('Editorial discussion is unavailable.')"
+  },
+  {
+    "file": "src/modules/commerce/AddToCartControl.tsx",
+    "line": 14,
+    "text": "unavailable?: boolean"
+  },
+  {
+    "file": "src/modules/commerce/AddToCartControl.tsx",
+    "line": 30,
+    "text": "const availableVariants = variants.filter((v) => !v.unavailable)"
+  },
+  {
+    "file": "src/modules/commerce/AddToCartControl.tsx",
+    "line": 46,
+    "text": "selectedVariant.unavailable ||"
+  },
+  {
+    "file": "src/modules/commerce/AddToCartControl.tsx",
+    "line": 116,
+    "text": "<option key={v.sku} value={v.sku} disabled={v.unavailable}>"
+  },
+  {
+    "file": "src/modules/commerce/AddToCartControl.tsx",
+    "line": 118,
+    "text": "{v.unavailable ? ' [Unavailable]' : ''}"
+  },
+  {
+    "file": "src/modules/commerce/AddToCartControl.tsx",
+    "line": 210,
+    "text": "isOutOfStock ? `${productName} is currently unavailable` : `Add ${productName} to cart`"
+  },
+  {
+    "file": "src/modules/commerce/AddToCartControl.tsx",
+    "line": 213,
+    "text": "{loading ? 'Adding...' : isOutOfStock ? 'Unavailable' : 'Add to Cart'}"
+  },
+  {
+    "file": "src/modules/commerce/cart.ts",
+    "line": 41,
+    "text": "| 'item-unavailable'"
+  },
+  {
+    "file": "src/modules/commerce/cart.ts",
+    "line": 94,
+    "text": "status?: 'active' | 'unavailable' | 'archived'"
+  },
+  {
+    "file": "src/modules/commerce/cart.ts",
+    "line": 179,
+    "text": "code: 'item-unavailable',"
+  },
+  {
+    "file": "src/modules/commerce/cart.ts",
+    "line": 188,
+    "text": "if (!variant || variant.status === 'unavailable' || variant.status === 'archived') {"
+  },
+  {
+    "file": "src/modules/commerce/cart.ts",
+    "line": 190,
+    "text": "code: 'item-unavailable',"
+  },
+  {
+    "file": "src/modules/commerce/cart.ts",
+    "line": 191,
+    "text": "message: `Variant \"${variant?.title ?? item.variantSku}\" is currently unavailable.`,"
+  },
+  {
+    "file": "src/modules/commerce/cart.ts",
+    "line": 224,
+    "text": "code: 'item-unavailable',"
+  },
+  {
+    "file": "src/modules/commerce/cart.ts",
+    "line": 248,
+    "text": "code: 'item-unavailable',"
+  },
+  {
+    "file": "src/modules/commerce/catalog.ts",
+    "line": 19,
+    "text": "status?: 'active' | 'unavailable' | 'archived'"
+  },
+  {
+    "file": "src/modules/commerce/CheckoutStatus.tsx",
+    "line": 30,
+    "text": "if (!response.ok) return setError(body.error ?? 'Checkout status is unavailable.')"
+  },
+  {
+    "file": "src/modules/commerce/contracts.ts",
+    "line": 84,
+    "text": "health: 'healthy' | 'degraded' | 'unavailable'"
+  },
+  {
+    "file": "src/modules/commerce/contracts.ts",
+    "line": 100,
+    "text": "unavailableReason?: string"
+  },
+  {
+    "file": "src/modules/commerce/disclosures.tsx",
+    "line": 125,
+    "text": "warnings.push(`Offer '${offer.name}' target network is rate-limited; link check deferred.`)"
+  },
+  {
+    "file": "src/modules/commerce/inventory.ts",
+    "line": 20,
+    "text": "status?: 'active' | 'unavailable' | 'archived'"
+  },
+  {
+    "file": "src/modules/commerce/inventory.ts",
+    "line": 51,
+    "text": "if (record.status === 'unavailable' || record.status === 'archived') {"
+  },
+  {
+    "file": "src/modules/commerce/inventory.ts",
+    "line": 56,
+    "text": "reason: 'Product variant is unavailable.',"
+  },
+  {
+    "file": "src/modules/commerce/inventory.ts",
+    "line": 79,
+    "text": "reason: 'Digital delivery is currently unavailable.',"
+  },
+  {
+    "file": "src/modules/commerce/payment-provider.ts",
+    "line": 23,
+    "text": "| 'provider-unavailable'"
+  },
+  {
+    "file": "src/modules/commerce/payment-provider.ts",
+    "line": 97,
+    "text": "health: 'healthy' | 'degraded' | 'unavailable'"
+  },
+  {
+    "file": "src/modules/commerce/payment-provider.ts",
+    "line": 263,
+    "text": ": { ready: false, health: 'unavailable', reason: 'missing-secret' }"
+  },
+  {
+    "file": "src/modules/commerce/payment-provider.ts",
+    "line": 389,
+    "text": "? 'provider-unavailable'"
+  },
+  {
+    "file": "src/modules/commerce/payment-provider.ts",
+    "line": 441,
+    "text": "return { ready: false, health: 'unavailable', reason: 'missing-test-secrets' }"
+  },
+  {
+    "file": "src/modules/commerce/payment-provider.ts",
+    "line": 449,
+    "text": "error instanceof PaymentProviderError && error.retryable ? 'degraded' : 'unavailable',"
+  },
+  {
+    "file": "src/modules/commerce/pod-connection.ts",
+    "line": 19,
+    "text": "lastHealthStatus?: 'healthy' | 'degraded' | 'unavailable'"
+  },
+  {
+    "file": "src/modules/commerce/pod-connection.ts",
+    "line": 39,
+    "text": "lastHealthStatus?: 'healthy' | 'degraded' | 'unavailable'"
+  },
+  {
+    "file": "src/modules/commerce/pod-contract.ts",
+    "line": 53,
+    "text": "| 'provider-unavailable'"
+  },
+  {
+    "file": "src/modules/commerce/pod-contract.ts",
+    "line": 244,
+    "text": "mode: 'deterministic-emulator' | 'live-configured'"
+  },
+  {
+    "file": "src/modules/commerce/pod-contract.ts",
+    "line": 250,
+    "text": "health: 'healthy' | 'degraded' | 'unavailable'"
+  },
+  {
+    "file": "src/modules/commerce/pod-emulator.ts",
+    "line": 21,
+    "text": "export const EMULATOR_CAPABILITIES: PodProviderCapabilityMatrix = {"
+  },
+  {
+    "file": "src/modules/commerce/pod-emulator.ts",
+    "line": 137,
+    "text": "export class PodEmulatorAdapter implements PodProviderAdapter {"
+  },
+  {
+    "file": "src/modules/commerce/pod-emulator.ts",
+    "line": 138,
+    "text": "readonly key = 'pod-emulator'"
+  },
+  {
+    "file": "src/modules/commerce/pod-emulator.ts",
+    "line": 140,
+    "text": "readonly capabilities = EMULATOR_CAPABILITIES"
+  },
+  {
+    "file": "src/modules/commerce/pod-emulator.ts",
+    "line": 144,
+    "text": "mode: 'deterministic-emulator' as const,"
+  },
+  {
+    "file": "src/modules/commerce/pod-emulator.ts",
+    "line": 179,
+    "text": "health: 'healthy' | 'degraded' | 'unavailable'"
+  },
+  {
+    "file": "src/modules/commerce/pod-emulator.ts",
+    "line": 186,
+    "text": "health: 'unavailable',"
+  },
+  {
+    "file": "src/modules/commerce/pod-emulator.ts",
+    "line": 187,
+    "text": "reason: this.healthReason ?? 'Emulator manually set to unhealthy',"
+  },
+  {
+    "file": "src/modules/commerce/pod-emulator.ts",
+    "line": 299,
+    "text": "downloadUrl: `https://emulator.renegade.internal/files/${remoteFileId}`,"
+  },
+  {
+    "file": "src/modules/commerce/pod-emulator.ts",
+    "line": 330,
+    "text": "mockupUrl: `https://emulator.renegade.internal/mockups/${mockupHash.slice(0, 16)}.png`,"
+  },
+  {
+    "file": "src/modules/commerce/pod-emulator.ts",
+    "line": 472,
+    "text": "`POD order ${externalOrderId} was not found on emulator.`,"
+  },
+  {
+    "file": "src/modules/commerce/pod-emulator.ts",
+    "line": 533,
+    "text": "if (!order) throw new Error(`Order ${externalOrderId} not found in emulator.`)"
+  },
+  {
+    "file": "src/modules/commerce/pod-emulator.ts",
+    "line": 547,
+    "text": "if (!order) throw new Error(`Order ${externalOrderId} not found in emulator.`)"
+  },
+  {
+    "file": "src/modules/commerce/pod-emulator.ts",
+    "line": 605,
+    "text": "'provider-unavailable',"
+  },
+  {
+    "file": "src/modules/commerce/pod-emulator.ts",
+    "line": 606,
+    "text": "this.healthReason ?? 'Emulator provider is currently unavailable.',"
+  },
+  {
+    "file": "src/modules/commerce/pod-real-provider.ts",
+    "line": 86,
+    "text": "health: 'healthy' | 'degraded' | 'unavailable'"
+  },
+  {
+    "file": "src/modules/commerce/pod-real-provider.ts",
+    "line": 100,
+    "text": "health: 'unavailable',"
+  },
+  {
+    "file": "src/modules/commerce/pod-real-provider.ts",
+    "line": 116,
+    "text": "health: 'unavailable',"
+  },
+  {
+    "file": "src/modules/commerce/pod-real-provider.ts",
+    "line": 130,
+    "text": "'provider-unavailable',"
+  },
+  {
+    "file": "src/modules/commerce/pod-real-provider.ts",
+    "line": 149,
+    "text": "'provider-unavailable',"
+  },
+  {
+    "file": "src/modules/commerce/pod-real-provider.ts",
+    "line": 197,
+    "text": "'provider-unavailable',"
+  },
+  {
+    "file": "src/modules/commerce/pod-real-provider.ts",
+    "line": 390,
+    "text": "'provider-unavailable',"
+  },
+  {
+    "file": "src/modules/commerce/pod-real-provider.ts",
+    "line": 454,
+    "text": "'provider-unavailable',"
+  },
+  {
+    "file": "src/modules/commerce/ProductView.tsx",
+    "line": 59,
+    "text": "<p>Price unavailable</p>"
+  },
+  {
+    "file": "src/modules/commerce/ProductView.tsx",
+    "line": 120,
+    "text": "const unavailable ="
+  },
+  {
+    "file": "src/modules/commerce/ProductView.tsx",
+    "line": 121,
+    "text": "variant.status === 'unavailable' ||"
+  },
+  {
+    "file": "src/modules/commerce/ProductView.tsx",
+    "line": 143,
+    "text": "<span>Price unavailable</span>"
+  },
+  {
+    "file": "src/modules/commerce/ProductView.tsx",
+    "line": 149,
+    "text": ": unavailable"
+  },
+  {
+    "file": "src/modules/commerce/ProductView.tsx",
+    "line": 150,
+    "text": "? 'Unavailable'"
+  },
+  {
+    "file": "src/modules/commerce/ProductView.tsx",
+    "line": 189,
+    "text": "unavailable:"
+  },
+  {
+    "file": "src/modules/commerce/ProductView.tsx",
+    "line": 190,
+    "text": "v.status === 'unavailable' ||"
+  },
+  {
+    "file": "src/modules/commerce/service.ts",
+    "line": 245,
+    "text": "variant?.status === 'unavailable' ||"
+  },
+  {
+    "file": "src/modules/commerce/service.ts",
+    "line": 250,
+    "text": "throw new Error('Product variant is unavailable.')"
+  },
+  {
+    "file": "src/modules/commerce/service.ts",
+    "line": 402,
+    "text": "/** Product publication can reference only DAM-approved assets; private/restricted files stay unavailable. */"
+  },
+  {
+    "file": "src/modules/commerce/shipping.ts",
+    "line": 134,
+    "text": "* with configured flat, free-tier, and pickup options when remote carrier quotes are unavailable."
+  },
+  {
+    "file": "src/modules/commerce/site-scope.ts",
+    "line": 49,
+    "text": "throw new Error('Catalog site unavailable for this host.')"
+  },
+  {
+    "file": "src/modules/commerce/tax.ts",
+    "line": 26,
+    "text": "export class TaxCalculationUnavailableError extends Error {"
+  },
+  {
+    "file": "src/modules/commerce/tax.ts",
+    "line": 32,
+    "text": "this.name = 'TaxCalculationUnavailableError'"
+  },
+  {
+    "file": "src/modules/commerce/tax.ts",
+    "line": 97,
+    "text": "throw new TaxCalculationUnavailableError("
+  },
+  {
+    "file": "src/modules/commerce/tax.ts",
+    "line": 114,
+    "text": "throw new TaxCalculationUnavailableError("
+  },
+  {
+    "file": "src/modules/commerce/tax.ts",
+    "line": 115,
+    "text": "`Reliable tax rates are unavailable for destination (${jurisdiction}). Checkout is blocked until a valid tax rule is configured.`,"
+  },
+  {
+    "file": "src/modules/community/abuse-triage.ts",
+    "line": 120,
+    "text": "if (!pool?.query) throw new Error('MODERATION_DB_UNAVAILABLE')"
+  },
+  {
+    "file": "src/modules/community/abuse-triage.ts",
+    "line": 250,
+    "text": "if (!pool?.connect) throw new Error('MODERATION_DB_UNAVAILABLE')"
+  },
+  {
+    "file": "src/modules/community/abuse-triage.ts",
+    "line": 323,
+    "text": "if (!pool?.connect) throw new Error('MODERATION_DB_UNAVAILABLE')"
+  },
+  {
+    "file": "src/modules/community/conversation-composer.ts",
+    "line": 289,
+    "text": "throw new ConversationError('Conversation unavailable', 404, 'CONVERSATION_UNAVAILABLE')"
+  },
+  {
+    "file": "src/modules/community/conversation-composer.ts",
+    "line": 354,
+    "text": "'Message request is unavailable',"
+  },
+  {
+    "file": "src/modules/community/conversation-composer.ts",
+    "line": 411,
+    "text": "throw new ConversationError('Message unavailable', 404, 'MESSAGE_NOT_FOUND')"
+  },
+  {
+    "file": "src/modules/community/conversation-composer.ts",
+    "line": 465,
+    "text": "throw new ConversationError('Conversation unavailable', 404, 'CONVERSATION_UNAVAILABLE')"
+  },
+  {
+    "file": "src/modules/community/conversation-composer.ts",
+    "line": 495,
+    "text": "throw new ConversationError('Group unavailable', 404, 'GROUP_NOT_FOUND')"
+  },
+  {
+    "file": "src/modules/community/forum-topic-operations.ts",
+    "line": 37,
+    "text": "'FORUM_DB_UNAVAILABLE',"
+  },
+  {
+    "file": "src/modules/community/MemberDirectory.tsx",
+    "line": 26,
+    "text": "setMessage(data.error ?? 'Directory unavailable.')"
+  },
+  {
+    "file": "src/modules/community/message-attachments.ts",
+    "line": 53,
+    "text": "'ATTACHMENT_STORAGE_UNAVAILABLE',"
+  },
+  {
+    "file": "src/modules/community/message-attachments.ts",
+    "line": 152,
+    "text": "'Attachment is unavailable for this site or sender.',"
+  },
+  {
+    "file": "src/modules/community/moderation-actions.ts",
+    "line": 38,
+    "text": "'MODERATION_DB_UNAVAILABLE',"
+  },
+  {
+    "file": "src/modules/community/moderation-actions.ts",
+    "line": 102,
+    "text": "'MODERATION_DB_UNAVAILABLE',"
+  },
+  {
+    "file": "src/modules/community/moderation-actions.ts",
+    "line": 585,
+    "text": "'MODERATION_DB_UNAVAILABLE',"
+  },
+  {
+    "file": "src/modules/community/moderation-reports.ts",
+    "line": 41,
+    "text": "'MODERATION_DB_UNAVAILABLE',"
+  },
+  {
+    "file": "src/modules/community/NotificationPreferences.tsx",
+    "line": 34,
+    "text": "setStatus('Notification preference saved.')"
+  },
+  {
+    "file": "src/modules/community/NotificationPreferences.tsx",
+    "line": 55,
+    "text": "Email, SMS and digest delivery for community notifications are deferred. Notifications"
+  },
+  {
+    "file": "src/modules/community/policy.ts",
+    "line": 72,
+    "text": "return { allowed: false, reason: 'record_burned', status: 410 }"
+  },
+  {
+    "file": "src/modules/community/profile-projection.ts",
+    "line": 99,
+    "text": "throw new ProfileAccessError(404, 'Profile unavailable.')"
+  },
+  {
+    "file": "src/modules/community/profile-projection.ts",
+    "line": 107,
+    "text": "if (!canSee) throw new ProfileAccessError(404, 'Profile unavailable.')"
+  },
+  {
+    "file": "src/modules/community/profile-projection.ts",
+    "line": 190,
+    "text": "throw new ProfileAccessError(404, 'Profile unavailable.')"
+  },
+  {
+    "file": "src/modules/community/profile-projection.ts",
+    "line": 210,
+    "text": "if (!old?.rows[0]) throw new ProfileAccessError(404, 'Profile unavailable.')"
+  },
+  {
+    "file": "src/modules/community/profile-projection.ts",
+    "line": 235,
+    "text": "throw new ProfileAccessError(404, 'Profile unavailable.')"
+  },
+  {
+    "file": "src/modules/community/profile-projection.ts",
+    "line": 265,
+    "text": "throw new ProfileAccessError(404, 'Member unavailable.')"
+  },
+  {
+    "file": "src/modules/community/profile-projection.ts",
+    "line": 273,
+    "text": "throw new ProfileAccessError(404, 'Member unavailable.')"
+  },
+  {
+    "file": "src/modules/community/profile-service.ts",
+    "line": 88,
+    "text": "if (!profile) throw new ProfileAccessError(404, 'Profile unavailable.')"
+  },
+  {
+    "file": "src/modules/community/profile-service.ts",
+    "line": 166,
+    "text": "throw new ProfileAccessError(404, 'Profile unavailable.')"
+  },
+  {
+    "file": "src/modules/community/profile-service.ts",
+    "line": 226,
+    "text": "throw new ProfileAccessError(503, 'Profile image changes are temporarily unavailable.')"
+  },
+  {
+    "file": "src/modules/community/profile-service.ts",
+    "line": 240,
+    "text": "if (!pool) throw new ProfileAccessError(503, 'Handle changes are temporarily unavailable.')"
+  },
+  {
+    "file": "src/modules/community/service.ts",
+    "line": 305,
+    "text": "throw new CommunityError('Profile is unavailable', 404, 'MEMBER_UNAVAILABLE')"
+  },
+  {
+    "file": "src/modules/community/service.ts",
+    "line": 1208,
+    "text": "if (!readable.allowed) throw new CommunityError('Thread unavailable', 403, 'THREAD_PRIVATE')"
+  },
+  {
+    "file": "src/modules/community/service.ts",
+    "line": 1625,
+    "text": "throw new CommunityError('Conversation unavailable', 404, 'CONVERSATION_UNAVAILABLE')"
+  },
+  {
+    "file": "src/modules/community/service.ts",
+    "line": 1651,
+    "text": "throw new CommunityError('Conversation unavailable', 404, 'CONVERSATION_UNAVAILABLE')"
+  },
+  {
+    "file": "src/modules/community/site-scope.ts",
+    "line": 45,
+    "text": "throw new ProfileAccessError(404, 'Community site unavailable.')"
+  },
+  {
+    "file": "src/modules/core/capabilities.ts",
+    "line": 13,
+    "text": "| 'unavailable'"
+  },
+  {
+    "file": "src/modules/core/capabilities.ts",
+    "line": 23,
+    "text": "| 'unavailable'"
+  },
+  {
+    "file": "src/modules/core/capabilities.ts",
+    "line": 33,
+    "text": "| 'provider_unavailable'"
+  },
+  {
+    "file": "src/modules/core/capabilities.ts",
+    "line": 34,
+    "text": "| 'worker_unavailable'"
+  },
+  {
+    "file": "src/modules/core/capabilities.ts",
+    "line": 36,
+    "text": "| 'core_database_unavailable'"
+  },
+  {
+    "file": "src/modules/core/capabilities.ts",
+    "line": 121,
+    "text": "health?: 'healthy' | 'degraded' | 'unavailable'"
+  },
+  {
+    "file": "src/modules/core/capabilities.ts",
+    "line": 131,
+    "text": "workers?: Readonly<Record<string, 'healthy' | 'unavailable'>>"
+  },
+  {
+    "file": "src/modules/core/capabilities.ts",
+    "line": 174,
+    "text": ": capability.reason?.code === 'core_database_unavailable'"
+  },
+  {
+    "file": "src/modules/core/capabilities.ts",
+    "line": 178,
+    "text": ": capability.status === 'unavailable'"
+  },
+  {
+    "file": "src/modules/core/capabilities.ts",
+    "line": 179,
+    "text": "? 'unavailable'"
+  },
+  {
+    "file": "src/modules/core/capabilities.ts",
+    "line": 207,
+    "text": "status: 'unavailable',"
+  },
+  {
+    "file": "src/modules/core/capabilities.ts",
+    "line": 243,
+    "text": "if (definition.requiresWorker && this.source.workers?.[definition.key] === 'unavailable')"
+  },
+  {
+    "file": "src/modules/core/capabilities.ts",
+    "line": 247,
+    "text": "reason: reason('worker_unavailable', 'Required worker is unavailable.'),"
+  },
+  {
+    "file": "src/modules/core/capabilities.ts",
+    "line": 259,
+    "text": "status: 'unavailable',"
+  },
+  {
+    "file": "src/modules/core/capabilities.ts",
+    "line": 281,
+    "text": "reason: reason('provider_unavailable', 'Configured provider is unavailable.'),"
+  },
+  {
+    "file": "src/modules/core/capabilities.ts",
+    "line": 285,
+    "text": "if (evidence.health === 'unavailable')"
+  },
+  {
+    "file": "src/modules/core/capabilities.ts",
+    "line": 288,
+    "text": "status: 'unavailable',"
+  },
+  {
+    "file": "src/modules/core/capabilities.ts",
+    "line": 289,
+    "text": "reason: reason('core_database_unavailable', 'Required core database is unavailable.'),"
+  },
+  {
+    "file": "src/modules/core/capabilities.ts",
+    "line": 295,
+    "text": "reason: reason('provider_unavailable', 'Dependency is degraded.'),"
+  },
+  {
+    "file": "src/modules/core/contracts.ts",
+    "line": 395,
+    "text": "availability: 'available' | 'unavailable' | 'restricted' | 'unknown'"
+  },
+  {
+    "file": "src/modules/editorial/contracts.ts",
+    "line": 369,
+    "text": "deferredCollections: readonly ["
+  },
+  {
+    "file": "src/modules/editorial/contracts.ts",
+    "line": 522,
+    "text": "deferredCollections: ["
+  },
+  {
+    "file": "src/modules/editorial/contracts.ts",
+    "line": 698,
+    "text": "if (value.deferredCollections.includes('revision-records')) return"
+  },
+  {
+    "file": "src/modules/email/delivery.ts",
+    "line": 372,
+    "text": "'SMTP service is temporarily unavailable.',"
+  },
+  {
+    "file": "src/modules/extensions/connection-runtime.ts",
+    "line": 96,
+    "text": "if (!encoded) throw new Error(`Credential key ${JSON.stringify(keyId)} is unavailable.`)"
+  },
+  {
+    "file": "src/modules/extensions/connection-runtime.ts",
+    "line": 292,
+    "text": "return this.failure(connection, 'degraded', 'unavailable', now, error)"
+  },
+  {
+    "file": "src/modules/extensions/connection-runtime.ts",
+    "line": 301,
+    "text": "return this.failure(connection, 'degraded', 'unavailable', now, error)"
+  },
+  {
+    "file": "src/modules/extensions/connection-runtime.ts",
+    "line": 343,
+    "text": "code: 'expired_credentials' | 'unavailable',"
+  },
+  {
+    "file": "src/modules/extensions/connection-runtime.ts",
+    "line": 354,
+    "text": "redact(error instanceof Error ? error.message : 'Provider unavailable.'),"
+  },
+  {
+    "file": "src/modules/extensions/connection-runtime.ts",
+    "line": 356,
+    "text": "retryable: code === 'unavailable',"
+  },
+  {
+    "file": "src/modules/extensions/ConnectionsCenter.tsx",
+    "line": 141,
+    "text": "['mastodon', 'bluesky', 'x'].includes(conn.providerKey)"
+  },
+  {
+    "file": "src/modules/extensions/contracts.ts",
+    "line": 134,
+    "text": "| 'unavailable'"
+  },
+  {
+    "file": "src/modules/extensions/example-extension.ts",
+    "line": 28,
+    "text": "degradedMode: 'unavailable',"
+  },
+  {
+    "file": "src/modules/extensions/reference-adapters.ts",
+    "line": 30,
+    "text": "degradedMode: 'capability unavailable; canonical records remain readable',"
+  },
+  {
+    "file": "src/modules/media/publishing.ts",
+    "line": 410,
+    "text": ": 'This video is unavailable.',"
+  },
+  {
+    "file": "src/modules/media/upload-sessions.ts",
+    "line": 145,
+    "text": "throw new MediaWorkflowError('Upload session expired. Start a new upload.', 410)"
+  },
+  {
+    "file": "src/modules/media/variants.ts",
+    "line": 392,
+    "text": "throw new MediaWorkflowError('The media worker queue is unavailable.', 503)"
+  },
+  {
+    "file": "src/modules/media/variants.ts",
+    "line": 465,
+    "text": "throw new MediaWorkflowError('Cannot generate variants for tombstoned asset.', 410)"
+  },
+  {
+    "file": "src/modules/media/video-workflow.ts",
+    "line": 33,
+    "text": "if (!bytes) throw new Error('Private video source bytes are unavailable.')"
+  },
+  {
+    "file": "src/modules/media/video-workflow.ts",
+    "line": 158,
+    "text": "if (!payload.jobs?.queue) throw new Error('The media-heavy queue is unavailable.')"
+  },
+  {
+    "file": "src/modules/media/workflow.ts",
+    "line": 1489,
+    "text": "throw new MediaWorkflowError('The media worker queue is unavailable.', 503)"
+  },
+  {
+    "file": "src/modules/module-registry.ts",
+    "line": 92,
+    "text": "title: 'Events (calendar deferred)',"
+  },
+  {
+    "file": "src/modules/module-registry.ts",
+    "line": 94,
+    "text": "'Events with future occurrence dates. Timelines, full interactive calendar and feeds are deferred for RC.',"
+  },
+  {
+    "file": "src/modules/module-registry.ts",
+    "line": 160,
+    "text": "'Local signing, outbox, and failure diagnostics. Remote interoperability is deferred for RC.',"
+  },
+  {
+    "file": "src/modules/module-registry.ts",
+    "line": 198,
+    "text": "summary: 'Deferred public forms; schemas and records are retained without product access.',"
+  },
+  {
+    "file": "src/modules/module-registry.ts",
+    "line": 242,
+    "text": "summary: 'In-app notifications. External digests and automation execution are deferred.',"
+  },
+  {
+    "file": "src/modules/operations/diagnostics.ts",
+    "line": 51,
+    "text": "database: { status: 'healthy' | 'unavailable' }"
+  },
+  {
+    "file": "src/modules/operations/diagnostics.ts",
+    "line": 53,
+    "text": "status: 'current' | 'behind' | 'unavailable'"
+  },
+  {
+    "file": "src/modules/operations/diagnostics.ts",
+    "line": 59,
+    "text": "worker: { status: 'healthy' | 'unavailable'; observedAt: string | null; ageMs: number | null }"
+  },
+  {
+    "file": "src/modules/operations/diagnostics.ts",
+    "line": 77,
+    "text": "mediaStorage: { status: 'healthy' | 'unavailable'; driver: string }"
+  },
+  {
+    "file": "src/modules/operations/diagnostics.ts",
+    "line": 231,
+    "text": "mediaStorage = { status: 'unavailable', driver: config.storage.driver }"
+  },
+  {
+    "file": "src/modules/operations/diagnostics.ts",
+    "line": 250,
+    "text": "workerHealthy ? 'healthy' : 'unavailable',"
+  },
+  {
+    "file": "src/modules/operations/diagnostics.ts",
+    "line": 257,
+    "text": "mediaStorage.status === 'unavailable' ||"
+  },
+  {
+    "file": "src/modules/operations/diagnostics.ts",
+    "line": 278,
+    "text": "worker: { status: workerHealthy ? 'healthy' : 'unavailable', observedAt, ageMs },"
+  },
+  {
+    "file": "src/modules/operations/diagnostics.ts",
+    "line": 303,
+    "text": "database: { status: 'unavailable' },"
+  },
+  {
+    "file": "src/modules/operations/diagnostics.ts",
+    "line": 305,
+    "text": "status: 'unavailable',"
+  },
+  {
+    "file": "src/modules/operations/diagnostics.ts",
+    "line": 311,
+    "text": "worker: { status: 'unavailable', observedAt: null, ageMs: null },"
+  },
+  {
+    "file": "src/modules/operations/diagnostics.ts",
+    "line": 319,
+    "text": "mediaStorage: { status: 'unavailable', driver: config.storage.driver },"
+  },
+  {
+    "file": "src/modules/operations/installation.ts",
+    "line": 117,
+    "text": "'PostgreSQL is unavailable. Start container with \"docker compose up -d\" and verify DATABASE_URL.',"
+  },
+  {
+    "file": "src/modules/operations/installation.ts",
+    "line": 241,
+    "text": "throw new InstallationError('INSTALLATION_INVALID', 'Installation state is unavailable.')"
+  },
+  {
+    "file": "src/modules/operations/installation.ts",
+    "line": 408,
+    "text": "? 'Core publishing is ready. Worker-heavy optional features remain deferred.'"
+  },
+  {
+    "file": "src/modules/operations/installation.ts",
+    "line": 797,
+    "text": "throw new InstallationError('INSTALLATION_INVALID', 'PostgreSQL is unavailable.')"
+  },
+  {
+    "file": "src/modules/packages/contracts.ts",
+    "line": 199,
+    "text": "warnings.push(`Optional capability unavailable: ${capability}`)"
+  },
+  {
+    "file": "src/modules/presentation/composition.ts",
+    "line": 590,
+    "text": "return errors.filter((e) => !e.startsWith('Unavailable component preserved:')).length === 0"
+  },
+  {
+    "file": "src/modules/presentation/composition.ts",
+    "line": 660,
+    "text": "if (!err.startsWith('Unavailable component preserved:')) {"
+  },
+  {
+    "file": "src/modules/presentation/document.tsx",
+    "line": 39,
+    "text": "<section data-unavailable-component={block.component}>"
+  },
+  {
+    "file": "src/modules/presentation/document.tsx",
+    "line": 40,
+    "text": "This section is unavailable."
+  },
+  {
+    "file": "src/modules/presentation/lifecycle.ts",
+    "line": 46,
+    "text": "'Theme unavailable, incompatible, or changed on disk. Reinstall the pinned package and save a new draft.',"
+  },
+  {
+    "file": "src/modules/presentation/lifecycle.ts",
+    "line": 212,
+    "text": "'Active theme is unavailable. Restore the installed package in Capability Center.',"
+  },
+  {
+    "file": "src/modules/presentation/packages.ts",
+    "line": 98,
+    "text": "'Package directory unavailable. Deploy theme-packages beside the running application.',"
+  },
+  {
+    "file": "src/modules/presentation/selection.ts",
+    "line": 10,
+    "text": "throw new Error('Unavailable theme version; activation refused.')"
+  },
+  {
+    "file": "src/modules/presentation/themes/components.tsx",
+    "line": 104,
+    "text": "<section data-unavailable-component={block.component}>This section is unavailable.</section>"
+  },
+  {
+    "file": "src/modules/presentation/themes/components.tsx",
+    "line": 214,
+    "text": "<div data-unavailable-component=\"publisher.pattern\">Linked pattern unavailable</div>"
+  },
+  {
+    "file": "src/modules/public/BuilderShell.tsx",
+    "line": 136,
+    "text": ".catch(() => setMessage('You do not have access to this layout or it is unavailable.'))"
+  },
+  {
+    "file": "src/modules/public/BuilderShell.tsx",
+    "line": 555,
+    "text": "components. Their data is preserved and public rendering uses a safe unavailable-section"
+  },
+  {
+    "file": "src/modules/public/discovery.ts",
+    "line": 64,
+    "text": "variant?.status !== 'unavailable' &&"
+  },
+  {
+    "file": "src/modules/public/page-builder.tsx",
+    "line": 172,
+    "text": "errors.push(`Unavailable component preserved: ${block.component}@${block.componentVersion}`)"
+  },
+  {
+    "file": "src/modules/public/page-builder.tsx",
+    "line": 320,
+    "text": "if (errors.some((error) => !error.startsWith('Unavailable component preserved:')))"
+  },
+  {
+    "file": "src/modules/quality/contracts.ts",
+    "line": 110,
+    "text": "message: `Internal link ${link.href} is unavailable or unauthorized.`,"
+  },
+  {
+    "file": "src/modules/social/adapters/mastodon.ts",
+    "line": 17,
+    "text": "export interface MastodonPollOptions {"
+  },
+  {
+    "file": "src/modules/social/adapters/mastodon.ts",
+    "line": 24,
+    "text": "export interface MastodonPlatformSettings {"
+  },
+  {
+    "file": "src/modules/social/adapters/mastodon.ts",
+    "line": 29,
+    "text": "poll?: MastodonPollOptions"
+  },
+  {
+    "file": "src/modules/social/adapters/mastodon.ts",
+    "line": 33,
+    "text": "export class MastodonAdapter implements SocialProviderAdapter {"
+  },
+  {
+    "file": "src/modules/social/adapters/mastodon.ts",
+    "line": 34,
+    "text": "readonly id = 'adapter-mastodon'"
+  },
+  {
+    "file": "src/modules/social/adapters/mastodon.ts",
+    "line": 35,
+    "text": "readonly name = 'Mastodon ActivityPub Adapter'"
+  },
+  {
+    "file": "src/modules/social/adapters/mastodon.ts",
+    "line": 37,
+    "text": "readonly network = 'mastodon' as const"
+  },
+  {
+    "file": "src/modules/social/adapters/mastodon.ts",
+    "line": 89,
+    "text": "platformSettings?: MastodonPlatformSettings,"
+  },
+  {
+    "file": "src/modules/social/adapters/mastodon.ts",
+    "line": 93,
+    "text": "const raw = fromSettings || fromCreds || 'https://mastodon.social'"
+  },
+  {
+    "file": "src/modules/social/adapters/mastodon.ts",
+    "line": 121,
+    "text": "message: 'Mastodon allows a maximum of 4 attachments per status.',"
+  },
+  {
+    "file": "src/modules/social/adapters/mastodon.ts",
+    "line": 126,
+    "text": "const settings = variant.platformSettings as MastodonPlatformSettings | undefined"
+  },
+  {
+    "file": "src/modules/social/adapters/mastodon.ts",
+    "line": 145,
+    "text": "message: 'Mastodon does not allow combining polls with media attachments.',"
+  },
+  {
+    "file": "src/modules/social/adapters/mastodon.ts",
+    "line": 166,
+    "text": "throw new Error('MediaResolver is required to upload media to Mastodon')"
+  },
+  {
+    "file": "src/modules/social/adapters/mastodon.ts",
+    "line": 227,
+    "text": "const settings = variant.platformSettings as MastodonPlatformSettings | undefined"
+  },
+  {
+    "file": "src/modules/social/adapters/mastodon.ts",
+    "line": 235,
+    "text": "message: 'Mastodon requires an access token or personal token.',"
+  },
+  {
+    "file": "src/modules/social/adapters/mastodon.ts",
+    "line": 320,
+    "text": "message: 'Mastodon instance rate limit reached.',"
+  },
+  {
+    "file": "src/modules/social/adapters/mastodon.ts",
+    "line": 333,
+    "text": "message: 'Mastodon authentication revoked or invalid token.',"
+  },
+  {
+    "file": "src/modules/social/adapters/mastodon.ts",
+    "line": 344,
+    "text": "message: errBody?.error || `Mastodon returned HTTP ${response.status}`,"
+  },
+  {
+    "file": "src/modules/social/adapters/mastodon.ts",
+    "line": 378,
+    "text": "const settings = variant.platformSettings as MastodonPlatformSettings | undefined"
+  },
+  {
+    "file": "src/modules/social/adapters/mastodon.ts",
+    "line": 400,
+    "text": "`Mastodon status edit failed (${res.status}): ${err?.error || res.statusText}`,"
+  },
+  {
+    "file": "src/modules/social/adapters/mastodon.ts",
+    "line": 430,
+    "text": "throw new Error(`Failed to delete Mastodon post: HTTP ${res.status}`)"
+  },
+  {
+    "file": "src/modules/social/adapters/mastodon.ts",
+    "line": 482,
+    "text": "deliveryId: `del-mastodon-${remotePostId}`,"
+  },
+  {
+    "file": "src/modules/social/adapters/mastodon.ts",
+    "line": 501,
+    "text": "export const mastodonAdapter = new MastodonAdapter()"
+  },
+  {
+    "file": "src/modules/social/contracts.ts",
+    "line": 15,
+    "text": "| 'mastodon'"
+  },
+  {
+    "file": "src/modules/social/contracts.ts",
+    "line": 40,
+    "text": "| 'unavailable'"
+  },
+  {
+    "file": "src/modules/social/contracts.ts",
+    "line": 245,
+    "text": "readonly mode: 'live' | 'manual-handoff' | 'unavailable' | 'fixture'"
+  },
+  {
+    "file": "src/modules/social/media-pipeline.ts",
+    "line": 61,
+    "text": "mastodon: {"
+  },
+  {
+    "file": "src/modules/social/provider-runtime.ts",
+    "line": 25,
+    "text": "mode: 'manual-handoff' | 'unavailable' = 'manual-handoff',"
+  },
+  {
+    "file": "src/modules/social/provider-runtime.ts",
+    "line": 189,
+    "text": "manual('activitypub', 'unavailable'),"
+  },
+  {
+    "file": "src/modules/social/provider-runtime.ts",
+    "line": 202,
+    "text": "manual(network, 'unavailable')"
+  },
+  {
+    "file": "src/modules/social/worker.ts",
+    "line": 6,
+    "text": "import { MastodonAdapter } from './adapters/mastodon'"
+  },
+  {
+    "file": "src/modules/social/worker.ts",
+    "line": 30,
+    "text": "mastodon: new MastodonAdapter(),"
+  },
+  {
+    "file": "src/modules/social/worker.ts",
+    "line": 41,
+    "text": "activitypub: new MastodonAdapter(),"
+  },
+  {
+    "file": "src/modules/telecom/emulator.ts",
+    "line": 21,
+    "text": "export type TelecomEmulatorSimulation ="
+  },
+  {
+    "file": "src/modules/telecom/emulator.ts",
+    "line": 30,
+    "text": "export type TelecomEmulatorReceipt = {"
+  },
+  {
+    "file": "src/modules/telecom/emulator.ts",
+    "line": 53,
+    "text": "const emulatorReceipts = new Map<string, TelecomEmulatorReceipt>()"
+  },
+  {
+    "file": "src/modules/telecom/emulator.ts",
+    "line": 54,
+    "text": "const emulatorCapabilities = new Map<string, { rcsSupported: boolean; carrier?: string }>()"
+  },
+  {
+    "file": "src/modules/telecom/emulator.ts",
+    "line": 55,
+    "text": "const emulatorSimulations = new Map<string, TelecomEmulatorSimulation>()"
+  },
+  {
+    "file": "src/modules/telecom/emulator.ts",
+    "line": 56,
+    "text": "const emulatorInboundHistory: TelecomInboundEvent[] = []"
+  },
+  {
+    "file": "src/modules/telecom/emulator.ts",
+    "line": 58,
+    "text": "export function resetTelecomEmulator() {"
+  },
+  {
+    "file": "src/modules/telecom/emulator.ts",
+    "line": 59,
+    "text": "emulatorReceipts.clear()"
+  },
+  {
+    "file": "src/modules/telecom/emulator.ts",
+    "line": 60,
+    "text": "emulatorCapabilities.clear()"
+  },
+  {
+    "file": "src/modules/telecom/emulator.ts",
+    "line": 61,
+    "text": "emulatorSimulations.clear()"
+  },
+  {
+    "file": "src/modules/telecom/emulator.ts",
+    "line": 62,
+    "text": "emulatorInboundHistory.length = 0"
+  },
+  {
+    "file": "src/modules/telecom/emulator.ts",
+    "line": 65,
+    "text": "export function getTelecomEmulatorReceipts(): TelecomEmulatorReceipt[] {"
+  },
+  {
+    "file": "src/modules/telecom/emulator.ts",
+    "line": 66,
+    "text": "return [...emulatorReceipts.values()]"
+  },
+  {
+    "file": "src/modules/telecom/emulator.ts",
+    "line": 69,
+    "text": "export function setEmulatorRecipientCapability("
+  },
+  {
+    "file": "src/modules/telecom/emulator.ts",
+    "line": 73,
+    "text": "emulatorCapabilities.set(phone, capability)"
+  },
+  {
+    "file": "src/modules/telecom/emulator.ts",
+    "line": 76,
+    "text": "export function setEmulatorSimulation(keyOrPhone: string, simulation: TelecomEmulatorSimulation) {"
+  },
+  {
+    "file": "src/modules/telecom/emulator.ts",
+    "line": 77,
+    "text": "emulatorSimulations.set(keyOrPhone, simulation)"
+  },
+  {
+    "file": "src/modules/telecom/emulator.ts",
+    "line": 80,
+    "text": "export function getEmulatorInboundHistory(): TelecomInboundEvent[] {"
+  },
+  {
+    "file": "src/modules/telecom/emulator.ts",
+    "line": 81,
+    "text": "return [...emulatorInboundHistory]"
+  },
+  {
+    "file": "src/modules/telecom/emulator.ts",
+    "line": 84,
+    "text": "export const telecomEmulatorCapabilities: TelecomProviderCapabilities = {"
+  },
+  {
+    "file": "src/modules/telecom/emulator.ts",
+    "line": 105,
+    "text": "export const deterministicTelecomEmulator: MessagingProviderAdapter = {"
+  },
+  {
+    "file": "src/modules/telecom/emulator.ts",
+    "line": 106,
+    "text": "id: 'telecom-emulator',"
+  },
+  {
+    "file": "src/modules/telecom/emulator.ts",
+    "line": 108,
+    "text": "contract: telecomEmulatorCapabilities,"
+  },
+  {
+    "file": "src/modules/telecom/emulator.ts",
+    "line": 111,
+    "text": "const found = emulatorCapabilities.get(recipientPhone)"
+  },
+  {
+    "file": "src/modules/telecom/emulator.ts",
+    "line": 115,
+    "text": "carrier: found?.carrier ?? 'Emulator Carrier',"
+  },
+  {
+    "file": "src/modules/telecom/emulator.ts",
+    "line": 122,
+    "text": "if (emulatorReceipts.has(request.idempotencyKey)) {"
+  },
+  {
+    "file": "src/modules/telecom/emulator.ts",
+    "line": 123,
+    "text": "const existing = emulatorReceipts.get(request.idempotencyKey)!"
+  },
+  {
+    "file": "src/modules/telecom/emulator.ts",
+    "line": 126,
+    "text": "provider: 'telecom-emulator',"
+  },
+  {
+    "file": "src/modules/telecom/emulator.ts",
+    "line": 137,
+    "text": "emulatorSimulations.get(request.idempotencyKey) || emulatorSimulations.get(request.to)"
+  },
+  {
+    "file": "src/modules/telecom/emulator.ts",
+    "line": 142,
+    "text": "provider: 'telecom-emulator',"
+  },
+  {
+    "file": "src/modules/telecom/emulator.ts",
+    "line": 155,
+    "text": "provider: 'telecom-emulator',"
+  },
+  {
+    "file": "src/modules/telecom/emulator.ts",
+    "line": 167,
+    "text": "provider: 'telecom-emulator',"
+  },
+  {
+    "file": "src/modules/telecom/emulator.ts",
+    "line": 179,
+    "text": "provider: 'telecom-emulator',"
+  },
+  {
+    "file": "src/modules/telecom/emulator.ts",
+    "line": 191,
+    "text": "provider: 'telecom-emulator',"
+  },
+  {
+    "file": "src/modules/telecom/emulator.ts",
+    "line": 217,
+    "text": "provider: 'telecom-emulator',"
+  },
+  {
+    "file": "src/modules/telecom/emulator.ts",
+    "line": 232,
+    "text": "provider: 'telecom-emulator',"
+  },
+  {
+    "file": "src/modules/telecom/emulator.ts",
+    "line": 244,
+    "text": "provider: 'telecom-emulator',"
+  },
+  {
+    "file": "src/modules/telecom/emulator.ts",
+    "line": 266,
+    "text": "const receipt: TelecomEmulatorReceipt = {"
+  },
+  {
+    "file": "src/modules/telecom/emulator.ts",
+    "line": 280,
+    "text": "emulatorReceipts.set(request.idempotencyKey, receipt)"
+  },
+  {
+    "file": "src/modules/telecom/emulator.ts",
+    "line": 284,
+    "text": "provider: 'telecom-emulator',"
+  },
+  {
+    "file": "src/modules/telecom/emulator.ts",
+    "line": 295,
+    "text": "provider: 'telecom-emulator',"
+  },
+  {
+    "file": "src/modules/telecom/emulator.ts",
+    "line": 302,
+    "text": "provider: 'telecom-emulator',"
+  },
+  {
+    "file": "src/modules/telecom/emulator.ts",
+    "line": 310,
+    "text": "provider: 'telecom-emulator',"
+  },
+  {
+    "file": "src/modules/telecom/emulator.ts",
+    "line": 316,
+    "text": "provider: 'telecom-emulator',"
+  },
+  {
+    "file": "src/modules/telecom/emulator.ts",
+    "line": 327,
+    "text": "const existing = emulatorReceipts.get(input.idempotencyKey)"
+  },
+  {
+    "file": "src/modules/telecom/emulator.ts",
+    "line": 332,
+    "text": "provider: 'telecom-emulator',"
+  },
+  {
+    "file": "src/modules/telecom/emulator.ts",
+    "line": 343,
+    "text": "* Simulates receiving an inbound SMS/RCS message to the emulator."
+  },
+  {
+    "file": "src/modules/telecom/emulator.ts",
+    "line": 359,
+    "text": "emulatorInboundHistory.push(event)"
+  },
+  {
+    "file": "src/modules/telecom/index.ts",
+    "line": 3,
+    "text": "export * from './emulator'"
+  },
+  {
+    "file": "src/modules/telecom/tasks.ts",
+    "line": 9,
+    "text": "import { deterministicTelecomEmulator } from './emulator'"
+  },
+  {
+    "file": "src/modules/telecom/tasks.ts",
+    "line": 20,
+    "text": "if (mode === 'development' || mode === 'emulator') {"
+  },
+  {
+    "file": "src/modules/telecom/tasks.ts",
+    "line": 21,
+    "text": "return deterministicTelecomEmulator"
+  },
+  {
+    "file": "src/payload.config.ts",
+    "line": 102,
+    "text": "hidden: true,"
+  },
+  {
+    "file": "src/scripts/prepare-rc04-instance.mjs",
+    "line": 41,
+    "text": "TELECOM_MODE: 'emulator',"
+  }
+]

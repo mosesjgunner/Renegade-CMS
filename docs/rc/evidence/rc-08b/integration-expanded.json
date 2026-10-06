@@ -1,0 +1,98 @@
+{
+  "numTotalTestSuites": 2,
+  "numPassedTestSuites": 0,
+  "numFailedTestSuites": 2,
+  "numPendingTestSuites": 0,
+  "numTotalTests": 6,
+  "numPassedTests": 4,
+  "numFailedTests": 2,
+  "numPendingTests": 0,
+  "numTodoTests": 0,
+  "snapshot": {
+    "added": 0,
+    "failure": false,
+    "filesAdded": 0,
+    "filesRemoved": 0,
+    "filesRemovedList": [],
+    "filesUnmatched": 0,
+    "filesUpdated": 0,
+    "matched": 0,
+    "total": 0,
+    "unchecked": 0,
+    "uncheckedKeysByFile": [],
+    "unmatched": 0,
+    "updated": 0,
+    "didUpdate": false
+  },
+  "startTime": 1791267330609,
+  "success": false,
+  "testResults": [
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["RC08B persisted promotion boundaries"],
+          "fullName": "RC08B persisted promotion boundaries reads real future occurrences, excludes foreign/private/draft/deleted records and survives a new query",
+          "status": "passed",
+          "title": "reads real future occurrences, excludes foreign/private/draft/deleted records and survives a new query",
+          "duration": 359.31089999999995,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["RC08B persisted promotion boundaries"],
+          "fullName": "RC08B persisted promotion boundaries creates and edits a real timeline through scoped operator access, rejects foreign memberships, and hides deleted/private events",
+          "status": "failed",
+          "title": "creates and edits a real timeline through scoped operator access, rejects foreign memberships, and hides deleted/private events",
+          "duration": 138.7201,
+          "failureMessages": [
+            "APIError: Timeline site access denied.\n    at C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\src\\modules\\events\\timeline.ts:27:189\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at createOperation (file:///C:/Projects/RENEGADE%20CMS/Renegade-CMS/node_modules/payload/dist/collections/operations/create.js:125:24)\n    at C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\tests\\integration\\rc08b-promotions.integration.test.ts:60:24\n    at file:///C:/Projects/RENEGADE%20CMS/Renegade-CMS/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+          ],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["RC08B persisted promotion boundaries"],
+          "fullName": "RC08B persisted promotion boundaries persists consent, scopes replay by form/site, recovers a failed task and never repeats completed side effects",
+          "status": "passed",
+          "title": "persists consent, scopes replay by form/site, recovers a failed task and never repeats completed side effects",
+          "duration": 597.7302,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["RC08B persisted promotion boundaries"],
+          "fullName": "RC08B persisted promotion boundaries enforces persisted message switches at notification creation, with owner-only preferences",
+          "status": "passed",
+          "title": "enforces persisted message switches at notification creation, with owner-only preferences",
+          "duration": 179.8732,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["RC08B persisted promotion boundaries"],
+          "fullName": "RC08B persisted promotion boundaries deduplicates explicit email windows, delivers through the transport, and cancels queued updates after opt-out",
+          "status": "failed",
+          "title": "deduplicates explicit email windows, delivers through the transport, and cancels queued updates after opt-out",
+          "duration": 119.61859999999979,
+          "failureMessages": [
+            "error: inconsistent types deduced for parameter $2\n    at C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\node_modules\\pg-pool\\index.js:45:11\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at executeDbQuery (C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\src\\modules\\community\\comment-composer.ts:39:13)\n    at C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\src\\modules\\community\\external-notifications.ts:90:68\n    at withExecutionLock (C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\src\\modules\\operations\\execution-lock.ts:26:12)\n    at C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\tests\\integration\\rc08b-promotions.integration.test.ts:122:5\n    at file:///C:/Projects/RENEGADE%20CMS/Renegade-CMS/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+          ],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["RC08B persisted promotion boundaries"],
+          "fullName": "RC08B persisted promotion boundaries exports canonical contributions and private owned/readable history without foreign contact or moderation data",
+          "status": "passed",
+          "title": "exports canonical contributions and private owned/readable history without foreign contact or moderation data",
+          "duration": 198.23479999999927,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791267333985,
+      "endTime": 1791267335579.2349,
+      "status": "failed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/integration/rc08b-promotions.integration.test.ts"
+    }
+  ]
+}

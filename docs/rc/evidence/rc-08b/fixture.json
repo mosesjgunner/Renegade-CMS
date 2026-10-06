@@ -1,0 +1,7 @@
+{
+  "database": "renegade_rc08b_1791268144094_release_acceptance",
+  "template": "renegade_rc02_1791086734920_release_acceptance",
+  "originalPreserved": true,
+  "freshInstall": false,
+  "purpose": "Completed RC02 publication copy; additive migrations only"
+}

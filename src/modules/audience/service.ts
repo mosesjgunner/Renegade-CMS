@@ -1,3 +1,5 @@
+import { withExecutionLock } from '../operations/execution-lock'
+import { executeIntakeActions } from './form-runtime'
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* Durable commands for public forms, subscriber lifecycle, and bulk delivery. */
 import {
@@ -44,186 +46,85 @@ export async function submitPublicForm(
     honeypot?: string
     idempotencyKey: string
   },
-) {
+): Promise<{ submission?: any; errors?: Record<string, string>; replay?: boolean }> {
   if (input.honeypot) throw new Error('Submission was rejected.')
   assertReviewedLocalizedConsent(input.schema)
   const schemaErrors = validateFormSchema(input.schema)
   if (schemaErrors.length) throw new Error(schemaErrors.join(' '))
   const errors = validateSubmission(input.schema, input.values)
   if (Object.keys(errors).length) return { errors }
-  const seen = await payload.find({
-    collection: 'form-submissions',
-    where: { idempotencyKey: { equals: input.idempotencyKey } },
-    limit: 1,
-    overrideAccess: true,
-  })
-  if (seen.docs.length) return { submission: seen.docs[0], replay: true }
-  const consent = {
-    wording: input.schema.consentText,
-    revision: input.schema.consentRevision,
-    locale: input.schema.locale,
-    schemaVersion: input.schema.version,
-    reviewed: true,
-  }
-  let schemaId = (input.schema as Doc).id
-  if (!schemaId) {
-    const form = (await payload.findByID({
-      collection: 'form-definitions',
-      id: input.formId,
-      depth: 0,
-      overrideAccess: true,
-    })) as Doc
-    schemaId = form?.activeSchema
-      ? typeof form.activeSchema === 'object'
-        ? form.activeSchema.id
-        : form.activeSchema
-      : undefined
-  }
-  const submission = await payload.create({
-    collection: 'form-submissions',
-    data: {
-      site: input.siteId,
-      form: input.formId,
-      schema: schemaId,
-      locale: input.schema.locale,
-      values: normalizeFormAnswers(input.schema, input.values),
-      consentSnapshot: consent,
-      status: 'received',
-      privacyClass: 'standard',
-      abuse: { ipDigest: input.ipDigest, challenge: 'passed' },
-      idempotencyKey: input.idempotencyKey,
-      actionState: [],
-      submittedAt: now(),
-      retentionMode: 'permanent',
-      retentionHold: 'none',
-      removeFromDiscovery: true,
+  return withExecutionLock(
+    payload,
+    `form-intake:${input.siteId}:${input.formId}:${input.idempotencyKey}`,
+    async () => {
+      const seen = await payload.find({
+        collection: 'form-submissions',
+        where: {
+          and: [
+            { site: { equals: input.siteId } },
+            { form: { equals: input.formId } },
+            { idempotencyKey: { equals: input.idempotencyKey } },
+          ],
+        },
+        limit: 1,
+        overrideAccess: true,
+      })
+      if (seen.docs.length) return { submission: seen.docs[0], replay: true }
+      const consent = {
+        wording: input.schema.consentText,
+        revision: input.schema.consentRevision,
+        locale: input.schema.locale,
+        schemaVersion: input.schema.version,
+        reviewed: true,
+      }
+      const form = (await payload.findByID({
+        collection: 'form-definitions',
+        id: input.formId,
+        depth: 0,
+        overrideAccess: true,
+      })) as Doc
+      if (relationId(form.site) !== input.siteId) throw new Error('Form site mismatch.')
+      const schemaId = (input.schema as Doc).id ?? relationId(form.activeSchema)
+      const submission = await payload.create({
+        collection: 'form-submissions',
+        data: {
+          site: input.siteId,
+          form: input.formId,
+          schema: schemaId,
+          locale: input.schema.locale,
+          values: normalizeFormAnswers(input.schema, input.values),
+          consentSnapshot: consent,
+          status: 'received',
+          privacyClass: 'standard',
+          abuse: { ipDigest: input.ipDigest, challenge: 'passed' },
+          idempotencyKey: input.idempotencyKey,
+          actionState: (Array.isArray(form.actions) ? form.actions : []).map(
+            (action: Doc, index: number) => ({
+              index,
+              action,
+              type: String(action.type),
+              status: 'pending',
+              attempts: 0,
+            }),
+          ),
+          submittedAt: now(),
+          retentionMode: 'permanent',
+          retentionHold: 'none',
+          removeFromDiscovery: true,
+        },
+        overrideAccess: true,
+      })
+      return { submission }
     },
-    overrideAccess: true,
-  })
-  return { submission }
+  )
 }
 
-/** Execute only reviewed, fixed action types. A failure is recorded and retryable; it never asks a visitor to resubmit. */
+/** Execute the supported action subset with a durable journal and crash reconciliation. */
 export async function runFormActions(
   payload: Store,
   input: { submission: Doc; form: Doc; schema: Doc },
 ) {
-  const actions = Array.isArray(input.form.actions) ? input.form.actions : []
-  const state: Doc[] = []
-  for (const action of actions) {
-    const kind = String(action?.type ?? '')
-    try {
-      if (kind === 'create-contact') {
-        const emailField = String(action.emailField ?? 'email')
-        const email = input.submission.values?.[emailField]
-        if (typeof email !== 'string') throw new Error('Configured identity value is unavailable.')
-        const hash = audienceDigest(normalizeEmailAddress(email))
-        const existing = await payload.find({
-          collection: 'contacts',
-          where: {
-            site: { equals: relationId(input.submission.site) },
-            emailHash: { equals: hash },
-          },
-          limit: 1,
-          overrideAccess: true,
-        })
-        const contact =
-          existing.docs[0] ||
-          (await payload.create({
-            collection: 'contacts',
-            data: {
-              site: relationId(input.submission.site),
-              displayName: String(
-                input.submission.values?.[String(action.nameField ?? 'name')] ?? email,
-              ).slice(0, 240),
-              email: normalizeEmailAddress(email),
-              emailHash: hash,
-              status: 'lead',
-              retentionMode: 'permanent',
-              retentionHold: 'none',
-            },
-            overrideAccess: true,
-          }))
-        await payload.update({
-          collection: 'form-submissions',
-          id: input.submission.id,
-          data: { contact: contact.id },
-          overrideAccess: true,
-        })
-      } else if (kind === 'create-task') {
-        await payload.create({
-          collection: 'workflow-items',
-          data: {
-            site: relationId(input.submission.site),
-            title: String(action.title ?? input.form.name).slice(0, 240),
-            type: 'form-intake',
-            status: 'open',
-            priority: 'normal',
-            sourceReferences: [{ collection: 'form-submissions', id: input.submission.id }],
-          },
-          overrideAccess: true,
-        })
-      } else if (kind === 'notify') {
-        const address = String(action.address ?? '')
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(address))
-          throw new Error('Notification recipient is not approved.')
-        await payload.create({
-          collection: 'execution-events',
-          data: {
-            site: relationId(input.submission.site),
-            tenantId: relationId(input.submission.site),
-            actor: { type: 'public-form' },
-            eventType: 'form.notification.requested',
-            eventVersion: 1,
-            occurredAt: now(),
-            correlationId: String(input.submission.id),
-            idempotencyKey: `form-notify:${input.submission.id}:${audienceDigest(address)}`,
-            privacyClass: 'restricted',
-            payload: { submissionId: input.submission.id, recipient: address },
-            state: 'ready',
-            attempts: 0,
-          },
-          overrideAccess: true,
-        })
-      } else if (kind === 'approved-webhook') {
-        if (!action.webhookId) throw new Error('No approved webhook is configured.')
-        await payload.create({
-          collection: 'execution-events',
-          data: {
-            site: relationId(input.submission.site),
-            tenantId: relationId(input.submission.site),
-            actor: { type: 'public-form' },
-            eventType: 'form.submitted',
-            eventVersion: 1,
-            occurredAt: now(),
-            correlationId: String(input.submission.id),
-            idempotencyKey: `form-action:${input.submission.id}:${action.webhookId}`,
-            privacyClass: 'restricted',
-            payload: { submissionId: input.submission.id, webhookId: String(action.webhookId) },
-            state: 'ready',
-            attempts: 0,
-          },
-          overrideAccess: true,
-        })
-      } else if (!['redirect', 'download', 'tag', 'newsletter'].includes(kind))
-        throw new Error('Unapproved action type.')
-      state.push({ type: kind, status: 'completed', at: now() })
-    } catch (error) {
-      state.push({
-        type: kind,
-        status: 'failed',
-        at: now(),
-        error: error instanceof Error ? error.message : 'Action failed.',
-      })
-    }
-  }
-  await payload.update({
-    collection: 'form-submissions',
-    id: input.submission.id,
-    data: { actionState: state },
-    overrideAccess: true,
-  })
-  return state
+  return executeIntakeActions(payload, input)
 }
 
 export async function requestDoubleOptIn(

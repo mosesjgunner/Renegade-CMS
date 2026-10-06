@@ -4,10 +4,11 @@ import { useEffect, useState } from 'react'
 
 type Frequency = 'immediate' | 'daily_digest' | 'weekly_digest' | 'off'
 type Channel = 'in_app' | 'email' | 'sms'
-const channels: Channel[] = ['in_app']
+const channels: Channel[] = ['in_app', 'email']
 
 export function NotificationPreferences({ siteId }: { siteId: string }) {
   const [values, setValues] = useState<Partial<Record<Channel, Frequency>>>({})
+  const [email, setEmail] = useState('')
   const [status, setStatus] = useState('')
   useEffect(() => {
     void fetch(`/api/community/notification-preferences?siteId=${encodeURIComponent(siteId)}`).then(
@@ -27,7 +28,7 @@ export function NotificationPreferences({ siteId }: { siteId: string }) {
     const response = await fetch('/api/community/notification-preferences', {
       method: 'PATCH',
       headers,
-      body: JSON.stringify({ siteId, channel, frequency }),
+      body: JSON.stringify({ siteId, channel, frequency, email }),
     })
     if (response.ok) {
       setValues((current) => ({ ...current, [channel]: frequency }))
@@ -37,6 +38,16 @@ export function NotificationPreferences({ siteId }: { siteId: string }) {
   return (
     <section className="mt-8" aria-label="Notification preferences">
       <h2 className="text-xl font-semibold">Notification preferences</h2>
+      <label>
+        Verified sign-in email for community updates
+        <input
+          type="email"
+          className="form-input"
+          value={email}
+          onChange={(event) => setEmail(event.target.value)}
+          autoComplete="email"
+        />
+      </label>
       {channels.map((channel) => (
         <label className="mt-3 block" key={channel}>
           {channel === 'in_app' ? 'In-app' : channel.toUpperCase()}
@@ -47,13 +58,19 @@ export function NotificationPreferences({ siteId }: { siteId: string }) {
           >
             {!values[channel] && <option value="">Loading</option>}
             <option value="immediate">Immediately</option>
+            {channel === 'email' ? (
+              <>
+                <option value="daily_digest">Daily digest (UTC)</option>
+                <option value="weekly_digest">Weekly digest (Monday, UTC)</option>
+              </>
+            ) : null}
             <option value="off">Off</option>
           </select>
         </label>
       ))}
       <p>
-        Email, SMS and digest delivery for community notifications are deferred. Notifications
-        remain in your member inbox.
+        Selecting email opts you into generic community updates at this frequency. You can turn
+        email off here or use the email unsubscribe link. SMS delivery is unavailable.
       </p>
       <p role="status">{status}</p>
     </section>

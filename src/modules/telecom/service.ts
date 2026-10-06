@@ -118,6 +118,8 @@ export async function hasTelecomConsent(
     purpose: string
   },
 ): Promise<boolean> {
+  // Anonymous phone hashes cannot borrow another subscriber's consent.
+  if (!input.subscriberId) return false
   // Check if phoneHash is suppressed
   const suppressed = await payload.find({
     collection: 'suppressions',
@@ -152,11 +154,7 @@ export async function hasTelecomConsent(
       if (event.event === 'preference-withdrawn' || event.event === 'unsubscribe') {
         return false
       }
-      if (
-        event.event === 'preference-granted' ||
-        event.event === 'double-opt-in-confirmed' ||
-        event.event === 'requested'
-      ) {
+      if (event.event === 'preference-granted' || event.event === 'double-opt-in-confirmed') {
         return true
       }
     }

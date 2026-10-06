@@ -76,6 +76,9 @@ export interface Config {
     'webhook-subscriptions': WebhookSubscription;
     'webhook-deliveries': WebhookDelivery;
     'integration-audit-events': IntegrationAuditEvent;
+    'ai-connections': AiConnection;
+    'ai-credentials': AiCredential;
+    'ai-proposals': AiProposal;
     brands: Brand;
     members: Member;
     'linked-identities': LinkedIdentity;
@@ -283,6 +286,9 @@ export interface Config {
     'webhook-subscriptions': WebhookSubscriptionsSelect<false> | WebhookSubscriptionsSelect<true>;
     'webhook-deliveries': WebhookDeliveriesSelect<false> | WebhookDeliveriesSelect<true>;
     'integration-audit-events': IntegrationAuditEventsSelect<false> | IntegrationAuditEventsSelect<true>;
+    'ai-connections': AiConnectionsSelect<false> | AiConnectionsSelect<true>;
+    'ai-credentials': AiCredentialsSelect<false> | AiCredentialsSelect<true>;
+    'ai-proposals': AiProposalsSelect<false> | AiProposalsSelect<true>;
     brands: BrandsSelect<false> | BrandsSelect<true>;
     members: MembersSelect<false> | MembersSelect<true>;
     'linked-identities': LinkedIdentitiesSelect<false> | LinkedIdentitiesSelect<true>;
@@ -522,8 +528,8 @@ export interface Config {
       'network-delivery': TaskNetworkDelivery;
       'audience-email-delivery': TaskAudienceEmailDelivery;
       'audience-newsletter-dispatch': TaskAudienceNewsletterDispatch;
-      'audience-telecom-delivery': TaskAudienceTelecomDelivery;
-      'audience-telecom-dispatch': TaskAudienceTelecomDispatch;
+      'audience-form-intake': TaskAudienceFormIntake;
+      'community-email-dispatch': TaskCommunityEmailDispatch;
       'analytics-retention-cleanup': TaskAnalyticsRetentionCleanup;
       'quality-scan': TaskQualityScan;
       'commerce-abandon-checkouts': TaskCommerceAbandonCheckouts;
@@ -1468,6 +1474,148 @@ export interface IntegrationAuditEvent {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ai-connections".
+ */
+export interface AiConnection {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  label: string;
+  providerKey: string;
+  endpoint: string;
+  model: string;
+  models:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  capabilities:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  allowedTasks:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  status: string;
+  lastError?: string | null;
+  lastTestedAt?: string | null;
+  perTaskUsd: number;
+  monthlyUsd: number;
+  maxInputTokens: number;
+  maxOutputTokens: number;
+  inputUsdPer1k: number;
+  outputUsdPer1k: number;
+  budgetMonth?: string | null;
+  spentMonthUsd: number;
+  leaseUntil?: string | null;
+  leaseId?: string | null;
+  leasedCostUsd: number;
+  createdBy: string | User;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ai-credentials".
+ */
+export interface AiCredential {
+  id: string;
+  connection: string | AiConnection;
+  envelope:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ai-proposals".
+ */
+export interface AiProposal {
+  id: string;
+  site: string | Site;
+  connection?: (string | null) | AiConnection;
+  task: string;
+  targetCollection: string;
+  targetId: string;
+  targetUpdatedAt: string;
+  status: string;
+  original?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  output?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  contextPreview:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  usage?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  auditId: string;
+  requestedBy: string | User;
+  decidedBy?: (string | null) | User;
+  decidedAt?: string | null;
+  failureCode?: string | null;
+  application?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "linked-identities".
  */
 export interface LinkedIdentity {
@@ -1887,6 +2035,7 @@ export interface Topic {
   name: string;
   slug: string;
   description?: string | null;
+  canonicalPath?: string | null;
   /**
    * Topic ordering.
    */
@@ -3072,8 +3221,8 @@ export interface PayloadJob {
           | 'network-delivery'
           | 'audience-email-delivery'
           | 'audience-newsletter-dispatch'
-          | 'audience-telecom-delivery'
-          | 'audience-telecom-dispatch'
+          | 'audience-form-intake'
+          | 'community-email-dispatch'
           | 'analytics-retention-cleanup'
           | 'quality-scan'
           | 'commerce-abandon-checkouts'
@@ -3137,8 +3286,8 @@ export interface PayloadJob {
         | 'network-delivery'
         | 'audience-email-delivery'
         | 'audience-newsletter-dispatch'
-        | 'audience-telecom-delivery'
-        | 'audience-telecom-dispatch'
+        | 'audience-form-intake'
+        | 'community-email-dispatch'
         | 'analytics-retention-cleanup'
         | 'quality-scan'
         | 'commerce-abandon-checkouts'
@@ -5099,7 +5248,7 @@ export interface Timeline {
   owner?: (string | null) | Member;
   title: string;
   slug: string;
-  canonicalPath: string;
+  canonicalPath?: string | null;
   summary?: string | null;
   status: 'draft' | 'published' | 'archived';
   visibility: 'public' | 'unlisted' | 'members' | 'friends' | 'private';
@@ -5932,7 +6081,7 @@ export interface FormDefinition {
     | boolean
     | null;
   /**
-   * Bounded declared actions only: contact, tag, task, notification, approved webhook, redirect, download.
+   * Supported intake actions: create-contact and create-task. Execution results and failures are saved on the submission.
    */
   actions?:
     | {
@@ -8214,7 +8363,7 @@ export interface Cart {
   publication?: (string | null) | Publication;
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
-  merchantConnection: string | MerchantConnection;
+  merchantConnection?: (string | null) | MerchantConnection;
   version: number;
   guestTokenHash?: string | null;
   member?: (string | null) | Member;
@@ -9100,6 +9249,7 @@ export interface DonationIntent {
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
   campaign: string | DonationCampaign;
+  idempotencyKey?: string | null;
   campaignVersion: number;
   designation?: string | null;
   donorSnapshot:
@@ -9440,24 +9590,16 @@ export interface PayloadLockedDocument {
         value: string | ExecutionEvent;
       } | null)
     | ({
-        relationTo: 'api-clients';
-        value: string | ApiClient;
+        relationTo: 'ai-connections';
+        value: string | AiConnection;
       } | null)
     | ({
-        relationTo: 'api-request-records';
-        value: string | ApiRequestRecord;
+        relationTo: 'ai-credentials';
+        value: string | AiCredential;
       } | null)
     | ({
-        relationTo: 'webhook-subscriptions';
-        value: string | WebhookSubscription;
-      } | null)
-    | ({
-        relationTo: 'webhook-deliveries';
-        value: string | WebhookDelivery;
-      } | null)
-    | ({
-        relationTo: 'integration-audit-events';
-        value: string | IntegrationAuditEvent;
+        relationTo: 'ai-proposals';
+        value: string | AiProposal;
       } | null)
     | ({
         relationTo: 'brands';
@@ -9506,50 +9648,6 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'publications';
         value: string | Publication;
-      } | null)
-    | ({
-        relationTo: 'relationships';
-        value: string | Relationship;
-      } | null)
-    | ({
-        relationTo: 'team-memberships';
-        value: string | TeamMembership;
-      } | null)
-    | ({
-        relationTo: 'team-invitations';
-        value: string | TeamInvitation;
-      } | null)
-    | ({
-        relationTo: 'team-audit-events';
-        value: string | TeamAuditEvent;
-      } | null)
-    | ({
-        relationTo: 'editorial-assignments';
-        value: string | EditorialAssignment;
-      } | null)
-    | ({
-        relationTo: 'editorial-discussions';
-        value: string | EditorialDiscussion;
-      } | null)
-    | ({
-        relationTo: 'editorial-comments';
-        value: string | EditorialComment;
-      } | null)
-    | ({
-        relationTo: 'work-conversations';
-        value: string | WorkConversation;
-      } | null)
-    | ({
-        relationTo: 'work-messages';
-        value: string | WorkMessage;
-      } | null)
-    | ({
-        relationTo: 'realtime-events';
-        value: string | RealtimeEvent;
-      } | null)
-    | ({
-        relationTo: 'realtime-presence';
-        value: string | RealtimePresence;
       } | null)
     | ({
         relationTo: 'media-assets';
@@ -9604,10 +9702,6 @@ export interface PayloadLockedDocument {
         value: string | PublicRedirect;
       } | null)
     | ({
-        relationTo: 'content-releases';
-        value: string | ContentRelease;
-      } | null)
-    | ({
         relationTo: 'content';
         value: string | Content;
       } | null)
@@ -9632,312 +9726,12 @@ export interface PayloadLockedDocument {
         value: string | ScheduledPublishJob;
       } | null)
     | ({
-        relationTo: 'books';
-        value: string | Book;
-      } | null)
-    | ({
-        relationTo: 'book-parts';
-        value: string | BookPart;
-      } | null)
-    | ({
-        relationTo: 'book-chapters';
-        value: string | BookChapter;
-      } | null)
-    | ({
-        relationTo: 'book-editions';
-        value: string | BookEdition;
-      } | null)
-    | ({
-        relationTo: 'podcast-shows';
-        value: string | PodcastShow;
-      } | null)
-    | ({
-        relationTo: 'podcast-seasons';
-        value: string | PodcastSeason;
-      } | null)
-    | ({
-        relationTo: 'podcast-episodes';
-        value: string | PodcastEpisode;
-      } | null)
-    | ({
-        relationTo: 'video-channels';
-        value: string | VideoChannel;
-      } | null)
-    | ({
-        relationTo: 'video-playlists';
-        value: string | VideoPlaylist;
-      } | null)
-    | ({
-        relationTo: 'videos';
-        value: string | Video;
-      } | null)
-    | ({
-        relationTo: 'video-assets';
-        value: string | VideoAsset;
-      } | null)
-    | ({
-        relationTo: 'video-captions';
-        value: string | VideoCaption;
-      } | null)
-    | ({
-        relationTo: 'interviews';
-        value: string | Interview;
-      } | null)
-    | ({
-        relationTo: 'livestreams';
-        value: string | Livestream;
-      } | null)
-    | ({
-        relationTo: 'transcript-revisions';
-        value: string | TranscriptRevision;
-      } | null)
-    | ({
-        relationTo: 'media-jobs';
-        value: string | MediaJob;
-      } | null)
-    | ({
-        relationTo: 'tts-outputs';
-        value: string | TtsOutput;
-      } | null)
-    | ({
-        relationTo: 'graphic-documents';
-        value: string | GraphicDocument;
-      } | null)
-    | ({
-        relationTo: 'media-derivatives';
-        value: string | MediaDerivative;
-      } | null)
-    | ({
-        relationTo: 'edit-sessions';
-        value: string | EditSession;
-      } | null)
-    | ({
-        relationTo: 'quick-capture-drafts';
-        value: string | QuickCaptureDraft;
-      } | null)
-    | ({
-        relationTo: 'social-accounts';
-        value: string | SocialAccount;
-      } | null)
-    | ({
-        relationTo: 'social-drafts';
-        value: string | SocialDraft;
-      } | null)
-    | ({
-        relationTo: 'social-network-variants';
-        value: string | SocialNetworkVariant;
-      } | null)
-    | ({
-        relationTo: 'social-queue-items';
-        value: string | SocialQueueItem;
-      } | null)
-    | ({
-        relationTo: 'social-publish-attempts';
-        value: string | SocialPublishAttempt;
-      } | null)
-    | ({
-        relationTo: 'external-posts';
-        value: string | ExternalPost;
-      } | null)
-    | ({
-        relationTo: 'campaigns';
-        value: string | Campaign;
-      } | null)
-    | ({
-        relationTo: 'calendar-entry-audits';
-        value: string | CalendarEntryAudit;
-      } | null)
-    | ({
-        relationTo: 'events';
-        value: string | Event;
-      } | null)
-    | ({
-        relationTo: 'timelines';
-        value: string | Timeline;
-      } | null)
-    | ({
-        relationTo: 'timeline-memberships';
-        value: string | TimelineMembership;
-      } | null)
-    | ({
-        relationTo: 'sources';
-        value: string | Source;
-      } | null)
-    | ({
-        relationTo: 'albums';
-        value: string | Album;
-      } | null)
-    | ({
         relationTo: 'media-usages';
         value: string | MediaUsage;
       } | null)
     | ({
-        relationTo: 'forum-sections';
-        value: string | ForumSection;
-      } | null)
-    | ({
-        relationTo: 'forums';
-        value: string | Forum;
-      } | null)
-    | ({
-        relationTo: 'discussions';
-        value: string | Discussion;
-      } | null)
-    | ({
-        relationTo: 'discussion-posts';
-        value: string | DiscussionPost;
-      } | null)
-    | ({
-        relationTo: 'calendar-entries';
-        value: string | CalendarEntry;
-      } | null)
-    | ({
-        relationTo: 'network-signing-keys';
-        value: string | NetworkSigningKey;
-      } | null)
-    | ({
-        relationTo: 'remote-instances';
-        value: string | RemoteInstance;
-      } | null)
-    | ({
-        relationTo: 'remote-actors';
-        value: string | RemoteActor;
-      } | null)
-    | ({
-        relationTo: 'remote-objects';
-        value: string | RemoteObject;
-      } | null)
-    | ({
-        relationTo: 'network-relationships';
-        value: string | NetworkRelationship;
-      } | null)
-    | ({
-        relationTo: 'inbound-network-activities';
-        value: string | InboundNetworkActivity;
-      } | null)
-    | ({
-        relationTo: 'outbound-network-deliveries';
-        value: string | OutboundNetworkDelivery;
-      } | null)
-    | ({
-        relationTo: 'network-delivery-attempts';
-        value: string | NetworkDeliveryAttempt;
-      } | null)
-    | ({
-        relationTo: 'network-access-decisions';
-        value: string | NetworkAccessDecision;
-      } | null)
-    | ({
-        relationTo: 'network-audit-events';
-        value: string | NetworkAuditEvent;
-      } | null)
-    | ({
-        relationTo: 'form-definitions';
-        value: string | FormDefinition;
-      } | null)
-    | ({
-        relationTo: 'form-schemas';
-        value: string | FormSchema;
-      } | null)
-    | ({
-        relationTo: 'form-submissions';
-        value: string | FormSubmission;
-      } | null)
-    | ({
-        relationTo: 'submission-attachments';
-        value: string | SubmissionAttachment;
-      } | null)
-    | ({
-        relationTo: 'contacts';
-        value: string | Contact;
-      } | null)
-    | ({
-        relationTo: 'organizations';
-        value: string | Organization;
-      } | null)
-    | ({
-        relationTo: 'relationship-records';
-        value: string | RelationshipRecord;
-      } | null)
-    | ({
-        relationTo: 'contact-tags';
-        value: string | ContactTag;
-      } | null)
-    | ({
-        relationTo: 'contact-taggings';
-        value: string | ContactTagging;
-      } | null)
-    | ({
-        relationTo: 'interaction-records';
-        value: string | InteractionRecord;
-      } | null)
-    | ({
-        relationTo: 'relationship-notes';
-        value: string | RelationshipNote;
-      } | null)
-    | ({
-        relationTo: 'deals-opportunities';
-        value: string | DealsOpportunity;
-      } | null)
-    | ({
-        relationTo: 'owner-assignments';
-        value: string | OwnerAssignment;
-      } | null)
-    | ({
-        relationTo: 'next-actions';
-        value: string | NextAction;
-      } | null)
-    | ({
-        relationTo: 'workflow-items';
-        value: string | WorkflowItem;
-      } | null)
-    | ({
-        relationTo: 'audience-lists';
-        value: string | AudienceList;
-      } | null)
-    | ({
-        relationTo: 'audience-segments';
-        value: string | AudienceSegment;
-      } | null)
-    | ({
-        relationTo: 'audience-memberships';
-        value: string | AudienceMembership;
-      } | null)
-    | ({
-        relationTo: 'subscriber-confirmation-tokens';
-        value: string | SubscriberConfirmationToken;
-      } | null)
-    | ({
-        relationTo: 'subscribers';
-        value: string | Subscriber;
-      } | null)
-    | ({
-        relationTo: 'consent-events';
-        value: string | ConsentEvent;
-      } | null)
-    | ({
-        relationTo: 'preferences';
-        value: string | Preference;
-      } | null)
-    | ({
-        relationTo: 'suppressions';
-        value: string | Suppression;
-      } | null)
-    | ({
-        relationTo: 'email-messages';
-        value: string | EmailMessage;
-      } | null)
-    | ({
         relationTo: 'email-templates';
         value: string | EmailTemplate;
-      } | null)
-    | ({
-        relationTo: 'delivery-identities';
-        value: string | DeliveryIdentity;
-      } | null)
-    | ({
-        relationTo: 'email-deliveries';
-        value: string | EmailDelivery;
       } | null)
     | ({
         relationTo: 'email-delivery-events';
@@ -9954,38 +9748,6 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'telecom-delivery-events';
         value: string | TelecomDeliveryEvent;
-      } | null)
-    | ({
-        relationTo: 'activity-events';
-        value: string | ActivityEvent;
-      } | null)
-    | ({
-        relationTo: 'notifications';
-        value: string | Notification;
-      } | null)
-    | ({
-        relationTo: 'notification-preferences';
-        value: string | NotificationPreference;
-      } | null)
-    | ({
-        relationTo: 'notification-channels';
-        value: string | NotificationChannel;
-      } | null)
-    | ({
-        relationTo: 'digest-definitions';
-        value: string | DigestDefinition;
-      } | null)
-    | ({
-        relationTo: 'digest-runs';
-        value: string | DigestRun;
-      } | null)
-    | ({
-        relationTo: 'delivery-receipts';
-        value: string | DeliveryReceipt;
-      } | null)
-    | ({
-        relationTo: 'automation-definitions';
-        value: string | AutomationDefinition;
       } | null)
     | ({
         relationTo: 'automation-runs';
@@ -10006,98 +9768,6 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'audience-experiments';
         value: string | AudienceExperiment;
-      } | null)
-    | ({
-        relationTo: 'analytics-events';
-        value: string | AnalyticsEvent;
-      } | null)
-    | ({
-        relationTo: 'analytics-consent-records';
-        value: string | AnalyticsConsentRecord;
-      } | null)
-    | ({
-        relationTo: 'analytics-rollups';
-        value: string | AnalyticsRollup;
-      } | null)
-    | ({
-        relationTo: 'metric-snapshots';
-        value: string | MetricSnapshot;
-      } | null)
-    | ({
-        relationTo: 'analytics-goals';
-        value: string | AnalyticsGoal;
-      } | null)
-    | ({
-        relationTo: 'command-center-preferences';
-        value: string | CommandCenterPreference;
-      } | null)
-    | ({
-        relationTo: 'experience-rules';
-        value: string | ExperienceRule;
-      } | null)
-    | ({
-        relationTo: 'experience-variants';
-        value: string | ExperienceVariant;
-      } | null)
-    | ({
-        relationTo: 'experiments';
-        value: string | Experiment;
-      } | null)
-    | ({
-        relationTo: 'experiment-variants';
-        value: string | ExperimentVariant;
-      } | null)
-    | ({
-        relationTo: 'traffic-allocations';
-        value: string | TrafficAllocation;
-      } | null)
-    | ({
-        relationTo: 'experiment-assignments';
-        value: string | ExperimentAssignment;
-      } | null)
-    | ({
-        relationTo: 'conversion-goals';
-        value: string | ConversionGoal;
-      } | null)
-    | ({
-        relationTo: 'experiment-events';
-        value: string | ExperimentEvent;
-      } | null)
-    | ({
-        relationTo: 'experiment-analyses';
-        value: string | ExperimentAnalysis;
-      } | null)
-    | ({
-        relationTo: 'experiment-decisions';
-        value: string | ExperimentDecision;
-      } | null)
-    | ({
-        relationTo: 'quality-policies';
-        value: string | QualityPolicy;
-      } | null)
-    | ({
-        relationTo: 'quality-rules';
-        value: string | QualityRule;
-      } | null)
-    | ({
-        relationTo: 'quality-scans';
-        value: string | QualityScan;
-      } | null)
-    | ({
-        relationTo: 'quality-issues';
-        value: string | QualityIssue;
-      } | null)
-    | ({
-        relationTo: 'quality-exceptions';
-        value: string | QualityException;
-      } | null)
-    | ({
-        relationTo: 'quality-waivers';
-        value: string | QualityWaiver;
-      } | null)
-    | ({
-        relationTo: 'quality-reports';
-        value: string | QualityReport;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -10307,6 +9977,73 @@ export interface IntegrationAuditEventsSelect<T extends boolean = true> {
   subject?: T;
   outcome?: T;
   occurredAt?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ai-connections_select".
+ */
+export interface AiConnectionsSelect<T extends boolean = true> {
+  site?: T;
+  publication?: T;
+  label?: T;
+  providerKey?: T;
+  endpoint?: T;
+  model?: T;
+  models?: T;
+  capabilities?: T;
+  allowedTasks?: T;
+  status?: T;
+  lastError?: T;
+  lastTestedAt?: T;
+  perTaskUsd?: T;
+  monthlyUsd?: T;
+  maxInputTokens?: T;
+  maxOutputTokens?: T;
+  inputUsdPer1k?: T;
+  outputUsdPer1k?: T;
+  budgetMonth?: T;
+  spentMonthUsd?: T;
+  leaseUntil?: T;
+  leaseId?: T;
+  leasedCostUsd?: T;
+  createdBy?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ai-credentials_select".
+ */
+export interface AiCredentialsSelect<T extends boolean = true> {
+  connection?: T;
+  envelope?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ai-proposals_select".
+ */
+export interface AiProposalsSelect<T extends boolean = true> {
+  site?: T;
+  connection?: T;
+  task?: T;
+  targetCollection?: T;
+  targetId?: T;
+  targetUpdatedAt?: T;
+  status?: T;
+  original?: T;
+  output?: T;
+  contextPreview?: T;
+  usage?: T;
+  auditId?: T;
+  requestedBy?: T;
+  decidedBy?: T;
+  decidedAt?: T;
+  failureCode?: T;
+  application?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -10996,6 +10733,7 @@ export interface TopicsSelect<T extends boolean = true> {
   name?: T;
   slug?: T;
   description?: T;
+  canonicalPath?: T;
   sortOrder?: T;
   updatedAt?: T;
   createdAt?: T;
@@ -14519,6 +14257,7 @@ export interface DonationIntentsSelect<T extends boolean = true> {
   space?: T;
   owner?: T;
   campaign?: T;
+  idempotencyKey?: T;
   campaignVersion?: T;
   designation?: T;
   donorSnapshot?: T;
@@ -14744,6 +14483,30 @@ export interface SiteSetting {
    * Optional site-id to canonical-origin map for multisite installs. Origins must be absolute HTTPS URLs in production.
    */
   canonicalOriginsBySite?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Optional templates for routes served by the semantic catch-all. Fixed-renderer and unavailable entity routes retain their safe defaults. Site-specific templates can override supported defaults using approved variables.
+   */
+  semanticRouteTemplates?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Optional route templates by site id. Each site can override supported semantic route types; unspecified types use safe defaults.
+   */
+  semanticRouteTemplatesBySite?:
     | {
         [k: string]: unknown;
       }
@@ -15034,6 +14797,8 @@ export interface SiteSettingsSelect<T extends boolean = true> {
   siteDescription?: T;
   canonicalOrigin?: T;
   canonicalOriginsBySite?: T;
+  semanticRouteTemplates?: T;
+  semanticRouteTemplatesBySite?: T;
   locale?: T;
   timezone?: T;
   footerText?: T;
@@ -15492,19 +15257,17 @@ export interface TaskAudienceNewsletterDispatch {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "TaskAudience-telecom-delivery".
+ * via the `definition` "TaskAudience-form-intake".
  */
-export interface TaskAudienceTelecomDelivery {
-  input: {
-    deliveryId: string;
-  };
+export interface TaskAudienceFormIntake {
+  input?: unknown;
   output?: unknown;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "TaskAudience-telecom-dispatch".
+ * via the `definition` "TaskCommunity-email-dispatch".
  */
-export interface TaskAudienceTelecomDispatch {
+export interface TaskCommunityEmailDispatch {
   input?: unknown;
   output?: unknown;
 }

@@ -1,0 +1,775 @@
+{
+  "numTotalTestSuites": 28,
+  "numPassedTestSuites": 28,
+  "numFailedTestSuites": 0,
+  "numPendingTestSuites": 0,
+  "numTotalTests": 63,
+  "numPassedTests": 63,
+  "numFailedTests": 0,
+  "numPendingTests": 0,
+  "numTodoTests": 0,
+  "snapshot": {
+    "added": 0,
+    "failure": false,
+    "filesAdded": 0,
+    "filesRemoved": 0,
+    "filesRemovedList": [],
+    "filesUnmatched": 0,
+    "filesUpdated": 0,
+    "matched": 0,
+    "total": 0,
+    "unchecked": 0,
+    "uncheckedKeysByFile": [],
+    "unmatched": 0,
+    "updated": 0,
+    "didUpdate": false
+  },
+  "startTime": 1791267988303,
+  "success": true,
+  "testResults": [
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "AUD-06 Telecom Capability and Safety Boundaries",
+            "Phone normalization & reassignment"
+          ],
+          "fullName": "AUD-06 Telecom Capability and Safety Boundaries Phone normalization & reassignment normalizes numbers to standard E.164 while retaining user-entered display",
+          "status": "passed",
+          "title": "normalizes numbers to standard E.164 while retaining user-entered display",
+          "duration": 2.24879999999996,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "AUD-06 Telecom Capability and Safety Boundaries",
+            "Phone normalization & reassignment"
+          ],
+          "fullName": "AUD-06 Telecom Capability and Safety Boundaries Phone normalization & reassignment handles number reassignment by revoking consent, adding suppression, and cancelling queued sends",
+          "status": "passed",
+          "title": "handles number reassignment by revoking consent, adding suppression, and cancelling queued sends",
+          "duration": 2.7776999999999816,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "AUD-06 Telecom Capability and Safety Boundaries",
+            "Telecom consent proof & channel isolation"
+          ],
+          "fullName": "AUD-06 Telecom Capability and Safety Boundaries Telecom consent proof & channel isolation proves email consent never implies SMS/RCS consent",
+          "status": "passed",
+          "title": "proves email consent never implies SMS/RCS consent",
+          "duration": 0.3815999999999349,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "AUD-06 Telecom Capability and Safety Boundaries",
+            "Inbound keywords & STOP race condition"
+          ],
+          "fullName": "AUD-06 Telecom Capability and Safety Boundaries Inbound keywords & STOP race condition parses standard STOP, HELP, and START keywords including French Canadian ARRET",
+          "status": "passed",
+          "title": "parses standard STOP, HELP, and START keywords including French Canadian ARRET",
+          "duration": 0.3612000000000535,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "AUD-06 Telecom Capability and Safety Boundaries",
+            "Inbound keywords & STOP race condition"
+          ],
+          "fullName": "AUD-06 Telecom Capability and Safety Boundaries Inbound keywords & STOP race condition cancels queued deliveries immediately upon inbound STOP before dispatch",
+          "status": "passed",
+          "title": "cancels queued deliveries immediately upon inbound STOP before dispatch",
+          "duration": 0.7835999999999785,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "AUD-06 Telecom Capability and Safety Boundaries",
+            "Inbound keywords & STOP race condition"
+          ],
+          "fullName": "AUD-06 Telecom Capability and Safety Boundaries Inbound keywords & STOP race condition routes free-form inbound inquiries to staff inbox and never acts as a hallucinating reply bot",
+          "status": "passed",
+          "title": "routes free-form inbound inquiries to staff inbox and never acts as a hallucinating reply bot",
+          "duration": 0.3266999999999598,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "AUD-06 Telecom Capability and Safety Boundaries",
+            "GSM-7 vs UCS-2 segmentation & cost estimation"
+          ],
+          "fullName": "AUD-06 Telecom Capability and Safety Boundaries GSM-7 vs UCS-2 segmentation & cost estimation accurately counts standard GSM-7 septets and extension characters",
+          "status": "passed",
+          "title": "accurately counts standard GSM-7 septets and extension characters",
+          "duration": 0.34789999999998145,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "AUD-06 Telecom Capability and Safety Boundaries",
+            "GSM-7 vs UCS-2 segmentation & cost estimation"
+          ],
+          "fullName": "AUD-06 Telecom Capability and Safety Boundaries GSM-7 vs UCS-2 segmentation & cost estimation detects Unicode characters and switches to UCS-2 encoding",
+          "status": "passed",
+          "title": "detects Unicode characters and switches to UCS-2 encoding",
+          "duration": 0.1715000000000373,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "AUD-06 Telecom Capability and Safety Boundaries",
+            "GSM-7 vs UCS-2 segmentation & cost estimation"
+          ],
+          "fullName": "AUD-06 Telecom Capability and Safety Boundaries GSM-7 vs UCS-2 segmentation & cost estimation estimates provider units and cost labeled as estimate",
+          "status": "passed",
+          "title": "estimates provider units and cost labeled as estimate",
+          "duration": 0.25890000000003965,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["AUD-06 Telecom Capability and Safety Boundaries", "Telecom Composer"],
+          "fullName": "AUD-06 Telecom Capability and Safety Boundaries Telecom Composer replaces personalization tokens with values or fallbacks",
+          "status": "passed",
+          "title": "replaces personalization tokens with values or fallbacks",
+          "duration": 0.2643000000000484,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["AUD-06 Telecom Capability and Safety Boundaries", "Telecom Composer"],
+          "fullName": "AUD-06 Telecom Capability and Safety Boundaries Telecom Composer warns when marketing SMS lacks opt-out instructions",
+          "status": "passed",
+          "title": "warns when marketing SMS lacks opt-out instructions",
+          "duration": 0.21109999999998763,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["AUD-06 Telecom Capability and Safety Boundaries", "Telecom Composer"],
+          "fullName": "AUD-06 Telecom Capability and Safety Boundaries Telecom Composer enforces accessibility alt text for RCS card media",
+          "status": "passed",
+          "title": "enforces accessibility alt text for RCS card media",
+          "duration": 0.3606999999999516,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "AUD-06 Telecom Capability and Safety Boundaries",
+            "Deterministic Telecom Emulator & RCS routing"
+          ],
+          "fullName": "AUD-06 Telecom Capability and Safety Boundaries Deterministic Telecom Emulator & RCS routing routes RCS-capable recipients directly to RCS",
+          "status": "passed",
+          "title": "routes RCS-capable recipients directly to RCS",
+          "duration": 0.49320000000000164,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "AUD-06 Telecom Capability and Safety Boundaries",
+            "Deterministic Telecom Emulator & RCS routing"
+          ],
+          "fullName": "AUD-06 Telecom Capability and Safety Boundaries Deterministic Telecom Emulator & RCS routing routes SMS-only recipients to configured SMS fallback when policy permits",
+          "status": "passed",
+          "title": "routes SMS-only recipients to configured SMS fallback when policy permits",
+          "duration": 0.2094000000000733,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "AUD-06 Telecom Capability and Safety Boundaries",
+            "Deterministic Telecom Emulator & RCS routing"
+          ],
+          "fullName": "AUD-06 Telecom Capability and Safety Boundaries Deterministic Telecom Emulator & RCS routing refuses to silently downgrade RCS to SMS when fallback is prohibited",
+          "status": "passed",
+          "title": "refuses to silently downgrade RCS to SMS when fallback is prohibited",
+          "duration": 0.10229999999990014,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "AUD-06 Telecom Capability and Safety Boundaries",
+            "Deterministic Telecom Emulator & RCS routing"
+          ],
+          "fullName": "AUD-06 Telecom Capability and Safety Boundaries Deterministic Telecom Emulator & RCS routing handles rate limits, carrier rejection, and timeout in emulator",
+          "status": "passed",
+          "title": "handles rate limits, carrier rejection, and timeout in emulator",
+          "duration": 0.13999999999998636,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "AUD-06 Telecom Capability and Safety Boundaries",
+            "Deterministic Telecom Emulator & RCS routing"
+          ],
+          "fullName": "AUD-06 Telecom Capability and Safety Boundaries Deterministic Telecom Emulator & RCS routing deduplicates deliveries with stable idempotency key",
+          "status": "passed",
+          "title": "deduplicates deliveries with stable idempotency key",
+          "duration": 0.1956000000000131,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "AUD-06 Telecom Capability and Safety Boundaries",
+            "Quiet hours & DST calculations"
+          ],
+          "fullName": "AUD-06 Telecom Capability and Safety Boundaries Quiet hours & DST calculations accurately identifies quiet hours (9pm to 8am)",
+          "status": "passed",
+          "title": "accurately identifies quiet hours (9pm to 8am)",
+          "duration": 13.876499999999965,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "AUD-06 Telecom Capability and Safety Boundaries",
+            "Quiet hours & DST calculations"
+          ],
+          "fullName": "AUD-06 Telecom Capability and Safety Boundaries Quiet hours & DST calculations calculates the next morning opening window across timezones",
+          "status": "passed",
+          "title": "calculates the next morning opening window across timezones",
+          "duration": 1.4891000000000076,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "AUD-06 Telecom Capability and Safety Boundaries",
+            "Real Provider Security & Preflight"
+          ],
+          "fullName": "AUD-06 Telecom Capability and Safety Boundaries Real Provider Security & Preflight fails closed when credentials are unconfigured without crashing or leaking secrets",
+          "status": "passed",
+          "title": "fails closed when credentials are unconfigured without crashing or leaking secrets",
+          "duration": 0.526299999999992,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "AUD-06 Telecom Capability and Safety Boundaries",
+            "Real Provider Security & Preflight"
+          ],
+          "fullName": "AUD-06 Telecom Capability and Safety Boundaries Real Provider Security & Preflight refuses outbound live send unless explicitly permitted by configuration",
+          "status": "passed",
+          "title": "refuses outbound live send unless explicitly permitted by configuration",
+          "duration": 0.2420999999999367,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791267989095,
+      "endTime": 1791267989122.2422,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/aud-06-telecom.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["COMM-06C notification preferences, digests & audience outbox"],
+          "fullName": "COMM-06C notification preferences, digests & audience outbox daily digest preference creates zero immediate emails for 10 comments, then one digest at scheduled run",
+          "status": "passed",
+          "title": "daily digest preference creates zero immediate emails for 10 comments, then one digest at scheduled run",
+          "duration": 6.281700000000001,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["COMM-06C notification preferences, digests & audience outbox"],
+          "fullName": "COMM-06C notification preferences, digests & audience outbox marketing unsubscribe does not block transactional community notifications",
+          "status": "passed",
+          "title": "marketing unsubscribe does not block transactional community notifications",
+          "duration": 0.5574000000000296,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["COMM-06C notification preferences, digests & audience outbox"],
+          "fullName": "COMM-06C notification preferences, digests & audience outbox private message email subject and preheader are strictly generic",
+          "status": "passed",
+          "title": "private message email subject and preheader are strictly generic",
+          "duration": 0.2319999999999709,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["COMM-06C notification preferences, digests & audience outbox"],
+          "fullName": "COMM-06C notification preferences, digests & audience outbox mandatory moderation notices do not bypass explicit external opt-out",
+          "status": "passed",
+          "title": "mandatory moderation notices do not bypass explicit external opt-out",
+          "duration": 0.6886999999999261,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791267989055,
+      "endTime": 1791267989063.6887,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/comm-06c-digests-and-outbox.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["event workflow contracts"],
+          "fullName": "event workflow contracts preserves local wall time over the DST boundary and produces portable ICS",
+          "status": "passed",
+          "title": "preserves local wall time over the DST boundary and produces portable ICS",
+          "duration": 25.973499999999945,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["event workflow contracts"],
+          "fullName": "event workflow contracts bounds recurrence, supports edit-one cancellation, and excludes drafts and other tenants",
+          "status": "passed",
+          "title": "bounds recurrence, supports edit-one cancellation, and excludes drafts and other tenants",
+          "duration": 27.803699999999935,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["event workflow contracts"],
+          "fullName": "event workflow contracts rejects malformed dates, invalid zones, and incomplete online events",
+          "status": "passed",
+          "title": "rejects malformed dates, invalid zones, and incomplete online events",
+          "duration": 0.7281000000000404,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["event workflow contracts"],
+          "fullName": "event workflow contracts resolves nonexistent spring time and chooses the earlier fall overlap",
+          "status": "passed",
+          "title": "resolves nonexistent spring time and chooses the earlier fall overlap",
+          "duration": 23.779499999999985,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["event workflow contracts"],
+          "fullName": "event workflow contracts folds multibyte text and prevents newline injection while composing multiple events",
+          "status": "passed",
+          "title": "folds multibyte text and prevents newline injection while composing multiple events",
+          "duration": 2.5996000000000095,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["event workflow contracts"],
+          "fullName": "event workflow contracts excludes private overrides from public occurrence projections",
+          "status": "passed",
+          "title": "excludes private overrides from public occurrence projections",
+          "duration": 0.6639999999999873,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791267989178,
+      "endTime": 1791267989260.664,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/events-contracts.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["RC08B safety boundaries"],
+          "fullName": "RC08B safety boundaries rejects arbitrary options, impossible dates, invalid numbers and oversized text; discards conditionally hidden answers",
+          "status": "passed",
+          "title": "rejects arbitrary options, impossible dates, invalid numbers and oversized text; discards conditionally hidden answers",
+          "duration": 2.4512999999999465,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["RC08B safety boundaries"],
+          "fullName": "RC08B safety boundaries maps follow, mention and message switches and defaults external channels to off without versioned opt-in",
+          "status": "passed",
+          "title": "maps follow, mention and message switches and defaults external channels to off without versioned opt-in",
+          "duration": 0.46489999999994325,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["RC08B safety boundaries"],
+          "fullName": "RC08B safety boundaries never borrows another subscriber consent when the recipient subject is missing",
+          "status": "passed",
+          "title": "never borrows another subscriber consent when the recipient subject is missing",
+          "duration": 0.8048000000001139,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["RC08B safety boundaries"],
+          "fullName": "RC08B safety boundaries does not call configured credentials verified sender or RCS readiness",
+          "status": "passed",
+          "title": "does not call configured credentials verified sender or RCS readiness",
+          "duration": 0.8412000000000717,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["RC08B safety boundaries"],
+          "fullName": "RC08B safety boundaries never manufactures Printful templates, files, mockups or prices",
+          "status": "passed",
+          "title": "never manufactures Printful templates, files, mockups or prices",
+          "duration": 1.5273999999999432,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["RC08B safety boundaries"],
+          "fullName": "RC08B safety boundaries rechecks same-site timeline event visibility and handles deleted references",
+          "status": "passed",
+          "title": "rechecks same-site timeline event visibility and handles deleted references",
+          "duration": 0.3934999999999036,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791267989955,
+      "endTime": 1791267989961.3936,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc08b-safety.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "SHOP-03 Print-on-Demand & Fulfillment Contracts",
+            "1. Versioned POD Adapter & Deterministic Emulator"
+          ],
+          "fullName": "SHOP-03 Print-on-Demand & Fulfillment Contracts 1. Versioned POD Adapter & Deterministic Emulator declares the contract version shop-03.v1 and complete capability matrix",
+          "status": "passed",
+          "title": "declares the contract version shop-03.v1 and complete capability matrix",
+          "duration": 3.0311000000000377,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "SHOP-03 Print-on-Demand & Fulfillment Contracts",
+            "1. Versioned POD Adapter & Deterministic Emulator"
+          ],
+          "fullName": "SHOP-03 Print-on-Demand & Fulfillment Contracts 1. Versioned POD Adapter & Deterministic Emulator performs health checks and supports degradation simulation",
+          "status": "passed",
+          "title": "performs health checks and supports degradation simulation",
+          "duration": 0.5851000000000113,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "SHOP-03 Print-on-Demand & Fulfillment Contracts",
+            "1. Versioned POD Adapter & Deterministic Emulator"
+          ],
+          "fullName": "SHOP-03 Print-on-Demand & Fulfillment Contracts 1. Versioned POD Adapter & Deterministic Emulator returns catalog, variants, and print area templates deterministically",
+          "status": "passed",
+          "title": "returns catalog, variants, and print area templates deterministically",
+          "duration": 0.5734999999999673,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "SHOP-03 Print-on-Demand & Fulfillment Contracts",
+            "1. Versioned POD Adapter & Deterministic Emulator"
+          ],
+          "fullName": "SHOP-03 Print-on-Demand & Fulfillment Contracts 1. Versioned POD Adapter & Deterministic Emulator validates file formats, minimum 150 DPI, and dimensions",
+          "status": "passed",
+          "title": "validates file formats, minimum 150 DPI, and dimensions",
+          "duration": 0.41689999999994143,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "SHOP-03 Print-on-Demand & Fulfillment Contracts",
+            "1. Versioned POD Adapter & Deterministic Emulator"
+          ],
+          "fullName": "SHOP-03 Print-on-Demand & Fulfillment Contracts 1. Versioned POD Adapter & Deterministic Emulator performs preflight check, effective DPI calculation, and mockup provenance",
+          "status": "passed",
+          "title": "performs preflight check, effective DPI calculation, and mockup provenance",
+          "duration": 0.6108000000000402,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "SHOP-03 Print-on-Demand & Fulfillment Contracts",
+            "1. Versioned POD Adapter & Deterministic Emulator"
+          ],
+          "fullName": "SHOP-03 Print-on-Demand & Fulfillment Contracts 1. Versioned POD Adapter & Deterministic Emulator estimates costs deterministically",
+          "status": "passed",
+          "title": "estimates costs deterministically",
+          "duration": 0.6324000000000751,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "SHOP-03 Print-on-Demand & Fulfillment Contracts",
+            "2. Configured Real Provider Boundaries & Opt-In Guard"
+          ],
+          "fullName": "SHOP-03 Print-on-Demand & Fulfillment Contracts 2. Configured Real Provider Boundaries & Opt-In Guard enforces live creation protection and excludes live creation from tests",
+          "status": "passed",
+          "title": "enforces live creation protection and excludes live creation from tests",
+          "duration": 2.24980000000005,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "SHOP-03 Print-on-Demand & Fulfillment Contracts",
+            "3. Encrypted Least-Privilege Connection & Redaction"
+          ],
+          "fullName": "SHOP-03 Print-on-Demand & Fulfillment Contracts 3. Encrypted Least-Privilege Connection & Redaction encrypts API tokens at rest using AES-256-GCM and redacts keys in public views",
+          "status": "passed",
+          "title": "encrypts API tokens at rest using AES-256-GCM and redacts keys in public views",
+          "duration": 1.935100000000034,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "SHOP-03 Print-on-Demand & Fulfillment Contracts",
+            "3. Encrypted Least-Privilege Connection & Redaction"
+          ],
+          "fullName": "SHOP-03 Print-on-Demand & Fulfillment Contracts 3. Encrypted Least-Privilege Connection & Redaction rotates credentials safely and supports safe disable",
+          "status": "passed",
+          "title": "rotates credentials safely and supports safe disable",
+          "duration": 0.8998000000000275,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "SHOP-03 Print-on-Demand & Fulfillment Contracts",
+            "4. Governed Print Renditions & Immutable Sold Snapshots"
+          ],
+          "fullName": "SHOP-03 Print-on-Demand & Fulfillment Contracts 4. Governed Print Renditions & Immutable Sold Snapshots validates DPI, dimensions, clean malware status, approved rights, and private originals",
+          "status": "passed",
+          "title": "validates DPI, dimensions, clean malware status, approved rights, and private originals",
+          "duration": 0.28949999999997544,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "SHOP-03 Print-on-Demand & Fulfillment Contracts",
+            "4. Governed Print Renditions & Immutable Sold Snapshots"
+          ],
+          "fullName": "SHOP-03 Print-on-Demand & Fulfillment Contracts 4. Governed Print Renditions & Immutable Sold Snapshots enforces color fidelity disclaimer and freezes immutable sold snapshot",
+          "status": "passed",
+          "title": "enforces color fidelity disclaimer and freezes immutable sold snapshot",
+          "duration": 0.31169999999997344,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "SHOP-03 Print-on-Demand & Fulfillment Contracts",
+            "5. POD Mapping Validation & Deliberate Remap"
+          ],
+          "fullName": "SHOP-03 Print-on-Demand & Fulfillment Contracts 5. POD Mapping Validation & Deliberate Remap rejects mapping when option values mismatch catalog variant",
+          "status": "passed",
+          "title": "rejects mapping when option values mismatch catalog variant",
+          "duration": 0.38799999999991996,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "SHOP-03 Print-on-Demand & Fulfillment Contracts",
+            "5. POD Mapping Validation & Deliberate Remap"
+          ],
+          "fullName": "SHOP-03 Print-on-Demand & Fulfillment Contracts 5. POD Mapping Validation & Deliberate Remap rejects mapping when artwork hash does not match rendition",
+          "status": "passed",
+          "title": "rejects mapping when artwork hash does not match rendition",
+          "duration": 0.19009999999991578,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "SHOP-03 Print-on-Demand & Fulfillment Contracts",
+            "5. POD Mapping Validation & Deliberate Remap"
+          ],
+          "fullName": "SHOP-03 Print-on-Demand & Fulfillment Contracts 5. POD Mapping Validation & Deliberate Remap allows deliberate remap that increments version and returns to pending review",
+          "status": "passed",
+          "title": "allows deliberate remap that increments version and returns to pending review",
+          "duration": 0.237700000000018,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "SHOP-03 Print-on-Demand & Fulfillment Contracts",
+            "6. FulfillmentPlan Splitting & Exactly-One PODJob Creation"
+          ],
+          "fullName": "SHOP-03 Print-on-Demand & Fulfillment Contracts 6. FulfillmentPlan Splitting & Exactly-One PODJob Creation splits lines into provider POD, manual fallback, and digital grants",
+          "status": "passed",
+          "title": "splits lines into provider POD, manual fallback, and digital grants",
+          "duration": 0.33209999999996853,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "SHOP-03 Print-on-Demand & Fulfillment Contracts",
+            "6. FulfillmentPlan Splitting & Exactly-One PODJob Creation"
+          ],
+          "fullName": "SHOP-03 Print-on-Demand & Fulfillment Contracts 6. FulfillmentPlan Splitting & Exactly-One PODJob Creation enforces Authoritative Paid Acceptance before creating PODJob",
+          "status": "passed",
+          "title": "enforces Authoritative Paid Acceptance before creating PODJob",
+          "duration": 0.7826999999999771,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "SHOP-03 Print-on-Demand & Fulfillment Contracts",
+            "6. FulfillmentPlan Splitting & Exactly-One PODJob Creation"
+          ],
+          "fullName": "SHOP-03 Print-on-Demand & Fulfillment Contracts 6. FulfillmentPlan Splitting & Exactly-One PODJob Creation enforces PO box rejection at the address boundary",
+          "status": "passed",
+          "title": "enforces PO box rejection at the address boundary",
+          "duration": 0.16420000000005075,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "SHOP-03 Print-on-Demand & Fulfillment Contracts",
+            "7. Hold Window, Address Boundary & Cancel Deadline"
+          ],
+          "fullName": "SHOP-03 Print-on-Demand & Fulfillment Contracts 7. Hold Window, Address Boundary & Cancel Deadline allows hold release and hold placement",
+          "status": "passed",
+          "title": "allows hold release and hold placement",
+          "duration": 0.46699999999998454,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "SHOP-03 Print-on-Demand & Fulfillment Contracts",
+            "7. Hold Window, Address Boundary & Cancel Deadline"
+          ],
+          "fullName": "SHOP-03 Print-on-Demand & Fulfillment Contracts 7. Hold Window, Address Boundary & Cancel Deadline enforces address boundary: allows address update during hold, rejects after submission",
+          "status": "passed",
+          "title": "enforces address boundary: allows address update during hold, rejects after submission",
+          "duration": 1.518199999999979,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "SHOP-03 Print-on-Demand & Fulfillment Contracts",
+            "7. Hold Window, Address Boundary & Cancel Deadline"
+          ],
+          "fullName": "SHOP-03 Print-on-Demand & Fulfillment Contracts 7. Hold Window, Address Boundary & Cancel Deadline enforces cancel deadline: allows cancel before production, rejects in production",
+          "status": "passed",
+          "title": "enforces cancel deadline: allows cancel before production, rejects in production",
+          "duration": 0.5163000000000011,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "SHOP-03 Print-on-Demand & Fulfillment Contracts",
+            "8. Event Reducer, Disorder, Partial Shipments & Safe Tracking"
+          ],
+          "fullName": "SHOP-03 Print-on-Demand & Fulfillment Contracts 8. Event Reducer, Disorder, Partial Shipments & Safe Tracking absorbs out-of-order events without regressing terminal or later states",
+          "status": "passed",
+          "title": "absorbs out-of-order events without regressing terminal or later states",
+          "duration": 0.4996999999999616,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "SHOP-03 Print-on-Demand & Fulfillment Contracts",
+            "8. Event Reducer, Disorder, Partial Shipments & Safe Tracking"
+          ],
+          "fullName": "SHOP-03 Print-on-Demand & Fulfillment Contracts 8. Event Reducer, Disorder, Partial Shipments & Safe Tracking tracks partial shipments and promotes to shipped when all lines are fulfilled",
+          "status": "passed",
+          "title": "tracks partial shipments and promotes to shipped when all lines are fulfilled",
+          "duration": 0.3552999999999429,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "SHOP-03 Print-on-Demand & Fulfillment Contracts",
+            "8. Event Reducer, Disorder, Partial Shipments & Safe Tracking"
+          ],
+          "fullName": "SHOP-03 Print-on-Demand & Fulfillment Contracts 8. Event Reducer, Disorder, Partial Shipments & Safe Tracking sanitizes tracking URLs against injection attacks and allows verified carrier domains",
+          "status": "passed",
+          "title": "sanitizes tracking URLs against injection attacks and allows verified carrier domains",
+          "duration": 0.11659999999994852,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "SHOP-03 Print-on-Demand & Fulfillment Contracts",
+            "9. Failure, Retry, Manual Handoff & Reprint"
+          ],
+          "fullName": "SHOP-03 Print-on-Demand & Fulfillment Contracts 9. Failure, Retry, Manual Handoff & Reprint exhausts retries and transitions to Explicit Manual Fulfillment Package with declaration",
+          "status": "passed",
+          "title": "exhausts retries and transitions to Explicit Manual Fulfillment Package with declaration",
+          "duration": 1.147899999999936,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "SHOP-03 Print-on-Demand & Fulfillment Contracts",
+            "9. Failure, Retry, Manual Handoff & Reprint"
+          ],
+          "fullName": "SHOP-03 Print-on-Demand & Fulfillment Contracts 9. Failure, Retry, Manual Handoff & Reprint creates replacement reprint job linked to parent with responsibility policy",
+          "status": "passed",
+          "title": "creates replacement reprint job linked to parent with responsibility policy",
+          "duration": 0.5150999999999613,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "SHOP-03 Print-on-Demand & Fulfillment Contracts",
+            "10. End-to-End Acceptance: One paid test line routes exactly once"
+          ],
+          "fullName": "SHOP-03 Print-on-Demand & Fulfillment Contracts 10. End-to-End Acceptance: One paid test line routes exactly once routes one paid test line through the emulator, fulfills, receives tracking, and preserves immutable snapshot",
+          "status": "passed",
+          "title": "routes one paid test line through the emulator, fulfills, receives tracking, and preserves immutable snapshot",
+          "duration": 1.3229000000000042,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791267989159,
+      "endTime": 1791267989180.323,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/shop-03-pod-fulfillment.test.ts"
+    }
+  ]
+}

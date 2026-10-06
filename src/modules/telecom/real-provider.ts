@@ -28,23 +28,23 @@ export type TwilioTelecomConfig = {
 
 export const twilioProviderCapabilities: TelecomProviderCapabilities = {
   version: 1,
-  channels: ['sms', 'mms', 'rcs'],
+  channels: ['sms'],
   rcs: {
-    basic: true,
-    richCards: true,
-    carousels: true,
-    capabilityLookup: true,
-    verifiedSender: true,
+    basic: false,
+    richCards: false,
+    carousels: false,
+    capabilityLookup: false,
+    verifiedSender: false,
   },
-  senderTypes: ['shortcode', 'longcode', 'toll-free', 'alphanumeric', 'rcs-agent'],
+  senderTypes: ['shortcode', 'longcode', 'toll-free', 'alphanumeric'],
   supportedDestinations: ['*'],
   rateLimits: {
     messagesPerSecond: 10,
     maxBurst: 50,
   },
-  supportsInboundKeywords: true,
-  supportsDeliveryReceipts: true,
-  supportsReconciliation: true,
+  supportsInboundKeywords: false,
+  supportsDeliveryReceipts: false,
+  supportsReconciliation: false,
 }
 
 export function createTwilioTelecomAdapter(config: TwilioTelecomConfig): MessagingProviderAdapter {
@@ -60,16 +60,14 @@ export function createTwilioTelecomAdapter(config: TwilioTelecomConfig): Messagi
 
   return {
     id: 'twilio-telecom',
-    channelCapabilities: ['sms', 'mms', 'rcs'],
+    channelCapabilities: ['sms'],
     contract: twilioProviderCapabilities,
 
     async lookupRecipientCapability(recipientPhone: string): Promise<RecipientTelecomCapability> {
-      // In production, queries Twilio Lookup API v2 with lineTypeIntelligence and rcs packages.
-      // If unconfigured or in preflight, returns conservative fallback (SMS only).
+      // No carrier capability lookup is implemented; do not advertise RCS readiness.
       return {
         phone: recipientPhone,
         rcsSupported: false,
-        carrier: 'Provider Lookup Pending',
         checkedAt: new Date().toISOString(),
       }
     },
@@ -156,12 +154,13 @@ export function createTwilioTelecomAdapter(config: TwilioTelecomConfig): Messagi
 
       return {
         provider: 'twilio-telecom',
-        status: 'ready',
+        status: 'degraded',
+        reason: 'Sender registration and carrier approval have not been verified by this adapter.',
         sender: sender ?? {
           from: activeFrom,
           type: activeFrom.startsWith('MG') ? 'toll-free' : 'longcode',
         },
-        registrationStatus: 'verified',
+        registrationStatus: 'pending',
       }
     },
 
@@ -191,6 +190,16 @@ export function createTwilioTelecomAdapter(config: TwilioTelecomConfig): Messagi
         }
       }
 
+      if (request.channel !== 'sms')
+        return {
+          ok: false,
+          provider: 'twilio-telecom',
+          failure: {
+            kind: 'permanent',
+            code: 'capability_mismatch',
+            message: 'This adapter implements SMS only. RCS/MMS dispatch is unavailable.',
+          },
+        }
       const segmentCalc = calculateSmsSegments(request.text)
       const costEstimate = estimateTelecomCost({
         channel: request.channel,
@@ -202,7 +211,9 @@ export function createTwilioTelecomAdapter(config: TwilioTelecomConfig): Messagi
         const authHeader = Buffer.from(`${accountSid}:${authToken}`).toString('base64')
         const params = new URLSearchParams()
         params.set('To', request.to)
-        params.set('From', request.from || config.fromNumber || '')
+        if (config.messagingServiceSid)
+          params.set('MessagingServiceSid', config.messagingServiceSid)
+        else params.set('From', config.fromNumber || request.from || '')
         params.set('Body', request.text)
 
         const controller = new AbortController()
@@ -224,11 +235,25 @@ export function createTwilioTelecomAdapter(config: TwilioTelecomConfig): Messagi
           return {
             ok: false,
             provider: 'twilio-telecom',
-            failure: normalizeTelecomError(body),
+            failure: {
+              ...normalizeTelecomError(body),
+              message: String(redact(normalizeTelecomError(body).message, secrets)),
+            },
           }
         }
 
         const data = (await res.json()) as { sid?: string; status?: string }
+        if (!data.sid || !/^SM[a-f0-9]{32}$/i.test(data.sid))
+          return {
+            ok: false,
+            provider: 'twilio-telecom',
+            failure: {
+              kind: 'unknown',
+              code: 'unknown_outcome',
+              message:
+                'Provider acceptance did not include a usable message identifier. Reconciliation is required.',
+            },
+          }
         return {
           ok: true,
           provider: 'twilio-telecom',
@@ -242,7 +267,10 @@ export function createTwilioTelecomAdapter(config: TwilioTelecomConfig): Messagi
         return {
           ok: false,
           provider: 'twilio-telecom',
-          failure: normalizeTelecomError(err),
+          failure: {
+            ...normalizeTelecomError(err),
+            message: String(redact(normalizeTelecomError(err).message, secrets)),
+          },
         }
       }
     },

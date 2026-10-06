@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from 'react'
 import Link from 'next/link'
 import { DEFAULT_SITE_NAME } from '@/modules/presentation/themes/identity'
 
-import { socialHash, socialIdempotencyKey, validateVariant } from '@/modules/social/contracts'
+import { validateVariant } from '@/modules/social/contracts'
 
 type NetworkConfig = {
   name: string
@@ -117,25 +117,12 @@ export default function SocialStudioPage() {
 
   const issues = validateVariant(variant, currentNetwork.limit)
 
-  const submit = (action: 'review' | 'publish' | 'schedule') => {
-    if (issues.length) return setStatus(`Validation Error: ${issues.join(' ')}`)
-    if (
-      action === 'publish' &&
-      selectedNetwork !== 'Bluesky' &&
-      selectedNetwork !== 'Mastodon / ActivityPub'
-    )
-      return setStatus(
-        `${selectedNetwork} is currently manual handoff only; no unsupported API call was made.`,
-      )
-    if (action === 'schedule' && !scheduledFor)
-      return setStatus('Please select a local date and time to schedule this post.')
-    const key = socialIdempotencyKey(variant.id, socialHash(variant))
+  const submit = () =>
     setStatus(
-      action === 'review'
-        ? 'Broadcast ready for review.'
-        : `${action === 'schedule' ? 'Scheduled' : 'Queued for dispatch'} with idempotency proof ${key.slice(0, 24)}…`,
+      issues.length
+        ? `Validation Error: ${issues.join(' ')}`
+        : 'Local preview checks passed. Save and review a persisted Social Draft before scheduling or dispatch.',
     )
-  }
 
   return (
     <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-16 space-y-10">
@@ -256,25 +243,18 @@ export default function SocialStudioPage() {
             <div className="flex flex-wrap items-center gap-3 pt-2">
               <button
                 type="button"
-                onClick={() => submit('review')}
+                onClick={submit}
                 className="btn btn-secondary text-xs flex-1 sm:flex-initial"
               >
-                Request Review
+                Validate preview
               </button>
-              <button
-                type="button"
-                onClick={() => submit('schedule')}
-                className="btn btn-secondary text-xs flex-1 sm:flex-initial"
-              >
-                📅 Schedule
-              </button>
-              <button
-                type="button"
-                onClick={() => submit('publish')}
-                className="btn btn-primary text-xs flex-1 sm:flex-initial"
-              >
-                🚀 Publish Broadcast
-              </button>
+              <Link href="/admin/collections/social-drafts" className="btn btn-primary text-xs">
+                Create a persisted Social Draft
+              </Link>
+              <p>
+                Scheduling and dispatch use approved drafts in coordinated releases. This preview is
+                unsaved.
+              </p>
             </div>
           </div>
 

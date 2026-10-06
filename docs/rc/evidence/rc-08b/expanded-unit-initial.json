@@ -1,0 +1,598 @@
+{
+  "numTotalTestSuites": 21,
+  "numPassedTestSuites": 21,
+  "numFailedTestSuites": 0,
+  "numPendingTestSuites": 0,
+  "numTotalTests": 50,
+  "numPassedTests": 50,
+  "numFailedTests": 0,
+  "numPendingTests": 0,
+  "numTodoTests": 0,
+  "snapshot": {
+    "added": 0,
+    "failure": false,
+    "filesAdded": 0,
+    "filesRemoved": 0,
+    "filesRemovedList": [],
+    "filesUnmatched": 0,
+    "filesUpdated": 0,
+    "matched": 0,
+    "total": 0,
+    "unchecked": 0,
+    "uncheckedKeysByFile": [],
+    "unmatched": 0,
+    "updated": 0,
+    "didUpdate": false
+  },
+  "startTime": 1791267289351,
+  "success": true,
+  "testResults": [
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "AUD-06 Telecom Capability and Safety Boundaries",
+            "Phone normalization & reassignment"
+          ],
+          "fullName": "AUD-06 Telecom Capability and Safety Boundaries Phone normalization & reassignment normalizes numbers to standard E.164 while retaining user-entered display",
+          "status": "passed",
+          "title": "normalizes numbers to standard E.164 while retaining user-entered display",
+          "duration": 2.1679000000000315,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "AUD-06 Telecom Capability and Safety Boundaries",
+            "Phone normalization & reassignment"
+          ],
+          "fullName": "AUD-06 Telecom Capability and Safety Boundaries Phone normalization & reassignment handles number reassignment by revoking consent, adding suppression, and cancelling queued sends",
+          "status": "passed",
+          "title": "handles number reassignment by revoking consent, adding suppression, and cancelling queued sends",
+          "duration": 2.6007000000000744,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "AUD-06 Telecom Capability and Safety Boundaries",
+            "Telecom consent proof & channel isolation"
+          ],
+          "fullName": "AUD-06 Telecom Capability and Safety Boundaries Telecom consent proof & channel isolation proves email consent never implies SMS/RCS consent",
+          "status": "passed",
+          "title": "proves email consent never implies SMS/RCS consent",
+          "duration": 0.33770000000004075,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "AUD-06 Telecom Capability and Safety Boundaries",
+            "Inbound keywords & STOP race condition"
+          ],
+          "fullName": "AUD-06 Telecom Capability and Safety Boundaries Inbound keywords & STOP race condition parses standard STOP, HELP, and START keywords including French Canadian ARRET",
+          "status": "passed",
+          "title": "parses standard STOP, HELP, and START keywords including French Canadian ARRET",
+          "duration": 0.35439999999994143,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "AUD-06 Telecom Capability and Safety Boundaries",
+            "Inbound keywords & STOP race condition"
+          ],
+          "fullName": "AUD-06 Telecom Capability and Safety Boundaries Inbound keywords & STOP race condition cancels queued deliveries immediately upon inbound STOP before dispatch",
+          "status": "passed",
+          "title": "cancels queued deliveries immediately upon inbound STOP before dispatch",
+          "duration": 0.7039999999999509,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "AUD-06 Telecom Capability and Safety Boundaries",
+            "Inbound keywords & STOP race condition"
+          ],
+          "fullName": "AUD-06 Telecom Capability and Safety Boundaries Inbound keywords & STOP race condition routes free-form inbound inquiries to staff inbox and never acts as a hallucinating reply bot",
+          "status": "passed",
+          "title": "routes free-form inbound inquiries to staff inbox and never acts as a hallucinating reply bot",
+          "duration": 0.3529000000000906,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "AUD-06 Telecom Capability and Safety Boundaries",
+            "GSM-7 vs UCS-2 segmentation & cost estimation"
+          ],
+          "fullName": "AUD-06 Telecom Capability and Safety Boundaries GSM-7 vs UCS-2 segmentation & cost estimation accurately counts standard GSM-7 septets and extension characters",
+          "status": "passed",
+          "title": "accurately counts standard GSM-7 septets and extension characters",
+          "duration": 0.35540000000003147,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "AUD-06 Telecom Capability and Safety Boundaries",
+            "GSM-7 vs UCS-2 segmentation & cost estimation"
+          ],
+          "fullName": "AUD-06 Telecom Capability and Safety Boundaries GSM-7 vs UCS-2 segmentation & cost estimation detects Unicode characters and switches to UCS-2 encoding",
+          "status": "passed",
+          "title": "detects Unicode characters and switches to UCS-2 encoding",
+          "duration": 0.16889999999989413,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "AUD-06 Telecom Capability and Safety Boundaries",
+            "GSM-7 vs UCS-2 segmentation & cost estimation"
+          ],
+          "fullName": "AUD-06 Telecom Capability and Safety Boundaries GSM-7 vs UCS-2 segmentation & cost estimation estimates provider units and cost labeled as estimate",
+          "status": "passed",
+          "title": "estimates provider units and cost labeled as estimate",
+          "duration": 0.293700000000058,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["AUD-06 Telecom Capability and Safety Boundaries", "Telecom Composer"],
+          "fullName": "AUD-06 Telecom Capability and Safety Boundaries Telecom Composer replaces personalization tokens with values or fallbacks",
+          "status": "passed",
+          "title": "replaces personalization tokens with values or fallbacks",
+          "duration": 0.25349999999991724,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["AUD-06 Telecom Capability and Safety Boundaries", "Telecom Composer"],
+          "fullName": "AUD-06 Telecom Capability and Safety Boundaries Telecom Composer warns when marketing SMS lacks opt-out instructions",
+          "status": "passed",
+          "title": "warns when marketing SMS lacks opt-out instructions",
+          "duration": 0.22419999999999618,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["AUD-06 Telecom Capability and Safety Boundaries", "Telecom Composer"],
+          "fullName": "AUD-06 Telecom Capability and Safety Boundaries Telecom Composer enforces accessibility alt text for RCS card media",
+          "status": "passed",
+          "title": "enforces accessibility alt text for RCS card media",
+          "duration": 0.3221999999999525,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "AUD-06 Telecom Capability and Safety Boundaries",
+            "Deterministic Telecom Emulator & RCS routing"
+          ],
+          "fullName": "AUD-06 Telecom Capability and Safety Boundaries Deterministic Telecom Emulator & RCS routing routes RCS-capable recipients directly to RCS",
+          "status": "passed",
+          "title": "routes RCS-capable recipients directly to RCS",
+          "duration": 0.5009000000000015,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "AUD-06 Telecom Capability and Safety Boundaries",
+            "Deterministic Telecom Emulator & RCS routing"
+          ],
+          "fullName": "AUD-06 Telecom Capability and Safety Boundaries Deterministic Telecom Emulator & RCS routing routes SMS-only recipients to configured SMS fallback when policy permits",
+          "status": "passed",
+          "title": "routes SMS-only recipients to configured SMS fallback when policy permits",
+          "duration": 0.22220000000004347,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "AUD-06 Telecom Capability and Safety Boundaries",
+            "Deterministic Telecom Emulator & RCS routing"
+          ],
+          "fullName": "AUD-06 Telecom Capability and Safety Boundaries Deterministic Telecom Emulator & RCS routing refuses to silently downgrade RCS to SMS when fallback is prohibited",
+          "status": "passed",
+          "title": "refuses to silently downgrade RCS to SMS when fallback is prohibited",
+          "duration": 0.10130000000003747,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "AUD-06 Telecom Capability and Safety Boundaries",
+            "Deterministic Telecom Emulator & RCS routing"
+          ],
+          "fullName": "AUD-06 Telecom Capability and Safety Boundaries Deterministic Telecom Emulator & RCS routing handles rate limits, carrier rejection, and timeout in emulator",
+          "status": "passed",
+          "title": "handles rate limits, carrier rejection, and timeout in emulator",
+          "duration": 0.13980000000003656,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "AUD-06 Telecom Capability and Safety Boundaries",
+            "Deterministic Telecom Emulator & RCS routing"
+          ],
+          "fullName": "AUD-06 Telecom Capability and Safety Boundaries Deterministic Telecom Emulator & RCS routing deduplicates deliveries with stable idempotency key",
+          "status": "passed",
+          "title": "deduplicates deliveries with stable idempotency key",
+          "duration": 0.23600000000010368,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "AUD-06 Telecom Capability and Safety Boundaries",
+            "Quiet hours & DST calculations"
+          ],
+          "fullName": "AUD-06 Telecom Capability and Safety Boundaries Quiet hours & DST calculations accurately identifies quiet hours (9pm to 8am)",
+          "status": "passed",
+          "title": "accurately identifies quiet hours (9pm to 8am)",
+          "duration": 14.894499999999994,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "AUD-06 Telecom Capability and Safety Boundaries",
+            "Quiet hours & DST calculations"
+          ],
+          "fullName": "AUD-06 Telecom Capability and Safety Boundaries Quiet hours & DST calculations calculates the next morning opening window across timezones",
+          "status": "passed",
+          "title": "calculates the next morning opening window across timezones",
+          "duration": 2.614500000000021,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "AUD-06 Telecom Capability and Safety Boundaries",
+            "Real Provider Security & Preflight"
+          ],
+          "fullName": "AUD-06 Telecom Capability and Safety Boundaries Real Provider Security & Preflight fails closed when credentials are unconfigured without crashing or leaking secrets",
+          "status": "passed",
+          "title": "fails closed when credentials are unconfigured without crashing or leaking secrets",
+          "duration": 0.8018000000000711,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "AUD-06 Telecom Capability and Safety Boundaries",
+            "Real Provider Security & Preflight"
+          ],
+          "fullName": "AUD-06 Telecom Capability and Safety Boundaries Real Provider Security & Preflight refuses outbound live send unless explicitly permitted by configuration",
+          "status": "passed",
+          "title": "refuses outbound live send unless explicitly permitted by configuration",
+          "duration": 0.3987000000000762,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791267290085,
+      "endTime": 1791267290114.3987,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/aud-06-telecom.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["audience contracts"],
+          "fullName": "audience contracts retains schema validation and consent-safe automation boundaries",
+          "status": "passed",
+          "title": "retains schema validation and consent-safe automation boundaries",
+          "duration": 1.6166999999999803,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["audience contracts"],
+          "fullName": "audience contracts uses stable delivery and automation idempotency keys",
+          "status": "passed",
+          "title": "uses stable delivery and automation idempotency keys",
+          "duration": 0.22109999999997854,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["audience contracts"],
+          "fullName": "audience contracts admits only renderable form controls and treats a required checkbox as consent",
+          "status": "passed",
+          "title": "admits only renderable form controls and treats a required checkbox as consent",
+          "duration": 0.3091999999999757,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["audience contracts"],
+          "fullName": "audience contracts drops undeclared and hidden browser values while normalizing declared answers",
+          "status": "passed",
+          "title": "drops undeclared and hidden browser values while normalizing declared answers",
+          "duration": 0.8973000000000297,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791267289941,
+      "endTime": 1791267289943.8972,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/audience-contracts.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["event workflow contracts"],
+          "fullName": "event workflow contracts preserves local wall time over the DST boundary and produces portable ICS",
+          "status": "passed",
+          "title": "preserves local wall time over the DST boundary and produces portable ICS",
+          "duration": 21.669700000000034,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["event workflow contracts"],
+          "fullName": "event workflow contracts bounds recurrence, supports edit-one cancellation, and excludes drafts and other tenants",
+          "status": "passed",
+          "title": "bounds recurrence, supports edit-one cancellation, and excludes drafts and other tenants",
+          "duration": 23.107400000000098,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["event workflow contracts"],
+          "fullName": "event workflow contracts rejects malformed dates, invalid zones, and incomplete online events",
+          "status": "passed",
+          "title": "rejects malformed dates, invalid zones, and incomplete online events",
+          "duration": 1.1984999999999673,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["event workflow contracts"],
+          "fullName": "event workflow contracts resolves nonexistent spring time and chooses the earlier fall overlap",
+          "status": "passed",
+          "title": "resolves nonexistent spring time and chooses the earlier fall overlap",
+          "duration": 11.835699999999974,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["event workflow contracts"],
+          "fullName": "event workflow contracts folds multibyte text and prevents newline injection while composing multiple events",
+          "status": "passed",
+          "title": "folds multibyte text and prevents newline injection while composing multiple events",
+          "duration": 2.038099999999986,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["event workflow contracts"],
+          "fullName": "event workflow contracts excludes private overrides from public occurrence projections",
+          "status": "passed",
+          "title": "excludes private overrides from public occurrence projections",
+          "duration": 0.8704000000000178,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791267290206,
+      "endTime": 1791267290266.8704,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/events-contracts.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["optional network experience safeguards"],
+          "fullName": "optional network experience safeguards blocks actors and domains, including in allowlist mode",
+          "status": "passed",
+          "title": "blocks actors and domains, including in allowlist mode",
+          "duration": 1.3086000000000695,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["optional network experience safeguards"],
+          "fullName": "optional network experience safeguards keeps remote references non-canonical and bounded",
+          "status": "passed",
+          "title": "keeps remote references non-canonical and bounded",
+          "duration": 0.8573999999999842,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["optional network experience safeguards"],
+          "fullName": "optional network experience safeguards bounds a hostile source",
+          "status": "passed",
+          "title": "bounds a hostile source",
+          "duration": 1.0984999999999445,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["optional network experience safeguards"],
+          "fullName": "optional network experience safeguards creates bounded outbound follow state and ends it without changing local content",
+          "status": "passed",
+          "title": "creates bounded outbound follow state and ends it without changing local content",
+          "duration": 2.1847999999999956,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791267290035,
+      "endTime": 1791267290040.1848,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/network-experience.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["protocol-neutral network foundation"],
+          "fullName": "protocol-neutral network foundation keeps the full network subsystem absent in Lean or disabled deployments",
+          "status": "passed",
+          "title": "keeps the full network subsystem absent in Lean or disabled deployments",
+          "duration": 2.38169999999991,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["protocol-neutral network foundation"],
+          "fullName": "protocol-neutral network foundation normalizes remote identities and makes deliveries idempotent",
+          "status": "passed",
+          "title": "normalizes remote identities and makes deliveries idempotent",
+          "duration": 0.8010000000000446,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["protocol-neutral network foundation"],
+          "fullName": "protocol-neutral network foundation never projects private signing material",
+          "status": "passed",
+          "title": "never projects private signing material",
+          "duration": 16.726300000000037,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["protocol-neutral network foundation"],
+          "fullName": "protocol-neutral network foundation enforces block decisions and validates every redirect hop",
+          "status": "passed",
+          "title": "enforces block decisions and validates every redirect hop",
+          "duration": 7.649000000000001,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791267290108,
+      "endTime": 1791267290135.649,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/network-foundation.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["Payload domain registration"],
+          "fullName": "Payload domain registration registers every existing collection, global, and task exactly once",
+          "status": "passed",
+          "title": "registers every existing collection, global, and task exactly once",
+          "duration": 2.240600000000086,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["Payload domain registration"],
+          "fullName": "Payload domain registration fails deterministically for duplicate IDs and slugs",
+          "status": "passed",
+          "title": "fails deterministically for duplicate IDs and slugs",
+          "duration": 0.9610999999999876,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["Payload domain registration"],
+          "fullName": "Payload domain registration rejects empty domain IDs and definitions",
+          "status": "passed",
+          "title": "rejects empty domain IDs and definitions",
+          "duration": 0.24810000000024957,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791267291848,
+      "endTime": 1791267291851.248,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/payload-domains.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [],
+          "fullName": "binds the event query to the host site and excludes foreign, draft, private and protected bytes",
+          "status": "passed",
+          "title": "binds the event query to the host site and excludes foreign, draft, private and protected bytes",
+          "duration": 21.087200000000053,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "denies unsafe single event ICS lookup {\"status\":\"draft\"}",
+          "status": "passed",
+          "title": "denies unsafe single event ICS lookup {\"status\":\"draft\"}",
+          "duration": 0.6986000000000558,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "denies unsafe single event ICS lookup {\"visibility\":\"private\"}",
+          "status": "passed",
+          "title": "denies unsafe single event ICS lookup {\"visibility\":\"private\"}",
+          "duration": 0.36330000000009477,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "denies unsafe single event ICS lookup {\"site\":\"site-b\"}",
+          "status": "passed",
+          "title": "denies unsafe single event ICS lookup {\"site\":\"site-b\"}",
+          "duration": 0.2543999999999187,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "denies unsafe single event ICS lookup {\"status\":\"cancelled\"}",
+          "status": "passed",
+          "title": "denies unsafe single event ICS lookup {\"status\":\"cancelled\"}",
+          "duration": 0.29340000000001965,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "denies unsafe single event ICS lookup {\"requiredEntitlement\":{\"resource\":\"members\",\"capability\":\"read\"}}",
+          "status": "passed",
+          "title": "denies unsafe single event ICS lookup {\"requiredEntitlement\":{\"resource\":\"members\",\"capability\":\"read\"}}",
+          "duration": 0.21680000000003474,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "fails closed for an unknown host on a multi-site install",
+          "status": "passed",
+          "title": "fails closed for an unknown host on a multi-site install",
+          "duration": 0.5154999999999745,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "paginates canonical records rather than truncating at a thousand",
+          "status": "passed",
+          "title": "paginates canonical records rather than truncating at a thousand",
+          "duration": 1.6355000000000928,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791267290217,
+      "endTime": 1791267290242.6355,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc08b-event-privacy.test.ts"
+    }
+  ]
+}

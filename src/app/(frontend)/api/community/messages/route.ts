@@ -1,3 +1,5 @@
+import { publicSiteForHost, samePublicOrigin } from '@/modules/public/site-scope'
+import { verifyCsrf } from '@/modules/identity/member-identity'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import { CommunityError, resolveCommunityActor } from '@/modules/community/service'
@@ -17,6 +19,13 @@ export async function GET(request: Request) {
     return Response.json({ error: 'conversationId is required' }, { status: 400 })
   }
 
+  if (siteId !== (await publicSiteForHost(payload, request.headers.get('host'))))
+    return Response.json({ error: 'Site access denied.' }, { status: 404 })
+  if (
+    request.method !== 'GET' &&
+    (!verifyCsrf(request.headers) || !(await samePublicOrigin(payload, request)))
+  )
+    return Response.json({ error: 'CSRF verification required.' }, { status: 403 })
   const actor = await resolveCommunityActor(payload, request.headers, siteId)
   if (actor.kind === 'anonymous' || !actor.memberId) {
     return Response.json({ error: 'Authentication required' }, { status: 401 })
@@ -42,6 +51,13 @@ export async function POST(request: Request) {
   const body = (await request.json().catch(() => ({}))) as Record<string, unknown>
   const siteId = String(body.siteId ?? request.headers.get('x-site-id') ?? 'default')
 
+  if (siteId !== (await publicSiteForHost(payload, request.headers.get('host'))))
+    return Response.json({ error: 'Site access denied.' }, { status: 404 })
+  if (
+    request.method !== 'GET' &&
+    (!verifyCsrf(request.headers) || !(await samePublicOrigin(payload, request)))
+  )
+    return Response.json({ error: 'CSRF verification required.' }, { status: 403 })
   const actor = await resolveCommunityActor(payload, request.headers, siteId)
   if (actor.kind === 'anonymous' || !actor.memberId) {
     return Response.json({ error: 'Authentication required' }, { status: 401 })

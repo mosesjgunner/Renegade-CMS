@@ -1,0 +1,391 @@
+{
+  "numTotalTestSuites": 11,
+  "numPassedTestSuites": 11,
+  "numFailedTestSuites": 0,
+  "numPendingTestSuites": 0,
+  "numTotalTests": 35,
+  "numPassedTests": 35,
+  "numFailedTests": 0,
+  "numPendingTests": 0,
+  "numTodoTests": 0,
+  "snapshot": {
+    "added": 0,
+    "failure": false,
+    "filesAdded": 0,
+    "filesRemoved": 0,
+    "filesRemovedList": [],
+    "filesUnmatched": 0,
+    "filesUpdated": 0,
+    "matched": 0,
+    "total": 0,
+    "unchecked": 0,
+    "uncheckedKeysByFile": [],
+    "unmatched": 0,
+    "updated": 0,
+    "didUpdate": false
+  },
+  "startTime": 1791266622281,
+  "success": true,
+  "testResults": [
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["COMM-06B inbox keyset cursor"],
+          "fullName": "COMM-06B inbox keyset cursor round-trips a stable created-at/id boundary",
+          "status": "passed",
+          "title": "round-trips a stable created-at/id boundary",
+          "duration": 1.4599999999999227,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["COMM-06B inbox keyset cursor"],
+          "fullName": "COMM-06B inbox keyset cursor rejects malformed cursors instead of falling back to offset pagination",
+          "status": "passed",
+          "title": "rejects malformed cursors instead of falling back to offset pagination",
+          "duration": 0.3324000000000069,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["COMM-06B snapshot sanitization"],
+          "fullName": "COMM-06B snapshot sanitization strips private or quarantined content text snippets from notifications",
+          "status": "passed",
+          "title": "strips private or quarantined content text snippets from notifications",
+          "duration": 0.7695999999999685,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["COMM-06B recipient policy & inbox projection"],
+          "fullName": "COMM-06B recipient policy & inbox projection blocked actor generates zero inbox notifications",
+          "status": "passed",
+          "title": "blocked actor generates zero inbox notifications",
+          "duration": 1.5909000000000333,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["COMM-06B recipient policy & inbox projection"],
+          "fullName": "COMM-06B recipient policy & inbox projection revoked private-space access halts notification creation",
+          "status": "passed",
+          "title": "revoked private-space access halts notification creation",
+          "duration": 0.5053000000000338,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["COMM-06B recipient policy & inbox projection"],
+          "fullName": "COMM-06B recipient policy & inbox projection quarantined target drops pending delivery",
+          "status": "passed",
+          "title": "quarantined target drops pending delivery",
+          "duration": 0.20539999999994052,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["COMM-06B recipient policy & inbox projection"],
+          "fullName": "COMM-06B recipient policy & inbox projection 5,000-notification inbox paginates efficiently using keyset pagination",
+          "status": "passed",
+          "title": "5,000-notification inbox paginates efficiently using keyset pagination",
+          "duration": 8.9298,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["COMM-06B recipient policy & inbox projection"],
+          "fullName": "COMM-06B recipient policy & inbox projection mark read and mark all read update counters correctly and atomically",
+          "status": "passed",
+          "title": "mark read and mark all read update counters correctly and atomically",
+          "duration": 0.4278000000000475,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791266623344,
+      "endTime": 1791266623358.4277,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/comm-06b-inbox-notifications.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["event workflow contracts"],
+          "fullName": "event workflow contracts preserves local wall time over the DST boundary and produces portable ICS",
+          "status": "passed",
+          "title": "preserves local wall time over the DST boundary and produces portable ICS",
+          "duration": 22.235300000000052,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["event workflow contracts"],
+          "fullName": "event workflow contracts bounds recurrence, supports edit-one cancellation, and excludes drafts and other tenants",
+          "status": "passed",
+          "title": "bounds recurrence, supports edit-one cancellation, and excludes drafts and other tenants",
+          "duration": 17.485500000000002,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["event workflow contracts"],
+          "fullName": "event workflow contracts rejects malformed dates, invalid zones, and incomplete online events",
+          "status": "passed",
+          "title": "rejects malformed dates, invalid zones, and incomplete online events",
+          "duration": 0.7699000000000069,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["event workflow contracts"],
+          "fullName": "event workflow contracts resolves nonexistent spring time and chooses the earlier fall overlap",
+          "status": "passed",
+          "title": "resolves nonexistent spring time and chooses the earlier fall overlap",
+          "duration": 14.077400000000011,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["event workflow contracts"],
+          "fullName": "event workflow contracts folds multibyte text and prevents newline injection while composing multiple events",
+          "status": "passed",
+          "title": "folds multibyte text and prevents newline injection while composing multiple events",
+          "duration": 2.1146999999999707,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["event workflow contracts"],
+          "fullName": "event workflow contracts excludes private overrides from public occurrence projections",
+          "status": "passed",
+          "title": "excludes private overrides from public occurrence projections",
+          "duration": 0.6938000000000102,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791266622978,
+      "endTime": 1791266623034.6938,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/events-contracts.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["member identity"],
+          "fullName": "member identity normalizes valid emails without accepting malformed addresses",
+          "status": "passed",
+          "title": "normalizes valid emails without accepting malformed addresses",
+          "duration": 1.223700000000008,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["member identity"],
+          "fullName": "member identity issues a hashed, expiring, single-use magic link and a revocable session",
+          "status": "passed",
+          "title": "issues a hashed, expiring, single-use magic link and a revocable session",
+          "duration": 2.27030000000002,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["member identity"],
+          "fullName": "member identity keeps wallet authentication capability-gated until its browser matrix is installed",
+          "status": "passed",
+          "title": "keeps wallet authentication capability-gated until its browser matrix is installed",
+          "duration": 0.762700000000109,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["member identity"],
+          "fullName": "member identity rejects suspended members even if they retain an unexpired link or session",
+          "status": "passed",
+          "title": "rejects suspended members even if they retain an unexpired link or session",
+          "duration": 0.3635999999999058,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["member identity"],
+          "fullName": "member identity uses a distinct HttpOnly member session and requires a matching CSRF double-submit token",
+          "status": "passed",
+          "title": "uses a distinct HttpOnly member session and requires a matching CSRF double-submit token",
+          "duration": 0.9397999999999911,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["member identity"],
+          "fullName": "member identity revokes all sessions and records the lifecycle reason when staff suspends a member",
+          "status": "passed",
+          "title": "revokes all sessions and records the lifecycle reason when staff suspends a member",
+          "duration": 0.8638999999999442,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["member identity"],
+          "fullName": "member identity anonymizes the profile and revokes access when deletion is finalized",
+          "status": "passed",
+          "title": "anonymizes the profile and revokes access when deletion is finalized",
+          "duration": 0.6798000000000002,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["member identity"],
+          "fullName": "member identity changes handles only after the cooldown and preserves redirect history",
+          "status": "passed",
+          "title": "changes handles only after the cooldown and preserves redirect history",
+          "duration": 0.5180000000000291,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["member identity"],
+          "fullName": "member identity exports and archives relationship graphs beyond one result page",
+          "status": "passed",
+          "title": "exports and archives relationship graphs beyond one result page",
+          "duration": 6.607300000000009,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["member identity"],
+          "fullName": "member identity persists only a hashed, expiring passkey challenge for enrollment and sign-in",
+          "status": "passed",
+          "title": "persists only a hashed, expiring passkey challenge for enrollment and sign-in",
+          "duration": 1.6159000000000106,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791266623356,
+      "endTime": 1791266623372.616,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/member-identity.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["Payload domain registration"],
+          "fullName": "Payload domain registration registers every existing collection, global, and task exactly once",
+          "status": "passed",
+          "title": "registers every existing collection, global, and task exactly once",
+          "duration": 2.976799999999912,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["Payload domain registration"],
+          "fullName": "Payload domain registration fails deterministically for duplicate IDs and slugs",
+          "status": "passed",
+          "title": "fails deterministically for duplicate IDs and slugs",
+          "duration": 0.9495999999999185,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["Payload domain registration"],
+          "fullName": "Payload domain registration rejects empty domain IDs and definitions",
+          "status": "passed",
+          "title": "rejects empty domain IDs and definitions",
+          "duration": 0.2613000000001193,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791266624602,
+      "endTime": 1791266624606.2612,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/payload-domains.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [],
+          "fullName": "binds the event query to the host site and excludes foreign, draft, private and protected bytes",
+          "status": "passed",
+          "title": "binds the event query to the host site and excludes foreign, draft, private and protected bytes",
+          "duration": 18.214000000000055,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "denies unsafe single event ICS lookup {\"status\":\"draft\"}",
+          "status": "passed",
+          "title": "denies unsafe single event ICS lookup {\"status\":\"draft\"}",
+          "duration": 0.4214000000000624,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "denies unsafe single event ICS lookup {\"visibility\":\"private\"}",
+          "status": "passed",
+          "title": "denies unsafe single event ICS lookup {\"visibility\":\"private\"}",
+          "duration": 0.1573999999999387,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "denies unsafe single event ICS lookup {\"site\":\"site-b\"}",
+          "status": "passed",
+          "title": "denies unsafe single event ICS lookup {\"site\":\"site-b\"}",
+          "duration": 0.262299999999982,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "denies unsafe single event ICS lookup {\"status\":\"cancelled\"}",
+          "status": "passed",
+          "title": "denies unsafe single event ICS lookup {\"status\":\"cancelled\"}",
+          "duration": 0.17640000000005784,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "denies unsafe single event ICS lookup {\"requiredEntitlement\":{\"resource\":\"members\",\"capability\":\"read\"}}",
+          "status": "passed",
+          "title": "denies unsafe single event ICS lookup {\"requiredEntitlement\":{\"resource\":\"members\",\"capability\":\"read\"}}",
+          "duration": 0.12530000000003838,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "fails closed for an unknown host on a multi-site install",
+          "status": "passed",
+          "title": "fails closed for an unknown host on a multi-site install",
+          "duration": 0.30599999999992633,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [],
+          "fullName": "paginates canonical records rather than truncating at a thousand",
+          "status": "passed",
+          "title": "paginates canonical records rather than truncating at a thousand",
+          "duration": 1.4443999999999733,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791266623000,
+      "endTime": 1791266623021.4443,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/unit/rc08b-event-privacy.test.ts"
+    }
+  ]
+}

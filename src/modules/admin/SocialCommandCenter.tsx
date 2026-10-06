@@ -862,7 +862,8 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
                   fontWeight: 500,
                 }}
               >
-                <span>✓</span> All target network requirements satisfied! Ready for dispatch.
+                <span>✓</span> Local preview checks passed. Save and review a Social Draft before
+                dispatch.
               </div>
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>

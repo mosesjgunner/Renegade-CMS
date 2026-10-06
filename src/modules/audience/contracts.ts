@@ -73,7 +73,11 @@ export function normalizePhoneAddress(value: string) {
 export function normalizeFormAnswers(schema: FormSchemaSnapshot, values: Record<string, unknown>) {
   return Object.fromEntries(
     schema.fields
-      .filter((field) => field.type !== 'hidden')
+      .filter(
+        (field) =>
+          field.type !== 'hidden' &&
+          (!field.visibleWhen || values[field.visibleWhen.field] === field.visibleWhen.equals),
+      )
       .map((field) => {
         const value = values[field.key]
         if (field.type === 'email' && typeof value === 'string')
@@ -105,13 +109,45 @@ export function validateSubmission(schema: FormSchemaSnapshot, values: Record<st
       (value === undefined || value === null || value === '' || value === false)
     )
       errors[field.key] = 'Required.'
+    if (!visible || value === undefined || value === null || value === '') continue
+    if (field.type === 'checkbox') {
+      if (typeof value !== 'boolean') errors[field.key] = 'Use a boolean answer.'
+      continue
+    }
+    if (typeof value !== 'string' && typeof value !== 'number') {
+      errors[field.key] = 'Use a text or numeric answer.'
+      continue
+    }
+    const text = String(value)
+    if (text.length > 10_000) errors[field.key] = 'Answer is too long.'
+    if (field.type === 'email') {
+      try {
+        normalizeEmailAddress(text)
+      } catch {
+        errors[field.key] = 'Enter a valid email address.'
+      }
+    }
+    if (field.type === 'number' && (typeof value === 'boolean' || !Number.isFinite(Number(value))))
+      errors[field.key] = 'Enter a valid number.'
+    if (field.type === 'number') {
+      if (typeof field.validation?.min === 'number' && Number(value) < field.validation.min)
+        errors[field.key] = 'Number is below the minimum.'
+      if (typeof field.validation?.max === 'number' && Number(value) > field.validation.max)
+        errors[field.key] = 'Number is above the maximum.'
+    }
     if (
-      visible &&
-      value &&
-      field.type === 'email' &&
-      !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value))
+      field.type === 'date' &&
+      (!/^\d{4}-\d{2}-\d{2}$/.test(text) ||
+        Number.isNaN(Date.parse(text)) ||
+        new Date(text).toISOString().slice(0, 10) !== text)
     )
-      errors[field.key] = 'Enter a valid email address.'
+      errors[field.key] = 'Enter a valid date.'
+    if (
+      ['select', 'radio'].includes(field.type) &&
+      (!Array.isArray(field.validation?.options) ||
+        !field.validation.options.map(String).includes(text))
+    )
+      errors[field.key] = 'Choose a listed option.'
   }
   return errors
 }
