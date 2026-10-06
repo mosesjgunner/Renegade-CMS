@@ -4,6 +4,8 @@ COPY package.json package-lock.json ./
 RUN npm ci
 
 FROM node:24-alpine AS builder
+ARG BUILD_SHA
+ENV BUILD_SHA=$BUILD_SHA
 WORKDIR /app
 COPY --from=dependencies /app/node_modules ./node_modules
 COPY . .
@@ -12,7 +14,7 @@ RUN npm run build
 FROM node:24-alpine AS runner
 WORKDIR /app
 ARG APP_VERSION=0.1.0
-ARG BUILD_SHA=unknown
+ARG BUILD_SHA
 LABEL org.opencontainers.image.version=$APP_VERSION \
 	org.opencontainers.image.revision=$BUILD_SHA
 ENV NODE_ENV=production PORT=3000 HOSTNAME=0.0.0.0
@@ -27,6 +29,7 @@ COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./standalone/.next/s
 COPY --from=builder --chown=nextjs:nodejs /app/public ./standalone/public
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
 COPY --from=builder --chown=nextjs:nodejs /app/package.json /app/package-lock.json ./
+COPY --from=builder --chown=nextjs:nodejs /app/build-provenance.json ./
 COPY --from=builder --chown=nextjs:nodejs /app/next.config.ts /app/tsconfig.json ./
 COPY --from=builder --chown=nextjs:nodejs /app/src ./src
 COPY --from=builder --chown=nextjs:nodejs /app/docker ./docker

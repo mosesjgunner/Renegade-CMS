@@ -23,7 +23,7 @@ services:
       target: runner
       args:
         APP_VERSION: ${APP_VERSION:-0.1.0}
-        BUILD_SHA: ${BUILD_SHA:-unknown}
+        BUILD_SHA: ${BUILD_SHA:?Set BUILD_SHA to the exact full source commit}
     image: ${RENEGADE_IMAGE:-renegade-cms}:${RENEGADE_IMAGE_TAG:-local}
     environment: &app_environment
       NODE_ENV: production

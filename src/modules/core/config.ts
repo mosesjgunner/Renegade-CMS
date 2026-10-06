@@ -1,4 +1,5 @@
 import path from 'node:path'
+import { readBuildProvenance } from './build-provenance'
 
 import type { ResourceProfile } from '../extensions/contracts'
 
@@ -328,7 +329,10 @@ export function loadConfig(env: Record<string, string | undefined> = process.env
     smokeTestToken: env.SMOKE_TEST_TOKEN,
     logLevel: logLevel as AppConfig['logLevel'],
     version: env.APP_VERSION ?? '0.1.0-dev',
-    buildSha: env.BUILD_SHA,
+    buildSha:
+      process.env.RENEGADE_ARTIFACT_SHA ||
+      (env.NODE_ENV === 'production' ? readBuildProvenance()?.sourceSha : undefined) ||
+      env.BUILD_SHA,
     schemaVersion: env.SCHEMA_VERSION ?? '1.0.0',
     deploymentProfile,
     ownerEmail,

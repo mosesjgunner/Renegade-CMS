@@ -6,6 +6,8 @@ const nextConfig: NextConfig = {
   // alternate directory prevents a build from deleting files owned by that process.
   distDir: process.env.RENEGADE_NEXT_DIST_DIR || '.next',
   output: 'standalone',
+  env: { RENEGADE_ARTIFACT_SHA: process.env.RENEGADE_ARTIFACT_SHA ?? '' },
+  generateBuildId: async () => process.env.RENEGADE_ARTIFACT_SHA || null,
   // Default Turbopack builds do not use the development-only Webpack watcher rules.
   turbopack: {},
   experimental: { webpackMemoryOptimizations: true },

@@ -11,4 +11,5 @@ coverage
 .worktrees
 .phase-a
 **/.git
+build-provenance.json
 Renegade CMS
