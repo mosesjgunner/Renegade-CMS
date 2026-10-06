@@ -30,6 +30,12 @@ EOF
 fail() { echo "Install failed: $*" >&2; exit 1; }
 ask() { local prompt="$1" value="$2"; read -r -p "$prompt [$value]: " answer; printf '%s' "${answer:-$value}"; }
 
+# Docker's build context excludes .git. Bind the exported source to this checkout.
+source_sha="$(git rev-parse HEAD 2>/dev/null || true)"
+if [[ -z "$source_sha" ]]; then source_sha="${BUILD_SHA:-}"; fi
+[[ "$source_sha" =~ ^[a-f0-9]{40}$ ]] || fail 'a Git checkout or an explicit full BUILD_SHA is required.'
+export BUILD_SHA="$source_sha"
+
 while (($#)); do
   case "$1" in
     --non-interactive) non_interactive=true ;;
@@ -136,6 +142,7 @@ else
     echo "RENEGADE_WEB_BIND=$web_bind"
     echo "RENEGADE_INSTANCE=$instance"
     echo "DEPLOYMENT_PROFILE=$profile"
+    echo "BUILD_SHA=$BUILD_SHA"
     echo 'STORAGE_DRIVER=local'; echo 'MEDIA_DIR=/app/media'; echo 'EMAIL_MODE=disabled'
     echo 'LOG_LEVEL=info'; echo 'ENABLE_TEST_ROUTES=false'
     [[ -z "$owner_email" ]] || echo "OWNER_EMAIL=$owner_email"
