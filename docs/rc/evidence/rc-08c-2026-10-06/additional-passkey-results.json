@@ -1,0 +1,129 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "C:\\Projects\\RENEGADE CMS\\rc08c-final-01908f3\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "--config",
+      "scratch/rc08c/probe.config.ts",
+      "--grep",
+      "second passkey"
+    ],
+    "configFile": "C:\\Projects\\RENEGADE CMS\\rc08c-final-01908f3\\scratch\\rc08c\\probe.config.ts",
+    "rootDir": "C:/Projects/RENEGADE CMS/rc08c-final-01908f3/scratch/rc08c",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Projects/RENEGADE CMS/rc08c-final-01908f3/scratch/rc08c/operator-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "C:/Projects/RENEGADE CMS/rc08c-final-01908f3/scratch/rc08c",
+        "testIgnore": [],
+        "testMatch": [
+          "operator-probes.spec.ts"
+        ],
+        "timeout": 600000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "scratch/rc08c/operator-results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.62.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "operator-probes.spec.ts",
+      "file": "operator-probes.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "RC-08C: owner enrolls a second passkey through Security",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 600000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 1309,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-06T16:48:26.259Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "C:\\Projects\\RENEGADE CMS\\rc08c-final-01908f3\\scratch\\rc08c\\operator-results\\operator-probes-RC-08C-own-533a1-nd-passkey-through-Security\\trace.zip"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "7c2e3b31ec6abde9d784-8e6c3b5ee80690fba886",
+          "file": "operator-probes.spec.ts",
+          "line": 22,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-06T16:48:25.730Z",
+    "duration": 2082.928,
+    "expected": 1,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

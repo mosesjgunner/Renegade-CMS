@@ -1,3 +1,5 @@
+> Current RC-08C verdict, 2026-10-06: **FAIL / NOT READY**. Tested source `01908f39a3ce40b5eae5d4dec64b981e103d5fb1`. [Final acceptance report](../rc/FINAL_RC_REPORT.md) supersedes readiness claims below. 1,140 unit and 261 integration tests pass; native settings reload and ordinary staff first passkey enrollment fail. Complete role/tenant, commerce, security, golden and business-state restore gates remain open. Prior dated entries and counts below are historical and are not current acceptance.
+
 > Historical release snapshot. Current release truth for source SHA e24fc53d9e370e28f01398c561b0f5adc4884756 is the [RC ledger](../rc/README.md). Prior VERIFIED/PASS labels and test/migration counts below do not establish current readiness. RC release verdict: BLOCKED; see the ledger and dependency-ordered blockers.
 
 # Renegade CMS feature readiness

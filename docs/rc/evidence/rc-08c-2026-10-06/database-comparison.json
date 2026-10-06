@@ -1,0 +1,162 @@
+{
+  "sourceSha": "01908f39a3ce40b5eae5d4dec64b981e103d5fb1",
+  "sourceTables": 309,
+  "restoredTables": 309,
+  "matching": 306,
+  "differences": [
+    {
+      "source": {
+        "table": "payload_jobs",
+        "rows": 202,
+        "digest": "b53b0d94429834f1ac12bb5f449ecd35"
+      },
+      "restored": {
+        "table": "payload_jobs",
+        "rows": 233,
+        "digest": "c44a996049a5d7839e70de6e64cb845b"
+      }
+    },
+    {
+      "source": {
+        "table": "payload_jobs_log",
+        "rows": 197,
+        "digest": "6c9ac48009c50eb8013c2ca35764a924"
+      },
+      "restored": {
+        "table": "payload_jobs_log",
+        "rows": 228,
+        "digest": "d6a6a994ba8323cc3781463aaaa17d59"
+      }
+    },
+    {
+      "source": {
+        "table": "payload_jobs_stats",
+        "rows": 1,
+        "digest": "5082849cba71bed88c673d7df543ae79"
+      },
+      "restored": {
+        "table": "payload_jobs_stats",
+        "rows": 1,
+        "digest": "f96cfc0e4c859bb671e4f2833f5f1845"
+      }
+    }
+  ],
+  "populatedTables": [
+    {
+      "table": "admin_auth_audit_events",
+      "rows": 5
+    },
+    {
+      "table": "admin_auth_rate_limits",
+      "rows": 3
+    },
+    {
+      "table": "admin_sessions",
+      "rows": 2
+    },
+    {
+      "table": "brands",
+      "rows": 1
+    },
+    {
+      "table": "installation_state",
+      "rows": 1
+    },
+    {
+      "table": "media_assets",
+      "rows": 1
+    },
+    {
+      "table": "media_blobs",
+      "rows": 21
+    },
+    {
+      "table": "media_variants",
+      "rows": 20
+    },
+    {
+      "table": "members",
+      "rows": 1
+    },
+    {
+      "table": "passkeys",
+      "rows": 2
+    },
+    {
+      "table": "payload_jobs",
+      "rows": 202
+    },
+    {
+      "table": "payload_jobs_log",
+      "rows": 197
+    },
+    {
+      "table": "payload_jobs_stats",
+      "rows": 1
+    },
+    {
+      "table": "payload_locked_documents",
+      "rows": 1
+    },
+    {
+      "table": "payload_locked_documents_rels",
+      "rows": 1
+    },
+    {
+      "table": "payload_migrations",
+      "rows": 112
+    },
+    {
+      "table": "presentation_theme_audit",
+      "rows": 2
+    },
+    {
+      "table": "presentation_theme_state",
+      "rows": 1
+    },
+    {
+      "table": "profiles",
+      "rows": 1
+    },
+    {
+      "table": "publications",
+      "rows": 1
+    },
+    {
+      "table": "publications_capabilities",
+      "rows": 1
+    },
+    {
+      "table": "recovery_codes",
+      "rows": 10
+    },
+    {
+      "table": "site_settings",
+      "rows": 1
+    },
+    {
+      "table": "sites",
+      "rows": 1
+    },
+    {
+      "table": "sites_comment_reaction_codes",
+      "rows": 4
+    },
+    {
+      "table": "spaces",
+      "rows": 1
+    },
+    {
+      "table": "spaces_capabilities",
+      "rows": 1
+    },
+    {
+      "table": "team_memberships",
+      "rows": 1
+    },
+    {
+      "table": "users",
+      "rows": 3
+    }
+  ]
+}

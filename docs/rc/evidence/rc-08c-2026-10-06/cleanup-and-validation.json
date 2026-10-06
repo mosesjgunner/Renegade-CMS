@@ -1,0 +1,16 @@
+{
+  "sourceSha": "01908f39a3ce40b5eae5d4dec64b981e103d5fb1",
+  "stoppedAcceptanceProjects": [
+    "renegade-rc08c-source-01908f3",
+    "renegade-rc08c-restore-01908f3"
+  ],
+  "stoppedAcceptancePostgres": "renegade-rc08c-postgres",
+  "volumesRetained": true,
+  "privateArchivesRetainedOutsideGit": true,
+  "existingDeveloperContainersUntouched": true,
+  "historicalTrackedReceiptsUnchanged": true,
+  "knownSecretAndJwtScan": "PASS",
+  "sanitizedTraceCount": 6,
+  "documentationFormatCheck": "PASS",
+  "documentationDiffCheck": "PASS"
+}

@@ -1,0 +1,238 @@
+{
+  "sha": "01908f39a3ce40b5eae5d4dec64b981e103d5fb1",
+  "branch": "",
+  "status": "",
+  "node": "v24.19.0",
+  "packageVersion": "0.1.0",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "dev": "cross-env NODE_OPTIONS=--no-deprecation next dev",
+    "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
+    "payload": "cross-env NODE_OPTIONS=--no-deprecation payload",
+    "db:migrate": "npm run payload -- migrate",
+    "db:status": "npm run payload -- migrate:status",
+    "db:seed": "npm run payload -- seed",
+    "installation:recover": "npm run payload -- recover-installation",
+    "generate:types": "cross-env RENEGADE_MODULES=all RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT=true npm run payload -- generate:types",
+    "generate:importmap": "cross-env RENEGADE_MODULES=all RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT=true npm run payload -- generate:importmap",
+    "semantic-url:backfill": "tsx src/scripts/semantic-url-backfill.ts",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "eslint . --max-warnings=0",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run tests/unit",
+    "test:integration": "node scripts/run-integration.mjs",
+    "test:browser": "cross-env RENEGADE_MODULES=all RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT=true playwright test",
+    "test:migrations:fresh": "tsx src/scripts/verify-fresh-migration.ts",
+    "test:migrations:upgrade": "tsx src/scripts/verify-upgrade-migration.ts",
+    "test:migrations:commerce": "tsx src/scripts/verify-commerce-migrations.ts",
+    "test:smoke": "tsx tests/smoke/stack.smoke.ts",
+    "verify:release:checks": "tsx src/scripts/verify-release.ts",
+    "verify:presentation-bundles": "node scripts/verify-presentation-bundles.mjs",
+    "verify:release": "node scripts/verify-clean-clone.mjs",
+    "verify": "npm run verify:release",
+    "jobs:worker": "tsx src/scripts/run-jobs-worker.ts",
+    "worker:health": "node docker/worker-healthcheck.mjs",
+    "backup:operational": "tsx src/scripts/operational-backup.ts --",
+    "restore:operational": "tsx src/scripts/operational-restore.ts --",
+    "restore:prepare-env": "tsx src/scripts/prepare-restore-environment.ts --",
+    "restore:rehearsal": "tsx src/scripts/operational-restore-rehearsal.ts --",
+    "status:operational": "tsx src/scripts/operational-status.ts --",
+    "maintenance:operational": "tsx src/scripts/operational-maintenance.ts --",
+    "upgrade:operational": "tsx src/scripts/operational-upgrade.ts --",
+    "rollback:operational": "tsx src/scripts/operational-rollback.ts --",
+    "portability": "tsx --env-file=.env src/scripts/portability.ts"
+  },
+  "migrations": 112,
+  "control": [
+    {
+      "file": "BLOCKERS.md",
+      "bytes": 11615,
+      "sha256": "261760ac3200bd04548e73fef0e91fd4374433633872909a3ce28fe37d00860e",
+      "headings": [
+        "## RC-04 Pass 2 result — 2026-10-04",
+        "## RC-02 acceptance ? PASS ? 2026-10-03",
+        "# Dependency-ordered blockers",
+        "## RC-01 current blockers — 2026-10-03",
+        "## RC-04 final result — 2026-10-04",
+        "## RC-07 Pass 2 — BLOCKED — 2026-10-05"
+      ],
+      "tableRows": 0,
+      "statuses": {
+        "BLOCKER": 3,
+        "VERIFIED": 1,
+        "DEFERRED": 0,
+        "PROVIDER-REQUIRED": 0
+      }
+    },
+    {
+      "file": "CAPABILITY_LEDGER.md",
+      "bytes": 203868,
+      "sha256": "8b0779ca5a6859aa609f23fd2e27f7e1444cb7a2f8909f5e5516074101a69083",
+      "headings": [
+        "# Capability ledger",
+        "## RC-04 Pass 2 verified subset — 2026-10-04",
+        "## Platform/Operations",
+        "## Identity",
+        "## Publishing/Editorial",
+        "## Presentation/Themes/Puck",
+        "## Media/DAM",
+        "## Discovery/Search/SEO/Quality",
+        "## Workflow/Releases",
+        "## Social/Distribution/Network",
+        "## Audience/Email/Telecom",
+        "## Community",
+        "## Analytics/Experiences",
+        "## Commerce/Fulfillment",
+        "## Integrations/Providers",
+        "## Internal Payload registrations",
+        "## Nonshipping reference scope",
+        "## RC-01 dispositions — 2026-10-03",
+        "## RC-02 site-build acceptance ? VERIFIED ? 2026-10-03",
+        "## RC-03 Pass 2 current scope appendix ? 2026-10-04",
+        "## RC-04 final verification — 2026-10-04",
+        "## RC-08B Deferred Capability Promotion Appendix — 2026-10-06"
+      ],
+      "tableRows": 334,
+      "statuses": {
+        "BLOCKER": 275,
+        "VERIFIED": 27,
+        "DEFERRED": 22,
+        "PROVIDER-REQUIRED": 0
+      }
+    },
+    {
+      "file": "HANDOFF.md",
+      "bytes": 8803,
+      "sha256": "0a41d93996c3680a4b0902c28e763089054916b76a931d69bb14da4bb5f119e1",
+      "headings": [
+        "## RC-08B Deferred Capability Promotion handoff — PASS — 2026-10-06",
+        "## RC-04 Pass 2 handoff — bounded PASS — 2026-10-04",
+        "# RC-03 Pass 3 final handoff ? PASS ? 2026-10-04",
+        "# RC-03 Pass 2 handoff ? PASS ? 2026-10-04",
+        "# RC-02 handoff ? PASS ? 2026-10-03",
+        "# RC-01 handoff — BLOCKED",
+        "## RC-04 final handoff — PASS — 2026-10-04",
+        "## RC-07 Pass 2 handoff — BLOCKED — 2026-10-05"
+      ],
+      "tableRows": 0,
+      "statuses": {
+        "BLOCKER": 1,
+        "VERIFIED": 0,
+        "DEFERRED": 1,
+        "PROVIDER-REQUIRED": 0
+      }
+    },
+    {
+      "file": "PROVIDER_MATRIX.md",
+      "bytes": 13170,
+      "sha256": "4692602de6f42d876933ba70c5935c447c7d701f5262bb0825e5bc819a9a7d6c",
+      "headings": [
+        "# Provider matrix",
+        "## RC-04 Pass 2 provider limit — 2026-10-04",
+        "## RC-03 Pass 2 provider boundary"
+      ],
+      "tableRows": 28,
+      "statuses": {
+        "BLOCKER": 25,
+        "VERIFIED": 0,
+        "DEFERRED": 3,
+        "PROVIDER-REQUIRED": 2
+      }
+    },
+    {
+      "file": "RC-08B-DEFERRAL-LEDGER.md",
+      "bytes": 18771,
+      "sha256": "e3b4c704c8d273be118c070ae07b9d2431615e1e03a21da07d5b89b4a952b7ee",
+      "headings": [
+        "# RC-08B deferred capability investigation",
+        "## Additional surfaces",
+        "## Execution status"
+      ],
+      "tableRows": 27,
+      "statuses": {
+        "BLOCKER": 0,
+        "VERIFIED": 0,
+        "DEFERRED": 7,
+        "PROVIDER-REQUIRED": 0
+      }
+    },
+    {
+      "file": "RC_SCOPE.md",
+      "bytes": 8249,
+      "sha256": "69a110d84b39cc218f6d81435163a76a7cd7e8d246b6fa6da13c234aae89e0e6",
+      "headings": [
+        "# RC scope and claim policy",
+        "## RC-05 Pass 3 claim boundary — 2026-10-05",
+        "## RC-04 Pass 2 current bounded scope — 2026-10-04",
+        "## A. Advertised RC capabilities",
+        "## B. Provider-dependent RC capabilities",
+        "## C. Degraded-safe local capabilities",
+        "## D. Deferred/experimental capabilities",
+        "## E. Absent future scope",
+        "## Frozen RC policy",
+        "## RC-02 current narrow claim ? 2026-10-03",
+        "## RC-03 Pass 2 scope boundary ? 2026-10-04",
+        "## RC-04 final bounded scope — 2026-10-04"
+      ],
+      "tableRows": 0,
+      "statuses": {
+        "BLOCKER": 4,
+        "VERIFIED": 2,
+        "DEFERRED": 4,
+        "PROVIDER-REQUIRED": 1
+      }
+    },
+    {
+      "file": "README.md",
+      "bytes": 6650,
+      "sha256": "caf9ec3274081e313d6980170eceb5ea9d228299973bf0b78ea90eecc1933dbc",
+      "headings": [
+        "# Current release truth",
+        "## Historical reconciliation"
+      ],
+      "tableRows": 7,
+      "statuses": {
+        "BLOCKER": 1,
+        "VERIFIED": 2,
+        "DEFERRED": 0,
+        "PROVIDER-REQUIRED": 0
+      }
+    },
+    {
+      "file": "ROUTE_MATRIX.md",
+      "bytes": 947058,
+      "sha256": "9656f6ebf2d79841eb143fe71a28de35d313a00bfccda81fc6816060236c1edd",
+      "headings": [
+        "# Route matrix",
+        "## RC-01 current admin audit — 2026-10-03",
+        "## RC-02 consolidated journey ? PASS ? 2026-10-03",
+        "## RC-03 Pass 2 route boundary"
+      ],
+      "tableRows": 582,
+      "statuses": {
+        "BLOCKER": 568,
+        "VERIFIED": 1,
+        "DEFERRED": 0,
+        "PROVIDER-REQUIRED": 0
+      }
+    },
+    {
+      "file": "SECURITY_LEDGER.md",
+      "bytes": 6805,
+      "sha256": "737e2706ac8fc279082f8e8012a6f3ed638d00b6eede2d0ef9356c01ef86b4d3",
+      "headings": [
+        "# Security ledger",
+        "## RC-06 Pass 2 assessment — 2026-10-05 — BLOCKED",
+        "## RC-04 Pass 2 executed privacy subset — 2026-10-04"
+      ],
+      "tableRows": 11,
+      "statuses": {
+        "BLOCKER": 10,
+        "VERIFIED": 0,
+        "DEFERRED": 0,
+        "PROVIDER-REQUIRED": 0
+      }
+    }
+  ]
+}

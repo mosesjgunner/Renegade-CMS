@@ -1,0 +1,694 @@
+{
+  "auditReportVersion": 2,
+  "vulnerabilities": {
+    "@esbuild-kit/core-utils": {
+      "name": "@esbuild-kit/core-utils",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        "esbuild"
+      ],
+      "effects": [
+        "@esbuild-kit/esm-loader"
+      ],
+      "range": "*",
+      "nodes": [
+        "node_modules/@esbuild-kit/core-utils"
+      ],
+      "fixAvailable": {
+        "name": "@payloadcms/db-postgres",
+        "version": "3.90.2",
+        "isSemVerMajor": false
+      }
+    },
+    "@esbuild-kit/esm-loader": {
+      "name": "@esbuild-kit/esm-loader",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        "@esbuild-kit/core-utils"
+      ],
+      "effects": [
+        "drizzle-kit"
+      ],
+      "range": "*",
+      "nodes": [
+        "node_modules/@esbuild-kit/esm-loader"
+      ],
+      "fixAvailable": {
+        "name": "@payloadcms/db-postgres",
+        "version": "3.90.2",
+        "isSemVerMajor": false
+      }
+    },
+    "@next/eslint-plugin-next": {
+      "name": "@next/eslint-plugin-next",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "fast-glob"
+      ],
+      "effects": [
+        "eslint-config-next"
+      ],
+      "range": ">=14.3.0-canary.0",
+      "nodes": [
+        "node_modules/@next/eslint-plugin-next"
+      ],
+      "fixAvailable": {
+        "name": "eslint-config-next",
+        "version": "14.2.35",
+        "isSemVerMajor": true
+      }
+    },
+    "@payloadcms/db-postgres": {
+      "name": "@payloadcms/db-postgres",
+      "severity": "moderate",
+      "isDirect": true,
+      "via": [
+        "@payloadcms/drizzle",
+        "drizzle-kit",
+        "payload"
+      ],
+      "effects": [],
+      "range": "*",
+      "nodes": [
+        "node_modules/@payloadcms/db-postgres"
+      ],
+      "fixAvailable": {
+        "name": "@payloadcms/db-postgres",
+        "version": "3.90.2",
+        "isSemVerMajor": false
+      }
+    },
+    "@payloadcms/drizzle": {
+      "name": "@payloadcms/drizzle",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        "payload"
+      ],
+      "effects": [
+        "@payloadcms/db-postgres"
+      ],
+      "range": "<=3.88.0",
+      "nodes": [
+        "node_modules/@payloadcms/drizzle"
+      ],
+      "fixAvailable": {
+        "name": "@payloadcms/db-postgres",
+        "version": "3.90.2",
+        "isSemVerMajor": false
+      }
+    },
+    "@payloadcms/graphql": {
+      "name": "@payloadcms/graphql",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        "payload"
+      ],
+      "effects": [],
+      "range": "<=3.88.0",
+      "nodes": [
+        "node_modules/@payloadcms/graphql"
+      ],
+      "fixAvailable": true
+    },
+    "@payloadcms/next": {
+      "name": "@payloadcms/next",
+      "severity": "high",
+      "isDirect": true,
+      "via": [
+        "@payloadcms/graphql",
+        "@payloadcms/ui",
+        "payload",
+        "sass"
+      ],
+      "effects": [],
+      "range": "*",
+      "nodes": [
+        "node_modules/@payloadcms/next"
+      ],
+      "fixAvailable": {
+        "name": "@payloadcms/next",
+        "version": "3.90.2",
+        "isSemVerMajor": false
+      }
+    },
+    "@payloadcms/richtext-lexical": {
+      "name": "@payloadcms/richtext-lexical",
+      "severity": "moderate",
+      "isDirect": true,
+      "via": [
+        "@payloadcms/next",
+        "@payloadcms/ui",
+        "payload"
+      ],
+      "effects": [],
+      "range": "0.1.10 - 3.88.0",
+      "nodes": [
+        "node_modules/@payloadcms/richtext-lexical"
+      ],
+      "fixAvailable": {
+        "name": "@payloadcms/richtext-lexical",
+        "version": "3.90.2",
+        "isSemVerMajor": false
+      }
+    },
+    "@payloadcms/ui": {
+      "name": "@payloadcms/ui",
+      "severity": "moderate",
+      "isDirect": true,
+      "via": [
+        "payload"
+      ],
+      "effects": [
+        "@payloadcms/richtext-lexical"
+      ],
+      "range": "<=3.88.0",
+      "nodes": [
+        "node_modules/@payloadcms/ui"
+      ],
+      "fixAvailable": {
+        "name": "@payloadcms/richtext-lexical",
+        "version": "3.90.2",
+        "isSemVerMajor": false
+      }
+    },
+    "@vitest/mocker": {
+      "name": "@vitest/mocker",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        {
+          "source": 1193684,
+          "name": "@vitest/mocker",
+          "dependency": "@vitest/mocker",
+          "title": "Vitest: Path Traversal / Arbitrary File Read via @vitest/mocker Redirect Mock",
+          "url": "https://github.com/advisories/GHSA-82fw-gwwq-j7x9",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-22"
+          ],
+          "cvss": {
+            "score": 5.9,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N"
+          },
+          "range": ">=2.1.0 <4.1.11"
+        }
+      ],
+      "effects": [
+        "vitest"
+      ],
+      "range": "2.1.0 - 4.1.10",
+      "nodes": [
+        "node_modules/vitest/node_modules/@vitest/mocker"
+      ],
+      "fixAvailable": {
+        "name": "vitest",
+        "version": "5.0.3",
+        "isSemVerMajor": true
+      }
+    },
+    "brace-expansion": {
+      "name": "brace-expansion",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        {
+          "source": 1240100,
+          "name": "brace-expansion",
+          "dependency": "brace-expansion",
+          "title": "brace-expansion: Quadratic-time expansion of the `{a},b}` rewrite causes CPU denial of service",
+          "url": "https://github.com/advisories/GHSA-q2hr-2g5m-vwhr",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-400",
+            "CWE-407"
+          ],
+          "cvss": {
+            "score": 5.3,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L"
+          },
+          "range": "<1.1.21"
+        },
+        {
+          "source": 1240103,
+          "name": "brace-expansion",
+          "dependency": "brace-expansion",
+          "title": "brace-expansion: Quadratic-time expansion of the `{a},b}` rewrite causes CPU denial of service",
+          "url": "https://github.com/advisories/GHSA-q2hr-2g5m-vwhr",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-400",
+            "CWE-407"
+          ],
+          "cvss": {
+            "score": 5.3,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L"
+          },
+          "range": ">=4.0.0 <5.0.12"
+        },
+        {
+          "source": 1240104,
+          "name": "brace-expansion",
+          "dependency": "brace-expansion",
+          "title": "brace-expansion: DoS via uncontrolled recursion on nested brace groups causing stack exhaustion",
+          "url": "https://github.com/advisories/GHSA-qhr7-859c-m2p7",
+          "severity": "high",
+          "cwe": [
+            "CWE-400",
+            "CWE-674"
+          ],
+          "cvss": {
+            "score": 7.5,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+          },
+          "range": "<1.1.20"
+        },
+        {
+          "source": 1240107,
+          "name": "brace-expansion",
+          "dependency": "brace-expansion",
+          "title": "brace-expansion: DoS via uncontrolled recursion on nested brace groups causing stack exhaustion",
+          "url": "https://github.com/advisories/GHSA-qhr7-859c-m2p7",
+          "severity": "high",
+          "cwe": [
+            "CWE-400",
+            "CWE-674"
+          ],
+          "cvss": {
+            "score": 7.5,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+          },
+          "range": ">=4.0.0 <5.0.11"
+        },
+        {
+          "source": 1240108,
+          "name": "brace-expansion",
+          "dependency": "brace-expansion",
+          "title": "brace-expansion: DoS via uncontrolled recursion in parseCommaParts causing stack exhaustion",
+          "url": "https://github.com/advisories/GHSA-6j4f-fj2g-mc7p",
+          "severity": "high",
+          "cwe": [
+            "CWE-400",
+            "CWE-674"
+          ],
+          "cvss": {
+            "score": 7.5,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+          },
+          "range": "<1.1.19"
+        },
+        {
+          "source": 1240111,
+          "name": "brace-expansion",
+          "dependency": "brace-expansion",
+          "title": "brace-expansion: DoS via uncontrolled recursion in parseCommaParts causing stack exhaustion",
+          "url": "https://github.com/advisories/GHSA-6j4f-fj2g-mc7p",
+          "severity": "high",
+          "cwe": [
+            "CWE-400",
+            "CWE-674"
+          ],
+          "cvss": {
+            "score": 7.5,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+          },
+          "range": ">=4.0.0 <5.0.10"
+        }
+      ],
+      "effects": [],
+      "range": "<=1.1.20 || 4.0.0 - 5.0.11",
+      "nodes": [
+        "node_modules/@typescript-eslint/typescript-estree/node_modules/brace-expansion",
+        "node_modules/brace-expansion"
+      ],
+      "fixAvailable": true
+    },
+    "braces": {
+      "name": "braces",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        {
+          "source": 1240992,
+          "name": "braces",
+          "dependency": "braces",
+          "title": "braces vulnerable to stack-exhaustion denial of service through deeply nested patterns",
+          "url": "https://github.com/advisories/GHSA-vfj7-8cjw-p6xm",
+          "severity": "high",
+          "cwe": [
+            "CWE-674"
+          ],
+          "cvss": {
+            "score": 7.5,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+          },
+          "range": "<=3.0.3"
+        }
+      ],
+      "effects": [
+        "chokidar",
+        "micromatch"
+      ],
+      "range": "*",
+      "nodes": [
+        "node_modules/braces"
+      ],
+      "fixAvailable": {
+        "name": "eslint-config-next",
+        "version": "14.2.35",
+        "isSemVerMajor": true
+      }
+    },
+    "chokidar": {
+      "name": "chokidar",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "braces"
+      ],
+      "effects": [
+        "sass"
+      ],
+      "range": "2.0.0 - 3.6.0",
+      "nodes": [
+        "node_modules/chokidar"
+      ],
+      "fixAvailable": {
+        "name": "@payloadcms/next",
+        "version": "3.90.2",
+        "isSemVerMajor": false
+      }
+    },
+    "drizzle-kit": {
+      "name": "drizzle-kit",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        "@esbuild-kit/esm-loader"
+      ],
+      "effects": [
+        "@payloadcms/db-postgres"
+      ],
+      "range": "0.19.0 - 1.0.0-beta.1-fd8bfcc",
+      "nodes": [
+        "node_modules/drizzle-kit"
+      ],
+      "fixAvailable": {
+        "name": "@payloadcms/db-postgres",
+        "version": "3.90.2",
+        "isSemVerMajor": false
+      }
+    },
+    "esbuild": {
+      "name": "esbuild",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        {
+          "source": 1102341,
+          "name": "esbuild",
+          "dependency": "esbuild",
+          "title": "esbuild enables any website to send any requests to the development server and read the response",
+          "url": "https://github.com/advisories/GHSA-67mh-4wv8-2f99",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-346"
+          ],
+          "cvss": {
+            "score": 5.3,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:U/C:H/I:N/A:N"
+          },
+          "range": "<=0.24.2"
+        }
+      ],
+      "effects": [
+        "@esbuild-kit/core-utils"
+      ],
+      "range": "<=0.24.2",
+      "nodes": [
+        "node_modules/@esbuild-kit/core-utils/node_modules/esbuild"
+      ],
+      "fixAvailable": {
+        "name": "@payloadcms/db-postgres",
+        "version": "3.90.2",
+        "isSemVerMajor": false
+      }
+    },
+    "eslint-config-next": {
+      "name": "eslint-config-next",
+      "severity": "high",
+      "isDirect": true,
+      "via": [
+        "@next/eslint-plugin-next"
+      ],
+      "effects": [],
+      "range": ">=14.3.0-canary.0",
+      "nodes": [
+        "node_modules/eslint-config-next"
+      ],
+      "fixAvailable": {
+        "name": "eslint-config-next",
+        "version": "14.2.35",
+        "isSemVerMajor": true
+      }
+    },
+    "fast-copy": {
+      "name": "fast-copy",
+      "severity": "moderate",
+      "isDirect": false,
+      "via": [
+        {
+          "source": 1241256,
+          "name": "fast-copy",
+          "dependency": "fast-copy",
+          "title": "fast-copy: Stack exhaustion in fast-copy when copying deeply-nested values",
+          "url": "https://github.com/advisories/GHSA-jggr-w7fw-pc2j",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-674"
+          ],
+          "cvss": {
+            "score": 0,
+            "vectorString": null
+          },
+          "range": ">=3.0.0 <3.1.0"
+        }
+      ],
+      "effects": [],
+      "range": "3.0.0 - 3.0.2",
+      "nodes": [
+        "node_modules/fast-copy"
+      ],
+      "fixAvailable": true
+    },
+    "fast-glob": {
+      "name": "fast-glob",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "micromatch"
+      ],
+      "effects": [
+        "@next/eslint-plugin-next"
+      ],
+      "range": "*",
+      "nodes": [
+        "node_modules/fast-glob"
+      ],
+      "fixAvailable": {
+        "name": "eslint-config-next",
+        "version": "14.2.35",
+        "isSemVerMajor": true
+      }
+    },
+    "micromatch": {
+      "name": "micromatch",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "braces"
+      ],
+      "effects": [
+        "fast-glob"
+      ],
+      "range": ">=0.2.0",
+      "nodes": [
+        "node_modules/micromatch"
+      ],
+      "fixAvailable": {
+        "name": "eslint-config-next",
+        "version": "14.2.35",
+        "isSemVerMajor": true
+      }
+    },
+    "payload": {
+      "name": "payload",
+      "severity": "moderate",
+      "isDirect": true,
+      "via": [
+        {
+          "source": 1182135,
+          "name": "payload",
+          "dependency": "payload",
+          "title": "Payload CMS default account-unlock access allows authenticated users to reset other accounts' lockouts",
+          "url": "https://github.com/advisories/GHSA-jg8r-5jh2-v2xj",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-307"
+          ],
+          "cvss": {
+            "score": 0,
+            "vectorString": null
+          },
+          "range": "<=3.88.0"
+        }
+      ],
+      "effects": [
+        "@payloadcms/db-postgres",
+        "@payloadcms/drizzle",
+        "@payloadcms/graphql",
+        "@payloadcms/next",
+        "@payloadcms/richtext-lexical",
+        "@payloadcms/ui"
+      ],
+      "range": "<=3.88.0",
+      "nodes": [
+        "node_modules/payload"
+      ],
+      "fixAvailable": {
+        "name": "@payloadcms/db-postgres",
+        "version": "3.90.2",
+        "isSemVerMajor": false
+      }
+    },
+    "sass": {
+      "name": "sass",
+      "severity": "high",
+      "isDirect": false,
+      "via": [
+        "chokidar"
+      ],
+      "effects": [
+        "@payloadcms/next"
+      ],
+      "range": "1.6.0 - 1.78.0",
+      "nodes": [
+        "node_modules/sass"
+      ],
+      "fixAvailable": {
+        "name": "@payloadcms/next",
+        "version": "3.90.2",
+        "isSemVerMajor": false
+      }
+    },
+    "tinypool": {
+      "name": "tinypool",
+      "severity": "critical",
+      "isDirect": false,
+      "via": [
+        {
+          "source": 1241260,
+          "name": "tinypool",
+          "dependency": "tinypool",
+          "title": "Tinypool: Prototype Pollution gadget in worker options leads to Remote Code Execution",
+          "url": "https://github.com/advisories/GHSA-5gmw-xhrv-c9v3",
+          "severity": "critical",
+          "cwe": [
+            "CWE-1321"
+          ],
+          "cvss": {
+            "score": 0,
+            "vectorString": null
+          },
+          "range": "<=2.1.0"
+        },
+        {
+          "source": 1241261,
+          "name": "tinypool",
+          "dependency": "tinypool",
+          "title": "Tinypool: Prototype Pollution Gadget to RCE in run() options",
+          "url": "https://github.com/advisories/GHSA-85c8-ppgw-ccpr",
+          "severity": "critical",
+          "cwe": [
+            "CWE-94",
+            "CWE-1321"
+          ],
+          "cvss": {
+            "score": 0,
+            "vectorString": null
+          },
+          "range": "<2.1.2"
+        }
+      ],
+      "effects": [
+        "vitest"
+      ],
+      "range": "<=2.1.1",
+      "nodes": [
+        "node_modules/tinypool"
+      ],
+      "fixAvailable": {
+        "name": "vitest",
+        "version": "5.0.3",
+        "isSemVerMajor": true
+      }
+    },
+    "vitest": {
+      "name": "vitest",
+      "severity": "critical",
+      "isDirect": true,
+      "via": [
+        "@vitest/mocker",
+        {
+          "source": 1193683,
+          "name": "vitest",
+          "dependency": "vitest",
+          "title": "Vitest: Path Traversal / Arbitrary File Read via @vitest/mocker Redirect Mock",
+          "url": "https://github.com/advisories/GHSA-82fw-gwwq-j7x9",
+          "severity": "moderate",
+          "cwe": [
+            "CWE-22"
+          ],
+          "cvss": {
+            "score": 5.9,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N"
+          },
+          "range": ">=2.1.0 <4.1.11"
+        },
+        "tinypool"
+      ],
+      "effects": [],
+      "range": "0.0.95 - 4.1.10",
+      "nodes": [
+        "node_modules/vitest"
+      ],
+      "fixAvailable": {
+        "name": "vitest",
+        "version": "5.0.3",
+        "isSemVerMajor": true
+      }
+    }
+  },
+  "metadata": {
+    "vulnerabilities": {
+      "info": 0,
+      "low": 0,
+      "moderate": 12,
+      "high": 9,
+      "critical": 2,
+      "total": 23
+    },
+    "dependencies": {
+      "prod": 524,
+      "dev": 423,
+      "optional": 206,
+      "peer": 7,
+      "peerOptional": 0,
+      "total": 1070
+    }
+  }
+}

@@ -1,0 +1,288 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "C:\\Projects\\RENEGADE CMS\\rc08c-final-01908f3\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "--config",
+      "scratch/rc08c/browser/playwright.config.ts"
+    ],
+    "configFile": "C:\\Projects\\RENEGADE CMS\\rc08c-final-01908f3\\scratch\\rc08c\\browser\\playwright.config.ts",
+    "rootDir": "C:/Projects/RENEGADE CMS/rc08c-final-01908f3/scratch/rc08c/browser",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Projects/RENEGADE CMS/rc08c-final-01908f3/scratch/rc08c/browser/test-results/rc02",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "C:/Projects/RENEGADE CMS/rc08c-final-01908f3/scratch/rc08c/browser",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 600000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "scratch/rc08c/browser/browser-results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.62.1",
+    "workers": 1,
+    "webServer": {
+      "cwd": "C:\\Projects\\RENEGADE CMS\\rc08c-final-01908f3",
+      "command": "node scratch/rc08c/browser/runtime.mjs",
+      "url": "https://dispatch.rc02.test:3129/api/setup/readiness",
+      "reuseExistingServer": false,
+      "ignoreHTTPSErrors": true,
+      "timeout": 120000,
+      "env": {
+        "ALLUSERSPROFILE": "C:\\ProgramData",
+        "APPDATA": "C:\\Users\\moses\\AppData\\Roaming",
+        "CHROME_CRASHPAD_PIPE_NAME": "\\\\.\\pipe\\crashpad_33532_GTEGUTTOFKQTJURY",
+        "CODEX_APPLY_PATCH_PRESERVE_LINE_ENDINGS": "1",
+        "CODEX_CI": "1",
+        "CODEX_INTERNAL_ORIGINATOR_OVERRIDE": "codex_vscode",
+        "CODEX_PERMISSION_PROFILE": ":danger-full-access",
+        "CODEX_SESSION_ID": "01a111e2-b32a-7831-89cc-e81c6127712d",
+        "CODEX_THREAD_ID": "01a111e2-b32a-7831-89cc-e81c6127712d",
+        "CODEX_VERSION": "0.160.0",
+        "COLORTERM": "",
+        "CommonProgramFiles": "C:\\Program Files\\Common Files",
+        "CommonProgramFiles(x86)": "C:\\Program Files (x86)\\Common Files",
+        "CommonProgramW6432": "C:\\Program Files\\Common Files",
+        "COMPUTERNAME": "GONZOGIB",
+        "ComSpec": "C:\\WINDOWS\\system32\\cmd.exe",
+        "DEBUG": "release",
+        "DriverData": "C:\\Windows\\System32\\Drivers\\DriverData",
+        "EFC_9788_1592913036": "1",
+        "EFC_9788_2946480783": "1",
+        "EFC_9788_4126798990": "1",
+        "ELECTRON_RUN_AS_NODE": "1",
+        "GH_PAGER": "cat",
+        "GIT_PAGER": "cat",
+        "HOMEDRIVE": "C:",
+        "HOMEPATH": "\\Users\\moses",
+        "LANG": "C.UTF-8",
+        "LC_ALL": "C.UTF-8",
+        "LC_CTYPE": "C.UTF-8",
+        "LOCALAPPDATA": "C:\\Users\\moses\\AppData\\Local",
+        "LOGONSERVER": "\\\\GONZOGIB",
+        "NO_COLOR": "1",
+        "NUMBER_OF_PROCESSORS": "8",
+        "OLLAMA_NO_CLOUD": "1",
+        "OneDrive": "C:\\Users\\moses\\OneDrive",
+        "OneDriveConsumer": "C:\\Users\\moses\\OneDrive",
+        "OS": "Windows_NT",
+        "PAGER": "cat",
+        "PATH": "C:\\Users\\moses\\.codex\\tmp\\arg0\\codex-arg08cozCW;C:\\WINDOWS\\system32;C:\\WINDOWS;C:\\WINDOWS\\System32\\Wbem;C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\;C:\\WINDOWS\\System32\\OpenSSH\\;C:\\Program Files\\nodejs\\;C:\\Program Files\\GitHub CLI\\;C:\\Program Files\\Git\\cmd;C:\\Program Files\\PuTTY\\;C:\\Program Files\\Docker\\Docker\\resources\\bin;C:\\Users\\moses\\AppData\\Local\\Microsoft\\WindowsApps;C:\\Users\\moses\\AppData\\Local\\Programs\\Microsoft VS Code\\bin;C:\\Users\\moses\\AppData\\Roaming\\npm;C:\\Users\\moses\\AppData\\Local\\Microsoft\\WinGet\\Packages\\ggml.llamacpp_Microsoft.Winget.Source_8wekyb3d8bbwe;C:\\Users\\moses\\AppData\\Local\\Programs\\Ollama;C:\\Users\\moses\\AppData\\Local\\Programs\\Antigravity IDE\\bin;C:\\Users\\moses\\AppData\\Local\\GitHubDesktop\\bin;c:\\Users\\moses\\.vscode\\extensions\\openai.chatgpt-26.930.41038-win32-x64\\bin\\windows-x86_64",
+        "PATHEXT": ".COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC;.CPL",
+        "PROCESSOR_ARCHITECTURE": "AMD64",
+        "PROCESSOR_IDENTIFIER": "Intel64 Family 6 Model 189 Stepping 1, GenuineIntel",
+        "PROCESSOR_LEVEL": "6",
+        "PROCESSOR_REVISION": "bd01",
+        "ProgramData": "C:\\ProgramData",
+        "ProgramFiles": "C:\\Program Files",
+        "ProgramFiles(x86)": "C:\\Program Files (x86)",
+        "ProgramW6432": "C:\\Program Files",
+        "PSModulePath": "C:\\Users\\moses\\OneDrive\\Documents\\WindowsPowerShell\\Modules;C:\\Program Files\\WindowsPowerShell\\Modules;C:\\WINDOWS\\system32\\WindowsPowerShell\\v1.0\\Modules",
+        "PUBLIC": "C:\\Users\\Public",
+        "RUST_LOG": "warn",
+        "SESSIONNAME": "Console",
+        "SystemDrive": "C:",
+        "SystemRoot": "C:\\WINDOWS",
+        "TEMP": "C:\\Users\\moses\\AppData\\Local\\Temp",
+        "TERM": "dumb",
+        "TMP": "C:\\Users\\moses\\AppData\\Local\\Temp",
+        "USERDOMAIN": "GONZOGIB",
+        "USERDOMAIN_ROAMINGPROFILE": "GONZOGIB",
+        "USERNAME": "moses",
+        "USERPROFILE": "C:\\Users\\moses",
+        "VSCODE_CODE_CACHE_PATH": "C:\\Users\\moses\\AppData\\Roaming\\Code\\CachedData\\07f806f999227108933c2e30515b26eecc1fda74",
+        "VSCODE_CRASH_REPORTER_PROCESS_TYPE": "extensionHost",
+        "VSCODE_CWD": "C:\\Users\\moses\\AppData\\Local\\Programs\\Microsoft VS Code",
+        "VSCODE_ESM_ENTRYPOINT": "vs/workbench/api/node/extensionHostProcess",
+        "VSCODE_HANDLES_UNCAUGHT_ERRORS": "true",
+        "VSCODE_IPC_HOOK": "\\\\.\\pipe\\4af2c1f7-1.140.0-main-sock",
+        "VSCODE_NLS_CONFIG": "{\"userLocale\":\"en-us\",\"osLocale\":\"en-us\",\"resolvedLanguage\":\"en\",\"defaultMessagesFile\":\"C:\\\\Users\\\\moses\\\\AppData\\\\Local\\\\Programs\\\\Microsoft VS Code\\\\07f806f999\\\\resources\\\\app\\\\out\\\\nls.messages.json\",\"locale\":\"en-us\",\"availableLanguages\":{}}",
+        "VSCODE_NODE_COMPILE_CACHE_KIND": "extension-host",
+        "VSCODE_NODE_COMPILE_CACHE_ROOT": "C:\\Users\\moses\\AppData\\Local\\Programs\\Microsoft VS Code\\07f806f999\\resources\\app\\node-compile-cache",
+        "VSCODE_PID": "33532",
+        "windir": "C:\\WINDOWS",
+        "ZES_ENABLE_SYSMAN": "1",
+        "DATABASE_URL": "postgresql://rc08c:19db08ca71606b9b95bbcf8154c0447d111130d37c11cfaf26fdb6ab05eacc49@127.0.0.1:55489/rc08c_browser3_release_acceptance",
+        "APP_URL": "https://dispatch.rc02.test:3129",
+        "PAYLOAD_SECRET": "[REDACTED]",
+        "NODE_ENV": "production",
+        "RENEGADE_MODULES": "all",
+        "RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT": "true",
+        "EMAIL_MODE": "disabled",
+        "TELECOM_MODE": "disabled",
+        "TELECOM_ALLOW_OUTBOUND": "false",
+        "SMOKE_BASE_URL": "http://127.0.0.1:3189",
+        "SMOKE_TEST_TOKEN": "[REDACTED]",
+        "MEDIA_DIR": "C:/Projects/RENEGADE CMS/rc08c-final-01908f3/scratch/rc08c/browser-media",
+        "LOCAL_E2E_TEST_MODE": "false",
+        "ENABLE_TEST_ROUTES": "false",
+        "NODE_OPTIONS": "--max-old-space-size=768 --import=file:///C:/Projects/RENEGADE%20CMS/rc08c-final-01908f3/src/scripts/rc02-network.mjs",
+        "UPGRADE_MIGRATION_DATABASE_URL": "postgresql://rc08c:19db08ca71606b9b95bbcf8154c0447d111130d37c11cfaf26fdb6ab05eacc49@127.0.0.1:55489/rc08c_019_upgrade_acceptance",
+        "NODE_EXTRA_CA_CERTS": "C:/Projects/RENEGADE CMS/rc08c-final-01908f3/scratch/rc02-tls/cert.pem",
+        "PORT": "3128",
+        "HOSTNAME": "127.0.0.1",
+        "PROXY_MODE": "direct",
+        "ALLOW_FIXTURE_SEED": "false"
+      }
+    }
+  },
+  "suites": [
+    {
+      "title": "site-build.spec.ts",
+      "file": "site-build.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "RC-02: ordinary operator builds Renegade Party Dispatch from an empty install",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 600000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 13672,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveValue\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: getByLabel('Footer Text', { exact: true })\nExpected: \u001b[32m\"Renegade Party Dispatch — independent reporting for an accountable republic.\"\u001b[39m\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toHaveValue\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByLabel('Footer Text', { exact: true })\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveValue\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: getByLabel('Footer Text', { exact: true })\nExpected: \u001b[32m\"Renegade Party Dispatch — independent reporting for an accountable republic.\"\u001b[39m\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toHaveValue\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByLabel('Footer Text', { exact: true })\u001b[22m\n\n    at C:\\Projects\\RENEGADE CMS\\rc08c-final-01908f3\\scratch\\rc08c\\browser\\site-build.spec.ts:122:69\n    at C:\\Projects\\RENEGADE CMS\\rc08c-final-01908f3\\scratch\\rc08c\\browser\\site-build.spec.ts:108:5",
+                    "location": {
+                      "file": "C:\\Projects\\RENEGADE CMS\\rc08c-final-01908f3\\scratch\\rc08c\\browser\\site-build.spec.ts",
+                      "column": 69,
+                      "line": 122
+                    },
+                    "snippet": "  120 |       expect((await settingsSaved).status()).toBe(200)\n  121 |       await page.reload()\n> 122 |       await expect(page.getByLabel('Footer Text', { exact: true })).toHaveValue(\n      |                                                                     ^\n  123 |         'Renegade Party Dispatch — independent reporting for an accountable republic.',\n  124 |       )\n  125 |       const settings = await api('GET', '/api/globals/site-settings?depth=0')"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\rc08c-final-01908f3\\scratch\\rc08c\\browser\\site-build.spec.ts",
+                        "column": 69,
+                        "line": 122
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveValue\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: getByLabel('Footer Text', { exact: true })\nExpected: \u001b[32m\"Renegade Party Dispatch — independent reporting for an accountable republic.\"\u001b[39m\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toHaveValue\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByLabel('Footer Text', { exact: true })\u001b[22m\n\n\n  120 |       expect((await settingsSaved).status()).toBe(200)\n  121 |       await page.reload()\n> 122 |       await expect(page.getByLabel('Footer Text', { exact: true })).toHaveValue(\n      |                                                                     ^\n  123 |         'Renegade Party Dispatch — independent reporting for an accountable republic.',\n  124 |       )\n  125 |       const settings = await api('GET', '/api/globals/site-settings?depth=0')\n    at C:\\Projects\\RENEGADE CMS\\rc08c-final-01908f3\\scratch\\rc08c\\browser\\site-build.spec.ts:122:69\n    at C:\\Projects\\RENEGADE CMS\\rc08c-final-01908f3\\scratch\\rc08c\\browser\\site-build.spec.ts:108:5"
+                    }
+                  ],
+                  "stdout": [
+                    {
+                      "buffer": "WzExOjQxOjMyXSAbWzMzbVdBUk4bWzM5bTogG1szNm1ObyBlbWFpbCBhZGFwdGVyIHByb3ZpZGVkLiBFbWFpbCB3aWxsIGJlIHdyaXR0ZW4gdG8gY29uc29sZS4gTW9yZSBpbmZvIGF0IGh0dHBzOi8vcGF5bG9hZGNtcy5jb20vZG9jcy9lbWFpbC9vdmVydmlldy4bWzM5bQo="
+                    }
+                  ],
+                  "stderr": [],
+                  "retry": 0,
+                  "steps": [
+                    {
+                      "title": "Owner enrollment and blank Standard onboarding",
+                      "duration": 5706
+                    },
+                    {
+                      "title": "Site settings through the normal admin form",
+                      "duration": 7141,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveValue\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: getByLabel('Footer Text', { exact: true })\nExpected: \u001b[32m\"Renegade Party Dispatch — independent reporting for an accountable republic.\"\u001b[39m\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toHaveValue\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByLabel('Footer Text', { exact: true })\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoHaveValue\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nLocator: getByLabel('Footer Text', { exact: true })\nExpected: \u001b[32m\"Renegade Party Dispatch — independent reporting for an accountable republic.\"\u001b[39m\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toHaveValue\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByLabel('Footer Text', { exact: true })\u001b[22m\n\n    at C:\\Projects\\RENEGADE CMS\\rc08c-final-01908f3\\scratch\\rc08c\\browser\\site-build.spec.ts:122:69\n    at C:\\Projects\\RENEGADE CMS\\rc08c-final-01908f3\\scratch\\rc08c\\browser\\site-build.spec.ts:108:5",
+                        "location": {
+                          "file": "C:\\Projects\\RENEGADE CMS\\rc08c-final-01908f3\\scratch\\rc08c\\browser\\site-build.spec.ts",
+                          "column": 69,
+                          "line": 122
+                        },
+                        "snippet": "  120 |       expect((await settingsSaved).status()).toBe(200)\n  121 |       await page.reload()\n> 122 |       await expect(page.getByLabel('Footer Text', { exact: true })).toHaveValue(\n      |                                                                     ^\n  123 |         'Renegade Party Dispatch — independent reporting for an accountable republic.',\n  124 |       )\n  125 |       const settings = await api('GET', '/api/globals/site-settings?depth=0')"
+                      }
+                    }
+                  ],
+                  "startTime": "2026-10-06T16:41:31.697Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "C:\\Projects\\RENEGADE CMS\\rc08c-final-01908f3\\scratch\\rc08c\\browser\\test-results\\rc02\\site-build-RC-02-ordinary--62930-patch-from-an-empty-install\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "C:\\Projects\\RENEGADE CMS\\rc08c-final-01908f3\\scratch\\rc08c\\browser\\test-results\\rc02\\site-build-RC-02-ordinary--62930-patch-from-an-empty-install\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "C:\\Projects\\RENEGADE CMS\\rc08c-final-01908f3\\scratch\\rc08c\\browser\\test-results\\rc02\\site-build-RC-02-ordinary--62930-patch-from-an-empty-install\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "C:\\Projects\\RENEGADE CMS\\rc08c-final-01908f3\\scratch\\rc08c\\browser\\site-build.spec.ts",
+                    "column": 69,
+                    "line": 122
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "ddf9e0cd01877a1bb162-0ce1cbdf71d8ad8c68f1",
+          "file": "site-build.spec.ts",
+          "line": 9,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-06T16:41:21.799Z",
+    "duration": 24614.356,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

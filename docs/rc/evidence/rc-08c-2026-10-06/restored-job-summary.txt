@@ -1,0 +1,8 @@
+operations-heartbeat|4|4|0
+audience-newsletter-dispatch|31|31|0
+commerce-abandon-checkouts|2|2|0
+execution-outbox-dispatch|79|79|0
+webhook-delivery-dispatch|78|78|0
+media-variant-generate|1|1|0
+audience-form-intake|30|30|0
+community-email-dispatch|30|30|0

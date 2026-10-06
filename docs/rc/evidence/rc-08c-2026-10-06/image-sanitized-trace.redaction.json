@@ -1,0 +1,8 @@
+{
+  "originalSha256": "b79e89b3cb964198fa4ff2a393e606e8c848908101cc72c7ebbc741204e565ec",
+  "sanitizedSha256": "d8edfc67063fd4b70e7af38c534a2c241bec2337a9e098c36a1b229991a7399f",
+  "entries": 65,
+  "redactedTextEntries": 9,
+  "screenCaptureInTrace": false,
+  "sanitized": true
+}

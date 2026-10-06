@@ -1,0 +1,173 @@
+{
+  "sourceSha": "01908f39a3ce40b5eae5d4dec64b981e103d5fb1",
+  "status": "OPEN",
+  "packageEntryCounts": {
+    "info": 0,
+    "low": 0,
+    "moderate": 12,
+    "high": 9,
+    "critical": 2,
+    "total": 23
+  },
+  "uniqueAdvisoryCount": 10,
+  "graphStatus": "ELSPROBLEMS - yaml 1.10.3 invalid against Vite optional yaml 2 peer",
+  "warning": "Package ancestors are not distinct exploits. Standalone exclusion is insufficient because full root node_modules ships in the runner.",
+  "advisories": [
+    {
+      "id": "GHSA-82fw-gwwq-j7x9",
+      "url": "https://github.com/advisories/GHSA-82fw-gwwq-j7x9",
+      "title": "Vitest: Path Traversal / Arbitrary File Read via @vitest/mocker Redirect Mock",
+      "severity": "moderate",
+      "package": "@vitest/mocker",
+      "affectedPackageEntries": [
+        "@vitest/mocker",
+        "vitest"
+      ],
+      "disposition": "OPEN - reachability and remediation acceptance incomplete",
+      "affectedRange": ">=2.1.0 <4.1.11",
+      "standalonePresence": "not found in traced standalone; does not adjudicate full image",
+      "productionImagePresence": "requires importer review",
+      "reviewScope": "Identify actual importer, reachable interface, attacker input, exploit prerequisites and accepted mitigation; test/dev usage is distinct from public serving exposure."
+    },
+    {
+      "id": "GHSA-q2hr-2g5m-vwhr",
+      "url": "https://github.com/advisories/GHSA-q2hr-2g5m-vwhr",
+      "title": "brace-expansion: Quadratic-time expansion of the `{a},b}` rewrite causes CPU denial of service",
+      "severity": "moderate",
+      "package": "brace-expansion",
+      "affectedPackageEntries": [
+        "brace-expansion",
+        "brace-expansion"
+      ],
+      "disposition": "OPEN - reachability and remediation acceptance incomplete",
+      "affectedRange": ">=4.0.0 <5.0.12",
+      "standalonePresence": "not found in traced standalone; does not adjudicate full image",
+      "productionImagePresence": "present",
+      "reviewScope": "Identify actual importer, reachable interface, attacker input, exploit prerequisites and accepted mitigation; test/dev usage is distinct from public serving exposure."
+    },
+    {
+      "id": "GHSA-qhr7-859c-m2p7",
+      "url": "https://github.com/advisories/GHSA-qhr7-859c-m2p7",
+      "title": "brace-expansion: DoS via uncontrolled recursion on nested brace groups causing stack exhaustion",
+      "severity": "high",
+      "package": "brace-expansion",
+      "affectedPackageEntries": [
+        "brace-expansion",
+        "brace-expansion"
+      ],
+      "disposition": "OPEN - reachability and remediation acceptance incomplete",
+      "affectedRange": ">=4.0.0 <5.0.11",
+      "standalonePresence": "not found in traced standalone; does not adjudicate full image",
+      "productionImagePresence": "present",
+      "reviewScope": "Identify actual importer, reachable interface, attacker input, exploit prerequisites and accepted mitigation; test/dev usage is distinct from public serving exposure."
+    },
+    {
+      "id": "GHSA-6j4f-fj2g-mc7p",
+      "url": "https://github.com/advisories/GHSA-6j4f-fj2g-mc7p",
+      "title": "brace-expansion: DoS via uncontrolled recursion in parseCommaParts causing stack exhaustion",
+      "severity": "high",
+      "package": "brace-expansion",
+      "affectedPackageEntries": [
+        "brace-expansion",
+        "brace-expansion"
+      ],
+      "disposition": "OPEN - reachability and remediation acceptance incomplete",
+      "affectedRange": ">=4.0.0 <5.0.10",
+      "standalonePresence": "not found in traced standalone; does not adjudicate full image",
+      "productionImagePresence": "present",
+      "reviewScope": "Identify actual importer, reachable interface, attacker input, exploit prerequisites and accepted mitigation; test/dev usage is distinct from public serving exposure."
+    },
+    {
+      "id": "GHSA-vfj7-8cjw-p6xm",
+      "url": "https://github.com/advisories/GHSA-vfj7-8cjw-p6xm",
+      "title": "braces vulnerable to stack-exhaustion denial of service through deeply nested patterns",
+      "severity": "high",
+      "package": "braces",
+      "affectedPackageEntries": [
+        "braces"
+      ],
+      "disposition": "OPEN - reachability and remediation acceptance incomplete",
+      "affectedRange": "<=3.0.3",
+      "standalonePresence": "not found in traced standalone; does not adjudicate full image",
+      "productionImagePresence": "present",
+      "reviewScope": "Identify actual importer, reachable interface, attacker input, exploit prerequisites and accepted mitigation; test/dev usage is distinct from public serving exposure."
+    },
+    {
+      "id": "GHSA-67mh-4wv8-2f99",
+      "url": "https://github.com/advisories/GHSA-67mh-4wv8-2f99",
+      "title": "esbuild enables any website to send any requests to the development server and read the response",
+      "severity": "moderate",
+      "package": "esbuild",
+      "affectedPackageEntries": [
+        "esbuild"
+      ],
+      "disposition": "OPEN - reachability and remediation acceptance incomplete",
+      "affectedRange": "<=0.24.2",
+      "standalonePresence": "not found in traced standalone; does not adjudicate full image",
+      "productionImagePresence": "present",
+      "reviewScope": "Identify actual importer, reachable interface, attacker input, exploit prerequisites and accepted mitigation; test/dev usage is distinct from public serving exposure."
+    },
+    {
+      "id": "GHSA-jggr-w7fw-pc2j",
+      "url": "https://github.com/advisories/GHSA-jggr-w7fw-pc2j",
+      "title": "fast-copy: Stack exhaustion in fast-copy when copying deeply-nested values",
+      "severity": "moderate",
+      "package": "fast-copy",
+      "affectedPackageEntries": [
+        "fast-copy"
+      ],
+      "disposition": "OPEN - reachability and remediation acceptance incomplete",
+      "affectedRange": ">=3.0.0 <3.1.0",
+      "standalonePresence": "present",
+      "productionImagePresence": "present",
+      "reviewScope": "Identify actual importer, reachable interface, attacker input, exploit prerequisites and accepted mitigation; test/dev usage is distinct from public serving exposure."
+    },
+    {
+      "id": "GHSA-jg8r-5jh2-v2xj",
+      "url": "https://github.com/advisories/GHSA-jg8r-5jh2-v2xj",
+      "title": "Payload CMS default account-unlock access allows authenticated users to reset other accounts' lockouts",
+      "severity": "moderate",
+      "package": "payload",
+      "affectedPackageEntries": [
+        "payload"
+      ],
+      "disposition": "OPEN - reachability and remediation acceptance incomplete",
+      "affectedRange": "<=3.88.0",
+      "standalonePresence": "present",
+      "productionImagePresence": "present",
+      "reviewScope": "Identify actual importer, reachable interface, attacker input, exploit prerequisites and accepted mitigation; test/dev usage is distinct from public serving exposure."
+    },
+    {
+      "id": "GHSA-5gmw-xhrv-c9v3",
+      "url": "https://github.com/advisories/GHSA-5gmw-xhrv-c9v3",
+      "title": "Tinypool: Prototype Pollution gadget in worker options leads to Remote Code Execution",
+      "severity": "critical",
+      "package": "tinypool",
+      "affectedPackageEntries": [
+        "tinypool"
+      ],
+      "disposition": "OPEN - reachability and remediation acceptance incomplete",
+      "affectedRange": "<=2.1.0",
+      "standalonePresence": "not found in traced standalone; does not adjudicate full image",
+      "productionImagePresence": "present",
+      "reviewScope": "Identify actual importer, reachable interface, attacker input, exploit prerequisites and accepted mitigation; test/dev usage is distinct from public serving exposure.",
+      "observedImporter": "Vitest test worker pool; full image carries development tooling. Public application exploit not established."
+    },
+    {
+      "id": "GHSA-85c8-ppgw-ccpr",
+      "url": "https://github.com/advisories/GHSA-85c8-ppgw-ccpr",
+      "title": "Tinypool: Prototype Pollution Gadget to RCE in run() options",
+      "severity": "critical",
+      "package": "tinypool",
+      "affectedPackageEntries": [
+        "tinypool"
+      ],
+      "disposition": "OPEN - reachability and remediation acceptance incomplete",
+      "affectedRange": "<2.1.2",
+      "standalonePresence": "not found in traced standalone; does not adjudicate full image",
+      "productionImagePresence": "present",
+      "reviewScope": "Identify actual importer, reachable interface, attacker input, exploit prerequisites and accepted mitigation; test/dev usage is distinct from public serving exposure.",
+      "observedImporter": "Vitest test worker pool; full image carries development tooling. Public application exploit not established."
+    }
+  ]
+}

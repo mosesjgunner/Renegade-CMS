@@ -1,0 +1,1415 @@
+
+> renegade-cms@0.1.0 verify:release
+> node scripts/verify-clean-clone.mjs
+
+
+==> verify:release [dependencies]
+npm warn deprecated deep-diff@1.0.2: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
+
+added 881 packages, and audited 882 packages in 1m
+
+270 packages are looking for funding
+  run `npm fund` for details
+
+23 vulnerabilities (12 moderate, 9 high, 2 critical)
+
+To address issues that do not require attention, run:
+  npm audit fix
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.
+npm warn allow-scripts 7 packages have install scripts not yet covered by allowScripts:
+npm warn allow-scripts   esbuild@0.18.20 (postinstall: node install.js)
+npm warn allow-scripts   esbuild@0.28.2 (postinstall: node install.js)
+npm warn allow-scripts   esbuild@0.25.12 (postinstall: node install.js)
+npm warn allow-scripts   esbuild@0.28.2 (postinstall: node install.js)
+npm warn allow-scripts   unrs-resolver@1.12.2 (postinstall: node postinstall.js)
+npm warn allow-scripts   esbuild@0.28.2 (postinstall: node install.js)
+npm warn allow-scripts   esbuild@0.28.2 (postinstall: node install.js)
+npm warn allow-scripts
+npm warn allow-scripts Run `npm approve-scripts --allow-scripts-pending` to review, or `npm approve-scripts <pkg>` to allow.
+
+==> verify:release [release checks]
+
+> renegade-cms@0.1.0 verify:release:checks
+> tsx src/scripts/verify-release.ts
+
+
+==> verify:release [fresh migration acceptance]
+
+> renegade-cms@0.1.0 test:migrations:fresh
+> tsx src/scripts/verify-fresh-migration.ts
+
+[11:33:36] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[11:33:37] [32mINFO[39m: [36mMigrating: 20260812_010209_initial_foundation[39m
+[11:33:37] [32mINFO[39m: [36mMigrated:  20260812_010209_initial_foundation (232ms)[39m
+[11:33:37] [32mINFO[39m: [36mMigrating: 20260812_034055_m02_operations_jobs[39m
+[11:33:37] [32mINFO[39m: [36mMigrated:  20260812_034055_m02_operations_jobs (51ms)[39m
+[11:33:37] [32mINFO[39m: [36mMigrating: 20260812_080000_m02_first_run_installation[39m
+[11:33:37] [32mINFO[39m: [36mMigrated:  20260812_080000_m02_first_run_installation (43ms)[39m
+[11:33:37] [32mINFO[39m: [36mMigrating: 20260812_081000_m02_single_use_setup_token[39m
+[11:33:37] [32mINFO[39m: [36mMigrated:  20260812_081000_m02_single_use_setup_token (7ms)[39m
+[11:33:37] [32mINFO[39m: [36mMigrating: 20260813_054441_canonical_information_architecture[39m
+[11:33:38] [32mINFO[39m: [36mMigrated:  20260813_054441_canonical_information_architecture (1356ms)[39m
+[11:33:38] [32mINFO[39m: [36mMigrating: 20260814_120000_m03_5_event_timeline_reconciliation[39m
+[11:33:39] [32mINFO[39m: [36mMigrated:  20260814_120000_m03_5_event_timeline_reconciliation (248ms)[39m
+[11:33:39] [32mINFO[39m: [36mMigrating: 20260818_000000_site_settings[39m
+[11:33:39] [32mINFO[39m: [36mMigrated:  20260818_000000_site_settings (9ms)[39m
+[11:33:39] [32mINFO[39m: [36mMigrating: 20260818_010000_reconcile_seo_canonical_columns[39m
+[11:33:39] [32mINFO[39m: [36mMigrated:  20260818_010000_reconcile_seo_canonical_columns (256ms)[39m
+[11:33:39] [32mINFO[39m: [36mMigrating: 20260818_062327_m04_c_editorial_workflow[39m
+[11:33:39] [32mINFO[39m: [36mMigrated:  20260818_062327_m04_c_editorial_workflow (285ms)[39m
+[11:33:39] [32mINFO[39m: [36mMigrating: 20260822_010232_page_layouts[39m
+[11:33:39] [32mINFO[39m: [36mMigrated:  20260822_010232_page_layouts (32ms)[39m
+[11:33:39] [32mINFO[39m: [36mMigrating: 20260822_012313_m07_a_passwordless_identity[39m
+[11:33:39] [32mINFO[39m: [36mMigrated:  20260822_012313_m07_a_passwordless_identity (85ms)[39m
+[11:33:39] [32mINFO[39m: [36mMigrating: 20260825_171336[39m
+[11:33:40] [32mINFO[39m: [36mMigrated:  20260825_171336 (686ms)[39m
+[11:33:40] [32mINFO[39m: [36mMigrating: 20260825_171738[39m
+[11:33:40] [32mINFO[39m: [36mMigrated:  20260825_171738 (20ms)[39m
+[11:33:40] [32mINFO[39m: [36mMigrating: 20260825_173116_social_distribution[39m
+[11:33:41] [32mINFO[39m: [36mMigrated:  20260825_173116_social_distribution (430ms)[39m
+[11:33:41] [32mINFO[39m: [36mMigrating: 20260825_180000_calendar_graphics[39m
+[11:33:41] [32mINFO[39m: [36mMigrated:  20260825_180000_calendar_graphics (22ms)[39m
+[11:33:41] [32mINFO[39m: [36mMigrating: 20260826_053416_second_pass_schema[39m
+[11:33:43] [32mINFO[39m: [36mMigrated:  20260826_053416_second_pass_schema (2267ms)[39m
+[11:33:43] [32mINFO[39m: [36mMigrating: 20260829_110000_content_release_execution[39m
+[11:33:43] [32mINFO[39m: [36mMigrated:  20260829_110000_content_release_execution (9ms)[39m
+[11:33:43] [32mINFO[39m: [36mMigrating: 20260829_120000_quality_runtime[39m
+[11:33:43] [32mINFO[39m: [36mMigrated:  20260829_120000_quality_runtime (8ms)[39m
+[11:33:43] [32mINFO[39m: [36mMigrating: 20260829_130000_progressive_disclosure_admin[39m
+[11:33:43] [32mINFO[39m: [36mMigrated:  20260829_130000_progressive_disclosure_admin (5ms)[39m
+[11:33:43] [32mINFO[39m: [36mMigrating: 20260829_140000_onboarding_settings[39m
+[11:33:43] [32mINFO[39m: [36mMigrated:  20260829_140000_onboarding_settings (3ms)[39m
+[11:33:43] [32mINFO[39m: [36mMigrating: 20260829_150000_integrations[39m
+[11:33:43] [32mINFO[39m: [36mMigrated:  20260829_150000_integrations (75ms)[39m
+[11:33:43] [32mINFO[39m: [36mMigrating: 20260829_160000_activitypub_delivery[39m
+[11:33:43] [32mINFO[39m: [36mMigrated:  20260829_160000_activitypub_delivery (3ms)[39m
+[11:33:43] [32mINFO[39m: [36mMigrating: 20260829_170000_network_experience[39m
+[11:33:43] [32mINFO[39m: [36mMigrated:  20260829_170000_network_experience (6ms)[39m
+[11:33:43] [32mINFO[39m: [36mMigrating: 20260829_180000_collaboration[39m
+[11:33:43] [32mINFO[39m: [36mMigrated:  20260829_180000_collaboration (38ms)[39m
+[11:33:43] [32mINFO[39m: [36mMigrating: 20260830_090000_realtime_collaboration[39m
+[11:33:43] [32mINFO[39m: [36mMigrated:  20260830_090000_realtime_collaboration (13ms)[39m
+[11:33:43] [32mINFO[39m: [36mMigrating: 20260830_100000_media_storage_workflow[39m
+[11:33:43] [32mINFO[39m: [36mMigrated:  20260830_100000_media_storage_workflow (4ms)[39m
+[11:33:43] [32mINFO[39m: [36mMigrating: 20260830_110000_discoverability[39m
+[11:33:43] [32mINFO[39m: [36mMigrated:  20260830_110000_discoverability (8ms)[39m
+[11:33:43] [32mINFO[39m: [36mMigrating: 20260830_120000_discoverability_lock_relation[39m
+[11:33:43] [32mINFO[39m: [36mMigrated:  20260830_120000_discoverability_lock_relation (28ms)[39m
+[11:33:43] [32mINFO[39m: [36mMigrating: 20260830_130000_admin_auth_hardening[39m
+[11:33:43] [32mINFO[39m: [36mMigrated:  20260830_130000_admin_auth_hardening (12ms)[39m
+[11:33:43] [32mINFO[39m: [36mMigrating: 20260831_090000_phase_b_execution_foundation[39m
+[11:33:43] [32mINFO[39m: [36mMigrated:  20260831_090000_phase_b_execution_foundation (19ms)[39m
+[11:33:43] [32mINFO[39m: [36mMigrating: 20260831_100000_analytics_privacy_runtime[39m
+[11:33:43] [32mINFO[39m: [36mMigrated:  20260831_100000_analytics_privacy_runtime (19ms)[39m
+[11:33:43] [32mINFO[39m: [36mMigrating: 20260831_110000_events_workflow[39m
+[11:33:43] [32mINFO[39m: [36mMigrated:  20260831_110000_events_workflow (9ms)[39m
+[11:33:43] [32mINFO[39m: [36mMigrating: 20260831_120000_media_publishing_workflows[39m
+[11:33:43] [32mINFO[39m: [36mMigrated:  20260831_120000_media_publishing_workflows (10ms)[39m
+[11:33:43] [32mINFO[39m: [36mMigrating: 20260831_130000_books_quality_center[39m
+[11:33:43] [32mINFO[39m: [36mMigrated:  20260831_130000_books_quality_center (10ms)[39m
+[11:33:43] [32mINFO[39m: [36mMigrating: 20260831_140000_public_api_webhooks[39m
+[11:33:43] [32mINFO[39m: [36mMigrated:  20260831_140000_public_api_webhooks (8ms)[39m
+[11:33:43] [32mINFO[39m: [36mMigrating: 20260831_150000_phase_b_locked_document_relations[39m
+[11:33:43] [32mINFO[39m: [36mMigrated:  20260831_150000_phase_b_locked_document_relations (5ms)[39m
+[11:33:43] [32mINFO[39m: [36mMigrating: 20260831_160000_phase_b_book_lifecycle_reconciliation[39m
+[11:33:43] [32mINFO[39m: [36mMigrated:  20260831_160000_phase_b_book_lifecycle_reconciliation (3ms)[39m
+[11:33:43] [32mINFO[39m: [36mMigrating: 20260831_170000_phase_b_scoped_media_reconciliation[39m
+[11:33:43] [32mINFO[39m: [36mMigrated:  20260831_170000_phase_b_scoped_media_reconciliation (3ms)[39m
+[11:33:43] [32mINFO[39m: [36mMigrating: 20260831_180000_phase_b_video_captions_relation[39m
+[11:33:43] [32mINFO[39m: [36mMigrated:  20260831_180000_phase_b_video_captions_relation (4ms)[39m
+[11:33:43] [32mINFO[39m: [36mMigrating: 20260831_190000_phase_b_integrations_id_defaults[39m
+[11:33:43] [32mINFO[39m: [36mMigrated:  20260831_190000_phase_b_integrations_id_defaults (4ms)[39m
+[11:33:43] [32mINFO[39m: [36mMigrating: 20260831_200000_member_identity_foundation[39m
+[11:33:43] [32mINFO[39m: [36mMigrated:  20260831_200000_member_identity_foundation (5ms)[39m
+[11:33:43] [32mINFO[39m: [36mMigrating: 20260902_000000_pub_02_content_publishing_pass[39m
+[11:33:43] [32mINFO[39m: [36mMigrated:  20260902_000000_pub_02_content_publishing_pass (9ms)[39m
+[11:33:43] [32mINFO[39m: [36mMigrating: 20260902_010000_pub_01_canonical_tenant_isolation[39m
+[11:33:43] [32mINFO[39m: [36mMigrated:  20260902_010000_pub_01_canonical_tenant_isolation (11ms)[39m
+[11:33:43] [32mINFO[39m: [36mMigrating: 20260902_020000_pub_04_publishing_floor[39m
+[11:33:43] [32mINFO[39m: [36mMigrated:  20260902_020000_pub_04_publishing_floor (8ms)[39m
+[11:33:43] [32mINFO[39m: [36mMigrating: 20260912_000000_pre_00_theme_selection[39m
+[11:33:43] [32mINFO[39m: [36mMigrated:  20260912_000000_pre_00_theme_selection (3ms)[39m
+[11:33:43] [32mINFO[39m: [36mMigrating: 20260912_010000_pre_01_theme_lifecycle[39m
+[11:33:43] [32mINFO[39m: [36mMigrated:  20260912_010000_pre_01_theme_lifecycle (11ms)[39m
+[11:33:43] [32mINFO[39m: [36mMigrating: 20260912_020000_pre_01_presentation_snapshots[39m
+[11:33:43] [32mINFO[39m: [36mMigrated:  20260912_020000_pre_01_presentation_snapshots (9ms)[39m
+[11:33:43] [32mINFO[39m: [36mMigrating: 20260912_030000_pre_03_visual_editor[39m
+[11:33:43] [32mINFO[39m: [36mMigrated:  20260912_030000_pre_03_visual_editor (4ms)[39m
+[11:33:43] [32mINFO[39m: [36mMigrating: 20260912_040000_pre_04_reusable_composition[39m
+[11:33:43] [32mINFO[39m: [36mMigrated:  20260912_040000_pre_04_reusable_composition (3ms)[39m
+[11:33:43] [32mINFO[39m: [36mMigrating: 20260912_050000_pre_05_legacy_site_migration[39m
+[11:33:43] [32mINFO[39m: [36mMigrated:  20260912_050000_pre_05_legacy_site_migration (9ms)[39m
+[11:33:43] [32mINFO[39m: [36mMigrating: 20260912_060000_med_00_media_contract[39m
+[11:33:44] [32mINFO[39m: [36mMigrated:  20260912_060000_med_00_media_contract (44ms)[39m
+[11:33:44] [32mINFO[39m: [36mMigrating: 20260912_070000_med_01_upload_sessions[39m
+[11:33:44] [32mINFO[39m: [36mMigrated:  20260912_070000_med_01_upload_sessions (14ms)[39m
+[11:33:44] [32mINFO[39m: [36mMigrating: 20260913_080000_med_02_dam_governance[39m
+[11:33:44] [32mINFO[39m: [36mMigrated:  20260913_080000_med_02_dam_governance (31ms)[39m
+[11:33:44] [32mINFO[39m: [36mMigrating: 20260913_090000_med_03_image_variants[39m
+[11:33:44] [32mINFO[39m: [36mMigrated:  20260913_090000_med_03_image_variants (8ms)[39m
+[11:33:44] [32mINFO[39m: [36mMigrating: 20260913_100000_med_04_podcast_workflow[39m
+[11:33:44] [32mINFO[39m: [36mMigrated:  20260913_100000_med_04_podcast_workflow (12ms)[39m
+[11:33:44] [32mINFO[39m: [36mMigrating: 20260914_110000_med_05_video_workflow[39m
+[11:33:44] [32mINFO[39m: [36mMigrated:  20260914_110000_med_05_video_workflow (35ms)[39m
+[11:33:44] [32mINFO[39m: [36mMigrating: 20260914_120000_disc_01_discovery_workflow[39m
+[11:33:44] [32mINFO[39m: [36mMigrated:  20260914_120000_disc_01_discovery_workflow (5ms)[39m
+[11:33:44] [32mINFO[39m: [36mMigrating: 20260914_121000_disc_01_shared_seo_fields[39m
+[11:33:44] [32mINFO[39m: [36mMigrated:  20260914_121000_disc_01_shared_seo_fields (3ms)[39m
+[11:33:44] [32mINFO[39m: [36mMigrating: 20260915_130000_disc_04_search_projection[39m
+[11:33:44] [32mINFO[39m: [36mMigrated:  20260915_130000_disc_04_search_projection (50ms)[39m
+[11:33:44] [32mINFO[39m: [36mMigrating: 20260916_070000_editorial_quality_gate_snapshot[39m
+[11:33:44] [32mINFO[39m: [36mMigrated:  20260916_070000_editorial_quality_gate_snapshot (4ms)[39m
+[11:33:44] [32mINFO[39m: [36mMigrating: 20260920_000000_aud_00_delivery_snapshots[39m
+[11:33:44] [32mINFO[39m: [36mMigrated:  20260920_000000_aud_00_delivery_snapshots (4ms)[39m
+[11:33:44] [32mINFO[39m: [36mMigrating: 20260920_010000_aud_01_audience_evidence[39m
+[11:33:44] [32mINFO[39m: [36mMigrated:  20260920_010000_aud_01_audience_evidence (5ms)[39m
+[11:33:44] [32mINFO[39m: [36mMigrating: 20260920_020000_aud_02_forms[39m
+[11:33:44] [32mINFO[39m: [36mMigrated:  20260920_020000_aud_02_forms (6ms)[39m
+[11:33:44] [32mINFO[39m: [36mMigrating: 20260920_030000_aud_03_email_composer[39m
+[11:33:44] [32mINFO[39m: [36mMigrated:  20260920_030000_aud_03_email_composer (8ms)[39m
+[11:33:44] [32mINFO[39m: [36mMigrating: 20260920_050000_aud_05_email_delivery[39m
+[11:33:44] [32mINFO[39m: [36mMigrated:  20260920_050000_aud_05_email_delivery (10ms)[39m
+[11:33:44] [32mINFO[39m: [36mMigrating: 20260920_060000_aud_06_telecom[39m
+[11:33:44] [32mINFO[39m: [36mMigrated:  20260920_060000_aud_06_telecom (17ms)[39m
+[11:33:44] [32mINFO[39m: [36mMigrating: 20260920_070000_aud_07_audience_command[39m
+[11:33:44] [32mINFO[39m: [36mMigrated:  20260920_070000_aud_07_audience_command (14ms)[39m
+[11:33:44] [32mINFO[39m: [36mMigrating: 20260920_080000_aud_08_audience_pass_gate[39m
+[11:33:44] [32mINFO[39m: [36mMigrated:  20260920_080000_aud_08_audience_pass_gate (57ms)[39m
+[11:33:44] [32mINFO[39m: [36mMigrating: 20260920_090000_comm_00_community_domain[39m
+[11:33:44] [32mINFO[39m: [36mMigrated:  20260920_090000_comm_00_community_domain (29ms)[39m
+[11:33:44] [32mINFO[39m: [36mMigrating: 20260920_100000_comm_01_member_auth_lifecycle[39m
+[11:33:44] [32mINFO[39m: [36mMigrated:  20260920_100000_comm_01_member_auth_lifecycle (21ms)[39m
+[11:33:44] [32mINFO[39m: [36mMigrating: 20260921_000000_comm_02_profile_projection[39m
+[11:33:44] [32mINFO[39m: [36mMigrated:  20260921_000000_comm_02_profile_projection (5ms)[39m
+[11:33:44] [32mINFO[39m: [36mMigrating: 20260921_010000_comm_02_profile_media_usage_relation[39m
+[11:33:44] [32mINFO[39m: [36mMigrated:  20260921_010000_comm_02_profile_media_usage_relation (6ms)[39m
+[11:33:44] [32mINFO[39m: [36mMigrating: 20260921_020000_comm_03a_comment_identity[39m
+[11:33:44] [32mINFO[39m: [36mMigrated:  20260921_020000_comm_03a_comment_identity (28ms)[39m
+[11:33:44] [32mINFO[39m: [36mMigrating: 20260921_030000_comm_03c_comment_reactions[39m
+[11:33:44] [32mINFO[39m: [36mMigrated:  20260921_030000_comm_03c_comment_reactions (9ms)[39m
+[11:33:44] [32mINFO[39m: [36mMigrating: 20260921_040000_comm_03d_thread_lifecycle_and_outbox[39m
+[11:33:44] [32mINFO[39m: [36mMigrated:  20260921_040000_comm_03d_thread_lifecycle_and_outbox (8ms)[39m
+[11:33:44] [32mINFO[39m: [36mMigrating: 20260921_050000_comm_04a_forum_spaces[39m
+[11:33:44] [32mINFO[39m: [36mMigrated:  20260921_050000_comm_04a_forum_spaces (13ms)[39m
+[11:33:44] [32mINFO[39m: [36mMigrating: 20260922_000000_comm_04b_forum_topics_posts[39m
+[11:33:44] [32mINFO[39m: [36mMigrated:  20260922_000000_comm_04b_forum_topics_posts (21ms)[39m
+[11:33:44] [32mINFO[39m: [36mMigrating: 20260922_010000_comm_04c_forum_browsing_read_state[39m
+[11:33:44] [32mINFO[39m: [36mMigrated:  20260922_010000_comm_04c_forum_browsing_read_state (12ms)[39m
+[11:33:44] [32mINFO[39m: [36mMigrating: 20260922_020000_comm_04d_forum_topic_operations[39m
+[11:33:44] [32mINFO[39m: [36mMigrated:  20260922_020000_comm_04d_forum_topic_operations (14ms)[39m
+[11:33:44] [32mINFO[39m: [36mMigrating: 20260922_030000_comm_05a_moderation_registry_reports[39m
+[11:33:44] [32mINFO[39m: [36mMigrated:  20260922_030000_comm_05a_moderation_registry_reports (15ms)[39m
+[11:33:44] [32mINFO[39m: [36mMigrating: 20260922_040000_comm_05b_moderation_actions_sanctions[39m
+[11:33:44] [32mINFO[39m: [36mMigrated:  20260922_040000_comm_05b_moderation_actions_sanctions (11ms)[39m
+[11:33:44] [32mINFO[39m: [36mMigrating: 20260922_050000_comm_05c_moderation_appeals_audit[39m
+[11:33:44] [32mINFO[39m: [36mMigrated:  20260922_050000_comm_05c_moderation_appeals_audit (15ms)[39m
+[11:33:44] [32mINFO[39m: [36mMigrating: 20260922_060000_comm_05d_abuse_triage_console[39m
+[11:33:44] [32mINFO[39m: [36mMigrated:  20260922_060000_comm_05d_abuse_triage_console (14ms)[39m
+[11:33:44] [32mINFO[39m: [36mMigrating: 20260922_070000_comm_07a_conversations[39m
+[11:33:44] [32mINFO[39m: [36mMigrated:  20260922_070000_comm_07a_conversations (14ms)[39m
+[11:33:44] [32mINFO[39m: [36mMigrating: 20260922_080000_comm_07b_message_requests[39m
+[11:33:44] [32mINFO[39m: [36mMigrated:  20260922_080000_comm_07b_message_requests (10ms)[39m
+[11:33:44] [32mINFO[39m: [36mMigrating: 20260922_090000_comm_07c_message_attachments[39m
+[11:33:44] [32mINFO[39m: [36mMigrated:  20260922_090000_comm_07c_message_attachments (10ms)[39m
+[11:33:44] [32mINFO[39m: [36mMigrating: 20260922_100000_comm_07d_group_administration[39m
+[11:33:44] [32mINFO[39m: [36mMigrated:  20260922_100000_comm_07d_group_administration (6ms)[39m
+[11:33:44] [32mINFO[39m: [36mMigrating: 20260922_110000_comm_06b_inbox_projections[39m
+[11:33:44] [32mINFO[39m: [36mMigrated:  20260922_110000_comm_06b_inbox_projections (11ms)[39m
+[11:33:44] [32mINFO[39m: [36mMigrating: 20260922_120000_comm_06c_notification_preferences_and_outbox[39m
+[11:33:44] [32mINFO[39m: [36mMigrated:  20260922_120000_comm_06c_notification_preferences_and_outbox (17ms)[39m
+[11:33:44] [32mINFO[39m: [36mMigrating: 20260922_130000_commerce_canonical_contract[39m
+[11:33:44] [32mINFO[39m: [36mMigrated:  20260922_130000_commerce_canonical_contract (16ms)[39m
+[11:33:44] [32mINFO[39m: [36mMigrating: 20260923_010000_shop_01_catalog_workflows[39m
+[11:33:44] [32mINFO[39m: [36mMigrated:  20260923_010000_shop_01_catalog_workflows (37ms)[39m
+[11:33:45] [32mINFO[39m: [36mMigrating: 20260923_020000_shop_02_carts_and_checkout_proposals[39m
+[11:33:45] [32mINFO[39m: [36mMigrated:  20260923_020000_shop_02_carts_and_checkout_proposals (32ms)[39m
+[11:33:45] [32mINFO[39m: [36mMigrating: 20260923_030000_shop_04_payment_operations[39m
+[11:33:45] [32mINFO[39m: [36mMigrated:  20260923_030000_shop_04_payment_operations (52ms)[39m
+[11:33:45] [32mINFO[39m: [36mMigrating: 20260923_040000_shop_05_subscriptions[39m
+[11:33:45] [32mINFO[39m: [36mMigrated:  20260923_040000_shop_05_subscriptions (36ms)[39m
+[11:33:45] [32mINFO[39m: [36mMigrating: 20260923_050000_shop_06_affiliate_and_referrals[39m
+[11:33:45] [32mINFO[39m: [36mMigrated:  20260923_050000_shop_06_affiliate_and_referrals (36ms)[39m
+[11:33:45] [32mINFO[39m: [36mMigrating: 20260923_060000_shop_07_donations[39m
+[11:33:45] [32mINFO[39m: [36mMigrated:  20260923_060000_shop_07_donations (36ms)[39m
+[11:33:45] [32mINFO[39m: [36mMigrating: 20260923_070000_shop_07_donation_lifecycle[39m
+[11:33:45] [32mINFO[39m: [36mMigrated:  20260923_070000_shop_07_donation_lifecycle (9ms)[39m
+[11:33:45] [32mINFO[39m: [36mMigrating: 20260923_080000_shop_03_pod_and_fulfillment[39m
+[11:33:45] [32mINFO[39m: [36mMigrated:  20260923_080000_shop_03_pod_and_fulfillment (55ms)[39m
+[11:33:45] [32mINFO[39m: [36mMigrating: 20260923_090000_events_required_entitlement[39m
+[11:33:45] [32mINFO[39m: [36mMigrated:  20260923_090000_events_required_entitlement (5ms)[39m
+[11:33:45] [32mINFO[39m: [36mMigrating: 20260923_100000_flow_03_scheduler_runtime[39m
+[11:33:45] [32mINFO[39m: [36mMigrated:  20260923_100000_flow_03_scheduler_runtime (5ms)[39m
+[11:33:45] [32mINFO[39m: [36mMigrating: 20260923_110000_content_release_runtime[39m
+[11:33:45] [32mINFO[39m: [36mMigrated:  20260923_110000_content_release_runtime (7ms)[39m
+[11:33:45] [32mINFO[39m: [36mMigrating: 20260924_000000_collection_scope_columns[39m
+[11:33:45] [32mINFO[39m: [36mMigrated:  20260924_000000_collection_scope_columns (36ms)[39m
+[11:33:45] [32mINFO[39m: [36mMigrating: 20260924_010000_donation_checkout_idempotency[39m
+[11:33:45] [32mINFO[39m: [36mMigrated:  20260924_010000_donation_checkout_idempotency (6ms)[39m
+[11:33:45] [32mINFO[39m: [36mMigrating: 20260924_020000_commerce_job_enum[39m
+[11:33:45] [32mINFO[39m: [36mMigrated:  20260924_020000_commerce_job_enum (4ms)[39m
+[11:33:45] [32mINFO[39m: [36mMigrating: 20260924_030000_ai_proposals[39m
+[11:33:45] [32mINFO[39m: [36mMigrated:  20260924_030000_ai_proposals (24ms)[39m
+[11:33:45] [32mINFO[39m: [36mMigrating: 20260924_040000_ai_locked_documents_rels[39m
+[11:33:45] [32mINFO[39m: [36mMigrated:  20260924_040000_ai_locked_documents_rels (17ms)[39m
+[11:33:45] [32mINFO[39m: [36mMigrating: 20260924_050000_ai_budget_reservation[39m
+[11:33:45] [32mINFO[39m: [36mMigrated:  20260924_050000_ai_budget_reservation (5ms)[39m
+[11:33:45] [32mINFO[39m: [36mMigrating: 20260924_060000_semantic_route_templates[39m
+[11:33:45] [32mINFO[39m: [36mMigrated:  20260924_060000_semantic_route_templates (14ms)[39m
+[11:33:45] [32mINFO[39m: [36mMigrating: 20261004_160000_rc03_network_outbox_ids[39m
+[11:33:45] [32mINFO[39m: [36mMigrated:  20261004_160000_rc03_network_outbox_ids (5ms)[39m
+[11:33:45] [32mINFO[39m: [36mMigrating: 20261004_180000_rc04_canonical_moderation[39m
+[11:33:45] [32mINFO[39m: [36mMigrated:  20261004_180000_rc04_canonical_moderation (5ms)[39m
+[11:33:45] [32mINFO[39m: [36mMigrating: 20261006_010000_rc08b_form_intake[39m
+[11:33:45] [32mINFO[39m: [36mMigrated:  20261006_010000_rc08b_form_intake (7ms)[39m
+[11:33:45] [32mINFO[39m: [36mMigrating: 20261006_013000_rc08b_federation_ids[39m
+[11:33:45] [32mINFO[39m: [36mMigrated:  20261006_013000_rc08b_federation_ids (9ms)[39m
+Fresh migration acceptance passed.
+
+==> verify:release [fixture seed]
+
+> renegade-cms@0.1.0 db:seed
+> npm run payload -- seed
+
+
+> renegade-cms@0.1.0 payload
+> cross-env NODE_OPTIONS=--no-deprecation payload seed
+
+[11:33:53] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[11:33:55] [32mINFO[39m: [36mCanonical neutral demo information architecture is ready.[39m
+
+==> verify:release [upgrade migration acceptance]
+
+> renegade-cms@0.1.0 test:migrations:upgrade
+> tsx src/scripts/verify-upgrade-migration.ts
+
+[11:34:01] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[11:34:02] [32mINFO[39m: [36mMigrating: 20260812_010209_initial_foundation[39m
+[11:34:02] [32mINFO[39m: [36mMigrated:  20260812_010209_initial_foundation (122ms)[39m
+[11:34:02] [32mINFO[39m: [36mMigrating: 20260812_034055_m02_operations_jobs[39m
+[11:34:02] [32mINFO[39m: [36mMigrated:  20260812_034055_m02_operations_jobs (26ms)[39m
+[11:34:02] [32mINFO[39m: [36mMigrating: 20260812_080000_m02_first_run_installation[39m
+[11:34:02] [32mINFO[39m: [36mMigrated:  20260812_080000_m02_first_run_installation (32ms)[39m
+[11:34:02] [32mINFO[39m: [36mMigrating: 20260812_081000_m02_single_use_setup_token[39m
+[11:34:02] [32mINFO[39m: [36mMigrated:  20260812_081000_m02_single_use_setup_token (5ms)[39m
+[11:34:02] [32mINFO[39m: [36mMigrating: 20260813_054441_canonical_information_architecture[39m
+[11:34:02] [32mINFO[39m: [36mMigrated:  20260813_054441_canonical_information_architecture (721ms)[39m
+[11:34:02] [32mINFO[39m: [36mMigrating: 20260814_120000_m03_5_event_timeline_reconciliation[39m
+[11:34:03] [32mINFO[39m: [36mMigrated:  20260814_120000_m03_5_event_timeline_reconciliation (170ms)[39m
+[11:34:03] [32mINFO[39m: [36mMigrating: 20260818_000000_site_settings[39m
+[11:34:03] [32mINFO[39m: [36mMigrated:  20260818_000000_site_settings (8ms)[39m
+[11:34:03] [32mINFO[39m: [36mMigrating: 20260818_010000_reconcile_seo_canonical_columns[39m
+[11:34:03] [32mINFO[39m: [36mMigrated:  20260818_010000_reconcile_seo_canonical_columns (89ms)[39m
+[11:34:03] [32mINFO[39m: [36mMigrating: 20260818_062327_m04_c_editorial_workflow[39m
+[11:34:03] [32mINFO[39m: [36mMigrated:  20260818_062327_m04_c_editorial_workflow (224ms)[39m
+[11:34:03] [32mINFO[39m: [36mMigrating: 20260822_010232_page_layouts[39m
+[11:34:03] [32mINFO[39m: [36mMigrated:  20260822_010232_page_layouts (25ms)[39m
+[11:34:03] [32mINFO[39m: [36mMigrating: 20260822_012313_m07_a_passwordless_identity[39m
+[11:34:03] [32mINFO[39m: [36mMigrated:  20260822_012313_m07_a_passwordless_identity (63ms)[39m
+[11:34:03] [32mINFO[39m: [36mMigrating: 20260825_171336[39m
+[11:34:04] [32mINFO[39m: [36mMigrated:  20260825_171336 (479ms)[39m
+[11:34:04] [32mINFO[39m: [36mMigrating: 20260825_171738[39m
+[11:34:04] [32mINFO[39m: [36mMigrated:  20260825_171738 (11ms)[39m
+[11:34:04] [32mINFO[39m: [36mMigrating: 20260825_173116_social_distribution[39m
+[11:34:04] [32mINFO[39m: [36mMigrated:  20260825_173116_social_distribution (474ms)[39m
+[11:34:04] [32mINFO[39m: [36mMigrating: 20260825_180000_calendar_graphics[39m
+[11:34:04] [32mINFO[39m: [36mMigrated:  20260825_180000_calendar_graphics (28ms)[39m
+[11:34:04] [32mINFO[39m: [36mMigrating: 20260826_053416_second_pass_schema[39m
+[11:34:06] [32mINFO[39m: [36mMigrated:  20260826_053416_second_pass_schema (2123ms)[39m
+[11:34:06] [32mINFO[39m: [36mMigrating: 20260829_110000_content_release_execution[39m
+[11:34:06] [32mINFO[39m: [36mMigrated:  20260829_110000_content_release_execution (10ms)[39m
+[11:34:06] [32mINFO[39m: [36mMigrating: 20260829_120000_quality_runtime[39m
+[11:34:06] [32mINFO[39m: [36mMigrated:  20260829_120000_quality_runtime (9ms)[39m
+[11:34:06] [32mINFO[39m: [36mMigrating: 20260829_130000_progressive_disclosure_admin[39m
+[11:34:06] [32mINFO[39m: [36mMigrated:  20260829_130000_progressive_disclosure_admin (5ms)[39m
+[11:34:06] [32mINFO[39m: [36mMigrating: 20260829_140000_onboarding_settings[39m
+[11:34:06] [32mINFO[39m: [36mMigrated:  20260829_140000_onboarding_settings (4ms)[39m
+[11:34:06] [32mINFO[39m: [36mMigrating: 20260829_150000_integrations[39m
+[11:34:06] [32mINFO[39m: [36mMigrated:  20260829_150000_integrations (82ms)[39m
+[11:34:06] [32mINFO[39m: [36mMigrating: 20260829_160000_activitypub_delivery[39m
+[11:34:06] [32mINFO[39m: [36mMigrated:  20260829_160000_activitypub_delivery (3ms)[39m
+[11:34:06] [32mINFO[39m: [36mMigrating: 20260829_170000_network_experience[39m
+[11:34:06] [32mINFO[39m: [36mMigrated:  20260829_170000_network_experience (6ms)[39m
+[11:34:06] [32mINFO[39m: [36mMigrating: 20260829_180000_collaboration[39m
+[11:34:06] [32mINFO[39m: [36mMigrated:  20260829_180000_collaboration (45ms)[39m
+[11:34:06] [32mINFO[39m: [36mMigrating: 20260830_090000_realtime_collaboration[39m
+[11:34:07] [32mINFO[39m: [36mMigrated:  20260830_090000_realtime_collaboration (20ms)[39m
+[11:34:07] [32mINFO[39m: [36mMigrating: 20260830_100000_media_storage_workflow[39m
+[11:34:07] [32mINFO[39m: [36mMigrated:  20260830_100000_media_storage_workflow (5ms)[39m
+[11:34:07] [32mINFO[39m: [36mMigrating: 20260830_110000_discoverability[39m
+[11:34:07] [32mINFO[39m: [36mMigrated:  20260830_110000_discoverability (10ms)[39m
+[11:34:07] [32mINFO[39m: [36mMigrating: 20260830_120000_discoverability_lock_relation[39m
+[11:34:07] [32mINFO[39m: [36mMigrated:  20260830_120000_discoverability_lock_relation (30ms)[39m
+[11:34:07] [32mINFO[39m: [36mMigrating: 20260830_130000_admin_auth_hardening[39m
+[11:34:07] [32mINFO[39m: [36mMigrated:  20260830_130000_admin_auth_hardening (19ms)[39m
+[11:34:07] [32mINFO[39m: [36mMigrating: 20260831_090000_phase_b_execution_foundation[39m
+[11:34:07] [32mINFO[39m: [36mMigrated:  20260831_090000_phase_b_execution_foundation (23ms)[39m
+[11:34:07] [32mINFO[39m: [36mMigrating: 20260831_100000_analytics_privacy_runtime[39m
+[11:34:07] [32mINFO[39m: [36mMigrated:  20260831_100000_analytics_privacy_runtime (18ms)[39m
+[11:34:07] [32mINFO[39m: [36mMigrating: 20260831_110000_events_workflow[39m
+[11:34:07] [32mINFO[39m: [36mMigrated:  20260831_110000_events_workflow (12ms)[39m
+[11:34:07] [32mINFO[39m: [36mMigrating: 20260831_120000_media_publishing_workflows[39m
+[11:34:07] [32mINFO[39m: [36mMigrated:  20260831_120000_media_publishing_workflows (18ms)[39m
+[11:34:07] [32mINFO[39m: [36mMigrating: 20260831_130000_books_quality_center[39m
+[11:34:07] [32mINFO[39m: [36mMigrated:  20260831_130000_books_quality_center (11ms)[39m
+[11:34:07] [32mINFO[39m: [36mMigrating: 20260831_140000_public_api_webhooks[39m
+[11:34:07] [32mINFO[39m: [36mMigrated:  20260831_140000_public_api_webhooks (12ms)[39m
+[11:34:07] [32mINFO[39m: [36mMigrating: 20260831_150000_phase_b_locked_document_relations[39m
+[11:34:07] [32mINFO[39m: [36mMigrated:  20260831_150000_phase_b_locked_document_relations (5ms)[39m
+[11:34:07] [32mINFO[39m: [36mMigrating: 20260831_160000_phase_b_book_lifecycle_reconciliation[39m
+[11:34:07] [32mINFO[39m: [36mMigrated:  20260831_160000_phase_b_book_lifecycle_reconciliation (5ms)[39m
+[11:34:07] [32mINFO[39m: [36mMigrating: 20260831_170000_phase_b_scoped_media_reconciliation[39m
+[11:34:07] [32mINFO[39m: [36mMigrated:  20260831_170000_phase_b_scoped_media_reconciliation (5ms)[39m
+[11:34:07] [32mINFO[39m: [36mMigrating: 20260831_180000_phase_b_video_captions_relation[39m
+[11:34:07] [32mINFO[39m: [36mMigrated:  20260831_180000_phase_b_video_captions_relation (4ms)[39m
+[11:34:07] [32mINFO[39m: [36mMigrating: 20260831_190000_phase_b_integrations_id_defaults[39m
+[11:34:07] [32mINFO[39m: [36mMigrated:  20260831_190000_phase_b_integrations_id_defaults (5ms)[39m
+[11:34:07] [32mINFO[39m: [36mMigrating: 20260831_200000_member_identity_foundation[39m
+[11:34:07] [32mINFO[39m: [36mMigrated:  20260831_200000_member_identity_foundation (7ms)[39m
+[11:34:07] [32mINFO[39m: [36mMigrating: 20260902_000000_pub_02_content_publishing_pass[39m
+[11:34:07] [32mINFO[39m: [36mMigrated:  20260902_000000_pub_02_content_publishing_pass (9ms)[39m
+[11:34:07] [32mINFO[39m: [36mMigrating: 20260902_010000_pub_01_canonical_tenant_isolation[39m
+[11:34:07] [32mINFO[39m: [36mMigrated:  20260902_010000_pub_01_canonical_tenant_isolation (15ms)[39m
+[11:34:07] [32mINFO[39m: [36mMigrating: 20260902_020000_pub_04_publishing_floor[39m
+[11:34:07] [32mINFO[39m: [36mMigrated:  20260902_020000_pub_04_publishing_floor (9ms)[39m
+[11:34:07] [32mINFO[39m: [36mMigrating: 20260912_000000_pre_00_theme_selection[39m
+[11:34:07] [32mINFO[39m: [36mMigrated:  20260912_000000_pre_00_theme_selection (4ms)[39m
+[11:34:07] [32mINFO[39m: [36mMigrating: 20260912_010000_pre_01_theme_lifecycle[39m
+[11:34:07] [32mINFO[39m: [36mMigrated:  20260912_010000_pre_01_theme_lifecycle (15ms)[39m
+[11:34:07] [32mINFO[39m: [36mMigrating: 20260912_020000_pre_01_presentation_snapshots[39m
+[11:34:07] [32mINFO[39m: [36mMigrated:  20260912_020000_pre_01_presentation_snapshots (8ms)[39m
+[11:34:07] [32mINFO[39m: [36mMigrating: 20260912_030000_pre_03_visual_editor[39m
+[11:34:07] [32mINFO[39m: [36mMigrated:  20260912_030000_pre_03_visual_editor (5ms)[39m
+[11:34:07] [32mINFO[39m: [36mMigrating: 20260912_040000_pre_04_reusable_composition[39m
+[11:34:07] [32mINFO[39m: [36mMigrated:  20260912_040000_pre_04_reusable_composition (5ms)[39m
+[11:34:07] [32mINFO[39m: [36mMigrating: 20260912_050000_pre_05_legacy_site_migration[39m
+[11:34:07] [32mINFO[39m: [36mMigrated:  20260912_050000_pre_05_legacy_site_migration (14ms)[39m
+[11:34:07] [32mINFO[39m: [36mMigrating: 20260912_060000_med_00_media_contract[39m
+[11:34:07] [32mINFO[39m: [36mMigrated:  20260912_060000_med_00_media_contract (60ms)[39m
+[11:34:07] [32mINFO[39m: [36mMigrating: 20260912_070000_med_01_upload_sessions[39m
+[11:34:07] [32mINFO[39m: [36mMigrated:  20260912_070000_med_01_upload_sessions (19ms)[39m
+[11:34:07] [32mINFO[39m: [36mMigrating: 20260913_080000_med_02_dam_governance[39m
+[11:34:07] [32mINFO[39m: [36mMigrated:  20260913_080000_med_02_dam_governance (46ms)[39m
+[11:34:07] [32mINFO[39m: [36mMigrating: 20260913_090000_med_03_image_variants[39m
+[11:34:07] [32mINFO[39m: [36mMigrated:  20260913_090000_med_03_image_variants (12ms)[39m
+[11:34:07] [32mINFO[39m: [36mMigrating: 20260913_100000_med_04_podcast_workflow[39m
+[11:34:07] [32mINFO[39m: [36mMigrated:  20260913_100000_med_04_podcast_workflow (21ms)[39m
+[11:34:07] [32mINFO[39m: [36mMigrating: 20260914_110000_med_05_video_workflow[39m
+[11:34:07] [32mINFO[39m: [36mMigrated:  20260914_110000_med_05_video_workflow (69ms)[39m
+[11:34:07] [32mINFO[39m: [36mMigrating: 20260914_120000_disc_01_discovery_workflow[39m
+[11:34:07] [32mINFO[39m: [36mMigrated:  20260914_120000_disc_01_discovery_workflow (7ms)[39m
+[11:34:08] [32mINFO[39m: [36mMigrating: 20260914_121000_disc_01_shared_seo_fields[39m
+[11:34:08] [32mINFO[39m: [36mMigrated:  20260914_121000_disc_01_shared_seo_fields (4ms)[39m
+[11:34:08] [32mINFO[39m: [36mMigrating: 20260915_130000_disc_04_search_projection[39m
+[11:34:08] [32mINFO[39m: [36mMigrated:  20260915_130000_disc_04_search_projection (34ms)[39m
+[11:34:08] [32mINFO[39m: [36mMigrating: 20260916_070000_editorial_quality_gate_snapshot[39m
+[11:34:08] [32mINFO[39m: [36mMigrated:  20260916_070000_editorial_quality_gate_snapshot (4ms)[39m
+[11:34:08] [32mINFO[39m: [36mMigrating: 20260920_000000_aud_00_delivery_snapshots[39m
+[11:34:08] [32mINFO[39m: [36mMigrated:  20260920_000000_aud_00_delivery_snapshots (6ms)[39m
+[11:34:08] [32mINFO[39m: [36mMigrating: 20260920_010000_aud_01_audience_evidence[39m
+[11:34:08] [32mINFO[39m: [36mMigrated:  20260920_010000_aud_01_audience_evidence (6ms)[39m
+[11:34:08] [32mINFO[39m: [36mMigrating: 20260920_020000_aud_02_forms[39m
+[11:34:08] [32mINFO[39m: [36mMigrated:  20260920_020000_aud_02_forms (5ms)[39m
+[11:34:08] [32mINFO[39m: [36mMigrating: 20260920_030000_aud_03_email_composer[39m
+[11:34:08] [32mINFO[39m: [36mMigrated:  20260920_030000_aud_03_email_composer (11ms)[39m
+[11:34:08] [32mINFO[39m: [36mMigrating: 20260920_050000_aud_05_email_delivery[39m
+[11:34:08] [32mINFO[39m: [36mMigrated:  20260920_050000_aud_05_email_delivery (10ms)[39m
+[11:34:08] [32mINFO[39m: [36mMigrating: 20260920_060000_aud_06_telecom[39m
+[11:34:08] [32mINFO[39m: [36mMigrated:  20260920_060000_aud_06_telecom (21ms)[39m
+[11:34:08] [32mINFO[39m: [36mMigrating: 20260920_070000_aud_07_audience_command[39m
+[11:34:08] [32mINFO[39m: [36mMigrated:  20260920_070000_aud_07_audience_command (16ms)[39m
+[11:34:08] [32mINFO[39m: [36mMigrating: 20260920_080000_aud_08_audience_pass_gate[39m
+[11:34:08] [32mINFO[39m: [36mMigrated:  20260920_080000_aud_08_audience_pass_gate (65ms)[39m
+[11:34:08] [32mINFO[39m: [36mMigrating: 20260920_090000_comm_00_community_domain[39m
+[11:34:08] [32mINFO[39m: [36mMigrated:  20260920_090000_comm_00_community_domain (26ms)[39m
+[11:34:08] [32mINFO[39m: [36mMigrating: 20260920_100000_comm_01_member_auth_lifecycle[39m
+[11:34:08] [32mINFO[39m: [36mMigrated:  20260920_100000_comm_01_member_auth_lifecycle (26ms)[39m
+[11:34:08] [32mINFO[39m: [36mMigrating: 20260921_000000_comm_02_profile_projection[39m
+[11:34:08] [32mINFO[39m: [36mMigrated:  20260921_000000_comm_02_profile_projection (4ms)[39m
+[11:34:08] [32mINFO[39m: [36mMigrating: 20260921_010000_comm_02_profile_media_usage_relation[39m
+[11:34:08] [32mINFO[39m: [36mMigrated:  20260921_010000_comm_02_profile_media_usage_relation (6ms)[39m
+[11:34:08] [32mINFO[39m: [36mMigrating: 20260921_020000_comm_03a_comment_identity[39m
+[11:34:08] [32mINFO[39m: [36mMigrated:  20260921_020000_comm_03a_comment_identity (21ms)[39m
+[11:34:08] [32mINFO[39m: [36mMigrating: 20260921_030000_comm_03c_comment_reactions[39m
+[11:34:08] [32mINFO[39m: [36mMigrated:  20260921_030000_comm_03c_comment_reactions (7ms)[39m
+[11:34:08] [32mINFO[39m: [36mMigrating: 20260921_040000_comm_03d_thread_lifecycle_and_outbox[39m
+[11:34:08] [32mINFO[39m: [36mMigrated:  20260921_040000_comm_03d_thread_lifecycle_and_outbox (17ms)[39m
+[11:34:08] [32mINFO[39m: [36mMigrating: 20260921_050000_comm_04a_forum_spaces[39m
+[11:34:08] [32mINFO[39m: [36mMigrated:  20260921_050000_comm_04a_forum_spaces (16ms)[39m
+[11:34:08] [32mINFO[39m: [36mMigrating: 20260922_000000_comm_04b_forum_topics_posts[39m
+[11:34:08] [32mINFO[39m: [36mMigrated:  20260922_000000_comm_04b_forum_topics_posts (17ms)[39m
+[11:34:08] [32mINFO[39m: [36mMigrating: 20260922_010000_comm_04c_forum_browsing_read_state[39m
+[11:34:08] [32mINFO[39m: [36mMigrated:  20260922_010000_comm_04c_forum_browsing_read_state (14ms)[39m
+[11:34:08] [32mINFO[39m: [36mMigrating: 20260922_020000_comm_04d_forum_topic_operations[39m
+[11:34:08] [32mINFO[39m: [36mMigrated:  20260922_020000_comm_04d_forum_topic_operations (13ms)[39m
+[11:34:08] [32mINFO[39m: [36mMigrating: 20260922_030000_comm_05a_moderation_registry_reports[39m
+[11:34:08] [32mINFO[39m: [36mMigrated:  20260922_030000_comm_05a_moderation_registry_reports (14ms)[39m
+[11:34:08] [32mINFO[39m: [36mMigrating: 20260922_040000_comm_05b_moderation_actions_sanctions[39m
+[11:34:08] [32mINFO[39m: [36mMigrated:  20260922_040000_comm_05b_moderation_actions_sanctions (11ms)[39m
+[11:34:08] [32mINFO[39m: [36mMigrating: 20260922_050000_comm_05c_moderation_appeals_audit[39m
+[11:34:08] [32mINFO[39m: [36mMigrated:  20260922_050000_comm_05c_moderation_appeals_audit (16ms)[39m
+[11:34:08] [32mINFO[39m: [36mMigrating: 20260922_060000_comm_05d_abuse_triage_console[39m
+[11:34:08] [32mINFO[39m: [36mMigrated:  20260922_060000_comm_05d_abuse_triage_console (14ms)[39m
+[11:34:08] [32mINFO[39m: [36mMigrating: 20260922_070000_comm_07a_conversations[39m
+[11:34:08] [32mINFO[39m: [36mMigrated:  20260922_070000_comm_07a_conversations (13ms)[39m
+[11:34:08] [32mINFO[39m: [36mMigrating: 20260922_080000_comm_07b_message_requests[39m
+[11:34:08] [32mINFO[39m: [36mMigrated:  20260922_080000_comm_07b_message_requests (9ms)[39m
+[11:34:08] [32mINFO[39m: [36mMigrating: 20260922_090000_comm_07c_message_attachments[39m
+[11:34:08] [32mINFO[39m: [36mMigrated:  20260922_090000_comm_07c_message_attachments (8ms)[39m
+[11:34:08] [32mINFO[39m: [36mMigrating: 20260922_100000_comm_07d_group_administration[39m
+[11:34:08] [32mINFO[39m: [36mMigrated:  20260922_100000_comm_07d_group_administration (6ms)[39m
+[11:34:08] [32mINFO[39m: [36mMigrating: 20260922_110000_comm_06b_inbox_projections[39m
+[11:34:08] [32mINFO[39m: [36mMigrated:  20260922_110000_comm_06b_inbox_projections (11ms)[39m
+[11:34:08] [32mINFO[39m: [36mMigrating: 20260922_120000_comm_06c_notification_preferences_and_outbox[39m
+[11:34:08] [32mINFO[39m: [36mMigrated:  20260922_120000_comm_06c_notification_preferences_and_outbox (17ms)[39m
+[11:34:08] [32mINFO[39m: [36mMigrating: 20260922_130000_commerce_canonical_contract[39m
+[11:34:08] [32mINFO[39m: [36mMigrated:  20260922_130000_commerce_canonical_contract (14ms)[39m
+[11:34:08] [32mINFO[39m: [36mMigrating: 20260923_010000_shop_01_catalog_workflows[39m
+[11:34:08] [32mINFO[39m: [36mMigrated:  20260923_010000_shop_01_catalog_workflows (44ms)[39m
+[11:34:08] [32mINFO[39m: [36mMigrating: 20260923_020000_shop_02_carts_and_checkout_proposals[39m
+[11:34:08] [32mINFO[39m: [36mMigrated:  20260923_020000_shop_02_carts_and_checkout_proposals (24ms)[39m
+[11:34:08] [32mINFO[39m: [36mMigrating: 20260923_030000_shop_04_payment_operations[39m
+[11:34:08] [32mINFO[39m: [36mMigrated:  20260923_030000_shop_04_payment_operations (30ms)[39m
+[11:34:08] [32mINFO[39m: [36mMigrating: 20260923_040000_shop_05_subscriptions[39m
+[11:34:08] [32mINFO[39m: [36mMigrated:  20260923_040000_shop_05_subscriptions (26ms)[39m
+[11:34:08] [32mINFO[39m: [36mMigrating: 20260923_050000_shop_06_affiliate_and_referrals[39m
+[11:34:08] [32mINFO[39m: [36mMigrated:  20260923_050000_shop_06_affiliate_and_referrals (40ms)[39m
+[11:34:08] [32mINFO[39m: [36mMigrating: 20260923_060000_shop_07_donations[39m
+[11:34:08] [32mINFO[39m: [36mMigrated:  20260923_060000_shop_07_donations (49ms)[39m
+[11:34:08] [32mINFO[39m: [36mMigrating: 20260923_070000_shop_07_donation_lifecycle[39m
+[11:34:08] [32mINFO[39m: [36mMigrated:  20260923_070000_shop_07_donation_lifecycle (5ms)[39m
+[11:34:08] [32mINFO[39m: [36mMigrating: 20260923_080000_shop_03_pod_and_fulfillment[39m
+[11:34:09] [32mINFO[39m: [36mMigrated:  20260923_080000_shop_03_pod_and_fulfillment (38ms)[39m
+[11:34:09] [32mINFO[39m: [36mMigrating: 20260923_090000_events_required_entitlement[39m
+[11:34:09] [32mINFO[39m: [36mMigrated:  20260923_090000_events_required_entitlement (3ms)[39m
+[11:34:09] [32mINFO[39m: [36mMigrating: 20260923_100000_flow_03_scheduler_runtime[39m
+[11:34:09] [32mINFO[39m: [36mMigrated:  20260923_100000_flow_03_scheduler_runtime (4ms)[39m
+[11:34:09] [32mINFO[39m: [36mMigrating: 20260923_110000_content_release_runtime[39m
+[11:34:09] [32mINFO[39m: [36mMigrated:  20260923_110000_content_release_runtime (9ms)[39m
+[11:34:09] [32mINFO[39m: [36mMigrating: 20260924_000000_collection_scope_columns[39m
+[11:34:09] [32mINFO[39m: [36mMigrated:  20260924_000000_collection_scope_columns (34ms)[39m
+[11:34:09] [32mINFO[39m: [36mMigrating: 20260924_010000_donation_checkout_idempotency[39m
+[11:34:09] [32mINFO[39m: [36mMigrated:  20260924_010000_donation_checkout_idempotency (4ms)[39m
+[11:34:09] [32mINFO[39m: [36mMigrating: 20260924_020000_commerce_job_enum[39m
+[11:34:09] [32mINFO[39m: [36mMigrated:  20260924_020000_commerce_job_enum (4ms)[39m
+[11:34:09] [32mINFO[39m: [36mMigrating: 20260924_030000_ai_proposals[39m
+[11:34:09] [32mINFO[39m: [36mMigrated:  20260924_030000_ai_proposals (29ms)[39m
+[11:34:09] [32mINFO[39m: [36mMigrating: 20260924_040000_ai_locked_documents_rels[39m
+[11:34:09] [32mINFO[39m: [36mMigrated:  20260924_040000_ai_locked_documents_rels (7ms)[39m
+[11:34:09] [32mINFO[39m: [36mMigrating: 20260924_050000_ai_budget_reservation[39m
+[11:34:09] [32mINFO[39m: [36mMigrated:  20260924_050000_ai_budget_reservation (3ms)[39m
+[11:34:09] [32mINFO[39m: [36mMigrating: 20260924_060000_semantic_route_templates[39m
+[11:34:09] [32mINFO[39m: [36mMigrated:  20260924_060000_semantic_route_templates (7ms)[39m
+[11:34:09] [32mINFO[39m: [36mMigrating: 20261004_160000_rc03_network_outbox_ids[39m
+[11:34:09] [32mINFO[39m: [36mMigrated:  20261004_160000_rc03_network_outbox_ids (3ms)[39m
+[11:34:09] [32mINFO[39m: [36mMigrating: 20261004_180000_rc04_canonical_moderation[39m
+[11:34:09] [32mINFO[39m: [36mMigrated:  20261004_180000_rc04_canonical_moderation (3ms)[39m
+[11:34:09] [32mINFO[39m: [36mMigrating: 20261006_010000_rc08b_form_intake[39m
+[11:34:09] [32mINFO[39m: [36mMigrated:  20261006_010000_rc08b_form_intake (3ms)[39m
+[11:34:09] [32mINFO[39m: [36mMigrating: 20261006_013000_rc08b_federation_ids[39m
+[11:34:09] [32mINFO[39m: [36mMigrated:  20261006_013000_rc08b_federation_ids (2ms)[39m
+Upgrade rehearsal passed: 20260914_110000_med_05_video_workflow -> current.
+
+==> verify:release [format]
+
+> renegade-cms@0.1.0 format:check
+> prettier --check .
+
+Checking formatting...
+All matched files use Prettier code style!
+
+==> verify:release [lint]
+
+> renegade-cms@0.1.0 lint
+> eslint . --max-warnings=0
+
+
+==> verify:release [typecheck]
+
+> renegade-cms@0.1.0 typecheck
+> tsc --noEmit
+
+
+==> verify:release [unit]
+
+> renegade-cms@0.1.0 test
+> vitest run tests/unit
+
+
+ RUN  v3.2.7 C:/Projects/RENEGADE CMS/rc08c-final-01908f3
+
+ ✓ tests/unit/aud-07-audience-command.test.ts (35 tests) 42ms
+ ✓ tests/unit/shop-06-affiliate-and-referrals.test.ts (19 tests) 25ms
+ ✓ tests/unit/shop-03-pod-fulfillment.test.ts (26 tests) 29ms
+ ✓ tests/unit/flow-05-localization-workflow.test.ts (9 tests) 15ms
+ ✓ tests/unit/disc-02-schema-graph.test.ts (22 tests) 18ms
+ ✓ tests/unit/aud-06-telecom.test.ts (21 tests) 36ms
+ ✓ tests/unit/comm-03b-comment-composer.test.ts (26 tests) 773ms
+   ✓ COMM-03B: Safe Comment Composer, Rich-Text Sanitization, Mentions, Edit Window, & Idempotency > 6. HTTP Route Handlers > POST /api/v1/sites/:site_id/threads/:thread_id/comments requires Idempotency-Key  742ms
+ ✓ tests/unit/flow-04-coordinated-releases.test.ts (9 tests) 174ms
+stderr | tests/unit/flow-04-acceptance.test.ts > FLOW-04 Coordinated Release Workflow End-to-End Acceptance Scenario > passes complete 8-stage acceptance lifecycle with blocking issue, waiver, scheduling, worker restart, partial failure, safe retry, and rollback
+Failed to revalidate paths: Error: Invariant: static generation store missing in revalidatePath /articles/spring-launch-2026
+    at revalidate (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\node_modules\next\src\server\web\spec-extension\revalidate.ts:135:11)
+    at revalidatePath (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\node_modules\next\src\server\web\spec-extension\revalidate.ts:125:10)
+    at persistWorkflow (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\src\modules\editorial\persistence.ts:553:7)
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at C:\Projects\RENEGADE CMS\rc08c-final-01908f3\src\modules\editorial\persistence.ts:976:5
+    at executeDatabaseStep (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\src\modules\releases\saga.ts:48:23)
+    at executeReleaseSagaUnlocked (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\src\modules\releases\saga.ts:509:21)
+    at C:\Projects\RENEGADE CMS\rc08c-final-01908f3\tests\unit\flow-04-acceptance.test.ts:451:22
+    at file:///C:/Projects/RENEGADE%20CMS/rc08c-final-01908f3/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20
+
+stderr | tests/unit/flow-04-acceptance.test.ts > FLOW-04 Coordinated Release Workflow End-to-End Acceptance Scenario > passes complete 8-stage acceptance lifecycle with blocking issue, waiver, scheduling, worker restart, partial failure, safe retry, and rollback
+Failed to revalidate paths: Error: Invariant: static generation store missing in revalidatePath /articles/company-announcement
+    at revalidate (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\node_modules\next\src\server\web\spec-extension\revalidate.ts:135:11)
+    at revalidatePath (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\node_modules\next\src\server\web\spec-extension\revalidate.ts:125:10)
+    at persistWorkflow (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\src\modules\editorial\persistence.ts:553:7)
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at C:\Projects\RENEGADE CMS\rc08c-final-01908f3\src\modules\editorial\persistence.ts:976:5
+    at executeDatabaseStep (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\src\modules\releases\saga.ts:48:23)
+    at executeReleaseSagaUnlocked (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\src\modules\releases\saga.ts:509:21)
+    at C:\Projects\RENEGADE CMS\rc08c-final-01908f3\tests\unit\flow-04-acceptance.test.ts:451:22
+    at file:///C:/Projects/RENEGADE%20CMS/rc08c-final-01908f3/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20
+
+ ✓ tests/unit/flow-04-acceptance.test.ts (1 test) 205ms
+ ✓ tests/unit/shop-04-payment-operations.test.ts (17 tests) 26ms
+ ✓ tests/unit/dist-03-meta-visual-adapters.test.ts (18 tests) 30ms
+ ✓ tests/unit/shop-02-carts-and-proposals.test.ts (10 tests) 14ms
+ ✓ tests/unit/dist-01-security-and-contracts.test.ts (19 tests) 14ms
+ ✓ tests/unit/pre-05-legacy-migration.test.ts (10 tests) 59ms
+ ✓ tests/unit/dist-02-core-adapters.test.ts (10 tests) 17ms
+ ✓ tests/unit/comm-03-comments-lifecycle.test.ts (9 tests) 20ms
+ ✓ tests/unit/integrations-operational-ux.test.ts (22 tests) 37ms
+ ✓ tests/unit/pre-04-reusable-composition.test.ts (17 tests) 11ms
+ ✓ tests/unit/dist-04-video-monetized-and-analytics.test.ts (11 tests) 24ms
+ ✓ tests/unit/dist-06-telegram-discord-adapters.test.ts (11 tests) 17ms
+ ✓ tests/unit/shop-01-catalog-workflows.test.ts (18 tests) 60ms
+ ✓ tests/unit/comm-03d-thread-lifecycle.test.ts (19 tests) 30ms
+ ✓ tests/unit/flow-01-cmos-workflow.test.ts (16 tests) 15ms
+ ✓ tests/unit/med-03-variant-engine.test.ts (11 tests) 291ms
+ ✓ tests/unit/shop-02-tampering-and-invariants.test.ts (9 tests) 15ms
+ ✓ tests/unit/med-ext-01-minipaint.test.tsx (22 tests) 26ms
+ ✓ tests/unit/analytics-attribution-experiments.test.ts (9 tests) 14ms
+ ✓ tests/unit/ai-gateway.test.ts (13 tests) 31ms
+ ✓ tests/unit/pre-06-presentation-pass-gate.test.ts (13 tests) 32ms
+ ✓ tests/unit/donation-ingestion.test.ts (9 tests) 28ms
+ ✓ tests/unit/team-collaboration.test.ts (6 tests) 15ms
+ ✓ tests/unit/flow-06-command-center.test.ts (3 tests) 7ms
+ ✓ tests/unit/dist-03-social-command-center.test.tsx (5 tests) 27ms
+ ✓ tests/unit/disc-00-discovery-contract.test.ts (11 tests) 5ms
+ ✓ tests/unit/member-identity.test.ts (10 tests) 21ms
+ ✓ tests/unit/pub-04-publishing-floor.test.ts (12 tests) 12ms
+ ✓ tests/unit/disc-03-crawler-infrastructure.test.ts (12 tests) 39ms
+ ✓ tests/unit/commerce-checkout.test.ts (7 tests) 31ms
+ ✓ tests/unit/flow-00-workflow-contract.test.ts (6 tests) 28ms
+ ✓ tests/unit/comm-00-community-policy.test.ts (13 tests) 4ms
+ ✓ tests/unit/extension-kernel.test.ts (9 tests) 16ms
+ ✓ tests/unit/comm-06b-inbox-notifications.test.ts (8 tests) 19ms
+ ✓ tests/unit/capabilities.test.ts (11 tests) 13ms
+ ✓ tests/unit/med-06-command-center.test.ts (13 tests) 18ms
+ ✓ tests/unit/contracts.test.ts (3 tests) 4ms
+ ✓ tests/unit/dist-07-queue-worker.test.ts (5 tests) 14ms
+ ✓ tests/unit/med-01-s3-storage.test.ts (5 tests) 16ms
+ ✓ tests/unit/shop-07-donation-checkout-route.test.ts (5 tests) 42ms
+ ✓ tests/unit/med-00-media-contract.test.ts (4 tests) 56ms
+ ✓ tests/unit/med-04-audio-metadata.test.ts (5 tests) 16ms
+ ✓ tests/unit/connection-runtime.test.ts (4 tests) 24ms
+ ✓ tests/unit/media-publishing-workflows.test.ts (7 tests) 22ms
+ ✓ tests/unit/comm-06c-digests-and-outbox.test.ts (4 tests) 639ms
+   ✓ COMM-06C notification preferences, digests & audience outbox > daily digest preference creates zero immediate emails for 10 comments, then one digest at scheduled run  636ms
+ ✓ tests/unit/comm-06d-realtime-hints-and-repair.test.ts (4 tests) 11ms
+ ✓ tests/unit/editorial-contracts.test.ts (6 tests) 9ms
+ ✓ tests/unit/comm-02-relationship-policy.test.ts (5 tests) 10ms
+ ✓ tests/unit/subscription-contract.test.ts (7 tests) 10ms
+ ✓ tests/unit/payload-domains.test.ts (3 tests) 5ms
+ ✓ tests/unit/module-registry.test.ts (9 tests) 27ms
+ ✓ tests/unit/med-01-upload-sessions.test.ts (3 tests) 53ms
+ ✓ tests/unit/media-storage.test.ts (5 tests) 23ms
+ ✓ tests/unit/commerce-prompt13.test.ts (4 tests) 9ms
+ ✓ tests/unit/flow-03-scheduling-calendar.test.ts (16 tests) 67ms
+ ✓ tests/unit/events-contracts.test.ts (8 tests) 1138ms
+   ✓ event workflow contracts > bounds recurrence, supports edit-one cancellation, and excludes drafts and other tenants  1047ms
+ ✓ tests/unit/med-01-backup-media.test.ts (5 tests) 51ms
+ ✓ tests/unit/starter-definitions.test.ts (15 tests) 16ms
+ ✓ tests/unit/email-delivery.test.ts (6 tests) 21ms
+ ✓ tests/unit/commerce-pos.test.ts (6 tests) 10ms
+ ✓ tests/unit/pre-00-presentation.test.tsx (8 tests) 22ms
+ ✓ tests/unit/comm-07d-group-administration.test.ts (7 tests) 16ms
+ ✓ tests/unit/comm-04a-forum-space-access.test.ts (11 tests) 8ms
+ ✓ tests/unit/audience-newsletter-workflow.test.ts (3 tests) 21ms
+ ✓ tests/unit/operations-diagnostics.test.ts (4 tests) 34ms
+ ✓ tests/unit/dist-05-social-api-routes.test.ts (6 tests) 14ms
+ ✓ tests/unit/installation-readiness.test.ts (7 tests) 9ms
+ ✓ tests/unit/config.test.ts (11 tests) 12ms
+ ✓ tests/unit/shop-04-local-test-checkout.test.ts (5 tests) 18ms
+ ✓ tests/unit/comm-07a-conversations.test.ts (5 tests) 12ms
+ ✓ tests/unit/med-02-dam-governance.test.ts (5 tests) 7ms
+ ✓ tests/unit/external-boundary-security.test.ts (7 tests) 25ms
+ ✓ tests/unit/pre-01-themes.test.ts (15 tests) 145ms
+ ✓ tests/unit/extension-lifecycle.test.ts (4 tests) 16ms
+ ✓ tests/unit/onboarding.test.ts (3 tests) 6ms
+ ✓ tests/unit/execution-foundation.test.ts (3 tests) 8ms
+ ✓ tests/unit/rc08b-safety.test.ts (6 tests) 8ms
+ ✓ tests/unit/shop-07-donations-contract.test.ts (4 tests) 7ms
+ ✓ tests/unit/commerce-contracts.test.ts (3 tests) 5ms
+ ✓ tests/unit/subscription-service.test.ts (3 tests) 10ms
+ ✓ tests/unit/comm-05c-moderation-appeals-audit.test.ts (4 tests) 109ms
+ ✓ tests/unit/semantic-url-backfill.test.ts (3 tests) 9ms
+ ✓ tests/unit/pre-03-visual-editor.test.ts (4 tests) 7ms
+ ✓ tests/unit/semantic-url.test.ts (5 tests) 8ms
+ ✓ tests/unit/comm-05d-abuse-triage.test.ts (7 tests) 26ms
+ ✓ tests/unit/ai-workflows.test.ts (4 tests) 5ms
+ ✓ tests/unit/comm-03a-comment-identity.test.ts (5 tests) 18ms
+ ✓ tests/unit/comm-04b-forum-composer.test.ts (5 tests) 11ms
+ ✓ tests/unit/media-contracts.test.ts (4 tests) 9ms
+ ✓ tests/unit/comm-04c-forum-browsing.test.ts (4 tests) 10ms
+ ✓ tests/unit/disc-05-persisted-lifecycle.test.ts (3 tests) 7ms
+ ✓ tests/unit/editorial-workflow.test.ts (4 tests) 29ms
+ ✓ tests/unit/comm-05b-moderation-actions.test.ts (4 tests) 132ms
+ ✓ tests/unit/prompt14-contracts.test.ts (5 tests) 7ms
+ ✓ tests/unit/realtime-collaboration.test.ts (2 tests) 6ms
+ ✓ tests/unit/activitypub.test.ts (7 tests) 29ms
+ ✓ tests/unit/integrations-service.test.ts (3 tests) 5ms
+ ✓ tests/unit/comm-02-profile-projection.test.ts (6 tests) 5ms
+ ✓ tests/unit/operational-backup.test.ts (4 tests) 135ms
+ ✓ tests/unit/portability-contracts.test.ts (4 tests) 8ms
+ ✓ tests/unit/comm-07c-message-attachments.test.ts (5 tests) 25ms
+ ✓ tests/unit/analytics-contracts.test.ts (3 tests) 14ms
+ ✓ tests/unit/portability-workflow.test.ts (3 tests) 8ms
+ ✓ tests/unit/comm-05a-moderation-reports.test.ts (5 tests) 10ms
+ ✓ tests/unit/disc-01-publisher-workflow.test.ts (4 tests) 5ms
+ ✓ tests/unit/ai-adapters.test.ts (3 tests) 10ms
+ ✓ tests/unit/network-experience.test.ts (4 tests) 6ms
+ ✓ tests/unit/information-architecture.test.ts (6 tests) 23ms
+ ✓ tests/unit/rc01-admin-truth.test.tsx (8 tests) 75ms
+ ✓ tests/unit/releases-service.test.ts (2 tests) 79ms
+ ✓ tests/unit/package-workflow.test.ts (2 tests) 8ms
+ ✓ tests/unit/aud-03-email-composer.test.ts (3 tests) 6ms
+ ✓ tests/unit/rc06-auth-attacks.test.ts (6 tests) 1235ms
+   ✓ RC06 admin session attacks > executes the installed Payload unlock guard before any database mutation  1217ms
+ ✓ tests/unit/network-foundation.test.ts (4 tests) 104ms
+ ✓ tests/unit/public-api-webhooks.test.ts (2 tests) 5ms
+ ✓ tests/unit/package-contracts.test.ts (3 tests) 18ms
+ ✓ tests/unit/disc-05-rendered-audit.test.ts (3 tests) 23ms
+ ✓ tests/unit/public-contracts.test.ts (4 tests) 5ms
+ ✓ tests/unit/rc08b-event-privacy.test.ts (8 tests) 25ms
+ ✓ tests/unit/social-contracts.test.ts (4 tests) 10ms
+ ✓ tests/unit/discovery-contracts.test.ts (2 tests) 7ms
+ ✓ tests/unit/disc-05-cross-checks.test.ts (2 tests) 4ms
+ ✓ tests/unit/audience-contracts.test.ts (4 tests) 7ms
+ ✓ tests/unit/page-builder.test.ts (3 tests) 6ms
+ ✓ tests/unit/comm-03c-comment-reactions.test.ts (7 tests) 11ms
+ ✓ tests/unit/rc02-content-preview.test.ts (4 tests) 24ms
+ ✓ tests/unit/disc-05-cannibalization.test.ts (2 tests) 4ms
+ ✓ tests/unit/aud-01-audience-evidence.test.ts (4 tests) 10ms
+ ✓ tests/unit/production-installer.test.ts (6 tests) 5ms
+ ✓ tests/unit/disc-05-redirect-manager.test.ts (3 tests) 5ms
+ ✓ tests/unit/operational-lifecycle.test.ts (4 tests) 5ms
+ ✓ tests/unit/shop-08-command-center-boundaries.test.ts (4 tests) 17ms
+ ✓ tests/unit/community-admin-actor.test.ts (7 tests) 4ms
+ ✓ tests/unit/aud-04-engine.test.ts (2 tests) 7ms
+ ✓ tests/unit/public-navigation.test.ts (3 tests) 9ms
+ ✓ tests/unit/phase-a-media.test.ts (3 tests) 3ms
+ ✓ tests/unit/analytics-privacy-runtime.test.ts (2 tests) 5ms
+ ✓ tests/unit/commerce-canonical-contract.test.ts (2 tests) 7ms
+ ✓ tests/unit/long-form-quality.test.ts (3 tests) 6ms
+ ✓ tests/unit/rc02-public-queries.test.ts (1 test) 9ms
+ ✓ tests/unit/theme-preview-identity.test.ts (3 tests) 4ms
+ ✓ tests/unit/disc-05-ai-boundary.test.ts (1 test) 3ms
+ ✓ tests/unit/progressive-disclosure.test.ts (4 tests) 4ms
+ ✓ tests/unit/med-05-video.test.tsx (3 tests) 16ms
+ ✓ tests/unit/build-provenance.test.ts (2 tests) 6ms
+ ✓ tests/unit/rc02-local-audit.test.ts (2 tests) 14ms
+ ✓ tests/unit/operational-compose.test.ts (2 tests) 42ms
+stderr | tests/unit/readiness-probe.unit.test.ts > GET /health/ready probe integrity > returns 503 not_ready when migrations are pending
+Readiness check failed: pending migrations (10/112)
+
+stderr | tests/unit/readiness-probe.unit.test.ts > GET /health/ready probe integrity > returns 503 not_ready when critical runtime columns are missing in schema
+Readiness check failed: critical runtime columns missing in schema
+
+stderr | tests/unit/readiness-probe.unit.test.ts > GET /health/ready probe integrity > returns 503 not_ready when database is unavailable
+Readiness database check failed: Error: Connection terminated unexpectedly
+    at C:\Projects\RENEGADE CMS\rc08c-final-01908f3\tests\unit\readiness-probe.unit.test.ts:75:36
+    at file:///C:/Projects/RENEGADE%20CMS/rc08c-final-01908f3/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11
+    at file:///C:/Projects/RENEGADE%20CMS/rc08c-final-01908f3/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26
+    at file:///C:/Projects/RENEGADE%20CMS/rc08c-final-01908f3/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///C:/Projects/RENEGADE%20CMS/rc08c-final-01908f3/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)
+    at runTest (file:///C:/Projects/RENEGADE%20CMS/rc08c-final-01908f3/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at runSuite (file:///C:/Projects/RENEGADE%20CMS/rc08c-final-01908f3/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)
+    at runSuite (file:///C:/Projects/RENEGADE%20CMS/rc08c-final-01908f3/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)
+
+ ✓ tests/unit/readiness-probe.unit.test.ts (4 tests) 12ms
+stdout | tests/unit/verification-contract.test.ts > release verification contract > propagates a failed child stage
+
+==> verify:release [deliberate failure]
+
+stderr | tests/unit/verification-contract.test.ts > release verification contract > propagates a failed child stage
+FAIL: verify:release [deliberate failure]
+
+ ✓ tests/unit/verification-contract.test.ts (2 tests) 5ms
+ ✓ tests/unit/editorial-workflow-permissions.test.ts (1 test) 4ms
+ ✓ tests/unit/comm-07b-message-requests.test.ts (3 tests) 9ms
+ ✓ tests/unit/rc02-published-revision.test.ts (1 test) 5ms
+ ✓ tests/unit/calendar-graphics-contracts.test.ts (2 tests) 21ms
+ ✓ tests/unit/publishing-pass.test.ts (2 tests) 5ms
+ ✓ tests/unit/rc02-event-schema.test.ts (2 tests) 3ms
+ ✓ tests/unit/donation-ui-accessibility.test.ts (3 tests) 3ms
+ ✓ tests/unit/editorial-markdown.test.ts (1 test) 4ms
+ ✓ tests/unit/rc02-related-content.test.ts (1 test) 2ms
+ ✓ tests/unit/comm-server-headers.test.ts (2 tests) 10ms
+ ✓ tests/unit/pod-production-key.test.ts (2 tests) 5ms
+ ✓ tests/unit/production-module-config.test.ts (1 test) 3ms
+ ✓ tests/unit/tenant-isolation.test.ts (2 tests) 5ms
+ ✓ tests/unit/rc02-layout-visibility.test.ts (1 test) 4ms
+ ✓ tests/unit/logging.test.ts (1 test) 3ms
+ ✓ tests/unit/extension-api.test.ts (1 test) 3ms
+ ✓ tests/unit/phase-a-access.test.ts (2 tests) 3ms
+ ✓ tests/unit/comm-04d-forum-topic-operations.test.ts (1 test) 5ms
+
+ Test Files  175 passed (175)
+      Tests  1140 passed (1140)
+   Start at  11:35:27
+   Duration  24.36s (transform 11.17s, setup 0ms, collect 81.97s, tests 7.71s, environment 38ms, prepare 22.52s)
+
+
+==> verify:release [integration]
+
+> renegade-cms@0.1.0 test:integration
+> node scripts/run-integration.mjs
+
+
+ RUN  v3.2.7 C:/Projects/RENEGADE CMS/rc08c-final-01908f3
+
+[11:35:57] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+stderr | tests/integration/shared-contract-commerce-shop.integration.test.ts > Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks
+Failed to revalidate paths: Error: Invariant: static generation store missing in revalidatePath /articles/decentralized-truth
+    at revalidate (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\node_modules\next\src\server\web\spec-extension\revalidate.ts:135:11)
+    at revalidatePath (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\node_modules\next\src\server\web\spec-extension\revalidate.ts:125:10)
+    at persistWorkflow (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\src\modules\editorial\persistence.ts:553:7)
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at ensureRenegadePartyDemo (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\tests\helpers\renegadeparty-demo.ts:562:7)
+    at C:\Projects\RENEGADE CMS\rc08c-final-01908f3\tests\integration\shared-contract-commerce-shop.integration.test.ts:186:12
+
+ ✓ tests/integration/shared-contract-commerce-shop.integration.test.ts (34 tests) 4243ms
+[11:36:04] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+stderr | tests/integration/aud-08-audience-pass-gate.integration.test.ts > AUD-08 Audience Pass Gate — Comprehensive End-to-End Acceptance Integration
+Failed to revalidate paths: Error: Invariant: static generation store missing in revalidatePath /articles/decentralized-truth
+    at revalidate (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\node_modules\next\src\server\web\spec-extension\revalidate.ts:135:11)
+    at revalidatePath (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\node_modules\next\src\server\web\spec-extension\revalidate.ts:125:10)
+    at persistWorkflow (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\src\modules\editorial\persistence.ts:553:7)
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at ensureRenegadePartyDemo (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\tests\helpers\renegadeparty-demo.ts:562:7)
+    at C:\Projects\RENEGADE CMS\rc08c-final-01908f3\tests\integration\aud-08-audience-pass-gate.integration.test.ts:90:12
+
+ ✓ tests/integration/aud-08-audience-pass-gate.integration.test.ts (10 tests) 4933ms
+   ✓ AUD-08 Audience Pass Gate — Comprehensive End-to-End Acceptance Integration > 2. Publishes accessible forms; submits valid, invalid, duplicate, spam-like, and consent-tested paths; inspects immutable submissions  350ms
+   ✓ AUD-08 Audience Pass Gate — Comprehensive End-to-End Acceptance Integration > 3. Confirms double opt-in, rejects expired/tampered/replayed tokens, updates preferences, reviews CSV import quarantine, and exports audience  482ms
+   ✓ AUD-08 Audience Pass Gate — Comprehensive End-to-End Acceptance Integration > 5. Composes responsive newsletter from canonical content, previews fallbacks, test sends, approves, and delivers through real local SMTP  523ms
+   ✓ AUD-08 Audience Pass Gate — Comprehensive End-to-End Acceptance Integration > 6. Proves no duplicate sends on concurrent execution, suppresses late unsubscribe, retries transient failures, and suppresses bounces/complaints  794ms
+   ✓ AUD-08 Audience Pass Gate — Comprehensive End-to-End Acceptance Integration > 8. Composes SMS/RCS variants, handles RCS fallback, enforces quiet hours, processes STOP/HELP keywords via emulator  632ms
+ ✓ tests/integration/shared-contract-affiliate-pod.integration.test.ts (28 tests) 32ms
+[11:36:11] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+stderr | tests/integration/shared-contract-audience-community.integration.test.ts > Shared Contract Proof: Audience, Community, Permissions/Privacy & Resilience
+Failed to revalidate paths: Error: Invariant: static generation store missing in revalidatePath /articles/decentralized-truth
+    at revalidate (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\node_modules\next\src\server\web\spec-extension\revalidate.ts:135:11)
+    at revalidatePath (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\node_modules\next\src\server\web\spec-extension\revalidate.ts:125:10)
+    at persistWorkflow (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\src\modules\editorial\persistence.ts:553:7)
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at ensureRenegadePartyDemo (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\tests\helpers\renegadeparty-demo.ts:562:7)
+    at C:\Projects\RENEGADE CMS\rc08c-final-01908f3\tests\integration\shared-contract-audience-community.integration.test.ts:118:12
+
+ ✓ tests/integration/shared-contract-audience-community.integration.test.ts (20 tests) 4788ms
+   ✓ Shared Contract Proof: Audience, Community, Permissions/Privacy & Resilience > AUDIENCE: Sovereign Multi-Channel Delivery, Preference & Suppression Ledger > 4. Composes responsive newsletter and delivers through local SMTP mail sink with RFC headers  335ms
+   ✓ Shared Contract Proof: Audience, Community, Permissions/Privacy & Resilience > AUDIENCE: Sovereign Multi-Channel Delivery, Preference & Suppression Ledger > 5. Exercises Telecom emulator: routes RCS directly, performs SMS fallback, and parses STOP keyword  622ms
+   ✓ Shared Contract Proof: Audience, Community, Permissions/Privacy & Resilience > AUDIENCE: Sovereign Multi-Channel Delivery, Preference & Suppression Ledger > 6 & 7. Queue a follow-up, suppress the recipient, and prove suppression halts delivery at send-time  371ms
+   ✓ Shared Contract Proof: Audience, Community, Permissions/Privacy & Resilience > COMMUNITY: Profiles, Discussions, Forums, Notifications & Moderation Lifecycles > 10. Forum participation: thread creation, member replies, and idempotent emoji reactions  367ms
+[11:36:19] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+ ✓ tests/integration/rc08b-promotions.integration.test.ts (10 tests) 31154ms
+   ✓ RC08B persisted promotion boundaries > reads real future occurrences, excludes foreign/private/draft/deleted records and survives a new query  420ms
+   ✓ RC08B persisted promotion boundaries > creates and edits a real timeline through scoped operator access, rejects foreign memberships, and hides deleted/private events  462ms
+   ✓ RC08B persisted promotion boundaries > persists consent, scopes replay by form/site, recovers a failed task and never repeats completed side effects  621ms
+   ✓ RC08B persisted promotion boundaries > deduplicates explicit email windows, delivers through the transport, and cancels queued updates after opt-out  376ms
+   ✓ RC08B persisted promotion boundaries > keeps external delivery independent of in-app, suppresses late mute/block/address opt-out, and recovers a real disabled-transport failure  681ms
+   ✓ RC08B persisted promotion boundaries > compiles ten persisted canonical notifications into one deduplicated digest while in-app is off  901ms
+   ✓ RC08B persisted promotion boundaries > exports more than one page of contributions and messages, while a removed member gets own sent text but no foreign history  25752ms
+[11:36:52] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+ ✓ tests/integration/rc05-pass2-commerce-routes.integration.test.ts (5 tests) 4359ms
+   ✓ RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security > proves the complete physical product lifecycle, server authority, and idempotent settlement  1805ms
+   ✓ RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security > defeats client price, quantity, and total tampering attempts across routes  781ms
+   ✓ RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security > proves webhook security boundaries: unsigned, invalid signature, replay, and race handling  607ms
+   ✓ RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security > proves multi-tenant boundaries and security against cross-site cart/order access  540ms
+   ✓ RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security > proves downstream partial failure handling and operator reconciliation  623ms
+ ✓ tests/integration/flow-06-workflow-pass-gate.integration.test.ts (1 test) 72ms
+[11:36:59] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[11:37:01] [32mINFO[39m: [36mCanonical neutral demo information architecture is ready.[39m
+ ✓ tests/integration/med-04-podcast-acceptance.integration.test.ts (1 test) 3085ms
+   ✓ MED-04 Podcast Publishing Workflow End-to-End Acceptance > creates show and two episodes, handles preview/scheduling, renders player/pages, validates RSS, handles range requests, maintains invariant GUIDs across slug rename, and restarts cleanly  1027ms
+[11:37:04] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+ ✓ tests/integration/comm-00-community-pass.integration.test.ts (11 tests) 1939ms
+[11:37:07] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+ ✓ tests/integration/community-cross-site-boundaries.integration.test.ts (7 tests) 2052ms
+[11:37:11] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[11:37:13] [32mINFO[39m: [36mCanonical neutral demo information architecture is ready.[39m
+ ✓ tests/integration/med-06-command-center.integration.test.ts (1 test) 5051ms
+   ✓ MED-06 Media Pass Release Gate — Comprehensive Acceptance Integration > exercises the complete 14-stage Mandatory Clean Demo workflow across PostgreSQL, durable storage, podcast feed, and video delivery  3175ms
+[11:37:18] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[11:37:20] [32mINFO[39m: [36mCanonical neutral demo information architecture is ready.[39m
+ ✓ tests/integration/disc-00-crawler-smoke.integration.test.ts (11 tests) 4553ms
+   ✓ DISC-00 Crawler-Facing Smoke Test Suite > serves canonical RSS 2.0 feed with caching and conditional GET support  343ms
+   ✓ DISC-00 Crawler-Facing Smoke Test Suite > serves valid sitemap index and child sitemaps with caching and conditional GET  836ms
+   ✓ DISC-00 Crawler-Facing Smoke Test Suite > serves JSON Feed 1.1 with ETag caching and conditional GET  329ms
+   ✓ DISC-00 Crawler-Facing Smoke Test Suite > serves content-scoped streams with stable entity IDs and conditional GET  328ms
+[11:37:24] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[11:37:26] [32mINFO[39m: [36mCanonical neutral demo information architecture is ready.[39m
+stderr | tests/integration/rc03-core-orchestration.integration.test.ts > RC-03 Core Orchestration Pass 1 End-to-End Suite > 2. Scheduled Publication: timezone-aware future scheduling, worker execution, lease locking & idempotency
+Failed to revalidate paths: Error: Invariant: static generation store missing in revalidatePath /articles/sched-art-991e3b07
+    at revalidate (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\node_modules\next\src\server\web\spec-extension\revalidate.ts:135:11)
+    at revalidatePath (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\node_modules\next\src\server\web\spec-extension\revalidate.ts:125:10)
+    at persistWorkflow (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\src\modules\editorial\persistence.ts:553:7)
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at publishScheduledArticleUnlocked (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\src\modules\editorial\persistence.ts:1018:3)
+    at withExecutionLock (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\src\modules\operations\execution-lock.ts:26:12)
+    at executeScheduledPublishJobUnlocked (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\src\modules\editorial\scheduler.ts:172:5)
+    at withExecutionLock (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\src\modules\operations\execution-lock.ts:26:12)
+    at C:\Projects\RENEGADE CMS\rc08c-final-01908f3\tests\integration\rc03-core-orchestration.integration.test.ts:245:24
+    at file:///C:/Projects/RENEGADE%20CMS/rc08c-final-01908f3/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20
+
+ ✓ tests/integration/rc03-core-orchestration.integration.test.ts (4 tests) 5710ms
+   ✓ RC-03 Core Orchestration Pass 1 End-to-End Suite > 1. Editorial Workflow: draft -> request review -> reject -> revise -> approve with permission boundaries & audit trail  1336ms
+   ✓ RC-03 Core Orchestration Pass 1 End-to-End Suite > 2. Scheduled Publication: timezone-aware future scheduling, worker execution, lease locking & idempotency  1532ms
+   ✓ RC-03 Core Orchestration Pass 1 End-to-End Suite > 3. Coordinated Release: rejects invalid article, media, distribution and newsletter references without false success  900ms
+[11:37:32] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+ ✓ tests/integration/starter-experiences.integration.test.ts (13 tests) 4949ms
+   ✓ Starter Experiences Integration Tests > Publication & Community Starter (publication-community) > installs the publication-community starter completely into Payload  2258ms
+   ✓ Starter Experiences Integration Tests > Publication & Community Starter (publication-community) > upgrades starter templates non-destructively without altering custom page content  308ms
+   ✓ Starter Experiences Integration Tests > Campaign & Commerce Starter (campaign-commerce) > installs the campaign-commerce starter completely into Payload  2030ms
+[11:37:39] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+ ✓ tests/integration/pre-06-presentation-pass-gate.integration.test.ts (4 tests) 4126ms
+   ✓ PRE-06 Presentation Pass Gate — PostgreSQL Integration Suite > 3. Legacy site migration end-to-end integration and quarantine boundary > executes preflight, imports into isolated site, verifies database, activates, and rolls back cleanly  2377ms
+[11:37:45] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[11:37:47] [32mINFO[39m: [36mCanonical neutral demo information architecture is ready.[39m
+ ✓ tests/integration/canonical-information-architecture.integration.test.ts (12 tests) 2902ms
+[11:37:50] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[11:37:51] [32mINFO[39m: [36mCanonical neutral demo information architecture is ready.[39m
+ ✓ tests/integration/pub-04-publishing-floor.integration.test.ts (6 tests) 3287ms
+   ✓ PUB-04 publishing floor integration contract > keeps saved edits out of the public body index and indexes them immediately upon republish  603ms
+   ✓ PUB-04 publishing floor integration contract > Requirement 6: local public search finds unique phrase in body projection and highlights excerpt  370ms
+   ✓ PUB-04 publishing floor integration contract > Requirement 5 & 7: sitemap and robots respect indexingMode toggle and unpublish changes  316ms
+[11:37:55] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[11:37:57] [32mINFO[39m: [36mCanonical neutral demo information architecture is ready.[39m
+ ✓ tests/integration/disc-06-discovery-pass-gate.integration.test.ts (9 tests) 3846ms
+   ✓ DISC-06 Discovery Pass Gate — Comprehensive End-to-End Proof > 4. Fetches and parses sitemap index/children, robots.txt, and site feeds; verifies indexability filters  586ms
+   ✓ DISC-06 Discovery Pass Gate — Comprehensive End-to-End Proof > 5. Searches unique title/body/transcript terms, facets, pagination, safe highlights, rebuild, and drift repair  507ms
+ ✓ tests/integration/public-experiment-and-telemetry.integration.test.ts (6 tests) 15ms
+[11:38:01] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+ ✓ tests/integration/aud-public-subscription-journey.integration.test.ts (4 tests) 2319ms
+   ✓ RC-04 Public Subscription Journey & Audience System Integration > rejects invalid inputs and enforces public rate limiting against abuse  723ms
+   ✓ RC-04 Public Subscription Journey & Audience System Integration > proves full journey: request -> confirmation -> preferences -> unsubscribe -> suppression -> re-subscribe  603ms
+[11:38:05] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+ ✓ tests/integration/phase-b-publisher-acceptance.integration.test.ts (4 tests) 536ms
+[11:38:07] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[11:38:08] [32mINFO[39m: [36mCanonical neutral demo information architecture is ready.[39m
+ ✓ tests/integration/pre-04-reusable-composition.integration.test.ts (5 tests) 2326ms
+ ✓ tests/integration/flow-05-localization-pass-gate.integration.test.ts (3 tests) 20ms
+[11:38:12] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[11:38:15] [32mINFO[39m: [36mCanonical neutral demo information architecture is ready.[39m
+ ✓ tests/integration/med-03-variants.integration.test.ts (1 test) 4743ms
+   ✓ MED-03 image variant lifecycle & governance integration > exercises real image upload, metadata extraction, variant generation, delivery headers, crop regeneration, and GC protection  2423ms
+[11:38:19] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[11:38:22] [32mINFO[39m: [36mCanonical neutral demo information architecture is ready.[39m
+stderr | tests/integration/editorial-acceptance.integration.test.ts > M04-C editorial acceptance > creates, reviews, previews, schedules, publishes exactly once, restores, and prevents embargo leakage
+Failed to revalidate paths: Error: Invariant: static generation store missing in revalidatePath /articles/m04-c-op-ed-49698373
+    at revalidate (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\node_modules\next\src\server\web\spec-extension\revalidate.ts:135:11)
+    at revalidatePath (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\node_modules\next\src\server\web\spec-extension\revalidate.ts:125:10)
+    at persistWorkflow (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\src\modules\editorial\persistence.ts:553:7)
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at publishScheduledArticleUnlocked (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\src\modules\editorial\persistence.ts:1018:3)
+    at withExecutionLock (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\src\modules\operations\execution-lock.ts:26:12)
+    at handler (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\src\modules\editorial\tasks.ts:32:23)
+    at Object.editorial-publish (file:///C:/Projects/RENEGADE%20CMS/rc08c-final-01908f3/node_modules/payload/dist/queues/operations/runJobs/runJob/getRunTaskFunction.js:65:37)
+    at handler (file:///C:/Projects/RENEGADE%20CMS/rc08c-final-01908f3/node_modules/payload/dist/queues/operations/runJobs/index.js:260:25)
+    at runJob (file:///C:/Projects/RENEGADE%20CMS/rc08c-final-01908f3/node_modules/payload/dist/queues/operations/runJobs/runJob/index.js:9:9)
+
+[11:38:25] [32mINFO[39m:
+    [35mevent[39m: "editorial.job.publish"
+    [35marticleId[39m: "4f322ab2-0003-4450-a5b0-7a057e4582c5"
+    [35midempotencyKey[39m: "schedule-49698373"
+    [35mpublished[39m: true
+    [35mqueue[39m: "operations"
+stderr | tests/integration/editorial-acceptance.integration.test.ts > M04-C editorial acceptance > creates, reviews, previews, schedules, publishes exactly once, restores, and prevents embargo leakage
+Failed to revalidate paths: Error: Invariant: static generation store missing in revalidatePath /articles/m04-c-op-ed-49698373
+    at revalidate (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\node_modules\next\src\server\web\spec-extension\revalidate.ts:135:11)
+    at revalidatePath (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\node_modules\next\src\server\web\spec-extension\revalidate.ts:125:10)
+    at persistWorkflow (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\src\modules\editorial\persistence.ts:553:7)
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at C:\Projects\RENEGADE CMS\rc08c-final-01908f3\tests\integration\editorial-acceptance.integration.test.ts:240:5
+    at file:///C:/Projects/RENEGADE%20CMS/rc08c-final-01908f3/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20
+
+stderr | tests/integration/editorial-acceptance.integration.test.ts > M04-C editorial acceptance > creates, reviews, previews, schedules, publishes exactly once, restores, and prevents embargo leakage
+Failed to revalidate paths: Error: Invariant: static generation store missing in revalidatePath /articles/m04-c-op-ed-49698373
+    at revalidate (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\node_modules\next\src\server\web\spec-extension\revalidate.ts:135:11)
+    at revalidatePath (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\node_modules\next\src\server\web\spec-extension\revalidate.ts:125:10)
+    at persistWorkflow (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\src\modules\editorial\persistence.ts:553:7)
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at C:\Projects\RENEGADE CMS\rc08c-final-01908f3\tests\integration\editorial-acceptance.integration.test.ts:269:5
+    at file:///C:/Projects/RENEGADE%20CMS/rc08c-final-01908f3/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20
+
+ ✓ tests/integration/editorial-acceptance.integration.test.ts (2 tests) 7323ms
+   ✓ M04-C editorial acceptance > creates, reviews, previews, schedules, publishes exactly once, restores, and prevents embargo leakage  4671ms
+   ✓ M04-C editorial acceptance > promotes a public discussion post into an editorial draft while keeping the original post intact  303ms
+ ✓ tests/integration/integrations-admin-api.integration.test.ts (8 tests) 12ms
+[11:38:30] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+ ✓ tests/integration/setup-first-run.integration.test.ts (6 tests) 4012ms
+   ✓ first-run onboarding provisioning > creates the owner profile with a valid, unique handle  354ms
+   ✓ first-run onboarding provisioning > is idempotent: re-running keeps the same owner profile handle  338ms
+   ✓ first-run onboarding provisioning > exercises full Lean profile lifecycle with publishing defaults  967ms
+   ✓ first-run onboarding provisioning > exercises full Standard profile lifecycle with publishing defaults  2043ms
+[11:38:35] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[11:38:37] [32mINFO[39m: [36mCanonical neutral demo information architecture is ready.[39m
+ ✓ tests/integration/media-acceptance.integration.test.ts (1 test) 2799ms
+   ✓ M10 media publication acceptance > fixture-syncs an episode and a video twice, publishes ordered book chapters, and preserves derived media boundaries  874ms
+[11:38:40] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[11:38:42] [32mINFO[39m: [36mCanonical neutral demo information architecture is ready.[39m
+ ✓ tests/integration/med-01-upload-sessions.integration.test.ts (1 test) 2472ms
+   ✓ MED-01 durable upload sessions PostgreSQL integration > exercises complete session lifecycle: creation, chunking, idempotency, finalization, recovery, cancel, cleanup, and attachment  577ms
+[11:38:44] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+ ✓ tests/integration/rc03-restart-recovery.integration.test.ts (2 tests) 18378ms
+   ✓ RC03 real durable jobs and local federation boundary > durable pending publication survives competing fresh job runners and publishes one canonical revision  13540ms
+   ✓ RC03 real durable jobs and local federation boundary > queues one local signed outbox message and truthfully retains a deliberate inbox failure  4757ms
+[11:39:04] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+ ✓ tests/integration/pre-05-legacy-migration.integration.test.ts (1 test) 2435ms
+   ✓ PRE-05 Legacy Site Migration Integration Tests > executes end-to-end migration into isolated site, verifies database records, activates, and cleanly rolls back  2293ms
+[11:39:08] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[11:39:10] [32mINFO[39m: [36mCanonical neutral demo information architecture is ready.[39m
+stderr | tests/integration/flow-00-editorial-pass-gate.integration.test.ts > FLOW-00 editorial pass gate integration > proves full FLOW-00 contract: draft -> review -> quality gate waiver -> schedule -> worker -> publish -> last-public-revision protection -> unpublish -> archive
+Failed to revalidate paths: Error: Invariant: static generation store missing in revalidatePath /articles/flow-00-pass-gate-43dd91e7
+    at revalidate (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\node_modules\next\src\server\web\spec-extension\revalidate.ts:135:11)
+    at revalidatePath (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\node_modules\next\src\server\web\spec-extension\revalidate.ts:125:10)
+    at persistWorkflow (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\src\modules\editorial\persistence.ts:553:7)
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at publishScheduledArticleUnlocked (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\src\modules\editorial\persistence.ts:1018:3)
+    at withExecutionLock (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\src\modules\operations\execution-lock.ts:26:12)
+    at reconcileScheduledPublishJobs (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\src\modules\editorial\persistence.ts:1134:23)
+    at C:\Projects\RENEGADE CMS\rc08c-final-01908f3\tests\integration\flow-00-editorial-pass-gate.integration.test.ts:163:30
+    at file:///C:/Projects/RENEGADE%20CMS/rc08c-final-01908f3/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20
+
+stderr | tests/integration/flow-00-editorial-pass-gate.integration.test.ts > FLOW-00 editorial pass gate integration > proves full FLOW-00 contract: draft -> review -> quality gate waiver -> schedule -> worker -> publish -> last-public-revision protection -> unpublish -> archive
+Failed to revalidate paths: Error: Invariant: static generation store missing in revalidatePath /articles/flow-00-pass-gate-43dd91e7
+    at revalidate (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\node_modules\next\src\server\web\spec-extension\revalidate.ts:135:11)
+    at revalidatePath (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\node_modules\next\src\server\web\spec-extension\revalidate.ts:125:10)
+    at persistWorkflow (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\src\modules\editorial\persistence.ts:553:7)
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at C:\Projects\RENEGADE CMS\rc08c-final-01908f3\tests\integration\flow-00-editorial-pass-gate.integration.test.ts:182:5
+    at file:///C:/Projects/RENEGADE%20CMS/rc08c-final-01908f3/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20
+
+stderr | tests/integration/flow-00-editorial-pass-gate.integration.test.ts > FLOW-00 editorial pass gate integration > proves full FLOW-00 contract: draft -> review -> quality gate waiver -> schedule -> worker -> publish -> last-public-revision protection -> unpublish -> archive
+Failed to revalidate paths: Error: Invariant: static generation store missing in revalidatePath /articles/flow-00-pass-gate-43dd91e7
+    at revalidate (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\node_modules\next\src\server\web\spec-extension\revalidate.ts:135:11)
+    at revalidatePath (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\node_modules\next\src\server\web\spec-extension\revalidate.ts:125:10)
+    at persistWorkflow (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\src\modules\editorial\persistence.ts:553:7)
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at C:\Projects\RENEGADE CMS\rc08c-final-01908f3\tests\integration\flow-00-editorial-pass-gate.integration.test.ts:217:5
+    at file:///C:/Projects/RENEGADE%20CMS/rc08c-final-01908f3/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20
+
+ ✓ tests/integration/flow-00-editorial-pass-gate.integration.test.ts (1 test) 4939ms
+   ✓ FLOW-00 editorial pass gate integration > proves full FLOW-00 contract: draft -> review -> quality gate waiver -> schedule -> worker -> publish -> last-public-revision protection -> unpublish -> archive  3125ms
+[11:39:15] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+ ✓ tests/integration/pre-01-theme-lifecycle.integration.test.ts (2 tests) 715ms
+[11:39:17] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+stderr | tests/integration/flow-03-scheduler-api.integration.test.ts > FLOW-03 Scheduling & Calendar Integration Suite > 3. Worker lease locking & idempotent execution publishes ONLY the target approved revision
+Failed to revalidate paths: Error: Invariant: static generation store missing in revalidatePath /articles/flow-03-sched-06fcf164
+    at revalidate (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\node_modules\next\src\server\web\spec-extension\revalidate.ts:135:11)
+    at revalidatePath (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\node_modules\next\src\server\web\spec-extension\revalidate.ts:125:10)
+    at persistWorkflow (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\src\modules\editorial\persistence.ts:553:7)
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at publishScheduledArticleUnlocked (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\src\modules\editorial\persistence.ts:1018:3)
+    at withExecutionLock (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\src\modules\operations\execution-lock.ts:26:12)
+    at executeScheduledPublishJobUnlocked (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\src\modules\editorial\scheduler.ts:172:5)
+    at withExecutionLock (C:\Projects\RENEGADE CMS\rc08c-final-01908f3\src\modules\operations\execution-lock.ts:26:12)
+    at C:\Projects\RENEGADE CMS\rc08c-final-01908f3\tests\integration\flow-03-scheduler-api.integration.test.ts:172:21
+    at file:///C:/Projects/RENEGADE%20CMS/rc08c-final-01908f3/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20
+
+ ✓ tests/integration/flow-03-scheduler-api.integration.test.ts (5 tests) 2661ms
+   ✓ FLOW-03 Scheduling & Calendar Integration Suite > 1. Schedules an article around a DST edge in test timezone America/Chicago  346ms
+   ✓ FLOW-03 Scheduling & Calendar Integration Suite > 2. Creating a newer draft (rev sequence N+1) post-schedule does NOT alter scheduled target revision  371ms
+   ✓ FLOW-03 Scheduling & Calendar Integration Suite > 3. Worker lease locking & idempotent execution publishes ONLY the target approved revision  768ms
+[11:39:22] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+ ✓ tests/integration/ai-control-plane.integration.test.ts (1 test) 5356ms
+   ✓ AI control plane persistence > stores an encrypted credential and review decision across database reads  5096ms
+[11:39:29] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+ ✓ tests/integration/shop-08-local-donation-checkout.integration.test.ts (1 test) 1524ms
+   ✓ SHOP-08 local donation checkout through public routes and durable payment job > settles one gift, one order and one receipt across a replay  1523ms
+ ✓ tests/integration/experiences-runtime.integration.test.ts (3 tests) 6ms
+[11:39:32] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[11:39:34] [32mINFO[39m: [36mCanonical neutral demo information architecture is ready.[39m
+ ✓ tests/integration/long-form-quality-center.integration.test.ts (1 test) 2199ms
+   ✓ long-form and Quality Center acceptance > publishes ordered chapters, preserves a chapter redirect, and retains deterministic quality lifecycle state  369ms
+[11:39:36] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[11:39:38] [32mINFO[39m: [36mCanonical neutral demo information architecture is ready.[39m
+ ✓ tests/integration/page-builder-acceptance.integration.test.ts (3 tests) 2128ms
+[11:39:40] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[11:39:42] [32mINFO[39m: [36mCanonical neutral demo information architecture is ready.[39m
+ ✓ tests/integration/content-release-acceptance.integration.test.ts (1 test) 2728ms
+   ✓ coordinated content release acceptance > durably schedules and releases an approved product once  451ms
+ ✓ tests/integration/flow-01-workflow-api.integration.test.ts (3 tests) 4ms
+[11:39:44] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[11:39:46] [32mINFO[39m: [36mCanonical neutral demo information architecture is ready.[39m
+ ✓ tests/integration/discoverability-acceptance.integration.test.ts (1 test) 2129ms
+[11:39:48] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+ ✓ tests/integration/installation.integration.test.ts (3 tests) 197ms
+[11:39:50] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[11:39:50] [32mINFO[39m:
+    [35mevent[39m: "operations.job.heartbeat"
+    [35mobservedAt[39m: "2026-10-06T16:39:50.782Z"
+    [35mversion[39m: "0.1.0-dev"
+[11:39:50] [33mWARN[39m:
+    [35mevent[39m: "operations.job.forced_failure"
+    [35mjobId[39m: "a88502a1-e230-4d82-b3b6-7399b7b95804"
+    [35mmarker[39m: "a1e2f1ea-e3b3-4278-9e12-3f318ea6b7f3"
+    [35mattempt[39m: 1
+[11:39:50] [31mERROR[39m:
+    [35mevent[39m: "operations.job.attempt_failed"
+    [35mjobId[39m: "a88502a1-e230-4d82-b3b6-7399b7b95804"
+    [35mattempt[39m: 1
+[11:39:50] [33mWARN[39m:
+    [35mevent[39m: "operations.job.forced_failure"
+    [35mjobId[39m: "a88502a1-e230-4d82-b3b6-7399b7b95804"
+    [35mmarker[39m: "a1e2f1ea-e3b3-4278-9e12-3f318ea6b7f3"
+    [35mattempt[39m: 2
+[11:39:50] [31mERROR[39m:
+    [35mevent[39m: "operations.job.attempt_failed"
+    [35mjobId[39m: "a88502a1-e230-4d82-b3b6-7399b7b95804"
+    [35mattempt[39m: 2
+[11:39:51] [33mWARN[39m:
+    [35mevent[39m: "operations.job.forced_failure"
+    [35mjobId[39m: "a88502a1-e230-4d82-b3b6-7399b7b95804"
+    [35mmarker[39m: "a1e2f1ea-e3b3-4278-9e12-3f318ea6b7f3"
+    [35mattempt[39m: 3
+[11:39:51] [31mERROR[39m:
+    [35mevent[39m: "operations.job.attempt_failed"
+    [35mjobId[39m: "a88502a1-e230-4d82-b3b6-7399b7b95804"
+    [35mattempt[39m: 3
+ ✓ tests/integration/operations-jobs.integration.test.ts (3 tests) 10443ms
+   ✓ PostgreSQL operations jobs > uses bounded exponential retry and retains terminal failure evidence  489ms
+   ✓ PostgreSQL operations jobs > runs a future-scheduled job after the queueing process has exited  9745ms
+ ✓ tests/integration/upgrade-migration.integration.test.ts (1 test) 2ms
+[11:40:03] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+ ✓ tests/integration/payload-postgres.integration.test.ts (1 test) 287ms
+
+ Test Files  46 passed (46)
+      Tests  261 passed (261)
+   Start at  11:35:53
+   Duration  250.50s (transform 2.80s, setup 0ms, collect 66.82s, tests 173.79s, environment 6ms, prepare 2.87s)
+
+
+==> verify:release [production build]
+
+> renegade-cms@0.1.0 build
+> node scripts/build.mjs
+
+▲ Next.js 16.3.8 (Turbopack)
+✓ Running next.config.ts took 1027ms
+- Experiments (use with caution):
+  ⨯ turbopackServerFastRefresh
+  ✓ webpackMemoryOptimizations
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 32.3s
+  Running TypeScript ...
+  Finished TypeScript in 19.6s ...
+  Collecting page data using 7 workers ...
+  Generating static pages using 7 workers (0/139) ...
+  Generating static pages using 7 workers (34/139) 
+  Generating static pages using 7 workers (69/139) 
+  Generating static pages using 7 workers (104/139) 
+✓ Generating static pages using 7 workers (139/139) in 299ms
+  Finalizing page optimization ...
+
+Route (app)
+┌ ƒ /
+├ ○ /_not-found
+├ ƒ /.well-known/nodeinfo
+├ ƒ /.well-known/webfinger
+├ ƒ /[...path]
+├ ƒ /admin/[[...segments]]
+├ ƒ /admin/ai
+├ ƒ /admin/audience
+├ ƒ /admin/catalog
+├ ƒ /admin/catalog/preview/[id]
+├ ƒ /admin/commerce
+├ ƒ /admin/fulfillment
+├ ƒ /admin/migration
+├ ƒ /admin/releases
+├ ƒ /admin/social
+├ ƒ /admin/telemetry
+├ ƒ /admin/workflow
+├ ƒ /ap/actors/[handle]
+├ ƒ /ap/actors/[handle]/followers
+├ ƒ /ap/actors/[handle]/following
+├ ƒ /ap/actors/[handle]/inbox
+├ ƒ /ap/actors/[handle]/outbox
+├ ƒ /api/[...slug]
+├ ƒ /api/admin/ai/connections
+├ ƒ /api/admin/ai/preview
+├ ƒ /api/admin/ai/proposals
+├ ƒ /api/admin/ai/proposals/[id]
+├ ƒ /api/admin/ai/sites
+├ ƒ /api/admin/audience/command-center
+├ ƒ /api/admin/audience/intake
+├ ƒ /api/admin/audience/retry
+├ ƒ /api/admin/calendar/schedule
+├ ƒ /api/admin/catalog
+├ ƒ /api/admin/catalog/import
+├ ƒ /api/admin/commerce/affiliate
+├ ƒ /api/admin/commerce/dashboard
+├ ƒ /api/admin/commerce/donations
+├ ƒ /api/admin/commerce/receipts/[orderId]/resend
+├ ƒ /api/admin/commerce/reconcile
+├ ƒ /api/admin/commerce/refunds
+├ ƒ /api/admin/commerce/subscriptions
+├ ƒ /api/admin/commerce/subscriptions/grant
+├ ƒ /api/admin/content/preview
+├ ƒ /api/admin/discovery
+├ ƒ /api/admin/discovery/ai-suggestion/accept
+├ ƒ /api/admin/discovery/audit
+├ ƒ /api/admin/indexing/export
+├ ƒ /api/admin/indexing/search/reconcile
+├ ƒ /api/admin/integrations
+├ ƒ /api/admin/navigation
+├ ƒ /api/admin/notifications
+├ ƒ /api/admin/redirects
+├ ƒ /api/admin/redirects/export
+├ ƒ /api/admin/redirects/import
+├ ƒ /api/admin/releases
+├ ƒ /api/admin/releases/[id]
+├ ƒ /api/admin/schedule-health
+├ ƒ /api/admin/semantic-url/preview
+├ ƒ /api/admin/social/accounts
+├ ƒ /api/admin/social/analytics
+├ ƒ /api/admin/social/dispatch
+├ ƒ /api/admin/social/worker
+├ ƒ /api/admin/starters
+├ ƒ /api/admin/telemetry/dashboard
+├ ƒ /api/admin/telemetry/experiment/winner
+├ ƒ /api/admin/telemetry/funnel
+├ ƒ /api/admin/themes
+├ ƒ /api/admin/translations
+├ ƒ /api/admin/webhooks
+├ ƒ /api/admin/workflow/actions
+├ ƒ /api/admin/workflow/audit
+├ ƒ /api/admin/workflow/bulk
+├ ƒ /api/admin/workflow/command-center
+├ ƒ /api/admin/workflow/comments
+├ ƒ /api/admin/workflow/queues
+├ ƒ /api/admin/workflow/templates
+├ ƒ /api/analytics/collect
+├ ƒ /api/analytics/consent
+├ ƒ /api/analytics/report
+├ ƒ /api/auth/logout
+├ ƒ /api/auth/passkey/complete
+├ ƒ /api/auth/passkey/options
+├ ƒ /api/auth/passkeys
+├ ƒ /api/auth/recovery
+├ ƒ /api/calendar/export
+├ ƒ /api/commerce/affiliate/conversions
+├ ƒ /api/commerce/affiliate/redirect
+├ ƒ /api/commerce/cart
+├ ƒ /api/commerce/cart/merge
+├ ƒ /api/commerce/checkout/initiate
+├ ƒ /api/commerce/checkout/status
+├ ƒ /api/commerce/checkout/test/confirm
+├ ƒ /api/commerce/crypto/verify
+├ ƒ /api/commerce/donations/campaign/[campaignId]
+├ ƒ /api/commerce/donations/intent
+├ ƒ /api/commerce/donations/privacy
+├ ƒ /api/commerce/download/[grantKey]
+├ ƒ /api/commerce/proposal
+├ ƒ /api/commerce/referrals/claim
+├ ƒ /api/commerce/subscriptions
+├ ƒ /api/commerce/subscriptions/checkout
+├ ƒ /api/commerce/webhooks/[provider]
+├ ƒ /api/community/blocks
+├ ƒ /api/community/comments
+├ ƒ /api/community/conversations
+├ ƒ /api/community/conversations/[conversationId]
+├ ƒ /api/community/directory
+├ ƒ /api/community/history
+├ ƒ /api/community/message-requests
+├ ƒ /api/community/messages
+├ ƒ /api/community/messages/report
+├ ƒ /api/community/moderation
+├ ƒ /api/community/moderation-sites
+├ ƒ /api/community/moderation/appeals
+├ ƒ /api/community/notification-preferences
+├ ƒ /api/community/notification-unsubscribe
+├ ƒ /api/community/notifications
+├ ƒ /api/community/posts
+├ ƒ /api/community/profiles/[handle]
+├ ƒ /api/community/reactions
+├ ƒ /api/community/relationships
+├ ƒ /api/community/reports
+├ ƒ /api/community/threads
+├ ƒ /api/email/webhook
+├ ƒ /api/experiences/active
+├ ƒ /api/experiences/conversion
+├ ƒ /api/experiences/exposure
+├ ƒ /api/forms/[formId]
+├ ƒ /api/foundation-smoke
+├ ƒ /api/graphql
+├ ƒ /api/graphql-playground
+├ ƒ /api/layouts
+├ ƒ /api/layouts/[id]
+├ ƒ /api/layouts/[id]/choices
+├ ƒ /api/layouts/[id]/rollback
+├ ƒ /api/layouts/overview
+├ ƒ /api/layouts/patterns
+├ ƒ /api/layouts/templates
+├ ƒ /api/media
+├ ƒ /api/media/[id]
+├ ƒ /api/media/[id]/variants
+├ ƒ /api/media/attach
+├ ƒ /api/media/command-center
+├ ƒ /api/media/governance
+├ ƒ /api/media/sessions
+├ ƒ /api/media/sessions/[id]
+├ ƒ /api/media/upload
+├ ƒ /api/member-auth/deactivate
+├ ƒ /api/member-auth/delete
+├ ƒ /api/member-auth/export
+├ ƒ /api/member-auth/link
+├ ƒ /api/member-auth/link/email
+├ ƒ /api/member-auth/link/email/confirm
+├ ƒ /api/member-auth/logout
+├ ƒ /api/member-auth/magic-link/complete
+├ ƒ /api/member-auth/magic-link/request
+├ ƒ /api/member-auth/me
+├ ƒ /api/member-auth/passkey/login/complete
+├ ƒ /api/member-auth/passkey/login/options
+├ ƒ /api/member-auth/passkey/register/complete
+├ ƒ /api/member-auth/passkey/register/options
+├ ƒ /api/member-auth/profile
+├ ƒ /api/member-auth/profile-media
+├ ƒ /api/member-auth/reactivate
+├ ƒ /api/member-auth/sessions
+├ ƒ /api/member-auth/sessions/[id]/revoke
+├ ƒ /api/member-auth/sessions/revoke-all
+├ ƒ /api/member-auth/unlink
+├ ƒ /api/migration/legacy/activate/[runId]
+├ ƒ /api/migration/legacy/execute
+├ ƒ /api/migration/legacy/inspect
+├ ƒ /api/migration/legacy/preflight
+├ ƒ /api/migration/legacy/report/[runId]
+├ ƒ /api/migration/legacy/rollback/[runId]
+├ ƒ /api/operations/diagnostics
+├ ƒ /api/operations/support-bundle
+├ ƒ /api/presentation/export
+├ ƒ /api/presentation/import
+├ ƒ /api/realtime/drafts/[articleId]/checkpoint
+├ ƒ /api/realtime/presence
+├ ƒ /api/realtime/stream
+├ ƒ /api/setup/complete
+├ ƒ /api/setup/options
+├ ƒ /api/setup/readiness
+├ ƒ /api/subscribers/confirm
+├ ƒ /api/subscribers/preferences
+├ ƒ /api/subscribers/subscribe
+├ ƒ /api/subscribers/unsubscribe
+├ ƒ /api/v1/[...segments]
+├ ƒ /api/v1/attachments/presign
+├ ƒ /api/v1/moderation/cases
+├ ƒ /api/v1/moderation/cases/batch
+├ ƒ /api/v1/moderation/cases/export
+├ ƒ /api/v1/notifications
+├ ƒ /api/v1/notifications/[id]/read
+├ ƒ /api/v1/notifications/mark-all-read
+├ ƒ /api/v1/notifications/stream
+├ ƒ /api/v1/sites/[site_id]/comments/[comment_id]/reactions
+├ ƒ /api/v1/sites/[site_id]/spaces/[space_id]
+├ ƒ /api/v1/sites/[site_id]/threads/[thread_id]
+├ ƒ /api/v1/sites/[site_id]/threads/[thread_id]/comments
+├ ƒ /api/v1/sites/[site_id]/threads/[thread_id]/comments/[comment_id]
+├ ƒ /api/v1/sites/[site_id]/threads/[thread_id]/subscriptions
+├ ƒ /api/v1/sites/[site_id]/topics
+├ ƒ /api/v1/sites/[site_id]/topics/[topic_id]
+├ ƒ /api/v1/sites/[site_id]/topics/[topic_id]/read
+├ ƒ /articles
+├ ƒ /articles/[slug]
+├ ƒ /builder/[id]
+├ ƒ /builder/[id]/preview
+├ ƒ /calendar
+├ ƒ /cart
+├ ƒ /checkout/cancel
+├ ƒ /checkout/return
+├ ƒ /checkout/test/[reference]
+├ ƒ /connections
+├ ƒ /donate
+├ ƒ /donate/[campaignId]
+├ ƒ /events
+├ ƒ /events/[slug]/ics
+├ ƒ /events/feed.ics
+├ ƒ /feed.json
+├ ƒ /feed.xml
+├ ƒ /feeds/[scope]/[slug]
+├ ƒ /forms/[formId]
+├ ƒ /forums
+├ ƒ /forums/[forumSlug]
+├ ƒ /forums/[forumSlug]/[topicSlug]
+├ ƒ /graphics-studio
+├ ƒ /guided-setup
+├ ƒ /health/live
+├ ƒ /health/ready
+├ ƒ /login
+├ ƒ /media/[id]
+├ ƒ /member-auth
+├ ƒ /member-auth/verify
+├ ƒ /members
+├ ƒ /members/[handle]
+├ ƒ /members/settings
+├ ƒ /messages
+├ ƒ /network
+├ ƒ /nodeinfo/2.1
+├ ƒ /notifications
+├ ƒ /ops/rebuild-notification-counters
+├ ƒ /podcasts/[slug]
+├ ƒ /podcasts/[slug]/feed.xml
+├ ƒ /podcasts/episodes/[slug]
+├ ƒ /podcasts/episodes/[slug]/chapters.json
+├ ƒ /podcasts/episodes/[slug]/transcript
+├ ƒ /pos
+├ ƒ /preferences
+├ ƒ /preview/article/[token]
+├ ƒ /robots.txt
+├ ƒ /search
+├ ƒ /setup
+├ ƒ /sitemap.xml
+├ ƒ /sitemaps/[page]
+├ ƒ /social-studio
+├ ƒ /store
+├ ƒ /subscribe
+├ ƒ /subscribe/confirm
+├ ƒ /subscribe/preferences
+├ ƒ /unsubscribe
+├ ƒ /video-captions/[id]
+├ ƒ /video-media/[id]/[filename]
+├ ƒ /videos
+└ ƒ /videos/[slug]
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
+Built source 01908f39a3ce40b5eae5d4dec64b981e103d5fb1; clean source: true.
+
+==> verify:release [production boot, health, and persistence smoke]
+
+> renegade-cms@0.1.0 test:smoke
+> tsx tests/smoke/stack.smoke.ts
+
+PASS: Next.js public/admin routes and Payload PostgreSQL persistence are operational.
+PASS: release verification checks completed.
+PASS: clean-clone release verification completed.

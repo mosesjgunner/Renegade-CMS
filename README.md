@@ -1,4 +1,4 @@
-> Historical release snapshot. Current release truth for source SHA e24fc53d9e370e28f01398c561b0f5adc4884756 is the [RC ledger](docs/rc/README.md). Prior VERIFIED/PASS labels and test/migration counts below do not establish current readiness. RC release verdict: BLOCKED; see the ledger and dependency-ordered blockers.
+> Release acceptance: **FAIL / NOT READY**, 2026-10-06. Package version `0.1.0`. Clean source `01908f39a3ce40b5eae5d4dec64b981e103d5fb1`: 1,140 unit and 261 integration tests pass; ordinary Site Settings reload and new staff enrollment fail. See the [final RC report](docs/rc/FINAL_RC_REPORT.md) for exact proof and remaining mandatory gates.
 
 <div align="center">
 
@@ -6,9 +6,8 @@
 
 ### The Sovereign Content & Media Operating System
 
-[![Beta Release](https://img.shields.io/badge/Release-0.1.0--beta.1-blue.svg?style=for-the-badge&logo=rocket)](docs/release/BETA_RELEASE_NOTES.md)
+[![Release Blocked](https://img.shields.io/badge/Release-Blocked-red.svg?style=for-the-badge)](docs/release/BETA_RELEASE_NOTES.md)
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-orange.svg?style=for-the-badge)](LICENSE)
-[![CI Status](https://img.shields.io/badge/CI-Passing-emerald.svg?style=for-the-badge&logo=githubactions)](https://github.com/mosesjgunner/Renegade-CMS/actions)
 [![TypeScript](https://img.shields.io/badge/TypeScript-Strict%200%20Errors-3178C6.svg?style=for-the-badge&logo=typescript)](tsconfig.json)
 [![Next.js 16](https://img.shields.io/badge/Next.js-16%20Turbopack-black.svg?style=for-the-badge&logo=nextdotjs)](https://nextjs.org)
 [![Payload CMS](https://img.shields.io/badge/Payload-3.88-black.svg?style=for-the-badge)](https://payloadcms.com)
@@ -41,12 +40,12 @@ Traditional web publishing has degraded into **SaaS sprawl**: a WordPress site t
 
 ## 🏛️ The Nine Product Surfaces
 
-Renegade CMoS is organized into nine canonical, integrated product surfaces proven through the **SHOP-08** release gate:
+Renegade CMoS is organized into nine product surfaces; current acceptance is recorded in the [RC report](docs/rc/FINAL_RC_REPORT.md):
 
 ```mermaid
 graph TD
     subgraph Core ["Sovereign Kernel & Operations"]
-        OP[Operations, Health & 101 Migrations]
+        OP[Operations, Health & 112 Registered Migrations]
         WF[Workflow & DST-Safe Release Scheduler]
         DS[Discovery, Schema.org & PostgreSQL Search]
     end
@@ -69,15 +68,15 @@ graph TD
 
 | #     | Surface                               | Status            | Highlights                                                                                                                                                                                                           |
 | ----- | ------------------------------------- | ----------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| **1** | **Editorial Floor**                   | `Production Core` | Canonical document model, multi-author workflows, Lexical rich-text AST, revision history, preview tokens, and unpublishing safety guards.                                                                           |
+| **1** | **Editorial Floor**                   | `Acceptance open` | Canonical document model, multi-author workflows, Lexical rich-text AST, revision history, preview tokens, and unpublishing safety guards.                                                                           |
 | **2** | **Presentation & Page Builder**       | `Beta Module`     | Isolated Puck visual editor (0 byte bundle leak to public routes), custom theme tokens, layout IR schemas, global shell slots (`header`, `footer`, `announcement`, `cta`), and legacy WordPress/WXR site migrations. |
 | **3** | **Media & DAM Governance**            | `Beta Module`     | Sharp responsive variant generation, interactive canvas image editor, audio/podcast ID3 metadata parser, chunked upload sessions, rights/consent governance, and tombstone lifecycle.                                |
-| **4** | **Discovery & Distribution**          | `Production Core` | Native PostgreSQL `tsvector` full-text search projections, Schema.org JSON-LD graphs, auto-updating sitemaps, RSS 2.0 / JSON Feed 1.1 / ICS syndication, and 308 redirect loop prevention.                           |
-| **5** | **Workflow & Scheduled Releases**     | `Production Core` | Multi-stage review queues, quality assurance gates, DST-safe worker execution, lease locking, and coordinated atomic releases.                                                                                       |
+| **4** | **Discovery & Distribution**          | `Acceptance open` | Native PostgreSQL `tsvector` full-text search projections, Schema.org JSON-LD graphs, auto-updating sitemaps, RSS 2.0 / JSON Feed 1.1 / ICS syndication, and 308 redirect loop prevention.                           |
+| **5** | **Workflow & Scheduled Releases**     | `Acceptance open` | Multi-stage review queues, quality assurance gates, DST-safe worker execution, lease locking, and coordinated atomic releases.                                                                                       |
 | **6** | **Audience & Sovereign Telecom**      | `Beta Module`     | Double opt-in consent lifecycle, preference centers, responsive email compilation, RFC compliant direct-to-MX SMTP transport, and quiet-hours-compliant SMS/RCS telecom emulators.                                   |
 | **7** | **Community & Real-Time Interaction** | `Beta Module`     | WebAuthn passkey member authentication, privacy profiles, nested discussion trees, forum spaces, topic locking, moderation triage, and direct messaging with attachments.                                            |
 | **8** | **Commerce Command Center**           | `Beta Module`     | Server-authoritative totals, cart tamper-proofing, deterministic payment webhooks, subscription dunning, donation anonymity walls, affiliate referral tracking, and POD preflight.                                   |
-| **9** | **Operations, Backup & Restore**      | `Production Core` | 101/101 fresh database migrations, upgrade migration rehearsal, maintenance windows, isolated backup manifest generation, and cold-start restore readiness.                                                          |
+| **9** | **Operations, Backup & Restore**      | `Acceptance open` | 112 fresh migrations and fixture upgrade pass; accounts/settings/media backup and separate restore pass. Complete business-state restore remains open.                                                               |
 
 ---
 
@@ -206,12 +205,12 @@ npm run lint                 # ESLint 9 (0 errors, 0 warnings)
 npm run format:check         # Prettier compliance (100%)
 
 # Test suites
-npm run test                 # Unit test suite (147 test files, 983 tests passed)
+npm run test                 # Unit test suite; commit-bound results in docs/rc/FINAL_RC_REPORT.md
 npm run test:integration     # Integration suite with live PostgreSQL 17
 npm run verify:presentation-bundles  # Proof of 0 Puck bundle leaks to public routes
 
 # Database migration gates
-npm run test:migrations:fresh    # 101/101 fresh migration verification
+npm run test:migrations:fresh    # Fresh migration verification; commit-bound results in docs/rc/FINAL_RC_REPORT.md
 npm run test:migrations:upgrade  # Non-destructive upgrade migration rehearsal
 ```
 
@@ -234,7 +233,7 @@ Renegade-CMS/
 │   │   ├── media/           # Sharp variant generator, canvas editor, DAM governance
 │   │   ├── presentation/    # Puck visual builder, design tokens, theme packages
 │   │   └── workflow/        # DST-safe scheduling engine & distributed lease locks
-│   └── migrations/          # 101 versioned database migrations
+│   └── migrations/          # Registered database migrations; see the RC report
 ├── compose.production.yaml  # Production Docker Compose specification
 ├── install.sh               # Autonomous VPS installation & verification script
 ├── docs/                    # Architectural decision records, release runbooks & guides

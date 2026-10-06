@@ -1,0 +1,73 @@
+{
+  "sourceSha": "01908f39a3ce40b5eae5d4dec64b981e103d5fb1",
+  "packageVersion": "0.1.0",
+  "verdict": "FAIL / NOT READY",
+  "releaseCommand": {
+    "command": "npm.cmd run verify:release",
+    "exitCode": 0
+  },
+  "unit": {
+    "files": 175,
+    "passed": 1140,
+    "failed": 0,
+    "skipped": 0
+  },
+  "integration": {
+    "files": 46,
+    "passed": 261,
+    "failed": 0,
+    "skipped": 0
+  },
+  "migrations": {
+    "registered": 112,
+    "freshApplied": 112,
+    "upgradeFixtureBaselineOrdinal": 56,
+    "upgradeSubsequent": 56,
+    "authenticCustomerUpgrade": "UNEXECUTED"
+  },
+  "browser": {
+    "passed": 4,
+    "failed": 2,
+    "skipped": 0,
+    "passedCases": [
+      "existing owner additional passkey",
+      "owner governed media upload",
+      "production image owner login",
+      "restored image owner login"
+    ],
+    "failedCases": [
+      "core site settings reload",
+      "new staff first passkey enrollment"
+    ]
+  },
+  "backup": {
+    "exitCode": 0,
+    "scope": "accounts/settings/governed media"
+  },
+  "restore": {
+    "exitCode": 0,
+    "matchedPublicTables": 306,
+    "totalPublicTables": 309,
+    "changedWorkerTables": [
+      "payload_jobs",
+      "payload_jobs_log",
+      "payload_jobs_stats"
+    ],
+    "matchedAssetFiles": 21,
+    "fullBusinessStateAcceptance": "UNEXECUTED"
+  },
+  "mandatoryOpen": [
+    "native editor reload",
+    "ordinary staff enrollment",
+    "authenticated tenant and object authorization",
+    "profiles and live actions",
+    "ordinary commerce and providers",
+    "dependency graph and reachability adjudication",
+    "runtime security negatives",
+    "canonical golden A-T",
+    "business worker recovery",
+    "full business-state restore",
+    "authentic predecessor upgrade",
+    "complete installer journey"
+  ]
+}

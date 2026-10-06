@@ -1,3 +1,11 @@
+> RC-08C current verdict (2026-10-06): **FAIL / NOT READY**. Tested clean source `01908f39a3ce40b5eae5d4dec64b981e103d5fb1`. [Final report](FINAL_RC_REPORT.md); [dependency-ordered repair cards](repairs/RC08C-closure-blockers.md); [exact checks](evidence/rc-08c-2026-10-06/checks.json).
+
+No real-provider commerce/delivery acceptance was executed. Printful unsupported upload/preflight/cost paths remain unavailable. HTTPS integration fixtures and SQL/contract suites are local acceptance, not provider settlement proof.
+
+All snapshots below are historical. Their PASS, VERIFIED, source SHA and count statements apply only to their recorded scope and do not override RC-08C.
+
+---
+
 # Provider matrix
 
 ## RC-04 Pass 2 provider limit — 2026-10-04

@@ -1,0 +1,9 @@
+{
+  "sourceSha": "01908f39a3ce40b5eae5d4dec64b981e103d5fb1",
+  "userCreated": 201,
+  "userId": "40bff487-fa6d-4bd8-a703-57d4a538913d",
+  "firstEnrollmentStatus": 401,
+  "firstEnrollmentError": {
+    "error": "Sign in is required."
+  }
+}

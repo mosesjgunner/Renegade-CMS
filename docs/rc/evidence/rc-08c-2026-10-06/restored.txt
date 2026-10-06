@@ -1,0 +1,8 @@
+
+Running 1 test using 1 worker
+
+(node:34776) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 scratch\rc08c\operator-probes.spec.ts:52:1 › RC-08C: preserved owner hardware signs in to the running production image (3.6s)
+
+  1 passed (4.7s)

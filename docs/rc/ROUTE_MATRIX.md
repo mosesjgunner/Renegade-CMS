@@ -1,3 +1,11 @@
+> RC-08C current verdict (2026-10-06): **FAIL / NOT READY**. Tested clean source `01908f39a3ce40b5eae5d4dec64b981e103d5fb1`. [Final report](FINAL_RC_REPORT.md); [dependency-ordered repair cards](repairs/RC08C-closure-blockers.md); [exact checks](evidence/rc-08c-2026-10-06/checks.json).
+
+Observed: core Site Settings reload fails after save; new STAFF enrollment/login fails. Owner media and security actions pass. Restored public theme/readiness pass; anonymous protected integrations/intake deny, private unreferenced media and production smoke return 404. Authenticated cross-site/object matrices and Lean/Standard coverage remain open.
+
+All snapshots below are historical. Their PASS, VERIFIED, source SHA and count statements apply only to their recorded scope and do not override RC-08C.
+
+---
+
 # Route matrix
 
 Source candidate: `e24fc53d9e370e28f01398c561b0f5adc4884756`. Reconciled 2026-10-03. Initial working tree was clean. This documentation freeze binds the source candidate; its artifact commit is discoverable with git log -- docs/rc. It does not establish runtime release readiness.

@@ -1,3 +1,11 @@
+> RC-08C current verdict (2026-10-06): **FAIL / NOT READY**. Tested clean source `01908f39a3ce40b5eae5d4dec64b981e103d5fb1`. [Final report](FINAL_RC_REPORT.md); [dependency-ordered repair cards](repairs/RC08C-closure-blockers.md); [exact checks](evidence/rc-08c-2026-10-06/checks.json).
+
+New bounded proof: owner additional passkey, governed media upload, theme draft/activation, production image owner login and accounts/settings/media restore. Full role/action, publication, commerce, community and security acceptance is not promoted.
+
+All snapshots below are historical. Their PASS, VERIFIED, source SHA and count statements apply only to their recorded scope and do not override RC-08C.
+
+---
+
 # Capability ledger
 
 ## RC-04 Pass 2 verified subset — 2026-10-04

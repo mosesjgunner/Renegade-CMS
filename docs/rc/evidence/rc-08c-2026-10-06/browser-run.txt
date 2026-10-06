@@ -1,0 +1,49 @@
+
+Running 1 test using 1 worker
+
+(node:16004) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[11:41:32] WARN: No email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.
+  x  1 scratch\rc08c\browser\site-build.spec.ts:9:1 › RC-02: ordinary operator builds Renegade Party Dispatch from an empty install (13.7s)
+
+
+  1) scratch\rc08c\browser\site-build.spec.ts:9:1 › RC-02: ordinary operator builds Renegade Party Dispatch from an empty install › Site settings through the normal admin form 
+
+    Error: expect(locator).toHaveValue(expected) failed
+
+    Locator: getByLabel('Footer Text', { exact: true })
+    Expected: "Renegade Party Dispatch — independent reporting for an accountable republic."
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toHaveValue" with timeout 5000ms
+      - waiting for getByLabel('Footer Text', { exact: true })
+
+
+      120 |       expect((await settingsSaved).status()).toBe(200)
+      121 |       await page.reload()
+    > 122 |       await expect(page.getByLabel('Footer Text', { exact: true })).toHaveValue(
+          |                                                                     ^
+      123 |         'Renegade Party Dispatch — independent reporting for an accountable republic.',
+      124 |       )
+      125 |       const settings = await api('GET', '/api/globals/site-settings?depth=0')
+        at C:\Projects\RENEGADE CMS\rc08c-final-01908f3\scratch\rc08c\browser\site-build.spec.ts:122:69
+        at C:\Projects\RENEGADE CMS\rc08c-final-01908f3\scratch\rc08c\browser\site-build.spec.ts:108:5
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    scratch\rc08c\browser\test-results\rc02\site-build-RC-02-ordinary--62930-patch-from-an-empty-install\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: scratch\rc08c\browser\test-results\rc02\site-build-RC-02-ordinary--62930-patch-from-an-empty-install\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    scratch\rc08c\browser\test-results\rc02\site-build-RC-02-ordinary--62930-patch-from-an-empty-install\trace.zip
+    Usage:
+
+        npx playwright show-trace scratch\rc08c\browser\test-results\rc02\site-build-RC-02-ordinary--62930-patch-from-an-empty-install\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    scratch\rc08c\browser\site-build.spec.ts:9:1 › RC-02: ordinary operator builds Renegade Party Dispatch from an empty install 

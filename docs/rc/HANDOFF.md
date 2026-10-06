@@ -1,3 +1,11 @@
+> RC-08C current verdict (2026-10-06): **FAIL / NOT READY**. Tested clean source `01908f39a3ce40b5eae5d4dec64b981e103d5fb1`. [Final report](FINAL_RC_REPORT.md); [dependency-ordered repair cards](repairs/RC08C-closure-blockers.md); [exact checks](evidence/rc-08c-2026-10-06/checks.json).
+
+Repair native lock-owner reload, then supported first staff passkey enrollment and canonical site/member grants. Continue tenant/object authorization, profiles/actions, commerce, dependency/security adjudication, canonical golden A-T, business recovery and complete business-state restore. Freeze a new clean SHA and restart affected gates. No tag, push or release is authorized by this verdict.
+
+All snapshots below are historical. Their PASS, VERIFIED, source SHA and count statements apply only to their recorded scope and do not override RC-08C.
+
+---
+
 ## RC-08B Deferred Capability Promotion handoff — PASS — 2026-10-06
 
 Following the RC-08A unit repair, this pass investigated every deferred, disabled, unavailable, and 410 capability in the codebase. Fourteen capabilities were successfully promoted and verified with executable evidence:

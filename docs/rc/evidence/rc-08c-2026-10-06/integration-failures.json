@@ -1,0 +1,78 @@
+[
+  {
+    "file": "C:/Projects/RENEGADE CMS/rc08c-candidate/tests/integration/aud-08-audience-pass-gate.integration.test.ts",
+    "message": "",
+    "failed": [
+      {
+        "test": "AUD-08 Audience Pass Gate — Comprehensive End-to-End Acceptance Integration 8. Composes SMS/RCS variants, handles RCS fallback, enforces quiet hours, processes STOP/HELP keywords via emulator",
+        "error": [
+          "AssertionError: expected undefined to be defined\n    at C:\\Projects\\RENEGADE CMS\\rc08c-candidate\\tests\\integration\\aud-08-audience-pass-gate.integration.test.ts:1098:22\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at file:///C:/Projects/RENEGADE%20CMS/rc08c-candidate/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+        ]
+      }
+    ],
+    "pending": []
+  },
+  {
+    "file": "C:/Projects/RENEGADE CMS/rc08c-candidate/tests/integration/rc03-restart-recovery.integration.test.ts",
+    "message": "",
+    "failed": [
+      {
+        "test": "RC03 real durable jobs and local federation boundary queues one local signed outbox message and truthfully retains a deliberate inbox failure",
+        "error": [
+          "Error: ENOENT: no such file or directory, open 'C:\\Projects\\RENEGADE CMS\\rc08c-candidate\\scratch\\rc02-tls\\key.pem'\n    at Object.openSync (node:fs:622:18)\n    at readFileSync (node:fs:488:35)\n    at C:\\Projects\\RENEGADE CMS\\rc08c-candidate\\tests\\integration\\rc03-restart-recovery.integration.test.ts:138:14\n    at file:///C:/Projects/RENEGADE%20CMS/rc08c-candidate/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///C:/Projects/RENEGADE%20CMS/rc08c-candidate/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///C:/Projects/RENEGADE%20CMS/rc08c-candidate/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///C:/Projects/RENEGADE%20CMS/rc08c-candidate/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///C:/Projects/RENEGADE%20CMS/rc08c-candidate/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)"
+        ]
+      }
+    ],
+    "pending": []
+  },
+  {
+    "file": "C:/Projects/RENEGADE CMS/rc08c-candidate/tests/integration/rc08b-promotions.integration.test.ts",
+    "message": "RC08B disposable DB required",
+    "failed": [],
+    "pending": []
+  },
+  {
+    "file": "C:/Projects/RENEGADE CMS/rc08c-candidate/tests/integration/shared-contract-affiliate-pod.integration.test.ts",
+    "message": "",
+    "failed": [
+      {
+        "test": "Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conformance PROVIDER & WORKER HEALTH: Degradation, Visibility, Age Reporting, Drilldown & Capabilities 25. Failed worker/job visibility: command center displays failed jobs with error details and retry counts",
+        "error": [
+          "AssertionError: expected '<main class=\"gutter--left gutter--rig…' to contain 'FAILED WORKER / SUBMISSION'\n    at C:\\Projects\\RENEGADE CMS\\rc08c-candidate\\tests\\integration\\shared-contract-affiliate-pod.integration.test.ts:1184:20\n    at file:///C:/Projects/RENEGADE%20CMS/rc08c-candidate/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///C:/Projects/RENEGADE%20CMS/rc08c-candidate/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///C:/Projects/RENEGADE%20CMS/rc08c-candidate/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///C:/Projects/RENEGADE%20CMS/rc08c-candidate/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///C:/Projects/RENEGADE%20CMS/rc08c-candidate/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at runSuite (file:///C:/Projects/RENEGADE%20CMS/rc08c-candidate/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///C:/Projects/RENEGADE%20CMS/rc08c-candidate/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+        ]
+      },
+      {
+        "test": "Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conformance PROVIDER & WORKER HEALTH: Degradation, Visibility, Age Reporting, Drilldown & Capabilities 26. Reconciliation-age reporting: tracks timestamp of last sync and displays age in Command Center",
+        "error": [
+          "AssertionError: expected '<main class=\"gutter--left gutter--rig…' to contain 'Reconciliation Age:'\n    at C:\\Projects\\RENEGADE CMS\\rc08c-candidate\\tests\\integration\\shared-contract-affiliate-pod.integration.test.ts:1205:20\n    at file:///C:/Projects/RENEGADE%20CMS/rc08c-candidate/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///C:/Projects/RENEGADE%20CMS/rc08c-candidate/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///C:/Projects/RENEGADE%20CMS/rc08c-candidate/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///C:/Projects/RENEGADE%20CMS/rc08c-candidate/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///C:/Projects/RENEGADE%20CMS/rc08c-candidate/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at runSuite (file:///C:/Projects/RENEGADE%20CMS/rc08c-candidate/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///C:/Projects/RENEGADE%20CMS/rc08c-candidate/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+        ]
+      },
+      {
+        "test": "Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conformance PROVIDER & WORKER HEALTH: Degradation, Visibility, Age Reporting, Drilldown & Capabilities 27. Command Center drilldown: health signal alert banner filters directly to affected provider jobs",
+        "error": [
+          "AssertionError: expected '<main class=\"gutter--left gutter--rig…' to contain 'Provider Health Alert'\n    at C:\\Projects\\RENEGADE CMS\\rc08c-candidate\\tests\\integration\\shared-contract-affiliate-pod.integration.test.ts:1238:25\n    at file:///C:/Projects/RENEGADE%20CMS/rc08c-candidate/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///C:/Projects/RENEGADE%20CMS/rc08c-candidate/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///C:/Projects/RENEGADE%20CMS/rc08c-candidate/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///C:/Projects/RENEGADE%20CMS/rc08c-candidate/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///C:/Projects/RENEGADE%20CMS/rc08c-candidate/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at runSuite (file:///C:/Projects/RENEGADE%20CMS/rc08c-candidate/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///C:/Projects/RENEGADE%20CMS/rc08c-candidate/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+        ]
+      },
+      {
+        "test": "Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conformance PROVIDER & WORKER HEALTH: Degradation, Visibility, Age Reporting, Drilldown & Capabilities 28. Unsupported capabilities labeled: explicitly labeled in UI and rejects silent or simulated execution",
+        "error": [
+          "AssertionError: expected '<main class=\"gutter--left gutter--rig…' to contain 'Unsupported — Requires manual operato…'\n    at C:\\Projects\\RENEGADE CMS\\rc08c-candidate\\tests\\integration\\shared-contract-affiliate-pod.integration.test.ts:1279:20\n    at file:///C:/Projects/RENEGADE%20CMS/rc08c-candidate/node_modules/@vitest/runner/dist/chunk-hooks.js:155:11\n    at file:///C:/Projects/RENEGADE%20CMS/rc08c-candidate/node_modules/@vitest/runner/dist/chunk-hooks.js:752:26\n    at file:///C:/Projects/RENEGADE%20CMS/rc08c-candidate/node_modules/@vitest/runner/dist/chunk-hooks.js:1897:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///C:/Projects/RENEGADE%20CMS/rc08c-candidate/node_modules/@vitest/runner/dist/chunk-hooks.js:1863:10)\n    at runTest (file:///C:/Projects/RENEGADE%20CMS/rc08c-candidate/node_modules/@vitest/runner/dist/chunk-hooks.js:1574:12)\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at runSuite (file:///C:/Projects/RENEGADE%20CMS/rc08c-candidate/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)\n    at runSuite (file:///C:/Projects/RENEGADE%20CMS/rc08c-candidate/node_modules/@vitest/runner/dist/chunk-hooks.js:1729:8)"
+        ]
+      }
+    ],
+    "pending": []
+  },
+  {
+    "file": "C:/Projects/RENEGADE CMS/rc08c-candidate/tests/integration/shared-contract-audience-community.integration.test.ts",
+    "message": "",
+    "failed": [
+      {
+        "test": "Shared Contract Proof: Audience, Community, Permissions/Privacy & Resilience AUDIENCE: Sovereign Multi-Channel Delivery, Preference & Suppression Ledger 5. Exercises Telecom emulator: routes RCS directly, performs SMS fallback, and parses STOP keyword",
+        "error": [
+          "AssertionError: expected undefined to be defined\n    at C:\\Projects\\RENEGADE CMS\\rc08c-candidate\\tests\\integration\\shared-contract-audience-community.integration.test.ts:603:24\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at file:///C:/Projects/RENEGADE%20CMS/rc08c-candidate/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+        ]
+      }
+    ],
+    "pending": []
+  }
+]

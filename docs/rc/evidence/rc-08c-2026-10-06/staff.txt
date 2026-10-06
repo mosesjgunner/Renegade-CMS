@@ -1,0 +1,42 @@
+
+Running 1 test using 1 worker
+
+(node:33224) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  1 scratch\rc08c\operator-probes.spec.ts:3:1 › RC-08C: a newly created staff operator can begin genuine passkey sign-in (1.1s)
+
+
+  1) scratch\rc08c\operator-probes.spec.ts:3:1 › RC-08C: a newly created staff operator can begin genuine passkey sign-in 
+
+    Error: A normal created staff account must be able to obtain its first credential and sign in
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 200
+    Received: 400
+
+      16 |     const response = await options
+      17 |     writeFileSync('scratch/rc08c/browser/staff-login.json', JSON.stringify({ status: response.status(), body: await response.json() }, null, 2))
+    > 18 |     expect(response.status(), 'A normal created staff account must be able to obtain its first credential and sign in').toBe(200)
+         |                                                                                                                         ^
+      19 |   } finally { await owner.close() }
+      20 | })
+      21 |
+        at C:\Projects\RENEGADE CMS\rc08c-final-01908f3\scratch\rc08c\operator-probes.spec.ts:18:121
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    scratch\rc08c\staff-results\operator-probes-RC-08C-a-n-f4428-gin-genuine-passkey-sign-in\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: scratch\rc08c\staff-results\operator-probes-RC-08C-a-n-f4428-gin-genuine-passkey-sign-in\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    scratch\rc08c\staff-results\operator-probes-RC-08C-a-n-f4428-gin-genuine-passkey-sign-in\trace.zip
+    Usage:
+
+        npx playwright show-trace scratch\rc08c\staff-results\operator-probes-RC-08C-a-n-f4428-gin-genuine-passkey-sign-in\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    scratch\rc08c\operator-probes.spec.ts:3:1 › RC-08C: a newly created staff operator can begin genuine passkey sign-in 

@@ -20,3 +20,6 @@ docs/rc/evidence/rc-04-pass2-recheck/
 docs/rc/evidence/rc-06-pass2/
 docs/rc/evidence/rc-07-pass2/
 docs/rc/evidence/rc-08-20261006/
+
+# Immutable RC-08C execution receipts; preserve captured bytes.
+docs/rc/evidence/rc-08c-2026-10-06/

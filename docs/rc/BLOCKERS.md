@@ -1,16 +1,24 @@
+> RC-08C current verdict (2026-10-06): **FAIL / NOT READY**. Tested clean source `01908f39a3ce40b5eae5d4dec64b981e103d5fb1`. [Final report](FINAL_RC_REPORT.md); [dependency-ordered repair cards](repairs/RC08C-closure-blockers.md); [exact checks](evidence/rc-08c-2026-10-06/checks.json).
+
+The dependency-ordered RC-08C cards supersede older active-blocker summaries; no mandatory path is converted to a deferral.
+
+All snapshots below are historical. Their PASS, VERIFIED, source SHA and count statements apply only to their recorded scope and do not override RC-08C.
+
+---
+
 > RC-08B deferred capability promotion sweep - **PASS**, 2026-10-06. Promotes 14 previously deferred capabilities to VERIFIED with executed unit (171 files / 1,126 tests), integration (10 passed), browser (Playwright passed), and restart evidence on isolated database and runtime. Resolves historical deferrals for calendar UI, calendar feeds, timelines, composer draft dispatch, local federation interoperability, public forms, audience automations, telecom dispatch contracts, external community notifications, community digests, per-event notification switches, contribution export, conversation export, and audience reporting. Truthfully retains deferrals for live SMS/RCS carrier delivery, permanent account deletion, and private community attachments with explicit rationale. Misleading demo surfaces (graphics studio fake save, Printful fake IDs/mockups, fulfillment fake metrics) removed. [Evidence](evidence/RC-08B-2026-10-06.md); [deferral ledger](RC-08B-DEFERRAL-LEDGER.md). Aggregate release acceptance remains with RC-08C.
 
 > RC-08A unit repair - **PASS**, 2026-10-06, based on clean HEAD `8ce1485d34bc7ed96532a4265a563df509a61d32`. The dedicated repair closes RC08-UNIT-RELEASE at the unit level: **169 files / 1,107 tests passed**, plus format, zero-warning lint and typecheck. [Repair evidence](evidence/RC-08A-2026-10-06.md). Aggregate RC-08 remains **NOT READY**; restart on the repair commit with fresh dependencies before later integration/migration/build/browser/security/restore gates. The failed clean-candidate report below is retained as historical evidence.
 
-> RC-08 current gate — **FAIL / NOT READY**, 2026-10-06. Tested clean candidate `07e75a47dec8424d26d7829ec9daba7e34c4c859`: npm ci, format, lint and typecheck pass; full unit gate reports 1,106 passed / 1 failed. First blocker: **RC08-UNIT-RELEASE**. Integration, migrations, build, golden browser/security and restore are unexecuted. [Current evidence](evidence/RC-08-2026-10-06.md); [repair card](repairs/RC08-05-unit-release.md). Earlier candidate/dirty-tree findings below are historical and do not describe this restart.
+> Historical RC-08 gate — **FAIL / NOT READY**, 2026-10-06. Tested clean candidate `07e75a47dec8424d26d7829ec9daba7e34c4c859`: npm ci, format, lint and typecheck pass; full unit gate reports 1,106 passed / 1 failed. First blocker: **RC08-UNIT-RELEASE**. Integration, migrations, build, golden browser/security and restore are unexecuted. [Current evidence](evidence/RC-08-2026-10-06.md); [repair card](repairs/RC08-05-unit-release.md). Earlier candidate/dirty-tree findings below are historical and do not describe this restart.
 
 ## RC-04 Pass 2 result — 2026-10-04
 
 Source `3a3260f120f500a48d51a5251a7fd3b900ba6e93` has no remaining blocker in the supported newsletter/local-email/canonical-forum/member-privacy/moderation/direct-group-message/in-app-notification acceptance subset. [Evidence](evidence/RC-04-PASS2.md). Unsupported audience/community entry points are explicitly deferred; live providers, configured private storage, and all broader RC-01 role/tenant/module, upgrade and restore gates below remain open. This pass does not confer aggregate release readiness.
 
-> Current orchestration gate: **RC-03 PASS 3 PASS**, source `97ce2c1e4a253289d0d4f9da66c154afce74c6e9`. [Final gate evidence](evidence/RC-03-PASS3.md). Small cleanup reconciled operator claims; final browser, 107 unit and 18 integration tests, typecheck, lint and build pass. Calendar/feed/timelines and remote federation remain deferred. Broader RC-01 release blockers remain open. NEXT: RC-04 and RC-05.
+> Historical orchestration gate: **RC-03 PASS 3 PASS**, source `97ce2c1e4a253289d0d4f9da66c154afce74c6e9`. [Final gate evidence](evidence/RC-03-PASS3.md). Small cleanup reconciled operator claims; final browser, 107 unit and 18 integration tests, typecheck, lint and build pass. Calendar/feed/timelines and remote federation remain deferred. Broader RC-01 release blockers remain open. NEXT: RC-04 and RC-05.
 
-Current orchestration gate: **RC-03 PASS 2 PASS**, source `bb93ea8b562bc91e71e64afeabb6d7ead6607bc2`. [Evidence](evidence/RC-03.md). Partial provider failure, failed-only recovery and worker restart/idempotency proved on the RC-02 publication copy. Calendar/timeline deferred; federation limited to local signing/outbox/failure. Broader RC-01 release blockers remain open. Sol Light: small cleanup only.
+Historical orchestration gate: **RC-03 PASS 2 PASS**, source `bb93ea8b562bc91e71e64afeabb6d7ead6607bc2`. [Evidence](evidence/RC-03.md). Partial provider failure, failed-only recovery and worker restart/idempotency proved on the RC-02 publication copy. Calendar/timeline deferred; federation limited to local signing/outbox/failure. Broader RC-01 release blockers remain open. Sol Light: small cleanup only.
 
 ## RC-02 acceptance ? PASS ? 2026-10-03
 

@@ -1,3 +1,11 @@
+> RC-08C current verdict (2026-10-06): **FAIL / NOT READY**. Tested clean source `01908f39a3ce40b5eae5d4dec64b981e103d5fb1`. [Final report](FINAL_RC_REPORT.md); [dependency-ordered repair cards](repairs/RC08C-closure-blockers.md); [exact checks](evidence/rc-08c-2026-10-06/checks.json).
+
+Audit: 23 affected package entries, 10 unique advisories; adjudication OPEN. Full image includes development dependencies. YAML peer graph is invalid. Anonymous denial and genuine owner WebAuthn pass; broad authenticated tenant/object and runtime negative cases remain open. The 1,618-entry source inventory is not a completed review.
+
+All snapshots below are historical. Their PASS, VERIFIED, source SHA and count statements apply only to their recorded scope and do not override RC-08C.
+
+---
+
 # Security ledger
 
 ## RC-06 Pass 2 assessment — 2026-10-05 — BLOCKED

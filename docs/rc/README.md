@@ -1,16 +1,24 @@
-> RC-08 current gate — **FAIL / NOT READY**, 2026-10-06. Tested clean candidate `07e75a47dec8424d26d7829ec9daba7e34c4c859`: npm ci, format, lint and typecheck pass; full unit gate reports 1,106 passed / 1 failed. First blocker: **RC08-UNIT-RELEASE**. Integration, migrations, build, golden browser/security and restore are unexecuted. [Current evidence](evidence/RC-08-2026-10-06.md); [repair card](repairs/RC08-05-unit-release.md). Earlier candidate/dirty-tree findings below are historical and do not describe this restart.
+> RC-08C current verdict (2026-10-06): **FAIL / NOT READY**. Tested clean source `01908f39a3ce40b5eae5d4dec64b981e103d5fb1`. [Final report](FINAL_RC_REPORT.md); [dependency-ordered repair cards](repairs/RC08C-closure-blockers.md); [exact checks](evidence/rc-08c-2026-10-06/checks.json).
+
+Full quality, unit/integration, migration fixture and build checks pass. Two ordinary browser journeys fail; mandatory operator, security, golden and full business-state restore gates remain open.
+
+All snapshots below are historical. Their PASS, VERIFIED, source SHA and count statements apply only to their recorded scope and do not override RC-08C.
+
+---
+
+> Historical RC-08 gate — **FAIL / NOT READY**, 2026-10-06. Tested clean candidate `07e75a47dec8424d26d7829ec9daba7e34c4c859`: npm ci, format, lint and typecheck pass; full unit gate reports 1,106 passed / 1 failed. First blocker: **RC08-UNIT-RELEASE**. Integration, migrations, build, golden browser/security and restore are unexecuted. [Current evidence](evidence/RC-08-2026-10-06.md); [repair card](repairs/RC08-05-unit-release.md). Earlier candidate/dirty-tree findings below are historical and do not describe this restart.
 
 > RC-04 Pass 2 current-tree recheck: bounded PASS after repairing profile-loading data loss. Source repair d1cb789908c11f3624cba6468d59c8ec556a029f plus recorded pre-existing source diff; clean candidate freeze remains open. [Recheck evidence](evidence/RC-04-PASS2-RECHECK.md).
 
-> Current audience/community gate: **RC-04 PASS 2 PASS (bounded scope)**, source `3a3260f120f500a48d51a5251a7fd3b900ba6e93`. [Evidence](evidence/RC-04-PASS2.md). Three real browser/API journeys, 270 unit tests, 52 integration tests, typecheck, lint and production build pass. Local SMTP proof includes MIME, failure, disabled transport and operator recovery; it is not production delivery proof. Forms/automation, telecom dispatch, external community notifications/digests, per-event switches, permanent deletion, complete export and private attachment launch are explicitly deferred. Broader RC-01 gates remain open. NEXT: RC-04 cleanup/final gate only; RC-05 requires its own instruction.
+> Historical audience/community gate: **RC-04 PASS 2 PASS (bounded scope)**, source `3a3260f120f500a48d51a5251a7fd3b900ba6e93`. [Evidence](evidence/RC-04-PASS2.md). Three real browser/API journeys, 270 unit tests, 52 integration tests, typecheck, lint and production build pass. Local SMTP proof includes MIME, failure, disabled transport and operator recovery; it is not production delivery proof. Forms/automation, telecom dispatch, external community notifications/digests, per-event switches, permanent deletion, complete export and private attachment launch are explicitly deferred. Broader RC-01 gates remain open. NEXT: RC-04 cleanup/final gate only; RC-05 requires its own instruction.
 
-> Current orchestration gate: **RC-03 PASS 3 PASS**, source `97ce2c1e4a253289d0d4f9da66c154afce74c6e9`. [Final gate evidence](evidence/RC-03-PASS3.md). Small cleanup reconciled operator claims; final browser, 107 unit and 18 integration tests, typecheck, lint and build pass. Calendar/feed/timelines and remote federation remain deferred. Broader RC-01 release blockers remain open. NEXT: RC-04 and RC-05.
+> Historical orchestration gate: **RC-03 PASS 3 PASS**, source `97ce2c1e4a253289d0d4f9da66c154afce74c6e9`. [Final gate evidence](evidence/RC-03-PASS3.md). Small cleanup reconciled operator claims; final browser, 107 unit and 18 integration tests, typecheck, lint and build pass. Calendar/feed/timelines and remote federation remain deferred. Broader RC-01 release blockers remain open. NEXT: RC-04 and RC-05.
 
-Current orchestration gate: **RC-03 PASS 2 PASS**, source `bb93ea8b562bc91e71e64afeabb6d7ead6607bc2`. [Evidence](evidence/RC-03.md). Partial provider failure, failed-only recovery and worker restart/idempotency proved on the RC-02 publication copy. Calendar/timeline deferred; federation limited to local signing/outbox/failure. Broader RC-01 release blockers remain open. Sol Light: small cleanup only.
+Historical orchestration gate: **RC-03 PASS 2 PASS**, source `bb93ea8b562bc91e71e64afeabb6d7ead6607bc2`. [Evidence](evidence/RC-03.md). Partial provider failure, failed-only recovery and worker restart/idempotency proved on the RC-02 publication copy. Calendar/timeline deferred; federation limited to local signing/outbox/failure. Broader RC-01 release blockers remain open. Sol Light: small cleanup only.
 
-> Current core-site gate: **RC-02 PASS**, source `b684ee11460637bf2177f349057f14d6e804bbbd`. [Evidence](evidence/RC-02.md). RC-00/RC-01 source and blockers below are historical broader scope, which remains open.
+> Historical core-site gate: **RC-02 PASS**, source `b684ee11460637bf2177f349057f14d6e804bbbd`. [Evidence](evidence/RC-02.md). RC-00/RC-01 source and blockers below are historical broader scope, which remains open.
 
-# Current release truth
+# Historical release reconciliation
 
 RC-05 Pass 3: **FAIL**, inspected HEAD `e25f1b554eeae6e898d754822c64181f4b8040cc` with pre-existing changes. [Final gate evidence](evidence/RC-05-PASS3.md). No completed RC-05 Pass 1/Pass 2 acceptance is available in this checkout. 161 unit and 28 affiliate/POD contract tests, typecheck, lint and build pass; ordinary checkout, persisted settlement/recovery/isolation and inventory-race gates remain unproved. Synthesized Printful provider outcomes remain a blocker. RC-06 is gated on RC-05 acceptance.
 
@@ -39,4 +47,4 @@ This directory supersedes release-readiness prose elsewhere for the source candi
 
 The two execution reports are marked historical by this external catalog; their bytes are preserved. The similarly named docs/PROJECT_STATE.md, if present, is also a historical state record rather than an alternate release authority.
 
-> Current audience/community gate: **RC-04 FINAL PASS (bounded scope)**, tested source `fb8c9d7c3211f4c257ad569edb366d089074e492`. [Final evidence](evidence/RC-04-PASS3.md). Cleanup reconciled readiness and moderation status copy; 270 unit tests, 52 integration tests, three browser journeys, typecheck, lint and production build pass. Live email/SMS-RCS remain provider-required and documented unsupported surfaces remain deferred. NEXT: RC-06 after RC-05 merges.
+> Historical audience/community gate: **RC-04 FINAL PASS (bounded scope)**, tested source `fb8c9d7c3211f4c257ad569edb366d089074e492`. [Final evidence](evidence/RC-04-PASS3.md). Cleanup reconciled readiness and moderation status copy; 270 unit tests, 52 integration tests, three browser journeys, typecheck, lint and production build pass. Live email/SMS-RCS remain provider-required and documented unsupported surfaces remain deferred. NEXT: RC-06 after RC-05 merges.

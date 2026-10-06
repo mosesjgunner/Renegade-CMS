@@ -1,0 +1,47 @@
+{
+  "sourceSha": "01908f39a3ce40b5eae5d4dec64b981e103d5fb1",
+  "results": [
+    {
+      "path": "/",
+      "status": 200,
+      "location": null,
+      "themeRendered": true,
+      "persistedFooter": true
+    },
+    {
+      "path": "/health/ready",
+      "status": 200,
+      "location": null
+    },
+    {
+      "path": "/api/setup/readiness",
+      "status": 200,
+      "location": null
+    },
+    {
+      "path": "/media/8526b492-c731-4428-8c3b-97d6d194a37b",
+      "status": 404,
+      "location": null
+    },
+    {
+      "path": "/connections",
+      "status": 307,
+      "location": "/login"
+    },
+    {
+      "path": "/api/admin/integrations",
+      "status": 403,
+      "location": null
+    },
+    {
+      "path": "/api/admin/audience/intake",
+      "status": 403,
+      "location": null
+    },
+    {
+      "path": "/api/foundation-smoke",
+      "method": "POST",
+      "status": 404
+    }
+  ]
+}

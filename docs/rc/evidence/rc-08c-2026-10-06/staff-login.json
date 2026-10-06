@@ -1,0 +1,6 @@
+{
+  "status": 400,
+  "body": {
+    "error": "No passkey is registered for this owner."
+  }
+}
