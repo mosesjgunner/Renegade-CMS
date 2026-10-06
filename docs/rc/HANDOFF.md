@@ -35,3 +35,13 @@ Repair scoped admin/community authorization and ordinary authorized-site discove
 ## RC-04 final handoff — PASS — 2026-10-04
 
 Tested source `fb8c9d7c3211f4c257ad569edb366d089074e492`; [final evidence](evidence/RC-04-PASS3.md). RC-04 has no remaining blocker inside its supported subset. Preserve the provider-required and deferred boundaries recorded in RC_SCOPE. Do not treat this as aggregate release readiness. NEXT: RC-06 after RC-05 merges.
+## RC-07 Pass 2 handoff — BLOCKED — 2026-10-05
+
+See [RC-07 evidence](evidence/RC-07-PASS2.md). Both existing projects remain
+healthy and unchanged, but their deployed source SHA is unknown. Stop at the
+failed candidate-provenance gate. Recover Pass 1 evidence, freeze/build/deploy
+the intended candidate with an exact SHA, establish valid ordinary setup, then
+execute the remaining isolation/upgrade/backup/destructive-restore/failure gates.
+This is substantive work, not a cleanup-only handoff. No RC-08 run is authorized
+by this report. Focused 27 unit tests, typecheck, lint and build pass only on the
+inspected dirty source tree.

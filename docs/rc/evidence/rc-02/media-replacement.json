@@ -24,12 +24,7 @@
       "description": "Independent civic reporting, local organizing and public accountability.",
       "lifecycle": "active",
       "communityRegistrationPolicy": "open",
-      "commentReactionCodes": [
-        "thumbs_up",
-        "heart",
-        "insightful",
-        "applause"
-      ],
+      "commentReactionCodes": ["thumbs_up", "heart", "insightful", "applause"],
       "updatedAt": "2026-10-04T04:05:53.935Z",
       "createdAt": "2026-10-04T04:05:53.935Z"
     },
@@ -68,12 +63,7 @@
         "description": "Independent civic reporting, local organizing and public accountability.",
         "lifecycle": "active",
         "communityRegistrationPolicy": "open",
-        "commentReactionCodes": [
-          "thumbs_up",
-          "heart",
-          "insightful",
-          "applause"
-        ],
+        "commentReactionCodes": ["thumbs_up", "heart", "insightful", "applause"],
         "updatedAt": "2026-10-04T04:05:53.935Z",
         "createdAt": "2026-10-04T04:05:53.935Z"
       },

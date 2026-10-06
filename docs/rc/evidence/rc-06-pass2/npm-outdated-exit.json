@@ -1,0 +1,4 @@
+{
+    "command":  "npm outdated after ci",
+    "exitCode":  1
+}

@@ -34,10 +34,12 @@ export default defineConfig({
     baseURL: env.APP_URL,
     browserName: 'chromium',
     ignoreHTTPSErrors: true,
-    launchOptions: { args: [
-      '--host-resolver-rules=MAP dispatch.rc02.test 127.0.0.1',
-      `--ignore-certificate-errors-spki-list=${certificatePin}`,
-    ] },
+    launchOptions: {
+      args: [
+        '--host-resolver-rules=MAP dispatch.rc02.test 127.0.0.1',
+        `--ignore-certificate-errors-spki-list=${certificatePin}`,
+      ],
+    },
     trace: 'on',
     screenshot: 'only-on-failure',
     actionTimeout: 20_000,

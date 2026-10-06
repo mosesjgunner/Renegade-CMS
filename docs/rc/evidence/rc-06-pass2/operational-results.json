@@ -1,0 +1,98 @@
+{
+  "success": true,
+  "database": "renegade_rc06_1791223545699_release_acceptance",
+  "template": "renegade_rc02_1791086734920_release_acceptance",
+  "production": true,
+  "testBypasses": false,
+  "observations": [
+    {
+      "label": "liveness",
+      "route": "/health/live",
+      "status": 200,
+      "body": {
+        "status": "live"
+      }
+    },
+    {
+      "label": "baseline",
+      "route": "/health/ready",
+      "status": 200,
+      "body": {
+        "status": "ready",
+        "checks": {
+          "database": "ok",
+          "migrations": "applied"
+        }
+      }
+    },
+    {
+      "label": "pending migration fails closed",
+      "route": "/health/ready",
+      "status": 503,
+      "body": {
+        "status": "not_ready",
+        "checks": {
+          "database": "ok",
+          "migrations": "pending"
+        }
+      }
+    },
+    {
+      "label": "critical schema fails closed",
+      "route": "/health/ready",
+      "status": 503,
+      "body": {
+        "status": "not_ready",
+        "checks": {
+          "database": "ok",
+          "schema": "corrupted"
+        }
+      }
+    },
+    {
+      "label": "restored",
+      "route": "/health/ready",
+      "status": 200,
+      "body": {
+        "status": "ready",
+        "checks": {
+          "database": "ok",
+          "migrations": "applied"
+        }
+      }
+    },
+    {
+      "label": "anonymous privileged API denial",
+      "route": "/api/admin/commerce/dashboard",
+      "status": 403
+    },
+    {
+      "label": "anonymous privileged API denial",
+      "route": "/api/admin/ai/connections",
+      "status": 403
+    },
+    {
+      "label": "anonymous privileged API denial",
+      "route": "/api/admin/social/accounts",
+      "status": 403
+    },
+    {
+      "label": "anonymous member session denied",
+      "route": "/api/member-auth/me",
+      "status": 401,
+      "body": {
+        "error": "Authentication required."
+      }
+    },
+    {
+      "label": "real Chromium rendered login",
+      "status": "rendered",
+      "secretMatches": 0,
+      "browserErrors": []
+    },
+    {
+      "label": "anonymous provider page denial",
+      "destination": "/login"
+    }
+  ]
+}

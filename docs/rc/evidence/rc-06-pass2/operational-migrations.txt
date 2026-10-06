@@ -1,0 +1,14 @@
+[13:04:31] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[13:04:31] [32mINFO[39m: [36mReading migration files from C:\Projects\RENEGADE CMS\Renegade-CMS\src\migrations[39m
+[13:04:32] [32mINFO[39m: [36mMigrating: 20261004_160000_rc03_network_outbox_ids[39m
+[13:04:32] [32mINFO[39m: [36mMigrated:  20261004_160000_rc03_network_outbox_ids (7ms)[39m
+[13:04:32] [32mINFO[39m: [36mMigrating: 20261004_180000_rc04_canonical_moderation[39m
+[13:04:32] [32mINFO[39m: [36mMigrated:  20261004_180000_rc04_canonical_moderation (8ms)[39m
+[13:04:32] [32mINFO[39m: [36mDone.[39m
+[13:05:50] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[13:05:50] [32mINFO[39m: [36mReading migration files from C:\Projects\RENEGADE CMS\Renegade-CMS\src\migrations[39m
+[13:05:50] [32mINFO[39m: [36mMigrating: 20261004_160000_rc03_network_outbox_ids[39m
+[13:05:50] [32mINFO[39m: [36mMigrated:  20261004_160000_rc03_network_outbox_ids (5ms)[39m
+[13:05:50] [32mINFO[39m: [36mMigrating: 20261004_180000_rc04_canonical_moderation[39m
+[13:05:50] [32mINFO[39m: [36mMigrated:  20261004_180000_rc04_canonical_moderation (5ms)[39m
+[13:05:50] [32mINFO[39m: [36mDone.[39m

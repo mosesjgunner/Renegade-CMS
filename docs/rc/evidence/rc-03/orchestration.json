@@ -11,12 +11,7 @@
       "description": "Independent civic reporting, local organizing and public accountability.",
       "lifecycle": "active",
       "communityRegistrationPolicy": "open",
-      "commentReactionCodes": [
-        "thumbs_up",
-        "heart",
-        "insightful",
-        "applause"
-      ],
+      "commentReactionCodes": ["thumbs_up", "heart", "insightful", "applause"],
       "updatedAt": "2026-10-04T04:05:53.935Z",
       "createdAt": "2026-10-04T04:05:53.935Z"
     },
@@ -362,10 +357,7 @@
         "completedAt": "2026-10-04T21:18:02.779Z"
       }
     ],
-    "resultingUrls": [
-      "/articles/rc03-release-1791148628311",
-      "/rc03-1791148628311"
-    ],
+    "resultingUrls": ["/articles/rc03-release-1791148628311", "/rc03-1791148628311"],
     "leaseOwner": null,
     "leaseExpiresAt": null,
     "scheduleAudit": [
@@ -625,12 +617,7 @@
       "description": "Independent civic reporting, local organizing and public accountability.",
       "lifecycle": "active",
       "communityRegistrationPolicy": "open",
-      "commentReactionCodes": [
-        "thumbs_up",
-        "heart",
-        "insightful",
-        "applause"
-      ],
+      "commentReactionCodes": ["thumbs_up", "heart", "insightful", "applause"],
       "updatedAt": "2026-10-04T04:05:53.935Z",
       "createdAt": "2026-10-04T04:05:53.935Z"
     },
@@ -1018,10 +1005,7 @@
         "completedAt": "2026-10-04T21:18:11.456Z"
       }
     ],
-    "resultingUrls": [
-      "/articles/rc03-release-1791148628311",
-      "/rc03-1791148628311"
-    ],
+    "resultingUrls": ["/articles/rc03-release-1791148628311", "/rc03-1791148628311"],
     "leaseOwner": null,
     "leaseExpiresAt": null,
     "scheduleAudit": [
@@ -1358,12 +1342,7 @@
       "description": "Independent civic reporting, local organizing and public accountability.",
       "lifecycle": "active",
       "communityRegistrationPolicy": "open",
-      "commentReactionCodes": [
-        "thumbs_up",
-        "heart",
-        "insightful",
-        "applause"
-      ],
+      "commentReactionCodes": ["thumbs_up", "heart", "insightful", "applause"],
       "updatedAt": "2026-10-04T04:05:53.935Z",
       "createdAt": "2026-10-04T04:05:53.935Z"
     },
@@ -1376,12 +1355,7 @@
         "description": "Independent civic reporting, local organizing and public accountability.",
         "lifecycle": "active",
         "communityRegistrationPolicy": "open",
-        "commentReactionCodes": [
-          "thumbs_up",
-          "heart",
-          "insightful",
-          "applause"
-        ],
+        "commentReactionCodes": ["thumbs_up", "heart", "insightful", "applause"],
         "updatedAt": "2026-10-04T04:05:53.935Z",
         "createdAt": "2026-10-04T04:05:53.935Z"
       },

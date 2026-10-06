@@ -1,0 +1,129 @@
+{
+  "inspectedHead": "e25f1b554eeae6e898d754822c64181f4b8040cc",
+  "workingTreeClean": false,
+  "instances": [
+    {
+      "name": "renegadeparty",
+      "image": "sha256:a9de7319f92a2cc94f8758ae8908c96cb3959508791301d6965614e762888e4b",
+      "buildSha": "unknown",
+      "appVersion": "0.1.0",
+      "origin": "https://party.renegadeparty.test:3181",
+      "project": "renegadeparty",
+      "health": {
+        "web": "healthy",
+        "worker": "healthy",
+        "postgres": "healthy"
+      },
+      "mounts": [
+        {
+          "container": "/renegadeparty-renegade-web-1",
+          "mounts": [
+            {
+              "name": "renegadeparty_renegade_media",
+              "destination": "/app/media"
+            }
+          ],
+          "networks": ["renegadeparty_default"]
+        },
+        {
+          "container": "/renegadeparty-renegade-worker-1",
+          "mounts": [
+            {
+              "name": "renegadeparty_renegade_media",
+              "destination": "/app/media"
+            }
+          ],
+          "networks": ["renegadeparty_default"]
+        },
+        {
+          "container": "/renegadeparty-postgres-1",
+          "mounts": [
+            {
+              "name": "renegadeparty_renegade_postgres_data",
+              "destination": "/var/lib/postgresql/data"
+            }
+          ],
+          "networks": ["renegadeparty_default"]
+        }
+      ],
+      "readiness": {
+        "status": 200,
+        "body": {
+          "status": "ready",
+          "checks": {
+            "database": "ok",
+            "migrations": "applied"
+          }
+        }
+      }
+    },
+    {
+      "name": "myhigherpower",
+      "image": "sha256:a9de7319f92a2cc94f8758ae8908c96cb3959508791301d6965614e762888e4b",
+      "buildSha": "unknown",
+      "appVersion": "0.1.0",
+      "origin": "https://power.myhigherpower.test:3182",
+      "project": "myhigherpower",
+      "health": {
+        "web": "healthy",
+        "worker": "healthy",
+        "postgres": "healthy"
+      },
+      "mounts": [
+        {
+          "container": "/myhigherpower-renegade-web-1",
+          "mounts": [
+            {
+              "name": "myhigherpower_renegade_media",
+              "destination": "/app/media"
+            }
+          ],
+          "networks": ["myhigherpower_default"]
+        },
+        {
+          "container": "/myhigherpower-renegade-worker-1",
+          "mounts": [
+            {
+              "name": "myhigherpower_renegade_media",
+              "destination": "/app/media"
+            }
+          ],
+          "networks": ["myhigherpower_default"]
+        },
+        {
+          "container": "/myhigherpower-postgres-1",
+          "mounts": [
+            {
+              "name": "myhigherpower_renegade_postgres_data",
+              "destination": "/var/lib/postgresql/data"
+            }
+          ],
+          "networks": ["myhigherpower_default"]
+        }
+      ],
+      "readiness": {
+        "status": 200,
+        "body": {
+          "status": "ready",
+          "checks": {
+            "database": "ok",
+            "migrations": "applied"
+          }
+        }
+      }
+    }
+  ],
+  "secretComparison": {
+    "PAYLOAD_SECRET": {
+      "bothPresent": true,
+      "distinct": true
+    },
+    "DATABASE_URL": {
+      "bothPresent": true,
+      "distinct": true
+    }
+  },
+  "verdict": "BLOCKED",
+  "firstFailure": "Both deployed images report BUILD_SHA=unknown; exact candidate provenance cannot be established.",
+  "customerUpgradeStatus": "CUSTOMER-UPGRADE-PROOF: UNAVAILABLE FOR rc.1"
+}

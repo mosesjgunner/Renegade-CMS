@@ -1,0 +1,1052 @@
+{
+  "auditCounts": {
+    "info": 0,
+    "low": 0,
+    "moderate": 12,
+    "high": 9,
+    "critical": 0,
+    "total": 21
+  },
+  "advisories": [
+    {
+      "source": 1193683,
+      "name": "vitest",
+      "dependency": "vitest",
+      "title": "Vitest: Path Traversal / Arbitrary File Read via @vitest/mocker Redirect Mock",
+      "url": "https://github.com/advisories/GHSA-82fw-gwwq-j7x9",
+      "severity": "moderate",
+      "cwe": ["CWE-22"],
+      "cvss": {
+        "score": 5.9,
+        "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N"
+      },
+      "range": ">=2.1.0 <4.1.11"
+    },
+    {
+      "source": 1240103,
+      "name": "brace-expansion",
+      "dependency": "brace-expansion",
+      "title": "brace-expansion: Quadratic-time expansion of the `{a},b}` rewrite causes CPU denial of service",
+      "url": "https://github.com/advisories/GHSA-q2hr-2g5m-vwhr",
+      "severity": "moderate",
+      "cwe": ["CWE-400", "CWE-407"],
+      "cvss": {
+        "score": 5.3,
+        "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L"
+      },
+      "range": ">=4.0.0 <5.0.12"
+    },
+    {
+      "source": 1240107,
+      "name": "brace-expansion",
+      "dependency": "brace-expansion",
+      "title": "brace-expansion: DoS via uncontrolled recursion on nested brace groups causing stack exhaustion",
+      "url": "https://github.com/advisories/GHSA-qhr7-859c-m2p7",
+      "severity": "high",
+      "cwe": ["CWE-400", "CWE-674"],
+      "cvss": {
+        "score": 7.5,
+        "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+      },
+      "range": ">=4.0.0 <5.0.11"
+    },
+    {
+      "source": 1240111,
+      "name": "brace-expansion",
+      "dependency": "brace-expansion",
+      "title": "brace-expansion: DoS via uncontrolled recursion in parseCommaParts causing stack exhaustion",
+      "url": "https://github.com/advisories/GHSA-6j4f-fj2g-mc7p",
+      "severity": "high",
+      "cwe": ["CWE-400", "CWE-674"],
+      "cvss": {
+        "score": 7.5,
+        "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+      },
+      "range": ">=4.0.0 <5.0.10"
+    },
+    {
+      "source": 1240992,
+      "name": "braces",
+      "dependency": "braces",
+      "title": "braces vulnerable to stack-exhaustion denial of service through deeply nested patterns",
+      "url": "https://github.com/advisories/GHSA-vfj7-8cjw-p6xm",
+      "severity": "high",
+      "cwe": ["CWE-674"],
+      "cvss": {
+        "score": 7.5,
+        "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+      },
+      "range": "<=3.0.3"
+    },
+    {
+      "source": 1102341,
+      "name": "esbuild",
+      "dependency": "esbuild",
+      "title": "esbuild enables any website to send any requests to the development server and read the response",
+      "url": "https://github.com/advisories/GHSA-67mh-4wv8-2f99",
+      "severity": "moderate",
+      "cwe": ["CWE-346"],
+      "cvss": {
+        "score": 5.3,
+        "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:U/C:H/I:N/A:N"
+      },
+      "range": "<=0.24.2"
+    },
+    {
+      "source": 1182135,
+      "name": "payload",
+      "dependency": "payload",
+      "title": "Payload CMS default account-unlock access allows authenticated users to reset other accounts' lockouts",
+      "url": "https://github.com/advisories/GHSA-jg8r-5jh2-v2xj",
+      "severity": "moderate",
+      "cwe": ["CWE-307"],
+      "cvss": {
+        "score": 0,
+        "vectorString": null
+      },
+      "range": "<=3.88.0"
+    }
+  ],
+  "productionPackages": [],
+  "decisions": [
+    {
+      "name": "@esbuild-kit/core-utils",
+      "severity": "moderate",
+      "installed": [
+        {
+          "path": "node_modules/@esbuild-kit/core-utils",
+          "version": "3.3.2"
+        }
+      ],
+      "dependencyPaths": [
+        [
+          "@payloadcms/db-postgres@3.88.0",
+          "drizzle-kit@0.31.7",
+          "@esbuild-kit/esm-loader@2.6.5",
+          "@esbuild-kit/core-utils@3.3.2"
+        ]
+      ],
+      "advisories": ["esbuild"],
+      "fixSuggestion": {
+        "name": "@payloadcms/db-postgres",
+        "version": "3.90.2",
+        "isSemVerMajor": false
+      },
+      "classification": "NONBLOCKING-NOT-REACHABLE",
+      "scope": "build/development/migration tooling",
+      "vulnerablePath": "esbuild development server",
+      "preconditions": "untrusted brace/glob pattern passed to parser, exposed esbuild serve, or Vitest browser mock server",
+      "invocation": "No shipping source import; audited tooling package absent from standalone. esbuild-kit uses transform/transformSync, not serve.",
+      "evidence": [
+        "dependency-graph.json",
+        "standalone-dependencies.json",
+        "package.json",
+        "next.config.ts",
+        "tooling-source-search.txt"
+      ],
+      "frameworkConstraints": "Payload package versions pinned together at 3.88.0. Do not use audit-suggested eslint-config-next 14 downgrade against Next 16.3.8. Audit fix suggestion is not patched-version proof.",
+      "releaseCanProceedForThisAdvisory": true,
+      "patchedVersion": "See underlying advisory; parent-package fix suggestion is not proof of a patched release",
+      "mitigation": "Keep audit-affected tooling outside production serving and do not feed it user-controlled runtime patterns."
+    },
+    {
+      "name": "@esbuild-kit/esm-loader",
+      "severity": "moderate",
+      "installed": [
+        {
+          "path": "node_modules/@esbuild-kit/esm-loader",
+          "version": "2.6.5"
+        }
+      ],
+      "dependencyPaths": [
+        ["@payloadcms/db-postgres@3.88.0", "drizzle-kit@0.31.7", "@esbuild-kit/esm-loader@2.6.5"]
+      ],
+      "advisories": ["@esbuild-kit/core-utils"],
+      "fixSuggestion": {
+        "name": "@payloadcms/db-postgres",
+        "version": "3.90.2",
+        "isSemVerMajor": false
+      },
+      "classification": "NONBLOCKING-NOT-REACHABLE",
+      "scope": "build/development/migration tooling",
+      "vulnerablePath": "esbuild development server",
+      "preconditions": "untrusted brace/glob pattern passed to parser, exposed esbuild serve, or Vitest browser mock server",
+      "invocation": "No shipping source import; audited tooling package absent from standalone. esbuild-kit uses transform/transformSync, not serve.",
+      "evidence": [
+        "dependency-graph.json",
+        "standalone-dependencies.json",
+        "package.json",
+        "next.config.ts",
+        "tooling-source-search.txt"
+      ],
+      "frameworkConstraints": "Payload package versions pinned together at 3.88.0. Do not use audit-suggested eslint-config-next 14 downgrade against Next 16.3.8. Audit fix suggestion is not patched-version proof.",
+      "releaseCanProceedForThisAdvisory": true,
+      "patchedVersion": "See underlying advisory; parent-package fix suggestion is not proof of a patched release",
+      "mitigation": "Keep audit-affected tooling outside production serving and do not feed it user-controlled runtime patterns."
+    },
+    {
+      "name": "@next/eslint-plugin-next",
+      "severity": "high",
+      "installed": [
+        {
+          "path": "node_modules/@next/eslint-plugin-next",
+          "version": "16.3.8"
+        }
+      ],
+      "dependencyPaths": [["eslint-config-next@16.3.8", "@next/eslint-plugin-next@16.3.8"]],
+      "advisories": ["fast-glob"],
+      "fixSuggestion": {
+        "name": "eslint-config-next",
+        "version": "14.2.35",
+        "isSemVerMajor": true
+      },
+      "classification": "DEV/TEST-ONLY",
+      "scope": "lint/test",
+      "vulnerablePath": "glob pattern parsing / development watcher / test redirect mock",
+      "preconditions": "untrusted brace/glob pattern passed to parser, exposed esbuild serve, or Vitest browser mock server",
+      "invocation": "No shipping source import; audited tooling package absent from standalone. esbuild-kit uses transform/transformSync, not serve.",
+      "evidence": [
+        "dependency-graph.json",
+        "standalone-dependencies.json",
+        "package.json",
+        "next.config.ts",
+        "tooling-source-search.txt"
+      ],
+      "frameworkConstraints": "Payload package versions pinned together at 3.88.0. Do not use audit-suggested eslint-config-next 14 downgrade against Next 16.3.8. Audit fix suggestion is not patched-version proof.",
+      "releaseCanProceedForThisAdvisory": true,
+      "patchedVersion": "See underlying advisory; parent-package fix suggestion is not proof of a patched release",
+      "mitigation": "Keep audit-affected tooling outside production serving and do not feed it user-controlled runtime patterns."
+    },
+    {
+      "name": "@payloadcms/db-postgres",
+      "severity": "moderate",
+      "installed": [
+        {
+          "path": "node_modules/@payloadcms/db-postgres",
+          "version": "3.88.0"
+        }
+      ],
+      "dependencyPaths": [["@payloadcms/db-postgres@3.88.0"]],
+      "advisories": ["@payloadcms/drizzle", "drizzle-kit", "payload"],
+      "fixSuggestion": {
+        "name": "@payloadcms/db-postgres",
+        "version": "3.90.2",
+        "isSemVerMajor": false
+      },
+      "classification": "NONBLOCKING-NOT-REACHABLE",
+      "scope": "production framework; inherited build/tooling paths and/or denied account unlock",
+      "vulnerablePath": "Payload account-unlock or inherited sass/chokidar/esbuild dependencies",
+      "preconditions": "local-strategy auth collection for unlock; tooling-specific preconditions for inherited advisories",
+      "invocation": "Only Users has Payload auth; disableLocalStrategy=true. Installed unlockOperation throws 403 before DB access. Framework tooling is excluded from standalone.",
+      "evidence": [
+        "tests/unit/rc06-auth-attacks.test.ts",
+        "auth-attack-results.json",
+        "src/collections/Users.ts:18",
+        "node_modules/payload/dist/auth/operations/unlock.js:19",
+        "standalone-dependencies.json",
+        "dependency-graph.json",
+        "tooling-source-search.txt"
+      ],
+      "frameworkConstraints": "Payload package versions pinned together at 3.88.0. Do not use audit-suggested eslint-config-next 14 downgrade against Next 16.3.8. Audit fix suggestion is not patched-version proof.",
+      "releaseCanProceedForThisAdvisory": true,
+      "patchedVersion": "See underlying advisory; parent-package fix suggestion is not proof of a patched release",
+      "mitigation": "Keep audit-affected tooling outside production serving and do not feed it user-controlled runtime patterns."
+    },
+    {
+      "name": "@payloadcms/drizzle",
+      "severity": "moderate",
+      "installed": [
+        {
+          "path": "node_modules/@payloadcms/drizzle",
+          "version": "3.88.0"
+        }
+      ],
+      "dependencyPaths": [["@payloadcms/db-postgres@3.88.0", "@payloadcms/drizzle@3.88.0"]],
+      "advisories": ["payload"],
+      "fixSuggestion": {
+        "name": "@payloadcms/db-postgres",
+        "version": "3.90.2",
+        "isSemVerMajor": false
+      },
+      "classification": "NONBLOCKING-NOT-REACHABLE",
+      "scope": "production framework; inherited build/tooling paths and/or denied account unlock",
+      "vulnerablePath": "Payload account-unlock or inherited sass/chokidar/esbuild dependencies",
+      "preconditions": "local-strategy auth collection for unlock; tooling-specific preconditions for inherited advisories",
+      "invocation": "Only Users has Payload auth; disableLocalStrategy=true. Installed unlockOperation throws 403 before DB access. Framework tooling is excluded from standalone.",
+      "evidence": [
+        "tests/unit/rc06-auth-attacks.test.ts",
+        "auth-attack-results.json",
+        "src/collections/Users.ts:18",
+        "node_modules/payload/dist/auth/operations/unlock.js:19",
+        "standalone-dependencies.json",
+        "dependency-graph.json",
+        "tooling-source-search.txt"
+      ],
+      "frameworkConstraints": "Payload package versions pinned together at 3.88.0. Do not use audit-suggested eslint-config-next 14 downgrade against Next 16.3.8. Audit fix suggestion is not patched-version proof.",
+      "releaseCanProceedForThisAdvisory": true,
+      "patchedVersion": "See underlying advisory; parent-package fix suggestion is not proof of a patched release",
+      "mitigation": "Keep audit-affected tooling outside production serving and do not feed it user-controlled runtime patterns."
+    },
+    {
+      "name": "@payloadcms/graphql",
+      "severity": "moderate",
+      "installed": [
+        {
+          "path": "node_modules/@payloadcms/graphql",
+          "version": "3.88.0"
+        }
+      ],
+      "dependencyPaths": [["@payloadcms/next@3.88.0", "@payloadcms/graphql@3.88.0"]],
+      "advisories": ["payload"],
+      "fixSuggestion": true,
+      "classification": "NONBLOCKING-NOT-REACHABLE",
+      "scope": "production framework; inherited build/tooling paths and/or denied account unlock",
+      "vulnerablePath": "Payload account-unlock or inherited sass/chokidar/esbuild dependencies",
+      "preconditions": "local-strategy auth collection for unlock; tooling-specific preconditions for inherited advisories",
+      "invocation": "Only Users has Payload auth; disableLocalStrategy=true. Installed unlockOperation throws 403 before DB access. Framework tooling is excluded from standalone.",
+      "evidence": [
+        "tests/unit/rc06-auth-attacks.test.ts",
+        "auth-attack-results.json",
+        "src/collections/Users.ts:18",
+        "node_modules/payload/dist/auth/operations/unlock.js:19",
+        "standalone-dependencies.json",
+        "dependency-graph.json",
+        "tooling-source-search.txt"
+      ],
+      "frameworkConstraints": "Payload package versions pinned together at 3.88.0. Do not use audit-suggested eslint-config-next 14 downgrade against Next 16.3.8. Audit fix suggestion is not patched-version proof.",
+      "releaseCanProceedForThisAdvisory": true,
+      "patchedVersion": "See underlying advisory; parent-package fix suggestion is not proof of a patched release",
+      "mitigation": "Keep audit-affected tooling outside production serving and do not feed it user-controlled runtime patterns."
+    },
+    {
+      "name": "@payloadcms/next",
+      "severity": "high",
+      "installed": [
+        {
+          "path": "node_modules/@payloadcms/next",
+          "version": "3.88.0"
+        }
+      ],
+      "dependencyPaths": [["@payloadcms/next@3.88.0"]],
+      "advisories": ["@payloadcms/graphql", "@payloadcms/ui", "payload", "sass"],
+      "fixSuggestion": {
+        "name": "@payloadcms/richtext-lexical",
+        "version": "3.90.2",
+        "isSemVerMajor": false
+      },
+      "classification": "NONBLOCKING-NOT-REACHABLE",
+      "scope": "production framework; inherited build/tooling paths and/or denied account unlock",
+      "vulnerablePath": "Payload account-unlock or inherited sass/chokidar/esbuild dependencies",
+      "preconditions": "local-strategy auth collection for unlock; tooling-specific preconditions for inherited advisories",
+      "invocation": "Only Users has Payload auth; disableLocalStrategy=true. Installed unlockOperation throws 403 before DB access. Framework tooling is excluded from standalone.",
+      "evidence": [
+        "tests/unit/rc06-auth-attacks.test.ts",
+        "auth-attack-results.json",
+        "src/collections/Users.ts:18",
+        "node_modules/payload/dist/auth/operations/unlock.js:19",
+        "standalone-dependencies.json",
+        "dependency-graph.json",
+        "tooling-source-search.txt"
+      ],
+      "frameworkConstraints": "Payload package versions pinned together at 3.88.0. Do not use audit-suggested eslint-config-next 14 downgrade against Next 16.3.8. Audit fix suggestion is not patched-version proof.",
+      "releaseCanProceedForThisAdvisory": true,
+      "patchedVersion": "See underlying advisory; parent-package fix suggestion is not proof of a patched release",
+      "mitigation": "Keep audit-affected tooling outside production serving and do not feed it user-controlled runtime patterns."
+    },
+    {
+      "name": "@payloadcms/richtext-lexical",
+      "severity": "moderate",
+      "installed": [
+        {
+          "path": "node_modules/@payloadcms/richtext-lexical",
+          "version": "3.88.0"
+        }
+      ],
+      "dependencyPaths": [["@payloadcms/richtext-lexical@3.88.0"]],
+      "advisories": ["@payloadcms/next", "@payloadcms/ui", "payload"],
+      "fixSuggestion": {
+        "name": "@payloadcms/richtext-lexical",
+        "version": "3.90.2",
+        "isSemVerMajor": false
+      },
+      "classification": "NONBLOCKING-NOT-REACHABLE",
+      "scope": "production framework; inherited build/tooling paths and/or denied account unlock",
+      "vulnerablePath": "Payload account-unlock or inherited sass/chokidar/esbuild dependencies",
+      "preconditions": "local-strategy auth collection for unlock; tooling-specific preconditions for inherited advisories",
+      "invocation": "Only Users has Payload auth; disableLocalStrategy=true. Installed unlockOperation throws 403 before DB access. Framework tooling is excluded from standalone.",
+      "evidence": [
+        "tests/unit/rc06-auth-attacks.test.ts",
+        "auth-attack-results.json",
+        "src/collections/Users.ts:18",
+        "node_modules/payload/dist/auth/operations/unlock.js:19",
+        "standalone-dependencies.json",
+        "dependency-graph.json",
+        "tooling-source-search.txt"
+      ],
+      "frameworkConstraints": "Payload package versions pinned together at 3.88.0. Do not use audit-suggested eslint-config-next 14 downgrade against Next 16.3.8. Audit fix suggestion is not patched-version proof.",
+      "releaseCanProceedForThisAdvisory": true,
+      "patchedVersion": "See underlying advisory; parent-package fix suggestion is not proof of a patched release",
+      "mitigation": "Keep audit-affected tooling outside production serving and do not feed it user-controlled runtime patterns."
+    },
+    {
+      "name": "@payloadcms/ui",
+      "severity": "moderate",
+      "installed": [
+        {
+          "path": "node_modules/@payloadcms/ui",
+          "version": "3.88.0"
+        }
+      ],
+      "dependencyPaths": [["@payloadcms/ui@3.88.0"]],
+      "advisories": ["payload"],
+      "fixSuggestion": {
+        "name": "@payloadcms/ui",
+        "version": "3.90.2",
+        "isSemVerMajor": false
+      },
+      "classification": "NONBLOCKING-NOT-REACHABLE",
+      "scope": "production framework; inherited build/tooling paths and/or denied account unlock",
+      "vulnerablePath": "Payload account-unlock or inherited sass/chokidar/esbuild dependencies",
+      "preconditions": "local-strategy auth collection for unlock; tooling-specific preconditions for inherited advisories",
+      "invocation": "Only Users has Payload auth; disableLocalStrategy=true. Installed unlockOperation throws 403 before DB access. Framework tooling is excluded from standalone.",
+      "evidence": [
+        "tests/unit/rc06-auth-attacks.test.ts",
+        "auth-attack-results.json",
+        "src/collections/Users.ts:18",
+        "node_modules/payload/dist/auth/operations/unlock.js:19",
+        "standalone-dependencies.json",
+        "dependency-graph.json",
+        "tooling-source-search.txt"
+      ],
+      "frameworkConstraints": "Payload package versions pinned together at 3.88.0. Do not use audit-suggested eslint-config-next 14 downgrade against Next 16.3.8. Audit fix suggestion is not patched-version proof.",
+      "releaseCanProceedForThisAdvisory": true,
+      "patchedVersion": "See underlying advisory; parent-package fix suggestion is not proof of a patched release",
+      "mitigation": "Keep audit-affected tooling outside production serving and do not feed it user-controlled runtime patterns."
+    },
+    {
+      "name": "@vitest/mocker",
+      "severity": "moderate",
+      "installed": [
+        {
+          "path": "node_modules/vitest/node_modules/@vitest/mocker",
+          "version": "3.2.7"
+        }
+      ],
+      "dependencyPaths": [["vitest@3.2.7", "@vitest/mocker@3.2.7"]],
+      "advisories": [
+        {
+          "source": 1193684,
+          "name": "@vitest/mocker",
+          "dependency": "@vitest/mocker",
+          "title": "Vitest: Path Traversal / Arbitrary File Read via @vitest/mocker Redirect Mock",
+          "url": "https://github.com/advisories/GHSA-82fw-gwwq-j7x9",
+          "severity": "moderate",
+          "cwe": ["CWE-22"],
+          "cvss": {
+            "score": 5.9,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N"
+          },
+          "range": ">=2.1.0 <4.1.11"
+        }
+      ],
+      "fixSuggestion": {
+        "name": "vitest",
+        "version": "5.0.3",
+        "isSemVerMajor": true
+      },
+      "classification": "DEV/TEST-ONLY",
+      "scope": "lint/test",
+      "vulnerablePath": "glob pattern parsing / development watcher / test redirect mock",
+      "preconditions": "untrusted brace/glob pattern passed to parser, exposed esbuild serve, or Vitest browser mock server",
+      "invocation": "No shipping source import; audited tooling package absent from standalone. esbuild-kit uses transform/transformSync, not serve.",
+      "evidence": [
+        "dependency-graph.json",
+        "standalone-dependencies.json",
+        "package.json",
+        "next.config.ts",
+        "tooling-source-search.txt"
+      ],
+      "frameworkConstraints": "Payload package versions pinned together at 3.88.0. Do not use audit-suggested eslint-config-next 14 downgrade against Next 16.3.8. Audit fix suggestion is not patched-version proof.",
+      "releaseCanProceedForThisAdvisory": true,
+      "patchedVersion": "4.1.11",
+      "mitigation": "Keep audit-affected tooling outside production serving and do not feed it user-controlled runtime patterns."
+    },
+    {
+      "name": "brace-expansion",
+      "severity": "high",
+      "installed": [
+        {
+          "path": "node_modules/@typescript-eslint/typescript-estree/node_modules/brace-expansion",
+          "version": "5.0.9"
+        },
+        {
+          "path": "node_modules/brace-expansion",
+          "version": "1.1.18"
+        }
+      ],
+      "dependencyPaths": [
+        [
+          "eslint-config-next@16.3.8",
+          "typescript-eslint@8.67.0",
+          "@typescript-eslint/typescript-estree@8.67.0",
+          "minimatch@10.2.6",
+          "brace-expansion@5.0.9"
+        ],
+        ["eslint@9.35.0", "minimatch@3.1.5", "brace-expansion@1.1.18"]
+      ],
+      "advisories": [
+        {
+          "source": 1240100,
+          "name": "brace-expansion",
+          "dependency": "brace-expansion",
+          "title": "brace-expansion: Quadratic-time expansion of the `{a},b}` rewrite causes CPU denial of service",
+          "url": "https://github.com/advisories/GHSA-q2hr-2g5m-vwhr",
+          "severity": "moderate",
+          "cwe": ["CWE-400", "CWE-407"],
+          "cvss": {
+            "score": 5.3,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L"
+          },
+          "range": "<1.1.21"
+        },
+        {
+          "source": 1240103,
+          "name": "brace-expansion",
+          "dependency": "brace-expansion",
+          "title": "brace-expansion: Quadratic-time expansion of the `{a},b}` rewrite causes CPU denial of service",
+          "url": "https://github.com/advisories/GHSA-q2hr-2g5m-vwhr",
+          "severity": "moderate",
+          "cwe": ["CWE-400", "CWE-407"],
+          "cvss": {
+            "score": 5.3,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:L"
+          },
+          "range": ">=4.0.0 <5.0.12"
+        },
+        {
+          "source": 1240104,
+          "name": "brace-expansion",
+          "dependency": "brace-expansion",
+          "title": "brace-expansion: DoS via uncontrolled recursion on nested brace groups causing stack exhaustion",
+          "url": "https://github.com/advisories/GHSA-qhr7-859c-m2p7",
+          "severity": "high",
+          "cwe": ["CWE-400", "CWE-674"],
+          "cvss": {
+            "score": 7.5,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+          },
+          "range": "<1.1.20"
+        },
+        {
+          "source": 1240107,
+          "name": "brace-expansion",
+          "dependency": "brace-expansion",
+          "title": "brace-expansion: DoS via uncontrolled recursion on nested brace groups causing stack exhaustion",
+          "url": "https://github.com/advisories/GHSA-qhr7-859c-m2p7",
+          "severity": "high",
+          "cwe": ["CWE-400", "CWE-674"],
+          "cvss": {
+            "score": 7.5,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+          },
+          "range": ">=4.0.0 <5.0.11"
+        },
+        {
+          "source": 1240108,
+          "name": "brace-expansion",
+          "dependency": "brace-expansion",
+          "title": "brace-expansion: DoS via uncontrolled recursion in parseCommaParts causing stack exhaustion",
+          "url": "https://github.com/advisories/GHSA-6j4f-fj2g-mc7p",
+          "severity": "high",
+          "cwe": ["CWE-400", "CWE-674"],
+          "cvss": {
+            "score": 7.5,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+          },
+          "range": "<1.1.19"
+        },
+        {
+          "source": 1240111,
+          "name": "brace-expansion",
+          "dependency": "brace-expansion",
+          "title": "brace-expansion: DoS via uncontrolled recursion in parseCommaParts causing stack exhaustion",
+          "url": "https://github.com/advisories/GHSA-6j4f-fj2g-mc7p",
+          "severity": "high",
+          "cwe": ["CWE-400", "CWE-674"],
+          "cvss": {
+            "score": 7.5,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+          },
+          "range": ">=4.0.0 <5.0.10"
+        }
+      ],
+      "fixSuggestion": true,
+      "classification": "NONBLOCKING-NOT-REACHABLE",
+      "scope": "build/development/migration tooling",
+      "vulnerablePath": "glob pattern parsing / development watcher / test redirect mock",
+      "preconditions": "untrusted brace/glob pattern passed to parser, exposed esbuild serve, or Vitest browser mock server",
+      "invocation": "No shipping source import; audited tooling package absent from standalone. esbuild-kit uses transform/transformSync, not serve.",
+      "evidence": [
+        "dependency-graph.json",
+        "standalone-dependencies.json",
+        "package.json",
+        "next.config.ts",
+        "tooling-source-search.txt"
+      ],
+      "frameworkConstraints": "Payload package versions pinned together at 3.88.0. Do not use audit-suggested eslint-config-next 14 downgrade against Next 16.3.8. Audit fix suggestion is not patched-version proof.",
+      "releaseCanProceedForThisAdvisory": true,
+      "patchedVersion": "1.1.21 or 5.0.12 for all audited findings",
+      "mitigation": "Keep audit-affected tooling outside production serving and do not feed it user-controlled runtime patterns."
+    },
+    {
+      "name": "braces",
+      "severity": "high",
+      "installed": [
+        {
+          "path": "node_modules/braces",
+          "version": "3.0.3"
+        }
+      ],
+      "dependencyPaths": [
+        ["@payloadcms/next@3.88.0", "sass@1.77.4", "chokidar@3.6.0", "braces@3.0.3"],
+        [
+          "eslint-config-next@16.3.8",
+          "@next/eslint-plugin-next@16.3.8",
+          "fast-glob@3.3.1",
+          "micromatch@4.0.8",
+          "braces@3.0.3"
+        ]
+      ],
+      "advisories": [
+        {
+          "source": 1240992,
+          "name": "braces",
+          "dependency": "braces",
+          "title": "braces vulnerable to stack-exhaustion denial of service through deeply nested patterns",
+          "url": "https://github.com/advisories/GHSA-vfj7-8cjw-p6xm",
+          "severity": "high",
+          "cwe": ["CWE-674"],
+          "cvss": {
+            "score": 7.5,
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+          },
+          "range": "<=3.0.3"
+        }
+      ],
+      "fixSuggestion": {
+        "name": "eslint-config-next",
+        "version": "14.2.35",
+        "isSemVerMajor": true
+      },
+      "classification": "NONBLOCKING-NOT-REACHABLE",
+      "scope": "build/development/migration tooling",
+      "vulnerablePath": "glob pattern parsing / development watcher / test redirect mock",
+      "preconditions": "untrusted brace/glob pattern passed to parser, exposed esbuild serve, or Vitest browser mock server",
+      "invocation": "No shipping source import; audited tooling package absent from standalone. esbuild-kit uses transform/transformSync, not serve.",
+      "evidence": [
+        "dependency-graph.json",
+        "standalone-dependencies.json",
+        "package.json",
+        "next.config.ts",
+        "tooling-source-search.txt"
+      ],
+      "frameworkConstraints": "Payload package versions pinned together at 3.88.0. Do not use audit-suggested eslint-config-next 14 downgrade against Next 16.3.8. Audit fix suggestion is not patched-version proof.",
+      "releaseCanProceedForThisAdvisory": true,
+      "patchedVersion": null,
+      "mitigation": "Keep audit-affected tooling outside production serving and do not feed it user-controlled runtime patterns."
+    },
+    {
+      "name": "chokidar",
+      "severity": "high",
+      "installed": [
+        {
+          "path": "node_modules/chokidar",
+          "version": "3.6.0"
+        }
+      ],
+      "dependencyPaths": [["@payloadcms/next@3.88.0", "sass@1.77.4", "chokidar@3.6.0"]],
+      "advisories": ["braces"],
+      "fixSuggestion": {
+        "name": "@payloadcms/richtext-lexical",
+        "version": "3.90.2",
+        "isSemVerMajor": false
+      },
+      "classification": "NONBLOCKING-NOT-REACHABLE",
+      "scope": "build/development/migration tooling",
+      "vulnerablePath": "glob pattern parsing / development watcher / test redirect mock",
+      "preconditions": "untrusted brace/glob pattern passed to parser, exposed esbuild serve, or Vitest browser mock server",
+      "invocation": "No shipping source import; audited tooling package absent from standalone. esbuild-kit uses transform/transformSync, not serve.",
+      "evidence": [
+        "dependency-graph.json",
+        "standalone-dependencies.json",
+        "package.json",
+        "next.config.ts",
+        "tooling-source-search.txt"
+      ],
+      "frameworkConstraints": "Payload package versions pinned together at 3.88.0. Do not use audit-suggested eslint-config-next 14 downgrade against Next 16.3.8. Audit fix suggestion is not patched-version proof.",
+      "releaseCanProceedForThisAdvisory": true,
+      "patchedVersion": "See underlying advisory; parent-package fix suggestion is not proof of a patched release",
+      "mitigation": "Keep audit-affected tooling outside production serving and do not feed it user-controlled runtime patterns."
+    },
+    {
+      "name": "drizzle-kit",
+      "severity": "moderate",
+      "installed": [
+        {
+          "path": "node_modules/drizzle-kit",
+          "version": "0.31.7"
+        }
+      ],
+      "dependencyPaths": [["@payloadcms/db-postgres@3.88.0", "drizzle-kit@0.31.7"]],
+      "advisories": ["@esbuild-kit/esm-loader"],
+      "fixSuggestion": {
+        "name": "@payloadcms/db-postgres",
+        "version": "3.90.2",
+        "isSemVerMajor": false
+      },
+      "classification": "NONBLOCKING-NOT-REACHABLE",
+      "scope": "build/development/migration tooling",
+      "vulnerablePath": "esbuild development server",
+      "preconditions": "untrusted brace/glob pattern passed to parser, exposed esbuild serve, or Vitest browser mock server",
+      "invocation": "No shipping source import; audited tooling package absent from standalone. esbuild-kit uses transform/transformSync, not serve.",
+      "evidence": [
+        "dependency-graph.json",
+        "standalone-dependencies.json",
+        "package.json",
+        "next.config.ts",
+        "tooling-source-search.txt"
+      ],
+      "frameworkConstraints": "Payload package versions pinned together at 3.88.0. Do not use audit-suggested eslint-config-next 14 downgrade against Next 16.3.8. Audit fix suggestion is not patched-version proof.",
+      "releaseCanProceedForThisAdvisory": true,
+      "patchedVersion": "See underlying advisory; parent-package fix suggestion is not proof of a patched release",
+      "mitigation": "Keep audit-affected tooling outside production serving and do not feed it user-controlled runtime patterns."
+    },
+    {
+      "name": "esbuild",
+      "severity": "moderate",
+      "installed": [
+        {
+          "path": "node_modules/@esbuild-kit/core-utils/node_modules/esbuild",
+          "version": "0.18.20"
+        }
+      ],
+      "dependencyPaths": [
+        [
+          "@payloadcms/db-postgres@3.88.0",
+          "drizzle-kit@0.31.7",
+          "@esbuild-kit/esm-loader@2.6.5",
+          "@esbuild-kit/core-utils@3.3.2",
+          "esbuild@0.18.20"
+        ],
+        [
+          "@payloadcms/db-postgres@3.88.0",
+          "drizzle-kit@0.31.7",
+          "esbuild-register@3.6.0",
+          "esbuild@0.25.12"
+        ],
+        ["@payloadcms/db-postgres@3.88.0", "drizzle-kit@0.31.7", "esbuild@0.25.12"],
+        ["@payloadcms/next@3.88.0", "@payloadcms/graphql@3.88.0", "tsx@4.22.4", "esbuild@0.28.2"],
+        ["payload@3.88.0", "tsx@4.22.4", "esbuild@0.28.2"],
+        ["tsx@4.20.5", "esbuild@0.25.12"],
+        ["vitest@3.2.7", "vite-node@3.2.4", "vite@7.3.6", "esbuild@0.28.2"],
+        ["vitest@3.2.7", "vite@7.3.6", "esbuild@0.28.2"]
+      ],
+      "advisories": [
+        {
+          "source": 1102341,
+          "name": "esbuild",
+          "dependency": "esbuild",
+          "title": "esbuild enables any website to send any requests to the development server and read the response",
+          "url": "https://github.com/advisories/GHSA-67mh-4wv8-2f99",
+          "severity": "moderate",
+          "cwe": ["CWE-346"],
+          "cvss": {
+            "score": 5.3,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:R/S:U/C:H/I:N/A:N"
+          },
+          "range": "<=0.24.2"
+        }
+      ],
+      "fixSuggestion": {
+        "name": "@payloadcms/db-postgres",
+        "version": "3.90.2",
+        "isSemVerMajor": false
+      },
+      "classification": "NONBLOCKING-NOT-REACHABLE",
+      "scope": "build/development/migration tooling",
+      "vulnerablePath": "esbuild development server",
+      "preconditions": "untrusted brace/glob pattern passed to parser, exposed esbuild serve, or Vitest browser mock server",
+      "invocation": "No shipping source import; audited tooling package absent from standalone. esbuild-kit uses transform/transformSync, not serve.",
+      "evidence": [
+        "dependency-graph.json",
+        "standalone-dependencies.json",
+        "package.json",
+        "next.config.ts",
+        "tooling-source-search.txt"
+      ],
+      "frameworkConstraints": "Payload package versions pinned together at 3.88.0. Do not use audit-suggested eslint-config-next 14 downgrade against Next 16.3.8. Audit fix suggestion is not patched-version proof.",
+      "releaseCanProceedForThisAdvisory": true,
+      "patchedVersion": "0.25.0",
+      "mitigation": "Keep audit-affected tooling outside production serving and do not feed it user-controlled runtime patterns."
+    },
+    {
+      "name": "eslint-config-next",
+      "severity": "high",
+      "installed": [
+        {
+          "path": "node_modules/eslint-config-next",
+          "version": "16.3.8"
+        }
+      ],
+      "dependencyPaths": [["eslint-config-next@16.3.8"]],
+      "advisories": ["@next/eslint-plugin-next"],
+      "fixSuggestion": {
+        "name": "eslint-config-next",
+        "version": "14.2.35",
+        "isSemVerMajor": true
+      },
+      "classification": "DEV/TEST-ONLY",
+      "scope": "lint/test",
+      "vulnerablePath": "glob pattern parsing / development watcher / test redirect mock",
+      "preconditions": "untrusted brace/glob pattern passed to parser, exposed esbuild serve, or Vitest browser mock server",
+      "invocation": "No shipping source import; audited tooling package absent from standalone. esbuild-kit uses transform/transformSync, not serve.",
+      "evidence": [
+        "dependency-graph.json",
+        "standalone-dependencies.json",
+        "package.json",
+        "next.config.ts",
+        "tooling-source-search.txt"
+      ],
+      "frameworkConstraints": "Payload package versions pinned together at 3.88.0. Do not use audit-suggested eslint-config-next 14 downgrade against Next 16.3.8. Audit fix suggestion is not patched-version proof.",
+      "releaseCanProceedForThisAdvisory": true,
+      "patchedVersion": "See underlying advisory; parent-package fix suggestion is not proof of a patched release",
+      "mitigation": "Keep audit-affected tooling outside production serving and do not feed it user-controlled runtime patterns."
+    },
+    {
+      "name": "fast-glob",
+      "severity": "high",
+      "installed": [
+        {
+          "path": "node_modules/fast-glob",
+          "version": "3.3.1"
+        }
+      ],
+      "dependencyPaths": [
+        ["eslint-config-next@16.3.8", "@next/eslint-plugin-next@16.3.8", "fast-glob@3.3.1"]
+      ],
+      "advisories": ["micromatch"],
+      "fixSuggestion": {
+        "name": "eslint-config-next",
+        "version": "14.2.35",
+        "isSemVerMajor": true
+      },
+      "classification": "NONBLOCKING-NOT-REACHABLE",
+      "scope": "build/development/migration tooling",
+      "vulnerablePath": "glob pattern parsing / development watcher / test redirect mock",
+      "preconditions": "untrusted brace/glob pattern passed to parser, exposed esbuild serve, or Vitest browser mock server",
+      "invocation": "No shipping source import; audited tooling package absent from standalone. esbuild-kit uses transform/transformSync, not serve.",
+      "evidence": [
+        "dependency-graph.json",
+        "standalone-dependencies.json",
+        "package.json",
+        "next.config.ts",
+        "tooling-source-search.txt"
+      ],
+      "frameworkConstraints": "Payload package versions pinned together at 3.88.0. Do not use audit-suggested eslint-config-next 14 downgrade against Next 16.3.8. Audit fix suggestion is not patched-version proof.",
+      "releaseCanProceedForThisAdvisory": true,
+      "patchedVersion": "See underlying advisory; parent-package fix suggestion is not proof of a patched release",
+      "mitigation": "Keep audit-affected tooling outside production serving and do not feed it user-controlled runtime patterns."
+    },
+    {
+      "name": "micromatch",
+      "severity": "high",
+      "installed": [
+        {
+          "path": "node_modules/micromatch",
+          "version": "4.0.8"
+        }
+      ],
+      "dependencyPaths": [
+        [
+          "eslint-config-next@16.3.8",
+          "@next/eslint-plugin-next@16.3.8",
+          "fast-glob@3.3.1",
+          "micromatch@4.0.8"
+        ]
+      ],
+      "advisories": ["braces"],
+      "fixSuggestion": {
+        "name": "eslint-config-next",
+        "version": "14.2.35",
+        "isSemVerMajor": true
+      },
+      "classification": "NONBLOCKING-NOT-REACHABLE",
+      "scope": "build/development/migration tooling",
+      "vulnerablePath": "glob pattern parsing / development watcher / test redirect mock",
+      "preconditions": "untrusted brace/glob pattern passed to parser, exposed esbuild serve, or Vitest browser mock server",
+      "invocation": "No shipping source import; audited tooling package absent from standalone. esbuild-kit uses transform/transformSync, not serve.",
+      "evidence": [
+        "dependency-graph.json",
+        "standalone-dependencies.json",
+        "package.json",
+        "next.config.ts",
+        "tooling-source-search.txt"
+      ],
+      "frameworkConstraints": "Payload package versions pinned together at 3.88.0. Do not use audit-suggested eslint-config-next 14 downgrade against Next 16.3.8. Audit fix suggestion is not patched-version proof.",
+      "releaseCanProceedForThisAdvisory": true,
+      "patchedVersion": "See underlying advisory; parent-package fix suggestion is not proof of a patched release",
+      "mitigation": "Keep audit-affected tooling outside production serving and do not feed it user-controlled runtime patterns."
+    },
+    {
+      "name": "payload",
+      "severity": "moderate",
+      "installed": [
+        {
+          "path": "node_modules/payload",
+          "version": "3.88.0"
+        }
+      ],
+      "dependencyPaths": [
+        ["@payloadcms/db-postgres@3.88.0", "@payloadcms/drizzle@3.88.0", "payload@3.88.0"],
+        ["@payloadcms/db-postgres@3.88.0", "payload@3.88.0"],
+        ["@payloadcms/next@3.88.0", "@payloadcms/graphql@3.88.0", "payload@3.88.0"],
+        ["@payloadcms/next@3.88.0", "payload@3.88.0"],
+        ["@payloadcms/richtext-lexical@3.88.0", "payload@3.88.0"],
+        ["@payloadcms/ui@3.88.0", "payload@3.88.0"],
+        ["payload@3.88.0"]
+      ],
+      "advisories": [
+        {
+          "source": 1182135,
+          "name": "payload",
+          "dependency": "payload",
+          "title": "Payload CMS default account-unlock access allows authenticated users to reset other accounts' lockouts",
+          "url": "https://github.com/advisories/GHSA-jg8r-5jh2-v2xj",
+          "severity": "moderate",
+          "cwe": ["CWE-307"],
+          "cvss": {
+            "score": 0,
+            "vectorString": null
+          },
+          "range": "<=3.88.0"
+        }
+      ],
+      "fixSuggestion": {
+        "name": "@payloadcms/db-postgres",
+        "version": "3.90.2",
+        "isSemVerMajor": false
+      },
+      "classification": "NONBLOCKING-NOT-REACHABLE",
+      "scope": "production framework; inherited build/tooling paths and/or denied account unlock",
+      "vulnerablePath": "Payload account-unlock or inherited sass/chokidar/esbuild dependencies",
+      "preconditions": "local-strategy auth collection for unlock; tooling-specific preconditions for inherited advisories",
+      "invocation": "Only Users has Payload auth; disableLocalStrategy=true. Installed unlockOperation throws 403 before DB access. Framework tooling is excluded from standalone.",
+      "evidence": [
+        "tests/unit/rc06-auth-attacks.test.ts",
+        "auth-attack-results.json",
+        "src/collections/Users.ts:18",
+        "node_modules/payload/dist/auth/operations/unlock.js:19",
+        "standalone-dependencies.json",
+        "dependency-graph.json",
+        "tooling-source-search.txt"
+      ],
+      "frameworkConstraints": "Payload package versions pinned together at 3.88.0. Do not use audit-suggested eslint-config-next 14 downgrade against Next 16.3.8. Audit fix suggestion is not patched-version proof.",
+      "releaseCanProceedForThisAdvisory": true,
+      "patchedVersion": null,
+      "mitigation": "Local password strategy disabled; installed operation rejects unlock before accessing database."
+    },
+    {
+      "name": "sass",
+      "severity": "high",
+      "installed": [
+        {
+          "path": "node_modules/sass",
+          "version": "1.77.4"
+        }
+      ],
+      "dependencyPaths": [
+        ["@payloadcms/next@3.88.0", "sass@1.77.4"],
+        ["next@16.3.8", "sass@1.77.4"],
+        ["vitest@3.2.7", "vite-node@3.2.4", "vite@7.3.6", "sass@1.77.4"],
+        ["vitest@3.2.7", "vite@7.3.6", "sass@1.77.4"]
+      ],
+      "advisories": ["chokidar"],
+      "fixSuggestion": {
+        "name": "@payloadcms/richtext-lexical",
+        "version": "3.90.2",
+        "isSemVerMajor": false
+      },
+      "classification": "NONBLOCKING-NOT-REACHABLE",
+      "scope": "build/development/migration tooling",
+      "vulnerablePath": "glob pattern parsing / development watcher / test redirect mock",
+      "preconditions": "untrusted brace/glob pattern passed to parser, exposed esbuild serve, or Vitest browser mock server",
+      "invocation": "No shipping source import; audited tooling package absent from standalone. esbuild-kit uses transform/transformSync, not serve.",
+      "evidence": [
+        "dependency-graph.json",
+        "standalone-dependencies.json",
+        "package.json",
+        "next.config.ts",
+        "tooling-source-search.txt"
+      ],
+      "frameworkConstraints": "Payload package versions pinned together at 3.88.0. Do not use audit-suggested eslint-config-next 14 downgrade against Next 16.3.8. Audit fix suggestion is not patched-version proof.",
+      "releaseCanProceedForThisAdvisory": true,
+      "patchedVersion": "See underlying advisory; parent-package fix suggestion is not proof of a patched release",
+      "mitigation": "Keep audit-affected tooling outside production serving and do not feed it user-controlled runtime patterns."
+    },
+    {
+      "name": "vitest",
+      "severity": "moderate",
+      "installed": [
+        {
+          "path": "node_modules/vitest",
+          "version": "3.2.7"
+        }
+      ],
+      "dependencyPaths": [["vitest@3.2.7"]],
+      "advisories": [
+        "@vitest/mocker",
+        {
+          "source": 1193683,
+          "name": "vitest",
+          "dependency": "vitest",
+          "title": "Vitest: Path Traversal / Arbitrary File Read via @vitest/mocker Redirect Mock",
+          "url": "https://github.com/advisories/GHSA-82fw-gwwq-j7x9",
+          "severity": "moderate",
+          "cwe": ["CWE-22"],
+          "cvss": {
+            "score": 5.9,
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N"
+          },
+          "range": ">=2.1.0 <4.1.11"
+        }
+      ],
+      "fixSuggestion": {
+        "name": "vitest",
+        "version": "5.0.3",
+        "isSemVerMajor": true
+      },
+      "classification": "DEV/TEST-ONLY",
+      "scope": "lint/test",
+      "vulnerablePath": "glob pattern parsing / development watcher / test redirect mock",
+      "preconditions": "untrusted brace/glob pattern passed to parser, exposed esbuild serve, or Vitest browser mock server",
+      "invocation": "No shipping source import; audited tooling package absent from standalone. esbuild-kit uses transform/transformSync, not serve.",
+      "evidence": [
+        "dependency-graph.json",
+        "standalone-dependencies.json",
+        "package.json",
+        "next.config.ts",
+        "tooling-source-search.txt"
+      ],
+      "frameworkConstraints": "Payload package versions pinned together at 3.88.0. Do not use audit-suggested eslint-config-next 14 downgrade against Next 16.3.8. Audit fix suggestion is not patched-version proof.",
+      "releaseCanProceedForThisAdvisory": true,
+      "patchedVersion": "4.1.11",
+      "mitigation": "Keep audit-affected tooling outside production serving and do not feed it user-controlled runtime patterns."
+    }
+  ],
+  "limitations": [
+    "Nonblocking dependency decisions do not clear application acceptance gates.",
+    "Bundle evidence is for this built working tree, not a clean committed candidate.",
+    "Glob tooling must not be reused for attacker-controlled runtime patterns.",
+    "No claim that all provider credentials are encrypted; tested envelope primitive and AI envelope store only."
+  ]
+}

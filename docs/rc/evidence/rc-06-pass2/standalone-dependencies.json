@@ -1,0 +1,12 @@
+{
+  "braces": false,
+  "brace-expansion": false,
+  "micromatch": false,
+  "fast-glob": false,
+  "chokidar": false,
+  "sass": false,
+  "esbuild": false,
+  "vitest": false,
+  "drizzle-kit": false,
+  "@esbuild-kit/core-utils": false
+}

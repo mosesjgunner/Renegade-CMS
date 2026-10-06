@@ -98,6 +98,24 @@ export async function POST(request: Request) {
   }
 }
 
+function inferProductKind(
+  capabilities: readonly string[] = [],
+):
+  | 'physical'
+  | 'digital'
+  | 'pod-reference'
+  | 'subscription'
+  | 'membership'
+  | 'donation'
+  | 'affiliate' {
+  if (capabilities.includes('pod')) return 'pod-reference'
+  if (capabilities.includes('affiliate')) return 'affiliate'
+  if (capabilities.includes('donation')) return 'donation'
+  if (capabilities.includes('subscription')) return 'subscription'
+  if (capabilities.includes('digital-entitlement')) return 'digital'
+  return 'physical'
+}
+
 function toPayloadProduct(product: CatalogProduct) {
   return {
     site: product.siteId,
@@ -106,6 +124,7 @@ function toPayloadProduct(product: CatalogProduct) {
     name: product.name,
     summary: product.summary,
     description: product.description,
+    kind: inferProductKind(product.capabilities),
     // Imported provider data is never publication authority. Every applied
     // record re-enters the local review workflow as a draft.
     state: 'draft',

@@ -1,5 +1,9 @@
 # RC scope and claim policy
 
+## RC-05 Pass 3 claim boundary — 2026-10-05
+
+RC-05 is **FAIL** on inspected HEAD `e25f1b554eeae6e898d754822c64181f4b8040cc` with pre-existing changes; see [final evidence](evidence/RC-05-PASS3.md). No commerce subset is promoted by this pass. Local/test payments do not establish real settlement; affiliate contracts do not establish payout automation; POD emulators and synthesized Printful outcomes do not establish manufacture or shipping. Subscription, donation and affiliate workflows remain blocked pending acceptance. Recurring-donation online checkout and the current frontend fulfillment workspace explicitly report unavailable, but this pass does not establish comprehensive product deferral of their APIs/jobs. Required persisted/browser/provider gates and runtime secret inspection remain open.
+
 ## RC-04 Pass 2 current bounded scope — 2026-10-04
 
 Source `3a3260f120f500a48d51a5251a7fd3b900ba6e93` passes the ordinary boundaries in [RC-04 evidence](evidence/RC-04-PASS2.md). Newsletter signup/consent/confirmation/preferences/suppression/re-subscribe, local MIME delivery and recovery, canonical forums and moderation, member profile privacy, owned account export, direct/group messages and in-app notification controls are the supported subset. This is an existing-publication copy journey, not a fresh-install/upgrade/restore claim. Local SMTP is DEGRADED BUT SAFE; live delivery is PROVIDER-REQUIRED.

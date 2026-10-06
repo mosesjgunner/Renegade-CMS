@@ -1,0 +1,4 @@
+{
+    "command":  "npm audit --json after ci",
+    "exitCode":  1
+}

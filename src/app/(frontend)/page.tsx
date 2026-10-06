@@ -74,7 +74,12 @@ export default async function HomePage() {
       // Fall through if selected page is unpublished or not found
     }
     if (editorial) {
-      return <>{schema}<EditorialArticleView themeId={settings.themeId} article={editorial} /></>
+      return (
+        <>
+          {schema}
+          <EditorialArticleView themeId={settings.themeId} article={editorial} />
+        </>
+      )
     }
   }
 
@@ -94,7 +99,15 @@ export default async function HomePage() {
       // Fall through if layout not found
     }
     if (layoutToRender) {
-      return <>{schema}<PublicLayout record={await hydratePublicLayoutRecord(payload, layoutToRender)} path="/" /></>
+      return (
+        <>
+          {schema}
+          <PublicLayout
+            record={await hydratePublicLayoutRecord(payload, layoutToRender)}
+            path="/"
+          />
+        </>
+      )
     }
   }
 
@@ -107,7 +120,12 @@ export default async function HomePage() {
       // No root content article
     }
     if (rootPage) {
-      return <>{schema}<EditorialArticleView themeId={settings.themeId} article={rootPage} /></>
+      return (
+        <>
+          {schema}
+          <EditorialArticleView themeId={settings.themeId} article={rootPage} />
+        </>
+      )
     }
 
     const layouts = await payload.find({
@@ -119,7 +137,12 @@ export default async function HomePage() {
     })
     const layout = layouts.docs[0] as unknown as (PublicState & Record<string, unknown>) | undefined
     if (layout && canRenderPublic(layout)) {
-      return <>{schema}<PublicLayout record={await hydratePublicLayoutRecord(payload, layout)} path="/" /></>
+      return (
+        <>
+          {schema}
+          <PublicLayout record={await hydratePublicLayoutRecord(payload, layout)} path="/" />
+        </>
+      )
     }
   }
 

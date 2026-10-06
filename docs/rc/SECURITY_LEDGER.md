@@ -1,5 +1,11 @@
 # Security ledger
 
+## RC-06 Pass 2 assessment — 2026-10-05 — BLOCKED
+
+Inspected HEAD `e25f1b554eeae6e898d754822c64181f4b8040cc` plus pre-existing working-tree dependency/source changes. [Current evidence](evidence/RC-06-PASS2.md) and [all 21 dependency decisions](evidence/rc-06-pass2/dependency-adjudication.json) supersede the historical npm-install/audit counts only. `npm ci` passes; refreshed audit reports 0 critical, 9 high and 12 moderate affected packages across 7 advisory IDs. Tooling has DEV/TEST-ONLY or NONBLOCKING-NOT-REACHABLE decisions backed by graph/import/standalone evidence; the affected Payload unlock path is denied by the actual installed operation with local password strategy disabled. No known reachable high/critical dependency advisory was established in this built serving artifact. This does not clear application security gates.
+
+479 focused unit tests pass. Production standalone proves migration/schema readiness failures and restoration, three anonymous admin API denials, member-session denial and Chromium login/provider-page denial. Full authenticated role/object/tenant attacks, integrated money regression, privacy/private bytes, rendered input/abuse attacks and exhaustive runtime/worker/backup secret evidence remain incomplete. Missing completed RC-06 Pass 1 evidence and RC-05's failed integrated money gate prevent RC-06 PASS. Existing boundary rows below retain their broader release-blocking status. Release cannot proceed; remaining work is substantive acceptance, not only cleanup.
+
 ## RC-04 Pass 2 executed privacy subset — 2026-10-04
 
 Source `3a3260f120f500a48d51a5251a7fd3b900ba6e93`; [evidence](evidence/RC-04-PASS2.md). Real member sessions prove private profile and private thread API/SSR denial, foreign conversation denial even for a moderator, guessed attachment association denial, ordinary-member moderation denial, mute/block effects, owned export and logout/fresh-session persistence. Canonical post projections flatten member relationships; public native identity/community reads require staff access. Moderator authority is site-scoped and distinct from the admin cookie.

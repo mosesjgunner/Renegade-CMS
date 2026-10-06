@@ -1,0 +1,28 @@
+{
+  "success": false,
+  "database": "renegade_rc06_1791223431269_release_acceptance",
+  "template": "renegade_rc02_1791086734920_release_acceptance",
+  "observations": [
+    {
+      "label": "liveness",
+      "route": "/health/live",
+      "status": 200,
+      "body": {
+        "status": "live"
+      }
+    },
+    {
+      "label": "baseline",
+      "route": "/health/ready",
+      "status": 503,
+      "body": {
+        "status": "not_ready",
+        "checks": {
+          "database": "ok",
+          "migrations": "pending"
+        }
+      }
+    }
+  ],
+  "error": "baseline\n\n503 !== 200\n"
+}

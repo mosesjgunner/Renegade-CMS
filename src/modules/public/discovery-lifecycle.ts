@@ -62,12 +62,19 @@ export async function persistRenderedAuditLifecycle(
   for (const item of issues) {
     const key = `disc-05:${item.ruleId}:${item.url}`
     const previous = grouped.get(key)
-    grouped.set(key, previous ? {
-      ...previous,
-      evidence: [...new Set([previous.evidence, item.evidence])].join('\n'),
-      severity: severityRank[item.severity] > severityRank[previous.severity]
-        ? item.severity : previous.severity,
-    } : item)
+    grouped.set(
+      key,
+      previous
+        ? {
+            ...previous,
+            evidence: [...new Set([previous.evidence, item.evidence])].join('\n'),
+            severity:
+              severityRank[item.severity] > severityRank[previous.severity]
+                ? item.severity
+                : previous.severity,
+          }
+        : item,
+    )
   }
 
   for (const [dedupeKey, item] of grouped) {

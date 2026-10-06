@@ -45,6 +45,15 @@ export async function verifyShop01Browser() {
         )
       },
     )
+    const existingOld = await payload.find({
+      collection: 'products',
+      where: { slug: { in: ['field-kit', 'organizing-lamp', 'renegade-shirt'] } },
+      limit: 100,
+      overrideAccess: true,
+    } as never)
+    for (const oldDoc of existingOld.docs) {
+      await payload.delete({ collection: 'products', id: (oldDoc as any).id, overrideAccess: true } as never)
+    }
     const now = new Date().toISOString()
     const products = [
       {
@@ -180,8 +189,8 @@ export async function verifyShop01Browser() {
     await page.getByLabel('Catalog JSON').fill(JSON.stringify(products))
     await page.getByRole('button', { name: 'Apply validated import' }).click()
     await page.getByText('apply: 3 create, 0 update, 0 unchanged, 0 errors.').waitFor()
-    for (const name of products.map((product) => product.name)) {
-      const row = page.getByRole('row', { name: new RegExp(name) })
+    for (const product of products) {
+      const row = page.getByRole('row', { name: new RegExp(`${product.canonicalPath}\\b`) })
       await row.getByRole('button', { name: 'Request review' }).click()
       await row.getByRole('button', { name: 'Approve' }).click()
       await row.getByRole('button', { name: 'Publish' }).click()
@@ -197,13 +206,22 @@ export async function verifyShop01Browser() {
     await page.goto(`${baseURL}/store/renegade-shirt`)
     await page.getByText('Availability confirmed at provider handoff').waitFor()
     const schema = await page.locator('script[type="application/ld+json"]').textContent()
-    if (!schema?.includes('Product') || !schema.includes('2800'))
+    if (!schema?.includes('Product') || (!schema.includes('2800') && !schema.includes('28.00')))
       throw new Error('Product schema is absent.')
     const denied = await page.request.get(`${baseURL}/api/commerce/download/not-a-valid-grant`)
     if (denied.status() !== 404) throw new Error('Private download denial failed.')
     console.log('SHOP-01 browser acceptance passed.')
     await browser.close()
   } finally {
+    const cleanup = await payload.find({
+      collection: 'products',
+      where: { slug: { in: ['field-kit', 'organizing-lamp', 'renegade-shirt'] } },
+      limit: 100,
+      overrideAccess: true,
+    } as never).catch(() => ({ docs: [] }))
+    for (const oldDoc of cleanup.docs) {
+      await payload.delete({ collection: 'products', id: (oldDoc as any).id, overrideAccess: true } as never).catch(() => undefined)
+    }
     await payload.db.destroy?.()
   }
 }

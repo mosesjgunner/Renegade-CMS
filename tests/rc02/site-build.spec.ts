@@ -757,12 +757,17 @@ test('RC-02: ordinary operator builds Renegade Party Dispatch from an empty inst
         publicProof[path] = { status: response?.status(), title: await visitor.title(), schemas }
         if (path === '/events/open-civic-assembly')
           expect(JSON.stringify(schemas)).toContain('"@type":"Event"')
-        if (path === '/')
-        {
+        if (path === '/') {
           expect(JSON.stringify(schemas)).toContain('"@type":"WebSite"')
-          await expect(visitor.getByRole('link', { name: 'A republic built in the open', exact: true })).toBeVisible()
-          await expect(visitor.getByRole('link', { name: 'Neighborhood assemblies in practice', exact: true })).toBeVisible()
-          await expect(visitor.locator('body')).not.toContainText('PRIVATE RC02 editorial investigation')
+          await expect(
+            visitor.getByRole('link', { name: 'A republic built in the open', exact: true }),
+          ).toBeVisible()
+          await expect(
+            visitor.getByRole('link', { name: 'Neighborhood assemblies in practice', exact: true }),
+          ).toBeVisible()
+          await expect(visitor.locator('body')).not.toContainText(
+            'PRIVATE RC02 editorial investigation',
+          )
         }
         if (path.startsWith('/categories/') || path.startsWith('/topics/'))
           expect(JSON.stringify(schemas)).toContain('"@type":"CollectionPage"')
@@ -916,7 +921,9 @@ test('RC-02: ordinary operator builds Renegade Party Dispatch from an empty inst
         ],
       })
       await api('PATCH', `/api/content/${articleId}`, { body: updatedBody, status: 'updated' })
-      await api('PATCH', `/api/content/${articleId}`, { summary: 'A saved revision awaiting republication.' })
+      await api('PATCH', `/api/content/${articleId}`, {
+        summary: 'A saved revision awaiting republication.',
+      })
       await page.goto('/articles/republic-in-the-open')
       await expect(page.locator('body')).not.toContainText('PUBLIC RC02 UPDATE')
       const searchVisitor = await browser.newContext({ ignoreHTTPSErrors: true })
@@ -982,11 +989,17 @@ test('RC-02: ordinary operator builds Renegade Party Dispatch from an empty inst
       writeFileSync('docs/rc/evidence/rc-02/rendered-quality.json', JSON.stringify(audit, null, 2))
       expect(audit.pages.length).toBeGreaterThan(0)
       expect(audit.pages.every((entry: { status: number }) => entry.status === 200)).toBe(true)
-      expect(audit.issues.filter((entry: { severity: string; ruleId: string }) =>
-        entry.severity === 'publication_blocking' || [
-          'DISC-05-INTERNAL-LINK-UNREACHABLE', 'DISC-05-DESCRIPTION-MISSING', 'DISC-05-HEADING-HIERARCHY',
-        ].includes(entry.ruleId),
-      )).toEqual([])
+      expect(
+        audit.issues.filter(
+          (entry: { severity: string; ruleId: string }) =>
+            entry.severity === 'publication_blocking' ||
+            [
+              'DISC-05-INTERNAL-LINK-UNREACHABLE',
+              'DISC-05-DESCRIPTION-MISSING',
+              'DISC-05-HEADING-HIERARCHY',
+            ].includes(entry.ruleId),
+        ),
+      ).toEqual([])
     })
     await test.step('Actual web and worker process restart, then fresh anonymous browse', async () => {
       const request = { nonce: Date.now() }
@@ -1033,7 +1046,10 @@ test('RC-02: ordinary operator builds Renegade Party Dispatch from an empty inst
       const restartedVisitor = await fresh.newPage()
       await restartedVisitor.goto(`${process.env.APP_URL}/articles/republic-public-records`)
       await expect(
-        restartedVisitor.getByRole('heading', { name: 'A republic built in the open', exact: true }),
+        restartedVisitor.getByRole('heading', {
+          name: 'A republic built in the open',
+          exact: true,
+        }),
       ).toBeVisible()
       await expect(restartedVisitor.locator('body')).toContainText('PUBLIC RC02 UPDATE')
       const restoredMedia = await fresh.request.get(

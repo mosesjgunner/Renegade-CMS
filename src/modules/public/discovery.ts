@@ -1659,8 +1659,10 @@ async function buildContentDiscoveryDocument(input: {
           overrideAccess: true,
         } as never)
         publishedRevision = rev as Record<string, any> | undefined
-        plainTextBody = typeof publishedRevision?.document?.plainTextProjection === 'string'
-          ? publishedRevision.document.plainTextProjection : ''
+        plainTextBody =
+          typeof publishedRevision?.document?.plainTextProjection === 'string'
+            ? publishedRevision.document.plainTextProjection
+            : ''
       } else if (content.status !== 'updated' && typeof fam.plainTextProjection === 'string') {
         plainTextBody = fam.plainTextProjection
       }
@@ -2794,7 +2796,14 @@ function buildGenericRecordDiscoveryDocument(input: {
     canonicalUrl: record.seoCanonicalURL || publicUrl,
     canonicalPath,
     base,
-    contentType: kind === 'topic' ? 'archive' : ext ? 'page' : kind === 'event' || kind === 'product' ? 'page' : 'article',
+    contentType:
+      kind === 'topic'
+        ? 'archive'
+        : ext
+          ? 'page'
+          : kind === 'event' || kind === 'product'
+            ? 'page'
+            : 'article',
     title: titleValue,
     description: descValue,
     site: siteIdentity,

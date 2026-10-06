@@ -4,18 +4,14 @@ import { runRenderedAudit } from '@/modules/public/discovery-audit'
 
 describe('RC-02 local rendered audit boundary', () => {
   it('allows only the exact server-configured origin, including private production deployments', () => {
-    expect(
-      allowConfiguredSelfAudit('http://localhost:3128', 'http://localhost:3128'),
-    ).toBe(true)
+    expect(allowConfiguredSelfAudit('http://localhost:3128', 'http://localhost:3128')).toBe(true)
     for (const [origin, app] of [
       ['http://localhost:9999', 'http://localhost:3128'],
       ['http://169.254.169.254', 'http://localhost:3128'],
       ['https://other.test', 'http://localhost:3128'],
     ])
       expect(allowConfiguredSelfAudit(origin, app)).toBe(false)
-    expect(
-      allowConfiguredSelfAudit('https://dispatch.test', 'https://dispatch.test'),
-    ).toBe(true)
+    expect(allowConfiguredSelfAudit('https://dispatch.test', 'https://dispatch.test')).toBe(true)
   })
   it('fetches local pages but retains the same-origin and manual-redirect boundaries', async () => {
     const fetcher = vi.fn<typeof fetch>(
@@ -24,10 +20,7 @@ describe('RC-02 local rendered audit boundary', () => {
     const result = await runRenderedAudit({
       origin: 'http://localhost:3128',
       paths: ['/', 'http://localhost:9999/private'],
-      allowPrivate: allowConfiguredSelfAudit(
-        'http://localhost:3128',
-        'http://localhost:3128',
-      ),
+      allowPrivate: allowConfiguredSelfAudit('http://localhost:3128', 'http://localhost:3128'),
       resolve: async () => [{ address: '127.0.0.1' }],
       fetcher: fetcher as typeof fetch,
     })

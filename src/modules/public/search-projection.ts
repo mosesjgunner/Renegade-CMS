@@ -65,11 +65,15 @@ export async function projectSearchDocument(
   if (!canonicalId) return 'removed'
   // Lifecycle hooks run before commit. Read companions and revisions in that
   // same request transaction so republishing indexes the new public pointer.
-  const scopedPayload = input.req ? Object.assign(Object.create(payload), {
-    find: (args: Parameters<Payload['find']>[0]) => payload.find({ ...args, req: input.req }),
-    findByID: (args: Parameters<Payload['findByID']>[0]) => payload.findByID({ ...args, req: input.req }),
-    findGlobal: (args: Parameters<Payload['findGlobal']>[0]) => payload.findGlobal({ ...args, req: input.req }),
-  }) as Payload : payload
+  const scopedPayload = input.req
+    ? (Object.assign(Object.create(payload), {
+        find: (args: Parameters<Payload['find']>[0]) => payload.find({ ...args, req: input.req }),
+        findByID: (args: Parameters<Payload['findByID']>[0]) =>
+          payload.findByID({ ...args, req: input.req }),
+        findGlobal: (args: Parameters<Payload['findGlobal']>[0]) =>
+          payload.findGlobal({ ...args, req: input.req }),
+      }) as Payload)
+    : payload
   const doc = await resolveDiscoveryDocument(scopedPayload, {
     collection: input.collection,
     record: input.record,

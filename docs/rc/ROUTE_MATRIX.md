@@ -585,22 +585,21 @@ The data-driven matrix owns 42 distinct configured/visible admin route targets. 
 | `/calendar`                                             | Not executed after first invalidating failure              | BLOCKER: CRUD, empty/validation, role/tenant, preview and execute/publish evidence incomplete |
 | `/admin/collections/email-messages`                     | Not executed after first invalidating failure              | BLOCKER: CRUD, empty/validation, role/tenant, preview and execute/publish evidence incomplete |
 
-
 ## RC-02 consolidated journey ? PASS ? 2026-10-03
 
 Source `b684ee11460637bf2177f349057f14d6e804bbbd`. [Executed assertions/trace](evidence/RC-02.md). This appendix supersedes historical ?not executed? entries only for the actions below, not broader roles/CRUD/provider scope.
 
-| Surface | Proof |
-| --- | --- |
-| `/setup`, `/admin` | Empty install, owner/passkey, admin access |
-| Settings, Theme Studio, media library, content editor, `/builder/[id]` | Saved settings/tokens/theme, binary DAM, native rich-text save and revision preview, Puck composition/publish |
-| Quality Scans / Rendered Quality | Real worker completion; nine actual HTTP pages, zero warning/blocking findings |
-| `/`, `/about`, `/get-involved`, `/articles`, two article routes, event, category/topic | Anonymous 200, navigation/mobile, metadata/schema/related reporting |
-| `/search` | Title/body/taxonomy results; unpublished body excluded until republish |
-| `/sitemap.xml`, sitemap child, `/robots.txt`, `/feed.xml`, `/feed.json` | 200; private/internal layouts excluded |
-| Old article slug / absent route | Exact 308 + `/articles/republic-public-records`; 404 |
-| Private draft / unused private media / anonymous admin data | Denied or absent |
-| Fresh public requests after web + worker restart | Page/article/event/media/sitemap/feed usable |
+| Surface                                                                                | Proof                                                                                                         |
+| -------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------- |
+| `/setup`, `/admin`                                                                     | Empty install, owner/passkey, admin access                                                                    |
+| Settings, Theme Studio, media library, content editor, `/builder/[id]`                 | Saved settings/tokens/theme, binary DAM, native rich-text save and revision preview, Puck composition/publish |
+| Quality Scans / Rendered Quality                                                       | Real worker completion; nine actual HTTP pages, zero warning/blocking findings                                |
+| `/`, `/about`, `/get-involved`, `/articles`, two article routes, event, category/topic | Anonymous 200, navigation/mobile, metadata/schema/related reporting                                           |
+| `/search`                                                                              | Title/body/taxonomy results; unpublished body excluded until republish                                        |
+| `/sitemap.xml`, sitemap child, `/robots.txt`, `/feed.xml`, `/feed.json`                | 200; private/internal layouts excluded                                                                        |
+| Old article slug / absent route                                                        | Exact 308 + `/articles/republic-public-records`; 404                                                          |
+| Private draft / unused private media / anonymous admin data                            | Denied or absent                                                                                              |
+| Fresh public requests after web + worker restart                                       | Page/article/event/media/sitemap/feed usable                                                                  |
 
 Author byline and Person schema passed; no clickable author archive is advertised in the current renderer. Transcript search is not claimed for the created article/event content.
 

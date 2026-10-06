@@ -3680,11 +3680,7 @@
         "urlB": "https://dispatch.rc02.test:3129/articles",
         "titleB": "Articles — Renegade Party Dispatch",
         "similarityScore": 0.65,
-        "sharedTerms": [
-          "renegade",
-          "party",
-          "dispatch"
-        ],
+        "sharedTerms": ["renegade", "party", "dispatch"],
         "issue": {
           "url": "https://dispatch.rc02.test:3129/",
           "ruleId": "DISC-05-CANNIBALIZATION-REVIEW",

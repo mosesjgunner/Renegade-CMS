@@ -10,6 +10,8 @@ Current orchestration gate: **RC-03 PASS 2 PASS**, source `bb93ea8b562bc91e71e64
 
 # Current release truth
 
+RC-05 Pass 3: **FAIL**, inspected HEAD `e25f1b554eeae6e898d754822c64181f4b8040cc` with pre-existing changes. [Final gate evidence](evidence/RC-05-PASS3.md). No completed RC-05 Pass 1/Pass 2 acceptance is available in this checkout. 161 unit and 28 affiliate/POD contract tests, typecheck, lint and build pass; ordinary checkout, persisted settlement/recovery/isolation and inventory-race gates remain unproved. Synthesized Printful provider outcomes remain a blocker. RC-06 is gated on RC-05 acceptance.
+
 Source candidate: `e24fc53d9e370e28f01398c561b0f5adc4884756`. Reconciled 2026-10-03. Initial working tree was clean. This documentation freeze binds the source candidate; its artifact commit is discoverable with git log -- docs/rc. It does not establish runtime release readiness.
 
 This directory supersedes release-readiness prose elsewhere for the source candidate. RC-00 reconciles implemented scope and evidence; the release remains BLOCKED. No workflow or provider is promoted by historical PASS reports.

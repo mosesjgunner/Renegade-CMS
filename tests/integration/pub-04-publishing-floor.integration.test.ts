@@ -8,7 +8,11 @@ import { normalizeNavigation, validateNavigation } from '../../src/modules/publi
 import { mediaStorage, inspectMedia } from '../../src/modules/media/storage'
 import { deleteOrphanedMedia, publicMedia } from '../../src/modules/media/workflow'
 import { loadConfig } from '../../src/modules/core/config'
-import { queryLocalSearch, resolveDiscoveryDocument, type SearchDocument } from '../../src/modules/public/discovery'
+import {
+  queryLocalSearch,
+  resolveDiscoveryDocument,
+  type SearchDocument,
+} from '../../src/modules/public/discovery'
 import { querySearchProjection } from '../../src/modules/public/search-projection'
 import sitemap from '../../src/modules/public/sitemap-compat'
 import robots from '../../src/app/(frontend)/robots'
@@ -64,29 +68,57 @@ describe('PUB-04 publishing floor integration contract', () => {
 
   it('keeps saved edits out of the public body index and indexes them immediately upon republish', async () => {
     const token = `privaterevision${randomUUID().replaceAll('-', '')}`
-    const body = (value: string) => ({ root: { type: 'root', version: 1, children: [
-      { type: 'paragraph', version: 1, children: [{ type: 'text', version: 1, text: value }] },
-    ] } })
-    const article = await payload.create({ collection: 'content', overrideAccess: true,
-      data: { site: siteId, publication: publicationId, contentType: 'article',
-        title: 'Revision privacy reporting', slug: `revision-${randomUUID()}`, status: 'published',
+    const body = (value: string) => ({
+      root: {
+        type: 'root',
+        version: 1,
+        children: [
+          { type: 'paragraph', version: 1, children: [{ type: 'text', version: 1, text: value }] },
+        ],
+      },
+    })
+    const article = await payload.create({
+      collection: 'content',
+      overrideAccess: true,
+      data: {
+        site: siteId,
+        publication: publicationId,
+        contentType: 'article',
+        title: 'Revision privacy reporting',
+        slug: `revision-${randomUUID()}`,
+        status: 'published',
         body: body('The original public reporting.'),
       } as never,
     })
-    await payload.update({ collection: 'content', id: article.id, overrideAccess: true,
+    await payload.update({
+      collection: 'content',
+      id: article.id,
+      overrideAccess: true,
       data: { body: body(`Saved private reporting ${token}`), status: 'updated' } as never,
     })
-    const saved = await payload.update({ collection: 'content', id: article.id, overrideAccess: true,
+    const saved = await payload.update({
+      collection: 'content',
+      id: article.id,
+      overrideAccess: true,
       data: { summary: 'Metadata saved while the body remains unpublished.' },
     })
-    const doc = await resolveDiscoveryDocument(payload, { collection: 'content', record: saved as unknown as Record<string, unknown>, siteId })
+    const doc = await resolveDiscoveryDocument(payload, {
+      collection: 'content',
+      record: saved as unknown as Record<string, unknown>,
+      siteId,
+    })
     expect(doc.search.bodyProjection).not.toContain(token)
     expect(doc.search.bodyProjection).toContain('original public reporting')
     expect((await querySearchProjection(payload, { siteId, query: token })).hits).toHaveLength(0)
-    await payload.update({ collection: 'content', id: article.id, overrideAccess: true,
+    await payload.update({
+      collection: 'content',
+      id: article.id,
+      overrideAccess: true,
       data: { status: 'published' },
     })
-    expect((await querySearchProjection(payload, { siteId, query: token })).hits.map((hit) => hit.id)).toContain(String(article.id))
+    expect(
+      (await querySearchProjection(payload, { siteId, query: token })).hits.map((hit) => hit.id),
+    ).toContain(String(article.id))
   })
 
   it('Requirement 1: updates and resolves site settings through normal admin controls', async () => {

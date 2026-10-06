@@ -1,0 +1,149 @@
+﻿{
+  "@payloadcms/db-postgres": {
+    "current": "3.88.0",
+    "wanted": "3.88.0",
+    "latest": "3.90.2",
+    "dependent": "Renegade-CMS",
+    "location": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\node_modules\\@payloadcms\\db-postgres"
+  },
+  "@payloadcms/next": {
+    "current": "3.88.0",
+    "wanted": "3.88.0",
+    "latest": "3.90.2",
+    "dependent": "Renegade-CMS",
+    "location": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\node_modules\\@payloadcms\\next"
+  },
+  "@payloadcms/richtext-lexical": {
+    "current": "3.88.0",
+    "wanted": "3.88.0",
+    "latest": "3.90.2",
+    "dependent": "Renegade-CMS",
+    "location": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\node_modules\\@payloadcms\\richtext-lexical"
+  },
+  "@payloadcms/ui": {
+    "current": "3.88.0",
+    "wanted": "3.88.0",
+    "latest": "3.90.2",
+    "dependent": "Renegade-CMS",
+    "location": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\node_modules\\@payloadcms\\ui"
+  },
+  "@playwright/test": {
+    "current": "1.62.1",
+    "wanted": "1.63.0",
+    "latest": "1.63.0",
+    "dependent": "Renegade-CMS",
+    "location": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\node_modules\\@playwright\\test"
+  },
+  "@simplewebauthn/server": {
+    "current": "13.3.3",
+    "wanted": "13.3.3",
+    "latest": "14.0.3",
+    "dependent": "Renegade-CMS",
+    "location": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\node_modules\\@simplewebauthn\\server"
+  },
+  "@types/node": {
+    "current": "24.3.0",
+    "wanted": "24.3.0",
+    "latest": "26.6.4",
+    "dependent": "Renegade-CMS",
+    "location": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\node_modules\\@types\\node"
+  },
+  "@types/nodemailer": {
+    "current": "7.0.8",
+    "wanted": "7.0.8",
+    "latest": "8.0.2",
+    "dependent": "Renegade-CMS",
+    "location": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\node_modules\\@types\\nodemailer"
+  },
+  "@types/react": {
+    "current": "19.2.14",
+    "wanted": "19.2.14",
+    "latest": "19.3.0",
+    "dependent": "Renegade-CMS",
+    "location": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\node_modules\\@types\\react"
+  },
+  "@types/react-dom": {
+    "current": "19.2.3",
+    "wanted": "19.2.3",
+    "latest": "19.3.0",
+    "dependent": "Renegade-CMS",
+    "location": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\node_modules\\@types\\react-dom"
+  },
+  "eslint": {
+    "current": "9.35.0",
+    "wanted": "9.35.0",
+    "latest": "10.12.0",
+    "dependent": "Renegade-CMS",
+    "location": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\node_modules\\eslint"
+  },
+  "graphql": {
+    "current": "16.11.0",
+    "wanted": "16.11.0",
+    "latest": "17.0.2",
+    "dependent": "Renegade-CMS",
+    "location": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\node_modules\\graphql"
+  },
+  "jose": {
+    "current": "5.10.0",
+    "wanted": "5.10.0",
+    "latest": "6.2.12",
+    "dependent": "Renegade-CMS",
+    "location": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\node_modules\\jose"
+  },
+  "payload": {
+    "current": "3.88.0",
+    "wanted": "3.88.0",
+    "latest": "3.90.2",
+    "dependent": "Renegade-CMS",
+    "location": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\node_modules\\payload"
+  },
+  "prettier": {
+    "current": "3.6.2",
+    "wanted": "3.6.2",
+    "latest": "3.9.9",
+    "dependent": "Renegade-CMS",
+    "location": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\node_modules\\prettier"
+  },
+  "react": {
+    "current": "19.2.8",
+    "wanted": "19.2.8",
+    "latest": "19.3.0",
+    "dependent": "Renegade-CMS",
+    "location": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\node_modules\\react"
+  },
+  "react-dom": {
+    "current": "19.2.8",
+    "wanted": "19.2.8",
+    "latest": "19.3.0",
+    "dependent": "Renegade-CMS",
+    "location": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\node_modules\\react-dom"
+  },
+  "sharp": {
+    "current": "0.35.4",
+    "wanted": "0.35.5",
+    "latest": "0.35.5",
+    "dependent": "Renegade-CMS",
+    "location": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\node_modules\\sharp"
+  },
+  "tsx": {
+    "current": "4.20.5",
+    "wanted": "4.20.5",
+    "latest": "4.23.15",
+    "dependent": "Renegade-CMS",
+    "location": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\node_modules\\tsx"
+  },
+  "typescript": {
+    "current": "5.9.2",
+    "wanted": "5.9.2",
+    "latest": "7.0.2",
+    "dependent": "Renegade-CMS",
+    "location": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\node_modules\\typescript"
+  },
+  "vitest": {
+    "current": "3.2.7",
+    "wanted": "3.2.7",
+    "latest": "5.0.3",
+    "dependent": "Renegade-CMS",
+    "location": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\node_modules\\vitest"
+  }
+}

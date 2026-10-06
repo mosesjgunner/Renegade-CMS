@@ -1,0 +1,54 @@
+{
+  "head": "e25f1b554eeae6e898d754822c64181f4b8040cc",
+  "verdict": "BLOCKED",
+  "exits": {
+    "auth-attacks-exit.json": {
+      "command": "RC06 auth attacks",
+      "exitCode": 0
+    },
+    "build-exit.json": {
+      "command": "build",
+      "exitCode": 0
+    },
+    "lint-exit.json": {
+      "command": "lint final",
+      "exitCode": 0
+    },
+    "npm-audit-exit.json": {
+      "command": "npm audit --json after ci",
+      "exitCode": 1
+    },
+    "npm-ci-exit.json": {
+      "command": "npm ci",
+      "exitCode": 0
+    },
+    "npm-outdated-exit.json": {
+      "command": "npm outdated after ci",
+      "exitCode": 1
+    },
+    "operational-exit.json": {
+      "command": "production operational acceptance with Chromium",
+      "exitCode": 0
+    },
+    "typecheck-exit.json": {
+      "command": "typecheck final",
+      "exitCode": 0
+    },
+    "unit-exit.json": {
+      "command": "focused Vitest",
+      "exitCode": 0
+    }
+  },
+  "unit": {
+    "files": 64,
+    "passed": 479,
+    "failed": 0,
+    "skipped": 0
+  },
+  "operational": {
+    "success": true,
+    "observations": 11
+  },
+  "fullFinalRC": false,
+  "integratedRoleTenantMoneyPrivacyAcceptance": false
+}

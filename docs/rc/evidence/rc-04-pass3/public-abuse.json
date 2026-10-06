@@ -1,16 +1,5 @@
 {
-  "statuses": [
-    400,
-    400,
-    400,
-    400,
-    400,
-    400,
-    400,
-    429,
-    429,
-    429
-  ],
+  "statuses": [400, 400, 400, 400, 400, 400, 400, 429, 429, 429],
   "processLocalLimit": true,
   "deferredFormGET": 410,
   "deferredFormPOST": 410,

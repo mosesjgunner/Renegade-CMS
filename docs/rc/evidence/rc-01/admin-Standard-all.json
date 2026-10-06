@@ -84,10 +84,7 @@
       "path": "/telemetry"
     }
   ],
-  "beforeNavLinks": [
-    "./modules/admin/PublishingLinks",
-    "./modules/admin/CapabilityCenterLink"
-  ],
+  "beforeNavLinks": ["./modules/admin/PublishingLinks", "./modules/admin/CapabilityCenterLink"],
   "links": [
     {
       "href": "/admin",

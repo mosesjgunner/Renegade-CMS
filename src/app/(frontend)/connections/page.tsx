@@ -2,6 +2,7 @@
 import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import { headers } from 'next/headers'
+import { redirect } from 'next/navigation'
 import {
   ConnectionsCenter,
   type OperationalConnection,
@@ -73,16 +74,19 @@ function determineGroup(providerKey: string): ConnectionGroup {
 }
 
 export default async function ConnectionsPage() {
+  const payload = await getPayload({ config: configPromise })
+  const incomingHeaders = await headers()
+  const auth = await payload.auth({ headers: incomingHeaders }).catch(() => null)
+  const isStaff = ['owner', 'administrator', 'publisher', 'staff'].includes(String(auth?.user?.role))
+  if (!isStaff) {
+    redirect('/login')
+  }
+
   const connections: OperationalConnection[] = []
   let deliveries: WebhookDeliveryItem[] = []
   let auditEvents: IntegrationAuditItem[] = []
-  let isStaff = false
 
   try {
-    const payload = await getPayload({ config: configPromise })
-    const incomingHeaders = await headers()
-    const auth = await payload.auth({ headers: incomingHeaders }).catch(() => null)
-    isStaff = ['owner', 'administrator', 'publisher', 'staff'].includes(String(auth?.user?.role))
 
     // 1. Merchant connections
     try {

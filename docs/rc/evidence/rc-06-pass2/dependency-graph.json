@@ -1,0 +1,266 @@
+{
+  "version": "0.1.0",
+  "name": "renegade-cms",
+  "dependencies": {
+    "@payloadcms/db-postgres": {
+      "version": "3.88.0",
+      "overridden": false,
+      "dependencies": {
+        "@payloadcms/drizzle": {
+          "version": "3.88.0",
+          "overridden": false,
+          "dependencies": {
+            "payload": {
+              "version": "3.88.0"
+            }
+          }
+        },
+        "drizzle-kit": {
+          "version": "0.31.7",
+          "overridden": false,
+          "dependencies": {
+            "@esbuild-kit/esm-loader": {
+              "version": "2.6.5",
+              "overridden": false,
+              "dependencies": {
+                "@esbuild-kit/core-utils": {
+                  "version": "3.3.2",
+                  "overridden": false,
+                  "dependencies": {
+                    "esbuild": {
+                      "version": "0.18.20",
+                      "overridden": false
+                    }
+                  }
+                }
+              }
+            },
+            "esbuild-register": {
+              "version": "3.6.0",
+              "overridden": false,
+              "dependencies": {
+                "esbuild": {
+                  "version": "0.25.12"
+                }
+              }
+            },
+            "esbuild": {
+              "version": "0.25.12"
+            }
+          }
+        },
+        "payload": {
+          "version": "3.88.0"
+        }
+      }
+    },
+    "@payloadcms/next": {
+      "version": "3.88.0",
+      "overridden": false,
+      "dependencies": {
+        "@payloadcms/graphql": {
+          "version": "3.88.0",
+          "overridden": false,
+          "dependencies": {
+            "payload": {
+              "version": "3.88.0"
+            },
+            "tsx": {
+              "version": "4.22.4",
+              "overridden": false,
+              "dependencies": {
+                "esbuild": {
+                  "version": "0.28.2",
+                  "overridden": false
+                }
+              }
+            }
+          }
+        },
+        "payload": {
+          "version": "3.88.0"
+        },
+        "sass": {
+          "version": "1.77.4",
+          "overridden": false,
+          "dependencies": {
+            "chokidar": {
+              "version": "3.6.0",
+              "overridden": false,
+              "dependencies": {
+                "braces": {
+                  "version": "3.0.3",
+                  "overridden": false
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "@payloadcms/richtext-lexical": {
+      "version": "3.88.0",
+      "overridden": false,
+      "dependencies": {
+        "payload": {
+          "version": "3.88.0"
+        }
+      }
+    },
+    "@payloadcms/ui": {
+      "version": "3.88.0",
+      "overridden": false,
+      "dependencies": {
+        "payload": {
+          "version": "3.88.0"
+        }
+      }
+    },
+    "eslint-config-next": {
+      "version": "16.3.8",
+      "resolved": "https://registry.npmjs.org/eslint-config-next/-/eslint-config-next-16.3.8.tgz",
+      "overridden": false,
+      "dependencies": {
+        "@next/eslint-plugin-next": {
+          "version": "16.3.8",
+          "resolved": "https://registry.npmjs.org/@next/eslint-plugin-next/-/eslint-plugin-next-16.3.8.tgz",
+          "overridden": false,
+          "dependencies": {
+            "fast-glob": {
+              "version": "3.3.1",
+              "resolved": "https://registry.npmjs.org/fast-glob/-/fast-glob-3.3.1.tgz",
+              "overridden": false,
+              "dependencies": {
+                "micromatch": {
+                  "version": "4.0.8",
+                  "resolved": "https://registry.npmjs.org/micromatch/-/micromatch-4.0.8.tgz",
+                  "overridden": false,
+                  "dependencies": {
+                    "braces": {
+                      "version": "3.0.3"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "typescript-eslint": {
+          "version": "8.67.0",
+          "overridden": false,
+          "dependencies": {
+            "@typescript-eslint/typescript-estree": {
+              "version": "8.67.0",
+              "overridden": false,
+              "dependencies": {
+                "minimatch": {
+                  "version": "10.2.6",
+                  "overridden": false,
+                  "dependencies": {
+                    "brace-expansion": {
+                      "version": "5.0.9",
+                      "overridden": false
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "eslint": {
+      "version": "9.35.0",
+      "overridden": false,
+      "dependencies": {
+        "minimatch": {
+          "version": "3.1.5",
+          "overridden": false,
+          "dependencies": {
+            "brace-expansion": {
+              "version": "1.1.18",
+              "overridden": false
+            }
+          }
+        }
+      }
+    },
+    "next": {
+      "version": "16.3.8",
+      "resolved": "https://registry.npmjs.org/next/-/next-16.3.8.tgz",
+      "overridden": false,
+      "dependencies": {
+        "sass": {
+          "version": "1.77.4"
+        }
+      }
+    },
+    "payload": {
+      "version": "3.88.0",
+      "overridden": false,
+      "dependencies": {
+        "tsx": {
+          "version": "4.22.4",
+          "overridden": false,
+          "dependencies": {
+            "esbuild": {
+              "version": "0.28.2",
+              "overridden": false
+            }
+          }
+        }
+      }
+    },
+    "tsx": {
+      "version": "4.20.5",
+      "overridden": false,
+      "dependencies": {
+        "esbuild": {
+          "version": "0.25.12",
+          "overridden": false
+        }
+      }
+    },
+    "vitest": {
+      "version": "3.2.7",
+      "resolved": "https://registry.npmjs.org/vitest/-/vitest-3.2.7.tgz",
+      "overridden": false,
+      "dependencies": {
+        "vite-node": {
+          "version": "3.2.4",
+          "overridden": false,
+          "dependencies": {
+            "vite": {
+              "version": "7.3.6",
+              "overridden": false,
+              "dependencies": {
+                "esbuild": {
+                  "version": "0.28.2",
+                  "overridden": false
+                },
+                "sass": {
+                  "version": "1.77.4"
+                }
+              }
+            }
+          }
+        },
+        "vite": {
+          "version": "7.3.6",
+          "resolved": "https://registry.npmjs.org/vite/-/vite-7.3.6.tgz",
+          "overridden": false,
+          "dependencies": {
+            "esbuild": {
+              "version": "0.28.2",
+              "resolved": "https://registry.npmjs.org/esbuild/-/esbuild-0.28.2.tgz",
+              "overridden": false
+            },
+            "sass": {
+              "version": "1.77.4"
+            }
+          }
+        }
+      }
+    }
+  }
+}

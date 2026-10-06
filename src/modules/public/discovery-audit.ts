@@ -123,7 +123,8 @@ export function inspectRenderedHtml(
     const attribute: 'href' | 'src' = /^<link\b/i.test(tag) ? 'href' : 'src'
     const raw = attr(tag, attribute)
     const target = raw && absolute(raw, finalUrl)
-    if (target && /^https?:/i.test(target)) links.push({ target, text: text(tag), attribute, resource: true })
+    if (target && /^https?:/i.test(target))
+      links.push({ target, text: text(tag), attribute, resource: true })
   }
   const issues: RenderedAuditIssue[] = []
   if (!title)
@@ -363,41 +364,58 @@ export async function runRenderedAudit(options: AuditOptions): Promise<RenderedA
     return target.toString()
   }
   const checked = new Map(pages.map((p) => [withoutFragment(p.finalUrl), p.status]))
-  const linkTargets = [...new Set(pages.flatMap((p) => p.links)
-    .filter((link) => !link.resource && link.attribute === 'href' && new URL(link.target).origin === origin)
-    .map((link) => withoutFragment(link.target)))]
-    .filter((target) => !checked.has(target)).slice(0, maxPages)
+  const linkTargets = [
+    ...new Set(
+      pages
+        .flatMap((p) => p.links)
+        .filter(
+          (link) =>
+            !link.resource && link.attribute === 'href' && new URL(link.target).origin === origin,
+        )
+        .map((link) => withoutFragment(link.target)),
+    ),
+  ]
+    .filter((target) => !checked.has(target))
+    .slice(0, maxPages)
   let linkCursor = 0
   const checkLinks = async () => {
     while (linkCursor < linkTargets.length) {
       const target = linkTargets[linkCursor++]
-      try { checked.set(target, (await request(target, options)).status) }
-      catch { checked.set(target, 0) }
+      try {
+        checked.set(target, (await request(target, options)).status)
+      } catch {
+        checked.set(target, 0)
+      }
     }
   }
   await Promise.all(Array.from({ length: concurrency }, checkLinks))
   for (const p of pages)
     for (const link of p.links)
-      if (
-        new URL(link.target).origin === origin &&
-        !link.resource &&
-        link.attribute === 'href'
-      ) {
+      if (new URL(link.target).origin === origin && !link.resource && link.attribute === 'href') {
         link.status = checked.get(withoutFragment(link.target))
-        if (link.status === 0 || (link.status !== undefined && link.status >= 400)) p.issues.push(
-          issue(
-            p.url,
-            'DISC-05-INTERNAL-LINK-UNREACHABLE',
-            'warning',
-            `Rendered internal link returned HTTP ${link.status}: ${link.target}`,
-            'body',
-          ),
-        )
+        if (link.status === 0 || (link.status !== undefined && link.status >= 400))
+          p.issues.push(
+            issue(
+              p.url,
+              'DISC-05-INTERNAL-LINK-UNREACHABLE',
+              'warning',
+              `Rendered internal link returned HTTP ${link.status}: ${link.target}`,
+              'body',
+            ),
+          )
       }
   const graph = pages.flatMap((page) =>
     page.links
-      .filter((link) => !link.resource && link.attribute === 'href' && new URL(link.target).origin === origin)
-      .map((link) => ({ source: page.finalUrl, target: link.target, anchor: link.text, status: link.status })),
+      .filter(
+        (link) =>
+          !link.resource && link.attribute === 'href' && new URL(link.target).origin === origin,
+      )
+      .map((link) => ({
+        source: page.finalUrl,
+        target: link.target,
+        anchor: link.text,
+        status: link.status,
+      })),
   )
   return {
     pages: pages.sort((a, b) => a.url.localeCompare(b.url)),

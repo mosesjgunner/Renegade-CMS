@@ -35,9 +35,7 @@
         "name": "setup",
         "testDir": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/rc01",
         "testIgnore": [],
-        "testMatch": [
-          "setup.spec.ts"
-        ],
+        "testMatch": ["setup.spec.ts"],
         "timeout": 90000
       },
       {
@@ -51,18 +49,13 @@
         "name": "admin-matrix",
         "testDir": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/rc01",
         "testIgnore": [],
-        "testMatch": [
-          "routes.spec.ts"
-        ],
+        "testMatch": ["routes.spec.ts"],
         "timeout": 90000
       }
     ],
     "quiet": false,
     "reporter": [
-      [
-        "list",
-        null
-      ],
+      ["list", null],
       [
         "json",
         {

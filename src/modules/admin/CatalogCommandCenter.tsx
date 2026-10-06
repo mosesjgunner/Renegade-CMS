@@ -68,12 +68,12 @@ export default function CatalogCommandCenter() {
         body: JSON.stringify({ products, mode, source: 'catalog-command-center' }),
       })
       const body = await response.json()
+      if (response.ok && mode === 'apply') await refresh()
       setMessage(
         response.ok
           ? `${mode}: ${body.plan.creates.length} create, ${body.plan.updates.length} update, ${body.plan.unchanged.length} unchanged, ${body.plan.errors.length} errors${body.replay ? ' (replay)' : ''}.`
           : body.error,
       )
-      if (response.ok && mode === 'apply') await refresh()
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Invalid import JSON.')
     }

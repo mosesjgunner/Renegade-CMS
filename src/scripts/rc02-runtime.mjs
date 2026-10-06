@@ -39,10 +39,7 @@ function launch(label, args) {
   return child
 }
 function start() {
-  web = launch('web', [
-    '--max-old-space-size=1536',
-    '.next/standalone/server.js',
-  ])
+  web = launch('web', ['--max-old-space-size=1536', '.next/standalone/server.js'])
   worker = launch('worker', [
     '--max-old-space-size=512',
     '--import',

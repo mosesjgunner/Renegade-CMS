@@ -46,3 +46,14 @@ Additional source-confirmed dependencies of RC-02/04/05:
 ## RC-04 final result — 2026-10-04
 
 No blocker remains within the supported RC-04 subset on tested source `fb8c9d7c3211f4c257ad569edb366d089074e492`; see [final evidence](evidence/RC-04-PASS3.md). Live providers, the explicitly deferred surfaces, and broader RC-01 release gates remain outside this verdict.
+## RC-07 Pass 2 — BLOCKED — 2026-10-05
+
+Both running projects report `BUILD_SHA=unknown`; deployed image revision is
+also `unknown`. Inspected dirty-tree HEAD is
+`e25f1b554eeae6e898d754822c64181f4b8040cc`, not a proven deployed candidate.
+Gate 1 fails before destructive acceptance. Completed RC-07 Pass 1 evidence
+was not found; existing configuration scripts use synthetic passkeys/direct
+setup completion. [Pass 2 evidence](evidence/RC-07-PASS2.md) preserves bounded
+health/topology observations and 27 passing unit tests plus typecheck/lint/build.
+All later runtime gates remain unexecuted; no recovery/isolation PASS follows.
+Resume requires provenance and valid setup repair, then substantive acceptance.

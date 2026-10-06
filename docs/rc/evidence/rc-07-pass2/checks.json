@@ -1,0 +1,14 @@
+{
+  "verdict": "BLOCKED",
+  "inspectedHead": "e25f1b554eeae6e898d754822c64181f4b8040cc",
+  "candidateProvenance": "unknown",
+  "focusedUnitTests": { "passed": 27, "failed": 0, "exitCode": 0 },
+  "typecheckExitCode": 0,
+  "lintExitCode": 0,
+  "buildExitCode": 0,
+  "operatorStatusAExitCode": 0,
+  "operatorStatusBExitCode": 0,
+  "restoredBootSmoke": "NOT EXECUTED",
+  "laterRuntimeGates": "NOT EXECUTED: first acceptance gate failed",
+  "rc08": "NOT EXECUTED"
+}
