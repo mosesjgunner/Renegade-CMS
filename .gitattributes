@@ -1,2 +1,5 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+
+# Preserve sanitized RC-08C receipt bytes and their recorded checksums.
+docs/rc/evidence/rc-08c-2026-10-06/** -text
