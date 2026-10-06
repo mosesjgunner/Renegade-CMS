@@ -2,6 +2,8 @@ import { cache } from 'react'
 import { cookies, headers } from 'next/headers.js'
 import type { Payload } from 'payload'
 import { resolveConfiguration, themePool } from './lifecycle'
+import { requireAdminUser } from '../operations/passkey-auth'
+import { loadConfig } from '../core/config'
 /** Same publication precedence as existing public routes; never take site scope from preview input. */
 export const requestTheme = cache(async (payload: Payload) => {
   const pubs = await payload.find({
@@ -22,8 +24,13 @@ export const requestTheme = cache(async (payload: Payload) => {
     // Worker, migration, and local API callers have no HTTP request; they use active state.
   }
   if (token) {
-    const auth = await payload.auth({ headers: await headers() })
-    if (auth.user?.role === 'owner') preview = { actor: String(auth.user.id), token }
+    // Full Payload auth also calculates collection permissions. Host-scoped
+    // permissions resolve site settings, which resolve this cached theme again.
+    // Verify the canonical passkey session without entering that permission loop.
+    const user = await requireAdminUser(payload, loadConfig().payloadSecret, await headers()).catch(
+      () => null,
+    )
+    if (user?.role === 'owner') preview = { actor: String(user.id), token }
   }
   return resolveConfiguration(themePool(payload), site, preview)
 })
