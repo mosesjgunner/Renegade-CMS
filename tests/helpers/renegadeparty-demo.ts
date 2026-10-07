@@ -97,6 +97,35 @@ export async function ensureRenegadePartyDemo(payload: Payload): Promise<DemoEnv
   }
   const siteId = String(site.id)
 
+  const ownerMembers = await payload.find({
+    collection: 'members',
+    where: { email: { equals: ownerEmail } },
+    limit: 1,
+    overrideAccess: true,
+  })
+  const ownerMemberId = ownerMembers.docs[0]?.id
+  if (ownerMemberId) {
+    const existingRole = await payload.find({
+      collection: 'member-site-roles',
+      where: {
+        and: [{ member: { equals: ownerMemberId } }, { site: { equals: siteId } }],
+      },
+      limit: 1,
+      overrideAccess: true,
+    })
+    if (existingRole.docs.length === 0) {
+      await payload.create({
+        collection: 'member-site-roles',
+        data: {
+          member: ownerMemberId,
+          site: siteId,
+          role: 'community-manager',
+        },
+        overrideAccess: true,
+      })
+    }
+  }
+
   // 4. Ensure Publication exists
   let publication = (
     await payload.find({
