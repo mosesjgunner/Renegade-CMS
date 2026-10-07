@@ -51,7 +51,8 @@ export const guardFormWrite =
     if (req.user) {
       const hostSiteId = await publicSiteForHost(req.payload, req.headers.get('host'))
       const grant = await resolveOperatorGrantContext(req.payload, req.user)
-      const hasSiteGrant = grant.authorized && (grant.isGlobalOwner || grant.authorizedSiteIds.includes(siteId))
+      const hasSiteGrant =
+        grant.authorized && (grant.isGlobalOwner || grant.authorizedSiteIds.includes(siteId))
       if (
         !staff(req.user.role) ||
         !hasSiteGrant ||

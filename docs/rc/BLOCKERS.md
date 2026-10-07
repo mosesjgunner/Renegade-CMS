@@ -1,8 +1,12 @@
-> RC-08C current verdict (2026-10-06): **FAIL / NOT READY**. Tested clean source `01908f39a3ce40b5eae5d4dec64b981e103d5fb1`. [Final report](FINAL_RC_REPORT.md); [dependency-ordered repair cards](repairs/RC08C-closure-blockers.md); [exact checks](evidence/rc-08c-2026-10-06/checks.json).
+> RC-08D current verdict (2026-10-06): **PREREQUISITES PASS (RC08D-01 through RC08D-06)**. Clean candidate reconciled on `main`. [Master receipt](evidence/RC-08D-2026-10-06.md); [acceptance verification](evidence/rc-08d/RC08D-06-acceptance-verification.md); [dependency decision](evidence/rc-08d/RC08D-05-dependency-image-decision.md).
+>
+> Reconciled site-settings lock reload (RC08D-01), staff passkey enrollment (RC08D-02), tenant authorization and scoped operator grants (RC08D-03), live fulfillment surface (RC08D-04), dependency graph and Docker image reachability decision (RC08D-05), and automated acceptance verification (RC08D-06). Prerequisite provenance established for RC08D-07 restart.
+
+> Historical RC-08C verdict (2026-10-06): **FAIL / NOT READY**. Tested clean source `01908f39a3ce40b5eae5d4dec64b981e103d5fb1`. [Final report](FINAL_RC_REPORT.md); [dependency-ordered repair cards](repairs/RC08C-closure-blockers.md); [exact checks](evidence/rc-08c-2026-10-06/checks.json).
 
 The dependency-ordered RC-08C cards supersede older active-blocker summaries; no mandatory path is converted to a deferral.
 
-All snapshots below are historical. Their PASS, VERIFIED, source SHA and count statements apply only to their recorded scope and do not override RC-08C.
+All snapshots below are historical. Their PASS, VERIFIED, source SHA and count statements apply only to their recorded scope and do not override RC-08D.
 
 ---
 

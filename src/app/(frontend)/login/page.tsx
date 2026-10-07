@@ -37,15 +37,24 @@ export default function LoginPage() {
         : await navigator.credentials.get({
             publicKey: decodeOptions(optionsBody.options),
           })
-      if (!credential) throw new Error(isRegistration ? 'Passkey enrollment was cancelled.' : 'Passkey sign-in was cancelled.')
+      if (!credential)
+        throw new Error(
+          isRegistration ? 'Passkey enrollment was cancelled.' : 'Passkey sign-in was cancelled.',
+        )
       const completeResponse = await fetch('/api/auth/passkey/complete', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify(isRegistration ? serializeRegistrationCredential(credential) : serializeCredential(credential)),
+        body: JSON.stringify(
+          isRegistration
+            ? serializeRegistrationCredential(credential)
+            : serializeCredential(credential),
+        ),
       })
       if (!completeResponse.ok) {
         const body = (await completeResponse.json()) as { error?: string }
-        throw new Error(body.error ?? (isRegistration ? 'Passkey enrollment failed.' : 'Passkey sign-in failed.'))
+        throw new Error(
+          body.error ?? (isRegistration ? 'Passkey enrollment failed.' : 'Passkey sign-in failed.'),
+        )
       }
       router.push('/admin')
     } catch (caught) {
@@ -232,7 +241,9 @@ function decodeOptions(options: Record<string, unknown>): PublicKeyCredentialReq
   } as PublicKeyCredentialRequestOptions
 }
 
-function decodeRegistrationOptions(options: Record<string, unknown>): PublicKeyCredentialCreationOptions {
+function decodeRegistrationOptions(
+  options: Record<string, unknown>,
+): PublicKeyCredentialCreationOptions {
   const user = options.user as Record<string, unknown>
   return {
     ...options,

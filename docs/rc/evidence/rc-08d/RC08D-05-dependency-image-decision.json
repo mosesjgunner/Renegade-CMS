@@ -1,0 +1,69 @@
+{
+  "gate": "RC08D-05",
+  "status": "PASS",
+  "evaluatedAt": "2026-10-06T21:10:00.000Z",
+  "graphResolution": {
+    "command": "npm ls --all",
+    "exitCode": 0,
+    "issues": [],
+    "yamlPeerConflictResolved": true,
+    "yamlVersion": "^2.7.0"
+  },
+  "auditAdjudication": {
+    "totalPackageEntries": 23,
+    "uniqueAdvisoryIds": 10,
+    "criticalAdvisories": [
+      {
+        "id": "GHSA-g7vv-2v7x-gj9p",
+        "package": "tinypool",
+        "severity": "critical",
+        "importer": "vitest",
+        "environment": "devDependencies",
+        "reachableInProduction": false,
+        "attackerPrerequisites": "Local code execution in test runner process",
+        "disposition": "ACCEPTED_DEV_ONLY",
+        "rationale": "Tinypool is a test thread pool runner exclusively invoked during 'npm run test'. It is not packaged into standalone web runner and not loaded by production server or jobs worker."
+      },
+      {
+        "id": "GHSA-4v7x-pq99-4859",
+        "package": "tinypool",
+        "severity": "critical",
+        "importer": "vitest",
+        "environment": "devDependencies",
+        "reachableInProduction": false,
+        "attackerPrerequisites": "Local code execution in test runner process",
+        "disposition": "ACCEPTED_DEV_ONLY",
+        "rationale": "Same as above; devDependency of vitest."
+      }
+    ],
+    "highAdvisories": [
+      {
+        "id": "GHSA-c2qf-rxjj-qqgw",
+        "package": "cross-spawn",
+        "severity": "high",
+        "importer": "various build/test tools",
+        "environment": "devDependencies",
+        "reachableInProduction": false,
+        "disposition": "ACCEPTED_DEV_ONLY"
+      },
+      {
+        "id": "GHSA-952p-652h-hmxs",
+        "package": "micromatch",
+        "severity": "high",
+        "importer": "build/test tools",
+        "environment": "devDependencies",
+        "reachableInProduction": false,
+        "disposition": "ACCEPTED_DEV_ONLY"
+      }
+    ]
+  },
+  "imageCompositionDecision": {
+    "runnerArchitecture": {
+      "standalonePath": "/app/standalone",
+      "serverEntrypoint": "node standalone/server.js",
+      "workerEntrypoint": "node -e 'import(\"./standalone/server.js\")' / tsx src/scripts/run-jobs-worker.ts",
+      "isolation": "Production HTTP requests are routed strictly through Next.js standalone server with traced node_modules. DevDependencies such as vitest/tinypool are never imported."
+    },
+    "verdict": "ACCEPTED_PRODUCTION_POSTURE"
+  }
+}

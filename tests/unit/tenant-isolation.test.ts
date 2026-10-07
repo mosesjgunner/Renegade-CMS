@@ -49,7 +49,9 @@ describe('RC08C-TENANT operator site grant policy', () => {
 
     const normalUser = await resolveOperatorGrantContext(payload, { id: 'u1', role: 'subscriber' })
     expect(normalUser.authorized).toBe(false)
-    expect(await checkOperatorSiteAccess(payload, { id: 'u1', role: 'subscriber' }, 'site-a')).toBe(false)
+    expect(await checkOperatorSiteAccess(payload, { id: 'u1', role: 'subscriber' }, 'site-a')).toBe(
+      false,
+    )
   })
 
   it('grants global owner access across all sites', async () => {
@@ -64,9 +66,15 @@ describe('RC08C-TENANT operator site grant policy', () => {
     expect(owner.isGlobalOwner).toBe(true)
     expect(owner.authorizedSiteIds).toEqual(['site-a', 'site-b'])
 
-    expect(await checkOperatorSiteAccess(payload, { id: 'u-owner', role: 'owner' }, 'site-a')).toBe(true)
-    expect(await checkOperatorSiteAccess(payload, { id: 'u-owner', role: 'owner' }, 'site-b')).toBe(true)
-    expect(await checkOperatorSiteAccess(payload, { id: 'u-owner', role: 'owner' }, 'any-site')).toBe(true)
+    expect(await checkOperatorSiteAccess(payload, { id: 'u-owner', role: 'owner' }, 'site-a')).toBe(
+      true,
+    )
+    expect(await checkOperatorSiteAccess(payload, { id: 'u-owner', role: 'owner' }, 'site-b')).toBe(
+      true,
+    )
+    expect(
+      await checkOperatorSiteAccess(payload, { id: 'u-owner', role: 'owner' }, 'any-site'),
+    ).toBe(true)
   })
 
   it('scopes staff strictly to sites granted in member-site-roles and denies cross-tenant access', async () => {
@@ -74,7 +82,13 @@ describe('RC08C-TENANT operator site grant policy', () => {
       '../../src/modules/operations/operator-grants'
     )
     const payload = {
-      find: async ({ collection, where }: { collection: string; where?: Record<string, unknown> }) => {
+      find: async ({
+        collection,
+        where,
+      }: {
+        collection: string
+        where?: Record<string, unknown>
+      }) => {
         if (collection === 'member-site-roles') {
           return { docs: [{ id: 'msr-1', site: 'site-alpha', member: 'm1', role: 'contributor' }] }
         }
@@ -92,4 +106,3 @@ describe('RC08C-TENANT operator site grant policy', () => {
     expect(await checkOperatorSiteAccess(payload, staffUser, 'site-beta')).toBe(false)
   })
 })
-

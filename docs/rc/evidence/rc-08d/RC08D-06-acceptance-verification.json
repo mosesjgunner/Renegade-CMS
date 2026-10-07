@@ -1,0 +1,58 @@
+{
+  "gate": "RC08D-06",
+  "status": "PASS",
+  "evaluatedAt": "2026-10-06T21:12:00.000Z",
+  "formatCheck": {
+    "command": "npm.cmd run format:check",
+    "exitCode": 0,
+    "status": "clean"
+  },
+  "lint": {
+    "command": "npm.cmd run lint",
+    "exitCode": 0,
+    "errors": 0,
+    "warnings": 0
+  },
+  "typecheck": {
+    "command": "npm.cmd run typecheck",
+    "exitCode": 0,
+    "errors": 0
+  },
+  "unit": {
+    "command": "npm.cmd run test",
+    "exitCode": 0,
+    "files": 175,
+    "passed": 1143,
+    "failed": 0,
+    "skipped": 0
+  },
+  "migrations": {
+    "registered": 112,
+    "freshApplied": 112,
+    "freshCommand": "npm.cmd run test:migrations:fresh",
+    "freshExitCode": 0,
+    "upgradeFixtureBaselineOrdinal": 56,
+    "upgradeSubsequent": 56,
+    "upgradeCommand": "npm.cmd run test:migrations:upgrade",
+    "upgradeExitCode": 0
+  },
+  "integration": {
+    "command": "node --env-file=.env scripts/run-integration.mjs",
+    "exitCode": 0,
+    "files": 46,
+    "passed": 261,
+    "failed": 0,
+    "skipped": 0
+  },
+  "presentationBundles": {
+    "command": "npm.cmd run verify:presentation-bundles",
+    "exitCode": 0,
+    "puckExcludedFromPublic": true
+  },
+  "build": {
+    "command": "npm.cmd run build",
+    "exitCode": 0,
+    "staticPages": 139,
+    "standaloneServerGenerated": true
+  }
+}

@@ -459,7 +459,10 @@ export async function beginPasskeyAuthentication(payload: Payload, email: string
     )
     const user = userResult.rows[0]
     if (!user || !['owner', 'administrator', 'staff'].includes(user.role)) {
-      throw new InstallationError('INSTALLATION_INVALID', 'No passkey is registered for this owner.')
+      throw new InstallationError(
+        'INSTALLATION_INVALID',
+        'No passkey is registered for this owner.',
+      )
     }
     const origin = new URL(payload.config.serverURL ?? 'http://localhost:3000')
     const options = await generateRegistrationOptions({

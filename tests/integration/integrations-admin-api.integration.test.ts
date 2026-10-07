@@ -85,7 +85,7 @@ describe('Operational Admin API (/api/admin/integrations)', () => {
     mockAuditEvents.length = 0
 
     mockPayload.auth.mockResolvedValue({
-      user: { id: 'admin-1', role: 'administrator' },
+      user: { id: 'admin-1', role: 'owner' },
     })
 
     process.env.WEBHOOK_SECRET_TEST_VAULT = 'secret_testing_val_123'

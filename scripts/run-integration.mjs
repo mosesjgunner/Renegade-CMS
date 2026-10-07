@@ -56,6 +56,7 @@ const child = spawn(
     stdio: 'inherit',
     env: {
       ...process.env,
+      EMAIL_MODE: process.env.EMAIL_MODE || 'development',
       ALLOW_FIXTURE_SEED: 'true',
       RENEGADE_MODULES: 'all',
       RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT: 'true',

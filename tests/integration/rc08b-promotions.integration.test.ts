@@ -23,7 +23,7 @@ import { executeDbQuery } from '../../src/modules/community/comment-composer'
 import { localMailSinkReceipts } from '../../src/modules/email/delivery'
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { randomUUID } from 'node:crypto'
-import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 import { getPayload, type Payload } from 'payload'
 import config from '../../src/payload.config'
 import { findPublicEvents, findPublicEvent } from '../../src/modules/events/public'
@@ -140,6 +140,10 @@ beforeAll(async () => {
 }, 60_000)
 afterAll(async () => {
   await payload?.db.destroy?.()
+})
+
+beforeEach(() => {
+  process.env.EMAIL_MODE = 'development'
 })
 
 describe('RC08B persisted promotion boundaries', () => {
