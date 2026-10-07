@@ -17,21 +17,35 @@ import {
   rollbackRelease,
 } from '@/modules/releases/service'
 
-type Args = { params: Promise<{ id: string }> }
+import { resolveOperatorGrantContext } from '@/modules/operations/operator-grants'
 
-const staffOnly = (user: { role?: string } | null | undefined) =>
-  ['owner', 'administrator', 'publisher', 'staff'].includes(String(user?.role))
+type Args = { params: Promise<{ id: string }> }
 
 export async function GET(request: Request, { params }: Args) {
   try {
     const payload = await getPayload({ config: configPromise })
     const auth = await payload.auth({ headers: request.headers })
-    if (!staffOnly(auth.user)) {
+    const grant = await resolveOperatorGrantContext(payload, auth?.user)
+    if (!grant.authorized) {
       return NextResponse.json({ error: 'Unauthorized.' }, { status: 403 })
     }
 
     const { id } = await params
     const release = await getReleaseDetail(payload, id)
+    if (!release) {
+      return NextResponse.json({ error: 'Release not found.' }, { status: 404 })
+    }
+    const releaseSite = String(
+      typeof (release as any).site === 'object' && (release as any).site
+        ? ((release as any).site as any).id
+        : (release as any).site ?? '',
+    )
+    if (!releaseSite || (!grant.isGlobalOwner && !grant.authorizedSiteIds.includes(releaseSite))) {
+      return NextResponse.json(
+        { error: 'Forbidden. Object belongs to another site.' },
+        { status: 403 },
+      )
+    }
     return NextResponse.json({ release })
   } catch (error) {
     return NextResponse.json(
@@ -45,11 +59,28 @@ export async function POST(request: Request, { params }: Args) {
   try {
     const payload = await getPayload({ config: configPromise })
     const auth = await payload.auth({ headers: request.headers })
-    if (!staffOnly(auth.user)) {
+    const grant = await resolveOperatorGrantContext(payload, auth?.user)
+    if (!grant.authorized) {
       return NextResponse.json({ error: 'Unauthorized.' }, { status: 403 })
     }
 
     const { id } = await params
+    const release = await getReleaseDetail(payload, id)
+    if (!release) {
+      return NextResponse.json({ error: 'Release not found.' }, { status: 404 })
+    }
+    const releaseSite = String(
+      typeof (release as any).site === 'object' && (release as any).site
+        ? ((release as any).site as any).id
+        : (release as any).site ?? '',
+    )
+    if (!releaseSite || (!grant.isGlobalOwner && !grant.authorizedSiteIds.includes(releaseSite))) {
+      return NextResponse.json(
+        { error: 'Forbidden. Object belongs to another site.' },
+        { status: 403 },
+      )
+    }
+
     const body = await request.json()
     const action = body.action
     const actor = {

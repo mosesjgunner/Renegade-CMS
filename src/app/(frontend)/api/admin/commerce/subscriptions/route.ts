@@ -8,14 +8,29 @@ import {
   type Subscription,
 } from '@/modules/commerce/subscription-contract'
 
+import { resolveOperatorGrantContext } from '@/modules/operations/operator-grants'
+
 export async function GET(request: Request) {
   const payload = await getPayload({ config })
   const auth = await payload.auth({ headers: request.headers })
-  if (!['owner', 'administrator', 'staff'].includes(String((auth.user as any)?.role)))
+  const grant = await resolveOperatorGrantContext(payload, auth?.user)
+  if (!grant.authorized)
     return NextResponse.json({ error: 'Unauthorized.' }, { status: 403 })
+
   const db: any = payload
   const siteId = new URL(request.url).searchParams.get('siteId')
-  const where = siteId ? { site: { equals: siteId } } : undefined
+  if (siteId && !grant.isGlobalOwner && !grant.authorizedSiteIds.includes(siteId)) {
+    return NextResponse.json(
+      { error: 'Forbidden. You do not have operator access to this site.' },
+      { status: 403 },
+    )
+  }
+
+  const where = siteId
+    ? { site: { equals: siteId } }
+    : grant.isGlobalOwner
+      ? undefined
+      : { site: { in: grant.authorizedSiteIds } }
   const subscriptions = await db.find({
     collection: 'subscriptions',
     ...(where ? { where } : {}),

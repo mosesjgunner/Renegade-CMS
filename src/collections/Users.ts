@@ -85,13 +85,25 @@ export function createUsersCollection(
                   overrideAccess: true,
                 })
               }
+              const explicitSiteId =
+                req.context?.siteId ||
+                (doc as Record<string, unknown>).site ||
+                (doc as Record<string, unknown>).siteId
               const sites = await req.payload.find({
                 collection: 'sites',
                 depth: 0,
                 limit: 10,
                 overrideAccess: true,
               })
-              for (const site of sites.docs) {
+              const targetSites = explicitSiteId
+                ? sites.docs.filter((s) => String(s.id) === String(explicitSiteId))
+                : req.context?.allSites
+                  ? sites.docs
+                  : sites.docs.length === 1
+                    ? sites.docs
+                    : []
+
+              for (const site of targetSites) {
                 const existingRoles = await req.payload.find({
                   collection: 'member-site-roles',
                   where: {

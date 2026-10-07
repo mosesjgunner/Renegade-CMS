@@ -4,21 +4,33 @@ import { NextResponse } from 'next/server'
 import { aggregateAnalytics } from '@/modules/social/analytics'
 import type { NormalizedAnalytics, SocialNetwork } from '@/modules/social/contracts'
 
-const staffOnly = (user: { role?: string } | null | undefined) =>
-  ['owner', 'administrator', 'publisher', 'staff'].includes(String(user?.role))
+import { resolveOperatorGrantContext } from '@/modules/operations/operator-grants'
 
 export async function GET(request: Request) {
   try {
     const payload = await getPayload({ config: configPromise })
     const auth = await payload.auth({ headers: request.headers })
-    if (!staffOnly(auth.user)) {
+    const grant = await resolveOperatorGrantContext(payload, auth?.user)
+    if (!grant.authorized) {
       return NextResponse.json({ error: 'Unauthorized.' }, { status: 403 })
     }
 
     const { searchParams } = new URL(request.url)
     const canonicalPostId = searchParams.get('canonicalPostId')
+    const siteId = searchParams.get('siteId')
+    if (siteId && !grant.isGlobalOwner && !grant.authorizedSiteIds.includes(siteId)) {
+      return NextResponse.json(
+        { error: 'Forbidden. You do not have operator access to this site.' },
+        { status: 403 },
+      )
+    }
 
     const where: Record<string, any> = {}
+    if (siteId) {
+      where.site = { equals: siteId }
+    } else if (!grant.isGlobalOwner) {
+      where.site = { in: grant.authorizedSiteIds }
+    }
     if (canonicalPostId) {
       where.canonicalPostId = { equals: canonicalPostId }
     }

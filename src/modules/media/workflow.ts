@@ -2,6 +2,7 @@ import type { Payload } from 'payload'
 
 import type { AppConfig } from '../core/config'
 import { assertTeamPermission, type TeamScope } from '../collaboration/service'
+import { checkOperatorSiteAccess } from '../operations/operator-grants'
 import { findIfRegistered } from '../public/registered-collections'
 import { inspectAudioMetadata, inspectMedia, mediaObjectKey, mediaStorage } from './storage'
 import { queueAssetVariantGeneration } from './variants'
@@ -98,7 +99,15 @@ export async function assertMediaPermission(
 ) {
   if (!user || !['owner', 'staff', 'administrator'].includes(String(user.role)))
     throw new MediaWorkflowError('Staff access is required.', 403)
-  if (user.role === 'owner') return
+  if (user.role === 'owner') {
+    if (scope.siteId) {
+      const hasSiteAccess = await checkOperatorSiteAccess(payload, user, scope.siteId)
+      if (!hasSiteAccess) {
+        throw new MediaWorkflowError('Site scope access denied.', 403)
+      }
+    }
+    return
+  }
   const memberId = id(user.member)
   if (!memberId) throw new MediaWorkflowError('A staff member identity is required.', 403)
   try {

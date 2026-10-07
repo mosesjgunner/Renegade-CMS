@@ -8,8 +8,8 @@ import {
   PaymentProviderError,
 } from '@/modules/commerce/payment-provider'
 
-const staffOnly = (user: { role?: string } | null | undefined) =>
-  ['owner', 'administrator', 'staff'].includes(String(user?.role))
+import { resolveOperatorGrantContext } from '@/modules/operations/operator-grants'
+
 const relationId = (value: any) =>
   typeof value === 'object' && value !== null ? String(value.id ?? '') : String(value ?? '')
 
@@ -17,7 +17,8 @@ export async function POST(request: Request) {
   const payload = await getPayload({ config })
   const db: any = payload
   const auth = await payload.auth({ headers: request.headers })
-  if (!staffOnly(auth.user)) return NextResponse.json({ error: 'Unauthorized.' }, { status: 403 })
+  const grant = await resolveOperatorGrantContext(payload, auth?.user)
+  if (!grant.authorized) return NextResponse.json({ error: 'Unauthorized.' }, { status: 403 })
   const input = (await request.json()) as {
     action?: 'preview' | 'request' | 'approve'
     orderId?: string
@@ -35,6 +36,13 @@ export async function POST(request: Request) {
     })
     if (!refund || refund.state !== 'awaiting-approval')
       return NextResponse.json({ error: 'Refund is not awaiting approval.' }, { status: 409 })
+    const refundSite = relationId(refund.site)
+    if (!refundSite || (!grant.isGlobalOwner && !grant.authorizedSiteIds.includes(refundSite))) {
+      return NextResponse.json(
+        { error: 'Forbidden. Object belongs to another site.' },
+        { status: 403 },
+      )
+    }
     if (refund.requestedBy === actorId)
       return NextResponse.json(
         { error: 'A second operator must approve this refund.' },
@@ -64,6 +72,13 @@ export async function POST(request: Request) {
     })
     .catch(() => null)
   if (!order) return NextResponse.json({ error: 'Order not found.' }, { status: 404 })
+  const orderSite = relationId(order.site)
+  if (!orderSite || (!grant.isGlobalOwner && !grant.authorizedSiteIds.includes(orderSite))) {
+    return NextResponse.json(
+      { error: 'Forbidden. Object belongs to another site.' },
+      { status: 403 },
+    )
+  }
   const attempts = await db.find({
     collection: 'payment-attempts',
     where: { checkoutSession: { equals: relationId(order.checkoutSession) } },

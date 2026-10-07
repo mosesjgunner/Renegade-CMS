@@ -136,11 +136,14 @@ export async function GET(request: Request) {
       ])
 
     const webhookIds = webhooksRes.docs.map((doc: any) => String(doc.id))
-    const deliveriesWhere = webhookIds.length > 0 ? { subscription: { in: webhookIds } } : undefined
+    const deliveriesWhere =
+      webhookIds.length > 0
+        ? { subscription: { in: webhookIds } }
+        : { id: { in: ['00000000-0000-0000-0000-000000000000'] } }
     const deliveriesRes = await payload
       .find({
         collection: 'webhook-deliveries' as never,
-        where: deliveriesWhere,
+        where: deliveriesWhere as never,
         limit: 100,
         sort: '-createdAt',
         depth: 0,
@@ -516,7 +519,7 @@ export async function POST(request: Request) {
         }
 
         const targetSite = asId((existing as any).site)
-        if (targetSite && !grant.isGlobalOwner && !grant.authorizedSiteIds.includes(targetSite)) {
+        if (!targetSite || (!grant.isGlobalOwner && !grant.authorizedSiteIds.includes(targetSite))) {
           return NextResponse.json(
             { error: 'Forbidden. Object belongs to another site.' },
             { status: 403 },
@@ -586,7 +589,7 @@ export async function POST(request: Request) {
         }
 
         const targetSite = asId((existing as any).site)
-        if (targetSite && !grant.isGlobalOwner && !grant.authorizedSiteIds.includes(targetSite)) {
+        if (!targetSite || (!grant.isGlobalOwner && !grant.authorizedSiteIds.includes(targetSite))) {
           return NextResponse.json(
             { error: 'Forbidden. Object belongs to another site.' },
             { status: 403 },
@@ -711,7 +714,7 @@ export async function POST(request: Request) {
           return NextResponse.json({ error: 'Webhook subscription not found.' }, { status: 404 })
 
         const targetSite = asId((sub as any).site)
-        if (targetSite && !grant.isGlobalOwner && !grant.authorizedSiteIds.includes(targetSite)) {
+        if (!targetSite || (!grant.isGlobalOwner && !grant.authorizedSiteIds.includes(targetSite))) {
           return NextResponse.json(
             { error: 'Forbidden. Object belongs to another site.' },
             { status: 403 },
@@ -785,7 +788,7 @@ export async function POST(request: Request) {
           return NextResponse.json({ error: 'Webhook subscription not found.' }, { status: 404 })
 
         const targetSite = asId((sub as any).site)
-        if (targetSite && !grant.isGlobalOwner && !grant.authorizedSiteIds.includes(targetSite)) {
+        if (!targetSite || (!grant.isGlobalOwner && !grant.authorizedSiteIds.includes(targetSite))) {
           return NextResponse.json(
             { error: 'Forbidden. Object belongs to another site.' },
             { status: 403 },
@@ -825,7 +828,7 @@ export async function POST(request: Request) {
         }
         const sub = (delivery as any).subscription
         const subSite = asId(typeof sub === 'object' && sub ? sub.site : null)
-        if (subSite && !grant.isGlobalOwner && !grant.authorizedSiteIds.includes(subSite)) {
+        if (!subSite || (!grant.isGlobalOwner && !grant.authorizedSiteIds.includes(subSite))) {
           return NextResponse.json(
             { error: 'Forbidden. Delivery belongs to another site.' },
             { status: 403 },
@@ -885,7 +888,7 @@ export async function POST(request: Request) {
         }
 
         const targetSite = asId((existing as any).site)
-        if (targetSite && !grant.isGlobalOwner && !grant.authorizedSiteIds.includes(targetSite)) {
+        if (!targetSite || (!grant.isGlobalOwner && !grant.authorizedSiteIds.includes(targetSite))) {
           return NextResponse.json(
             { error: 'Forbidden. Object belongs to another site.' },
             { status: 403 },
@@ -986,7 +989,7 @@ export async function POST(request: Request) {
         }
 
         const targetSite = asId((existing as any).site)
-        if (targetSite && !grant.isGlobalOwner && !grant.authorizedSiteIds.includes(targetSite)) {
+        if (!targetSite || (!grant.isGlobalOwner && !grant.authorizedSiteIds.includes(targetSite))) {
           return NextResponse.json(
             { error: 'Forbidden. Object belongs to another site.' },
             { status: 403 },

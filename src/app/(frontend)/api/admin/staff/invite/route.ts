@@ -8,6 +8,8 @@ import {
   StaffEnrollmentError,
 } from '@/modules/operations/staff-enrollment'
 
+import { resolveOperatorGrantContext } from '@/modules/operations/operator-grants'
+
 export async function POST(request: Request) {
   try {
     const payload = await getPayload({ config })
@@ -21,11 +23,26 @@ export async function POST(request: Request) {
       )
     }
 
+    const grant = await resolveOperatorGrantContext(payload, auth.user)
+    if (!grant.authorized) {
+      return Response.json(
+        { error: 'Forbidden. Owner authority required to invite staff.' },
+        { status: 403 },
+      )
+    }
+
     const body = (await request.json()) as {
       email?: string
       role?: 'staff' | 'administrator'
       siteId?: string
       validHours?: number
+    }
+
+    if (body.siteId && !grant.isGlobalOwner && !grant.authorizedSiteIds.includes(body.siteId)) {
+      return Response.json(
+        { error: 'Forbidden. You do not have owner authority over the target site.' },
+        { status: 403 },
+      )
     }
 
     if (!body.email) {

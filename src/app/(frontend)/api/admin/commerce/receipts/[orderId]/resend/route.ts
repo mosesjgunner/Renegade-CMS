@@ -3,15 +3,29 @@ import config from '@payload-config'
 import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
 import { receiptMessageSnapshot } from '@/modules/commerce/payment-operations'
+import { resolveOperatorGrantContext } from '@/modules/operations/operator-grants'
 
 export async function POST(request: Request, { params }: { params: Promise<{ orderId: string }> }) {
   const payload = await getPayload({ config })
   const auth = await payload.auth({ headers: request.headers })
-  if (!['owner', 'administrator', 'staff'].includes(String((auth.user as any)?.role)))
+  const grant = await resolveOperatorGrantContext(payload, auth?.user)
+  if (!grant.authorized)
     return NextResponse.json({ error: 'Unauthorized.' }, { status: 403 })
+
+  const orderId = (await params).orderId
   const order: any = await payload
-    .findByID({ collection: 'orders', id: (await params).orderId, depth: 0, overrideAccess: true })
+    .findByID({ collection: 'orders', id: orderId, depth: 0, overrideAccess: true })
     .catch(() => null)
+  if (!order)
+    return NextResponse.json({ error: 'Order not found.' }, { status: 404 })
+
+  const orderSite = String(order.site?.id ?? order.site ?? '')
+  if (!orderSite || (!grant.isGlobalOwner && !grant.authorizedSiteIds.includes(orderSite))) {
+    return NextResponse.json(
+      { error: 'Forbidden. Object belongs to another site.' },
+      { status: 403 },
+    )
+  }
   if (!order?.receipt?.receiptNumber)
     return NextResponse.json({ error: 'Issued receipt not found.' }, { status: 404 })
   const email = String(order.partySnapshot?.email ?? '')

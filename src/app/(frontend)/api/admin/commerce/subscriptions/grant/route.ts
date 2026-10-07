@@ -20,11 +20,14 @@ const fingerprint = (
     .update(`${memberId}|${planId}|${expiresAt}|${reason.trim()}|${source}`)
     .digest('hex')
 
+import { resolveOperatorGrantContext } from '@/modules/operations/operator-grants'
+
 /** Explicit complimentary agreement; it never creates or implies a payment. */
 export async function POST(request: Request) {
   const payload = await getPayload({ config })
   const auth = await payload.auth({ headers: request.headers })
-  if (!staffOnly((auth.user as any)?.role))
+  const grant = await resolveOperatorGrantContext(payload, auth?.user)
+  if (!grant.authorized)
     return NextResponse.json({ error: 'Unauthorized.' }, { status: 403 })
   const input = await request.json()
   const memberId = String(input.memberId ?? ''),
@@ -48,6 +51,12 @@ export async function POST(request: Request) {
     )
   const source = input.source === 'migration' ? 'migration' : 'complimentary'
   const siteId = String(input.siteId ?? '')
+  if (!siteId || (!grant.isGlobalOwner && !grant.authorizedSiteIds.includes(siteId))) {
+    return NextResponse.json(
+      { error: 'Forbidden. You do not have operator access to this site.' },
+      { status: 403 },
+    )
+  }
   const plan: any = await (payload as any)
     .findByID({ collection: 'plan-revisions', id: planId, depth: 0, overrideAccess: true })
     .catch(() => null)

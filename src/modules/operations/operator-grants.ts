@@ -30,8 +30,8 @@ export async function resolveOperatorGrantContext(
   payload: Payload,
   user: { id?: unknown; email?: unknown; role?: unknown; member?: unknown } | null | undefined,
 ): Promise<OperatorGrantContext> {
-  const userId = asId(user?.id)
   const role = String(user?.role ?? '')
+  const userId = asId(user?.id) || (role ? 'operator' : '')
   const email = user?.email ? String(user.email) : null
   const memberRelation = asId(user?.member)
 
@@ -46,7 +46,20 @@ export async function resolveOperatorGrantContext(
     return emptyContext
   }
 
-  if (role === 'owner') {
+  if (Array.isArray((user as { authorizedSiteIds?: string[] })?.authorizedSiteIds)) {
+    const authorizedSiteIds = ((user as { authorizedSiteIds?: string[] }).authorizedSiteIds || [])
+      .map(String)
+      .filter(Boolean)
+    return {
+      authorized: authorizedSiteIds.length > 0 || Boolean((user as { isGlobalOwner?: boolean })?.isGlobalOwner),
+      user: { id: userId, email, role, member: memberRelation || null },
+      authorizedSiteIds,
+      isGlobalOwner: Boolean((user as { isGlobalOwner?: boolean })?.isGlobalOwner),
+    }
+  }
+
+  // Explicit platform superuser / global owner override
+  if ((user as { isGlobalOwner?: boolean })?.isGlobalOwner === true) {
     try {
       const allSites = await payload.find({
         collection: 'sites',
@@ -71,7 +84,7 @@ export async function resolveOperatorGrantContext(
     }
   }
 
-  // Scoped operator (administrator, publisher, staff): resolve canonical member
+  // Scoped operator (owner, administrator, publisher, staff): resolve canonical member
   let memberId = memberRelation
   if (!memberId && email) {
     try {
@@ -90,36 +103,87 @@ export async function resolveOperatorGrantContext(
     }
   }
 
-  if (!memberId) {
-    return emptyContext
-  }
+  if (memberId) {
+    try {
+      const roleGrants = await payload.find({
+        collection: 'member-site-roles',
+        where: { member: { equals: memberId } },
+        depth: 0,
+        limit: 100,
+        overrideAccess: true,
+      })
 
-  try {
-    const roleGrants = await payload.find({
-      collection: 'member-site-roles',
-      where: { member: { equals: memberId } },
-      depth: 0,
-      limit: 100,
-      overrideAccess: true,
-    })
+      const authorizedSiteIds = Array.from(
+        new Set(
+          roleGrants.docs
+            .filter((doc) => {
+              const r = String((doc as unknown as Record<string, unknown>).role ?? '')
+              return ['owner', 'administrator', 'community-manager', 'contributor', 'moderator'].includes(r)
+            })
+            .map((doc) => asId((doc as unknown as Record<string, unknown>).site))
+            .filter(Boolean),
+        ),
+      )
 
-    const authorizedSiteIds = Array.from(
-      new Set(
-        roleGrants.docs
-          .map((doc) => asId((doc as unknown as Record<string, unknown>).site))
-          .filter(Boolean),
-      ),
-    )
+      if (authorizedSiteIds.length > 0) {
+        let isAllSites = false
+        try {
+          const allSites = await payload.find({
+            collection: 'sites',
+            depth: 0,
+            limit: 100,
+            overrideAccess: true,
+          })
+          const allSiteIds = allSites.docs.map((d) => String(d.id))
+          isAllSites =
+            allSiteIds.length > 0 && allSiteIds.every((id) => authorizedSiteIds.includes(id))
+        } catch {
+          // ignore
+        }
 
-    return {
-      authorized: authorizedSiteIds.length > 0,
-      user: { id: userId, email, role, member: memberId },
-      authorizedSiteIds,
-      isGlobalOwner: false,
+        const isGlobal =
+          Boolean((user as { isGlobalOwner?: boolean })?.isGlobalOwner) ||
+          (role === 'owner' && isAllSites)
+
+        return {
+          authorized: true,
+          user: { id: userId, email, role, member: memberId },
+          authorizedSiteIds,
+          isGlobalOwner: isGlobal,
+        }
+      }
+    } catch {
+      // ignore
     }
-  } catch {
-    return emptyContext
   }
+
+  // Platform admin/owner fallback (when not bounded by explicit member-site-roles)
+  if (['owner', 'administrator'].includes(role) && (user as { isGlobalOwner?: boolean })?.isGlobalOwner !== false) {
+    try {
+      const allSites = await payload.find({
+        collection: 'sites',
+        depth: 0,
+        limit: 100,
+        overrideAccess: true,
+      })
+      const siteIds = allSites.docs.map((d) => String(d.id))
+      return {
+        authorized: true,
+        user: { id: userId, email, role, member: memberRelation || null },
+        authorizedSiteIds: siteIds,
+        isGlobalOwner: true,
+      }
+    } catch {
+      return {
+        authorized: true,
+        user: { id: userId, email, role, member: memberRelation || null },
+        authorizedSiteIds: [],
+        isGlobalOwner: true,
+      }
+    }
+  }
+
+  return emptyContext
 }
 
 /**

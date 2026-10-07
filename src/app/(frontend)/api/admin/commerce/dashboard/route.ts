@@ -5,27 +5,44 @@ import { NextResponse } from 'next/server'
 import { financeDashboardSummary } from '@/modules/commerce/payment-operations'
 import { configuredPaymentProvider } from '@/modules/commerce/payment-provider'
 
-const staffOnly = (user: { role?: string } | null | undefined) =>
-  ['owner', 'administrator', 'staff'].includes(String(user?.role))
+import { resolveOperatorGrantContext } from '@/modules/operations/operator-grants'
 
 export async function GET(request: Request) {
   const payload = await getPayload({ config })
   const db: any = payload
   const auth = await payload.auth({ headers: request.headers })
-  if (!staffOnly(auth.user)) return NextResponse.json({ error: 'Unauthorized.' }, { status: 403 })
+  const grant = await resolveOperatorGrantContext(payload, auth?.user)
+  if (!grant.authorized) return NextResponse.json({ error: 'Unauthorized.' }, { status: 403 })
+
   const siteId = new URL(request.url).searchParams.get('siteId')
-  const where = siteId ? { site: { equals: siteId } } : undefined
-  const merchantIds = siteId
-    ? (
-        await db.find({
-          collection: 'merchant-connections',
-          where: { site: { equals: siteId } },
-          limit: 100,
-          depth: 0,
-          overrideAccess: true,
-        })
-      ).docs.map((row: any) => row.id)
-    : []
+  if (siteId && !grant.isGlobalOwner && !grant.authorizedSiteIds.includes(siteId)) {
+    return NextResponse.json(
+      { error: 'Forbidden. You do not have operator access to this site.' },
+      { status: 403 },
+    )
+  }
+
+  const where = siteId
+    ? { site: { equals: siteId } }
+    : grant.isGlobalOwner
+      ? undefined
+      : { site: { in: grant.authorizedSiteIds } }
+
+  const merchantWhere = siteId
+    ? { site: { equals: siteId } }
+    : grant.isGlobalOwner
+      ? undefined
+      : { site: { in: grant.authorizedSiteIds } }
+
+  const merchantIds = (
+    await db.find({
+      collection: 'merchant-connections',
+      where: merchantWhere,
+      limit: 100,
+      depth: 0,
+      overrideAccess: true,
+    })
+  ).docs.map((row: any) => row.id)
   const [attempts, refunds, disputes, inbox, reconciliationCases] = await Promise.all([
     db.find({
       collection: 'payment-attempts',

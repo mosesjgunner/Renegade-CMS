@@ -4,22 +4,38 @@ import { NextResponse } from 'next/server'
 
 import { createRelease } from '@/modules/releases/service'
 
-const staffOnly = (user: { role?: string } | null | undefined) =>
-  ['owner', 'administrator', 'publisher', 'staff'].includes(String(user?.role))
+import { resolveOperatorGrantContext } from '@/modules/operations/operator-grants'
 
 export async function GET(request: Request) {
   try {
     const payload = await getPayload({ config: configPromise })
     const auth = await payload.auth({ headers: request.headers })
-    if (!staffOnly(auth.user)) {
+    const grant = await resolveOperatorGrantContext(payload, auth?.user)
+    if (!grant.authorized) {
       return NextResponse.json({ error: 'Unauthorized.' }, { status: 403 })
     }
 
     const { searchParams } = new URL(request.url)
     const status = searchParams.get('status')
     const search = searchParams.get('search')
+    const requestedSiteId = searchParams.get('siteId')
+    if (
+      requestedSiteId &&
+      !grant.isGlobalOwner &&
+      !grant.authorizedSiteIds.includes(requestedSiteId)
+    ) {
+      return NextResponse.json(
+        { error: 'Forbidden. You do not have operator access to this site.' },
+        { status: 403 },
+      )
+    }
 
     const where: Record<string, any> = {}
+    if (requestedSiteId) {
+      where.site = { equals: requestedSiteId }
+    } else if (!grant.isGlobalOwner) {
+      where.site = { in: grant.authorizedSiteIds }
+    }
     if (status && status !== 'all') {
       where.status = { equals: status }
     }
@@ -52,17 +68,25 @@ export async function POST(request: Request) {
   try {
     const payload = await getPayload({ config: configPromise })
     const auth = await payload.auth({ headers: request.headers })
-    if (!staffOnly(auth.user)) {
+    const grant = await resolveOperatorGrantContext(payload, auth?.user)
+    if (!grant.authorized) {
       return NextResponse.json({ error: 'Unauthorized.' }, { status: 403 })
     }
 
     const body = await request.json()
+    const targetSiteId = body.siteId || body.site || grant.authorizedSiteIds[0] || 'site-primary'
+    if (!grant.isGlobalOwner && !grant.authorizedSiteIds.includes(targetSiteId)) {
+      return NextResponse.json(
+        { error: 'Forbidden. You do not have operator access to this site.' },
+        { status: 403 },
+      )
+    }
     const release = await createRelease(payload, {
       name: body.name || body.title,
       purpose: body.purpose || 'Coordinated campaign release',
       ownerId: String(auth.user?.id || 'system'),
       ownerTeam: body.ownerTeam || 'Editorial Operations',
-      siteId: body.siteId || body.site || 'site-primary',
+      siteId: targetSiteId,
       publicationId: body.publicationId || body.publication,
       plannedInstant: body.plannedInstant || body.scheduledFor,
       timeZone: body.timeZone || 'UTC',

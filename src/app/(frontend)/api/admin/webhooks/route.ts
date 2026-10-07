@@ -4,12 +4,15 @@ import { NextResponse } from 'next/server'
 import { getLocalizationEngine } from '@/modules/editorial/localization/service'
 import { rotateSubscriptionSecret } from '@/modules/editorial/localization/webhooks'
 
+import { resolveOperatorGrantContext } from '@/modules/operations/operator-grants'
+
 export const runtime = 'nodejs'
 
 export async function GET(request: Request) {
   const payload = await getPayload({ config })
   const auth = await payload.auth({ headers: request.headers })
-  if (!auth.user || !['owner', 'administrator', 'staff'].includes(String(auth.user.role))) {
+  const grant = await resolveOperatorGrantContext(payload, auth?.user)
+  if (!grant.authorized) {
     return NextResponse.json({ error: 'Staff access required.' }, { status: 403 })
   }
 
@@ -24,7 +27,8 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   const payload = await getPayload({ config })
   const auth = await payload.auth({ headers: request.headers })
-  if (!auth.user || !['owner', 'administrator', 'staff'].includes(String(auth.user.role))) {
+  const grant = await resolveOperatorGrantContext(payload, auth?.user)
+  if (!grant.authorized) {
     return NextResponse.json({ error: 'Staff access required.' }, { status: 403 })
   }
 

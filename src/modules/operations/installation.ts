@@ -525,7 +525,8 @@ async function ensureCanonicalMemberForUser(
       limit: 10,
       overrideAccess: true,
     })
-    for (const site of sites.docs) {
+    const targetSites = sites.docs.length === 1 ? sites.docs : []
+    for (const site of targetSites) {
       const existingRoles = await payload.find({
         collection: 'member-site-roles',
         where: {
