@@ -49,12 +49,14 @@ export async function POST(request: Request) {
   let session: any = null
 
   if (input.proposalId) {
-    proposal = await db.findByID({
-      collection: 'checkout-proposals',
-      id: input.proposalId,
-      depth: 1,
-      overrideAccess: true,
-    })
+    proposal = await db
+      .findByID({
+        collection: 'checkout-proposals',
+        id: input.proposalId,
+        depth: 1,
+        overrideAccess: true,
+      })
+      .catch(() => null)
     if (!proposal) return NextResponse.json({ error: 'Proposal not found.' }, { status: 404 })
     if (proposal.state !== 'active' || proposal.expiresAt <= new Date().toISOString()) {
       return NextResponse.json({ error: 'Proposal is expired or inactive.' }, { status: 409 })
@@ -62,12 +64,14 @@ export async function POST(request: Request) {
     const proposalCart: any =
       typeof proposal.cart === 'object'
         ? proposal.cart
-        : await db.findByID({
-            collection: 'carts',
-            id: id(proposal.cart),
-            depth: 0,
-            overrideAccess: true,
-          })
+        : await db
+            .findByID({
+              collection: 'carts',
+              id: id(proposal.cart),
+              depth: 0,
+              overrideAccess: true,
+            })
+            .catch(() => null)
     const cartItems = list(proposalCart.items)
     const expectedIntegrity = computeProposalIntegrityHash({
       id: String(proposal.id),
@@ -98,12 +102,15 @@ export async function POST(request: Request) {
   }
 
   if (input.sessionId) {
-    session = await db.findByID({
-      collection: 'checkout-sessions',
-      id: input.sessionId,
-      depth: 1,
-      overrideAccess: true,
-    })
+    session = await db
+      .findByID({
+        collection: 'checkout-sessions',
+        id: input.sessionId,
+        depth: 1,
+        overrideAccess: true,
+      })
+      .catch(() => null)
+    if (!session) return NextResponse.json({ error: 'Session not found.' }, { status: 404 })
     if (session.state !== 'open')
       return NextResponse.json({ error: 'Checkout is not open.' }, { status: 409 })
   } else if (proposal) {

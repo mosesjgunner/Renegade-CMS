@@ -242,6 +242,16 @@ export async function POST(request: Request) {
       taxTotalMinor: taxSnapshot?.taxAmountMinor,
     })
 
+    if (resolvedCart.items.length === 0) {
+      return NextResponse.json(
+        {
+          error: 'Cart is empty or all items are unavailable.',
+          reconciliationNotes: resolvedCart.reconciliationNotes,
+        },
+        { status: 400 },
+      )
+    }
+
     const proposal = createCheckoutProposal({
       cart: resolvedCart,
       pricingSnapshot,

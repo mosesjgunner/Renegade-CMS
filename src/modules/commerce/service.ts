@@ -754,14 +754,22 @@ export async function finalizeVerifiedOrder(
     })
     if (prior.docs.length) continue
     if (!supporter) {
-      const supporterResult = await db.find({
-        collection: 'supporters',
-        where: memberId
-          ? { member: { equals: memberId } }
-          : { providerReferences: { contains: String(input.intent.id) } },
-        limit: 1,
-        overrideAccess: true,
-      })
+      const email = String(order.customerEmail ?? '').trim().toLowerCase()
+      const emailHash = email ? createHash('sha256').update(email).digest('hex') : null
+      const supporterWhere: any = memberId
+        ? { member: { equals: memberId } }
+        : emailHash
+          ? { emailHash: { equals: emailHash } }
+          : undefined
+
+      const supporterResult = supporterWhere
+        ? await db.find({
+            collection: 'supporters',
+            where: supporterWhere,
+            limit: 1,
+            overrideAccess: true,
+          })
+        : { docs: [] }
       supporter = supporterResult.docs[0]
       if (!supporter)
         supporter = await db.create({
@@ -771,6 +779,7 @@ export async function finalizeVerifiedOrder(
             publication: input.session.publication,
             space: input.session.space,
             ...(memberId ? { member: memberId } : {}),
+            ...(emailHash ? { emailHash } : {}),
             displayName: memberId ? undefined : `Order ${order.orderNumber}`,
             providerReferences: [
               { providerKey: input.intent.providerKey, externalId: String(input.intent.id) },
