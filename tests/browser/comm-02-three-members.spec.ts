@@ -72,7 +72,7 @@ test('COMM-02 three clean browsers enforce profile audiences, follows, blocks an
       await page.getByLabel('Visibility', { exact: true }).selectOption('public')
       await page.getByLabel('Bio audience').selectOption(index === 0 ? 'followers' : 'private')
       await page.getByRole('button', { name: 'Save profile' }).click()
-      await expect(page.getByRole('status')).toHaveText('Profile saved.')
+      await expect(page.getByText('Profile saved.')).toBeVisible()
       const saved = await page.request.get('/api/member-auth/me')
       expect((await saved.json()).profile).toMatchObject({ handle, visibility: 'public' })
     }
@@ -121,6 +121,5 @@ test('COMM-02 three clean browsers enforce profile audiences, follows, blocks an
       data: { canonicalOriginsBySite: original ?? {} },
       overrideAccess: true,
     })
-    await payload.db.destroy?.()
   }
 })

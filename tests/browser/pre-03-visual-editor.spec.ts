@@ -158,6 +158,5 @@ test('PRE-03: controlled editor preview, publish, conflict recovery, theme switc
     await payload.delete({ collection: 'publications', id: publication.id, overrideAccess: true })
     await payload.db.pool.query('DELETE FROM admin_sessions WHERE id=$1', [session.sessionId])
     await payload.delete({ collection: 'sites', id: site.id, overrideAccess: true })
-    await payload.db.destroy?.()
   }
 })

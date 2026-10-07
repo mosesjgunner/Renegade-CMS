@@ -519,7 +519,10 @@ export async function POST(request: Request) {
         }
 
         const targetSite = asId((existing as any).site)
-        if (!targetSite || (!grant.isGlobalOwner && !grant.authorizedSiteIds.includes(targetSite))) {
+        if (
+          !grant.isGlobalOwner &&
+          (!targetSite || !grant.authorizedSiteIds.includes(targetSite))
+        ) {
           return NextResponse.json(
             { error: 'Forbidden. Object belongs to another site.' },
             { status: 403 },
@@ -589,7 +592,10 @@ export async function POST(request: Request) {
         }
 
         const targetSite = asId((existing as any).site)
-        if (!targetSite || (!grant.isGlobalOwner && !grant.authorizedSiteIds.includes(targetSite))) {
+        if (
+          !grant.isGlobalOwner &&
+          (!targetSite || !grant.authorizedSiteIds.includes(targetSite))
+        ) {
           return NextResponse.json(
             { error: 'Forbidden. Object belongs to another site.' },
             { status: 403 },
@@ -714,7 +720,10 @@ export async function POST(request: Request) {
           return NextResponse.json({ error: 'Webhook subscription not found.' }, { status: 404 })
 
         const targetSite = asId((sub as any).site)
-        if (!targetSite || (!grant.isGlobalOwner && !grant.authorizedSiteIds.includes(targetSite))) {
+        if (
+          !grant.isGlobalOwner &&
+          (!targetSite || !grant.authorizedSiteIds.includes(targetSite))
+        ) {
           return NextResponse.json(
             { error: 'Forbidden. Object belongs to another site.' },
             { status: 403 },
@@ -788,7 +797,10 @@ export async function POST(request: Request) {
           return NextResponse.json({ error: 'Webhook subscription not found.' }, { status: 404 })
 
         const targetSite = asId((sub as any).site)
-        if (!targetSite || (!grant.isGlobalOwner && !grant.authorizedSiteIds.includes(targetSite))) {
+        if (
+          !grant.isGlobalOwner &&
+          (!targetSite || !grant.authorizedSiteIds.includes(targetSite))
+        ) {
           return NextResponse.json(
             { error: 'Forbidden. Object belongs to another site.' },
             { status: 403 },
@@ -828,7 +840,7 @@ export async function POST(request: Request) {
         }
         const sub = (delivery as any).subscription
         const subSite = asId(typeof sub === 'object' && sub ? sub.site : null)
-        if (!subSite || (!grant.isGlobalOwner && !grant.authorizedSiteIds.includes(subSite))) {
+        if (!grant.isGlobalOwner && (!subSite || !grant.authorizedSiteIds.includes(subSite))) {
           return NextResponse.json(
             { error: 'Forbidden. Delivery belongs to another site.' },
             { status: 403 },
@@ -888,7 +900,10 @@ export async function POST(request: Request) {
         }
 
         const targetSite = asId((existing as any).site)
-        if (!targetSite || (!grant.isGlobalOwner && !grant.authorizedSiteIds.includes(targetSite))) {
+        if (
+          !grant.isGlobalOwner &&
+          (!targetSite || !grant.authorizedSiteIds.includes(targetSite))
+        ) {
           return NextResponse.json(
             { error: 'Forbidden. Object belongs to another site.' },
             { status: 403 },
@@ -989,7 +1004,10 @@ export async function POST(request: Request) {
         }
 
         const targetSite = asId((existing as any).site)
-        if (!targetSite || (!grant.isGlobalOwner && !grant.authorizedSiteIds.includes(targetSite))) {
+        if (
+          !grant.isGlobalOwner &&
+          (!targetSite || !grant.authorizedSiteIds.includes(targetSite))
+        ) {
           return NextResponse.json(
             { error: 'Forbidden. Object belongs to another site.' },
             { status: 403 },

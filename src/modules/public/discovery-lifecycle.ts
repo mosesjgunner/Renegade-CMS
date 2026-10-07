@@ -80,7 +80,16 @@ export async function persistRenderedAuditLifecycle(
   for (const [dedupeKey, item] of grouped) {
     activeDedupeKeys.add(dedupeKey)
 
-    const existingIssue = existingMap.get(dedupeKey)
+    const existingIssue =
+      existingMap.get(dedupeKey) ??
+      ((
+        await payload.find({
+          collection: 'quality-issues',
+          where: { dedupeKey: { equals: dedupeKey } },
+          limit: 1,
+          overrideAccess: true,
+        })
+      ).docs[0] as unknown as QualityIssue | undefined)
     if (existingIssue) {
       if (existingIssue.status === 'resolved') {
         await payload.update({

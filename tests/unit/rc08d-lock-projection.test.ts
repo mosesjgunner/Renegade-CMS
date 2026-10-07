@@ -20,7 +20,9 @@ describe('RC08D-01 Core Editor Lock-Owner Projection', () => {
     findThrows = false,
   } = {}) => {
     return {
-      user: userId ? { id: userId, role: userRole, email: userEmail, collection: 'users' } : undefined,
+      user: userId
+        ? { id: userId, role: userRole, email: userEmail, collection: 'users' }
+        : undefined,
       payload: {
         collections: {
           'payload-locked-documents': { config: { slug: 'payload-locked-documents' } },

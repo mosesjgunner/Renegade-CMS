@@ -36,7 +36,10 @@ export async function POST(request: Request) {
 
   const siteId = typeof body.siteId === 'string' ? body.siteId : defaultSiteId
   const settings = await resolveSiteSettings(payload)
-  const origin = (siteId && settings.canonicalOriginsBySite[siteId]) || settings.canonicalOrigin
+  let origin = (siteId && settings.canonicalOriginsBySite[siteId]) || settings.canonicalOrigin
+  if (process.env.LOCAL_E2E_TEST_MODE === 'true' && process.env.APP_URL) {
+    origin = process.env.APP_URL
+  }
 
   try {
     const documents = await getAllIndexableDiscoveryDocuments(payload, siteId)

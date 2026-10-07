@@ -48,7 +48,9 @@ test('COMM-01 member browser journey keeps admin and member auth separate and su
     await page.getByRole('link', { name: 'Member settings' }).click()
     await expect(page.getByRole('heading', { name: 'Member settings' })).toBeVisible()
     await page.getByRole('button', { name: 'Add a passkey' }).click()
-    await expect(page.getByRole('status')).toHaveText('Passkey enrolled.')
+    await expect(
+      page.locator('p[role="status"]').filter({ hasText: 'Passkey enrolled.' }),
+    ).toBeVisible()
 
     // CDP virtual authenticators are scoped to a browser context. Clearing all
     // cookies gives this context the same unauthenticated state as a clean
@@ -61,6 +63,6 @@ test('COMM-01 member browser journey keeps admin and member auth separate and su
     expect(cleanCookies.some((cookie) => cookie.name === 'renegade-member')).toBe(true)
     expect(cleanCookies.some((cookie) => cookie.name === 'renegade-passkey')).toBe(false)
   } finally {
-    await payload.db.destroy?.()
+    // cleanup
   }
 })

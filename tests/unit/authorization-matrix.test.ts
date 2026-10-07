@@ -95,7 +95,7 @@ function createMatrixMockPayload() {
         const memberId = String(
           where?.member && typeof where.member === 'object' && 'equals' in where.member
             ? (where.member as { equals: unknown }).equals
-            : where?.member ?? '',
+            : (where?.member ?? ''),
         )
         const roles = MEMBER_SITE_ROLES[memberId] || []
         return {
@@ -111,12 +111,12 @@ function createMatrixMockPayload() {
         const memberId = String(
           where?.and && Array.isArray(where.and)
             ? ((where.and[0] as any)?.member?.equals ?? '')
-            : (where?.member as any)?.equals ?? where?.member ?? '',
+            : ((where?.member as any)?.equals ?? where?.member ?? ''),
         )
         const requestedScopeKey = String(
           where?.and && Array.isArray(where.and)
             ? ((where.and[1] as any)?.scopeKey?.equals ?? '')
-            : (where?.scopeKey as any)?.equals ?? where?.scopeKey ?? '',
+            : ((where?.scopeKey as any)?.equals ?? where?.scopeKey ?? ''),
         )
         if (
           memberId === SESSIONS.staffA.member &&
@@ -232,38 +232,73 @@ describe('RC08D-03: Mandatory Scoped Authorization and Cross-Site Isolation Matr
   describe('2. Surface: Media & Private Assets (assertMediaPermission)', () => {
     it('Same-site authorized success: Owner A and Staff A can operate on Site A media', async () => {
       await expect(
-        assertMediaPermission(payload, SESSIONS.ownerA, { kind: 'site', siteId: SITE_A }, 'content.edit'),
+        assertMediaPermission(
+          payload,
+          SESSIONS.ownerA,
+          { kind: 'site', siteId: SITE_A },
+          'content.edit',
+        ),
       ).resolves.toBeUndefined()
 
       await expect(
-        assertMediaPermission(payload, SESSIONS.staffA, { kind: 'site', siteId: SITE_A }, 'content.edit'),
+        assertMediaPermission(
+          payload,
+          SESSIONS.staffA,
+          { kind: 'site', siteId: SITE_A },
+          'content.edit',
+        ),
       ).resolves.toBeUndefined()
     })
 
     it('Cross-site authenticated denial: Owner A is DENIED on Site B media', async () => {
       await expect(
-        assertMediaPermission(payload, SESSIONS.ownerA, { kind: 'site', siteId: SITE_B }, 'content.edit'),
+        assertMediaPermission(
+          payload,
+          SESSIONS.ownerA,
+          { kind: 'site', siteId: SITE_B },
+          'content.edit',
+        ),
       ).rejects.toThrow(MediaWorkflowError)
       await expect(
-        assertMediaPermission(payload, SESSIONS.ownerA, { kind: 'site', siteId: SITE_B }, 'content.edit'),
+        assertMediaPermission(
+          payload,
+          SESSIONS.ownerA,
+          { kind: 'site', siteId: SITE_B },
+          'content.edit',
+        ),
       ).rejects.toThrow('Site scope access denied.')
     })
 
     it('Cross-site authenticated denial: Staff A is DENIED on Site B media', async () => {
       await expect(
-        assertMediaPermission(payload, SESSIONS.staffA, { kind: 'site', siteId: SITE_B }, 'content.edit'),
+        assertMediaPermission(
+          payload,
+          SESSIONS.staffA,
+          { kind: 'site', siteId: SITE_B },
+          'content.edit',
+        ),
       ).rejects.toThrow('Site scope access denied.')
     })
 
     it('Same-site insufficient-role denial: Member A is denied media access', async () => {
       await expect(
-        assertMediaPermission(payload, SESSIONS.memberA, { kind: 'site', siteId: SITE_A }, 'content.read'),
+        assertMediaPermission(
+          payload,
+          SESSIONS.memberA,
+          { kind: 'site', siteId: SITE_A },
+          'content.read',
+        ),
       ).rejects.toThrow('Staff access is required.')
     })
 
     it('Anonymous denial: Anonymous caller is denied media access', async () => {
       await expect(
-        assertMediaPermission(payload, SESSIONS.anonymous, { kind: 'site', siteId: SITE_A }, 'content.read'),
+        assertMediaPermission(
+          payload,
+          SESSIONS.anonymous,
+          { kind: 'site', siteId: SITE_A },
+          'content.read',
+        ),
       ).rejects.toThrow('Staff access is required.')
     })
   })

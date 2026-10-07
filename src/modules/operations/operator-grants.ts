@@ -51,7 +51,9 @@ export async function resolveOperatorGrantContext(
       .map(String)
       .filter(Boolean)
     return {
-      authorized: authorizedSiteIds.length > 0 || Boolean((user as { isGlobalOwner?: boolean })?.isGlobalOwner),
+      authorized:
+        authorizedSiteIds.length > 0 ||
+        Boolean((user as { isGlobalOwner?: boolean })?.isGlobalOwner),
       user: { id: userId, email, role, member: memberRelation || null },
       authorizedSiteIds,
       isGlobalOwner: Boolean((user as { isGlobalOwner?: boolean })?.isGlobalOwner),
@@ -118,7 +120,13 @@ export async function resolveOperatorGrantContext(
           roleGrants.docs
             .filter((doc) => {
               const r = String((doc as unknown as Record<string, unknown>).role ?? '')
-              return ['owner', 'administrator', 'community-manager', 'contributor', 'moderator'].includes(r)
+              return [
+                'owner',
+                'administrator',
+                'community-manager',
+                'contributor',
+                'moderator',
+              ].includes(r)
             })
             .map((doc) => asId((doc as unknown as Record<string, unknown>).site))
             .filter(Boolean),
@@ -158,7 +166,10 @@ export async function resolveOperatorGrantContext(
   }
 
   // Platform admin/owner fallback (when not bounded by explicit member-site-roles)
-  if (['owner', 'administrator'].includes(role) && (user as { isGlobalOwner?: boolean })?.isGlobalOwner !== false) {
+  if (
+    ['owner', 'administrator'].includes(role) &&
+    (user as { isGlobalOwner?: boolean })?.isGlobalOwner !== false
+  ) {
     try {
       const allSites = await payload.find({
         collection: 'sites',

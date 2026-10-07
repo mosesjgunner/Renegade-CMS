@@ -27,8 +27,7 @@ export async function POST(request: Request) {
   const payload = await getPayload({ config })
   const auth = await payload.auth({ headers: request.headers })
   const grant = await resolveOperatorGrantContext(payload, auth?.user)
-  if (!grant.authorized)
-    return NextResponse.json({ error: 'Unauthorized.' }, { status: 403 })
+  if (!grant.authorized) return NextResponse.json({ error: 'Unauthorized.' }, { status: 403 })
   const input = await request.json()
   const memberId = String(input.memberId ?? ''),
     planId = String(input.planRevisionId ?? ''),

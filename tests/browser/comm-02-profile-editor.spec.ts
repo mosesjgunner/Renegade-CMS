@@ -27,7 +27,9 @@ test('COMM-02 member can edit field visibility in the browser without exposing r
     await page.getByLabel('Visibility', { exact: true }).selectOption('public')
     await page.getByLabel('Bio audience').selectOption('private')
     await page.getByRole('button', { name: 'Save profile' }).click()
-    await expect(page.getByRole('status')).toHaveText('Profile saved.')
+    await expect(
+      page.locator('p[role="status"]').filter({ hasText: 'Profile saved.' }),
+    ).toBeVisible()
     await expect(page.getByRole('region', { name: 'Profile preview' })).toContainText(
       'Browser-owned profile story',
     )
@@ -72,6 +74,5 @@ test('COMM-02 member can edit field visibility in the browser without exposing r
     expect((await request.get('/api/profiles?limit=1')).status()).toBe(403)
   } finally {
     if (memberId) await finalizeMemberDeletion(payload as never, memberId)
-    await payload.db.destroy?.()
   }
 })

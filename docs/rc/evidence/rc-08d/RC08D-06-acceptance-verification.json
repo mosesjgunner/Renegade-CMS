@@ -21,8 +21,8 @@
   "unit": {
     "command": "npm.cmd run test",
     "exitCode": 0,
-    "files": 175,
-    "passed": 1143,
+    "files": 178,
+    "passed": 1193,
     "failed": 0,
     "skipped": 0
   },
@@ -37,12 +37,25 @@
     "upgradeExitCode": 0
   },
   "integration": {
-    "command": "node --env-file=.env scripts/run-integration.mjs",
+    "command": "node scripts/run-integration.mjs",
     "exitCode": 0,
-    "files": 46,
-    "passed": 261,
+    "files": 48,
+    "passed": 270,
     "failed": 0,
     "skipped": 0
+  },
+  "browser": {
+    "command": "npm.cmd run test:browser",
+    "exitCode": 0,
+    "specs": 28,
+    "passed": 27,
+    "skipped": 1,
+    "failed": 0
+  },
+  "smoke": {
+    "command": "npm.cmd run test:smoke",
+    "exitCode": 0,
+    "status": "PASS"
   },
   "presentationBundles": {
     "command": "npm.cmd run verify:presentation-bundles",
@@ -52,7 +65,6 @@
   "build": {
     "command": "npm.cmd run build",
     "exitCode": 0,
-    "staticPages": 139,
     "standaloneServerGenerated": true
   }
 }

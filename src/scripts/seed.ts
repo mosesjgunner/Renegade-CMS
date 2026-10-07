@@ -23,10 +23,21 @@ async function upsert(payload: Payload, { collection, data, where }: UpsertArgs)
   })
 
   if (existing.docs[0]) {
-    return payload.update({ collection, id: existing.docs[0].id, data, overrideAccess: true })
+    return payload.update({
+      collection,
+      id: existing.docs[0].id,
+      data,
+      overrideAccess: true,
+      context: { seeding: true, skipEnrollmentToken: true },
+    })
   }
 
-  return payload.create({ collection, data, overrideAccess: true })
+  return payload.create({
+    collection,
+    data,
+    overrideAccess: true,
+    context: { seeding: true, skipEnrollmentToken: true },
+  })
 }
 
 const rel = (relationTo: string, value: unknown) => ({ relationTo, value })

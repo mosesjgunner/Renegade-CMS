@@ -3,6 +3,8 @@
 - Gate: `RC08D-05` (`RC08C-DEPS`)
 - Status: **PASS**
 - Base SHA: `d3a37e1d150cdf273b63afa8dc14b3d14296987a`
+- Result SHA: `7f0ef9f2defebf6443f407487a97f64248b5348f`
+- Production Docker Image Digest: `sha256:10cc1d482ad1ff75aa566b3539b8801e85bf21ddd723c4fe8361c692e5223a8e` (`renegade-cms:security-check`)
 - Scope: Compatible dependency graph resolution (`npm ls --all` clean exit 0), systematic adjudication of all unique security advisories, and production Docker image composition hardening.
 - Target Artifacts: `package.json`, `package-lock.json`, `Dockerfile`, `.dockerignore`, `docs/rc/evidence/rc-08d/RC08D-05-dependency-image-decision.json`.
 

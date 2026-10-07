@@ -1,14 +1,14 @@
 {
-  "timestamp": "2026-09-24T05:15:59.039Z",
+  "timestamp": "2026-10-07T18:52:57.948Z",
   "standard": "WCAG 2.1 Level AA",
   "surfacesAudited": 7,
-  "totalPasses": 159,
+  "totalPasses": 163,
   "totalViolations": 7,
   "details": [
     {
       "path": "/",
       "name": "Home",
-      "passes": 21,
+      "passes": 24,
       "violations": [
         {
           "id": "color-contrast",
@@ -60,7 +60,7 @@
     {
       "path": "/search?q=Decentralized",
       "name": "Search",
-      "passes": 24,
+      "passes": 25,
       "violations": [
         {
           "id": "color-contrast",

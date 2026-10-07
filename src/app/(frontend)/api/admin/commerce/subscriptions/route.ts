@@ -14,8 +14,7 @@ export async function GET(request: Request) {
   const payload = await getPayload({ config })
   const auth = await payload.auth({ headers: request.headers })
   const grant = await resolveOperatorGrantContext(payload, auth?.user)
-  if (!grant.authorized)
-    return NextResponse.json({ error: 'Unauthorized.' }, { status: 403 })
+  if (!grant.authorized) return NextResponse.json({ error: 'Unauthorized.' }, { status: 403 })
 
   const db: any = payload
   const siteId = new URL(request.url).searchParams.get('siteId')

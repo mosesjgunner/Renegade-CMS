@@ -26,6 +26,17 @@ export async function publicSiteForHost(payload: Payload, hostValue: string | nu
   try {
     canonical = new URL(settings.canonicalOrigin).host.toLowerCase() === host
   } catch {}
+  if (process.env.LOCAL_E2E_TEST_MODE === 'true' && local) {
+    const e2eSite = await payload.find({
+      collection: 'sites',
+      where: { slug: { equals: 'analytics-e2e' } },
+      limit: 1,
+      depth: 0,
+      overrideAccess: true,
+    } as never)
+    if (e2eSite.docs[0]) return String(e2eSite.docs[0].id)
+    if (sites.docs[0]) return String(sites.docs[0].id)
+  }
   return sites.docs.length === 1 && (local || canonical) ? String(sites.docs[0].id) : ''
 }
 

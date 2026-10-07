@@ -6,7 +6,13 @@ import Link from 'next/link'
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<main className="max-w-md mx-auto px-4 py-16 text-center text-xs text-stone-500">Loading sign in…</main>}>
+    <Suspense
+      fallback={
+        <main className="max-w-md mx-auto px-4 py-16 text-center text-xs text-stone-500">
+          Loading sign in…
+        </main>
+      }
+    >
       <LoginForm />
     </Suspense>
   )

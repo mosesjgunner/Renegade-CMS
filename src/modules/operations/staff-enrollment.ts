@@ -31,7 +31,10 @@ export class StaffEnrollmentError extends Error {
 }
 
 type SqlPool = {
-  query: <R = unknown>(text: string, values?: unknown[]) => Promise<{ rows: R[]; rowCount?: number | null }>
+  query: <R = unknown>(
+    text: string,
+    values?: unknown[],
+  ) => Promise<{ rows: R[]; rowCount?: number | null }>
 }
 
 export function hashValue(value: string, secret: string): string {
@@ -59,6 +62,9 @@ export async function createStaffEnrollmentToken(
     siteId?: string
     invitedByUserId?: string
     validHours?: number
+    userId?: string
+    memberId?: string
+    req?: unknown
   },
 ): Promise<{
   enrollmentToken: string
@@ -77,37 +83,52 @@ export async function createStaffEnrollmentToken(
     throw new StaffEnrollmentError('INVALID_ROLE', 'Role must be staff or administrator.')
   }
 
+  const req = input.req as Parameters<Payload['find']>[0]['req']
+
   // 1. Locate or create users doc
-  const existingUsers = await payload.find({
-    collection: 'users',
-    where: { email: { equals: email } },
-    limit: 1,
-    depth: 0,
-    overrideAccess: true,
-  })
+  let user: { id: string; email: string; role: string; member?: unknown } | undefined
 
-  let user = existingUsers.docs[0] as
-    | { id: string; email: string; role: string; member?: unknown }
-    | undefined
-
-  if (user) {
-    if (user.role === 'owner') {
-      throw new StaffEnrollmentError('UNAUTHORIZED', 'Owner accounts cannot be enrolled as staff.')
-    }
+  if (input.userId) {
+    user = { id: input.userId, email, role, member: input.memberId }
   } else {
-    const created = await payload.create({
+    const existingUsers = await payload.find({
       collection: 'users',
-      data: { email, role },
+      where: { email: { equals: email } },
+      limit: 1,
+      depth: 0,
       overrideAccess: true,
+      req,
     })
-    user = created as { id: string; email: string; role: string; member?: unknown }
+
+    user = existingUsers.docs[0] as
+      | { id: string; email: string; role: string; member?: unknown }
+      | undefined
+
+    if (user) {
+      if (user.role === 'owner') {
+        throw new StaffEnrollmentError(
+          'UNAUTHORIZED',
+          'Owner accounts cannot be enrolled as staff.',
+        )
+      }
+    } else {
+      const created = await payload.create({
+        collection: 'users',
+        data: { email, role },
+        overrideAccess: true,
+        req,
+        context: { skipEnrollmentToken: true },
+      })
+      user = created as { id: string; email: string; role: string; member?: unknown }
+    }
   }
 
   // 2. Ensure canonical Member record exists
   let memberId =
-    typeof user.member === 'string'
+    input.memberId ||
+    (typeof user.member === 'string'
       ? user.member
-      : (user.member as { id?: string } | undefined)?.id
+      : (user.member as { id?: string } | undefined)?.id)
 
   if (!memberId) {
     const existingMembers = await payload.find({
@@ -116,6 +137,7 @@ export async function createStaffEnrollmentToken(
       limit: 1,
       depth: 0,
       overrideAccess: true,
+      req,
     })
     if (existingMembers.docs[0]) {
       memberId = existingMembers.docs[0].id
@@ -128,6 +150,7 @@ export async function createStaffEnrollmentToken(
           status: 'active',
         },
         overrideAccess: true,
+        req,
       })
       memberId = createdMember.id
     }
@@ -137,6 +160,7 @@ export async function createStaffEnrollmentToken(
       id: user.id,
       data: { member: memberId },
       overrideAccess: true,
+      req,
     })
   }
 
@@ -148,6 +172,7 @@ export async function createStaffEnrollmentToken(
       limit: 1,
       depth: 0,
       overrideAccess: true,
+      req,
     })
     targetSiteId = sites.docs[0]?.id
   }
@@ -161,6 +186,7 @@ export async function createStaffEnrollmentToken(
       limit: 1,
       depth: 0,
       overrideAccess: true,
+      req,
     })
     if (!existingRole.docs.length) {
       await payload.create({
@@ -172,6 +198,7 @@ export async function createStaffEnrollmentToken(
           grantedByUserId: input.invitedByUserId ?? null,
         },
         overrideAccess: true,
+        req,
       })
     }
   }
@@ -209,6 +236,7 @@ export async function createStaffEnrollmentToken(
       },
     },
     overrideAccess: true,
+    req,
   })
 
   const enrollmentUrl = `${config.appUrl}/enroll?token=${enrollmentToken}`
@@ -246,10 +274,7 @@ export async function getStaffEnrollmentDetails(
   const res = await payload.find({
     collection: 'identity-tokens',
     where: {
-      and: [
-        { purpose: { equals: 'passkey-registration' } },
-        { tokenHash: { equals: tokenHash } },
-      ],
+      and: [{ purpose: { equals: 'passkey-registration' } }, { tokenHash: { equals: tokenHash } }],
     },
     limit: 1,
     depth: 0,
@@ -376,10 +401,10 @@ export async function beginStaffPasskeyEnrollment(
     ],
   )
 
-  await pool.query(
-    `INSERT INTO admin_auth_audit_events (user_id, event) VALUES ($1, $2)`,
-    [details.userId, 'staff.passkey.registration.started'],
-  )
+  await pool.query(`INSERT INTO admin_auth_audit_events (user_id, event) VALUES ($1, $2)`, [
+    details.userId,
+    'staff.passkey.registration.started',
+  ])
 
   return {
     options,
@@ -409,10 +434,10 @@ export async function completeStaffPasskeyEnrollment(
   )
   const pool = getPool(payload)
 
-  const tokenRow = await pool.query<{ metadata: Record<string, unknown>; consumed_at: Date | null }>(
-    `SELECT metadata, consumed_at FROM identity_tokens WHERE id = $1`,
-    [details.tokenId],
-  )
+  const tokenRow = await pool.query<{
+    metadata: Record<string, unknown>
+    consumed_at: Date | null
+  }>(`SELECT metadata, consumed_at FROM identity_tokens WHERE id = $1`, [details.tokenId])
   const row = tokenRow.rows[0]
   if (!row || row.consumed_at) {
     throw new StaffEnrollmentError(

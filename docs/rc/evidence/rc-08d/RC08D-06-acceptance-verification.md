@@ -18,7 +18,7 @@
    - Result: Exit 0. 0 TypeScript compiler errors.
 4. **Unit Test Suite**:
    - Command: `npm.cmd run test`
-   - Result: Exit 0. 175 test files passed, 1,143 tests passed, 0 failed, 0 skipped.
+   - Result: Exit 0. 178 test files passed, 1,193 tests passed, 0 failed, 0 skipped.
 5. **Fresh Migrations**:
    - Command: `npm.cmd run test:migrations:fresh`
    - Result: Exit 0. All 112 migrations applied cleanly to empty PostgreSQL database (`renegade_rc08d_release_acceptance`); runtime assertions on public tables, triggers, and indices confirmed.
@@ -26,14 +26,20 @@
    - Command: `npm.cmd run test:migrations:upgrade`
    - Result: Exit 0. Baseline fixture schema (`20260914_110000_med_05_video_workflow`, ordinal 56) upgraded through 56 subsequent migrations to latest schema without errors.
 7. **Integration Test Suite**:
-   - Command: `node --env-file=.env scripts/run-integration.mjs`
-   - Result: Exit 0. All 46 integration test files passed, 261 integration tests passed, 0 failed.
+   - Command: `npm.cmd run test:integration`
+   - Result: Exit 0. All 48 integration test files passed, 270 integration tests passed, 0 failed.
 8. **Presentation Bundle Isolation**:
    - Command: `npm.cmd run verify:presentation-bundles`
    - Result: Exit 0. Public route presentation bundles strictly exclude Puck, editor, and administrative dependencies.
 9. **Turbopack Production Build**:
    - Command: `npm.cmd run build`
-   - Result: Exit 0. Built 139 static pages, generated Next.js standalone server bundle (`.next/standalone`).
+   - Result: Exit 0. Next.js standalone server bundle (`.next/standalone`) built cleanly.
+10. **Browser Test Suite (Playwright E2E)**:
+    - Command: `npm.cmd run test:browser`
+    - Result: Exit 0. 28 browser test specs: 27 passed, 1 skipped, 0 failed across all Golden Journeys.
+11. **Production Boot, Health & Smoke**:
+    - Command: `npm.cmd run test:smoke`
+    - Result: Exit 0. PASS: Next.js public/admin routes and Payload PostgreSQL persistence operational.
 
 ## Contained in Candidate
 

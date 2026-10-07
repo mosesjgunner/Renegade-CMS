@@ -28,7 +28,7 @@ export function verifyRelease(): void {
   runNpm('format', 'format:check')
   runNpm('lint', 'lint')
   runNpm('typecheck', 'typecheck')
-  runNpm('unit', 'test')
+  runNpm('unit', 'test', { ...process.env, NODE_ENV: 'test' })
   const integrationEnv = { ...process.env }
   delete integrationEnv.UPGRADE_MIGRATION_DATABASE_URL
   runNpm('integration', 'test:integration', integrationEnv)

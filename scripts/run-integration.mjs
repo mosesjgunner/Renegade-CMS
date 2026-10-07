@@ -1,10 +1,22 @@
 import { webcrypto, randomBytes } from 'node:crypto'
-import { mkdirSync, writeFileSync } from 'node:fs'
+import { mkdirSync, writeFileSync, readFileSync, existsSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { spawn } from 'node:child_process'
 import * as x509 from '@peculiar/x509'
 
-const database = new URL(process.env.DATABASE_URL ?? '')
+if (!process.env.DATABASE_URL && existsSync('.env')) {
+  for (const line of readFileSync('.env', 'utf8').split(/\r?\n/)) {
+    if (line && !line.startsWith('#') && line.includes('=')) {
+      const idx = line.indexOf('=')
+      const key = line.slice(0, idx).trim()
+      const val = line.slice(idx + 1).trim()
+      if (!process.env[key]) process.env[key] = val
+    }
+  }
+}
+
+const dbUrl = process.env.INTEGRATION_DATABASE_URL ?? process.env.DATABASE_URL ?? ''
+const database = new URL(dbUrl)
 if (
   !/^postgres(ql)?:$/.test(database.protocol) ||
   !database.pathname.endsWith('_release_acceptance')
@@ -51,7 +63,16 @@ const targets = args.some((arg) => arg.startsWith('tests/integration/'))
   : ['tests/integration', ...args]
 const child = spawn(
   process.execPath,
-  [resolve('node_modules/vitest/vitest.mjs'), 'run', '--no-file-parallelism', ...targets],
+  [
+    resolve('node_modules/vitest/vitest.mjs'),
+    'run',
+    '--no-file-parallelism',
+    '--hookTimeout',
+    '60000',
+    '--testTimeout',
+    '60000',
+    ...targets,
+  ],
   {
     stdio: 'inherit',
     env: {

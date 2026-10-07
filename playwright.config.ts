@@ -14,7 +14,7 @@ const runtimeEnv = Object.fromEntries(
 const e2eEnv = {
   ...runtimeEnv,
   // Allows destructive browser fixtures to run against a dedicated disposable database.
-  DATABASE_URL: process.env.E2E_DATABASE_URL ?? runtimeEnv.DATABASE_URL,
+  DATABASE_URL: process.env.E2E_DATABASE_URL ?? process.env.DATABASE_URL ?? runtimeEnv.DATABASE_URL,
   // Use `localhost` (not the 127.0.0.1 literal) so browser WebAuthn accepts the
   // origin: an IP address is an invalid RP ID, but `localhost` is allowed. It
   // resolves to the same loopback address, so non-passkey specs are unaffected.
@@ -22,9 +22,12 @@ const e2eEnv = {
   PORT: '3110',
   HOSTNAME: 'localhost',
   LOCAL_E2E_TEST_MODE: 'true',
+  NEXT_PUBLIC_LOCAL_E2E_TEST_MODE: 'true',
   RENEGADE_MODULES: 'all',
   RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT: 'true',
   MEDIA_DIR: process.env.E2E_MEDIA_DIR ?? path.resolve('media'),
+  AI_CREDENTIAL_KEY_BASE64URL:
+    process.env.AI_CREDENTIAL_KEY_BASE64URL ?? Buffer.alloc(32, 9).toString('base64url'),
 }
 
 Object.assign(process.env, e2eEnv)

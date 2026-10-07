@@ -38,7 +38,7 @@ export async function GET(request: Request, { params }: Args) {
     const releaseSite = String(
       typeof (release as any).site === 'object' && (release as any).site
         ? ((release as any).site as any).id
-        : (release as any).site ?? '',
+        : ((release as any).site ?? ''),
     )
     if (!releaseSite || (!grant.isGlobalOwner && !grant.authorizedSiteIds.includes(releaseSite))) {
       return NextResponse.json(
@@ -72,7 +72,7 @@ export async function POST(request: Request, { params }: Args) {
     const releaseSite = String(
       typeof (release as any).site === 'object' && (release as any).site
         ? ((release as any).site as any).id
-        : (release as any).site ?? '',
+        : ((release as any).site ?? ''),
     )
     if (!releaseSite || (!grant.isGlobalOwner && !grant.authorizedSiteIds.includes(releaseSite))) {
       return NextResponse.json(

@@ -347,6 +347,5 @@ test('AI: operator connects a tested local adapter and editors review four workf
     await expect(activeConnection).toContainText('disabled')
   } finally {
     server.close()
-    await payload.db.destroy?.()
   }
 })

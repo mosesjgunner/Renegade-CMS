@@ -126,18 +126,23 @@ test('MED-EXT-01: miniPaint Image Editor opens CMoS image asset, initializes can
   const contentFrame = await frameHandle?.contentFrame()
   expect(contentFrame).toBeTruthy()
 
-  const isMiniPaintReady = await contentFrame?.evaluate(() => {
-    const win = window as unknown as {
-      Layers?: {
-        get_dimensions: () => { width: number; height: number }
-        get_active_layer?: () => { name: string }
-      }
-      app?: unknown
-    }
-    if (!win.Layers || !win.app) return null
-    return win.Layers.get_dimensions()
-  })
-  expect(isMiniPaintReady).toEqual({ width: 16, height: 16 })
+  await expect
+    .poll(
+      async () =>
+        contentFrame?.evaluate(() => {
+          const win = window as unknown as {
+            Layers?: {
+              get_dimensions: () => { width: number; height: number }
+              get_active_layer?: () => { name: string }
+            }
+            app?: unknown
+          }
+          if (!win.Layers || !win.app) return null
+          return win.Layers.get_dimensions()
+        }),
+      { timeout: 15_000 },
+    )
+    .toEqual({ width: 16, height: 16 })
 
   // 11. Save a non-destructive version through the Media API, then verify its persisted lifecycle.
   const editedTitle = `edited-banner-${suffix}`

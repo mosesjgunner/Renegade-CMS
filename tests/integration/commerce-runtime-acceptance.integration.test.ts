@@ -704,12 +704,10 @@ describe('RC08D-04: Commerce Runtime Closure & Acceptance Verification', () => {
     expect(
       isSafeAffiliateDestinationUrl('https://evil.attacker.com/malware', ['partner.com']),
     ).toBe(false)
-    expect(
-      isSafeAffiliateDestinationUrl('javascript:alert(1)', ['partner.com']),
-    ).toBe(false)
-    expect(
-      isSafeAffiliateDestinationUrl('https://partner.com/product/123', ['partner.com']),
-    ).toBe(true)
+    expect(isSafeAffiliateDestinationUrl('javascript:alert(1)', ['partner.com'])).toBe(false)
+    expect(isSafeAffiliateDestinationUrl('https://partner.com/product/123', ['partner.com'])).toBe(
+      true,
+    )
 
     // Disclosure validation: requires disclosure text when marked required
     const invalidOfferIssues = validateAffiliateOffer({

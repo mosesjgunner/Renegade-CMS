@@ -9,7 +9,10 @@ import {
   StaffEnrollmentError,
   hashValue,
 } from '../../src/modules/operations/staff-enrollment'
-import { resolveOperatorGrantContext, checkOperatorSiteAccess } from '../../src/modules/operations/operator-grants'
+import {
+  resolveOperatorGrantContext,
+  checkOperatorSiteAccess,
+} from '../../src/modules/operations/operator-grants'
 
 describe('RC08D-02: Staff Enrollment and Canonical Site Grants', () => {
   const secret = 'test-secret-key-12345678901234567890'
@@ -86,7 +89,7 @@ describe('RC08D-02: Staff Enrollment and Canonical Site Grants', () => {
             }
             return { rows: [], rowCount: 0 }
           }
-          if (text.includes('WHERE purpose = \'passkey-registration\' AND email_hash = $1')) {
+          if (text.includes("WHERE purpose = 'passkey-registration' AND email_hash = $1")) {
             const emailHash = values?.[0] as string
             for (const t of Object.values(identityTokens)) {
               if (t.emailHash === emailHash && !t.consumed_at) {
@@ -106,7 +109,9 @@ describe('RC08D-02: Staff Enrollment and Canonical Site Grants', () => {
             }
             return { rows: [], rowCount: 1 }
           }
-          if (text.includes('WHERE purpose = \'passkey-registration\' AND (metadata->>\'userId\') = $1')) {
+          if (
+            text.includes("WHERE purpose = 'passkey-registration' AND (metadata->>'userId') = $1")
+          ) {
             const userId = values?.[0] as string
             for (const t of Object.values(identityTokens)) {
               if (t.metadata?.userId === userId && !t.consumed_at) {
@@ -141,9 +146,20 @@ describe('RC08D-02: Staff Enrollment and Canonical Site Grants', () => {
           return { rows: matches }
         }
         if (text.includes('INSERT INTO passkeys')) {
-          const [userId, credId, pubKey, counter, devType, backedUp, name, transports] = values as any[]
+          const [userId, credId, pubKey, counter, devType, backedUp, name, transports] =
+            values as any[]
           const id = `pk-${Date.now()}`
-          passkeys[id] = { id, user_id: userId, credential_id: credId, public_key: pubKey, counter, device_type: devType, backed_up: backedUp, name, transports }
+          passkeys[id] = {
+            id,
+            user_id: userId,
+            credential_id: credId,
+            public_key: pubKey,
+            counter,
+            device_type: devType,
+            backed_up: backedUp,
+            name,
+            transports,
+          }
           return { rows: [{ id }], rowCount: 1 }
         }
         if (text.includes('INSERT INTO admin_auth_audit_events')) {
@@ -184,7 +200,8 @@ describe('RC08D-02: Staff Enrollment and Canonical Site Grants', () => {
           if (memberId) matches = matches.filter((r) => r.member === memberId)
           for (const cond of andConditions) {
             if (cond.site?.equals) matches = matches.filter((r) => r.site === cond.site.equals)
-            if (cond.member?.equals) matches = matches.filter((r) => r.member === cond.member.equals)
+            if (cond.member?.equals)
+              matches = matches.filter((r) => r.member === cond.member.equals)
           }
           return { docs: matches }
         }
@@ -192,8 +209,10 @@ describe('RC08D-02: Staff Enrollment and Canonical Site Grants', () => {
           const and = where?.and || []
           let matches = Object.values(identityTokens)
           for (const cond of and) {
-            if (cond.purpose?.equals) matches = matches.filter((t) => t.purpose === cond.purpose.equals)
-            if (cond.tokenHash?.equals) matches = matches.filter((t) => t.tokenHash === cond.tokenHash.equals)
+            if (cond.purpose?.equals)
+              matches = matches.filter((t) => t.purpose === cond.purpose.equals)
+            if (cond.tokenHash?.equals)
+              matches = matches.filter((t) => t.tokenHash === cond.tokenHash.equals)
           }
           return { docs: matches }
         }
@@ -217,7 +236,8 @@ describe('RC08D-02: Staff Enrollment and Canonical Site Grants', () => {
       update: async ({ collection, id, data }: any) => {
         if (collection === 'users' && users[id]) Object.assign(users[id], data)
         if (collection === 'members' && members[id]) Object.assign(members[id], data)
-        if (collection === 'identity-tokens' && identityTokens[id]) Object.assign(identityTokens[id], data)
+        if (collection === 'identity-tokens' && identityTokens[id])
+          Object.assign(identityTokens[id], data)
         return { id, ...data }
       },
       auth: async ({ headers }: any) => {
@@ -228,7 +248,17 @@ describe('RC08D-02: Staff Enrollment and Canonical Site Grants', () => {
       },
     }
 
-    return { payload, users, members, sites, memberSiteRoles, identityTokens, passkeys, adminSessions, auditEvents }
+    return {
+      payload,
+      users,
+      members,
+      sites,
+      memberSiteRoles,
+      identityTokens,
+      passkeys,
+      adminSessions,
+      auditEvents,
+    }
   }
 
   describe('1. Create and Invite Staff with Bounded Authority', () => {
@@ -243,17 +273,23 @@ describe('RC08D-02: Staff Enrollment and Canonical Site Grants', () => {
       })
 
       expect(result.enrollmentToken).toBeTruthy()
-      expect(result.enrollmentUrl).toBe(`http://localhost:3000/enroll?token=${result.enrollmentToken}`)
+      expect(result.enrollmentUrl).toBe(
+        `http://localhost:3000/enroll?token=${result.enrollmentToken}`,
+      )
       expect(result.user.email).toBe('staff-editor@renegadeparty.test')
       expect(result.user.role).toBe('staff')
       expect(result.siteId).toBe('site-alpha')
 
       // Verifies canonical Member linkage
-      const staffUser = Object.values(users).find((u) => u.email === 'staff-editor@renegadeparty.test')
+      const staffUser = Object.values(users).find(
+        (u) => u.email === 'staff-editor@renegadeparty.test',
+      )
       expect(staffUser).toBeDefined()
       expect(staffUser?.member).toBeDefined()
 
-      const staffMember = Object.values(members).find((m) => m.email === 'staff-editor@renegadeparty.test')
+      const staffMember = Object.values(members).find(
+        (m) => m.email === 'staff-editor@renegadeparty.test',
+      )
       expect(staffMember).toBeDefined()
       expect(staffUser?.member).toBe(staffMember?.id)
 
@@ -304,7 +340,12 @@ describe('RC08D-02: Staff Enrollment and Canonical Site Grants', () => {
         siteId: 'site-alpha',
       })
 
-      const details = await getStaffEnrollmentDetails(payload, config, created.enrollmentToken, 'site-alpha')
+      const details = await getStaffEnrollmentDetails(
+        payload,
+        config,
+        created.enrollmentToken,
+        'site-alpha',
+      )
       expect(details.valid).toBe(true)
       expect(details.email).toBe('editor@renegadeparty.test')
       expect(details.role).toBe('staff')

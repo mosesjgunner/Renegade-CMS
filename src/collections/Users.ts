@@ -53,38 +53,48 @@ export function createUsersCollection(
           }
         },
       ],
-      afterChange: [
-        async ({ doc, req, operation }) => {
-          if (operation === 'create' && doc?.id && doc?.email) {
+      beforeChange: [
+        async ({ data, req, operation }) => {
+          if (operation === 'create' && data?.email && !data.member) {
             try {
               const existingMembers = await req.payload.find({
                 collection: 'members',
-                where: { email: { equals: doc.email } },
+                where: { email: { equals: data.email } },
                 depth: 0,
                 limit: 1,
                 overrideAccess: true,
+                req,
               })
               let memberId = existingMembers.docs[0]?.id
               if (!memberId) {
                 const created = await req.payload.create({
                   collection: 'members',
                   data: {
-                    email: doc.email,
-                    displayName: doc.email.split('@')[0],
+                    email: data.email,
+                    displayName: String(data.email).split('@')[0],
                     status: 'active',
                   },
                   overrideAccess: true,
+                  req,
                 })
                 memberId = created.id
               }
-              if (!doc.member) {
-                await req.payload.update({
-                  collection: 'users',
-                  id: doc.id,
-                  data: { member: memberId },
-                  overrideAccess: true,
-                })
-              }
+              data.member = memberId
+            } catch {
+              // Best-effort non-blocking member linkage
+            }
+          }
+          return data
+        },
+      ],
+      afterChange: [
+        async ({ doc, req, operation }) => {
+          if (operation === 'create' && doc?.id && doc?.email) {
+            try {
+              const memberId =
+                typeof doc.member === 'object' && doc.member
+                  ? (doc.member as { id?: string }).id
+                  : doc.member
               const explicitSiteId =
                 req.context?.siteId ||
                 (doc as Record<string, unknown>).site ||
@@ -94,6 +104,7 @@ export function createUsersCollection(
                 depth: 0,
                 limit: 10,
                 overrideAccess: true,
+                req,
               })
               const targetSites = explicitSiteId
                 ? sites.docs.filter((s) => String(s.id) === String(explicitSiteId))
@@ -103,41 +114,51 @@ export function createUsersCollection(
                     ? sites.docs
                     : []
 
-              for (const site of targetSites) {
-                const existingRoles = await req.payload.find({
-                  collection: 'member-site-roles',
-                  where: {
-                    and: [{ site: { equals: site.id } }, { member: { equals: memberId } }],
-                  },
-                  depth: 0,
-                  limit: 1,
-                  overrideAccess: true,
-                })
-                if (!existingRoles.docs.length) {
-                  await req.payload.create({
+              if (memberId) {
+                for (const site of targetSites) {
+                  const existingRoles = await req.payload.find({
                     collection: 'member-site-roles',
-                    data: {
-                      site: site.id,
-                      member: memberId,
-                      role: doc.role === 'staff' ? 'contributor' : 'community-manager',
-                      grantedByUserId: req.user?.id,
+                    where: {
+                      and: [{ site: { equals: site.id } }, { member: { equals: memberId } }],
                     },
+                    depth: 0,
+                    limit: 1,
                     overrideAccess: true,
+                    req,
                   })
+                  if (!existingRoles.docs.length) {
+                    await req.payload.create({
+                      collection: 'member-site-roles',
+                      data: {
+                        site: site.id,
+                        member: memberId,
+                        role: doc.role === 'staff' ? 'contributor' : 'community-manager',
+                        grantedByUserId: req.user?.id,
+                      },
+                      overrideAccess: true,
+                      req,
+                    })
+                  }
                 }
               }
 
-              if (doc.role === 'staff' || doc.role === 'administrator') {
+              if (
+                !req.context?.skipEnrollmentToken &&
+                !req.context?.seeding &&
+                (doc.role === 'staff' || doc.role === 'administrator')
+              ) {
                 try {
-                  const enrollment = await createStaffEnrollmentToken(
-                    req.payload,
-                    loadConfig(),
-                    {
-                      email: doc.email,
-                      role: doc.role,
-                      invitedByUserId: req.user?.id,
-                    },
-                  )
+                  const enrollment = await createStaffEnrollmentToken(req.payload, loadConfig(), {
+                    email: doc.email,
+                    role: doc.role,
+                    invitedByUserId: req.user?.id,
+                    userId: doc.id,
+                    memberId:
+                      typeof doc.member === 'object' && doc.member
+                        ? (doc.member as { id?: string }).id
+                        : doc.member,
+                    req,
+                  })
                   if (req.context) {
                     req.context.enrollmentToken = enrollment.enrollmentToken
                     req.context.enrollmentUrl = enrollment.enrollmentUrl

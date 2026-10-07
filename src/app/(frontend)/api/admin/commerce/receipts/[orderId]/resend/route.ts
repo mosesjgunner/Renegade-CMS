@@ -9,15 +9,13 @@ export async function POST(request: Request, { params }: { params: Promise<{ ord
   const payload = await getPayload({ config })
   const auth = await payload.auth({ headers: request.headers })
   const grant = await resolveOperatorGrantContext(payload, auth?.user)
-  if (!grant.authorized)
-    return NextResponse.json({ error: 'Unauthorized.' }, { status: 403 })
+  if (!grant.authorized) return NextResponse.json({ error: 'Unauthorized.' }, { status: 403 })
 
   const orderId = (await params).orderId
   const order: any = await payload
     .findByID({ collection: 'orders', id: orderId, depth: 0, overrideAccess: true })
     .catch(() => null)
-  if (!order)
-    return NextResponse.json({ error: 'Order not found.' }, { status: 404 })
+  if (!order) return NextResponse.json({ error: 'Order not found.' }, { status: 404 })
 
   const orderSite = String(order.site?.id ?? order.site ?? '')
   if (!orderSite || (!grant.isGlobalOwner && !grant.authorizedSiteIds.includes(orderSite))) {

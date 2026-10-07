@@ -754,7 +754,9 @@ export async function finalizeVerifiedOrder(
     })
     if (prior.docs.length) continue
     if (!supporter) {
-      const email = String(order.customerEmail ?? '').trim().toLowerCase()
+      const email = String(order.customerEmail ?? '')
+        .trim()
+        .toLowerCase()
       const emailHash = email ? createHash('sha256').update(email).digest('hex') : null
       const supporterWhere: any = memberId
         ? { member: { equals: memberId } }

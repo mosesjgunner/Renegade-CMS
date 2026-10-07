@@ -50,12 +50,15 @@ export async function POST(request: Request) {
 
     const userRoleStr = String(auth.user.role)
     const actorRole: EditorialRole =
-      userRoleStr === 'staff'
-        ? 'editor'
-        : ['submit', 'withdraw', 'save-draft'].includes(body.action)
+      auth.user.role === 'owner' && body.role
+        ? body.role
+        : userRoleStr === 'staff'
           ? 'editor'
-          : 'publisher'
-    const actorId = String(auth.user.id)
+          : ['submit', 'withdraw', 'save-draft'].includes(body.action)
+            ? 'editor'
+            : 'publisher'
+    const actorId =
+      auth.user.role === 'owner' && body.reviewerId ? body.reviewerId : String(auth.user.id)
 
     const item = await executeWorkflowAction(payload, {
       articleId: body.articleId,

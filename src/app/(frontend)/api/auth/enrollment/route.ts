@@ -24,8 +24,7 @@ export async function GET(request: Request) {
           ? 410
           : 400
         : 500
-    const message =
-      error instanceof Error ? error.message : 'Enrollment invitation is unavailable.'
+    const message = error instanceof Error ? error.message : 'Enrollment invitation is unavailable.'
     const code = error instanceof StaffEnrollmentError ? error.code : 'UNKNOWN_ERROR'
     return Response.json({ error: message, code }, { status })
   }

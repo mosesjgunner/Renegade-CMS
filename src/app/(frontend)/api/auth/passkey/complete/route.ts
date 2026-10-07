@@ -57,8 +57,7 @@ export async function POST(request: Request) {
           : 500
     return Response.json(
       {
-        error:
-          error instanceof Error ? error.message : 'Passkey sign-in is unavailable.',
+        error: error instanceof Error ? error.message : 'Passkey sign-in is unavailable.',
       },
       { status },
     )

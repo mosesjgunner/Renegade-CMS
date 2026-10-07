@@ -61,8 +61,7 @@ export async function POST(request: Request) {
           ? 410
           : 400
         : 500
-    const message =
-      error instanceof Error ? error.message : 'Passkey enrollment is unavailable.'
+    const message = error instanceof Error ? error.message : 'Passkey enrollment is unavailable.'
     const code = error instanceof StaffEnrollmentError ? error.code : 'UNKNOWN_ERROR'
     return Response.json({ error: message, code }, { status })
   }

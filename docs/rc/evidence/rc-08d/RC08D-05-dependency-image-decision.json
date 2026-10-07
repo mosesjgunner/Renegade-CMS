@@ -3,6 +3,9 @@
   "status": "PASS",
   "evaluatedAt": "2026-10-07T16:15:00.000Z",
   "baseSha": "d3a37e1d150cdf273b63afa8dc14b3d14296987a",
+  "resultSha": "7f0ef9f2defebf6443f407487a97f64248b5348f",
+  "productionImageDigest": "sha256:10cc1d482ad1ff75aa566b3539b8801e85bf21ddd723c4fe8361c692e5223a8e",
+  "productionImageTag": "renegade-cms:security-check",
   "graphResolution": {
     "command": "npm ls --all",
     "exitCode": 0,
