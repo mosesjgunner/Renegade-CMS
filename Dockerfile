@@ -1,7 +1,14 @@
 FROM node:24-alpine AS dependencies
 WORKDIR /app
 COPY package.json package-lock.json ./
+COPY scripts ./scripts
 RUN npm ci
+
+FROM node:24-alpine AS production-dependencies
+WORKDIR /app
+COPY package.json package-lock.json ./
+COPY scripts ./scripts
+RUN npm ci --omit=dev
 
 FROM node:24-alpine AS builder
 ARG BUILD_SHA
@@ -22,12 +29,13 @@ ENV APP_VERSION=$APP_VERSION BUILD_SHA=$BUILD_SHA
 RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 nextjs
 RUN mkdir -p /app/media /tmp/renegade-worker && chown -R nextjs:nodejs /app /tmp/renegade-worker
 # The web server uses Next's standalone output. Payload's migration and worker
-# CLIs also require the application source and their runtime dependencies; they
-# are deliberately included instead of assuming standalone contains them.
+# CLIs require runtime dependencies (including tsx for the worker), but NOT
+# build or test harnesses (such as vitest, tinypool, eslint, playwright).
+# Production node_modules are isolated via a dedicated --omit=dev stage.
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./standalone
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./standalone/.next/static
 COPY --from=builder --chown=nextjs:nodejs /app/public ./standalone/public
-COPY --from=builder --chown=nextjs:nodejs /app/node_modules ./node_modules
+COPY --from=production-dependencies --chown=nextjs:nodejs /app/node_modules ./node_modules
 COPY --from=builder --chown=nextjs:nodejs /app/package.json /app/package-lock.json ./
 COPY --from=builder --chown=nextjs:nodejs /app/build-provenance.json ./
 COPY --from=builder --chown=nextjs:nodejs /app/next.config.ts /app/tsconfig.json ./

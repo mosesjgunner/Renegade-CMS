@@ -1,69 +1,297 @@
 {
   "gate": "RC08D-05",
   "status": "PASS",
-  "evaluatedAt": "2026-10-06T21:10:00.000Z",
+  "evaluatedAt": "2026-10-07T16:15:00.000Z",
+  "baseSha": "d3a37e1d150cdf273b63afa8dc14b3d14296987a",
   "graphResolution": {
     "command": "npm ls --all",
     "exitCode": 0,
     "issues": [],
     "yamlPeerConflictResolved": true,
-    "yamlVersion": "^2.7.0"
+    "yamlVersion": "^2.9.1",
+    "debugResolution": "^4.4.3"
   },
-  "auditAdjudication": {
-    "totalPackageEntries": 23,
-    "uniqueAdvisoryIds": 10,
-    "criticalAdvisories": [
-      {
-        "id": "GHSA-g7vv-2v7x-gj9p",
-        "package": "tinypool",
-        "severity": "critical",
-        "importer": "vitest",
-        "environment": "devDependencies",
-        "reachableInProduction": false,
-        "attackerPrerequisites": "Local code execution in test runner process",
-        "disposition": "ACCEPTED_DEV_ONLY",
-        "rationale": "Tinypool is a test thread pool runner exclusively invoked during 'npm run test'. It is not packaged into standalone web runner and not loaded by production server or jobs worker."
-      },
-      {
-        "id": "GHSA-4v7x-pq99-4859",
-        "package": "tinypool",
-        "severity": "critical",
-        "importer": "vitest",
-        "environment": "devDependencies",
-        "reachableInProduction": false,
-        "attackerPrerequisites": "Local code execution in test runner process",
-        "disposition": "ACCEPTED_DEV_ONLY",
-        "rationale": "Same as above; devDependency of vitest."
-      }
-    ],
-    "highAdvisories": [
-      {
-        "id": "GHSA-c2qf-rxjj-qqgw",
-        "package": "cross-spawn",
-        "severity": "high",
-        "importer": "various build/test tools",
-        "environment": "devDependencies",
-        "reachableInProduction": false,
-        "disposition": "ACCEPTED_DEV_ONLY"
-      },
-      {
-        "id": "GHSA-952p-652h-hmxs",
-        "package": "micromatch",
-        "severity": "high",
-        "importer": "build/test tools",
-        "environment": "devDependencies",
-        "reachableInProduction": false,
-        "disposition": "ACCEPTED_DEV_ONLY"
-      }
-    ]
-  },
-  "imageCompositionDecision": {
-    "runnerArchitecture": {
-      "standalonePath": "/app/standalone",
-      "serverEntrypoint": "node standalone/server.js",
-      "workerEntrypoint": "node -e 'import(\"./standalone/server.js\")' / tsx src/scripts/run-jobs-worker.ts",
-      "isolation": "Production HTTP requests are routed strictly through Next.js standalone server with traced node_modules. DevDependencies such as vitest/tinypool are never imported."
+  "auditSummary": {
+    "before": {
+      "total": 24,
+      "critical": 3,
+      "high": 9,
+      "moderate": 12,
+      "low": 0,
+      "info": 0
     },
-    "verdict": "ACCEPTED_PRODUCTION_POSTURE"
-  }
+    "after": {
+      "total": 16,
+      "critical": 0,
+      "high": 9,
+      "moderate": 7,
+      "low": 0,
+      "info": 0
+    },
+    "productionImage": {
+      "total": 10,
+      "critical": 0,
+      "high": 5,
+      "moderate": 5,
+      "low": 0,
+      "info": 0
+    }
+  },
+  "imageChanges": [
+    "Added multi-stage production-dependencies target running 'npm ci --omit=dev' to isolate runtime dependencies from build/test harnesses.",
+    "Hardened runner stage: /app/node_modules now receives strictly production dependencies from production-dependencies stage, completely eliminating vitest, tinypool, eslint, prettier, and playwright test frameworks from the runtime container.",
+    "Preserved native binary support for Sharp (0.35.5) with musl libc prebuilds for Alpine Linux, verified with live PNG generation in container.",
+    "Traced Next.js standalone output (.next/standalone, .next/static, public) remains primary web server boundary with zero dev tooling loaded.",
+    "Moved tsx to production dependencies to ensure background worker and operational CLIs run predictably in production container without devDependencies."
+  ],
+  "advisories": [
+    {
+      "id": "GHSA-vc4h-q48j-5hcx",
+      "package": "payload",
+      "severity": "critical",
+      "installedPath": "node_modules/payload",
+      "directOrTransitive": "direct",
+      "runtimeOrBuildOrTestOrDev": "runtime",
+      "vulnerableCondition": "API key disclosure through ordinary document reads",
+      "productionReachability": "Reachable in vulnerable version (<3.90.0)",
+      "patchedVersion": "3.90.2",
+      "compatibilityConstraint": "Requires coordinated upgrade of @payloadcms/* packages to 3.90.2",
+      "disposition": "FIXED"
+    },
+    {
+      "id": "GHSA-5gmw-xhrv-c9v3",
+      "package": "tinypool",
+      "severity": "critical",
+      "installedPath": "node_modules/vitest/node_modules/tinypool",
+      "directOrTransitive": "transitive",
+      "runtimeOrBuildOrTestOrDev": "test",
+      "vulnerableCondition": "Prototype pollution gadget in worker options leads to RCE",
+      "productionReachability": "Zero; devDependency test runner only, never imported in production web or worker",
+      "patchedVersion": "2.2.0",
+      "compatibilityConstraint": "Overridden via package.json overrides; verified passing 178 test files and 1193 tests",
+      "disposition": "FIXED"
+    },
+    {
+      "id": "GHSA-85c8-ppgw-ccpr",
+      "package": "tinypool",
+      "severity": "critical",
+      "installedPath": "node_modules/vitest/node_modules/tinypool",
+      "directOrTransitive": "transitive",
+      "runtimeOrBuildOrTestOrDev": "test",
+      "vulnerableCondition": "Prototype pollution gadget to RCE in run() options",
+      "productionReachability": "Zero; devDependency test runner only, never imported in production web or worker",
+      "patchedVersion": "2.2.0",
+      "compatibilityConstraint": "Overridden via package.json overrides",
+      "disposition": "FIXED"
+    },
+    {
+      "id": "GHSA-fx49-4h83-wjv9",
+      "package": "payload",
+      "severity": "high",
+      "installedPath": "node_modules/payload",
+      "directOrTransitive": "direct",
+      "runtimeOrBuildOrTestOrDev": "runtime",
+      "vulnerableCondition": "Relationship-query authorization bypass",
+      "productionReachability": "Reachable in vulnerable version (<3.90.0)",
+      "patchedVersion": "3.90.2",
+      "compatibilityConstraint": "Requires coordinated upgrade of @payloadcms/* packages to 3.90.2",
+      "disposition": "FIXED"
+    },
+    {
+      "id": "GHSA-2g7p-5934-q4w7",
+      "package": "payload",
+      "severity": "high",
+      "installedPath": "node_modules/payload",
+      "directOrTransitive": "direct",
+      "runtimeOrBuildOrTestOrDev": "runtime",
+      "vulnerableCondition": "Token refresh and password reset responses may expose restricted user fields",
+      "productionReachability": "Reachable in vulnerable version (<3.90.0)",
+      "patchedVersion": "3.90.2",
+      "compatibilityConstraint": "Requires coordinated upgrade of @payloadcms/* packages to 3.90.2",
+      "disposition": "FIXED"
+    },
+    {
+      "id": "GHSA-238x-w2j9-gwwr",
+      "package": "payload",
+      "severity": "high",
+      "installedPath": "node_modules/payload",
+      "directOrTransitive": "direct",
+      "runtimeOrBuildOrTestOrDev": "runtime",
+      "vulnerableCondition": "Field access control bypass on auth collections",
+      "productionReachability": "Reachable in vulnerable version (<3.90.0)",
+      "patchedVersion": "3.90.2",
+      "compatibilityConstraint": "Requires coordinated upgrade of @payloadcms/* packages to 3.90.2",
+      "disposition": "FIXED"
+    },
+    {
+      "id": "GHSA-xgv3-crq2-6f69",
+      "package": "payload",
+      "severity": "high",
+      "installedPath": "node_modules/payload",
+      "directOrTransitive": "direct",
+      "runtimeOrBuildOrTestOrDev": "runtime",
+      "vulnerableCondition": "Polymorphic join queries could disclose hidden fields",
+      "productionReachability": "Reachable in vulnerable version (<3.90.0)",
+      "patchedVersion": "3.90.2",
+      "compatibilityConstraint": "Requires coordinated upgrade of @payloadcms/* packages to 3.90.2",
+      "disposition": "FIXED"
+    },
+    {
+      "id": "GHSA-fpww-c55p-cjv6",
+      "package": "payload",
+      "severity": "high",
+      "installedPath": "node_modules/payload",
+      "directOrTransitive": "direct",
+      "runtimeOrBuildOrTestOrDev": "runtime",
+      "vulnerableCondition": "Field-level password update restrictions not enforced",
+      "productionReachability": "Reachable in vulnerable version (<3.90.0)",
+      "patchedVersion": "3.90.2",
+      "compatibilityConstraint": "Requires coordinated upgrade of @payloadcms/* packages to 3.90.2",
+      "disposition": "FIXED"
+    },
+    {
+      "id": "GHSA-qhr7-859c-m2p7",
+      "package": "brace-expansion",
+      "severity": "high",
+      "installedPath": "node_modules/@typescript-eslint/typescript-estree/node_modules/minimatch/node_modules/brace-expansion",
+      "directOrTransitive": "transitive",
+      "runtimeOrBuildOrTestOrDev": "dev",
+      "vulnerableCondition": "DoS via uncontrolled recursion on nested brace groups causing stack exhaustion",
+      "productionReachability": "Zero; devDependency ESLint tooling only, excluded from production image",
+      "patchedVersion": "5.0.12",
+      "compatibilityConstraint": "Overridden via scoped overrides in package.json",
+      "disposition": "FIXED"
+    },
+    {
+      "id": "GHSA-6j4f-fj2g-mc7p",
+      "package": "brace-expansion",
+      "severity": "high",
+      "installedPath": "node_modules/@typescript-eslint/typescript-estree/node_modules/minimatch/node_modules/brace-expansion",
+      "directOrTransitive": "transitive",
+      "runtimeOrBuildOrTestOrDev": "dev",
+      "vulnerableCondition": "DoS via uncontrolled recursion in parseCommaParts causing stack exhaustion",
+      "productionReachability": "Zero; devDependency ESLint tooling only, excluded from production image",
+      "patchedVersion": "5.0.12",
+      "compatibilityConstraint": "Overridden via scoped overrides in package.json",
+      "disposition": "FIXED"
+    },
+    {
+      "id": "GHSA-vfj7-8cjw-p6xm",
+      "package": "braces",
+      "severity": "high",
+      "installedPath": "node_modules/chokidar/node_modules/braces and node_modules/micromatch/node_modules/braces",
+      "directOrTransitive": "transitive",
+      "runtimeOrBuildOrTestOrDev": "build/dev",
+      "vulnerableCondition": "Stack exhaustion denial of service through deeply nested patterns passed to braces.expand()",
+      "productionReachability": "Zero; braces is used by sass/chokidar for local file watching and fast-glob for eslint file matching. In production, Next.js serves precompiled standalone bundles and does not watch files or perform runtime glob expansions on user input.",
+      "patchedVersion": "None (upstream range <=3.0.3 has no patch published)",
+      "compatibilityConstraint": "Upstream micromatch and chokidar require braces@^3.0.3",
+      "disposition": "UPSTREAM / NO PATCH WITH COMPENSATING CONTROL"
+    },
+    {
+      "id": "GHSA-82fw-gwwq-j7x9",
+      "package": "@vitest/mocker",
+      "severity": "moderate",
+      "installedPath": "node_modules/vitest/node_modules/@vitest/mocker",
+      "directOrTransitive": "transitive",
+      "runtimeOrBuildOrTestOrDev": "test",
+      "vulnerableCondition": "Path traversal / arbitrary file read via redirect mock in test files",
+      "productionReachability": "Zero; purely local test framework harness, never included in standalone build and excluded from production runner image via --omit=dev stage",
+      "patchedVersion": "4.1.11",
+      "compatibilityConstraint": "Vitest 4/5 requires major test suite refactoring; excluded entirely from production container",
+      "disposition": "NOT PRESENT IN PRODUCTION IMAGE"
+    },
+    {
+      "id": "GHSA-67mh-4wv8-2f99",
+      "package": "esbuild",
+      "severity": "moderate",
+      "installedPath": "node_modules/@esbuild-kit/core-utils/node_modules/esbuild",
+      "directOrTransitive": "transitive",
+      "runtimeOrBuildOrTestOrDev": "dev/cli",
+      "vulnerableCondition": "esbuild development server allows local web requests to read responses",
+      "productionReachability": "Zero; drizzle-kit uses esbuild strictly as a programmatic transform/loader library (transformSync). esbuild --serve is never started. In production, drizzle-kit is not imported; migrations run via Payload's SQL runner.",
+      "patchedVersion": "0.25.0",
+      "compatibilityConstraint": "drizzle-kit 0.31.7 is pinned by @payloadcms/db-postgres@3.90.2; dev server mode never enabled",
+      "disposition": "UPSTREAM / NO PATCH WITH COMPENSATING CONTROL"
+    },
+    {
+      "id": "GHSA-q2hr-2g5m-vwhr",
+      "package": "brace-expansion",
+      "severity": "moderate",
+      "installedPath": "node_modules/eslint/node_modules/minimatch/node_modules/brace-expansion",
+      "directOrTransitive": "transitive",
+      "runtimeOrBuildOrTestOrDev": "dev",
+      "vulnerableCondition": "Quadratic-time expansion causes CPU denial of service",
+      "productionReachability": "Zero; ESLint devDependency only, excluded from production image",
+      "patchedVersion": "1.1.21",
+      "compatibilityConstraint": "Overridden via scoped overrides in package.json",
+      "disposition": "FIXED"
+    },
+    {
+      "id": "GHSA-w247-99vg-m257",
+      "package": "yaml",
+      "severity": "moderate",
+      "installedPath": "node_modules/yaml",
+      "directOrTransitive": "direct",
+      "runtimeOrBuildOrTestOrDev": "dev",
+      "vulnerableCondition": "Stack overflow via deeply nested YAML collections",
+      "productionReachability": "Zero; devDependency satisfying Vite 7 peer requirements",
+      "patchedVersion": "2.9.1",
+      "compatibilityConstraint": "Pinned to ^2.9.1 in package.json devDependencies",
+      "disposition": "FIXED"
+    },
+    {
+      "id": "GHSA-jggr-w7fw-pc2j",
+      "package": "fast-copy",
+      "severity": "moderate",
+      "installedPath": "node_modules/payload/node_modules/pino-pretty/node_modules/fast-copy",
+      "directOrTransitive": "transitive",
+      "runtimeOrBuildOrTestOrDev": "runtime",
+      "vulnerableCondition": "Stack exhaustion when copying deeply-nested values",
+      "productionReachability": "Deep nesting during logging serialization",
+      "patchedVersion": "3.1.0",
+      "compatibilityConstraint": "Overridden via package.json overrides",
+      "disposition": "FIXED"
+    },
+    {
+      "id": "GHSA-jg8r-5jh2-v2xj",
+      "package": "payload",
+      "severity": "moderate",
+      "installedPath": "node_modules/payload",
+      "directOrTransitive": "direct",
+      "runtimeOrBuildOrTestOrDev": "runtime",
+      "vulnerableCondition": "Default account-unlock access allows resetting other accounts lockouts",
+      "productionReachability": "Reachable in vulnerable version (<3.90.0)",
+      "patchedVersion": "3.90.2",
+      "compatibilityConstraint": "Upgraded with Payload core",
+      "disposition": "FIXED"
+    },
+    {
+      "id": "GHSA-8g93-h5g9-p7ph",
+      "package": "payload",
+      "severity": "moderate",
+      "installedPath": "node_modules/payload",
+      "directOrTransitive": "direct",
+      "runtimeOrBuildOrTestOrDev": "runtime",
+      "vulnerableCondition": "Password hashes use insufficient PBKDF2 iterations",
+      "productionReachability": "Reachable in vulnerable version (<3.90.0)",
+      "patchedVersion": "3.90.2",
+      "compatibilityConstraint": "Upgraded with Payload core",
+      "disposition": "FIXED"
+    },
+    {
+      "id": "GHSA-8977-m862-2v4j",
+      "package": "payload",
+      "severity": "moderate",
+      "installedPath": "node_modules/payload",
+      "directOrTransitive": "direct",
+      "runtimeOrBuildOrTestOrDev": "runtime",
+      "vulnerableCondition": "ReDoS in Multipart Content-Type Validation",
+      "productionReachability": "Reachable in vulnerable version (<3.90.0)",
+      "patchedVersion": "3.90.2",
+      "compatibilityConstraint": "Upgraded with Payload core",
+      "disposition": "FIXED"
+    }
+  ],
+  "releaseDecision": "PASS"
 }

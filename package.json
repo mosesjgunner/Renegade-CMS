@@ -50,10 +50,10 @@
     "portability": "tsx --env-file=.env src/scripts/portability.ts"
   },
   "dependencies": {
-    "@payloadcms/db-postgres": "3.88.0",
-    "@payloadcms/next": "3.88.0",
-    "@payloadcms/richtext-lexical": "3.88.0",
-    "@payloadcms/ui": "3.88.0",
+    "@payloadcms/db-postgres": "3.90.2",
+    "@payloadcms/next": "3.90.2",
+    "@payloadcms/richtext-lexical": "3.90.2",
+    "@payloadcms/ui": "3.90.2",
     "@puckeditor/core": "^0.23.0",
     "@simplewebauthn/server": "^13.3.3",
     "@types/qrcode": "^1.5.6",
@@ -63,13 +63,14 @@
     "jose": "5.10.0",
     "next": "16.3.8",
     "nodemailer": "10.0.15",
-    "payload": "3.88.0",
+    "payload": "3.90.2",
     "qrcode": "^1.5.4",
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "semver": "^7.8.5",
     "server-only": "0.0.1",
-    "sharp": "0.35.5"
+    "sharp": "0.35.5",
+    "tsx": "4.20.5"
   },
   "devDependencies": {
     "@peculiar/x509": "1.14.3",
@@ -84,10 +85,9 @@
     "postcss": "8.5.29",
     "prettier": "3.6.2",
     "tailwindcss": "4.3.3",
-    "tsx": "4.20.5",
     "typescript": "5.9.2",
     "vitest": "3.2.7",
-    "yaml": "^2.7.0"
+    "yaml": "^2.9.1"
   },
   "overrides": {
     "undici": "^7.30.0",
@@ -95,6 +95,20 @@
     "js-yaml": "^4.3.2",
     "@tiptap/core": "^3.31.4",
     "@tiptap/pm": "^3.31.4",
-    "dompurify": "^3.4.16"
+    "dompurify": "^3.4.16",
+    "fast-copy": "^3.1.0",
+    "@payloadcms/db-postgres": "3.90.2",
+    "@payloadcms/next": "3.90.2",
+    "@payloadcms/richtext-lexical": "3.90.2",
+    "@payloadcms/ui": "3.90.2",
+    "payload": "3.90.2",
+    "@typescript-eslint/typescript-estree": {
+      "brace-expansion": "^5.0.12"
+    },
+    "eslint": {
+      "brace-expansion": "^1.1.21"
+    },
+    "tinypool": "^2.2.0",
+    "debug": "^4.4.3"
   }
 }
