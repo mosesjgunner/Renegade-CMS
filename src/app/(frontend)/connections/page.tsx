@@ -73,26 +73,34 @@ function determineGroup(providerKey: string): ConnectionGroup {
   return 'Security'
 }
 
+import { resolveOperatorGrantContext } from '@/modules/operations/operator-grants'
+
 export default async function ConnectionsPage() {
   const payload = await getPayload({ config: configPromise })
   const incomingHeaders = await headers()
   const auth = await payload.auth({ headers: incomingHeaders }).catch(() => null)
-  const isStaff = ['owner', 'administrator', 'publisher', 'staff'].includes(
-    String(auth?.user?.role),
-  )
-  if (!isStaff) {
+  const grant = await resolveOperatorGrantContext(payload, auth?.user)
+  if (!grant.authorized) {
     redirect('/login')
   }
+
+  const siteFilter = grant.isGlobalOwner
+    ? undefined
+    : grant.authorizedSiteIds.length === 1
+      ? { site: { equals: grant.authorizedSiteIds[0] } }
+      : { site: { in: grant.authorizedSiteIds } }
 
   const connections: OperationalConnection[] = []
   let deliveries: WebhookDeliveryItem[] = []
   let auditEvents: IntegrationAuditItem[] = []
+  const scopedWebhookIds: string[] = []
 
   try {
     // 1. Merchant connections
     try {
       const merchants = await payload.find({
         collection: 'merchant-connections' as never,
+        where: siteFilter,
         limit: 100,
         depth: 0,
         overrideAccess: true,
@@ -138,6 +146,7 @@ export default async function ConnectionsPage() {
     try {
       const socials = await payload.find({
         collection: 'social-accounts' as never,
+        where: siteFilter,
         limit: 100,
         depth: 0,
         overrideAccess: true,
@@ -191,6 +200,7 @@ export default async function ConnectionsPage() {
     try {
       const clients = await payload.find({
         collection: 'api-clients' as never,
+        where: siteFilter,
         limit: 100,
         depth: 0,
         overrideAccess: true,
@@ -238,11 +248,13 @@ export default async function ConnectionsPage() {
     try {
       const webhooks = await payload.find({
         collection: 'webhook-subscriptions' as never,
+        where: siteFilter,
         limit: 100,
         depth: 0,
         overrideAccess: true,
       })
       for (const doc of webhooks.docs as any[]) {
+        scopedWebhookIds.push(String(doc.id))
         const failureCount = Number(doc.failureCount ?? 0)
         const isDeadLetter = failureCount >= 5
         const status = doc.status === 'disabled' ? 'disabled' : isDeadLetter ? 'degraded' : 'active'
@@ -289,6 +301,7 @@ export default async function ConnectionsPage() {
     try {
       const podConnections = await payload.find({
         collection: 'pod-connections' as never,
+        where: siteFilter,
         limit: 100,
         depth: 0,
         overrideAccess: true,
@@ -338,34 +351,41 @@ export default async function ConnectionsPage() {
 
     // 6. Webhook Deliveries
     try {
-      const deliveriesRes = await payload.find({
-        collection: 'webhook-deliveries' as never,
-        limit: 50,
-        sort: '-createdAt',
-        depth: 0,
-        overrideAccess: true,
-      })
-      deliveries = (deliveriesRes.docs as any[]).map((doc) => ({
-        id: String(doc.id),
-        subscriptionId: String(
-          typeof doc.subscription === 'object' && doc.subscription
-            ? doc.subscription.id
-            : doc.subscription,
-        ),
-        eventId: String(doc.eventId),
-        eventType: String(doc.eventType),
-        state: doc.state,
-        attempts: Number(doc.attempts ?? 0),
-        nextAttemptAt: doc.nextAttemptAt ? String(doc.nextAttemptAt) : null,
-        redactedResponse: doc.redactedResponse ?? null,
-        lastError: doc.lastError ?? null,
-        diagnosis: diagnoseWebhookDelivery({
+      if (grant.isGlobalOwner || scopedWebhookIds.length > 0) {
+        const deliveriesWhere = grant.isGlobalOwner
+          ? undefined
+          : { subscription: { in: scopedWebhookIds } }
+
+        const deliveriesRes = await payload.find({
+          collection: 'webhook-deliveries' as never,
+          where: deliveriesWhere,
+          limit: 50,
+          sort: '-createdAt',
+          depth: 0,
+          overrideAccess: true,
+        })
+        deliveries = (deliveriesRes.docs as any[]).map((doc) => ({
+          id: String(doc.id),
+          subscriptionId: String(
+            typeof doc.subscription === 'object' && doc.subscription
+              ? doc.subscription.id
+              : doc.subscription,
+          ),
+          eventId: String(doc.eventId),
+          eventType: String(doc.eventType),
           state: doc.state,
           attempts: Number(doc.attempts ?? 0),
-          redactedResponse: doc.redactedResponse,
-          lastError: doc.lastError,
-        }),
-      }))
+          nextAttemptAt: doc.nextAttemptAt ? String(doc.nextAttemptAt) : null,
+          redactedResponse: doc.redactedResponse ?? null,
+          lastError: doc.lastError ?? null,
+          diagnosis: diagnoseWebhookDelivery({
+            state: doc.state,
+            attempts: Number(doc.attempts ?? 0),
+            redactedResponse: doc.redactedResponse,
+            lastError: doc.lastError,
+          }),
+        }))
+      }
     } catch {
       // module might be disabled in current profile
     }
@@ -374,6 +394,7 @@ export default async function ConnectionsPage() {
     try {
       const auditRes = await payload.find({
         collection: 'integration-audit-events' as never,
+        where: siteFilter,
         limit: 50,
         sort: '-occurredAt',
         depth: 0,
@@ -400,7 +421,7 @@ export default async function ConnectionsPage() {
       deliveries={deliveries}
       auditEvents={auditEvents}
       groupFor={determineGroup}
-      isStaff={isStaff}
+      isStaff={grant.authorized}
     />
   )
 }

@@ -5,14 +5,19 @@ import { getPayload } from 'payload'
 import { publicSiteForHost, samePublicOrigin } from '@/modules/public/site-scope'
 import { withExecutionLock } from '@/modules/operations/execution-lock'
 
+import { resolveOperatorGrantContext } from '@/modules/operations/operator-grants'
+
 type Doc = Record<string, unknown>
 async function scope(request: Request) {
   const payload = await getPayload({ config }),
     { user } = await payload.auth({ headers: request.headers })
   const site = await publicSiteForHost(payload, request.headers.get('host'))
-  return user && ['owner', 'administrator', 'staff'].includes(String(user.role)) && site
-    ? { payload, user, site }
-    : null
+  if (!user || !site) return null
+  const grant = await resolveOperatorGrantContext(payload, user)
+  if (!grant.authorized || (!grant.isGlobalOwner && !grant.authorizedSiteIds.includes(site))) {
+    return null
+  }
+  return { payload, user, site }
 }
 export async function GET(request: Request) {
   const context = await scope(request)

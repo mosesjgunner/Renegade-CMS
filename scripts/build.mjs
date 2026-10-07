@@ -2,6 +2,7 @@ import { execFileSync, spawnSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
 import { cpSync, existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
+import './apply-patches.mjs'
 
 let sourceSha = process.env.BUILD_SHA
 let clean = null

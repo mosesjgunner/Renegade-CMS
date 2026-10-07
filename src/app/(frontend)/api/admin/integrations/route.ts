@@ -20,8 +20,19 @@ import {
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
-const staffOnly = (user: { role?: string } | null | undefined) =>
-  ['owner', 'administrator', 'publisher', 'staff'].includes(String(user?.role))
+import { resolveOperatorGrantContext } from '@/modules/operations/operator-grants'
+import { samePublicOrigin } from '@/modules/public/site-scope'
+
+const ALLOWED_COLLECTIONS = [
+  'merchant-connections',
+  'social-accounts',
+  'pod-connections',
+  'ai-connections',
+  'api-clients',
+  'webhook-subscriptions',
+] as const
+
+type AllowedCollection = (typeof ALLOWED_COLLECTIONS)[number]
 
 const asId = (value: unknown) =>
   String(typeof value === 'object' && value ? (value as { id?: unknown }).id : (value ?? ''))
@@ -30,13 +41,31 @@ export async function GET(request: Request) {
   try {
     const payload = await getPayload({ config: configPromise })
     const auth = await payload.auth({ headers: request.headers })
-    if (!staffOnly(auth.user)) {
+    const grant = await resolveOperatorGrantContext(payload, auth?.user)
+    if (!grant.authorized) {
       return NextResponse.json({ error: 'Unauthorized. Staff role required.' }, { status: 403 })
     }
 
     const { searchParams } = new URL(request.url)
-    const siteId = searchParams.get('siteId') || undefined
-    const siteWhere = siteId ? { site: { equals: siteId } } : undefined
+    const requestedSiteId = searchParams.get('siteId') || undefined
+    if (
+      requestedSiteId &&
+      !grant.isGlobalOwner &&
+      !grant.authorizedSiteIds.includes(requestedSiteId)
+    ) {
+      return NextResponse.json(
+        { error: 'Forbidden. You do not have operator access to this site.' },
+        { status: 403 },
+      )
+    }
+
+    const siteWhere = requestedSiteId
+      ? { site: { equals: requestedSiteId } }
+      : grant.isGlobalOwner
+        ? undefined
+        : grant.authorizedSiteIds.length === 1
+          ? { site: { equals: grant.authorizedSiteIds[0] } }
+          : { site: { in: grant.authorizedSiteIds } }
 
     const [apiClientsRes, webhooksRes, merchantsRes, socialsRes, podRes, aiRes, auditEventsRes] =
       await Promise.all([
@@ -378,8 +407,20 @@ export async function POST(request: Request) {
   try {
     const payload = await getPayload({ config: configPromise })
     const auth = await payload.auth({ headers: request.headers })
-    if (!staffOnly(auth.user)) {
+    const grant = await resolveOperatorGrantContext(payload, auth?.user)
+    if (!grant.authorized) {
       return NextResponse.json({ error: 'Unauthorized. Staff role required.' }, { status: 403 })
+    }
+
+    const origin = request.headers.get('origin')
+    if (origin) {
+      const isSameOrigin = await samePublicOrigin(payload, request, false)
+      if (!isSameOrigin) {
+        return NextResponse.json(
+          { error: 'Forbidden. Cross-origin request rejected.' },
+          { status: 403 },
+        )
+      }
     }
 
     const body = await request.json().catch(() => null)
@@ -387,14 +428,20 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Missing operation action.' }, { status: 400 })
     }
 
-    const defaultSiteId = 'default'
+    const defaultSiteId = grant.authorizedSiteIds[0] || 'default'
 
     switch (body.action) {
       case 'create-client': {
         if (!body.name || typeof body.name !== 'string') {
           return NextResponse.json({ error: 'Client name is required.' }, { status: 422 })
         }
-        const siteId = body.siteId || defaultSiteId
+        const siteId = body.siteId ? String(body.siteId) : defaultSiteId
+        if (!grant.isGlobalOwner && !grant.authorizedSiteIds.includes(siteId)) {
+          return NextResponse.json(
+            { error: 'Forbidden. No operator access to target site.' },
+            { status: 403 },
+          )
+        }
         const scopes: readonly IntegrationScope[] =
           Array.isArray(body.scopes) && body.scopes.length > 0 ? body.scopes : ['content.read']
 
@@ -468,6 +515,14 @@ export async function POST(request: Request) {
           return NextResponse.json({ error: 'API Client not found.' }, { status: 404 })
         }
 
+        const targetSite = asId((existing as any).site)
+        if (targetSite && !grant.isGlobalOwner && !grant.authorizedSiteIds.includes(targetSite)) {
+          return NextResponse.json(
+            { error: 'Forbidden. Object belongs to another site.' },
+            { status: 403 },
+          )
+        }
+
         const rotated = rotateMachineCredential({
           id: String((existing as any).id),
           name: String((existing as any).name),
@@ -530,6 +585,14 @@ export async function POST(request: Request) {
           return NextResponse.json({ error: 'API Client not found.' }, { status: 404 })
         }
 
+        const targetSite = asId((existing as any).site)
+        if (targetSite && !grant.isGlobalOwner && !grant.authorizedSiteIds.includes(targetSite)) {
+          return NextResponse.json(
+            { error: 'Forbidden. Object belongs to another site.' },
+            { status: 403 },
+          )
+        }
+
         await payload.update({
           collection: 'api-clients' as never,
           id: body.clientId,
@@ -569,7 +632,13 @@ export async function POST(request: Request) {
             { status: 422 },
           )
         }
-        const siteId = body.siteId || defaultSiteId
+        const siteId = body.siteId ? String(body.siteId) : defaultSiteId
+        if (!grant.isGlobalOwner && !grant.authorizedSiteIds.includes(siteId)) {
+          return NextResponse.json(
+            { error: 'Forbidden. No operator access to target site.' },
+            { status: 403 },
+          )
+        }
         const secret = await resolveWebhookSecret(String(body.secretRef))
         if (!secret) {
           return NextResponse.json(
@@ -641,6 +710,14 @@ export async function POST(request: Request) {
         if (!sub)
           return NextResponse.json({ error: 'Webhook subscription not found.' }, { status: 404 })
 
+        const targetSite = asId((sub as any).site)
+        if (targetSite && !grant.isGlobalOwner && !grant.authorizedSiteIds.includes(targetSite)) {
+          return NextResponse.json(
+            { error: 'Forbidden. Object belongs to another site.' },
+            { status: 403 },
+          )
+        }
+
         const secret = await resolveWebhookSecret(String(body.secretRef))
         if (!secret) {
           return NextResponse.json({ error: 'New secretRef cannot be resolved.' }, { status: 422 })
@@ -696,6 +773,25 @@ export async function POST(request: Request) {
             { status: 422 },
           )
         }
+        const sub = await payload
+          .findByID({
+            collection: 'webhook-subscriptions' as never,
+            id: body.subscriptionId,
+            depth: 0,
+            overrideAccess: true,
+          })
+          .catch(() => null)
+        if (!sub)
+          return NextResponse.json({ error: 'Webhook subscription not found.' }, { status: 404 })
+
+        const targetSite = asId((sub as any).site)
+        if (targetSite && !grant.isGlobalOwner && !grant.authorizedSiteIds.includes(targetSite)) {
+          return NextResponse.json(
+            { error: 'Forbidden. Object belongs to another site.' },
+            { status: 403 },
+          )
+        }
+
         const updated = await payload.update({
           collection: 'webhook-subscriptions' as never,
           id: body.subscriptionId,
@@ -716,13 +812,33 @@ export async function POST(request: Request) {
         if (!body.deliveryId) {
           return NextResponse.json({ error: 'deliveryId is required.' }, { status: 422 })
         }
+        const delivery = await payload
+          .findByID({
+            collection: 'webhook-deliveries' as never,
+            id: body.deliveryId,
+            depth: 1,
+            overrideAccess: true,
+          })
+          .catch(() => null)
+        if (!delivery) {
+          return NextResponse.json({ error: 'Webhook delivery not found.' }, { status: 404 })
+        }
+        const sub = (delivery as any).subscription
+        const subSite = asId(typeof sub === 'object' && sub ? sub.site : null)
+        if (subSite && !grant.isGlobalOwner && !grant.authorizedSiteIds.includes(subSite)) {
+          return NextResponse.json(
+            { error: 'Forbidden. Delivery belongs to another site.' },
+            { status: 403 },
+          )
+        }
+
         const redelivered = await redeliverWebhook(payload as any, body.deliveryId)
 
         await payload
           .create({
             collection: 'integration-audit-events' as never,
             data: {
-              site: defaultSiteId,
+              site: subSite || defaultSiteId,
               action: 'webhook.manual_redelivery',
               subject: { previousDeliveryId: body.deliveryId, newDeliveryId: redelivered.id },
               outcome: 'allowed',
@@ -745,6 +861,12 @@ export async function POST(request: Request) {
             { status: 422 },
           )
         }
+        if (!ALLOWED_COLLECTIONS.includes(body.collection as AllowedCollection)) {
+          return NextResponse.json(
+            { error: 'Disallowed or invalid provider collection.' },
+            { status: 422 },
+          )
+        }
 
         const existing = await payload
           .findByID({
@@ -759,6 +881,14 @@ export async function POST(request: Request) {
           return NextResponse.json(
             { error: 'Connection record not found in provider collection.' },
             { status: 404 },
+          )
+        }
+
+        const targetSite = asId((existing as any).site)
+        if (targetSite && !grant.isGlobalOwner && !grant.authorizedSiteIds.includes(targetSite)) {
+          return NextResponse.json(
+            { error: 'Forbidden. Object belongs to another site.' },
+            { status: 403 },
           )
         }
 
@@ -835,6 +965,12 @@ export async function POST(request: Request) {
             { status: 422 },
           )
         }
+        if (!ALLOWED_COLLECTIONS.includes(body.collection as AllowedCollection)) {
+          return NextResponse.json(
+            { error: 'Disallowed or invalid provider collection.' },
+            { status: 422 },
+          )
+        }
 
         const existing = await payload
           .findByID({
@@ -847,6 +983,14 @@ export async function POST(request: Request) {
 
         if (!existing) {
           return NextResponse.json({ error: 'Connection record not found.' }, { status: 404 })
+        }
+
+        const targetSite = asId((existing as any).site)
+        if (targetSite && !grant.isGlobalOwner && !grant.authorizedSiteIds.includes(targetSite)) {
+          return NextResponse.json(
+            { error: 'Forbidden. Object belongs to another site.' },
+            { status: 403 },
+          )
         }
 
         const safeDisconnect = safeDisconnectProviderState({

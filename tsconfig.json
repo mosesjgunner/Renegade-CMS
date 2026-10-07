@@ -32,5 +32,5 @@
     ".next-shop08-restart/types/**/*.ts",
     ".next-shop08-restart/dev/types/**/*.ts"
   ],
-  "exclude": ["node_modules", ".payload-upstream", "docs/media/evidence", ".next"]
+  "exclude": ["node_modules", ".payload-upstream", "docs", ".next"]
 }

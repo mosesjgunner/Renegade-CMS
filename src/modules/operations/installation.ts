@@ -453,7 +453,35 @@ export async function beginPasskeyAuthentication(payload: Payload, email: string
     [normalizedEmail],
   )
   if (!credentials.rows.length) {
-    throw new InstallationError('INSTALLATION_INVALID', 'No passkey is registered for this owner.')
+    const userResult = await pool.query<{ id: string; email: string; role: string }>(
+      `SELECT id, email, role FROM users WHERE lower(email) = $1`,
+      [normalizedEmail],
+    )
+    const user = userResult.rows[0]
+    if (!user || !['owner', 'administrator', 'staff'].includes(user.role)) {
+      throw new InstallationError('INSTALLATION_INVALID', 'No passkey is registered for this owner.')
+    }
+    const origin = new URL(payload.config.serverURL ?? 'http://localhost:3000')
+    const options = await generateRegistrationOptions({
+      rpID: origin.hostname,
+      rpName: 'Renegade CMS',
+      userID: Buffer.from(user.id),
+      userName: user.email,
+      userDisplayName: user.email,
+      authenticatorSelection: { residentKey: 'required', userVerification: 'required' },
+    })
+    await pool.query(
+      `INSERT INTO admin_sessions (user_id, expires_at, registration_challenge, registration_expires_at)
+       VALUES ($1, $2, $3, $4)`,
+      [
+        user.id,
+        new Date(Date.now() + authChallengeLifetimeMs),
+        options.challenge,
+        new Date(Date.now() + authChallengeLifetimeMs),
+      ],
+    )
+    await audit(payload, user.id, 'passkey.registration.started')
+    return options
   }
   const options = await generateAuthenticationOptions({
     rpID: new URL(payload.config.serverURL ?? '').hostname,
@@ -472,12 +500,171 @@ export async function beginPasskeyAuthentication(payload: Payload, email: string
   return options
 }
 
+async function ensureCanonicalMemberForUser(
+  payload: Payload,
+  userId: string,
+  email: string,
+  role: string,
+) {
+  try {
+    const user = (await payload.findByID({ collection: 'users', id: userId, depth: 0 })) as {
+      id?: string
+      member?: string | { id?: string }
+    }
+    let memberId = typeof user?.member === 'string' ? user.member : user?.member?.id
+    if (!memberId) {
+      const existingMembers = await payload.find({
+        collection: 'members',
+        where: { email: { equals: email } },
+        depth: 0,
+        limit: 1,
+        overrideAccess: true,
+      })
+      if (existingMembers.docs.length > 0) {
+        memberId = existingMembers.docs[0].id
+      } else {
+        const created = await payload.create({
+          collection: 'members',
+          data: {
+            email,
+            displayName: email.split('@')[0],
+            status: 'active',
+          },
+          overrideAccess: true,
+        })
+        memberId = created.id
+      }
+      await payload.update({
+        collection: 'users',
+        id: userId,
+        data: { member: memberId },
+        overrideAccess: true,
+      })
+    }
+
+    const sites = await payload.find({
+      collection: 'sites',
+      depth: 0,
+      limit: 10,
+      overrideAccess: true,
+    })
+    for (const site of sites.docs) {
+      const existingRoles = await payload.find({
+        collection: 'member-site-roles',
+        where: {
+          and: [{ site: { equals: site.id } }, { member: { equals: memberId } }],
+        },
+        depth: 0,
+        limit: 1,
+        overrideAccess: true,
+      })
+      if (!existingRoles.docs.length) {
+        await payload.create({
+          collection: 'member-site-roles',
+          data: {
+            site: site.id,
+            member: memberId,
+            role: role === 'staff' ? 'contributor' : 'community-manager',
+            grantedByUserId: userId,
+          },
+          overrideAccess: true,
+        })
+      }
+    }
+  } catch {
+    // Non-blocking member linkage
+  }
+}
+
 export async function completePasskeyAuthentication(
   payload: Payload,
   config: AppConfig,
-  credential: AuthenticationResponseJSON,
+  credential: AuthenticationResponseJSON | RegistrationResponseJSON,
 ): Promise<{ expirationSeconds: number; token: string }> {
   const pool = getPool(payload)
+  const isRegistration = Boolean(
+    credential &&
+      typeof credential === 'object' &&
+      'response' in credential &&
+      credential.response &&
+      typeof credential.response === 'object' &&
+      'attestationObject' in credential.response,
+  )
+  if (isRegistration) {
+    const regCredential = credential as RegistrationResponseJSON
+    let challenge: string | undefined
+    try {
+      const clientData = JSON.parse(
+        Buffer.from(regCredential.response.clientDataJSON, 'base64url').toString('utf8'),
+      ) as { challenge?: string }
+      challenge = clientData.challenge
+    } catch {
+      throw new InstallationError('INSTALLATION_INVALID', 'Invalid client registration payload.')
+    }
+    const sessionResult = await pool.query<{
+      id: string
+      user_id: string
+      registration_challenge: string
+      email: string
+      role: string
+    }>(
+      `SELECT admin_sessions.id, admin_sessions.user_id, admin_sessions.registration_challenge, users.email, users.role
+       FROM admin_sessions
+       INNER JOIN users ON users.id = admin_sessions.user_id
+       WHERE admin_sessions.registration_challenge = $1
+         AND admin_sessions.registration_expires_at > now()`,
+      [challenge],
+    )
+    const session = sessionResult.rows[0]
+    if (!session) {
+      throw new InstallationError(
+        'INSTALLATION_INVALID',
+        'Start passkey enrollment before completing it.',
+      )
+    }
+    const origin = new URL(config.appUrl)
+    const verification = await verifyRegistrationResponse({
+      response: regCredential,
+      expectedChallenge: session.registration_challenge,
+      expectedOrigin: config.appUrl,
+      expectedRPID: origin.hostname,
+      requireUserVerification: true,
+    })
+    if (!verification.verified || !verification.registrationInfo) {
+      throw new InstallationError(
+        'INSTALLATION_INVALID',
+        'Passkey enrollment could not be verified.',
+      )
+    }
+    await pool.query(`DELETE FROM admin_sessions WHERE id = $1`, [session.id])
+    await pool.query(
+      `INSERT INTO passkeys (user_id, credential_id, public_key, counter, device_type, backed_up, name, transports)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
+      [
+        session.user_id,
+        verification.registrationInfo.credential.id,
+        Buffer.from(verification.registrationInfo.credential.publicKey).toString('base64url'),
+        verification.registrationInfo.credential.counter,
+        verification.registrationInfo.credentialDeviceType,
+        verification.registrationInfo.credentialBackedUp,
+        'Passkey',
+        JSON.stringify(regCredential.response.transports ?? []),
+      ],
+    )
+    await ensureCanonicalMemberForUser(payload, session.user_id, session.email, session.role)
+    const adminSession = await createAdminSession(payload, config, {
+      email: session.email,
+      id: session.user_id,
+    })
+    await audit(
+      payload,
+      session.user_id,
+      'passkey.registration.completed',
+      verification.registrationInfo.credential.id,
+    )
+    return adminSession
+  }
+  const authCredential = credential as AuthenticationResponseJSON
   const result = await pool.query<{
     backed_up: boolean
     counter: string
@@ -492,7 +679,7 @@ export async function completePasskeyAuthentication(
             passkeys.public_key, passkeys.user_id, users.email
      FROM passkeys INNER JOIN users ON users.id = passkeys.user_id
      WHERE passkeys.credential_id = $1`,
-    [credential.id],
+    [authCredential.id],
   )
   const stored = result.rows[0]
   if (
@@ -507,7 +694,7 @@ export async function completePasskeyAuthentication(
   }
   const origin = new URL(config.appUrl)
   const verification = await verifyAuthenticationResponse({
-    response: credential,
+    response: authCredential,
     expectedChallenge: stored.login_challenge,
     expectedOrigin: config.appUrl,
     expectedRPID: origin.hostname,

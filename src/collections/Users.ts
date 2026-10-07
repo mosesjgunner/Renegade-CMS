@@ -25,6 +25,76 @@ export function createUsersCollection(
         secure: config.secureCookies,
       },
     },
+    hooks: {
+      afterChange: [
+        async ({ doc, req, operation }) => {
+          if (operation === 'create' && doc?.id && doc?.email) {
+            try {
+              const existingMembers = await req.payload.find({
+                collection: 'members',
+                where: { email: { equals: doc.email } },
+                depth: 0,
+                limit: 1,
+                overrideAccess: true,
+              })
+              let memberId = existingMembers.docs[0]?.id
+              if (!memberId) {
+                const created = await req.payload.create({
+                  collection: 'members',
+                  data: {
+                    email: doc.email,
+                    displayName: doc.email.split('@')[0],
+                    status: 'active',
+                  },
+                  overrideAccess: true,
+                })
+                memberId = created.id
+              }
+              if (!doc.member) {
+                await req.payload.update({
+                  collection: 'users',
+                  id: doc.id,
+                  data: { member: memberId },
+                  overrideAccess: true,
+                })
+              }
+              const sites = await req.payload.find({
+                collection: 'sites',
+                depth: 0,
+                limit: 10,
+                overrideAccess: true,
+              })
+              for (const site of sites.docs) {
+                const existingRoles = await req.payload.find({
+                  collection: 'member-site-roles',
+                  where: {
+                    and: [{ site: { equals: site.id } }, { member: { equals: memberId } }],
+                  },
+                  depth: 0,
+                  limit: 1,
+                  overrideAccess: true,
+                })
+                if (!existingRoles.docs.length) {
+                  await req.payload.create({
+                    collection: 'member-site-roles',
+                    data: {
+                      site: site.id,
+                      member: memberId,
+                      role: doc.role === 'staff' ? 'contributor' : 'community-manager',
+                      grantedByUserId: req.user?.id,
+                    },
+                    overrideAccess: true,
+                  })
+                }
+              }
+            } catch {
+              // Best-effort non-blocking member linkage
+            }
+          }
+          return doc
+        },
+      ],
+    },
     fields: [
       { name: 'email', type: 'email', required: true, unique: true, index: true },
       {

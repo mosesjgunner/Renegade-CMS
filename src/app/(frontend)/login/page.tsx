@@ -26,20 +26,26 @@ export default function LoginPage() {
         error?: string
         options?: Record<string, unknown>
       }
-      if (!optionsResponse.ok || !optionsBody.options)
-        throw new Error(optionsBody.error ?? 'Could not start sign-in.')
-      const credential = await navigator.credentials.get({
-        publicKey: decodeOptions(optionsBody.options),
-      })
-      if (!credential) throw new Error('Passkey sign-in was cancelled.')
+      if (!optionsResponse.ok || !optionsBody.options) {
+        throw new Error(optionsBody.error ?? 'Failed to retrieve passkey challenge.')
+      }
+      const isRegistration = Boolean('user' in optionsBody.options)
+      const credential = isRegistration
+        ? await navigator.credentials.create({
+            publicKey: decodeRegistrationOptions(optionsBody.options),
+          })
+        : await navigator.credentials.get({
+            publicKey: decodeOptions(optionsBody.options),
+          })
+      if (!credential) throw new Error(isRegistration ? 'Passkey enrollment was cancelled.' : 'Passkey sign-in was cancelled.')
       const completeResponse = await fetch('/api/auth/passkey/complete', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify(serializeCredential(credential)),
+        body: JSON.stringify(isRegistration ? serializeRegistrationCredential(credential) : serializeCredential(credential)),
       })
       if (!completeResponse.ok) {
         const body = (await completeResponse.json()) as { error?: string }
-        throw new Error(body.error ?? 'Passkey sign-in failed.')
+        throw new Error(body.error ?? (isRegistration ? 'Passkey enrollment failed.' : 'Passkey sign-in failed.'))
       }
       router.push('/admin')
     } catch (caught) {
@@ -224,6 +230,42 @@ function decodeOptions(options: Record<string, unknown>): PublicKeyCredentialReq
         }))
       : undefined,
   } as PublicKeyCredentialRequestOptions
+}
+
+function decodeRegistrationOptions(options: Record<string, unknown>): PublicKeyCredentialCreationOptions {
+  const user = options.user as Record<string, unknown>
+  return {
+    ...options,
+    challenge: fromBase64Url(String(options.challenge)),
+    user: {
+      ...user,
+      id: fromBase64Url(String(user.id)),
+      name: String(user.name ?? ''),
+      displayName: String(user.displayName ?? user.name ?? ''),
+    },
+    excludeCredentials: Array.isArray(options.excludeCredentials)
+      ? options.excludeCredentials.map((credential) => ({
+          ...(credential as Record<string, unknown>),
+          id: fromBase64Url(String((credential as Record<string, unknown>).id)),
+        }))
+      : undefined,
+  } as PublicKeyCredentialCreationOptions
+}
+
+function serializeRegistrationCredential(credential: Credential): Record<string, unknown> {
+  const publicKeyCredential = credential as PublicKeyCredential
+  const response = publicKeyCredential.response as AuthenticatorAttestationResponse
+  return {
+    id: publicKeyCredential.id,
+    rawId: toBase64Url(publicKeyCredential.rawId),
+    type: publicKeyCredential.type,
+    response: {
+      clientDataJSON: toBase64Url(response.clientDataJSON),
+      attestationObject: toBase64Url(response.attestationObject),
+      transports: response.getTransports?.(),
+    },
+    clientExtensionResults: publicKeyCredential.getClientExtensionResults(),
+  }
 }
 
 function serializeCredential(credential: Credential): Record<string, unknown> {

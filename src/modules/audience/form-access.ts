@@ -7,6 +7,8 @@ const relationId = (value: unknown) =>
   typeof value === 'object' && value
     ? String((value as { id?: unknown }).id ?? '')
     : String(value ?? '')
+import { resolveOperatorGrantContext } from '../operations/operator-grants'
+
 const staff = (role: unknown) => ['owner', 'administrator', 'staff'].includes(String(role))
 export const formAccess =
   (schema = false): Access =>
@@ -14,6 +16,10 @@ export const formAccess =
     if (!staff(req.user?.role)) return false
     const siteId = await publicSiteForHost(req.payload, req.headers.get('host'))
     if (!siteId) return false
+    const grant = await resolveOperatorGrantContext(req.payload, req.user)
+    if (!grant.authorized || (!grant.isGlobalOwner && !grant.authorizedSiteIds.includes(siteId))) {
+      return false
+    }
     if (!schema) return { site: { equals: siteId } } as Where
     const forms = await req.payload.find({
       collection: 'form-definitions' as never,
@@ -44,8 +50,11 @@ export const guardFormWrite =
     }
     if (req.user) {
       const hostSiteId = await publicSiteForHost(req.payload, req.headers.get('host'))
+      const grant = await resolveOperatorGrantContext(req.payload, req.user)
+      const hasSiteGrant = grant.authorized && (grant.isGlobalOwner || grant.authorizedSiteIds.includes(siteId))
       if (
         !staff(req.user.role) ||
+        !hasSiteGrant ||
         !hostSiteId ||
         hostSiteId !== siteId ||
         (originalDoc?.site && relationId(originalDoc.site) !== siteId)
