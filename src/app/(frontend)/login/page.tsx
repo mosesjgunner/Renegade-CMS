@@ -1,16 +1,32 @@
 'use client'
 
-import { FormEvent, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { FormEvent, Suspense, useEffect, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 
 export default function LoginPage() {
+  return (
+    <Suspense fallback={<main className="max-w-md mx-auto px-4 py-16 text-center text-xs text-stone-500">Loading sign in…</main>}>
+      <LoginForm />
+    </Suspense>
+  )
+}
+
+function LoginForm() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [mode, setMode] = useState<'passkey' | 'recovery'>('passkey')
   const [email, setEmail] = useState('')
   const [recoveryCode, setRecoveryCode] = useState('')
   const [error, setError] = useState<string>()
   const [busy, setBusy] = useState(false)
+
+  useEffect(() => {
+    const enrollToken = searchParams.get('enrollmentToken') || searchParams.get('token')
+    if (enrollToken) {
+      router.replace(`/enroll?token=${encodeURIComponent(enrollToken)}`)
+    }
+  }, [searchParams, router])
 
   async function submitPasskey(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()

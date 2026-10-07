@@ -9,6 +9,12 @@ import {
   listOrRemovePasskeys,
 } from '@/modules/operations/installation'
 
+import {
+  beginStaffPasskeyEnrollment,
+  completeStaffPasskeyEnrollment,
+  StaffEnrollmentError,
+} from '@/modules/operations/staff-enrollment'
+
 export async function GET(request: Request) {
   return respond(async () =>
     listOrRemovePasskeys(await getPayload({ config }), loadConfig(), request.headers),
@@ -23,7 +29,27 @@ export async function POST(request: Request) {
       action?: string
       credential?: Parameters<typeof completeAdditionalPasskeyRegistration>[3]['credential']
       name?: string
+      enrollmentToken?: string
+      siteId?: string
     }
+
+    if (body.enrollmentToken) {
+      if (body.action === 'options') {
+        const res = await beginStaffPasskeyEnrollment(payload, runtime, {
+          enrollmentToken: body.enrollmentToken,
+          siteId: body.siteId,
+        })
+        return res
+      }
+      if (body.action === 'complete' && body.credential) {
+        return completeStaffPasskeyEnrollment(payload, runtime, {
+          enrollmentToken: body.enrollmentToken,
+          credential: body.credential,
+          siteId: body.siteId,
+        })
+      }
+    }
+
     if (body.action === 'options')
       return {
         options: await beginAdditionalPasskeyRegistration(payload, runtime, request.headers),
@@ -62,9 +88,13 @@ async function respond(action: () => Promise<unknown>) {
     const status =
       message === 'Sign in is required.' || message === 'Your session has expired.'
         ? 401
-        : error instanceof InstallationError
-          ? 400
-          : 500
+        : error instanceof StaffEnrollmentError
+          ? error.code === 'TOKEN_EXPIRED' || error.code === 'TOKEN_ALREADY_USED'
+            ? 410
+            : 400
+          : error instanceof InstallationError
+            ? 400
+            : 500
     return Response.json({ error: message }, { status })
   }
 }

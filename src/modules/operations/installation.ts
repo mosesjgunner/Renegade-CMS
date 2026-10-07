@@ -12,7 +12,7 @@ import {
 } from '@simplewebauthn/server'
 import type { Payload } from 'payload'
 
-import type { AppConfig } from '../core/config'
+import { loadConfig, type AppConfig } from '../core/config'
 import { migrations } from '../../migrations'
 import { createPasskeySession } from './passkey-auth'
 import { requireAdminUser } from './passkey-auth'
@@ -453,41 +453,15 @@ export async function beginPasskeyAuthentication(payload: Payload, email: string
     [normalizedEmail],
   )
   if (!credentials.rows.length) {
-    const userResult = await pool.query<{ id: string; email: string; role: string }>(
-      `SELECT id, email, role FROM users WHERE lower(email) = $1`,
-      [normalizedEmail],
+    throw new InstallationError(
+      'INSTALLATION_INVALID',
+      'No passkey is registered for this account. Please use your staff enrollment invitation to register your first passkey.',
     )
-    const user = userResult.rows[0]
-    if (!user || !['owner', 'administrator', 'staff'].includes(user.role)) {
-      throw new InstallationError(
-        'INSTALLATION_INVALID',
-        'No passkey is registered for this owner.',
-      )
-    }
-    const origin = new URL(payload.config.serverURL ?? 'http://localhost:3000')
-    const options = await generateRegistrationOptions({
-      rpID: origin.hostname,
-      rpName: 'Renegade CMS',
-      userID: Buffer.from(user.id),
-      userName: user.email,
-      userDisplayName: user.email,
-      authenticatorSelection: { residentKey: 'required', userVerification: 'required' },
-    })
-    await pool.query(
-      `INSERT INTO admin_sessions (user_id, expires_at, registration_challenge, registration_expires_at)
-       VALUES ($1, $2, $3, $4)`,
-      [
-        user.id,
-        new Date(Date.now() + authChallengeLifetimeMs),
-        options.challenge,
-        new Date(Date.now() + authChallengeLifetimeMs),
-      ],
-    )
-    await audit(payload, user.id, 'passkey.registration.started')
-    return options
   }
+  const appUrl = loadConfig().appUrl
+  const origin = new URL(appUrl)
   const options = await generateAuthenticationOptions({
-    rpID: new URL(payload.config.serverURL ?? '').hostname,
+    rpID: origin.hostname,
     allowCredentials: credentials.rows.map(({ credential_id }) => ({ id: credential_id })),
     userVerification: 'required',
   })

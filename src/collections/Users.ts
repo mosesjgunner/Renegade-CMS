@@ -3,6 +3,9 @@ import type { CollectionConfig } from 'payload'
 import type { AppConfig } from '../modules/core/config'
 import { createPasskeyAuthStrategy } from '../modules/operations/passkey-auth'
 
+import { createStaffEnrollmentToken } from '../modules/operations/staff-enrollment'
+import { loadConfig } from '../modules/core/config'
+
 export function createUsersCollection(
   config: Pick<AppConfig, 'payloadSecret' | 'secureCookies'>,
 ): CollectionConfig {
@@ -26,6 +29,30 @@ export function createUsersCollection(
       },
     },
     hooks: {
+      beforeDelete: [
+        async ({ id, req }) => {
+          try {
+            const pool = (
+              req.payload.db as {
+                pool?: { query: (q: string, v?: unknown[]) => Promise<unknown> }
+              }
+            ).pool
+            if (pool && id) {
+              await pool.query(
+                `UPDATE identity_tokens SET consumed_at = now(), updated_at = now()
+                 WHERE purpose = 'passkey-registration' AND (metadata->>'userId') = $1 AND consumed_at IS NULL`,
+                [id],
+              )
+              await pool.query(
+                `UPDATE admin_sessions SET revoked_at = now() WHERE user_id = $1 AND revoked_at IS NULL`,
+                [id],
+              )
+            }
+          } catch {
+            // Best-effort cleanup
+          }
+        },
+      ],
       afterChange: [
         async ({ doc, req, operation }) => {
           if (operation === 'create' && doc?.id && doc?.email) {
@@ -85,6 +112,28 @@ export function createUsersCollection(
                     },
                     overrideAccess: true,
                   })
+                }
+              }
+
+              if (doc.role === 'staff' || doc.role === 'administrator') {
+                try {
+                  const enrollment = await createStaffEnrollmentToken(
+                    req.payload,
+                    loadConfig(),
+                    {
+                      email: doc.email,
+                      role: doc.role,
+                      invitedByUserId: req.user?.id,
+                    },
+                  )
+                  if (req.context) {
+                    req.context.enrollmentToken = enrollment.enrollmentToken
+                    req.context.enrollmentUrl = enrollment.enrollmentUrl
+                  }
+                  doc.enrollmentToken = enrollment.enrollmentToken
+                  doc.enrollmentUrl = enrollment.enrollmentUrl
+                } catch {
+                  // Non-blocking staff enrollment token creation
                 }
               }
             } catch {
