@@ -1,3 +1,5 @@
+> Current reconciliation (2026-10-07): **FAIL / NOT READY** on clean source `0159f6bf3c7944a285743709514e487343aaa4f7`. Installation passed; formatting failed on 20 files. RC08D-01 through RC08D-06 acceptance remains unestablished. Earlier PASS statements below are historical claims, not current closure evidence. See [reconciliation repair](repairs/RC08D-reconciliation-format-gate.md) and [executed checks](evidence/rc-08d/reconciliation-2026-10-07/checks.json).
+
 # RC-08C final release closure — FAIL / NOT READY
 
 Recorded 2026-10-06. Package version: `0.1.0`. Tested clean source: `01908f39a3ce40b5eae5d4dec64b981e103d5fb1`, branch `rc08c-closure`. Documentation and receipt commits following this source are not newly accepted executable candidates. No release, tag or push occurred.

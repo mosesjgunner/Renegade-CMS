@@ -1,0 +1,27 @@
+﻿{
+  "date": "2026-10-07",
+  "status": "FAIL / NOT READY",
+  "testedSha": "0159f6bf3c7944a285743709514e487343aaa4f7",
+  "testedGitTree": "1d406723b8e2b8686ea0d9473c2e073fa40a6425",
+  "cleanBefore": true,
+  "cleanAfter": true,
+  "commands": [
+    {
+      "exitCode": 0,
+      "command": "npm.cmd ci --include=dev",
+      "sha256": "cdd644deec8dd841116c94fa69955552ee454496f9e8e3e2e21ac459c4632107",
+      "log": "01-npm-ci.log"
+    },
+    {
+      "exitCode": 1,
+      "command": "npm.cmd run format:check",
+      "affectedFiles": 20,
+      "sha256": "e4de0cccb6f2ad4aef6473d97fb8834bcc4ab898e58658ba0179971fa0381ca6",
+      "log": "02-format-check.log"
+    }
+  ],
+  "testsExecuted": 0,
+  "migrationsApplied": null,
+  "prerequisiteAcceptance": "NOT ESTABLISHED",
+  "closureExecuted": false
+}
