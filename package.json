@@ -10,6 +10,7 @@
     "npm": ">=10"
   },
   "scripts": {
+    "postinstall": "node scripts/apply-patches.mjs",
     "build": "node scripts/build.mjs",
     "dev": "cross-env NODE_OPTIONS=--no-deprecation next dev",
     "start": "cross-env NODE_OPTIONS=--no-deprecation next start",
