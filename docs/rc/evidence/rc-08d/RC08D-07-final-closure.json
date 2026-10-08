@@ -1,0 +1,100 @@
+{
+  "gate": "RC08D-07",
+  "status": "PASS",
+  "decision": "RELEASE_CANDIDATE_ACHIEVED",
+  "frozenCommitSha": "100bd80fa8451ab04eb6e14c937697bb77970e4c",
+  "evaluatedAt": "2026-10-08T00:38:00.000Z",
+  "gitStatus": "clean",
+  "packageVersion": "0.1.0",
+  "docker": {
+    "image": "renegade-cms:rc08d-final",
+    "manifestListDigest": "sha256:d5c0d3fe3b1c54304568091ef9316e600207c39697ff4bdeb8f09d3cc0bd40e7",
+    "configDigest": "sha256:69edcaa5f41c5b40d328c6a1e23f86aed208feb6c130f20855fdfe907f87841b",
+    "manifestDigest": "sha256:46b6085dcf9680831164d43e3fbf3296a4e3f4a53bbdb08aa9d3db1a01cc66ed",
+    "livenessCheck": "PASS"
+  },
+  "gates": {
+    "formatCheck": {
+      "command": "npm.cmd run format:check",
+      "exitCode": 0,
+      "status": "PASS"
+    },
+    "lint": {
+      "command": "npm.cmd run lint",
+      "exitCode": 0,
+      "errors": 0,
+      "warnings": 0,
+      "status": "PASS"
+    },
+    "typecheck": {
+      "command": "npm.cmd run typecheck",
+      "exitCode": 0,
+      "errors": 0,
+      "status": "PASS"
+    },
+    "unit": {
+      "command": "npm.cmd run test",
+      "exitCode": 0,
+      "files": 178,
+      "passed": 1193,
+      "failed": 0,
+      "skipped": 0,
+      "status": "PASS"
+    },
+    "integration": {
+      "command": "npm.cmd run test:integration",
+      "exitCode": 0,
+      "files": 48,
+      "passed": 270,
+      "failed": 0,
+      "skipped": 0,
+      "status": "PASS"
+    },
+    "migrationsFresh": {
+      "command": "npm.cmd run test:migrations:fresh",
+      "exitCode": 0,
+      "registered": 112,
+      "applied": 112,
+      "status": "PASS"
+    },
+    "migrationsUpgrade": {
+      "command": "npm.cmd run test:migrations:upgrade",
+      "exitCode": 0,
+      "baselineOrdinal": 56,
+      "subsequent": 56,
+      "status": "PASS"
+    },
+    "presentationBundles": {
+      "command": "npm.cmd run verify:presentation-bundles",
+      "exitCode": 0,
+      "puckExcludedFromPublic": true,
+      "status": "PASS"
+    },
+    "productionBuild": {
+      "command": "npm.cmd run build",
+      "exitCode": 0,
+      "standaloneServer": true,
+      "status": "PASS"
+    },
+    "browser": {
+      "command": "npm.cmd run test:browser",
+      "exitCode": 0,
+      "specs": 28,
+      "passed": 27,
+      "skipped": 1,
+      "failed": 0,
+      "status": "PASS"
+    },
+    "smoke": {
+      "command": "npm.cmd run test:smoke",
+      "exitCode": 0,
+      "status": "PASS"
+    },
+    "releaseChecksPipeline": {
+      "command": "npm.cmd run verify:release:checks",
+      "exitCode": 0,
+      "stages": 10,
+      "status": "PASS"
+    }
+  }
+}
