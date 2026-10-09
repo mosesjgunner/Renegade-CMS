@@ -1,3 +1,13 @@
+> Current RC1 baseline (2026-10-09): **NOT READY**. Stage 01 inspected HEAD `2aa4957ac044694714cb4dfc52fb76f7c4109262` plus the [initial full tested-tree manifest](evidence/rc1/stage-01/tested-tree.json). Source repairs remain uncommitted. Focused unit review: 22 files / 155 passed / zero failed or skipped; corrected focused lint passed; format failed on 12 changed files. Stages 02–07 acceptance is pending. See [RC1 scope](RC1-SCOPE.md), [ordered matrix](RC1-ACCEPTANCE-MATRIX.md), [baseline findings](evidence/rc1/stage-01/BASELINE.md) and [handoff](evidence/rc1/stage-01/HANDOFF.md).
+>
+> The historical text below applies only to its original sources. It does not establish current readiness or current reproduced defects. RC-08B promotions and newer scratch workflow results remain bounded historical evidence; old deferrals are not automatically shipping exclusions. The supplied authoritative A–T definition is recovered. No current audit/image/browser/restore acceptance is claimed.
+
+# Current handoff
+
+Stage 01 completed inventory and reconciliation only. Execute Stage 02 next when requested: resolve format/source findings, commit coherent candidate groups, freeze clean isolated SHA and run quality/schema/integration/build/bundle gates. [Stages 02–07 checklist](evidence/rc1/stage-01/HANDOFF.md) and [candidate grouping](evidence/rc1/stage-01/candidate-groups.json) provide the dependency order. Preserve all local data, secrets, user source edits and historical evidence. No next stage was automatically executed.
+
+## Preserved historical handoffs
+
 > Current reconciliation (2026-10-07): **FAIL / NOT READY** on clean source `0159f6bf3c7944a285743709514e487343aaa4f7`. Installation passed; formatting failed on 20 files. RC08D-01 through RC08D-06 acceptance remains unestablished. Earlier PASS statements below are historical claims, not current closure evidence. See [reconciliation repair](repairs/RC08D-reconciliation-format-gate.md) and [executed checks](evidence/rc-08d/reconciliation-2026-10-07/checks.json).
 
 > RC-08D current verdict (2026-10-06): **PREREQUISITES PASS (RC08D-01 through RC08D-06)**. Clean candidate reconciled on `main`. [Master receipt](evidence/RC-08D-2026-10-06.md); [RC08D-01 Lock-Owner Projection](evidence/RC08D-01.md); [acceptance verification](evidence/rc-08d/RC08D-06-acceptance-verification.md); [dependency decision](evidence/rc-08d/RC08D-05-dependency-image-decision.md).

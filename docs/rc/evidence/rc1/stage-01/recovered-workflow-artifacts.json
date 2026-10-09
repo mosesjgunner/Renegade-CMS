@@ -1,0 +1,127 @@
+{
+  "classification": "historical workflow artifacts found; current-source acceptance requires rerun",
+  "testedSha": null,
+  "testedTreeManifestAtExecution": null,
+  "artifacts": [
+    {
+      "localPath": "scratch/implementation-closure/browser-observations.json",
+      "sha256": "4a3578f0f6167408186ce88856c91e25f6cbbfe8652924fb58b26cba0264932b",
+      "bytes": 160,
+      "sourceBinding": "missing historical tested-tree manifest; do not assign current SHA",
+      "assertions": {
+        "recordCount": 2,
+        "valuesWithheld": "state/session/runtime details may include bearer authority"
+      }
+    },
+    {
+      "localPath": "scratch/implementation-closure/install2/staff-results.json",
+      "sha256": "ba720b3cac2e205e74583e56747655a35dc7c6c1acaafd04c9d5d7756f62c68f",
+      "bytes": 5236,
+      "sourceBinding": "missing historical tested-tree manifest; do not assign current SHA",
+      "stats": {
+        "startTime": "2026-10-08T16:07:07.046Z",
+        "duration": 14146.301,
+        "expected": 1,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      },
+      "runnerErrorCount": 0,
+      "specs": [
+        {
+          "title": "Owner invites staff through Security, staff enrolls and logs in with WebAuthn",
+          "ok": true,
+          "statuses": [
+            "passed"
+          ]
+        }
+      ]
+    },
+    {
+      "localPath": "scratch/implementation-closure/digital.json",
+      "sha256": "114d6822cc067fc029cd73347266eb11b8c2f51827a05bc82aa213dcdd2a219f",
+      "bytes": 212,
+      "sourceBinding": "missing historical tested-tree manifest; do not assign current SHA",
+      "assertions": {
+        "bytesMatch": true,
+        "downloadPathPresent": true
+      }
+    },
+    {
+      "localPath": "scratch/implementation-closure/digital-recovery.json",
+      "sha256": "facc93790b5fe7683b90e8a88e61f8bca634c9dba96ed4fd03aa956577b48d96",
+      "bytes": 179,
+      "sourceBinding": "missing historical tested-tree manifest; do not assign current SHA",
+      "assertions": {
+        "orderPresent": true,
+        "downloadCount": 1
+      }
+    },
+    {
+      "localPath": "scratch/implementation-closure/payment-recovery.json",
+      "sha256": "0894f2be70f559a0f869d3966449437bc417344447d9426babc2621e5bf97a0a",
+      "bytes": 558,
+      "sourceBinding": "missing historical tested-tree manifest; do not assign current SHA",
+      "assertions": {
+        "recordCount": 2,
+        "valuesWithheld": "state/session/runtime details may include bearer authority"
+      }
+    },
+    {
+      "localPath": "scratch/implementation-closure/digital-preflight.json",
+      "sha256": "eb5d730a77807b12a2764059f413bfea8541fd4b2d5446a7c870b8e4534338cf",
+      "bytes": 151,
+      "sourceBinding": "missing historical tested-tree manifest; do not assign current SHA",
+      "assertions": {
+        "status": 503,
+        "providerAttempts": 0
+      }
+    },
+    {
+      "localPath": "scratch/implementation-closure/paid-checkout.json",
+      "sha256": "c25d92ff806b179316e5304f3c7f827de19cad2cdaee257621bfbff6999cff65",
+      "bytes": 244,
+      "sourceBinding": "missing historical tested-tree manifest; do not assign current SHA",
+      "assertions": {
+        "orderPresent": true,
+        "amountMinor": "4500"
+      }
+    },
+    {
+      "localPath": "scratch/implementation-closure/install2/restart.json",
+      "sha256": "3bac1bb4adb41a3305e17dd62a72031eb01051db4bba6deabde6273f60dfdc1c",
+      "bytes": 211,
+      "sourceBinding": "missing historical tested-tree manifest; do not assign current SHA",
+      "assertions": {
+        "recordCount": 1,
+        "valuesWithheld": "state/session/runtime details may include bearer authority"
+      }
+    },
+    {
+      "localPath": "scratch/implementation-closure/operational-backup/manifest.json",
+      "sha256": "bb92a40d35eec50662da5fdc2d131da5ace232c11782e0358543126a3484dadf",
+      "bytes": 6631,
+      "sourceBinding": "missing historical tested-tree manifest; do not assign current SHA",
+      "assertions": {
+        "format": "renegade-operational-backup",
+        "version": 1,
+        "totals": {
+          "files": 2,
+          "bytes": 3187619
+        },
+        "files": [
+          {
+            "path": "database.dump",
+            "sizeBytes": null,
+            "sha256": "sha256:e86ff9b32dd5023c093c6af44fe7588833194ebc2bbd218b89bbc3c0495dad2b"
+          },
+          {
+            "path": "media.tar.gz",
+            "sizeBytes": null,
+            "sha256": "sha256:9305a175180917e583754379590c4c03c17415c48be3808967c4aeef1de66862"
+          }
+        ]
+      }
+    }
+  ]
+}

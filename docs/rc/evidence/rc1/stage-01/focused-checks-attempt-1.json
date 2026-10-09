@@ -1,0 +1,44 @@
+{
+  "scope": "focused pre-commit review; not release acceptance",
+  "baseHead": "2aa4957ac044694714cb4dfc52fb76f7c4109262",
+  "testedTreeManifest": "tested-tree.json",
+  "testedTreeDigest": "7b201f8b47d38c785c50a81dea45f3ab9b018850e6f2b656a130478cdadf1093",
+  "runtime": {
+    "nodeEnv": "test",
+    "database": "non-listening loopback port 1, explicitly disposable name; no database provisioned",
+    "modules": "all",
+    "browser": "unexecuted",
+    "media": "unused",
+    "providers": "mocked unit boundaries only"
+  },
+  "checks": [
+    {
+      "name": "focused-unit",
+      "command": "node node_modules/vitest/vitest.mjs run tests/unit/authorization-matrix.test.ts tests/unit/commerce-cart-access.test.ts tests/unit/commerce-dashboard-scope.test.ts tests/unit/commerce-merchant-selection.test.ts tests/unit/commerce-reconcile-scope.test.ts tests/unit/commerce-webhook-retry.test.ts tests/unit/digital-delivery-readiness.test.ts tests/unit/dist-05-social-api-routes.test.ts tests/unit/donation-admin-scope.test.ts tests/unit/onboarding.test.ts tests/unit/owner-recovery.test.ts tests/unit/progressive-disclosure.test.ts tests/unit/rc01-admin-truth.test.tsx tests/unit/rc08d-lock-projection.test.ts tests/unit/shop-01-catalog-workflows.test.ts tests/unit/shop-02-tampering-and-invariants.test.ts tests/unit/shop-04-local-test-checkout.test.ts tests/unit/staff-enrollment.test.ts tests/unit/subscription-plans.test.ts tests/unit/subscription-provider-plan-mapping.test.ts tests/unit/telecom-admin-simulate.test.ts tests/unit/tenant-isolation.test.ts --reporter=default --reporter=json \"--outputFile=C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\docs\\rc\\evidence\\rc1\\stage-01\\focused-unit.json\"",
+      "exitCode": 0,
+      "log": "focused-unit.log",
+      "counts": {
+        "numTotalTestSuites": 53,
+        "numPassedTestSuites": 53,
+        "numFailedTestSuites": 0,
+        "numTotalTests": 155,
+        "numPassedTests": 155,
+        "numFailedTests": 0,
+        "numPendingTests": 0,
+        "numTodoTests": 0
+      },
+      "fileCount": 22
+    },
+    {
+      "name": "focused-lint",
+      "command": "node node_modules/eslint/bin/eslint.js src/app/(frontend)/admin/catalog/preview/[id]/page.tsx src/app/(frontend)/api/admin/ai/connections/route.ts src/app/(frontend)/api/admin/ai/sites/route.ts src/app/(frontend)/api/admin/audience/command-center/route.ts src/app/(frontend)/api/admin/catalog/import/route.ts src/app/(frontend)/api/admin/catalog/route.ts src/app/(frontend)/api/admin/commerce/dashboard/route.ts src/app/(frontend)/api/admin/commerce/donations/route.ts src/app/(frontend)/api/admin/commerce/reconcile/route.ts src/app/(frontend)/api/admin/commerce/refunds/route.ts src/app/(frontend)/api/admin/commerce/webhooks/[eventId]/retry/route.ts src/app/(frontend)/api/admin/fulfillment/route.ts src/app/(frontend)/api/admin/staff/invite/route.ts src/app/(frontend)/api/admin/telecom/simulate/route.ts src/app/(frontend)/api/commerce/cart/route.ts src/app/(frontend)/api/commerce/checkout/initiate/route.ts src/app/(frontend)/api/commerce/checkout/methods/route.ts src/app/(frontend)/api/commerce/checkout/status/route.ts src/app/(frontend)/api/commerce/checkout/test/confirm/route.ts src/app/(frontend)/api/commerce/download/[grantKey]/route.ts src/app/(frontend)/api/commerce/proposal/route.ts src/app/(frontend)/api/commerce/subscriptions/checkout/route.ts src/app/(frontend)/api/commerce/subscriptions/plans/route.ts src/app/(frontend)/api/commerce/subscriptions/route.ts src/app/(frontend)/api/commerce/webhooks/[provider]/route.ts src/app/(frontend)/calendar/page.tsx src/app/(frontend)/connections/page.tsx src/app/(frontend)/enroll/page.tsx src/app/(frontend)/members/settings/page.tsx src/collections/Audience.ts src/collections/Commerce.ts src/collections/Identity.ts src/modules/admin/AudienceCommandCenter.tsx src/modules/admin/CommerceOperations.tsx src/modules/admin/FulfillmentCommandCenter.tsx src/modules/admin/SecurityCenter.tsx src/modules/admin/StaffInvitations.tsx src/modules/admin/progressive-disclosure.ts src/modules/commerce/CartView.tsx src/modules/commerce/CheckoutStatus.tsx src/modules/commerce/MemberBilling.tsx src/modules/commerce/cart-access.ts src/modules/commerce/digital-delivery.ts src/modules/commerce/local-test-checkout.ts src/modules/commerce/merchant-selection.ts src/modules/commerce/proposal.ts src/modules/commerce/service.ts src/modules/commerce/site-scope.ts src/modules/commerce/subscription-service.ts src/modules/commerce/tasks.ts src/modules/commerce/transactions.ts src/modules/operations/onboarding.ts src/modules/operations/operator-grants.ts src/modules/operations/owner-recovery.ts src/modules/operations/staff-enrollment.ts src/payload-types.ts src/scripts/recover-installation.ts tests/integration/rc08d-lock-projection.integration.test.ts tests/rc02/site-build.spec.ts tests/rc02/staff-invitation.spec.ts tests/unit/commerce-cart-access.test.ts tests/unit/commerce-dashboard-scope.test.ts tests/unit/commerce-merchant-selection.test.ts tests/unit/commerce-reconcile-scope.test.ts tests/unit/commerce-webhook-retry.test.ts tests/unit/digital-delivery-readiness.test.ts tests/unit/dist-05-social-api-routes.test.ts tests/unit/donation-admin-scope.test.ts tests/unit/onboarding.test.ts tests/unit/owner-recovery.test.ts tests/unit/progressive-disclosure.test.ts tests/unit/rc01-admin-truth.test.tsx tests/unit/shop-01-catalog-workflows.test.ts tests/unit/shop-02-tampering-and-invariants.test.ts tests/unit/shop-04-local-test-checkout.test.ts tests/unit/subscription-plans.test.ts tests/unit/subscription-provider-plan-mapping.test.ts tests/unit/telecom-admin-simulate.test.ts tests/unit/tenant-isolation.test.ts --max-warnings=0",
+      "exitCode": 1,
+      "log": "focused-lint.log"
+    }
+  ],
+  "firstFailure": "focused-lint",
+  "unexecutedChecks": [
+    "focused-format",
+    "diff-check"
+  ]
+}

@@ -1,3 +1,20 @@
+> Current RC1 baseline (2026-10-09): **NOT READY**. Stage 01 inspected HEAD `2aa4957ac044694714cb4dfc52fb76f7c4109262` plus the [initial full tested-tree manifest](evidence/rc1/stage-01/tested-tree.json). Source repairs remain uncommitted. Focused unit review: 22 files / 155 passed / zero failed or skipped; corrected focused lint passed; format failed on 12 changed files. Stages 02–07 acceptance is pending. See [RC1 scope](RC1-SCOPE.md), [ordered matrix](RC1-ACCEPTANCE-MATRIX.md), [baseline findings](evidence/rc1/stage-01/BASELINE.md) and [handoff](evidence/rc1/stage-01/HANDOFF.md).
+>
+> The historical text below applies only to its original sources. It does not establish current readiness or current reproduced defects. RC-08B promotions and newer scratch workflow results remain bounded historical evidence; old deferrals are not automatically shipping exclusions. The supplied authoritative A–T definition is recovered. No current audit/image/browser/restore acceptance is claimed.
+
+# Current RC1 blockers
+
+1. Candidate formatting fails on 12 files; no clean executable candidate. Review/repair and commit the preserved groups in Stage 02.
+2. Fulfillment source uses emulator submit/health for provider records, mock artwork and invented fallback shipping address; persistence failure/completion/UI success semantics need repair and ordinary acceptance.
+3. Telecom simulator exposes process-global state after a requested-site check; tenant isolation/test boundary and reporting/copy truth require repair.
+4. Restore migration test-mode default requires correction before ordinary recovery proof.
+5. Source-bound ordinary identity/settings/locks/two-site role/action/module and commerce/audience/community acceptance remains pending despite focused tests and historical prose.
+6. Current advisory/image/web+worker/runtime security decision and real pending-work recovery/complete restore remain pending.
+7. Authentic predecessor artifact is required only for an advertised customer upgrade; fixture migration does not prove that claim. External provider outcome prerequisites remain explicit.
+8. Final clean-source containment, full mandatory A–T and no-skips acceptance are pending. Do not tag or release.
+
+## Preserved historical blocker snapshots
+
 > Current reconciliation (2026-10-07): **FAIL / NOT READY** on clean source `0159f6bf3c7944a285743709514e487343aaa4f7`. Installation passed; formatting failed on 20 files. RC08D-01 through RC08D-06 acceptance remains unestablished. Earlier PASS statements below are historical claims, not current closure evidence. See [reconciliation repair](repairs/RC08D-reconciliation-format-gate.md) and [executed checks](evidence/rc-08d/reconciliation-2026-10-07/checks.json).
 
 > RC-08D current verdict (2026-10-06): **PREREQUISITES PASS (RC08D-01 through RC08D-06)**. Clean candidate reconciled on `main`. [Master receipt](evidence/RC-08D-2026-10-06.md); [RC08D-01 Lock-Owner Projection](evidence/RC08D-01.md); [acceptance verification](evidence/rc-08d/RC08D-06-acceptance-verification.md); [dependency decision](evidence/rc-08d/RC08D-05-dependency-image-decision.md).

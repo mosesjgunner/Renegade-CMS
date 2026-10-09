@@ -1,0 +1,22 @@
+Without direct database seeding around ordinary workflows:
+
+A. install/start the Standard candidate;
+B. obtain one-time setup token;
+C. enroll owner passkey;
+D. enter admin;
+E. configure site identity/theme;
+F. build homepage/navigation;
+G. upload real media and record original checksum;
+H. create page + article with real body/media/taxonomy/SEO;
+I. preview and publish through workflow;
+J. verify public rendering/metadata/schema/sitemap/robots/feed/search;
+K. change slug and verify redirect;
+L. create a scheduled/release action and allow the worker to execute it;
+M. exercise one audience subscription/email delivery to local test sink;
+N. exercise one member/community action and moderation/notification path;
+O. exercise one product/cart/local checkout/order path;
+P. inspect analytics/telemetry/health/provider truth;
+Q. restart web + worker and verify no duplicate side effects;
+R. log out and log in from a new clean browser context;
+S. back up and restore into a second isolated environment;
+T. re-fetch the public site and verify byte-identical original media plus critical records.

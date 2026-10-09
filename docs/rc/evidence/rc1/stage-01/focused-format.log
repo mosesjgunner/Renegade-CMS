@@ -1,0 +1,14 @@
+Checking formatting...
+[warn] src/app/(frontend)/api/commerce/cart/route.ts
+[warn] src/app/(frontend)/api/commerce/proposal/route.ts
+[warn] src/modules/admin/AudienceCommandCenter.tsx
+[warn] src/modules/admin/FulfillmentCommandCenter.tsx
+[warn] src/modules/commerce/CartView.tsx
+[warn] src/modules/commerce/service.ts
+[warn] tests/unit/dist-05-social-api-routes.test.ts
+[warn] tests/unit/shop-02-tampering-and-invariants.test.ts
+[warn] src/app/(frontend)/api/admin/fulfillment/route.ts
+[warn] src/app/(frontend)/api/admin/telecom/simulate/route.ts
+[warn] src/modules/commerce/merchant-selection.ts
+[warn] tests/unit/commerce-merchant-selection.test.ts
+[warn] Code style issues found in 12 files. Run Prettier with --write to fix.

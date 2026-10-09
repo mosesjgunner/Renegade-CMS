@@ -1,0 +1,51 @@
+[
+  {
+    "path": "docs/rc/evidence/rc-02/source-attribution.json",
+    "sourceSha": "b684ee11460637bf2177f349057f14d6e804bbbd",
+    "recordedSourceFileComparisons": [],
+    "qualification": "Retain historical bounded results; matching selected files is not full dependency or current behavior containment."
+  },
+  {
+    "path": "docs/rc/evidence/rc-03-pass3/checks.json",
+    "sourceSha": "97ce2c1e4a253289d0d4f9da66c154afce74c6e9",
+    "recordedSourceFileComparisons": [
+      {
+        "path": "src/modules/admin/CapabilityCenter.tsx",
+        "matchesCurrentBytes": true
+      },
+      {
+        "path": "src/modules/admin/SocialCommandCenter.tsx",
+        "matchesCurrentBytes": false
+      },
+      {
+        "path": "src/modules/module-registry.ts",
+        "matchesCurrentBytes": false
+      },
+      {
+        "path": "src/modules/releases/saga.ts",
+        "matchesCurrentBytes": true
+      },
+      {
+        "path": "tests/rc03/orchestration.spec.ts",
+        "matchesCurrentBytes": true
+      },
+      {
+        "path": "tests/unit/dist-03-social-command-center.test.tsx",
+        "matchesCurrentBytes": true
+      }
+    ],
+    "qualification": "Retain historical bounded results; matching selected files is not full dependency or current behavior containment."
+  },
+  {
+    "path": "docs/rc/evidence/rc-04-pass2-recheck/checks.json",
+    "sourceSha": "d1cb789908c11f3624cba6468d59c8ec556a029f",
+    "recordedSourceFileComparisons": [],
+    "qualification": "Retain historical bounded results; matching selected files is not full dependency or current behavior containment."
+  },
+  {
+    "path": "docs/rc/evidence/rc-08c-2026-10-06/checks.json",
+    "sourceSha": "01908f39a3ce40b5eae5d4dec64b981e103d5fb1",
+    "recordedSourceFileComparisons": [],
+    "qualification": "Retain historical bounded results; matching selected files is not full dependency or current behavior containment."
+  }
+]

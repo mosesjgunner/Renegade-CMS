@@ -1,3 +1,11 @@
+> Current RC1 baseline (2026-10-09): **NOT READY**. Stage 01 inspected HEAD `2aa4957ac044694714cb4dfc52fb76f7c4109262` plus the [initial full tested-tree manifest](evidence/rc1/stage-01/tested-tree.json). Source repairs remain uncommitted. Focused unit review: 22 files / 155 passed / zero failed or skipped; corrected focused lint passed; format failed on 12 changed files. Stages 02–07 acceptance is pending. See [RC1 scope](RC1-SCOPE.md), [ordered matrix](RC1-ACCEPTANCE-MATRIX.md), [baseline findings](evidence/rc1/stage-01/BASELINE.md) and [handoff](evidence/rc1/stage-01/HANDOFF.md).
+>
+> The historical text below applies only to its original sources. It does not establish current readiness or current reproduced defects. RC-08B promotions and newer scratch workflow results remain bounded historical evidence; old deferrals are not automatically shipping exclusions. The supplied authoritative A–T definition is recovered. No current audit/image/browser/restore acceptance is claimed.
+
+Current acceptance dispositions are in [the expanded inventory](evidence/rc1/stage-01/acceptance-inventory.json), with dependency and scope overrides in [RC1-ACCEPTANCE-MATRIX.md](RC1-ACCEPTANCE-MATRIX.md). Original rows below are preserved for attribution and historical inventory.
+
+---
+
 > RC-08C current verdict (2026-10-06): **FAIL / NOT READY**. Tested clean source `01908f39a3ce40b5eae5d4dec64b981e103d5fb1`. [Final report](FINAL_RC_REPORT.md); [dependency-ordered repair cards](repairs/RC08C-closure-blockers.md); [exact checks](evidence/rc-08c-2026-10-06/checks.json).
 
 Full quality, unit/integration, migration fixture and build checks pass. Two ordinary browser journeys fail; mandatory operator, security, golden and full business-state restore gates remain open.

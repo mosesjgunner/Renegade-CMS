@@ -23,3 +23,6 @@ docs/rc/evidence/rc-08-20261006/
 
 # Immutable RC-08C execution receipts; preserve captured bytes.
 docs/rc/evidence/rc-08c-2026-10-06/
+
+# Immutable RC1 baseline manifests, raw results and preserved historical report.
+docs/rc/evidence/rc1/stage-01/

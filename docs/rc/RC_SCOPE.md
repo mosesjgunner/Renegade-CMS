@@ -1,3 +1,13 @@
+> Current RC1 baseline (2026-10-09): **NOT READY**. Stage 01 inspected HEAD `2aa4957ac044694714cb4dfc52fb76f7c4109262` plus the [initial full tested-tree manifest](evidence/rc1/stage-01/tested-tree.json). Source repairs remain uncommitted. Focused unit review: 22 files / 155 passed / zero failed or skipped; corrected focused lint passed; format failed on 12 changed files. Stages 02–07 acceptance is pending. See [RC1 scope](RC1-SCOPE.md), [ordered matrix](RC1-ACCEPTANCE-MATRIX.md), [baseline findings](evidence/rc1/stage-01/BASELINE.md) and [handoff](evidence/rc1/stage-01/HANDOFF.md).
+>
+> The historical text below applies only to its original sources. It does not establish current readiness or current reproduced defects. RC-08B promotions and newer scratch workflow results remain bounded historical evidence; old deferrals are not automatically shipping exclusions. The supplied authoritative A–T definition is recovered. No current audit/image/browser/restore acceptance is claimed.
+
+# Current scope authority
+
+[RC1-SCOPE.md](RC1-SCOPE.md) supersedes contradictory historical scope summaries below. Required enabled module features remain pending acceptance; local/provider/experimental boundaries are explicit.
+
+## Preserved historical scope snapshots
+
 # RC scope and claim policy
 
 ## RC-05 Pass 3 claim boundary — 2026-10-05
