@@ -1,0 +1,8 @@
+{
+  "command": "git diff HEAD^ HEAD --check",
+  "exitCode": 0,
+  "reason": "Postcommit diagnostic exited 0. Earlier staged diff emitted CRLF trailing-whitespace messages; its individual exit code was not captured and is not assigned retrospectively. Receipt attributes explicitly recognize CR-at-EOL while preserving bytes.",
+  "findingCount": 0,
+  "outputSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "sample": []
+}

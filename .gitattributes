@@ -8,4 +8,4 @@ docs/rc/evidence/rc-08c-2026-10-06/** -text
 docs/rc/evidence/rc-08d/reconciliation-2026-10-07/*.log -text
 
 # Preserve RC1 baseline hashes, raw command output and archived report bytes.
-docs/rc/evidence/rc1/stage-01/** -text
+docs/rc/evidence/rc1/stage-01/** -text whitespace=cr-at-eol

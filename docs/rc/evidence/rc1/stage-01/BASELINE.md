@@ -57,6 +57,8 @@ All initial source changes are preserved. **No implementation commit** is made: 
 
 Format repair paths: cart route, proposal route, AudienceCommandCenter, FulfillmentCommandCenter, CartView, commerce service, dist-05 social API tests, shop-02 invariants, new fulfillment route, telecom simulate route, merchant selection helper and its test. No broad redesign or disabling document locking is authorized.
 
+Documentation packaging note: after marking receipts `-text`, the staged diff check emitted CRLF trailing-whitespace messages, and the PowerShell command continued to the documentation commit. The subsequent `git diff HEAD^ HEAD --check` diagnostic exited 0 with no findings; that later result does not establish the earlier command's uncaptured exit code. The receipt attribute now explicitly recognizes CR-at-end-of-line while preserving captured bytes. This does not change application formatting or test assertions. See `packaging-first-failure.json` and `git-state.json` for the exact recorded diagnostics/final state.
+
 ## Next stage
 
 Execute **Stage 02 only when requested**. Resolve the review queue, format the affected candidate files, commit coherent reviewed implementation groups, freeze a clean isolated source, then run ordered quality/schema/integration/build/bundle gates. Stages 03–07 are detailed in [the matrix](../../../RC1-ACCEPTANCE-MATRIX.md) and [handoff](HANDOFF.md). The first current measured candidate failure is focused formatting, not the historical October 7 failure. RC1 remains NOT READY.
