@@ -1,3 +1,5 @@
+> Execution authority (2026-10-11): the user has assigned the final seven sequential Gemini→Sol pairs. Use the assigned stage instruction with [Sol mandatory gates/owners](evidence/rc1/stage-01/sol/mandatory-gates.md). The self-contained stage prompts below remain the stage scopes; do not create another round. Only final Sol Stage 07 may create a local RC1 tag after actual PASS; older no-tag wording below is superseded solely for that action. No push, publish or deploy.
+
 # RC1 plan and execution prompts
 
 Assessment date: 2026-10-09. Inspected HEAD: `2aa4957ac044694714cb4dfc52fb76f7c4109262`; substantial tracked and untracked repairs are present. This is a planning review, not an acceptance run. No tests, image verification, or provider acceptance were executed for this assessment.
@@ -14,7 +16,11 @@ The current changes span identity/recovery, scoped grants, audience truth, cart/
 
 Run the prompts below in order, one stage at a time. A stage may require a repair and rerun. Final RC1 requires every mandatory stage to pass on the final candidate or have inspectable, valid source-containment evidence. Existing substantive evidence should be reused where valid. RC1 does not require every future feature or live provider, but mandatory shipping features cannot become deferred merely to obtain green status.
 
-## Shared instructions — prepend to every prompt
+## How to use these prompts
+
+Each stage below is a complete prompt. Copy its entire text block and paste it as one message. Run one stage at a time, in order; no separate instruction block is needed.
+
+## Prompt 1 — Reconcile scope, existing work and evidence
 
 ```text
 Work in C:\Projects\RENEGADE CMS\Renegade-CMS. Read AGENTS.md and docs/rc/RC1-PLAN-AND-PROMPTS.md, then the current scope, ledgers and relevant evidence. Complete only the stage below. Preserve existing local databases, media, secrets, user changes and historical evidence. Use isolated disposable databases/media/Compose projects for acceptance. Never print credentials or tokens.
@@ -22,11 +28,7 @@ Work in C:\Projects\RENEGADE CMS\Renegade-CMS. Read AGENTS.md and docs/rc/RC1-PL
 Act autonomously within this stage. Repair narrowly; do not redesign, weaken assertions, disable document locking, fabricate provider success, edit business status rows to simulate success, or promote static/unit proof to browser acceptance. Keep sandbox/emulator/local and real-provider claims distinct. Do not tag, push, publish or deploy to existing installations.
 
 For every result record exact tested SHA or full tested-tree manifest, commands, exit codes, passed/failed/skipped/unexecuted counts, runtime configuration without secrets, and inspectable logs/traces/persistence assertions. Save new evidence under docs/rc/evidence/rc1/<stage>/ and a concise handoff. Stop acceptance at the first dependency-ordered failure; preserve it, repair separately, freeze a new candidate and rerun affected gates. Missing evidence is not PASS. End with PASS or FAIL/NOT READY, exact scope, remaining blockers and next stage; do not automatically execute the next prompt.
-```
 
-## Prompt 1 — Reconcile scope, existing work and evidence
-
-```text
 Stage 01: Establish the actual RC1 baseline.
 
 Inventory current HEAD, index, tracked modifications and untracked files. Review all existing repairs without overwriting them. Compare FINAL_RC_REPORT, BLOCKERS, HANDOFF, RC_SCOPE, capability/route/provider/security ledgers, RC08C repair cards and RC08D-01 through RC08D-07 receipts. Locate underlying execution artifacts; check SHA/tree binding, source containment and whether each receipt proves its claimed behavior. Reuse valid evidence; explicitly distinguish stale, unsupported and missing results. Resolve the 27 passed/1 skipped versus no-skips claim by identifying the skipped case and its requirement.
@@ -39,6 +41,12 @@ Review and organize the existing uncommitted work into coherent candidate change
 ## Prompt 2 — Stabilize and freeze a reproducible candidate
 
 ```text
+Work in C:\Projects\RENEGADE CMS\Renegade-CMS. Read AGENTS.md and docs/rc/RC1-PLAN-AND-PROMPTS.md, then the current scope, ledgers and relevant evidence. Complete only the stage below. Preserve existing local databases, media, secrets, user changes and historical evidence. Use isolated disposable databases/media/Compose projects for acceptance. Never print credentials or tokens.
+
+Act autonomously within this stage. Repair narrowly; do not redesign, weaken assertions, disable document locking, fabricate provider success, edit business status rows to simulate success, or promote static/unit proof to browser acceptance. Keep sandbox/emulator/local and real-provider claims distinct. Do not tag, push, publish or deploy to existing installations.
+
+For every result record exact tested SHA or full tested-tree manifest, commands, exit codes, passed/failed/skipped/unexecuted counts, runtime configuration without secrets, and inspectable logs/traces/persistence assertions. Save new evidence under docs/rc/evidence/rc1/<stage>/ and a concise handoff. Stop acceptance at the first dependency-ordered failure; preserve it, repair separately, freeze a new candidate and rerun affected gates. Missing evidence is not PASS. End with PASS or FAIL/NOT READY, exact scope, remaining blockers and next stage; do not automatically execute the next prompt.
+
 Stage 02: Finish and validate the candidate changes identified by stage 01.
 
 Review identity/owner recovery and staff invitation changes, scoped authorization, audience data projections, cart ownership, merchant selection, checkout/status/download controls, webhook retry, subscription plans and fulfillment wiring. Resolve implementation defects within the approved shipping scope. Verify collection changes have required additive fresh/upgrade migrations, generated types and import maps. Do not assume generated types prove database compatibility.
@@ -51,6 +59,12 @@ Deliver a reproducible clean candidate and quality/schema receipts, with later b
 ## Prompt 3 — Ordinary setup, identity, publishing and role boundaries
 
 ```text
+Work in C:\Projects\RENEGADE CMS\Renegade-CMS. Read AGENTS.md and docs/rc/RC1-PLAN-AND-PROMPTS.md, then the current scope, ledgers and relevant evidence. Complete only the stage below. Preserve existing local databases, media, secrets, user changes and historical evidence. Use isolated disposable databases/media/Compose projects for acceptance. Never print credentials or tokens.
+
+Act autonomously within this stage. Repair narrowly; do not redesign, weaken assertions, disable document locking, fabricate provider success, edit business status rows to simulate success, or promote static/unit proof to browser acceptance. Keep sandbox/emulator/local and real-provider claims distinct. Do not tag, push, publish or deploy to existing installations.
+
+For every result record exact tested SHA or full tested-tree manifest, commands, exit codes, passed/failed/skipped/unexecuted counts, runtime configuration without secrets, and inspectable logs/traces/persistence assertions. Save new evidence under docs/rc/evidence/rc1/<stage>/ and a concise handoff. Stop acceptance at the first dependency-ordered failure; preserve it, repair separately, freeze a new candidate and rerun affected gates. Missing evidence is not PASS. End with PASS or FAIL/NOT READY, exact scope, remaining blockers and next stage; do not automatically execute the next prompt.
+
 Stage 03: Prove ordinary product entry and core workflows on stage 02's candidate.
 
 Use production boot and a fresh disposable database/media directory with local test authentication mode disabled. Complete actual first-run setup through Chromium with a real browser WebAuthn virtual authenticator. Invite administrator/staff through shipping UI/API, enroll their first passkeys, log out/in, and verify canonical member/site grants. Exercise expired/reused/foreign invitations, wrong origin/challenge, role revocation and owner recovery through supported interfaces. Never forge sessions or directly mark setup complete.
@@ -63,6 +77,12 @@ Execute owner/administrator/staff/member/anonymous permitted and denied actions 
 ## Prompt 4 — Commerce, audience, community and provider boundaries
 
 ```text
+Work in C:\Projects\RENEGADE CMS\Renegade-CMS. Read AGENTS.md and docs/rc/RC1-PLAN-AND-PROMPTS.md, then the current scope, ledgers and relevant evidence. Complete only the stage below. Preserve existing local databases, media, secrets, user changes and historical evidence. Use isolated disposable databases/media/Compose projects for acceptance. Never print credentials or tokens.
+
+Act autonomously within this stage. Repair narrowly; do not redesign, weaken assertions, disable document locking, fabricate provider success, edit business status rows to simulate success, or promote static/unit proof to browser acceptance. Keep sandbox/emulator/local and real-provider claims distinct. Do not tag, push, publish or deploy to existing installations.
+
+For every result record exact tested SHA or full tested-tree manifest, commands, exit codes, passed/failed/skipped/unexecuted counts, runtime configuration without secrets, and inspectable logs/traces/persistence assertions. Save new evidence under docs/rc/evidence/rc1/<stage>/ and a concise handoff. Stop acceptance at the first dependency-ordered failure; preserve it, repair separately, freeze a new candidate and rerun affected gates. Missing evidence is not PASS. End with PASS or FAIL/NOT READY, exact scope, remaining blockers and next stage; do not automatically execute the next prompt.
+
 Stage 04: Complete ordinary shipping module workflows after stage 03 passes.
 
 Execute stage 01's capability matrix through shipping browser/API/operator paths. Commerce must cover guest/member cart ownership and merge, server pricing and proposal integrity, merchant/site binding, available payment methods, checkout/status authorization, signed webhook settlement and replay, inventory concurrency, digital delivery authorization/revocation, refunds, subscriptions and entitlements, cancellation/dunning, donations/privacy and any advertised affiliate behavior. Verify actual persisted fulfillment mappings, tracking and exception actions through scoped roles. Do not describe integration-only commerce checks as a browser journey.
@@ -75,6 +95,12 @@ Use actual adapters against isolated local harnesses or approved configured sand
 ## Prompt 5 — Production artifact and security decision
 
 ```text
+Work in C:\Projects\RENEGADE CMS\Renegade-CMS. Read AGENTS.md and docs/rc/RC1-PLAN-AND-PROMPTS.md, then the current scope, ledgers and relevant evidence. Complete only the stage below. Preserve existing local databases, media, secrets, user changes and historical evidence. Use isolated disposable databases/media/Compose projects for acceptance. Never print credentials or tokens.
+
+Act autonomously within this stage. Repair narrowly; do not redesign, weaken assertions, disable document locking, fabricate provider success, edit business status rows to simulate success, or promote static/unit proof to browser acceptance. Keep sandbox/emulator/local and real-provider claims distinct. Do not tag, push, publish or deploy to existing installations.
+
+For every result record exact tested SHA or full tested-tree manifest, commands, exit codes, passed/failed/skipped/unexecuted counts, runtime configuration without secrets, and inspectable logs/traces/persistence assertions. Save new evidence under docs/rc/evidence/rc1/<stage>/ and a concise handoff. Stop acceptance at the first dependency-ordered failure; preserve it, repair separately, freeze a new candidate and rerun affected gates. Missing evidence is not PASS. End with PASS or FAIL/NOT READY, exact scope, remaining blockers and next stage; do not automatically execute the next prompt.
+
 Stage 05: Verify the production web/worker artifact and security boundary.
 
 Refresh dependency graph and audit evidence for the candidate. Enumerate each unique advisory with installed path/version, importing code, runtime/build/test classification, exploit prerequisites, production reachability, patch options and explicit disposition. Verify current advisory facts from primary sources. Do not use audit fix --force, parent-package counts or an old image as proof of this candidate.
@@ -87,6 +113,12 @@ Execute the required authenticated runtime security negatives from the ledger: t
 ## Prompt 6 — Business recovery, complete restore and supported upgrade
 
 ```text
+Work in C:\Projects\RENEGADE CMS\Renegade-CMS. Read AGENTS.md and docs/rc/RC1-PLAN-AND-PROMPTS.md, then the current scope, ledgers and relevant evidence. Complete only the stage below. Preserve existing local databases, media, secrets, user changes and historical evidence. Use isolated disposable databases/media/Compose projects for acceptance. Never print credentials or tokens.
+
+Act autonomously within this stage. Repair narrowly; do not redesign, weaken assertions, disable document locking, fabricate provider success, edit business status rows to simulate success, or promote static/unit proof to browser acceptance. Keep sandbox/emulator/local and real-provider claims distinct. Do not tag, push, publish or deploy to existing installations.
+
+For every result record exact tested SHA or full tested-tree manifest, commands, exit codes, passed/failed/skipped/unexecuted counts, runtime configuration without secrets, and inspectable logs/traces/persistence assertions. Save new evidence under docs/rc/evidence/rc1/<stage>/ and a concise handoff. Stop acceptance at the first dependency-ordered failure; preserve it, repair separately, freeze a new candidate and rerun affected gates. Missing evidence is not PASS. End with PASS or FAIL/NOT READY, exact scope, remaining blockers and next stage; do not automatically execute the next prompt.
+
 Stage 06: Prove operations using representative state created through accepted workflows.
 
 Populate the isolated candidate with published pages/articles/search, media, users/roles/settings, audience consent/delivery, community/messages, orders/refunds/subscriptions/donations/entitlements and pending scheduled/outbox/fulfillment state required by the RC1 scope.
@@ -101,6 +133,12 @@ Prove multi-instance project/network/volume/secret isolation and supported upgra
 ## Prompt 7 — Immutable RC1 acceptance and handoff
 
 ```text
+Work in C:\Projects\RENEGADE CMS\Renegade-CMS. Read AGENTS.md and docs/rc/RC1-PLAN-AND-PROMPTS.md, then the current scope, ledgers and relevant evidence. Complete only the stage below. Preserve existing local databases, media, secrets, user changes and historical evidence. Use isolated disposable databases/media/Compose projects for acceptance. Never print credentials or tokens.
+
+Act autonomously within this stage. Repair narrowly; do not redesign, weaken assertions, disable document locking, fabricate provider success, edit business status rows to simulate success, or promote static/unit proof to browser acceptance. Keep sandbox/emulator/local and real-provider claims distinct. Do not tag, push, publish or deploy to existing installations.
+
+For every result record exact tested SHA or full tested-tree manifest, commands, exit codes, passed/failed/skipped/unexecuted counts, runtime configuration without secrets, and inspectable logs/traces/persistence assertions. Save new evidence under docs/rc/evidence/rc1/<stage>/ and a concise handoff. Stop acceptance at the first dependency-ordered failure; preserve it, repair separately, freeze a new candidate and rerun affected gates. Missing evidence is not PASS. End with PASS or FAIL/NOT READY, exact scope, remaining blockers and next stage; do not automatically execute the next prompt.
+
 Stage 07: Decide whether v0.1.0-rc.1 is ready; this is an acceptance gate.
 
 Review stages 01–06 for individually inspectable PASS evidence and complete coverage of mandatory scope. Every receipt must bind to the actual tested SHA/tree, with proof of containment in the final candidate. Do not retrospectively assign current SHA to historical runs. If later repairs changed accepted behavior, rerun affected workflows and all required final aggregate checks.

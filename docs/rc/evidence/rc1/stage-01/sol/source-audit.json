@@ -1,0 +1,40 @@
+[
+  {
+    "commandArguments": [
+      "git",
+      "merge-base",
+      "--is-ancestor",
+      "100bd80fa8451ab04eb6e14c937697bb77970e4c",
+      "HEAD"
+    ],
+    "exitCode": 0,
+    "stdout": "",
+    "scope": "source inspection only; not historical execution report"
+  },
+  {
+    "commandArguments": [
+      "git",
+      "diff",
+      "100bd80fa8451ab04eb6e14c937697bb77970e4c",
+      "HEAD",
+      "--name-only"
+    ],
+    "exitCode": 0,
+    "stdout": ".gitattributes\n.prettierignore\ndocs/rc/BLOCKERS.md\ndocs/rc/CAPABILITY_LEDGER.md\ndocs/rc/FINAL_RC_REPORT.md\ndocs/rc/HANDOFF.md\ndocs/rc/PROVIDER_MATRIX.md\ndocs/rc/RC1-ACCEPTANCE-MATRIX.md\ndocs/rc/RC1-PLAN-AND-PROMPTS.md\ndocs/rc/RC1-SCOPE.md\ndocs/rc/RC_SCOPE.md\ndocs/rc/README.md\ndocs/rc/ROUTE_MATRIX.md\ndocs/rc/SECURITY_LEDGER.md\ndocs/rc/evidence/rc-08d/RC08D-07-final-closure.json\ndocs/rc/evidence/rc-08d/RC08D-07-final-closure.md\ndocs/rc/evidence/rc1/stage-01/BASELINE.md\ndocs/rc/evidence/rc1/stage-01/HANDOFF.md\ndocs/rc/evidence/rc1/stage-01/acceptance-inventory.json\ndocs/rc/evidence/rc1/stage-01/attachment-attribution.json\ndocs/rc/evidence/rc1/stage-01/candidate-groups.json\ndocs/rc/evidence/rc1/stage-01/containment.json\ndocs/rc/evidence/rc1/stage-01/documentation-checks.json\ndocs/rc/evidence/rc1/stage-01/documentation-diff-check.log\ndocs/rc/evidence/rc1/stage-01/documentation-format.log\ndocs/rc/evidence/rc1/stage-01/finalize-state.py\ndocs/rc/evidence/rc1/stage-01/focused-checks-attempt-1.json\ndocs/rc/evidence/rc1/stage-01/focused-checks.json\ndocs/rc/evidence/rc1/stage-01/focused-format.log\ndocs/rc/evidence/rc1/stage-01/focused-lint-attempt-1.log\ndocs/rc/evidence/rc1/stage-01/focused-lint.log\ndocs/rc/evidence/rc1/stage-01/focused-unit.json\ndocs/rc/evidence/rc1/stage-01/focused-unit.log\ndocs/rc/evidence/rc1/stage-01/git-state.json\ndocs/rc/evidence/rc1/stage-01/golden-journey.txt\ndocs/rc/evidence/rc1/stage-01/historical-artifacts.json\ndocs/rc/evidence/rc1/stage-01/historical-proof-review.json\ndocs/rc/evidence/rc1/stage-01/historical/FINAL_RC_REPORT-2026-10-08.md\ndocs/rc/evidence/rc1/stage-01/inspect-baseline.py\ndocs/rc/evidence/rc1/stage-01/inventory.json\ndocs/rc/evidence/rc1/stage-01/packaging-first-failure.json\ndocs/rc/evidence/rc1/stage-01/reconcile-documents.py\ndocs/rc/evidence/rc1/stage-01/recover-evidence.py\ndocs/rc/evidence/rc1/stage-01/recovered-workflow-artifacts.json\ndocs/rc/evidence/rc1/stage-01/run-focused-checks.py\ndocs/rc/evidence/rc1/stage-01/summary-documents-before.json\ndocs/rc/evidence/rc1/stage-01/tested-tree.json\ndocs/rc/evidence/rc1/stage-01/verify-documentation.py\n",
+    "scope": "source inspection only; not historical execution report"
+  },
+  {
+    "commandArguments": [
+      "git",
+      "grep",
+      "-n",
+      "test.skip",
+      "100bd80fa8451ab04eb6e14c937697bb77970e4c",
+      "--",
+      "tests/browser"
+    ],
+    "exitCode": 0,
+    "stdout": "100bd80fa8451ab04eb6e14c937697bb77970e4c:tests/browser/phase-a-install-login.spec.ts:16:    test.skip(true, 'A01_SETUP_TOKEN must come from the local web-container log')\n",
+    "scope": "source inspection only; not historical execution report"
+  }
+]

@@ -1,0 +1,2312 @@
+[
+  {
+    "module": "collaboration",
+    "kind": "collections",
+    "slug": "team-memberships",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "collaboration",
+    "kind": "collections",
+    "slug": "team-invitations",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "collaboration",
+    "kind": "collections",
+    "slug": "team-audit-events",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "collaboration",
+    "kind": "collections",
+    "slug": "editorial-assignments",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "collaboration",
+    "kind": "collections",
+    "slug": "editorial-discussions",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "collaboration",
+    "kind": "collections",
+    "slug": "editorial-comments",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "collaboration",
+    "kind": "collections",
+    "slug": "work-conversations",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "collaboration",
+    "kind": "collections",
+    "slug": "work-messages",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "collaboration",
+    "kind": "collections",
+    "slug": "realtime-events",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "collaboration",
+    "kind": "collections",
+    "slug": "realtime-presence",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "community",
+    "kind": "collections",
+    "slug": "relationships",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "community",
+    "kind": "collections",
+    "slug": "forum-sections",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "community",
+    "kind": "collections",
+    "slug": "forums",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "community",
+    "kind": "collections",
+    "slug": "discussions",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "community",
+    "kind": "collections",
+    "slug": "discussion-posts",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "events",
+    "kind": "collections",
+    "slug": "events",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "events",
+    "kind": "collections",
+    "slug": "timelines",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "events",
+    "kind": "collections",
+    "slug": "timeline-memberships",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "events",
+    "kind": "collections",
+    "slug": "calendar-entries",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "sources",
+    "kind": "collections",
+    "slug": "sources",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "media-studio",
+    "kind": "collections",
+    "slug": "albums",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "media-studio",
+    "kind": "collections",
+    "slug": "books",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "media-studio",
+    "kind": "collections",
+    "slug": "book-parts",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "media-studio",
+    "kind": "collections",
+    "slug": "book-chapters",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "media-studio",
+    "kind": "collections",
+    "slug": "book-editions",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "media-studio",
+    "kind": "collections",
+    "slug": "podcast-shows",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "media-studio",
+    "kind": "collections",
+    "slug": "podcast-seasons",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "media-studio",
+    "kind": "collections",
+    "slug": "podcast-episodes",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "media-studio",
+    "kind": "collections",
+    "slug": "video-channels",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "media-studio",
+    "kind": "collections",
+    "slug": "video-playlists",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "media-studio",
+    "kind": "collections",
+    "slug": "videos",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "media-studio",
+    "kind": "collections",
+    "slug": "video-assets",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "media-studio",
+    "kind": "collections",
+    "slug": "video-captions",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "media-studio",
+    "kind": "collections",
+    "slug": "interviews",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "media-studio",
+    "kind": "collections",
+    "slug": "livestreams",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "media-studio",
+    "kind": "collections",
+    "slug": "transcript-revisions",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "media-studio",
+    "kind": "collections",
+    "slug": "media-jobs",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "media-studio",
+    "kind": "collections",
+    "slug": "tts-outputs",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "media-studio",
+    "kind": "collections",
+    "slug": "graphic-documents",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "media-studio",
+    "kind": "collections",
+    "slug": "media-derivatives",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "media-studio",
+    "kind": "collections",
+    "slug": "edit-sessions",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "media-studio",
+    "kind": "collections",
+    "slug": "quick-capture-drafts",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "media-studio",
+    "kind": "tasks",
+    "slug": "media-import",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "media-studio",
+    "kind": "tasks",
+    "slug": "media-render",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "media-studio",
+    "kind": "tasks",
+    "slug": "media-transcribe",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "media-studio",
+    "kind": "tasks",
+    "slug": "media-tts",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "media-studio",
+    "kind": "tasks",
+    "slug": "media-usage-reconcile",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "media-studio",
+    "kind": "tasks",
+    "slug": "video-process",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "social",
+    "kind": "collections",
+    "slug": "social-accounts",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "social",
+    "kind": "collections",
+    "slug": "social-drafts",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "social",
+    "kind": "collections",
+    "slug": "social-network-variants",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "social",
+    "kind": "collections",
+    "slug": "social-queue-items",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "social",
+    "kind": "collections",
+    "slug": "social-publish-attempts",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "social",
+    "kind": "collections",
+    "slug": "external-posts",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "social",
+    "kind": "collections",
+    "slug": "campaigns",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "social",
+    "kind": "collections",
+    "slug": "calendar-entry-audits",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "social",
+    "kind": "tasks",
+    "slug": "social-publish",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "network",
+    "kind": "collections",
+    "slug": "network-signing-keys",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "network",
+    "kind": "collections",
+    "slug": "remote-instances",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "network",
+    "kind": "collections",
+    "slug": "remote-actors",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "network",
+    "kind": "collections",
+    "slug": "remote-objects",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "network",
+    "kind": "collections",
+    "slug": "network-relationships",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "network",
+    "kind": "collections",
+    "slug": "inbound-network-activities",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "network",
+    "kind": "collections",
+    "slug": "outbound-network-deliveries",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "network",
+    "kind": "collections",
+    "slug": "network-delivery-attempts",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "network",
+    "kind": "collections",
+    "slug": "network-access-decisions",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "network",
+    "kind": "collections",
+    "slug": "network-audit-events",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "network",
+    "kind": "globals",
+    "slug": "network-settings",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "network",
+    "kind": "tasks",
+    "slug": "network-delivery",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "integrations",
+    "kind": "collections",
+    "slug": "api-clients",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "integrations",
+    "kind": "collections",
+    "slug": "api-request-records",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "integrations",
+    "kind": "collections",
+    "slug": "webhook-subscriptions",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "integrations",
+    "kind": "collections",
+    "slug": "webhook-deliveries",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "integrations",
+    "kind": "collections",
+    "slug": "integration-audit-events",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "releases",
+    "kind": "collections",
+    "slug": "content-releases",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "releases",
+    "kind": "tasks",
+    "slug": "content-release-execute",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "forms",
+    "kind": "collections",
+    "slug": "form-definitions",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "forms",
+    "kind": "collections",
+    "slug": "form-schemas",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "forms",
+    "kind": "collections",
+    "slug": "form-submissions",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "forms",
+    "kind": "collections",
+    "slug": "submission-attachments",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "crm",
+    "kind": "collections",
+    "slug": "contacts",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "crm",
+    "kind": "collections",
+    "slug": "organizations",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "crm",
+    "kind": "collections",
+    "slug": "relationship-records",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "crm",
+    "kind": "collections",
+    "slug": "contact-tags",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "crm",
+    "kind": "collections",
+    "slug": "contact-taggings",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "crm",
+    "kind": "collections",
+    "slug": "interaction-records",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "crm",
+    "kind": "collections",
+    "slug": "relationship-notes",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "crm",
+    "kind": "collections",
+    "slug": "deals-opportunities",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "crm",
+    "kind": "collections",
+    "slug": "owner-assignments",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "crm",
+    "kind": "collections",
+    "slug": "next-actions",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "crm",
+    "kind": "collections",
+    "slug": "workflow-items",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "newsletter",
+    "kind": "collections",
+    "slug": "audience-lists",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "newsletter",
+    "kind": "collections",
+    "slug": "audience-segments",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "newsletter",
+    "kind": "collections",
+    "slug": "audience-memberships",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "newsletter",
+    "kind": "collections",
+    "slug": "subscriber-confirmation-tokens",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "newsletter",
+    "kind": "collections",
+    "slug": "subscribers",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "newsletter",
+    "kind": "collections",
+    "slug": "consent-events",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "newsletter",
+    "kind": "collections",
+    "slug": "preferences",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "newsletter",
+    "kind": "collections",
+    "slug": "suppressions",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "newsletter",
+    "kind": "collections",
+    "slug": "email-messages",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "newsletter",
+    "kind": "collections",
+    "slug": "delivery-identities",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "newsletter",
+    "kind": "collections",
+    "slug": "email-deliveries",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "newsletter",
+    "kind": "collections",
+    "slug": "delivery-receipts",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "newsletter",
+    "kind": "tasks",
+    "slug": "audience-email-delivery",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "newsletter",
+    "kind": "tasks",
+    "slug": "audience-newsletter-dispatch",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "notifications",
+    "kind": "collections",
+    "slug": "activity-events",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "notifications",
+    "kind": "collections",
+    "slug": "notifications",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "notifications",
+    "kind": "collections",
+    "slug": "notification-preferences",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "notifications",
+    "kind": "collections",
+    "slug": "notification-channels",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "notifications",
+    "kind": "collections",
+    "slug": "digest-definitions",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "notifications",
+    "kind": "collections",
+    "slug": "digest-runs",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "notifications",
+    "kind": "collections",
+    "slug": "automation-definitions",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "analytics",
+    "kind": "collections",
+    "slug": "analytics-events",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "analytics",
+    "kind": "collections",
+    "slug": "analytics-consent-records",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "analytics",
+    "kind": "collections",
+    "slug": "analytics-rollups",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "analytics",
+    "kind": "collections",
+    "slug": "metric-snapshots",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "analytics",
+    "kind": "collections",
+    "slug": "analytics-goals",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "analytics",
+    "kind": "collections",
+    "slug": "command-center-preferences",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "analytics",
+    "kind": "tasks",
+    "slug": "analytics-retention-cleanup",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "experiences",
+    "kind": "collections",
+    "slug": "experience-rules",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "experiences",
+    "kind": "collections",
+    "slug": "experience-variants",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "experiences",
+    "kind": "collections",
+    "slug": "experiments",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "experiences",
+    "kind": "collections",
+    "slug": "experiment-variants",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "experiences",
+    "kind": "collections",
+    "slug": "traffic-allocations",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "experiences",
+    "kind": "collections",
+    "slug": "experiment-assignments",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "experiences",
+    "kind": "collections",
+    "slug": "conversion-goals",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "experiences",
+    "kind": "collections",
+    "slug": "experiment-events",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "experiences",
+    "kind": "collections",
+    "slug": "experiment-analyses",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "experiences",
+    "kind": "collections",
+    "slug": "experiment-decisions",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "quality",
+    "kind": "collections",
+    "slug": "quality-policies",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "quality",
+    "kind": "collections",
+    "slug": "quality-rules",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "quality",
+    "kind": "collections",
+    "slug": "quality-scans",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "quality",
+    "kind": "collections",
+    "slug": "quality-issues",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "quality",
+    "kind": "collections",
+    "slug": "quality-exceptions",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "quality",
+    "kind": "collections",
+    "slug": "quality-waivers",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "quality",
+    "kind": "collections",
+    "slug": "quality-reports",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "quality",
+    "kind": "tasks",
+    "slug": "quality-scan",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "commerce",
+    "kind": "collections",
+    "slug": "merchant-connections",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "commerce",
+    "kind": "collections",
+    "slug": "payment-method-capabilities",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "commerce",
+    "kind": "collections",
+    "slug": "products",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "commerce",
+    "kind": "collections",
+    "slug": "carts",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "commerce",
+    "kind": "collections",
+    "slug": "checkout-sessions",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "commerce",
+    "kind": "collections",
+    "slug": "payment-intents",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "commerce",
+    "kind": "collections",
+    "slug": "payment-attempts",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "commerce",
+    "kind": "collections",
+    "slug": "orders",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "commerce",
+    "kind": "collections",
+    "slug": "payment-webhook-events",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "commerce",
+    "kind": "collections",
+    "slug": "commerce-refunds",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "commerce",
+    "kind": "collections",
+    "slug": "commerce-disputes",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "commerce",
+    "kind": "collections",
+    "slug": "commerce-reconciliation-cases",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "commerce",
+    "kind": "collections",
+    "slug": "supporters",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "commerce",
+    "kind": "collections",
+    "slug": "entitlements",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "commerce",
+    "kind": "tasks",
+    "slug": "commerce-abandon-checkouts",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "commerce",
+    "kind": "tasks",
+    "slug": "commerce-process-payment-event",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  },
+  {
+    "module": "commerce",
+    "kind": "tasks",
+    "slug": "commerce-reconcile-payments",
+    "owner": "Gemini 02 schema/registration; Gemini 03 configuration/roles; Gemini 04 actual outcome; corresponding Sol independent closure",
+    "gates": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ],
+    "classification": "rerun required"
+  }
+]

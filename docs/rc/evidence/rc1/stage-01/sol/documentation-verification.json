@@ -1,0 +1,74 @@
+{
+  "sourceManifest": "tested-tree.json",
+  "sourceDigest": "76a616549216cd26283730a2ee23f2d90b9cde8eb49800cfca95066b4c319cef",
+  "documentationOnlyDifferencesSinceChecks": [
+    "docs/rc/BLOCKERS.md",
+    "docs/rc/CAPABILITY_LEDGER.md",
+    "docs/rc/FINAL_RC_REPORT.md",
+    "docs/rc/HANDOFF.md",
+    "docs/rc/PROVIDER_MATRIX.md",
+    "docs/rc/RC1-ACCEPTANCE-MATRIX.md",
+    "docs/rc/RC1-PLAN-AND-PROMPTS.md",
+    "docs/rc/RC1-SCOPE.md",
+    "docs/rc/RC_SCOPE.md",
+    "docs/rc/README.md",
+    "docs/rc/ROUTE_MATRIX.md",
+    "docs/rc/SECURITY_LEDGER.md"
+  ],
+  "executableDifferencesSinceChecks": [],
+  "historicalArtifactsChecked": 607,
+  "historicalDifferences": [],
+  "geminiArtifactsChecked": 13,
+  "geminiDifferences": [],
+  "assignedEntries": 1215,
+  "unassignedEntries": 0,
+  "registeredObjectsAssigned": 154,
+  "checks": [
+    {
+      "name": "documentation-format",
+      "commandArguments": [
+        "node",
+        "node_modules/prettier/bin/prettier.cjs",
+        "--check",
+        "docs/rc/FINAL_RC_REPORT.md",
+        "docs/rc/BLOCKERS.md",
+        "docs/rc/HANDOFF.md",
+        "docs/rc/RC_SCOPE.md",
+        "docs/rc/CAPABILITY_LEDGER.md",
+        "docs/rc/ROUTE_MATRIX.md",
+        "docs/rc/PROVIDER_MATRIX.md",
+        "docs/rc/SECURITY_LEDGER.md",
+        "docs/rc/README.md",
+        "docs/rc/RC1-SCOPE.md",
+        "docs/rc/RC1-ACCEPTANCE-MATRIX.md",
+        "docs/rc/RC1-PLAN-AND-PROMPTS.md"
+      ],
+      "exitCode": 0,
+      "log": "documentation-format.log"
+    },
+    {
+      "name": "diff-check",
+      "commandArguments": [
+        "git",
+        "diff",
+        "--check"
+      ],
+      "exitCode": 0,
+      "log": "diff-check.log"
+    }
+  ],
+  "exitCode": 0,
+  "counts": {
+    "passed": 6,
+    "failed": 0,
+    "skipped": 0,
+    "unexecutedAcceptanceStages": [
+      "02",
+      "03",
+      "04",
+      "05",
+      "06",
+      "07"
+    ]
+  }
+}

@@ -1,0 +1,33 @@
+
+ RUN  v3.2.7 C:/Projects/RENEGADE CMS/Renegade-CMS
+
+ ✓ tests/unit/shop-04-local-test-checkout.test.ts (6 tests) 26ms
+ ✓ tests/unit/dist-05-social-api-routes.test.ts (6 tests) 19ms
+ ✓ tests/unit/telecom-admin-simulate.test.ts (5 tests) 119ms
+ ✓ tests/unit/commerce-cart-access.test.ts (4 tests) 13ms
+ ✓ tests/unit/shop-02-tampering-and-invariants.test.ts (9 tests) 16ms
+ ✓ tests/unit/rc01-admin-truth.test.tsx (11 tests) 564ms
+   ✓ RC-01 truthful admin boundaries > denies unauthorized reporting before operational reads  534ms
+ ✓ tests/unit/commerce-dashboard-scope.test.ts (3 tests) 7ms
+ ✓ tests/unit/shop-01-catalog-workflows.test.ts (18 tests) 74ms
+ ✓ tests/unit/owner-recovery.test.ts (3 tests) 9ms
+ ✓ tests/unit/donation-admin-scope.test.ts (4 tests) 14ms
+ ✓ tests/unit/commerce-webhook-retry.test.ts (4 tests) 52ms
+ ✓ tests/unit/staff-enrollment.test.ts (13 tests) 23ms
+ ✓ tests/unit/subscription-plans.test.ts (3 tests) 9ms
+ ✓ tests/unit/commerce-reconcile-scope.test.ts (2 tests) 11ms
+ ✓ tests/unit/digital-delivery-readiness.test.ts (3 tests) 8ms
+ ✓ tests/unit/commerce-merchant-selection.test.ts (3 tests) 2ms
+ ✓ tests/unit/onboarding.test.ts (4 tests) 11ms
+ ✓ tests/unit/authorization-matrix.test.ts (28 tests) 15ms
+ ✓ tests/unit/subscription-provider-plan-mapping.test.ts (3 tests) 3ms
+ ✓ tests/unit/tenant-isolation.test.ts (10 tests) 122ms
+ ✓ tests/unit/rc08d-lock-projection.test.ts (9 tests) 15ms
+ ✓ tests/unit/progressive-disclosure.test.ts (4 tests) 4ms
+
+ Test Files  22 passed (22)
+      Tests  155 passed (155)
+   Start at  13:19:48
+   Duration  4.73s (transform 3.54s, setup 0ms, collect 13.07s, tests 1.14s, environment 6ms, prepare 3.59s)
+
+JSON report written to C:/Projects/RENEGADE CMS/Renegade-CMS/docs/rc/evidence/rc1/stage-01/sol/focused-unit.json

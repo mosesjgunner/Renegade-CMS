@@ -1,0 +1,7 @@
+warning: in the working copy of 'src/app/(frontend)/api/admin/staff/invite/route.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/app/(frontend)/enroll/page.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/modules/admin/FulfillmentCommandCenter.tsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/modules/operations/operator-grants.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/modules/operations/staff-enrollment.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/payload-types.ts', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/integration/rc08d-lock-projection.integration.test.ts', LF will be replaced by CRLF the next time Git touches it

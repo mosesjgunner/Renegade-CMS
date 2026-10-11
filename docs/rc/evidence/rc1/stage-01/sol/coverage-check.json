@@ -1,0 +1,31 @@
+{
+  "command": "python docs/rc/evidence/rc1/stage-01/sol/review-baseline.py",
+  "exitCode": 0,
+  "historicalLedgerEntries": 924,
+  "currentRoutesAndPages": 274,
+  "moduleIds": [
+    "collaboration",
+    "community",
+    "events",
+    "sources",
+    "media-studio",
+    "social",
+    "network",
+    "integrations",
+    "releases",
+    "forms",
+    "crm",
+    "newsletter",
+    "notifications",
+    "analytics",
+    "experiences",
+    "quality",
+    "commerce"
+  ],
+  "assignedEntries": 1215,
+  "unassignedEntries": 0,
+  "passed": 3,
+  "failed": 0,
+  "skipped": 0,
+  "limit": "assignment completeness only; not executable capability coverage; granular overrides mandatory-gates.md govern"
+}

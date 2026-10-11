@@ -1,0 +1,749 @@
+[
+  {
+    "path": "src/app/(frontend)/api/admin/staff/invite/route.ts",
+    "initialSha256": "fea9727f48b9fd79dc4d938bcfc1ea2182d87b5897d123e7c2716ae489b4cbdb",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "identity-grants-recovery",
+    "currentSha256": "fea9727f48b9fd79dc4d938bcfc1ea2182d87b5897d123e7c2716ae489b4cbdb",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "src/app/(frontend)/enroll/page.tsx",
+    "initialSha256": "d0e835386f7d63bd99859626bb3e980dcfbe4307b9d6289acdc527c73420bc46",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "identity-grants-recovery",
+    "currentSha256": "d0e835386f7d63bd99859626bb3e980dcfbe4307b9d6289acdc527c73420bc46",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "src/collections/Identity.ts",
+    "initialSha256": "49f4e327c67fb9f3066d6e5125c89dca7c9d6f33c7999c31dce53a11e2d1dba2",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "identity-grants-recovery",
+    "currentSha256": "49f4e327c67fb9f3066d6e5125c89dca7c9d6f33c7999c31dce53a11e2d1dba2",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "src/modules/admin/SecurityCenter.tsx",
+    "initialSha256": "012c0254193ec73aa3a2e71540f7d6ee254755341a76f747015c492e1b89a0fc",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "identity-grants-recovery",
+    "currentSha256": "012c0254193ec73aa3a2e71540f7d6ee254755341a76f747015c492e1b89a0fc",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "src/modules/operations/onboarding.ts",
+    "initialSha256": "2fa03643db4a22cb5197c66b26b048dfca1efa260df3008d0367a773a6a693aa",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "identity-grants-recovery",
+    "currentSha256": "2fa03643db4a22cb5197c66b26b048dfca1efa260df3008d0367a773a6a693aa",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "src/modules/operations/operator-grants.ts",
+    "initialSha256": "d4a80cd75b53923cd096ce640e0301c049ae801bb65f533c60cddbe9584380fd",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "identity-grants-recovery",
+    "currentSha256": "d4a80cd75b53923cd096ce640e0301c049ae801bb65f533c60cddbe9584380fd",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "src/modules/operations/staff-enrollment.ts",
+    "initialSha256": "4867afc73083b5a0e0078b1519aa7f11d5ff14559a8a5134c6035dff15b7f589",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "identity-grants-recovery",
+    "currentSha256": "4867afc73083b5a0e0078b1519aa7f11d5ff14559a8a5134c6035dff15b7f589",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "src/scripts/recover-installation.ts",
+    "initialSha256": "04895f179b4524691b367cd00e1ffb75a7bce41e0de22dc77f6d643917443079",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "identity-grants-recovery",
+    "currentSha256": "04895f179b4524691b367cd00e1ffb75a7bce41e0de22dc77f6d643917443079",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "tests/integration/rc08d-lock-projection.integration.test.ts",
+    "initialSha256": "3a80595fe24621b8a6ba63fbc0db896cdc1bf5f09c01e9f317f9230fbb3aa324",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "identity-grants-recovery",
+    "currentSha256": "3a80595fe24621b8a6ba63fbc0db896cdc1bf5f09c01e9f317f9230fbb3aa324",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "tests/rc02/site-build.spec.ts",
+    "initialSha256": "77004360ec10e99a4fd35124bf3c1dbd7b58e69c6916cfec02cc1c60338756c2",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "identity-grants-recovery",
+    "currentSha256": "77004360ec10e99a4fd35124bf3c1dbd7b58e69c6916cfec02cc1c60338756c2",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "tests/unit/onboarding.test.ts",
+    "initialSha256": "a2409d94fd832d6f6faa580a5ca9742074a18e02bc69fb420340bce633a2fcd0",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "identity-grants-recovery",
+    "currentSha256": "a2409d94fd832d6f6faa580a5ca9742074a18e02bc69fb420340bce633a2fcd0",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "docs/operations/owner-recovery.md",
+    "initialSha256": "f9c13968d21ccc72b02c23c888512a71128ad5d2289e35d3e1d0fca44c6f6743",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "identity-grants-recovery",
+    "currentSha256": "f9c13968d21ccc72b02c23c888512a71128ad5d2289e35d3e1d0fca44c6f6743",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "src/modules/admin/StaffInvitations.tsx",
+    "initialSha256": "de575278d5f6e9e4a25821bce227314f4d2edc6134a61c1ec9fc3d45665c1236",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "identity-grants-recovery",
+    "currentSha256": "de575278d5f6e9e4a25821bce227314f4d2edc6134a61c1ec9fc3d45665c1236",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "src/modules/operations/owner-recovery.ts",
+    "initialSha256": "2533e6221f3641d28847fc536408d58b8285fbc895ec6d9ca152f80c32ff2fd0",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "identity-grants-recovery",
+    "currentSha256": "2533e6221f3641d28847fc536408d58b8285fbc895ec6d9ca152f80c32ff2fd0",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "tests/rc02/staff-invitation.spec.ts",
+    "initialSha256": "2486403d78ff6a44a8d8427447593df1e08477aee676d361d7ece3b261bcf43c",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "identity-grants-recovery",
+    "currentSha256": "2486403d78ff6a44a8d8427447593df1e08477aee676d361d7ece3b261bcf43c",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "tests/unit/owner-recovery.test.ts",
+    "initialSha256": "932df06ac29b047417318ace379038c460960c48139d7950881e7b8d0ff3b7cb",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "identity-grants-recovery",
+    "currentSha256": "932df06ac29b047417318ace379038c460960c48139d7950881e7b8d0ff3b7cb",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "src/app/(frontend)/admin/catalog/preview/[id]/page.tsx",
+    "initialSha256": "22a2b86d171437df5864a435d44e6f895204c7ebbcf68c1b8bfd6bd4fb55c44e",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "scoped-operator-native-access",
+    "currentSha256": "22a2b86d171437df5864a435d44e6f895204c7ebbcf68c1b8bfd6bd4fb55c44e",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "src/app/(frontend)/api/admin/ai/connections/route.ts",
+    "initialSha256": "deb6d88e56e495647161e5d5fd2c528f27b041a50a554276ef96f8742c1a8ee6",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "scoped-operator-native-access",
+    "currentSha256": "deb6d88e56e495647161e5d5fd2c528f27b041a50a554276ef96f8742c1a8ee6",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "src/app/(frontend)/api/admin/ai/sites/route.ts",
+    "initialSha256": "084a89e7d5e1a29067feb008b055912a0a11be47691e6de909e52cfe480d939b",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "scoped-operator-native-access",
+    "currentSha256": "084a89e7d5e1a29067feb008b055912a0a11be47691e6de909e52cfe480d939b",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "src/app/(frontend)/api/admin/catalog/import/route.ts",
+    "initialSha256": "1a35856ea596ab5afcb2c58119b329bee5d80105e1ea5fde67bbb6819e489eac",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "scoped-operator-native-access",
+    "currentSha256": "1a35856ea596ab5afcb2c58119b329bee5d80105e1ea5fde67bbb6819e489eac",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "src/app/(frontend)/api/admin/catalog/route.ts",
+    "initialSha256": "6c094e5d7081f439aa03df13551d01b89898ec67a8135bb0c9f87681eff4fd46",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "scoped-operator-native-access",
+    "currentSha256": "6c094e5d7081f439aa03df13551d01b89898ec67a8135bb0c9f87681eff4fd46",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "src/app/(frontend)/api/admin/commerce/dashboard/route.ts",
+    "initialSha256": "faa1001125356758c9f0e46fed6eca769627af94131069b1271165b8567e9df2",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "scoped-operator-native-access",
+    "currentSha256": "faa1001125356758c9f0e46fed6eca769627af94131069b1271165b8567e9df2",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "src/app/(frontend)/api/admin/commerce/donations/route.ts",
+    "initialSha256": "d9ed14e0b1ab177996af811c60be4f53fab9dba5aaf077d8bec29a4d6fbe5ec8",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "scoped-operator-native-access",
+    "currentSha256": "d9ed14e0b1ab177996af811c60be4f53fab9dba5aaf077d8bec29a4d6fbe5ec8",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "src/app/(frontend)/api/admin/commerce/reconcile/route.ts",
+    "initialSha256": "c5cae80014c6f2ea1a7b4b425643f2b723030fa5dc2f92b51df87ebccc423f46",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "scoped-operator-native-access",
+    "currentSha256": "c5cae80014c6f2ea1a7b4b425643f2b723030fa5dc2f92b51df87ebccc423f46",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "src/app/(frontend)/api/admin/commerce/refunds/route.ts",
+    "initialSha256": "de1fbad31b5466ad89d309d10b03fc1c1285e2596990a26dd2dd25fbf85e60b8",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "scoped-operator-native-access",
+    "currentSha256": "de1fbad31b5466ad89d309d10b03fc1c1285e2596990a26dd2dd25fbf85e60b8",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "src/app/(frontend)/connections/page.tsx",
+    "initialSha256": "57c982bbe73b0ac7ad8b0000d8f75db81129c0ac9eef8b6f638772af874e67b2",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "scoped-operator-native-access",
+    "currentSha256": "57c982bbe73b0ac7ad8b0000d8f75db81129c0ac9eef8b6f638772af874e67b2",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "src/collections/Audience.ts",
+    "initialSha256": "38cf4f323508583565df14912c1f01f05a64d4275b1d32f1d66d5239dad8549c",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "scoped-operator-native-access",
+    "currentSha256": "38cf4f323508583565df14912c1f01f05a64d4275b1d32f1d66d5239dad8549c",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "src/collections/Commerce.ts",
+    "initialSha256": "b277612e370e7cdcea22f83652d69115a1391ef86036a4e7204de9274db7743e",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "scoped-operator-native-access",
+    "currentSha256": "b277612e370e7cdcea22f83652d69115a1391ef86036a4e7204de9274db7743e",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "tests/unit/dist-05-social-api-routes.test.ts",
+    "initialSha256": "ad1bc07a89e79d5c0cdccde087772a316493a6f35945fdaba79ec7d703fca8ed",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "scoped-operator-native-access",
+    "currentSha256": "af18702b9554a66183ec7056132330cfd0faef69ee4e129733f82ff2a54c268b",
+    "changedSinceOctober09": true,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "tests/unit/tenant-isolation.test.ts",
+    "initialSha256": "152c2f629067336f910cc0e93f3eadc72ca152f21601872313abaf184786f0c4",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "scoped-operator-native-access",
+    "currentSha256": "152c2f629067336f910cc0e93f3eadc72ca152f21601872313abaf184786f0c4",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "src/app/(frontend)/api/admin/commerce/webhooks/[eventId]/retry/route.ts",
+    "initialSha256": "f0ce1a8cd62c9fae17b3d3dffd422dc81547d8549b1d59e08dee1ee198b2314e",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "scoped-operator-native-access",
+    "currentSha256": "f0ce1a8cd62c9fae17b3d3dffd422dc81547d8549b1d59e08dee1ee198b2314e",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": ".env.example",
+    "initialSha256": "823176a4522521e13df910a7c1ebbe1a9c7973155cfff62278520623403d12b1",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "cart-checkout-digital-subscriptions",
+    "currentSha256": "823176a4522521e13df910a7c1ebbe1a9c7973155cfff62278520623403d12b1",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "src/app/(frontend)/api/commerce/cart/route.ts",
+    "initialSha256": "9410baa6621fbf041d0a4ca21e2f20cf5909cf5c0a2f9f0f739f8d84ab9a1a4d",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "cart-checkout-digital-subscriptions",
+    "currentSha256": "5680b1cf31423c42c8d8ee551e8af5e2e84cd1b14e1413edee83025da32db7ff",
+    "changedSinceOctober09": true,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "src/app/(frontend)/api/commerce/checkout/initiate/route.ts",
+    "initialSha256": "4fe64544a369a3016b4acef44eefc200df51058d43e0038e4a8bdd3be5279f99",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "cart-checkout-digital-subscriptions",
+    "currentSha256": "4fe64544a369a3016b4acef44eefc200df51058d43e0038e4a8bdd3be5279f99",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "src/app/(frontend)/api/commerce/checkout/status/route.ts",
+    "initialSha256": "f74809ad3f57fccb6dbe12600ed6d97cdf9238fbaf9881aa91ece92a8d548bb0",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "cart-checkout-digital-subscriptions",
+    "currentSha256": "f74809ad3f57fccb6dbe12600ed6d97cdf9238fbaf9881aa91ece92a8d548bb0",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "src/app/(frontend)/api/commerce/checkout/test/confirm/route.ts",
+    "initialSha256": "7b1343663155ba8576d7881f877f0967ecd7a37101b6459d4181f150ebeaf7d8",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "cart-checkout-digital-subscriptions",
+    "currentSha256": "7b1343663155ba8576d7881f877f0967ecd7a37101b6459d4181f150ebeaf7d8",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "src/app/(frontend)/api/commerce/download/[grantKey]/route.ts",
+    "initialSha256": "91489d8ec298be9cd92de83dec61734f38d5896cec536d18fbea5c05952cf392",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "cart-checkout-digital-subscriptions",
+    "currentSha256": "91489d8ec298be9cd92de83dec61734f38d5896cec536d18fbea5c05952cf392",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "src/app/(frontend)/api/commerce/proposal/route.ts",
+    "initialSha256": "e71a289082c08c76dc2449857bead297508b7d5fa54b83b9bc620233a20bd397",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "cart-checkout-digital-subscriptions",
+    "currentSha256": "99ebf5320ebb92d4c3deaf44f36296258ce1e61b7e1c1696755eaee6ff3fd49b",
+    "changedSinceOctober09": true,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "src/app/(frontend)/api/commerce/subscriptions/checkout/route.ts",
+    "initialSha256": "0fd0e2a4d0f530b95b42d24186ba3a918d586877c9fdbb65dc836e39021d74ce",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "cart-checkout-digital-subscriptions",
+    "currentSha256": "0fd0e2a4d0f530b95b42d24186ba3a918d586877c9fdbb65dc836e39021d74ce",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "src/app/(frontend)/api/commerce/subscriptions/route.ts",
+    "initialSha256": "c6c3f89db3b7e6ddccae1fc5738d7b5f7060de17fca9d7d8b154545208102c58",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "cart-checkout-digital-subscriptions",
+    "currentSha256": "c6c3f89db3b7e6ddccae1fc5738d7b5f7060de17fca9d7d8b154545208102c58",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "src/app/(frontend)/api/commerce/webhooks/[provider]/route.ts",
+    "initialSha256": "2f373d304219274dc2398652a8b9b8abda5f696088306916bd50fbd816fa385d",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "cart-checkout-digital-subscriptions",
+    "currentSha256": "2f373d304219274dc2398652a8b9b8abda5f696088306916bd50fbd816fa385d",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "src/app/(frontend)/members/settings/page.tsx",
+    "initialSha256": "4792ec11478e1db882ffd60fc8252cb23d8b5682809aae9c2c36081ca416f654",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "cart-checkout-digital-subscriptions",
+    "currentSha256": "4792ec11478e1db882ffd60fc8252cb23d8b5682809aae9c2c36081ca416f654",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "src/modules/admin/CommerceOperations.tsx",
+    "initialSha256": "077ef6bb821388bbbea99780b540aafdcd4a0dd5e09c7e7aae3efca030045d88",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "cart-checkout-digital-subscriptions",
+    "currentSha256": "077ef6bb821388bbbea99780b540aafdcd4a0dd5e09c7e7aae3efca030045d88",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "src/modules/commerce/CartView.tsx",
+    "initialSha256": "0c02382b73d84aa6d08a1e4a8fe0d1aa30b0c8b320d4f4d4c6c7e474ee4eb577",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "cart-checkout-digital-subscriptions",
+    "currentSha256": "e0396e1608786b47ed8efebd055eadb547daaa41dce66a5338fa84abf9f73215",
+    "changedSinceOctober09": true,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "src/modules/commerce/CheckoutStatus.tsx",
+    "initialSha256": "ee61620108166f75bfa7653b4efd13eccba4f6d1f88181b6510720a13e345870",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "cart-checkout-digital-subscriptions",
+    "currentSha256": "ee61620108166f75bfa7653b4efd13eccba4f6d1f88181b6510720a13e345870",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "src/modules/commerce/local-test-checkout.ts",
+    "initialSha256": "a0e69fb2090749fbb3c2f731f62abe3a7c514f32eede5b85472fe18699b907cd",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "cart-checkout-digital-subscriptions",
+    "currentSha256": "a0e69fb2090749fbb3c2f731f62abe3a7c514f32eede5b85472fe18699b907cd",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "src/modules/commerce/proposal.ts",
+    "initialSha256": "290dfdff3577aa856b763ad481f3c432b9d387c15bf797be958114135621d685",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "cart-checkout-digital-subscriptions",
+    "currentSha256": "290dfdff3577aa856b763ad481f3c432b9d387c15bf797be958114135621d685",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "src/modules/commerce/site-scope.ts",
+    "initialSha256": "bbbf6ad43c76c69190b260682cfef51b899f144b43219f26b076b535c725dc77",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "cart-checkout-digital-subscriptions",
+    "currentSha256": "bbbf6ad43c76c69190b260682cfef51b899f144b43219f26b076b535c725dc77",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "src/modules/commerce/subscription-service.ts",
+    "initialSha256": "50c9e187d80d6ffaf396b0ffea15f5cff4d1523e65ae75c0564be2146afb9e3d",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "cart-checkout-digital-subscriptions",
+    "currentSha256": "50c9e187d80d6ffaf396b0ffea15f5cff4d1523e65ae75c0564be2146afb9e3d",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "src/modules/commerce/tasks.ts",
+    "initialSha256": "bebe58fa151badc236219a65117475f7a04bd4d52824f1be8e6b3dfec12b1445",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "cart-checkout-digital-subscriptions",
+    "currentSha256": "bebe58fa151badc236219a65117475f7a04bd4d52824f1be8e6b3dfec12b1445",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "src/payload-types.ts",
+    "initialSha256": "e26c4ffb11ca9dd2c3f0093a61ab21b517125da941b29ac6322860fc97ebe673",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "cart-checkout-digital-subscriptions",
+    "currentSha256": "e26c4ffb11ca9dd2c3f0093a61ab21b517125da941b29ac6322860fc97ebe673",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "tests/unit/shop-01-catalog-workflows.test.ts",
+    "initialSha256": "7f39c08cd33147e55997b649c3ebb0c16cb6cf984a45c277e4f66a8b8dbccb0e",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "cart-checkout-digital-subscriptions",
+    "currentSha256": "7f39c08cd33147e55997b649c3ebb0c16cb6cf984a45c277e4f66a8b8dbccb0e",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "tests/unit/shop-02-tampering-and-invariants.test.ts",
+    "initialSha256": "4608b7d083f0383b05d0703157a8dd8d66398a0612910ad202aa4774516d6acd",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "cart-checkout-digital-subscriptions",
+    "currentSha256": "708444b023497f773f0c5d724317d14148e9dc4e758a880c0ae02ffcd35845f7",
+    "changedSinceOctober09": true,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "tests/unit/shop-04-local-test-checkout.test.ts",
+    "initialSha256": "cb3463e3c102cda933cd1d66fc29eb0d978c98416701e1ed79019256fc36b793",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "cart-checkout-digital-subscriptions",
+    "currentSha256": "cb3463e3c102cda933cd1d66fc29eb0d978c98416701e1ed79019256fc36b793",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "src/app/(frontend)/api/commerce/checkout/methods/route.ts",
+    "initialSha256": "514c8985f4464346b2a01a53796382bf895bd0a6b86f145843c6c50950b9a0b0",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "cart-checkout-digital-subscriptions",
+    "currentSha256": "514c8985f4464346b2a01a53796382bf895bd0a6b86f145843c6c50950b9a0b0",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "src/app/(frontend)/api/commerce/subscriptions/plans/route.ts",
+    "initialSha256": "2fdb58e69b862827996e953faf87ce9ee5dacf8e2bfe432e49b97097b30c1dd3",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "cart-checkout-digital-subscriptions",
+    "currentSha256": "2fdb58e69b862827996e953faf87ce9ee5dacf8e2bfe432e49b97097b30c1dd3",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "src/modules/commerce/MemberBilling.tsx",
+    "initialSha256": "fc6e9af24c2cafbf39d289bd2cf1ee2ff5708fac738f8423c08897ba3535b978",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "cart-checkout-digital-subscriptions",
+    "currentSha256": "fc6e9af24c2cafbf39d289bd2cf1ee2ff5708fac738f8423c08897ba3535b978",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "src/modules/commerce/cart-access.ts",
+    "initialSha256": "5b64adda91813a43889ea531b01e7ebee34e03d6646b4e20781cccaeb38ecbeb",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "cart-checkout-digital-subscriptions",
+    "currentSha256": "5b64adda91813a43889ea531b01e7ebee34e03d6646b4e20781cccaeb38ecbeb",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "src/modules/commerce/digital-delivery.ts",
+    "initialSha256": "45af979ca87eab31052a040e180bb8c18d0246c57c75cdd34e86f985ac5ec756",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "cart-checkout-digital-subscriptions",
+    "currentSha256": "45af979ca87eab31052a040e180bb8c18d0246c57c75cdd34e86f985ac5ec756",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "src/modules/commerce/merchant-selection.ts",
+    "initialSha256": "dd3eda4e6142c87b807d2085329b784a5fff50146518df37cb99ce76da50fa6a",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "cart-checkout-digital-subscriptions",
+    "currentSha256": "6b7fbf4baabc31f675048ad4f73a2d9ce7be2af3625afa55b735df80a204ea57",
+    "changedSinceOctober09": true,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "src/modules/commerce/transactions.ts",
+    "initialSha256": "91afdb1122c42c2cdfa1c1d9ae3067b308fb018c9aeafb445a98806686e59d6a",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "cart-checkout-digital-subscriptions",
+    "currentSha256": "91afdb1122c42c2cdfa1c1d9ae3067b308fb018c9aeafb445a98806686e59d6a",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "tests/unit/commerce-cart-access.test.ts",
+    "initialSha256": "b1c64c67bdbce821bc6f9f3ee8a6c99f2ca00715a6b585499b973d67c60c1538",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "cart-checkout-digital-subscriptions",
+    "currentSha256": "b1c64c67bdbce821bc6f9f3ee8a6c99f2ca00715a6b585499b973d67c60c1538",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "tests/unit/commerce-dashboard-scope.test.ts",
+    "initialSha256": "f5b9375483a38108427957832234b86ff62ff91e3659f72390d4f9c4aef5b2b3",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "cart-checkout-digital-subscriptions",
+    "currentSha256": "f5b9375483a38108427957832234b86ff62ff91e3659f72390d4f9c4aef5b2b3",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "tests/unit/commerce-merchant-selection.test.ts",
+    "initialSha256": "444f67d60d44dcaeb198cc4aa251e7dc1243d10bc6770820bb68f3b64246c936",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "cart-checkout-digital-subscriptions",
+    "currentSha256": "f116c5d626f81afe5cae899e91c4e64e025a858d1d7883ec763429994e5cfc8c",
+    "changedSinceOctober09": true,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "tests/unit/commerce-reconcile-scope.test.ts",
+    "initialSha256": "8ffd119404dc259389d017093f74b0d2b17cde7f9704f9b801b4caceabea32ec",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "cart-checkout-digital-subscriptions",
+    "currentSha256": "8ffd119404dc259389d017093f74b0d2b17cde7f9704f9b801b4caceabea32ec",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "tests/unit/commerce-webhook-retry.test.ts",
+    "initialSha256": "20415571195efe686d672af62da09de34f48e91f3cb0c134cda3465cb34a0ff2",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "cart-checkout-digital-subscriptions",
+    "currentSha256": "20415571195efe686d672af62da09de34f48e91f3cb0c134cda3465cb34a0ff2",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "tests/unit/digital-delivery-readiness.test.ts",
+    "initialSha256": "4ff812541b4574d8282d606773f25473673952427b033ef3d69cc2c1e9b9ba4a",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "cart-checkout-digital-subscriptions",
+    "currentSha256": "4ff812541b4574d8282d606773f25473673952427b033ef3d69cc2c1e9b9ba4a",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "tests/unit/donation-admin-scope.test.ts",
+    "initialSha256": "f9751ce9f3f5d55a1fb4de878c2f3e9679733acee15eabbe5b230be0d34695ff",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "cart-checkout-digital-subscriptions",
+    "currentSha256": "f9751ce9f3f5d55a1fb4de878c2f3e9679733acee15eabbe5b230be0d34695ff",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "tests/unit/subscription-plans.test.ts",
+    "initialSha256": "221b80e2bf21a40ee6bd5e1ba537d888dcdb85f7d3ecbc0be5a3cf269392ee28",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "cart-checkout-digital-subscriptions",
+    "currentSha256": "221b80e2bf21a40ee6bd5e1ba537d888dcdb85f7d3ecbc0be5a3cf269392ee28",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "tests/unit/subscription-provider-plan-mapping.test.ts",
+    "initialSha256": "7c32d81d47e4bed6785ddb4454d6dcf9a58937ec8dee3f8a764d790d9aafb0f3",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "cart-checkout-digital-subscriptions",
+    "currentSha256": "7c32d81d47e4bed6785ddb4454d6dcf9a58937ec8dee3f8a764d790d9aafb0f3",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "src/app/(frontend)/api/admin/audience/command-center/route.ts",
+    "initialSha256": "0e90b46d2493be1f079bd7a4b0267d54aff2666d20251ed6800e38f3e707edbd",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "audience-truth-disclosure",
+    "currentSha256": "0e90b46d2493be1f079bd7a4b0267d54aff2666d20251ed6800e38f3e707edbd",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "src/app/(frontend)/calendar/page.tsx",
+    "initialSha256": "3a2500f8f4c59d9efa2cd904928df8d31d6022261787dc287ca89e71d899b0cd",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "audience-truth-disclosure",
+    "currentSha256": "3a2500f8f4c59d9efa2cd904928df8d31d6022261787dc287ca89e71d899b0cd",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "src/modules/admin/AudienceCommandCenter.tsx",
+    "initialSha256": "e867def7100691b5bcd7d6850de6c96f2d592bfabb019eecb45dbc14c82ab6ee",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "audience-truth-disclosure",
+    "currentSha256": "6b478fc7ff923160faf3205fca8476110b8ac6535a40005bc07bc1cdc8a7c9aa",
+    "changedSinceOctober09": true,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "src/modules/admin/progressive-disclosure.ts",
+    "initialSha256": "a92768bb916729f3b352f622de47271d79fc76feb4a185e25e2ad2d34761fec7",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "audience-truth-disclosure",
+    "currentSha256": "a92768bb916729f3b352f622de47271d79fc76feb4a185e25e2ad2d34761fec7",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "tests/unit/progressive-disclosure.test.ts",
+    "initialSha256": "f931abf34fc773ddafe3bf1fbc9df98360e4190c45a7f351340ba9beb332c9fd",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "audience-truth-disclosure",
+    "currentSha256": "f931abf34fc773ddafe3bf1fbc9df98360e4190c45a7f351340ba9beb332c9fd",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "tests/unit/rc01-admin-truth.test.tsx",
+    "initialSha256": "f347ea1ba6b99c62ef0884392b7fccdb44a7608d6521f41815a72d8f7b21a333",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "audience-truth-disclosure",
+    "currentSha256": "f347ea1ba6b99c62ef0884392b7fccdb44a7608d6521f41815a72d8f7b21a333",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "src/modules/admin/FulfillmentCommandCenter.tsx",
+    "initialSha256": "d7e526b02c85f7963335b21c6d6c75085293db023c46ba80aa65bf1e45fbd5ae",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "fulfillment",
+    "currentSha256": "546f7862e0be312804395ece72a4ee590d2326e7b1cb6a80ca68aafedca227ae",
+    "changedSinceOctober09": true,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "src/modules/commerce/service.ts",
+    "initialSha256": "5d90397ed66121243860a03de60b54dba9ced640d133998d874a654acdd8df19",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "fulfillment",
+    "currentSha256": "b76cb6c6358821ffeec84a23a21e22ecc733c23cec9ae0e620eaa60ff1488725",
+    "changedSinceOctober09": true,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "src/app/(frontend)/api/admin/fulfillment/route.ts",
+    "initialSha256": "eb35036e0a7166658896d37baabbdedb6a7020fbd70ffb5b8dca53c29a6cc974",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "fulfillment",
+    "currentSha256": "5aa1acbc30bdc3caba130f9290f6f2b558e6392132aeb213e3ae62b32912c3f3",
+    "changedSinceOctober09": true,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "src/app/(frontend)/api/admin/telecom/simulate/route.ts",
+    "initialSha256": "b4d80c0a030cb641f566dc2c8d59f7ae5680fa03260aa5eb9250673bd505d7a5",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "telecom-simulator",
+    "currentSha256": "986c50c2ba77d9b38ea6cfe30493fd32f9ed08361faa1af10b3ac8bcbdcd7444",
+    "changedSinceOctober09": true,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "tests/unit/telecom-admin-simulate.test.ts",
+    "initialSha256": "6a84fd43e42353a019795541d7c9664a51937d91927df7a53c27569e364427dd",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "telecom-simulator",
+    "currentSha256": "6a84fd43e42353a019795541d7c9664a51937d91927df7a53c27569e364427dd",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "compose.restore.yaml",
+    "initialSha256": "759436562f8ce911ad72073eb39a60a427ac332e01d34724978e23ad3258690a",
+    "disposition": "preserved uncommitted; Stage 02 review/repair/commit required",
+    "group": "restore-configuration",
+    "currentSha256": "759436562f8ce911ad72073eb39a60a427ac332e01d34724978e23ad3258690a",
+    "changedSinceOctober09": false,
+    "currentDisposition": "still uncommitted; Gemini Stage 02 review/repair/commit; Sol Stage 02 verify"
+  },
+  {
+    "path": "docs/rc/RC1-PLAN-AND-PROMPTS.md",
+    "initialSha256": "367cc884b3b3a473ae42c8863d83635feb9f6a05cb4c42c480f598f3fc345b43",
+    "disposition": "documentation candidate",
+    "group": "stage-01-plan",
+    "currentSha256": "0802bf67c7cd337c565b1da4b5f34e1daee42ff315c7996ae0296061bbea60d8",
+    "changedSinceOctober09": true,
+    "currentDisposition": "documentation reviewed in Stage 01"
+  }
+]

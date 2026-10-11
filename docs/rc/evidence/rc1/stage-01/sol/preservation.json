@@ -1,0 +1,19 @@
+{
+  "historicalArtifactsChecked": 607,
+  "historicalDifferences": [],
+  "geminiArtifactHashes": {
+    "docs/rc/evidence/rc1/stage-01/gemini/BASELINE.md": "7b7ce98c24f6267cfcfd7e9ddc20ce6ec061773ba3a8d9220e4060419a508ada",
+    "docs/rc/evidence/rc1/stage-01/gemini/candidate-groups.json": "e87e4108ac11df20569861fb7493e461e1237daba51242cddc4c8af98a83aa5f",
+    "docs/rc/evidence/rc1/stage-01/gemini/diff-check.log": "3e74c64338226d942d8904acc13aaf14adec354267781bfe988d284ccbe511a1",
+    "docs/rc/evidence/rc1/stage-01/gemini/EVIDENCE_RECONCILIATION.md": "c70c82b57b20eb2ba2232163af38f587478e244e3c08b0f04d31b8928cdcafe0",
+    "docs/rc/evidence/rc1/stage-01/gemini/focused-checks.json": "65b3afce92c7119d6755267b46ba509e03b85e9143255023c6371218a4618ad1",
+    "docs/rc/evidence/rc1/stage-01/gemini/focused-format.log": "17aa973d3f004560237d9a95171210b0671deff23d61628eecf7322ff5938f20",
+    "docs/rc/evidence/rc1/stage-01/gemini/focused-lint.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "docs/rc/evidence/rc1/stage-01/gemini/focused-unit.json": "3360a5e253e55e6f6535fe9b95231850e0e4cca3ac61641b01e9e94130de81b0",
+    "docs/rc/evidence/rc1/stage-01/gemini/focused-unit.log": "9ac5e46e5681fca18a3099e001bbf1a0691352eebdaf99b8618155bb88e01cb3",
+    "docs/rc/evidence/rc1/stage-01/gemini/generate-gemini-evidence.py": "c667396b8ebfee15ab025f3a1e3b3d6a7174942c0976a014a849065d9fc741a9",
+    "docs/rc/evidence/rc1/stage-01/gemini/HANDOFF.md": "981d21a2e8c158a439e17f9c12e3cae1b3aa1f16107c766e2b610a6d82c8c135",
+    "docs/rc/evidence/rc1/stage-01/gemini/inventory.json": "9c18b6d98dddd007a4ab12c64b01f52109cf94ae92e46fd81170e59bb8d720d0",
+    "docs/rc/evidence/rc1/stage-01/gemini/RC1_ACCEPTANCE_MATRIX.md": "79a80c92d90e6bc936087f43ed42cc38c55739f30a9d56b3986276f89a45cd9d"
+  }
+}

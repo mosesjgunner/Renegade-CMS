@@ -1,0 +1,23 @@
+[
+  {
+    "path": "C:\\Users\\moses\\.codex\\attachments\\ff8fe46c-8269-44ad-85a2-63839e21c47c\\Pasted text.txt",
+    "sha256": "678a7ec992aa0461b4225f4ee5a11c6f09df3796103368c745ed2127d5069167",
+    "goldenDefinition": false,
+    "currentlyExists": true,
+    "matchesRecordedHash": true
+  },
+  {
+    "path": "C:\\Users\\moses\\.codex\\attachments\\ba453a3b-cd38-4414-9438-1ea42eceed65\\Pasted text.txt",
+    "sha256": "b1afc2b58af94574fcfb0056499c2b6c0324f38788d189477a64c3f63ae82fb9",
+    "goldenDefinition": true,
+    "currentlyExists": true,
+    "matchesRecordedHash": true
+  },
+  {
+    "path": "C:\\Users\\moses\\.codex\\attachments\\c4a47fe4-9997-4f9a-a517-9711717da4b0\\Pasted text.txt",
+    "sha256": "6979083ab678b07c516602d7c03f47b9d3d1c4e25692fdb51ba0e6ca0d1291ba",
+    "goldenDefinition": false,
+    "currentlyExists": true,
+    "matchesRecordedHash": true
+  }
+]
