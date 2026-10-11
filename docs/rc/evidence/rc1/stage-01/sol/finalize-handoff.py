@@ -1,0 +1,55 @@
+"""Record source and evidence identities separately; do not run later stages."""
+import hashlib
+import json
+import pathlib
+import subprocess
+
+ROOT = pathlib.Path(__file__).resolve().parents[6]
+OUT = pathlib.Path(__file__).resolve().parent
+
+def git(*args):
+    return subprocess.check_output(['git',*args],cwd=ROOT,text=True).strip()
+
+head = git('rev-parse','HEAD')
+tested = json.loads((OUT/'tested-tree.json').read_text())
+paths = sorted(set(git('ls-files').splitlines()+git('ls-files','--others','--exclude-standard').splitlines()))
+files = {p:hashlib.sha256((ROOT/p).read_bytes()).hexdigest() for p in paths if (ROOT/p).is_file()
+         and not p.startswith('docs/rc/evidence/rc1/stage-01/') and (not p.startswith('.env') or p=='.env.example')}
+digest = hashlib.sha256(json.dumps(files,sort_keys=True,separators=(',',':')).encode()).hexdigest()
+differences = [p for p,h in tested['files'].items() if files.get(p)!=h]
+assert all(p.startswith('docs/rc/') for p in differences), differences
+changed = git('diff','HEAD^','HEAD','--name-only').splitlines()
+tracked = git('diff','--name-only').splitlines()
+untracked = git('ls-files','--others','--exclude-standard').splitlines()
+candidate = [p for p in untracked if not p.startswith('docs/rc/evidence/rc1/stage-01/')]
+assert len(tracked)==57 and len(candidate)==25
+for name, value in [('final-reviewed-tree.json',{'baseHead':head,'manifestDigest':digest,'files':files,
+                                               'exclusions':tested['exclusions'],'encoding':tested['canonicalDigestEncoding']}),
+                    ('final-state.json',{'reviewDocumentationCommit':head,'testedSourceHead':tested['baseHead'],
+                                         'testedSourceDigest':tested['manifestDigest'],'finalReviewedTreeDigest':digest,
+                                         'committedFiles':changed,'stillUncommittedTracked':tracked,'stillUntrackedCandidate':candidate,
+                                         'untrackedGeminiEvidence':[p for p in untracked if p.startswith('docs/rc/evidence/rc1/stage-01/gemini/')],
+                                         'executableDifferencesFromTestedManifest':[],
+                                         'remainingEvidenceCommit':'The commit containing HANDOFF.md is evidence-only; resolve git log -1 --format=%H -- docs/rc/evidence/rc1/stage-01/sol/HANDOFF.md.'})]:
+    (OUT/name).write_text(json.dumps(value,indent=2)+'\n',encoding='utf-8')
+(OUT/'HANDOFF.md').write_text(f'''# Stage 01 Sol handoff
+
+**STAGE 01 SOL PASS — RC1 NOT READY.** Date: 2026-10-11. Signed off by Sol for baseline reconciliation and complete gate assignment only.
+
+Final reviewed documentation/source HEAD: `{head}`, plus **57 tracked modifications and 25 untracked implementation/operations paths**; this is not a clean executable candidate. The final evidence commit containing this handoff changes only Stage 01 receipt files; obtain its exact SHA with `git log -1 --format=%H -- docs/rc/evidence/rc1/stage-01/sol/HANDOFF.md`. It does not change tested executable bytes.
+
+Independent focused checks tested HEAD `{tested['baseHead']}` plus full tree digest `{tested['manifestDigest']}`: [manifest](tested-tree.json), [exact commands/config/counts/logs](focused-checks.json). **22 files / 155 passed / 0 failed / 0 skipped / 0 todo**, focused lint/format/diff exit 0. Documentation validation: six assertions/checks passed, zero failed/skipped. Later summary changes are documentation only; [containment verification](documentation-verification.json). Final reviewed tree digest `{digest}`: [manifest](final-reviewed-tree.json). No integration, migration, build, browser, provider, security image, business recovery or restore acceptance executed; mandatory Stages 02–07 remain unexecuted.
+
+Committed changes: 12 current RC summary/scope/ledger/prompt documents and 23 independent review/inventory/check artifacts in the documentation commit; exact list in [final-state.json](final-state.json). The earlier authorized prompt usability edit is included. This handoff/final manifests are a separate evidence commit. All executable/operations candidate edits and Gemini's 13 original evidence files remain preserved and uncommitted; every original candidate path is accounted for in [candidate-disposition.json](candidate-disposition.json). All 607 historical artifacts match prior hashes; no existing databases/media/.env were invoked or changed.
+
+Corrections: historical 27 passed/1 skipped is not a zero-skip pass. The unique frozen source skip guard points to mandatory first-run WebAuthn when A01_SETUP_TOKEN is missing; the actual old runner cause is still unproven. Resource profiles do not register modules. Fixture-upgrade acceptance was not executed in Stage 01. Canonical A–T comes from the hashed supplied attachment; S includes backup/restore, T refetch/media/records. Private invitation links, provider fallbacks and response contracts must be verified from shipping behavior, not assumed.
+
+Coverage: **1,215 assigned ledger/route/module entries, zero unassigned**; 17 optional modules and 154 registered collection/global/task targets enumerated. [REVIEW.md](REVIEW.md), [mandatory stage gates and owners](mandatory-gates.md), [claims](claim-ownership.json), [registered objects](registered-object-ownership.json).
+
+Remaining work: Gemini Stage 02 must resolve fulfillment address/persistence/adapter/artwork/completion/UI truth, tenant-global telecom simulator state, restore test-mode default and operator site-create permissions; review all other candidate groups, then commit/freeze and complete quality/schema/build gates. Sol Stage 02 independently verifies. Subsequent existing stages cover ordinary identity/publishing/roles (03), shipping modules/providers (04), production security/image (05), durable business recovery/complete restore/upgrade (06), immutable release decision (07). No new eighth stage.
+
+External prerequisites: no qualifying authentic predecessor image/source/config/representative DB/media archive was located for any retained customer-upgrade claim; fixture proof cannot substitute. Provider credentials/sender/artwork/storage/scanner/peer availability is unassessed here and must be documented per required remote claim in 04. Approved optional providers may remain safely unconfigured only with runtime proof. No unilateral shipping-scope removal or blanket provider fallback is approved.
+
+Next: **Gemini Stage 02, then Sol Stage 02**, when instructed. No next stage, tag, push, publication or deployment was started. Only final Sol Stage 07 may create a local RC1 tag after actual PASS.
+''',encoding='utf-8')
+print(json.dumps({'reviewHead':head,'finalTreeDigest':digest,'dirtyTracked':len(tracked),'untrackedCandidate':len(candidate),'executableContainment':True}))
