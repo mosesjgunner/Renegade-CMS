@@ -349,6 +349,62 @@ export default async function ConnectionsPage() {
       // module might be disabled in current profile
     }
 
+    // 5.5. AI Connections
+    try {
+      const aiConnections = await payload.find({
+        collection: 'ai-connections' as never,
+        where: siteFilter,
+        limit: 100,
+        depth: 0,
+        overrideAccess: true,
+      })
+      for (const doc of aiConnections.docs as any[]) {
+        const status =
+          doc.status === 'ready' || doc.status === 'active'
+            ? 'active'
+            : doc.status === 'error'
+              ? 'degraded'
+              : doc.status === 'disabled'
+                ? 'disabled'
+                : 'configured'
+        connections.push({
+          id: String(doc.id),
+          collection: 'ai-connections',
+          group: 'AI',
+          siteId: String(doc.site ?? 'default'),
+          providerKey: String(doc.providerKey || 'ai'),
+          externalAccountId: String(doc.model || 'model'),
+          label: String(doc.label || 'AI Connection'),
+          status,
+          healthState: status === 'active' ? 'healthy' : 'warning',
+          encryptedSecretRef: doc.credential ? 'credential-set' : null,
+          scopes: Array.isArray(doc.allowedTasks) ? doc.allowedTasks.map(String) : [],
+          expiresAt: null,
+          refreshMetadata: null,
+          capabilities: Array.isArray(doc.capabilities) ? doc.capabilities.map(String) : [],
+          lastHealthCheckAt: doc.lastTestedAt ? String(doc.lastTestedAt) : null,
+          lastSuccessAt:
+            doc.status === 'ready' && doc.lastTestedAt ? String(doc.lastTestedAt) : null,
+          lastError: doc.lastError
+            ? { code: 'unavailable', message: String(doc.lastError), retryable: true }
+            : null,
+          auditEventIds: [],
+          nextSafeRepairAction: resolveNextSafeRepairAction({
+            status,
+            providerKey: doc.providerKey || 'ai',
+            lastError: doc.lastError,
+            lastHealthCheckAt: doc.lastTestedAt,
+          }),
+          unconfiguredFeatures: [],
+          isUnknown: !doc.lastTestedAt,
+          canRotateSecret: true,
+          canDisconnect: status !== 'disabled',
+        })
+      }
+    } catch {
+      // module might be disabled in current profile
+    }
+
     // 6. Webhook Deliveries
     try {
       if (grant.isGlobalOwner || scopedWebhookIds.length > 0) {

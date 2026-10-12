@@ -10,6 +10,26 @@ import {
 
 import { resolveOperatorGrantContext } from '@/modules/operations/operator-grants'
 
+export async function GET(request: Request) {
+  const payload = await getPayload({ config })
+  const auth = await payload.auth({ headers: request.headers })
+  if (!auth.user || auth.user.role !== 'owner') {
+    return Response.json({ error: 'Owner authority required.' }, { status: 403 })
+  }
+  const grant = await resolveOperatorGrantContext(payload, auth.user)
+  if (!grant.authorized) {
+    return Response.json({ error: 'Owner authority required.' }, { status: 403 })
+  }
+  const sites = await payload.find({
+    collection: 'sites',
+    where: { id: { in: grant.authorizedSiteIds } },
+    depth: 0,
+    limit: 100,
+    overrideAccess: true,
+  })
+  return Response.json({ sites: sites.docs.map(({ id, name }) => ({ id, name })) })
+}
+
 export async function POST(request: Request) {
   try {
     const payload = await getPayload({ config })
@@ -47,6 +67,13 @@ export async function POST(request: Request) {
 
     if (!body.email) {
       return Response.json({ error: 'Staff email is required.' }, { status: 400 })
+    }
+
+    if (!body.siteId || !grant.authorizedSiteIds.includes(body.siteId)) {
+      return Response.json(
+        { error: 'Choose an authorized site for this invitation.' },
+        { status: 400 },
+      )
     }
 
     const result = await createStaffEnrollmentToken(payload, runtimeConfig, {

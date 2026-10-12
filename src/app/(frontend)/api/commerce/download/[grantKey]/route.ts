@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto'
+import { catalogSiteForHost } from '@/modules/commerce/site-scope'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import { loadConfig } from '@/modules/core/config'
@@ -25,6 +26,12 @@ export async function GET(request: Request, context: { params: Promise<{ grantKe
     overrideAccess: true,
   } as never)
   const grant = found.docs[0] as unknown as Record<string, unknown> | undefined
+  const hostSite = await catalogSiteForHost(payload, request.headers.get('host')).catch(() => '')
+  if (!grant || hostSite !== id(grant.site))
+    return Response.json(
+      { error: 'Download is unavailable.' },
+      { status: 404, headers: { 'cache-control': 'private, no-store' } },
+    )
   const entitlement = grant?.entitlement as Record<string, unknown> | undefined
   const decision = authorizePrivateDownload(
     grant
@@ -154,7 +161,10 @@ export async function GET(request: Request, context: { params: Promise<{ grantKe
     },
     overrideAccess: true,
   } as never)
-  const filename = String(asset.filename ?? `${asset.id}.bin`).replace(/[^A-Za-z0-9._-]/g, '_')
+  const filename = String(asset.originalFilename ?? asset.filename ?? `${asset.id}.bin`).replace(
+    /[^A-Za-z0-9._-]/g,
+    '_',
+  )
   return new Response(Buffer.from(bytes), {
     headers: {
       'content-type': String(asset.mimeType ?? 'application/octet-stream'),

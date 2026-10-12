@@ -30,7 +30,10 @@ vi.mock('@/app/(frontend)/api/commerce/webhooks/[provider]/route', () => ({
 }))
 
 import { POST } from '../../src/app/(frontend)/api/commerce/checkout/test/confirm/route'
-import { signedLocalPaymentEvent } from '../../src/modules/commerce/local-test-checkout'
+import {
+  signedLocalPaymentEvent,
+  localTestCheckoutEnabled,
+} from '../../src/modules/commerce/local-test-checkout'
 import { createDeterministicPaymentAdapter } from '../../src/modules/commerce/payment-provider'
 
 function request(cookie = '') {
@@ -46,6 +49,7 @@ describe('local checkout boundary', () => {
     state.webhook.mockReset().mockResolvedValue(new Response('{}', { status: 202 }))
     state.attemptState = 'action-required'
     process.env.LOCAL_E2E_TEST_MODE = 'true'
+    delete process.env.COMMERCE_LOCAL_TEST_CHECKOUT_ENABLED
     process.env.COMMERCE_GUEST_ORDER_SECRET = 'unit-test-guest-order-secret-long-enough'
   })
 
@@ -90,6 +94,24 @@ describe('local checkout boundary', () => {
       secret: 'secret',
     })
     expect(event.signature).toBe(createHmac('sha256', 'secret').update(event.raw).digest('hex'))
+  })
+
+  it('supports configured local test payment without enabling E2E mode or a public host', () => {
+    vi.stubEnv('LOCAL_E2E_TEST_MODE', 'false')
+    vi.stubEnv('COMMERCE_LOCAL_TEST_CHECKOUT_ENABLED', 'true')
+    vi.stubEnv('COMMERCE_GUEST_ORDER_SECRET', 'guest-secret-with-at-least-32-characters')
+    vi.stubEnv('COMMERCE_TEST_WEBHOOK_SECRET', 'webhook-secret-with-at-least-32-characters')
+    vi.stubEnv('APP_URL', 'https://dispatch.test')
+    try {
+      expect(localTestCheckoutEnabled('https://dispatch.test/checkout')).toBe(true)
+      expect(localTestCheckoutEnabled('http://localhost/checkout')).toBe(true)
+      expect(localTestCheckoutEnabled('https://other.test/checkout')).toBe(false)
+      expect(localTestCheckoutEnabled('https://public.example/checkout')).toBe(false)
+      vi.stubEnv('COMMERCE_TEST_WEBHOOK_SECRET', 'development-only')
+      expect(localTestCheckoutEnabled('https://dispatch.test/checkout')).toBe(false)
+    } finally {
+      vi.unstubAllEnvs()
+    }
   })
 
   it('accepts loopback HTTP returns only in explicit local test mode', async () => {

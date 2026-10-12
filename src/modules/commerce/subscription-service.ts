@@ -12,6 +12,21 @@ type PayloadLike = {
 }
 const rel = (value: any) => String(typeof value === 'object' && value ? value.id : (value ?? ''))
 
+/** An unchanged provider price preserves the immutable agreement bought by this member. */
+export function resolveProviderPlanChange<T extends { providerMappings?: unknown }>(
+  plans: T[],
+  provider: string,
+  price: string,
+  currentPrice: string,
+): { plan: T | null; ambiguous: boolean } {
+  if (!price || price === currentPrice) return { plan: null, ambiguous: false }
+  const matches = plans.filter(
+    (plan) =>
+      String((plan.providerMappings as Record<string, unknown> | null)?.[provider] ?? '') === price,
+  )
+  return { plan: matches.length === 1 ? matches[0] : null, ambiguous: matches.length > 1 }
+}
+
 export async function queueBillingSystemNotice(
   payload: PayloadLike,
   input: {

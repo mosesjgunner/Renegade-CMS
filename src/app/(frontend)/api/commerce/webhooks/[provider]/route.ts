@@ -8,6 +8,7 @@ import { applySubscriptionEvent } from '@/modules/commerce/subscription-contract
 import {
   queueBillingSystemNotice,
   recomputeSubscriptionEntitlements,
+  resolveProviderPlanChange,
 } from '@/modules/commerce/subscription-service'
 
 /** Authenticate, normalize, and durably inbox the event. Financial mutations run in the ordered job. */
@@ -155,6 +156,8 @@ export async function POST(
       }
       const priceReference = subscriptionEvent.priceReference ?? projection?.priceReference
       let changedPlan: any = null
+      let ambiguousPrice = false
+      const currentProviderPrice = String(row.planSnapshot?.providerMappings?.[provider] ?? '')
       if (priceReference) {
         const siteId = typeof row.site === 'object' ? String(row.site.id) : String(row.site)
         const plans = await db.find({
@@ -164,24 +167,24 @@ export async function POST(
           depth: 0,
           overrideAccess: true,
         })
-        changedPlan =
-          plans.docs.find(
-            (candidate: any) =>
-              String(candidate.providerMappings?.[provider] ?? '') === priceReference &&
-              String(candidate.id) !==
-                String(
-                  typeof row.planRevision === 'object' ? row.planRevision.id : row.planRevision,
-                ),
-          ) ?? null
+        const mapping = resolveProviderPlanChange(
+          plans.docs,
+          provider,
+          priceReference,
+          currentProviderPrice,
+        )
+        changedPlan = mapping.plan
+        ambiguousPrice = mapping.ambiguous
       }
-      const currentProviderPrice = String(row.planSnapshot?.providerMappings?.[provider] ?? '')
       const unmappedPrice = Boolean(
-        priceReference && priceReference !== currentProviderPrice && !changedPlan,
+        ambiguousPrice ||
+          (priceReference && priceReference !== currentProviderPrice && !changedPlan),
       )
       const planSnapshot = changedPlan
         ? {
             id: String(changedPlan.id),
             planKey: String(changedPlan.planKey),
+            name: String(changedPlan.name),
             revision: Number(changedPlan.revision),
             publishedAt: String(changedPlan.publishedAt),
             lifecycle: 'published',

@@ -1,4 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { createHash } from 'node:crypto'
+import { catalogSiteForHost } from '@/modules/commerce/site-scope'
+import { deliveryGrantAvailable } from '@/modules/commerce/digital-delivery'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
@@ -19,6 +22,9 @@ export async function GET(request: Request) {
     .catch(() => null)
   if (!session) return NextResponse.json({ error: 'Checkout not found.' }, { status: 404 })
   const siteId = relationId(session.site)
+  const hostSite = await catalogSiteForHost(payload, request.headers.get('host')).catch(() => '')
+  if (hostSite !== siteId)
+    return NextResponse.json({ error: 'Checkout not found.' }, { status: 404 })
   const cart: any =
     typeof session.cart === 'object'
       ? session.cart
@@ -69,8 +75,38 @@ export async function GET(request: Request) {
   })
   const attempt: any = attempts.docs[0]
   const order: any = orders.docs[0]
+  const downloads: Array<{ path: string; label: string }> = []
+  if (order && ['paid', 'fulfilled'].includes(order.state)) {
+    for (const entry of order.fulfillmentExtension?.downloads ?? []) {
+      if (
+        typeof entry.path !== 'string' ||
+        !/^\/api\/commerce\/download\/[A-Za-z0-9_-]{43}$/.test(entry.path)
+      )
+        continue
+      const key = entry.path.split('/').pop()
+      const grants = await payload.find({
+        collection: 'digital-delivery-grants',
+        where: {
+          and: [
+            { site: { equals: siteId } },
+            { grantKeyHash: { equals: createHash('sha256').update(key).digest('hex') } },
+          ],
+        },
+        depth: 1,
+        limit: 1,
+        overrideAccess: true,
+      })
+      const grant = grants.docs[0]
+      if (grant && deliveryGrantAvailable(grant))
+        downloads.push({
+          path: entry.path,
+          label: 'Download purchased file ' + String(entry.variantSku),
+        })
+    }
+  }
   return NextResponse.json(
     {
+      downloads,
       checkout: { id: session.id, state: session.state, expiresAt: session.expiresAt },
       payment: attempt
         ? {

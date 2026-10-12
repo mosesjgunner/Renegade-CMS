@@ -20,6 +20,10 @@ describe('SHOP-08 local donation checkout through public routes and durable paym
     await payload.updateGlobal({
       slug: 'site-settings',
       data: {
+        canonicalOriginsBySite: {
+          ...((settings.canonicalOriginsBySite as Record<string, unknown> | null) ?? {}),
+          [siteId]: 'http://localhost',
+        },
         adminExperience: {
           ...(settings.adminExperience ?? {}),
           optionalCapabilities: {

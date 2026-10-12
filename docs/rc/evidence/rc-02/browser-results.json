@@ -4,8 +4,8 @@
       "C:\\Program Files\\nodejs\\node.exe",
       "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\node_modules\\@playwright\\test\\cli.js",
       "test",
-      "--config",
-      "playwright.rc02.config.ts"
+      "tests/rc02/staff-invitation.spec.ts",
+      "--config=playwright.rc02.config.ts"
     ],
     "configFile": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\playwright.rc02.config.ts",
     "rootDir": "C:/Projects/RENEGADE CMS/Renegade-CMS/tests/rc02",
@@ -89,13 +89,13 @@
   },
   "suites": [
     {
-      "title": "site-build.spec.ts",
-      "file": "site-build.spec.ts",
+      "title": "staff-invitation.spec.ts",
+      "file": "staff-invitation.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [
         {
-          "title": "RC-02: ordinary operator builds Renegade Party Dispatch from an empty install",
+          "title": "Owner invites staff through Security, staff enrolls and logs in with WebAuthn",
           "ok": true,
           "tags": [],
           "tests": [
@@ -110,76 +110,18 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 41220,
+                  "duration": 15994,
                   "errors": [],
-                  "stdout": [
-                    {
-                      "buffer": "WzIzOjA1OjQ4XSAbWzMzbVdBUk4bWzM5bTogG1szNm1ObyBlbWFpbCBhZGFwdGVyIHByb3ZpZGVkLiBFbWFpbCB3aWxsIGJlIHdyaXR0ZW4gdG8gY29uc29sZS4gTW9yZSBpbmZvIGF0IGh0dHBzOi8vcGF5bG9hZGNtcy5jb20vZG9jcy9lbWFpbC9vdmVydmlldy4bWzM5bQo="
-                    }
-                  ],
+                  "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "steps": [
-                    {
-                      "title": "Owner enrollment and blank Standard onboarding",
-                      "duration": 6122
-                    },
-                    {
-                      "title": "Site settings through the normal admin form",
-                      "duration": 2105
-                    },
-                    {
-                      "title": "Activate a theme and configure supported tokens in Theme Studio",
-                      "duration": 1057
-                    },
-                    {
-                      "title": "Upload original image and metadata through the normal media API",
-                      "duration": 573
-                    },
-                    {
-                      "title": "Create coherent editorial records through authenticated product REST",
-                      "duration": 7950
-                    },
-                    {
-                      "title": "Build homepage using Puck and publish a reusable composition",
-                      "duration": 1741
-                    },
-                    {
-                      "title": "Reusable templates, patterns and published global regions",
-                      "duration": 438
-                    },
-                    {
-                      "title": "Media usage tracking and nondestructive replacement",
-                      "duration": 420
-                    },
-                    {
-                      "title": "Theme preview and switching preserve canonical editorial records",
-                      "duration": 1743
-                    },
-                    {
-                      "title": "Anonymous public site, metadata, discovery and responsive media",
-                      "duration": 6359
-                    },
-                    {
-                      "title": "Published edit, revision history and exact slug redirect",
-                      "duration": 2050
-                    },
-                    {
-                      "title": "Rendered Quality performs real HTTP checks against this site",
-                      "duration": 1884
-                    },
-                    {
-                      "title": "Actual web and worker process restart, then fresh anonymous browse",
-                      "duration": 7688
-                    }
-                  ],
-                  "startTime": "2026-10-04T04:05:48.492Z",
+                  "startTime": "2026-10-12T22:43:56.639Z",
                   "annotations": [],
                   "attachments": [
                     {
                       "name": "trace",
                       "contentType": "application/zip",
-                      "path": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\test-results\\rc02\\site-build-RC-02-ordinary--62930-patch-from-an-empty-install\\trace.zip"
+                      "path": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\test-results\\rc02\\staff-invitation-Owner-inv-9a903-s-and-logs-in-with-WebAuthn\\trace.zip"
                     }
                   ]
                 }
@@ -187,9 +129,9 @@
               "status": "expected"
             }
           ],
-          "id": "ddf9e0cd01877a1bb162-0ce1cbdf71d8ad8c68f1",
-          "file": "site-build.spec.ts",
-          "line": 9,
+          "id": "1ef1e52a1ecd203e5f48-3c7f3bc514d4a1ae27d6",
+          "file": "staff-invitation.spec.ts",
+          "line": 3,
           "column": 1
         }
       ]
@@ -197,8 +139,8 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-10-04T04:05:41.848Z",
-    "duration": 49249.817,
+    "startTime": "2026-10-12T22:43:53.521Z",
+    "duration": 19879.409,
     "expected": 1,
     "skipped": 0,
     "unexpected": 0,

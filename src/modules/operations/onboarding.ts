@@ -211,6 +211,12 @@ export async function provisionOnboardingSite(
       status: 'active',
     },
   )
+  await upsert(
+    payload,
+    'member-site-roles',
+    { site: { equals: site.id }, member: { equals: member.id } },
+    { site: site.id, member: member.id, role: 'community-manager' },
+  )
   const profileHandle = await resolveUniqueProfileHandle(payload, input.slug, member.id)
   const profile = await upsert(
     payload,
@@ -289,6 +295,11 @@ export async function provisionOnboardingSite(
     },
   )
   const optional = new Set(input.optionalConnections)
+  const priorSettings = await payload.findGlobal({
+    slug: 'site-settings',
+    depth: 0,
+    overrideAccess: true,
+  })
   await payload.updateGlobal({
     slug: 'site-settings',
     overrideAccess: true,
@@ -297,6 +308,10 @@ export async function provisionOnboardingSite(
       defaultTitle: input.name,
       defaultDescription: input.description || undefined,
       canonicalOrigin: input.primaryUrl,
+      canonicalOriginsBySite: {
+        ...(priorSettings.canonicalOriginsBySite as Record<string, string> | null),
+        [site.id]: input.primaryUrl,
+      },
       locale: input.locale,
       timezone: input.timezone,
       indexingMode: input.publishingDefaults?.indexingMode ?? 'index',

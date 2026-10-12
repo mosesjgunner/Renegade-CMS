@@ -13,6 +13,14 @@ import {
   quoteOrderLines,
   verifyCryptoObservation,
 } from './contracts'
+import {
+  buildFulfillmentPlan,
+  createPodJobAfterPaidAcceptance,
+  DEFAULT_HOLD_WINDOW_MS,
+  type FulfillmentLineItem,
+} from './fulfillment-plan'
+import { createManualFulfillmentPackage, MANUAL_FULFILLMENT_DISCLAIMER } from './manual-fulfillment'
+import type { PodConnectionRecord } from './pod-connection'
 
 export type CartLine = {
   productId: string
@@ -886,11 +894,220 @@ export async function finalizeVerifiedOrder(
       })
     }
   }
-  if (downloads.length)
+  if (!alreadySettled) {
+    const rawShipping = proposal?.shippingAddress ?? order.addressSnapshot?.shipping ?? null
+    const recipientAddress = rawShipping
+      ? {
+          name: String(rawShipping.name ?? order.partySnapshot?.name ?? 'Customer'),
+          address1: String(rawShipping.address1 ?? rawShipping.street ?? ''),
+          address2: rawShipping.address2 ? String(rawShipping.address2) : undefined,
+          city: String(rawShipping.city ?? ''),
+          state: rawShipping.state ? String(rawShipping.state) : undefined,
+          postalCode: String(rawShipping.postalCode ?? rawShipping.zip ?? ''),
+          country: String(rawShipping.country ?? 'US'),
+          phone: rawShipping.phone ? String(rawShipping.phone) : undefined,
+          email: rawShipping.email ? String(rawShipping.email) : undefined,
+        }
+      : undefined
+
+    const podConnectionsResult = await db.find({
+      collection: 'pod-connections',
+      where: { site: { equals: input.session.site } },
+      limit: 100,
+      overrideAccess: true,
+    })
+    const connectionsByProviderKey = new Map<string, PodConnectionRecord>()
+    for (const conn of podConnectionsResult.docs) {
+      connectionsByProviderKey.set(conn.providerKey, conn as unknown as PodConnectionRecord)
+    }
+
+    const fulfillmentItems: FulfillmentLineItem[] = lines.map((line: any, idx: number) => {
+      const prod = products.find((p: any) => String(p.id) === String(line.productId))
+      const variant = prod?.variants?.find((v: any) => v.sku === line.variantSku)
+
+      let kind: FulfillmentLineItem['kind'] = 'physical'
+      if (line.kind === 'digital' || line.entitlement || prod?.digitalDelivery?.assets?.length) {
+        kind = 'digital'
+      } else if (
+        line.kind === 'pod' ||
+        variant?.inventoryPolicy === 'pod' ||
+        variant?.inventoryPolicy === 'pod-provider' ||
+        prod?.podMappings
+      ) {
+        kind = 'pod'
+      } else if (line.kind === 'physical') {
+        kind = 'physical'
+      }
+
+      let podMapping = line.podMapping
+      if (!podMapping && prod?.podMappings) {
+        if (Array.isArray(prod.podMappings)) {
+          podMapping = prod.podMappings.find((m: any) => m.variantSku === line.variantSku)
+        } else if (prod.podMappings[line.variantSku]) {
+          podMapping = prod.podMappings[line.variantSku]
+        }
+      }
+
+      return {
+        lineId: line.lineId ?? `line_${idx}`,
+        productId: String(line.productId),
+        variantSku: String(line.variantSku),
+        title: String(line.title ?? variant?.title ?? prod?.name ?? 'Item'),
+        quantity: Number(line.quantity ?? 1),
+        unitPriceMinor: String(line.unitPriceMinor ?? line.priceMinor ?? '0'),
+        lineAmountMinor: String(line.lineAmountMinor ?? line.amountMinor ?? '0'),
+        kind,
+        podMapping,
+        soldRenditions: line.soldRenditions,
+      }
+    })
+
+    const plan = buildFulfillmentPlan({
+      orderId: String(order.id),
+      siteId: String(input.session.site),
+      currency: String(input.session.currency),
+      recipientAddress,
+      items: fulfillmentItems,
+      connectionsByProviderKey,
+    })
+
+    for (const plannedPod of plan.providerJobs) {
+      if (!recipientAddress) continue
+      const podJob = createPodJobAfterPaidAcceptance({
+        plan,
+        packageIndex: plannedPod.packageIndex,
+        orderPaymentState: 'paid',
+        holdWindowMs: DEFAULT_HOLD_WINDOW_MS,
+        actor: 'commerce_settlement',
+      })
+      const existingJob = await db.find({
+        collection: 'pod-jobs',
+        where: { idempotencyKey: { equals: podJob.idempotencyKey } },
+        limit: 1,
+        overrideAccess: true,
+      })
+      if (!existingJob.docs.length) {
+        await db.create({
+          collection: 'pod-jobs',
+          data: {
+            site: input.session.site,
+            order: order.id,
+            connection: plannedPod.connectionId,
+            providerKey: plannedPod.providerKey,
+            packageIndex: plannedPod.packageIndex,
+            idempotencyKey: podJob.idempotencyKey,
+            payloadHash: podJob.payloadHash,
+            state: podJob.state,
+            addressPolicy: podJob.addressPolicy,
+            recipientSnapshot: podJob.recipientSnapshot,
+            itemsSnapshot: podJob.itemsSnapshot,
+            costSnapshot: podJob.costSnapshot,
+            attemptCount: podJob.attemptCount,
+            holdExpiresAt: podJob.holdExpiresAt,
+            auditTrail: podJob.auditTrail,
+          },
+          overrideAccess: true,
+        })
+      }
+    }
+
+    for (const plannedManual of plan.manualPackages) {
+      const existingManual = await db.find({
+        collection: 'manual-fulfillment-packages',
+        where: {
+          and: [
+            { order: { equals: order.id } },
+            { packageIndex: { equals: plannedManual.packageIndex } },
+          ],
+        },
+        limit: 1,
+        overrideAccess: true,
+      })
+      if (!existingManual.docs.length) {
+        const manualPkg = createManualFulfillmentPackage({
+          orderId: String(order.id),
+          siteId: String(input.session.site),
+          packageIndex: plannedManual.packageIndex,
+          source:
+            plannedManual.reason === 'explicit-manual'
+              ? 'explicit-manual-product'
+              : 'pod-provider-fallback',
+          approvedLines: plannedManual.items.map((it) => ({
+            lineId: it.lineId,
+            productId: it.productId,
+            variantSku: it.variantSku,
+            title: it.title,
+            quantity: it.quantity,
+            artworkSpecs: [],
+          })),
+          permissionedAddressManifest: recipientAddress ?? {
+            name: String(order.partySnapshot?.name ?? 'Customer'),
+            address1: '',
+            city: '',
+            postalCode: '',
+            country: String(order.addressSnapshot?.shipping?.country ?? 'US'),
+          },
+        })
+        await db.create({
+          collection: 'manual-fulfillment-packages',
+          data: {
+            site: input.session.site,
+            order: order.id,
+            packageIndex: manualPkg.packageIndex,
+            source: manualPkg.source,
+            status: manualPkg.status,
+            approvedLines: manualPkg.approvedLines,
+            permissionedAddressManifest: manualPkg.permissionedAddressManifest,
+            instructions: manualPkg.instructions,
+            auditTrail: manualPkg.auditTrail,
+          },
+          overrideAccess: true,
+        })
+      }
+    }
+
+    const currentFulfillmentExt = order.fulfillmentExtension ?? {}
     order = await db.update({
       collection: 'orders',
       id: order.id,
-      data: { fulfillmentExtension: { downloads } },
+      data: {
+        fulfillmentExtension: {
+          ...currentFulfillmentExt,
+          planId: plan.id,
+          podJobsCount: plan.providerJobs.length,
+          manualPackagesCount: plan.manualPackages.length,
+          downloads: downloads.length ? downloads : (currentFulfillmentExt.downloads ?? []),
+        },
+      },
+      overrideAccess: true,
+    })
+  } else if (downloads.length) {
+    order = await db.update({
+      collection: 'orders',
+      id: order.id,
+      data: { fulfillmentExtension: { ...(order.fulfillmentExtension ?? {}), downloads } },
+      overrideAccess: true,
+    })
+  }
+  if (proposal?.id) {
+    await db.update({
+      collection: 'inventory-reservations',
+      where: { proposal: { equals: String(proposal.id) } },
+      data: { status: 'consumed' },
+      overrideAccess: true,
+    })
+    await db.update({
+      collection: 'checkout-proposals',
+      id: proposal.id,
+      data: { state: 'consumed' },
+      overrideAccess: true,
+    })
+  }
+  if (cart.id)
+    await db.update({
+      collection: 'carts',
+      id: cart.id,
+      data: { state: 'converted' },
       overrideAccess: true,
     })
   return { order, replay: alreadySettled }

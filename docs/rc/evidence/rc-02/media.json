@@ -1,33 +1,33 @@
 {
   "sourceSha256": "16b989fd2ac7b2bbf09e1befd6abaaf633edfbb9ed1f1d3083e27700a81cc7d6",
   "asset": {
-    "id": "32363a56-af1a-4308-9652-ac76db8ef487",
+    "id": "895d5b7d-09c9-4b4c-8054-903279c279bd",
     "site": {
-      "id": "ef4d1fb8-989c-4df0-abb0-9ac8b218dcc0",
+      "id": "117cb44a-1b6e-49f8-9e9c-443a35a5119b",
       "name": "Renegade Party Dispatch",
       "slug": "renegadeparty",
       "description": "Independent civic reporting, local organizing and public accountability.",
       "lifecycle": "active",
       "communityRegistrationPolicy": "open",
       "commentReactionCodes": ["thumbs_up", "heart", "insightful", "applause"],
-      "updatedAt": "2026-10-04T04:05:53.935Z",
-      "createdAt": "2026-10-04T04:05:53.935Z"
+      "updatedAt": "2026-10-12T22:41:25.850Z",
+      "createdAt": "2026-10-12T22:41:25.849Z"
     },
     "publication": {
-      "id": "88dd0221-94fe-41fc-bff2-6beccd8ba062",
+      "id": "184c06e5-5d1a-44df-91ed-19f95a3c9648",
       "site": {
-        "id": "ef4d1fb8-989c-4df0-abb0-9ac8b218dcc0",
+        "id": "117cb44a-1b6e-49f8-9e9c-443a35a5119b",
         "name": "Renegade Party Dispatch",
         "slug": "renegadeparty",
         "description": "Independent civic reporting, local organizing and public accountability.",
         "lifecycle": "active",
         "communityRegistrationPolicy": "open",
         "commentReactionCodes": ["thumbs_up", "heart", "insightful", "applause"],
-        "updatedAt": "2026-10-04T04:05:53.935Z",
-        "createdAt": "2026-10-04T04:05:53.935Z"
+        "updatedAt": "2026-10-12T22:41:25.850Z",
+        "createdAt": "2026-10-12T22:41:25.849Z"
       },
       "owner": {
-        "id": "7f9ad54d-b1ab-48d4-8e7f-c1b43e06a382",
+        "id": "8d232b91-f80f-40ed-b970-cd2b8ae3c3f1",
         "displayName": "Renegade Party Dispatch",
         "email": "editor@renegadeparty.test",
         "status": "active",
@@ -43,14 +43,14 @@
         "verifiedEmailAt": null,
         "moderationReason": null,
         "stateReason": null,
-        "updatedAt": "2026-10-04T04:05:53.955Z",
-        "createdAt": "2026-10-04T04:05:53.954Z"
+        "updatedAt": "2026-10-12T22:41:25.871Z",
+        "createdAt": "2026-10-12T22:41:25.871Z"
       },
       "space": {
-        "id": "3d6a2e4a-4990-46bb-b9b3-b3dcd8d48f71",
-        "site": "ef4d1fb8-989c-4df0-abb0-9ac8b218dcc0",
-        "member": "7f9ad54d-b1ab-48d4-8e7f-c1b43e06a382",
-        "profile": "d05bbe9c-eb15-428d-ad98-a12630523a75",
+        "id": "3c9ef045-a741-4563-9d5f-09f8e1ed8a6a",
+        "site": "117cb44a-1b6e-49f8-9e9c-443a35a5119b",
+        "member": "8d232b91-f80f-40ed-b970-cd2b8ae3c3f1",
+        "profile": "308d627a-a985-4543-9361-fdb769c1a9c8",
         "handle": "renegadeparty",
         "canonicalPath": "/members/renegadeparty",
         "displayName": "Renegade Party Dispatch Space",
@@ -62,7 +62,7 @@
         "layoutTheme": null,
         "capabilities": [
           {
-            "id": "6ac1d0a1b228794f408ca418",
+            "id": "6acd62154903e36b18e69b58",
             "key": "space.blog",
             "status": "enabled"
           }
@@ -75,8 +75,8 @@
         "suspendedAt": null,
         "transferToMember": null,
         "transferState": "none",
-        "updatedAt": "2026-10-04T04:05:53.983Z",
-        "createdAt": "2026-10-04T04:05:53.982Z"
+        "updatedAt": "2026-10-12T22:41:25.944Z",
+        "createdAt": "2026-10-12T22:41:25.943Z"
       },
       "name": "Renegade Party Dispatch",
       "slug": "main",
@@ -84,8 +84,8 @@
       "status": "active",
       "visibility": "public",
       "brand": {
-        "id": "07f82a9d-007a-4449-a07b-b2ad86b2dec3",
-        "site": "ef4d1fb8-989c-4df0-abb0-9ac8b218dcc0",
+        "id": "b08208a8-8136-439a-92e9-4be91dbaa5eb",
+        "site": "117cb44a-1b6e-49f8-9e9c-443a35a5119b",
         "name": "Renegade Party Dispatch",
         "legalName": null,
         "kind": "organization",
@@ -112,12 +112,12 @@
         "newsletterDefaults": null,
         "disclosures": null,
         "structuredDataDefaults": null,
-        "updatedAt": "2026-10-04T04:05:54.006Z",
-        "createdAt": "2026-10-04T04:05:54.006Z"
+        "updatedAt": "2026-10-12T22:41:25.973Z",
+        "createdAt": "2026-10-12T22:41:25.973Z"
       },
       "profile": {
-        "id": "d05bbe9c-eb15-428d-ad98-a12630523a75",
-        "member": "7f9ad54d-b1ab-48d4-8e7f-c1b43e06a382",
+        "id": "308d627a-a985-4543-9361-fdb769c1a9c8",
+        "member": "8d232b91-f80f-40ed-b970-cd2b8ae3c3f1",
         "displayName": "Renegade Party Dispatch",
         "handle": "renegadeparty",
         "handleChangedAt": null,
@@ -138,8 +138,8 @@
           "email": "private"
         },
         "layoutTheme": null,
-        "updatedAt": "2026-10-04T04:05:53.967Z",
-        "createdAt": "2026-10-04T04:05:53.967Z"
+        "updatedAt": "2026-10-12T22:41:25.923Z",
+        "createdAt": "2026-10-12T22:41:25.923Z"
       },
       "brandOverrides": null,
       "themePreset": "neutral-starter",
@@ -147,7 +147,7 @@
       "featurePolicy": null,
       "capabilities": [
         {
-          "id": "6ac1d0a2b228794f408ca419",
+          "id": "6acd62154903e36b18e69b59",
           "key": "publication.content",
           "status": "enabled"
         }
@@ -172,12 +172,12 @@
       "suspendedAt": null,
       "archivedAt": null,
       "archiveMessage": null,
-      "updatedAt": "2026-10-04T04:05:54.030Z",
-      "createdAt": "2026-10-04T04:05:54.030Z"
+      "updatedAt": "2026-10-12T22:41:26.000Z",
+      "createdAt": "2026-10-12T22:41:26.000Z"
     },
     "space": null,
     "owner": {
-      "id": "7f9ad54d-b1ab-48d4-8e7f-c1b43e06a382",
+      "id": "8d232b91-f80f-40ed-b970-cd2b8ae3c3f1",
       "displayName": "Renegade Party Dispatch",
       "email": "editor@renegadeparty.test",
       "status": "active",
@@ -193,45 +193,45 @@
       "verifiedEmailAt": null,
       "moderationReason": null,
       "stateReason": null,
-      "updatedAt": "2026-10-04T04:05:53.955Z",
-      "createdAt": "2026-10-04T04:05:53.954Z"
+      "updatedAt": "2026-10-12T22:41:25.871Z",
+      "createdAt": "2026-10-12T22:41:25.871Z"
     },
     "title": "Liberty and civic assembly",
     "kind": "image",
-    "storageLocation": "ef4d1fb8-989c-4df0-abb0-9ac8b218dcc0/b67dc3fe-e635-4b9b-b360-9706ecd95956.png",
+    "storageLocation": "117cb44a-1b6e-49f8-9e9c-443a35a5119b/8f73a325-0e31-4c3b-892b-a406f8c048e2.png",
     "storageProvider": "local",
     "originalBlob": {
-      "id": "6d08a68b-41f7-4099-a548-291a32614287",
+      "id": "2d2731b7-89f6-4369-a776-f5f4c427bd3a",
       "site": {
-        "id": "ef4d1fb8-989c-4df0-abb0-9ac8b218dcc0",
+        "id": "117cb44a-1b6e-49f8-9e9c-443a35a5119b",
         "name": "Renegade Party Dispatch",
         "slug": "renegadeparty",
         "description": "Independent civic reporting, local organizing and public accountability.",
         "lifecycle": "active",
         "communityRegistrationPolicy": "open",
         "commentReactionCodes": ["thumbs_up", "heart", "insightful", "applause"],
-        "updatedAt": "2026-10-04T04:05:53.935Z",
-        "createdAt": "2026-10-04T04:05:53.935Z"
+        "updatedAt": "2026-10-12T22:41:25.850Z",
+        "createdAt": "2026-10-12T22:41:25.849Z"
       },
       "publication": {
-        "id": "88dd0221-94fe-41fc-bff2-6beccd8ba062",
-        "site": "ef4d1fb8-989c-4df0-abb0-9ac8b218dcc0",
-        "owner": "7f9ad54d-b1ab-48d4-8e7f-c1b43e06a382",
-        "space": "3d6a2e4a-4990-46bb-b9b3-b3dcd8d48f71",
+        "id": "184c06e5-5d1a-44df-91ed-19f95a3c9648",
+        "site": "117cb44a-1b6e-49f8-9e9c-443a35a5119b",
+        "owner": "8d232b91-f80f-40ed-b970-cd2b8ae3c3f1",
+        "space": "3c9ef045-a741-4563-9d5f-09f8e1ed8a6a",
         "name": "Renegade Party Dispatch",
         "slug": "main",
         "canonicalBasePath": "/",
         "status": "active",
         "visibility": "public",
-        "brand": "07f82a9d-007a-4449-a07b-b2ad86b2dec3",
-        "profile": "d05bbe9c-eb15-428d-ad98-a12630523a75",
+        "brand": "b08208a8-8136-439a-92e9-4be91dbaa5eb",
+        "profile": "308d627a-a985-4543-9361-fdb769c1a9c8",
         "brandOverrides": null,
         "themePreset": "neutral-starter",
         "moderationPolicy": null,
         "featurePolicy": null,
         "capabilities": [
           {
-            "id": "6ac1d0a2b228794f408ca419",
+            "id": "6acd62154903e36b18e69b59",
             "key": "publication.content",
             "status": "enabled"
           }
@@ -256,18 +256,18 @@
         "suspendedAt": null,
         "archivedAt": null,
         "archiveMessage": null,
-        "updatedAt": "2026-10-04T04:05:54.030Z",
-        "createdAt": "2026-10-04T04:05:54.030Z"
+        "updatedAt": "2026-10-12T22:41:26.000Z",
+        "createdAt": "2026-10-12T22:41:26.000Z"
       },
       "space": null,
       "checksum": "sha256:16b989fd2ac7b2bbf09e1befd6abaaf633edfbb9ed1f1d3083e27700a81cc7d6",
-      "storageKey": "ef4d1fb8-989c-4df0-abb0-9ac8b218dcc0/b67dc3fe-e635-4b9b-b360-9706ecd95956.png",
+      "storageKey": "117cb44a-1b6e-49f8-9e9c-443a35a5119b/8f73a325-0e31-4c3b-892b-a406f8c048e2.png",
       "storageProvider": "local",
       "mimeType": "image/png",
       "sizeBytes": 73970,
       "state": "ready",
-      "updatedAt": "2026-10-04T04:05:58.136Z",
-      "createdAt": "2026-10-04T04:05:58.136Z"
+      "updatedAt": "2026-10-12T22:41:42.915Z",
+      "createdAt": "2026-10-12T22:41:42.915Z"
     },
     "originalFilename": "liberty-banner.png",
     "mimeType": "image/png",
@@ -318,7 +318,7 @@
     "retentionHold": "none",
     "removeFromDiscovery": false,
     "tombstoneLabel": null,
-    "updatedAt": "2026-10-04T04:05:58.162Z",
-    "createdAt": "2026-10-04T04:05:58.162Z"
+    "updatedAt": "2026-10-12T22:41:42.947Z",
+    "createdAt": "2026-10-12T22:41:42.947Z"
   }
 }

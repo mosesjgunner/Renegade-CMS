@@ -3,6 +3,7 @@ import { getPayload } from 'payload'
 import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
 
+import { checkOperatorSiteAccess } from '@/modules/operations/operator-grants'
 import { ProductDetail } from '@/modules/commerce/ProductView'
 
 export const dynamic = 'force-dynamic'
@@ -19,9 +20,11 @@ export default async function CatalogPreviewPage({ params }: { params: Promise<{
       id: (await params).id,
       depth: 1,
       overrideAccess: true,
-    } as never)
+    })
     .catch(() => null)
   if (!product) notFound()
+  const site = typeof product.site === 'object' ? product.site?.id : product.site
+  if (!(await checkOperatorSiteAccess(payload, auth.user, String(site ?? '')))) notFound()
   return (
     <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-6">
       <aside className="rounded border border-amber-500 bg-amber-50 p-4 text-amber-950" role="note">

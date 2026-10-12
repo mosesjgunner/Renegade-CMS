@@ -6,6 +6,10 @@ import {
   catalogProductFromDocument,
   catalogReadiness,
 } from '@/modules/commerce/catalog'
+import {
+  checkOperatorSiteAccess,
+  resolveOperatorGrantContext,
+} from '@/modules/operations/operator-grants'
 import { publishProductRelease } from '@/modules/commerce/service'
 
 export const runtime = 'nodejs'
@@ -61,9 +65,19 @@ export async function GET(request: Request) {
   if (!auth.user || !staff(auth.user.role))
     return NextResponse.json({ error: 'Staff access required.' }, { status: 403 })
   const siteId = new URL(request.url).searchParams.get('siteId')
+  const grant = await resolveOperatorGrantContext(payload, auth.user)
+  if (
+    !grant.authorized ||
+    (siteId && !grant.isGlobalOwner && !grant.authorizedSiteIds.includes(siteId))
+  )
+    return NextResponse.json({ error: 'Staff site access required.' }, { status: 403 })
   const result = await payload.find({
     collection: 'products',
-    where: siteId ? { site: { equals: siteId } } : undefined,
+    where: siteId
+      ? { site: { equals: siteId } }
+      : grant.isGlobalOwner
+        ? undefined
+        : { site: { in: grant.authorizedSiteIds } },
     limit: 500,
     depth: 1,
     overrideAccess: true,
@@ -94,6 +108,8 @@ export async function PATCH(request: Request) {
       depth: 1,
       overrideAccess: true,
     } as never)) as unknown as Record<string, unknown>
+    if (!(await checkOperatorSiteAccess(payload, auth.user, relationId(current.site))))
+      return NextResponse.json({ error: 'Staff site access required.' }, { status: 403 })
     const expected: Record<typeof body.action, string[]> = {
       'request-review': ['draft'],
       approve: ['review'],
@@ -183,6 +199,16 @@ export async function DELETE(request: Request) {
     const body = (await request.json()) as { productIds: string[]; redirectTo?: string }
     if (!Array.isArray(body.productIds) || !body.productIds.length || body.productIds.length > 100)
       throw new Error('Choose 1 to 100 products.')
+    // Authorize every selected record before mutating any of them.
+    const selected = await Promise.all(
+      [...new Set(body.productIds)].map(async (id) =>
+        payload.findByID({ collection: 'products', id, depth: 0, overrideAccess: true }),
+      ),
+    )
+    for (const product of selected) {
+      if (!(await checkOperatorSiteAccess(payload, auth.user, relationId(product.site))))
+        return NextResponse.json({ error: 'Staff site access required.' }, { status: 403 })
+    }
     const now = new Date().toISOString()
     const warnings: { productId: string; dependencies: string[] }[] = []
     for (const productId of [...new Set(body.productIds)]) {

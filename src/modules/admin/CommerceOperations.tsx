@@ -53,6 +53,8 @@ type Dashboard = {
 export function CommerceOperations() {
   const [data, setData] = useState<Dashboard | null>(null)
   const [error, setError] = useState('')
+  const [notice, setNotice] = useState('')
+  const [retrying, setRetrying] = useState<string | null>(null)
   const load = async () => {
     const response = await fetch('/api/admin/commerce/dashboard', { cache: 'no-store' })
     const body = await response.json()
@@ -70,6 +72,7 @@ export function CommerceOperations() {
   return (
     <main>
       <h1>Commerce operations</h1>
+      {notice && <p role="status">{notice}</p>}
       <p>{data.disclaimer}</p>
       {data.summaryScope.sampled && (
         <p role="status">
@@ -96,8 +99,20 @@ export function CommerceOperations() {
       <button
         type="button"
         onClick={async () => {
-          await fetch('/api/admin/commerce/reconcile', { method: 'POST' })
-          await load()
+          try {
+            const response = await fetch('/api/admin/commerce/reconcile', { method: 'POST' })
+            const body = await response.json()
+            setNotice(
+              response.ok && body.queued
+                ? 'Reconciliation queued for your authorized sites.'
+                : (body.error ?? 'Reconciliation was not queued.'),
+            )
+            await load()
+          } catch {
+            setNotice(
+              'Reconciliation could not be confirmed. Refresh server truth before trying again.',
+            )
+          }
         }}
       >
         Queue reconciliation
@@ -177,6 +192,36 @@ export function CommerceOperations() {
           <li key={item.id}>
             <Link href={recordUrl('payment-webhook-events', item.id)}>{item.state} event</Link>:{' '}
             {item.providerKey}; verified {item.verifiedAt}; {item.error ?? 'inspect event'}
+            {item.state === 'failed' && (
+              <button
+                type="button"
+                disabled={retrying !== null}
+                onClick={async () => {
+                  setRetrying(item.id)
+                  try {
+                    const response = await fetch(
+                      `/api/admin/commerce/webhooks/${encodeURIComponent(item.id)}/retry`,
+                      { method: 'POST' },
+                    )
+                    const body = await response.json()
+                    setNotice(
+                      response.ok && body.queued
+                        ? 'Verified event retry queued. Refresh to inspect the worker outcome.'
+                        : (body.error ?? 'Event retry was not queued.'),
+                    )
+                    await load()
+                  } catch {
+                    setNotice(
+                      'Event retry could not be confirmed. Refresh server truth before trying again.',
+                    )
+                  } finally {
+                    setRetrying(null)
+                  }
+                }}
+              >
+                Retry verified payment event
+              </button>
+            )}
           </li>
         ))}
       </ul>

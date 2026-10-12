@@ -3,9 +3,9 @@
     "impact": {
       "usages": [
         {
-          "id": "6ccefec6-8297-4bf3-955b-3a85047ef2e0",
+          "id": "542583bf-e465-4824-b61b-df71f5a15fe0",
           "targetType": "content",
-          "targetId": "26efe9e2-377d-4fe0-ae2f-5edcfd070b16",
+          "targetId": "94243d00-f4d1-4c97-950c-fc4576ab4134",
           "field": "heroMedia",
           "slot": "",
           "lifecycle": "public",
@@ -16,22 +16,22 @@
     }
   },
   "replacement": {
-    "id": "56438959-4320-4f6f-b13d-576566dfc0f8",
+    "id": "c4cd1ae7-c0e8-4641-a548-6c4ed3f350ff",
     "site": {
-      "id": "ef4d1fb8-989c-4df0-abb0-9ac8b218dcc0",
+      "id": "117cb44a-1b6e-49f8-9e9c-443a35a5119b",
       "name": "Renegade Party Dispatch",
       "slug": "renegadeparty",
       "description": "Independent civic reporting, local organizing and public accountability.",
       "lifecycle": "active",
       "communityRegistrationPolicy": "open",
       "commentReactionCodes": ["thumbs_up", "heart", "insightful", "applause"],
-      "updatedAt": "2026-10-04T04:05:53.935Z",
-      "createdAt": "2026-10-04T04:05:53.935Z"
+      "updatedAt": "2026-10-12T22:41:25.850Z",
+      "createdAt": "2026-10-12T22:41:25.849Z"
     },
     "publication": null,
     "space": null,
     "owner": {
-      "id": "7f9ad54d-b1ab-48d4-8e7f-c1b43e06a382",
+      "id": "8d232b91-f80f-40ed-b970-cd2b8ae3c3f1",
       "displayName": "Renegade Party Dispatch",
       "email": "editor@renegadeparty.test",
       "status": "active",
@@ -47,36 +47,36 @@
       "verifiedEmailAt": null,
       "moderationReason": null,
       "stateReason": null,
-      "updatedAt": "2026-10-04T04:05:53.955Z",
-      "createdAt": "2026-10-04T04:05:53.954Z"
+      "updatedAt": "2026-10-12T22:41:25.871Z",
+      "createdAt": "2026-10-12T22:41:25.871Z"
     },
     "title": "Civic assembly diagram",
     "kind": "image",
-    "storageLocation": "ef4d1fb8-989c-4df0-abb0-9ac8b218dcc0/7fcd452f-189c-44de-9c73-c7d4e6e09849.png",
+    "storageLocation": "117cb44a-1b6e-49f8-9e9c-443a35a5119b/6bb73010-5d3d-429b-bb12-e0911cbb2ee8.png",
     "storageProvider": "local",
     "originalBlob": {
-      "id": "5e38e5fc-feef-4c52-95e1-16527759dca8",
+      "id": "24777232-4134-433b-bb08-0a5c86305edd",
       "site": {
-        "id": "ef4d1fb8-989c-4df0-abb0-9ac8b218dcc0",
+        "id": "117cb44a-1b6e-49f8-9e9c-443a35a5119b",
         "name": "Renegade Party Dispatch",
         "slug": "renegadeparty",
         "description": "Independent civic reporting, local organizing and public accountability.",
         "lifecycle": "active",
         "communityRegistrationPolicy": "open",
         "commentReactionCodes": ["thumbs_up", "heart", "insightful", "applause"],
-        "updatedAt": "2026-10-04T04:05:53.935Z",
-        "createdAt": "2026-10-04T04:05:53.935Z"
+        "updatedAt": "2026-10-12T22:41:25.850Z",
+        "createdAt": "2026-10-12T22:41:25.849Z"
       },
       "publication": null,
       "space": null,
       "checksum": "sha256:16ba445eadefb0e27981e475147d22e132e007a1e904824c36a93365438903bc",
-      "storageKey": "ef4d1fb8-989c-4df0-abb0-9ac8b218dcc0/7fcd452f-189c-44de-9c73-c7d4e6e09849.png",
+      "storageKey": "117cb44a-1b6e-49f8-9e9c-443a35a5119b/6bb73010-5d3d-429b-bb12-e0911cbb2ee8.png",
       "storageProvider": "local",
       "mimeType": "image/png",
       "sizeBytes": 35379,
       "state": "ready",
-      "updatedAt": "2026-10-04T04:06:09.147Z",
-      "createdAt": "2026-10-04T04:06:09.147Z"
+      "updatedAt": "2026-10-12T22:42:13.788Z",
+      "createdAt": "2026-10-12T22:42:13.788Z"
     },
     "originalFilename": "assembly.png",
     "mimeType": "image/png",
@@ -127,8 +127,8 @@
     "retentionHold": "none",
     "removeFromDiscovery": false,
     "tombstoneLabel": null,
-    "updatedAt": "2026-10-04T04:06:09.156Z",
-    "createdAt": "2026-10-04T04:06:09.155Z"
+    "updatedAt": "2026-10-12T22:42:13.794Z",
+    "createdAt": "2026-10-12T22:42:13.794Z"
   },
-  "retainedHeroMedia": "32363a56-af1a-4308-9652-ac76db8ef487"
+  "retainedHeroMedia": "895d5b7d-09c9-4b4c-8054-903279c279bd"
 }

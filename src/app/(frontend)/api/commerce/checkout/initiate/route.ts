@@ -10,7 +10,12 @@ import {
   sameCommerceScope,
   snapshotQuotedLines,
 } from '@/modules/commerce/service'
+import {
+  assertDigitalDeliveryConfigured,
+  assertDigitalAssetsReady,
+} from '@/modules/commerce/digital-delivery'
 import { safeRelativeRedirect } from '@/modules/core/external-boundary'
+import { canAccessCommerceCart } from '@/modules/commerce/cart-access'
 import { checkoutBindingKey, signGuestOrderToken } from '@/modules/commerce/payment-operations'
 import { computeProposalIntegrityHash } from '@/modules/commerce/proposal'
 import {
@@ -72,6 +77,8 @@ export async function POST(request: Request) {
               overrideAccess: true,
             })
             .catch(() => null)
+    if (!proposalCart || !(await canAccessCommerceCart(payload, request, proposalCart)))
+      return NextResponse.json({ error: 'Checkout access denied.' }, { status: 403 })
     const cartItems = list(proposalCart.items)
     const expectedIntegrity = computeProposalIntegrityHash({
       id: String(proposal.id),
@@ -83,6 +90,7 @@ export async function POST(request: Request) {
       taxTotalMinor: String(proposal.pricingSnapshot?.taxTotalMinor ?? ''),
       netShippingMinor: String(proposal.pricingSnapshot?.netShippingMinor ?? ''),
       customerEmail: String(proposal.customer?.email ?? ''),
+      buyerCountry: proposal.customer?.country,
       shippingPostalCode: proposal.shippingAddress?.normalized?.postalCode,
       items: cartItems.map((item: any) => ({
         productId: String(item.productId),
@@ -146,6 +154,7 @@ export async function POST(request: Request) {
           merchantConnection: id(proposal.merchantConnection),
           currency: proposal.currency,
           amountMinor: proposal.pricingSnapshot.grandTotalMinor,
+          buyerCountry: proposal.shippingAddress?.normalized?.country ?? proposal.customer?.country,
           customerKey,
           attempt,
           bindingKey,
@@ -164,6 +173,8 @@ export async function POST(request: Request) {
           depth: 0,
           overrideAccess: true,
         })
+  if (!(await canAccessCommerceCart(payload, request, cart)))
+    return NextResponse.json({ error: 'Checkout access denied.' }, { status: 403 })
   const merchantId = id(session.merchantConnection)
   if (!merchantId || id(cart.merchantConnection) !== merchantId)
     return NextResponse.json({ error: 'Cross-Space merchant cart denied.' }, { status: 403 })
@@ -173,12 +184,15 @@ export async function POST(request: Request) {
     depth: 0,
     overrideAccess: true,
   })
-  const capability: any = await db.findByID({
-    collection: 'payment-method-capabilities',
-    id: input.capabilityId,
-    depth: 0,
-    overrideAccess: true,
-  })
+  const capability: any = await db
+    .findByID({
+      collection: 'payment-method-capabilities',
+      id: input.capabilityId,
+      depth: 0,
+      overrideAccess: true,
+    })
+    .catch(() => null)
+  if (!capability) return NextResponse.json({ error: 'Payment method not found.' }, { status: 404 })
   const scope = {
     siteId: id(session.site)!,
     spaceId: id(session.space)!,
@@ -223,6 +237,15 @@ export async function POST(request: Request) {
       db.findByID({ collection: 'products', id: productId, depth: 0, overrideAccess: true }),
     ),
   )
+  try {
+    assertDigitalDeliveryConfigured(products)
+    await assertDigitalAssetsReady(payload, products, String(id(session.site)))
+  } catch (error) {
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : 'Digital delivery is unavailable.' },
+      { status: 503 },
+    )
+  }
   let quotedLines: any[]
   try {
     quotedLines = snapshotQuotedLines({

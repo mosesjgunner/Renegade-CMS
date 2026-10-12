@@ -294,6 +294,15 @@ describe('SHOP-02 Security & Tampering Resistance', () => {
     expect(() => assertProposalValidForCheckout(tamperedProposal, cartWithItem)).toThrow(
       'Proposal integrity check failed',
     )
+    expect(() =>
+      assertProposalValidForCheckout(
+        {
+          ...proposal,
+          customer: { ...proposal.customer, country: 'CA' },
+        },
+        cartWithItem,
+      ),
+    ).toThrow('Proposal integrity check failed')
   })
 
   it('rejects checkout proposals when cart version has changed (multi-tab race)', () => {

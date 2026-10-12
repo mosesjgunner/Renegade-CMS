@@ -330,6 +330,14 @@ export class PayloadLegacyMigrationStore implements LegacyMigrationStore {
         await db.query("SET session_replication_role = 'replica'").catch(() => {})
         try {
           await db
+            .query(`DELETE FROM execution_events WHERE site_id = $1`, [siteId])
+            .catch(() => {})
+          await db.query(`DELETE FROM ai_proposals WHERE site_id = $1`, [siteId]).catch(() => {})
+          await db.query(`DELETE FROM publications WHERE site_id = $1`, [siteId]).catch(() => {})
+          await db
+            .query(`DELETE FROM public_api_webhooks WHERE site_id = $1`, [siteId])
+            .catch(() => {})
+          await db
             .query(
               `DELETE FROM revision_records WHERE article_id IN (SELECT id FROM article_family_content WHERE content_id IN (SELECT id FROM content WHERE site_id = $1))`,
               [siteId],
@@ -370,7 +378,7 @@ export class PayloadLegacyMigrationStore implements LegacyMigrationStore {
           await db
             .query(`DELETE FROM legacy_migration_runs WHERE site_id = $1`, [siteId])
             .catch(() => {})
-          await db.query(`DELETE FROM sites WHERE id = $1`, [siteId]).catch(() => {})
+          await db.query(`DELETE FROM sites WHERE id = $1`, [siteId])
         } finally {
           await db.query("SET session_replication_role = 'origin'").catch(() => {})
         }

@@ -23,6 +23,7 @@ function EnrollContent() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
   const [success, setSuccess] = useState(false)
+  const [recoveryCodes, setRecoveryCodes] = useState<string[]>([])
 
   useEffect(() => {
     if (!token) {
@@ -99,10 +100,8 @@ function EnrollContent() {
         throw new Error(completeData.error || 'Failed to complete passkey enrollment.')
       }
 
+      setRecoveryCodes(completeData.recoveryCodes ?? [])
       setSuccess(true)
-      setTimeout(() => {
-        router.push('/login')
-      }, 2000)
     } catch (err) {
       setErrorMessage(err instanceof Error ? err.message : 'Passkey registration failed.')
     } finally {
@@ -217,7 +216,20 @@ function EnrollContent() {
             role="status"
             className="p-3 rounded-xl bg-green-50 dark:bg-green-950/40 border border-green-200 dark:border-green-800 text-xs text-green-700 dark:text-green-300 text-center font-medium"
           >
-            🎉 Passkey registered successfully! Redirecting to sign in…
+            <p>Passkey registered successfully!</p>
+            <h2>Save emergency recovery codes</h2>
+            <p>
+              Store these codes offline. Each works once if you lose your passkey. They will not be
+              shown again.
+            </p>
+            <ul className="font-mono">
+              {recoveryCodes.map((code) => (
+                <li key={code}>{code}</li>
+              ))}
+            </ul>
+            <button type="button" onClick={() => router.push('/login')}>
+              I saved my codes — continue to sign in
+            </button>
           </div>
         ) : (
           <button

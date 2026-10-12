@@ -2,7 +2,7 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
-import { catalogSiteForHost } from '@/modules/commerce/site-scope'
+import { catalogOriginForSite, catalogSiteForHost } from '@/modules/commerce/site-scope'
 import { recurringProvider, configuredPaymentProvider } from '@/modules/commerce/payment-provider'
 import { visibleProration } from '@/modules/commerce/subscription-contract'
 import { currentMember, readMemberSession, verifyCsrf } from '@/modules/identity/member-identity'
@@ -126,7 +126,7 @@ export async function POST(request: Request) {
         { status: 409 },
       )
     const adapter = recurringProvider(configuredPaymentProvider(String(subscription.providerKey)))
-    const origin = new URL(request.url).origin
+    const origin = await catalogOriginForSite(payload, siteId)
     const url = await adapter.createCustomerPortal({
       customerReference: String(subscription.providerCustomerReference),
       returnUrl: `${origin}/members/settings?tab=billing`,

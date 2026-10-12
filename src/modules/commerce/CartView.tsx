@@ -19,6 +19,7 @@ export function CartView() {
   // Customer & Shipping Address State
   const [customerEmail, setCustomerEmail] = useState<string>('')
   const [customerName, setCustomerName] = useState<string>('')
+  const [billingCountry, setBillingCountry] = useState('US')
   const [address, setAddress] = useState<RawAddressInput>({
     name: '',
     line1: '',
@@ -35,6 +36,10 @@ export function CartView() {
   const [proposalError, setProposalError] = useState<string>('')
   const [paymentLoading, setPaymentLoading] = useState<boolean>(false)
   const [paymentAction, setPaymentAction] = useState<any>(null)
+  const [paymentMethods, setPaymentMethods] = useState<
+    Array<{ id: string; label: string; providerKey: string }>
+  >([])
+  const [paymentMethodId, setPaymentMethodId] = useState('')
 
   useEffect(() => {
     fetchCart()
@@ -174,6 +179,9 @@ export function CartView() {
 
     setProposalLoading(true)
     setProposalError('')
+    setPaymentAction(null)
+    setPaymentMethods([])
+    setPaymentMethodId('')
 
     try {
       const hasPhysical = cart.items.some((i) => i.kind === 'physical' || i.kind === 'pod')
@@ -181,6 +189,7 @@ export function CartView() {
         customer: {
           email: customerEmail,
           name: customerName,
+          country: hasPhysical ? address.country : billingCountry,
         },
         consents: {
           termsAccepted: true,
@@ -207,6 +216,16 @@ export function CartView() {
       }
 
       setProposal(data.proposal)
+      const methodsResponse = await fetch(
+        '/api/commerce/checkout/methods?proposal=' + encodeURIComponent(data.proposal.id),
+      )
+      const available = await methodsResponse.json()
+      if (!methodsResponse.ok)
+        throw new Error(available.error ?? 'Payment methods could not be loaded.')
+      setPaymentMethods(available.methods)
+      setPaymentMethodId(available.methods[0]?.id ?? '')
+      if (!available.methods.length)
+        throw new Error('No configured payment methods are eligible for this quote.')
       setAnnouncement('Immutable checkout proposal created. Ready to proceed to payment.')
     } catch (err: any) {
       setProposalError(err.message || 'Error creating checkout proposal.')
@@ -216,7 +235,7 @@ export function CartView() {
   }
 
   async function handleInitiateCheckout() {
-    if (!proposal) return
+    if (!proposal || !paymentMethodId) return
     setPaymentLoading(true)
     try {
       // Find eligible capability
@@ -225,7 +244,7 @@ export function CartView() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           proposalId: proposal.id,
-          capabilityId: 'development-card', // Default test capability
+          capabilityId: paymentMethodId,
           returnUrl: '/cart',
         }),
       })
@@ -508,6 +527,19 @@ export function CartView() {
                 />
               </div>
 
+              {!hasPhysical && (
+                <div>
+                  <label htmlFor="billing-country">Billing country (2-letter ISO)</label>
+                  <input
+                    id="billing-country"
+                    value={billingCountry}
+                    required
+                    maxLength={2}
+                    pattern="[A-Za-z]{2}"
+                    onChange={(event) => setBillingCountry(event.target.value.toUpperCase())}
+                  />
+                </div>
+              )}
               {hasPhysical && (
                 <fieldset className="space-y-3 border-t pt-3">
                   <legend className="text-xs font-bold">Shipping Address *</legend>
@@ -662,6 +694,25 @@ export function CartView() {
                 </p>
               )}
 
+              {paymentMethods.length > 0 && !paymentAction && (
+                <label>
+                  Payment method
+                  <select
+                    aria-label="Payment method"
+                    value={paymentMethodId}
+                    onChange={(event) => setPaymentMethodId(event.target.value)}
+                  >
+                    {paymentMethods.map((method) => (
+                      <option key={method.id} value={method.id}>
+                        {method.label}
+                        {method.providerKey === 'deterministic-test'
+                          ? ' (test payment — no real charge)'
+                          : ''}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+              )}
               {paymentAction ? (
                 <div className="p-4 rounded border bg-surface dark:bg-zinc-900 space-y-2 text-sm">
                   <p className="font-bold text-green-600">✓ Checkout Initiated</p>
@@ -682,7 +733,7 @@ export function CartView() {
                 <button
                   type="button"
                   onClick={handleInitiateCheckout}
-                  disabled={paymentLoading}
+                  disabled={paymentLoading || !paymentMethodId}
                   className="w-full py-3 bg-primary text-primary-foreground font-bold rounded hover:opacity-90 disabled:opacity-50 text-sm transition-opacity"
                 >
                   {paymentLoading

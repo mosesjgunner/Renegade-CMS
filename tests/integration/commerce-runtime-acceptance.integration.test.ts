@@ -58,6 +58,10 @@ describe('RC08D-04: Commerce Runtime Closure & Acceptance Verification', () => {
     await payload.updateGlobal({
       slug: 'site-settings',
       data: {
+        canonicalOriginsBySite: {
+          ...((settings.canonicalOriginsBySite as Record<string, unknown> | null) ?? {}),
+          [siteId]: 'http://localhost',
+        },
         adminExperience: {
           ...(settings.adminExperience ?? {}),
           optionalCapabilities: {

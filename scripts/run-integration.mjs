@@ -4,16 +4,7 @@ import { resolve } from 'node:path'
 import { spawn } from 'node:child_process'
 import * as x509 from '@peculiar/x509'
 
-if (!process.env.DATABASE_URL && existsSync('.env')) {
-  for (const line of readFileSync('.env', 'utf8').split(/\r?\n/)) {
-    if (line && !line.startsWith('#') && line.includes('=')) {
-      const idx = line.indexOf('=')
-      const key = line.slice(0, idx).trim()
-      const val = line.slice(idx + 1).trim()
-      if (!process.env[key]) process.env[key] = val
-    }
-  }
-}
+// Acceptance scripts must receive an explicit database environment and never fallback to .env.
 
 const dbUrl = process.env.INTEGRATION_DATABASE_URL ?? process.env.DATABASE_URL ?? ''
 const database = new URL(dbUrl)
@@ -38,7 +29,7 @@ const certificate = await x509.X509CertificateGenerator.createSelfSigned({
   serialNumber: randomBytes(16).toString('hex'),
   name: 'CN=dispatch.rc02.test',
   notBefore: new Date(Date.now() - 60_000),
-  notAfter: new Date(Date.now() + 24 * 60 * 60 * 1000),
+  notAfter: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000),
   signingAlgorithm: algorithm,
   keys,
   extensions: [
@@ -77,6 +68,7 @@ const child = spawn(
     stdio: 'inherit',
     env: {
       ...process.env,
+      DATABASE_URL: dbUrl,
       EMAIL_MODE: process.env.EMAIL_MODE || 'development',
       ALLOW_FIXTURE_SEED: 'true',
       RENEGADE_MODULES: 'all',

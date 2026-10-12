@@ -61,7 +61,12 @@ export function applyProgressiveDisclosure(
   collections: readonly CollectionConfig[],
 ): CollectionConfig[] {
   return collections.map((collection) => {
-    if (CORE_COLLECTIONS.has(collection.slug) || collection.admin?.hidden) return collection
+    if (
+      CORE_COLLECTIONS.has(collection.slug) ||
+      collection.admin?.group === 'Commerce' ||
+      collection.admin?.hidden
+    )
+      return collection
     return { ...collection, admin: { ...collection.admin, hidden: true } }
   })
 }

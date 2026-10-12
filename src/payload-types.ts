@@ -15313,6 +15313,7 @@ export interface TaskCommerceAbandonCheckouts {
 export interface TaskCommerceProcessPaymentEvent {
   input: {
     webhookEventId: string;
+    requestedBy?: string | null;
   };
   output?: unknown;
 }
@@ -15321,7 +15322,9 @@ export interface TaskCommerceProcessPaymentEvent {
  * via the `definition` "TaskCommerce-reconcile-payments".
  */
 export interface TaskCommerceReconcilePayments {
-  input?: unknown;
+  input: {
+    siteId?: string | null;
+  };
   output?: unknown;
 }
 /**

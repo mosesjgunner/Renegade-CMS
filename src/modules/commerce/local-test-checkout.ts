@@ -3,9 +3,19 @@ import { verifyGuestOrderToken } from './payment-operations'
 
 export const localTestCheckoutEnabled = (url: string) => {
   const host = new URL(url).hostname.toLowerCase()
-  return (
-    process.env.LOCAL_E2E_TEST_MODE === 'true' && (host === 'localhost' || host === '127.0.0.1')
+  const loopback = ['localhost', '127.0.0.1', '[::1]'].includes(host)
+  if (process.env.LOCAL_E2E_TEST_MODE === 'true' && loopback) return true
+  if (process.env.COMMERCE_LOCAL_TEST_CHECKOUT_ENABLED !== 'true') return false
+  if (
+    (process.env.COMMERCE_GUEST_ORDER_SECRET?.length ?? 0) < 32 ||
+    (process.env.COMMERCE_TEST_WEBHOOK_SECRET?.length ?? 0) < 32
   )
+    return false
+  let configuredHost = ''
+  try {
+    configuredHost = new URL(process.env.APP_URL ?? '').hostname.toLowerCase()
+  } catch {}
+  return loopback || (host.endsWith('.test') && host === configuredHost)
 }
 
 export function guestCanConfirmTestCheckout(input: {

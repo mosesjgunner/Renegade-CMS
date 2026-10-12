@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { createMemberPasskey } from '@/modules/identity/member-passkey-browser'
 import { MemberRelationshipList } from '@/modules/community/MemberRelationshipList'
 import { NotificationPreferences } from '@/modules/community/NotificationPreferences'
+import { MemberBilling } from '@/modules/commerce/MemberBilling'
 
 function csrfHeader(): Record<string, string> {
   const token = document.cookie
@@ -517,6 +518,7 @@ export default function MemberSettingsPage() {
           <p>No consequential profile changes recorded yet.</p>
         )}
       </section>
+      {profileLoaded && <MemberBilling />}
       <section className="mt-8 rounded border p-4" aria-label="Account lifecycle and data">
         <h2 className="text-xl font-semibold">Privacy, Data & Account</h2>
         <p className="mt-2 text-sm text-stone-600 dark:text-stone-400">

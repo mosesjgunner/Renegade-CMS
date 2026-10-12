@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 
 type Status = {
+  downloads?: Array<{ path: string; label: string }>
   checkout: { state: string }
   payment: { state: string; amountMinor: string; currency: string } | null
   order: { orderNumber: string; state: string; receiptNumber: string | null } | null
@@ -21,16 +22,30 @@ export function CheckoutStatus({
     let active = true
     let timer: ReturnType<typeof setTimeout>
     const poll = async () => {
-      const response = await fetch(
-        `/api/commerce/checkout/status?session=${encodeURIComponent(sessionId)}`,
-        { cache: 'no-store', credentials: 'same-origin' },
-      )
-      const body = await response.json()
-      if (!active) return
-      if (!response.ok) return setError(body.error ?? 'Checkout status is unavailable.')
-      setStatus(body)
-      if (['processing', 'unknown', 'action-required', 'initiated'].includes(body.payment?.state))
+      try {
+        const response = await fetch(
+          `/api/commerce/checkout/status?session=${encodeURIComponent(sessionId)}`,
+          { cache: 'no-store', credentials: 'same-origin' },
+        )
+        const body = await response.json()
+        if (!active) return
+        if (!response.ok) {
+          setError(body.error ?? 'Checkout status is unavailable.')
+          if (response.status >= 500) timer = setTimeout(poll, 2000)
+          return
+        }
+        setError('')
+        setStatus(body)
+        if (
+          ['processing', 'unknown', 'action-required', 'initiated'].includes(body.payment?.state) ||
+          (body.payment?.state === 'succeeded' && !body.order?.receiptNumber)
+        )
+          timer = setTimeout(poll, 2000)
+      } catch {
+        if (!active) return
+        setError('Checkout status could not be loaded. Retrying.')
         timer = setTimeout(poll, 2000)
+      }
     }
     void poll()
     return () => {
@@ -50,6 +65,11 @@ export function CheckoutStatus({
         <>
           <p>Order {status.order?.orderNumber} is paid.</p>
           <p>Receipt {status.order?.receiptNumber ?? 'is being prepared'}.</p>
+          {(status.downloads ?? []).map((file) => (
+            <p key={file.path}>
+              <a href={file.path}>{file.label}</a>
+            </p>
+          ))}
         </>
       ) : (
         <>

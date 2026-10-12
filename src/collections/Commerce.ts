@@ -1,4 +1,11 @@
-import type { CollectionConfig, Field } from 'payload'
+import type { CollectionConfig, Field, Where } from 'payload'
+import {
+  operatorSiteCreateAccess,
+  operatorSiteReadAccess,
+  operatorSiteUpdateAccess,
+  resolveOperatorGrantContext,
+} from '../modules/operations/operator-grants'
+import { publicSiteForHost } from '../modules/public/site-scope'
 import {
   enforceSiteTenantBoundary,
   ownerFields,
@@ -14,17 +21,24 @@ import {
   recordPublishedPathHistory,
 } from '../modules/public/semantic-url-service'
 
-const staff = ({ req }: { req: { user?: { role?: string } | null } }) =>
-  ['owner', 'administrator', 'staff'].includes(String(req.user?.role))
-const publishedProductRead = ({ req }: { req: { user?: { role?: string } | null } }) =>
-  ['owner', 'administrator', 'staff'].includes(String(req.user?.role))
-    ? true
-    : { state: { equals: 'published' } }
+const publishedProductRead: NonNullable<CollectionConfig['access']>['read'] = async ({ req }) => {
+  if (['owner', 'administrator', 'staff'].includes(String(req.user?.role)))
+    return operatorSiteReadAccess({ req })
+  const siteId = await publicSiteForHost(req.payload, req.headers.get('host'))
+  return siteId
+    ? { and: [{ site: { equals: siteId } }, { state: { equals: 'published' } }] }
+    : false
+}
 const base = (slug: string, title: string): CollectionConfig => ({
   slug,
   lockDocuments: false,
   admin: { useAsTitle: title, group: 'Commerce' },
-  access: { create: staff, delete: staff, read: staff, update: staff },
+  access: {
+    create: operatorSiteCreateAccess,
+    delete: operatorSiteReadAccess,
+    read: operatorSiteReadAccess,
+    update: operatorSiteUpdateAccess,
+  },
   fields: [],
 })
 const ref = (name: string, relationTo: string | string[], required = false): Field =>
@@ -92,7 +106,12 @@ export const PaymentMethodCapabilities: CollectionConfig = {
 }
 export const Products: CollectionConfig = {
   ...base('products', 'name'),
-  access: { create: staff, delete: staff, update: staff, read: publishedProductRead },
+  access: {
+    create: operatorSiteCreateAccess,
+    delete: operatorSiteReadAccess,
+    update: operatorSiteUpdateAccess,
+    read: publishedProductRead,
+  },
   hooks: {
     beforeValidate: [
       ({ data, originalDoc, operation, context }) => {
@@ -407,6 +426,12 @@ export const CheckoutSessions: CollectionConfig = {
 }
 export const PaymentAttempts: CollectionConfig = {
   ...base('payment-attempts', 'id'),
+  access: {
+    create: () => false,
+    delete: () => false,
+    read: operatorSiteReadAccess,
+    update: () => false,
+  },
   fields: [
     ...ownerFields(),
     ref('checkoutSession', 'checkout-sessions', true),
@@ -455,6 +480,12 @@ export const PaymentAttempts: CollectionConfig = {
 }
 export const PaymentIntents: CollectionConfig = {
   ...base('payment-intents', 'id'),
+  access: {
+    create: () => false,
+    delete: () => false,
+    read: operatorSiteReadAccess,
+    update: () => false,
+  },
   fields: [
     ...ownerFields(),
     ref('checkoutSession', 'checkout-sessions', true),
@@ -509,6 +540,12 @@ export const PaymentIntents: CollectionConfig = {
 }
 export const Orders: CollectionConfig = {
   ...base('orders', 'orderNumber'),
+  access: {
+    create: () => false,
+    delete: () => false,
+    read: operatorSiteReadAccess,
+    update: () => false,
+  },
   fields: [
     ...ownerFields(),
     ref('checkoutSession', 'checkout-sessions', true),
@@ -557,6 +594,25 @@ export const Orders: CollectionConfig = {
 }
 export const PaymentWebhookEvents: CollectionConfig = {
   ...base('payment-webhook-events', 'providerEventId'),
+  access: {
+    create: () => false,
+    update: () => false,
+    delete: () => false,
+    read: async ({ req }) => {
+      const grant = await resolveOperatorGrantContext(req.payload, req.user)
+      if (!grant.authorized) return false
+      if (grant.isGlobalOwner) return true
+      const merchants = await req.payload.find({
+        collection: 'merchant-connections',
+        where: { site: { in: grant.authorizedSiteIds } },
+        depth: 0,
+        limit: 0,
+        pagination: false,
+        overrideAccess: true,
+      })
+      return { merchantConnection: { in: merchants.docs.map((merchant) => String(merchant.id)) } }
+    },
+  },
   fields: [
     ref('merchantConnection', 'merchant-connections', true),
     { name: 'providerKey', type: 'text', required: true },
@@ -578,6 +634,12 @@ export const PaymentWebhookEvents: CollectionConfig = {
 }
 export const CommerceRefunds: CollectionConfig = {
   ...base('commerce-refunds', 'id'),
+  access: {
+    create: () => false,
+    delete: () => false,
+    read: operatorSiteReadAccess,
+    update: () => false,
+  },
   fields: [
     ...ownerFields(),
     ref('order', 'orders', true),
@@ -603,6 +665,12 @@ export const CommerceRefunds: CollectionConfig = {
 }
 export const CommerceDisputes: CollectionConfig = {
   ...base('commerce-disputes', 'providerDisputeReference'),
+  access: {
+    create: () => false,
+    delete: () => false,
+    read: operatorSiteReadAccess,
+    update: () => false,
+  },
   fields: [
     ...ownerFields(),
     ref('order', 'orders', true),
@@ -620,6 +688,12 @@ export const CommerceDisputes: CollectionConfig = {
 export const CommerceReconciliationCases: CollectionConfig = {
   ...base('commerce-reconciliation-cases', 'legacyId'),
   timestamps: false,
+  access: {
+    create: () => false,
+    delete: () => false,
+    read: operatorSiteReadAccess,
+    update: () => false,
+  },
   fields: [
     ref('site', 'sites', true),
     { name: 'legacyType', type: 'text', required: true },
@@ -758,6 +832,12 @@ export const DonationCampaigns: CollectionConfig = {
 /** A donation intent is the frozen checkout request; provider truth stays in PaymentIntent. */
 export const DonationIntents: CollectionConfig = {
   ...base('donation-intents', 'id'),
+  access: {
+    create: () => false,
+    delete: () => false,
+    read: operatorSiteReadAccess,
+    update: () => false,
+  },
   hooks: {
     beforeChange: [
       immutableFields([
@@ -820,7 +900,12 @@ export const DonationIntents: CollectionConfig = {
 /** Canonical contribution snapshot. Updates are prohibited; corrections append ledger events. */
 export const Donations: CollectionConfig = {
   ...base('donations', 'id'),
-  access: { create: staff, delete: () => false, read: staff, update: staff },
+  access: {
+    create: () => false,
+    delete: () => false,
+    read: operatorSiteReadAccess,
+    update: () => false,
+  },
   hooks: {
     beforeChange: [
       ({ data, originalDoc, operation }) => {
@@ -892,7 +977,45 @@ export const Donations: CollectionConfig = {
 
 export const DonationEvents: CollectionConfig = {
   ...base('donation-events', 'eventKey'),
-  access: { create: staff, delete: () => false, read: staff, update: () => false },
+  access: {
+    create: () => false,
+    delete: () => false,
+    read: async ({ req }) => {
+      const grant = await resolveOperatorGrantContext(req.payload, req.user)
+      if (!grant.authorized) return false
+      if (grant.isGlobalOwner) return true
+      const [scopedDonations, scopedIntents] = await Promise.all([
+        req.payload.find({
+          collection: 'donations',
+          where: { site: { in: grant.authorizedSiteIds } },
+          depth: 0,
+          limit: 0,
+          pagination: false,
+          overrideAccess: true,
+        }),
+        req.payload.find({
+          collection: 'donation-intents',
+          where: { site: { in: grant.authorizedSiteIds } },
+          depth: 0,
+          limit: 0,
+          pagination: false,
+          overrideAccess: true,
+        }),
+      ])
+      const donationIds = scopedDonations.docs.map((d) => String(d.id))
+      const intentIds = scopedIntents.docs.map((d) => String(d.id))
+      const or: Where[] = []
+      if (donationIds.length > 0) {
+        or.push({ donation: { in: donationIds } })
+      }
+      if (intentIds.length > 0) {
+        or.push({ donationIntent: { in: intentIds } })
+      }
+      if (or.length === 0) return false
+      return { or }
+    },
+    update: () => false,
+  },
   hooks: {
     beforeValidate: [
       ({ data }) => {
@@ -939,7 +1062,12 @@ export const Entitlements: CollectionConfig = {
 /** Published agreements are immutable snapshots. A new price or policy is a new revision. */
 export const PlanRevisions: CollectionConfig = {
   ...base('plan-revisions', 'name'),
-  access: { create: staff, delete: () => false, read: staff, update: () => false },
+  access: {
+    create: operatorSiteCreateAccess,
+    delete: () => false,
+    read: operatorSiteReadAccess,
+    update: () => false,
+  },
   fields: [
     ...ownerFields(),
     { name: 'planKey', type: 'text', required: true, index: true },
@@ -980,6 +1108,12 @@ export const PlanRevisions: CollectionConfig = {
 
 export const Subscriptions: CollectionConfig = {
   ...base('subscriptions', 'id'),
+  access: {
+    create: () => false,
+    delete: () => false,
+    read: operatorSiteReadAccess,
+    update: () => false,
+  },
   hooks: {
     beforeChange: [
       ({ data, originalDoc, operation, context }) => {
@@ -1051,7 +1185,12 @@ export const Subscriptions: CollectionConfig = {
 
 export const SubscriptionEvents: CollectionConfig = {
   ...base('subscription-events', 'eventKey'),
-  access: { create: () => false, delete: () => false, read: staff, update: () => false },
+  access: {
+    create: () => false,
+    delete: () => false,
+    read: operatorSiteReadAccess,
+    update: () => false,
+  },
   fields: [
     ...ownerFields(),
     ref('subscription', 'subscriptions', true),
@@ -1065,6 +1204,12 @@ export const SubscriptionEvents: CollectionConfig = {
 
 export const DigitalDeliveryGrants: CollectionConfig = {
   ...base('digital-delivery-grants', 'id'),
+  access: {
+    create: () => false,
+    delete: () => false,
+    read: operatorSiteReadAccess,
+    update: () => false,
+  },
   fields: [
     ...ownerFields(),
     ref('product', 'products', true),
@@ -1083,7 +1228,12 @@ export const DigitalDeliveryGrants: CollectionConfig = {
 
 export const DigitalDownloadEvents: CollectionConfig = {
   ...base('digital-download-events', 'id'),
-  access: { create: staff, delete: () => false, read: staff, update: () => false },
+  access: {
+    create: () => false,
+    delete: () => false,
+    read: operatorSiteReadAccess,
+    update: () => false,
+  },
   fields: [
     ...ownerFields(),
     ref('grant', 'digital-delivery-grants', true),
@@ -1142,6 +1292,12 @@ export const PodConnections: CollectionConfig = {
 
 export const PodJobs: CollectionConfig = {
   ...base('pod-jobs', 'idempotencyKey'),
+  access: {
+    create: () => false,
+    delete: () => false,
+    read: operatorSiteReadAccess,
+    update: () => false,
+  },
   fields: [
     ...ownerFields(),
     ref('order', 'orders', true),
@@ -1184,6 +1340,12 @@ export const PodJobs: CollectionConfig = {
 
 export const ManualFulfillmentPackages: CollectionConfig = {
   ...base('manual-fulfillment-packages', 'id'),
+  access: {
+    create: () => false,
+    delete: () => false,
+    read: operatorSiteReadAccess,
+    update: () => false,
+  },
   fields: [
     ...ownerFields(),
     ref('order', 'orders', true),

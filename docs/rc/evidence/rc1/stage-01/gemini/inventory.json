@@ -1,0 +1,134 @@
+{
+  "head": "764e77dd869564e13ab5add7e10710f2cb6c61e9",
+  "trackedModifications": [
+    ".env.example",
+    "compose.restore.yaml",
+    "docs/rc/RC1-PLAN-AND-PROMPTS.md",
+    "src/app/(frontend)/admin/catalog/preview/[id]/page.tsx",
+    "src/app/(frontend)/api/admin/ai/connections/route.ts",
+    "src/app/(frontend)/api/admin/ai/sites/route.ts",
+    "src/app/(frontend)/api/admin/audience/command-center/route.ts",
+    "src/app/(frontend)/api/admin/catalog/import/route.ts",
+    "src/app/(frontend)/api/admin/catalog/route.ts",
+    "src/app/(frontend)/api/admin/commerce/dashboard/route.ts",
+    "src/app/(frontend)/api/admin/commerce/donations/route.ts",
+    "src/app/(frontend)/api/admin/commerce/reconcile/route.ts",
+    "src/app/(frontend)/api/admin/commerce/refunds/route.ts",
+    "src/app/(frontend)/api/admin/staff/invite/route.ts",
+    "src/app/(frontend)/api/commerce/cart/route.ts",
+    "src/app/(frontend)/api/commerce/checkout/initiate/route.ts",
+    "src/app/(frontend)/api/commerce/checkout/status/route.ts",
+    "src/app/(frontend)/api/commerce/checkout/test/confirm/route.ts",
+    "src/app/(frontend)/api/commerce/download/[grantKey]/route.ts",
+    "src/app/(frontend)/api/commerce/proposal/route.ts",
+    "src/app/(frontend)/api/commerce/subscriptions/checkout/route.ts",
+    "src/app/(frontend)/api/commerce/subscriptions/route.ts",
+    "src/app/(frontend)/api/commerce/webhooks/[provider]/route.ts",
+    "src/app/(frontend)/calendar/page.tsx",
+    "src/app/(frontend)/connections/page.tsx",
+    "src/app/(frontend)/enroll/page.tsx",
+    "src/app/(frontend)/members/settings/page.tsx",
+    "src/collections/Audience.ts",
+    "src/collections/Commerce.ts",
+    "src/collections/Identity.ts",
+    "src/modules/admin/AudienceCommandCenter.tsx",
+    "src/modules/admin/CommerceOperations.tsx",
+    "src/modules/admin/FulfillmentCommandCenter.tsx",
+    "src/modules/admin/SecurityCenter.tsx",
+    "src/modules/admin/progressive-disclosure.ts",
+    "src/modules/commerce/CartView.tsx",
+    "src/modules/commerce/CheckoutStatus.tsx",
+    "src/modules/commerce/local-test-checkout.ts",
+    "src/modules/commerce/proposal.ts",
+    "src/modules/commerce/service.ts",
+    "src/modules/commerce/site-scope.ts",
+    "src/modules/commerce/subscription-service.ts",
+    "src/modules/commerce/tasks.ts",
+    "src/modules/operations/onboarding.ts",
+    "src/modules/operations/operator-grants.ts",
+    "src/modules/operations/staff-enrollment.ts",
+    "src/payload-types.ts",
+    "src/scripts/recover-installation.ts",
+    "tests/integration/rc08d-lock-projection.integration.test.ts",
+    "tests/rc02/site-build.spec.ts",
+    "tests/unit/dist-05-social-api-routes.test.ts",
+    "tests/unit/onboarding.test.ts",
+    "tests/unit/progressive-disclosure.test.ts",
+    "tests/unit/rc01-admin-truth.test.tsx",
+    "tests/unit/shop-01-catalog-workflows.test.ts",
+    "tests/unit/shop-02-tampering-and-invariants.test.ts",
+    "tests/unit/shop-04-local-test-checkout.test.ts",
+    "tests/unit/tenant-isolation.test.ts"
+  ],
+  "untrackedFiles": [
+    "docs/operations/owner-recovery.md",
+    "docs/rc/evidence/rc1/stage-01/gemini/focused-checks.json",
+    "docs/rc/evidence/rc1/stage-01/gemini/generate-gemini-evidence.py",
+    "docs/rc/evidence/rc1/stage-01/gemini/inventory.json",
+    "src/app/(frontend)/api/admin/commerce/webhooks/[eventId]/retry/route.ts",
+    "src/app/(frontend)/api/admin/fulfillment/route.ts",
+    "src/app/(frontend)/api/admin/telecom/simulate/route.ts",
+    "src/app/(frontend)/api/commerce/checkout/methods/route.ts",
+    "src/app/(frontend)/api/commerce/subscriptions/plans/route.ts",
+    "src/modules/admin/StaffInvitations.tsx",
+    "src/modules/commerce/MemberBilling.tsx",
+    "src/modules/commerce/cart-access.ts",
+    "src/modules/commerce/digital-delivery.ts",
+    "src/modules/commerce/merchant-selection.ts",
+    "src/modules/commerce/transactions.ts",
+    "src/modules/operations/owner-recovery.ts",
+    "tests/rc02/staff-invitation.spec.ts",
+    "tests/unit/commerce-cart-access.test.ts",
+    "tests/unit/commerce-dashboard-scope.test.ts",
+    "tests/unit/commerce-merchant-selection.test.ts",
+    "tests/unit/commerce-reconcile-scope.test.ts",
+    "tests/unit/commerce-webhook-retry.test.ts",
+    "tests/unit/digital-delivery-readiness.test.ts",
+    "tests/unit/donation-admin-scope.test.ts",
+    "tests/unit/owner-recovery.test.ts",
+    "tests/unit/subscription-plans.test.ts",
+    "tests/unit/subscription-provider-plan-mapping.test.ts",
+    "tests/unit/telecom-admin-simulate.test.ts"
+  ],
+  "worktrees": [
+    {
+      "worktree": "C:/Projects/RENEGADE CMS/Renegade-CMS",
+      "head": "764e77dd869564e13ab5add7e10710f2cb6c61e9",
+      "branch": "refs/heads/main"
+    },
+    {
+      "worktree": "C:/Projects/RENEGADE CMS/Events-Release-Candidate",
+      "head": "4e73c86f6bc13210ad40ba2eb060ea7760e72059"
+    },
+    {
+      "worktree": "C:/Projects/RENEGADE CMS/rc08c-candidate",
+      "head": "aede4e6652ad180e476514a679ce96d5325c1334",
+      "branch": "refs/heads/rc08c-closure"
+    },
+    {
+      "worktree": "C:/Projects/RENEGADE CMS/rc08c-final-01908f3",
+      "head": "01908f39a3ce40b5eae5d4dec64b981e103d5fb1"
+    },
+    {
+      "worktree": "C:/Projects/RENEGADE CMS/rc08c-verify-9ec71fb",
+      "head": "d32b5d8531731305331a79342fa261de66767eba"
+    },
+    {
+      "worktree": "C:/Projects/RENEGADE CMS/rc08d-reconcile-0159f6b",
+      "head": "0159f6bf3c7944a285743709514e487343aaa4f7"
+    },
+    {
+      "worktree": "C:/Projects/RENEGADE CMS/rc08d07-3dcce7e",
+      "head": "3dcce7ece610dfbfa1d0d02bc1cfef646e0018f3"
+    },
+    {
+      "worktree": "C:/Projects/RENEGADE CMS/rc08d07-7f0ef9f",
+      "head": "7f0ef9f2defebf6443f407487a97f64248b5348f"
+    },
+    {
+      "worktree": "C:/Projects/RENEGADE CMS/Renegade-CMS-ci-fix",
+      "head": "1d81814f73393ebcbfeb7b5dde71756e6f3e2024",
+      "branch": "refs/heads/fix/podcast-discovery-site-resolution"
+    }
+  ]
+}

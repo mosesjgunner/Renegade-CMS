@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
+import StaffInvitations from './StaffInvitations'
 
 type Passkey = {
   credential_id: string
@@ -143,6 +144,7 @@ export default function SecurityCenter() {
           {busy ? 'Waiting for passkey…' : 'Add passkey'}
         </button>
       </section>
+      <StaffInvitations />
       <section style={{ marginTop: 28 }}>
         <h2>Session</h2>
         <button type="button" onClick={() => void logout()}>

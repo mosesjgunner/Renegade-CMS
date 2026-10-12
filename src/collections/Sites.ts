@@ -3,7 +3,13 @@ import type { CollectionConfig } from 'payload'
 export const Sites: CollectionConfig = {
   slug: 'sites',
   admin: { useAsTitle: 'name' },
-  access: { read: () => true },
+  access: {
+    create: ({ req }) => req.user?.role === 'owner',
+    delete: ({ req }) => req.user?.role === 'owner',
+    read: () => true,
+    update: ({ req }) =>
+      Boolean(req.user?.role && ['owner', 'administrator'].includes(String(req.user.role))),
+  },
   hooks: {
     beforeValidate: [
       ({ data, originalDoc }) => {

@@ -1,5 +1,6 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
+import { checkOperatorSiteAccess } from '@/modules/operations/operator-grants'
 import { NextResponse } from 'next/server'
 import {
   catalogProductFromDocument,
@@ -24,6 +25,8 @@ export async function POST(request: Request) {
     const siteIds = [...new Set(body.products.map((item) => item.siteId))]
     if (siteIds.length !== 1 || !siteIds[0])
       throw new Error('One explicit site is required per import.')
+    if (!(await checkOperatorSiteAccess(payload, auth.user, siteIds[0])))
+      return NextResponse.json({ error: 'Staff site access required.' }, { status: 403 })
     const existingResult = await payload.find({
       collection: 'products',
       where: { site: { equals: siteIds[0] } },

@@ -70,18 +70,19 @@ export async function GET(request: Request) {
     }),
     db.find({
       collection: 'payment-webhook-events',
-      where: siteId
-        ? {
-            and: [
-              { processingState: { in: ['failed', 'gap'] } },
-              {
-                merchantConnection: {
-                  in: merchantIds.length ? merchantIds : ['00000000-0000-0000-0000-000000000000'],
+      where:
+        siteId || !grant.isGlobalOwner
+          ? {
+              and: [
+                { processingState: { in: ['failed', 'gap'] } },
+                {
+                  merchantConnection: {
+                    in: merchantIds.length ? merchantIds : ['00000000-0000-0000-0000-000000000000'],
+                  },
                 },
-              },
-            ],
-          }
-        : { processingState: { in: ['failed', 'gap'] } },
+              ],
+            }
+          : { processingState: { in: ['failed', 'gap'] } },
       limit: 100,
       sort: '-verifiedAt',
       depth: 0,
@@ -89,8 +90,8 @@ export async function GET(request: Request) {
     }),
     db.find({
       collection: 'commerce-reconciliation-cases',
-      where: siteId
-        ? { and: [{ site: { equals: siteId } }, { status: { equals: 'quarantined' } }] }
+      where: where
+        ? { and: [where, { status: { equals: 'quarantined' } }] }
         : { status: { equals: 'quarantined' } },
       limit: 100,
       sort: '-createdAt',

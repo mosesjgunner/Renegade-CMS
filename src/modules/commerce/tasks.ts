@@ -6,6 +6,7 @@ import {
   recurringProvider,
   type NormalizedPaymentEvent,
 } from './payment-provider'
+import { lockCommerceStock } from './transactions'
 import { finalizeVerifiedOrder } from './service'
 import { queueBillingSystemNotice, recomputeSubscriptionEntitlements } from './subscription-service'
 import { ingestDonationEvidence, reverseDonation } from './donation-ingestion'
@@ -153,7 +154,10 @@ export const abandonCheckoutTask = {
 export const processPaymentEventTask = {
   slug: 'commerce-process-payment-event',
   label: 'Process verified payment provider event',
-  inputSchema: [{ name: 'webhookEventId', type: 'text', required: true }],
+  inputSchema: [
+    { name: 'webhookEventId', type: 'text', required: true },
+    { name: 'requestedBy', type: 'text' },
+  ],
   outputSchema: [],
   retries: { attempts: 5, backoff: { delay: 1000, type: 'exponential' } },
   // One durable lane preserves provider event ordering across processes; event IDs still deduplicate replays.
@@ -374,6 +378,13 @@ export const processPaymentEventTask = {
           : req.payload
         let finalized
         try {
+          if (!transactionID) throw new Error('Transactional inventory storage is unavailable.')
+          await lockCommerceStock(
+            req.payload,
+            transactionID,
+            (intent.orderLines ?? []).map((line: any) => String(line.productId)),
+            relationId(session.cart),
+          )
           finalized = await finalizeVerifiedOrder(transactionalPayload, {
             intent: {
               ...intent,
@@ -540,15 +551,19 @@ export const processPaymentEventTask = {
 export const reconcilePaymentsTask = {
   slug: 'commerce-reconcile-payments',
   label: 'Reconcile pending and unknown payment attempts',
-  inputSchema: [],
+  inputSchema: [{ name: 'siteId', type: 'text' }],
   outputSchema: [],
   retries: { attempts: 3, backoff: { delay: 5000, type: 'exponential' } },
   concurrency: () => 'commerce.reconcile-payments',
   schedule: [{ cron: '0 */5 * * * *', queue: 'commerce' }],
-  handler: async ({ req }: { req: any }) => {
+  handler: async ({ req, input }: { req: any; input?: { siteId?: string } }) => {
     const pending = await req.payload.find({
       collection: 'payment-attempts',
-      where: { state: { in: ['processing', 'unknown'] } },
+      where: input?.siteId
+        ? {
+            and: [{ site: { equals: input.siteId } }, { state: { in: ['processing', 'unknown'] } }],
+          }
+        : { state: { in: ['processing', 'unknown'] } },
       limit: 100,
       sort: 'createdAt',
       overrideAccess: true,

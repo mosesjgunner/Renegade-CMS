@@ -167,14 +167,28 @@ describe('SHOP-01 canonical catalog workflows', () => {
     const read = Products.access?.read
     expect(typeof read).toBe('function')
     if (typeof read !== 'function') throw new Error('Product read access must be a function.')
-    expect(await read({ req: { user: null } } as never)).toEqual({
-      state: { equals: 'published' },
+    const payload = {
+      findGlobal: async () => ({
+        canonicalOriginsBySite: { 'site-a': 'https://shop.example.test' },
+      }),
+      find: async ({ collection }: { collection: string }) => ({
+        docs: collection === 'member-site-roles' ? [{ site: 'site-a', role: 'contributor' }] : [],
+      }),
+    }
+    const req = { user: null, headers: new Headers({ host: 'shop.example.test' }), payload }
+    expect(await read({ req } as never)).toEqual({
+      and: [{ site: { equals: 'site-a' } }, { state: { equals: 'published' } }],
     })
     expect(
       await read({
-        req: { user: { role: 'staff' } },
+        req: { ...req, headers: new Headers({ host: 'unknown.example.test' }) },
       } as never),
-    ).toBe(true)
+    ).toBe(false)
+    expect(
+      await read({
+        req: { ...req, user: { id: 'staff', role: 'staff', member: 'member-a' } },
+      } as never),
+    ).toEqual({ site: { in: ['site-a'] } })
   })
   it('requires the governed workflow boundary for publication', () => {
     const validate = Products.hooks?.beforeValidate?.[0]

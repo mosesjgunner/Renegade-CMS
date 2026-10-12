@@ -89,6 +89,12 @@ test('RC-02: ordinary operator builds Renegade Party Dispatch from an empty inst
       expect((await context.cookies()).some((cookie) => cookie.name === 'renegade-passkey')).toBe(
         true,
       )
+      expect((await page.request.post('/api/auth/logout')).ok()).toBe(true)
+      await context.clearCookies()
+      await page.goto('/login')
+      await page.getByLabel('Owner / Staff Email').fill('editor@renegadeparty.test')
+      await page.getByRole('button', { name: /Authenticate with Passkey/ }).click()
+      await expect(page).toHaveURL(/\/admin/)
       await context.storageState({ path: 'scratch/rc02-owner.json' })
       await page.goto('/admin')
       await expect(page.getByRole('heading', { name: 'Dashboard', exact: true })).toBeVisible()

@@ -9,6 +9,7 @@ export const PROPOSAL_TTL_MS = 20 * 60 * 1000 // 20 minutes
 export type ProposalCustomerInfo = Readonly<{
   email: string
   name?: string
+  country?: string
   memberId?: string
   isGuest: boolean
 }>
@@ -67,6 +68,7 @@ export function computeProposalIntegrityHash(proposal: {
   taxTotalMinor: string
   netShippingMinor: string
   customerEmail: string
+  buyerCountry?: string
   shippingPostalCode?: string
   items: readonly {
     productId: string
@@ -92,6 +94,7 @@ export function computeProposalIntegrityHash(proposal: {
     proposal.customerEmail.toLowerCase().trim(),
     proposal.shippingPostalCode ?? '',
     itemsDigest,
+    ...(proposal.buyerCountry ? [`buyer-country:${proposal.buyerCountry}`] : []),
   ].join(';')
 
   return `sha256:${createHash('sha256').update(raw).digest('hex')}`
@@ -201,6 +204,7 @@ export function createCheckoutProposal(input: {
     taxTotalMinor: input.pricingSnapshot.taxTotalMinor,
     netShippingMinor: input.pricingSnapshot.netShippingMinor,
     customerEmail: input.customer.email,
+    buyerCountry: input.customer.country,
     shippingPostalCode: input.shippingAddress?.normalized.postalCode,
     items: input.cart.items.map((i) => ({
       productId: i.productId,
@@ -269,6 +273,7 @@ export function assertProposalValidForCheckout(
     taxTotalMinor: proposal.pricingSnapshot.taxTotalMinor,
     netShippingMinor: proposal.pricingSnapshot.netShippingMinor,
     customerEmail: proposal.customer.email,
+    buyerCountry: proposal.customer.country,
     shippingPostalCode: proposal.shippingAddress?.normalized.postalCode,
     items: cart.items.map((i) => ({
       productId: i.productId,

@@ -15,6 +15,7 @@ import {
   type CartItem,
 } from '@/modules/commerce/cart'
 import { randomUUID } from 'node:crypto'
+import { configuredCheckoutMerchant } from '@/modules/commerce/merchant-selection'
 
 async function resolveCartContext(request: Request, payload: any) {
   const host = request.headers.get('host')
@@ -93,6 +94,7 @@ async function loadSiteCatalogAndPromos(payload: any, siteId: string) {
       state: String(d.state),
       kind: String(d.kind),
       productCapabilities: Array.isArray(d.productCapabilities) ? d.productCapabilities : [],
+      merchantConnectionId: String(d.merchantConnection?.id ?? d.merchantConnection ?? ''),
       variants: Array.isArray(d.variants) ? d.variants : [],
       offers: Array.isArray(d.offers) ? d.offers : [],
     })),
@@ -251,10 +253,21 @@ export async function POST(request: Request) {
       const merchants = await (payload as any).find({
         collection: 'merchant-connections',
         where: { and: [{ site: { equals: siteId } }, { status: { equals: 'active' } }] },
-        limit: 1,
+        limit: 100,
         overrideAccess: true,
       })
-      const merchantId = merchants.docs[0]?.id
+      const methods = await payload.find({
+        collection: 'payment-method-capabilities',
+        where: { site: { equals: siteId } },
+        limit: 100,
+        depth: 0,
+        overrideAccess: true,
+      })
+      const merchantId = configuredCheckoutMerchant(merchants.docs, methods.docs, {
+        siteId,
+        currency,
+        preferredMerchantId: product.merchantConnectionId || undefined,
+      })?.id
 
       const created = await (payload as any).create({
         collection: 'carts',

@@ -7,19 +7,29 @@ vi.mock('@payload-config', () => ({
   default: Promise.resolve({}),
 }))
 
-let mockUser: { id: string; role: string } | null = { id: 'usr-admin-1', role: 'administrator' }
+let mockUser: { id: string; role: string; email?: string } | null = {
+  id: 'usr-admin-1',
+  role: 'administrator',
+  email: 'admin@renegadeparty.org',
+}
 let mockFindDocs: any[] = []
 
 vi.mock('payload', () => ({
   getPayload: vi.fn(async () => ({
     auth: vi.fn(async () => ({ user: mockUser })),
-    find: vi.fn(async () => ({ docs: mockFindDocs })),
+    find: vi.fn(async ({ collection }: { collection: string }) => {
+      if (collection === 'members')
+        return { docs: [{ id: 'mem-admin-1', email: 'admin@renegadeparty.org' }] }
+      if (collection === 'member-site-roles')
+        return { docs: [{ site: 'site-default', role: 'administrator' }] }
+      return { docs: mockFindDocs }
+    }),
   })),
 }))
 
 describe('Social Distribution Admin API Routes', () => {
   beforeEach(() => {
-    mockUser = { id: 'usr-admin-1', role: 'administrator' }
+    mockUser = { id: 'usr-admin-1', role: 'administrator', email: 'admin@renegadeparty.org' }
     mockFindDocs = []
   })
 

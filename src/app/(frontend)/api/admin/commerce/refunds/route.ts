@@ -259,6 +259,26 @@ async function executeRefund(payload: any, refundId: string) {
         },
         overrideAccess: true,
       })
+      if (full) {
+        const matchingEntitlements = await payload.find({
+          collection: 'entitlements',
+          where: { source: { equals: `order:${order.id}` } },
+          limit: 100,
+          overrideAccess: true,
+        })
+        const nowIso = new Date().toISOString()
+        for (const ent of matchingEntitlements.docs) {
+          await payload.update({
+            collection: 'entitlements',
+            id: ent.id,
+            data: {
+              revokedAt: nowIso,
+              endsAt: nowIso,
+            },
+            overrideAccess: true,
+          })
+        }
+      }
       if (correctionReceipt?.recipient) {
         const key = `commerce-refund-receipt:${refund.id}`
         const messages = await payload.find({

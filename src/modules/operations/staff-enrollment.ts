@@ -425,7 +425,13 @@ export async function completeStaffPasskeyEnrollment(
     credential: RegistrationResponseJSON
     siteId?: string
   },
-): Promise<{ status: string; email: string; role: string; redirectUrl: string }> {
+): Promise<{
+  status: string
+  email: string
+  role: string
+  redirectUrl: string
+  recoveryCodes: string[]
+}> {
   const details = await getStaffEnrollmentDetails(
     payload,
     config,
@@ -471,11 +477,39 @@ export async function completeStaffPasskeyEnrollment(
     )
   }
 
-  // Atomically mark token as consumed
+  const recoveryCodes = Array.from({ length: 10 }, () =>
+    randomBytes(10).toString('hex').toUpperCase(),
+  )
+  // Consume the invitation, persist the credential and issue recovery authority
+  // in one statement. A database error must leave the invitation retryable.
   const consumed = await pool.query(
-    `UPDATE identity_tokens SET consumed_at = now(), updated_at = now()
-     WHERE id = $1 AND consumed_at IS NULL RETURNING id`,
-    [details.tokenId],
+    `WITH consumed AS (
+       UPDATE identity_tokens SET consumed_at = now(), updated_at = now()
+       WHERE id = $1 AND consumed_at IS NULL AND expires_at > now()
+         AND metadata->>'challenge' = $2
+         AND (metadata->>'challengeExpiresAt')::timestamptz > now()
+       RETURNING id
+     ), registered AS (
+       INSERT INTO passkeys (user_id, credential_id, public_key, counter, device_type, backed_up, name, transports)
+       SELECT $3, $4, $5, $6, $7, $8, 'Staff Passkey', $9 FROM consumed
+       RETURNING user_id, credential_id
+     ), codes AS (
+       INSERT INTO recovery_codes (user_id, code_hash)
+       SELECT user_id, unnest($10::text[]) FROM registered
+       RETURNING id
+     ) SELECT credential_id, (SELECT count(*) FROM codes) AS recovery_count FROM registered`,
+    [
+      details.tokenId,
+      challenge,
+      details.userId,
+      verification.registrationInfo.credential.id,
+      Buffer.from(verification.registrationInfo.credential.publicKey).toString('base64url'),
+      verification.registrationInfo.credential.counter,
+      verification.registrationInfo.credentialDeviceType,
+      verification.registrationInfo.credentialBackedUp,
+      JSON.stringify(input.credential.response?.transports ?? []),
+      recoveryCodes.map((code) => hashValue(code, config.payloadSecret)),
+    ],
   )
   if (!consumed.rowCount) {
     throw new StaffEnrollmentError(
@@ -483,22 +517,6 @@ export async function completeStaffPasskeyEnrollment(
       'This enrollment invitation has already been used.',
     )
   }
-
-  // Insert into passkeys table (public material only, never log private keys)
-  await pool.query(
-    `INSERT INTO passkeys (user_id, credential_id, public_key, counter, device_type, backed_up, name, transports)
-     VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
-    [
-      details.userId,
-      verification.registrationInfo.credential.id,
-      Buffer.from(verification.registrationInfo.credential.publicKey).toString('base64url'),
-      verification.registrationInfo.credential.counter,
-      verification.registrationInfo.credentialDeviceType,
-      verification.registrationInfo.credentialBackedUp,
-      'Staff Passkey',
-      JSON.stringify(input.credential.response?.transports ?? []),
-    ],
-  )
 
   // Ensure canonical Member linkage and site roles
   const userDoc = (await payload.findByID({
@@ -581,6 +599,7 @@ export async function completeStaffPasskeyEnrollment(
     email: details.email,
     role: details.role,
     redirectUrl: '/login',
+    recoveryCodes,
   }
 }
 

@@ -30,6 +30,7 @@ export type TelecomEmulatorSimulation =
 export type TelecomEmulatorReceipt = {
   providerMessageId: string
   idempotencyKey: string
+  siteId?: string
   from: string
   to: string
   channel: 'sms' | 'mms' | 'rcs'
@@ -43,6 +44,7 @@ export type TelecomEmulatorReceipt = {
 
 export type TelecomInboundEvent = {
   providerMessageId: string
+  siteId?: string
   from: string
   to: string
   text: string
@@ -55,30 +57,57 @@ const emulatorCapabilities = new Map<string, { rcsSupported: boolean; carrier?: 
 const emulatorSimulations = new Map<string, TelecomEmulatorSimulation>()
 const emulatorInboundHistory: TelecomInboundEvent[] = []
 
-export function resetTelecomEmulator() {
+export function resetTelecomEmulator(siteId?: string) {
+  if (siteId) {
+    for (const [k, v] of emulatorReceipts.entries()) {
+      if (v.siteId === siteId) emulatorReceipts.delete(k)
+    }
+    for (const [k] of emulatorCapabilities.entries()) {
+      if (k.startsWith(`${siteId}:`)) emulatorCapabilities.delete(k)
+    }
+    for (const [k] of emulatorSimulations.entries()) {
+      if (k.startsWith(`${siteId}:`)) emulatorSimulations.delete(k)
+    }
+    for (let i = emulatorInboundHistory.length - 1; i >= 0; i--) {
+      if (emulatorInboundHistory[i].siteId === siteId) {
+        emulatorInboundHistory.splice(i, 1)
+      }
+    }
+    return
+  }
   emulatorReceipts.clear()
   emulatorCapabilities.clear()
   emulatorSimulations.clear()
   emulatorInboundHistory.length = 0
 }
 
-export function getTelecomEmulatorReceipts(): TelecomEmulatorReceipt[] {
-  return [...emulatorReceipts.values()]
+export function getTelecomEmulatorReceipts(siteId?: string): TelecomEmulatorReceipt[] {
+  const all = [...emulatorReceipts.values()]
+  if (!siteId) return all
+  return all.filter((r) => !r.siteId || r.siteId === siteId)
 }
 
 export function setEmulatorRecipientCapability(
   phone: string,
   capability: { rcsSupported: boolean; carrier?: string },
+  siteId?: string,
 ) {
-  emulatorCapabilities.set(phone, capability)
+  const key = siteId ? `${siteId}:${phone}` : phone
+  emulatorCapabilities.set(key, capability)
 }
 
-export function setEmulatorSimulation(keyOrPhone: string, simulation: TelecomEmulatorSimulation) {
-  emulatorSimulations.set(keyOrPhone, simulation)
+export function setEmulatorSimulation(
+  keyOrPhone: string,
+  simulation: TelecomEmulatorSimulation,
+  siteId?: string,
+) {
+  const key = siteId ? `${siteId}:${keyOrPhone}` : keyOrPhone
+  emulatorSimulations.set(key, simulation)
 }
 
-export function getEmulatorInboundHistory(): TelecomInboundEvent[] {
-  return [...emulatorInboundHistory]
+export function getEmulatorInboundHistory(siteId?: string): TelecomInboundEvent[] {
+  if (!siteId) return [...emulatorInboundHistory]
+  return emulatorInboundHistory.filter((e) => !e.siteId || e.siteId === siteId)
 }
 
 export const telecomEmulatorCapabilities: TelecomProviderCapabilities = {
@@ -132,9 +161,15 @@ export const deterministicTelecomEmulator: MessagingProviderAdapter = {
       }
     }
 
-    // Check simulations by idempotencyKey or recipient phone
+    // Check simulations by scoped idempotencyKey or recipient phone, falling back to unscoped
     const sim =
-      emulatorSimulations.get(request.idempotencyKey) || emulatorSimulations.get(request.to)
+      ((request as { siteId?: string }).siteId
+        ? (emulatorSimulations.get(
+            `${(request as { siteId?: string }).siteId}:${request.idempotencyKey}`,
+          ) ?? emulatorSimulations.get(`${(request as { siteId?: string }).siteId}:${request.to}`))
+        : undefined) ??
+      emulatorSimulations.get(request.idempotencyKey) ??
+      emulatorSimulations.get(request.to)
 
     if (sim === 'rate_limited') {
       return {
@@ -266,6 +301,7 @@ export const deterministicTelecomEmulator: MessagingProviderAdapter = {
     const receipt: TelecomEmulatorReceipt = {
       providerMessageId,
       idempotencyKey: request.idempotencyKey,
+      siteId: (request as { siteId?: string }).siteId,
       from: request.from,
       to: request.to,
       channel: effectiveChannel,
@@ -346,10 +382,12 @@ export function simulateInboundTelecomMessage(input: {
   from: string
   to: string
   text: string
+  siteId?: string
 }): TelecomInboundEvent {
   const keywordResult = parseInboundKeyword(input.text)
   const event: TelecomInboundEvent = {
     providerMessageId: `emul-inbound-${randomBytes(8).toString('hex')}`,
+    siteId: input.siteId,
     from: input.from,
     to: input.to,
     text: input.text,

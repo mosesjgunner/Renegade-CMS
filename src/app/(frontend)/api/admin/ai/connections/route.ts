@@ -10,6 +10,8 @@ import {
   validateConnectionInput,
 } from '@/modules/ai/connections'
 
+import { resolveOperatorGrantContext } from '@/modules/operations/operator-grants'
+
 export const runtime = 'nodejs'
 type Doc = Record<string, unknown> & { id: string }
 const errorResponse = (message: string, status = 400) =>
@@ -18,9 +20,11 @@ const errorResponse = (message: string, status = 400) =>
 async function operator(request: Request, configure = true) {
   const payload = await getPayload({ config })
   const auth = await payload.auth({ headers: request.headers })
+  const grant = await resolveOperatorGrantContext(payload, auth?.user)
+  if (!grant.authorized) return null
   const roles = configure ? ['owner', 'administrator'] : ['owner', 'administrator', 'staff']
   if (!auth.user || !roles.includes(String(auth.user.role))) return null
-  return { payload, user: auth.user }
+  return { payload, user: auth.user, grant }
 }
 
 export async function GET(request: Request) {
@@ -28,6 +32,9 @@ export async function GET(request: Request) {
   if (!session) return errorResponse('Editor access required.', 403)
   const siteId = new URL(request.url).searchParams.get('siteId')
   if (!siteId) return errorResponse('Choose a site.')
+  if (!session.grant.isGlobalOwner && !session.grant.authorizedSiteIds.includes(siteId)) {
+    return errorResponse('Forbidden. You do not have operator access to this site.', 403)
+  }
   const found = await session.payload.find({
     collection: 'ai-connections' as never,
     where: { site: { equals: siteId } },
@@ -45,6 +52,9 @@ export async function POST(request: Request) {
     credentialCipher()
     const body = (await request.json()) as Record<string, unknown>
     const input = validateConnectionInput(body)
+    if (!session.grant.isGlobalOwner && !session.grant.authorizedSiteIds.includes(input.siteId)) {
+      return errorResponse('Forbidden. You do not have operator access to this site.', 403)
+    }
     await session.payload.findByID({ collection: 'sites', id: input.siteId, overrideAccess: true })
     if (input.publicationId) {
       const publication = await session.payload.findByID({
@@ -119,6 +129,9 @@ export async function PATCH(request: Request) {
   const body = (await request.json()) as { id?: string; siteId?: string; action?: string }
   if (!body.id || !body.siteId || !['disable', 'enable', 'test'].includes(String(body.action)))
     return errorResponse('Connection, site, and action are required.')
+  if (!session.grant.isGlobalOwner && !session.grant.authorizedSiteIds.includes(body.siteId)) {
+    return errorResponse('Forbidden. You do not have operator access to this site.', 403)
+  }
   let connection: Doc
   try {
     connection = (await session.payload.findByID({

@@ -640,6 +640,24 @@ describe('RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security
       overrideAccess: true,
     })
 
+    const siteSettings = (await payload.findGlobal({
+      slug: 'site-settings',
+      overrideAccess: true,
+    } as never)) as unknown as Record<string, unknown> | null
+    await payload.updateGlobal({
+      slug: 'site-settings',
+      data: {
+        canonicalOriginsBySite: {
+          ...(typeof siteSettings?.canonicalOriginsBySite === 'object' &&
+          siteSettings?.canonicalOriginsBySite
+            ? (siteSettings.canonicalOriginsBySite as Record<string, string>)
+            : {}),
+          [siteB.id]: `https://site-b-${suffix}.renegade.test`,
+        },
+      },
+      overrideAccess: true,
+    } as never)
+
     const merchantA = await payload.create({
       collection: 'merchant-connections',
       data: {

@@ -6,6 +6,12 @@ import { validateFormSchema, validateEmailBlocks } from '../modules/audience/con
 import { approvedRenderSnapshot, validateEmailDesign } from '../modules/audience/email-composer'
 import { validateAutomation, validateSegmentTree } from '../modules/audience/engine'
 import { formAccess, guardFormWrite } from '../modules/audience/form-access'
+import {
+  operatorSiteCreateAccess,
+  operatorSiteReadAccess,
+  operatorSiteUpdateAccess,
+  resolveOperatorGrantContext,
+} from '../modules/operations/operator-grants'
 
 const staffOnly = ({ req }: { req: { user?: { role?: string } | null } }) =>
   ['owner', 'administrator', 'staff'].includes(String(req.user?.role))
@@ -14,14 +20,8 @@ const deferredAudienceCollections = new Set([
   'form-schemas',
   'form-submissions',
   'submission-attachments',
-  'automation-definitions',
-  'automation-runs',
-  'automation-failures',
   'digest-definitions',
   'digest-runs',
-  'telecom-messages',
-  'telecom-deliveries',
-  'telecom-delivery-events',
 ])
 const base = (slug: string, title: string, group = 'Audience'): CollectionConfig => ({
   slug,
@@ -29,6 +29,19 @@ const base = (slug: string, title: string, group = 'Audience'): CollectionConfig
   access: deferredAudienceCollections.has(slug)
     ? { create: () => false, delete: () => false, read: () => false, update: () => false }
     : { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
+  fields: [],
+})
+const scopedBase = (slug: string, title: string, group = 'Audience'): CollectionConfig => ({
+  slug,
+  admin: { useAsTitle: title, group, hidden: deferredAudienceCollections.has(slug) },
+  access: deferredAudienceCollections.has(slug)
+    ? { create: () => false, delete: () => false, read: () => false, update: () => false }
+    : {
+        create: operatorSiteCreateAccess,
+        delete: operatorSiteReadAccess,
+        read: operatorSiteReadAccess,
+        update: operatorSiteUpdateAccess,
+      },
   fields: [],
 })
 const scope = () => [...ownerFields()]
@@ -221,7 +234,7 @@ export const Contacts: CollectionConfig = {
   ],
 }
 export const Organizations: CollectionConfig = {
-  ...base('organizations', 'name', 'CRM'),
+  ...scopedBase('organizations', 'name', 'CRM'),
   fields: [
     ...scope(),
     { name: 'name', type: 'text', required: true },
@@ -232,7 +245,7 @@ export const Organizations: CollectionConfig = {
   ],
 }
 export const RelationshipRecords: CollectionConfig = {
-  ...base('relationship-records', 'id', 'CRM'),
+  ...scopedBase('relationship-records', 'id', 'CRM'),
   fields: [
     ...scope(),
     ref('contact', 'contacts', true),
@@ -243,7 +256,7 @@ export const RelationshipRecords: CollectionConfig = {
   ],
 }
 export const ContactTags: CollectionConfig = {
-  ...base('contact-tags', 'name', 'CRM'),
+  ...scopedBase('contact-tags', 'name', 'CRM'),
   fields: [
     ...scope(),
     { name: 'name', type: 'text', required: true },
@@ -261,7 +274,7 @@ export const ContactTaggings: CollectionConfig = {
   indexes: [{ fields: ['contact', 'tag'], unique: true }],
 }
 export const InteractionRecords: CollectionConfig = {
-  ...base('interaction-records', 'occurredAt', 'CRM'),
+  ...scopedBase('interaction-records', 'occurredAt', 'CRM'),
   fields: [
     ...scope(),
     ref('contact', 'contacts'),
@@ -277,7 +290,7 @@ export const InteractionRecords: CollectionConfig = {
   ],
 }
 export const RelationshipNotes: CollectionConfig = {
-  ...base('relationship-notes', 'id', 'CRM'),
+  ...scopedBase('relationship-notes', 'id', 'CRM'),
   fields: [
     ...scope(),
     ref('contact', 'contacts'),
@@ -287,7 +300,7 @@ export const RelationshipNotes: CollectionConfig = {
   ],
 }
 export const DealsOrOpportunities: CollectionConfig = {
-  ...base('deals-opportunities', 'title', 'CRM'),
+  ...scopedBase('deals-opportunities', 'title', 'CRM'),
   fields: [
     ...scope(),
     ref('contact', 'contacts'),
@@ -306,7 +319,7 @@ export const DealsOrOpportunities: CollectionConfig = {
   ],
 }
 export const OwnerAssignments: CollectionConfig = {
-  ...base('owner-assignments', 'id', 'CRM'),
+  ...scopedBase('owner-assignments', 'id', 'CRM'),
   fields: [
     ...scope(),
     ref('assignee', 'users'),
@@ -315,7 +328,7 @@ export const OwnerAssignments: CollectionConfig = {
   ],
 }
 export const NextActions: CollectionConfig = {
-  ...base('next-actions', 'title', 'CRM'),
+  ...scopedBase('next-actions', 'title', 'CRM'),
   fields: [
     ...scope(),
     { name: 'title', type: 'text', required: true },
@@ -380,7 +393,7 @@ export const WorkflowItems: CollectionConfig = {
   ],
 }
 export const AudienceLists: CollectionConfig = {
-  ...base('audience-lists', 'name'),
+  ...scopedBase('audience-lists', 'name'),
   fields: [
     ...scope(),
     { name: 'name', type: 'text', required: true },
@@ -399,7 +412,7 @@ export const AudienceLists: CollectionConfig = {
   ],
 }
 export const AudienceSegments: CollectionConfig = {
-  ...base('audience-segments', 'name'),
+  ...scopedBase('audience-segments', 'name'),
   fields: [
     ...scope(),
     { name: 'name', type: 'text', required: true },
@@ -449,7 +462,7 @@ export const SubscriberConfirmationTokens: CollectionConfig = {
   ],
 }
 export const Subscribers: CollectionConfig = {
-  ...base('subscribers', 'emailHash'),
+  ...scopedBase('subscribers', 'emailHash'),
   fields: [
     ...scope(),
     { name: 'email', type: 'email', required: true, access: { read: staffOnly } },
@@ -464,7 +477,7 @@ export const Subscribers: CollectionConfig = {
   indexes: [{ fields: ['site', 'emailHash'], unique: true }],
 }
 export const ConsentEvents: CollectionConfig = {
-  ...base('consent-events', 'occurredAt'),
+  ...scopedBase('consent-events', 'occurredAt'),
   fields: [
     ...scope(),
     ref('subscriber', 'subscribers'),
@@ -514,7 +527,7 @@ export const Preferences: CollectionConfig = {
   ],
 }
 export const Suppressions: CollectionConfig = {
-  ...base('suppressions', 'emailHash'),
+  ...scopedBase('suppressions', 'emailHash'),
   fields: [
     ...scope(),
     { name: 'emailHash', type: 'text', required: true, index: true },
@@ -533,7 +546,7 @@ export const Suppressions: CollectionConfig = {
   indexes: [{ fields: ['site', 'emailHash', 'reason'], unique: true }],
 }
 export const EmailMessages: CollectionConfig = {
-  ...base('email-messages', 'subject', 'Audience'),
+  ...scopedBase('email-messages', 'subject', 'Audience'),
   hooks: {
     beforeChange: [
       ({ data, originalDoc, operation, req }) => {
@@ -637,7 +650,7 @@ export const EmailMessages: CollectionConfig = {
   ],
 }
 export const EmailTemplates: CollectionConfig = {
-  ...base('email-templates', 'name', 'Audience'),
+  ...scopedBase('email-templates', 'name', 'Audience'),
   fields: [
     ...scope(),
     { name: 'name', type: 'text', required: true },
@@ -672,7 +685,7 @@ export const EmailTemplates: CollectionConfig = {
   indexes: [{ fields: ['site', 'name', 'version'], unique: true }],
 }
 export const DeliveryIdentities: CollectionConfig = {
-  ...base('delivery-identities', 'emailHash'),
+  ...scopedBase('delivery-identities', 'emailHash'),
   fields: [
     ...scope(),
     { name: 'emailHash', type: 'text', required: true, index: true },
@@ -683,6 +696,25 @@ export const DeliveryIdentities: CollectionConfig = {
 }
 export const EmailDeliveries: CollectionConfig = {
   ...base('email-deliveries', 'idempotencyKey'),
+  access: {
+    create: () => false,
+    update: () => false,
+    delete: () => false,
+    read: async ({ req }) => {
+      const grant = await resolveOperatorGrantContext(req.payload, req.user)
+      if (!grant.authorized) return false
+      if (grant.isGlobalOwner) return true
+      const messages = await req.payload.find({
+        collection: 'email-messages',
+        where: { site: { in: grant.authorizedSiteIds } },
+        depth: 0,
+        limit: 0,
+        pagination: false,
+        overrideAccess: true,
+      })
+      return { message: { in: messages.docs.map((m) => String(m.id)) } }
+    },
+  },
   fields: [
     ref('message', 'email-messages', true),
     ref('subscriber', 'subscribers'),
@@ -727,6 +759,33 @@ export const EmailDeliveries: CollectionConfig = {
 /** Sanitized, idempotent operational evidence. Never persist a provider's raw payload. */
 export const EmailDeliveryEvents: CollectionConfig = {
   ...base('email-delivery-events', 'idempotencyKey', 'Audience'),
+  access: {
+    create: () => false,
+    update: () => false,
+    delete: () => false,
+    read: async ({ req }) => {
+      const grant = await resolveOperatorGrantContext(req.payload, req.user)
+      if (!grant.authorized) return false
+      if (grant.isGlobalOwner) return true
+      const messages = await req.payload.find({
+        collection: 'email-messages',
+        where: { site: { in: grant.authorizedSiteIds } },
+        depth: 0,
+        limit: 0,
+        pagination: false,
+        overrideAccess: true,
+      })
+      const deliveries = await req.payload.find({
+        collection: 'email-deliveries',
+        where: { message: { in: messages.docs.map((m) => String(m.id)) } },
+        depth: 0,
+        limit: 0,
+        pagination: false,
+        overrideAccess: true,
+      })
+      return { delivery: { in: deliveries.docs.map((d) => String(d.id)) } }
+    },
+  },
   fields: [
     ref('delivery', 'email-deliveries', true),
     { name: 'idempotencyKey', type: 'text', required: true, unique: true, index: true },
@@ -742,7 +801,7 @@ export const EmailDeliveryEvents: CollectionConfig = {
   ],
 }
 export const ActivityEvents: CollectionConfig = {
-  ...base('activity-events', 'type', 'Notifications'),
+  ...scopedBase('activity-events', 'type', 'Notifications'),
   fields: [
     ...scope(),
     { name: 'type', type: 'text', required: true, index: true },
@@ -784,7 +843,7 @@ export const NotificationChannels: CollectionConfig = {
   ],
 }
 export const DigestDefinitions: CollectionConfig = {
-  ...base('digest-definitions', 'name', 'Notifications'),
+  ...scopedBase('digest-definitions', 'name', 'Notifications'),
   fields: [
     ...scope(),
     ref('member', 'members'),
@@ -798,6 +857,25 @@ export const DigestDefinitions: CollectionConfig = {
 }
 export const DigestRuns: CollectionConfig = {
   ...base('digest-runs', 'id', 'Notifications'),
+  access: {
+    create: () => false,
+    update: () => false,
+    delete: () => false,
+    read: async ({ req }) => {
+      const grant = await resolveOperatorGrantContext(req.payload, req.user)
+      if (!grant.authorized) return false
+      if (grant.isGlobalOwner) return true
+      const defs = await req.payload.find({
+        collection: 'digest-definitions',
+        where: { site: { in: grant.authorizedSiteIds } },
+        depth: 0,
+        limit: 0,
+        pagination: false,
+        overrideAccess: true,
+      })
+      return { definition: { in: defs.docs.map((d) => String(d.id)) } }
+    },
+  },
   fields: [
     ref('definition', 'digest-definitions', true),
     { name: 'sourceEventIds', type: 'json', required: true },
@@ -817,7 +895,7 @@ export const DeliveryReceipts: CollectionConfig = {
   ],
 }
 export const AutomationDefinitions: CollectionConfig = {
-  ...base('automation-definitions', 'name', 'Operations'),
+  ...scopedBase('automation-definitions', 'name', 'Operations'),
   fields: [
     ...scope(),
     { name: 'name', type: 'text', required: true },
@@ -852,6 +930,25 @@ export const AutomationDefinitions: CollectionConfig = {
 }
 export const AutomationRuns: CollectionConfig = {
   ...base('automation-runs', 'idempotencyKey', 'Operations'),
+  access: {
+    create: () => false,
+    update: () => false,
+    delete: () => false,
+    read: async ({ req }) => {
+      const grant = await resolveOperatorGrantContext(req.payload, req.user)
+      if (!grant.authorized) return false
+      if (grant.isGlobalOwner) return true
+      const defs = await req.payload.find({
+        collection: 'automation-definitions',
+        where: { site: { in: grant.authorizedSiteIds } },
+        depth: 0,
+        limit: 0,
+        pagination: false,
+        overrideAccess: true,
+      })
+      return { definition: { in: defs.docs.map((d) => String(d.id)) } }
+    },
+  },
   fields: [
     ref('definition', 'automation-definitions', true),
     ref('sourceEvent', 'activity-events'),
@@ -866,6 +963,33 @@ export const AutomationRuns: CollectionConfig = {
 }
 export const AutomationFailures: CollectionConfig = {
   ...base('automation-failures', 'id', 'Operations'),
+  access: {
+    create: () => false,
+    update: () => false,
+    delete: () => false,
+    read: async ({ req }) => {
+      const grant = await resolveOperatorGrantContext(req.payload, req.user)
+      if (!grant.authorized) return false
+      if (grant.isGlobalOwner) return true
+      const defs = await req.payload.find({
+        collection: 'automation-definitions',
+        where: { site: { in: grant.authorizedSiteIds } },
+        depth: 0,
+        limit: 0,
+        pagination: false,
+        overrideAccess: true,
+      })
+      const runs = await req.payload.find({
+        collection: 'automation-runs',
+        where: { definition: { in: defs.docs.map((d) => String(d.id)) } },
+        depth: 0,
+        limit: 0,
+        pagination: false,
+        overrideAccess: true,
+      })
+      return { run: { in: runs.docs.map((r) => String(r.id)) } }
+    },
+  },
   fields: [
     ref('run', 'automation-runs', true),
     { name: 'actionIndex', type: 'number', required: true },
@@ -875,7 +999,7 @@ export const AutomationFailures: CollectionConfig = {
   ],
 }
 export const RecipientSnapshots: CollectionConfig = {
-  ...base('recipient-snapshots', 'hash', 'Audience'),
+  ...scopedBase('recipient-snapshots', 'hash', 'Audience'),
   fields: [
     ...scope(),
     ref('message', 'email-messages', true),
@@ -889,7 +1013,7 @@ export const RecipientSnapshots: CollectionConfig = {
   ],
 }
 export const AudienceFrequencyPolicies: CollectionConfig = {
-  ...base('audience-frequency-policies', 'purpose', 'Audience'),
+  ...scopedBase('audience-frequency-policies', 'purpose', 'Audience'),
   fields: [
     ...scope(),
     { name: 'purpose', type: 'text', required: true },
@@ -902,7 +1026,7 @@ export const AudienceFrequencyPolicies: CollectionConfig = {
 }
 
 export const TelecomMessages: CollectionConfig = {
-  ...base('telecom-messages', 'title', 'Audience'),
+  ...scopedBase('telecom-messages', 'title', 'Audience'),
   fields: [
     ...scope(),
     { name: 'title', type: 'text', required: true },
@@ -928,7 +1052,13 @@ export const TelecomMessages: CollectionConfig = {
 }
 
 export const TelecomDeliveries: CollectionConfig = {
-  ...base('telecom-deliveries', 'idempotencyKey', 'Audience'),
+  ...scopedBase('telecom-deliveries', 'idempotencyKey', 'Audience'),
+  access: {
+    create: () => false,
+    update: () => false,
+    delete: () => false,
+    read: operatorSiteReadAccess,
+  },
   fields: [
     ...scope(),
     ref('message', 'telecom-messages', true),
@@ -972,6 +1102,25 @@ export const TelecomDeliveries: CollectionConfig = {
 
 export const TelecomDeliveryEvents: CollectionConfig = {
   ...base('telecom-delivery-events', 'idempotencyKey', 'Audience'),
+  access: {
+    create: () => false,
+    update: () => false,
+    delete: () => false,
+    read: async ({ req }) => {
+      const grant = await resolveOperatorGrantContext(req.payload, req.user)
+      if (!grant.authorized) return false
+      if (grant.isGlobalOwner) return true
+      const deliveries = await req.payload.find({
+        collection: 'telecom-deliveries',
+        where: { site: { in: grant.authorizedSiteIds } },
+        depth: 0,
+        limit: 0,
+        pagination: false,
+        overrideAccess: true,
+      })
+      return { delivery: { in: deliveries.docs.map((d) => String(d.id)) } }
+    },
+  },
   fields: [
     ref('delivery', 'telecom-deliveries', true),
     { name: 'idempotencyKey', type: 'text', required: true, unique: true, index: true },
@@ -988,7 +1137,7 @@ export const TelecomDeliveryEvents: CollectionConfig = {
 }
 
 export const AudienceExperiments: CollectionConfig = {
-  ...base('audience-experiments', 'title', 'Audience'),
+  ...scopedBase('audience-experiments', 'title', 'Audience'),
   fields: [
     ...scope(),
     { name: 'title', type: 'text', required: true },

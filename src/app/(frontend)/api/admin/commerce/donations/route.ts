@@ -4,16 +4,28 @@ import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
 import { calculateDonationProgress } from '@/modules/commerce/donations'
 
-const allowed = ['owner', 'administrator', 'staff']
+import {
+  checkOperatorSiteAccess,
+  resolveOperatorGrantContext,
+} from '@/modules/operations/operator-grants'
 const rel = (value: any) => String(typeof value === 'object' && value ? value.id : (value ?? ''))
 
 export async function GET(request: Request) {
   const payload: any = await getPayload({ config })
   const auth = await payload.auth({ headers: request.headers })
-  if (!allowed.includes(String((auth.user as any)?.role)))
-    return NextResponse.json({ error: 'Unauthorized.' }, { status: 403 })
+  const grant = await resolveOperatorGrantContext(payload, auth.user)
+  if (!grant.authorized) return NextResponse.json({ error: 'Unauthorized.' }, { status: 403 })
+  const siteId = new URL(request.url).searchParams.get('siteId')
+  if (siteId && !grant.isGlobalOwner && !grant.authorizedSiteIds.includes(siteId))
+    return NextResponse.json({ error: 'Forbidden.' }, { status: 403 })
+  const where = siteId
+    ? { site: { equals: siteId } }
+    : grant.isGlobalOwner
+      ? undefined
+      : { site: { in: grant.authorizedSiteIds } }
   const donations = await payload.find({
     collection: 'donations',
+    where,
     limit: 10000,
     depth: 0,
     overrideAccess: true,
@@ -21,6 +33,7 @@ export async function GET(request: Request) {
   })
   const campaigns = await payload.find({
     collection: 'donation-campaigns',
+    where,
     limit: 5000,
     depth: 0,
     overrideAccess: true,
@@ -28,6 +41,7 @@ export async function GET(request: Request) {
   const allDonations = donations.docs as any[]
   const events = await payload.find({
     collection: 'donation-events',
+    where: { donation: { in: allDonations.map((donation) => String(donation.id)) } },
     limit: 20000,
     depth: 0,
     overrideAccess: true,
@@ -124,8 +138,8 @@ export async function GET(request: Request) {
 export async function PATCH(request: Request) {
   const payload: any = await getPayload({ config })
   const auth = await payload.auth({ headers: request.headers })
-  if (!allowed.includes(String((auth.user as any)?.role)))
-    return NextResponse.json({ error: 'Unauthorized.' }, { status: 403 })
+  const grant = await resolveOperatorGrantContext(payload, auth.user)
+  if (!grant.authorized) return NextResponse.json({ error: 'Unauthorized.' }, { status: 403 })
   const body = await request.json().catch(() => ({}))
   const supporterId = String(body.supporterId ?? '')
   if (!supporterId) return NextResponse.json({ error: 'supporterId is required.' }, { status: 400 })
@@ -133,6 +147,8 @@ export async function PATCH(request: Request) {
     .findByID({ collection: 'supporters', id: supporterId, depth: 0, overrideAccess: true })
     .catch(() => null)
   if (!supporter) return NextResponse.json({ error: 'Supporter not found.' }, { status: 404 })
+  if (!(await checkOperatorSiteAccess(payload, auth.user, rel(supporter.site))))
+    return NextResponse.json({ error: 'Forbidden.' }, { status: 403 })
   if (body.action === 'privacy') {
     if (!['public', 'anonymous', 'private'].includes(body.visibilityPreference))
       return NextResponse.json({ error: 'Invalid privacy preference.' }, { status: 400 })

@@ -3,7 +3,7 @@ import config from '@payload-config'
 import { getPayload } from 'payload'
 import { createHash } from 'node:crypto'
 import { NextResponse } from 'next/server'
-import { catalogSiteForHost } from '@/modules/commerce/site-scope'
+import { catalogOriginForSite, catalogSiteForHost } from '@/modules/commerce/site-scope'
 import { recurringProvider, configuredPaymentProvider } from '@/modules/commerce/payment-provider'
 import { currentMember, readMemberSession, verifyCsrf } from '@/modules/identity/member-identity'
 
@@ -112,6 +112,7 @@ export async function POST(request: Request) {
     const snapshot = {
       id: String(plan.id),
       planKey: String(plan.planKey),
+      name: String(plan.name),
       revision: Number(plan.revision),
       publishedAt: String(plan.publishedAt),
       lifecycle: 'published',
@@ -157,7 +158,7 @@ export async function POST(request: Request) {
       depth: 0,
       overrideAccess: true,
     })
-    const origin = new URL(request.url).origin
+    const origin = await catalogOriginForSite(payload, siteId)
     const result = await adapter.createSubscriptionCheckout({
       idempotencyKey: `subscription-checkout:${checkoutKey}`,
       priceReference,

@@ -3,6 +3,13 @@ import config from '@payload-config'
 import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
 import { catalogSiteForHost } from '@/modules/commerce/site-scope'
+import {
+  commerceTransactionPayload,
+  lockCommerceStock,
+  reservedCommerceStock,
+  InventoryReservationError,
+} from '@/modules/commerce/transactions'
+import { canAccessCommerceCart, commerceRelationId } from '@/modules/commerce/cart-access'
 import { currentMember, readMemberSession } from '@/modules/identity/member-identity'
 import {
   guestCartCookieName,
@@ -78,6 +85,11 @@ export async function POST(request: Request) {
     if (!customer?.email) {
       return NextResponse.json({ error: 'Customer email is required.' }, { status: 400 })
     }
+    if (customer.country !== undefined && !/^[A-Z]{2}$/.test(String(customer.country)))
+      return NextResponse.json(
+        { error: 'Choose a valid two-letter billing country.' },
+        { status: 400 },
+      )
     if (!consents?.termsAccepted || !consents?.privacyAccepted) {
       return NextResponse.json(
         { error: 'Terms and Privacy Policy must be accepted.' },
@@ -258,6 +270,7 @@ export async function POST(request: Request) {
       customer: {
         email: customer.email,
         name: customer.name,
+        country: customer.country,
         memberId: memberId || undefined,
         isGuest: !memberId,
       },
@@ -273,73 +286,150 @@ export async function POST(request: Request) {
       },
     })
 
-    // Store proposal in DB
-    const storedProposal = await (payload as any).create({
-      collection: 'checkout-proposals',
-      data: {
-        id: proposal.id,
-        site: siteId,
-        cart: cartDoc.id,
-        merchantConnection: cartDoc.merchantConnection,
-        cartVersion: proposal.cartVersion,
-        currency: proposal.currency,
-        customer: proposal.customer,
-        shippingAddress: proposal.shippingAddress,
-        billingAddress: proposal.billingAddress,
-        selectedShippingRate: proposal.selectedShippingRate,
-        pricingSnapshot: proposal.pricingSnapshot,
-        taxSnapshot: proposal.taxSnapshot,
-        consents: proposal.consents,
-        fulfillmentSplit: proposal.fulfillmentSplit,
-        integrityHash: 'pending',
-        state: 'cancelled',
-        expiresAt: proposal.expiresAt,
-      },
-      overrideAccess: true,
-    })
-    const integrityHash = computeProposalIntegrityHash({
-      id: String(storedProposal.id),
-      cartId: String(cartDoc.id),
-      cartVersion: proposal.cartVersion,
-      siteId,
-      currency: proposal.currency,
-      grandTotalMinor: proposal.pricingSnapshot.grandTotalMinor,
-      taxTotalMinor: proposal.pricingSnapshot.taxTotalMinor,
-      netShippingMinor: proposal.pricingSnapshot.netShippingMinor,
-      customerEmail: proposal.customer.email,
-      shippingPostalCode: proposal.shippingAddress?.normalized.postalCode,
-      items: resolvedCart.items.map((item) => ({
-        productId: item.productId,
-        variantSku: item.variantSku,
-        quantity: item.quantity,
-        unitPriceMinor: item.displaySnapshot.unitPriceMinor,
-      })),
-    })
-    await (payload as any).update({
-      collection: 'checkout-proposals',
-      id: storedProposal.id,
-      data: { integrityHash, state: 'active' },
-      overrideAccess: true,
-    })
-
-    // Create bounded inventory reservations
-    const now = new Date()
-    const resExpiry = new Date(now.getTime() + PROPOSAL_TTL_MS).toISOString()
-    for (const item of resolvedCart.items) {
-      await (payload as any).create({
+    const transactionID = await payload.db.beginTransaction()
+    if (!transactionID) throw new Error('Transactional inventory storage is unavailable.')
+    let storedProposal: any
+    let integrityHash: string
+    try {
+      await lockCommerceStock(
+        payload,
+        transactionID,
+        resolvedCart.items.map((item) => item.productId),
+        String(cartDoc.id),
+      )
+      const transactionalPayload = commerceTransactionPayload(payload, transactionID)
+      const freshCart = await transactionalPayload.findByID({
+        collection: 'carts',
+        id: String(cartDoc.id),
+        depth: 0,
+        overrideAccess: true,
+      })
+      if (freshCart.state !== 'active' || Number(freshCart.version) !== proposal.cartVersion)
+        throw new InventoryReservationError('Your cart changed. Reload it before creating a quote.')
+      const openCheckouts = await transactionalPayload.find({
+        collection: 'checkout-sessions',
+        where: {
+          and: [{ cart: { equals: String(cartDoc.id) } }, { state: { in: ['open', 'pending'] } }],
+        },
+        limit: 1,
+        depth: 0,
+        overrideAccess: true,
+      })
+      if (openCheckouts.docs.length)
+        throw new InventoryReservationError(
+          'This cart already has a payment in progress. Return to that checkout.',
+        )
+      await transactionalPayload.update({
         collection: 'inventory-reservations',
+        where: {
+          and: [{ cart: { equals: String(cartDoc.id) } }, { status: { equals: 'active' } }],
+        },
+        data: { status: 'released' },
+        overrideAccess: true,
+      })
+      await transactionalPayload.update({
+        collection: 'checkout-proposals',
+        where: { and: [{ cart: { equals: String(cartDoc.id) } }, { state: { equals: 'active' } }] },
+        data: { state: 'cancelled' },
+        overrideAccess: true,
+      })
+      for (const item of resolvedCart.items) {
+        const freshProduct = await transactionalPayload.findByID({
+          collection: 'products',
+          id: item.productId,
+          depth: 0,
+          overrideAccess: true,
+        })
+        const variant = freshProduct.variants?.find((variant) => variant.sku === item.variantSku)
+        if (!variant || commerceRelationId(freshProduct.site) !== siteId)
+          throw new InventoryReservationError('A quoted item is no longer available.')
+        if (variant.inventoryPolicy === 'tracked') {
+          const reserved = await reservedCommerceStock(
+            payload,
+            transactionID,
+            item.productId,
+            item.variantSku,
+          )
+          if (Number(variant.inventoryQuantity ?? 0) - reserved < item.quantity)
+            throw new InventoryReservationError(
+              'Stock is reserved by another checkout. Reduce the quantity or try again after its quote expires.',
+            )
+        }
+      }
+      // Store proposal in DB
+      storedProposal = await transactionalPayload.create({
+        collection: 'checkout-proposals',
         data: {
+          id: proposal.id,
           site: siteId,
           cart: cartDoc.id,
-          proposal: storedProposal.id,
-          product: item.productId,
-          variantSku: item.variantSku,
-          quantity: item.quantity,
-          status: 'active',
-          expiresAt: resExpiry,
+          merchantConnection: cartDoc.merchantConnection,
+          cartVersion: proposal.cartVersion,
+          currency: proposal.currency,
+          customer: proposal.customer,
+          shippingAddress: proposal.shippingAddress,
+          billingAddress: proposal.billingAddress,
+          selectedShippingRate: proposal.selectedShippingRate,
+          pricingSnapshot: proposal.pricingSnapshot,
+          taxSnapshot: proposal.taxSnapshot,
+          consents: proposal.consents,
+          fulfillmentSplit: [...proposal.fulfillmentSplit],
+          integrityHash: 'pending',
+          state: 'cancelled',
+          expiresAt: proposal.expiresAt,
         },
         overrideAccess: true,
       })
+      integrityHash = computeProposalIntegrityHash({
+        id: String(storedProposal.id),
+        cartId: String(cartDoc.id),
+        cartVersion: proposal.cartVersion,
+        siteId,
+        currency: proposal.currency,
+        grandTotalMinor: proposal.pricingSnapshot.grandTotalMinor,
+        taxTotalMinor: proposal.pricingSnapshot.taxTotalMinor,
+        netShippingMinor: proposal.pricingSnapshot.netShippingMinor,
+        customerEmail: proposal.customer.email,
+        buyerCountry: proposal.customer.country,
+        shippingPostalCode: proposal.shippingAddress?.normalized.postalCode,
+        items: resolvedCart.items.map((item) => ({
+          productId: item.productId,
+          variantSku: item.variantSku,
+          quantity: item.quantity,
+          unitPriceMinor: item.displaySnapshot.unitPriceMinor,
+        })),
+      })
+      await transactionalPayload.update({
+        collection: 'checkout-proposals',
+        id: storedProposal.id,
+        data: { integrityHash, state: 'active' },
+        overrideAccess: true,
+      })
+
+      // Create bounded inventory reservations
+      const now = new Date()
+      const resExpiry = new Date(now.getTime() + PROPOSAL_TTL_MS).toISOString()
+      for (const item of resolvedCart.items) {
+        await transactionalPayload.create({
+          collection: 'inventory-reservations',
+          data: {
+            site: siteId,
+            cart: cartDoc.id,
+            proposal: storedProposal.id,
+            product: item.productId,
+            variantSku: item.variantSku,
+            quantity: item.quantity,
+            status: 'active',
+            expiresAt: resExpiry,
+          },
+          overrideAccess: true,
+        })
+      }
+
+      await payload.db.commitTransaction(transactionID)
+    } catch (error) {
+      await payload.db.rollbackTransaction(transactionID)
+      throw error
     }
 
     return NextResponse.json({
@@ -348,7 +438,7 @@ export async function POST(request: Request) {
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Failed to create checkout proposal.' },
-      { status: 500 },
+      { status: error instanceof InventoryReservationError ? error.status : 500 },
     )
   }
 }
@@ -372,7 +462,21 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: 'Proposal not found.' }, { status: 404 })
     }
 
-    return NextResponse.json({ proposal: found })
+    const cart =
+      typeof found.cart === 'object'
+        ? found.cart
+        : await payload.findByID({
+            collection: 'carts',
+            id: commerceRelationId(found.cart),
+            depth: 0,
+            overrideAccess: true,
+          })
+    if (!cart || !(await canAccessCommerceCart(payload, request, cart)))
+      return NextResponse.json({ error: 'Proposal access denied.' }, { status: 403 })
+    return NextResponse.json(
+      { proposal: found },
+      { headers: { 'cache-control': 'private, no-store' } },
+    )
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Failed to retrieve proposal.' },

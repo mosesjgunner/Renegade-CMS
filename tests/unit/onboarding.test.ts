@@ -37,6 +37,7 @@ function payloadDouble() {
   return {
     records,
     globals,
+    findGlobal: async ({ slug }: { slug: string }) => globals[slug] ?? {},
     find: async ({
       collection,
       where,
@@ -73,6 +74,23 @@ function payloadDouble() {
 }
 
 describe('first-run onboarding', () => {
+  it('keeps the installed host bound to its site when another site is added', async () => {
+    const payload = payloadDouble()
+    payload.globals['site-settings'] = {
+      canonicalOriginsBySite: { existing: 'https://existing.test' },
+    }
+    await provisionOnboardingSite(payload as never, 'owner@example.test', input())
+    const site = payload.records.find((record) => record.collection === 'sites')!
+    expect(
+      payload.records.find((record) => record.collection === 'member-site-roles'),
+    ).toMatchObject({
+      site: site.id,
+      role: 'community-manager',
+    })
+    expect(payload.globals['site-settings']).toMatchObject({
+      canonicalOriginsBySite: { existing: 'https://existing.test', [site.id]: input().primaryUrl },
+    })
+  })
   it('keeps Lean and Standard profiles explicit while allowing all integrations to be skipped', () => {
     expect(validateOnboardingInput(input({ featureProfile: 'Lean' }))).toMatchObject({
       featureProfile: 'Lean',

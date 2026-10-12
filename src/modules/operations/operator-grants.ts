@@ -1,4 +1,29 @@
-import type { Payload } from 'payload'
+import type { Access, Payload } from 'payload'
+
+/** Native Payload reads must apply the same site grants as operator APIs. */
+export const operatorSiteReadAccess: Access = async ({ req }) => {
+  const grant = await resolveOperatorGrantContext(req.payload, req.user)
+  if (!grant.authorized) return false
+  if (grant.isGlobalOwner) return true
+  return { site: { in: grant.authorizedSiteIds } }
+}
+
+export const operatorSiteCreateAccess: Access = async ({ req, data }) => {
+  // Payload evaluates permission to open the create form before it has form data.
+  if (data?.site === undefined)
+    return (await resolveOperatorGrantContext(req.payload, req.user)).authorized
+  return checkOperatorSiteAccess(req.payload, req.user, asId(data?.site))
+}
+
+export const operatorSiteUpdateAccess: Access = async ({ req, data }) => {
+  if (
+    data &&
+    Object.prototype.hasOwnProperty.call(data, 'site') &&
+    !(await checkOperatorSiteAccess(req.payload, req.user, asId(data.site)))
+  )
+    return false
+  return operatorSiteReadAccess({ req })
+}
 
 export interface OperatorGrantContext {
   authorized: boolean
@@ -53,15 +78,16 @@ export async function resolveOperatorGrantContext(
     return {
       authorized:
         authorizedSiteIds.length > 0 ||
-        Boolean((user as { isGlobalOwner?: boolean })?.isGlobalOwner),
+        (role === 'owner' && Boolean((user as { isGlobalOwner?: boolean })?.isGlobalOwner)),
       user: { id: userId, email, role, member: memberRelation || null },
       authorizedSiteIds,
-      isGlobalOwner: Boolean((user as { isGlobalOwner?: boolean })?.isGlobalOwner),
+      isGlobalOwner:
+        role === 'owner' && Boolean((user as { isGlobalOwner?: boolean })?.isGlobalOwner),
     }
   }
 
   // Explicit platform superuser / global owner override
-  if ((user as { isGlobalOwner?: boolean })?.isGlobalOwner === true) {
+  if (role === 'owner' && (user as { isGlobalOwner?: boolean })?.isGlobalOwner === true) {
     try {
       const allSites = await payload.find({
         collection: 'sites',
@@ -150,7 +176,7 @@ export async function resolveOperatorGrantContext(
         }
 
         const isGlobal =
-          Boolean((user as { isGlobalOwner?: boolean })?.isGlobalOwner) ||
+          (role === 'owner' && Boolean((user as { isGlobalOwner?: boolean })?.isGlobalOwner)) ||
           (role === 'owner' && isAllSites)
 
         return {
@@ -165,11 +191,9 @@ export async function resolveOperatorGrantContext(
     }
   }
 
-  // Platform admin/owner fallback (when not bounded by explicit member-site-roles)
-  if (
-    ['owner', 'administrator'].includes(role) &&
-    (user as { isGlobalOwner?: boolean })?.isGlobalOwner !== false
-  ) {
+  // Only platform owners retain the installation fallback. Administrators must
+  // have an explicit site grant, including after their last grant is revoked.
+  if (role === 'owner' && (user as { isGlobalOwner?: boolean })?.isGlobalOwner !== false) {
     try {
       const allSites = await payload.find({
         collection: 'sites',

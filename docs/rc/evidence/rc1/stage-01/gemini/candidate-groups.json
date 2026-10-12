@@ -1,0 +1,350 @@
+{
+  "identity-grants-recovery": [
+    {
+      "path": "src/app/(frontend)/api/admin/staff/invite/route.ts",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "src/app/(frontend)/enroll/page.tsx",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "src/collections/Identity.ts",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "src/modules/admin/SecurityCenter.tsx",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "src/modules/operations/onboarding.ts",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "src/modules/operations/operator-grants.ts",
+      "disposition": "preserved; Stage 02 review/repair/commit required (check operatorSiteCreateAccess)"
+    },
+    {
+      "path": "src/modules/operations/staff-enrollment.ts",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "src/scripts/recover-installation.ts",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "tests/integration/rc08d-lock-projection.integration.test.ts",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "tests/rc02/site-build.spec.ts",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "tests/unit/onboarding.test.ts",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "docs/operations/owner-recovery.md",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "src/modules/admin/StaffInvitations.tsx",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "src/modules/operations/owner-recovery.ts",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "tests/rc02/staff-invitation.spec.ts",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "tests/unit/owner-recovery.test.ts",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    }
+  ],
+  "scoped-operator-native-access": [
+    {
+      "path": "src/app/(frontend)/admin/catalog/preview/[id]/page.tsx",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "src/app/(frontend)/api/admin/ai/connections/route.ts",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "src/app/(frontend)/api/admin/ai/sites/route.ts",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "src/app/(frontend)/api/admin/catalog/import/route.ts",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "src/app/(frontend)/api/admin/catalog/route.ts",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "src/app/(frontend)/api/admin/commerce/dashboard/route.ts",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "src/app/(frontend)/api/admin/commerce/donations/route.ts",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "src/app/(frontend)/api/admin/commerce/reconcile/route.ts",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "src/app/(frontend)/api/admin/commerce/refunds/route.ts",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "src/collections/Commerce.ts",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "src/modules/admin/CommerceOperations.tsx",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "tests/unit/dist-05-social-api-routes.test.ts",
+      "disposition": "formatted; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "tests/unit/shop-01-catalog-workflows.test.ts",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "tests/unit/commerce-dashboard-scope.test.ts",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "tests/unit/donation-admin-scope.test.ts",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    }
+  ],
+  "cart-checkout-digital-subscriptions": [
+    {
+      "path": "src/app/(frontend)/api/commerce/cart/route.ts",
+      "disposition": "formatted; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "src/app/(frontend)/api/commerce/checkout/initiate/route.ts",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "src/app/(frontend)/api/commerce/checkout/status/route.ts",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "src/app/(frontend)/api/commerce/checkout/test/confirm/route.ts",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "src/app/(frontend)/api/commerce/download/[grantKey]/route.ts",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "src/app/(frontend)/api/commerce/proposal/route.ts",
+      "disposition": "formatted; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "src/app/(frontend)/api/commerce/subscriptions/checkout/route.ts",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "src/app/(frontend)/api/commerce/subscriptions/route.ts",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "src/app/(frontend)/api/commerce/webhooks/[provider]/route.ts",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "src/app/(frontend)/members/settings/page.tsx",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "src/modules/commerce/CartView.tsx",
+      "disposition": "formatted; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "src/modules/commerce/CheckoutStatus.tsx",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "src/modules/commerce/local-test-checkout.ts",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "src/modules/commerce/proposal.ts",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "src/modules/commerce/service.ts",
+      "disposition": "formatted; Stage 02 review/repair/commit required (repair fake address fallback)"
+    },
+    {
+      "path": "src/modules/commerce/site-scope.ts",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "src/modules/commerce/subscription-service.ts",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "src/modules/commerce/tasks.ts",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "src/payload-types.ts",
+      "disposition": "preserved generated types; Stage 02 typecheck/schema verification"
+    },
+    {
+      "path": "tests/unit/rc01-admin-truth.test.tsx",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "tests/unit/shop-02-tampering-and-invariants.test.ts",
+      "disposition": "formatted; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "tests/unit/shop-04-local-test-checkout.test.ts",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "tests/unit/tenant-isolation.test.ts",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "src/app/(frontend)/api/admin/commerce/webhooks/[eventId]/retry/route.ts",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "src/app/(frontend)/api/commerce/checkout/methods/route.ts",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "src/app/(frontend)/api/commerce/subscriptions/plans/route.ts",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "src/modules/commerce/MemberBilling.tsx",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "src/modules/commerce/cart-access.ts",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "src/modules/commerce/digital-delivery.ts",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "src/modules/commerce/merchant-selection.ts",
+      "disposition": "formatted; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "src/modules/commerce/transactions.ts",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "tests/unit/commerce-cart-access.test.ts",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "tests/unit/commerce-merchant-selection.test.ts",
+      "disposition": "formatted; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "tests/unit/commerce-reconcile-scope.test.ts",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "tests/unit/commerce-webhook-retry.test.ts",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "tests/unit/digital-delivery-readiness.test.ts",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "tests/unit/subscription-plans.test.ts",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "tests/unit/subscription-provider-plan-mapping.test.ts",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": ".env.example",
+      "disposition": "preserved env additions; Stage 02 commit"
+    }
+  ],
+  "audience-truth-disclosure": [
+    {
+      "path": "src/app/(frontend)/api/admin/audience/command-center/route.ts",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "src/app/(frontend)/calendar/page.tsx",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "src/app/(frontend)/connections/page.tsx",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "src/collections/Audience.ts",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "src/modules/admin/AudienceCommandCenter.tsx",
+      "disposition": "formatted; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "src/modules/admin/progressive-disclosure.ts",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    },
+    {
+      "path": "tests/unit/progressive-disclosure.test.ts",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    }
+  ],
+  "fulfillment": [
+    {
+      "path": "src/modules/admin/FulfillmentCommandCenter.tsx",
+      "disposition": "formatted; Stage 02 repair required (UI error handling and worker mutation path)"
+    },
+    {
+      "path": "src/app/(frontend)/api/admin/fulfillment/route.ts",
+      "disposition": "formatted; Stage 02 repair required (adapter selection and artwork mock)"
+    }
+  ],
+  "telecom-simulator": [
+    {
+      "path": "src/app/(frontend)/api/admin/telecom/simulate/route.ts",
+      "disposition": "formatted; Stage 02 repair required (tenant isolation of global emulator state)"
+    },
+    {
+      "path": "tests/unit/telecom-admin-simulate.test.ts",
+      "disposition": "preserved; Stage 02 review/repair/commit required"
+    }
+  ],
+  "restore-configuration": [
+    {
+      "path": "compose.restore.yaml",
+      "disposition": "preserved; Stage 02 repair required (revert or configure explicit LOCAL_E2E_TEST_MODE)"
+    }
+  ],
+  "stage-01-plan": [
+    {
+      "path": "docs/rc/RC1-PLAN-AND-PROMPTS.md",
+      "disposition": "preserved; full prompt blocks added for stages 01-07"
+    }
+  ]
+}

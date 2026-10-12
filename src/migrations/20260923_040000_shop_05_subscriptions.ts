@@ -45,8 +45,8 @@ export async function up({ db }: MigrateUpArgs): Promise<void> {
     ALTER TABLE "entitlements" ADD COLUMN IF NOT EXISTS "limit" numeric;
     ALTER TABLE "entitlements" ADD COLUMN IF NOT EXISTS "evidence" jsonb NOT NULL DEFAULT '{}'::jsonb;
     CREATE UNIQUE INDEX IF NOT EXISTS "entitlements_grant_key_idx" ON "entitlements" ("grant_key") WHERE "grant_key" IS NOT NULL;
-    ALTER TABLE "forum_spaces" ADD COLUMN IF NOT EXISTS "required_entitlement" jsonb;
-    ALTER TABLE "content" ADD COLUMN IF NOT EXISTS "required_entitlement" jsonb;
+    ALTER TABLE IF EXISTS "forum_spaces" ADD COLUMN IF NOT EXISTS "required_entitlement" jsonb;
+    ALTER TABLE IF EXISTS "content" ADD COLUMN IF NOT EXISTS "required_entitlement" jsonb;
   `)
 }
 
@@ -55,7 +55,7 @@ export async function down({ db }: MigrateDownArgs): Promise<void> {
     DROP TABLE IF EXISTS "subscription_events"; DROP TABLE IF EXISTS "subscriptions"; DROP TABLE IF EXISTS "plan_revisions";
     DROP INDEX IF EXISTS "entitlements_grant_key_idx";
     ALTER TABLE "entitlements" DROP COLUMN IF EXISTS "evidence", DROP COLUMN IF EXISTS "limit", DROP COLUMN IF EXISTS "grant_key", DROP COLUMN IF EXISTS "scope", DROP COLUMN IF EXISTS "capability", DROP COLUMN IF EXISTS "resource";
-    ALTER TABLE "forum_spaces" DROP COLUMN IF EXISTS "required_entitlement";
-    ALTER TABLE "content" DROP COLUMN IF EXISTS "required_entitlement";
+    ALTER TABLE IF EXISTS "forum_spaces" DROP COLUMN IF EXISTS "required_entitlement";
+    ALTER TABLE IF EXISTS "content" DROP COLUMN IF EXISTS "required_entitlement";
   `)
 }

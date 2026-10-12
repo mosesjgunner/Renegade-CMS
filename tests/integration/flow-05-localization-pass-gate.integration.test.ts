@@ -235,7 +235,9 @@ describe('FLOW-05 Localization & Quality Pass Gate — Integration & API Suite',
   })
 
   it('3. Tests webhook subscription registration, secret rotation, and SSRF guard via API', async () => {
-    mockAuth.mockResolvedValue({ user: { id: 'admin-1', role: 'administrator' } })
+    mockAuth.mockResolvedValue({
+      user: { id: 'admin-1', role: 'administrator', authorizedSiteIds: ['site-1'] },
+    })
 
     // SSRF rejection on localhost
     const ssrfReq = new Request('https://renegadeparty.org/api/admin/webhooks', {

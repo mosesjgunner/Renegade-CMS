@@ -11,11 +11,15 @@ describe('progressive disclosure admin presentation', () => {
   it('keeps core navigation visible while hiding optional collection clutter without unregistering it', () => {
     const collections = applyProgressiveDisclosure([
       { slug: 'content', fields: [] },
-      { slug: 'products', fields: [] },
+      { slug: 'products', fields: [], admin: { group: 'Commerce' } },
+      { slug: 'internal-projections', fields: [] },
     ])
-    expect(collections).toHaveLength(2)
+    expect(collections).toHaveLength(3)
     expect(collections.find((item) => item.slug === 'content')?.admin?.hidden).not.toBe(true)
-    expect(collections.find((item) => item.slug === 'products')?.admin?.hidden).toBe(true)
+    expect(collections.find((item) => item.slug === 'products')?.admin?.hidden).not.toBe(true)
+    expect(collections.find((item) => item.slug === 'internal-projections')?.admin?.hidden).toBe(
+      true,
+    )
   })
 
   it('makes enabled capabilities discoverable and exposes degraded state', () => {

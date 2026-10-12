@@ -12,6 +12,12 @@ describe('RC08D-01 Integration: Core Editor Lock-Owner Projection on Acceptance 
   const suffix = Date.now().toString(36)
 
   beforeAll(async () => {
+    const database = new URL(process.env.DATABASE_URL ?? '').pathname.slice(1)
+    if (!/(?:_release_acceptance|_test|^implementation_closure_)/.test(database)) {
+      throw new Error(
+        'Lock projection integration tests require an explicitly configured disposable database.',
+      )
+    }
     payload = await getPayload({ config })
 
     testSite = await payload.create({

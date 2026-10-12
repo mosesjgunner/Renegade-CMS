@@ -382,8 +382,12 @@ describe('PUB-04 publishing floor integration contract', () => {
     await payload.updateGlobal({
       slug: 'site-settings',
       data: {
+        launchState: 'live',
         indexingMode: 'index',
         canonicalOrigin: 'https://renegadeparty.org',
+        canonicalOriginsBySite: {
+          [siteId]: 'https://renegadeparty.org',
+        },
       },
       overrideAccess: true,
     })

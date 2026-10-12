@@ -258,6 +258,11 @@ export async function ensureRenegadePartyDemo(payload: Payload): Promise<DemoEnv
     'Organizational diagram of the Renegade National Assembly',
   )
 
+  const currentSettings = (await payload.findGlobal({
+    slug: 'site-settings',
+    overrideAccess: true,
+  } as never)) as unknown as Record<string, unknown> | null
+
   // 6. Update Site Settings
   await payload.updateGlobal({
     slug: 'site-settings',
@@ -265,6 +270,13 @@ export async function ensureRenegadePartyDemo(payload: Payload): Promise<DemoEnv
       siteName: 'Renegade Party',
       siteDescription: 'Autonomous publishing and grassroots governance for the Renegade movement.',
       canonicalOrigin: 'http://localhost:3110',
+      canonicalOriginsBySite: {
+        ...(typeof currentSettings?.canonicalOriginsBySite === 'object' &&
+        currentSettings?.canonicalOriginsBySite
+          ? (currentSettings.canonicalOriginsBySite as Record<string, string>)
+          : {}),
+        [siteId]: 'http://localhost',
+      },
       locale: 'en',
       timezone: 'America/Chicago',
       footerText: '© 2026 Renegade Party. Published autonomously with Renegade CMS.',

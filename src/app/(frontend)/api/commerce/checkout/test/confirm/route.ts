@@ -73,8 +73,8 @@ export async function POST(request: Request) {
     if (!received.ok)
       return NextResponse.json({ error: 'Test payment could not be queued.' }, { status: 503 })
   }
-  return NextResponse.redirect(
-    new URL(`/checkout/return?session=${encodeURIComponent(sessionId)}`, request.url),
-    303,
-  )
+  return new NextResponse(null, {
+    status: 303,
+    headers: { location: `/checkout/return?session=${encodeURIComponent(sessionId)}` },
+  })
 }

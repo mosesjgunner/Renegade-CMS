@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { operatorSiteReadAccess } from '../modules/operations/operator-grants'
 
 import {
   canonicalSlug,
@@ -104,7 +105,12 @@ export const Members: CollectionConfig = {
 export const MemberSiteRoles: CollectionConfig = {
   slug: 'member-site-roles',
   admin: { useAsTitle: 'role', group: 'Community', hidden: true },
-  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
+  access: {
+    create: ({ req }) => req.user?.role === 'owner',
+    delete: ({ req }) => req.user?.role === 'owner',
+    read: operatorSiteReadAccess,
+    update: ({ req }) => req.user?.role === 'owner',
+  },
   fields: [
     { name: 'site', type: 'relationship', relationTo: 'sites', required: true, index: true },
     { name: 'member', type: 'relationship', relationTo: 'members', required: true, index: true },
