@@ -1,4 +1,4 @@
-import type { CollectionConfig } from 'payload'
+import { ValidationError, type CollectionConfig } from 'payload'
 
 import { ownerFields } from './canonical-shared'
 import {
@@ -329,14 +329,33 @@ export const SocialCalendarEntries: CollectionConfig = {
       return allowed === true ? true : allowed ? { actor: { equals: req.user!.id } } : false
     },
   },
+  hooks: {
+    beforeValidate: [
+      ({ data, originalDoc }) => {
+        const record = { ...originalDoc, ...data }
+        if (!record.calendarEntry && !record.article)
+          throw new ValidationError({
+            collection: 'calendar-entry-audits',
+            errors: [
+              {
+                path: 'article',
+                message: 'A calendar entry or canonical article source is required.',
+              },
+            ],
+          })
+        return data
+      },
+    ],
+  },
   fields: [
     {
       name: 'calendarEntry',
       type: 'relationship',
       relationTo: 'calendar-entries',
-      required: true,
+      required: false,
       index: true,
     },
+    { name: 'article', type: 'relationship', relationTo: 'article-family-content', index: true },
     { name: 'action', type: 'text', required: true },
     { name: 'actor', type: 'relationship', relationTo: 'users' },
     { name: 'before', type: 'json' },

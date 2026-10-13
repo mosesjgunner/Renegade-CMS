@@ -1,6 +1,9 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 const mocks = vi.hoisted(() => ({ payload: {}, schedule: vi.fn(), allowed: vi.fn() }))
-vi.mock('payload', () => ({ getPayload: async () => mocks.payload }))
+vi.mock('payload', () => ({
+  getPayload: async () => mocks.payload,
+  createLocalReq: async (_input: unknown, payload: unknown) => ({ payload }),
+}))
 vi.mock('@payload-config', () => ({ default: {} }))
 vi.mock('@/modules/operations/operator-grants', () => ({
   checkOperatorRecordAccess: mocks.allowed,
@@ -30,6 +33,12 @@ describe('calendar canonical approval boundary', () => {
     vi.clearAllMocks()
     mocks.allowed.mockResolvedValue(true)
     mocks.payload = {
+      db: {
+        beginTransaction: vi.fn().mockResolvedValue('transaction-1'),
+        commitTransaction: vi.fn(),
+        rollbackTransaction: vi.fn(),
+      },
+      jobs: { queue: vi.fn() },
       auth: async () => ({ user: { id: 'owner', role: 'owner' } }),
       findByID: vi.fn().mockResolvedValue({
         id: 'article',
@@ -45,9 +54,17 @@ describe('calendar canonical approval boundary', () => {
   it('schedules the canonical approved lifecycle even if a legacy status says draft', async () => {
     expect((await POST(request())).status).toBe(200)
     expect(mocks.schedule).toHaveBeenCalledWith(
-      mocks.payload,
+      expect.objectContaining({ db: (mocks.payload as any).db }),
       expect.objectContaining({ articleId: 'article', scheduledFor: '2030-01-01T12:00:00.000Z' }),
     )
+    expect((mocks.payload as any).create).toHaveBeenCalledWith(
+      expect.objectContaining({
+        collection: 'calendar-entry-audits',
+        data: expect.objectContaining({ article: 'article' }),
+        req: expect.objectContaining({ transactionID: 'transaction-1' }),
+      }),
+    )
+    expect((mocks.payload as any).db.commitTransaction).toHaveBeenCalledWith('transaction-1')
   })
   it('rejects a canonical draft even if a legacy status says approved', async () => {
     ;(mocks.payload as any).findByID.mockResolvedValue({
@@ -60,5 +77,11 @@ describe('calendar canonical approval boundary', () => {
     })
     expect((await POST(request())).status).toBe(422)
     expect(mocks.schedule).not.toHaveBeenCalled()
+  })
+  it('rolls back rather than reporting success when its source audit fails', async () => {
+    ;(mocks.payload as any).create.mockRejectedValue(new Error('actual storage failure'))
+    expect((await POST(request())).status).toBe(500)
+    expect((mocks.payload as any).db.rollbackTransaction).toHaveBeenCalledWith('transaction-1')
+    expect((mocks.payload as any).db.commitTransaction).not.toHaveBeenCalled()
   })
 })
