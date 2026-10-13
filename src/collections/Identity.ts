@@ -1,5 +1,12 @@
 import type { CollectionConfig } from 'payload'
-import { operatorSiteReadAccess } from '../modules/operations/operator-grants'
+import {
+  operatorAllSitesAccess,
+  operatorSiteReadAccess,
+  operatorSiteCreateAccess,
+  operatorSiteUpdateAccess,
+  operatorMemberScopeAccess,
+  resolveOperatorGrantContext,
+} from '../modules/operations/operator-grants'
 
 import {
   canonicalSlug,
@@ -11,13 +18,22 @@ import {
   visibilityOptions,
 } from './canonical-shared'
 
-const staffOnly = ({ req }: { req: { user?: { role?: string } | null } }) =>
-  ['owner', 'administrator', 'staff'].includes(String(req.user?.role))
+const identityStoreAccess: NonNullable<CollectionConfig['access']> = {
+  create: () => false,
+  update: () => false,
+  delete: () => false,
+  read: async ({ req }) => (await resolveOperatorGrantContext(req.payload, req.user)).isGlobalOwner,
+}
 
 export const Brands: CollectionConfig = {
   slug: 'brands',
   admin: { useAsTitle: 'name', group: 'Publishing' },
-  access: { create: staffOnly, delete: staffOnly, read: () => true, update: staffOnly },
+  access: {
+    create: operatorSiteCreateAccess,
+    delete: operatorSiteReadAccess,
+    read: () => true,
+    update: operatorSiteUpdateAccess,
+  },
   hooks: { beforeChange: [enforceSiteTenantBoundary([])] },
   fields: [
     { name: 'site', type: 'relationship', relationTo: 'sites', required: true, index: true },
@@ -67,7 +83,13 @@ export const memberAccountStates = [
 export const Members: CollectionConfig = {
   slug: 'members',
   admin: { useAsTitle: 'displayName', group: 'Community' },
-  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
+  access: {
+    ...operatorMemberScopeAccess('id'),
+    create: async ({ req }) =>
+      (await resolveOperatorGrantContext(req.payload, req.user)).isGlobalOwner,
+    delete: async ({ req }) =>
+      (await resolveOperatorGrantContext(req.payload, req.user)).isGlobalOwner,
+  },
   fields: [
     { name: 'displayName', type: 'text', required: true },
     { name: 'email', type: 'email', unique: true, index: true },
@@ -129,7 +151,7 @@ export const MemberSiteRoles: CollectionConfig = {
 export const LinkedIdentities: CollectionConfig = {
   slug: 'linked-identities',
   admin: { useAsTitle: 'externalSubject', group: 'Community', hidden: true },
-  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
+  access: identityStoreAccess,
   fields: [
     { name: 'member', type: 'relationship', relationTo: 'members', required: true, index: true },
     {
@@ -150,7 +172,7 @@ export const LinkedIdentities: CollectionConfig = {
 export const MemberSessions: CollectionConfig = {
   slug: 'member-sessions',
   admin: { useAsTitle: 'id', group: 'Community', hidden: true },
-  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
+  access: identityStoreAccess,
   fields: [
     { name: 'member', type: 'relationship', relationTo: 'members', required: true, index: true },
     { name: 'tokenHash', type: 'text', required: true, unique: true },
@@ -169,7 +191,7 @@ export const MemberSessions: CollectionConfig = {
 export const IdentityTokens: CollectionConfig = {
   slug: 'identity-tokens',
   admin: { useAsTitle: 'purpose', group: 'Community', hidden: true },
-  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
+  access: identityStoreAccess,
   fields: [
     {
       name: 'purpose',
@@ -195,7 +217,7 @@ export const IdentityTokens: CollectionConfig = {
 export const MemberRecoveryCodes: CollectionConfig = {
   slug: 'member-recovery-codes',
   admin: { useAsTitle: 'id', group: 'Community', hidden: true },
-  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
+  access: identityStoreAccess,
   fields: [
     { name: 'member', type: 'relationship', relationTo: 'members', required: true, index: true },
     { name: 'codeHash', type: 'text', required: true, unique: true },
@@ -205,7 +227,7 @@ export const MemberRecoveryCodes: CollectionConfig = {
 export const IdentityAuditEvents: CollectionConfig = {
   slug: 'identity-audit-events',
   admin: { useAsTitle: 'event', group: 'Community', hidden: true },
-  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
+  access: { ...identityStoreAccess, read: operatorMemberScopeAccess().read },
   fields: [
     { name: 'member', type: 'relationship', relationTo: 'members', index: true },
     { name: 'event', type: 'text', required: true, index: true },
@@ -217,7 +239,7 @@ export const Profiles: CollectionConfig = {
   admin: { useAsTitle: 'displayName', group: 'Community' },
   // Public reads use the versioned projection service. Payload REST/GraphQL
   // must never serialize the underlying preferences or field audience map.
-  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
+  access: operatorMemberScopeAccess(),
   fields: [
     {
       name: 'member',
@@ -281,7 +303,12 @@ export const Profiles: CollectionConfig = {
 export const Spaces: CollectionConfig = {
   slug: 'spaces',
   admin: { useAsTitle: 'handle', group: 'Community' },
-  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
+  access: {
+    create: operatorSiteCreateAccess,
+    delete: operatorSiteReadAccess,
+    read: operatorSiteReadAccess,
+    update: operatorSiteUpdateAccess,
+  },
   hooks: { beforeChange: [enforceSiteTenantBoundary([])] },
   fields: [
     { name: 'site', type: 'relationship', relationTo: 'sites', required: true, index: true },
@@ -340,7 +367,12 @@ export const Spaces: CollectionConfig = {
 export const Authors: CollectionConfig = {
   slug: 'authors',
   admin: { useAsTitle: 'displayName', group: 'Publishing' },
-  access: { create: staffOnly, delete: staffOnly, read: () => true, update: staffOnly },
+  access: {
+    create: operatorAllSitesAccess,
+    delete: operatorAllSitesAccess,
+    read: () => true,
+    update: operatorAllSitesAccess,
+  },
   hooks: {
     beforeDelete: [
       async ({ id, req }) => {
@@ -377,7 +409,12 @@ export const Authors: CollectionConfig = {
 export const Publications: CollectionConfig = {
   slug: 'publications',
   admin: { useAsTitle: 'name', group: 'Publishing' },
-  access: { create: staffOnly, delete: staffOnly, read: () => true, update: staffOnly },
+  access: {
+    create: operatorSiteCreateAccess,
+    delete: operatorSiteReadAccess,
+    read: () => true,
+    update: operatorSiteUpdateAccess,
+  },
   hooks: {
     beforeChange: [
       enforceSiteTenantBoundary([
@@ -431,7 +468,12 @@ export const Publications: CollectionConfig = {
 export const Relationships: CollectionConfig = {
   slug: 'relationships',
   admin: { useAsTitle: 'pairKey', group: 'Community' },
-  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
+  access: {
+    create: operatorSiteCreateAccess,
+    delete: operatorSiteReadAccess,
+    read: operatorSiteReadAccess,
+    update: operatorSiteUpdateAccess,
+  },
   hooks: {
     beforeValidate: [
       ({ data }) => {

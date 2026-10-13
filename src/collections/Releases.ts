@@ -1,11 +1,19 @@
+import {
+  operatorSiteCreateAccess,
+  operatorSiteReadAccess,
+  operatorSiteUpdateAccess,
+} from '../modules/operations/operator-grants'
 import type { CollectionConfig } from 'payload'
 import { ownerFields } from './canonical-shared'
-const staffOnly = ({ req }: { req: { user?: { role?: string } | null } }) =>
-  ['owner', 'administrator', 'staff'].includes(String(req.user?.role))
 export const ContentReleases: CollectionConfig = {
   slug: 'content-releases',
   admin: { useAsTitle: 'title', group: 'Publishing' },
-  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
+  access: {
+    create: operatorSiteCreateAccess,
+    delete: operatorSiteReadAccess,
+    read: operatorSiteReadAccess,
+    update: operatorSiteUpdateAccess,
+  },
   fields: [
     ...ownerFields(),
     { name: 'title', type: 'text', required: true },

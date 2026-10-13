@@ -1,7 +1,9 @@
+import {
+  operatorSiteCreateAccess,
+  operatorSiteReadAccess,
+  operatorSiteUpdateAccess,
+} from '../modules/operations/operator-grants'
 import type { CollectionConfig, Field } from 'payload'
-
-const staffOnly = ({ req }: { req: { user?: { role?: string } | null } }) =>
-  ['owner', 'administrator', 'staff'].includes(String(req.user?.role))
 
 const scopeFields = (): Field[] => [
   { name: 'scopeKind', type: 'select', required: true, options: ['site', 'publication', 'space'] },
@@ -27,7 +29,12 @@ const scopeKeyHook = ({ data }: { data?: Record<string, unknown> }) => {
 const base = (slug: string, title: string): CollectionConfig => ({
   slug,
   admin: { useAsTitle: title, group: 'Team' },
-  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
+  access: {
+    create: operatorSiteCreateAccess,
+    delete: operatorSiteReadAccess,
+    read: operatorSiteReadAccess,
+    update: operatorSiteUpdateAccess,
+  },
   hooks: { beforeValidate: [scopeKeyHook] },
   fields: [],
 })

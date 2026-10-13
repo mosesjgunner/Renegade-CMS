@@ -106,7 +106,7 @@ export default async function CapabilityCenter({ initPageResult }: AdminViewServ
     'networking.federation': config.networking.enabled,
   }
   const capabilities = new CapabilityLifecycleService({
-    profile: 'Standard',
+    profile: config.deploymentProfile,
     coreVersion: config.version,
     schemaVersion: '1.0.0',
     evidence: Object.fromEntries(
