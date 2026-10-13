@@ -972,7 +972,10 @@ export async function finalizeVerifiedOrder(
     })
 
     for (const plannedPod of plan.providerJobs) {
-      if (!recipientAddress) continue
+      if (!recipientAddress)
+        throw new Error(
+          'Shipping address is missing. Fulfillment requires operator reconciliation.',
+        )
       const podJob = createPodJobAfterPaidAcceptance({
         plan,
         packageIndex: plannedPod.packageIndex,
@@ -1012,6 +1015,10 @@ export async function finalizeVerifiedOrder(
     }
 
     for (const plannedManual of plan.manualPackages) {
+      if (!recipientAddress)
+        throw new Error(
+          'Shipping address is missing. Fulfillment requires operator reconciliation.',
+        )
       const existingManual = await db.find({
         collection: 'manual-fulfillment-packages',
         where: {
@@ -1040,13 +1047,7 @@ export async function finalizeVerifiedOrder(
             quantity: it.quantity,
             artworkSpecs: [],
           })),
-          permissionedAddressManifest: recipientAddress ?? {
-            name: String(order.partySnapshot?.name ?? 'Customer'),
-            address1: '',
-            city: '',
-            postalCode: '',
-            country: String(order.addressSnapshot?.shipping?.country ?? 'US'),
-          },
+          permissionedAddressManifest: recipientAddress,
         })
         await db.create({
           collection: 'manual-fulfillment-packages',
