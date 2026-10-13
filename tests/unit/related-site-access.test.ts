@@ -8,14 +8,12 @@ function request() {
   const count = vi.fn().mockResolvedValue({ totalDocs: 1 })
   const payload = {
     count,
-    find: vi
-      .fn()
-      .mockImplementation(async ({ collection }) => ({
-        docs:
-          collection === 'member-site-roles'
-            ? [{ site: 'site-a', role: 'community-manager' }]
-            : [{ id: 'site-a' }, { id: 'site-b' }],
-      })),
+    find: vi.fn().mockImplementation(async ({ collection }) => ({
+      docs:
+        collection === 'member-site-roles'
+          ? [{ site: 'site-a', role: 'community-manager' }]
+          : [{ id: 'site-a' }, { id: 'site-b' }],
+    })),
   }
   return { payload, user: { id: 'operator-a', role: 'staff', member: 'member-a' } } as any
 }
