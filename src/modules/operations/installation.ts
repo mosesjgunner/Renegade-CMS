@@ -318,6 +318,8 @@ export async function completeInstallation(
     expectedOrigin: config.appUrl,
     expectedRPID: origin.hostname,
     requireUserVerification: true,
+  }).catch(() => {
+    throw new InstallationError('INSTALLATION_INVALID', 'Passkey enrollment could not be verified.')
   })
   if (!verification.verified) {
     throw new InstallationError('INSTALLATION_INVALID', 'Passkey enrollment could not be verified.')
@@ -607,6 +609,11 @@ export async function completePasskeyAuthentication(
       expectedOrigin: config.appUrl,
       expectedRPID: origin.hostname,
       requireUserVerification: true,
+    }).catch(() => {
+      throw new InstallationError(
+        'INSTALLATION_INVALID',
+        'Passkey enrollment could not be verified.',
+      )
     })
     if (!verification.verified || !verification.registrationInfo) {
       throw new InstallationError(
@@ -683,6 +690,8 @@ export async function completePasskeyAuthentication(
       transports: [],
     },
     requireUserVerification: true,
+  }).catch(() => {
+    throw new InstallationError('INSTALLATION_INVALID', 'Passkey sign-in could not be verified.')
   })
   if (!verification.verified) {
     throw new InstallationError('INSTALLATION_INVALID', 'Passkey sign-in could not be verified.')
@@ -860,6 +869,8 @@ export async function completeAdditionalPasskeyRegistration(
     expectedOrigin: config.appUrl,
     expectedRPID: new URL(config.appUrl).hostname,
     requireUserVerification: true,
+  }).catch(() => {
+    throw new InstallationError('INSTALLATION_INVALID', 'Passkey enrollment could not be verified.')
   })
   if (!verification.verified)
     throw new InstallationError('INSTALLATION_INVALID', 'Passkey enrollment could not be verified.')

@@ -468,6 +468,11 @@ export async function completeStaffPasskeyEnrollment(
     expectedOrigin: config.appUrl,
     expectedRPID: origin.hostname,
     requireUserVerification: true,
+  }).catch(() => {
+    throw new StaffEnrollmentError(
+      'VERIFICATION_FAILED',
+      'Passkey enrollment could not be verified.',
+    )
   })
 
   if (!verification.verified || !verification.registrationInfo) {
