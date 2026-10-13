@@ -1,5 +1,33 @@
 import type { Access, CollectionSlug, Payload } from 'payload'
 
+/** Physical identity is changed only by the supported upload/replacement service. */
+export function preserveRecordRelationshipsAccess(
+  collection: CollectionSlug,
+  fields: readonly string[],
+  update: Access,
+): Access {
+  return async (args) => {
+    const allowed = await update(args)
+    if (!allowed) return false
+    const supplied = fields.filter(
+      (field) => args.data && Object.prototype.hasOwnProperty.call(args.data, field),
+    )
+    if (!supplied.length) return allowed
+    if (!args.id) return false
+    const current = await args.req.payload.findByID({
+      collection,
+      id: args.id,
+      depth: 0,
+      overrideAccess: true,
+    })
+    for (const field of supplied) {
+      if (asId(args.data?.[field]) !== asId((current as unknown as Record<string, unknown>)[field]))
+        return false
+    }
+    return allowed
+  }
+}
+
 /** Child records inherit authority from their persisted parent, never a caller's site hint. */
 export function operatorRelatedSiteAccess(sitePath: string, parentCollection: CollectionSlug) {
   const [relation, ...parentPath] = sitePath.split('.')

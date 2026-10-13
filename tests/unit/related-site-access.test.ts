@@ -2,6 +2,7 @@ import { describe, expect, it, vi } from 'vitest'
 import {
   operatorRelatedSiteAccess,
   checkOperatorRecordAccess,
+  preserveRecordRelationshipsAccess,
 } from '@/modules/operations/operator-grants'
 
 function request() {
@@ -19,6 +20,24 @@ function request() {
 }
 
 describe('persisted parent site authority', () => {
+  it('rejects a changed physical relationship and allows unchanged native form values', async () => {
+    const req = request()
+    req.payload.findByID = vi.fn().mockResolvedValue({ site: 'site-a', originalBlob: 'blob-a' })
+    const access = preserveRecordRelationshipsAccess(
+      'media-assets',
+      ['site', 'originalBlob'],
+      async () => true,
+    )
+    expect(await access({ req, id: 'asset-a', data: { originalBlob: 'foreign-blob' } })).toBe(false)
+    expect(await access({ req, id: 'asset-a', data: { site: 'site-b' } })).toBe(false)
+    expect(
+      await access({
+        req,
+        id: 'asset-a',
+        data: { originalBlob: { id: 'blob-a' }, site: 'site-a' },
+      }),
+    ).toBe(true)
+  })
   it('filters child reads through the actual parent relationship', async () => {
     const access = operatorRelatedSiteAccess('discussion.site', 'discussions')
     expect(await access.read({ req: request() })).toEqual({ 'discussion.site': { in: ['site-a'] } })
