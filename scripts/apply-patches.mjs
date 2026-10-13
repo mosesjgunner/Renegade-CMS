@@ -1,6 +1,25 @@
 import { readFileSync, writeFileSync, existsSync } from 'node:fs'
 import { resolve } from 'node:path'
 
+// Payload's collection REST endpoint respects locks by default, but its global
+// REST endpoint leaves overrideLock undefined (the operation defaults to true).
+// Keep ordinary global writes consistent with the editor's active lock.
+const globalUpdatePath = resolve('node_modules/payload/dist/globals/endpoints/update.js')
+if (existsSync(globalUpdatePath)) {
+  const marker = '// RC1-GLOBAL-REST-LOCK-PATCH'
+  const content = readFileSync(globalUpdatePath, 'utf8')
+  if (!content.includes(marker)) {
+    const target = '        globalConfig,\n'
+    if (!content.includes(target)) throw new Error('Payload global REST lock patch target changed.')
+    writeFileSync(
+      globalUpdatePath,
+      `${marker}\n${content.replace(target, `${target}        overrideLock: false,\n`)}`,
+      'utf8',
+    )
+    console.log('Applied ordinary global REST document-lock enforcement patch.')
+  }
+}
+
 const getIsLockedPath = resolve('node_modules/@payloadcms/next/dist/views/Document/getIsLocked.js')
 
 if (existsSync(getIsLockedPath)) {
