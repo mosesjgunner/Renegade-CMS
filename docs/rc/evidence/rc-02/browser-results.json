@@ -4,6 +4,7 @@
       "C:\\Program Files\\nodejs\\node.exe",
       "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\node_modules\\@playwright\\test\\cli.js",
       "test",
+      "tests/rc02/site-build.spec.ts",
       "tests/rc02/staff-invitation.spec.ts",
       "--config=playwright.rc02.config.ts"
     ],
@@ -65,8 +66,8 @@
       "ignoreHTTPSErrors": true,
       "timeout": 120000,
       "env": {
-        "DATABASE_URL": "postgresql://renegade_rc02_1791086734920_release_acceptance:c8483251d22084b240a1011fd43f3cb58986d81543f72b3793aee994c0026d00@localhost:5432/renegade_rc02_1791086734920_release_acceptance",
-        "PAYLOAD_SECRET": "53455fab81015b6720760631ffc1e32f5199c85a05c575292e22cb653117deec7e2f01f91c86c3b5d8ae0ee1dc47676a",
+        "DATABASE_URL": "postgresql://renegade_rc02_1791848788612_release_acceptance:08a567894853f0f95e8ffd4b279a7dbdfb206b3b3c7ebb95780afebf6caf4088@localhost:5432/renegade_rc02_1791848788612_release_acceptance",
+        "PAYLOAD_SECRET": "37fb974f0f0480fa2a987a199904f4d587a98fb21a752cd2c65953b29efb515fed72a199266a06bcdb216145b783a491",
         "APP_URL": "https://dispatch.rc02.test:3129",
         "PORT": "3128",
         "HOSTNAME": "127.0.0.1",
@@ -80,7 +81,7 @@
         "ENABLE_TEST_ROUTES": "false",
         "RENEGADE_NEXT_DIST_DIR": ".next",
         "DISABLE_PAYLOAD_HMR": "true",
-        "MEDIA_DIR": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\scratch\\renegade_rc02_1791086734920_release_acceptance-media",
+        "MEDIA_DIR": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\scratch\\renegade_rc02_1791848788612_release_acceptance-media",
         "NODE_EXTRA_CA_CERTS": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\scratch\\rc02-tls\\cert.pem",
         "EMAIL_MODE": "disabled",
         "NODE_OPTIONS": "--max-old-space-size=768 --import=file:///C:/Projects/RENEGADE%20CMS/Renegade-CMS/src/scripts/rc02-network.mjs"
@@ -89,13 +90,13 @@
   },
   "suites": [
     {
-      "title": "staff-invitation.spec.ts",
-      "file": "staff-invitation.spec.ts",
+      "title": "site-build.spec.ts",
+      "file": "site-build.spec.ts",
       "column": 0,
       "line": 0,
       "specs": [
         {
-          "title": "Owner invites staff through Security, staff enrolls and logs in with WebAuthn",
+          "title": "RC-02: ordinary operator builds Renegade Party Dispatch from an empty install",
           "ok": true,
           "tags": [],
           "tests": [
@@ -110,18 +111,76 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 15994,
+                  "duration": 80471,
                   "errors": [],
-                  "stdout": [],
+                  "stdout": [
+                    {
+                      "buffer": "WzE5OjA1OjQ4XSAbWzMzbVdBUk4bWzM5bTogG1szNm1ObyBlbWFpbCBhZGFwdGVyIHByb3ZpZGVkLiBFbWFpbCB3aWxsIGJlIHdyaXR0ZW4gdG8gY29uc29sZS4gTW9yZSBpbmZvIGF0IGh0dHBzOi8vcGF5bG9hZGNtcy5jb20vZG9jcy9lbWFpbC9vdmVydmlldy4bWzM5bQo="
+                    }
+                  ],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-10-12T22:43:56.639Z",
+                  "steps": [
+                    {
+                      "title": "Owner enrollment and blank Standard onboarding",
+                      "duration": 7016
+                    },
+                    {
+                      "title": "Site settings through the normal admin form",
+                      "duration": 4984
+                    },
+                    {
+                      "title": "Activate a theme and configure supported tokens in Theme Studio",
+                      "duration": 4055
+                    },
+                    {
+                      "title": "Upload original image and metadata through the normal media API",
+                      "duration": 6391
+                    },
+                    {
+                      "title": "Create coherent editorial records through authenticated product REST",
+                      "duration": 13980
+                    },
+                    {
+                      "title": "Build homepage using Puck and publish a reusable composition",
+                      "duration": 7330
+                    },
+                    {
+                      "title": "Reusable templates, patterns and published global regions",
+                      "duration": 2384
+                    },
+                    {
+                      "title": "Media usage tracking and nondestructive replacement",
+                      "duration": 1402
+                    },
+                    {
+                      "title": "Theme preview and switching preserve canonical editorial records",
+                      "duration": 7240
+                    },
+                    {
+                      "title": "Anonymous public site, metadata, discovery and responsive media",
+                      "duration": 6173
+                    },
+                    {
+                      "title": "Published edit, revision history and exact slug redirect",
+                      "duration": 2413
+                    },
+                    {
+                      "title": "Rendered Quality performs real HTTP checks against this site",
+                      "duration": 4295
+                    },
+                    {
+                      "title": "Actual web and worker process restart, then fresh anonymous browse",
+                      "duration": 10563
+                    }
+                  ],
+                  "startTime": "2026-10-13T00:05:47.718Z",
                   "annotations": [],
                   "attachments": [
                     {
                       "name": "trace",
                       "contentType": "application/zip",
-                      "path": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\test-results\\rc02\\staff-invitation-Owner-inv-9a903-s-and-logs-in-with-WebAuthn\\trace.zip"
+                      "path": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\test-results\\rc02\\site-build-RC-02-ordinary--62930-patch-from-an-empty-install\\trace.zip"
                     }
                   ]
                 }
@@ -129,19 +188,276 @@
               "status": "expected"
             }
           ],
-          "id": "1ef1e52a1ecd203e5f48-3c7f3bc514d4a1ae27d6",
-          "file": "staff-invitation.spec.ts",
-          "line": 3,
+          "id": "ddf9e0cd01877a1bb162-0ce1cbdf71d8ad8c68f1",
+          "file": "site-build.spec.ts",
+          "line": 9,
           "column": 1
+        }
+      ]
+    },
+    {
+      "title": "staff-invitation.spec.ts",
+      "file": "staff-invitation.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Staff and Administrator Identity, WebAuthn & Document Lock Journey",
+          "file": "staff-invitation.spec.ts",
+          "line": 5,
+          "column": 15,
+          "specs": [
+            {
+              "title": "1. Owner invites staff through Security, staff enrolls and logs in with WebAuthn",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 600000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 15345,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-13T00:07:10.183Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\test-results\\rc02\\staff-invitation-Staff-and-9c706-s-and-logs-in-with-WebAuthn\\trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1ef1e52a1ecd203e5f48-a73f21657289acd0c7fd",
+              "file": "staff-invitation.spec.ts",
+              "line": 9,
+              "column": 3
+            },
+            {
+              "title": "2. Administrator invitation, passkey enrollment and privilege bounds",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 600000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 4776,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-13T00:07:25.753Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\test-results\\rc02\\staff-invitation-Staff-and-4c5ab-llment-and-privilege-bounds\\trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1ef1e52a1ecd203e5f48-ee69840225dbd888e515",
+              "file": "staff-invitation.spec.ts",
+              "line": 108,
+              "column": 3
+            },
+            {
+              "title": "3. Identity negatives: expired invitations, wrong WebAuthn origin/challenge",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 600000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 26,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-13T00:07:30.688Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\test-results\\rc02\\staff-invitation-Staff-and-bb3c3-g-WebAuthn-origin-challenge\\trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1ef1e52a1ecd203e5f48-074c90d9b7cb91ad4810",
+              "file": "staff-invitation.spec.ts",
+              "line": 171,
+              "column": 3
+            },
+            {
+              "title": "4. Session revocation and role protection",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 600000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 2478,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-13T00:07:30.728Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\test-results\\rc02\\staff-invitation-Staff-and-f6943-ocation-and-role-protection\\trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1ef1e52a1ecd203e5f48-ca139be7980978cd7758",
+              "file": "staff-invitation.spec.ts",
+              "line": 202,
+              "column": 3
+            },
+            {
+              "title": "5. Supported offline owner recovery CLI rotates credentials and revokes sessions",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 600000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 10934,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-13T00:07:33.253Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\test-results\\rc02\\staff-invitation-Staff-and-f5efc-ntials-and-revokes-sessions\\trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1ef1e52a1ecd203e5f48-e94c12250bf8c376a922",
+              "file": "staff-invitation.spec.ts",
+              "line": 225,
+              "column": 3
+            },
+            {
+              "title": "6. Real browser document lock acquisition, conflict, and release",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 600000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 5568,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-13T00:07:44.269Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\test-results\\rc02\\staff-invitation-Staff-and-9c047-sition-conflict-and-release\\trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "1ef1e52a1ecd203e5f48-3219a1bfb15a97697289",
+              "file": "staff-invitation.spec.ts",
+              "line": 272,
+              "column": 3
+            }
+          ]
         }
       ]
     }
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-10-12T22:43:53.521Z",
-    "duration": 19879.409,
-    "expected": 1,
+    "startTime": "2026-10-13T00:05:36.785Z",
+    "duration": 133763.058,
+    "expected": 7,
     "skipped": 0,
     "unexpected": 0,
     "flaky": 0

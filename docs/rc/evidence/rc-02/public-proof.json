@@ -59,8 +59,8 @@
           {
             "@type": "ImageObject",
             "@id": "https://dispatch.rc02.test:3129#primaryimage",
-            "url": "https://dispatch.rc02.test:3129/media/895d5b7d-09c9-4b4c-8054-903279c279bd",
-            "contentUrl": "https://dispatch.rc02.test:3129/media/895d5b7d-09c9-4b4c-8054-903279c279bd",
+            "url": "https://dispatch.rc02.test:3129/media/9a638d55-f68c-45b0-8b80-78da2495dc60",
+            "contentUrl": "https://dispatch.rc02.test:3129/media/9a638d55-f68c-45b0-8b80-78da2495dc60",
             "caption": "Renegade Party Dispatch"
           }
         ]
@@ -89,8 +89,8 @@
             },
             "description": "Read independent civic reporting from Renegade Party Dispatch, with primary sources, clear context and corrections.",
             "inLanguage": "en-US",
-            "datePublished": "2026-10-12T22:41:56.771Z",
-            "dateModified": "2026-10-12T22:41:56.808Z",
+            "datePublished": "2026-10-13T00:06:23.306Z",
+            "dateModified": "2026-10-13T00:06:23.352Z",
             "primaryImageOfPage": {
               "@id": "https://dispatch.rc02.test:3129/about#primaryimage"
             }
@@ -133,8 +133,8 @@
           {
             "@type": "ImageObject",
             "@id": "https://dispatch.rc02.test:3129/about#primaryimage",
-            "url": "https://dispatch.rc02.test:3129/media/895d5b7d-09c9-4b4c-8054-903279c279bd",
-            "contentUrl": "https://dispatch.rc02.test:3129/media/895d5b7d-09c9-4b4c-8054-903279c279bd",
+            "url": "https://dispatch.rc02.test:3129/media/9a638d55-f68c-45b0-8b80-78da2495dc60",
+            "contentUrl": "https://dispatch.rc02.test:3129/media/9a638d55-f68c-45b0-8b80-78da2495dc60",
             "caption": "Our editorial charter | Dispatch"
           }
         ]
@@ -162,8 +162,8 @@
               "@id": "https://dispatch.rc02.test:3129/#identity"
             },
             "description": "Read independent civic reporting from Renegade Party Dispatch, with primary sources, clear context and corrections.",
-            "datePublished": "2026-10-12T22:41:57.512Z",
-            "dateModified": "2026-10-12T22:42:12.947Z",
+            "datePublished": "2026-10-13T00:06:24.073Z",
+            "dateModified": "2026-10-13T00:06:35.614Z",
             "author": {
               "@id": "https://dispatch.rc02.test:3129/authors/dispatch-editorial-board#person"
             },
@@ -186,8 +186,8 @@
             },
             "description": "Read independent civic reporting from Renegade Party Dispatch, with primary sources, clear context and corrections.",
             "inLanguage": "en-US",
-            "datePublished": "2026-10-12T22:41:57.512Z",
-            "dateModified": "2026-10-12T22:42:12.947Z",
+            "datePublished": "2026-10-13T00:06:24.073Z",
+            "dateModified": "2026-10-13T00:06:35.614Z",
             "primaryImageOfPage": {
               "@id": "https://dispatch.rc02.test:3129/articles/republic-in-the-open#primaryimage"
             },
@@ -244,8 +244,8 @@
           {
             "@type": "ImageObject",
             "@id": "https://dispatch.rc02.test:3129/articles/republic-in-the-open#primaryimage",
-            "url": "https://dispatch.rc02.test:3129/media/895d5b7d-09c9-4b4c-8054-903279c279bd",
-            "contentUrl": "https://dispatch.rc02.test:3129/media/895d5b7d-09c9-4b4c-8054-903279c279bd",
+            "url": "https://dispatch.rc02.test:3129/media/9a638d55-f68c-45b0-8b80-78da2495dc60",
+            "contentUrl": "https://dispatch.rc02.test:3129/media/9a638d55-f68c-45b0-8b80-78da2495dc60",
             "caption": "A republic built in the open | Dispatch"
           }
         ]
@@ -273,8 +273,8 @@
               "@id": "https://dispatch.rc02.test:3129/#identity"
             },
             "description": "Read independent civic reporting from Renegade Party Dispatch, with primary sources, clear context and corrections.",
-            "datePublished": "2026-10-12T22:41:58.238Z",
-            "dateModified": "2026-10-12T22:41:58.274Z",
+            "datePublished": "2026-10-13T00:06:24.826Z",
+            "dateModified": "2026-10-13T00:06:24.867Z",
             "author": {
               "@id": "https://dispatch.rc02.test:3129/authors/dispatch-editorial-board#person"
             },
@@ -297,8 +297,8 @@
             },
             "description": "Read independent civic reporting from Renegade Party Dispatch, with primary sources, clear context and corrections.",
             "inLanguage": "en-US",
-            "datePublished": "2026-10-12T22:41:58.238Z",
-            "dateModified": "2026-10-12T22:41:58.274Z",
+            "datePublished": "2026-10-13T00:06:24.826Z",
+            "dateModified": "2026-10-13T00:06:24.867Z",
             "primaryImageOfPage": {
               "@id": "https://dispatch.rc02.test:3129/articles/neighborhood-assemblies#primaryimage"
             },
@@ -355,8 +355,8 @@
           {
             "@type": "ImageObject",
             "@id": "https://dispatch.rc02.test:3129/articles/neighborhood-assemblies#primaryimage",
-            "url": "https://dispatch.rc02.test:3129/media/895d5b7d-09c9-4b4c-8054-903279c279bd",
-            "contentUrl": "https://dispatch.rc02.test:3129/media/895d5b7d-09c9-4b4c-8054-903279c279bd",
+            "url": "https://dispatch.rc02.test:3129/media/9a638d55-f68c-45b0-8b80-78da2495dc60",
+            "contentUrl": "https://dispatch.rc02.test:3129/media/9a638d55-f68c-45b0-8b80-78da2495dc60",
             "caption": "Neighborhood assemblies in practice | Dispatch"
           }
         ]
@@ -385,8 +385,8 @@
             },
             "description": "A public meeting on transparent local government.",
             "inLanguage": "en-US",
-            "datePublished": "2026-10-12T22:41:58.479Z",
-            "dateModified": "2026-10-12T22:41:58.479Z"
+            "datePublished": "2026-10-13T00:06:25.080Z",
+            "dateModified": "2026-10-13T00:06:25.080Z"
           },
           {
             "@type": "BreadcrumbList",
@@ -659,8 +659,8 @@
             },
             "description": "Independent civic reporting, local organizing and public accountability.",
             "inLanguage": "en-US",
-            "datePublished": "2026-10-12T22:42:11.290Z",
-            "dateModified": "2026-10-12T22:42:11.609Z"
+            "datePublished": "2026-10-13T00:06:34.019Z",
+            "dateModified": "2026-10-13T00:06:34.322Z"
           },
           {
             "@type": "BreadcrumbList",
@@ -720,8 +720,8 @@
               "@id": "https://dispatch.rc02.test:3129/#identity"
             },
             "description": "Read independent civic reporting from Renegade Party Dispatch, with primary sources, clear context and corrections.",
-            "datePublished": "2026-10-12T22:41:57.512Z",
-            "dateModified": "2026-10-12T22:42:12.947Z",
+            "datePublished": "2026-10-13T00:06:24.073Z",
+            "dateModified": "2026-10-13T00:06:35.614Z",
             "author": {
               "@id": "https://dispatch.rc02.test:3129/authors/dispatch-editorial-board#person"
             },
@@ -744,8 +744,8 @@
             },
             "description": "Read independent civic reporting from Renegade Party Dispatch, with primary sources, clear context and corrections.",
             "inLanguage": "en-US",
-            "datePublished": "2026-10-12T22:41:57.512Z",
-            "dateModified": "2026-10-12T22:42:12.947Z",
+            "datePublished": "2026-10-13T00:06:24.073Z",
+            "dateModified": "2026-10-13T00:06:35.614Z",
             "primaryImageOfPage": {
               "@id": "https://dispatch.rc02.test:3129/articles/republic-in-the-open#primaryimage"
             },
@@ -802,8 +802,8 @@
           {
             "@type": "ImageObject",
             "@id": "https://dispatch.rc02.test:3129/articles/republic-in-the-open#primaryimage",
-            "url": "https://dispatch.rc02.test:3129/media/895d5b7d-09c9-4b4c-8054-903279c279bd",
-            "contentUrl": "https://dispatch.rc02.test:3129/media/895d5b7d-09c9-4b4c-8054-903279c279bd",
+            "url": "https://dispatch.rc02.test:3129/media/9a638d55-f68c-45b0-8b80-78da2495dc60",
+            "contentUrl": "https://dispatch.rc02.test:3129/media/9a638d55-f68c-45b0-8b80-78da2495dc60",
             "caption": "A republic built in the open | Dispatch"
           }
         ]
@@ -812,7 +812,7 @@
   },
   "derivatives": {
     "original": {
-      "id": "895d5b7d-09c9-4b4c-8054-903279c279bd",
+      "id": "9a638d55-f68c-45b0-8b80-78da2495dc60",
       "title": "Liberty and civic assembly",
       "originalFilename": "liberty-banner.png",
       "mimeType": "image/png",
@@ -838,12 +838,12 @@
         "y": null
       },
       "cropSettings": null,
-      "url": "/media/895d5b7d-09c9-4b4c-8054-903279c279bd",
+      "url": "/media/9a638d55-f68c-45b0-8b80-78da2495dc60",
       "canDownload": true
     },
     "variants": [
       {
-        "id": "57447950-0395-452d-a3e0-84cf909d7762",
+        "id": "28e3fe71-acb0-4dc6-b5c6-94e3e7dfa36c",
         "recipeKey": "wide",
         "label": "Wide (16:9) (JPEG)",
         "format": "jpeg",
@@ -854,10 +854,10 @@
         "percentSaved": 53,
         "processingState": "ready",
         "errorMessage": null,
-        "url": "/media/895d5b7d-09c9-4b4c-8054-903279c279bd?variant=wide&format=jpeg&v=1"
+        "url": "/media/9a638d55-f68c-45b0-8b80-78da2495dc60?variant=wide&format=jpeg&v=1"
       },
       {
-        "id": "3800f320-65da-4a68-b9c6-dc1632c3cfe5",
+        "id": "d4889e5f-ca45-4104-a398-143cd9dcbcaa",
         "recipeKey": "wide",
         "label": "Wide (16:9) (AVIF)",
         "format": "avif",
@@ -868,10 +868,10 @@
         "percentSaved": 68,
         "processingState": "ready",
         "errorMessage": null,
-        "url": "/media/895d5b7d-09c9-4b4c-8054-903279c279bd?variant=wide&format=avif&v=1"
+        "url": "/media/9a638d55-f68c-45b0-8b80-78da2495dc60?variant=wide&format=avif&v=1"
       },
       {
-        "id": "97a3d90b-61df-44a2-94d1-960bc0b3759b",
+        "id": "6576a626-3196-42c4-97f8-2959820b5bcd",
         "recipeKey": "wide",
         "label": "Wide (16:9) (WEBP)",
         "format": "webp",
@@ -882,10 +882,10 @@
         "percentSaved": 70,
         "processingState": "ready",
         "errorMessage": null,
-        "url": "/media/895d5b7d-09c9-4b4c-8054-903279c279bd?variant=wide&format=webp&v=1"
+        "url": "/media/9a638d55-f68c-45b0-8b80-78da2495dc60?variant=wide&format=webp&v=1"
       },
       {
-        "id": "87fb8e49-ed74-4154-b019-8b73c48b3765",
+        "id": "a2f92ade-27c6-4f09-a3aa-f9660be53fbf",
         "recipeKey": "thumbnail",
         "label": "Thumbnail (JPEG)",
         "format": "jpeg",
@@ -896,10 +896,10 @@
         "percentSaved": 87,
         "processingState": "ready",
         "errorMessage": null,
-        "url": "/media/895d5b7d-09c9-4b4c-8054-903279c279bd?variant=thumbnail&format=jpeg&v=1"
+        "url": "/media/9a638d55-f68c-45b0-8b80-78da2495dc60?variant=thumbnail&format=jpeg&v=1"
       },
       {
-        "id": "41fb0a31-5803-41bb-afe4-78ebe82b8645",
+        "id": "933630ba-70bb-4ef9-a02f-d8cf0ea17ed6",
         "recipeKey": "thumbnail",
         "label": "Thumbnail (AVIF)",
         "format": "avif",
@@ -910,10 +910,10 @@
         "percentSaved": 88,
         "processingState": "ready",
         "errorMessage": null,
-        "url": "/media/895d5b7d-09c9-4b4c-8054-903279c279bd?variant=thumbnail&format=avif&v=1"
+        "url": "/media/9a638d55-f68c-45b0-8b80-78da2495dc60?variant=thumbnail&format=avif&v=1"
       },
       {
-        "id": "4ccc571e-df07-4efd-873a-f91ae565caf6",
+        "id": "5b70c6ad-d1fd-45de-83ba-941af4ef8395",
         "recipeKey": "thumbnail",
         "label": "Thumbnail (WEBP)",
         "format": "webp",
@@ -924,10 +924,10 @@
         "percentSaved": 90,
         "processingState": "ready",
         "errorMessage": null,
-        "url": "/media/895d5b7d-09c9-4b4c-8054-903279c279bd?variant=thumbnail&format=webp&v=1"
+        "url": "/media/9a638d55-f68c-45b0-8b80-78da2495dc60?variant=thumbnail&format=webp&v=1"
       },
       {
-        "id": "be7acb8c-35bd-459c-8437-491dfa5ed271",
+        "id": "c9d80248-0ccb-43fe-aea6-ddf9dad1d588",
         "recipeKey": "square",
         "label": "Square (1:1) (JPEG)",
         "format": "jpeg",
@@ -938,10 +938,10 @@
         "percentSaved": 64,
         "processingState": "ready",
         "errorMessage": null,
-        "url": "/media/895d5b7d-09c9-4b4c-8054-903279c279bd?variant=square&format=jpeg&v=1"
+        "url": "/media/9a638d55-f68c-45b0-8b80-78da2495dc60?variant=square&format=jpeg&v=1"
       },
       {
-        "id": "3d38fafa-6af3-4b9d-8dad-927d58a9d41a",
+        "id": "c3dc26ca-d8c0-41f7-a9e3-5b243db8b9e6",
         "recipeKey": "square",
         "label": "Square (1:1) (AVIF)",
         "format": "avif",
@@ -952,10 +952,10 @@
         "percentSaved": 76,
         "processingState": "ready",
         "errorMessage": null,
-        "url": "/media/895d5b7d-09c9-4b4c-8054-903279c279bd?variant=square&format=avif&v=1"
+        "url": "/media/9a638d55-f68c-45b0-8b80-78da2495dc60?variant=square&format=avif&v=1"
       },
       {
-        "id": "c0c86254-a445-4e89-8656-c5a577111466",
+        "id": "c26368bb-f719-4d28-9c23-7dc06adeaed3",
         "recipeKey": "square",
         "label": "Square (1:1) (WEBP)",
         "format": "webp",
@@ -966,10 +966,10 @@
         "percentSaved": 77,
         "processingState": "ready",
         "errorMessage": null,
-        "url": "/media/895d5b7d-09c9-4b4c-8054-903279c279bd?variant=square&format=webp&v=1"
+        "url": "/media/9a638d55-f68c-45b0-8b80-78da2495dc60?variant=square&format=webp&v=1"
       },
       {
-        "id": "44d65848-788d-46bc-986e-fdaa12a2b73f",
+        "id": "473c6904-439b-45ea-8f02-56928e17884c",
         "recipeKey": "portrait",
         "label": "Portrait (3:4) (JPEG)",
         "format": "jpeg",
@@ -980,10 +980,10 @@
         "percentSaved": 62,
         "processingState": "ready",
         "errorMessage": null,
-        "url": "/media/895d5b7d-09c9-4b4c-8054-903279c279bd?variant=portrait&format=jpeg&v=1"
+        "url": "/media/9a638d55-f68c-45b0-8b80-78da2495dc60?variant=portrait&format=jpeg&v=1"
       },
       {
-        "id": "68dbf88a-3793-4911-9b0a-d69d6986055c",
+        "id": "dd71c359-80fc-4912-826b-ca159642ccd3",
         "recipeKey": "portrait",
         "label": "Portrait (3:4) (AVIF)",
         "format": "avif",
@@ -994,10 +994,10 @@
         "percentSaved": 76,
         "processingState": "ready",
         "errorMessage": null,
-        "url": "/media/895d5b7d-09c9-4b4c-8054-903279c279bd?variant=portrait&format=avif&v=1"
+        "url": "/media/9a638d55-f68c-45b0-8b80-78da2495dc60?variant=portrait&format=avif&v=1"
       },
       {
-        "id": "ef259c7f-ca35-4f96-90a7-d1f5a989c3f2",
+        "id": "51690df8-d7ba-4b9b-b8ba-5a4ba9eb7f6e",
         "recipeKey": "portrait",
         "label": "Portrait (3:4) (WEBP)",
         "format": "webp",
@@ -1008,10 +1008,10 @@
         "percentSaved": 78,
         "processingState": "ready",
         "errorMessage": null,
-        "url": "/media/895d5b7d-09c9-4b4c-8054-903279c279bd?variant=portrait&format=webp&v=1"
+        "url": "/media/9a638d55-f68c-45b0-8b80-78da2495dc60?variant=portrait&format=webp&v=1"
       },
       {
-        "id": "5447ac58-1727-4a87-91db-b2c129de257b",
+        "id": "c78abdd4-d1b6-4dd7-9b3c-0c4837748302",
         "recipeKey": "og",
         "label": "Open Graph & Social (WEBP)",
         "format": "webp",
@@ -1022,10 +1022,10 @@
         "percentSaved": 70,
         "processingState": "ready",
         "errorMessage": null,
-        "url": "/media/895d5b7d-09c9-4b4c-8054-903279c279bd?variant=og&format=webp&v=1"
+        "url": "/media/9a638d55-f68c-45b0-8b80-78da2495dc60?variant=og&format=webp&v=1"
       },
       {
-        "id": "e63e9d31-164e-478f-a794-531aca1cf3aa",
+        "id": "7c9212a4-45c0-4e92-a74c-61e548ce8030",
         "recipeKey": "og",
         "label": "Open Graph & Social (JPEG)",
         "format": "jpeg",
@@ -1036,10 +1036,10 @@
         "percentSaved": 55,
         "processingState": "ready",
         "errorMessage": null,
-        "url": "/media/895d5b7d-09c9-4b4c-8054-903279c279bd?variant=og&format=jpeg&v=1"
+        "url": "/media/9a638d55-f68c-45b0-8b80-78da2495dc60?variant=og&format=jpeg&v=1"
       },
       {
-        "id": "05c49625-474c-4b23-8c47-194f22bd39fb",
+        "id": "a3e26f17-53b0-4339-b489-8b91eaef0eff",
         "recipeKey": "inline",
         "label": "Inline Content (JPEG)",
         "format": "jpeg",
@@ -1050,10 +1050,10 @@
         "percentSaved": 72,
         "processingState": "ready",
         "errorMessage": null,
-        "url": "/media/895d5b7d-09c9-4b4c-8054-903279c279bd?variant=inline&format=jpeg&v=1"
+        "url": "/media/9a638d55-f68c-45b0-8b80-78da2495dc60?variant=inline&format=jpeg&v=1"
       },
       {
-        "id": "c4fa9d76-493e-45d3-a455-018bcaede83d",
+        "id": "8eec398d-fb0c-44a5-adfa-041d5e8af59a",
         "recipeKey": "inline",
         "label": "Inline Content (AVIF)",
         "format": "avif",
@@ -1064,10 +1064,10 @@
         "percentSaved": 77,
         "processingState": "ready",
         "errorMessage": null,
-        "url": "/media/895d5b7d-09c9-4b4c-8054-903279c279bd?variant=inline&format=avif&v=1"
+        "url": "/media/9a638d55-f68c-45b0-8b80-78da2495dc60?variant=inline&format=avif&v=1"
       },
       {
-        "id": "adbb0e82-b0eb-4d75-98c2-f16d6c29fb5a",
+        "id": "3bf18e2c-c47c-40b2-95b4-f8f76d93b3c5",
         "recipeKey": "inline",
         "label": "Inline Content (WEBP)",
         "format": "webp",
@@ -1078,10 +1078,10 @@
         "percentSaved": 80,
         "processingState": "ready",
         "errorMessage": null,
-        "url": "/media/895d5b7d-09c9-4b4c-8054-903279c279bd?variant=inline&format=webp&v=1"
+        "url": "/media/9a638d55-f68c-45b0-8b80-78da2495dc60?variant=inline&format=webp&v=1"
       },
       {
-        "id": "9097671e-058b-452d-b7bc-0fb6cf4d70ff",
+        "id": "4807cfeb-903b-44b0-b32d-8a7231218566",
         "recipeKey": "hero",
         "label": "Hero (JPEG)",
         "format": "jpeg",
@@ -1092,10 +1092,10 @@
         "percentSaved": 34,
         "processingState": "ready",
         "errorMessage": null,
-        "url": "/media/895d5b7d-09c9-4b4c-8054-903279c279bd?variant=hero&format=jpeg&v=1"
+        "url": "/media/9a638d55-f68c-45b0-8b80-78da2495dc60?variant=hero&format=jpeg&v=1"
       },
       {
-        "id": "d5fc291d-0eec-42fb-9f15-7e2921c1004c",
+        "id": "dab1532e-a6c4-49c6-9652-9bcc005b887f",
         "recipeKey": "hero",
         "label": "Hero (AVIF)",
         "format": "avif",
@@ -1106,10 +1106,10 @@
         "percentSaved": 57,
         "processingState": "ready",
         "errorMessage": null,
-        "url": "/media/895d5b7d-09c9-4b4c-8054-903279c279bd?variant=hero&format=avif&v=1"
+        "url": "/media/9a638d55-f68c-45b0-8b80-78da2495dc60?variant=hero&format=avif&v=1"
       },
       {
-        "id": "d085c124-dd2d-4e80-af77-3ef9ef46f2d5",
+        "id": "71d08289-3bfa-4c29-a1b4-d2151d7bd971",
         "recipeKey": "hero",
         "label": "Hero (WEBP)",
         "format": "webp",
@@ -1120,7 +1120,7 @@
         "percentSaved": 58,
         "processingState": "ready",
         "errorMessage": null,
-        "url": "/media/895d5b7d-09c9-4b4c-8054-903279c279bd?variant=hero&format=webp&v=1"
+        "url": "/media/9a638d55-f68c-45b0-8b80-78da2495dc60?variant=hero&format=webp&v=1"
       }
     ],
     "summary": {
@@ -1140,17 +1140,17 @@
       "x-powered-by": "Next.js, Payload",
       "cache-control": "public, max-age=60, s-maxage=300, stale-while-revalidate=3600",
       "content-type": "application/xml; charset=utf-8",
-      "etag": "\"120eeabbb30286dbcfd5cd73e0fa4430319d9697c9b0633ef30af37c700f8e3b\"",
-      "date": "Mon, 12 Oct 2026 22:42:26 GMT",
+      "etag": "\"b955b03a11cfa7e6fd6de83baa1f2d451576bfd32ed106b38009c97f4b2c6bc6\"",
+      "date": "Tue, 13 Oct 2026 00:06:48 GMT",
       "connection": "keep-alive",
       "keep-alive": "timeout=5",
       "transfer-encoding": "chunked"
     },
-    "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><sitemapindex xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\"><sitemap><loc>https://dispatch.rc02.test:3129/sitemaps/1.xml</loc><lastmod>2026-10-12T22:42:12.947Z</lastmod></sitemap></sitemapindex>"
+    "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><sitemapindex xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\"><sitemap><loc>https://dispatch.rc02.test:3129/sitemaps/1.xml</loc><lastmod>2026-10-13T00:06:35.614Z</lastmod></sitemap></sitemapindex>"
   },
   "https://dispatch.rc02.test:3129/sitemaps/1.xml": {
     "status": 200,
-    "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\" xmlns:image=\"http://www.google.com/schemas/sitemap-image/1.1\"><url><loc>https://dispatch.rc02.test:3129/</loc></url><url><loc>https://dispatch.rc02.test:3129/about</loc><lastmod>2026-10-12T22:41:56.808Z</lastmod><image:image><image:loc>https://dispatch.rc02.test:3129/media/895d5b7d-09c9-4b4c-8054-903279c279bd</image:loc></image:image></url><url><loc>https://dispatch.rc02.test:3129/articles</loc></url><url><loc>https://dispatch.rc02.test:3129/articles/neighborhood-assemblies</loc><lastmod>2026-10-12T22:41:58.274Z</lastmod><image:image><image:loc>https://dispatch.rc02.test:3129/media/895d5b7d-09c9-4b4c-8054-903279c279bd</image:loc></image:image></url><url><loc>https://dispatch.rc02.test:3129/articles/republic-in-the-open</loc><lastmod>2026-10-12T22:42:12.947Z</lastmod><image:image><image:loc>https://dispatch.rc02.test:3129/media/895d5b7d-09c9-4b4c-8054-903279c279bd</image:loc></image:image></url><url><loc>https://dispatch.rc02.test:3129/categories/civic-accountability</loc><lastmod>2026-10-12T22:41:46.677Z</lastmod></url><url><loc>https://dispatch.rc02.test:3129/events/open-civic-assembly</loc><lastmod>2026-10-12T22:41:58.479Z</lastmod></url><url><loc>https://dispatch.rc02.test:3129/get-involved</loc><lastmod>2026-10-12T22:42:11.609Z</lastmod></url><url><loc>https://dispatch.rc02.test:3129/topics/local-governance</loc><lastmod>2026-10-12T22:41:46.729Z</lastmod></url></urlset>"
+    "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\" xmlns:image=\"http://www.google.com/schemas/sitemap-image/1.1\"><url><loc>https://dispatch.rc02.test:3129/</loc></url><url><loc>https://dispatch.rc02.test:3129/about</loc><lastmod>2026-10-13T00:06:23.352Z</lastmod><image:image><image:loc>https://dispatch.rc02.test:3129/media/9a638d55-f68c-45b0-8b80-78da2495dc60</image:loc></image:image></url><url><loc>https://dispatch.rc02.test:3129/articles</loc></url><url><loc>https://dispatch.rc02.test:3129/articles/neighborhood-assemblies</loc><lastmod>2026-10-13T00:06:24.867Z</lastmod><image:image><image:loc>https://dispatch.rc02.test:3129/media/9a638d55-f68c-45b0-8b80-78da2495dc60</image:loc></image:image></url><url><loc>https://dispatch.rc02.test:3129/articles/republic-in-the-open</loc><lastmod>2026-10-13T00:06:35.614Z</lastmod><image:image><image:loc>https://dispatch.rc02.test:3129/media/9a638d55-f68c-45b0-8b80-78da2495dc60</image:loc></image:image></url><url><loc>https://dispatch.rc02.test:3129/categories/civic-accountability</loc><lastmod>2026-10-13T00:06:11.526Z</lastmod></url><url><loc>https://dispatch.rc02.test:3129/events/open-civic-assembly</loc><lastmod>2026-10-13T00:06:25.080Z</lastmod></url><url><loc>https://dispatch.rc02.test:3129/get-involved</loc><lastmod>2026-10-13T00:06:34.322Z</lastmod></url><url><loc>https://dispatch.rc02.test:3129/topics/local-governance</loc><lastmod>2026-10-13T00:06:11.578Z</lastmod></url></urlset>"
   },
   "/robots.txt": {
     "status": 200,
@@ -1161,7 +1161,7 @@
       "x-powered-by": "Next.js, Payload",
       "cache-control": "public, max-age=0, must-revalidate",
       "content-type": "text/plain",
-      "date": "Mon, 12 Oct 2026 22:42:26 GMT",
+      "date": "Tue, 13 Oct 2026 00:06:48 GMT",
       "connection": "keep-alive",
       "keep-alive": "timeout=5",
       "transfer-encoding": "chunked"
@@ -1177,13 +1177,13 @@
       "x-powered-by": "Next.js, Payload",
       "cache-control": "public, max-age=300, s-maxage=3600, stale-while-revalidate=86400",
       "content-type": "application/rss+xml; charset=utf-8",
-      "etag": "\"f092c8d8f9d5f78e075ce281beb675615ce4ba4c6fb6a9e838cc661024a2e25c\"",
-      "date": "Mon, 12 Oct 2026 22:42:26 GMT",
+      "etag": "\"6bcfbcde2bed6472f3f8e926a805e97175d9466b9bc224af0c0d300e21e37087\"",
+      "date": "Tue, 13 Oct 2026 00:06:48 GMT",
       "connection": "keep-alive",
       "keep-alive": "timeout=5",
       "transfer-encoding": "chunked"
     },
-    "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<rss version=\"2.0\" xmlns:atom=\"http://www.w3.org/2005/Atom\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\">\n  <channel>\n    <title>Renegade Party Dispatch</title>\n    <link>https://dispatch.rc02.test:3129</link>\n    <description>Independent civic reporting, local organizing and public accountability.</description>\n    <language>en-US</language>\n    <atom:link href=\"https://dispatch.rc02.test:3129/feed.xml\" rel=\"self\" type=\"application/rss+xml\"/>\n    <lastBuildDate>Mon, 12 Oct 2026 22:41:58 GMT</lastBuildDate>\n    <item>\n      <title>Neighborhood assemblies in practice | Dispatch</title>\n      <link>https://dispatch.rc02.test:3129/articles/neighborhood-assemblies</link>\n      <guid isPermaLink=\"false\">urn:renegade:content:7478b8eb-f48a-4790-8e59-599af6676a92</guid>\n      <pubDate>Mon, 12 Oct 2026 22:41:58 GMT</pubDate>\n      <dc:creator>Dispatch Editorial Board</dc:creator>\n      <description><![CDATA[Read independent civic reporting from Renegade Party Dispatch, with primary sources, clear context and corrections.]]></description>\n    </item>\n    <item>\n      <title>A republic built in the open | Dispatch</title>\n      <link>https://dispatch.rc02.test:3129/articles/republic-in-the-open</link>\n      <guid isPermaLink=\"false\">urn:renegade:content:94243d00-f4d1-4c97-950c-fc4576ab4134</guid>\n      <pubDate>Mon, 12 Oct 2026 22:41:57 GMT</pubDate>\n      <dc:creator>Dispatch Editorial Board</dc:creator>\n      <description><![CDATA[Read independent civic reporting from Renegade Party Dispatch, with primary sources, clear context and corrections.]]></description>\n    </item>\n  </channel>\n</rss>"
+    "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<rss version=\"2.0\" xmlns:atom=\"http://www.w3.org/2005/Atom\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\">\n  <channel>\n    <title>Renegade Party Dispatch</title>\n    <link>https://dispatch.rc02.test:3129</link>\n    <description>Independent civic reporting, local organizing and public accountability.</description>\n    <language>en-US</language>\n    <atom:link href=\"https://dispatch.rc02.test:3129/feed.xml\" rel=\"self\" type=\"application/rss+xml\"/>\n    <lastBuildDate>Tue, 13 Oct 2026 00:06:24 GMT</lastBuildDate>\n    <item>\n      <title>Neighborhood assemblies in practice | Dispatch</title>\n      <link>https://dispatch.rc02.test:3129/articles/neighborhood-assemblies</link>\n      <guid isPermaLink=\"false\">urn:renegade:content:b2c364a7-3cda-49db-870f-09b3036528d8</guid>\n      <pubDate>Tue, 13 Oct 2026 00:06:24 GMT</pubDate>\n      <dc:creator>Dispatch Editorial Board</dc:creator>\n      <description><![CDATA[Read independent civic reporting from Renegade Party Dispatch, with primary sources, clear context and corrections.]]></description>\n    </item>\n    <item>\n      <title>A republic built in the open | Dispatch</title>\n      <link>https://dispatch.rc02.test:3129/articles/republic-in-the-open</link>\n      <guid isPermaLink=\"false\">urn:renegade:content:6b6b42b7-c166-49f6-8dd9-92fe3721f4a0</guid>\n      <pubDate>Tue, 13 Oct 2026 00:06:24 GMT</pubDate>\n      <dc:creator>Dispatch Editorial Board</dc:creator>\n      <description><![CDATA[Read independent civic reporting from Renegade Party Dispatch, with primary sources, clear context and corrections.]]></description>\n    </item>\n  </channel>\n</rss>"
   },
   "/feed.json": {
     "status": 200,
@@ -1194,13 +1194,13 @@
       "x-powered-by": "Next.js, Payload",
       "cache-control": "public, max-age=60, s-maxage=300, stale-while-revalidate=3600",
       "content-type": "application/feed+json; charset=utf-8",
-      "etag": "\"e752fd39b4e9df42dc2904739ee9dfd2148f3d59c70abce372a85dff3d9805c5\"",
-      "date": "Mon, 12 Oct 2026 22:42:27 GMT",
+      "etag": "\"d6ba5cbf74d47af6ba70ad24ed834927b27e465feabd4d868c32509be3329bad\"",
+      "date": "Tue, 13 Oct 2026 00:06:48 GMT",
       "connection": "keep-alive",
       "keep-alive": "timeout=5",
       "transfer-encoding": "chunked"
     },
-    "body": "{\"version\":\"https://jsonfeed.org/version/1.1\",\"title\":\"Renegade Party Dispatch\",\"home_page_url\":\"https://dispatch.rc02.test:3129\",\"feed_url\":\"https://dispatch.rc02.test:3129/feed.json\",\"items\":[{\"id\":\"urn:renegade:content:7478b8eb-f48a-4790-8e59-599af6676a92\",\"url\":\"https://dispatch.rc02.test:3129/articles/neighborhood-assemblies\",\"title\":\"Neighborhood assemblies in practice | Dispatch\",\"summary\":\"Read independent civic reporting from Renegade Party Dispatch, with primary sources, clear context and corrections.\",\"date_published\":\"2026-10-12T22:41:58.238Z\",\"date_modified\":\"2026-10-12T22:41:58.274Z\",\"authors\":[{\"name\":\"Dispatch Editorial Board\",\"url\":null}],\"image\":\"https://dispatch.rc02.test:3129/media/895d5b7d-09c9-4b4c-8054-903279c279bd\"},{\"id\":\"urn:renegade:content:94243d00-f4d1-4c97-950c-fc4576ab4134\",\"url\":\"https://dispatch.rc02.test:3129/articles/republic-in-the-open\",\"title\":\"A republic built in the open | Dispatch\",\"summary\":\"Read independent civic reporting from Renegade Party Dispatch, with primary sources, clear context and corrections.\",\"date_published\":\"2026-10-12T22:41:57.512Z\",\"date_modified\":\"2026-10-12T22:42:12.947Z\",\"authors\":[{\"name\":\"Dispatch Editorial Board\",\"url\":null}],\"image\":\"https://dispatch.rc02.test:3129/media/895d5b7d-09c9-4b4c-8054-903279c279bd\"}]}"
+    "body": "{\"version\":\"https://jsonfeed.org/version/1.1\",\"title\":\"Renegade Party Dispatch\",\"home_page_url\":\"https://dispatch.rc02.test:3129\",\"feed_url\":\"https://dispatch.rc02.test:3129/feed.json\",\"items\":[{\"id\":\"urn:renegade:content:b2c364a7-3cda-49db-870f-09b3036528d8\",\"url\":\"https://dispatch.rc02.test:3129/articles/neighborhood-assemblies\",\"title\":\"Neighborhood assemblies in practice | Dispatch\",\"summary\":\"Read independent civic reporting from Renegade Party Dispatch, with primary sources, clear context and corrections.\",\"date_published\":\"2026-10-13T00:06:24.826Z\",\"date_modified\":\"2026-10-13T00:06:24.867Z\",\"authors\":[{\"name\":\"Dispatch Editorial Board\",\"url\":null}],\"image\":\"https://dispatch.rc02.test:3129/media/9a638d55-f68c-45b0-8b80-78da2495dc60\"},{\"id\":\"urn:renegade:content:6b6b42b7-c166-49f6-8dd9-92fe3721f4a0\",\"url\":\"https://dispatch.rc02.test:3129/articles/republic-in-the-open\",\"title\":\"A republic built in the open | Dispatch\",\"summary\":\"Read independent civic reporting from Renegade Party Dispatch, with primary sources, clear context and corrections.\",\"date_published\":\"2026-10-13T00:06:24.073Z\",\"date_modified\":\"2026-10-13T00:06:35.614Z\",\"authors\":[{\"name\":\"Dispatch Editorial Board\",\"url\":null}],\"image\":\"https://dispatch.rc02.test:3129/media/9a638d55-f68c-45b0-8b80-78da2495dc60\"}]}"
   },
   "notFound": {
     "status": 404

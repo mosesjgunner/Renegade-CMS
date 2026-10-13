@@ -1,11 +1,12 @@
 # Stage 03 Gemini Verification Log
 
 ## Execution Environment
+
 - **Date**: 2026-10-12
 - **Host**: Windows Local Environment (Node v24.19.0, npm 11.1.0)
 - **Database**: PostgreSQL (Container `renegade-cms-postgres-1`, port 5432)
-- **Acceptance DB**: `renegade_rc02_1791086734920_release_acceptance` (isolated fresh database)
-- **Media Dir**: `scratch/renegade_rc02_1791086734920_release_acceptance-media`
+- **Acceptance DB**: `renegade_rc02_1791848788612_release_acceptance` (disposable acceptance DB ending in `_release_acceptance`)
+- **Media Dir**: `scratch/renegade_rc02_1791848788612_release_acceptance-media`
 - **Configuration**: `.env.rc02` with `LOCAL_E2E_TEST_MODE=false`, `APP_URL=https://dispatch.rc02.test:3129`
 - **TLS Certificate**: Self-signed 365-day certificate for `dispatch.rc02.test` in `scratch/rc02-tls/`
 
@@ -13,88 +14,53 @@
 
 ## Quality Gates Summary
 
-| Gate / Command | Exit Code | Result | Details |
-|---|---|---|---|
-| `npm.cmd run typecheck` | 0 | PASS | `tsc --noEmit` completed with zero TypeScript errors |
-| `npm.cmd run lint` | 0 | PASS | `eslint . --max-warnings=0` passed cleanly |
-| `npm.cmd run format:check` | 0 | PASS | `prettier --check .` passed cleanly on all repository files |
-| `npm.cmd test` | 0 | PASS | 189 test files passed, 1,241 unit tests passed, 0 failed |
-| `npm.cmd run build` | 0 | PASS | Next.js 16.3.8 production standalone build compiled in 28.6s, 144 static/dynamic routes |
-| `npm.cmd run verify:presentation-bundles` | 0 | PASS | Public bundle isolation verified (excludes Puck and editor code) |
-| `tsx --env-file=.env.rc02 src/scripts/verify-fresh-migration.ts` | 0 | PASS | All 112 migrations applied cleanly against acceptance DB |
+| Gate / Command                            | Exit Code | Result | Details                                                                                 |
+| ----------------------------------------- | --------- | ------ | --------------------------------------------------------------------------------------- |
+| `npm.cmd run typecheck`                   | 0         | PASS   | `tsc --noEmit` completed with zero TypeScript errors                                    |
+| `npm.cmd run lint`                        | 0         | PASS   | `eslint . --max-warnings=0` passed cleanly                                              |
+| `npm.cmd run format:check`                | 0         | PASS   | `prettier --check .` passed cleanly on all repository files                             |
+| `npm.cmd test`                            | 0         | PASS   | 189 test files passed, 1,241 unit tests passed, 0 failed                                |
+| `npm.cmd run build`                       | 0         | PASS   | Next.js 16.3.8 production standalone build compiled in 28.6s, 144 static/dynamic routes |
+| `npm.cmd run verify:presentation-bundles` | 0         | PASS   | Public bundle isolation verified (excludes Puck and editor code)                        |
 
 ---
 
-## Stage 03 Specialized Suites
+## Stage 03 Acceptance Suites
 
-### 1. Browser Golden Journey (`tests/rc02/site-build.spec.ts`)
-- **Command**: `npx.cmd playwright test tests/rc02/site-build.spec.ts --config=playwright.rc02.config.ts`
+### 1. Browser Acceptance Suite (`tests/rc02/site-build.spec.ts` & `tests/rc02/staff-invitation.spec.ts`)
+
+- **Command**: `npx.cmd playwright test tests/rc02/site-build.spec.ts tests/rc02/staff-invitation.spec.ts --config=playwright.rc02.config.ts`
 - **Environment**: Chromium headless with virtual WebAuthn authenticator, production standalone server (`https://dispatch.rc02.test:3129`)
-- **Outcome**: **1 passed** (duration: 1.4m)
-- **Verified Capabilities**:
-  - Setup bootstrap with virtual WebAuthn passkey registration.
-  - Standard onboarding with custom branding and primary URL.
-  - Native Site Settings save & reload.
-  - Neutral theme activation and custom layout composition.
-  - Media asset upload with image replacement and thumbnail generation.
-  - Puck visual builder authoring, custom layout saving, and draft isolation.
-  - Template and reusable block instantiation.
-  - Public page render (desktop and mobile viewports) with rendered quality validation.
-  - Custom slug redirect creation and HTTP 301/308 resolution.
-  - Production server restart and refetch persistence validation.
+- **Outcome**: **7 passed**, 0 failed, 0 skipped (duration: 2.2m)
+- **Test Cases**:
+  1. `tests/rc02/site-build.spec.ts`: Ordinary operator builds Renegade Party Dispatch from an empty install (1.3m) — **PASS**
+  2. `tests/rc02/staff-invitation.spec.ts`: Owner invites staff through Security, staff enrolls and logs in with WebAuthn (15.3s) — **PASS**
+  3. `tests/rc02/staff-invitation.spec.ts`: Administrator invitation, passkey enrollment and privilege bounds (4.8s) — **PASS**
+  4. `tests/rc02/staff-invitation.spec.ts`: Identity negatives: expired invitations, wrong WebAuthn origin/challenge (26ms) — **PASS**
+  5. `tests/rc02/staff-invitation.spec.ts`: Session revocation and role protection (2.5s) — **PASS**
+  6. `tests/rc02/staff-invitation.spec.ts`: Supported offline owner recovery CLI rotates credentials and revokes sessions (10.9s) — **PASS**
+  7. `tests/rc02/staff-invitation.spec.ts`: Real browser document lock acquisition, conflict, and release (5.6s) — **PASS**
 
-### 2. Staff Invitation & Passkey Authentication (`tests/rc02/staff-invitation.spec.ts`)
-- **Command**: `npx.cmd playwright test tests/rc02/staff-invitation.spec.ts --config=playwright.rc02.config.ts`
-- **Environment**: Chromium headless with virtual WebAuthn authenticator, production server
-- **Outcome**: **1 passed** (duration: 16.0s)
-- **Verified Capabilities**:
-  - Staff invitation issued by owner (`POST /api/admin/staff/invite`).
-  - First passkey enrollment through `/enroll` flow using real virtual WebAuthn credentials.
-  - Owner and staff recovery code generation and recovery authentication.
-  - Recovery code replay rejection (HTTP 400).
-  - Unprivileged actor invite attempt rejection (HTTP 403).
+### 2. Two-Site Five-Actor Runtime Authorization & Tenant Boundary Matrix (`tests/integration/tenant-authorization-matrix.integration.test.ts`)
 
-### 3. Document Locking & Projection (`tests/integration/rc08d-lock-projection.integration.test.ts`)
-- **Command**: `node --env-file=.env.rc02 scripts/run-integration.mjs tests/integration/rc08d-lock-projection.integration.test.ts`
-- **Outcome**: **8 passed**, 0 failed
+- **Command**: `node --env-file=.env.rc02 scripts/run-integration.mjs tests/integration/tenant-authorization-matrix.integration.test.ts`
+- **Environment**: Real Payload instance against acceptance database, no mock objects
+- **Outcome**: **21 passed**, 0 failed (duration: 4.56s)
 - **Verified Capabilities**:
-  - Lock acquisition on draft documents.
-  - Conflict prevention when another editor attempts to acquire lock.
-  - Lock heartbeat renewal and explicit lock release.
-  - Document projection consistency during active editing.
+  - Grant context resolution across Owner, Administrator, Staff, Member, and Anonymous.
+  - Permitted reads and mutations for Owner (global) and Administrator/Staff (Site A).
+  - Cross-tenant ID substitution attacks denied: Admin A cannot read/mutate Site B organizations or merchant connections; Staff A cannot read/mutate Site B articles or private media; Staff A cannot access Site B carts.
+  - Unprivileged/anonymous boundaries: Member A and Anonymous denied access to operator collections and drafts.
+  - Persistence assertion: denied mutations leave protected state unchanged.
+  - Feature profiles & module registration: Lean, Standard, and Enabled-all runtime evaluations verified.
 
-### 4. Publishing Floor & Discovery (`tests/integration/pub-04-publishing-floor.integration.test.ts`)
-- **Command**: `node --env-file=.env.rc02 scripts/run-integration.mjs tests/integration/pub-04-publishing-floor.integration.test.ts`
-- **Outcome**: **6 passed**, 0 failed
-- **Verified Capabilities**:
-  - Saved edits remain isolated from public body index until publication.
-  - Immediate indexing upon publication.
-  - Navigation menu validation, update, and normalization with 1-level nesting.
-  - Real byte uploads, restart persistence, anonymous protection, and deletion refusal.
-  - Local public search finds unique phrase in body projection and highlights excerpts.
-  - Sitemap and robots respect `indexingMode` toggle and unpublish changes.
+### 3. Core Integration Regression Suite
 
-### 5. Presentation Pass Gate (`tests/integration/pre-06-presentation-pass-gate.integration.test.ts`)
-- **Command**: `node --env-file=.env.rc02 scripts/run-integration.mjs tests/integration/pre-06-presentation-pass-gate.integration.test.ts`
-- **Outcome**: **4 passed**, 0 failed
+- **Command**: `node --env-file=.env.rc02 scripts/run-integration.mjs tests/integration/disc-06-discovery-pass-gate.integration.test.ts tests/integration/setup-first-run.integration.test.ts tests/integration/pre-06-presentation-pass-gate.integration.test.ts tests/integration/pub-04-publishing-floor.integration.test.ts tests/integration/rc08d-lock-projection.integration.test.ts`
+- **Outcome**: **5 files passed, 33 tests passed**, 0 failed (duration: 29.75s)
 - **Verified Capabilities**:
-  - Complete theme lifecycle: draft, preview isolation, atomic activation, upgrade, rollback.
-  - Reusable visual composition: templates, patterns, globals, safeguards, draft isolation.
-  - Global announcement region with versioned rollback.
-  - Legacy site migration preflight, isolated import, activation, and clean rollback with foreign key cascade handling.
-
-### 6. Discovery Pass Gate (`tests/integration/disc-06-discovery-pass-gate.integration.test.ts`)
-- **Command**: `node --env-file=.env.rc02 scripts/run-integration.mjs tests/integration/disc-06-discovery-pass-gate.integration.test.ts`
-- **Outcome**: **9 passed**, 0 failed
-- **Verified Capabilities**:
-  - Canonical URL calculation, OpenGraph/Twitter card metadata.
-  - Schema.org structured data graph verification.
-  - Sitemap index, child sitemaps, robots.txt, and RSS/Atom feeds.
-  - Local full-text search indexing, query highlighting, and facet filtering.
-
-### 7. Authorization Matrix & Tenant Isolation
-- **Command**: `npx.cmd vitest run tests/unit/authorization-matrix.test.ts tests/unit/tenant-isolation.test.ts`
-- **Outcome**: **38 passed**, 0 failed
-- **Verified Capabilities**:
-  - Two-site actor matrix (owner, admin, staff, member, anonymous) permitted and denied actions across native collections, custom views, connections, AI, audience, catalog, commerce, fulfillment, moderation, and private media.
-  - Tenant boundary isolation: cross-site data access strictly denied.
+  - `disc-06-discovery-pass-gate.integration.test.ts` (9 tests passed): canonical URLs, OpenGraph/Twitter cards, Schema.org graph, sitemaps, robots.txt, feeds, full-text search.
+  - `setup-first-run.integration.test.ts` (6 tests passed): first-run onboarding provisioning, handle uniqueness, Lean & Standard lifecycle.
+  - `pre-06-presentation-pass-gate.integration.test.ts` (4 tests passed): theme lifecycle, reusable layouts, global announcements, legacy migration preflight & rollback.
+  - `pub-04-publishing-floor.integration.test.ts` (6 tests passed): draft isolation from public body index, immediate indexing on publish, navigation menus, byte uploads.
+  - `rc08d-lock-projection.integration.test.ts` (8 tests passed): document lock acquisition, conflict prevention, heartbeat renewal, and release API.

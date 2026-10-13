@@ -1,0 +1,721 @@
+{
+  "inspectionDate": "2026-10-12",
+  "signedOffBy": "Sol",
+  "status": "BLOCKED",
+  "commands": [
+    {
+      "command": ["git", "rev-parse", "HEAD"],
+      "exitCode": 0,
+      "stdout": "02ea2a0dc50353cc4f1897dd4fe6cde51c3881eb\n",
+      "stderr": ""
+    },
+    {
+      "command": ["git", "rev-parse", "HEAD^{tree}"],
+      "exitCode": 0,
+      "stdout": "3e1f805adf16334f75edbb88532f4a2e5cae75bc\n",
+      "stderr": ""
+    },
+    {
+      "command": ["git", "status", "--porcelain=v1", "--untracked-files=all"],
+      "exitCode": 0,
+      "stdout": "?? docs/rc/evidence/rc1/stage-03/sol/audit-prerequisites.py\n",
+      "stderr": ""
+    },
+    {
+      "command": ["git", "worktree", "list", "--porcelain"],
+      "exitCode": 0,
+      "stdout": "worktree C:/Projects/RENEGADE CMS/Renegade-CMS\nHEAD 02ea2a0dc50353cc4f1897dd4fe6cde51c3881eb\nbranch refs/heads/main\n\nworktree C:/Projects/RENEGADE CMS/Events-Release-Candidate\nHEAD 4e73c86f6bc13210ad40ba2eb060ea7760e72059\ndetached\n\nworktree C:/Projects/RENEGADE CMS/rc08c-candidate\nHEAD aede4e6652ad180e476514a679ce96d5325c1334\nbranch refs/heads/rc08c-closure\n\nworktree C:/Projects/RENEGADE CMS/rc08c-final-01908f3\nHEAD 01908f39a3ce40b5eae5d4dec64b981e103d5fb1\ndetached\n\nworktree C:/Projects/RENEGADE CMS/rc08c-verify-9ec71fb\nHEAD d32b5d8531731305331a79342fa261de66767eba\ndetached\n\nworktree C:/Projects/RENEGADE CMS/rc08d-reconcile-0159f6b\nHEAD 0159f6bf3c7944a285743709514e487343aaa4f7\ndetached\n\nworktree C:/Projects/RENEGADE CMS/rc08d07-3dcce7e\nHEAD 3dcce7ece610dfbfa1d0d02bc1cfef646e0018f3\ndetached\n\nworktree C:/Projects/RENEGADE CMS/rc08d07-7f0ef9f\nHEAD 7f0ef9f2defebf6443f407487a97f64248b5348f\ndetached\n\nworktree C:/Projects/RENEGADE CMS/Renegade-CMS-ci-fix\nHEAD 1d81814f73393ebcbfeb7b5dde71756e6f3e2024\nbranch refs/heads/fix/podcast-discovery-site-resolution\n\n",
+      "stderr": ""
+    },
+    {
+      "command": ["git", "for-each-ref", "--format=%(refname) %(objectname)"],
+      "exitCode": 0,
+      "stdout": "refs/heads/fix/podcast-discovery-site-resolution 1d81814f73393ebcbfeb7b5dde71756e6f3e2024\nrefs/heads/main 02ea2a0dc50353cc4f1897dd4fe6cde51c3881eb\nrefs/heads/phase-b-foundation-wip a8ebcfe00eaa94eb40c19b948e8bf060492ba3ec\nrefs/heads/pub-06/operational-resilience-release-gate 91daa425510f3eaf6f434a8bb94e870fb19d98c4\nrefs/heads/rc02-site-build-candidate b684ee11460637bf2177f349057f14d6e804bbbd\nrefs/heads/rc08c-closure aede4e6652ad180e476514a679ce96d5325c1334\nrefs/remotes/origin/HEAD 7f0ef9f2defebf6443f407487a97f64248b5348f\nrefs/remotes/origin/fix/podcast-discovery-site-resolution 1d81814f73393ebcbfeb7b5dde71756e6f3e2024\nrefs/remotes/origin/main 7f0ef9f2defebf6443f407487a97f64248b5348f\nrefs/remotes/origin/phase-b-foundation-wip a8ebcfe00eaa94eb40c19b948e8bf060492ba3ec\nrefs/remotes/origin/pub-06/operational-resilience-release-gate 91daa425510f3eaf6f434a8bb94e870fb19d98c4\nrefs/tags/v0.1.0-rc.1 ef13d2031bafca5f07ce09c2ace529fcd6f9be9a\n",
+      "stderr": ""
+    },
+    {
+      "command": ["git", "log", "--all", "--oneline", "--grep=stage 02", "--grep=Stage 02"],
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "show",
+        "-s",
+        "--format=%H %T %P %s",
+        "99f29f1c4dd0138102b6b757a477fe72e350ea95"
+      ],
+      "exitCode": 0,
+      "stdout": "99f29f1c4dd0138102b6b757a477fe72e350ea95 83d89bf3f2a668214cde4a52364992d99b9c0701 2689375e7b7918d92021fefc082e8493bc275f8e feat(rc1): stage 03 first-run browser, identity, publishing, and authorization\n",
+      "stderr": ""
+    },
+    {
+      "command": ["git", "diff", "--name-only", "99f29f1c4dd0138102b6b757a477fe72e350ea95", "HEAD"],
+      "exitCode": 0,
+      "stdout": "docs/rc/evidence/rc1/stage-03/gemini/HANDOFF.md\n",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "git",
+        "merge-base",
+        "--is-ancestor",
+        "99f29f1c4dd0138102b6b757a477fe72e350ea95",
+        "HEAD"
+      ],
+      "exitCode": 1,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/BASELINE.md",
+      "exists": true,
+      "bytes": 13579,
+      "sha256": "dba7c71b21a3e3a027c77df239fed0a5258688d98ae083e3c2b13e73f526961f"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/HANDOFF.md",
+      "exists": true,
+      "bytes": 2959,
+      "sha256": "defeb6140622ed828a4c455ed09d5eead3b262969ade25adc0c923f74361677b"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/acceptance-inventory.json",
+      "exists": true,
+      "bytes": 1471633,
+      "sha256": "d0bd4d07a62c7511e20f64523296e6c7d2dadbf0d47922c036d247b50b20b3e4"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/attachment-attribution.json",
+      "exists": true,
+      "bytes": 706,
+      "sha256": "04418dfc8fd8cdce911d0ed771ae55d891ebf717570c6158102b4ceefeb0e8ac"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/candidate-groups.json",
+      "exists": true,
+      "bytes": 21405,
+      "sha256": "91c5a6f297c9cec29c2333daff025eeb8db5df9cc93cd502b2f919b60f93c244"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/containment.json",
+      "exists": true,
+      "bytes": 141705,
+      "sha256": "a90899f78ddfc98135d5a60fd34d0be7c9b001840fc4c1a9fcf623d4cfbccdf0"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/documentation-checks.json",
+      "exists": true,
+      "bytes": 1182,
+      "sha256": "281cecc14424923c7a95013d0077574c361eb32e6ef16a168d5ff70966d87603"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/documentation-diff-check.log",
+      "exists": true,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/documentation-format.log",
+      "exists": true,
+      "bytes": 66,
+      "sha256": "17aa973d3f004560237d9a95171210b0671deff23d61628eecf7322ff5938f20"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/finalize-state.py",
+      "exists": true,
+      "bytes": 3515,
+      "sha256": "9dbb03b253acedcc34c33b3fe4937b475aaf59091137d348473e665387131040"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/focused-checks-attempt-1.json",
+      "exists": true,
+      "bytes": 5923,
+      "sha256": "63bb4e41c0e419270cc937ff09542627ccd9b5b6cf21a2aa9b8fec6159d8efcc"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/focused-checks.json",
+      "exists": true,
+      "bytes": 9863,
+      "sha256": "9ab0921dcb8d08e7ad8832421c69fd7c7278cfe721d8f4bef91a8e651652a364"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/focused-format.log",
+      "exists": true,
+      "bytes": 730,
+      "sha256": "524187523c3cd589aaa47f15cfae17fad26dd15c316ec83ab98fe22893aac260"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/focused-lint-attempt-1.log",
+      "exists": true,
+      "bytes": 312,
+      "sha256": "4357b7b9e383801ef05b76a2730e0c6ed5274cac574c9f6964595010a6eaa300"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/focused-lint.log",
+      "exists": true,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/focused-unit.json",
+      "exists": true,
+      "bytes": 61701,
+      "sha256": "f3131de2e56852ce9bb150a3d1a4fd0bbaeed20a8ef49c48260d9f346137272d"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/focused-unit.log",
+      "exists": true,
+      "bytes": 1818,
+      "sha256": "8b55baab32bbdf4121d9ec825ab7cc858f587d404823ed91c3fc75f92ff2b2cf"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/gemini/BASELINE.md",
+      "exists": true,
+      "bytes": 7141,
+      "sha256": "7b7ce98c24f6267cfcfd7e9ddc20ce6ec061773ba3a8d9220e4060419a508ada"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/gemini/EVIDENCE_RECONCILIATION.md",
+      "exists": true,
+      "bytes": 18666,
+      "sha256": "c70c82b57b20eb2ba2232163af38f587478e244e3c08b0f04d31b8928cdcafe0"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/gemini/HANDOFF.md",
+      "exists": true,
+      "bytes": 5184,
+      "sha256": "981d21a2e8c158a439e17f9c12e3cae1b3aa1f16107c766e2b610a6d82c8c135"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/gemini/RC1_ACCEPTANCE_MATRIX.md",
+      "exists": true,
+      "bytes": 11780,
+      "sha256": "79a80c92d90e6bc936087f43ed42cc38c55739f30a9d56b3986276f89a45cd9d"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/gemini/candidate-groups.json",
+      "exists": true,
+      "bytes": 12656,
+      "sha256": "e87e4108ac11df20569861fb7493e461e1237daba51242cddc4c8af98a83aa5f"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/gemini/diff-check.log",
+      "exists": true,
+      "bytes": 943,
+      "sha256": "3e74c64338226d942d8904acc13aaf14adec354267781bfe988d284ccbe511a1"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/gemini/focused-checks.json",
+      "exists": true,
+      "bytes": 9621,
+      "sha256": "65b3afce92c7119d6755267b46ba509e03b85e9143255023c6371218a4618ad1"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/gemini/focused-format.log",
+      "exists": true,
+      "bytes": 66,
+      "sha256": "17aa973d3f004560237d9a95171210b0671deff23d61628eecf7322ff5938f20"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/gemini/focused-lint.log",
+      "exists": true,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/gemini/focused-unit.json",
+      "exists": true,
+      "bytes": 61682,
+      "sha256": "3360a5e253e55e6f6535fe9b95231850e0e4cca3ac61641b01e9e94130de81b0"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/gemini/focused-unit.log",
+      "exists": true,
+      "bytes": 3244,
+      "sha256": "9ac5e46e5681fca18a3099e001bbf1a0691352eebdaf99b8618155bb88e01cb3"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/gemini/generate-gemini-evidence.py",
+      "exists": true,
+      "bytes": 4906,
+      "sha256": "c667396b8ebfee15ab025f3a1e3b3d6a7174942c0976a014a849065d9fc741a9"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/gemini/inventory.json",
+      "exists": true,
+      "bytes": 6046,
+      "sha256": "9c18b6d98dddd007a4ab12c64b01f52109cf94ae92e46fd81170e59bb8d720d0"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/git-state.json",
+      "exists": true,
+      "bytes": 7776,
+      "sha256": "86864ba1557665a7bb68c80ddad41da15f773cf9d624ebad200039e36978364c"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/golden-journey.txt",
+      "exists": true,
+      "bytes": 1118,
+      "sha256": "6d8bbc11499909c073b66c42ad30a67293b7c8450e0a221554b7084d621f5ed1"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/historical-artifacts.json",
+      "exists": true,
+      "bytes": 109581,
+      "sha256": "7eb08871881a8cfb6ca0b002fd1b986e24033ae9aa6b34cac5b887a0d7b0218d"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/historical-proof-review.json",
+      "exists": true,
+      "bytes": 1956,
+      "sha256": "b3a584722e3a65c126a16a911a750d2072a43432b893c34f3433bb7fc03114d4"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/historical/FINAL_RC_REPORT-2026-10-08.md",
+      "exists": true,
+      "bytes": 10338,
+      "sha256": "dd3b99b9ff914ef66f1f7018888013b161aed38ef9fba2b970ec6063c1d9a8ac"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/inspect-baseline.py",
+      "exists": true,
+      "bytes": 7079,
+      "sha256": "e3e4c828baf2c6b4a0b33f9712102bc3a2414cd66bfb7b3db769c4bb30ef7b1a"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/inventory.json",
+      "exists": true,
+      "bytes": 14164,
+      "sha256": "2600e0fde5a340afdd84f4d59bb4b03578cc8dc174d488b161e59fd16005d534"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/packaging-first-failure.json",
+      "exists": true,
+      "bytes": 458,
+      "sha256": "e3327d2091ba6027d289ab0d8cd9952a270f3a8fe9d0863243049f7f3992fe08"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/reconcile-documents.py",
+      "exists": true,
+      "bytes": 11051,
+      "sha256": "513b1ce1ea3d46619e4038e6ce0baff9ba2e6ac3647cde1c03fd8270f48c9fac"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/recover-evidence.py",
+      "exists": true,
+      "bytes": 3981,
+      "sha256": "33fa3f5fce4c92cc15840f52e73b35c3a376c457fb2a3b99d61f4d9f84cfece3"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/recovered-workflow-artifacts.json",
+      "exists": true,
+      "bytes": 4708,
+      "sha256": "bcac0777ee496da1c0a95666a607264e9132bbe7908441a6c4b915e8b6101242"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/run-focused-checks.py",
+      "exists": true,
+      "bytes": 3897,
+      "sha256": "d9f8f04951dfafe3464a0b14b5283a85062812c45d268af880ae2e7be1ae3394"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/sol/HANDOFF.md",
+      "exists": true,
+      "bytes": 4305,
+      "sha256": "08fa2931b1646e1156197fdcbfd397fefa512f39a06e21479ef5b0ecd8c88aa4"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/sol/REVIEW.md",
+      "exists": true,
+      "bytes": 10261,
+      "sha256": "95bec5e8e982b860d2cef92326699468027c43f977b5db15bd97e92ac38fce55"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/sol/attachment-check.json",
+      "exists": true,
+      "bytes": 898,
+      "sha256": "4987f9cb8b88ff2a34985f592e8ae4e092b2b71770a8fedc4b46f8ded5564222"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/sol/candidate-disposition.json",
+      "exists": true,
+      "bytes": 43584,
+      "sha256": "75bccad285ef5307303fe8c12c09c51dec112492256e6f5357a8c26d02c902ff"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/sol/claim-ownership.json",
+      "exists": true,
+      "bytes": 1802500,
+      "sha256": "4181e8210ed79ab2b8948f6a69aceb5cd57ca574cbb87403f276011dae441f61"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/sol/coverage-check.json",
+      "exists": true,
+      "bytes": 720,
+      "sha256": "5e452840d5258f7bae97fcd1b6222b7ffbecd52dc0f59b59ed122835b29eeed6"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/sol/diff-check.log",
+      "exists": true,
+      "bytes": 943,
+      "sha256": "3e74c64338226d942d8904acc13aaf14adec354267781bfe988d284ccbe511a1"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/sol/documentation-format.log",
+      "exists": true,
+      "bytes": 66,
+      "sha256": "17aa973d3f004560237d9a95171210b0671deff23d61628eecf7322ff5938f20"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/sol/documentation-verification.json",
+      "exists": true,
+      "bytes": 1952,
+      "sha256": "07c902b91dca77845db569c3e661a98bafeab5b5c8ab78e4e21768d6b7875a9e"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/sol/final-reviewed-tree.json",
+      "exists": true,
+      "bytes": 245348,
+      "sha256": "288dec065af42ad08befe02480b817176ca7b97bbf294a30101e755739303394"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/sol/final-state.json",
+      "exists": true,
+      "bytes": 7361,
+      "sha256": "b6e79a735c3181b28450c4f5508467c5a5e20b313ebb49db4914a8d0e631625e"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/sol/finalize-handoff.py",
+      "exists": true,
+      "bytes": 6784,
+      "sha256": "ae55f7d4a97b4edb4e4baaed896974a8bd6e9cd81b6e344196d71d3304411bd7"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/sol/focused-checks.json",
+      "exists": true,
+      "bytes": 12161,
+      "sha256": "763519a2ffe8809086da06fc803bf2b80e5659fd407ba67d522e810e23df6f20"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/sol/focused-format.log",
+      "exists": true,
+      "bytes": 66,
+      "sha256": "17aa973d3f004560237d9a95171210b0671deff23d61628eecf7322ff5938f20"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/sol/focused-lint.log",
+      "exists": true,
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/sol/focused-unit.json",
+      "exists": true,
+      "bytes": 61701,
+      "sha256": "68d52fdb18f9cb14c8a03b8914424149e3663d9a7a38356523c9c5df4206c7b7"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/sol/focused-unit.log",
+      "exists": true,
+      "bytes": 1823,
+      "sha256": "607446a5433ea84c554bbfbf75e473188611e3b9f40e663d3a36655964d53d78"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/sol/inventory.json",
+      "exists": true,
+      "bytes": 10251,
+      "sha256": "dad3c6302f36acbff3cee7c041818d51471b16ca1f92d2832d0d45ca44c4cf84"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/sol/mandatory-gates.md",
+      "exists": true,
+      "bytes": 9547,
+      "sha256": "f303afb65a0e4404e29a6a9289c75f8094422145c5777b990faba475562ed09f"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/sol/post-check-source.json",
+      "exists": true,
+      "bytes": 200,
+      "sha256": "f1456c3a19894151d46c17fbe62b841f0feb6d1fc12a1ac75ecd08ea9585bf4c"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/sol/preservation.json",
+      "exists": true,
+      "bytes": 1824,
+      "sha256": "8e3462dbe6fa90b04843ac3fb9b4318f098a92d79cee5bae317f2e807783ee71"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/sol/reconcile-documents.py",
+      "exists": true,
+      "bytes": 3980,
+      "sha256": "1fc9fd52aa582f8ebc63b09d095fade08b0122b68f65449528e106f74ac1ea59"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/sol/registered-object-ownership.json",
+      "exists": true,
+      "bytes": 59113,
+      "sha256": "e8d9e61b726e34b6e17348c330086931e9dad3240bdcd9ed86f4a61d85345306"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/sol/review-baseline.py",
+      "exists": true,
+      "bytes": 10793,
+      "sha256": "9d22c837174613b18a0ee18a0b7bdffdb5af695c1013a84f0bd4431e26776562"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/sol/source-audit.json",
+      "exists": true,
+      "bytes": 3200,
+      "sha256": "ef0ba6ae737523c858a2308300115a514cb701f62cd764eb684e6fc3d8c80242"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/sol/tested-tree.json",
+      "exists": true,
+      "bytes": 245397,
+      "sha256": "358e0d1f6b717d6f4d63ea8d79615af202f65f8372fe3ce0a8a6eb0a55603c2e"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/sol/verify-review.py",
+      "exists": true,
+      "bytes": 3929,
+      "sha256": "879439c341554f853a9d2bb921433279221e977ccc22518d63648b7404da313c"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/summary-documents-before.json",
+      "exists": true,
+      "bytes": 882,
+      "sha256": "c99c18207ac32b04cb5d77c6d6b834b731cd0bdba40e71afc59c2f6b59dd0349"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/tested-tree.json",
+      "exists": true,
+      "bytes": 245107,
+      "sha256": "4197bf43d90dfdcbc49174d6d3a6d9d33818d95917ecc010d28da083287490ad"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/verify-documentation.py",
+      "exists": true,
+      "bytes": 2780,
+      "sha256": "1ad854cf2d027dd1f6f3952d8b6f27f38c51ccc4787cb02c37fa61df59612e99"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-02/sol/HANDOFF.md",
+      "exists": true,
+      "bytes": 1564,
+      "sha256": "eb628e8262807d01ad3b77ea0594299b431f2f793b0447d053fdd05486ac54f2"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-02/sol/VERIFICATION.md",
+      "exists": true,
+      "bytes": 3707,
+      "sha256": "75205f218f17e8574957b70893d53ff90f91575db9693ef1b82da38e618e7e84"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-02/sol/prerequisite-inspection.json",
+      "exists": true,
+      "bytes": 396776,
+      "sha256": "11a26db74a6098cfb486ca9fbf4ccc49aed188c632b0150b0491b0b8f899d823"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-03/gemini/EVIDENCE_MATRIX.md",
+      "exists": true,
+      "bytes": 4830,
+      "sha256": "301d17fb67fe3970bc03b930eaf8759205c3b8127a38fffc4916bf3ee1fe241a"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-03/gemini/HANDOFF.md",
+      "exists": true,
+      "bytes": 5530,
+      "sha256": "d2e21873a826e58b6769c2e28da3d1ccef1da51ba537f37b163ca89d39a029d6"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-03/gemini/VERIFICATION.md",
+      "exists": true,
+      "bytes": 6276,
+      "sha256": "2dcc84990d8beb7e9d915ff600a55f834303a7e416e57ed8a09168931f2f3bcc"
+    },
+    {
+      "path": "AGENTS.md",
+      "exists": true,
+      "bytes": 952,
+      "sha256": "3b0332a6182d269787c286696f00b9cc4bf63493fafeae1a1b73b19cdeaca71c"
+    },
+    {
+      "path": "docs/rc/RC1-PLAN-AND-PROMPTS.md",
+      "exists": true,
+      "bytes": 23941,
+      "sha256": "592e191d0ea8ded243c2e18e90305e6aa5f32bebd08196a73365e693d50fe9ec"
+    },
+    {
+      "path": "docs/rc/RC1-SCOPE.md",
+      "exists": true,
+      "bytes": 9939,
+      "sha256": "cdbf250e583de7a584afbadb3f12e95152d0744a232431dc2ba02aeff25ed8a6"
+    },
+    {
+      "path": "docs/rc/RC_SCOPE.md",
+      "exists": true,
+      "bytes": 10617,
+      "sha256": "574aabb0c3fde3f00de6fcf0b0d768aa3d1297aeaf402581ee5178f1bb7c1713"
+    },
+    {
+      "path": "docs/rc/RC1-ACCEPTANCE-MATRIX.md",
+      "exists": true,
+      "bytes": 13546,
+      "sha256": "dab2f7b4a3661750a1556ab34d857f273629ec53d3ad9d77f9b034068570e885"
+    },
+    {
+      "path": "docs/rc/CAPABILITY_LEDGER.md",
+      "exists": true,
+      "bytes": 207225,
+      "sha256": "677f8cd9765799e4ade906628f4ac948ddd17afdef8a844f11f7c4b0256e4625"
+    },
+    {
+      "path": "docs/rc/ROUTE_MATRIX.md",
+      "exists": true,
+      "bytes": 950251,
+      "sha256": "a5ce694b61d78a831edbf9ee1e089e60a7867f8a0b2cfb949f6a7148cb7947b5"
+    },
+    {
+      "path": "docs/rc/PROVIDER_MATRIX.md",
+      "exists": true,
+      "bytes": 16244,
+      "sha256": "6ba4c52bd2241a7775a3a9df9e931826dbb2709a95a33542f6c082aff6e86251"
+    },
+    {
+      "path": "docs/rc/SECURITY_LEDGER.md",
+      "exists": true,
+      "bytes": 9981,
+      "sha256": "da250fd46f432e3ce03651721b7dfb6ccf9b0aff152321cdbedb28a8e3c328bf"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-02/gemini/HANDOFF.md",
+      "exists": false
+    },
+    {
+      "path": "playwright.rc02.config.ts",
+      "exists": true,
+      "bytes": 1861,
+      "sha256": "32411c76e72bd2a2f1dc1c7fe1d802be033e52cf4dcd5ca2e7c6565c6be38cba"
+    },
+    {
+      "path": "tests/rc02/site-build.spec.ts",
+      "exists": true,
+      "bytes": 47068,
+      "sha256": "77004360ec10e99a4fd35124bf3c1dbd7b58e69c6916cfec02cc1c60338756c2"
+    },
+    {
+      "path": "tests/rc02/staff-invitation.spec.ts",
+      "exists": true,
+      "bytes": 4221,
+      "sha256": "2486403d78ff6a44a8d8427447593df1e08477aee676d361d7ece3b261bcf43c"
+    },
+    {
+      "path": "tests/unit/authorization-matrix.test.ts",
+      "exists": true,
+      "bytes": 18168,
+      "sha256": "2ad264facc9de62abfee4243debf9923544aeb39d12cc50b3bf4d3a8e389edbb"
+    },
+    {
+      "path": "tests/unit/tenant-isolation.test.ts",
+      "exists": true,
+      "bytes": 10008,
+      "sha256": "152c2f629067336f910cc0e93f3eadc72ca152f21601872313abaf184786f0c4"
+    },
+    {
+      "path": "tests/integration/rc08d-lock-projection.integration.test.ts",
+      "exists": true,
+      "bytes": 8310,
+      "sha256": "3a80595fe24621b8a6ba63fbc0db896cdc1bf5f09c01e9f317f9230fbb3aa324"
+    },
+    {
+      "path": "docs/rc/evidence/rc-02/source-attribution.json",
+      "exists": true,
+      "bytes": 947,
+      "sha256": "cb72d8a9040b9ccb1efbc76e3c48107d2af3d188f87f08b75877fb03e2082e9b"
+    },
+    {
+      "path": "docs/rc/evidence/rc-02/browser-results.json",
+      "exists": true,
+      "bytes": 4870,
+      "sha256": "246ef54caf8896a76e8e14960b3c7d11ac29f8819849ce96cb2839851e68f48c"
+    },
+    {
+      "path": "docs/rc/evidence/rc-02/site-build-trace.zip",
+      "exists": true,
+      "bytes": 19237748,
+      "sha256": "85977963e767b98012a65095cfdf867f2b5507b42c62691adf592f980b5f0d9a"
+    },
+    {
+      "path": "scratch/rc02-browser.log",
+      "exists": true,
+      "bytes": 1654,
+      "sha256": "e0f5efa98e2f6391e6bd96d71bb022b80ac78c54f21dc5c77f843b2aea67128e"
+    },
+    {
+      "path": "scratch/rc02-final-browser-exit.txt",
+      "exists": true,
+      "bytes": 3,
+      "sha256": "13bf7b3039c63bf5a50491fa3cfd8eb4e699d1ba1436315aef9cbe5711530354"
+    }
+  ],
+  "traceIntegrity": [
+    {
+      "path": "docs/rc/evidence/rc-02/site-build-trace.zip",
+      "exists": true,
+      "bytes": 19237748,
+      "sha256": "85977963e767b98012a65095cfdf867f2b5507b42c62691adf592f980b5f0d9a",
+      "entries": 749,
+      "crcFailure": null,
+      "earliestEntry": "(2026, 10, 3, 23, 6, 28)",
+      "latestEntry": "(2026, 10, 3, 23, 6, 28)"
+    },
+    {
+      "path": "test-results/rc02/staff-invitation-Owner-inv-9a903-s-and-logs-in-with-WebAuthn/trace.zip",
+      "exists": true,
+      "bytes": 3842444,
+      "sha256": "c5aca2706fbaf8edfc326e5d59e2f11fa0343636020956ed27abfee56a0ec89e",
+      "entries": 193,
+      "crcFailure": null,
+      "earliestEntry": "(2026, 10, 12, 17, 44, 12)",
+      "latestEntry": "(2026, 10, 12, 17, 44, 12)"
+    }
+  ],
+  "retainedBrowserReportStats": {
+    "startTime": "2026-10-12T22:43:53.521Z",
+    "duration": 19879.409,
+    "expected": 1,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "retainedSourceAttribution": {
+    "candidateSha": "b684ee11460637bf2177f349057f14d6e804bbbd",
+    "traceSha256": "85977963e767b98012a65095cfdf867f2b5507b42c62691adf592f980b5f0d9a",
+    "profile": "Standard",
+    "modules": "all",
+    "localE2ETestMode": false
+  },
+  "prerequisite": "Gemini Stage 02 handoff absent; Sol Stage 02 recorded BLOCKED, not PASS.",
+  "runtimeAcceptance": {
+    "executed": 0,
+    "passed": 0,
+    "failed": 0,
+    "skipped": 0,
+    "unexecutedTestCaseCount": null
+  },
+  "environment": {
+    "shell": "PowerShell",
+    "envFilesLoaded": false,
+    "databaseInvoked": false,
+    "mediaInvoked": false,
+    "browserInvoked": false,
+    "providerInvoked": false,
+    "imageDigest": null
+  }
+}

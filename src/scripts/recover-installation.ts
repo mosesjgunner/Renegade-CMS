@@ -34,3 +34,9 @@ export const script = async (config: SanitizedConfig): Promise<void> => {
     await payload.db.destroy?.()
   }
 }
+
+if (process.argv[1] && /recover-installation(\.[cm]?[jt]s)?$/i.test(process.argv[1])) {
+  const { default: config } = await import('../payload.config')
+  await script(config as any)
+  process.exit(0)
+}

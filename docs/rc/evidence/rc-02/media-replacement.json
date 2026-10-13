@@ -3,9 +3,9 @@
     "impact": {
       "usages": [
         {
-          "id": "542583bf-e465-4824-b61b-df71f5a15fe0",
+          "id": "65895231-6e87-4285-84d1-e25935a885fb",
           "targetType": "content",
-          "targetId": "94243d00-f4d1-4c97-950c-fc4576ab4134",
+          "targetId": "6b6b42b7-c166-49f6-8dd9-92fe3721f4a0",
           "field": "heroMedia",
           "slot": "",
           "lifecycle": "public",
@@ -16,22 +16,22 @@
     }
   },
   "replacement": {
-    "id": "c4cd1ae7-c0e8-4641-a548-6c4ed3f350ff",
+    "id": "a39b1a75-09e9-4cf4-8cb6-edb75333a96c",
     "site": {
-      "id": "117cb44a-1b6e-49f8-9e9c-443a35a5119b",
+      "id": "b0ad252b-3b90-488f-adfb-7655cbae97ba",
       "name": "Renegade Party Dispatch",
       "slug": "renegadeparty",
       "description": "Independent civic reporting, local organizing and public accountability.",
       "lifecycle": "active",
       "communityRegistrationPolicy": "open",
       "commentReactionCodes": ["thumbs_up", "heart", "insightful", "applause"],
-      "updatedAt": "2026-10-12T22:41:25.850Z",
-      "createdAt": "2026-10-12T22:41:25.849Z"
+      "updatedAt": "2026-10-13T00:05:50.647Z",
+      "createdAt": "2026-10-13T00:05:50.646Z"
     },
     "publication": null,
     "space": null,
     "owner": {
-      "id": "8d232b91-f80f-40ed-b970-cd2b8ae3c3f1",
+      "id": "21b5fc2e-682e-4fd0-91ad-09f5b425329b",
       "displayName": "Renegade Party Dispatch",
       "email": "editor@renegadeparty.test",
       "status": "active",
@@ -47,36 +47,36 @@
       "verifiedEmailAt": null,
       "moderationReason": null,
       "stateReason": null,
-      "updatedAt": "2026-10-12T22:41:25.871Z",
-      "createdAt": "2026-10-12T22:41:25.871Z"
+      "updatedAt": "2026-10-13T00:05:50.669Z",
+      "createdAt": "2026-10-13T00:05:50.669Z"
     },
     "title": "Civic assembly diagram",
     "kind": "image",
-    "storageLocation": "117cb44a-1b6e-49f8-9e9c-443a35a5119b/6bb73010-5d3d-429b-bb12-e0911cbb2ee8.png",
+    "storageLocation": "b0ad252b-3b90-488f-adfb-7655cbae97ba/eb8ccb08-8679-49ea-b903-9ad18d753ed9.png",
     "storageProvider": "local",
     "originalBlob": {
-      "id": "24777232-4134-433b-bb08-0a5c86305edd",
+      "id": "035fdd81-6dfe-4aae-bec5-89c1e37dd440",
       "site": {
-        "id": "117cb44a-1b6e-49f8-9e9c-443a35a5119b",
+        "id": "b0ad252b-3b90-488f-adfb-7655cbae97ba",
         "name": "Renegade Party Dispatch",
         "slug": "renegadeparty",
         "description": "Independent civic reporting, local organizing and public accountability.",
         "lifecycle": "active",
         "communityRegistrationPolicy": "open",
         "commentReactionCodes": ["thumbs_up", "heart", "insightful", "applause"],
-        "updatedAt": "2026-10-12T22:41:25.850Z",
-        "createdAt": "2026-10-12T22:41:25.849Z"
+        "updatedAt": "2026-10-13T00:05:50.647Z",
+        "createdAt": "2026-10-13T00:05:50.646Z"
       },
       "publication": null,
       "space": null,
       "checksum": "sha256:16ba445eadefb0e27981e475147d22e132e007a1e904824c36a93365438903bc",
-      "storageKey": "117cb44a-1b6e-49f8-9e9c-443a35a5119b/6bb73010-5d3d-429b-bb12-e0911cbb2ee8.png",
+      "storageKey": "b0ad252b-3b90-488f-adfb-7655cbae97ba/eb8ccb08-8679-49ea-b903-9ad18d753ed9.png",
       "storageProvider": "local",
       "mimeType": "image/png",
       "sizeBytes": 35379,
       "state": "ready",
-      "updatedAt": "2026-10-12T22:42:13.788Z",
-      "createdAt": "2026-10-12T22:42:13.788Z"
+      "updatedAt": "2026-10-13T00:06:36.496Z",
+      "createdAt": "2026-10-13T00:06:36.496Z"
     },
     "originalFilename": "assembly.png",
     "mimeType": "image/png",
@@ -127,8 +127,8 @@
     "retentionHold": "none",
     "removeFromDiscovery": false,
     "tombstoneLabel": null,
-    "updatedAt": "2026-10-12T22:42:13.794Z",
-    "createdAt": "2026-10-12T22:42:13.794Z"
+    "updatedAt": "2026-10-13T00:06:36.505Z",
+    "createdAt": "2026-10-13T00:06:36.505Z"
   },
-  "retainedHeroMedia": "895d5b7d-09c9-4b4c-8054-903279c279bd"
+  "retainedHeroMedia": "9a638d55-f68c-45b0-8b80-78da2495dc60"
 }

@@ -1,5 +1,6 @@
 import { guardTimelineWrite, timelineAccess } from '../modules/events/timeline'
 import type {
+  Access,
   CollectionBeforeChangeHook,
   CollectionBeforeDeleteHook,
   CollectionConfig,
@@ -43,9 +44,35 @@ import {
   structuredDataSourceFields,
   visibilityOptions,
 } from './canonical-shared'
+import {
+  operatorSiteCreateAccess,
+  operatorSiteReadAccess,
+  operatorSiteUpdateAccess,
+} from '../modules/operations/operator-grants'
 
 const staffOnly = ({ req }: { req: { user?: { role?: string } | null } }) =>
   ['owner', 'administrator', 'staff'].includes(String(req.user?.role))
+
+const tenantReadAccess: Access = (args) => {
+  const user = args.req?.user
+  if (!user || !['owner', 'administrator', 'staff'].includes(String(user.role))) return false
+  if (!args.req?.payload) return true
+  return operatorSiteReadAccess(args)
+}
+
+const tenantCreateAccess: Access = (args) => {
+  const user = args.req?.user
+  if (!user || !['owner', 'administrator', 'staff'].includes(String(user.role))) return false
+  if (!args.req?.payload) return true
+  return operatorSiteCreateAccess(args)
+}
+
+const tenantUpdateAccess: Access = (args) => {
+  const user = args.req?.user
+  if (!user || !['owner', 'administrator', 'staff'].includes(String(user.role))) return false
+  if (!args.req?.payload) return true
+  return operatorSiteUpdateAccess(args)
+}
 
 const taxonomyScope = [
   {
@@ -215,9 +242,12 @@ const refuseReferencedTaxonomyDeletion =
 export const MediaAssets: CollectionConfig = {
   slug: 'media-assets',
   admin: { useAsTitle: 'title', group: 'Media' },
-  // Metadata includes the opaque storage location. Anonymous readers must use the
-  // scoped public byte route, which independently verifies a published reference.
-  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
+  access: {
+    create: tenantCreateAccess,
+    delete: tenantReadAccess,
+    read: tenantReadAccess,
+    update: tenantUpdateAccess,
+  },
   hooks: {
     afterChange: [
       async ({ doc, previousDoc, req }) => {
@@ -803,9 +833,12 @@ export const Content: CollectionConfig = {
     description:
       'Posts and Pages share one editorial record. Use the Posts and Pages links for focused work.',
   },
-  // Public pages query through the explicit publication renderer; Payload's raw
-  // REST/GraphQL collection surface must not disclose drafts or private records.
-  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
+  access: {
+    create: tenantCreateAccess,
+    delete: tenantReadAccess,
+    read: tenantReadAccess,
+    update: tenantUpdateAccess,
+  },
   hooks: {
     beforeValidate: [
       async ({ data, originalDoc, req }) => {

@@ -1066,6 +1066,7 @@ test('RC-02: ordinary operator builds Renegade Party Dispatch from an empty inst
       writeFileSync('docs/rc/evidence/rc-02/restart.json', JSON.stringify(receipt, null, 2))
       await fresh.close()
     })
+    await context.storageState({ path: 'scratch/rc02-owner.json' })
     expect(pageErrors).toEqual([])
   } finally {
     writeFileSync(
