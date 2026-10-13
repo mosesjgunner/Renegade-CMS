@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server'
 import configPromise from '@payload-config'
-import { getPayload } from 'payload'
+import { createLocalReq, getPayload } from 'payload'
 import { convertLocalToUtc } from '@/modules/calendar/timezone'
 import { evaluateScheduleRules } from '@/modules/calendar/dependencies'
 import {
@@ -9,6 +9,7 @@ import {
 } from '@/modules/editorial/persistence'
 import type { EditorialActor } from '@/modules/editorial/workflow'
 import { checkOperatorRecordAccess } from '@/modules/operations/operator-grants'
+import { transactionPayload } from '@/modules/core/transaction-payload'
 
 type Doc = Record<string, any>
 
@@ -140,33 +141,45 @@ export async function POST(req: NextRequest) {
           )
         }
 
-        // Execute Schedule Persistence
+        // Scheduling and its real source audit either persist together or roll back.
         const idempotencyKey = `sched-cal-${sourceId}-${Date.now()}`
-        await scheduleEditorialPublication(payload, {
-          articleId: sourceId,
-          scheduledFor: tzResult.utcInstant,
-          timeZone: tzResult.timeZone,
-          actor,
-          idempotencyKey,
-          actorUserId,
-        })
+        const transactionID = await payload.db.beginTransaction()
+        if (!transactionID) throw new Error('Transactional scheduling storage is unavailable.')
+        const transactionReq = await createLocalReq({ user: auth.user }, payload)
+        transactionReq.transactionID = transactionID
+        const transactional = transactionPayload(payload, transactionReq)
+        try {
+          await scheduleEditorialPublication(transactional, {
+            articleId: sourceId,
+            scheduledFor: tzResult.utcInstant,
+            timeZone: tzResult.timeZone,
+            actor,
+            idempotencyKey,
+            actorUserId,
+          })
 
-        // Log calendar audit
-        await payload.create({
-          collection: 'calendar-entry-audits',
-          data: {
-            action: action === 'reschedule' ? 'calendar.rescheduled' : 'calendar.scheduled',
-            actor: actorUserId,
-            before: { scheduledFor: article.scheduledFor, timeZone: article.timeZone },
-            after: {
-              scheduledFor: tzResult.utcInstant,
-              timeZone: tzResult.timeZone,
-              localFormatted: tzResult.localFormatted,
+          // Log calendar audit
+          await transactional.create({
+            collection: 'calendar-entry-audits',
+            data: {
+              article: String(article.id),
+              action: action === 'reschedule' ? 'calendar.rescheduled' : 'calendar.scheduled',
+              actor: actorUserId,
+              before: { scheduledFor: article.scheduledFor, timeZone: article.timeZone },
+              after: {
+                scheduledFor: tzResult.utcInstant,
+                timeZone: tzResult.timeZone,
+                localFormatted: tzResult.localFormatted,
+              },
+              createdAt: new Date().toISOString(),
             },
-            createdAt: new Date().toISOString(),
-          },
-          overrideAccess: true,
-        } as never)
+            overrideAccess: true,
+          } as never)
+          await payload.db.commitTransaction(transactionID)
+        } catch (error) {
+          await payload.db.rollbackTransaction(transactionID)
+          throw error
+        }
 
         return NextResponse.json({
           ok: true,

@@ -5212,7 +5212,8 @@ export interface ExternalPost {
  */
 export interface CalendarEntryAudit {
   id: string;
-  calendarEntry: string | CalendarEntry;
+  calendarEntry?: (string | null) | CalendarEntry;
+  article?: (string | null) | ArticleFamilyContent;
   action: string;
   actor?: (string | null) | User;
   before?:
@@ -9726,6 +9727,10 @@ export interface PayloadLockedDocument {
         value: string | ScheduledPublishJob;
       } | null)
     | ({
+        relationTo: 'calendar-entry-audits';
+        value: string | CalendarEntryAudit;
+      } | null)
+    | ({
         relationTo: 'media-usages';
         value: string | MediaUsage;
       } | null)
@@ -11780,6 +11785,7 @@ export interface CampaignsSelect<T extends boolean = true> {
  */
 export interface CalendarEntryAuditsSelect<T extends boolean = true> {
   calendarEntry?: T;
+  article?: T;
   action?: T;
   actor?: T;
   before?: T;
