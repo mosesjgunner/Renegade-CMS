@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createHash, createHmac, randomBytes, randomUUID } from 'node:crypto'
-import { afterAll, beforeAll, describe, expect, it } from 'vitest'
+import { afterAll, beforeAll, describe, expect, it, vi } from 'vitest'
 import { getPayload, type Payload } from 'payload'
 
 import config from '../../src/payload.config'
@@ -673,12 +673,36 @@ describe('Shared Contract Proof: Checkout/Order, Member/Subscription, Donations 
     })
 
     it('9. Proves exactly one canonical Order and one correct receipt created across duplicate deliveries', async () => {
+      // Persist the validated proposal rather than asking settlement to invent
+      // the shipping address of a physical purchase.
+      const persistedProposal = await payload.create({
+        collection: 'checkout-proposals',
+        data: {
+          site: siteId,
+          cart: persistedCartDoc.id,
+          merchantConnection: merchantConnectionId,
+          cartVersion: checkoutProposal.cartVersion,
+          currency: checkoutProposal.currency,
+          customer: checkoutProposal.customer,
+          shippingAddress: checkoutProposal.shippingAddress?.normalized,
+          selectedShippingRate: checkoutProposal.selectedShippingRate,
+          pricingSnapshot: checkoutProposal.pricingSnapshot,
+          taxSnapshot: checkoutProposal.taxSnapshot,
+          consents: checkoutProposal.consents,
+          fulfillmentSplit: checkoutProposal.fulfillmentSplit,
+          integrityHash: checkoutProposal.integrityHash,
+          expiresAt: checkoutProposal.expiresAt,
+          state: 'active',
+        },
+        overrideAccess: true,
+      } as never)
       // Create session & intent documents in Payload
       checkoutSessionDoc = (await payload.create({
         collection: 'checkout-sessions',
         data: {
           site: siteId,
           cart: persistedCartDoc.id,
+          proposal: persistedProposal.id,
           merchantConnection: merchantConnectionId,
           currency: 'USD',
           amountMinor: '10412',
@@ -731,12 +755,42 @@ describe('Shared Contract Proof: Checkout/Order, Member/Subscription, Donations 
           currency: 'USD',
           amountMinor: '10412',
           cart: persistedCartDoc.id,
+          proposal: persistedProposal.id,
         },
         merchantId: merchantConnectionId,
         verifiedAt: verificationTime,
       }
 
-      // First delivery: creates order and issues receipt
+      // A storage failure after payment cannot silently drop fulfillment on replay.
+      const originalCreate = payload.create.bind(payload) as any
+      let injected = false
+      const createFault = vi.spyOn(payload, 'create').mockImplementation(async (args: any) => {
+        if (!injected && args.collection === 'manual-fulfillment-packages') {
+          injected = true
+          throw new Error('Deliberate acceptance fulfillment storage failure')
+        }
+        return originalCreate(args)
+      })
+      try {
+        await expect(finalizeVerifiedOrder(payload, settlementInput)).rejects.toThrow(
+          'Deliberate acceptance fulfillment storage failure',
+        )
+      } finally {
+        createFault.mockRestore()
+      }
+      expect(injected).toBe(true)
+      const interruptedOrders = await payload.find({
+        collection: 'orders',
+        where: {
+          checkoutSession: { equals: checkoutSessionDoc.id },
+        },
+        overrideAccess: true,
+      })
+      expect(interruptedOrders.docs).toHaveLength(1)
+      expect((interruptedOrders.docs[0].receipt as any)?.state).toBe('issued')
+      expect((interruptedOrders.docs[0].fulfillmentExtension as any)?.planId).toBeUndefined()
+
+      // Recovery persists missing business work while preserving the paid order.
       await finalizeVerifiedOrder(payload, settlementInput)
 
       // Concurrent duplicate delivery: executes with identical input
@@ -760,6 +814,18 @@ describe('Shared Contract Proof: Checkout/Order, Member/Subscription, Donations 
       expect(order.receipt.state).toBe('issued')
       expect(order.receipt.amountMinor).toBe('10412')
       expect(order.receipt.receiptNumber).toBe(`receipt_${createdOrderId}`)
+      const packages = await payload.find({
+        collection: 'manual-fulfillment-packages',
+        where: { order: { equals: createdOrderId } },
+        overrideAccess: true,
+      })
+      expect(packages.docs).toHaveLength(1)
+      expect(packages.docs[0].permissionedAddressManifest).toMatchObject({
+        name: 'Citizen Jane',
+        address1: '123 Renegade Way',
+        city: 'Austin',
+        country: 'US',
+      })
 
       // Verify receipt message snapshot produces valid transactional delivery message
       const msg = receiptMessageSnapshot({
