@@ -4,6 +4,7 @@ import { getPayload, type Payload } from 'payload'
 import { migrations } from '../migrations'
 import * as eventsEntitlementMigration from '../migrations/20260923_090000_events_required_entitlement'
 import { assertPublishingRuntimeSchema } from './assert-publishing-runtime-schema'
+import { assertUuidRuntimeSchema } from './assert-uuid-runtime-schema'
 
 /** Advance this name, and only this name, when the supported upgrade baseline moves. */
 export const UPGRADE_BASELINE = '20260914_110000_med_05_video_workflow'
@@ -325,6 +326,7 @@ async function assertUpgrade(payload: Payload) {
   )
     throw new Error('Upgrade did not create the optional Events entitlement JSON column.')
   await assertPublishingRuntimeSchema(poolFor(payload))
+  await assertUuidRuntimeSchema(poolFor(payload))
   const form = await payload.create({
     collection: 'form-definitions',
     data: {

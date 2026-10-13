@@ -8,6 +8,7 @@ import {
   cancelScheduledPublication,
 } from '@/modules/editorial/persistence'
 import type { EditorialActor } from '@/modules/editorial/workflow'
+import { checkOperatorRecordAccess } from '@/modules/operations/operator-grants'
 
 type Doc = Record<string, any>
 
@@ -39,6 +40,18 @@ export async function POST(req: NextRequest) {
     if (!sourceId) {
       return NextResponse.json({ error: 'sourceId is required.' }, { status: 400 })
     }
+
+    if (
+      sourceType === 'article' &&
+      !(await checkOperatorRecordAccess(
+        payload,
+        auth.user,
+        'article-family-content',
+        String(sourceId),
+        'content.site',
+      ))
+    )
+      return NextResponse.json({ error: 'Staff site access required.' }, { status: 403 })
 
     const actorUserId = String(auth.user.id)
     const actor: EditorialActor = {

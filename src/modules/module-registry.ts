@@ -149,7 +149,6 @@ export const OPTIONAL_MODULES: readonly ModuleManifestEntry[] = [
       'social-publish-attempts',
       'external-posts',
       'campaigns',
-      'calendar-entry-audits',
     ],
     tasks: ['social-publish'],
   },

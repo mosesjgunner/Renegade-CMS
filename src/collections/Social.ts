@@ -1,9 +1,13 @@
 import type { CollectionConfig } from 'payload'
 
 import { ownerFields } from './canonical-shared'
+import {
+  operatorSiteCreateAccess,
+  operatorSiteReadAccess,
+  operatorSiteUpdateAccess,
+  operatorRelatedSiteAccess,
+} from '../modules/operations/operator-grants'
 
-const staffOnly = ({ req }: { req: { user?: { role?: string } | null } }) =>
-  ['owner', 'administrator', 'staff'].includes(String(req.user?.role))
 const states = [
   'draft',
   'review',
@@ -36,7 +40,12 @@ const networks = [
 const base = (slug: string, title: string): CollectionConfig => ({
   slug,
   admin: { useAsTitle: title, group: 'Social Studio' },
-  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
+  access: {
+    create: operatorSiteCreateAccess,
+    delete: operatorSiteReadAccess,
+    read: operatorSiteReadAccess,
+    update: operatorSiteUpdateAccess,
+  },
   fields: [],
 })
 
@@ -107,6 +116,7 @@ export const SocialDrafts: CollectionConfig = {
 }
 export const SocialNetworkVariants: CollectionConfig = {
   ...base('social-network-variants', 'label'),
+  access: operatorRelatedSiteAccess('draft.site', 'social-drafts'),
   fields: [
     {
       name: 'draft',
@@ -144,6 +154,7 @@ export const SocialNetworkVariants: CollectionConfig = {
 }
 export const SocialQueueItems: CollectionConfig = {
   ...base('social-queue-items', 'idempotencyKey'),
+  access: operatorRelatedSiteAccess('account.site', 'social-accounts'),
   fields: [
     {
       name: 'variant',
@@ -187,6 +198,7 @@ export const SocialQueueItems: CollectionConfig = {
 }
 export const SocialPublishAttempts: CollectionConfig = {
   ...base('social-publish-attempts', 'idempotencyKey'),
+  access: operatorRelatedSiteAccess('variant.draft.site', 'social-network-variants'),
   fields: [
     {
       name: 'queueItem',
@@ -218,6 +230,7 @@ export const SocialPublishAttempts: CollectionConfig = {
 }
 export const ExternalPosts: CollectionConfig = {
   ...base('external-posts', 'remoteId'),
+  access: operatorRelatedSiteAccess('account.site', 'social-accounts'),
   fields: [
     {
       name: 'variant',
@@ -307,6 +320,15 @@ export const Campaigns: CollectionConfig = {
 }
 export const SocialCalendarEntries: CollectionConfig = {
   ...base('calendar-entry-audits', 'action'),
+  access: {
+    create: () => false,
+    update: () => false,
+    delete: () => false,
+    read: async ({ req }) => {
+      const allowed = await operatorSiteReadAccess({ req })
+      return allowed === true ? true : allowed ? { actor: { equals: req.user!.id } } : false
+    },
+  },
   fields: [
     {
       name: 'calendarEntry',

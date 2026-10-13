@@ -1,4 +1,10 @@
 import type { CollectionConfig } from 'payload'
+import {
+  operatorSiteCreateAccess,
+  operatorSiteReadAccess,
+  operatorSiteUpdateAccess,
+  operatorRelatedSiteAccess,
+} from '../modules/operations/operator-grants'
 
 import {
   canonicalSlug,
@@ -18,13 +24,15 @@ import {
   recordPublishedPathHistory,
 } from '../modules/public/semantic-url-service'
 
-const staffOnly = ({ req }: { req: { user?: { role?: string } | null } }) =>
-  ['owner', 'administrator', 'staff'].includes(String(req.user?.role))
-
 export const ForumSections: CollectionConfig = {
   slug: 'forum-sections',
   admin: { useAsTitle: 'name', group: 'Community' },
-  access: { create: staffOnly, delete: staffOnly, read: () => true, update: staffOnly },
+  access: {
+    create: operatorSiteCreateAccess,
+    delete: operatorSiteReadAccess,
+    read: () => true,
+    update: operatorSiteUpdateAccess,
+  },
   fields: [
     ...siteScopeFields(),
     { name: 'name', type: 'text', required: true },
@@ -37,7 +45,12 @@ export const ForumSections: CollectionConfig = {
 export const Forums: CollectionConfig = {
   slug: 'forums',
   admin: { useAsTitle: 'name', group: 'Community' },
-  access: { create: staffOnly, delete: staffOnly, read: () => true, update: staffOnly },
+  access: {
+    create: operatorSiteCreateAccess,
+    delete: operatorSiteReadAccess,
+    read: () => true,
+    update: operatorSiteUpdateAccess,
+  },
   fields: [
     ...siteScopeFields(),
     { name: 'section', type: 'relationship', relationTo: 'forum-sections', required: true },
@@ -53,7 +66,12 @@ export const Forums: CollectionConfig = {
 export const Discussions: CollectionConfig = {
   slug: 'discussions',
   admin: { useAsTitle: 'title', group: 'Community' },
-  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
+  access: {
+    create: operatorSiteCreateAccess,
+    delete: operatorSiteReadAccess,
+    read: operatorSiteReadAccess,
+    update: operatorSiteUpdateAccess,
+  },
   hooks: {
     beforeValidate: [
       async ({ data, originalDoc, req, context }) => {
@@ -143,7 +161,7 @@ export const Discussions: CollectionConfig = {
 export const DiscussionPosts: CollectionConfig = {
   slug: 'discussion-posts',
   admin: { useAsTitle: 'permalink', group: 'Community' },
-  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
+  access: operatorRelatedSiteAccess('discussion.site', 'discussions'),
   fields: [
     {
       name: 'discussion',
