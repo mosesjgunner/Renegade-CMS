@@ -48,6 +48,7 @@ import {
   operatorSiteCreateAccess,
   operatorSiteReadAccess,
   operatorSiteUpdateAccess,
+  operatorRelatedSiteAccess,
 } from '../modules/operations/operator-grants'
 
 const staffOnly = ({ req }: { req: { user?: { role?: string } | null } }) =>
@@ -433,7 +434,12 @@ export const MediaAssets: CollectionConfig = {
 export const MediaAssetVersions: CollectionConfig = {
   slug: 'media-asset-versions',
   admin: { useAsTitle: 'versionLabel', group: 'Media', hidden: true },
-  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
+  access: {
+    create: operatorSiteCreateAccess,
+    delete: operatorSiteReadAccess,
+    read: operatorSiteReadAccess,
+    update: operatorSiteUpdateAccess,
+  },
   fields: [
     ...siteScopeFields(),
     {
@@ -467,7 +473,12 @@ export const MediaAssetVersions: CollectionConfig = {
 export const MediaGovernanceIncidents: CollectionConfig = {
   slug: 'media-governance-incidents',
   admin: { useAsTitle: 'summary', group: 'Media' },
-  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
+  access: {
+    create: operatorSiteCreateAccess,
+    delete: operatorSiteReadAccess,
+    read: operatorSiteReadAccess,
+    update: operatorSiteUpdateAccess,
+  },
   fields: [
     ...siteScopeFields(),
     {
@@ -498,7 +509,12 @@ export const MediaGovernanceIncidents: CollectionConfig = {
 export const MediaBlobs: CollectionConfig = {
   slug: 'media-blobs',
   admin: { useAsTitle: 'checksum', group: 'Media', hidden: true },
-  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
+  access: {
+    create: operatorSiteCreateAccess,
+    delete: operatorSiteReadAccess,
+    read: operatorSiteReadAccess,
+    update: operatorSiteUpdateAccess,
+  },
   fields: [
     ...siteScopeFields(),
     { name: 'checksum', type: 'text', required: true, index: true },
@@ -521,7 +537,12 @@ export const MediaBlobs: CollectionConfig = {
 export const MediaVariants: CollectionConfig = {
   slug: 'media-variants',
   admin: { useAsTitle: 'label', group: 'Media' },
-  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
+  access: {
+    create: operatorSiteCreateAccess,
+    delete: operatorSiteReadAccess,
+    read: operatorSiteReadAccess,
+    update: operatorSiteUpdateAccess,
+  },
   fields: [
     ...siteScopeFields(),
     {
@@ -570,7 +591,12 @@ export const MediaVariants: CollectionConfig = {
 export const MediaUploadSessions: CollectionConfig = {
   slug: 'media-upload-sessions',
   admin: { useAsTitle: 'filename', group: 'Media', hidden: true },
-  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
+  access: {
+    create: operatorSiteCreateAccess,
+    delete: operatorSiteReadAccess,
+    read: operatorSiteReadAccess,
+    update: operatorSiteUpdateAccess,
+  },
   fields: [
     ...siteScopeFields(),
     { name: 'owner', type: 'relationship', relationTo: 'members', required: true, index: true },
@@ -599,7 +625,12 @@ export const MediaUploadSessions: CollectionConfig = {
 export const Sections: CollectionConfig = {
   slug: 'sections',
   admin: { useAsTitle: 'name', group: 'Taxonomy' },
-  access: { create: staffOnly, delete: staffOnly, read: () => true, update: staffOnly },
+  access: {
+    create: operatorSiteCreateAccess,
+    delete: operatorSiteReadAccess,
+    read: () => true,
+    update: operatorSiteUpdateAccess,
+  },
   hooks: { beforeChange: [enforceTaxonomyTenantBoundary] },
   fields: [
     ...taxonomyScope,
@@ -614,7 +645,12 @@ export const Sections: CollectionConfig = {
 export const Categories: CollectionConfig = {
   slug: 'categories',
   admin: { useAsTitle: 'name', group: 'Taxonomy' },
-  access: { create: staffOnly, delete: staffOnly, read: () => true, update: staffOnly },
+  access: {
+    create: operatorSiteCreateAccess,
+    delete: operatorSiteReadAccess,
+    read: () => true,
+    update: operatorSiteUpdateAccess,
+  },
   hooks: {
     beforeDelete: [refuseReferencedTaxonomyDeletion('categories')],
     beforeChange: [
@@ -657,7 +693,12 @@ export const Categories: CollectionConfig = {
 const simpleTaxonomy = (slug: string, label: string, semanticUrl = false): CollectionConfig => ({
   slug,
   admin: { useAsTitle: 'name', group: 'Taxonomy' },
-  access: { create: staffOnly, delete: staffOnly, read: () => true, update: staffOnly },
+  access: {
+    create: operatorSiteCreateAccess,
+    delete: operatorSiteReadAccess,
+    read: () => true,
+    update: operatorSiteUpdateAccess,
+  },
   hooks: {
     beforeChange: [
       enforceTaxonomyTenantBoundary,
@@ -732,7 +773,12 @@ export const Series = simpleTaxonomy('series', 'Series')
 export const TaxonomyRedirects: CollectionConfig = {
   slug: 'taxonomy-redirects',
   admin: { useAsTitle: 'fromPath', group: 'Taxonomy' },
-  access: { create: staffOnly, delete: staffOnly, read: () => true, update: staffOnly },
+  access: {
+    create: operatorSiteCreateAccess,
+    delete: operatorSiteReadAccess,
+    read: () => true,
+    update: operatorSiteUpdateAccess,
+  },
   fields: [
     { name: 'site', type: 'relationship', relationTo: 'sites', required: true, index: true },
     { name: 'fromPath', type: 'text', required: true, unique: true },
@@ -746,7 +792,12 @@ export const TaxonomyRedirects: CollectionConfig = {
 export const PublicRedirects: CollectionConfig = {
   slug: 'public-redirects',
   admin: { useAsTitle: 'fromPath', group: 'Publishing' },
-  access: { create: staffOnly, delete: staffOnly, read: () => true, update: staffOnly },
+  access: {
+    create: operatorSiteCreateAccess,
+    delete: operatorSiteReadAccess,
+    read: () => true,
+    update: operatorSiteUpdateAccess,
+  },
   hooks: {
     beforeValidate: [
       ({ data }) => {
@@ -1124,7 +1175,7 @@ export const Content: CollectionConfig = {
 export const ArticleFamilyContent: CollectionConfig = {
   slug: 'article-family-content',
   admin: { useAsTitle: 'articleKey', group: 'Publishing' },
-  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
+  access: operatorRelatedSiteAccess('content.site', 'content'),
   fields: [
     {
       name: 'content',
@@ -1243,7 +1294,7 @@ export const ArticleFamilyContent: CollectionConfig = {
 export const MarkdownConversionReports: CollectionConfig = {
   slug: 'markdown-conversion-reports',
   admin: { useAsTitle: 'sourceChecksum', group: 'Publishing' },
-  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
+  access: operatorRelatedSiteAccess('article.content.site', 'article-family-content'),
   fields: [
     {
       name: 'article',
@@ -1272,7 +1323,11 @@ export const RevisionRecords: CollectionConfig = {
   admin: { useAsTitle: 'sequence', group: 'Publishing' },
   // Revision records are append-only evidence. Restoration creates a new record
   // linked to the retained historical revision rather than mutating history.
-  access: { create: staffOnly, delete: () => false, read: staffOnly, update: () => false },
+  access: {
+    ...operatorRelatedSiteAccess('article.content.site', 'article-family-content'),
+    delete: () => false,
+    update: () => false,
+  },
   fields: [
     {
       name: 'article',
@@ -1311,7 +1366,7 @@ export const RevisionRecords: CollectionConfig = {
 export const PreviewTokens: CollectionConfig = {
   slug: 'preview-tokens',
   admin: { useAsTitle: 'tokenHash', group: 'Publishing' },
-  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
+  access: operatorRelatedSiteAccess('article.content.site', 'article-family-content'),
   fields: [
     {
       name: 'article',
@@ -1338,7 +1393,7 @@ export const PreviewTokens: CollectionConfig = {
 export const ScheduledPublishJobs: CollectionConfig = {
   slug: 'scheduled-publish-jobs',
   admin: { useAsTitle: 'idempotencyKey', group: 'Publishing' },
-  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
+  access: operatorRelatedSiteAccess('article.content.site', 'article-family-content'),
   fields: [
     {
       name: 'article',
@@ -1382,7 +1437,12 @@ export const ScheduledPublishJobs: CollectionConfig = {
 export const Events: CollectionConfig = {
   slug: 'events',
   admin: { useAsTitle: 'title', group: 'Calendar' },
-  access: { create: staffOnly, delete: staffOnly, read: () => true, update: staffOnly },
+  access: {
+    create: operatorSiteCreateAccess,
+    delete: operatorSiteReadAccess,
+    read: () => true,
+    update: operatorSiteUpdateAccess,
+  },
   hooks: {
     beforeValidate: [
       async ({ data, originalDoc, req, context }) => {
@@ -1724,7 +1784,12 @@ export const TimelineMemberships: CollectionConfig = {
 export const Sources: CollectionConfig = {
   slug: 'sources',
   admin: { useAsTitle: 'title', group: 'Publishing' },
-  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
+  access: {
+    create: operatorSiteCreateAccess,
+    delete: operatorSiteReadAccess,
+    read: operatorSiteReadAccess,
+    update: operatorSiteUpdateAccess,
+  },
   fields: [
     ...siteScopeFields(),
     { name: 'title', type: 'text', required: true },
@@ -1755,7 +1820,12 @@ export const Sources: CollectionConfig = {
 export const Albums: CollectionConfig = {
   slug: 'albums',
   admin: { useAsTitle: 'title', group: 'Media' },
-  access: { create: staffOnly, delete: staffOnly, read: () => true, update: staffOnly },
+  access: {
+    create: operatorSiteCreateAccess,
+    delete: operatorSiteReadAccess,
+    read: () => true,
+    update: operatorSiteUpdateAccess,
+  },
   hooks: {
     beforeValidate: [
       async ({ data, originalDoc, req, context }) => {
@@ -1855,7 +1925,12 @@ export const Albums: CollectionConfig = {
 export const MediaUsages: CollectionConfig = {
   slug: 'media-usages',
   admin: { useAsTitle: 'usageKey', group: 'Media' },
-  access: { create: staffOnly, delete: staffOnly, read: staffOnly, update: staffOnly },
+  access: {
+    create: operatorSiteCreateAccess,
+    delete: operatorSiteReadAccess,
+    read: operatorSiteReadAccess,
+    update: operatorSiteUpdateAccess,
+  },
   fields: [
     { name: 'site', type: 'relationship', relationTo: 'sites', required: true, index: true },
     {

@@ -1,4 +1,36 @@
-import type { Access, Payload } from 'payload'
+import type { Access, CollectionSlug, Payload } from 'payload'
+
+/** Child records inherit authority from their persisted parent, never a caller's site hint. */
+export function operatorRelatedSiteAccess(sitePath: string, parentCollection: CollectionSlug) {
+  const [relation, ...parentPath] = sitePath.split('.')
+  const read: Access = async ({ req }) => {
+    const grant = await resolveOperatorGrantContext(req.payload, req.user)
+    if (!grant.authorized) return false
+    return grant.isGlobalOwner ? true : { [sitePath]: { in: grant.authorizedSiteIds } }
+  }
+  const canReference: Access = async ({ req, data }) => {
+    const grant = await resolveOperatorGrantContext(req.payload, req.user)
+    if (!grant.authorized) return false
+    if (!data || !Object.prototype.hasOwnProperty.call(data, relation)) return true
+    const id = asId(data[relation])
+    if (!id) return false
+    const result = await req.payload.count({
+      collection: parentCollection,
+      where: grant.isGlobalOwner
+        ? { id: { equals: id } }
+        : {
+            and: [
+              { id: { equals: id } },
+              { [parentPath.join('.')]: { in: grant.authorizedSiteIds } },
+            ],
+          },
+      overrideAccess: true,
+    })
+    return result.totalDocs === 1
+  }
+  const update: Access = async (args) => ((await canReference(args)) ? read(args) : false)
+  return { create: canReference, read, update, delete: read }
+}
 
 /** Native Payload reads must apply the same site grants as operator APIs. */
 export const operatorSiteReadAccess: Access = async ({ req }) => {
@@ -6,6 +38,27 @@ export const operatorSiteReadAccess: Access = async ({ req }) => {
   if (!grant.authorized) return false
   if (grant.isGlobalOwner) return true
   return { site: { in: grant.authorizedSiteIds } }
+}
+
+export async function checkOperatorRecordAccess(
+  payload: Payload,
+  user: Parameters<typeof resolveOperatorGrantContext>[1],
+  collection: CollectionSlug,
+  id: string,
+  sitePath = 'site',
+): Promise<boolean> {
+  const grant = await resolveOperatorGrantContext(payload, user)
+  if (!grant.authorized) return false
+  const result = await payload.count({
+    collection,
+    overrideAccess: true,
+    where: grant.isGlobalOwner
+      ? { id: { equals: id } }
+      : {
+          and: [{ id: { equals: id } }, { [sitePath]: { in: grant.authorizedSiteIds } }],
+        },
+  })
+  return result.totalDocs === 1
 }
 
 export const operatorSiteCreateAccess: Access = async ({ req, data }) => {

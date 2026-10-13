@@ -1,7 +1,10 @@
 import type { CollectionConfig, Field } from 'payload'
-
-const staff = ({ req }: { req: { user?: { role?: string } | null } }) =>
-  ['owner', 'administrator', 'staff'].includes(String(req.user?.role))
+import {
+  operatorSiteCreateAccess,
+  operatorSiteReadAccess,
+  operatorSiteUpdateAccess,
+  operatorRelatedSiteAccess,
+} from '../modules/operations/operator-grants'
 
 const scopeFields: Field[] = [
   { name: 'site', type: 'relationship', relationTo: 'sites', required: true, index: true },
@@ -12,7 +15,12 @@ const scopeFields: Field[] = [
 const base = (slug: string, title: string): CollectionConfig => ({
   slug,
   admin: { useAsTitle: title, group: 'Integrations' },
-  access: { create: staff, delete: staff, read: staff, update: staff },
+  access: {
+    create: operatorSiteCreateAccess,
+    delete: operatorSiteReadAccess,
+    read: operatorSiteReadAccess,
+    update: operatorSiteUpdateAccess,
+  },
   fields: [],
 })
 
@@ -53,6 +61,7 @@ export const WebhookSubscriptions: CollectionConfig = {
 
 export const WebhookDeliveries: CollectionConfig = {
   ...base('webhook-deliveries', 'eventId'),
+  access: operatorRelatedSiteAccess('subscription.site', 'webhook-subscriptions'),
   fields: [
     {
       name: 'subscription',

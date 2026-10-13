@@ -3,6 +3,7 @@ import { getPayload, type Payload } from 'payload'
 
 import { migrations } from '../migrations'
 import { assertPublishingRuntimeSchema } from './assert-publishing-runtime-schema'
+import { assertUuidRuntimeSchema } from './assert-uuid-runtime-schema'
 import { isDedicatedDatabase } from './verification-contract'
 
 type Pool = {
@@ -53,6 +54,7 @@ export async function verifyFreshMigration() {
       throw new Error('Fresh migration did not create the optional Events entitlement JSON column.')
     }
     await assertPublishingRuntimeSchema(db.pool)
+    await assertUuidRuntimeSchema(db.pool)
   } finally {
     await payload.db.destroy?.()
   }

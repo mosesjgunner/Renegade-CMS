@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { resolveOperatorGrantContext } from '../modules/operations/operator-grants'
 
 export const Sites: CollectionConfig = {
   slug: 'sites',
@@ -7,8 +8,12 @@ export const Sites: CollectionConfig = {
     create: ({ req }) => req.user?.role === 'owner',
     delete: ({ req }) => req.user?.role === 'owner',
     read: () => true,
-    update: ({ req }) =>
-      Boolean(req.user?.role && ['owner', 'administrator'].includes(String(req.user.role))),
+    update: async ({ req }) => {
+      if (!['owner', 'administrator'].includes(String(req.user?.role))) return false
+      const grant = await resolveOperatorGrantContext(req.payload, req.user)
+      if (!grant.authorized) return false
+      return grant.isGlobalOwner ? true : { id: { in: grant.authorizedSiteIds } }
+    },
   },
   hooks: {
     beforeValidate: [

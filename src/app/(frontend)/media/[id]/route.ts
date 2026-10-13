@@ -5,6 +5,7 @@ import { NextResponse } from 'next/server'
 import { mediaStorage } from '@/modules/media/storage'
 import { mediaStorageKey, publicMedia } from '@/modules/media/workflow'
 import { loadConfig } from '@/modules/core/config'
+import { checkOperatorSiteAccess } from '@/modules/operations/operator-grants'
 import {
   formatMimeTypes,
   standardRecipes,
@@ -37,6 +38,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
   const isDownload = url.searchParams.get('download') === 'true'
 
   let media = await publicMedia(payload, id)
+  const isPublic = Boolean(media)
   const auth = await payload.auth({ headers: request.headers }).catch(() => ({ user: null }))
   const isStaff = Boolean(
     auth.user && ['owner', 'administrator', 'staff'].includes(String(auth.user.role)),
@@ -46,6 +48,9 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     media = (await payload
       .findByID({ collection: 'media-assets', id, depth: 0, overrideAccess: true } as never)
       .catch(() => undefined)) as unknown as Record<string, unknown> | undefined
+    const siteId = typeof media?.site === 'object' && media.site !== null
+      ? String((media.site as { id?: unknown }).id ?? '') : String(media?.site ?? '')
+    if (!(await checkOperatorSiteAccess(payload, auth.user, siteId))) media = undefined
   }
 
   if (!media) return new NextResponse('Not found', { status: 404 })
@@ -138,7 +143,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
           const headers: Record<string, string> = {
             'Content-Type': mimeType,
             'Content-Length': String(bytes.byteLength),
-            'Cache-Control': 'public, max-age=31536000, immutable',
+            'Cache-Control': isPublic ? 'public, max-age=31536000, immutable' : 'private, no-store',
             ETag: checksum,
             'Content-Location': `/media/${id}?variant=${encodeURIComponent(variantKey)}&format=${chosenVariant.format}&v=${chosenVariant.recipeVersion || standardRecipes[variantKey].version}`,
             'X-Content-Type-Options': 'nosniff',
@@ -193,7 +198,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
   const headers: Record<string, string> = {
     'Content-Type': mimeType,
     'Content-Length': String(bytes.byteLength),
-    'Cache-Control': 'public, max-age=31536000, immutable',
+    'Cache-Control': isPublic ? 'public, max-age=31536000, immutable' : 'private, no-store',
     ETag: checksum,
     'X-Content-Type-Options': 'nosniff',
   }

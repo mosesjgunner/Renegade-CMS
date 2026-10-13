@@ -1,4 +1,5 @@
 import * as migration_20261006_013000_rc08b_federation_ids from './20261006_013000_rc08b_federation_ids'
+import * as rc1UuidSchemaRepair from './20261013_160000_rc1_uuid_schema_repair'
 import * as rc08bFormIntake from './20261006_010000_rc08b_form_intake'
 import * as rc03NetworkOutboxIds from './20261004_160000_rc03_network_outbox_ids'
 import * as rc04CanonicalModeration from './20261004_180000_rc04_canonical_moderation'
@@ -655,5 +656,10 @@ export const migrations = [
     up: migration_20261006_013000_rc08b_federation_ids.up,
     down: migration_20261006_013000_rc08b_federation_ids.down,
     name: '20261006_013000_rc08b_federation_ids',
+  },
+  {
+    up: rc1UuidSchemaRepair.up,
+    down: rc1UuidSchemaRepair.down,
+    name: '20261013_160000_rc1_uuid_schema_repair',
   },
 ]

@@ -4,6 +4,7 @@ import { NextResponse } from 'next/server'
 import { executeWorkflowAction } from '@/modules/editorial/cmos-persistence'
 import type { EditorialRole } from '@/modules/editorial/workflow'
 import { WorkflowPermissionError, WorkflowStateError } from '@/modules/editorial/cmos-workflow'
+import { checkOperatorRecordAccess } from '@/modules/operations/operator-grants'
 
 export const runtime = 'nodejs'
 
@@ -46,6 +47,18 @@ export async function POST(request: Request) {
 
     if (!body.articleId || !body.action) {
       return NextResponse.json({ error: 'articleId and action are required.' }, { status: 400 })
+    }
+
+    if (
+      !(await checkOperatorRecordAccess(
+        payload,
+        auth.user,
+        'article-family-content',
+        body.articleId,
+        'content.site',
+      ))
+    ) {
+      return NextResponse.json({ error: 'Staff site access required.' }, { status: 403 })
     }
 
     const userRoleStr = String(auth.user.role)
