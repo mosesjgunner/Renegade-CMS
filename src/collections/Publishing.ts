@@ -49,6 +49,7 @@ import {
   operatorSiteReadAccess,
   operatorSiteUpdateAccess,
   operatorRelatedSiteAccess,
+  preserveRecordRelationshipsAccess,
 } from '../modules/operations/operator-grants'
 
 const staffOnly = ({ req }: { req: { user?: { role?: string } | null } }) =>
@@ -244,10 +245,14 @@ export const MediaAssets: CollectionConfig = {
   slug: 'media-assets',
   admin: { useAsTitle: 'title', group: 'Media' },
   access: {
-    create: tenantCreateAccess,
+    create: (args) => (args.data?.originalBlob ? false : tenantCreateAccess(args)),
     delete: tenantReadAccess,
     read: tenantReadAccess,
-    update: tenantUpdateAccess,
+    update: preserveRecordRelationshipsAccess(
+      'media-assets',
+      ['site', 'originalBlob', 'storageLocation'],
+      tenantUpdateAccess,
+    ),
   },
   hooks: {
     afterChange: [
@@ -318,7 +323,13 @@ export const MediaAssets: CollectionConfig = {
     // their bytes through originalBlob; this is never a public URL.
     { name: 'storageLocation', type: 'text', admin: { readOnly: true } },
     { name: 'storageProvider', type: 'text', required: true, defaultValue: 'local' },
-    { name: 'originalBlob', type: 'relationship', relationTo: 'media-blobs', index: true },
+    {
+      name: 'originalBlob',
+      type: 'relationship',
+      relationTo: 'media-blobs',
+      index: true,
+      admin: { readOnly: true },
+    },
     { name: 'originalFilename', type: 'text' },
     { name: 'mimeType', type: 'text' },
     { name: 'sizeBytes', type: 'number', min: 0 },
@@ -435,10 +446,10 @@ export const MediaAssetVersions: CollectionConfig = {
   slug: 'media-asset-versions',
   admin: { useAsTitle: 'versionLabel', group: 'Media', hidden: true },
   access: {
-    create: operatorSiteCreateAccess,
-    delete: operatorSiteReadAccess,
+    create: () => false,
+    delete: () => false,
     read: operatorSiteReadAccess,
-    update: operatorSiteUpdateAccess,
+    update: () => false,
   },
   fields: [
     ...siteScopeFields(),
@@ -510,10 +521,10 @@ export const MediaBlobs: CollectionConfig = {
   slug: 'media-blobs',
   admin: { useAsTitle: 'checksum', group: 'Media', hidden: true },
   access: {
-    create: operatorSiteCreateAccess,
-    delete: operatorSiteReadAccess,
+    create: () => false,
+    delete: () => false,
     read: operatorSiteReadAccess,
-    update: operatorSiteUpdateAccess,
+    update: () => false,
   },
   fields: [
     ...siteScopeFields(),
@@ -538,10 +549,10 @@ export const MediaVariants: CollectionConfig = {
   slug: 'media-variants',
   admin: { useAsTitle: 'label', group: 'Media' },
   access: {
-    create: operatorSiteCreateAccess,
-    delete: operatorSiteReadAccess,
+    create: () => false,
+    delete: () => false,
     read: operatorSiteReadAccess,
-    update: operatorSiteUpdateAccess,
+    update: () => false,
   },
   fields: [
     ...siteScopeFields(),
@@ -592,10 +603,10 @@ export const MediaUploadSessions: CollectionConfig = {
   slug: 'media-upload-sessions',
   admin: { useAsTitle: 'filename', group: 'Media', hidden: true },
   access: {
-    create: operatorSiteCreateAccess,
-    delete: operatorSiteReadAccess,
+    create: () => false,
+    delete: () => false,
     read: operatorSiteReadAccess,
-    update: operatorSiteUpdateAccess,
+    update: () => false,
   },
   fields: [
     ...siteScopeFields(),
