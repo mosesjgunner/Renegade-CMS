@@ -17,6 +17,7 @@ import {
   buildFulfillmentPlan,
   createPodJobAfterPaidAcceptance,
   DEFAULT_HOLD_WINDOW_MS,
+  validateShippingAddressForPod,
   type FulfillmentLineItem,
 } from './fulfillment-plan'
 import { createManualFulfillmentPackage, MANUAL_FULFILLMENT_DISCLAIMER } from './manual-fulfillment'
@@ -894,17 +895,21 @@ export async function finalizeVerifiedOrder(
       })
     }
   }
-  if (!alreadySettled) {
-    const rawShipping = proposal?.shippingAddress ?? order.addressSnapshot?.shipping ?? null
+  if (!alreadySettled || !order.fulfillmentExtension?.planId) {
+    const storedShipping = order.addressSnapshot?.shipping ?? proposal?.shippingAddress ?? null
+    const rawShipping = storedShipping?.normalized ?? storedShipping
     const recipientAddress = rawShipping
       ? {
-          name: String(rawShipping.name ?? order.partySnapshot?.name ?? 'Customer'),
-          address1: String(rawShipping.address1 ?? rawShipping.street ?? ''),
-          address2: rawShipping.address2 ? String(rawShipping.address2) : undefined,
+          name: String(rawShipping.name ?? order.partySnapshot?.name ?? ''),
+          address1: String(rawShipping.address1 ?? rawShipping.line1 ?? rawShipping.street ?? ''),
+          address2:
+            rawShipping.address2 || rawShipping.line2
+              ? String(rawShipping.address2 ?? rawShipping.line2)
+              : undefined,
           city: String(rawShipping.city ?? ''),
           state: rawShipping.state ? String(rawShipping.state) : undefined,
           postalCode: String(rawShipping.postalCode ?? rawShipping.zip ?? ''),
-          country: String(rawShipping.country ?? 'US'),
+          country: String(rawShipping.country ?? ''),
           phone: rawShipping.phone ? String(rawShipping.phone) : undefined,
           email: rawShipping.email ? String(rawShipping.email) : undefined,
         }
@@ -970,6 +975,14 @@ export async function finalizeVerifiedOrder(
       items: fulfillmentItems,
       connectionsByProviderKey,
     })
+
+    if (plan.providerJobs.length || plan.manualPackages.length) {
+      const address = validateShippingAddressForPod(recipientAddress, true)
+      if (!address.valid)
+        throw new Error(
+          `Shipping address requires operator reconciliation: ${address.issues.join(' ')}`,
+        )
+    }
 
     for (const plannedPod of plan.providerJobs) {
       if (!recipientAddress)
