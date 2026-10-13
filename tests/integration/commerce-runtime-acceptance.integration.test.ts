@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createHmac, randomUUID } from 'node:crypto'
+import { readFileSync } from 'node:fs'
 import { describe, expect, it } from 'vitest'
 import config from '../../src/payload.config'
 import { getPayload } from 'payload'
@@ -41,6 +42,8 @@ import {
   shipManualFulfillmentPackage,
 } from '../../src/modules/commerce/manual-fulfillment'
 import { resolveOperatorGrantContext } from '../../src/modules/operations/operator-grants'
+import { uploadMedia } from '../../src/modules/media/workflow'
+import { loadConfig } from '../../src/modules/core/config'
 
 describe('RC08D-04: Commerce Runtime Closure & Acceptance Verification', () => {
   it('proves catalog, low-stock race, cart authority, settlement, subscriptions, donations, affiliates, and fulfillment', async () => {
@@ -150,6 +153,24 @@ describe('RC08D-04: Commerce Runtime Closure & Acceptance Verification', () => {
       overrideAccess: true,
     })
 
+    // Upload a separate, private asset through the media persistence service.
+    // The public demo hero cannot satisfy private digital delivery preflight.
+    const operator = await payload.findByID({ collection: 'users', id: demo.userId })
+    const privateAsset = await uploadMedia(payload, loadConfig(), {
+      user: operator as any,
+      scope: { kind: 'site', siteId },
+      title: `Private album artwork ${suffix}`,
+      altText: 'Private digital purchase artwork',
+      originalFilename: `album-${suffix}.png`,
+      bytes: readFileSync('fixtures/renegadeparty-demo/assets/hero-liberty.png'),
+    })
+    await payload.update({
+      collection: 'media-assets',
+      id: privateAsset.id,
+      data: { publicPolicy: 'private' },
+      overrideAccess: true,
+    })
+
     // Also create a digital entitlement product for download verification
     const digitalProduct = await (payload as any).create({
       collection: 'products',
@@ -179,7 +200,7 @@ describe('RC08D-04: Commerce Runtime Closure & Acceptance Verification', () => {
           expiresAfterDays: 30,
           assets: [
             {
-              mediaId: String(demo.assets.hero.id),
+              mediaId: String(privateAsset.id),
               rightsStatus: 'approved',
               malwareStatus: 'clean',
               publicOriginal: false,
