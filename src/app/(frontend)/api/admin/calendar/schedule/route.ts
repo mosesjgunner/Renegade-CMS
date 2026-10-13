@@ -121,7 +121,7 @@ export async function POST(req: NextRequest) {
           {
             id: sourceId,
             title: String(article.title ?? 'Untitled'),
-            status: String(article.status ?? 'draft'),
+            status: String(article.lifecycle ?? article.status ?? 'draft'),
             scheduledFor: tzResult.utcInstant,
             siteId: idOf(article.site),
             publicationId: article.publication ? idOf(article.publication) : null,

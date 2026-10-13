@@ -3,7 +3,7 @@ import {
   operatorSiteReadAccess,
   operatorSiteUpdateAccess,
 } from '../modules/operations/operator-grants'
-import type { CollectionConfig } from 'payload'
+import type { Access, CollectionConfig } from 'payload'
 import { ownerFields, retentionFields } from './canonical-shared'
 
 const base = (slug: string, title: string): CollectionConfig => ({
@@ -119,8 +119,24 @@ export const AnalyticsGoals: CollectionConfig = {
   ],
   indexes: [{ fields: ['site', 'key'], unique: true }],
 }
+const personalPreferencesRead: Access = ({ req }) =>
+  req.user?.id ? { user: { equals: req.user.id } } : false
 export const CommandCenterPreferences: CollectionConfig = {
   ...base('command-center-preferences', 'id'),
+  access: {
+    read: personalPreferencesRead,
+    delete: personalPreferencesRead,
+    create: ({ req, data }) =>
+      Boolean(req.user?.id) &&
+      (!data?.user ||
+        String(typeof data.user === 'object' ? data.user.id : data.user) === String(req.user!.id)),
+    update: (args) =>
+      args.data?.user &&
+      String(typeof args.data.user === 'object' ? args.data.user.id : args.data.user) !==
+        String(args.req.user?.id)
+        ? false
+        : personalPreferencesRead(args),
+  },
   fields: [
     { name: 'user', type: 'relationship', relationTo: 'users', required: true, unique: true },
     { name: 'hiddenSections', type: 'json', defaultValue: [] },
