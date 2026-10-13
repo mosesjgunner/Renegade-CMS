@@ -1336,6 +1336,7 @@ export const RevisionRecords: CollectionConfig = {
   // linked to the retained historical revision rather than mutating history.
   access: {
     ...operatorRelatedSiteAccess('article.content.site', 'article-family-content'),
+    create: () => false,
     delete: () => false,
     update: () => false,
   },
@@ -1404,7 +1405,12 @@ export const PreviewTokens: CollectionConfig = {
 export const ScheduledPublishJobs: CollectionConfig = {
   slug: 'scheduled-publish-jobs',
   admin: { useAsTitle: 'idempotencyKey', group: 'Publishing' },
-  access: operatorRelatedSiteAccess('article.content.site', 'article-family-content'),
+  access: {
+    ...operatorRelatedSiteAccess('article.content.site', 'article-family-content'),
+    create: () => false,
+    update: () => false,
+    delete: () => false,
+  },
   fields: [
     {
       name: 'article',

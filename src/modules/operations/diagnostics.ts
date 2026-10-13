@@ -239,7 +239,7 @@ export async function buildOperationsDiagnostics(
       openIssues: Number((qualityIssueResult as { totalDocs?: number }).totalDocs ?? 0),
     }
     const capabilities = new CapabilityLifecycleService({
-      profile: 'Standard',
+      profile: config.deploymentProfile,
 
       coreVersion: config.version,
       schemaVersion: '1.0.0',

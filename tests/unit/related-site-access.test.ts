@@ -3,6 +3,8 @@ import {
   operatorRelatedSiteAccess,
   checkOperatorRecordAccess,
   preserveRecordRelationshipsAccess,
+  operatorAllSitesAccess,
+  operatorMemberScopeAccess,
 } from '@/modules/operations/operator-grants'
 
 function request() {
@@ -20,6 +22,43 @@ function request() {
 }
 
 describe('persisted parent site authority', () => {
+  it('bounds canonical members and profile substitution by persisted site membership', async () => {
+    const req = request()
+    req.payload.find.mockImplementation(async ({ collection, where }: any) => ({
+      docs:
+        collection === 'sites'
+          ? [{ id: 'site-a' }, { id: 'site-b' }]
+          : where.member
+            ? [{ site: 'site-a', role: 'community-manager' }]
+            : [{ member: 'member-a' }, { member: 'target-a' }],
+    }))
+    expect(await operatorMemberScopeAccess('id').read({ req })).toEqual({
+      id: { in: ['member-a', 'target-a'] },
+    })
+    const profile = operatorMemberScopeAccess()
+    expect(await profile.read({ req })).toEqual({ member: { in: ['member-a', 'target-a'] } })
+    expect(await profile.update({ req, data: { member: 'target-b' } })).toBe(false)
+    expect(await profile.create({ req, data: { member: 'target-a' } })).toBe(true)
+  })
+  it('denies instance-wide writes until canonical grants cover every site', async () => {
+    const req = request()
+    req.payload.count.mockResolvedValue({ totalDocs: 1 })
+    expect(await operatorAllSitesAccess({ req })).toBe(false)
+    req.payload.find.mockImplementation(async ({ collection }: { collection: string }) => ({
+      docs:
+        collection === 'member-site-roles'
+          ? [
+              { site: 'site-a', role: 'community-manager' },
+              { site: 'site-b', role: 'community-manager' },
+            ]
+          : [{ id: 'site-a' }, { id: 'site-b' }],
+    }))
+    req.payload.count.mockResolvedValue({ totalDocs: 0 })
+    expect(await operatorAllSitesAccess({ req })).toBe(true)
+    expect(req.payload.count).toHaveBeenLastCalledWith(
+      expect.objectContaining({ where: { id: { not_in: ['site-a', 'site-b'] } } }),
+    )
+  })
   it('rejects a changed physical relationship and allows unchanged native form values', async () => {
     const req = request()
     req.payload.findByID = vi.fn().mockResolvedValue({ site: 'site-a', originalBlob: 'blob-a' })

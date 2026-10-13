@@ -1,5 +1,12 @@
 import { randomUUID } from 'crypto'
-import type { CollectionConfig } from 'payload'
+import type { Access, CollectionConfig, CollectionSlug, Where } from 'payload'
+import {
+  operatorSiteCreateAccess,
+  operatorSiteReadAccess,
+  operatorSiteUpdateAccess,
+  operatorRelatedSiteAccess,
+  operatorAllSitesAccess,
+} from '../modules/operations/operator-grants'
 import {
   canonicalSlug,
   ownerFields,
@@ -22,8 +29,6 @@ const relationId = (value: unknown): string =>
       ? String((value as { id: unknown }).id)
       : ''
 
-const staffOnly = ({ req }: { req: { user?: { role?: string } | null } }) =>
-  ['owner', 'administrator', 'staff'].includes(String(req.user?.role))
 const scoped = (canonicalContentType?: string) => [
   ...ownerFields(),
   { name: 'title', type: 'text' as const, required: true },
@@ -58,10 +63,72 @@ const scoped = (canonicalContentType?: string) => [
 const collection = (slug: string, fields: CollectionConfig['fields']): CollectionConfig => ({
   slug,
   admin: { useAsTitle: 'title', group: 'Media publishing' },
-  access: { create: staffOnly, delete: staffOnly, read: () => true, update: staffOnly },
+  access: mediaCollectionAccess(slug, fields),
   fields,
   hooks: searchProjectionHooks(slug),
 })
+
+function mediaCollectionAccess(
+  slug: string,
+  fields: CollectionConfig['fields'],
+): NonNullable<CollectionConfig['access']> {
+  const parents: Record<string, [string, CollectionSlug]> = {
+    'book-parts': ['book.site', 'books'],
+    'book-chapters': ['book.site', 'books'],
+    'book-editions': ['book.site', 'books'],
+    'podcast-seasons': ['show.site', 'podcast-shows'],
+    'video-captions': ['video.site', 'videos'],
+    'transcript-revisions': ['media.site', 'media-assets'],
+    'tts-outputs': ['content.site', 'content'],
+    'media-derivatives': ['document.site', 'graphic-documents'],
+    'edit-sessions': ['document.site', 'graphic-documents'],
+    'quick-capture-drafts': ['content.site', 'content'],
+  }
+  const hasSite = fields.some((field) => 'name' in field && field.name === 'site')
+  const access = hasSite
+    ? {
+        create: operatorSiteCreateAccess,
+        read: operatorSiteReadAccess,
+        update: operatorSiteUpdateAccess,
+        delete: operatorSiteReadAccess,
+      }
+    : parents[slug]
+      ? operatorRelatedSiteAccess(...parents[slug])
+      : {
+          create: () => false,
+          update: () => false,
+          delete: () => false,
+          read: operatorAllSitesAccess,
+        }
+  const status = fields.find((field) => 'name' in field && field.name === 'status')
+  const publicStatus =
+    status?.type === 'select' &&
+    status.options.some(
+      (option) => (typeof option === 'string' ? option : option.value) === 'published',
+    )
+  const visible = fields.some((field) => 'name' in field && field.name === 'visibility')
+  const published: Where | undefined = publicStatus
+    ? {
+        and: [
+          { status: { in: ['published', 'updated'] } },
+          ...(visible ? [{ visibility: { equals: 'public' } }] : []),
+          ...(slug === 'book-chapters'
+            ? [
+                { 'book.status': { in: ['published', 'updated'] } },
+                { 'book.visibility': { equals: 'public' } },
+              ]
+            : []),
+        ],
+      }
+    : undefined
+  const read: Access = async (args) => {
+    const scoped = await access.read(args)
+    if (scoped === true) return true
+    if (!published) return scoped
+    return scoped ? { or: [scoped, published] } : published
+  }
+  return { ...access, read }
+}
 
 const booksSearchHooks = searchProjectionHooks('books')
 export const Books: CollectionConfig = {

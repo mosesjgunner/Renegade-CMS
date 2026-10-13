@@ -60,12 +60,56 @@ export function operatorRelatedSiteAccess(sitePath: string, parentCollection: Co
   return { create: canReference, read, update, delete: read }
 }
 
+/** Canonical members are global; their site membership determines a scoped operator's visibility. */
+export function operatorMemberScopeAccess(memberField = 'member') {
+  const scope = async (req: Parameters<Access>[0]['req']) => {
+    const grant = await resolveOperatorGrantContext(req.payload, req.user)
+    if (!grant.authorized) return { allowed: false, global: false, ids: [] as string[] }
+    if (grant.isGlobalOwner) return { allowed: true, global: true, ids: [] as string[] }
+    const memberships = await req.payload.find({
+      collection: 'member-site-roles',
+      depth: 0,
+      limit: 0,
+      pagination: false,
+      overrideAccess: true,
+      where: { site: { in: grant.authorizedSiteIds } },
+    })
+    const ids = Array.from(new Set(memberships.docs.map((doc) => asId(doc.member)).filter(Boolean)))
+    return { allowed: true, global: false, ids }
+  }
+  const read: Access = async ({ req }) => {
+    const grant = await scope(req)
+    return !grant.allowed ? false : grant.global ? true : { [memberField]: { in: grant.ids } }
+  }
+  const create: Access = async ({ req, data }) => {
+    const grant = await scope(req)
+    if (!grant.allowed) return false
+    if (!data || !Object.prototype.hasOwnProperty.call(data, memberField)) return true
+    return grant.global || grant.ids.includes(asId(data[memberField]))
+  }
+  const update: Access = async (args) => ((await create(args)) ? read(args) : false)
+  return { create, read, update, delete: read }
+}
+
 /** Native Payload reads must apply the same site grants as operator APIs. */
 export const operatorSiteReadAccess: Access = async ({ req }) => {
   const grant = await resolveOperatorGrantContext(req.payload, req.user)
   if (!grant.authorized) return false
   if (grant.isGlobalOwner) return true
   return { site: { in: grant.authorizedSiteIds } }
+}
+
+/** A global changes every site's fallback settings; a one-site grant is insufficient. */
+export const operatorAllSitesAccess: Access = async ({ req }) => {
+  const grant = await resolveOperatorGrantContext(req.payload, req.user)
+  if (!grant.authorized) return false
+  if (grant.isGlobalOwner) return true
+  const foreign = await req.payload.count({
+    collection: 'sites',
+    overrideAccess: true,
+    where: { id: { not_in: grant.authorizedSiteIds } },
+  })
+  return foreign.totalDocs === 0
 }
 
 export async function checkOperatorRecordAccess(
@@ -173,7 +217,8 @@ export async function resolveOperatorGrantContext(
       const allSites = await payload.find({
         collection: 'sites',
         depth: 0,
-        limit: 100,
+        limit: 0,
+        pagination: false,
         overrideAccess: true,
       })
       const siteIds = allSites.docs.map((d) => String(d.id))
@@ -218,7 +263,8 @@ export async function resolveOperatorGrantContext(
         collection: 'member-site-roles',
         where: { member: { equals: memberId } },
         depth: 0,
-        limit: 100,
+        limit: 0,
+        pagination: false,
         overrideAccess: true,
       })
 
@@ -246,7 +292,8 @@ export async function resolveOperatorGrantContext(
           const allSites = await payload.find({
             collection: 'sites',
             depth: 0,
-            limit: 100,
+            limit: 0,
+            pagination: false,
             overrideAccess: true,
           })
           const allSiteIds = allSites.docs.map((d) => String(d.id))
@@ -279,7 +326,8 @@ export async function resolveOperatorGrantContext(
       const allSites = await payload.find({
         collection: 'sites',
         depth: 0,
-        limit: 100,
+        limit: 0,
+        pagination: false,
         overrideAccess: true,
       })
       const siteIds = allSites.docs.map((d) => String(d.id))

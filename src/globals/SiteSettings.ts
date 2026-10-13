@@ -1,6 +1,7 @@
 import { DEFAULT_SITE_NAME } from '../modules/presentation/themes/identity'
 import { themes } from '../modules/presentation/registry'
 import type { GlobalConfig } from 'payload'
+import { operatorAllSitesAccess } from '../modules/operations/operator-grants'
 
 import { seoFields, structuredDataSourceFields } from '../collections/canonical-shared'
 import { revalidateDiscoveryOutputs } from '../modules/public/revalidation'
@@ -9,8 +10,6 @@ import {
   validateRouteTemplatesBySite,
 } from '../modules/public/semantic-url'
 
-const staffOrOwner = ({ req }: { req: { user?: { role?: string } | null } }) =>
-  ['owner', 'administrator', 'staff'].includes(String(req.user?.role))
 const ownerOnly = ({ req }: { req: { user?: { role?: string } | null } }) =>
   req.user?.role === 'owner'
 
@@ -18,7 +17,7 @@ export const SiteSettings: GlobalConfig = {
   slug: 'site-settings',
   label: 'Site Settings',
   admin: { group: 'Settings' },
-  access: { read: () => true, update: staffOrOwner },
+  access: { read: () => true, update: operatorAllSitesAccess },
   hooks: {
     afterChange: [
       async ({ doc }) => {
