@@ -19,7 +19,7 @@ import {
 import { PodEmulatorAdapter } from '@/modules/commerce/pod-emulator'
 import { PrintfulPodAdapter } from '@/modules/commerce/pod-real-provider'
 import { decryptCredential } from '@/modules/commerce/pod-connection'
-import type { PodProviderAdapter } from '@/modules/commerce/pod-contract'
+import { PodProviderError, type PodProviderAdapter } from '@/modules/commerce/pod-contract'
 import type { PODJob } from '@/modules/commerce/fulfillment-plan'
 
 export const dynamic = 'force-dynamic'
@@ -31,30 +31,37 @@ async function resolvePodAdapter(
   payload: any,
   connectionId?: string,
   providerKey?: string,
+  siteId?: string,
 ): Promise<PodProviderAdapter> {
   if (connectionId) {
-    try {
-      const conn: any = await payload.findByID({
-        collection: 'pod-connections',
-        id: connectionId,
-        depth: 0,
-        overrideAccess: true,
+    const conn: any = await payload.findByID({
+      collection: 'pod-connections',
+      id: connectionId,
+      depth: 0,
+      overrideAccess: true,
+    })
+    if (!siteId || relationId(conn.site) !== siteId)
+      throw new Error('Forbidden. Provider connection belongs to another site.')
+    if (providerKey && conn.providerKey !== providerKey)
+      throw new PodProviderError('configuration', 'Provider does not match the job.', false, true)
+    if (conn.status === 'disabled')
+      throw new PodProviderError('configuration', 'Provider connection is disabled.', false, true)
+    providerKey = conn.providerKey
+    if (providerKey === 'printful' && conn.encryptedApiKey) {
+      const apiKey = decryptCredential(conn.encryptedApiKey)
+      return new PrintfulPodAdapter({
+        apiKey,
+        storeId: conn.remoteStoreId,
       })
-      if (conn?.providerKey === 'printful' && conn.encryptedApiKey) {
-        const apiKey = decryptCredential(conn.encryptedApiKey)
-        return new PrintfulPodAdapter({
-          apiKey,
-          storeId: conn.remoteStoreId,
-        })
-      }
-    } catch {
-      // fallback to emulator
     }
   }
-  if (providerKey === 'printful' && process.env.PRINTFUL_API_KEY) {
-    return new PrintfulPodAdapter({ apiKey: process.env.PRINTFUL_API_KEY })
-  }
-  return new PodEmulatorAdapter()
+  if (providerKey === 'pod-emulator') return new PodEmulatorAdapter()
+  throw new PodProviderError(
+    'configuration',
+    'The selected POD provider is not configured.',
+    false,
+    true,
+  )
 }
 
 export async function POST(request: Request) {
@@ -235,12 +242,16 @@ export async function POST(request: Request) {
             collection: 'manual-fulfillment-packages',
             where: { order: { equals: orderId } },
             depth: 0,
+            pagination: false,
+            limit: 0,
             overrideAccess: true,
           }),
           payload.find({
             collection: 'pod-jobs',
             where: { order: { equals: orderId } },
             depth: 0,
+            pagination: false,
+            limit: 0,
             overrideAccess: true,
           }),
         ])
@@ -253,7 +264,13 @@ export async function POST(request: Request) {
             p.state === 'shipped' ||
             p.state === 'delivered' ||
             p.state === 'cancelled' ||
-            p.state === 'failed',
+            (p.state === 'failed' &&
+              siblingManualRes.docs.some(
+                (m: any) =>
+                  m.source === 'pod-submission-exhausted' &&
+                  m.packageIndex === p.packageIndex &&
+                  (m.id === packageId || m.status === 'shipped'),
+              )),
         )
 
         if (allManualShippedOrCancelled && allPodShippedOrCancelled) {
@@ -419,7 +436,12 @@ export async function POST(request: Request) {
         updatedAt: doc.updatedAt,
       }
 
-      const adapter = await resolvePodAdapter(payload, job.connectionId, job.providerKey)
+      const adapter = await resolvePodAdapter(
+        payload,
+        job.connectionId,
+        job.providerKey,
+        job.siteId,
+      )
       const outcome = await submitPodJobWithRetry({ job, adapter, actor: actorId })
 
       if (outcome.success) {
@@ -473,12 +495,15 @@ export async function POST(request: Request) {
           })
         }
 
-        return NextResponse.json({
-          success: false,
-          error: outcome.error,
-          job: savedJob,
-          manualHandoff,
-        })
+        return NextResponse.json(
+          {
+            success: false,
+            error: outcome.error,
+            job: savedJob,
+            manualHandoff,
+          },
+          { status: outcome.retryable ? 503 : 409 },
+        )
       }
     }
 
@@ -520,7 +545,12 @@ export async function POST(request: Request) {
         updatedAt: doc.updatedAt,
       }
 
-      const adapter = await resolvePodAdapter(payload, job.connectionId, job.providerKey)
+      const adapter = await resolvePodAdapter(
+        payload,
+        job.connectionId,
+        job.providerKey,
+        job.siteId,
+      )
       const updated = await cancelPodJob(job, adapter, reason, actorId)
       const saved = await payload.update({
         collection: 'pod-jobs',
@@ -548,7 +578,12 @@ export async function POST(request: Request) {
       if (!conn) return NextResponse.json({ error: 'Connection not found.' }, { status: 404 })
       assertSiteAccess(relationId(conn.site))
 
-      const adapter = await resolvePodAdapter(payload, connectionId, conn.providerKey)
+      const adapter = await resolvePodAdapter(
+        payload,
+        connectionId,
+        conn.providerKey,
+        relationId(conn.site),
+      )
       const health = await adapter.health()
       const saved = await payload.update({
         collection: 'pod-connections',
@@ -564,31 +599,26 @@ export async function POST(request: Request) {
     }
 
     if (action === 'pod-preflight') {
-      const {
-        variantId = 'mock-variant-1',
-        printArea = 'front',
-        artwork,
-        placement,
-        connectionId,
-      } = body
-      const adapter = await resolvePodAdapter(payload, connectionId)
+      const { variantId, printArea, artwork, placement, connectionId } = body
+      if (!connectionId || !variantId || !printArea || !artwork || !placement)
+        return NextResponse.json(
+          { error: 'A connection, variant, print area, artwork and placement are required.' },
+          { status: 400 },
+        )
+      const connection = await payload.findByID({
+        collection: 'pod-connections',
+        id: connectionId,
+        depth: 0,
+        overrideAccess: true,
+      })
+      const siteId = relationId(connection.site)
+      assertSiteAccess(siteId)
+      const adapter = await resolvePodAdapter(payload, connectionId, connection.providerKey, siteId)
       const preflight = await adapter.preflight({
         variantId,
         printArea,
-        artwork: artwork ?? {
-          id: 'art-preflight',
-          hash: 'hash-mock',
-          mimeType: 'image/png',
-          widthPx: 3600,
-          heightPx: 4800,
-          dpi: 300,
-        },
-        placement: placement ?? {
-          topMm: 50,
-          leftMm: 50,
-          widthMm: 280,
-          heightMm: 380,
-        },
+        artwork,
+        placement,
       })
       return NextResponse.json({ success: true, preflight })
     }
@@ -596,6 +626,15 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: `Unknown action: ${action}` }, { status: 400 })
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : 'Fulfillment action failed'
-    return NextResponse.json({ error: errorMsg }, { status: 400 })
+    return NextResponse.json(
+      { error: errorMsg },
+      {
+        status: errorMsg.startsWith('Forbidden.')
+          ? 403
+          : err instanceof PodProviderError && err.code === 'configuration'
+            ? 503
+            : 400,
+      },
+    )
   }
 }

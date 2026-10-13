@@ -48,7 +48,7 @@ export const FulfillmentCommandCenter: FC<FulfillmentCommandCenterProps> = ({
         body: JSON.stringify(payload),
       })
       const data = await res.json()
-      if (!res.ok) {
+      if (!res.ok || data.success === false) {
         setFeedback(`Error: ${data.error ?? 'Action failed'}`)
         return
       }
