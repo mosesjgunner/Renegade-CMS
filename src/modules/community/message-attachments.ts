@@ -55,7 +55,8 @@ export async function createMessageAttachmentPresign(
   const attachmentId = randomUUID(),
     key = `community/${input.siteId}/attachments/${attachmentId}`
   const signed = presignS3Put(config.storage.s3, key, input.mimeType)
-  const query = (payload as PoolPayload).db?.pool?.query
+  const pool = (payload as PoolPayload).db?.pool
+  const query = pool?.query?.bind(pool)
   if (!query) throw new Error('Database query execution not available')
   await query(
     "INSERT INTO message_attachments (id,site_id,owner_id,storage_key,original_filename,claimed_mime_type,byte_size,status,upload_expires_at) VALUES ($1,$2,$3,$4,$5,$6,$7,'pending_scan',$8)",
@@ -84,7 +85,8 @@ export async function scanMessageAttachment(
   config: AppConfig,
   attachmentId: string,
 ) {
-  const query = (payload as PoolPayload).db?.pool?.query
+  const pool = (payload as PoolPayload).db?.pool
+  const query = pool?.query?.bind(pool)
   if (!query) throw new Error('Database query execution not available')
   const row = (
     await query<Record<string, unknown>>(
@@ -123,7 +125,8 @@ export async function scanMessageAttachment(
 }
 
 export async function scanPendingMessageAttachments(payload: Payload, config: AppConfig) {
-  const query = (payload as PoolPayload).db?.pool?.query
+  const pool = (payload as PoolPayload).db?.pool
+  const query = pool?.query?.bind(pool)
   if (!query) throw new Error('Database query execution not available')
   const rows = (
     await query<{ id: string }>(
@@ -167,7 +170,8 @@ export async function linkMessageAttachments(
 }
 
 export async function cleanupOrphanedMessageAttachments(payload: Payload, config: AppConfig) {
-  const query = (payload as PoolPayload).db?.pool?.query
+  const pool = (payload as PoolPayload).db?.pool
+  const query = pool?.query?.bind(pool)
   if (!query) throw new Error('Database query execution not available')
   // Retain metadata when object deletion fails so the next worker run retries it;
   // deleting metadata first would permanently strand private storage bytes.

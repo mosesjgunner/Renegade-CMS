@@ -2,6 +2,11 @@ import { randomUUID } from 'node:crypto'
 import { getPayload } from 'payload'
 import { describe, expect, it } from 'vitest'
 import config from '../../src/payload.config'
+import { loadConfig } from '../../src/modules/core/config'
+import {
+  scanPendingMessageAttachments,
+  cleanupOrphanedMessageAttachments,
+} from '../../src/modules/community/message-attachments'
 
 describe('RC1 cart and registered worker schema', () => {
   it('accepts an unassigned member cart before a payment provider is selected', async () => {
@@ -73,5 +78,10 @@ describe('RC1 cart and registered worker schema', () => {
         `${name} missing registered tasks`,
       ).toEqual([])
     }
+  })
+  it('executes attachment housekeeping against the real PostgreSQL pool', async () => {
+    const payload = await getPayload({ config })
+    expect(await scanPendingMessageAttachments(payload, loadConfig())).toBeGreaterThanOrEqual(0)
+    expect(await cleanupOrphanedMessageAttachments(payload, loadConfig())).toBeGreaterThanOrEqual(0)
   })
 })

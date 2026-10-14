@@ -1379,6 +1379,7 @@ export interface ApiRequestRecord {
   space?: (string | null) | Space;
   client: string | ApiClient;
   idempotencyKey: string;
+  requestHash?: string | null;
   method: string;
   path: string;
   responseStatus: number;
@@ -9927,6 +9928,7 @@ export interface ApiRequestRecordsSelect<T extends boolean = true> {
   space?: T;
   client?: T;
   idempotencyKey?: T;
+  requestHash?: T;
   method?: T;
   path?: T;
   responseStatus?: T;
