@@ -1,0 +1,477 @@
+[
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\supplemental-d564\\05-http-authorization-five-b3cee--views-and-grant-revocation\\trace.zip",
+    "sha256": "1923a4a6dd057ced9fc798efc8a4fd745973a96bf4c0b95b8865c8dbd1b8bbac",
+    "bytes": 3642735
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\supplemental-d564\\06-scheduled-publication-s-ab8d7--restart-and-public-refetch\\trace.zip",
+    "sha256": "401ade19ac686040a4f1acd05f9d28fdb7503b353cf24fce1569a4edc83ce54f",
+    "bytes": 1194938
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\supplemental-d564\\07-minipaint-miniPaint-dra-3ea22-riginal-bytes-after-restart\\trace.zip",
+    "sha256": "29d086d21ca3e6a6680f5108ec0ec8a75bb79b21c084565daf06cd3b8fd03fba",
+    "bytes": 5081942
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\supplemental-d564\\08-theme-rollback-actual-t-524a4-preserves-canonical-content\\trace.zip",
+    "sha256": "eec74149b7b900979e781a75dcbf880c002eeb2d6e3f74e7643d0e4d8f7b22d6",
+    "bytes": 1411434
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\supplemental-d564\\09-private-model-boundarie-f44c2-enforce-persisted-authority\\trace.zip",
+    "sha256": "561fe97141527870a59400ccdf5282382c44df09687c60c5451f4c250f982ff7",
+    "bytes": 2898434
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\supplemental-1d0\\05-http-authorization-five-b3cee--views-and-grant-revocation\\trace.zip",
+    "sha256": "fb838309aa6569939b39bed4f5d75c4b8fe2f0ca185ddca047343522f14529e6",
+    "bytes": 4197068
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\supplemental-1d0\\06-scheduled-publication-s-ab8d7--restart-and-public-refetch\\trace.zip",
+    "sha256": "b616415719277e09c56e58471c8f9769364611f5f376ee709b7ce9ec866aeaf5",
+    "bytes": 12827
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\supplemental-1d0\\07-minipaint-miniPaint-dra-3ea22-riginal-bytes-after-restart\\trace.zip",
+    "sha256": "0eb30aaf85a3bf2b878ab5859dd76ec79bdf0f2d5b9cce69a982737d0f71389f",
+    "bytes": 75114
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\supplemental-1d0\\08-theme-rollback-actual-t-524a4-preserves-canonical-content\\trace.zip",
+    "sha256": "3efc2654439acb78dee03c47ae12b640765dbad3cf6cb160f899602ba3c8344e",
+    "bytes": 8454
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\source-5666\\01-site-build-RC-02-ordina-e5eb1-patch-from-an-empty-install\\trace.zip",
+    "sha256": "6f6dd3fbd7870948bae2d46fa6b0a808723a1cd84a3e1ad34df31c85a409e1f0",
+    "bytes": 27384475
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\source-5666\\02-staff-invitation-Staff--07a3f-llment-and-privilege-bounds\\trace.zip",
+    "sha256": "5e326a4748d03528cee37994e301a6203ab5430c0e03b477b28f4929873ec6ee",
+    "bytes": 2486293
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\source-5666\\02-staff-invitation-Staff--0f490-ntials-and-revokes-sessions\\trace.zip",
+    "sha256": "fd7300d95f6393359d0bde6c2d6118cf20c45180d8364563cdffd993f8cc2730",
+    "bytes": 1341505
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\source-5666\\02-staff-invitation-Staff--5bfd0-g-WebAuthn-origin-challenge\\trace.zip",
+    "sha256": "c3d1eb905ad6ab097dbd07fc11b31b9d94e3709c79dddd115b254e6717d3aaac",
+    "bytes": 9237
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\source-5666\\02-staff-invitation-Staff--74b9a-sition-conflict-and-release\\trace.zip",
+    "sha256": "d710fd375e3cc9cbc9c0dabd5fde4757b72b81352c6edd90413faddf437ece54",
+    "bytes": 1889761
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\source-5666\\02-staff-invitation-Staff--cf4e2-ocation-and-role-protection\\trace.zip",
+    "sha256": "d1a3d22eaf53a69c57b50eb6e9246f4c0d797a408f4f735a2aa435606f5bae4f",
+    "bytes": 314892
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\source-5666\\02-staff-invitation-Staff--e275d-s-and-logs-in-with-WebAuthn\\trace.zip",
+    "sha256": "02646c32c8571cd2624f35be0b8d40b8cf8bb32be32efaf5a7f94b5888358b5d",
+    "bytes": 3857759
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\source-5666\\03-identity-negatives-Ordi-13c84-ing-credentials-or-sessions\\trace.zip",
+    "sha256": "7184b5c307ebd48a8aafc6d62e015ac42ff8cdd154052e24b45a8250c8cc8d2c",
+    "bytes": 12823
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\source-5666\\03-identity-negatives-Ordi-14e02-lls-once-and-rejects-replay\\trace.zip",
+    "sha256": "d512770ab7ff705549df89997a2dc17e96464f96eff46c45024e6095319dea13",
+    "bytes": 442321
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\source-5666\\03-identity-negatives-Ordi-1f2ff-n-site-without-consuming-it\\trace.zip",
+    "sha256": "dea873ddf4416b607d48273ed6db325a14b030241a8f1cd38e76d3791b80fc4d",
+    "bytes": 12906
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\source-5666\\03-identity-negatives-Ordi-6774a-ut-consuming-the-invitation\\trace.zip",
+    "sha256": "f2513967cf6dc9a86892cfa89d670dc98a03193919cb743435d5dddb67488914",
+    "bytes": 462067
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\source-5666\\03-identity-negatives-Ordi-9bbb2-s-canonical-operator-grants\\trace.zip",
+    "sha256": "0ea7dae6ccf921c9235cebb4e2ddc4668741cfc9bfe8ffe7fab33bb051d83fc9",
+    "bytes": 14384
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\source-5666\\04-document-locks-native-s-559c7--and-release-through-the-UI\\trace.zip",
+    "sha256": "0d2d013527bd01ae4e71952471f8574ad8db2016074a97e4a10dfe617572022e",
+    "bytes": 3908387
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\scheduled-8a5ac9d\\06-scheduled-publication-s-ab8d7--restart-and-public-refetch\\trace.zip",
+    "sha256": "e22a8898c21600a3a1b1b21af8b8d1da919e2320f1ba3ea1a4929227a2bed7aa",
+    "bytes": 761438
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\ordinary\\01-site-build-RC-02-ordina-e5eb1-patch-from-an-empty-install\\trace.zip",
+    "sha256": "66a300c12d8a1425f48c29cdb10c164dc9fbf03830cf813ba69021b2a24573cf",
+    "bytes": 27171786
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\ordinary\\02-staff-invitation-Staff--07a3f-llment-and-privilege-bounds\\trace.zip",
+    "sha256": "52a62ddcd05a21b6c9b48a66f3ff9153548b542fa7636266e39e70eeb2144c93",
+    "bytes": 2404079
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\ordinary\\02-staff-invitation-Staff--0f490-ntials-and-revokes-sessions\\trace.zip",
+    "sha256": "1d24432be06805ef9ca80d1064d869f463d5aaefdf0bc63fd11af7971d00f527",
+    "bytes": 1348271
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\ordinary\\02-staff-invitation-Staff--5bfd0-g-WebAuthn-origin-challenge\\trace.zip",
+    "sha256": "93e919a2c3c948768c734d9135851cba76827b0ce043324a44449ad1efd7db96",
+    "bytes": 9304
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\ordinary\\02-staff-invitation-Staff--74b9a-sition-conflict-and-release\\trace.zip",
+    "sha256": "33e8ce4c4591395988ec14571a2d912160c34104aa460d728bbd5fe8404984bd",
+    "bytes": 1833028
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\ordinary\\02-staff-invitation-Staff--cf4e2-ocation-and-role-protection\\trace.zip",
+    "sha256": "ac7f41130975428fc218910cdb23de70f009067bf21c997c366624c118e7e291",
+    "bytes": 306176
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\ordinary\\02-staff-invitation-Staff--e275d-s-and-logs-in-with-WebAuthn\\trace.zip",
+    "sha256": "eb48bff6831033c82cf6f1bc69f3807cf9793c9be75e16484577fd0f34783a19",
+    "bytes": 4104750
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\ordinary\\03-identity-negatives-Ordi-13c84-ing-credentials-or-sessions\\trace.zip",
+    "sha256": "869d029513100498cb3fc091f6309909fb6ae41baf19d4f783cb402075721195",
+    "bytes": 13340
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\ordinary\\03-identity-negatives-Ordi-9bbb2-s-canonical-operator-grants\\trace.zip",
+    "sha256": "6d35991e9091c03d98fb226de5ca8052e8dc7ef66a04bd8805443fd737fac3d2",
+    "bytes": 14024
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\lock-3c7-release\\04-document-locks-native-s-559c7--and-release-through-the-UI\\trace.zip",
+    "sha256": "2b8830224b7c36ec87db27ae58cfdaf868e608330334f9d06cb645103f24fe1d",
+    "bytes": 6908088
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\lock-3c7-diagnostic\\04-document-locks-native-s-559c7--and-release-through-the-UI\\trace.zip",
+    "sha256": "bc378057ac2c0e00ec36bafe9ad9eb57409055c1caab741008b430d72e0c2858",
+    "bytes": 5563508
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\lock-3c7-activity\\04-document-locks-native-s-559c7--and-release-through-the-UI\\trace.zip",
+    "sha256": "b38b393e50053044250fc2bd63a8c2c7bdd626f8270d6774baa0179419d8c2d7",
+    "bytes": 5113247
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\identity-diagnostic\\03-identity-negatives-Ordi-13c84-ing-credentials-or-sessions\\trace.zip",
+    "sha256": "a0db31b1d84a64e7629e21908e69834d57de3072b75fae2add64fb4c2a5e4da5",
+    "bytes": 12521
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\identity-diagnostic\\03-identity-negatives-Ordi-14e02-lls-once-and-rejects-replay\\trace.zip",
+    "sha256": "35ec5936f5ae94f233cead6776bd39462524eee9aaaa0506e6cfca3a82022df8",
+    "bytes": 612723
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\identity-diagnostic\\03-identity-negatives-Ordi-1f2ff-n-site-without-consuming-it\\trace.zip",
+    "sha256": "94a003bd1ac5e77993595f7ae6c994c029b12b5ab5e63fbf2f3df01cf7c9b02a",
+    "bytes": 12621
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\identity-diagnostic\\03-identity-negatives-Ordi-9bbb2-s-canonical-operator-grants\\trace.zip",
+    "sha256": "f275f6dcd1edae9235331531508a12cf7f312f99922093f6eb2e4b8a162c8900",
+    "bytes": 11177
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\final3\\01-site-build-RC-02-ordina-e5eb1-patch-from-an-empty-install\\trace.zip",
+    "sha256": "0808f91deb693dae92468ffabe2e3ce7b1b880d80a4816e69f4071ba62fb8018",
+    "bytes": 30025293
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\final3\\02-staff-invitation-Staff--07a3f-llment-and-privilege-bounds\\trace.zip",
+    "sha256": "76fa492c6354a0ecb34557289345c792d8c3a1136a7236b8a020f29ca67534c9",
+    "bytes": 2358827
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\final3\\02-staff-invitation-Staff--0f490-ntials-and-revokes-sessions\\trace.zip",
+    "sha256": "25518b0f9b6b3f97860b642e10c46082432464d625659c12f2ebe56bb607af0f",
+    "bytes": 1313442
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\final3\\02-staff-invitation-Staff--5bfd0-g-WebAuthn-origin-challenge\\trace.zip",
+    "sha256": "532afba40b3895f6ec280f455d9eee2494888bbfa283a7e9191e45fb526b6513",
+    "bytes": 9543
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\final3\\02-staff-invitation-Staff--74b9a-sition-conflict-and-release\\trace.zip",
+    "sha256": "6aa30c9c49b1690780552077ca831d7c8ba2a5c5aa2e5d4be4ea37ceabd90cb2",
+    "bytes": 1833987
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\final3\\02-staff-invitation-Staff--cf4e2-ocation-and-role-protection\\trace.zip",
+    "sha256": "d683e10b25ea78d94a17bbb8d2f7e297e7977bc0fd2af88d92e759357b921220",
+    "bytes": 362576
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\final3\\02-staff-invitation-Staff--e275d-s-and-logs-in-with-WebAuthn\\trace.zip",
+    "sha256": "09d99194493f844b1c6f46bdda1f1a99d4f998386545bd9eaffac432c42a0ada",
+    "bytes": 4172211
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\final3\\03-identity-negatives-Ordi-13c84-ing-credentials-or-sessions\\trace.zip",
+    "sha256": "f2dec524b356493be9b9d34ba306852225c3e1e09e5149237c368be34dde77fe",
+    "bytes": 12856
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\final3\\03-identity-negatives-Ordi-14e02-lls-once-and-rejects-replay\\trace.zip",
+    "sha256": "d70e37eb5a98d7ca88910b7614fd9972b8b35e60c16121b08b7559dd34ee42c1",
+    "bytes": 443648
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\final3\\03-identity-negatives-Ordi-1f2ff-n-site-without-consuming-it\\trace.zip",
+    "sha256": "19bc1048db04b6000e401d3e0be3a7f86a294370e5f9177d0aa574047fb4b657",
+    "bytes": 12927
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\final3\\03-identity-negatives-Ordi-6774a-ut-consuming-the-invitation\\trace.zip",
+    "sha256": "749c9c18b889e21af3a56d330f213235d9e51370814d8b6a5e75b586a6824ec6",
+    "bytes": 481565
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\final3\\03-identity-negatives-Ordi-9bbb2-s-canonical-operator-grants\\trace.zip",
+    "sha256": "ca3f55a00882d22d4f732f9239739980a58eafef4b8383f9d68a666fcfec883c",
+    "bytes": 14389
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\final3\\04-document-locks-native-s-559c7--and-release-through-the-UI\\trace.zip",
+    "sha256": "c40b07917d80d6dd97e140cfe986b2b81f0d687c9741204ec852488638b43494",
+    "bytes": 6921804
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\final3\\05-http-authorization-five-b3cee--views-and-grant-revocation\\trace.zip",
+    "sha256": "941fc0ef37043e5b894a343d89cdbfb7acdf6daeac562bc33804ead0a290eb77",
+    "bytes": 3992821
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\final3\\06-scheduled-publication-s-ab8d7--restart-and-public-refetch\\trace.zip",
+    "sha256": "219dc0a2aef66461a7d8823a84990cef9680ba2d4b2fb7bc26b01fc718a1b0d5",
+    "bytes": 817752
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\final3\\07-minipaint-miniPaint-dra-3ea22-riginal-bytes-after-restart\\trace.zip",
+    "sha256": "88a946168052d1f6b7eabe09bb492daac85dca62d28a8695ad307b6e75522d7f",
+    "bytes": 5670166
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\final3\\08-theme-rollback-actual-t-524a4-preserves-canonical-content\\trace.zip",
+    "sha256": "4ece7f53009461cf70376a6957375402b65f9e2d474a810630dca62625e419c3",
+    "bytes": 1402406
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\final3\\09-private-model-boundarie-f44c2-enforce-persisted-authority\\trace.zip",
+    "sha256": "35329d0e53c13e0219ae5bfa65b04bea68310cf0c827ee092603436f790cb597",
+    "bytes": 2913132
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\final2-continuation\\02-staff-invitation-Staff--0f490-ntials-and-revokes-sessions\\trace.zip",
+    "sha256": "be852e6d311f54238ab3e95ffbd5acf93761c6a29ad68ff56dfbd168a63f731b",
+    "bytes": 1366520
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\final2-continuation\\02-staff-invitation-Staff--74b9a-sition-conflict-and-release\\trace.zip",
+    "sha256": "3395bda02e87bbba7dee0b113adad162a26870e8d7d9e74f9683551e1fed5ee5",
+    "bytes": 1871653
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\final2-continuation\\02-staff-invitation-Staff--cf4e2-ocation-and-role-protection\\trace.zip",
+    "sha256": "1c34d4efee5c82c846e33d516f96e3d75ebc7f2e461b22a337186c268f13606f",
+    "bytes": 321539
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\final2-continuation\\03-identity-negatives-Ordi-13c84-ing-credentials-or-sessions\\trace.zip",
+    "sha256": "11b73956d08a5492b8747183c46eb6f724fc5fdfe03e184fddbd752d0164de5e",
+    "bytes": 12838
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\final2-continuation\\03-identity-negatives-Ordi-14e02-lls-once-and-rejects-replay\\trace.zip",
+    "sha256": "11baa65c6c9a654c65412b4d58e9f172af0c1c7289c559c27d90f3b28e6b9b27",
+    "bytes": 424818
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\final2-continuation\\03-identity-negatives-Ordi-1f2ff-n-site-without-consuming-it\\trace.zip",
+    "sha256": "ef45339fd1ce1c22d9fde231960cec92a21aa75a8e770b545bb457bff92c6e27",
+    "bytes": 12943
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\final2-continuation\\03-identity-negatives-Ordi-6774a-ut-consuming-the-invitation\\trace.zip",
+    "sha256": "42ddd4915fc65e1e0023c318f05cd8d6d9d4bcfd4ebe07f0305e60534c7b5028",
+    "bytes": 446468
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\final2-continuation\\03-identity-negatives-Ordi-9bbb2-s-canonical-operator-grants\\trace.zip",
+    "sha256": "ae163eb0ce54ea380005695ce50db2398e41aa8d3bb52a1ecacf9721f61769a7",
+    "bytes": 14495
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\final2-continuation\\04-document-locks-native-s-559c7--and-release-through-the-UI\\trace.zip",
+    "sha256": "8cc19605c40a09e8691abcb8ea59fd395a8dfbc759a6c1b24ec4c2644218bf31",
+    "bytes": 7586733
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\final2-continuation\\05-http-authorization-five-b3cee--views-and-grant-revocation\\trace.zip",
+    "sha256": "f4d86cf240663092fe2babb895b5572582bf9cf3a84fd57793598ff988a723d4",
+    "bytes": 3917163
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\final2-continuation\\06-scheduled-publication-s-ab8d7--restart-and-public-refetch\\trace.zip",
+    "sha256": "77471a7acf984785c068d265df3cee48fa5c2149dece47db1fe64a543965fa33",
+    "bytes": 1180831
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\final2-continuation\\07-minipaint-miniPaint-dra-3ea22-riginal-bytes-after-restart\\trace.zip",
+    "sha256": "438d5ae068f57dbdcfc7a4a86a4b05de0a7e193c253d2dbf8b72062427d84b0f",
+    "bytes": 5931857
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\final2-continuation\\08-theme-rollback-actual-t-524a4-preserves-canonical-content\\trace.zip",
+    "sha256": "3e2caf6c34d360b044599f188f73ebebd4561e6688b6273cef30bc8880d02efe",
+    "bytes": 1383845
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\final2-continuation\\09-private-model-boundarie-f44c2-enforce-persisted-authority\\trace.zip",
+    "sha256": "4457f5fbbcb46a172d2d90df75be64881cc86725ab4895a22582e035c01eb1bd",
+    "bytes": 2110302
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\final2\\01-site-build-RC-02-ordina-e5eb1-patch-from-an-empty-install\\trace.zip",
+    "sha256": "3bd0b45c24762e965bad6c578073d88cbc38599eaefe1fc51604345c30b61d7e",
+    "bytes": 29668473
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\final2\\02-staff-invitation-Staff--07a3f-llment-and-privilege-bounds\\trace.zip",
+    "sha256": "651c2725d381b87b844e44406ee8604f64a96f79945b2613de6c64c8b0f5be90",
+    "bytes": 2329481
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\final2\\02-staff-invitation-Staff--5bfd0-g-WebAuthn-origin-challenge\\trace.zip",
+    "sha256": "361008af214c96aa407a3117a98b35b9ab109e79b580b5fdf35c1cda47c12ba0",
+    "bytes": 9446
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\final2\\02-staff-invitation-Staff--cf4e2-ocation-and-role-protection\\trace.zip",
+    "sha256": "86b33fa6ae9f2a4eeed25aa8256d7a7d89a4ae5fa941659e13239a6834e7a381",
+    "bytes": 366443
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\final2\\02-staff-invitation-Staff--e275d-s-and-logs-in-with-WebAuthn\\trace.zip",
+    "sha256": "bf804672e8adb590a4cb8f523010c1536fbaf6b11e7feab602e4c13a3676a97e",
+    "bytes": 3941075
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\final\\01-site-build-RC-02-ordina-e5eb1-patch-from-an-empty-install\\trace.zip",
+    "sha256": "b10021e694c359678eb23d1e15331509516e6a12884f6cf76c2c9db7bebc4f60",
+    "bytes": 1840316
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\config-v4-standard-floor\\configuration-ordinary-con-772b6--actual-publishing-mutation\\trace.zip",
+    "sha256": "c6f74f0d5a629764266a0553c2e180c8162cd0253ed887cb4d62dc1e147646b6",
+    "bytes": 4171960
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\config-v4-standard-crm\\configuration-ordinary-con-772b6--actual-publishing-mutation\\trace.zip",
+    "sha256": "5328f8edf2ba7f71d6cccfd8515dce8816e39e4e2e91508ebd04bd993dbd2c95",
+    "bytes": 5070856
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\config-v4-standard-commerce\\configuration-ordinary-con-772b6--actual-publishing-mutation\\trace.zip",
+    "sha256": "e1b3e19433bedb5c9202080f7e1be276e44dd4da21a14841acd4e219c6f62ef2",
+    "bytes": 6207768
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\config-v4-standard-all\\configuration-ordinary-con-772b6--actual-publishing-mutation\\trace.zip",
+    "sha256": "10e4679ea2ae163f44fa98d18de11b128b42ac92ab61d458ae4c8881ca7d9e55",
+    "bytes": 6254334
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\config-v4-lean-floor\\configuration-ordinary-con-772b6--actual-publishing-mutation\\trace.zip",
+    "sha256": "22a5e67932b4fc73e290560b62064d4c9fdee1b49b4b1dc2aa70961bc4074716",
+    "bytes": 4318644
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\config-v4-lean-all\\configuration-ordinary-con-772b6--actual-publishing-mutation\\trace.zip",
+    "sha256": "5bd60de2dd5f1dcba8588ce5dc93755157753f9b346235b01f45c49c86d7a6e7",
+    "bytes": 6734338
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\config-v3-standard-floor\\configuration-ordinary-con-772b6--actual-publishing-mutation\\trace.zip",
+    "sha256": "16e99e9cf9ebaac42f4cfba5c43017a402d212db1744607ca934e500a9e1ef49",
+    "bytes": 5872113
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\config-v3-standard-all\\configuration-ordinary-con-772b6--actual-publishing-mutation\\trace.zip",
+    "sha256": "0338f8533a527b76fabf54c5e9025ac7c1fdf8c3e171ada175d6bd69d474f2f6",
+    "bytes": 3452969
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\config-v3-lean-floor\\configuration-ordinary-con-772b6--actual-publishing-mutation\\trace.zip",
+    "sha256": "2d3f28e1244c8e107e4f3fb2a0b939cf346d4734f34d4404626658ad637f462e",
+    "bytes": 4371798
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\config-v2-lean-floor\\configuration-ordinary-con-772b6--actual-publishing-mutation\\trace.zip",
+    "sha256": "0fe23832a64cbfec9b70dda9a9c729bb6c598fe57dd60697699d6c926b2e77af",
+    "bytes": 1748182
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\config-lean-floor\\configuration-ordinary-con-772b6--actual-publishing-mutation\\trace.zip",
+    "sha256": "4d9844f7025992d145c1254332493951179a9f0a4787caaea19f9b4c12d1538a",
+    "bytes": 2708652
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\authorization-fa35-cold-nav\\05-http-authorization-five-b3cee--views-and-grant-revocation\\trace.zip",
+    "sha256": "092a93e9fc9d1aebecb705739999787953a93b743ac4aad9a72c4a5f84b48ed7",
+    "bytes": 2816049
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\authorization-fa35\\05-http-authorization-five-b3cee--views-and-grant-revocation\\trace.zip",
+    "sha256": "c6dbd5e0e26fe3fa15c7af5736c62a73eb2b463550e695de1269656c4ed7020d",
+    "bytes": 1134810
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\authorization-3c7-scoped-objects\\05-http-authorization-five-b3cee--views-and-grant-revocation\\trace.zip",
+    "sha256": "398cd34407855b09cbe40f3aa6e2c5ded2f8a720c1432b2280827e145d1eea14",
+    "bytes": 3885044
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\authorization-3c7-member-nav\\05-http-authorization-five-b3cee--views-and-grant-revocation\\trace.zip",
+    "sha256": "ad2f1bfa405ab0aced75dc5a9fa998e615f5c164c5b214f2de1a8228bdc7ea91",
+    "bytes": 491863
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\authorization-3c7-matrix\\05-http-authorization-five-b3cee--views-and-grant-revocation\\trace.zip",
+    "sha256": "41b1831d072812ef9e3782b960d6b22b1559f02084201175066d7ba9b7ec35d4",
+    "bytes": 3452520
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\authorization-3c7-diagnostic\\05-http-authorization-five-b3cee--views-and-grant-revocation\\trace.zip",
+    "sha256": "1c002008396a2cde58a469d48f191f95699516942c81967cfc6c2e7bcebfd69c",
+    "bytes": 2773577
+  },
+  {
+    "privateLocalPath": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\authorization-3c7-counter-persistence\\05-http-authorization-five-b3cee--views-and-grant-revocation\\trace.zip",
+    "sha256": "89c465171d318fc8acef5467d35f65fe82e7e8aa039d3a442ecf2508f7a653c3",
+    "bytes": 980844
+  }
+]

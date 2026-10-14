@@ -1,0 +1,10 @@
+[
+  {
+    "gate": "02-format",
+    "command": "npm.cmd run format:check",
+    "exitCode": 1,
+    "durationSeconds": 36.28085017204285,
+    "sourceSha": "bee57092530cdbfa358e1a4aa69426327d740f7a",
+    "log": "scratch/sol-evidence/02-format.log"
+  }
+]

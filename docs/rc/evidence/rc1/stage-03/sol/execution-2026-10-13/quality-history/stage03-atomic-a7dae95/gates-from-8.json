@@ -1,0 +1,18 @@
+[
+  {
+    "gate": "10-build",
+    "command": "npm.cmd run build",
+    "exitCode": 0,
+    "durationSeconds": 27.269579887390137,
+    "sourceSha": "d2ce4dbe149f7a50e87d20fc3a204b7d96bdcba4",
+    "log": "scratch/sol-evidence/10-build.log"
+  },
+  {
+    "gate": "11-bundles",
+    "command": "npm.cmd run verify:presentation-bundles",
+    "exitCode": 0,
+    "durationSeconds": 0.5753295421600342,
+    "sourceSha": "d2ce4dbe149f7a50e87d20fc3a204b7d96bdcba4",
+    "log": "scratch/sol-evidence/11-bundles.log"
+  }
+]

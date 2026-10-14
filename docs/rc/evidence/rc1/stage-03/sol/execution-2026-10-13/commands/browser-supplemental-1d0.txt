@@ -1,0 +1,216 @@
+
+Running 4 tests using 1 worker
+
+node : (node:20856) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+At line:2 char:118
++ ... ental-1d0'; node node_modules/@playwright/test/cli.js test 05-http-au ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ((node:20856) Wa... env being set.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+Completed native authorization cases for owner
+Completed native authorization cases for administrator
+Completed native authorization cases for staff
+Completed native authorization cases for member
+Completed native authorization cases for anonymous
+  x  1 scratch\sol-specs\05-http-authorization.spec.ts:44:1 › five real HTTP actors prove two-site reads, mutations, object substitutions, custom views and grant revocation (1.1m)
+(node:18520) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  2 scratch\sol-specs\06-scheduled-publication.spec.ts:11:1 › scheduled publication uses the actual worker, immutable revision, restart and public refetch (138ms)
+(node:17984) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  3 scratch\sol-specs\07-minipaint.spec.ts:7:1 › miniPaint draws actual pixels, saves a new version and preserves original bytes after restart (236ms)
+(node:25604) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  4 scratch\sol-specs\08-theme-rollback.spec.ts:6:1 › actual theme rollback restores public presentation and preserves canonical content (85ms)
+
+
+  1) scratch\sol-specs\05-http-authorization.spec.ts:44:1 › five real HTTP actors prove two-site reads, mutations, object substitutions, custom views and grant revocation
+
+    Error: owner: foreign revision-records creation
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 403
+    Received: 400
+
+      204 |         if (object.collection === 'sites') data.slug = `denied-${role}-${stamp}`
+      205 |         const deniedCreate = await actor.request.post(`${base}/api/${object.collection}`, { data })
+    > 206 |         expect.soft(deniedCreate.status(), `${role}: foreign ${object.collection} creation`).toBe(403)
+          |                                                                                              ^
+      207 |         expect.soft((await (await owner.request.get(countURL)).json()).totalDocs, `${role}: denied create preserves ${object.collection} count`).toBe(countBefore)
+      208 |       }
+      209 |       const patch = await actor.request.patch(`${base}/api/${object.collection}/${object.b.id}`, { data: {
+        at C:\Projects\RENEGADE CMS\sol-rc1-20261013\scratch\sol-specs\05-http-authorization.spec.ts:206:94
+
+    Error: administrator: instance-wide settings authority
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 403
+    Received: 200
+
+      237 |     const settingsBefore = await (await owner.request.get(`${base}/api/globals/site-settings`)).json()
+      238 |     const globalWrite = await actor.request.post(`${base}/api/globals/site-settings`, { data: { siteName: `Sol ${role} instance-wide mutation` } })
+    > 239 |     expect.soft(globalWrite.status(), `${role}: instance-wide settings authority`).toBe(role === 'owner' ? 200 : 403)
+          |                                                                                    ^
+      240 |     if (role !== 'owner') expect.soft((await (await owner.request.get(`${base}/api/globals/site-settings`)).json()).siteName).toBe(settingsBefore.siteName)
+      241 |     else expect((await owner.request.post(`${base}/api/globals/site-settings`, { data: { siteName: settingsBefore.siteName } })).status()).toBe(200)
+      242 |     for (const path of ['/api/admin/ai/connections', '/api/admin/audience/command-center', '/api/admin/integrations']) {
+        at C:\Projects\RENEGADE CMS\sol-rc1-20261013\scratch\sol-specs\05-http-authorization.spec.ts:239:84
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: "FOREIGN LOCK MUTATION"
+    Received: "Sol administrator instance-wide mutation"
+
+      238 |     const globalWrite = await actor.request.post(`${base}/api/globals/site-settings`, { data: { siteName: `Sol ${role} instance-wide mutation` } })
+      239 |     expect.soft(globalWrite.status(), `${role}: instance-wide settings authority`).toBe(role === 'owner' ? 200 : 403)
+    > 240 |     if (role !== 'owner') expect.soft((await (await owner.request.get(`${base}/api/globals/site-settings`)).json()).siteName).toBe(settingsBefore.siteName)
+          |                                                                                                                               ^
+      241 |     else expect((await owner.request.post(`${base}/api/globals/site-settings`, { data: { siteName: settingsBefore.siteName } })).status()).toBe(200)
+      242 |     for (const path of ['/api/admin/ai/connections', '/api/admin/audience/command-center', '/api/admin/integrations']) {
+      243 |       for (const target of [sites.site, sites.foreignSite]) {
+        at C:\Projects\RENEGADE CMS\sol-rc1-20261013\scratch\sol-specs\05-http-authorization.spec.ts:240:127
+
+    Error: staff: instance-wide settings authority
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 403
+    Received: 200
+
+      237 |     const settingsBefore = await (await owner.request.get(`${base}/api/globals/site-settings`)).json()
+      238 |     const globalWrite = await actor.request.post(`${base}/api/globals/site-settings`, { data: { siteName: `Sol ${role} instance-wide mutation` } })
+    > 239 |     expect.soft(globalWrite.status(), `${role}: instance-wide settings authority`).toBe(role === 'owner' ? 200 : 403)
+          |                                                                                    ^
+      240 |     if (role !== 'owner') expect.soft((await (await owner.request.get(`${base}/api/globals/site-settings`)).json()).siteName).toBe(settingsBefore.siteName)
+      241 |     else expect((await owner.request.post(`${base}/api/globals/site-settings`, { data: { siteName: settingsBefore.siteName } })).status()).toBe(200)
+      242 |     for (const path of ['/api/admin/ai/connections', '/api/admin/audience/command-center', '/api/admin/integrations']) {
+        at C:\Projects\RENEGADE CMS\sol-rc1-20261013\scratch\sol-specs\05-http-authorization.spec.ts:239:84
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: "Sol administrator instance-wide mutation"
+    Received: "Sol staff instance-wide mutation"
+
+      238 |     const globalWrite = await actor.request.post(`${base}/api/globals/site-settings`, { data: { siteName: `Sol ${role} instance-wide mutation` } })
+      239 |     expect.soft(globalWrite.status(), `${role}: instance-wide settings authority`).toBe(role === 'owner' ? 200 : 403)
+    > 240 |     if (role !== 'owner') expect.soft((await (await owner.request.get(`${base}/api/globals/site-settings`)).json()).siteName).toBe(settingsBefore.siteName)
+          |                                                                                                                               ^
+      241 |     else expect((await owner.request.post(`${base}/api/globals/site-settings`, { data: { siteName: settingsBefore.siteName } })).status()).toBe(200)
+      242 |     for (const path of ['/api/admin/ai/connections', '/api/admin/audience/command-center', '/api/admin/integrations']) {
+      243 |       for (const target of [sites.site, sites.foreignSite]) {
+        at C:\Projects\RENEGADE CMS\sol-rc1-20261013\scratch\sol-specs\05-http-authorization.spec.ts:240:127
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    scratch\sol-traces\supplemental-1d0\05-http-authorization-five-b3cee--views-and-grant-revocation\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    scratch\sol-traces\supplemental-1d0\05-http-authorization-five-b3cee--views-and-grant-revocation\test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #3: screenshot (image/png) ──────────────────────────────────────────────────────────
+    scratch\sol-traces\supplemental-1d0\05-http-authorization-five-b3cee--views-and-grant-revocation\test-failed-4.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #4: screenshot (image/png) ──────────────────────────────────────────────────────────
+    scratch\sol-traces\supplemental-1d0\05-http-authorization-five-b3cee--views-and-grant-revocation\test-failed-3.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: scratch\sol-traces\supplemental-1d0\05-http-authorization-five-b3cee--views-and-grant-revocation\error-context.md
+
+    attachment #6: trace (application/zip) ─────────────────────────────────────────────────────────
+    scratch\sol-traces\supplemental-1d0\05-http-authorization-five-b3cee--views-and-grant-revocation\trace.zip
+    Usage:
+
+        npx playwright show-trace scratch\sol-traces\supplemental-1d0\05-http-authorization-five-b3cee--views-and-grant-revocation\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) scratch\sol-specs\06-scheduled-publication.spec.ts:11:1 › scheduled publication uses the actual worker, immutable revision, restart and public refetch
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 201
+    Received: 403
+
+      20 |     status: 'draft', body: lexical(phrase), summary: 'Independent ordinary scheduled publication acceptance.',
+      21 |   } })
+    > 22 |   expect(created.status()).toBe(201)
+         |                            ^
+      23 |   const content = (await created.json()).doc
+      24 |   const publicUrl = `${process.env.APP_URL}${content.canonicalPath}`
+      25 |   expect((await anonymous.request.get(publicUrl)).status()).toBe(404)
+        at C:\Projects\RENEGADE CMS\sol-rc1-20261013\scratch\sol-specs\06-scheduled-publication.spec.ts:22:28
+
+    Error Context: scratch\sol-traces\supplemental-1d0\06-scheduled-publication-s-ab8d7--restart-and-public-refetch\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    scratch\sol-traces\supplemental-1d0\06-scheduled-publication-s-ab8d7--restart-and-public-refetch\trace.zip
+    Usage:
+
+        npx playwright show-trace scratch\sol-traces\supplemental-1d0\06-scheduled-publication-s-ab8d7--restart-and-public-refetch\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) scratch\sol-specs\07-minipaint.spec.ts:7:1 › miniPaint draws actual pixels, saves a new version and preserves original bytes after restart
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 201
+    Received: 403
+
+      14 |     file: { name: 'minipaint-original.png', mimeType: 'image/png', buffer: source },
+      15 |   } })
+    > 16 |   expect(uploaded.status()).toBe(201)
+         |                             ^
+      17 |   const original = (await uploaded.json()).asset
+      18 |   expect((await owner.request.patch(`${process.env.APP_URL}/api/media-assets/${original.id}`, { data: { publicPolicy: 'private' } })).status()).toBe(200)
+      19 |   await page.goto(`/admin/collections/media-assets/${original.id}`)
+        at C:\Projects\RENEGADE CMS\sol-rc1-20261013\scratch\sol-specs\07-minipaint.spec.ts:16:29
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    scratch\sol-traces\supplemental-1d0\07-minipaint-miniPaint-dra-3ea22-riginal-bytes-after-restart\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: scratch\sol-traces\supplemental-1d0\07-minipaint-miniPaint-dra-3ea22-riginal-bytes-after-restart\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    scratch\sol-traces\supplemental-1d0\07-minipaint-miniPaint-dra-3ea22-riginal-bytes-after-restart\trace.zip
+    Usage:
+
+        npx playwright show-trace scratch\sol-traces\supplemental-1d0\07-minipaint-miniPaint-dra-3ea22-riginal-bytes-after-restart\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) scratch\sol-specs\08-theme-rollback.spec.ts:6:1 › actual theme rollback restores public presentation and preserves canonical content
+
+    TypeError: The "data" argument must be of type string or an instance of Buffer, TypedArray, or DataView. Received undefined
+
+       8 |   const site = JSON.parse(readFileSync(`${output}/two-sites.json`, 'utf8')).site
+       9 |   const before = await (await owner.request.get(`${process.env.APP_URL}/api/content?depth=0&limit=100&sort=id`)).json()
+    > 10 |   const fingerprint = createHash('sha256').update(JSON.stringify(before.docs)).digest('hex')
+         |                                            ^
+      11 |   const themeURL = `${process.env.APP_URL}/api/admin/themes?site=${site}`
+      12 |   const initial = await (await owner.request.get(themeURL)).json()
+      13 |   const change = async (action: string, extra = {}) => {
+        at C:\Projects\RENEGADE CMS\sol-rc1-20261013\scratch\sol-specs\08-theme-rollback.spec.ts:10:44
+
+    Error Context: scratch\sol-traces\supplemental-1d0\08-theme-rollback-actual-t-524a4-preserves-canonical-content\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    scratch\sol-traces\supplemental-1d0\08-theme-rollback-actual-t-524a4-preserves-canonical-content\trace.zip
+    Usage:
+
+        npx playwright show-trace scratch\sol-traces\supplemental-1d0\08-theme-rollback-actual-t-524a4-preserves-canonical-content\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4 failed
+    scratch\sol-specs\05-http-authorization.spec.ts:44:1 › five real HTTP actors prove two-site reads, mutations, object substitutions, custom views and grant revocation
+    scratch\sol-specs\06-scheduled-publication.spec.ts:11:1 › scheduled publication uses the actual worker, immutable revision, restart and public refetch
+    scratch\sol-specs\07-minipaint.spec.ts:7:1 › miniPaint draws actual pixels, saves a new version and preserves original bytes after restart
+    scratch\sol-specs\08-theme-rollback.spec.ts:6:1 › actual theme rollback restores public presentation and preserves canonical content

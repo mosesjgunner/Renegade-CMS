@@ -1,0 +1,322 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "03-identity-negatives",
+      "--config=scratch/playwright.sol.config.ts",
+      "--max-failures=1"
+    ],
+    "configFile": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\playwright.sol.config.ts",
+    "rootDir": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/scratch/sol-specs",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 1,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/scratch/sol-traces/identity-diagnostic",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/scratch/sol-specs",
+        "testIgnore": [],
+        "testMatch": ["**/*.@(spec|test).?(c|m)[jt]s?(x)"],
+        "timeout": 600000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      ["list", null],
+      [
+        "json",
+        {
+          "outputFile": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-browser\\identity-diagnostic\\results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.62.1",
+    "workers": 1,
+    "webServer": {
+      "command": "node scratch/sol-runtime.mjs",
+      "cwd": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013",
+      "url": "https://dispatch.rc02.test:3129/api/setup/readiness",
+      "reuseExistingServer": false,
+      "ignoreHTTPSErrors": true,
+      "timeout": 120000,
+      "env": {
+        "DATABASE_URL": "postgresql://solrc1:[REDACTED]@127.0.0.1:15433/solrc1_20261013_browser_release_acceptance",
+        "UPGRADE_MIGRATION_DATABASE_URL": "postgresql://solrc1:[REDACTED]@127.0.0.1:15433/solrc1_20261013_upgrade_acceptance",
+        "PAYLOAD_SECRET": "[REDACTED]",
+        "APP_URL": "https://dispatch.rc02.test:3129",
+        "PORT": "3128",
+        "HOSTNAME": "127.0.0.1",
+        "NODE_ENV": "production",
+        "PROXY_MODE": "trusted",
+        "TRUSTED_PROXY_HOPS": "1",
+        "DEPLOYMENT_PROFILE": "Standard",
+        "RENEGADE_MODULES": "all",
+        "RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT": "false",
+        "LOCAL_E2E_TEST_MODE": "false",
+        "ENABLE_TEST_ROUTES": "false",
+        "DISABLE_PAYLOAD_HMR": "true",
+        "MEDIA_DIR": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/scratch/sol-browser-media",
+        "EMAIL_MODE": "smtp",
+        "SMTP_HOST": "127.0.0.1",
+        "SMTP_PORT": "3152",
+        "SMTP_SECURE": "false",
+        "EMAIL_FROM": "Renegade Sol <noreply@renegadeparty.test>",
+        "NODE_EXTRA_CA_CERTS": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/scratch/rc02-tls/cert.pem",
+        "NODE_OPTIONS": "--max-old-space-size=768 --import=file:///C:/Projects/RENEGADE%20CMS/sol-rc1-20261013/src/scripts/rc02-network.mjs"
+      }
+    }
+  },
+  "suites": [
+    {
+      "title": "03-identity-negatives.spec.ts",
+      "file": "03-identity-negatives.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Ordinary identity negatives with persisted-state assertions",
+          "file": "03-identity-negatives.spec.ts",
+          "line": 54,
+          "column": 15,
+          "specs": [
+            {
+              "title": "creates a second site through owner REST and preserves canonical operator grants",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 600000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 415,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-13T10:16:31.316Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\identity-diagnostic\\03-identity-negatives-Ordi-9bbb2-s-canonical-operator-grants\\trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "[REDACTED RECOVERY CODE]-[REDACTED RECOVERY CODE]",
+              "file": "03-identity-negatives.spec.ts",
+              "line": 55,
+              "column": 3
+            },
+            {
+              "title": "rejects a genuinely expired invitation without issuing credentials or sessions",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 600000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1433,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-13T10:16:32.277Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\identity-diagnostic\\03-identity-negatives-Ordi-13c84-ing-credentials-or-sessions\\trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "[REDACTED RECOVERY CODE]-[REDACTED RECOVERY CODE]",
+              "file": "03-identity-negatives.spec.ts",
+              "line": 79,
+              "column": 3
+            },
+            {
+              "title": "rejects a real invitation at a foreign site without consuming it",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 600000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1038,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-13T10:16:33.739Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\identity-diagnostic\\03-identity-negatives-Ordi-1f2ff-n-site-without-consuming-it\\trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "[REDACTED RECOVERY CODE]-[REDACTED RECOVERY CODE]",
+              "file": "03-identity-negatives.spec.ts",
+              "line": 89,
+              "column": 3
+            },
+            {
+              "title": "valid authenticator response rejects wrong origin and challenge, then enrolls once and rejects replay",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 600000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 2079,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m400\u001b[39m\nReceived: \u001b[31m500\u001b[39m",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m400\u001b[39m\nReceived: \u001b[31m500\u001b[39m\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\03-identity-negatives.spec.ts:113:28",
+                        "location": {
+                          "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\03-identity-negatives.spec.ts",
+                          "column": 28,
+                          "line": 113
+                        },
+                        "snippet": "  111 |         clientDataJSON: Buffer.from(JSON.stringify({ ...clientData, ...change })).toString('base64url') } }\n  112 |       const res = await context.request.post(`${base}/api/auth/passkey/enroll`, { data: { action: 'complete', enrollmentToken: invitation.enrollmentToken, credential: altered } })\n> 113 |       expect(res.status()).toBe(400)\n      |                            ^\n  114 |       expect((await res.json()).code).toBe('VERIFICATION_FAILED')\n  115 |       expect(await persisted(invitation.user.id)).toEqual(before)\n  116 |     }"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\03-identity-negatives.spec.ts",
+                            "column": 28,
+                            "line": 113
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m400\u001b[39m\nReceived: \u001b[31m500\u001b[39m\n\n  111 |         clientDataJSON: Buffer.from(JSON.stringify({ ...clientData, ...change })).toString('base64url') } }\n  112 |       const res = await context.request.post(`${base}/api/auth/passkey/enroll`, { data: { action: 'complete', enrollmentToken: invitation.enrollmentToken, credential: altered } })\n> 113 |       expect(res.status()).toBe(400)\n      |                            ^\n  114 |       expect((await res.json()).code).toBe('VERIFICATION_FAILED')\n  115 |       expect(await persisted(invitation.user.id)).toEqual(before)\n  116 |     }\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\03-identity-negatives.spec.ts:113:28"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-13T10:16:34.805Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\identity-diagnostic\\03-identity-negatives-Ordi-14e02-lls-once-and-rejects-replay\\test-failed-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\identity-diagnostic\\03-identity-negatives-Ordi-14e02-lls-once-and-rejects-replay\\error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\identity-diagnostic\\03-identity-negatives-Ordi-14e02-lls-once-and-rejects-replay\\trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\03-identity-negatives.spec.ts",
+                        "column": 28,
+                        "line": 113
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "[REDACTED RECOVERY CODE]-[REDACTED RECOVERY CODE]",
+              "file": "03-identity-negatives.spec.ts",
+              "line": 98,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "message": "\u001b[31mTesting stopped early after 1 maximum allowed failures.\u001b[39m"
+    }
+  ],
+  "stats": {
+    "startTime": "2026-10-13T10:16:26.326Z",
+    "duration": 11144.058,
+    "expected": 3,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

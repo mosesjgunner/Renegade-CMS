@@ -1,0 +1,8 @@
+import {readFileSync,writeFileSync,readdirSync} from 'node:fs'
+import pg from 'pg'
+const e=Object.fromEntries(readFileSync('scratch/.env.sol-final3','utf8').trim().split(/\r?\n/).map(l=>{const i=l.indexOf('=');return[l.slice(0,i),l.slice(i+1)]}))
+const u=new URL(e.DATABASE_URL);if(u.hostname!=='127.0.0.1'||u.port!=='15433'||u.pathname!=='/solrc1_20261013_browser_final3_release_acceptance')throw Error('Disposable final3 required')
+const c=new pg.Client({connectionString:u.href});await c.connect();const counts={};try{for(const t of ['sites','users','members','content','linked_identities','member_sessions']){counts[t]=Number((await c.query(`SELECT count(*) AS count FROM "${t}"`)).rows[0].count);if(counts[t])throw Error('Fresh first-run has existing product data')}}finally{await c.end()}
+const mediaEntries=readdirSync(e.MEDIA_DIR).length;if(mediaEntries)throw Error('New media must be empty')
+writeFileSync('scratch/sol-evidence/final3-empty-state.json',JSON.stringify({database:u.pathname.slice(1),databaseCounts:counts,mediaEntries,nonsecretEnvironment:{NODE_ENV:e.NODE_ENV,LOCAL_E2E_TEST_MODE:e.LOCAL_E2E_TEST_MODE,ENABLE_TEST_ROUTES:e.ENABLE_TEST_ROUTES,MEDIA_DIR:e.MEDIA_DIR,DEPLOYMENT_PROFILE:e.DEPLOYMENT_PROFILE,RENEGADE_MODULES:e.RENEGADE_MODULES}},null,2))
+console.log('Final3 empty product state and media verified')

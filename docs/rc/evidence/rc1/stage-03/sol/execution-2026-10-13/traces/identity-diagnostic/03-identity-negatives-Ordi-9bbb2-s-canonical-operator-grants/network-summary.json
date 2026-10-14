@@ -1,0 +1,26 @@
+[
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/api/sites?depth=0",
+    "status": 200,
+    "startedDateTime": "2026-10-13T10:16:32.016Z",
+    "time": 97.82000000000062,
+    "requestBodyRetainedPrivately": false
+  },
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/api/users/me",
+    "status": 200,
+    "startedDateTime": "2026-10-13T10:16:32.110Z",
+    "time": 25.25799999999981,
+    "requestBodyRetainedPrivately": false
+  },
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/api/member-site-roles?depth=0&limit=100",
+    "status": 200,
+    "startedDateTime": "2026-10-13T10:16:32.144Z",
+    "time": 64.9380000000001,
+    "requestBodyRetainedPrivately": false
+  }
+]

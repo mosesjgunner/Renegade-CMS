@@ -1,0 +1,9 @@
+{
+  "command": "node node_modules/@playwright/test/cli.js test --config=scratch/playwright.sol.config.ts --max-failures=1",
+  "exitCode": 0,
+  "sourceSha": "d311396876fabc104826e4375d26feef0b5e2b39",
+  "environmentFile": "scratch/.env.sol-final3",
+  "reportOverride": "final3",
+  "durationSeconds": 708.5559043884277,
+  "resultFile": "scratch/sol-browser/final3/results.json"
+}

@@ -1,0 +1,39 @@
+npm.cmd : npm warn deprecated deep-diff@1.0.2: Package no longer supported. Contact Support at
+https://www.npmjs.com/support for more info.
+At line:2 char:308
++ ... | Out-Null; npm.cmd ci --include=dev *> scratch/sol-evidence/candidat ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (npm warn deprec... for more info.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+
+> renegade-cms@0.1.0 postinstall
+> node scripts/apply-patches.mjs
+
+Applied RC08D-01 patch to getIsLocked.js
+
+added 879 packages, and audited 880 packages in 1m
+
+271 packages are looking for funding
+  run `npm fund` for details
+
+16 vulnerabilities (7 moderate, 9 high)
+
+To address all issues possible (including breaking changes), run:
+  npm audit fix --force
+
+Some issues need review, and may require choosing
+a different dependency.
+
+Run `npm audit` for details.
+npm warn allow-scripts 7 packages have install scripts not yet covered by allowScripts:
+npm warn allow-scripts   esbuild@0.18.20 (postinstall: node install.js)
+npm warn allow-scripts   esbuild@0.28.2 (postinstall: node install.js)
+npm warn allow-scripts   esbuild@0.25.12 (postinstall: node install.js)
+npm warn allow-scripts   esbuild@0.28.2 (postinstall: node install.js)
+npm warn allow-scripts   unrs-resolver@1.12.2 (postinstall: node postinstall.js)
+npm warn allow-scripts   esbuild@0.28.2 (postinstall: node install.js)
+npm warn allow-scripts   esbuild@0.28.2 (postinstall: node install.js)
+npm warn allow-scripts
+npm warn allow-scripts Run `npm approve-scripts --allow-scripts-pending` to review, or `npm approve-scripts <pkg>` to
+allow.

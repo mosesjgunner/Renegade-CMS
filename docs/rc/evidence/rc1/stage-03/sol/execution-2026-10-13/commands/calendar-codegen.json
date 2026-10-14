@@ -1,0 +1,10 @@
+[
+  {
+    "command": "npm.cmd run generate:types",
+    "exitCode": 0
+  },
+  {
+    "command": "npm.cmd run generate:importmap",
+    "exitCode": 0
+  }
+]

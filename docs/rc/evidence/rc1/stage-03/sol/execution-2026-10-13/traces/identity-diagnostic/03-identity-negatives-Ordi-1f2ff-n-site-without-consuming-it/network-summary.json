@@ -1,0 +1,18 @@
+[
+  {
+    "method": "POST",
+    "url": "https://dispatch.rc02.test:3129/api/auth/passkey/enroll",
+    "status": 400,
+    "startedDateTime": "2026-10-13T10:16:34.679Z",
+    "time": 13.086999999999534,
+    "requestBodyRetainedPrivately": true
+  },
+  {
+    "method": "POST",
+    "url": "https://dispatch.rc02.test:3129/api/admin/staff/invite",
+    "status": 201,
+    "startedDateTime": "2026-10-13T10:16:33.757Z",
+    "time": 874.6180000000004,
+    "requestBodyRetainedPrivately": true
+  }
+]

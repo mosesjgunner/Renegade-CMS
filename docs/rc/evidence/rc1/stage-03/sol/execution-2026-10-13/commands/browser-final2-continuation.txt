@@ -1,0 +1,91 @@
+
+Running 14 tests using 1 worker
+
+node : (node:11400) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+At line:2 char:168
++ ... tinuation'; node node_modules/@playwright/test/cli.js test --config=s ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ((node:11400) Wa... env being set.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 scratch\sol-specs\02-staff-invitation.spec.ts:209:3 › Staff and Administrator Identity, WebAuthn & Document Lock Journey › 4. Session revocation and role protection (14.9s)
+(node:3784) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:3784) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  2 scratch\sol-specs\02-staff-invitation.spec.ts:243:3 › Staff and Administrator Identity, WebAuthn & Document Lock Journey › 5. Supported offline owner recovery CLI rotates credentials and revokes sessions (14.2s)
+  ok  3 scratch\sol-specs\02-staff-invitation.spec.ts:290:3 › Staff and Administrator Identity, WebAuthn & Document Lock Journey › 6. Real browser document lock acquisition, conflict, and release (10.6s)
+  ok  4 scratch\sol-specs\03-identity-negatives.spec.ts:56:3 › Ordinary identity negatives with persisted-state assertions › creates a second site through owner REST and preserves canonical operator grants (293ms)
+  ok  5 scratch\sol-specs\03-identity-negatives.spec.ts:80:3 › Ordinary identity negatives with persisted-state assertions › rejects a genuinely expired invitation without issuing credentials or sessions (897ms)
+  ok  6 scratch\sol-specs\03-identity-negatives.spec.ts:90:3 › Ordinary identity negatives with persisted-state assertions › rejects a real invitation at a foreign site without consuming it (727ms)
+  ok  7 scratch\sol-specs\03-identity-negatives.spec.ts:99:3 › Ordinary identity negatives with persisted-state assertions › valid authenticator response rejects wrong origin and challenge, then enrolls once and rejects replay (1.5s)
+Ordinary challenge-expiry check: waiting on the real server TTL.
+Ordinary challenge-expiry check: waiting on the real server TTL.
+Ordinary challenge-expiry check: waiting on the real server TTL.
+Ordinary challenge-expiry check: waiting on the real server TTL.
+Ordinary challenge-expiry check: waiting on the real server TTL.
+Ordinary challenge-expiry check: waiting on the real server TTL.
+Ordinary challenge-expiry check: waiting on the real server TTL.
+Ordinary challenge-expiry check: waiting on the real server TTL.
+Ordinary challenge-expiry check: waiting on the real server TTL.
+Ordinary challenge-expiry check: waiting on the real server TTL.
+Ordinary challenge-expiry check: waiting on the real server TTL.
+  ok  8 scratch\sol-specs\03-identity-negatives.spec.ts:129:3 › Ordinary identity negatives with persisted-state assertions › rejects a genuinely expired registration challenge without consuming the invitation (5.1m)
+  ok  9 scratch\sol-specs\04-document-locks.spec.ts:5:1 › native settings locks acquire, reject concurrent mutation, renew and release through the UI (48.9s)
+Completed native authorization cases for owner
+Completed native authorization cases for administrator
+Completed native authorization cases for staff
+Completed native authorization cases for member
+Completed native authorization cases for anonymous
+  ok 10 scratch\sol-specs\05-http-authorization.spec.ts:18:1 › five real HTTP actors prove two-site reads, mutations, object substitutions, custom views and grant revocation (1.4m)
+  x  11 scratch\sol-specs\06-scheduled-publication.spec.ts:13:1 › scheduled publication uses the actual worker, immutable revision, restart and public refetch (8.3s)
+(node:20044) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 12 scratch\sol-specs\07-minipaint.spec.ts:9:1 › miniPaint draws actual pixels, saves a new version and preserves original bytes after restart (42.3s)
+  ok 13 scratch\sol-specs\08-theme-rollback.spec.ts:8:1 › actual theme rollback restores public presentation and preserves canonical content (16.8s)
+Completed additional model boundaries for owner
+Completed additional model boundaries for administrator
+Completed additional model boundaries for staff
+Completed additional model boundaries for member
+Completed additional model boundaries for anonymous
+  ok 14 scratch\sol-specs\09-private-model-boundaries.spec.ts:10:1 › private identity stores and remaining native module factories enforce persisted authority (27.8s)
+
+
+  1) scratch\sol-specs\06-scheduled-publication.spec.ts:13:1 › scheduled publication uses the actual worker, immutable revision, restart and public refetch
+
+    Error: {"error":"The following field is invalid: Calendar Entry"}
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 200
+    Received: 500
+
+      38 |     expectedSequence: family.currentRevisionSequence,
+      39 |   } })
+    > 40 |   expect(schedule.status(), await schedule.text()).toBe(200)
+         |                                                    ^
+      41 |   const jobsUrl = `${process.env.APP_URL}/api/scheduled-publish-jobs?where[article][equals]=${family.id}&depth=0`
+      42 |   const queued = (await (await owner.request.get(jobsUrl)).json()).docs
+      43 |   expect(queued).toHaveLength(1)
+        at C:\Projects\RENEGADE CMS\sol-rc1-20261013\scratch\sol-specs\06-scheduled-publication.spec.ts:40:52
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    scratch\sol-traces\final2-continuation\06-scheduled-publication-s-ab8d7--restart-and-public-refetch\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: scratch\sol-traces\final2-continuation\06-scheduled-publication-s-ab8d7--restart-and-public-refetch\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    scratch\sol-traces\final2-continuation\06-scheduled-publication-s-ab8d7--restart-and-public-refetch\trace.zip
+    Usage:
+
+        npx playwright show-trace scratch\sol-traces\final2-continuation\06-scheduled-publication-s-ab8d7--restart-and-public-refetch\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  Slow test file: scratch\sol-specs\03-identity-negatives.spec.ts (5.1m)
+  Consider running tests from slow files in parallel. See: https://playwright.dev/docs/test-parallel
+  1 failed
+    scratch\sol-specs\06-scheduled-publication.spec.ts:13:1 › scheduled publication uses the actual worker, immutable revision, restart and public refetch
+  13 passed (9.8m)

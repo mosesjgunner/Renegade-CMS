@@ -1,0 +1,198 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "04-document-locks",
+      "--config=scratch/playwright.sol.config.ts",
+      "--max-failures=1"
+    ],
+    "configFile": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\playwright.sol.config.ts",
+    "rootDir": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/scratch/sol-specs",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 1,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/scratch/sol-traces/lock-3c7-diagnostic",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/scratch/sol-specs",
+        "testIgnore": [],
+        "testMatch": ["**/*.@(spec|test).?(c|m)[jt]s?(x)"],
+        "timeout": 600000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      ["list", null],
+      [
+        "json",
+        {
+          "outputFile": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-browser\\lock-3c7-diagnostic\\results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.62.1",
+    "workers": 1,
+    "webServer": {
+      "command": "node scratch/sol-runtime.mjs",
+      "cwd": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013",
+      "url": "https://dispatch.rc02.test:3129/api/setup/readiness",
+      "reuseExistingServer": false,
+      "ignoreHTTPSErrors": true,
+      "timeout": 120000,
+      "env": {
+        "DATABASE_URL": "postgresql://solrc1:[REDACTED]@127.0.0.1:15433/solrc1_20261013_browser_5666_release_acceptance",
+        "UPGRADE_MIGRATION_DATABASE_URL": "postgresql://solrc1:[REDACTED]@127.0.0.1:15433/solrc1_20261013_upgrade_acceptance",
+        "PAYLOAD_SECRET": "[REDACTED]",
+        "APP_URL": "https://dispatch.rc02.test:3129",
+        "PORT": "3128",
+        "HOSTNAME": "127.0.0.1",
+        "NODE_ENV": "production",
+        "PROXY_MODE": "trusted",
+        "TRUSTED_PROXY_HOPS": "1",
+        "DEPLOYMENT_PROFILE": "Standard",
+        "RENEGADE_MODULES": "all",
+        "RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT": "false",
+        "LOCAL_E2E_TEST_MODE": "false",
+        "ENABLE_TEST_ROUTES": "false",
+        "DISABLE_PAYLOAD_HMR": "true",
+        "MEDIA_DIR": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/scratch/sol-browser-media-5666",
+        "EMAIL_MODE": "smtp",
+        "SMTP_HOST": "127.0.0.1",
+        "SMTP_PORT": "3152",
+        "SMTP_SECURE": "false",
+        "EMAIL_FROM": "Renegade Sol <noreply@renegadeparty.test>",
+        "NODE_EXTRA_CA_CERTS": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/scratch/rc02-tls/cert.pem",
+        "NODE_OPTIONS": "--max-old-space-size=768 --import=file:///C:/Projects/RENEGADE%20CMS/sol-rc1-20261013/src/scripts/rc02-network.mjs"
+      }
+    }
+  },
+  "suites": [
+    {
+      "title": "04-document-locks.spec.ts",
+      "file": "04-document-locks.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "native settings locks acquire, reject concurrent mutation, renew and release through the UI",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 600000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 61703,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m1791888723882\u001b[39m\nReceived:   \u001b[31m1791888723882\u001b[39m\n\nCall Log:\n- Timeout 45000ms exceeded while waiting on the predicate",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m1791888723882\u001b[39m\nReceived:   \u001b[31m1791888723882\u001b[39m\n\nCall Log:\n- Timeout 45000ms exceeded while waiting on the predicate\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\04-document-locks.spec.ts:32:96",
+                    "location": {
+                      "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\04-document-locks.spec.ts",
+                      "column": 96,
+                      "line": 32
+                    },
+                    "snippet": "  30 |   expect(after.siteName).toBe(before.siteName)\n  31 |   await page.getByLabel('Site Name', { exact: true }).fill(title)\n> 32 |   await expect.poll(async () => Date.parse((await locks())[0].updatedAt), { timeout: 45_000 }).toBeGreaterThan(Date.parse(acquired.updatedAt))\n     |                                                                                                ^\n  33 |   // Restore the edited field and use the admin navigation; closing a context is not release proof.\n  34 |   const menu = page.getByRole('button', { name: 'Open Menu', exact: true })\n  35 |   if (await menu.isVisible()) await menu.click()"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\04-document-locks.spec.ts",
+                        "column": 96,
+                        "line": 32
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBeGreaterThan\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m\n\nExpected: > \u001b[32m1791888723882\u001b[39m\nReceived:   \u001b[31m1791888723882\u001b[39m\n\nCall Log:\n- Timeout 45000ms exceeded while waiting on the predicate\n\n  30 |   expect(after.siteName).toBe(before.siteName)\n  31 |   await page.getByLabel('Site Name', { exact: true }).fill(title)\n> 32 |   await expect.poll(async () => Date.parse((await locks())[0].updatedAt), { timeout: 45_000 }).toBeGreaterThan(Date.parse(acquired.updatedAt))\n     |                                                                                                ^\n  33 |   // Restore the edited field and use the admin navigation; closing a context is not release proof.\n  34 |   const menu = page.getByRole('button', { name: 'Open Menu', exact: true })\n  35 |   if (await menu.isVisible()) await menu.click()\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\04-document-locks.spec.ts:32:96"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-13T10:51:54.063Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\lock-3c7-diagnostic\\04-document-locks-native-s-559c7--and-release-through-the-UI\\test-failed-2.png"
+                    },
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\lock-3c7-diagnostic\\04-document-locks-native-s-559c7--and-release-through-the-UI\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\lock-3c7-diagnostic\\04-document-locks-native-s-559c7--and-release-through-the-UI\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\lock-3c7-diagnostic\\04-document-locks-native-s-559c7--and-release-through-the-UI\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\04-document-locks.spec.ts",
+                    "column": 96,
+                    "line": 32
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "[REDACTED RECOVERY CODE]-[REDACTED RECOVERY CODE]",
+          "file": "04-document-locks.spec.ts",
+          "line": 4,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "message": "\u001b[31mTesting stopped early after 1 maximum allowed failures.\u001b[39m"
+    }
+  ],
+  "stats": {
+    "startTime": "2026-10-13T10:51:49.934Z",
+    "duration": 67558.648,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

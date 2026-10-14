@@ -1,0 +1,10 @@
+[
+  {
+    "method": "POST",
+    "url": "https://dispatch.rc02.test:3129/api/media/upload",
+    "status": 403,
+    "startedDateTime": "2026-10-13T21:03:59.371Z",
+    "time": 48.02399999999034,
+    "requestBodyRetainedPrivately": true
+  }
+]

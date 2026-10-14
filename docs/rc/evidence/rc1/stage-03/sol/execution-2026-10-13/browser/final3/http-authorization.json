@@ -1,0 +1,768 @@
+{
+  "observations": [
+    {
+      "role": "owner",
+      "collection": "sites",
+      "ownRead": 200,
+      "foreignRead": 200,
+      "foreignMutation": 200
+    },
+    {
+      "role": "owner",
+      "collection": "organizations",
+      "ownRead": 200,
+      "foreignRead": 200,
+      "foreignMutation": 200
+    },
+    {
+      "role": "owner",
+      "collection": "merchant-connections",
+      "ownRead": 200,
+      "foreignRead": 200,
+      "foreignMutation": 200
+    },
+    {
+      "role": "owner",
+      "collection": "social-accounts",
+      "ownRead": 200,
+      "foreignRead": 200,
+      "foreignMutation": 200
+    },
+    {
+      "role": "owner",
+      "collection": "api-clients",
+      "ownRead": 200,
+      "foreignRead": 200,
+      "foreignMutation": 200
+    },
+    {
+      "role": "owner",
+      "collection": "forum-sections",
+      "ownRead": 200,
+      "foreignRead": 200,
+      "foreignMutation": 200
+    },
+    {
+      "role": "owner",
+      "collection": "content",
+      "ownRead": 200,
+      "foreignRead": 200,
+      "foreignMutation": 200
+    },
+    {
+      "role": "owner",
+      "collection": "products",
+      "ownRead": 200,
+      "foreignRead": 200,
+      "foreignMutation": 200
+    },
+    {
+      "role": "owner",
+      "collection": "pod-connections",
+      "ownRead": 200,
+      "foreignRead": 200,
+      "foreignMutation": 200
+    },
+    {
+      "role": "owner",
+      "collection": "discussions",
+      "ownRead": 200,
+      "foreignRead": 200,
+      "foreignMutation": 200
+    },
+    {
+      "role": "owner",
+      "collection": "discussion-posts",
+      "ownRead": 200,
+      "foreignRead": 200,
+      "foreignMutation": 200
+    },
+    {
+      "role": "owner",
+      "collection": "revision-records",
+      "ownRead": 200,
+      "foreignRead": 200,
+      "foreignMutation": 403
+    },
+    {
+      "role": "owner",
+      "collection": "markdown-conversion-reports",
+      "ownRead": 200,
+      "foreignRead": 200,
+      "foreignMutation": 200
+    },
+    {
+      "role": "owner",
+      "collection": "media-blobs",
+      "ownRead": 200,
+      "foreignRead": 200,
+      "foreignMutation": 403
+    },
+    {
+      "role": "owner",
+      "collection": "media-variants",
+      "ownRead": 200,
+      "foreignRead": 200,
+      "foreignMutation": 403
+    },
+    {
+      "role": "owner",
+      "path": "/api/admin/ai/connections",
+      "site": "644e5b04-06f4-4202-a306-5b4e7329ebf5",
+      "status": 200
+    },
+    {
+      "role": "owner",
+      "path": "/api/admin/ai/connections",
+      "site": "68f2d52c-db9c-4670-8fab-0a062e252fa9",
+      "status": 200
+    },
+    {
+      "role": "owner",
+      "path": "/api/admin/audience/command-center",
+      "site": "644e5b04-06f4-4202-a306-5b4e7329ebf5",
+      "status": 200
+    },
+    {
+      "role": "owner",
+      "path": "/api/admin/audience/command-center",
+      "site": "68f2d52c-db9c-4670-8fab-0a062e252fa9",
+      "status": 200
+    },
+    {
+      "role": "owner",
+      "path": "/api/admin/integrations",
+      "site": "644e5b04-06f4-4202-a306-5b4e7329ebf5",
+      "status": 200
+    },
+    {
+      "role": "owner",
+      "path": "/api/admin/integrations",
+      "site": "68f2d52c-db9c-4670-8fab-0a062e252fa9",
+      "status": 200
+    },
+    {
+      "role": "administrator",
+      "collection": "sites",
+      "ownRead": 200,
+      "foreignRead": 200,
+      "foreignMutation": 403
+    },
+    {
+      "role": "administrator",
+      "collection": "organizations",
+      "ownRead": 200,
+      "foreignRead": 404,
+      "foreignMutation": 403
+    },
+    {
+      "role": "administrator",
+      "collection": "merchant-connections",
+      "ownRead": 200,
+      "foreignRead": 404,
+      "foreignMutation": 403
+    },
+    {
+      "role": "administrator",
+      "collection": "social-accounts",
+      "ownRead": 200,
+      "foreignRead": 404,
+      "foreignMutation": 403
+    },
+    {
+      "role": "administrator",
+      "collection": "api-clients",
+      "ownRead": 200,
+      "foreignRead": 404,
+      "foreignMutation": 403
+    },
+    {
+      "role": "administrator",
+      "collection": "forum-sections",
+      "ownRead": 200,
+      "foreignRead": 200,
+      "foreignMutation": 403
+    },
+    {
+      "role": "administrator",
+      "collection": "content",
+      "ownRead": 200,
+      "foreignRead": 404,
+      "foreignMutation": 403
+    },
+    {
+      "role": "administrator",
+      "collection": "products",
+      "ownRead": 200,
+      "foreignRead": 404,
+      "foreignMutation": 403
+    },
+    {
+      "role": "administrator",
+      "collection": "pod-connections",
+      "ownRead": 200,
+      "foreignRead": 404,
+      "foreignMutation": 403
+    },
+    {
+      "role": "administrator",
+      "collection": "discussions",
+      "ownRead": 200,
+      "foreignRead": 404,
+      "foreignMutation": 403
+    },
+    {
+      "role": "administrator",
+      "collection": "discussion-posts",
+      "ownRead": 200,
+      "foreignRead": 404,
+      "foreignMutation": 403
+    },
+    {
+      "role": "administrator",
+      "collection": "article-family-content",
+      "ownRead": 200,
+      "foreignRead": 404,
+      "foreignMutation": 403
+    },
+    {
+      "role": "administrator",
+      "collection": "revision-records",
+      "ownRead": 200,
+      "foreignRead": 404,
+      "foreignMutation": 403
+    },
+    {
+      "role": "administrator",
+      "collection": "markdown-conversion-reports",
+      "ownRead": 200,
+      "foreignRead": 404,
+      "foreignMutation": 403
+    },
+    {
+      "role": "administrator",
+      "collection": "media-assets",
+      "ownRead": 200,
+      "foreignRead": 404,
+      "foreignMutation": 403
+    },
+    {
+      "role": "administrator",
+      "collection": "media-blobs",
+      "ownRead": 200,
+      "foreignRead": 404,
+      "foreignMutation": 403
+    },
+    {
+      "role": "administrator",
+      "collection": "media-variants",
+      "ownRead": 200,
+      "foreignRead": 404,
+      "foreignMutation": 403
+    },
+    {
+      "role": "administrator",
+      "path": "/api/admin/ai/connections",
+      "site": "644e5b04-06f4-4202-a306-5b4e7329ebf5",
+      "status": 200
+    },
+    {
+      "role": "administrator",
+      "path": "/api/admin/ai/connections",
+      "site": "68f2d52c-db9c-4670-8fab-0a062e252fa9",
+      "status": 403
+    },
+    {
+      "role": "administrator",
+      "path": "/api/admin/audience/command-center",
+      "site": "644e5b04-06f4-4202-a306-5b4e7329ebf5",
+      "status": 200
+    },
+    {
+      "role": "administrator",
+      "path": "/api/admin/audience/command-center",
+      "site": "68f2d52c-db9c-4670-8fab-0a062e252fa9",
+      "status": 403
+    },
+    {
+      "role": "administrator",
+      "path": "/api/admin/integrations",
+      "site": "644e5b04-06f4-4202-a306-5b4e7329ebf5",
+      "status": 200
+    },
+    {
+      "role": "administrator",
+      "path": "/api/admin/integrations",
+      "site": "68f2d52c-db9c-4670-8fab-0a062e252fa9",
+      "status": 403
+    },
+    {
+      "role": "staff",
+      "collection": "sites",
+      "ownRead": 200,
+      "foreignRead": 200,
+      "foreignMutation": 403
+    },
+    {
+      "role": "staff",
+      "collection": "organizations",
+      "ownRead": 200,
+      "foreignRead": 404,
+      "foreignMutation": 403
+    },
+    {
+      "role": "staff",
+      "collection": "merchant-connections",
+      "ownRead": 200,
+      "foreignRead": 404,
+      "foreignMutation": 403
+    },
+    {
+      "role": "staff",
+      "collection": "social-accounts",
+      "ownRead": 200,
+      "foreignRead": 404,
+      "foreignMutation": 403
+    },
+    {
+      "role": "staff",
+      "collection": "api-clients",
+      "ownRead": 200,
+      "foreignRead": 404,
+      "foreignMutation": 403
+    },
+    {
+      "role": "staff",
+      "collection": "forum-sections",
+      "ownRead": 200,
+      "foreignRead": 200,
+      "foreignMutation": 403
+    },
+    {
+      "role": "staff",
+      "collection": "content",
+      "ownRead": 200,
+      "foreignRead": 404,
+      "foreignMutation": 403
+    },
+    {
+      "role": "staff",
+      "collection": "products",
+      "ownRead": 200,
+      "foreignRead": 404,
+      "foreignMutation": 403
+    },
+    {
+      "role": "staff",
+      "collection": "pod-connections",
+      "ownRead": 200,
+      "foreignRead": 404,
+      "foreignMutation": 403
+    },
+    {
+      "role": "staff",
+      "collection": "discussions",
+      "ownRead": 200,
+      "foreignRead": 404,
+      "foreignMutation": 403
+    },
+    {
+      "role": "staff",
+      "collection": "discussion-posts",
+      "ownRead": 200,
+      "foreignRead": 404,
+      "foreignMutation": 403
+    },
+    {
+      "role": "staff",
+      "collection": "article-family-content",
+      "ownRead": 200,
+      "foreignRead": 404,
+      "foreignMutation": 403
+    },
+    {
+      "role": "staff",
+      "collection": "revision-records",
+      "ownRead": 200,
+      "foreignRead": 404,
+      "foreignMutation": 403
+    },
+    {
+      "role": "staff",
+      "collection": "markdown-conversion-reports",
+      "ownRead": 200,
+      "foreignRead": 404,
+      "foreignMutation": 403
+    },
+    {
+      "role": "staff",
+      "collection": "media-assets",
+      "ownRead": 200,
+      "foreignRead": 404,
+      "foreignMutation": 403
+    },
+    {
+      "role": "staff",
+      "collection": "media-blobs",
+      "ownRead": 200,
+      "foreignRead": 404,
+      "foreignMutation": 403
+    },
+    {
+      "role": "staff",
+      "collection": "media-variants",
+      "ownRead": 200,
+      "foreignRead": 404,
+      "foreignMutation": 403
+    },
+    {
+      "role": "staff",
+      "path": "/api/admin/ai/connections",
+      "site": "644e5b04-06f4-4202-a306-5b4e7329ebf5",
+      "status": 200
+    },
+    {
+      "role": "staff",
+      "path": "/api/admin/ai/connections",
+      "site": "68f2d52c-db9c-4670-8fab-0a062e252fa9",
+      "status": 403
+    },
+    {
+      "role": "staff",
+      "path": "/api/admin/audience/command-center",
+      "site": "644e5b04-06f4-4202-a306-5b4e7329ebf5",
+      "status": 200
+    },
+    {
+      "role": "staff",
+      "path": "/api/admin/audience/command-center",
+      "site": "68f2d52c-db9c-4670-8fab-0a062e252fa9",
+      "status": 403
+    },
+    {
+      "role": "staff",
+      "path": "/api/admin/integrations",
+      "site": "644e5b04-06f4-4202-a306-5b4e7329ebf5",
+      "status": 200
+    },
+    {
+      "role": "staff",
+      "path": "/api/admin/integrations",
+      "site": "68f2d52c-db9c-4670-8fab-0a062e252fa9",
+      "status": 403
+    },
+    {
+      "role": "member",
+      "collection": "sites",
+      "ownRead": 200,
+      "foreignRead": 200,
+      "foreignMutation": 403
+    },
+    {
+      "role": "member",
+      "collection": "organizations",
+      "ownRead": 403,
+      "foreignRead": 403,
+      "foreignMutation": 403
+    },
+    {
+      "role": "member",
+      "collection": "merchant-connections",
+      "ownRead": 403,
+      "foreignRead": 403,
+      "foreignMutation": 403
+    },
+    {
+      "role": "member",
+      "collection": "social-accounts",
+      "ownRead": 403,
+      "foreignRead": 403,
+      "foreignMutation": 403
+    },
+    {
+      "role": "member",
+      "collection": "api-clients",
+      "ownRead": 403,
+      "foreignRead": 403,
+      "foreignMutation": 403
+    },
+    {
+      "role": "member",
+      "collection": "forum-sections",
+      "ownRead": 200,
+      "foreignRead": 200,
+      "foreignMutation": 403
+    },
+    {
+      "role": "member",
+      "collection": "content",
+      "ownRead": 403,
+      "foreignRead": 403,
+      "foreignMutation": 403
+    },
+    {
+      "role": "member",
+      "collection": "products",
+      "ownRead": 404,
+      "foreignRead": 404,
+      "foreignMutation": 403
+    },
+    {
+      "role": "member",
+      "collection": "pod-connections",
+      "ownRead": 403,
+      "foreignRead": 403,
+      "foreignMutation": 403
+    },
+    {
+      "role": "member",
+      "collection": "discussions",
+      "ownRead": 403,
+      "foreignRead": 403,
+      "foreignMutation": 403
+    },
+    {
+      "role": "member",
+      "collection": "discussion-posts",
+      "ownRead": 403,
+      "foreignRead": 403,
+      "foreignMutation": 403
+    },
+    {
+      "role": "member",
+      "collection": "article-family-content",
+      "ownRead": 403,
+      "foreignRead": 403,
+      "foreignMutation": 403
+    },
+    {
+      "role": "member",
+      "collection": "revision-records",
+      "ownRead": 403,
+      "foreignRead": 403,
+      "foreignMutation": 403
+    },
+    {
+      "role": "member",
+      "collection": "markdown-conversion-reports",
+      "ownRead": 403,
+      "foreignRead": 403,
+      "foreignMutation": 403
+    },
+    {
+      "role": "member",
+      "collection": "media-assets",
+      "ownRead": 403,
+      "foreignRead": 403,
+      "foreignMutation": 403
+    },
+    {
+      "role": "member",
+      "collection": "media-blobs",
+      "ownRead": 403,
+      "foreignRead": 403,
+      "foreignMutation": 403
+    },
+    {
+      "role": "member",
+      "collection": "media-variants",
+      "ownRead": 403,
+      "foreignRead": 403,
+      "foreignMutation": 403
+    },
+    {
+      "role": "member",
+      "path": "/api/admin/ai/connections",
+      "site": "644e5b04-06f4-4202-a306-5b4e7329ebf5",
+      "status": 403
+    },
+    {
+      "role": "member",
+      "path": "/api/admin/ai/connections",
+      "site": "68f2d52c-db9c-4670-8fab-0a062e252fa9",
+      "status": 403
+    },
+    {
+      "role": "member",
+      "path": "/api/admin/audience/command-center",
+      "site": "644e5b04-06f4-4202-a306-5b4e7329ebf5",
+      "status": 403
+    },
+    {
+      "role": "member",
+      "path": "/api/admin/audience/command-center",
+      "site": "68f2d52c-db9c-4670-8fab-0a062e252fa9",
+      "status": 403
+    },
+    {
+      "role": "member",
+      "path": "/api/admin/integrations",
+      "site": "644e5b04-06f4-4202-a306-5b4e7329ebf5",
+      "status": 403
+    },
+    {
+      "role": "member",
+      "path": "/api/admin/integrations",
+      "site": "68f2d52c-db9c-4670-8fab-0a062e252fa9",
+      "status": 403
+    },
+    {
+      "role": "anonymous",
+      "collection": "sites",
+      "ownRead": 200,
+      "foreignRead": 200,
+      "foreignMutation": 403
+    },
+    {
+      "role": "anonymous",
+      "collection": "organizations",
+      "ownRead": 403,
+      "foreignRead": 403,
+      "foreignMutation": 403
+    },
+    {
+      "role": "anonymous",
+      "collection": "merchant-connections",
+      "ownRead": 403,
+      "foreignRead": 403,
+      "foreignMutation": 403
+    },
+    {
+      "role": "anonymous",
+      "collection": "social-accounts",
+      "ownRead": 403,
+      "foreignRead": 403,
+      "foreignMutation": 403
+    },
+    {
+      "role": "anonymous",
+      "collection": "api-clients",
+      "ownRead": 403,
+      "foreignRead": 403,
+      "foreignMutation": 403
+    },
+    {
+      "role": "anonymous",
+      "collection": "forum-sections",
+      "ownRead": 200,
+      "foreignRead": 200,
+      "foreignMutation": 403
+    },
+    {
+      "role": "anonymous",
+      "collection": "content",
+      "ownRead": 403,
+      "foreignRead": 403,
+      "foreignMutation": 403
+    },
+    {
+      "role": "anonymous",
+      "collection": "products",
+      "ownRead": 404,
+      "foreignRead": 404,
+      "foreignMutation": 403
+    },
+    {
+      "role": "anonymous",
+      "collection": "pod-connections",
+      "ownRead": 403,
+      "foreignRead": 403,
+      "foreignMutation": 403
+    },
+    {
+      "role": "anonymous",
+      "collection": "discussions",
+      "ownRead": 403,
+      "foreignRead": 403,
+      "foreignMutation": 403
+    },
+    {
+      "role": "anonymous",
+      "collection": "discussion-posts",
+      "ownRead": 403,
+      "foreignRead": 403,
+      "foreignMutation": 403
+    },
+    {
+      "role": "anonymous",
+      "collection": "article-family-content",
+      "ownRead": 403,
+      "foreignRead": 403,
+      "foreignMutation": 403
+    },
+    {
+      "role": "anonymous",
+      "collection": "revision-records",
+      "ownRead": 403,
+      "foreignRead": 403,
+      "foreignMutation": 403
+    },
+    {
+      "role": "anonymous",
+      "collection": "markdown-conversion-reports",
+      "ownRead": 403,
+      "foreignRead": 403,
+      "foreignMutation": 403
+    },
+    {
+      "role": "anonymous",
+      "collection": "media-assets",
+      "ownRead": 403,
+      "foreignRead": 403,
+      "foreignMutation": 403
+    },
+    {
+      "role": "anonymous",
+      "collection": "media-blobs",
+      "ownRead": 403,
+      "foreignRead": 403,
+      "foreignMutation": 403
+    },
+    {
+      "role": "anonymous",
+      "collection": "media-variants",
+      "ownRead": 403,
+      "foreignRead": 403,
+      "foreignMutation": 403
+    },
+    {
+      "role": "anonymous",
+      "path": "/api/admin/ai/connections",
+      "site": "644e5b04-06f4-4202-a306-5b4e7329ebf5",
+      "status": 403
+    },
+    {
+      "role": "anonymous",
+      "path": "/api/admin/ai/connections",
+      "site": "68f2d52c-db9c-4670-8fab-0a062e252fa9",
+      "status": 403
+    },
+    {
+      "role": "anonymous",
+      "path": "/api/admin/audience/command-center",
+      "site": "644e5b04-06f4-4202-a306-5b4e7329ebf5",
+      "status": 403
+    },
+    {
+      "role": "anonymous",
+      "path": "/api/admin/audience/command-center",
+      "site": "68f2d52c-db9c-4670-8fab-0a062e252fa9",
+      "status": 403
+    },
+    {
+      "role": "anonymous",
+      "path": "/api/admin/integrations",
+      "site": "644e5b04-06f4-4202-a306-5b4e7329ebf5",
+      "status": 403
+    },
+    {
+      "role": "anonymous",
+      "path": "/api/admin/integrations",
+      "site": "68f2d52c-db9c-4670-8fab-0a062e252fa9",
+      "status": 403
+    }
+  ],
+  "memberSignedInThroughLocalSmtp": true,
+  "realPasskeyContexts": 3,
+  "canonicalGrantRevoked": true
+}

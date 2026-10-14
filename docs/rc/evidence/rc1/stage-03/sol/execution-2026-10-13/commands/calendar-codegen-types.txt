@@ -1,0 +1,10 @@
+
+> renegade-cms@0.1.0 generate:types
+> cross-env RENEGADE_MODULES=all RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT=true npm run payload -- generate:types
+
+
+> renegade-cms@0.1.0 payload
+> cross-env NODE_OPTIONS=--no-deprecation payload generate:types
+
+[17:27:18] [32mINFO[39m: [36mCompiling TS types for Collections and Globals...[39m
+[17:27:19] [32mINFO[39m: [36mTypes written to C:\Projects\RENEGADE CMS\sol-rc1-20261013\src\payload-types.ts[39m

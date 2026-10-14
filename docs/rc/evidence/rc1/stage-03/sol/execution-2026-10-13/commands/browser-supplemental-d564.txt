@@ -1,0 +1,104 @@
+
+Running 5 tests using 1 worker
+
+node : (node:8840) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+At line:2 char:119
++ ... ntal-d564'; node node_modules/@playwright/test/cli.js test 05-http-au ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ((node:8840) War... env being set.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+Completed native authorization cases for owner
+Completed native authorization cases for administrator
+Completed native authorization cases for staff
+Completed native authorization cases for member
+Completed native authorization cases for anonymous
+  ok 1 scratch\sol-specs\05-http-authorization.spec.ts:17:1 › five real HTTP actors prove two-site reads, mutations, object substitutions, custom views and grant revocation (1.3m)
+  x  2 scratch\sol-specs\06-scheduled-publication.spec.ts:12:1 › scheduled publication uses the actual worker, immutable revision, restart and public refetch (7.4s)
+(node:764) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  3 scratch\sol-specs\07-minipaint.spec.ts:8:1 › miniPaint draws actual pixels, saves a new version and preserves original bytes after restart (15.9s)
+(node:12012) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 4 scratch\sol-specs\08-theme-rollback.spec.ts:7:1 › actual theme rollback restores public presentation and preserves canonical content (13.6s)
+Completed additional model boundaries for owner
+Completed additional model boundaries for administrator
+Completed additional model boundaries for staff
+Completed additional model boundaries for member
+Completed additional model boundaries for anonymous
+  ok 5 scratch\sol-specs\09-private-model-boundaries.spec.ts:9:1 › private identity stores and remaining native module factories enforce persisted authority (22.1s)
+
+
+  1) scratch\sol-specs\06-scheduled-publication.spec.ts:12:1 › scheduled publication uses the actual worker, immutable revision, restart and public refetch
+
+    Error: {"error":"Schedule Validation Failed","violations":[{"ruleId":"missing-approval","severity":"error","message":"Item status is \"draft\". Only approved content can be scheduled.","evidence":{"currentStatus":"draft"}}]}
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 200
+    Received: 422
+
+      37 |     expectedSequence: family.currentRevisionSequence,
+      38 |   } })
+    > 39 |   expect(schedule.status(), await schedule.text()).toBe(200)
+         |                                                    ^
+      40 |   const jobsUrl = `${process.env.APP_URL}/api/scheduled-publish-jobs?where[article][equals]=${family.id}&depth=0`
+      41 |   const queued = (await (await owner.request.get(jobsUrl)).json()).docs
+      42 |   expect(queued).toHaveLength(1)
+        at C:\Projects\RENEGADE CMS\sol-rc1-20261013\scratch\sol-specs\06-scheduled-publication.spec.ts:39:52
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    scratch\sol-traces\supplemental-d564\06-scheduled-publication-s-ab8d7--restart-and-public-refetch\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: scratch\sol-traces\supplemental-d564\06-scheduled-publication-s-ab8d7--restart-and-public-refetch\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    scratch\sol-traces\supplemental-d564\06-scheduled-publication-s-ab8d7--restart-and-public-refetch\trace.zip
+    Usage:
+
+        npx playwright show-trace scratch\sol-traces\supplemental-d564\06-scheduled-publication-s-ab8d7--restart-and-public-refetch\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) scratch\sol-specs\07-minipaint.spec.ts:8:1 › miniPaint draws actual pixels, saves a new version and preserves original bytes after restart
+
+    Error: {"replacement":{"id":"b480b5f9-a0ae-4f65-8ca8-9633475fcbe2","site":{"id":"9d2b48e0-4244-45b9-b436-059c96562a75","name":"Sol administrator permitted sites","slug":"renegadeparty","description":"Independent civic reporting, local organizing and public accountability.","lifecycle":"active","communityRegistrationPolicy":"open","commentReactionCodes":["thumbs_up","heart","insightful","applause"],"updatedAt":"2026-10-13T21:44:50.060Z","createdAt":"2026-10-13T10:28:01.930Z"},"publication":null,"space":null,"owner":{"id":"fafe5788-53fc-4fd4-9da2-763846a31701","displayName":"Renegade Party Dispatch","email":"editor@renegadeparty.test","status":"active","disabledAt":null,"archivedAt":null,"restrictedAt":null,"suspendedAt":null,"deactivatedAt":null,"deletionPendingAt":null,"deletedAt":null,"exportRequestedAt":null,"deletionRequestedAt":null,"verifiedEmailAt":null,"moderationReason":null,"stateReason":null,"updatedAt":"2026-10-13T10:28:01.964Z","createdAt":"2026-10-13T10:28:01.963Z"},"title":"Sol drawn version 1791927949176","kind":"image","storageLocation":"9d2b48e0-4244-45b9-b436-059c96562a75/290b0dd8-d351-4c0c-9408-6b0d3a1105ad.png","storageProvider":"local","originalBlob":{"id":"49ba4744-a708-42d0-91a6-1a770a5f5a15","site":{"id":"9d2b48e0-4244-45b9-b436-059c96562a75","name":"Sol administrator permitted sites","slug":"renegadeparty","description":"Independent civic reporting, local organizing and public accountability.","lifecycle":"active","communityRegistrationPolicy":"open","commentReactionCodes":["thumbs_up","heart","insightful","applause"],"updatedAt":"2026-10-13T21:44:50.060Z","createdAt":"2026-10-13T10:28:01.930Z"},"publication":null,"space":null,"checksum":"sha256:734ed7e9a28904d051b63d34d687fa8c4e9aa5844d668010cf64ade4da08039f","storageKey":"9d2b48e0-4244-45b9-b436-059c96562a75/290b0dd8-d351-4c0c-9408-6b0d3a1105ad.png","storageProvider":"local","mimeType":"image/png","sizeBytes":154390,"state":"ready","updatedAt":"2026-10-13T21:45:49.938Z","createdAt":"2026-10-13T21:45:49.938Z"},"originalFilename":"Sol drawn version 1791927949176.png","mimeType":"image/png","sizeBytes":154390,"checksum":"sha256:734ed7e9a28904d051b63d34d687fa8c4e9aa5844d668010cf64ade4da08039f","width":1200,"height":600,"durationSeconds":null,"audioMetadata":null,"videoMetadata":null,"altText":"Actual browser drawing acceptance","focalPoint":{"x":null,"y":null},"aspectRatio":null,"dominantColor":null,"colorPalette":null,"cropSettings":null,"caption":null,"description":null,"creatorCredit":null,"credits":null,"source":null,"copyrightOwner":null,"license":null,"licenseType":null,"licenseUrl":null,"rightsSourceUrl":null,"rightsExpiresAt":null,"embargoUntil":null,"usageRestrictions":null,"consentReference":null,"modelReleaseReference":null,"propertyReleaseReference":null,"governanceEnabled":false,"customMetadata":null,"processingState":"ready","publicPolicy":"published-use","tags":[],"collections":[],"variants":[],"replaceGloballyWith":null,"originalExportAllowed":true,"rightsStatus":"approved","retentionMode":"permanent","retentionExpiresAt":null,"retentionHold":"none","removeFromDiscovery":false,"tombstoneLabel":null,"updatedAt":"2026-10-13T21:45:49.962Z","createdAt":"2026-10-13T21:45:49.962Z"}}
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 200
+    Received: 201
+
+      39 |   await editor.getByRole('button', { name: 'Save version', exact: true }).click()
+      40 |   const response = await saved
+    > 41 |   expect(response.status(), await response.text()).toBe(200)
+         |                                                    ^
+      42 |   const replacement = (await response.json()).replacement
+      43 |   expect(replacement.id).not.toBe(original.id)
+      44 |   const editedBytes = await (await owner.request.get(`${process.env.APP_URL}/media/${replacement.id}`)).body()
+        at C:\Projects\RENEGADE CMS\sol-rc1-20261013\scratch\sol-specs\07-minipaint.spec.ts:41:52
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    scratch\sol-traces\supplemental-d564\07-minipaint-miniPaint-dra-3ea22-riginal-bytes-after-restart\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    scratch\sol-traces\supplemental-d564\07-minipaint-miniPaint-dra-3ea22-riginal-bytes-after-restart\test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: scratch\sol-traces\supplemental-d564\07-minipaint-miniPaint-dra-3ea22-riginal-bytes-after-restart\error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    scratch\sol-traces\supplemental-d564\07-minipaint-miniPaint-dra-3ea22-riginal-bytes-after-restart\trace.zip
+    Usage:
+
+        npx playwright show-trace scratch\sol-traces\supplemental-d564\07-minipaint-miniPaint-dra-3ea22-riginal-bytes-after-restart\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    scratch\sol-specs\06-scheduled-publication.spec.ts:12:1 › scheduled publication uses the actual worker, immutable revision, restart and public refetch
+    scratch\sol-specs\07-minipaint.spec.ts:8:1 › miniPaint draws actual pixels, saves a new version and preserves original bytes after restart
+  3 passed (2.4m)

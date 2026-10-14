@@ -1,0 +1,16 @@
+{
+  "sourceSha": "fa35d5f2bb6c48afac105b4bba548a9ac329b05c",
+  "command": "npm.cmd run db:migrate",
+  "exitCode": 0,
+  "database": "solrc1_20261013_cfg_lean_floor_release_acceptance",
+  "nonsecretEnvironment": {
+    "NODE_ENV": "production",
+    "LOCAL_E2E_TEST_MODE": "false",
+    "ENABLE_TEST_ROUTES": "false",
+    "MEDIA_DIR": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-config-lean-floor-media",
+    "DEPLOYMENT_PROFILE": "Lean",
+    "RENEGADE_MODULES": ""
+  },
+  "durationSeconds": 16.169334888458252,
+  "log": "scratch\\sol-evidence\\migrations-config-lean-floor.txt"
+}

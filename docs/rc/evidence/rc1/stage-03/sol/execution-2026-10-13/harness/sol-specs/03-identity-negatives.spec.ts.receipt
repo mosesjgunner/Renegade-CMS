@@ -1,0 +1,158 @@
+const artifactRoot = process.env.SOL_ARTIFACT_ROOT ?? 'scratch/sol-browser/source-5666'
+import { test, expect, type Browser, type Page } from '@playwright/test'
+import { Client } from 'pg'
+import { writeFileSync } from 'node:fs'
+
+const output = artifactRoot
+const ownerState = 'scratch/rc02-owner.json'
+const base = process.env.APP_URL!
+let foreignSite: string
+let site: string
+const id = (value: any): string => typeof value === 'object' ? value.id : value
+
+async function authenticator(page: Page) {
+  const cdp = await page.context().newCDPSession(page)
+  await cdp.send('WebAuthn.enable')
+  await cdp.send('WebAuthn.addVirtualAuthenticator', { options: { protocol: 'ctap2', transport: 'internal',
+    hasResidentKey: true, hasUserVerification: true, isUserVerified: true, automaticPresenceSimulation: true } })
+}
+async function owner(browser: Browser) {
+  return browser.newContext({ storageState: ownerState, ignoreHTTPSErrors: true })
+}
+async function invite(browser: Browser, validHours = 24) {
+  const context = await owner(browser)
+  const email = `negative-${Date.now()}-${Math.random().toString(16).slice(2)}@renegadeparty.test`
+  const res = await context.request.post(`${base}/api/admin/staff/invite`, { data: { email, siteId: site, validHours } })
+  expect(res.status()).toBe(201)
+  const result = await res.json()
+  await context.close()
+  return result
+}
+async function persisted(userId: string) {
+  const url = process.env.DATABASE_URL!
+  expect(new URL(url).pathname).toMatch(/^\/solrc1_20261013_browser_[a-z0-9_]+_release_acceptance$/)
+  const client = new Client({ connectionString: url })
+  await client.connect()
+  try {
+    return (await client.query(`SELECT
+      (SELECT count(*)::int FROM passkeys WHERE user_id=$1) AS passkeys,
+      (SELECT count(*)::int FROM recovery_codes WHERE user_id=$1) AS recovery_codes,
+      (SELECT count(*)::int FROM admin_sessions WHERE user_id=$1) AS sessions,
+      (SELECT consumed_at IS NOT NULL FROM identity_tokens WHERE metadata->>'userId'=$1::text ORDER BY created_at DESC LIMIT 1) AS consumed`, [userId])).rows[0]
+  } finally { await client.end() }
+}
+async function registration(page: Page, options: any) {
+  return page.evaluate(async (input) => {
+    const decode = (v: string) => Uint8Array.from(atob(v.replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0))
+    const credential = await navigator.credentials.create({ publicKey: {
+      ...input, challenge: decode(input.challenge), user: { ...input.user, id: decode(input.user.id) },
+      excludeCredentials: (input.excludeCredentials ?? []).map((c: any) => ({ ...c, id: decode(c.id) })),
+    } }) as PublicKeyCredential
+    return credential.toJSON()
+  }, options)
+}
+
+test.describe.serial('Ordinary identity negatives with persisted-state assertions', () => {
+  test('creates a second site through owner REST and preserves canonical operator grants', async ({ browser }) => {
+    const context = await owner(browser)
+    const sites = await (await context.request.get(`${base}/api/sites?depth=0`)).json()
+    site = sites.docs.find((doc: any) => doc.slug === 'renegadeparty').id
+    const me = await (await context.request.get(`${base}/api/users/me`)).json()
+    expect(me.user.role).toBe('owner')
+    const existing = sites.docs.find((doc: any) => doc.slug === 'sol-second-tenant')
+    if (existing) foreignSite = existing.id
+    else {
+      const res = await context.request.post(`${base}/api/sites`, { data: { name: 'Sol second tenant', slug: 'sol-second-tenant', lifecycle: 'active' } })
+      expect(res.status()).toBe(201)
+      foreignSite = (await res.json()).doc.id
+      const grant = await context.request.post(`${base}/api/member-site-roles`, { data: {
+        site: foreignSite, member: id(me.user.member), role: 'community-manager', grantedByUserId: me.user.id,
+      } })
+      expect(grant.status()).toBe(201)
+    }
+    writeFileSync(`${output}/two-sites.json`, JSON.stringify({ site, foreignSite }, null, 2))
+    const roles = await (await context.request.get(`${base}/api/member-site-roles?depth=0&limit=100`)).json()
+    expect(roles.docs.some((g: any) => g.site === site && g.member === id(me.user.member))).toBe(true)
+    expect(roles.docs.some((g: any) => g.site === foreignSite && g.member === id(me.user.member))).toBe(true)
+    await context.close()
+  })
+
+  test('rejects a genuinely expired invitation without issuing credentials or sessions', async ({ browser, request }) => {
+    const invitation = await invite(browser, 0.00001)
+    await new Promise(resolve => setTimeout(resolve, 100))
+    const before = await persisted(invitation.user.id)
+    const res = await request.post('/api/auth/passkey/enroll', { data: { action: 'options', enrollmentToken: invitation.enrollmentToken } })
+    expect(res.status()).toBe(410)
+    expect((await res.json()).code).toBe('TOKEN_EXPIRED')
+    expect(await persisted(invitation.user.id)).toEqual(before)
+  })
+
+  test('rejects a real invitation at a foreign site without consuming it', async ({ browser, request }) => {
+    const invitation = await invite(browser)
+    const before = await persisted(invitation.user.id)
+    const res = await request.post('/api/auth/passkey/enroll', { data: { action: 'options', enrollmentToken: invitation.enrollmentToken, siteId: foreignSite } })
+    expect(res.status()).toBe(400)
+    expect((await res.json()).code).toBe('WRONG_SITE')
+    expect(await persisted(invitation.user.id)).toEqual(before)
+  })
+
+  test('valid authenticator response rejects wrong origin and challenge, then enrolls once and rejects replay', async ({ browser }) => {
+    const invitation = await invite(browser)
+    const context = await browser.newContext({ ignoreHTTPSErrors: true })
+    const page = await context.newPage()
+    await authenticator(page)
+    await page.goto(invitation.enrollmentUrl)
+    const optionsRes = await context.request.post(`${base}/api/auth/passkey/enroll`, { data: { action: 'options', enrollmentToken: invitation.enrollmentToken } })
+    expect(optionsRes.status()).toBe(200)
+    const credential: any = await registration(page, (await optionsRes.json()).options)
+    const before = await persisted(invitation.user.id)
+    const clientData = JSON.parse(Buffer.from(credential.response.clientDataJSON, 'base64url').toString())
+    for (const change of [{ origin: 'https://foreign.example.test' }, { challenge: 'a-different-challenge' }]) {
+      const altered = { ...credential, response: { ...credential.response,
+        clientDataJSON: Buffer.from(JSON.stringify({ ...clientData, ...change })).toString('base64url') } }
+      const res = await context.request.post(`${base}/api/auth/passkey/enroll`, { data: { action: 'complete', enrollmentToken: invitation.enrollmentToken, credential: altered } })
+      expect(res.status()).toBe(400)
+      expect((await res.json()).code).toBe('VERIFICATION_FAILED')
+      expect(await persisted(invitation.user.id)).toEqual(before)
+    }
+    const complete = await context.request.post(`${base}/api/auth/passkey/enroll`, { data: { action: 'complete', enrollmentToken: invitation.enrollmentToken, credential } })
+    expect(complete.status()).toBe(200)
+    const after = await persisted(invitation.user.id)
+    expect(after).toEqual({ passkeys: 1, recovery_codes: 10, sessions: 0, consumed: true })
+    const replay = await context.request.post(`${base}/api/auth/passkey/enroll`, { data: { action: 'complete', enrollmentToken: invitation.enrollmentToken, credential } })
+    expect(replay.status()).toBe(410)
+    expect((await replay.json()).code).toBe('TOKEN_ALREADY_USED')
+    expect(await persisted(invitation.user.id)).toEqual(after)
+    writeFileSync(`${output}/identity-negatives.json`, JSON.stringify({ origin: 'denied', challenge: 'denied', replay: 'denied', before, after }, null, 2))
+    await context.close()
+  })
+  test('rejects a genuinely expired registration challenge without consuming the invitation', async ({ browser }) => {
+    test.setTimeout(360_000)
+    const invitation = await invite(browser)
+    const context = await browser.newContext({ ignoreHTTPSErrors: true })
+    const page = await context.newPage()
+    await authenticator(page)
+    await page.goto(invitation.enrollmentUrl)
+    const started = Date.now()
+    const res = await context.request.post(`${base}/api/auth/passkey/enroll`, {
+      data: { action: 'options', enrollmentToken: invitation.enrollmentToken },
+    })
+    expect(res.status()).toBe(200)
+    const credential = await registration(page, (await res.json()).options)
+    const before = await persisted(invitation.user.id)
+    const deadline = started + 5 * 60_000 + 2_000
+    while (Date.now() < deadline) {
+      await new Promise(resolve => setTimeout(resolve, Math.min(30_000, deadline - Date.now())))
+      console.log('Ordinary challenge-expiry check: waiting on the real server TTL.')
+    }
+    const expired = await context.request.post(`${base}/api/auth/passkey/enroll`, {
+      data: { action: 'complete', enrollmentToken: invitation.enrollmentToken, credential },
+    })
+    expect(expired.status()).toBe(400)
+    expect((await expired.json()).code).toBe('CHALLENGE_EXPIRED')
+    expect(await persisted(invitation.user.id)).toEqual(before)
+    writeFileSync(`${output}/challenge-expiry.json`, JSON.stringify({ waitedMilliseconds: Date.now() - started,
+      response: 'CHALLENGE_EXPIRED', protectedStateUnchanged: true }, null, 2))
+    await context.close()
+  })
+})

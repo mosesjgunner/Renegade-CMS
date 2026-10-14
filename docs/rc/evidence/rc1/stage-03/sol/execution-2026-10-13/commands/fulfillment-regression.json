@@ -1,0 +1,113 @@
+{
+  "numTotalTestSuites": 4,
+  "numPassedTestSuites": 4,
+  "numFailedTestSuites": 0,
+  "numPendingTestSuites": 0,
+  "numTotalTests": 6,
+  "numPassedTests": 6,
+  "numFailedTests": 0,
+  "numPendingTests": 0,
+  "numTodoTests": 0,
+  "snapshot": {
+    "added": 0,
+    "failure": false,
+    "filesAdded": 0,
+    "filesRemoved": 0,
+    "filesRemovedList": [],
+    "filesUnmatched": 0,
+    "filesUpdated": 0,
+    "matched": 0,
+    "total": 0,
+    "unchecked": 0,
+    "uncheckedKeysByFile": [],
+    "unmatched": 0,
+    "updated": 0,
+    "didUpdate": false
+  },
+  "startTime": 1791884715084,
+  "success": true,
+  "testResults": [
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["RC08D-04: Commerce Runtime Closure & Acceptance Verification"],
+          "fullName": "RC08D-04: Commerce Runtime Closure & Acceptance Verification proves catalog, low-stock race, cart authority, settlement, subscriptions, donations, affiliates, and fulfillment",
+          "status": "passed",
+          "title": "proves catalog, low-stock race, cart authority, settlement, subscriptions, donations, affiliates, and fulfillment",
+          "duration": 3378.1620000000003,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791884726958,
+      "endTime": 1791884730336.162,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/tests/integration/commerce-runtime-acceptance.integration.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security"
+          ],
+          "fullName": "RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security proves the complete physical product lifecycle, server authority, and idempotent settlement",
+          "status": "passed",
+          "title": "proves the complete physical product lifecycle, server authority, and idempotent settlement",
+          "duration": 2453.2509,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security"
+          ],
+          "fullName": "RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security defeats client price, quantity, and total tampering attempts across routes",
+          "status": "passed",
+          "title": "defeats client price, quantity, and total tampering attempts across routes",
+          "duration": 942.7822999999999,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security"
+          ],
+          "fullName": "RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security proves webhook security boundaries: unsigned, invalid signature, replay, and race handling",
+          "status": "passed",
+          "title": "proves webhook security boundaries: unsigned, invalid signature, replay, and race handling",
+          "duration": 668.4185000000007,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security"
+          ],
+          "fullName": "RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security proves multi-tenant boundaries and security against cross-site cart/order access",
+          "status": "passed",
+          "title": "proves multi-tenant boundaries and security against cross-site cart/order access",
+          "duration": 579.0509999999995,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security"
+          ],
+          "fullName": "RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security proves downstream partial failure handling and operator reconciliation",
+          "status": "passed",
+          "title": "proves downstream partial failure handling and operator reconciliation",
+          "duration": 628.974400000001,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791884719582,
+      "endTime": 1791884724854.9744,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/tests/integration/rc05-pass2-commerce-routes.integration.test.ts"
+    }
+  ]
+}

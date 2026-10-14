@@ -1,0 +1,56 @@
+[
+  {
+    "label": "v4-lean-floor",
+    "command": "node node_modules/@playwright/test/cli.js test --config=scratch/playwright.sol.config.ts --max-failures=1",
+    "sourceSha": "d311396876fabc104826e4375d26feef0b5e2b39",
+    "exitCode": 0,
+    "durationSeconds": 23.944008588790894,
+    "environmentFile": "scratch/.env.sol-config-v4-lean-floor",
+    "resultFile": "scratch/sol-browser/config-v4-lean-floor/results.json"
+  },
+  {
+    "label": "v4-standard-floor",
+    "command": "node node_modules/@playwright/test/cli.js test --config=scratch/playwright.sol.config.ts --max-failures=1",
+    "sourceSha": "d311396876fabc104826e4375d26feef0b5e2b39",
+    "exitCode": 0,
+    "durationSeconds": 32.20996642112732,
+    "environmentFile": "scratch/.env.sol-config-v4-standard-floor",
+    "resultFile": "scratch/sol-browser/config-v4-standard-floor/results.json"
+  },
+  {
+    "label": "v4-standard-all",
+    "command": "node node_modules/@playwright/test/cli.js test --config=scratch/playwright.sol.config.ts --max-failures=1",
+    "sourceSha": "d311396876fabc104826e4375d26feef0b5e2b39",
+    "exitCode": 0,
+    "durationSeconds": 31.168628454208374,
+    "environmentFile": "scratch/.env.sol-config-v4-standard-all",
+    "resultFile": "scratch/sol-browser/config-v4-standard-all/results.json"
+  },
+  {
+    "label": "v4-lean-all",
+    "command": "node node_modules/@playwright/test/cli.js test --config=scratch/playwright.sol.config.ts --max-failures=1",
+    "sourceSha": "d311396876fabc104826e4375d26feef0b5e2b39",
+    "exitCode": 0,
+    "durationSeconds": 31.634451866149902,
+    "environmentFile": "scratch/.env.sol-config-v4-lean-all",
+    "resultFile": "scratch/sol-browser/config-v4-lean-all/results.json"
+  },
+  {
+    "label": "v4-standard-commerce",
+    "command": "node node_modules/@playwright/test/cli.js test --config=scratch/playwright.sol.config.ts --max-failures=1",
+    "sourceSha": "d311396876fabc104826e4375d26feef0b5e2b39",
+    "exitCode": 0,
+    "durationSeconds": 24.543485403060913,
+    "environmentFile": "scratch/.env.sol-config-v4-standard-commerce",
+    "resultFile": "scratch/sol-browser/config-v4-standard-commerce/results.json"
+  },
+  {
+    "label": "v4-standard-crm",
+    "command": "node node_modules/@playwright/test/cli.js test --config=scratch/playwright.sol.config.ts --max-failures=1",
+    "sourceSha": "d311396876fabc104826e4375d26feef0b5e2b39",
+    "exitCode": 0,
+    "durationSeconds": 22.19402313232422,
+    "environmentFile": "scratch/.env.sol-config-v4-standard-crm",
+    "resultFile": "scratch/sol-browser/config-v4-standard-crm/results.json"
+  }
+]

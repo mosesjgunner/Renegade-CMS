@@ -1,0 +1,84 @@
+
+ RUN  v3.2.7 C:/Projects/RENEGADE CMS/sol-rc1-20261013
+
+[04:56:09] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+ ❯ tests/integration/shared-contract-commerce-shop.integration.test.ts (34 tests | 1 failed) 2726ms
+   ✓ Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks > CHECKOUT / ORDER: Lifecycle, Tampering Invariants & Reconciliation > 1. Creates an empty guest cart with cryptographic guest token 1ms
+   ✓ Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks > CHECKOUT / ORDER: Lifecycle, Tampering Invariants & Reconciliation > 2. Defeats client price/totals tampering via authoritative catalog re-resolution 4ms
+   ✓ Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks > CHECKOUT / ORDER: Lifecycle, Tampering Invariants & Reconciliation > 3. Recovers cart across sessions via hashed token without leaking plaintext 101ms
+   ✓ Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks > CHECKOUT / ORDER: Lifecycle, Tampering Invariants & Reconciliation > 4. Calculates valid shipping and jurisdiction tax with exact integer allocation 1ms
+   ✓ Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks > CHECKOUT / ORDER: Lifecycle, Tampering Invariants & Reconciliation > 5. Creates checkout proposal and verifies cryptographic integrity hash 1ms
+   ✓ Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks > CHECKOUT / ORDER: Lifecycle, Tampering Invariants & Reconciliation > 6. Initiates hosted checkout and delivers verified signed payment webhook event 1ms
+   ✓ Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks > CHECKOUT / ORDER: Lifecycle, Tampering Invariants & Reconciliation > 7. Delivers duplicate, delayed, and out-of-order events with deterministic monotonic reduction 1ms
+   ✓ Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks > CHECKOUT / ORDER: Lifecycle, Tampering Invariants & Reconciliation > 8. Reconciles payment attempts under simulated worker interruption/restart 0ms
+   × Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks > CHECKOUT / ORDER: Lifecycle, Tampering Invariants & Reconciliation > 9. Proves exactly one canonical Order and one correct receipt created across duplicate deliveries 565ms
+     → expected { city: 'Austin', …(5) } to match object { name: 'Citizen Jane', …(3) }
+(2 matching properties omitted from actual)
+   ✓ Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks > CHECKOUT / ORDER: Lifecycle, Tampering Invariants & Reconciliation > 10. Executes refunds and disputes, transitioning order state safely with dual control 1ms
+   ✓ Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks > CHECKOUT / ORDER: Lifecycle, Tampering Invariants & Reconciliation > 11. Verifies subsequent catalog mutations or archiving do NOT corrupt historical order facts 95ms
+   ✓ Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks > MEMBER / SUBSCRIPTION: Identity Merge, Lifecycle, Dunning & Entitlements > 12. Merges guest and member carts safely and blocks cross-site guest cart theft 1ms
+   ✓ Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks > MEMBER / SUBSCRIPTION: Identity Merge, Lifecycle, Dunning & Entitlements > 13 & 14. Publishes subscription plan, starts active subscription, and grants gated access 1ms
+   ✓ Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks > MEMBER / SUBSCRIPTION: Identity Merge, Lifecycle, Dunning & Entitlements > 15 & 16. Handles failed renewal: transitions to past_due dunning grace period without erasing evidence 0ms
+   ✓ Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks > MEMBER / SUBSCRIPTION: Identity Merge, Lifecycle, Dunning & Entitlements > 17. Executes recovery on successful invoice OR deterministic terminal cancellation 0ms
+   ✓ Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks > MEMBER / SUBSCRIPTION: Identity Merge, Lifecycle, Dunning & Entitlements > 18. Confirms plan change, cancellation scheduling at period end, and immediate resumption 0ms
+   ✓ Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks > MEMBER / SUBSCRIPTION: Identity Merge, Lifecycle, Dunning & Entitlements > 19. Verifies invoices, metrics, and billing history segregated by currency 0ms
+   ✓ Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks > MEMBER / SUBSCRIPTION: Identity Merge, Lifecycle, Dunning & Entitlements > 20. Simulates restart during renewal processing and proves zero duplicate side effects 0ms
+   ✓ Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks > DONATIONS: Campaigns, Ingestion, Recognition, Progress & Reversals > 21. Creates campaign and ingests one-time donation with fee-cover math and receipt 1ms
+   ✓ Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks > DONATIONS: Campaigns, Ingestion, Recognition, Progress & Reversals > 22. Links recurring donation installments to canonical supporter identity 18ms
+   ✓ Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks > DONATIONS: Campaigns, Ingestion, Recognition, Progress & Reversals > 23 & 24. Respects distinct recognition levels and projects privacy on public donor walls 0ms
+   ✓ Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks > DONATIONS: Campaigns, Ingestion, Recognition, Progress & Reversals > 25. Calculates donation goal progress strictly in campaign currency and excludes failed/refunded gifts 0ms
+   ✓ Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks > DONATIONS: Campaigns, Ingestion, Recognition, Progress & Reversals > 26 & 27. Provisions supporter entitlement on settlement and revokes it deterministically on refund 1ms
+   ✓ Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks > DONATIONS: Campaigns, Ingestion, Recognition, Progress & Reversals > 28. Cancels recurring donation subscription without corrupting settled financial history 0ms
+   ✓ Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks > DONATIONS: Campaigns, Ingestion, Recognition, Progress & Reversals > 29. Reconciles delayed and duplicate donation payment evidence with exact deduplication 1ms
+   ✓ Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks > DONATIONS: Campaigns, Ingestion, Recognition, Progress & Reversals > 30. Proves donor anonymization clears personal PII while preserving required financial audit facts 0ms
+   ✓ Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks > FINANCIAL ATTACKS: Totals, Checkout, Webhooks, Coupons, Inventory, Tokens & Transitions > 31a. Defeats totals attack: negative values, floating point numbers, and non-integer minor units 1ms
+   ✓ Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks > FINANCIAL ATTACKS: Totals, Checkout, Webhooks, Coupons, Inventory, Tokens & Transitions > 31b. Defeats checkout attack: expired proposal or modified cart version during checkout 1ms
+   ✓ Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks > FINANCIAL ATTACKS: Totals, Checkout, Webhooks, Coupons, Inventory, Tokens & Transitions > 31c. Defeats webhook validation attack: forged signature, tampered body, replay of old events 1ms
+   ✓ Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks > FINANCIAL ATTACKS: Totals, Checkout, Webhooks, Coupons, Inventory, Tokens & Transitions > 31d. Defeats coupons attack: invalid code, expired promo, and negative discount values 1ms
+   ✓ Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks > FINANCIAL ATTACKS: Totals, Checkout, Webhooks, Coupons, Inventory, Tokens & Transitions > 31e. Defeats inventory attack: ordering more than tracked stock 1ms
+   ✓ Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks > FINANCIAL ATTACKS: Totals, Checkout, Webhooks, Coupons, Inventory, Tokens & Transitions > 31f. Defeats token attack: digital delivery HMAC token forging and tampering 1ms
+   ✓ Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks > FINANCIAL ATTACKS: Totals, Checkout, Webhooks, Coupons, Inventory, Tokens & Transitions > 31g. Defeats redirects attack: credentials or non-http protocols in checkout return URLs 3ms
+   ✓ Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks > FINANCIAL ATTACKS: Totals, Checkout, Webhooks, Coupons, Inventory, Tokens & Transitions > 31h. Defeats money-state transition attack: transitioning refunded/cancelled attempts back to succeeded 0ms
+node :
+At line:2 char:214
++ ... host:3000'; node --env-file=.env.acceptance scripts/run-integration.m ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/integration/shared-contract-commerce-shop.integration.test.ts > Shared Contract Proof: Checkout/Order,
+Member/Subscription, Donations & Financial Attacks > CHECKOUT / ORDER: Lifecycle, Tampering Invariants &
+Reconciliation > 9. Proves exactly one canonical Order and one correct receipt created across duplicate deliveries
+AssertionError: expected { city: 'Austin', …(5) } to match object { name: 'Citizen Jane', …(3) }
+(2 matching properties omitted from actual)
+
+- Expected
++ Received
+
+  {
+-   "address1": "123 Renegade Way",
++   "address1": "",
+    "city": "Austin",
+    "country": "US",
+    "name": "Citizen Jane",
+  }
+
+ ❯ tests/integration/shared-contract-commerce-shop.integration.test.ts:823:60
+    821|       })
+    822|       expect(packages.docs).toHaveLength(1)
+    823|       expect(packages.docs[0].permissionedAddressManifest).toMatchObje…
+       |                                                            ^
+    824|         name: 'Citizen Jane',
+    825|         address1: '123 Renegade Way',
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 33 passed (34)
+   Start at  04:56:03
+   Duration  8.76s (transform 1.50s, setup 0ms, collect 5.47s, tests 2.73s, environment 0ms, prepare 119ms)
+
+JSON report written to C:/Projects/RENEGADE CMS/sol-rc1-20261013/scratch/sol-evidence/fulfillment-recovery.json

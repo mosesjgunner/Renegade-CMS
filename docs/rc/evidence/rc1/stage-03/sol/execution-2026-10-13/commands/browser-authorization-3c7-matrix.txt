@@ -1,0 +1,63 @@
+
+Running 1 test using 1 worker
+
+node : (node:31624) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+At line:2 char:126
++ ... c7-matrix'; node node_modules/@playwright/test/cli.js test 05-http-au ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ((node:31624) Wa... env being set.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  1 scratch\sol-specs\05-http-authorization.spec.ts:41:1 › five real HTTP actors prove two-site reads, mutations, object substitutions, custom views and grant revocation (17.6s)
+Testing stopped early after 1 maximum allowed failures.
+
+
+  1) scratch\sol-specs\05-http-authorization.spec.ts:41:1 › five real HTTP actors prove two-site reads, mutations, object substitutions, custom views and grant revocation
+
+    Error: discussions creation: {"errors":[{"name":"l","data":{"collection":"discussions","errors":[{"label":"Canonical Path","message":"This field is required.","path":"canonicalPath"}]},"message":"The following field is invalid: Canonical Path"}]}
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 201
+    Received: 400
+
+      94 |   const create = async (collection: string, data: Doc) => {
+      95 |     const res = await owner.request.post(`${base}/api/${collection}`, { data })
+    > 96 |     expect(res.status(), `${collection} creation: ${await res.text()}`).toBe(201)
+         |                                                                         ^
+      97 |     return (await res.json()).doc
+      98 |   }
+      99 |   const definitions: Array<{ collection: string; field: string; publicRead?: boolean; data: (site: string, tag: string) => Doc }> = [
+        at create (C:\Projects\RENEGADE CMS\sol-rc1-20261013\scratch\sol-specs\05-http-authorization.spec.ts:96:73)
+        at C:\Projects\RENEGADE CMS\sol-rc1-20261013\scratch\sol-specs\05-http-authorization.spec.ts:118:24
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    scratch\sol-traces\authorization-3c7-matrix\05-http-authorization-five-b3cee--views-and-grant-revocation\test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    scratch\sol-traces\authorization-3c7-matrix\05-http-authorization-five-b3cee--views-and-grant-revocation\test-failed-4.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #3: screenshot (image/png) ──────────────────────────────────────────────────────────
+    scratch\sol-traces\authorization-3c7-matrix\05-http-authorization-five-b3cee--views-and-grant-revocation\test-failed-3.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #4: screenshot (image/png) ──────────────────────────────────────────────────────────
+    scratch\sol-traces\authorization-3c7-matrix\05-http-authorization-five-b3cee--views-and-grant-revocation\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: scratch\sol-traces\authorization-3c7-matrix\05-http-authorization-five-b3cee--views-and-grant-revocation\error-context.md
+
+    attachment #6: trace (application/zip) ─────────────────────────────────────────────────────────
+    scratch\sol-traces\authorization-3c7-matrix\05-http-authorization-five-b3cee--views-and-grant-revocation\trace.zip
+    Usage:
+
+        npx playwright show-trace scratch\sol-traces\authorization-3c7-matrix\05-http-authorization-five-b3cee--views-and-grant-revocation\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    scratch\sol-specs\05-http-authorization.spec.ts:41:1 › five real HTTP actors prove two-site reads, mutations, object substitutions, custom views and grant revocation
+  1 error was not a part of any test, see above for details

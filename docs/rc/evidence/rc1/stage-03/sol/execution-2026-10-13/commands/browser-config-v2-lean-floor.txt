@@ -1,0 +1,66 @@
+
+Running 1 test using 1 worker
+
+(node:21716) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  1 scratch\config-specs\configuration.spec.ts:6:1 › ordinary configuration boot, first-run, registered collections and an actual publishing mutation (9.2s)
+Testing stopped early after 1 maximum allowed failures.
+
+
+  1) scratch\config-specs\configuration.spec.ts:6:1 › ordinary configuration boot, first-run, registered collections and an actual publishing mutation
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 5
+    + Received  + 0
+
+    @@ -1,9 +1,6 @@
+      Array [
+    -   "ai-connections",
+    -   "ai-credentials",
+    -   "ai-proposals",
+        "article-family-content",
+        "audience-experiments",
+        "audience-frequency-policies",
+        "authors",
+        "automation-failures",
+    @@ -39,12 +36,10 @@
+        "member-recovery-codes",
+        "member-sessions",
+        "member-site-roles",
+        "members",
+        "page-layouts",
+    -   "payload-jobs",
+    -   "payload-kv",
+        "payload-locked-documents",
+        "payload-migrations",
+        "payload-preferences",
+        "plan-revisions",
+        "pod-connections",
+
+      47 |   const expected = await config
+      48 |   const actualCollections = Object.keys(accessModel.collections).sort()
+    > 49 |   expect(actualCollections).toEqual(expected.collections.map(c => c.slug).sort())
+         |                             ^
+      50 |   const enabled = loadConfig()
+      51 |   expect(enabled.deploymentProfile).toBe(profile)
+      52 |   const sites = await (await page.request.get('/api/sites?depth=0')).json()
+        at C:\Projects\RENEGADE CMS\sol-rc1-20261013\scratch\config-specs\configuration.spec.ts:49:29
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    scratch\sol-traces\config-v2-lean-floor\configuration-ordinary-con-772b6--actual-publishing-mutation\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: scratch\sol-traces\config-v2-lean-floor\configuration-ordinary-con-772b6--actual-publishing-mutation\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    scratch\sol-traces\config-v2-lean-floor\configuration-ordinary-con-772b6--actual-publishing-mutation\trace.zip
+    Usage:
+
+        npx playwright show-trace scratch\sol-traces\config-v2-lean-floor\configuration-ordinary-con-772b6--actual-publishing-mutation\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    scratch\config-specs\configuration.spec.ts:6:1 › ordinary configuration boot, first-run, registered collections and an actual publishing mutation
+  1 error was not a part of any test, see above for details

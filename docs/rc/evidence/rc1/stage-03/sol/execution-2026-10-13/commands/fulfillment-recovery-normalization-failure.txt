@@ -1,0 +1,68 @@
+
+ RUN  v3.2.7 C:/Projects/RENEGADE CMS/sol-rc1-20261013
+
+[04:57:36] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+ ✓ tests/integration/shared-contract-commerce-shop.integration.test.ts (34 tests) 1621ms
+   ✓ Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks > CHECKOUT / ORDER: Lifecycle, Tampering Invariants & Reconciliation > 9. Proves exactly one canonical Order and one correct receipt created across duplicate deliveries  418ms
+[04:57:40] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+ ❯ tests/integration/rc05-pass2-commerce-routes.integration.test.ts (5 tests | 1 failed) 4290ms
+   × RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security > proves the complete physical product lifecycle, server authority, and idempotent settlement 1671ms
+     → Shipping address requires operator reconciliation: Street address is required. City is required. Postal code is required. Country must be a valid 2-letter ISO 3166-1 alpha-2 code.
+   ✓ RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security > defeats client price, quantity, and total tampering attempts across routes  760ms
+   ✓ RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security > proves webhook security boundaries: unsigned, invalid signature, replay, and race handling  616ms
+   ✓ RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security > proves multi-tenant boundaries and security against cross-site cart/order access  595ms
+   ✓ RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security > proves downstream partial failure handling and operator reconciliation  647ms
+[04:57:47] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+ ❯ tests/integration/commerce-runtime-acceptance.integration.test.ts (1 test | 1 failed) 2036ms
+   × RC08D-04: Commerce Runtime Closure & Acceptance Verification > proves catalog, low-stock race, cart authority, settlement, subscriptions, donations, affiliates, and fulfillment 2035ms
+     → Shipping address requires operator reconciliation: Street address is required. City is required. Postal code is required. Country must be a valid 2-letter ISO 3166-1 alpha-2 code.
+node :
+At line:2 char:412
++ ... host:3000'; node --env-file=.env.acceptance scripts/run-integration.m ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/integration/commerce-runtime-acceptance.integration.test.ts > RC08D-04: Commerce Runtime Closure &
+Acceptance Verification > proves catalog, low-stock race, cart authority, settlement, subscriptions, donations,
+affiliates, and fulfillment
+Error: Shipping address requires operator reconciliation: Street address is required. City is required. Postal code is
+required. Country must be a valid 2-letter ISO 3166-1 alpha-2 code.
+ ❯ finalizeVerifiedOrder src/modules/commerce/service.ts:981:15
+    979|       const address = validateShippingAddressForPod(recipientAddress, …
+    980|       if (!address.valid)
+    981|         throw new Error(
+       |               ^
+    982|           `Shipping address requires operator reconciliation: ${addres…
+    983|         )
+ ❯ Object.handler src/modules/commerce/tasks.ts:388:23
+ ❯ tests/integration/commerce-runtime-acceptance.integration.test.ts:423:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/integration/rc05-pass2-commerce-routes.integration.test.ts > RC-05 Pass 2: Commerce Acceptance,
+Idempotency, Concurrency & Security > proves the complete physical product lifecycle, server authority, and idempotent
+settlement
+Error: Shipping address requires operator reconciliation: Street address is required. City is required. Postal code is
+required. Country must be a valid 2-letter ISO 3166-1 alpha-2 code.
+ ❯ finalizeVerifiedOrder src/modules/commerce/service.ts:981:15
+    979|       const address = validateShippingAddressForPod(recipientAddress, …
+    980|       if (!address.valid)
+    981|         throw new Error(
+       |               ^
+    982|           `Shipping address requires operator reconciliation: ${addres…
+    983|         )
+ ❯ Object.handler src/modules/commerce/tasks.ts:388:23
+ ❯ tests/integration/rc05-pass2-commerce-routes.integration.test.ts:235:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  2 failed | 1 passed (3)
+      Tests  2 failed | 38 passed (40)
+   Start at  04:57:33
+   Duration  16.02s (transform 1.26s, setup 0ms, collect 7.33s, tests 7.95s, environment 0ms, prepare 181ms)
+
+JSON report written to C:/Projects/RENEGADE CMS/sol-rc1-20261013/scratch/sol-evidence/fulfillment-recovery-final.json

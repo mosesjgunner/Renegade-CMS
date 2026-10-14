@@ -1,0 +1,122 @@
+[
+  {
+    "executedPath": "scratch\\sol-specs\\01-site-build.spec.ts",
+    "sha256": "5dcc83ab4d14fe2ff6a1ab38e189f2ef72691e77f662691eafc651e49dfe0e32",
+    "receipt": "harness\\sol-specs\\01-site-build.spec.ts.receipt"
+  },
+  {
+    "executedPath": "scratch\\sol-specs\\02-staff-invitation.spec.ts",
+    "sha256": "dc0c1a87793cf8b1511e1c848ae1b281a885320b9414d4d51037499483fea121",
+    "receipt": "harness\\sol-specs\\02-staff-invitation.spec.ts.receipt"
+  },
+  {
+    "executedPath": "scratch\\sol-specs\\03-identity-negatives.spec.ts",
+    "sha256": "6a6dde74b156be246c1e143f99aad4cded9f7bbbae65a4313f46917174312de4",
+    "receipt": "harness\\sol-specs\\03-identity-negatives.spec.ts.receipt"
+  },
+  {
+    "executedPath": "scratch\\sol-specs\\04-document-locks.spec.ts",
+    "sha256": "6b9c2c863d776a40b91a1302047774421e4010ef4ec9c5f80aee5cb5ce1dfa82",
+    "receipt": "harness\\sol-specs\\04-document-locks.spec.ts.receipt"
+  },
+  {
+    "executedPath": "scratch\\sol-specs\\05-http-authorization.spec.ts",
+    "sha256": "47f0f019aca6ae9de98e4ea6758f0974c372ccd9413d1ae98ffe79b51d8991f2",
+    "receipt": "harness\\sol-specs\\05-http-authorization.spec.ts.receipt"
+  },
+  {
+    "executedPath": "scratch\\sol-specs\\06-scheduled-publication.spec.ts",
+    "sha256": "4473ce8fc17d06214c4ebc976c6990ff3ff00591021952025f01e05961e16dfa",
+    "receipt": "harness\\sol-specs\\06-scheduled-publication.spec.ts.receipt"
+  },
+  {
+    "executedPath": "scratch\\sol-specs\\07-minipaint.spec.ts",
+    "sha256": "48bb8ee3776a2c93a22a8a10c38be0cb22b0d2eadbcc68db7c350eb5412b4851",
+    "receipt": "harness\\sol-specs\\07-minipaint.spec.ts.receipt"
+  },
+  {
+    "executedPath": "scratch\\sol-specs\\08-theme-rollback.spec.ts",
+    "sha256": "6c339c0ead1d63e3b850fdefbcf1e196b8ea8745669374a96039372211314c67",
+    "receipt": "harness\\sol-specs\\08-theme-rollback.spec.ts.receipt"
+  },
+  {
+    "executedPath": "scratch\\sol-specs\\09-private-model-boundaries.spec.ts",
+    "sha256": "aceb43512503b98d948ab1621afe1aae22f988b5c9b362ed95e874eaf19f5906",
+    "receipt": "harness\\sol-specs\\09-private-model-boundaries.spec.ts.receipt"
+  },
+  {
+    "executedPath": "scratch\\config-specs\\configuration.spec.ts",
+    "sha256": "2451fc75b2f0371662fa8e10104f0296e6123791254eed74991128db247cdbb7",
+    "receipt": "harness\\config-specs\\configuration.spec.ts.receipt"
+  },
+  {
+    "executedPath": "scratch\\playwright.sol.config.ts",
+    "sha256": "92d7127eae657d1a9ac724f3de5dabe8da26e03356577769cc27222ab7a57fff",
+    "receipt": "harness\\playwright.sol.config.ts.receipt"
+  },
+  {
+    "executedPath": "scratch\\sol-runtime.mjs",
+    "sha256": "90634d46bd79b630fbb22588f8c7e3d07d503241b91dbb16b30ee8b994fe3584",
+    "receipt": "harness\\sol-runtime.mjs.receipt"
+  },
+  {
+    "executedPath": "scratch\\sol-browser-helpers.ts",
+    "sha256": "abfd9de59fd195be685d1b0edb65c7810eeda0a974974e8237caada998eb59c5",
+    "receipt": "harness\\sol-browser-helpers.ts.receipt"
+  },
+  {
+    "executedPath": "scratch\\sol-smtp-sink.mjs",
+    "sha256": "e5fcc09f66fbd35ab00b2cf211f4a5ac3ccf94ac00edd66f6942deffd1e60333",
+    "receipt": "harness\\sol-smtp-sink.mjs.receipt"
+  },
+  {
+    "executedPath": "scratch\\run-configurations.py",
+    "sha256": "f332ed7d9cb84680c1bfa248ec1b1ae8e64220927e0137d0cacb5fc7bdb233ff",
+    "receipt": "harness\\run-configurations.py.receipt"
+  },
+  {
+    "executedPath": "scratch\\run-gates.py",
+    "sha256": "9775dbbcdc8356d065344ab29e8e90cc435af0ad1f7bffedad49e9ee7a8251de",
+    "receipt": "harness\\run-gates.py.receipt"
+  },
+  {
+    "executedPath": "scratch\\run-browser.py",
+    "sha256": "80a9ca3b536d0a9d0b385cfc22bec04a0dcdfb99956787b3b47e6f0e3d72cc9c",
+    "receipt": "harness\\run-browser.py.receipt"
+  },
+  {
+    "executedPath": "scratch\\freeze-acceptance.py",
+    "sha256": "d331f4b862140076b10cdebdf9928dae7a144cef673a35f45ada78f0ae6988a3",
+    "receipt": "harness\\freeze-acceptance.py.receipt"
+  },
+  {
+    "executedPath": "scratch\\profile-guidance.ts",
+    "sha256": "17b1a5d1bf873c07a765bec95bc59c817246bda59759e0e373180312c57f2172",
+    "receipt": "harness\\profile-guidance.ts.receipt"
+  },
+  {
+    "executedPath": "scratch\\check-final-persistence.mjs",
+    "sha256": "446b58e7a33eb523ed5b93549664cc063bc7d34a534390ba8a8ad5ebae2a08df",
+    "receipt": "harness\\check-final-persistence.mjs.receipt"
+  },
+  {
+    "executedPath": "scratch\\check-final3-empty.mjs",
+    "sha256": "7b11b10a4374e1b270e5b88450c92cf20f8e175edddadb49faa87d30c13cae00",
+    "receipt": "harness\\check-final3-empty.mjs.receipt"
+  },
+  {
+    "executedPath": "scratch\\migrate-owned-environment.py",
+    "sha256": "350f03649cf5028b1b19280eea0ebc2347795f93739ca1e70e4585606b53b5e1",
+    "receipt": "harness\\migrate-owned-environment.py.receipt"
+  },
+  {
+    "executedPath": "scratch\\prepare-configurations.mjs",
+    "sha256": "a529ef9a2dbd1478dcd90ec44f670f9ed979264485be1ba330c3cc9eb8278842",
+    "receipt": "harness\\prepare-configurations.mjs.receipt"
+  },
+  {
+    "executedPath": "scratch\\prepare-final-browser.mjs",
+    "sha256": "28054833ad6e033560e3803fac13fc68bb2bd873e3792254710bfa8f98905113",
+    "receipt": "harness\\prepare-final-browser.mjs.receipt"
+  }
+]

@@ -1,0 +1,71 @@
+const artifactRoot = process.env.SOL_ARTIFACT_ROOT ?? 'scratch/sol-browser/source-5666'
+import { passkeyLogin } from '../sol-browser-helpers'
+import { test, expect } from '@playwright/test'
+import { readFileSync, writeFileSync, existsSync } from 'node:fs'
+import { createHash } from 'node:crypto'
+const output = process.env.SOL_ARTIFACT_ROOT ?? artifactRoot
+const hash = (bytes: Buffer) => createHash('sha256').update(bytes).digest('hex')
+
+test('miniPaint draws actual pixels, saves a new version and preserves original bytes after restart', async ({ browser }) => {
+  const owner = await passkeyLogin(browser, 'editor@renegadeparty.test', 'scratch/sol-owner-authenticator.json')
+  const page = await owner.newPage()
+  const site = JSON.parse(readFileSync(`${output}/two-sites.json`, 'utf8')).site
+  const source = readFileSync('fixtures/renegadeparty-demo/assets/hero-liberty.png')
+  const uploaded = await owner.request.post(`${process.env.APP_URL}/api/media/upload`, { multipart: {
+    siteId: site, title: `Sol miniPaint ${Date.now()}`, altText: 'Actual browser drawing acceptance',
+    file: { name: 'minipaint-original.png', mimeType: 'image/png', buffer: source },
+  } })
+  expect(uploaded.status()).toBe(201)
+  const original = (await uploaded.json()).asset
+  expect((await owner.request.patch(`${process.env.APP_URL}/api/media-assets/${original.id}`, { data: { publicPolicy: 'private' } })).status()).toBe(200)
+  await page.goto(`/admin/collections/media-assets/${original.id}`)
+  await page.getByRole('button', { name: 'Edit in miniPaint', exact: true }).click()
+  const editor = page.getByRole('dialog', { name: /^Image Editor:/ })
+  await expect(editor.getByRole('status')).toContainText('Ready', { timeout: 30_000 })
+  const frame = page.frameLocator('iframe[title="miniPaint Editor"]')
+  const canvas = frame.locator('#canvas_minipaint')
+  await expect(canvas).toBeVisible()
+  const beforeCanvas = await canvas.evaluate((c: HTMLCanvasElement) => c.toDataURL())
+  await frame.locator('#tools_container #brush').click()
+  const bounds = await canvas.boundingBox()
+  expect(bounds).toBeTruthy()
+  await page.mouse.move(bounds!.x + bounds!.width * .4, bounds!.y + bounds!.height * .4)
+  await page.mouse.down()
+  await page.mouse.move(bounds!.x + bounds!.width * .6, bounds!.y + bounds!.height * .6, { steps: 20 })
+  await page.mouse.up()
+  await expect.poll(() => canvas.evaluate((c: HTMLCanvasElement) => c.toDataURL())).not.toBe(beforeCanvas)
+  await editor.getByLabel('Filename').fill(`Sol drawn version ${Date.now()}`)
+  await editor.getByLabel('Version note').fill('Actual brush stroke through browser controls')
+  const saved = page.waitForResponse(r => r.url().endsWith(`/api/media/${original.id}`) && r.request().method() === 'PUT')
+  await editor.getByRole('button', { name: 'Save version', exact: true }).click()
+  const response = await saved
+  expect(response.status(), await response.text()).toBe(201)
+  const replacement = (await response.json()).replacement
+  expect(replacement.id).not.toBe(original.id)
+  const editedBytes = await (await owner.request.get(`${process.env.APP_URL}/media/${replacement.id}`)).body()
+  expect(hash(editedBytes)).not.toBe(hash(source))
+  const oldBytes = await (await owner.request.get(`${process.env.APP_URL}/media/${original.id}`)).body()
+  expect(hash(oldBytes)).toBe(hash(source))
+  const persisted = await (await owner.request.get(`${process.env.APP_URL}/api/media-assets/${original.id}?depth=0`)).json()
+  expect(persisted.replaceGloballyWith).toBe(replacement.id)
+  const versions = await (await owner.request.get(`${process.env.APP_URL}/api/media-asset-versions?where[replacesAsset][equals]=${original.id}&depth=0`)).json()
+  expect(versions.docs).toHaveLength(1)
+  const restart = { nonce: Date.now(), reason: 'miniPaint persistence proof' }
+  writeFileSync('scratch/rc02-restart-request.json', JSON.stringify(restart))
+  await expect.poll(() => existsSync('scratch/rc02-restart-receipt.json') ? JSON.parse(readFileSync('scratch/rc02-restart-receipt.json', 'utf8')).request.nonce : 0, { timeout: 30_000 }).toBe(restart.nonce)
+  await expect.poll(async () => {
+    try { return (await owner.request.get(`${process.env.APP_URL}/media/${replacement.id}`)).status() } catch { return 0 }
+  }, { timeout: 30_000 }).toBe(200)
+  expect(hash(await (await owner.request.get(`${process.env.APP_URL}/media/${replacement.id}`)).body())).toBe(hash(editedBytes))
+  expect(hash(await (await owner.request.get(`${process.env.APP_URL}/media/${original.id}`)).body())).toBe(hash(source))
+  const anonymous = await browser.newContext({ ignoreHTTPSErrors: true })
+  for (const id of [original.id, replacement.id]) expect((await anonymous.request.get(`${process.env.APP_URL}/media/${id}`)).status()).toBe(404)
+  await anonymous.close()
+  await page.goto(`/admin/collections/media-assets/${replacement.id}`)
+  await page.screenshot({ path: `${output}/minipaint-saved-version.png`, fullPage: true })
+  writeFileSync(`${output}/minipaint.json`, JSON.stringify({ originalId: original.id, replacementId: replacement.id,
+    originalSha256: hash(source), editedSha256: hash(editedBytes), actualCanvasChanged: true,
+    version: versions.docs[0], retainedOriginalBytes: true, privateReplacementStayedPrivate: true,
+    restart: JSON.parse(readFileSync('scratch/rc02-restart-receipt.json', 'utf8')) }, null, 2))
+  await owner.close()
+})

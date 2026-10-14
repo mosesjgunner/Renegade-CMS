@@ -1,0 +1,6 @@
+
+> renegade-cms@0.1.0 test:migrations:commerce
+> tsx src/scripts/verify-commerce-migrations.ts
+
+[15:52:59] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+Commerce migration acceptance passed: {"grants":"digital_delivery_grants","imports":"catalog_import_runs","proposals":"checkout_proposals","promotions":"promotions","reservations":"inventory_reservations","payment_attempts":"payment_attempts","refunds":"commerce_refunds","disputes":"commerce_disputes","affiliate_offers":"affiliate_offers","commission_ledgers":"commission_ledgers","settlement_batches":"settlement_batches","donation_campaigns":"donation_campaigns","donation_intents":"donation_intents","donations":"donations","donation_events":"donation_events","pod_connections":"pod_connections","pod_jobs":"pod_jobs","manual_packages":"manual_fulfillment_packages","offers":true,"cart_version":true}

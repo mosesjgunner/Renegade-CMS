@@ -1,0 +1,3552 @@
+{
+  "numTotalTestSuites": 124,
+  "numPassedTestSuites": 124,
+  "numFailedTestSuites": 0,
+  "numPendingTestSuites": 0,
+  "numTotalTests": 293,
+  "numPassedTests": 293,
+  "numFailedTests": 0,
+  "numPendingTests": 0,
+  "numTodoTests": 0,
+  "snapshot": {
+    "added": 0,
+    "failure": false,
+    "filesAdded": 0,
+    "filesRemoved": 0,
+    "filesRemovedList": [],
+    "filesUnmatched": 0,
+    "filesUpdated": 0,
+    "matched": 0,
+    "total": 0,
+    "unchecked": 0,
+    "uncheckedKeysByFile": [],
+    "unmatched": 0,
+    "updated": 0,
+    "didUpdate": false
+  },
+  "startTime": 1791941559302,
+  "success": true,
+  "testResults": [
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["AI control plane persistence"],
+          "fullName": "AI control plane persistence stores an encrypted credential and review decision across database reads",
+          "status": "passed",
+          "title": "stores an encrypted credential and review decision across database reads",
+          "duration": 6208.6214,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791941680144,
+      "endTime": 1791941686352.6213,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/tests/integration/ai-control-plane.integration.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "AUD-08 Audience Pass Gate \u2014 Comprehensive End-to-End Acceptance Integration"
+          ],
+          "fullName": "AUD-08 Audience Pass Gate \u2014 Comprehensive End-to-End Acceptance Integration 1. Configures site sender identity, local mail sink, telecom emulator, and verifies unconfigured real providers degrade safely",
+          "status": "passed",
+          "title": "1. Configures site sender identity, local mail sink, telecom emulator, and verifies unconfigured real providers degrade safely",
+          "duration": 201.48790000000008,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "AUD-08 Audience Pass Gate \u2014 Comprehensive End-to-End Acceptance Integration"
+          ],
+          "fullName": "AUD-08 Audience Pass Gate \u2014 Comprehensive End-to-End Acceptance Integration 2. Publishes accessible forms; submits valid, invalid, duplicate, spam-like, and consent-tested paths; inspects immutable submissions",
+          "status": "passed",
+          "title": "2. Publishes accessible forms; submits valid, invalid, duplicate, spam-like, and consent-tested paths; inspects immutable submissions",
+          "duration": 205.53250000000025,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "AUD-08 Audience Pass Gate \u2014 Comprehensive End-to-End Acceptance Integration"
+          ],
+          "fullName": "AUD-08 Audience Pass Gate \u2014 Comprehensive End-to-End Acceptance Integration 3. Confirms double opt-in, rejects expired/tampered/replayed tokens, updates preferences, reviews CSV import quarantine, and exports audience",
+          "status": "passed",
+          "title": "3. Confirms double opt-in, rejects expired/tampered/replayed tokens, updates preferences, reviews CSV import quarantine, and exports audience",
+          "duration": 355.46579999999994,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "AUD-08 Audience Pass Gate \u2014 Comprehensive End-to-End Acceptance Integration"
+          ],
+          "fullName": "AUD-08 Audience Pass Gate \u2014 Comprehensive End-to-End Acceptance Integration 4. Builds an explainable segment; shows exact included/excluded reasons and suppression/frequency effects",
+          "status": "passed",
+          "title": "4. Builds an explainable segment; shows exact included/excluded reasons and suppression/frequency effects",
+          "duration": 25.76560000000063,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "AUD-08 Audience Pass Gate \u2014 Comprehensive End-to-End Acceptance Integration"
+          ],
+          "fullName": "AUD-08 Audience Pass Gate \u2014 Comprehensive End-to-End Acceptance Integration 5. Composes responsive newsletter from canonical content, previews fallbacks, test sends, approves, and delivers through real local SMTP",
+          "status": "passed",
+          "title": "5. Composes responsive newsletter from canonical content, previews fallbacks, test sends, approves, and delivers through real local SMTP",
+          "duration": 412.7560000000003,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "AUD-08 Audience Pass Gate \u2014 Comprehensive End-to-End Acceptance Integration"
+          ],
+          "fullName": "AUD-08 Audience Pass Gate \u2014 Comprehensive End-to-End Acceptance Integration 6. Proves no duplicate sends on concurrent execution, suppresses late unsubscribe, retries transient failures, and suppresses bounces/complaints",
+          "status": "passed",
+          "title": "6. Proves no duplicate sends on concurrent execution, suppresses late unsubscribe, retries transient failures, and suppresses bounces/complaints",
+          "duration": 584.4754999999996,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "AUD-08 Audience Pass Gate \u2014 Comprehensive End-to-End Acceptance Integration"
+          ],
+          "fullName": "AUD-08 Audience Pass Gate \u2014 Comprehensive End-to-End Acceptance Integration 7. Activates welcome automation, rejects trigger replays, pauses, resumes, and progresses idempotently",
+          "status": "passed",
+          "title": "7. Activates welcome automation, rejects trigger replays, pauses, resumes, and progresses idempotently",
+          "duration": 95.57870000000003,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "AUD-08 Audience Pass Gate \u2014 Comprehensive End-to-End Acceptance Integration"
+          ],
+          "fullName": "AUD-08 Audience Pass Gate \u2014 Comprehensive End-to-End Acceptance Integration 8. Composes SMS/RCS variants, handles RCS fallback, enforces quiet hours, processes STOP/HELP keywords via emulator",
+          "status": "passed",
+          "title": "8. Composes SMS/RCS variants, handles RCS fallback, enforces quiet hours, processes STOP/HELP keywords via emulator",
+          "duration": 426.0041000000001,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "AUD-08 Audience Pass Gate \u2014 Comprehensive End-to-End Acceptance Integration"
+          ],
+          "fullName": "AUD-08 Audience Pass Gate \u2014 Comprehensive End-to-End Acceptance Integration 9. Verifies Command Center metrics definitions, experiment allocation, deliverability health, and bot filtering",
+          "status": "passed",
+          "title": "9. Verifies Command Center metrics definitions, experiment allocation, deliverability health, and bot filtering",
+          "duration": 2.386199999999917,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "AUD-08 Audience Pass Gate \u2014 Comprehensive End-to-End Acceptance Integration"
+          ],
+          "fullName": "AUD-08 Audience Pass Gate \u2014 Comprehensive End-to-End Acceptance Integration 10. Re-initializes stack, reconciles outbox, executes operational backup, and proves isolated restore retention",
+          "status": "passed",
+          "title": "10. Re-initializes stack, reconciles outbox, executes operational backup, and proves isolated restore retention",
+          "duration": 42.456199999999626,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791941778752,
+      "endTime": 1791941781105.4563,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/tests/integration/aud-08-audience-pass-gate.integration.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["RC-04 Public Subscription Journey & Audience System Integration"],
+          "fullName": "RC-04 Public Subscription Journey & Audience System Integration proves only human-facing fields are required and site/list resolution happens automatically",
+          "status": "passed",
+          "title": "proves only human-facing fields are required and site/list resolution happens automatically",
+          "duration": 131.83379999999988,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["RC-04 Public Subscription Journey & Audience System Integration"],
+          "fullName": "RC-04 Public Subscription Journey & Audience System Integration rejects invalid inputs and enforces public rate limiting against abuse",
+          "status": "passed",
+          "title": "rejects invalid inputs and enforces public rate limiting against abuse",
+          "duration": 767.0710999999997,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["RC-04 Public Subscription Journey & Audience System Integration"],
+          "fullName": "RC-04 Public Subscription Journey & Audience System Integration proves full journey: request -> confirmation -> preferences -> unsubscribe -> suppression -> re-subscribe",
+          "status": "passed",
+          "title": "proves full journey: request -> confirmation -> preferences -> unsubscribe -> suppression -> re-subscribe",
+          "duration": 601.7413999999994,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["RC-04 Public Subscription Journey & Audience System Integration"],
+          "fullName": "RC-04 Public Subscription Journey & Audience System Integration proves unconfigured email provider reports degraded/disabled state safely",
+          "status": "passed",
+          "title": "proves unconfigured email provider reports degraded/disabled state safely",
+          "duration": 0.24099999999998545,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791941805873,
+      "endTime": 1791941807375.241,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/tests/integration/aud-public-subscription-journey.integration.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["canonical information architecture integration"],
+          "fullName": "canonical information architecture integration keeps main publication, member space, and member blog ownership isolated",
+          "status": "passed",
+          "title": "keeps main publication, member space, and member blog ownership isolated",
+          "duration": 16.588300000000345,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["canonical information architecture integration"],
+          "fullName": "canonical information architecture integration hides disabled space creation capability without deleting existing records",
+          "status": "passed",
+          "title": "hides disabled space creation capability without deleting existing records",
+          "duration": 83.11869999999999,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["canonical information architecture integration"],
+          "fullName": "canonical information architecture integration uses album visibility and shared media references without byte duplication",
+          "status": "passed",
+          "title": "uses album visibility and shared media references without byte duplication",
+          "duration": 11.863800000000083,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["canonical information architecture integration"],
+          "fullName": "canonical information architecture integration enforces relationship uniqueness and active block precedence",
+          "status": "passed",
+          "title": "enforces relationship uniqueness and active block precedence",
+          "duration": 33.75390000000061,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["canonical information architecture integration"],
+          "fullName": "canonical information architecture integration enforces discussion shape and keeps post permalinks stable across edits",
+          "status": "passed",
+          "title": "enforces discussion shape and keeps post permalinks stable across edits",
+          "duration": 31.074999999999818,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["canonical information architecture integration"],
+          "fullName": "canonical information architecture integration validates calendar scope, privacy, timezone, and references",
+          "status": "passed",
+          "title": "validates calendar scope, privacy, timezone, and references",
+          "duration": 9.662199999999757,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["canonical information architecture integration"],
+          "fullName": "canonical information architecture integration keeps native events separate from calendar planning entries",
+          "status": "passed",
+          "title": "keeps native events separate from calendar planning entries",
+          "duration": 7.242000000000189,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["canonical information architecture integration"],
+          "fullName": "canonical information architecture integration queries timelines from PostgreSQL first and filters expired events by retention",
+          "status": "passed",
+          "title": "queries timelines from PostgreSQL first and filters expired events by retention",
+          "duration": 82.90970000000016,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["canonical information architecture integration"],
+          "fullName": "canonical information architecture integration protects taxonomy cycles and records scoped redirect outcomes for moves",
+          "status": "passed",
+          "title": "protects taxonomy cycles and records scoped redirect outcomes for moves",
+          "duration": 47.67030000000068,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["canonical information architecture integration"],
+          "fullName": "canonical information architecture integration keeps private source notes out of public projections and orders authorship display",
+          "status": "passed",
+          "title": "keeps private source notes out of public projections and orders authorship display",
+          "duration": 9.651600000000144,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["canonical information architecture integration"],
+          "fullName": "canonical information architecture integration removes expired retained records from discovery while honoring legal holds",
+          "status": "passed",
+          "title": "removes expired retained records from discovery while honoring legal holds",
+          "duration": 166.83430000000044,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["canonical information architecture integration"],
+          "fullName": "canonical information architecture integration has the migrated canonical tables and refuses unsafe automatic down migration",
+          "status": "passed",
+          "title": "has the migrated canonical tables and refuses unsafe automatic down migration",
+          "duration": 12.320800000000418,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791941826155,
+      "endTime": 1791941826668.3208,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/tests/integration/canonical-information-architecture.integration.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["COMM-00: Canonical Community Domain Full Member Journey"],
+          "fullName": "COMM-00: Canonical Community Domain Full Member Journey 1. Reader registration issues a secure, non-reusable magic link token",
+          "status": "passed",
+          "title": "1. Reader registration issues a secure, non-reusable magic link token",
+          "duration": 36.190500000000156,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["COMM-00: Canonical Community Domain Full Member Journey"],
+          "fullName": "COMM-00: Canonical Community Domain Full Member Journey 2. Verification consumes token and establishes authenticated member session",
+          "status": "passed",
+          "title": "2. Verification consumes token and establishes authenticated member session",
+          "duration": 91.61430000000018,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["COMM-00: Canonical Community Domain Full Member Journey"],
+          "fullName": "COMM-00: Canonical Community Domain Full Member Journey 3. Member updates profile and public projection exposes zero auth or contact fields",
+          "status": "passed",
+          "title": "3. Member updates profile and public projection exposes zero auth or contact fields",
+          "duration": 29.49019999999973,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["COMM-00: Canonical Community Domain Full Member Journey"],
+          "fullName": "COMM-00: Canonical Community Domain Full Member Journey 3b. A pending governed profile image stays absent until its governed usage is approved",
+          "status": "passed",
+          "title": "3b. A pending governed profile image stays absent until its governed usage is approved",
+          "duration": 160.06100000000015,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["COMM-00: Canonical Community Domain Full Member Journey"],
+          "fullName": "COMM-00: Canonical Community Domain Full Member Journey 4. Authenticated member comments on an article; anonymous readers can view it",
+          "status": "passed",
+          "title": "4. Authenticated member comments on an article; anonymous readers can view it",
+          "duration": 84.78749999999991,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["COMM-00: Canonical Community Domain Full Member Journey"],
+          "fullName": "COMM-00: Canonical Community Domain Full Member Journey 5. Second member registers and replies to a forum thread",
+          "status": "passed",
+          "title": "5. Second member registers and replies to a forum thread",
+          "duration": 235.08320000000003,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["COMM-00: Canonical Community Domain Full Member Journey"],
+          "fullName": "COMM-00: Canonical Community Domain Full Member Journey 6. Notifications are routed to recipients with unread tracking and isolation",
+          "status": "passed",
+          "title": "6. Notifications are routed to recipients with unread tracking and isolation",
+          "duration": 16.29190000000017,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["COMM-00: Canonical Community Domain Full Member Journey"],
+          "fullName": "COMM-00: Canonical Community Domain Full Member Journey 7. Alice reports objectionable content and blocks Bob",
+          "status": "passed",
+          "title": "7. Alice reports objectionable content and blocks Bob",
+          "duration": 32.74479999999994,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["COMM-00: Canonical Community Domain Full Member Journey"],
+          "fullName": "COMM-00: Canonical Community Domain Full Member Journey 8. Moderator resolves report, removes post, and suspends offending member",
+          "status": "passed",
+          "title": "8. Moderator resolves report, removes post, and suspends offending member",
+          "duration": 249.80510000000004,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["COMM-00: Canonical Community Domain Full Member Journey"],
+          "fullName": "COMM-00: Canonical Community Domain Full Member Journey 9. Direct messaging operates with participant verification and block enforcement",
+          "status": "passed",
+          "title": "9. Direct messaging operates with participant verification and block enforcement",
+          "duration": 65.00539999999955,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["COMM-00: Canonical Community Domain Full Member Journey"],
+          "fullName": "COMM-00: Canonical Community Domain Full Member Journey 10. Member session revalidates across restart and activity history persists accurately",
+          "status": "passed",
+          "title": "10. Member session revalidates across restart and activity history persists accurately",
+          "duration": 27.028600000000097,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791941856024,
+      "endTime": 1791941857053.0286,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/tests/integration/comm-00-community-pass.integration.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["RC08D-04: Commerce Runtime Closure & Acceptance Verification"],
+          "fullName": "RC08D-04: Commerce Runtime Closure & Acceptance Verification proves catalog, low-stock race, cart authority, settlement, subscriptions, donations, affiliates, and fulfillment",
+          "status": "passed",
+          "title": "proves catalog, low-stock race, cart authority, settlement, subscriptions, donations, affiliates, and fulfillment",
+          "duration": 4281.0527,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791941697528,
+      "endTime": 1791941701809.0527,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/tests/integration/commerce-runtime-acceptance.integration.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["Community Domain Cross-Site, Multi-Member & Boundary Verification"],
+          "fullName": "Community Domain Cross-Site, Multi-Member & Boundary Verification 1. Object-ID Attacks: Prevents cross-member private resource query and mutation",
+          "status": "passed",
+          "title": "1. Object-ID Attacks: Prevents cross-member private resource query and mutation",
+          "duration": 106.08350000000019,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["Community Domain Cross-Site, Multi-Member & Boundary Verification"],
+          "fullName": "Community Domain Cross-Site, Multi-Member & Boundary Verification 2. Blocked Relationships: Enforces strict isolation on messaging, projection, and notifications",
+          "status": "passed",
+          "title": "2. Blocked Relationships: Enforces strict isolation on messaging, projection, and notifications",
+          "duration": 42.53899999999976,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["Community Domain Cross-Site, Multi-Member & Boundary Verification"],
+          "fullName": "Community Domain Cross-Site, Multi-Member & Boundary Verification 3. Search and Notification Leakage: Respects discovery opt-out and scrubs sensitive snippets",
+          "status": "passed",
+          "title": "3. Search and Notification Leakage: Respects discovery opt-out and scrubs sensitive snippets",
+          "duration": 37.00749999999971,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["Community Domain Cross-Site, Multi-Member & Boundary Verification"],
+          "fullName": "Community Domain Cross-Site, Multi-Member & Boundary Verification 4. Realtime Reconnect: Manages event leases, reconnects with Last-Event-ID, isolates sites",
+          "status": "passed",
+          "title": "4. Realtime Reconnect: Manages event leases, reconnects with Last-Event-ID, isolates sites",
+          "duration": 0.5357000000003609,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["Community Domain Cross-Site, Multi-Member & Boundary Verification"],
+          "fullName": "Community Domain Cross-Site, Multi-Member & Boundary Verification 5. Worker Restart & Idempotency: Outbox projection delivers at-least-once with zero duplicate inboxes",
+          "status": "passed",
+          "title": "5. Worker Restart & Idempotency: Outbox projection delivers at-least-once with zero duplicate inboxes",
+          "duration": 315.15999999999985,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["Community Domain Cross-Site, Multi-Member & Boundary Verification"],
+          "fullName": "Community Domain Cross-Site, Multi-Member & Boundary Verification 6. Full Journey & Moderator Audit Trail: Report, inspect, resolve, and verify tamper-evident audit chain",
+          "status": "passed",
+          "title": "6. Full Journey & Moderator Audit Trail: Report, inspect, resolve, and verify tamper-evident audit chain",
+          "duration": 310.97310000000016,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["Community Domain Cross-Site, Multi-Member & Boundary Verification"],
+          "fullName": "Community Domain Cross-Site, Multi-Member & Boundary Verification 7. Backup/Restore and Data Lifecycle Policy: Preserves community state, enforces secret exclusions, and satisfies deletion compliance",
+          "status": "passed",
+          "title": "7. Backup/Restore and Data Lifecycle Policy: Preserves community state, enforces secret exclusions, and satisfies deletion compliance",
+          "duration": 98.48719999999958,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791941848091,
+      "endTime": 1791941849002.4873,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/tests/integration/community-cross-site-boundaries.integration.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["coordinated content release acceptance"],
+          "fullName": "coordinated content release acceptance durably schedules and releases an approved product once",
+          "status": "passed",
+          "title": "durably schedules and releases an approved product once",
+          "duration": 396.13909999999987,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791941835782,
+      "endTime": 1791941836178.1392,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/tests/integration/content-release-acceptance.integration.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["DISC-00 Crawler-Facing Smoke Test Suite"],
+          "fullName": "DISC-00 Crawler-Facing Smoke Test Suite resolves raw HTML metadata with cross-output consistency",
+          "status": "passed",
+          "title": "resolves raw HTML metadata with cross-output consistency",
+          "duration": 388.4432999999999,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["DISC-00 Crawler-Facing Smoke Test Suite"],
+          "fullName": "DISC-00 Crawler-Facing Smoke Test Suite emits deterministic JSON-LD schema across public surfaces",
+          "status": "passed",
+          "title": "emits deterministic JSON-LD schema across public surfaces",
+          "duration": 150.2498000000005,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["DISC-00 Crawler-Facing Smoke Test Suite"],
+          "fullName": "DISC-00 Crawler-Facing Smoke Test Suite generates a clean sitemap containing only indexable canonical URLs",
+          "status": "passed",
+          "title": "generates a clean sitemap containing only indexable canonical URLs",
+          "duration": 361.0634,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["DISC-00 Crawler-Facing Smoke Test Suite"],
+          "fullName": "DISC-00 Crawler-Facing Smoke Test Suite emits robots.txt rules protecting administrative and builder routes",
+          "status": "passed",
+          "title": "emits robots.txt rules protecting administrative and builder routes",
+          "duration": 13.82589999999982,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["DISC-00 Crawler-Facing Smoke Test Suite"],
+          "fullName": "DISC-00 Crawler-Facing Smoke Test Suite serves canonical RSS 2.0 feed with caching and conditional GET support",
+          "status": "passed",
+          "title": "serves canonical RSS 2.0 feed with caching and conditional GET support",
+          "duration": 611.0623000000005,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["DISC-00 Crawler-Facing Smoke Test Suite"],
+          "fullName": "DISC-00 Crawler-Facing Smoke Test Suite indexes published articles into search projections and excludes drafts",
+          "status": "passed",
+          "title": "indexes published articles into search projections and excludes drafts",
+          "duration": 272.95809999999983,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["DISC-00 Crawler-Facing Smoke Test Suite"],
+          "fullName": "DISC-00 Crawler-Facing Smoke Test Suite resolves public redirects to destination and marks non-indexable",
+          "status": "passed",
+          "title": "resolves public redirects to destination and marks non-indexable",
+          "duration": 21.842399999999543,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["DISC-00 Crawler-Facing Smoke Test Suite"],
+          "fullName": "DISC-00 Crawler-Facing Smoke Test Suite serves valid sitemap index and child sitemaps with caching and conditional GET",
+          "status": "passed",
+          "title": "serves valid sitemap index and child sitemaps with caching and conditional GET",
+          "duration": 1294.2564000000002,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["DISC-00 Crawler-Facing Smoke Test Suite"],
+          "fullName": "DISC-00 Crawler-Facing Smoke Test Suite serves JSON Feed 1.1 with ETag caching and conditional GET",
+          "status": "passed",
+          "title": "serves JSON Feed 1.1 with ETag caching and conditional GET",
+          "duration": 425.78340000000026,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["DISC-00 Crawler-Facing Smoke Test Suite"],
+          "fullName": "DISC-00 Crawler-Facing Smoke Test Suite serves content-scoped streams with stable entity IDs and conditional GET",
+          "status": "passed",
+          "title": "serves content-scoped streams with stable entity IDs and conditional GET",
+          "duration": 482.618199999999,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["DISC-00 Crawler-Facing Smoke Test Suite"],
+          "fullName": "DISC-00 Crawler-Facing Smoke Test Suite records idempotent indexing execution events during publishing lifecycle and worker processes them",
+          "status": "passed",
+          "title": "records idempotent indexing execution events during publishing lifecycle and worker processes them",
+          "duration": 77.46119999999974,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791941752752,
+      "endTime": 1791941756852.4612,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/tests/integration/disc-00-crawler-smoke.integration.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["DISC-06 Discovery Pass Gate \u2014 Comprehensive End-to-End Proof"],
+          "fullName": "DISC-06 Discovery Pass Gate \u2014 Comprehensive End-to-End Proof 1. Configures site/type defaults & content overrides; verifies source provenance and previews",
+          "status": "passed",
+          "title": "1. Configures site/type defaults & content overrides; verifies source provenance and previews",
+          "duration": 177.90179999999964,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["DISC-06 Discovery Pass Gate \u2014 Comprehensive End-to-End Proof"],
+          "fullName": "DISC-06 Discovery Pass Gate \u2014 Comprehensive End-to-End Proof 2. Publishes Home, Page, Post (Article), Podcast Episode, and Video with distinct canonical/schema/media requirements",
+          "status": "passed",
+          "title": "2. Publishes Home, Page, Post (Article), Podcast Episode, and Video with distinct canonical/schema/media requirements",
+          "duration": 332.65480000000025,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["DISC-06 Discovery Pass Gate \u2014 Comprehensive End-to-End Proof"],
+          "fullName": "DISC-06 Discovery Pass Gate \u2014 Comprehensive End-to-End Proof 3. Inspects metadata structure, canonicals, robots, OpenGraph/Twitter, and JSON-LD graph coherence",
+          "status": "passed",
+          "title": "3. Inspects metadata structure, canonicals, robots, OpenGraph/Twitter, and JSON-LD graph coherence",
+          "duration": 144.40899999999965,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["DISC-06 Discovery Pass Gate \u2014 Comprehensive End-to-End Proof"],
+          "fullName": "DISC-06 Discovery Pass Gate \u2014 Comprehensive End-to-End Proof 4. Fetches and parses sitemap index/children, robots.txt, and site feeds; verifies indexability filters",
+          "status": "passed",
+          "title": "4. Fetches and parses sitemap index/children, robots.txt, and site feeds; verifies indexability filters",
+          "duration": 1047.9887999999992,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["DISC-06 Discovery Pass Gate \u2014 Comprehensive End-to-End Proof"],
+          "fullName": "DISC-06 Discovery Pass Gate \u2014 Comprehensive End-to-End Proof 5. Searches unique title/body/transcript terms, facets, pagination, safe highlights, rebuild, and drift repair",
+          "status": "passed",
+          "title": "5. Searches unique title/body/transcript terms, facets, pagination, safe highlights, rebuild, and drift repair",
+          "duration": 912.7356,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["DISC-06 Discovery Pass Gate \u2014 Comprehensive End-to-End Proof"],
+          "fullName": "DISC-06 Discovery Pass Gate \u2014 Comprehensive End-to-End Proof 6. Changes slug, creates redirect, detects loop/chain, and verifies 308 redirect resolution",
+          "status": "passed",
+          "title": "6. Changes slug, creates redirect, detects loop/chain, and verifies 308 redirect resolution",
+          "duration": 72.24880000000121,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["DISC-06 Discovery Pass Gate \u2014 Comprehensive End-to-End Proof"],
+          "fullName": "DISC-06 Discovery Pass Gate \u2014 Comprehensive End-to-End Proof 7. Runs Quality Center crawler audit and proves issue detection and resolution workflow",
+          "status": "passed",
+          "title": "7. Runs Quality Center crawler audit and proves issue detection and resolution workflow",
+          "duration": 0.8991000000005442,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["DISC-06 Discovery Pass Gate \u2014 Comprehensive End-to-End Proof"],
+          "fullName": "DISC-06 Discovery Pass Gate \u2014 Comprehensive End-to-End Proof 8. Verifies draft and private assets are strictly omitted from discovery outputs",
+          "status": "passed",
+          "title": "8. Verifies draft and private assets are strictly omitted from discovery outputs",
+          "duration": 257.85679999999957,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["DISC-06 Discovery Pass Gate \u2014 Comprehensive End-to-End Proof"],
+          "fullName": "DISC-06 Discovery Pass Gate \u2014 Comprehensive End-to-End Proof 9. Exercises webmaster adapter and indexing change generation",
+          "status": "passed",
+          "title": "9. Exercises webmaster adapter and indexing change generation",
+          "duration": 0.5298999999995431,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791941764131,
+      "endTime": 1791941767079.5298,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/tests/integration/disc-06-discovery-pass-gate.integration.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["discoverability acceptance"],
+          "fullName": "discoverability acceptance converges search and redirects for a persisted public record without crossing sites",
+          "status": "passed",
+          "title": "converges search and redirects for a persisted public record without crossing sites",
+          "duration": 261.28679999999986,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791941844556,
+      "endTime": 1791941844817.2869,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/tests/integration/discoverability-acceptance.integration.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["M04-C editorial acceptance"],
+          "fullName": "M04-C editorial acceptance creates, reviews, previews, schedules, publishes exactly once, restores, and prevents embargo leakage",
+          "status": "passed",
+          "title": "creates, reviews, previews, schedules, publishes exactly once, restores, and prevents embargo leakage",
+          "duration": 4403.536300000001,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["M04-C editorial acceptance"],
+          "fullName": "M04-C editorial acceptance promotes a public discussion post into an editorial draft while keeping the original post intact",
+          "status": "passed",
+          "title": "promotes a public discussion post into an editorial draft while keeping the original post intact",
+          "duration": 336.6288999999997,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791941690435,
+      "endTime": 1791941695175.629,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/tests/integration/editorial-acceptance.integration.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["actual PostgreSQL editorial scheduling transaction"],
+          "fullName": "actual PostgreSQL editorial scheduling transaction rolls back queued jobs and article state when the actual required-source audit fails",
+          "status": "passed",
+          "title": "rolls back queued jobs and article state when the actual required-source audit fails",
+          "duration": 273.7611000000006,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["actual PostgreSQL editorial scheduling transaction"],
+          "fullName": "actual PostgreSQL editorial scheduling transaction commits one real queue contract and its canonical source audit together",
+          "status": "passed",
+          "title": "commits one real queue contract and its canonical source audit together",
+          "duration": 234.89689999999973,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791941565568,
+      "endTime": 1791941566076.897,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/tests/integration/editorial-transaction-boundary.integration.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["privacy-safe experiences runtime"],
+          "fullName": "privacy-safe experiences runtime runs the consented first-party workflow through canonical analytics",
+          "status": "passed",
+          "title": "runs the consented first-party workflow through canonical analytics",
+          "duration": 3.735500000000002,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["privacy-safe experiences runtime"],
+          "fullName": "privacy-safe experiences runtime uses control without recording when privacy or capability policy forbids experimentation",
+          "status": "passed",
+          "title": "uses control without recording when privacy or capability policy forbids experimentation",
+          "duration": 0.4586000000000183,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["privacy-safe experiences runtime"],
+          "fullName": "privacy-safe experiences runtime rejects unregistered variants and prohibited targeting inputs",
+          "status": "passed",
+          "title": "rejects unregistered variants and prohibited targeting inputs",
+          "duration": 0.29589999999998895,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791941885758,
+      "endTime": 1791941885762.296,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/tests/integration/experiences-runtime.integration.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["FLOW-00 editorial pass gate integration"],
+          "fullName": "FLOW-00 editorial pass gate integration proves full FLOW-00 contract: draft -> review -> quality gate waiver -> schedule -> worker -> publish -> last-public-revision protection -> unpublish -> archive",
+          "status": "passed",
+          "title": "proves full FLOW-00 contract: draft -> review -> quality gate waiver -> schedule -> worker -> publish -> last-public-revision protection -> unpublish -> archive",
+          "duration": 3497.099699999999,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791941743277,
+      "endTime": 1791941746774.0996,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/tests/integration/flow-00-editorial-pass-gate.integration.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["FLOW-01 Workflow Integration & API Layer"],
+          "fullName": "FLOW-01 Workflow Integration & API Layer 1. retrieves builtin workflow template and validates custom templates",
+          "status": "passed",
+          "title": "1. retrieves builtin workflow template and validates custom templates",
+          "duration": 0.9111000000000047,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["FLOW-01 Workflow Integration & API Layer"],
+          "fullName": "FLOW-01 Workflow Integration & API Layer 2. executes full workflow action flow: submit -> decide review -> save draft -> stale approval protection",
+          "status": "passed",
+          "title": "2. executes full workflow action flow: submit -> decide review -> save draft -> stale approval protection",
+          "duration": 1.987499999999983,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["FLOW-01 Workflow Integration & API Layer"],
+          "fullName": "FLOW-01 Workflow Integration & API Layer 3. retrieves queues and audit history for item",
+          "status": "passed",
+          "title": "3. retrieves queues and audit history for item",
+          "duration": 0.38059999999998695,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791941885973,
+      "endTime": 1791941885976.3806,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/tests/integration/flow-01-workflow-api.integration.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["FLOW-03 Scheduling & Calendar Integration Suite"],
+          "fullName": "FLOW-03 Scheduling & Calendar Integration Suite 1. Schedules an article around a DST edge in test timezone America/Chicago",
+          "status": "passed",
+          "title": "1. Schedules an article around a DST edge in test timezone America/Chicago",
+          "duration": 335.06349999999975,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["FLOW-03 Scheduling & Calendar Integration Suite"],
+          "fullName": "FLOW-03 Scheduling & Calendar Integration Suite 2. Creating a newer draft (rev sequence N+1) post-schedule does NOT alter scheduled target revision",
+          "status": "passed",
+          "title": "2. Creating a newer draft (rev sequence N+1) post-schedule does NOT alter scheduled target revision",
+          "duration": 372.00559999999996,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["FLOW-03 Scheduling & Calendar Integration Suite"],
+          "fullName": "FLOW-03 Scheduling & Calendar Integration Suite 3. Worker lease locking & idempotent execution publishes ONLY the target approved revision",
+          "status": "passed",
+          "title": "3. Worker lease locking & idempotent execution publishes ONLY the target approved revision",
+          "duration": 613.5958999999998,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["FLOW-03 Scheduling & Calendar Integration Suite"],
+          "fullName": "FLOW-03 Scheduling & Calendar Integration Suite 4. Reconciles worker jobs idempotently and sanitizes error logs",
+          "status": "passed",
+          "title": "4. Reconciles worker jobs idempotently and sanitizes error logs",
+          "duration": 4.304300000000694,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["FLOW-03 Scheduling & Calendar Integration Suite"],
+          "fullName": "FLOW-03 Scheduling & Calendar Integration Suite 5. Generates valid RFC 5545 iCalendar (.ics) feed output",
+          "status": "passed",
+          "title": "5. Generates valid RFC 5545 iCalendar (.ics) feed output",
+          "duration": 0.33950000000004366,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791941810658,
+      "endTime": 1791941811984.3396,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/tests/integration/flow-03-scheduler-api.integration.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "FLOW-05 Localization & Quality Pass Gate \u2014 Integration & API Suite"
+          ],
+          "fullName": "FLOW-05 Localization & Quality Pass Gate \u2014 Integration & API Suite 1. Rejects unauthorized access and supports Translation API lifecycle",
+          "status": "passed",
+          "title": "1. Rejects unauthorized access and supports Translation API lifecycle",
+          "duration": 9.953999999999724,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "FLOW-05 Localization & Quality Pass Gate \u2014 Integration & API Suite"
+          ],
+          "fullName": "FLOW-05 Localization & Quality Pass Gate \u2014 Integration & API Suite 2. Tests notification preferences and durable outbox processing API",
+          "status": "passed",
+          "title": "2. Tests notification preferences and durable outbox processing API",
+          "duration": 1.1669999999999163,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "FLOW-05 Localization & Quality Pass Gate \u2014 Integration & API Suite"
+          ],
+          "fullName": "FLOW-05 Localization & Quality Pass Gate \u2014 Integration & API Suite 3. Tests webhook subscription registration, secret rotation, and SSRF guard via API",
+          "status": "passed",
+          "title": "3. Tests webhook subscription registration, secret rotation, and SSRF guard via API",
+          "duration": 2.7588000000000648,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791941884894,
+      "endTime": 1791941884907.7588,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/tests/integration/flow-05-localization-pass-gate.integration.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["FLOW-06 Comprehensive Workflow Pass Gate \u2014 End-to-End Proof"],
+          "fullName": "FLOW-06 Comprehensive Workflow Pass Gate \u2014 End-to-End Proof executes full 9-stage multi-user demo: authoring, comments, staleness, scheduling across restart, translation sync, coordinated release gates, bounded failure, retry, rollback, and data isolation",
+          "status": "passed",
+          "title": "executes full 9-stage multi-user demo: authoring, comments, staleness, scheduling across restart, translation sync, coordinated release gates, bounded failure, retry, rollback, and data isolation",
+          "duration": 76.40250000000003,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791941882224,
+      "endTime": 1791941882300.4026,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/tests/integration/flow-06-workflow-pass-gate.integration.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["first-run installation state"],
+          "fullName": "first-run installation state persists bootstrap availability and rejects an invalid token",
+          "status": "passed",
+          "title": "persists bootstrap availability and rejects an invalid token",
+          "duration": 187.63149999999996,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["first-run installation state"],
+          "fullName": "first-run installation state rejects an expired bootstrap token without changing the installation state",
+          "status": "passed",
+          "title": "rejects an expired bootstrap token without changing the installation state",
+          "duration": 10.39830000000029,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["first-run installation state"],
+          "fullName": "first-run installation state rotates a local recovery token but refuses to reopen a completed install",
+          "status": "passed",
+          "title": "rotates a local recovery token but refuses to reopen a completed install",
+          "duration": 13.453899999999976,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791941881535,
+      "endTime": 1791941881746.4539,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/tests/integration/installation.integration.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["Operational Admin API (/api/admin/integrations)"],
+          "fullName": "Operational Admin API (/api/admin/integrations) rejects unauthorized requests without staff role",
+          "status": "passed",
+          "title": "rejects unauthorized requests without staff role",
+          "duration": 3.4166999999999916,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["Operational Admin API (/api/admin/integrations)"],
+          "fullName": "Operational Admin API (/api/admin/integrations) queries all canonical connection records and computes operational health and repair actions",
+          "status": "passed",
+          "title": "queries all canonical connection records and computes operational health and repair actions",
+          "duration": 1.983000000000004,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["Operational Admin API (/api/admin/integrations)"],
+          "fullName": "Operational Admin API (/api/admin/integrations) creates an API client machine credential, returning clear token once and recording audit event",
+          "status": "passed",
+          "title": "creates an API client machine credential, returning clear token once and recording audit event",
+          "duration": 2.857599999999991,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["Operational Admin API (/api/admin/integrations)"],
+          "fullName": "Operational Admin API (/api/admin/integrations) rotates machine client secret and records audit trail",
+          "status": "passed",
+          "title": "rotates machine client secret and records audit trail",
+          "duration": 0.9783999999999651,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["Operational Admin API (/api/admin/integrations)"],
+          "fullName": "Operational Admin API (/api/admin/integrations) revokes machine client safely",
+          "status": "passed",
+          "title": "revokes machine client safely",
+          "duration": 0.5724999999999909,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["Operational Admin API (/api/admin/integrations)"],
+          "fullName": "Operational Admin API (/api/admin/integrations) reconciles provider in safe dry-run mode and updates health without making external transactions",
+          "status": "passed",
+          "title": "reconciles provider in safe dry-run mode and updates health without making external transactions",
+          "duration": 1.1509000000000356,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["Operational Admin API (/api/admin/integrations)"],
+          "fullName": "Operational Admin API (/api/admin/integrations) safely disconnects provider, clearing secret reference and preserving canonical data",
+          "status": "passed",
+          "title": "safely disconnects provider, clearing secret reference and preserving canonical data",
+          "duration": 0.7248000000000161,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["Operational Admin API (/api/admin/integrations)"],
+          "fullName": "Operational Admin API (/api/admin/integrations) enqueues manual redelivery for failed webhook with fresh idempotency key",
+          "status": "passed",
+          "title": "enqueues manual redelivery for failed webhook with fresh idempotency key",
+          "duration": 0.686300000000017,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791941885525,
+      "endTime": 1791941885537.6863,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/tests/integration/integrations-admin-api.integration.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["long-form and Quality Center acceptance"],
+          "fullName": "long-form and Quality Center acceptance publishes ordered chapters, preserves a chapter redirect, and retains deterministic quality lifecycle state",
+          "status": "passed",
+          "title": "publishes ordered chapters, preserves a chapter redirect, and retains deterministic quality lifecycle state",
+          "duration": 397.11060000000043,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791941840132,
+      "endTime": 1791941840529.1106,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/tests/integration/long-form-quality-center.integration.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["MED-01 durable upload sessions PostgreSQL integration"],
+          "fullName": "MED-01 durable upload sessions PostgreSQL integration exercises complete session lifecycle: creation, chunking, idempotency, finalization, recovery, cancel, cleanup, and attachment",
+          "status": "passed",
+          "title": "exercises complete session lifecycle: creation, chunking, idempotency, finalization, recovery, cancel, cleanup, and attachment",
+          "duration": 634.8517000000002,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791941821470,
+      "endTime": 1791941822104.8518,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/tests/integration/med-01-upload-sessions.integration.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["MED-03 image variant lifecycle & governance integration"],
+          "fullName": "MED-03 image variant lifecycle & governance integration exercises real image upload, metadata extraction, variant generation, delivery headers, crop regeneration, and GC protection",
+          "status": "passed",
+          "title": "exercises real image upload, metadata extraction, variant generation, delivery headers, crop regeneration, and GC protection",
+          "duration": 4535.620000000001,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791941733267,
+      "endTime": 1791941737802.62,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/tests/integration/med-03-variants.integration.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["MED-04 Podcast Publishing Workflow End-to-End Acceptance"],
+          "fullName": "MED-04 Podcast Publishing Workflow End-to-End Acceptance creates show and two episodes, handles preview/scheduling, renders player/pages, validates RSS, handles range requests, maintains invariant GUIDs across slug rename, and restarts cleanly",
+          "status": "passed",
+          "title": "creates show and two episodes, handles preview/scheduling, renders player/pages, validates RSS, handles range requests, maintains invariant GUIDs across slug rename, and restarts cleanly",
+          "duration": 1041.1981000000005,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791941796726,
+      "endTime": 1791941797767.198,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/tests/integration/med-04-podcast-acceptance.integration.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "MED-06 Media Pass Release Gate \u2014 Comprehensive Acceptance Integration"
+          ],
+          "fullName": "MED-06 Media Pass Release Gate \u2014 Comprehensive Acceptance Integration exercises the complete 14-stage Mandatory Clean Demo workflow across PostgreSQL, durable storage, podcast feed, and video delivery",
+          "status": "passed",
+          "title": "exercises the complete 14-stage Mandatory Clean Demo workflow across PostgreSQL, durable storage, podcast feed, and video delivery",
+          "duration": 3298.0993,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791941721409,
+      "endTime": 1791941724707.0994,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/tests/integration/med-06-command-center.integration.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["M10 media publication acceptance"],
+          "fullName": "M10 media publication acceptance fixture-syncs an episode and a video twice, publishes ordered book chapters, and preserves derived media boundaries",
+          "status": "passed",
+          "title": "fixture-syncs an episode and a video twice, publishes ordered book chapters, and preserves derived media boundaries",
+          "duration": 836.7806,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791941801962,
+      "endTime": 1791941802798.7805,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/tests/integration/media-acceptance.integration.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["PostgreSQL operations jobs"],
+          "fullName": "PostgreSQL operations jobs persists and completes the harmless heartbeat task",
+          "status": "passed",
+          "title": "persists and completes the harmless heartbeat task",
+          "duration": 136.2815999999998,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["PostgreSQL operations jobs"],
+          "fullName": "PostgreSQL operations jobs uses bounded exponential retry and retains terminal failure evidence",
+          "status": "passed",
+          "title": "uses bounded exponential retry and retains terminal failure evidence",
+          "duration": 470.6614999999997,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["PostgreSQL operations jobs"],
+          "fullName": "PostgreSQL operations jobs runs a future-scheduled job after the queueing process has exited",
+          "status": "passed",
+          "title": "runs a future-scheduled job after the queueing process has exited",
+          "duration": 13287.124,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791941631364,
+      "endTime": 1791941645258.124,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/tests/integration/operations-jobs.integration.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["visual builder acceptance"],
+          "fullName": "visual builder acceptance installs a starter, replaces its guided image, saves a draft, previews, publishes, and protects drafts",
+          "status": "passed",
+          "title": "installs a starter, replaces its guided image, saves a draft, previews, publishes, and protects drafts",
+          "duration": 97.01040000000012,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["visual builder acceptance"],
+          "fullName": "visual builder acceptance keeps removed components recoverable and renders the same portable layout in both themes",
+          "status": "passed",
+          "title": "keeps removed components recoverable and renders the same portable layout in both themes",
+          "duration": 1.0700000000001637,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["visual builder acceptance"],
+          "fullName": "visual builder acceptance stores the representative published navigation contract alongside public layouts",
+          "status": "passed",
+          "title": "stores the representative published navigation contract alongside public layouts",
+          "duration": 24.482500000000073,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791941852909,
+      "endTime": 1791941853031.4824,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/tests/integration/page-builder-acceptance.integration.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["Payload PostgreSQL integration"],
+          "fullName": "Payload PostgreSQL integration writes and reads a scoped publication record through Payload",
+          "status": "passed",
+          "title": "writes and reads a scoped publication record through Payload",
+          "duration": 304.88329999999996,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791941878999,
+      "endTime": 1791941879303.8833,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/tests/integration/payload-postgres.integration.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["Phase B Publisher Final Acceptance Integration"],
+          "fullName": "Phase B Publisher Final Acceptance Integration validates privacy consent lifecycle: consented form submission vs withdrawal suppression",
+          "status": "passed",
+          "title": "validates privacy consent lifecycle: consented form submission vs withdrawal suppression",
+          "duration": 224.46090000000027,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["Phase B Publisher Final Acceptance Integration"],
+          "fullName": "Phase B Publisher Final Acceptance Integration validates media & long-form public outputs: ICS feed, Podcast RSS, and multi-chapter book",
+          "status": "passed",
+          "title": "validates media & long-form public outputs: ICS feed, Podcast RSS, and multi-chapter book",
+          "duration": 184.63590000000022,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["Phase B Publisher Final Acceptance Integration"],
+          "fullName": "Phase B Publisher Final Acceptance Integration validates Quality Center automated rule evaluation and remediation findings",
+          "status": "passed",
+          "title": "validates Quality Center automated rule evaluation and remediation findings",
+          "duration": 0.3933999999999287,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["Phase B Publisher Final Acceptance Integration"],
+          "fullName": "Phase B Publisher Final Acceptance Integration validates signed webhooks: signature verification, replay rejection, bounded retry, and terminal dead-letter",
+          "status": "passed",
+          "title": "validates signed webhooks: signature verification, replay rejection, bounded retry, and terminal dead-letter",
+          "duration": 88.41960000000017,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791941876442,
+      "endTime": 1791941876940.4197,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/tests/integration/phase-b-publisher-acceptance.integration.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["PRE-01 durable lifecycle"],
+          "fullName": "PRE-01 durable lifecycle isolates previews, serializes activation, preserves audit, upgrades, rolls back, and recovers after package failure",
+          "status": "passed",
+          "title": "isolates previews, serializes activation, preserves audit, upgrades, rolls back, and recovers after package failure",
+          "duration": 148.5037000000002,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["PRE-01 durable lifecycle"],
+          "fullName": "PRE-01 durable lifecycle publishes a complete layout snapshot and keeps later draft edits private",
+          "status": "passed",
+          "title": "publishes a complete layout snapshot and keeps later draft edits private",
+          "duration": 247.87350000000015,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791941873931,
+      "endTime": 1791941874327.8735,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/tests/integration/pre-01-theme-lifecycle.integration.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["PRE-04 reusable composition integration"],
+          "fullName": "PRE-04 reusable composition integration 1. manages template lifecycle: create, duplicate, retire, reactivate, and instantiate",
+          "status": "passed",
+          "title": "1. manages template lifecycle: create, duplicate, retire, reactivate, and instantiate",
+          "duration": 366.1381000000001,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["PRE-04 reusable composition integration"],
+          "fullName": "PRE-04 reusable composition integration 2. proves published pages are never surprise-updated when templates change",
+          "status": "passed",
+          "title": "2. proves published pages are never surprise-updated when templates change",
+          "duration": 178.6309000000001,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["PRE-04 reusable composition integration"],
+          "fullName": "PRE-04 reusable composition integration 3. creates reusable patterns and enforces deletion safeguards",
+          "status": "passed",
+          "title": "3. creates reusable patterns and enforces deletion safeguards",
+          "duration": 86.79600000000028,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["PRE-04 reusable composition integration"],
+          "fullName": "PRE-04 reusable composition integration 4. manages global regions and supports rollback",
+          "status": "passed",
+          "title": "4. manages global regions and supports rollback",
+          "duration": 78.92830000000049,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["PRE-04 reusable composition integration"],
+          "fullName": "PRE-04 reusable composition integration 5. exports and imports presentation packages with cross-theme validation",
+          "status": "passed",
+          "title": "5. exports and imports presentation packages with cross-theme validation",
+          "duration": 17.825700000000325,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791941830900,
+      "endTime": 1791941831628.8257,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/tests/integration/pre-04-reusable-composition.integration.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["PRE-05 Legacy Site Migration Integration Tests"],
+          "fullName": "PRE-05 Legacy Site Migration Integration Tests executes end-to-end migration into isolated site, verifies database records, activates, and cleanly rolls back",
+          "status": "passed",
+          "title": "executes end-to-end migration into isolated site, verifies database records, activates, and cleanly rolls back",
+          "duration": 2976.0804999999996,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791941814292,
+      "endTime": 1791941817268.0806,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/tests/integration/pre-05-legacy-migration.integration.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "PRE-06 Presentation Pass Gate \u2014 PostgreSQL Integration Suite",
+            "1. Theme lifecycle, preview isolation, atomic activation, upgrade, and rollback"
+          ],
+          "fullName": "PRE-06 Presentation Pass Gate \u2014 PostgreSQL Integration Suite 1. Theme lifecycle, preview isolation, atomic activation, upgrade, and rollback exercises complete theme lifecycle: draft, preview isolation, atomic activation, upgrade, and rollback",
+          "status": "passed",
+          "title": "exercises complete theme lifecycle: draft, preview isolation, atomic activation, upgrade, and rollback",
+          "duration": 103.45089999999982,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "PRE-06 Presentation Pass Gate \u2014 PostgreSQL Integration Suite",
+            "2. Reusable visual composition: templates, patterns, globals, safeguards, and draft isolation"
+          ],
+          "fullName": "PRE-06 Presentation Pass Gate \u2014 PostgreSQL Integration Suite 2. Reusable visual composition: templates, patterns, globals, safeguards, and draft isolation creates reusable template, pattern, and instantiates into layout",
+          "status": "passed",
+          "title": "creates reusable template, pattern, and instantiates into layout",
+          "duration": 99.8094000000001,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "PRE-06 Presentation Pass Gate \u2014 PostgreSQL Integration Suite",
+            "2. Reusable visual composition: templates, patterns, globals, safeguards, and draft isolation"
+          ],
+          "fullName": "PRE-06 Presentation Pass Gate \u2014 PostgreSQL Integration Suite 2. Reusable visual composition: templates, patterns, globals, safeguards, and draft isolation creates global announcement region and exercises versioned rollback",
+          "status": "passed",
+          "title": "creates global announcement region and exercises versioned rollback",
+          "duration": 88.17799999999988,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "PRE-06 Presentation Pass Gate \u2014 PostgreSQL Integration Suite",
+            "3. Legacy site migration end-to-end integration and quarantine boundary"
+          ],
+          "fullName": "PRE-06 Presentation Pass Gate \u2014 PostgreSQL Integration Suite 3. Legacy site migration end-to-end integration and quarantine boundary executes preflight, imports into isolated site, verifies database, activates, and rolls back cleanly",
+          "status": "passed",
+          "title": "executes preflight, imports into isolated site, verifies database, activates, and rolls back cleanly",
+          "duration": 2705.9500000000007,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791941772011,
+      "endTime": 1791941775008.95,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/tests/integration/pre-06-presentation-pass-gate.integration.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["PUB-04 publishing floor integration contract"],
+          "fullName": "PUB-04 publishing floor integration contract keeps saved edits out of the public body index and indexes them immediately upon republish",
+          "status": "passed",
+          "title": "keeps saved edits out of the public body index and indexes them immediately upon republish",
+          "duration": 638.2708999999995,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["PUB-04 publishing floor integration contract"],
+          "fullName": "PUB-04 publishing floor integration contract Requirement 1: updates and resolves site settings through normal admin controls",
+          "status": "passed",
+          "title": "Requirement 1: updates and resolves site settings through normal admin controls",
+          "duration": 36.130300000000716,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["PUB-04 publishing floor integration contract"],
+          "fullName": "PUB-04 publishing floor integration contract Requirement 2: validates, updates, and normalizes navigation menus with 1-level nesting",
+          "status": "passed",
+          "title": "Requirement 2: validates, updates, and normalizes navigation menus with 1-level nesting",
+          "duration": 34.26180000000022,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["PUB-04 publishing floor integration contract"],
+          "fullName": "PUB-04 publishing floor integration contract Requirement 4: supports real byte uploads, restart persistence, anonymous protection, and deletion refusal",
+          "status": "passed",
+          "title": "Requirement 4: supports real byte uploads, restart persistence, anonymous protection, and deletion refusal",
+          "duration": 86.92399999999998,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["PUB-04 publishing floor integration contract"],
+          "fullName": "PUB-04 publishing floor integration contract Requirement 6: local public search finds unique phrase in body projection and highlights excerpt",
+          "status": "passed",
+          "title": "Requirement 6: local public search finds unique phrase in body projection and highlights excerpt",
+          "duration": 340.65489999999954,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["PUB-04 publishing floor integration contract"],
+          "fullName": "PUB-04 publishing floor integration contract Requirement 5 & 7: sitemap and robots respect indexingMode toggle and unpublish changes",
+          "status": "passed",
+          "title": "Requirement 5 & 7: sitemap and robots respect indexingMode toggle and unpublish changes",
+          "duration": 341.3009999999995,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791941785373,
+      "endTime": 1791941786851.301,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/tests/integration/pub-04-publishing-floor.integration.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "Public Experiment & Consent-Safe Telemetry Integration \u2014 Prompt 5",
+            "1. Tracking-Off & Privacy Shield Verification"
+          ],
+          "fullName": "Public Experiment & Consent-Safe Telemetry Integration \u2014 Prompt 5 1. Tracking-Off & Privacy Shield Verification strictly serves privacy-default variant with ZERO telemetry when consent is absent",
+          "status": "passed",
+          "title": "strictly serves privacy-default variant with ZERO telemetry when consent is absent",
+          "duration": 1.218199999999996,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Public Experiment & Consent-Safe Telemetry Integration \u2014 Prompt 5",
+            "1. Tracking-Off & Privacy Shield Verification"
+          ],
+          "fullName": "Public Experiment & Consent-Safe Telemetry Integration \u2014 Prompt 5 1. Tracking-Off & Privacy Shield Verification honors Global Privacy Control (GPC) and Do-Not-Track (DNT) headers even if cookie exists",
+          "status": "passed",
+          "title": "honors Global Privacy Control (GPC) and Do-Not-Track (DNT) headers even if cookie exists",
+          "duration": 0.7682000000000073,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Public Experiment & Consent-Safe Telemetry Integration \u2014 Prompt 5",
+            "1. Tracking-Off & Privacy Shield Verification"
+          ],
+          "fullName": "Public Experiment & Consent-Safe Telemetry Integration \u2014 Prompt 5 1. Tracking-Off & Privacy Shield Verification verifies consent withdrawal immediately halts tracking",
+          "status": "passed",
+          "title": "verifies consent withdrawal immediately halts tracking",
+          "duration": 0.1529999999999916,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Public Experiment & Consent-Safe Telemetry Integration \u2014 Prompt 5",
+            "1. Tracking-Off & Privacy Shield Verification"
+          ],
+          "fullName": "Public Experiment & Consent-Safe Telemetry Integration \u2014 Prompt 5 1. Tracking-Off & Privacy Shield Verification filters out automated search engine bots and internal crawlers",
+          "status": "passed",
+          "title": "filters out automated search engine bots and internal crawlers",
+          "duration": 0.13880000000000337,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Public Experiment & Consent-Safe Telemetry Integration \u2014 Prompt 5",
+            "2. Live Public Experiment Lifecycle: Assignment, Exposure, Conversion, Winner Approval"
+          ],
+          "fullName": "Public Experiment & Consent-Safe Telemetry Integration \u2014 Prompt 5 2. Live Public Experiment Lifecycle: Assignment, Exposure, Conversion, Winner Approval executes end-to-end experiment journey with deduplication and human winner enforcement",
+          "status": "passed",
+          "title": "executes end-to-end experiment journey with deduplication and human winner enforcement",
+          "duration": 2.542599999999993,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Public Experiment & Consent-Safe Telemetry Integration \u2014 Prompt 5",
+            "3. Campaign Funnel Explanation & Suppression Protection"
+          ],
+          "fullName": "Public Experiment & Consent-Safe Telemetry Integration \u2014 Prompt 5 3. Campaign Funnel Explanation & Suppression Protection proves an operator can explain a campaign funnel from inspectable events without exposing suppressed visitors",
+          "status": "passed",
+          "title": "proves an operator can explain a campaign funnel from inspectable events without exposing suppressed visitors",
+          "duration": 6.488500000000016,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791941885157,
+      "endTime": 1791941885168.4885,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/tests/integration/public-experiment-and-telemetry.integration.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["RC-03 Core Orchestration Pass 1 End-to-End Suite"],
+          "fullName": "RC-03 Core Orchestration Pass 1 End-to-End Suite 1. Editorial Workflow: draft -> request review -> reject -> revise -> approve with permission boundaries & audit trail",
+          "status": "passed",
+          "title": "1. Editorial Workflow: draft -> request review -> reject -> revise -> approve with permission boundaries & audit trail",
+          "duration": 1636.7219999999998,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["RC-03 Core Orchestration Pass 1 End-to-End Suite"],
+          "fullName": "RC-03 Core Orchestration Pass 1 End-to-End Suite 2. Scheduled Publication: timezone-aware future scheduling, worker execution, lease locking & idempotency",
+          "status": "passed",
+          "title": "2. Scheduled Publication: timezone-aware future scheduling, worker execution, lease locking & idempotency",
+          "duration": 1497.3919999999998,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["RC-03 Core Orchestration Pass 1 End-to-End Suite"],
+          "fullName": "RC-03 Core Orchestration Pass 1 End-to-End Suite 3. Coordinated Release: rejects invalid article, media, distribution and newsletter references without false success",
+          "status": "passed",
+          "title": "3. Coordinated Release: rejects invalid article, media, distribution and newsletter references without false success",
+          "duration": 1108.9033000000009,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["RC-03 Core Orchestration Pass 1 End-to-End Suite"],
+          "fullName": "RC-03 Core Orchestration Pass 1 End-to-End Suite 4. Distribution Truth: verifies provider runtime boundaries (Bluesky live vs manual handoff vs unavailable)",
+          "status": "passed",
+          "title": "4. Distribution Truth: verifies provider runtime boundaries (Bluesky live vs manual handoff vs unavailable)",
+          "duration": 0.40569999999934225,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791941705851,
+      "endTime": 1791941710095.4058,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/tests/integration/rc03-core-orchestration.integration.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["RC03 real durable jobs and local federation boundary"],
+          "fullName": "RC03 real durable jobs and local federation boundary durable pending publication survives competing fresh job runners and publishes one canonical revision",
+          "status": "passed",
+          "title": "durable pending publication survives competing fresh job runners and publishes one canonical revision",
+          "duration": 22046.9557,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["RC03 real durable jobs and local federation boundary"],
+          "fullName": "RC03 real durable jobs and local federation boundary queues one local signed outbox message and truthfully retains a deliberate inbox failure",
+          "status": "passed",
+          "title": "queues one local signed outbox message and truthfully retains a deliberate inbox failure",
+          "duration": 4782.203000000001,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791941601776,
+      "endTime": 1791941628605.203,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/tests/integration/rc03-restart-recovery.integration.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security"
+          ],
+          "fullName": "RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security proves the complete physical product lifecycle, server authority, and idempotent settlement",
+          "status": "passed",
+          "title": "proves the complete physical product lifecycle, server authority, and idempotent settlement",
+          "duration": 3366.731,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security"
+          ],
+          "fullName": "RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security defeats client price, quantity, and total tampering attempts across routes",
+          "status": "passed",
+          "title": "defeats client price, quantity, and total tampering attempts across routes",
+          "duration": 880.7357000000002,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security"
+          ],
+          "fullName": "RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security proves webhook security boundaries: unsigned, invalid signature, replay, and race handling",
+          "status": "passed",
+          "title": "proves webhook security boundaries: unsigned, invalid signature, replay, and race handling",
+          "duration": 879.9302000000007,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security"
+          ],
+          "fullName": "RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security proves multi-tenant boundaries and security against cross-site cart/order access",
+          "status": "passed",
+          "title": "proves multi-tenant boundaries and security against cross-site cart/order access",
+          "duration": 804.1354999999994,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security"
+          ],
+          "fullName": "RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security proves downstream partial failure handling and operator reconciliation",
+          "status": "passed",
+          "title": "proves downstream partial failure handling and operator reconciliation",
+          "duration": 770.9694999999992,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791941671042,
+      "endTime": 1791941677744.9695,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/tests/integration/rc05-pass2-commerce-routes.integration.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["RC08B persisted promotion boundaries"],
+          "fullName": "RC08B persisted promotion boundaries reads real future occurrences, excludes foreign/private/draft/deleted records and survives a new query",
+          "status": "passed",
+          "title": "reads real future occurrences, excludes foreign/private/draft/deleted records and survives a new query",
+          "duration": 244.04340000000002,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["RC08B persisted promotion boundaries"],
+          "fullName": "RC08B persisted promotion boundaries creates and edits a real timeline through scoped operator access, rejects foreign memberships, and hides deleted/private events",
+          "status": "passed",
+          "title": "creates and edits a real timeline through scoped operator access, rejects foreign memberships, and hides deleted/private events",
+          "duration": 336.4231,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["RC08B persisted promotion boundaries"],
+          "fullName": "RC08B persisted promotion boundaries persists consent, scopes replay by form/site, recovers a failed task and never repeats completed side effects",
+          "status": "passed",
+          "title": "persists consent, scopes replay by form/site, recovers a failed task and never repeats completed side effects",
+          "duration": 519.0596,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["RC08B persisted promotion boundaries"],
+          "fullName": "RC08B persisted promotion boundaries enforces persisted message switches at notification creation, with owner-only preferences",
+          "status": "passed",
+          "title": "enforces persisted message switches at notification creation, with owner-only preferences",
+          "duration": 135.72630000000026,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["RC08B persisted promotion boundaries"],
+          "fullName": "RC08B persisted promotion boundaries deduplicates explicit email windows, delivers through the transport, and cancels queued updates after opt-out",
+          "status": "passed",
+          "title": "deduplicates explicit email windows, delivers through the transport, and cancels queued updates after opt-out",
+          "duration": 252.45010000000002,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["RC08B persisted promotion boundaries"],
+          "fullName": "RC08B persisted promotion boundaries keeps external delivery independent of in-app, suppresses late mute/block/address opt-out, and recovers a real disabled-transport failure",
+          "status": "passed",
+          "title": "keeps external delivery independent of in-app, suppresses late mute/block/address opt-out, and recovers a real disabled-transport failure",
+          "duration": 599.2011000000002,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["RC08B persisted promotion boundaries"],
+          "fullName": "RC08B persisted promotion boundaries compiles ten persisted canonical notifications into one deduplicated digest while in-app is off",
+          "status": "passed",
+          "title": "compiles ten persisted canonical notifications into one deduplicated digest while in-app is off",
+          "duration": 637.7453999999998,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["RC08B persisted promotion boundaries"],
+          "fullName": "RC08B persisted promotion boundaries interoperates with an independent HTTPS peer: discovery, signed failure/retry, replay and tampering denial",
+          "status": "passed",
+          "title": "interoperates with an independent HTTPS peer: discovery, signed failure/retry, replay and tampering denial",
+          "duration": 253.1282000000001,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["RC08B persisted promotion boundaries"],
+          "fullName": "RC08B persisted promotion boundaries exports canonical contributions and private owned/readable history without foreign contact or moderation data",
+          "status": "passed",
+          "title": "exports canonical contributions and private owned/readable history without foreign contact or moderation data",
+          "duration": 150.22490000000016,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["RC08B persisted promotion boundaries"],
+          "fullName": "RC08B persisted promotion boundaries exports more than one page of contributions and messages, while a removed member gets own sent text but no foreign history",
+          "status": "passed",
+          "title": "exports more than one page of contributions and messages, while a removed member gets own sent text but no foreign history",
+          "duration": 24447.8243,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791941569400,
+      "endTime": 1791941596977.8242,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/tests/integration/rc08b-promotions.integration.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "RC08D-01 Integration: Core Editor Lock-Owner Projection on Acceptance Database"
+          ],
+          "fullName": "RC08D-01 Integration: Core Editor Lock-Owner Projection on Acceptance Database 1. owner opens Site Settings (unlocked when no lock exists)",
+          "status": "passed",
+          "title": "1. owner opens Site Settings (unlocked when no lock exists)",
+          "duration": 28.719700000000103,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "RC08D-01 Integration: Core Editor Lock-Owner Projection on Acceptance Database"
+          ],
+          "fullName": "RC08D-01 Integration: Core Editor Lock-Owner Projection on Acceptance Database 2. save Site Settings and create persistent document lock",
+          "status": "passed",
+          "title": "2. save Site Settings and create persistent document lock",
+          "duration": 166.1185999999998,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "RC08D-01 Integration: Core Editor Lock-Owner Projection on Acceptance Database"
+          ],
+          "fullName": "RC08D-01 Integration: Core Editor Lock-Owner Projection on Acceptance Database 3. immediate reload resolves owner lock projection without blanking or throwing",
+          "status": "passed",
+          "title": "3. immediate reload resolves owner lock projection without blanking or throwing",
+          "duration": 7.580500000000029,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "RC08D-01 Integration: Core Editor Lock-Owner Projection on Acceptance Database"
+          ],
+          "fullName": "RC08D-01 Integration: Core Editor Lock-Owner Projection on Acceptance Database 4. repeated reload resolves lock state consistently",
+          "status": "passed",
+          "title": "4. repeated reload resolves lock state consistently",
+          "duration": 16.130099999999857,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "RC08D-01 Integration: Core Editor Lock-Owner Projection on Acceptance Database"
+          ],
+          "fullName": "RC08D-01 Integration: Core Editor Lock-Owner Projection on Acceptance Database 5. second edit and save retains owner access and updates timestamp",
+          "status": "passed",
+          "title": "5. second edit and save retains owner access and updates timestamp",
+          "duration": 31.40639999999985,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "RC08D-01 Integration: Core Editor Lock-Owner Projection on Acceptance Database"
+          ],
+          "fullName": "RC08D-01 Integration: Core Editor Lock-Owner Projection on Acceptance Database 6. logout/new owner session sees active lock and cannot edit concurrently",
+          "status": "passed",
+          "title": "6. logout/new owner session sees active lock and cannot edit concurrently",
+          "duration": 19.775900000000092,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "RC08D-01 Integration: Core Editor Lock-Owner Projection on Acceptance Database"
+          ],
+          "fullName": "RC08D-01 Integration: Core Editor Lock-Owner Projection on Acceptance Database 7. representative lock-enabled content editor (posts/content) shares lock resolution",
+          "status": "passed",
+          "title": "7. representative lock-enabled content editor (posts/content) shares lock resolution",
+          "duration": 168.3526999999999,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "RC08D-01 Integration: Core Editor Lock-Owner Projection on Acceptance Database"
+          ],
+          "fullName": "RC08D-01 Integration: Core Editor Lock-Owner Projection on Acceptance Database 8. malformed/missing lock owner fails safely instead of blanking the editor",
+          "status": "passed",
+          "title": "8. malformed/missing lock owner fails safely instead of blanking the editor",
+          "duration": 29.344499999999698,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791941871128,
+      "endTime": 1791941871596.3445,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/tests/integration/rc08d-lock-projection.integration.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["first-run onboarding provisioning"],
+          "fullName": "first-run onboarding provisioning creates the owner profile with a valid, unique handle",
+          "status": "passed",
+          "title": "creates the owner profile with a valid, unique handle",
+          "duration": 391.18550000000005,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["first-run onboarding provisioning"],
+          "fullName": "first-run onboarding provisioning falls back to a suffixed handle when the preferred handle is taken",
+          "status": "passed",
+          "title": "falls back to a suffixed handle when the preferred handle is taken",
+          "duration": 199.37480000000005,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["first-run onboarding provisioning"],
+          "fullName": "first-run onboarding provisioning is idempotent: re-running keeps the same owner profile handle",
+          "status": "passed",
+          "title": "is idempotent: re-running keeps the same owner profile handle",
+          "duration": 377.30319999999983,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["first-run onboarding provisioning"],
+          "fullName": "first-run onboarding provisioning exercises full Lean profile lifecycle with publishing defaults",
+          "status": "passed",
+          "title": "exercises full Lean profile lifecycle with publishing defaults",
+          "duration": 775.2941000000005,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["first-run onboarding provisioning"],
+          "fullName": "first-run onboarding provisioning exercises full Standard profile lifecycle with publishing defaults",
+          "status": "passed",
+          "title": "exercises full Standard profile lifecycle with publishing defaults",
+          "duration": 2020.0922,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": ["first-run onboarding provisioning"],
+          "fullName": "first-run onboarding provisioning authenticates emergency recovery code, burns it single-use, and rejects replay",
+          "status": "passed",
+          "title": "authenticates emergency recovery code, burns it single-use, and rejects replay",
+          "duration": 30.650499999999738,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791941664932,
+      "endTime": 1791941668726.6504,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/tests/integration/setup-first-run.integration.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conformance",
+            "AFFILIATE: Tracking, Redirects, Conversions, Attribution, Holds & Settlements"
+          ],
+          "fullName": "Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conformance AFFILIATE: Tracking, Redirects, Conversions, Attribution, Holds & Settlements 1. Tracking enabled: subId interpolated, click token generated, and normal UI outputs verified",
+          "status": "passed",
+          "title": "1. Tracking enabled: subId interpolated, click token generated, and normal UI outputs verified",
+          "duration": 6.116600000000005,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conformance",
+            "AFFILIATE: Tracking, Redirects, Conversions, Attribution, Holds & Settlements"
+          ],
+          "fullName": "Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conformance AFFILIATE: Tracking, Redirects, Conversions, Attribution, Holds & Settlements 2. Tracking disabled: privacy signals (DNT/Sec-GPC/opt-out) suppress click tracking and sub-IDs",
+          "status": "passed",
+          "title": "2. Tracking disabled: privacy signals (DNT/Sec-GPC/opt-out) suppress click tracking and sub-IDs",
+          "duration": 0.5883000000000038,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conformance",
+            "AFFILIATE: Tracking, Redirects, Conversions, Attribution, Holds & Settlements"
+          ],
+          "fullName": "Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conformance AFFILIATE: Tracking, Redirects, Conversions, Attribution, Holds & Settlements 3. Redirect allow/deny behavior: blocks open redirects, insecure protocols, and unapproved params",
+          "status": "passed",
+          "title": "3. Redirect allow/deny behavior: blocks open redirects, insecure protocols, and unapproved params",
+          "duration": 0.4522000000000048,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conformance",
+            "AFFILIATE: Tracking, Redirects, Conversions, Attribution, Holds & Settlements"
+          ],
+          "fullName": "Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conformance AFFILIATE: Tracking, Redirects, Conversions, Attribution, Holds & Settlements 4. Conversion import: ingests raw external network evidence and calculates idempotent hash",
+          "status": "passed",
+          "title": "4. Conversion import: ingests raw external network evidence and calculates idempotent hash",
+          "duration": 1.005200000000002,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conformance",
+            "AFFILIATE: Tracking, Redirects, Conversions, Attribution, Holds & Settlements"
+          ],
+          "fullName": "Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conformance AFFILIATE: Tracking, Redirects, Conversions, Attribution, Holds & Settlements 5. Referral attribution: validates program rules, role eligibility, and defeats self-referral attacks",
+          "status": "passed",
+          "title": "5. Referral attribution: validates program rules, role eligibility, and defeats self-referral attacks",
+          "duration": 0.42660000000000764,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conformance",
+            "AFFILIATE: Tracking, Redirects, Conversions, Attribution, Holds & Settlements"
+          ],
+          "fullName": "Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conformance AFFILIATE: Tracking, Redirects, Conversions, Attribution, Holds & Settlements 6. Commission hold: enforces hold period before maturing to eligible status",
+          "status": "passed",
+          "title": "6. Commission hold: enforces hold period before maturing to eligible status",
+          "duration": 0.37220000000002074,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conformance",
+            "AFFILIATE: Tracking, Redirects, Conversions, Attribution, Holds & Settlements"
+          ],
+          "fullName": "Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conformance AFFILIATE: Tracking, Redirects, Conversions, Attribution, Holds & Settlements 7. Refund/reversal: generates compensating reversal entry and restores clean liability state",
+          "status": "passed",
+          "title": "7. Refund/reversal: generates compensating reversal entry and restores clean liability state",
+          "duration": 0.41689999999999827,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conformance",
+            "AFFILIATE: Tracking, Redirects, Conversions, Attribution, Holds & Settlements"
+          ],
+          "fullName": "Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conformance AFFILIATE: Tracking, Redirects, Conversions, Attribution, Holds & Settlements 8. Settlement calculation: strictly separates liabilities by currency and excludes held referrers",
+          "status": "passed",
+          "title": "8. Settlement calculation: strictly separates liabilities by currency and excludes held referrers",
+          "duration": 0.6236000000000104,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conformance",
+            "AFFILIATE: Tracking, Redirects, Conversions, Attribution, Holds & Settlements"
+          ],
+          "fullName": "Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conformance AFFILIATE: Tracking, Redirects, Conversions, Attribution, Holds & Settlements 9. Settlement export: operator approval gates tamper-evident export generation",
+          "status": "passed",
+          "title": "9. Settlement export: operator approval gates tamper-evident export generation",
+          "duration": 0.7817000000000007,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conformance",
+            "AFFILIATE: Tracking, Redirects, Conversions, Attribution, Holds & Settlements"
+          ],
+          "fullName": "Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conformance AFFILIATE: Tracking, Redirects, Conversions, Attribution, Holds & Settlements 10. Do not execute a real payout: verifies safe rollback on failure and reconciliation without money movement",
+          "status": "passed",
+          "title": "10. Do not execute a real payout: verifies safe rollback on failure and reconciliation without money movement",
+          "duration": 0.26909999999998035,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conformance",
+            "AFFILIATE: Tracking, Redirects, Conversions, Attribution, Holds & Settlements"
+          ],
+          "fullName": "Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conformance AFFILIATE: Tracking, Redirects, Conversions, Attribution, Holds & Settlements 11. Privacy choices and disabled tracking prevent prohibited attribution and verify UI dashboard rendering",
+          "status": "passed",
+          "title": "11. Privacy choices and disabled tracking prevent prohibited attribution and verify UI dashboard rendering",
+          "duration": 1.4850000000000136,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conformance",
+            "POD: Preflight, Holds, Reconciliation, Tracking, Errors, Recovery & Concurrency"
+          ],
+          "fullName": "Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conformance POD: Preflight, Holds, Reconciliation, Tracking, Errors, Recovery & Concurrency 12. Product/preflight validation: validates dimensions, DPI >= 150, mime types, and placement",
+          "status": "passed",
+          "title": "12. Product/preflight validation: validates dimensions, DPI >= 150, mime types, and placement",
+          "duration": 0.5483000000000402,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conformance",
+            "POD: Preflight, Holds, Reconciliation, Tracking, Errors, Recovery & Concurrency"
+          ],
+          "fullName": "Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conformance POD: Preflight, Holds, Reconciliation, Tracking, Errors, Recovery & Concurrency 13. Hold: places paid POD job on hold preventing premature dispatch during cancel/edit window",
+          "status": "passed",
+          "title": "13. Hold: places paid POD job on hold preventing premature dispatch during cancel/edit window",
+          "duration": 0.8858000000000175,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conformance",
+            "POD: Preflight, Holds, Reconciliation, Tracking, Errors, Recovery & Concurrency"
+          ],
+          "fullName": "Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conformance POD: Preflight, Holds, Reconciliation, Tracking, Errors, Recovery & Concurrency 14. Release: releases hold, enabling worker submission to provider",
+          "status": "passed",
+          "title": "14. Release: releases hold, enabling worker submission to provider",
+          "duration": 0.125,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conformance",
+            "POD: Preflight, Holds, Reconciliation, Tracking, Errors, Recovery & Concurrency"
+          ],
+          "fullName": "Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conformance POD: Preflight, Holds, Reconciliation, Tracking, Errors, Recovery & Concurrency 15. Duplicate provider event: deduplicates duplicate webhook events without redundant state changes",
+          "status": "passed",
+          "title": "15. Duplicate provider event: deduplicates duplicate webhook events without redundant state changes",
+          "duration": 0.2256999999999607,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conformance",
+            "POD: Preflight, Holds, Reconciliation, Tracking, Errors, Recovery & Concurrency"
+          ],
+          "fullName": "Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conformance POD: Preflight, Holds, Reconciliation, Tracking, Errors, Recovery & Concurrency 16. Unknown provider event: handles unrecognized provider event types safely without crashing worker",
+          "status": "passed",
+          "title": "16. Unknown provider event: handles unrecognized provider event types safely without crashing worker",
+          "duration": 0.09719999999998663,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conformance",
+            "POD: Preflight, Holds, Reconciliation, Tracking, Errors, Recovery & Concurrency"
+          ],
+          "fullName": "Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conformance POD: Preflight, Holds, Reconciliation, Tracking, Errors, Recovery & Concurrency 17. Reconciliation: actively polls provider adapter and synchronizes state, fulfillments, and timestamp",
+          "status": "passed",
+          "title": "17. Reconciliation: actively polls provider adapter and synchronizes state, fulfillments, and timestamp",
+          "duration": 0.6041000000000167,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conformance",
+            "POD: Preflight, Holds, Reconciliation, Tracking, Errors, Recovery & Concurrency"
+          ],
+          "fullName": "Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conformance POD: Preflight, Holds, Reconciliation, Tracking, Errors, Recovery & Concurrency 18. Shipping state: applies normalized shipped event with tracking and updates line fulfillments",
+          "status": "passed",
+          "title": "18. Shipping state: applies normalized shipped event with tracking and updates line fulfillments",
+          "duration": 0.17779999999999063,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conformance",
+            "POD: Preflight, Holds, Reconciliation, Tracking, Errors, Recovery & Concurrency"
+          ],
+          "fullName": "Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conformance POD: Preflight, Holds, Reconciliation, Tracking, Errors, Recovery & Concurrency 19. Tracking state: sanitizes tracking URLs and blocks javascript/open redirect attacks",
+          "status": "passed",
+          "title": "19. Tracking state: sanitizes tracking URLs and blocks javascript/open redirect attacks",
+          "duration": 0.13519999999999754,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conformance",
+            "POD: Preflight, Holds, Reconciliation, Tracking, Errors, Recovery & Concurrency"
+          ],
+          "fullName": "Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conformance POD: Preflight, Holds, Reconciliation, Tracking, Errors, Recovery & Concurrency 20. Provider failure: verifies retry backoff on transient errors and terminal failure on exhaustion",
+          "status": "passed",
+          "title": "20. Provider failure: verifies retry backoff on transient errors and terminal failure on exhaustion",
+          "duration": 0.3220999999999776,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conformance",
+            "POD: Preflight, Holds, Reconciliation, Tracking, Errors, Recovery & Concurrency"
+          ],
+          "fullName": "Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conformance POD: Preflight, Holds, Reconciliation, Tracking, Errors, Recovery & Concurrency 21. Manual recovery path: hands off failed POD job to manual package queue with disclaimer and dispatch",
+          "status": "passed",
+          "title": "21. Manual recovery path: hands off failed POD job to manual package queue with disclaimer and dispatch",
+          "duration": 0.418200000000013,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conformance",
+            "POD: Preflight, Holds, Reconciliation, Tracking, Errors, Recovery & Concurrency"
+          ],
+          "fullName": "Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conformance POD: Preflight, Holds, Reconciliation, Tracking, Errors, Recovery & Concurrency 22. Restart while fulfillment work is in progress: resumes state safely using deterministic idempotency key",
+          "status": "passed",
+          "title": "22. Restart while fulfillment work is in progress: resumes state safely using deterministic idempotency key",
+          "duration": 0.1792000000000371,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conformance",
+            "POD: Preflight, Holds, Reconciliation, Tracking, Errors, Recovery & Concurrency"
+          ],
+          "fullName": "Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conformance POD: Preflight, Holds, Reconciliation, Tracking, Errors, Recovery & Concurrency 23. Concurrency invariant: proves zero duplicate orders, fulfillments, shipments, or provider submissions",
+          "status": "passed",
+          "title": "23. Concurrency invariant: proves zero duplicate orders, fulfillments, shipments, or provider submissions",
+          "duration": 0.13850000000002183,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conformance",
+            "PROVIDER & WORKER HEALTH: Degradation, Visibility, Age Reporting, Drilldown & Capabilities"
+          ],
+          "fullName": "Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conformance PROVIDER & WORKER HEALTH: Degradation, Visibility, Age Reporting, Drilldown & Capabilities 24. Provider degradation and recovery: health check reflects unavailable/degraded and recovers cleanly",
+          "status": "passed",
+          "title": "24. Provider degradation and recovery: health check reflects unavailable/degraded and recovers cleanly",
+          "duration": 0.16320000000001755,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conformance",
+            "PROVIDER & WORKER HEALTH: Degradation, Visibility, Age Reporting, Drilldown & Capabilities"
+          ],
+          "fullName": "Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conformance PROVIDER & WORKER HEALTH: Degradation, Visibility, Age Reporting, Drilldown & Capabilities 25. Failed worker/job visibility: command center displays failed jobs with error details and retry counts",
+          "status": "passed",
+          "title": "25. Failed worker/job visibility: command center displays failed jobs with error details and retry counts",
+          "duration": 2.880200000000002,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conformance",
+            "PROVIDER & WORKER HEALTH: Degradation, Visibility, Age Reporting, Drilldown & Capabilities"
+          ],
+          "fullName": "Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conformance PROVIDER & WORKER HEALTH: Degradation, Visibility, Age Reporting, Drilldown & Capabilities 26. Reconciliation-age reporting: tracks timestamp of last sync and displays age in Command Center",
+          "status": "passed",
+          "title": "26. Reconciliation-age reporting: tracks timestamp of last sync and displays age in Command Center",
+          "duration": 0.5092999999999961,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conformance",
+            "PROVIDER & WORKER HEALTH: Degradation, Visibility, Age Reporting, Drilldown & Capabilities"
+          ],
+          "fullName": "Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conformance PROVIDER & WORKER HEALTH: Degradation, Visibility, Age Reporting, Drilldown & Capabilities 27. Command Center drilldown: health signal alert banner filters directly to affected provider jobs",
+          "status": "passed",
+          "title": "27. Command Center drilldown: health signal alert banner filters directly to affected provider jobs",
+          "duration": 1.359800000000007,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conformance",
+            "PROVIDER & WORKER HEALTH: Degradation, Visibility, Age Reporting, Drilldown & Capabilities"
+          ],
+          "fullName": "Shared Contract Proof: Affiliate, POD Fulfillment & Worker Health Conformance PROVIDER & WORKER HEALTH: Degradation, Visibility, Age Reporting, Drilldown & Capabilities 28. Unsupported capabilities labeled: explicitly labeled in UI and rejects silent or simulated execution",
+          "status": "passed",
+          "title": "28. Unsupported capabilities labeled: explicitly labeled in UI and rejects silent or simulated execution",
+          "duration": 1.465599999999995,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791941882671,
+      "endTime": 1791941882693.4656,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/tests/integration/shared-contract-affiliate-pod.integration.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Audience, Community, Permissions/Privacy & Resilience",
+            "AUDIENCE: Sovereign Multi-Channel Delivery, Preference & Suppression Ledger"
+          ],
+          "fullName": "Shared Contract Proof: Audience, Community, Permissions/Privacy & Resilience AUDIENCE: Sovereign Multi-Channel Delivery, Preference & Suppression Ledger 1. Visitor signup via public form records immutable submission and consent",
+          "status": "passed",
+          "title": "1. Visitor signup via public form records immutable submission and consent",
+          "duration": 115.27169999999978,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Audience, Community, Permissions/Privacy & Resilience",
+            "AUDIENCE: Sovereign Multi-Channel Delivery, Preference & Suppression Ledger"
+          ],
+          "fullName": "Shared Contract Proof: Audience, Community, Permissions/Privacy & Resilience AUDIENCE: Sovereign Multi-Channel Delivery, Preference & Suppression Ledger 2. Preferences and consent state update securely via token-based confirmation",
+          "status": "passed",
+          "title": "2. Preferences and consent state update securely via token-based confirmation",
+          "duration": 82.34209999999985,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Audience, Community, Permissions/Privacy & Resilience",
+            "AUDIENCE: Sovereign Multi-Channel Delivery, Preference & Suppression Ledger"
+          ],
+          "fullName": "Shared Contract Proof: Audience, Community, Permissions/Privacy & Resilience AUDIENCE: Sovereign Multi-Channel Delivery, Preference & Suppression Ledger 3. Explainable segment membership records explicit inclusion/exclusion reasons and snapshot hash",
+          "status": "passed",
+          "title": "3. Explainable segment membership records explicit inclusion/exclusion reasons and snapshot hash",
+          "duration": 22.449699999999666,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Audience, Community, Permissions/Privacy & Resilience",
+            "AUDIENCE: Sovereign Multi-Channel Delivery, Preference & Suppression Ledger"
+          ],
+          "fullName": "Shared Contract Proof: Audience, Community, Permissions/Privacy & Resilience AUDIENCE: Sovereign Multi-Channel Delivery, Preference & Suppression Ledger 4. Composes responsive newsletter and delivers through local SMTP mail sink with RFC headers",
+          "status": "passed",
+          "title": "4. Composes responsive newsletter and delivers through local SMTP mail sink with RFC headers",
+          "duration": 219.32839999999987,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Audience, Community, Permissions/Privacy & Resilience",
+            "AUDIENCE: Sovereign Multi-Channel Delivery, Preference & Suppression Ledger"
+          ],
+          "fullName": "Shared Contract Proof: Audience, Community, Permissions/Privacy & Resilience AUDIENCE: Sovereign Multi-Channel Delivery, Preference & Suppression Ledger 5. Exercises Telecom emulator: routes RCS directly, performs SMS fallback, and parses STOP keyword",
+          "status": "passed",
+          "title": "5. Exercises Telecom emulator: routes RCS directly, performs SMS fallback, and parses STOP keyword",
+          "duration": 294.3037999999997,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Audience, Community, Permissions/Privacy & Resilience",
+            "AUDIENCE: Sovereign Multi-Channel Delivery, Preference & Suppression Ledger"
+          ],
+          "fullName": "Shared Contract Proof: Audience, Community, Permissions/Privacy & Resilience AUDIENCE: Sovereign Multi-Channel Delivery, Preference & Suppression Ledger 6 & 7. Queue a follow-up, suppress the recipient, and prove suppression halts delivery at send-time",
+          "status": "passed",
+          "title": "6 & 7. Queue a follow-up, suppress the recipient, and prove suppression halts delivery at send-time",
+          "duration": 230.4319000000005,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Audience, Community, Permissions/Privacy & Resilience",
+            "COMMUNITY: Profiles, Discussions, Forums, Notifications & Moderation Lifecycles"
+          ],
+          "fullName": "Shared Contract Proof: Audience, Community, Permissions/Privacy & Resilience COMMUNITY: Profiles, Discussions, Forums, Notifications & Moderation Lifecycles 8. Member profile and privacy controls sanitize sensitive auth/contact fields",
+          "status": "passed",
+          "title": "8. Member profile and privacy controls sanitize sensitive auth/contact fields",
+          "duration": 32.01040000000012,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Audience, Community, Permissions/Privacy & Resilience",
+            "COMMUNITY: Profiles, Discussions, Forums, Notifications & Moderation Lifecycles"
+          ],
+          "fullName": "Shared Contract Proof: Audience, Community, Permissions/Privacy & Resilience COMMUNITY: Profiles, Discussions, Forums, Notifications & Moderation Lifecycles 9. Comment creation with rich-text anti-XSS, 15-minute edit window, and author tombstone",
+          "status": "passed",
+          "title": "9. Comment creation with rich-text anti-XSS, 15-minute edit window, and author tombstone",
+          "duration": 166.91370000000006,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Audience, Community, Permissions/Privacy & Resilience",
+            "COMMUNITY: Profiles, Discussions, Forums, Notifications & Moderation Lifecycles"
+          ],
+          "fullName": "Shared Contract Proof: Audience, Community, Permissions/Privacy & Resilience COMMUNITY: Profiles, Discussions, Forums, Notifications & Moderation Lifecycles 10. Forum participation: thread creation, member replies, and idempotent emoji reactions",
+          "status": "passed",
+          "title": "10. Forum participation: thread creation, member replies, and idempotent emoji reactions",
+          "duration": 205.6305000000002,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Audience, Community, Permissions/Privacy & Resilience",
+            "COMMUNITY: Profiles, Discussions, Forums, Notifications & Moderation Lifecycles"
+          ],
+          "fullName": "Shared Contract Proof: Audience, Community, Permissions/Privacy & Resilience COMMUNITY: Profiles, Discussions, Forums, Notifications & Moderation Lifecycles 11. Notification routing, isolation, and unread tracking",
+          "status": "passed",
+          "title": "11. Notification routing, isolation, and unread tracking",
+          "duration": 10.475000000000364,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Audience, Community, Permissions/Privacy & Resilience",
+            "COMMUNITY: Profiles, Discussions, Forums, Notifications & Moderation Lifecycles"
+          ],
+          "fullName": "Shared Contract Proof: Audience, Community, Permissions/Privacy & Resilience COMMUNITY: Profiles, Discussions, Forums, Notifications & Moderation Lifecycles 12. Member messaging with participant verification",
+          "status": "passed",
+          "title": "12. Member messaging with participant verification",
+          "duration": 70.63689999999951,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Audience, Community, Permissions/Privacy & Resilience",
+            "COMMUNITY: Profiles, Discussions, Forums, Notifications & Moderation Lifecycles"
+          ],
+          "fullName": "Shared Contract Proof: Audience, Community, Permissions/Privacy & Resilience COMMUNITY: Profiles, Discussions, Forums, Notifications & Moderation Lifecycles 13. Block & report flows: blocking prevents direct messaging and mutes interactions",
+          "status": "passed",
+          "title": "13. Block & report flows: blocking prevents direct messaging and mutes interactions",
+          "duration": 24.429699999999684,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Audience, Community, Permissions/Privacy & Resilience",
+            "COMMUNITY: Profiles, Discussions, Forums, Notifications & Moderation Lifecycles"
+          ],
+          "fullName": "Shared Contract Proof: Audience, Community, Permissions/Privacy & Resilience COMMUNITY: Profiles, Discussions, Forums, Notifications & Moderation Lifecycles 14. Moderator workflow: review reports, remove post, and suspend offending member with session revocation",
+          "status": "passed",
+          "title": "14. Moderator workflow: review reports, remove post, and suspend offending member with session revocation",
+          "duration": 96.66450000000077,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Audience, Community, Permissions/Privacy & Resilience",
+            "COMMUNITY: Profiles, Discussions, Forums, Notifications & Moderation Lifecycles"
+          ],
+          "fullName": "Shared Contract Proof: Audience, Community, Permissions/Privacy & Resilience COMMUNITY: Profiles, Discussions, Forums, Notifications & Moderation Lifecycles 15. Recovery and appeal path: review appeal and verify immutable append-only audit chain",
+          "status": "passed",
+          "title": "15. Recovery and appeal path: review appeal and verify immutable append-only audit chain",
+          "duration": 10.633700000000317,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Audience, Community, Permissions/Privacy & Resilience",
+            "PERMISSIONS / PRIVACY: Multi-Tenant & Cross-User Security Boundary Attacks"
+          ],
+          "fullName": "Shared Contract Proof: Audience, Community, Permissions/Privacy & Resilience PERMISSIONS / PRIVACY: Multi-Tenant & Cross-User Security Boundary Attacks 16. Attack cross-user and cross-site object access: all unauthorized attempts rejected",
+          "status": "passed",
+          "title": "16. Attack cross-user and cross-site object access: all unauthorized attempts rejected",
+          "duration": 12.022200000000339,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Audience, Community, Permissions/Privacy & Resilience",
+            "PERMISSIONS / PRIVACY: Multi-Tenant & Cross-User Security Boundary Attacks"
+          ],
+          "fullName": "Shared Contract Proof: Audience, Community, Permissions/Privacy & Resilience PERMISSIONS / PRIVACY: Multi-Tenant & Cross-User Security Boundary Attacks 17. Attempt unauthorized access to private profiles, messages, staff surfaces, and audience exports",
+          "status": "passed",
+          "title": "17. Attempt unauthorized access to private profiles, messages, staff surfaces, and audience exports",
+          "duration": 23.245300000000498,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Audience, Community, Permissions/Privacy & Resilience",
+            "PERMISSIONS / PRIVACY: Multi-Tenant & Cross-User Security Boundary Attacks"
+          ],
+          "fullName": "Shared Contract Proof: Audience, Community, Permissions/Privacy & Resilience PERMISSIONS / PRIVACY: Multi-Tenant & Cross-User Security Boundary Attacks 18. Privacy settings agree across public profile projections, exports, and retained history",
+          "status": "passed",
+          "title": "18. Privacy settings agree across public profile projections, exports, and retained history",
+          "duration": 35.66330000000016,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Audience, Community, Permissions/Privacy & Resilience",
+            "RESILIENCE: Service Re-Initialization, State Retention & Zero-Duplicate Guarantees"
+          ],
+          "fullName": "Shared Contract Proof: Audience, Community, Permissions/Privacy & Resilience RESILIENCE: Service Re-Initialization, State Retention & Zero-Duplicate Guarantees 19. Stack restart during audience work: reconciles outbox and preserves subscriber records",
+          "status": "passed",
+          "title": "19. Stack restart during audience work: reconciles outbox and preserves subscriber records",
+          "duration": 4.372100000000501,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Audience, Community, Permissions/Privacy & Resilience",
+            "RESILIENCE: Service Re-Initialization, State Retention & Zero-Duplicate Guarantees"
+          ],
+          "fullName": "Shared Contract Proof: Audience, Community, Permissions/Privacy & Resilience RESILIENCE: Service Re-Initialization, State Retention & Zero-Duplicate Guarantees 20. Stack restart during community work: preserves member identity, read states, and activity history",
+          "status": "passed",
+          "title": "20. Stack restart during community work: preserves member identity, read states, and activity history",
+          "duration": 43.155799999999545,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Audience, Community, Permissions/Privacy & Resilience",
+            "RESILIENCE: Service Re-Initialization, State Retention & Zero-Duplicate Guarantees"
+          ],
+          "fullName": "Shared Contract Proof: Audience, Community, Permissions/Privacy & Resilience RESILIENCE: Service Re-Initialization, State Retention & Zero-Duplicate Guarantees 21. Concurrency idempotency: proves zero duplicate deliveries, notifications, or moderation actions",
+          "status": "passed",
+          "title": "21. Concurrency idempotency: proves zero duplicate deliveries, notifications, or moderation actions",
+          "duration": 26.525700000000143,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791941790574,
+      "endTime": 1791941792301.5256,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/tests/integration/shared-contract-audience-community.integration.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "CHECKOUT / ORDER: Lifecycle, Tampering Invariants & Reconciliation"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks CHECKOUT / ORDER: Lifecycle, Tampering Invariants & Reconciliation 1. Creates an empty guest cart with cryptographic guest token",
+          "status": "passed",
+          "title": "1. Creates an empty guest cart with cryptographic guest token",
+          "duration": 1.0916000000001986,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "CHECKOUT / ORDER: Lifecycle, Tampering Invariants & Reconciliation"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks CHECKOUT / ORDER: Lifecycle, Tampering Invariants & Reconciliation 2. Defeats client price/totals tampering via authoritative catalog re-resolution",
+          "status": "passed",
+          "title": "2. Defeats client price/totals tampering via authoritative catalog re-resolution",
+          "duration": 2.077400000000125,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "CHECKOUT / ORDER: Lifecycle, Tampering Invariants & Reconciliation"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks CHECKOUT / ORDER: Lifecycle, Tampering Invariants & Reconciliation 3. Recovers cart across sessions via hashed token without leaking plaintext",
+          "status": "passed",
+          "title": "3. Recovers cart across sessions via hashed token without leaking plaintext",
+          "duration": 23.049199999999928,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "CHECKOUT / ORDER: Lifecycle, Tampering Invariants & Reconciliation"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks CHECKOUT / ORDER: Lifecycle, Tampering Invariants & Reconciliation 4. Calculates valid shipping and jurisdiction tax with exact integer allocation",
+          "status": "passed",
+          "title": "4. Calculates valid shipping and jurisdiction tax with exact integer allocation",
+          "duration": 0.7780999999999949,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "CHECKOUT / ORDER: Lifecycle, Tampering Invariants & Reconciliation"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks CHECKOUT / ORDER: Lifecycle, Tampering Invariants & Reconciliation 5. Creates checkout proposal and verifies cryptographic integrity hash",
+          "status": "passed",
+          "title": "5. Creates checkout proposal and verifies cryptographic integrity hash",
+          "duration": 0.8532999999997628,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "CHECKOUT / ORDER: Lifecycle, Tampering Invariants & Reconciliation"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks CHECKOUT / ORDER: Lifecycle, Tampering Invariants & Reconciliation 6. Initiates hosted checkout and delivers verified signed payment webhook event",
+          "status": "passed",
+          "title": "6. Initiates hosted checkout and delivers verified signed payment webhook event",
+          "duration": 0.689600000000155,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "CHECKOUT / ORDER: Lifecycle, Tampering Invariants & Reconciliation"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks CHECKOUT / ORDER: Lifecycle, Tampering Invariants & Reconciliation 7. Delivers duplicate, delayed, and out-of-order events with deterministic monotonic reduction",
+          "status": "passed",
+          "title": "7. Delivers duplicate, delayed, and out-of-order events with deterministic monotonic reduction",
+          "duration": 0.5776999999998225,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "CHECKOUT / ORDER: Lifecycle, Tampering Invariants & Reconciliation"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks CHECKOUT / ORDER: Lifecycle, Tampering Invariants & Reconciliation 8. Reconciles payment attempts under simulated worker interruption/restart",
+          "status": "passed",
+          "title": "8. Reconciles payment attempts under simulated worker interruption/restart",
+          "duration": 0.2056999999999789,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "CHECKOUT / ORDER: Lifecycle, Tampering Invariants & Reconciliation"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks CHECKOUT / ORDER: Lifecycle, Tampering Invariants & Reconciliation 9. Proves exactly one canonical Order and one correct receipt created across duplicate deliveries",
+          "status": "passed",
+          "title": "9. Proves exactly one canonical Order and one correct receipt created across duplicate deliveries",
+          "duration": 393.6651999999999,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "CHECKOUT / ORDER: Lifecycle, Tampering Invariants & Reconciliation"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks CHECKOUT / ORDER: Lifecycle, Tampering Invariants & Reconciliation 10. Executes refunds and disputes, transitioning order state safely with dual control",
+          "status": "passed",
+          "title": "10. Executes refunds and disputes, transitioning order state safely with dual control",
+          "duration": 0.4904999999998836,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "CHECKOUT / ORDER: Lifecycle, Tampering Invariants & Reconciliation"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks CHECKOUT / ORDER: Lifecycle, Tampering Invariants & Reconciliation 11. Verifies subsequent catalog mutations or archiving do NOT corrupt historical order facts",
+          "status": "passed",
+          "title": "11. Verifies subsequent catalog mutations or archiving do NOT corrupt historical order facts",
+          "duration": 76.16210000000001,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "MEMBER / SUBSCRIPTION: Identity Merge, Lifecycle, Dunning & Entitlements"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks MEMBER / SUBSCRIPTION: Identity Merge, Lifecycle, Dunning & Entitlements 12. Merges guest and member carts safely and blocks cross-site guest cart theft",
+          "status": "passed",
+          "title": "12. Merges guest and member carts safely and blocks cross-site guest cart theft",
+          "duration": 0.5389999999997599,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "MEMBER / SUBSCRIPTION: Identity Merge, Lifecycle, Dunning & Entitlements"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks MEMBER / SUBSCRIPTION: Identity Merge, Lifecycle, Dunning & Entitlements 13 & 14. Publishes subscription plan, starts active subscription, and grants gated access",
+          "status": "passed",
+          "title": "13 & 14. Publishes subscription plan, starts active subscription, and grants gated access",
+          "duration": 0.449500000000171,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "MEMBER / SUBSCRIPTION: Identity Merge, Lifecycle, Dunning & Entitlements"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks MEMBER / SUBSCRIPTION: Identity Merge, Lifecycle, Dunning & Entitlements 15 & 16. Handles failed renewal: transitions to past_due dunning grace period without erasing evidence",
+          "status": "passed",
+          "title": "15 & 16. Handles failed renewal: transitions to past_due dunning grace period without erasing evidence",
+          "duration": 0.14310000000023138,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "MEMBER / SUBSCRIPTION: Identity Merge, Lifecycle, Dunning & Entitlements"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks MEMBER / SUBSCRIPTION: Identity Merge, Lifecycle, Dunning & Entitlements 17. Executes recovery on successful invoice OR deterministic terminal cancellation",
+          "status": "passed",
+          "title": "17. Executes recovery on successful invoice OR deterministic terminal cancellation",
+          "duration": 0.1248000000000502,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "MEMBER / SUBSCRIPTION: Identity Merge, Lifecycle, Dunning & Entitlements"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks MEMBER / SUBSCRIPTION: Identity Merge, Lifecycle, Dunning & Entitlements 18. Confirms plan change, cancellation scheduling at period end, and immediate resumption",
+          "status": "passed",
+          "title": "18. Confirms plan change, cancellation scheduling at period end, and immediate resumption",
+          "duration": 0.09189999999989595,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "MEMBER / SUBSCRIPTION: Identity Merge, Lifecycle, Dunning & Entitlements"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks MEMBER / SUBSCRIPTION: Identity Merge, Lifecycle, Dunning & Entitlements 19. Verifies invoices, metrics, and billing history segregated by currency",
+          "status": "passed",
+          "title": "19. Verifies invoices, metrics, and billing history segregated by currency",
+          "duration": 0.6064000000001215,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "MEMBER / SUBSCRIPTION: Identity Merge, Lifecycle, Dunning & Entitlements"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks MEMBER / SUBSCRIPTION: Identity Merge, Lifecycle, Dunning & Entitlements 20. Simulates restart during renewal processing and proves zero duplicate side effects",
+          "status": "passed",
+          "title": "20. Simulates restart during renewal processing and proves zero duplicate side effects",
+          "duration": 0.23430000000007567,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "DONATIONS: Campaigns, Ingestion, Recognition, Progress & Reversals"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks DONATIONS: Campaigns, Ingestion, Recognition, Progress & Reversals 21. Creates campaign and ingests one-time donation with fee-cover math and receipt",
+          "status": "passed",
+          "title": "21. Creates campaign and ingests one-time donation with fee-cover math and receipt",
+          "duration": 0.5717999999997119,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "DONATIONS: Campaigns, Ingestion, Recognition, Progress & Reversals"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks DONATIONS: Campaigns, Ingestion, Recognition, Progress & Reversals 22. Links recurring donation installments to canonical supporter identity",
+          "status": "passed",
+          "title": "22. Links recurring donation installments to canonical supporter identity",
+          "duration": 14.425499999999829,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "DONATIONS: Campaigns, Ingestion, Recognition, Progress & Reversals"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks DONATIONS: Campaigns, Ingestion, Recognition, Progress & Reversals 23 & 24. Respects distinct recognition levels and projects privacy on public donor walls",
+          "status": "passed",
+          "title": "23 & 24. Respects distinct recognition levels and projects privacy on public donor walls",
+          "duration": 0.1871000000001004,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "DONATIONS: Campaigns, Ingestion, Recognition, Progress & Reversals"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks DONATIONS: Campaigns, Ingestion, Recognition, Progress & Reversals 25. Calculates donation goal progress strictly in campaign currency and excludes failed/refunded gifts",
+          "status": "passed",
+          "title": "25. Calculates donation goal progress strictly in campaign currency and excludes failed/refunded gifts",
+          "duration": 0.22719999999981155,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "DONATIONS: Campaigns, Ingestion, Recognition, Progress & Reversals"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks DONATIONS: Campaigns, Ingestion, Recognition, Progress & Reversals 26 & 27. Provisions supporter entitlement on settlement and revokes it deterministically on refund",
+          "status": "passed",
+          "title": "26 & 27. Provisions supporter entitlement on settlement and revokes it deterministically on refund",
+          "duration": 0.8676999999997861,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "DONATIONS: Campaigns, Ingestion, Recognition, Progress & Reversals"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks DONATIONS: Campaigns, Ingestion, Recognition, Progress & Reversals 28. Cancels recurring donation subscription without corrupting settled financial history",
+          "status": "passed",
+          "title": "28. Cancels recurring donation subscription without corrupting settled financial history",
+          "duration": 0.08609999999998763,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "DONATIONS: Campaigns, Ingestion, Recognition, Progress & Reversals"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks DONATIONS: Campaigns, Ingestion, Recognition, Progress & Reversals 29. Reconciles delayed and duplicate donation payment evidence with exact deduplication",
+          "status": "passed",
+          "title": "29. Reconciles delayed and duplicate donation payment evidence with exact deduplication",
+          "duration": 0.47260000000005675,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "DONATIONS: Campaigns, Ingestion, Recognition, Progress & Reversals"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks DONATIONS: Campaigns, Ingestion, Recognition, Progress & Reversals 30. Proves donor anonymization clears personal PII while preserving required financial audit facts",
+          "status": "passed",
+          "title": "30. Proves donor anonymization clears personal PII while preserving required financial audit facts",
+          "duration": 0.21019999999998618,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "FINANCIAL ATTACKS: Totals, Checkout, Webhooks, Coupons, Inventory, Tokens & Transitions"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks FINANCIAL ATTACKS: Totals, Checkout, Webhooks, Coupons, Inventory, Tokens & Transitions 31a. Defeats totals attack: negative values, floating point numbers, and non-integer minor units",
+          "status": "passed",
+          "title": "31a. Defeats totals attack: negative values, floating point numbers, and non-integer minor units",
+          "duration": 0.426600000000235,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "FINANCIAL ATTACKS: Totals, Checkout, Webhooks, Coupons, Inventory, Tokens & Transitions"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks FINANCIAL ATTACKS: Totals, Checkout, Webhooks, Coupons, Inventory, Tokens & Transitions 31b. Defeats checkout attack: expired proposal or modified cart version during checkout",
+          "status": "passed",
+          "title": "31b. Defeats checkout attack: expired proposal or modified cart version during checkout",
+          "duration": 0.18740000000025248,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "FINANCIAL ATTACKS: Totals, Checkout, Webhooks, Coupons, Inventory, Tokens & Transitions"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks FINANCIAL ATTACKS: Totals, Checkout, Webhooks, Coupons, Inventory, Tokens & Transitions 31c. Defeats webhook validation attack: forged signature, tampered body, replay of old events",
+          "status": "passed",
+          "title": "31c. Defeats webhook validation attack: forged signature, tampered body, replay of old events",
+          "duration": 0.2068000000003849,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "FINANCIAL ATTACKS: Totals, Checkout, Webhooks, Coupons, Inventory, Tokens & Transitions"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks FINANCIAL ATTACKS: Totals, Checkout, Webhooks, Coupons, Inventory, Tokens & Transitions 31d. Defeats coupons attack: invalid code, expired promo, and negative discount values",
+          "status": "passed",
+          "title": "31d. Defeats coupons attack: invalid code, expired promo, and negative discount values",
+          "duration": 0.29060000000026776,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "FINANCIAL ATTACKS: Totals, Checkout, Webhooks, Coupons, Inventory, Tokens & Transitions"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks FINANCIAL ATTACKS: Totals, Checkout, Webhooks, Coupons, Inventory, Tokens & Transitions 31e. Defeats inventory attack: ordering more than tracked stock",
+          "status": "passed",
+          "title": "31e. Defeats inventory attack: ordering more than tracked stock",
+          "duration": 0.2864999999997053,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "FINANCIAL ATTACKS: Totals, Checkout, Webhooks, Coupons, Inventory, Tokens & Transitions"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks FINANCIAL ATTACKS: Totals, Checkout, Webhooks, Coupons, Inventory, Tokens & Transitions 31f. Defeats token attack: digital delivery HMAC token forging and tampering",
+          "status": "passed",
+          "title": "31f. Defeats token attack: digital delivery HMAC token forging and tampering",
+          "duration": 0.24749999999994543,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "FINANCIAL ATTACKS: Totals, Checkout, Webhooks, Coupons, Inventory, Tokens & Transitions"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks FINANCIAL ATTACKS: Totals, Checkout, Webhooks, Coupons, Inventory, Tokens & Transitions 31g. Defeats redirects attack: credentials or non-http protocols in checkout return URLs",
+          "status": "passed",
+          "title": "31g. Defeats redirects attack: credentials or non-http protocols in checkout return URLs",
+          "duration": 0.5230000000001382,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "FINANCIAL ATTACKS: Totals, Checkout, Webhooks, Coupons, Inventory, Tokens & Transitions"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks FINANCIAL ATTACKS: Totals, Checkout, Webhooks, Coupons, Inventory, Tokens & Transitions 31h. Defeats money-state transition attack: transitioning refunded/cancelled attempts back to succeeded",
+          "status": "passed",
+          "title": "31h. Defeats money-state transition attack: transitioning refunded/cancelled attempts back to succeeded",
+          "duration": 0.14640000000008513,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791941860223,
+      "endTime": 1791941860745.523,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/tests/integration/shared-contract-commerce-shop.integration.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "SHOP-08 local donation checkout through public routes and durable payment job"
+          ],
+          "fullName": "SHOP-08 local donation checkout through public routes and durable payment job settles one gift, one order and one receipt across a replay",
+          "status": "passed",
+          "title": "settles one gift, one order and one receipt across a replay",
+          "duration": 1595.9434,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791941862976,
+      "endTime": 1791941864571.9434,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/tests/integration/shop-08-local-donation-checkout.integration.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "Starter Experiences Integration Tests",
+            "Publication & Community Starter (publication-community)"
+          ],
+          "fullName": "Starter Experiences Integration Tests Publication & Community Starter (publication-community) installs the publication-community starter completely into Payload",
+          "status": "passed",
+          "title": "installs the publication-community starter completely into Payload",
+          "duration": 2230.4163999999996,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Starter Experiences Integration Tests",
+            "Publication & Community Starter (publication-community)"
+          ],
+          "fullName": "Starter Experiences Integration Tests Publication & Community Starter (publication-community) creates governed media assets with local storage and licensing metadata",
+          "status": "passed",
+          "title": "creates governed media assets with local storage and licensing metadata",
+          "duration": 7.407000000000153,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Starter Experiences Integration Tests",
+            "Publication & Community Starter (publication-community)"
+          ],
+          "fullName": "Starter Experiences Integration Tests Publication & Community Starter (publication-community) creates canonical pages including legal and disclosure placements",
+          "status": "passed",
+          "title": "creates canonical pages including legal and disclosure placements",
+          "duration": 11.837199999999939,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Starter Experiences Integration Tests",
+            "Publication & Community Starter (publication-community)"
+          ],
+          "fullName": "Starter Experiences Integration Tests Publication & Community Starter (publication-community) creates published articles with tags and plain text projections",
+          "status": "passed",
+          "title": "creates published articles with tags and plain text projections",
+          "duration": 62.774499999999534,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Starter Experiences Integration Tests",
+            "Publication & Community Starter (publication-community)"
+          ],
+          "fullName": "Starter Experiences Integration Tests Publication & Community Starter (publication-community) creates page-layouts with published presentation snapshots and revision history",
+          "status": "passed",
+          "title": "creates page-layouts with published presentation snapshots and revision history",
+          "duration": 6.996100000000297,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Starter Experiences Integration Tests",
+            "Publication & Community Starter (publication-community)"
+          ],
+          "fullName": "Starter Experiences Integration Tests Publication & Community Starter (publication-community) reports starter install status accurately",
+          "status": "passed",
+          "title": "reports starter install status accurately",
+          "duration": 23.511099999999715,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Starter Experiences Integration Tests",
+            "Publication & Community Starter (publication-community)"
+          ],
+          "fullName": "Starter Experiences Integration Tests Publication & Community Starter (publication-community) upgrades starter templates non-destructively without altering custom page content",
+          "status": "passed",
+          "title": "upgrades starter templates non-destructively without altering custom page content",
+          "duration": 295.3078999999998,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Starter Experiences Integration Tests",
+            "Publication & Community Starter (publication-community)"
+          ],
+          "fullName": "Starter Experiences Integration Tests Publication & Community Starter (publication-community) rolls back a layout to a previous revision safely",
+          "status": "passed",
+          "title": "rolls back a layout to a previous revision safely",
+          "duration": 70.76980000000003,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Starter Experiences Integration Tests",
+            "Campaign & Commerce Starter (campaign-commerce)"
+          ],
+          "fullName": "Starter Experiences Integration Tests Campaign & Commerce Starter (campaign-commerce) installs the campaign-commerce starter completely into Payload",
+          "status": "passed",
+          "title": "installs the campaign-commerce starter completely into Payload",
+          "duration": 2111.8794,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Starter Experiences Integration Tests",
+            "Campaign & Commerce Starter (campaign-commerce)"
+          ],
+          "fullName": "Starter Experiences Integration Tests Campaign & Commerce Starter (campaign-commerce) creates physical products with prices, SKUs, inventory, and media",
+          "status": "passed",
+          "title": "creates physical products with prices, SKUs, inventory, and media",
+          "duration": 7.965799999999945,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Starter Experiences Integration Tests",
+            "Campaign & Commerce Starter (campaign-commerce)"
+          ],
+          "fullName": "Starter Experiences Integration Tests Campaign & Commerce Starter (campaign-commerce) creates an active donation campaign with suggested tiers and legal disclosures",
+          "status": "passed",
+          "title": "creates an active donation campaign with suggested tiers and legal disclosures",
+          "duration": 5.496900000000096,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Starter Experiences Integration Tests",
+            "Campaign & Commerce Starter (campaign-commerce)"
+          ],
+          "fullName": "Starter Experiences Integration Tests Campaign & Commerce Starter (campaign-commerce) creates campaign templates, patterns, globals, and homepage layout with renegade-party theme",
+          "status": "passed",
+          "title": "creates campaign templates, patterns, globals, and homepage layout with renegade-party theme",
+          "duration": 6.347399999999652,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Starter Experiences Integration Tests",
+            "Campaign & Commerce Starter (campaign-commerce)"
+          ],
+          "fullName": "Starter Experiences Integration Tests Campaign & Commerce Starter (campaign-commerce) preserves canonical content and URLs when switching themes",
+          "status": "passed",
+          "title": "preserves canonical content and URLs when switching themes",
+          "duration": 71.79150000000027,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791941712392,
+      "endTime": 1791941717304.7915,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/tests/integration/starter-experiences.integration.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "Stage 03: Two-Site Five-Actor Runtime Authorization & Tenant Boundary Matrix",
+            "1. Operator Grant Resolution & Canonical Hierarchy"
+          ],
+          "fullName": "Stage 03: Two-Site Five-Actor Runtime Authorization & Tenant Boundary Matrix 1. Operator Grant Resolution & Canonical Hierarchy resolves Owner as superuser with authority over sites",
+          "status": "passed",
+          "title": "resolves Owner as superuser with authority over sites",
+          "duration": 5.899400000000242,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Stage 03: Two-Site Five-Actor Runtime Authorization & Tenant Boundary Matrix",
+            "1. Operator Grant Resolution & Canonical Hierarchy"
+          ],
+          "fullName": "Stage 03: Two-Site Five-Actor Runtime Authorization & Tenant Boundary Matrix 1. Operator Grant Resolution & Canonical Hierarchy resolves Administrator bounded strictly to Site A",
+          "status": "passed",
+          "title": "resolves Administrator bounded strictly to Site A",
+          "duration": 5.661399999999958,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Stage 03: Two-Site Five-Actor Runtime Authorization & Tenant Boundary Matrix",
+            "1. Operator Grant Resolution & Canonical Hierarchy"
+          ],
+          "fullName": "Stage 03: Two-Site Five-Actor Runtime Authorization & Tenant Boundary Matrix 1. Operator Grant Resolution & Canonical Hierarchy resolves Staff bounded strictly to Site A",
+          "status": "passed",
+          "title": "resolves Staff bounded strictly to Site A",
+          "duration": 4.202200000000175,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Stage 03: Two-Site Five-Actor Runtime Authorization & Tenant Boundary Matrix",
+            "1. Operator Grant Resolution & Canonical Hierarchy"
+          ],
+          "fullName": "Stage 03: Two-Site Five-Actor Runtime Authorization & Tenant Boundary Matrix 1. Operator Grant Resolution & Canonical Hierarchy denies operator authority for Subscriber / Member",
+          "status": "passed",
+          "title": "denies operator authority for Subscriber / Member",
+          "duration": 0.49139999999988504,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Stage 03: Two-Site Five-Actor Runtime Authorization & Tenant Boundary Matrix",
+            "1. Operator Grant Resolution & Canonical Hierarchy"
+          ],
+          "fullName": "Stage 03: Two-Site Five-Actor Runtime Authorization & Tenant Boundary Matrix 1. Operator Grant Resolution & Canonical Hierarchy denies operator authority for Anonymous session",
+          "status": "passed",
+          "title": "denies operator authority for Anonymous session",
+          "duration": 0.16469999999981155,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Stage 03: Two-Site Five-Actor Runtime Authorization & Tenant Boundary Matrix",
+            "2. Permitted Reads and Mutations (Site A)"
+          ],
+          "fullName": "Stage 03: Two-Site Five-Actor Runtime Authorization & Tenant Boundary Matrix 2. Permitted Reads and Mutations (Site A) Owner can read and update Site A resources",
+          "status": "passed",
+          "title": "Owner can read and update Site A resources",
+          "duration": 180.80989999999974,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Stage 03: Two-Site Five-Actor Runtime Authorization & Tenant Boundary Matrix",
+            "2. Permitted Reads and Mutations (Site A)"
+          ],
+          "fullName": "Stage 03: Two-Site Five-Actor Runtime Authorization & Tenant Boundary Matrix 2. Permitted Reads and Mutations (Site A) Administrator can read Site A organizations and merchant connections",
+          "status": "passed",
+          "title": "Administrator can read Site A organizations and merchant connections",
+          "duration": 23.254300000000057,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Stage 03: Two-Site Five-Actor Runtime Authorization & Tenant Boundary Matrix",
+            "2. Permitted Reads and Mutations (Site A)"
+          ],
+          "fullName": "Stage 03: Two-Site Five-Actor Runtime Authorization & Tenant Boundary Matrix 2. Permitted Reads and Mutations (Site A) Staff can read and update Site A content drafts",
+          "status": "passed",
+          "title": "Staff can read and update Site A content drafts",
+          "duration": 121.65480000000025,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Stage 03: Two-Site Five-Actor Runtime Authorization & Tenant Boundary Matrix",
+            "3. Cross-Tenant ID Substitution Attacks Denied (Site A -> Site B)"
+          ],
+          "fullName": "Stage 03: Two-Site Five-Actor Runtime Authorization & Tenant Boundary Matrix 3. Cross-Tenant ID Substitution Attacks Denied (Site A -> Site B) Admin A cannot read Site B organization by ID substitution",
+          "status": "passed",
+          "title": "Admin A cannot read Site B organization by ID substitution",
+          "duration": 8.193299999999908,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Stage 03: Two-Site Five-Actor Runtime Authorization & Tenant Boundary Matrix",
+            "3. Cross-Tenant ID Substitution Attacks Denied (Site A -> Site B)"
+          ],
+          "fullName": "Stage 03: Two-Site Five-Actor Runtime Authorization & Tenant Boundary Matrix 3. Cross-Tenant ID Substitution Attacks Denied (Site A -> Site B) Admin A cannot mutate Site B merchant connection by ID substitution",
+          "status": "passed",
+          "title": "Admin A cannot mutate Site B merchant connection by ID substitution",
+          "duration": 18.58919999999989,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Stage 03: Two-Site Five-Actor Runtime Authorization & Tenant Boundary Matrix",
+            "3. Cross-Tenant ID Substitution Attacks Denied (Site A -> Site B)"
+          ],
+          "fullName": "Stage 03: Two-Site Five-Actor Runtime Authorization & Tenant Boundary Matrix 3. Cross-Tenant ID Substitution Attacks Denied (Site A -> Site B) Staff A cannot read Site B draft article by ID substitution",
+          "status": "passed",
+          "title": "Staff A cannot read Site B draft article by ID substitution",
+          "duration": 9.77579999999989,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Stage 03: Two-Site Five-Actor Runtime Authorization & Tenant Boundary Matrix",
+            "3. Cross-Tenant ID Substitution Attacks Denied (Site A -> Site B)"
+          ],
+          "fullName": "Stage 03: Two-Site Five-Actor Runtime Authorization & Tenant Boundary Matrix 3. Cross-Tenant ID Substitution Attacks Denied (Site A -> Site B) Staff A cannot mutate Site B draft article by ID substitution",
+          "status": "passed",
+          "title": "Staff A cannot mutate Site B draft article by ID substitution",
+          "duration": 19.07479999999987,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Stage 03: Two-Site Five-Actor Runtime Authorization & Tenant Boundary Matrix",
+            "3. Cross-Tenant ID Substitution Attacks Denied (Site A -> Site B)"
+          ],
+          "fullName": "Stage 03: Two-Site Five-Actor Runtime Authorization & Tenant Boundary Matrix 3. Cross-Tenant ID Substitution Attacks Denied (Site A -> Site B) Staff A cannot mutate Site B private media by ID substitution",
+          "status": "passed",
+          "title": "Staff A cannot mutate Site B private media by ID substitution",
+          "duration": 4.977899999999863,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Stage 03: Two-Site Five-Actor Runtime Authorization & Tenant Boundary Matrix",
+            "3. Cross-Tenant ID Substitution Attacks Denied (Site A -> Site B)"
+          ],
+          "fullName": "Stage 03: Two-Site Five-Actor Runtime Authorization & Tenant Boundary Matrix 3. Cross-Tenant ID Substitution Attacks Denied (Site A -> Site B) Staff A cannot access Site B carts",
+          "status": "passed",
+          "title": "Staff A cannot access Site B carts",
+          "duration": 8.087999999999738,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Stage 03: Two-Site Five-Actor Runtime Authorization & Tenant Boundary Matrix",
+            "4. Unprivileged and Anonymous Actor Boundaries"
+          ],
+          "fullName": "Stage 03: Two-Site Five-Actor Runtime Authorization & Tenant Boundary Matrix 4. Unprivileged and Anonymous Actor Boundaries Member A cannot read operator collections (connections, organizations)",
+          "status": "passed",
+          "title": "Member A cannot read operator collections (connections, organizations)",
+          "duration": 0.5339999999996508,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Stage 03: Two-Site Five-Actor Runtime Authorization & Tenant Boundary Matrix",
+            "4. Unprivileged and Anonymous Actor Boundaries"
+          ],
+          "fullName": "Stage 03: Two-Site Five-Actor Runtime Authorization & Tenant Boundary Matrix 4. Unprivileged and Anonymous Actor Boundaries Member A cannot read draft content",
+          "status": "passed",
+          "title": "Member A cannot read draft content",
+          "duration": 0.18519999999989523,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Stage 03: Two-Site Five-Actor Runtime Authorization & Tenant Boundary Matrix",
+            "4. Unprivileged and Anonymous Actor Boundaries"
+          ],
+          "fullName": "Stage 03: Two-Site Five-Actor Runtime Authorization & Tenant Boundary Matrix 4. Unprivileged and Anonymous Actor Boundaries Anonymous user cannot read draft content or private media",
+          "status": "passed",
+          "title": "Anonymous user cannot read draft content or private media",
+          "duration": 0.25270000000000437,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Stage 03: Two-Site Five-Actor Runtime Authorization & Tenant Boundary Matrix",
+            "4. Unprivileged and Anonymous Actor Boundaries"
+          ],
+          "fullName": "Stage 03: Two-Site Five-Actor Runtime Authorization & Tenant Boundary Matrix 4. Unprivileged and Anonymous Actor Boundaries Anonymous user cannot mutate any resource",
+          "status": "passed",
+          "title": "Anonymous user cannot mutate any resource",
+          "duration": 2.0347999999999047,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Stage 03: Two-Site Five-Actor Runtime Authorization & Tenant Boundary Matrix",
+            "5. Feature Profiles & Module Registration"
+          ],
+          "fullName": "Stage 03: Two-Site Five-Actor Runtime Authorization & Tenant Boundary Matrix 5. Feature Profiles & Module Registration evaluates Lean profile defaults correctly",
+          "status": "passed",
+          "title": "evaluates Lean profile defaults correctly",
+          "duration": 0.7033999999998741,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Stage 03: Two-Site Five-Actor Runtime Authorization & Tenant Boundary Matrix",
+            "5. Feature Profiles & Module Registration"
+          ],
+          "fullName": "Stage 03: Two-Site Five-Actor Runtime Authorization & Tenant Boundary Matrix 5. Feature Profiles & Module Registration evaluates Standard profile defaults correctly",
+          "status": "passed",
+          "title": "evaluates Standard profile defaults correctly",
+          "duration": 0.4944000000000415,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Stage 03: Two-Site Five-Actor Runtime Authorization & Tenant Boundary Matrix",
+            "5. Feature Profiles & Module Registration"
+          ],
+          "fullName": "Stage 03: Two-Site Five-Actor Runtime Authorization & Tenant Boundary Matrix 5. Feature Profiles & Module Registration evaluates runtime configuration with all modules registered",
+          "status": "passed",
+          "title": "evaluates runtime configuration with all modules registered",
+          "duration": 0.13200000000006185,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791941867390,
+      "endTime": 1791941867805.4944,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/tests/integration/tenant-authorization-matrix.integration.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["previous-release upgrade acceptance"],
+          "fullName": "previous-release upgrade acceptance keeps an explicit, advanceable pre-Second-Pass upgrade boundary",
+          "status": "passed",
+          "title": "keeps an explicit, advanceable pre-Second-Pass upgrade boundary",
+          "duration": 15072.454299999998,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791941647353,
+      "endTime": 1791941662425.4543,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/tests/integration/upgrade-migration.integration.test.ts"
+    }
+  ]
+}

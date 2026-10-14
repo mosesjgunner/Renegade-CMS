@@ -1,0 +1,1 @@
+sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94 {"purpose":"disposable-sol-rc1-20261013"} {"5432/tcp":[{"HostIp":"127.0.0.1","HostPort":"15433"}]}

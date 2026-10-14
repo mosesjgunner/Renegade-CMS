@@ -1,0 +1,193 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "05-http-authorization",
+      "--config=scratch/playwright.sol.config.ts",
+      "--max-failures=1"
+    ],
+    "configFile": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\playwright.sol.config.ts",
+    "rootDir": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/scratch/sol-specs",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 1,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/scratch/sol-traces/authorization-fa35",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/scratch/sol-specs",
+        "testIgnore": [],
+        "testMatch": ["**/*.@(spec|test).?(c|m)[jt]s?(x)"],
+        "timeout": 600000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      ["list", null],
+      [
+        "json",
+        {
+          "outputFile": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-browser\\authorization-fa35\\results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.62.1",
+    "workers": 1,
+    "webServer": {
+      "command": "node scratch/sol-runtime.mjs",
+      "cwd": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013",
+      "url": "https://dispatch.rc02.test:3129/api/setup/readiness",
+      "reuseExistingServer": false,
+      "ignoreHTTPSErrors": true,
+      "timeout": 120000,
+      "env": {
+        "DATABASE_URL": "postgresql://solrc1:[REDACTED]@127.0.0.1:15433/solrc1_20261013_browser_5666_release_acceptance",
+        "UPGRADE_MIGRATION_DATABASE_URL": "postgresql://solrc1:[REDACTED]@127.0.0.1:15433/solrc1_20261013_upgrade_acceptance",
+        "PAYLOAD_SECRET": "[REDACTED]",
+        "APP_URL": "https://dispatch.rc02.test:3129",
+        "PORT": "3128",
+        "HOSTNAME": "127.0.0.1",
+        "NODE_ENV": "production",
+        "PROXY_MODE": "trusted",
+        "TRUSTED_PROXY_HOPS": "1",
+        "DEPLOYMENT_PROFILE": "Standard",
+        "RENEGADE_MODULES": "all",
+        "RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT": "false",
+        "LOCAL_E2E_TEST_MODE": "false",
+        "ENABLE_TEST_ROUTES": "false",
+        "DISABLE_PAYLOAD_HMR": "true",
+        "MEDIA_DIR": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/scratch/sol-browser-media-5666",
+        "EMAIL_MODE": "smtp",
+        "SMTP_HOST": "127.0.0.1",
+        "SMTP_PORT": "3152",
+        "SMTP_SECURE": "false",
+        "EMAIL_FROM": "Renegade Sol <noreply@renegadeparty.test>",
+        "NODE_EXTRA_CA_CERTS": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/scratch/rc02-tls/cert.pem",
+        "NODE_OPTIONS": "--max-old-space-size=768 --import=file:///C:/Projects/RENEGADE%20CMS/sol-rc1-20261013/src/scripts/rc02-network.mjs"
+      }
+    }
+  },
+  "suites": [
+    {
+      "title": "05-http-authorization.spec.ts",
+      "file": "05-http-authorization.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "five real HTTP actors prove two-site reads, mutations, object substitutions, custom views and grant revocation",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 600000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 11213,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveURL\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nExpected pattern: \u001b[32m/\\/admin/\u001b[39m\nReceived string:  \u001b[31m\"https://dispatch.rc02.test:3129/login\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveURL\" with timeout 5000ms\u001b[22m\n\u001b[2m    3 \u00d7 locator resolved to <html lang=\"en\" class=\"inter_31011fd-module__jtyeTG__variable newsreader_c8da6703-module__BVKz_G__variable jetbrains_mono_32dfc0ee-module__kJDCNG__variable\">\u2026</html>\u001b[22m\n\u001b[2m      - unexpected value \"https://dispatch.rc02.test:3129/login\"\u001b[22m\n\u001b[2m    - waiting for \"https://dispatch.rc02.test:3129/admin\" navigation to finish...\u001b[22m\n",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveURL\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nExpected pattern: \u001b[32m/\\/admin/\u001b[39m\nReceived string:  \u001b[31m\"https://dispatch.rc02.test:3129/login\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveURL\" with timeout 5000ms\u001b[22m\n\u001b[2m    3 \u00d7 locator resolved to <html lang=\"en\" class=\"inter_31011fd-module__jtyeTG__variable newsreader_c8da6703-module__BVKz_G__variable jetbrains_mono_32dfc0ee-module__kJDCNG__variable\">\u2026</html>\u001b[22m\n\u001b[2m      - unexpected value \"https://dispatch.rc02.test:3129/login\"\u001b[22m\n\u001b[2m    - waiting for \"https://dispatch.rc02.test:3129/admin\" navigation to finish...\u001b[22m\n\n    at passkeyLogin (C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:39:22)\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:46:17",
+                    "location": {
+                      "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                      "column": 22,
+                      "line": 39
+                    },
+                    "snippet": "  37 |     await expect(page.getByRole('alert').filter({ hasText: 'could not be verified' })).toBeVisible()\n  38 |   }\n> 39 |   await expect(page).toHaveURL(/\\/admin/)\n     |                      ^\n  40 |   expect((await context.cookies()).some(c => c.name === 'renegade-passkey')).toBe(true)\n  41 |   return context\n  42 | }"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                        "column": 22,
+                        "line": 39
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mpage\u001b[39m\u001b[2m).\u001b[22mtoHaveURL\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m)\u001b[22m failed\n\nExpected pattern: \u001b[32m/\\/admin/\u001b[39m\nReceived string:  \u001b[31m\"https://dispatch.rc02.test:3129/login\"\u001b[39m\nTimeout: 5000ms\n\nCall log:\n\u001b[2m  - Expect \"toHaveURL\" with timeout 5000ms\u001b[22m\n\u001b[2m    3 \u00d7 locator resolved to <html lang=\"en\" class=\"inter_31011fd-module__jtyeTG__variable newsreader_c8da6703-module__BVKz_G__variable jetbrains_mono_32dfc0ee-module__kJDCNG__variable\">\u2026</html>\u001b[22m\n\u001b[2m      - unexpected value \"https://dispatch.rc02.test:3129/login\"\u001b[22m\n\u001b[2m    - waiting for \"https://dispatch.rc02.test:3129/admin\" navigation to finish...\u001b[22m\n\n\n  37 |     await expect(page.getByRole('alert').filter({ hasText: 'could not be verified' })).toBeVisible()\n  38 |   }\n> 39 |   await expect(page).toHaveURL(/\\/admin/)\n     |                      ^\n  40 |   expect((await context.cookies()).some(c => c.name === 'renegade-passkey')).toBe(true)\n  41 |   return context\n  42 | }\n    at passkeyLogin (C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:39:22)\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:46:17"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-13T20:42:39.527Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\authorization-fa35\\05-http-authorization-five-b3cee--views-and-grant-revocation\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\authorization-fa35\\05-http-authorization-five-b3cee--views-and-grant-revocation\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\authorization-fa35\\05-http-authorization-five-b3cee--views-and-grant-revocation\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                    "column": 22,
+                    "line": 39
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "[REDACTED RECOVERY CODE]-[REDACTED RECOVERY CODE]",
+          "file": "05-http-authorization.spec.ts",
+          "line": 44,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "message": "\u001b[31mTesting stopped early after 1 maximum allowed failures.\u001b[39m"
+    }
+  ],
+  "stats": {
+    "startTime": "2026-10-13T20:42:35.412Z",
+    "duration": 16823.664999999997,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

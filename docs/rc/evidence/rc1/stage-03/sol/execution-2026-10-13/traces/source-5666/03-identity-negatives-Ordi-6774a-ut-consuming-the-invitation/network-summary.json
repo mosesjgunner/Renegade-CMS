@@ -1,0 +1,274 @@
+[
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/enroll?token=[REDACTED]",
+    "status": 307,
+    "startedDateTime": "2026-10-13T10:30:24.523Z",
+    "time": 36.092,
+    "requestBodyRetainedPrivately": false
+  },
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/enroll?token=[REDACTED]",
+    "status": 200,
+    "startedDateTime": "2026-10-13T10:30:24.559Z",
+    "time": 31.033,
+    "requestBodyRetainedPrivately": false
+  },
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/_next/static/media/5f402bd2d8eef81a-s.p.40bho2kviej2o.woff2",
+    "status": 200,
+    "startedDateTime": "2026-10-13T10:30:24.593Z",
+    "time": 6.0120000000000005,
+    "requestBodyRetainedPrivately": false
+  },
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/_next/static/chunks/10_sadu1qy7pp.css",
+    "status": 200,
+    "startedDateTime": "2026-10-13T10:30:24.594Z",
+    "time": 13.544,
+    "requestBodyRetainedPrivately": false
+  },
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/_next/static/chunks/2_d35ecozp5l6.css",
+    "status": 200,
+    "startedDateTime": "2026-10-13T10:30:24.594Z",
+    "time": 14.259,
+    "requestBodyRetainedPrivately": false
+  },
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/_next/static/media/9433d1a810498265-s.p.1hij5ex6k3v9q.woff2",
+    "status": 200,
+    "startedDateTime": "2026-10-13T10:30:24.594Z",
+    "time": 10.443999999999999,
+    "requestBodyRetainedPrivately": false
+  },
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/_next/static/chunks/0wf2rmyoojkx7.js",
+    "status": 200,
+    "startedDateTime": "2026-10-13T10:30:24.594Z",
+    "time": 16.947,
+    "requestBodyRetainedPrivately": false
+  },
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/_next/static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2",
+    "status": 200,
+    "startedDateTime": "2026-10-13T10:30:24.593Z",
+    "time": 7.461,
+    "requestBodyRetainedPrivately": false
+  },
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/_next/static/chunks/0if-vqkhyn-zc.js",
+    "status": 200,
+    "startedDateTime": "2026-10-13T10:30:24.594Z",
+    "time": 17.078,
+    "requestBodyRetainedPrivately": false
+  },
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/_next/static/chunks/turbopack-0mv79w43jdm6g.js",
+    "status": 200,
+    "startedDateTime": "2026-10-13T10:30:24.595Z",
+    "time": 20.883,
+    "requestBodyRetainedPrivately": false
+  },
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/_next/static/chunks/33t46atd3n2zd.js",
+    "status": 200,
+    "startedDateTime": "2026-10-13T10:30:24.595Z",
+    "time": 21.237000000000002,
+    "requestBodyRetainedPrivately": false
+  },
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/_next/static/chunks/3ozi4wby-xl_5.js",
+    "status": 200,
+    "startedDateTime": "2026-10-13T10:30:24.595Z",
+    "time": 21.505,
+    "requestBodyRetainedPrivately": false
+  },
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/_next/static/chunks/209o83m88wcpt.js",
+    "status": 200,
+    "startedDateTime": "2026-10-13T10:30:24.595Z",
+    "time": 24.217,
+    "requestBodyRetainedPrivately": false
+  },
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/_next/static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+    "status": 200,
+    "startedDateTime": "2026-10-13T10:30:24.593Z",
+    "time": 13.267000000000001,
+    "requestBodyRetainedPrivately": false
+  },
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/_next/static/chunks/1tw5_upsy-qj_.js",
+    "status": 200,
+    "startedDateTime": "2026-10-13T10:30:24.595Z",
+    "time": 26.133,
+    "requestBodyRetainedPrivately": false
+  },
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/_next/static/chunks/0vaio3-af1qz7.js",
+    "status": 200,
+    "startedDateTime": "2026-10-13T10:30:24.594Z",
+    "time": 27.313,
+    "requestBodyRetainedPrivately": false
+  },
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/_next/static/chunks/1qbtb6h34xmb6.js",
+    "status": 200,
+    "startedDateTime": "2026-10-13T10:30:24.684Z",
+    "time": 2.638,
+    "requestBodyRetainedPrivately": false
+  },
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/about?_rsc=hzSZKSTAcX2pNipx",
+    "status": 200,
+    "startedDateTime": "2026-10-13T10:30:24.711Z",
+    "time": 15.828,
+    "requestBodyRetainedPrivately": false
+  },
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/?_rsc=hzSZKSTAcX2pNipx",
+    "status": 200,
+    "startedDateTime": "2026-10-13T10:30:24.711Z",
+    "time": 16.195,
+    "requestBodyRetainedPrivately": false
+  },
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/articles?_rsc=hzSZKSTAcX2pNipx",
+    "status": 200,
+    "startedDateTime": "2026-10-13T10:30:24.711Z",
+    "time": 16.395,
+    "requestBodyRetainedPrivately": false
+  },
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/events/open-civic-assembly?_rsc=hzSZKSTAcX2pNipx",
+    "status": 200,
+    "startedDateTime": "2026-10-13T10:30:24.712Z",
+    "time": 16.452,
+    "requestBodyRetainedPrivately": false
+  },
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/api/auth/enrollment?token=[REDACTED]",
+    "status": 200,
+    "startedDateTime": "2026-10-13T10:30:24.718Z",
+    "time": 18.537999999999997,
+    "requestBodyRetainedPrivately": false
+  },
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/api/analytics/consent",
+    "status": 200,
+    "startedDateTime": "2026-10-13T10:30:24.707Z",
+    "time": 30.622,
+    "requestBodyRetainedPrivately": false
+  },
+  {
+    "method": "POST",
+    "url": "https://dispatch.rc02.test:3129/api/auth/passkey/enroll",
+    "status": 200,
+    "startedDateTime": "2026-10-13T10:30:24.718Z",
+    "time": 42.28699999998207,
+    "requestBodyRetainedPrivately": true
+  },
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/search?_rsc=hzSZKSTAcX2pNipx",
+    "status": 200,
+    "startedDateTime": "2026-10-13T10:30:24.735Z",
+    "time": 8.327,
+    "requestBodyRetainedPrivately": false
+  },
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/?_rsc=ROf7jgsyTiD5jTlh",
+    "status": 200,
+    "startedDateTime": "2026-10-13T10:30:24.737Z",
+    "time": 11.199,
+    "requestBodyRetainedPrivately": false
+  },
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/articles?_rsc=ROf7jgsyTiD5jTlh",
+    "status": 200,
+    "startedDateTime": "2026-10-13T10:30:24.739Z",
+    "time": 47.726,
+    "requestBodyRetainedPrivately": false
+  },
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/login?_rsc=hzSZKSTAcX2pNipx",
+    "status": 200,
+    "startedDateTime": "2026-10-13T10:30:24.796Z",
+    "time": 13.33,
+    "requestBodyRetainedPrivately": false
+  },
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/login?_rsc=ROf7jgsyTiD5jTlh",
+    "status": 200,
+    "startedDateTime": "2026-10-13T10:30:24.815Z",
+    "time": 3.808,
+    "requestBodyRetainedPrivately": false
+  },
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/search?_rsc=ROf7jgsyTiD5jTlh",
+    "status": 200,
+    "startedDateTime": "2026-10-13T10:30:24.793Z",
+    "time": 11.235,
+    "requestBodyRetainedPrivately": false
+  },
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/about?_rsc=ROf7jgsyTiD5jTlh",
+    "status": 200,
+    "startedDateTime": "2026-10-13T10:30:24.738Z",
+    "time": 11.059,
+    "requestBodyRetainedPrivately": false
+  },
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/events/open-civic-assembly?_rsc=ROf7jgsyTiD5jTlh",
+    "status": 200,
+    "startedDateTime": "2026-10-13T10:30:24.791Z",
+    "time": 8.038,
+    "requestBodyRetainedPrivately": false
+  },
+  {
+    "method": "POST",
+    "url": "https://dispatch.rc02.test:3129/api/auth/passkey/enroll",
+    "status": 400,
+    "startedDateTime": "2026-10-13T10:35:26.804Z",
+    "time": 234.12200000009034,
+    "requestBodyRetainedPrivately": true
+  },
+  {
+    "method": "POST",
+    "url": "https://dispatch.rc02.test:3129/api/admin/staff/invite",
+    "status": 201,
+    "startedDateTime": "2026-10-13T10:30:24.102Z",
+    "time": 350.1459999999788,
+    "requestBodyRetainedPrivately": true
+  }
+]

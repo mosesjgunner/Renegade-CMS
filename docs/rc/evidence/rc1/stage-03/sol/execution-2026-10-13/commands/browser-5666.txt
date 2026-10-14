@@ -1,0 +1,83 @@
+
+Running 14 tests using 1 worker
+
+node : (node:32340) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+At line:12 char:379
++ ... gateExit }; node node_modules/@playwright/test/cli.js test --config=s ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ((node:32340) Wa... env being set.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 scratch\sol-specs\01-site-build.spec.ts:5:1 › RC-02: ordinary operator builds Renegade Party Dispatch from an empty install (1.6m)
+  ok  2 scratch\sol-specs\02-staff-invitation.spec.ts:9:3 › Staff and Administrator Identity, WebAuthn & Document Lock Journey › 1. Owner invites staff through Security, staff enrolls and logs in with WebAuthn (21.2s)
+  ok  3 scratch\sol-specs\02-staff-invitation.spec.ts:111:3 › Staff and Administrator Identity, WebAuthn & Document Lock Journey › 2. Administrator invitation, passkey enrollment and privilege bounds (5.3s)
+  ok  4 scratch\sol-specs\02-staff-invitation.spec.ts:175:3 › Staff and Administrator Identity, WebAuthn & Document Lock Journey › 3. Identity negatives: expired invitations, wrong WebAuthn origin/challenge (28ms)
+  ok  5 scratch\sol-specs\02-staff-invitation.spec.ts:208:3 › Staff and Administrator Identity, WebAuthn & Document Lock Journey › 4. Session revocation and role protection (3.0s)
+(node:3736) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:3736) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  6 scratch\sol-specs\02-staff-invitation.spec.ts:231:3 › Staff and Administrator Identity, WebAuthn & Document Lock Journey › 5. Supported offline owner recovery CLI rotates credentials and revokes sessions (12.9s)
+  ok  7 scratch\sol-specs\02-staff-invitation.spec.ts:278:3 › Staff and Administrator Identity, WebAuthn & Document Lock Journey › 6. Real browser document lock acquisition, conflict, and release (6.4s)
+  ok  8 scratch\sol-specs\03-identity-negatives.spec.ts:55:3 › Ordinary identity negatives with persisted-state assertions › creates a second site through owner REST and preserves canonical operator grants (112ms)
+  ok  9 scratch\sol-specs\03-identity-negatives.spec.ts:79:3 › Ordinary identity negatives with persisted-state assertions › rejects a genuinely expired invitation without issuing credentials or sessions (627ms)
+  ok 10 scratch\sol-specs\03-identity-negatives.spec.ts:89:3 › Ordinary identity negatives with persisted-state assertions › rejects a real invitation at a foreign site without consuming it (495ms)
+  ok 11 scratch\sol-specs\03-identity-negatives.spec.ts:98:3 › Ordinary identity negatives with persisted-state assertions › valid authenticator response rejects wrong origin and challenge, then enrolls once and rejects replay (1.0s)
+Ordinary challenge-expiry check: waiting on the real server TTL.
+Ordinary challenge-expiry check: waiting on the real server TTL.
+Ordinary challenge-expiry check: waiting on the real server TTL.
+Ordinary challenge-expiry check: waiting on the real server TTL.
+Ordinary challenge-expiry check: waiting on the real server TTL.
+Ordinary challenge-expiry check: waiting on the real server TTL.
+Ordinary challenge-expiry check: waiting on the real server TTL.
+Ordinary challenge-expiry check: waiting on the real server TTL.
+Ordinary challenge-expiry check: waiting on the real server TTL.
+Ordinary challenge-expiry check: waiting on the real server TTL.
+Ordinary challenge-expiry check: waiting on the real server TTL.
+  ok 12 scratch\sol-specs\03-identity-negatives.spec.ts:128:3 › Ordinary identity negatives with persisted-state assertions › rejects a genuinely expired registration challenge without consuming the invitation (5.1m)
+  x  13 scratch\sol-specs\04-document-locks.spec.ts:4:1 › native settings locks acquire, reject concurrent mutation, renew and release through the UI (12.0s)
+Testing stopped early after 1 maximum allowed failures.
+
+
+  1) scratch\sol-specs\04-document-locks.spec.ts:4:1 › native settings locks acquire, reject concurrent mutation, renew and release through the UI
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 423
+    Received: 200
+
+      26 |   const before = await (await owner.request.get(`${process.env.APP_URL}/api/globals/site-settings`)).json()
+      27 |   const denied = await staff.request.post(`${process.env.APP_URL}/api/globals/site-settings`, { data: { siteName: 'FOREIGN LOCK MUTATION' } })
+    > 28 |   expect(denied.status()).toBe(423)
+         |                           ^
+      29 |   const after = await (await owner.request.get(`${process.env.APP_URL}/api/globals/site-settings`)).json()
+      30 |   expect(after.siteName).toBe(before.siteName)
+      31 |   await page.getByLabel('Site Name', { exact: true }).fill(title)
+        at C:\Projects\RENEGADE CMS\sol-rc1-20261013\scratch\sol-specs\04-document-locks.spec.ts:28:27
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    scratch\sol-traces\source-5666\04-document-locks-native-s-559c7--and-release-through-the-UI\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    scratch\sol-traces\source-5666\04-document-locks-native-s-559c7--and-release-through-the-UI\test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: scratch\sol-traces\source-5666\04-document-locks-native-s-559c7--and-release-through-the-UI\error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    scratch\sol-traces\source-5666\04-document-locks-native-s-559c7--and-release-through-the-UI\trace.zip
+    Usage:
+
+        npx playwright show-trace scratch\sol-traces\source-5666\04-document-locks-native-s-559c7--and-release-through-the-UI\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  Slow test file: scratch\sol-specs\03-identity-negatives.spec.ts (5.1m)
+  Consider running tests from slow files in parallel. See: https://playwright.dev/docs/test-parallel
+  1 failed
+    scratch\sol-specs\04-document-locks.spec.ts:4:1 › native settings locks acquire, reject concurrent mutation, renew and release through the UI
+  1 did not run
+  12 passed (7.8m)
+  1 error was not a part of any test, see above for details

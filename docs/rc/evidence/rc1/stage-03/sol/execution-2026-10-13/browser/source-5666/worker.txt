@@ -1,0 +1,507 @@
+(node:17400) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:17400) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[05:27:59] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[05:28:00] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[05:28:11] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[05:28:19] [32mINFO[39m: [36mRunning 1 jobs.[39m
+    [35mnew[39m: 1
+    [35mretrying[39m: 0
+[05:28:24] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[05:28:26] [32mINFO[39m: [36mRunning 1 jobs.[39m
+    [35mnew[39m: 1
+    [35mretrying[39m: 0
+[05:28:31] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[05:28:40] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[05:28:42] [32mINFO[39m: [36mRunning 3 jobs.[39m
+    [35mnew[39m: 3
+    [35mretrying[39m: 0
+[05:28:50] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[05:28:52] [32mINFO[39m: [36mRunning 1 jobs.[39m
+    [35mnew[39m: 1
+    [35mretrying[39m: 0
+[05:28:57] [32mINFO[39m: [36mRunning 1 jobs.[39m
+    [35mnew[39m: 1
+    [35mretrying[39m: 0
+[05:29:01] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[05:29:02] [32mINFO[39m: [36mRunning 1 jobs.[39m
+    [35mnew[39m: 1
+    [35mretrying[39m: 0
+[05:29:10] [32mINFO[39m: [36mRunning 3 jobs.[39m
+    [35mnew[39m: 3
+    [35mretrying[39m: 0
+[05:29:12] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+(node:7316) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:7316) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[05:29:23] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[05:29:23] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[05:29:30] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[05:29:40] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[05:29:50] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[05:29:51] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[05:30:00] [32mINFO[39m: [36mRunning 7 jobs.[39m
+    [35mnew[39m: 7
+    [35mretrying[39m: 0
+[05:30:00] [32mINFO[39m:
+    [35mevent[39m: "operations.job.heartbeat"
+    [35mobservedAt[39m: "2026-10-13T10:30:00.172Z"
+    [35mversion[39m: "0.1.0-dev"
+[05:30:01] [32mINFO[39m: [36mRunning 3 jobs.[39m
+    [35mnew[39m: 3
+    [35mretrying[39m: 0
+[05:30:01] [32mINFO[39m:
+    [35mevent[39m: "operations.job.heartbeat"
+    [35mobservedAt[39m: "2026-10-13T10:30:01.562Z"
+    [35mversion[39m: "0.1.0-dev"
+[05:30:10] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[05:30:20] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[05:30:30] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[05:30:40] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[05:30:50] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[05:31:00] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[05:31:01] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[05:31:10] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[05:31:20] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[05:31:30] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[05:31:40] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[05:31:50] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[05:32:00] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[05:32:10] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[05:32:20] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[05:32:30] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[05:32:40] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[05:32:50] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[05:33:00] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[05:33:10] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[05:33:20] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[05:33:21] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[05:33:30] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[05:33:40] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[05:33:50] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[05:34:00] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[05:34:10] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[05:34:20] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[05:34:30] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[05:34:40] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[05:34:50] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[05:35:00] [32mINFO[39m: [36mRunning 6 jobs.[39m
+    [35mnew[39m: 6
+    [35mretrying[39m: 0
+[05:35:00] [32mINFO[39m:
+    [35mevent[39m: "operations.job.heartbeat"
+    [35mobservedAt[39m: "2026-10-13T10:35:00.893Z"
+    [35mversion[39m: "0.1.0-dev"
+[05:35:11] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[05:35:21] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[05:35:30] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+(node:6960) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:6960) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[05:51:59] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[05:51:59] [32mINFO[39m: [36mRunning 7 jobs.[39m
+    [35mnew[39m: 7
+    [35mretrying[39m: 0
+[05:51:59] [32mINFO[39m:
+    [35mevent[39m: "operations.job.heartbeat"
+    [35mobservedAt[39m: "2026-10-13T10:51:59.810Z"
+    [35mversion[39m: "0.1.0-dev"
+[05:52:01] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[05:52:10] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[05:52:12] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[05:52:20] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[05:52:21] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[05:52:30] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[05:52:40] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[05:52:50] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+(node:28420) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:28420) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[05:54:19] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[05:54:19] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[05:54:21] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[05:54:31] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[05:54:40] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+(node:19256) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:19256) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[05:56:31] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[05:56:31] [32mINFO[39m: [36mRunning 6 jobs.[39m
+    [35mnew[39m: 6
+    [35mretrying[39m: 0
+[05:56:31] [32mINFO[39m:
+    [35mevent[39m: "operations.job.heartbeat"
+    [35mobservedAt[39m: "2026-10-13T10:56:31.545Z"
+    [35mversion[39m: "0.1.0-dev"
+[05:56:40] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[05:56:50] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+(node:30624) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:30624) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[15:14:40] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[15:14:41] [32mINFO[39m: [36mRunning 7 jobs.[39m
+    [35mnew[39m: 7
+    [35mretrying[39m: 0
+[15:14:41] [32mINFO[39m:
+    [35mevent[39m: "operations.job.heartbeat"
+    [35mobservedAt[39m: "2026-10-13T20:14:41.719Z"
+    [35mversion[39m: "0.1.0-dev"
+[15:14:50] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+(node:13208) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:13208) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[15:18:13] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[15:18:14] [32mINFO[39m: [36mRunning 7 jobs.[39m
+    [35mnew[39m: 7
+    [35mretrying[39m: 0
+[15:18:14] [32mINFO[39m:
+    [35mevent[39m: "operations.job.heartbeat"
+    [35mobservedAt[39m: "2026-10-13T20:18:14.327Z"
+    [35mversion[39m: "0.1.0-dev"
+(node:19076) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:19076) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[15:19:42] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[15:19:43] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[15:19:50] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+(node:4480) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:4480) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[15:20:55] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[15:20:55] [32mINFO[39m: [36mRunning 6 jobs.[39m
+    [35mnew[39m: 6
+    [35mretrying[39m: 0
+[15:20:55] [32mINFO[39m:
+    [35mevent[39m: "operations.job.heartbeat"
+    [35mobservedAt[39m: "2026-10-13T20:20:55.846Z"
+    [35mversion[39m: "0.1.0-dev"
+[15:21:00] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[15:21:05] [32mINFO[39m: [36mRunning 1 jobs.[39m
+    [35mnew[39m: 1
+    [35mretrying[39m: 0
+[15:21:10] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[15:21:10] [32mINFO[39m: [36mRunning 1 jobs.[39m
+    [35mnew[39m: 1
+    [35mretrying[39m: 0
+[15:21:20] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+(node:2680) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:2680) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[15:42:48] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[15:42:48] [32mINFO[39m: [36mRunning 7 jobs.[39m
+    [35mnew[39m: 7
+    [35mretrying[39m: 0
+[15:42:48] [32mINFO[39m:
+    [35mevent[39m: "operations.job.heartbeat"
+    [35mobservedAt[39m: "2026-10-13T20:42:48.814Z"
+    [35mversion[39m: "0.1.0-dev"
+[15:42:50] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+(node:26980) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:26980) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[15:44:27] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[15:44:28] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[15:44:30] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[15:44:31] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[15:44:40] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[15:44:50] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[15:44:51] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[15:44:53] [32mINFO[39m: [36mRunning 1 jobs.[39m
+    [35mnew[39m: 1
+    [35mretrying[39m: 0
+[15:44:58] [32mINFO[39m: [36mRunning 1 jobs.[39m
+    [35mnew[39m: 1
+    [35mretrying[39m: 0
+[15:45:02] [32mINFO[39m: [36mRunning 7 jobs.[39m
+    [35mnew[39m: 7
+    [35mretrying[39m: 0
+[15:45:02] [32mINFO[39m:
+    [35mevent[39m: "operations.job.heartbeat"
+    [35mobservedAt[39m: "2026-10-13T20:45:02.919Z"
+    [35mversion[39m: "0.1.0-dev"
+[15:45:10] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[15:45:20] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[15:45:31] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+(node:14096) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:14096) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[16:02:54] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[16:02:55] [32mINFO[39m: [36mRunning 7 jobs.[39m
+    [35mnew[39m: 7
+    [35mretrying[39m: 0
+[16:02:55] [32mINFO[39m:
+    [35mevent[39m: "operations.job.heartbeat"
+    [35mobservedAt[39m: "2026-10-13T21:02:55.901Z"
+    [35mversion[39m: "0.1.0-dev"
+[16:03:00] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[16:03:10] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[16:03:15] [32mINFO[39m: [36mRunning 1 jobs.[39m
+    [35mnew[39m: 1
+    [35mretrying[39m: 0
+[16:03:19] [32mINFO[39m: [36mRunning 1 jobs.[39m
+    [35mnew[39m: 1
+    [35mretrying[39m: 0
+[16:03:23] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[16:03:30] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[16:03:40] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[16:03:51] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[16:04:00] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+(node:28720) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:28720) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[16:44:17] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[16:44:18] [32mINFO[39m: [36mRunning 7 jobs.[39m
+    [35mnew[39m: 7
+    [35mretrying[39m: 0
+[16:44:18] [32mINFO[39m:
+    [35mevent[39m: "operations.job.heartbeat"
+    [35mobservedAt[39m: "2026-10-13T21:44:18.370Z"
+    [35mversion[39m: "0.1.0-dev"
+[16:44:21] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[16:44:30] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[16:44:36] [32mINFO[39m: [36mRunning 1 jobs.[39m
+    [35mnew[39m: 1
+    [35mretrying[39m: 0
+[16:44:40] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[16:44:40] [32mINFO[39m: [36mRunning 1 jobs.[39m
+    [35mnew[39m: 1
+    [35mretrying[39m: 0
+[16:44:50] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[16:45:00] [32mINFO[39m: [36mRunning 7 jobs.[39m
+    [35mnew[39m: 7
+    [35mretrying[39m: 0
+[16:45:00] [32mINFO[39m:
+    [35mevent[39m: "operations.job.heartbeat"
+    [35mobservedAt[39m: "2026-10-13T21:45:00.256Z"
+    [35mversion[39m: "0.1.0-dev"
+[16:45:10] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[16:45:11] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[16:45:20] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[16:45:31] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[16:45:40] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[16:45:43] [32mINFO[39m: [36mRunning 1 jobs.[39m
+    [35mnew[39m: 1
+    [35mretrying[39m: 0
+[16:45:51] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[16:45:51] [32mINFO[39m: [36mRunning 1 jobs.[39m
+    [35mnew[39m: 1
+    [35mretrying[39m: 0
+[16:45:55] [32mINFO[39m: [36mRunning 1 jobs.[39m
+    [35mnew[39m: 1
+    [35mretrying[39m: 0
+[16:46:00] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[16:46:01] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[16:46:10] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[16:46:20] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[16:46:30] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0

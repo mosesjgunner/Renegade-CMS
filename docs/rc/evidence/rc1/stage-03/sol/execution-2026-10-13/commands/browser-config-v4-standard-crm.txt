@@ -1,0 +1,8 @@
+
+Running 1 test using 1 worker
+
+(node:31892) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 scratch\config-specs\configuration.spec.ts:6:1 › ordinary configuration boot, first-run, registered collections and an actual publishing mutation (11.9s)
+
+  1 passed (21.6s)

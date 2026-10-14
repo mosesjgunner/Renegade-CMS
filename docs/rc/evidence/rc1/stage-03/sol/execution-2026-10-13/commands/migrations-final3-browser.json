@@ -1,0 +1,16 @@
+{
+  "sourceSha": "8a5ac9d795fa5256797b651aad141fa3c69fffa2",
+  "command": "npm.cmd run db:migrate",
+  "exitCode": 0,
+  "database": "solrc1_20261013_browser_final3_release_acceptance",
+  "nonsecretEnvironment": {
+    "NODE_ENV": "production",
+    "LOCAL_E2E_TEST_MODE": "false",
+    "ENABLE_TEST_ROUTES": "false",
+    "MEDIA_DIR": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-final3-media",
+    "DEPLOYMENT_PROFILE": "Standard",
+    "RENEGADE_MODULES": "all"
+  },
+  "durationSeconds": 15.291650533676147,
+  "log": "scratch\\sol-evidence\\migrations-final3-browser.txt"
+}

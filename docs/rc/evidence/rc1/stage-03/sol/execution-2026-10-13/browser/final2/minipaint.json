@@ -1,0 +1,39 @@
+{
+  "originalId": "3b24359c-2552-45d3-bdf7-b5889fce5737",
+  "replacementId": "fb9c4038-27ed-43c0-b0c0-4ec958ae8a07",
+  "originalSha256": "16b989fd2ac7b2bbf09e1befd6abaaf633edfbb9ed1f1d3083e27700a81cc7d6",
+  "editedSha256": "734ed7e9a28904d051b63d34d687fa8c4e9aa5844d668010cf64ade4da08039f",
+  "actualCanvasChanged": true,
+  "version": {
+    "id": "5c5fa6e4-b6dd-448c-b80f-058df45132fd",
+    "site": "deeff952-5b4e-4acd-b6c4-39c32e0ef35b",
+    "publication": null,
+    "space": null,
+    "asset": "fb9c4038-27ed-43c0-b0c0-4ec958ae8a07",
+    "replacesAsset": "3b24359c-2552-45d3-bdf7-b5889fce5737",
+    "versionLabel": "replacement-2026-10-13T22:19:36.357Z",
+    "mode": "all-usages",
+    "replacedUsageIds": [],
+    "impactCount": 0,
+    "reason": "Edited in miniPaint: Actual brush stroke through browser controls",
+    "updatedAt": "2026-10-13T22:19:36.358Z",
+    "createdAt": "2026-10-13T22:19:36.358Z"
+  },
+  "retainedOriginalBytes": true,
+  "privateReplacementStayedPrivate": true,
+  "restart": {
+    "request": {
+      "nonce": 1791929982543,
+      "reason": "miniPaint persistence proof"
+    },
+    "previous": {
+      "web": 10308,
+      "worker": 34656
+    },
+    "current": {
+      "web": 2396,
+      "worker": 33484
+    },
+    "restartedAt": "2026-10-13T22:19:43.248Z"
+  }
+}

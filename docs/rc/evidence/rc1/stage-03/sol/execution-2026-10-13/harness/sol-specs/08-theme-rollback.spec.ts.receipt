@@ -1,0 +1,39 @@
+const artifactRoot = process.env.SOL_ARTIFACT_ROOT ?? 'scratch/sol-browser/source-5666'
+import { passkeyLogin } from '../sol-browser-helpers'
+import { test, expect } from '@playwright/test'
+import { readFileSync, writeFileSync } from 'node:fs'
+import { createHash } from 'node:crypto'
+const output = process.env.SOL_ARTIFACT_ROOT ?? artifactRoot
+
+test('actual theme rollback restores public presentation and preserves canonical content', async ({ browser }) => {
+  const owner = await passkeyLogin(browser, 'editor@renegadeparty.test', 'scratch/sol-owner-authenticator.json')
+  const site = JSON.parse(readFileSync(`${output}/two-sites.json`, 'utf8')).site
+  const before = await (await owner.request.get(`${process.env.APP_URL}/api/content?depth=0&limit=100&sort=id`)).json()
+  const fingerprint = createHash('sha256').update(JSON.stringify(before.docs)).digest('hex')
+  const themeURL = `${process.env.APP_URL}/api/admin/themes?site=${site}`
+  const initial = await (await owner.request.get(themeURL)).json()
+  const change = async (action: string, extra = {}) => {
+    const model = await (await owner.request.get(themeURL)).json()
+    const res = await owner.request.post(`${process.env.APP_URL}/api/admin/themes`, {
+      headers: { origin: process.env.APP_URL! }, data: { action, site, revision: model.state.revision, ...extra },
+    })
+    expect(res.status(), await res.text()).toBe(200)
+    return res.json()
+  }
+  await change('draft', { id: 'neutral-starter', version: '1.0.0', tokens: {} })
+  await change('activate')
+  const anonymous = await browser.newContext({ ignoreHTTPSErrors: true })
+  const page = await anonymous.newPage()
+  await page.goto('/')
+  await expect(page.locator('[data-theme]').first()).toHaveAttribute('data-theme', 'neutral-starter')
+  await change('rollback')
+  const final = await (await owner.request.get(themeURL)).json()
+  expect(final.state.active.id).toBe(initial.state.active.id)
+  await page.reload()
+  await expect(page.locator('[data-theme]').first()).toHaveAttribute('data-theme', initial.state.active.id)
+  const after = await (await owner.request.get(`${process.env.APP_URL}/api/content?depth=0&limit=100&sort=id`)).json()
+  expect(createHash('sha256').update(JSON.stringify(after.docs)).digest('hex')).toBe(fingerprint)
+  await page.screenshot({ path: `${output}/theme-rollback.png`, fullPage: true })
+  writeFileSync(`${output}/theme-rollback.json`, JSON.stringify({ initialState: initial.state, finalState: final.state, contentSha256: fingerprint }, null, 2))
+  await anonymous.close(); await owner.close()
+})

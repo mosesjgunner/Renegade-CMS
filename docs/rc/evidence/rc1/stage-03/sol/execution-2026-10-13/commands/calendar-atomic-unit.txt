@@ -1,0 +1,119 @@
+
+ RUN  v3.2.7 C:/Projects/RENEGADE CMS/sol-rc1-20261013
+
+ ❯ tests/unit/calendar-lifecycle-boundary.test.ts (3 tests | 1 failed) 88ms
+   × calendar canonical approval boundary > schedules the canonical approved lifecycle even if a legacy status says draft 82ms
+     → expected "spy" to be called with arguments: [ { db: { …(3) }, …(4) }, …(1) ]
+
+Received:
+
+  1st spy call:
+
+  [
+-   {
+-     "auth": [Function auth],
+-     "create": [Function spy],
++   bound Object {
++     "auth": [Function bound auth],
++     "create": [Function anonymous],
+      "db": {
+        "beginTransaction": [Function spy],
+        "commitTransaction": [Function spy],
+        "rollbackTransaction": [Function spy],
+      },
+-     "findByID": [Function spy],
+-     "jobs": {
+-       "queue": [Function spy],
++     "findByID": [Function anonymous],
++     "jobs": bound Object {
++       "queue": [Function anonymous],
++     },
+    },
++   {
++     "actor": {
++       "id": "owner",
++       "role": "publisher",
+      },
+-   ObjectContaining {
++     "actorUserId": "owner",
+      "articleId": "article",
++     "idempotencyKey": "sched-cal-article-1791930538542",
+      "scheduledFor": "2030-01-01T12:00:00.000Z",
++     "timeZone": "UTC",
+    },
+  ]
+
+
+Number of calls: 1
+
+   ✓ calendar canonical approval boundary > rejects a canonical draft even if a legacy status says approved 3ms
+   ✓ calendar canonical approval boundary > rolls back rather than reporting success when its source audit fails 2ms
+npx.cmd :
+At line:2 char:1
++ npx.cmd vitest run tests/unit/calendar-lifecycle-boundary.test.ts *>  ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/unit/calendar-lifecycle-boundary.test.ts > calendar canonical approval boundary > schedules the canonical
+approved lifecycle even if a legacy status says draft
+AssertionError: expected "spy" to be called with arguments: [ { db: { …(3) }, …(4) }, …(1) ]
+
+Received:
+
+  1st spy call:
+
+  [
+-   {
+-     "auth": [Function auth],
+-     "create": [Function spy],
++   bound Object {
++     "auth": [Function bound auth],
++     "create": [Function anonymous],
+      "db": {
+        "beginTransaction": [Function spy],
+        "commitTransaction": [Function spy],
+        "rollbackTransaction": [Function spy],
+      },
+-     "findByID": [Function spy],
+-     "jobs": {
+-       "queue": [Function spy],
++     "findByID": [Function anonymous],
++     "jobs": bound Object {
++       "queue": [Function anonymous],
++     },
+    },
++   {
++     "actor": {
++       "id": "owner",
++       "role": "publisher",
+      },
+-   ObjectContaining {
++     "actorUserId": "owner",
+      "articleId": "article",
++     "idempotencyKey": "sched-cal-article-1791930538542",
+      "scheduledFor": "2030-01-01T12:00:00.000Z",
++     "timeZone": "UTC",
+    },
+  ]
+
+
+Number of calls: 1
+
+ ❯ tests/unit/calendar-lifecycle-boundary.test.ts:56:28
+     54|   it('schedules the canonical approved lifecycle even if a legacy stat…
+     55|     expect((await POST(request())).status).toBe(200)
+     56|     expect(mocks.schedule).toHaveBeenCalledWith(
+       |                            ^
+     57|       mocks.payload,
+     58|       expect.objectContaining({ articleId: 'article', scheduledFor: '2…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 2 passed (3)
+   Start at  17:28:57
+   Duration  655ms (transform 84ms, setup 0ms, collect 157ms, tests 88ms, environment 0ms, prepare 109ms)

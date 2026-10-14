@@ -1,0 +1,157 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "--config=scratch/playwright.sol.config.ts",
+      "--max-failures=1"
+    ],
+    "configFile": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\playwright.sol.config.ts",
+    "rootDir": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/scratch/config-specs",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 1,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/scratch/sol-traces/config-v3-lean-floor",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/scratch/config-specs",
+        "testIgnore": [],
+        "testMatch": ["**/*.@(spec|test).?(c|m)[jt]s?(x)"],
+        "timeout": 600000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      ["list", null],
+      [
+        "json",
+        {
+          "outputFile": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-browser\\config-v3-lean-floor\\results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.62.1",
+    "workers": 1,
+    "webServer": {
+      "command": "node scratch/sol-runtime.mjs",
+      "cwd": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013",
+      "url": "https://dispatch.rc02.test:3129/api/setup/readiness",
+      "reuseExistingServer": false,
+      "ignoreHTTPSErrors": true,
+      "timeout": 120000,
+      "env": {
+        "DATABASE_URL": "postgresql://solrc1:[REDACTED]@127.0.0.1:15433/solrc1_20261013_cfg_v3_lean_floor_release_acceptance",
+        "UPGRADE_MIGRATION_DATABASE_URL": "postgresql://solrc1:[REDACTED]@127.0.0.1:15433/solrc1_20261013_upgrade_acceptance",
+        "PAYLOAD_SECRET": "[REDACTED]",
+        "APP_URL": "https://dispatch.rc02.test:3129",
+        "PORT": "3128",
+        "HOSTNAME": "127.0.0.1",
+        "NODE_ENV": "production",
+        "PROXY_MODE": "trusted",
+        "TRUSTED_PROXY_HOPS": "1",
+        "DEPLOYMENT_PROFILE": "Lean",
+        "RENEGADE_MODULES": "",
+        "RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT": "false",
+        "LOCAL_E2E_TEST_MODE": "false",
+        "ENABLE_TEST_ROUTES": "false",
+        "DISABLE_PAYLOAD_HMR": "true",
+        "MEDIA_DIR": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-config-v3-lean-floor-media",
+        "EMAIL_MODE": "disabled",
+        "SMTP_HOST": "127.0.0.1",
+        "SMTP_PORT": "3152",
+        "SMTP_SECURE": "false",
+        "EMAIL_FROM": "Renegade Sol <noreply@renegadeparty.test>",
+        "NODE_EXTRA_CA_CERTS": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/scratch/rc02-tls/cert.pem",
+        "SOL_ARTIFACT_ROOT": "scratch/sol-browser/config-v3-lean-floor",
+        "SOL_BROWSER_RUN": "config-v3-lean-floor",
+        "SOL_CONFIGURATION_RUN": "true",
+        "NODE_OPTIONS": "--max-old-space-size=768 --import=file:///C:/Projects/RENEGADE%20CMS/sol-rc1-20261013/src/scripts/rc02-network.mjs"
+      }
+    }
+  },
+  "suites": [
+    {
+      "title": "configuration.spec.ts",
+      "file": "configuration.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "ordinary configuration boot, first-run, registered collections and an actual publishing mutation",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 600000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 12432,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-14T01:55:31.031Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\config-v3-lean-floor\\configuration-ordinary-con-772b6--actual-publishing-mutation\\trace.zip"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "[REDACTED RECOVERY CODE]-[REDACTED RECOVERY CODE]",
+          "file": "configuration.spec.ts",
+          "line": 6,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-14T01:55:20.009Z",
+    "duration": 24657.055,
+    "expected": 1,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

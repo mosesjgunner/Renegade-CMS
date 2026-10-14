@@ -1,0 +1,288 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "05-http-authorization",
+      "--config=scratch/playwright.sol.config.ts",
+      "--max-failures=1"
+    ],
+    "configFile": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\playwright.sol.config.ts",
+    "rootDir": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/scratch/sol-specs",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 1,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/scratch/sol-traces/authorization-fa35-cold-nav",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/scratch/sol-specs",
+        "testIgnore": [],
+        "testMatch": ["**/*.@(spec|test).?(c|m)[jt]s?(x)"],
+        "timeout": 600000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      ["list", null],
+      [
+        "json",
+        {
+          "outputFile": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-browser\\authorization-fa35-cold-nav\\results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.62.1",
+    "workers": 1,
+    "webServer": {
+      "command": "node scratch/sol-runtime.mjs",
+      "cwd": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013",
+      "url": "https://dispatch.rc02.test:3129/api/setup/readiness",
+      "reuseExistingServer": false,
+      "ignoreHTTPSErrors": true,
+      "timeout": 120000,
+      "env": {
+        "DATABASE_URL": "postgresql://solrc1:[REDACTED]@127.0.0.1:15433/solrc1_20261013_browser_5666_release_acceptance",
+        "UPGRADE_MIGRATION_DATABASE_URL": "postgresql://solrc1:[REDACTED]@127.0.0.1:15433/solrc1_20261013_upgrade_acceptance",
+        "PAYLOAD_SECRET": "[REDACTED]",
+        "APP_URL": "https://dispatch.rc02.test:3129",
+        "PORT": "3128",
+        "HOSTNAME": "127.0.0.1",
+        "NODE_ENV": "production",
+        "PROXY_MODE": "trusted",
+        "TRUSTED_PROXY_HOPS": "1",
+        "DEPLOYMENT_PROFILE": "Standard",
+        "RENEGADE_MODULES": "all",
+        "RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT": "false",
+        "LOCAL_E2E_TEST_MODE": "false",
+        "ENABLE_TEST_ROUTES": "false",
+        "DISABLE_PAYLOAD_HMR": "true",
+        "MEDIA_DIR": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/scratch/sol-browser-media-5666",
+        "EMAIL_MODE": "smtp",
+        "SMTP_HOST": "127.0.0.1",
+        "SMTP_PORT": "3152",
+        "SMTP_SECURE": "false",
+        "EMAIL_FROM": "Renegade Sol <noreply@renegadeparty.test>",
+        "NODE_EXTRA_CA_CERTS": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/scratch/rc02-tls/cert.pem",
+        "NODE_OPTIONS": "--max-old-space-size=768 --import=file:///C:/Projects/RENEGADE%20CMS/sol-rc1-20261013/src/scripts/rc02-network.mjs"
+      }
+    }
+  },
+  "suites": [
+    {
+      "title": "05-http-authorization.spec.ts",
+      "file": "05-http-authorization.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "five real HTTP actors prove two-site reads, mutations, object substitutions, custom views and grant revocation",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 600000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 81082,
+                  "error": {
+                    "message": "Error: owner: own article-family-content mutation\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m200\u001b[39m\nReceived: \u001b[31m400\u001b[39m",
+                    "stack": "Error: owner: own article-family-content mutation\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m200\u001b[39m\nReceived: \u001b[31m400\u001b[39m\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:179:88",
+                    "location": {
+                      "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                      "column": 88,
+                      "line": 179
+                    },
+                    "snippet": "  177 |         if (role === 'staff' && object.collection === 'sites') expect.soft(ownWrite.status()).toBe(403)\n  178 |         else {\n> 179 |           expect.soft(ownWrite.status(), `${role}: own ${object.collection} mutation`).toBe(200)\n      |                                                                                        ^\n  180 |           expect.soft((await (await owner.request.get(`${base}/api/${object.collection}/${object.a.id}`)).json())[object.field]).toBe(ownValue)\n  181 |         }\n  182 |       }"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                        "column": 88,
+                        "line": 179
+                      },
+                      "message": "Error: owner: own article-family-content mutation\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m200\u001b[39m\nReceived: \u001b[31m400\u001b[39m\n\n  177 |         if (role === 'staff' && object.collection === 'sites') expect.soft(ownWrite.status()).toBe(403)\n  178 |         else {\n> 179 |           expect.soft(ownWrite.status(), `${role}: own ${object.collection} mutation`).toBe(200)\n      |                                                                                        ^\n  180 |           expect.soft((await (await owner.request.get(`${base}/api/${object.collection}/${object.a.id}`)).json())[object.field]).toBe(ownValue)\n  181 |         }\n  182 |       }\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:179:88"
+                    },
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                        "column": 130,
+                        "line": 180
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m\"Sol owner permitted article-family-content\"\u001b[39m\nReceived: \u001b[31mnull\u001b[39m\n\n  178 |         else {\n  179 |           expect.soft(ownWrite.status(), `${role}: own ${object.collection} mutation`).toBe(200)\n> 180 |           expect.soft((await (await owner.request.get(`${base}/api/${object.collection}/${object.a.id}`)).json())[object.field]).toBe(ownValue)\n      |                                                                                                                                  ^\n  181 |         }\n  182 |       }\n  183 |       const foreignRead = await actor.request.get(`${base}/api/${object.collection}/${object.b.id}?depth=0`)\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:180:130"
+                    },
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                        "column": 77,
+                        "line": 200
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m200\u001b[39m\nReceived: \u001b[31m400\u001b[39m\n\n  198 |         [object.field]: `Sol ${role} foreign mutation`,\n  199 |       } })\n> 200 |       if (role === 'owner' && !object.readOnly) expect.soft(patch.status()).toBe(200)\n      |                                                                             ^\n  201 |       else {\n  202 |         expect.soft([403, 404], `${role}: foreign ${object.collection} mutation`).toContain(patch.status())\n  203 |         const after = await (await owner.request.get(`${base}/api/${object.collection}/${object.b.id}?depth=0`)).json()\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:200:77"
+                    },
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                        "column": 39,
+                        "line": 214
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m200\u001b[39m\nReceived: \u001b[31m400\u001b[39m\n\n  212 |             continue\n  213 |           }\n> 214 |           expect.soft(moved.status()).toBe(200)\n      |                                       ^\n  215 |           expect((await owner.request.patch(`${base}/api/${object.collection}/${object.a.id}`, { data: { [scopeField]: object.parentA ?? sites.site } })).status()).toBe(200)\n  216 |         } else expect.soft([403, 404], `${role}: reassign ${object.collection} to foreign site`).toContain(moved.status())\n  217 |       }\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:214:39"
+                    },
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                        "column": 88,
+                        "line": 179
+                      },
+                      "message": "Error: administrator: own article-family-content mutation\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m200\u001b[39m\nReceived: \u001b[31m400\u001b[39m\n\n  177 |         if (role === 'staff' && object.collection === 'sites') expect.soft(ownWrite.status()).toBe(403)\n  178 |         else {\n> 179 |           expect.soft(ownWrite.status(), `${role}: own ${object.collection} mutation`).toBe(200)\n      |                                                                                        ^\n  180 |           expect.soft((await (await owner.request.get(`${base}/api/${object.collection}/${object.a.id}`)).json())[object.field]).toBe(ownValue)\n  181 |         }\n  182 |       }\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:179:88"
+                    },
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                        "column": 130,
+                        "line": 180
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m\"Sol administrator permitted article-family-content\"\u001b[39m\nReceived: \u001b[31mnull\u001b[39m\n\n  178 |         else {\n  179 |           expect.soft(ownWrite.status(), `${role}: own ${object.collection} mutation`).toBe(200)\n> 180 |           expect.soft((await (await owner.request.get(`${base}/api/${object.collection}/${object.a.id}`)).json())[object.field]).toBe(ownValue)\n      |                                                                                                                                  ^\n  181 |         }\n  182 |       }\n  183 |       const foreignRead = await actor.request.get(`${base}/api/${object.collection}/${object.b.id}?depth=0`)\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:180:130"
+                    },
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                        "column": 88,
+                        "line": 241
+                      },
+                      "message": "Error: administrator: substituted private foreign blob\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m403\u001b[39m\nReceived: \u001b[31m200\u001b[39m\n\n  239 |         const ownBefore = await (await owner.request.get(`${base}/api/media-assets/${privateMedia.a.id}?depth=0`)).json()\n  240 |         const substituted = await actor.request.patch(`${base}/api/media-assets/${privateMedia.a.id}`, { data: { originalBlob: relId(privateMedia.b.originalBlob) } })\n> 241 |         expect.soft(substituted.status(), `${role}: substituted private foreign blob`).toBe(403)\n      |                                                                                        ^\n  242 |         expect.soft((await (await owner.request.get(`${base}/api/media-assets/${privateMedia.a.id}?depth=0`)).json()).originalBlob).toBe(ownBefore.originalBlob)\n  243 |       }\n  244 |       const before = await (await owner.request.get(`${base}/api/article-family-content/${families[1].id}?depth=0`)).json()\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:241:88"
+                    },
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                        "column": 133,
+                        "line": 242
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m\"3b072567-731f-444c-9df9-04b47a233a4a\"\u001b[39m\nReceived: \u001b[31m\"54c9e180-44ce-4ade-b314-3a9c53cdf670\"\u001b[39m\n\n  240 |         const substituted = await actor.request.patch(`${base}/api/media-assets/${privateMedia.a.id}`, { data: { originalBlob: relId(privateMedia.b.originalBlob) } })\n  241 |         expect.soft(substituted.status(), `${role}: substituted private foreign blob`).toBe(403)\n> 242 |         expect.soft((await (await owner.request.get(`${base}/api/media-assets/${privateMedia.a.id}?depth=0`)).json()).originalBlob).toBe(ownBefore.originalBlob)\n      |                                                                                                                                     ^\n  243 |       }\n  244 |       const before = await (await owner.request.get(`${base}/api/article-family-content/${families[1].id}?depth=0`)).json()\n  245 |       for (const data of [{ action: 'schedule', startsAt: '2030-01-01T12:00:00' }, { action: 'cancel' }]) {\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:242:133"
+                    },
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                        "column": 88,
+                        "line": 179
+                      },
+                      "message": "Error: staff: own article-family-content mutation\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m200\u001b[39m\nReceived: \u001b[31m400\u001b[39m\n\n  177 |         if (role === 'staff' && object.collection === 'sites') expect.soft(ownWrite.status()).toBe(403)\n  178 |         else {\n> 179 |           expect.soft(ownWrite.status(), `${role}: own ${object.collection} mutation`).toBe(200)\n      |                                                                                        ^\n  180 |           expect.soft((await (await owner.request.get(`${base}/api/${object.collection}/${object.a.id}`)).json())[object.field]).toBe(ownValue)\n  181 |         }\n  182 |       }\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:179:88"
+                    },
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                        "column": 130,
+                        "line": 180
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m\"Sol staff permitted article-family-content\"\u001b[39m\nReceived: \u001b[31mnull\u001b[39m\n\n  178 |         else {\n  179 |           expect.soft(ownWrite.status(), `${role}: own ${object.collection} mutation`).toBe(200)\n> 180 |           expect.soft((await (await owner.request.get(`${base}/api/${object.collection}/${object.a.id}`)).json())[object.field]).toBe(ownValue)\n      |                                                                                                                                  ^\n  181 |         }\n  182 |       }\n  183 |       const foreignRead = await actor.request.get(`${base}/api/${object.collection}/${object.b.id}?depth=0`)\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:180:130"
+                    },
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                        "column": 88,
+                        "line": 241
+                      },
+                      "message": "Error: staff: substituted private foreign blob\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m403\u001b[39m\nReceived: \u001b[31m200\u001b[39m\n\n  239 |         const ownBefore = await (await owner.request.get(`${base}/api/media-assets/${privateMedia.a.id}?depth=0`)).json()\n  240 |         const substituted = await actor.request.patch(`${base}/api/media-assets/${privateMedia.a.id}`, { data: { originalBlob: relId(privateMedia.b.originalBlob) } })\n> 241 |         expect.soft(substituted.status(), `${role}: substituted private foreign blob`).toBe(403)\n      |                                                                                        ^\n  242 |         expect.soft((await (await owner.request.get(`${base}/api/media-assets/${privateMedia.a.id}?depth=0`)).json()).originalBlob).toBe(ownBefore.originalBlob)\n  243 |       }\n  244 |       const before = await (await owner.request.get(`${base}/api/article-family-content/${families[1].id}?depth=0`)).json()\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:241:88"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-13T20:44:15.919Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\authorization-fa35-cold-nav\\05-http-authorization-five-b3cee--views-and-grant-revocation\\test-failed-1.png"
+                    },
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\authorization-fa35-cold-nav\\05-http-authorization-five-b3cee--views-and-grant-revocation\\test-failed-3.png"
+                    },
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\authorization-fa35-cold-nav\\05-http-authorization-five-b3cee--views-and-grant-revocation\\test-failed-2.png"
+                    },
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\authorization-fa35-cold-nav\\05-http-authorization-five-b3cee--views-and-grant-revocation\\test-failed-4.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\authorization-fa35-cold-nav\\05-http-authorization-five-b3cee--views-and-grant-revocation\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\authorization-fa35-cold-nav\\05-http-authorization-five-b3cee--views-and-grant-revocation\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                    "column": 88,
+                    "line": 179
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "[REDACTED RECOVERY CODE]-[REDACTED RECOVERY CODE]",
+          "file": "05-http-authorization.spec.ts",
+          "line": 44,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "message": "\u001b[31mTesting stopped early after 1 maximum allowed failures.\u001b[39m"
+    }
+  ],
+  "stats": {
+    "startTime": "2026-10-13T20:44:09.669Z",
+    "duration": 89400.09000000001,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

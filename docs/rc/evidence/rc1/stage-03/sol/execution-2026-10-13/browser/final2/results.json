@@ -1,0 +1,751 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "--config=scratch/playwright.sol.config.ts",
+      "--max-failures=1"
+    ],
+    "configFile": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\playwright.sol.config.ts",
+    "rootDir": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/scratch/sol-specs",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 1,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/scratch/sol-traces/final2",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/scratch/sol-specs",
+        "testIgnore": [],
+        "testMatch": ["**/*.@(spec|test).?(c|m)[jt]s?(x)"],
+        "timeout": 600000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      ["list", null],
+      [
+        "json",
+        {
+          "outputFile": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-browser\\final2\\results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.62.1",
+    "workers": 1,
+    "webServer": {
+      "command": "node scratch/sol-runtime.mjs",
+      "cwd": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013",
+      "url": "https://dispatch.rc02.test:3129/api/setup/readiness",
+      "reuseExistingServer": false,
+      "ignoreHTTPSErrors": true,
+      "timeout": 120000,
+      "env": {
+        "DATABASE_URL": "postgresql://solrc1:[REDACTED]@127.0.0.1:15433/solrc1_20261013_browser_final2_release_acceptance",
+        "UPGRADE_MIGRATION_DATABASE_URL": "postgresql://solrc1:[REDACTED]@127.0.0.1:15433/solrc1_20261013_upgrade_acceptance",
+        "PAYLOAD_SECRET": "[REDACTED]",
+        "APP_URL": "https://dispatch.rc02.test:3129",
+        "PORT": "3128",
+        "HOSTNAME": "127.0.0.1",
+        "NODE_ENV": "production",
+        "PROXY_MODE": "trusted",
+        "TRUSTED_PROXY_HOPS": "1",
+        "DEPLOYMENT_PROFILE": "Standard",
+        "RENEGADE_MODULES": "all",
+        "RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT": "false",
+        "LOCAL_E2E_TEST_MODE": "false",
+        "ENABLE_TEST_ROUTES": "false",
+        "DISABLE_PAYLOAD_HMR": "true",
+        "MEDIA_DIR": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-final2-media",
+        "EMAIL_MODE": "smtp",
+        "SMTP_HOST": "127.0.0.1",
+        "SMTP_PORT": "3152",
+        "SMTP_SECURE": "false",
+        "EMAIL_FROM": "Renegade Sol <noreply@renegadeparty.test>",
+        "NODE_EXTRA_CA_CERTS": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/scratch/rc02-tls/cert.pem",
+        "SOL_ARTIFACT_ROOT": "scratch/sol-browser/final2",
+        "SOL_BROWSER_RUN": "final2",
+        "SOL_CONFIGURATION_RUN": "false",
+        "NODE_OPTIONS": "--max-old-space-size=768 --import=file:///C:/Projects/RENEGADE%20CMS/sol-rc1-20261013/src/scripts/rc02-network.mjs"
+      }
+    }
+  },
+  "suites": [
+    {
+      "title": "01-site-build.spec.ts",
+      "file": "01-site-build.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "RC-02: ordinary operator builds Renegade Party Dispatch from an empty install",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 600000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 134650,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "steps": [
+                    {
+                      "title": "Owner enrollment and blank Standard onboarding",
+                      "duration": 11158
+                    },
+                    {
+                      "title": "Site settings through the normal admin form",
+                      "duration": 10674
+                    },
+                    {
+                      "title": "Activate a theme and configure supported tokens in Theme Studio",
+                      "duration": 12661
+                    },
+                    {
+                      "title": "Upload original image and metadata through the normal media API",
+                      "duration": 15635
+                    },
+                    {
+                      "title": "Create coherent editorial records through authenticated product REST",
+                      "duration": 18581
+                    },
+                    {
+                      "title": "Build homepage using Puck and publish a reusable composition",
+                      "duration": 14882
+                    },
+                    {
+                      "title": "Reusable templates, patterns and published global regions",
+                      "duration": 5261
+                    },
+                    {
+                      "title": "Media usage tracking and nondestructive replacement",
+                      "duration": 3156
+                    },
+                    {
+                      "title": "Theme preview and switching preserve canonical editorial records",
+                      "duration": 12292
+                    },
+                    {
+                      "title": "Anonymous public site, metadata, discovery and responsive media",
+                      "duration": 7692
+                    },
+                    {
+                      "title": "Published edit, revision history and exact slug redirect",
+                      "duration": 2417
+                    },
+                    {
+                      "title": "Rendered Quality performs real HTTP checks against this site",
+                      "duration": 5926
+                    },
+                    {
+                      "title": "Actual web and worker process restart, then fresh anonymous browse",
+                      "duration": 10837
+                    }
+                  ],
+                  "startTime": "2026-10-13T22:05:27.450Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\final2\\01-site-build-RC-02-ordina-e5eb1-patch-from-an-empty-install\\trace.zip"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "[REDACTED RECOVERY CODE]-[REDACTED RECOVERY CODE]",
+          "file": "01-site-build.spec.ts",
+          "line": 6,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "02-staff-invitation.spec.ts",
+      "file": "02-staff-invitation.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Staff and Administrator Identity, WebAuthn & Document Lock Journey",
+          "file": "02-staff-invitation.spec.ts",
+          "line": 6,
+          "column": 15,
+          "specs": [
+            {
+              "title": "1. Owner invites staff through Security, staff enrolls and logs in with WebAuthn",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 600000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 20820,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-13T22:07:44.372Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\final2\\02-staff-invitation-Staff--e275d-s-and-logs-in-with-WebAuthn\\trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "[REDACTED RECOVERY CODE]-[REDACTED RECOVERY CODE]",
+              "file": "02-staff-invitation.spec.ts",
+              "line": 10,
+              "column": 3
+            },
+            {
+              "title": "2. Administrator invitation, passkey enrollment and privilege bounds",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 600000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 7937,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-13T22:08:05.426Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\final2\\02-staff-invitation-Staff--07a3f-llment-and-privilege-bounds\\trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "[REDACTED RECOVERY CODE]-[REDACTED RECOVERY CODE]",
+              "file": "02-staff-invitation.spec.ts",
+              "line": 112,
+              "column": 3
+            },
+            {
+              "title": "3. Identity negatives: expired invitations, wrong WebAuthn origin/challenge",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 600000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 48,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-13T22:08:13.563Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\final2\\02-staff-invitation-Staff--5bfd0-g-WebAuthn-origin-challenge\\trace.zip"
+                        }
+                      ]
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "[REDACTED RECOVERY CODE]-[REDACTED RECOVERY CODE]",
+              "file": "02-staff-invitation.spec.ts",
+              "line": 176,
+              "column": 3
+            },
+            {
+              "title": "4. Session revocation and role protection",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 600000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "failed",
+                      "duration": 7109,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m200\u001b[39m\nReceived: \u001b[31m400\u001b[39m",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m200\u001b[39m\nReceived: \u001b[31m400\u001b[39m\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\02-staff-invitation.spec.ts:222:91",
+                        "location": {
+                          "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\02-staff-invitation.spec.ts",
+                          "column": 91,
+                          "line": 222
+                        },
+                        "snippet": "  220 |     // Explicit logout revokes session\n  221 |     const staleAdmin = await browser.newContext({ storageState: await adminCtx.storageState(), ignoreHTTPSErrors: true })\n> 222 |     expect((await staleAdmin.request.get(`${appUrl}/api/admin/ai/connections`)).status()).toBe(200)\n      |                                                                                           ^\n  223 |     const logoutRes = await page.request.post(`${appUrl}/api/auth/logout`)\n  224 |     expect(logoutRes.ok()).toBe(true)\n  225 |     expect((await staleAdmin.cookies()).some(c => c.name === 'renegade-passkey')).toBe(true)"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\02-staff-invitation.spec.ts",
+                            "column": 91,
+                            "line": 222
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m200\u001b[39m\nReceived: \u001b[31m400\u001b[39m\n\n  220 |     // Explicit logout revokes session\n  221 |     const staleAdmin = await browser.newContext({ storageState: await adminCtx.storageState(), ignoreHTTPSErrors: true })\n> 222 |     expect((await staleAdmin.request.get(`${appUrl}/api/admin/ai/connections`)).status()).toBe(200)\n      |                                                                                           ^\n  223 |     const logoutRes = await page.request.post(`${appUrl}/api/auth/logout`)\n  224 |     expect(logoutRes.ok()).toBe(true)\n  225 |     expect((await staleAdmin.cookies()).some(c => c.name === 'renegade-passkey')).toBe(true)\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\02-staff-invitation.spec.ts:222:91"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2026-10-13T22:08:13.627Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\final2\\02-staff-invitation-Staff--cf4e2-ocation-and-role-protection\\test-failed-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\final2\\02-staff-invitation-Staff--cf4e2-ocation-and-role-protection\\error-context.md"
+                        },
+                        {
+                          "name": "trace",
+                          "contentType": "application/zip",
+                          "path": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\final2\\02-staff-invitation-Staff--cf4e2-ocation-and-role-protection\\trace.zip"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\02-staff-invitation.spec.ts",
+                        "column": 91,
+                        "line": 222
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "[REDACTED RECOVERY CODE]-[REDACTED RECOVERY CODE]",
+              "file": "02-staff-invitation.spec.ts",
+              "line": 209,
+              "column": 3
+            },
+            {
+              "title": "5. Supported offline owner recovery CLI rotates credentials and revokes sessions",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 600000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "[REDACTED RECOVERY CODE]-[REDACTED RECOVERY CODE]",
+              "file": "02-staff-invitation.spec.ts",
+              "line": 240,
+              "column": 3
+            },
+            {
+              "title": "6. Real browser document lock acquisition, conflict, and release",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 600000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "[REDACTED RECOVERY CODE]-[REDACTED RECOVERY CODE]",
+              "file": "02-staff-invitation.spec.ts",
+              "line": 287,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "03-identity-negatives.spec.ts",
+      "file": "03-identity-negatives.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Ordinary identity negatives with persisted-state assertions",
+          "file": "03-identity-negatives.spec.ts",
+          "line": 55,
+          "column": 15,
+          "specs": [
+            {
+              "title": "creates a second site through owner REST and preserves canonical operator grants",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 600000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "[REDACTED RECOVERY CODE]-[REDACTED RECOVERY CODE]",
+              "file": "03-identity-negatives.spec.ts",
+              "line": 56,
+              "column": 3
+            },
+            {
+              "title": "rejects a genuinely expired invitation without issuing credentials or sessions",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 600000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "[REDACTED RECOVERY CODE]-[REDACTED RECOVERY CODE]",
+              "file": "03-identity-negatives.spec.ts",
+              "line": 80,
+              "column": 3
+            },
+            {
+              "title": "rejects a real invitation at a foreign site without consuming it",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 600000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "[REDACTED RECOVERY CODE]-[REDACTED RECOVERY CODE]",
+              "file": "03-identity-negatives.spec.ts",
+              "line": 90,
+              "column": 3
+            },
+            {
+              "title": "valid authenticator response rejects wrong origin and challenge, then enrolls once and rejects replay",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 600000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "[REDACTED RECOVERY CODE]-[REDACTED RECOVERY CODE]",
+              "file": "03-identity-negatives.spec.ts",
+              "line": 99,
+              "column": 3
+            },
+            {
+              "title": "rejects a genuinely expired registration challenge without consuming the invitation",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 600000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "",
+                  "projectName": "",
+                  "results": [],
+                  "status": "skipped"
+                }
+              ],
+              "id": "[REDACTED RECOVERY CODE]-[REDACTED RECOVERY CODE]",
+              "file": "03-identity-negatives.spec.ts",
+              "line": 129,
+              "column": 3
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "04-document-locks.spec.ts",
+      "file": "04-document-locks.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "native settings locks acquire, reject concurrent mutation, renew and release through the UI",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 600000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "[REDACTED RECOVERY CODE]-[REDACTED RECOVERY CODE]",
+          "file": "04-document-locks.spec.ts",
+          "line": 5,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "05-http-authorization.spec.ts",
+      "file": "05-http-authorization.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "five real HTTP actors prove two-site reads, mutations, object substitutions, custom views and grant revocation",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 600000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "[REDACTED RECOVERY CODE]-[REDACTED RECOVERY CODE]",
+          "file": "05-http-authorization.spec.ts",
+          "line": 18,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "06-scheduled-publication.spec.ts",
+      "file": "06-scheduled-publication.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "scheduled publication uses the actual worker, immutable revision, restart and public refetch",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 600000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "[REDACTED RECOVERY CODE]-[REDACTED RECOVERY CODE]",
+          "file": "06-scheduled-publication.spec.ts",
+          "line": 13,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "07-minipaint.spec.ts",
+      "file": "07-minipaint.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "miniPaint draws actual pixels, saves a new version and preserves original bytes after restart",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 600000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "[REDACTED RECOVERY CODE]-[REDACTED RECOVERY CODE]",
+          "file": "07-minipaint.spec.ts",
+          "line": 9,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "08-theme-rollback.spec.ts",
+      "file": "08-theme-rollback.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "actual theme rollback restores public presentation and preserves canonical content",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 600000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "[REDACTED RECOVERY CODE]-[REDACTED RECOVERY CODE]",
+          "file": "08-theme-rollback.spec.ts",
+          "line": 8,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "09-private-model-boundaries.spec.ts",
+      "file": "09-private-model-boundaries.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "private identity stores and remaining native module factories enforce persisted authority",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 600000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [],
+              "status": "skipped"
+            }
+          ],
+          "id": "[REDACTED RECOVERY CODE]-[REDACTED RECOVERY CODE]",
+          "file": "09-private-model-boundaries.spec.ts",
+          "line": 10,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "message": "\u001b[31mTesting stopped early after 1 maximum allowed failures.\u001b[39m"
+    }
+  ],
+  "stats": {
+    "startTime": "2026-10-13T22:05:23.483Z",
+    "duration": 178034.033,
+    "expected": 4,
+    "skipped": 13,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

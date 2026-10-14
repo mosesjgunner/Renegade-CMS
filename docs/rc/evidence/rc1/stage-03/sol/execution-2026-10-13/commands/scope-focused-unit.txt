@@ -1,0 +1,11 @@
+
+ RUN  v3.2.7 C:/Projects/RENEGADE CMS/sol-rc1-20261013
+
+ ✓ tests/unit/related-site-access.test.ts (5 tests) 11ms
+ ✓ tests/unit/authorization-matrix.test.ts (28 tests) 8ms
+ ✓ tests/unit/tenant-isolation.test.ts (10 tests) 155ms
+
+ Test Files  3 passed (3)
+      Tests  43 passed (43)
+   Start at  15:29:49
+   Duration  2.45s (transform 928ms, setup 0ms, collect 2.71s, tests 174ms, environment 1ms, prepare 397ms)

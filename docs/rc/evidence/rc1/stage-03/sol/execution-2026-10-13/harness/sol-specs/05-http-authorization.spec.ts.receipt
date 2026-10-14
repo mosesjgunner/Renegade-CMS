@@ -1,0 +1,263 @@
+const artifactRoot = process.env.SOL_ARTIFACT_ROOT ?? 'scratch/sol-browser/source-5666'
+import { passkeyLogin } from '../sol-browser-helpers'
+import { test, expect, type Browser, type BrowserContext } from '@playwright/test'
+import { readFileSync, readdirSync, writeFileSync } from 'node:fs'
+import { createHash, randomBytes } from 'node:crypto'
+import { encryptCredential } from '@/modules/commerce/pod-connection'
+
+const base = process.env.APP_URL!
+const output = artifactRoot
+type Doc = Record<string, any>
+type ObjectCase = { collection: string; field: string; a: Doc; b: Doc; publicRead?: boolean; noSiteMove?: boolean; readOnly?: boolean; jsonField?: boolean; parentField?: string; parentA?: string; parentB?: string }
+const lexical = (text: string) => ({ root: { type: 'root', version: 1, direction: null, format: '', indent: 0,
+  children: [{ type: 'paragraph', version: 1, direction: null, format: '', indent: 0,
+    children: [{ type: 'text', version: 1, text, format: 0, detail: 0, mode: 'normal', style: '' }] }] } })
+const relId = (value: any) => typeof value === 'object' ? value.id : value
+
+
+test('five real HTTP actors prove two-site reads, mutations, object substitutions, custom views and grant revocation', async ({ browser }) => {
+  const stamp = Date.now()
+  const owner = await passkeyLogin(browser, 'editor@renegadeparty.test', 'scratch/sol-owner-authenticator.json')
+  const sites: { site: string; foreignSite: string } = JSON.parse(readFileSync(`${output}/two-sites.json`, 'utf8'))
+  const users = await (await owner.request.get(`${base}/api/users?depth=0&limit=100`)).json()
+  const adminUser = users.docs.find((u: Doc) => u.role === 'administrator')
+  const staffUser = users.docs.find((u: Doc) => u.email.startsWith('staff-'))
+  expect(adminUser).toBeDefined()
+  expect(staffUser).toBeDefined()
+  const grantList = await (await owner.request.get(`${base}/api/member-site-roles?depth=0&limit=100`)).json()
+  if (!grantList.docs.some((g: Doc) => relId(g.member) === relId(adminUser.member) && relId(g.site) === sites.site)) {
+    expect((await owner.request.post(`${base}/api/member-site-roles`, { data: { member: relId(adminUser.member), site: sites.site, role: 'community-manager' } })).status()).toBe(201)
+  }
+  const admin = await passkeyLogin(browser, adminUser.email, 'scratch/sol-admin-authenticator.json')
+  const staff = await passkeyLogin(browser, staffUser.email, 'scratch/sol-staff-authenticator.json')
+  const anonymous = await browser.newContext({ ignoreHTTPSErrors: true })
+  const member = await browser.newContext({ ignoreHTTPSErrors: true })
+  const memberPage = await member.newPage()
+  const memberEmail = `member-${Date.now()}@renegadeparty.test`
+  await memberPage.goto('/member-auth')
+  await memberPage.getByLabel('Email address').fill(memberEmail)
+  const requested = memberPage.waitForResponse(r => r.url().endsWith('/api/member-auth/magic-link/request'))
+  await memberPage.getByRole('button', { name: 'Email me a sign-in link' }).click()
+  const requestedResponse = await requested
+  expect(requestedResponse.status()).toBe(200)
+  expect((await requestedResponse.json()).testToken).toBeUndefined()
+  let link = ''
+  await expect.poll(() => {
+    for (const file of readdirSync('scratch/sol-mail').filter(f => f.endsWith('.eml'))) {
+      const raw = readFileSync(`scratch/sol-mail/${file}`, 'utf8')
+      if (!raw.includes(memberEmail)) continue
+      const decoded = raw.replace(/=\r?\n/g, '').replace(/=([A-Fa-f0-9]{2})/g, (_, hex) => String.fromCharCode(parseInt(hex, 16)))
+      link = decoded.match(/https:\/\/dispatch\.rc02\.test:3129\/member-auth\/verify\?token=[REDACTED] ?? ''
+    }
+    return Boolean(link)
+  }).toBe(true)
+  await memberPage.goto(link)
+  await expect(memberPage.getByRole('status')).toHaveText('Signed in.')
+  await memberPage.getByRole('link', { name: 'Member settings' }).click()
+  await expect(memberPage).toHaveURL(/\/members\/settings/)
+  const me = await (await member.request.get(`${base}/api/member-auth/me`)).json()
+  expect(me.memberId).toBeTruthy()
+  const membership = await owner.request.post(`${base}/api/member-site-roles`, { data: {
+    site: sites.site, member: me.memberId, role: 'member',
+  } })
+  expect(membership.status()).toBe(201)
+  const csrf = (await member.cookies()).find(c => c.name === 'renegade-member-csrf')!.value
+  const profile = await member.request.patch(`${base}/api/member-auth/profile`, { headers: { 'x-member-csrf': csrf },
+    data: { displayName: 'Sol ordinary member' } })
+  expect(profile.status()).toBe(200)
+  expect((await (await member.request.get(`${base}/api/member-auth/me`)).json()).profile.displayName).toBe('Sol ordinary member')
+
+  await member.storageState({ path: 'scratch/sol-member-session.json' })
+  const actors: Array<[string, BrowserContext]> = [['owner', owner], ['administrator', admin], ['staff', staff], ['member', member], ['anonymous', anonymous]]
+  const cases: ObjectCase[] = []
+  cases.push({ collection: 'sites', field: 'name', publicRead: true,
+    a: await (await owner.request.get(`${base}/api/sites/${sites.site}`)).json(),
+    b: await (await owner.request.get(`${base}/api/sites/${sites.foreignSite}`)).json(),
+  })
+  const create = async (collection: string, data: Doc) => {
+    const res = await owner.request.post(`${base}/api/${collection}`, { data })
+    expect(res.status(), `${collection} creation: ${await res.text()}`).toBe(201)
+    return (await res.json()).doc
+  }
+  const definitions: Array<{ collection: string; field: string; publicRead?: boolean; data: (site: string, tag: string) => Doc }> = [
+    { collection: 'organizations', field: 'name', data: (site, tag) => ({ site, name: `Sol org ${tag}` }) },
+    { collection: 'merchant-connections', field: 'label', data: (site, tag) => ({ site, label: `Sol merchant ${tag}`, providerKey: 'deterministic-test', merchantCountry: 'US', status: 'disabled' }) },
+    { collection: 'social-accounts', field: 'displayName', data: (site, tag) => ({ site, displayName: `Sol social ${tag}`, network: 'manual', actorType: 'site', externalAccountId: `local-${tag}`, capabilityState: 'manual-handoff' }) },
+    { collection: 'api-clients', field: 'name', data: (site, tag) => ({ site, name: `Sol client ${tag}`, tokenPrefix: `sol-${tag}-${Date.now()}`, tokenHash: createHash('sha256').update(randomBytes(32)).digest('hex'), scopes: [] }) },
+    { collection: 'forum-sections', field: 'name', publicRead: true, data: (site, tag) => ({ site, name: `Sol section ${tag}`, slug: `sol-section-${tag}` }) },
+    { collection: 'content', field: 'title', data: (site, tag) => ({ site, contentType: 'article', title: `Sol private draft ${tag}`, slug: `sol-private-draft-${tag}`, status: 'draft', body: lexical(`Private persisted body ${tag}`) }) },
+    { collection: 'products', field: 'name', data: (site, tag) => ({ site, name: `Sol draft catalog ${tag}`, slug: `sol-draft-catalog-${tag}`, kind: 'physical', state: 'draft' }) },
+    { collection: 'pod-connections', field: 'label', data: (site, tag) => ({ site, label: `Sol unavailable POD ${tag}`, providerKey: 'printful', status: 'disabled', encryptedApiKey: encryptCredential('local-unconfigured-credential', 'a'.repeat(64)) }) },
+  ]
+  for (const def of definitions) cases.push({ ...def,
+    a: await create(def.collection, def.data(sites.site, `a-${stamp}`)),
+    b: await create(def.collection, def.data(sites.foreignSite, `b-${stamp}`)),
+  })
+  const sections = cases.find(c => c.collection === 'forum-sections')!
+  const discussions: Doc[] = []
+  const posts: Doc[] = []
+  for (const [target, tag, section] of [[sites.site, 'a', sections.a], [sites.foreignSite, 'b', sections.b]] as Array<[string, string, Doc]>) {
+    const forum = await create('forums', { site: target, section: section.id, name: `Sol forum ${tag}`, slug: `sol-forum-${tag}-${stamp}` })
+    const discussion = await create('discussions', { site: target, kind: 'thread', forum: forum.id,
+      title: `Sol private discussion ${tag}`, canonicalPath: `/sol-private-discussion-${tag}-${stamp}`, visibility: 'private', status: 'open' })
+    discussions.push(discussion)
+    posts.push(await create('discussion-posts', { discussion: discussion.id, body: `Private moderation text ${tag}`,
+      permalink: `sol-moderation-${tag}-${stamp}`, paginationAnchor: `sol-${tag}`, status: 'published', visibility: 'private' }))
+  }
+  cases.push({ collection: 'discussions', field: 'title', a: discussions[0], b: discussions[1] })
+  cases.push({ collection: 'discussion-posts', field: 'body', a: posts[0], b: posts[1], parentField: 'discussion', parentA: discussions[0].id, parentB: discussions[1].id })
+  const contentPair = cases.find(c => c.collection === 'content')!
+  const families: Doc[] = []
+  const revisions: Doc[] = []
+  for (const content of [contentPair.a, contentPair.b]) {
+    const family = (await (await owner.request.get(`${base}/api/article-family-content?where[content][equals]=${content.id}&depth=0`)).json()).docs[0]
+    expect(family).toBeDefined()
+    families.push(family)
+    revisions.push(await (await owner.request.get(`${base}/api/revision-records/${relId(family.currentRevision)}?depth=0`)).json())
+  }
+  cases.push({ collection: 'article-family-content', field: 'bibliography', jsonField: true, a: families[0], b: families[1], parentField: 'content', parentA: contentPair.a.id, parentB: contentPair.b.id })
+  cases.push({ collection: 'revision-records', field: 'documentHash', a: revisions[0], b: revisions[1], readOnly: true, noSiteMove: true })
+  const reports: Doc[] = []
+  for (const family of families) reports.push(await create('markdown-conversion-reports', { article: family.id, sourceChecksum: `scope-${family.id}`, status: 'accepted', fidelityBoundary: { localFixture: true } }))
+  cases.push({ collection: 'markdown-conversion-reports', field: 'sourceChecksum', a: reports[0], b: reports[1], parentField: 'article', parentA: families[0].id, parentB: families[1].id })
+  for (const target of [sites.site, sites.foreignSite]) {
+    const uploaded = await owner.request.post(`${base}/api/media/upload`, { multipart: {
+      siteId: target, title: 'Sol private object', altText: 'Private scope test',
+      file: { name: 'scope.png', mimeType: 'image/png', buffer: readFileSync('fixtures/renegadeparty-demo/assets/hero-liberty.png') },
+    } })
+    expect(uploaded.status()).toBe(201)
+    const asset = (await uploaded.json()).asset
+    const privateRes = await owner.request.patch(`${base}/api/media-assets/${asset.id}`, { data: { publicPolicy: 'private' } })
+    expect(privateRes.status()).toBe(200)
+    if (target === sites.site) cases.push({ collection: 'media-assets', field: 'title', a: asset, b: {} })
+    else cases.find(c => c.collection === 'media-assets')!.b = asset
+  }
+  const observations: Doc[] = []
+  // Child metadata and private byte storage must obey the same site boundary.
+  const mediaPair = cases.find(c => c.collection === 'media-assets')!
+  const blobs: Doc[] = []
+  for (const asset of [mediaPair.a, mediaPair.b]) blobs.push(await (await owner.request.get(`${base}/api/media-blobs/${relId(asset.originalBlob)}?depth=0`)).json())
+  cases.push({ collection: 'media-blobs', field: 'storageProvider', a: blobs[0], b: blobs[1], readOnly: true, noSiteMove: true })
+  const variantPair: Doc[] = []
+  for (const asset of [mediaPair.a, mediaPair.b]) {
+    let variant: Doc | undefined
+    await expect.poll(async () => {
+      const records = await (await owner.request.get(`${base}/api/media-variants?where[asset][equals]=${asset.id}&depth=0`)).json()
+      variant = records.docs?.[0]
+      return Boolean(variant)
+    }, { timeout: 60_000 }).toBe(true)
+    variantPair.push(variant!)
+  }
+  cases.push({ collection: 'media-variants', field: 'label', a: variantPair[0], b: variantPair[1], readOnly: true, noSiteMove: true })
+  for (const [role, actor] of actors) {
+    for (const object of cases) {
+      const permitted = role === 'owner' || role === 'administrator' || role === 'staff'
+      const ownRead = await actor.request.get(`${base}/api/${object.collection}/${object.a.id}?depth=0`)
+      if (permitted || object.publicRead) expect.soft(ownRead.status(), `${role}: owned ${object.collection} read`).toBe(200)
+      else expect.soft([403, 404], `${role}: owned ${object.collection} read denied`).toContain(ownRead.status())
+      if (permitted && !object.readOnly) {
+        const ownLabel = `Sol ${role} permitted ${object.collection}`
+        const ownValue = object.jsonField ? { proof: ownLabel } : ownLabel
+        const ownWrite = await actor.request.patch(`${base}/api/${object.collection}/${object.a.id}`, {
+          data: { [object.field]: ownValue },
+        })
+        if (role === 'staff' && object.collection === 'sites') expect.soft(ownWrite.status()).toBe(403)
+        else {
+          expect.soft(ownWrite.status(), `${role}: own ${object.collection} mutation`).toBe(200)
+          expect.soft((await (await owner.request.get(`${base}/api/${object.collection}/${object.a.id}`)).json())[object.field]).toEqual(ownValue)
+        }
+      }
+      const foreignRead = await actor.request.get(`${base}/api/${object.collection}/${object.b.id}?depth=0`)
+      if (role === 'owner' || object.publicRead) expect.soft(foreignRead.status()).toBe(200)
+      else expect.soft([403, 404]).toContain(foreignRead.status())
+      const before = await (await owner.request.get(`${base}/api/${object.collection}/${object.b.id}?depth=0`)).json()
+      if (role !== 'owner' || object.readOnly) {
+        const countURL = `${base}/api/${object.collection}?depth=0&limit=1`
+        const countBefore = (await (await owner.request.get(countURL)).json()).totalDocs
+        const data: Doc = { ...before }
+        delete data.id; delete data.createdAt; delete data.updatedAt
+        if (object.collection === 'sites') data.slug = `denied-${role}-${stamp}`
+        const deniedCreate = await actor.request.post(`${base}/api/${object.collection}`, { data })
+        expect.soft(deniedCreate.status(), `${role}: foreign ${object.collection} creation`).toBe(403)
+        expect.soft((await (await owner.request.get(countURL)).json()).totalDocs, `${role}: denied create preserves ${object.collection} count`).toBe(countBefore)
+      }
+      const patch = await actor.request.patch(`${base}/api/${object.collection}/${object.b.id}`, { data: {
+        [object.field]: object.jsonField ? { proof: `Sol ${role} foreign mutation` } : `Sol ${role} foreign mutation`,
+      } })
+      if (role === 'owner' && !object.readOnly) expect.soft(patch.status()).toBe(200)
+      else {
+        expect.soft([403, 404], `${role}: foreign ${object.collection} mutation`).toContain(patch.status())
+        const after = await (await owner.request.get(`${base}/api/${object.collection}/${object.b.id}?depth=0`)).json()
+        expect.soft(after[object.field], `${role}: protected ${object.collection} state`).toEqual(before[object.field])
+      }
+      if (permitted && object.collection !== 'sites' && !object.noSiteMove) {
+        const scopeField = object.parentField ?? 'site'
+        const moved = await actor.request.patch(`${base}/api/${object.collection}/${object.a.id}`, { data: { [scopeField]: object.parentB ?? sites.foreignSite } })
+        if (role === 'owner') {
+          if (object.collection === 'media-assets') {
+            expect.soft(moved.status(), 'Physical media site identity is preserved').toBe(403)
+            continue
+          }
+          if (object.collection === 'article-family-content') {
+            expect.soft(moved.status(), 'An existing content companion prevents duplicate assignment').toBe(400)
+            continue
+          }
+          expect.soft(moved.status(), `${role}: scope move ${object.collection}`).toBe(200)
+          expect((await owner.request.patch(`${base}/api/${object.collection}/${object.a.id}`, { data: { [scopeField]: object.parentA ?? sites.site } })).status()).toBe(200)
+        } else expect.soft([403, 404], `${role}: reassign ${object.collection} to foreign site`).toContain(moved.status())
+      }
+      observations.push({ role, collection: object.collection, ownRead: ownRead.status(), foreignRead: foreignRead.status(), foreignMutation: patch.status() })
+    }
+    console.log('Completed native authorization cases for', role)
+    const settingsBefore = await (await owner.request.get(`${base}/api/globals/site-settings`)).json()
+    const globalWrite = await actor.request.post(`${base}/api/globals/site-settings`, { data: { siteName: `Sol ${role} instance-wide mutation` } })
+    expect.soft(globalWrite.status(), `${role}: instance-wide settings authority`).toBe(role === 'owner' ? 200 : 403)
+    if (role !== 'owner') expect.soft((await (await owner.request.get(`${base}/api/globals/site-settings`)).json()).siteName).toBe(settingsBefore.siteName)
+    else expect((await owner.request.post(`${base}/api/globals/site-settings`, { data: { siteName: settingsBefore.siteName } })).status()).toBe(200)
+    for (const path of ['/api/admin/ai/connections', '/api/admin/audience/command-center', '/api/admin/integrations']) {
+      for (const target of [sites.site, sites.foreignSite]) {
+        const res = await actor.request.get(`${base}${path}?siteId=${target}`)
+        expect.soft(res.status(), `${role}: ${path} at ${target}`).toBe(
+          (role === 'owner' || (['administrator', 'staff'].includes(role) && target === sites.site)) ? 200 : 403,
+        )
+        observations.push({ role, path, site: target, status: res.status() })
+      }
+    }
+    const connection = cases.find(c => c.collection === 'pod-connections')!
+    const foreignHealth = await actor.request.post(`${base}/api/admin/fulfillment`, { data: { action: 'check-provider-health', connectionId: connection.b.id } })
+    expect.soft(foreignHealth.status()).toBe(role === 'owner' ? 503 : 403)
+    const privateMedia = cases.find(c => c.collection === 'media-assets')!
+    const foreignBytes = await actor.request.get(`${base}/media/${privateMedia.b.id}`)
+    if (role === 'owner') expect.soft(foreignBytes.status()).toBe(200)
+    else expect.soft([403, 404], `${role}: private foreign bytes`).toContain(foreignBytes.status())
+    if (role === 'owner') expect(foreignBytes.headers()['cache-control']).toBe('private, no-store')
+    if (role !== 'owner') {
+      if (role === 'staff' || role === 'administrator') {
+        const ownBefore = await (await owner.request.get(`${base}/api/media-assets/${privateMedia.a.id}?depth=0`)).json()
+        const substituted = await actor.request.patch(`${base}/api/media-assets/${privateMedia.a.id}`, { data: { originalBlob: relId(privateMedia.b.originalBlob) } })
+        expect.soft(substituted.status(), `${role}: substituted private foreign blob`).toBe(403)
+        expect.soft((await (await owner.request.get(`${base}/api/media-assets/${privateMedia.a.id}?depth=0`)).json()).originalBlob).toBe(ownBefore.originalBlob)
+      }
+      const before = await (await owner.request.get(`${base}/api/article-family-content/${families[1].id}?depth=0`)).json()
+      for (const data of [{ action: 'schedule', startsAt: '2030-01-01T12:00:00' }, { action: 'cancel' }]) {
+        const res = await actor.request.post(`${base}/api/admin/calendar/schedule`, { data: { ...data, sourceType: 'article', sourceId: families[1].id, timeZone: 'UTC' } })
+        expect.soft(res.status(), `${role}: foreign schedule ${data.action}`).toBe(403)
+      }
+      const workflow = await actor.request.post(`${base}/api/admin/workflow/actions`, { data: { articleId: families[1].id, action: 'save-draft', actorSiteId: sites.site } })
+      expect.soft(workflow.status(), `${role}: substituted workflow source`).toBe(403)
+      expect.soft(await (await owner.request.get(`${base}/api/article-family-content/${families[1].id}?depth=0`)).json()).toEqual(before)
+    }
+  }
+
+  // Deleting the canonical grant must revoke authority in an existing, real session.
+  const grants = await (await owner.request.get(`${base}/api/member-site-roles?depth=0&limit=100`)).json()
+  const grant = grants.docs.find((g: Doc) => g.member === relId(adminUser.member) && g.site === sites.site)
+  expect(grant).toBeDefined()
+  expect((await owner.request.delete(`${base}/api/member-site-roles/${grant.id}`)).status()).toBe(200)
+  expect((await admin.request.get(`${base}/api/admin/audience/command-center?siteId=${sites.site}`)).status()).toBe(403)
+  const org = cases.find(c => c.collection === 'organizations')!
+  expect([403, 404]).toContain((await admin.request.get(`${base}/api/organizations/${org.a.id}`)).status())
+  writeFileSync(`${output}/http-authorization.json`, JSON.stringify({ observations,
+    memberSignedInThroughLocalSmtp: true, realPasskeyContexts: 3, canonicalGrantRevoked: true }, null, 2))
+  for (const [, context] of actors) await context.close()
+})

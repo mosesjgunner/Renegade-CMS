@@ -1,0 +1,506 @@
+{
+  "observations": [
+    {
+      "role": "owner",
+      "collection": "members",
+      "ownRead": 200,
+      "foreignRead": 200,
+      "foreignMutation": 200
+    },
+    {
+      "role": "owner",
+      "collection": "profiles",
+      "ownRead": 200,
+      "foreignRead": 200,
+      "foreignMutation": 200
+    },
+    {
+      "role": "owner",
+      "collection": "brands",
+      "ownRead": 200,
+      "foreignRead": 200,
+      "foreignMutation": 200
+    },
+    {
+      "role": "owner",
+      "collection": "quality-policies",
+      "ownRead": 200,
+      "foreignRead": 200,
+      "foreignMutation": 200
+    },
+    {
+      "role": "owner",
+      "collection": "analytics-goals",
+      "ownRead": 200,
+      "foreignRead": 200,
+      "foreignMutation": 200
+    },
+    {
+      "role": "owner",
+      "collection": "experience-rules",
+      "ownRead": 200,
+      "foreignRead": 200,
+      "foreignMutation": 200
+    },
+    {
+      "role": "owner",
+      "collection": "content-releases",
+      "ownRead": 200,
+      "foreignRead": 200,
+      "foreignMutation": 200
+    },
+    {
+      "role": "owner",
+      "collection": "books",
+      "ownRead": 200,
+      "foreignRead": 200,
+      "foreignMutation": 200
+    },
+    {
+      "role": "owner",
+      "collection": "team-memberships",
+      "ownRead": 200,
+      "foreignRead": 200,
+      "foreignMutation": 200
+    },
+    {
+      "role": "owner",
+      "collection": "book-parts",
+      "ownRead": 200,
+      "foreignRead": 200,
+      "foreignMutation": 200
+    },
+    {
+      "role": "owner",
+      "collection": "linked-identities",
+      "readStatus": 200,
+      "directCreate": 403
+    },
+    {
+      "role": "owner",
+      "collection": "member-sessions",
+      "readStatus": 200,
+      "directCreate": 403
+    },
+    {
+      "role": "owner",
+      "collection": "identity-tokens",
+      "readStatus": 200,
+      "directCreate": 403
+    },
+    {
+      "role": "owner",
+      "collection": "member-recovery-codes",
+      "readStatus": 200,
+      "directCreate": 403
+    },
+    {
+      "role": "owner",
+      "collection": "identity-audit-events",
+      "readStatus": 200,
+      "directCreate": 403
+    },
+    {
+      "role": "administrator",
+      "collection": "members",
+      "ownRead": 200,
+      "foreignRead": 404,
+      "foreignMutation": 403
+    },
+    {
+      "role": "administrator",
+      "collection": "profiles",
+      "ownRead": 200,
+      "foreignRead": 404,
+      "foreignMutation": 403
+    },
+    {
+      "role": "administrator",
+      "collection": "brands",
+      "ownRead": 200,
+      "foreignRead": 200,
+      "foreignMutation": 403
+    },
+    {
+      "role": "administrator",
+      "collection": "quality-policies",
+      "ownRead": 200,
+      "foreignRead": 404,
+      "foreignMutation": 403
+    },
+    {
+      "role": "administrator",
+      "collection": "analytics-goals",
+      "ownRead": 200,
+      "foreignRead": 404,
+      "foreignMutation": 403
+    },
+    {
+      "role": "administrator",
+      "collection": "experience-rules",
+      "ownRead": 200,
+      "foreignRead": 404,
+      "foreignMutation": 403
+    },
+    {
+      "role": "administrator",
+      "collection": "content-releases",
+      "ownRead": 200,
+      "foreignRead": 404,
+      "foreignMutation": 403
+    },
+    {
+      "role": "administrator",
+      "collection": "books",
+      "ownRead": 200,
+      "foreignRead": 404,
+      "foreignMutation": 403
+    },
+    {
+      "role": "administrator",
+      "collection": "team-memberships",
+      "ownRead": 200,
+      "foreignRead": 404,
+      "foreignMutation": 403
+    },
+    {
+      "role": "administrator",
+      "collection": "book-parts",
+      "ownRead": 200,
+      "foreignRead": 404,
+      "foreignMutation": 403
+    },
+    {
+      "role": "administrator",
+      "collection": "linked-identities",
+      "readStatus": 403,
+      "directCreate": 403
+    },
+    {
+      "role": "administrator",
+      "collection": "member-sessions",
+      "readStatus": 403,
+      "directCreate": 403
+    },
+    {
+      "role": "administrator",
+      "collection": "identity-tokens",
+      "readStatus": 403,
+      "directCreate": 403
+    },
+    {
+      "role": "administrator",
+      "collection": "member-recovery-codes",
+      "readStatus": 403,
+      "directCreate": 403
+    },
+    {
+      "role": "administrator",
+      "collection": "identity-audit-events",
+      "readStatus": 200,
+      "directCreate": 403
+    },
+    {
+      "role": "staff",
+      "collection": "members",
+      "ownRead": 200,
+      "foreignRead": 404,
+      "foreignMutation": 403
+    },
+    {
+      "role": "staff",
+      "collection": "profiles",
+      "ownRead": 200,
+      "foreignRead": 404,
+      "foreignMutation": 403
+    },
+    {
+      "role": "staff",
+      "collection": "brands",
+      "ownRead": 200,
+      "foreignRead": 200,
+      "foreignMutation": 403
+    },
+    {
+      "role": "staff",
+      "collection": "quality-policies",
+      "ownRead": 200,
+      "foreignRead": 404,
+      "foreignMutation": 403
+    },
+    {
+      "role": "staff",
+      "collection": "analytics-goals",
+      "ownRead": 200,
+      "foreignRead": 404,
+      "foreignMutation": 403
+    },
+    {
+      "role": "staff",
+      "collection": "experience-rules",
+      "ownRead": 200,
+      "foreignRead": 404,
+      "foreignMutation": 403
+    },
+    {
+      "role": "staff",
+      "collection": "content-releases",
+      "ownRead": 200,
+      "foreignRead": 404,
+      "foreignMutation": 403
+    },
+    {
+      "role": "staff",
+      "collection": "books",
+      "ownRead": 200,
+      "foreignRead": 404,
+      "foreignMutation": 403
+    },
+    {
+      "role": "staff",
+      "collection": "team-memberships",
+      "ownRead": 200,
+      "foreignRead": 404,
+      "foreignMutation": 403
+    },
+    {
+      "role": "staff",
+      "collection": "book-parts",
+      "ownRead": 200,
+      "foreignRead": 404,
+      "foreignMutation": 403
+    },
+    {
+      "role": "staff",
+      "collection": "linked-identities",
+      "readStatus": 403,
+      "directCreate": 403
+    },
+    {
+      "role": "staff",
+      "collection": "member-sessions",
+      "readStatus": 403,
+      "directCreate": 403
+    },
+    {
+      "role": "staff",
+      "collection": "identity-tokens",
+      "readStatus": 403,
+      "directCreate": 403
+    },
+    {
+      "role": "staff",
+      "collection": "member-recovery-codes",
+      "readStatus": 403,
+      "directCreate": 403
+    },
+    {
+      "role": "staff",
+      "collection": "identity-audit-events",
+      "readStatus": 200,
+      "directCreate": 403
+    },
+    {
+      "role": "member",
+      "collection": "members",
+      "ownRead": 403,
+      "foreignRead": 403,
+      "foreignMutation": 403
+    },
+    {
+      "role": "member",
+      "collection": "profiles",
+      "ownRead": 403,
+      "foreignRead": 403,
+      "foreignMutation": 403
+    },
+    {
+      "role": "member",
+      "collection": "brands",
+      "ownRead": 200,
+      "foreignRead": 200,
+      "foreignMutation": 403
+    },
+    {
+      "role": "member",
+      "collection": "quality-policies",
+      "ownRead": 403,
+      "foreignRead": 403,
+      "foreignMutation": 403
+    },
+    {
+      "role": "member",
+      "collection": "analytics-goals",
+      "ownRead": 403,
+      "foreignRead": 403,
+      "foreignMutation": 403
+    },
+    {
+      "role": "member",
+      "collection": "experience-rules",
+      "ownRead": 403,
+      "foreignRead": 403,
+      "foreignMutation": 403
+    },
+    {
+      "role": "member",
+      "collection": "content-releases",
+      "ownRead": 403,
+      "foreignRead": 403,
+      "foreignMutation": 403
+    },
+    {
+      "role": "member",
+      "collection": "books",
+      "ownRead": 404,
+      "foreignRead": 404,
+      "foreignMutation": 403
+    },
+    {
+      "role": "member",
+      "collection": "team-memberships",
+      "ownRead": 403,
+      "foreignRead": 403,
+      "foreignMutation": 403
+    },
+    {
+      "role": "member",
+      "collection": "book-parts",
+      "ownRead": 403,
+      "foreignRead": 403,
+      "foreignMutation": 403
+    },
+    {
+      "role": "member",
+      "collection": "linked-identities",
+      "readStatus": 403,
+      "directCreate": 403
+    },
+    {
+      "role": "member",
+      "collection": "member-sessions",
+      "readStatus": 403,
+      "directCreate": 403
+    },
+    {
+      "role": "member",
+      "collection": "identity-tokens",
+      "readStatus": 403,
+      "directCreate": 403
+    },
+    {
+      "role": "member",
+      "collection": "member-recovery-codes",
+      "readStatus": 403,
+      "directCreate": 403
+    },
+    {
+      "role": "member",
+      "collection": "identity-audit-events",
+      "readStatus": 403,
+      "directCreate": 403
+    },
+    {
+      "role": "anonymous",
+      "collection": "members",
+      "ownRead": 403,
+      "foreignRead": 403,
+      "foreignMutation": 403
+    },
+    {
+      "role": "anonymous",
+      "collection": "profiles",
+      "ownRead": 403,
+      "foreignRead": 403,
+      "foreignMutation": 403
+    },
+    {
+      "role": "anonymous",
+      "collection": "brands",
+      "ownRead": 200,
+      "foreignRead": 200,
+      "foreignMutation": 403
+    },
+    {
+      "role": "anonymous",
+      "collection": "quality-policies",
+      "ownRead": 403,
+      "foreignRead": 403,
+      "foreignMutation": 403
+    },
+    {
+      "role": "anonymous",
+      "collection": "analytics-goals",
+      "ownRead": 403,
+      "foreignRead": 403,
+      "foreignMutation": 403
+    },
+    {
+      "role": "anonymous",
+      "collection": "experience-rules",
+      "ownRead": 403,
+      "foreignRead": 403,
+      "foreignMutation": 403
+    },
+    {
+      "role": "anonymous",
+      "collection": "content-releases",
+      "ownRead": 403,
+      "foreignRead": 403,
+      "foreignMutation": 403
+    },
+    {
+      "role": "anonymous",
+      "collection": "books",
+      "ownRead": 404,
+      "foreignRead": 404,
+      "foreignMutation": 403
+    },
+    {
+      "role": "anonymous",
+      "collection": "team-memberships",
+      "ownRead": 403,
+      "foreignRead": 403,
+      "foreignMutation": 403
+    },
+    {
+      "role": "anonymous",
+      "collection": "book-parts",
+      "ownRead": 403,
+      "foreignRead": 403,
+      "foreignMutation": 403
+    },
+    {
+      "role": "anonymous",
+      "collection": "linked-identities",
+      "readStatus": 403,
+      "directCreate": 403
+    },
+    {
+      "role": "anonymous",
+      "collection": "member-sessions",
+      "readStatus": 403,
+      "directCreate": 403
+    },
+    {
+      "role": "anonymous",
+      "collection": "identity-tokens",
+      "readStatus": 403,
+      "directCreate": 403
+    },
+    {
+      "role": "anonymous",
+      "collection": "member-recovery-codes",
+      "readStatus": 403,
+      "directCreate": 403
+    },
+    {
+      "role": "anonymous",
+      "collection": "identity-audit-events",
+      "readStatus": 403,
+      "directCreate": 403
+    }
+  ],
+  "foreignMemberRemainedPending": true,
+  "identityStoresWereNeverManuallyProvisioned": true
+}

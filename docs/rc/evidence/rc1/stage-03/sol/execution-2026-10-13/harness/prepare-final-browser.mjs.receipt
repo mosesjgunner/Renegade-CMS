@@ -1,0 +1,21 @@
+import {readFileSync,writeFileSync,mkdirSync} from 'node:fs'
+import {resolve} from 'node:path'
+import {randomBytes} from 'node:crypto'
+import pg from 'pg'
+const env=Object.fromEntries(readFileSync('.env.rc02','utf8').trim().split(/\r?\n/).map(l=>{const a=l.indexOf('=');return[l.slice(0,a),l.slice(a+1)]}))
+const url=new URL(env.DATABASE_URL)
+if(url.hostname!=='127.0.0.1'||url.port!=='15433'||url.username!=='solrc1'||!url.pathname.startsWith('/solrc1_20261013_'))throw Error('Owned PostgreSQL required')
+const label=process.env.SOL_FINAL_LABEL ?? 'final'
+if(!/^final[0-9]*$/.test(label))throw Error('Verified final disposable label required')
+const name=`solrc1_20261013_browser_${label}_release_acceptance`
+url.pathname='/postgres';const client=new pg.Client({connectionString:url.href});await client.connect()
+try {
+  if((await client.query('SELECT 1 FROM pg_database WHERE datname=$1',[name])).rowCount)throw Error('Final fresh database already exists')
+  await client.query(`CREATE DATABASE "${name}"`)
+} finally {await client.end()}
+url.pathname='/'+name
+env.DATABASE_URL=url.href;env.PAYLOAD_SECRET=randomBytes(32).toString('hex');env.MEDIA_DIR=resolve(`scratch/sol-${label}-media`)
+mkdirSync(env.MEDIA_DIR,{recursive:true})
+env.SOL_ARTIFACT_ROOT=`scratch/sol-browser/${label}`;env.SOL_BROWSER_RUN=label;env.SOL_CONFIGURATION_RUN='false'
+writeFileSync(`scratch/.env.sol-${label}`,Object.entries(env).map(([k,v])=>`${k}=${v}`).join('\n')+'\n')
+console.log('Created owned fresh final database and media directory:',name)

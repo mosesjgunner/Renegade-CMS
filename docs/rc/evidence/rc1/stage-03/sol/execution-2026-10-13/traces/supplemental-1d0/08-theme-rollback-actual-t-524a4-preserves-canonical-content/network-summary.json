@@ -1,0 +1,10 @@
+[
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/api/content?depth=0&limit=100&sort=id",
+    "status": 403,
+    "startedDateTime": "2026-10-13T21:04:00.058Z",
+    "time": 31.59800000001269,
+    "requestBodyRetainedPrivately": false
+  }
+]

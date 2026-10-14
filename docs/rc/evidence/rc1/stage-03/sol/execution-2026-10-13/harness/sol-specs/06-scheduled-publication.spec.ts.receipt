@@ -1,0 +1,93 @@
+const artifactRoot = process.env.SOL_ARTIFACT_ROOT ?? 'scratch/sol-browser/source-5666'
+import { passkeyLogin } from '../sol-browser-helpers'
+import { test, expect } from '@playwright/test'
+import { readFileSync, writeFileSync, existsSync } from 'node:fs'
+import { createHash } from 'node:crypto'
+import { Client } from 'pg'
+
+const output = artifactRoot
+const lexical = (text: string) => ({ root: { type: 'root', version: 1, direction: null, format: '', indent: 0,
+  children: [{ type: 'paragraph', version: 1, direction: null, format: '', indent: 0,
+    children: [{ type: 'text', version: 1, text, format: 0, detail: 0, mode: 'normal', style: '' }] }] } })
+
+test('scheduled publication uses the actual worker, immutable revision, restart and public refetch', async ({ browser }) => {
+  const owner = await passkeyLogin(browser, 'editor@renegadeparty.test', 'scratch/sol-owner-authenticator.json')
+  const anonymous = await browser.newContext({ ignoreHTTPSErrors: true })
+  const site = JSON.parse(readFileSync(`${output}/two-sites.json`, 'utf8')).site
+  const stamp = Date.now()
+  const phrase = `APPROVED WORKER BODY ${stamp}`
+  const laterDraft = `UNAPPROVED FUTURE BODY ${stamp}`
+  const created = await owner.request.post(`${process.env.APP_URL}/api/content`, { data: {
+    site, contentType: 'article', title: `Scheduled worker proof ${stamp}`, slug: `scheduled-worker-${stamp}`,
+    status: 'draft', body: lexical(phrase), summary: 'Independent ordinary scheduled publication acceptance.',
+  } })
+  expect(created.status()).toBe(201)
+  const content = (await created.json()).doc
+  const publicUrl = `${process.env.APP_URL}${content.canonicalPath}`
+  expect((await anonymous.request.get(publicUrl)).status()).toBe(404)
+  for (const status of ['review', 'approved']) {
+    const updated = await owner.request.patch(`${process.env.APP_URL}/api/content/${content.id}`, { data: { status } })
+    expect(updated.status()).toBe(200)
+  }
+  const family = (await (await owner.request.get(`${process.env.APP_URL}/api/article-family-content?where[content][equals]=${content.id}&depth=0`)).json()).docs[0]
+  expect(family.lifecycle).toBe('approved')
+  const approvedRevision = typeof family.currentRevision === 'object' ? family.currentRevision.id : family.currentRevision
+  const scheduledFor = new Date(Date.now() + 35_000).toISOString().slice(0, 19)
+  const schedule = await owner.request.post(`${process.env.APP_URL}/api/admin/calendar/schedule`, { data: {
+    action: 'schedule', sourceId: family.id, sourceType: 'article', startsAt: scheduledFor, timeZone: 'UTC',
+    expectedSequence: family.currentRevisionSequence,
+  } })
+  expect(schedule.status(), await schedule.text()).toBe(200)
+  const audits = (await (await owner.request.get(`${process.env.APP_URL}/api/calendar-entry-audits?where[article][equals]=${family.id}&depth=0`)).json()).docs
+  expect(audits).toHaveLength(1)
+  expect(audits[0].article).toBe(family.id)
+  const jobsUrl = `${process.env.APP_URL}/api/scheduled-publish-jobs?where[article][equals]=${family.id}&depth=0`
+  const queued = (await (await owner.request.get(jobsUrl)).json()).docs
+  expect(queued).toHaveLength(1)
+  expect(queued[0].status).toBe('queued')
+  expect(queued[0].revision).toBe(approvedRevision)
+  const newer = await owner.request.patch(`${process.env.APP_URL}/api/content/${content.id}`, {
+    data: { status: 'draft', body: lexical(laterDraft) },
+  })
+  expect(newer.status()).toBe(200)
+  expect((await anonymous.request.get(publicUrl)).status()).toBe(404)
+  const request = { nonce: Date.now(), reason: 'scheduled publication restart' }
+  writeFileSync('scratch/rc02-restart-request.json', JSON.stringify(request))
+  await expect.poll(() => existsSync('scratch/rc02-restart-receipt.json')
+    ? JSON.parse(readFileSync('scratch/rc02-restart-receipt.json', 'utf8')).request.nonce : 0, { timeout: 30_000 }).toBe(request.nonce)
+  await expect.poll(async () => {
+    try { return (await anonymous.request.get(publicUrl)).status() } catch { return 0 }
+  }, { timeout: 120_000 }).toBe(200)
+  const rendered = await anonymous.request.get(publicUrl)
+  const html = await rendered.text()
+  expect(html).toContain(phrase)
+  expect(html).not.toContain(laterDraft)
+  const completed = (await (await owner.request.get(jobsUrl)).json()).docs
+  expect(completed).toHaveLength(1)
+  expect(completed[0].status).toBe('completed')
+  expect(completed[0].retryCount).toBe(0)
+  expect(completed[0].leaseOwner).toBeFalsy()
+  const connection = new Client({ connectionString: process.env.DATABASE_URL })
+  expect(new URL(process.env.DATABASE_URL!).pathname).toContain('/solrc1_20261013_browser_')
+  await connection.connect()
+  let workerJob
+  try {
+    workerJob = (await connection.query(`SELECT id, task_slug, completed_at, has_error, total_tried
+      FROM payload_jobs WHERE id=$1`, [completed[0].job])).rows[0]
+  } finally { await connection.end() }
+  expect(workerJob.task_slug).toBe('editorial-publish')
+  expect(workerJob.completed_at).toBeTruthy()
+  expect(workerJob.has_error).toBe(false)
+  const persisted = await (await owner.request.get(`${process.env.APP_URL}/api/article-family-content/${family.id}?depth=0`)).json()
+  expect(persisted.latestPublishedRevision).toBe(approvedRevision)
+  const page = await anonymous.newPage()
+  await page.goto(publicUrl)
+  await expect(page.locator('body')).toContainText(phrase)
+  await expect(page.locator('body')).not.toContainText(laterDraft)
+  await page.screenshot({ path: `${output}/scheduled-publication.png`, fullPage: true })
+  writeFileSync(`${output}/scheduled-publication.json`, JSON.stringify({ contentId: content.id, articleId: family.id,
+    approvedRevision, scheduledFor, canonicalSourceAudit: audits[0], persistedJob: completed[0], workerJob, publicBodySha256: createHash('sha256').update(html).digest('hex'),
+    restart: JSON.parse(readFileSync('scratch/rc02-restart-receipt.json', 'utf8')), laterDraftIsolated: true }, null, 2))
+  await owner.close()
+  await anonymous.close()
+})

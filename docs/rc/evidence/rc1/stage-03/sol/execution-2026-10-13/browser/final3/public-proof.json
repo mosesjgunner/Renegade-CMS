@@ -1,0 +1,1208 @@
+{
+  "/": {
+    "status": 200,
+    "title": "Renegade Party Dispatch",
+    "schemas": [
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Renegade Party Dispatch",
+        "description": "Independent civic reporting, local organizing and public accountability.",
+        "url": "https://dispatch.rc02.test:3129/",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "@id": "https://dispatch.rc02.test:3129/#website",
+            "url": "https://dispatch.rc02.test:3129/",
+            "name": "Renegade Party Dispatch",
+            "publisher": {
+              "@id": "https://dispatch.rc02.test:3129/#identity"
+            },
+            "description": "Independent civic reporting, local organizing and public accountability.",
+            "inLanguage": "en-US"
+          },
+          {
+            "@type": "Organization",
+            "@id": "https://dispatch.rc02.test:3129/#identity",
+            "name": "Renegade Party Dispatch",
+            "url": "https://dispatch.rc02.test:3129/"
+          },
+          {
+            "@type": "WebPage",
+            "@id": "https://dispatch.rc02.test:3129#webpage",
+            "url": "https://dispatch.rc02.test:3129/",
+            "name": "Renegade Party Dispatch",
+            "isPartOf": {
+              "@id": "https://dispatch.rc02.test:3129/#website"
+            },
+            "breadcrumb": {
+              "@id": "https://dispatch.rc02.test:3129#breadcrumb"
+            },
+            "description": "Independent civic reporting, local organizing and public accountability.",
+            "inLanguage": "en-US",
+            "primaryImageOfPage": {
+              "@id": "https://dispatch.rc02.test:3129#primaryimage"
+            }
+          },
+          {
+            "@type": "BreadcrumbList",
+            "@id": "https://dispatch.rc02.test:3129#breadcrumb",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://dispatch.rc02.test:3129/"
+              }
+            ]
+          },
+          {
+            "@type": "ImageObject",
+            "@id": "https://dispatch.rc02.test:3129#primaryimage",
+            "url": "https://dispatch.rc02.test:3129/media/3d1972a5-1409-4862-a829-37ce15c0a6a6",
+            "contentUrl": "https://dispatch.rc02.test:3129/media/3d1972a5-1409-4862-a829-37ce15c0a6a6",
+            "caption": "Renegade Party Dispatch"
+          }
+        ]
+      }
+    ]
+  },
+  "/about": {
+    "status": 200,
+    "title": "Our editorial charter | Dispatch",
+    "schemas": [
+      {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "name": "Our editorial charter | Dispatch",
+        "@graph": [
+          {
+            "@type": "WebPage",
+            "@id": "https://dispatch.rc02.test:3129/about#webpage",
+            "url": "https://dispatch.rc02.test:3129/about",
+            "name": "Our editorial charter | Dispatch",
+            "isPartOf": {
+              "@id": "https://dispatch.rc02.test:3129/#website"
+            },
+            "breadcrumb": {
+              "@id": "https://dispatch.rc02.test:3129/about#breadcrumb"
+            },
+            "description": "Read independent civic reporting from Renegade Party Dispatch, with primary sources, clear context and corrections.",
+            "inLanguage": "en-US",
+            "datePublished": "2026-10-14T02:03:19.840Z",
+            "dateModified": "2026-10-14T02:03:19.904Z",
+            "primaryImageOfPage": {
+              "@id": "https://dispatch.rc02.test:3129/about#primaryimage"
+            }
+          },
+          {
+            "@type": "BreadcrumbList",
+            "@id": "https://dispatch.rc02.test:3129/about#breadcrumb",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://dispatch.rc02.test:3129/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Our editorial charter | Dispatch",
+                "item": "https://dispatch.rc02.test:3129/about"
+              }
+            ]
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://dispatch.rc02.test:3129/#website",
+            "url": "https://dispatch.rc02.test:3129/",
+            "name": "Renegade Party Dispatch",
+            "publisher": {
+              "@id": "https://dispatch.rc02.test:3129/#identity"
+            },
+            "description": "Independent civic reporting, local organizing and public accountability.",
+            "inLanguage": "en-US"
+          },
+          {
+            "@type": "Organization",
+            "@id": "https://dispatch.rc02.test:3129/#identity",
+            "name": "Renegade Party Dispatch",
+            "url": "https://dispatch.rc02.test:3129/"
+          },
+          {
+            "@type": "ImageObject",
+            "@id": "https://dispatch.rc02.test:3129/about#primaryimage",
+            "url": "https://dispatch.rc02.test:3129/media/3d1972a5-1409-4862-a829-37ce15c0a6a6",
+            "contentUrl": "https://dispatch.rc02.test:3129/media/3d1972a5-1409-4862-a829-37ce15c0a6a6",
+            "caption": "Our editorial charter | Dispatch"
+          }
+        ]
+      }
+    ]
+  },
+  "/articles/republic-in-the-open": {
+    "status": 200,
+    "title": "A republic built in the open | Dispatch",
+    "schemas": [
+      {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "name": "A republic built in the open | Dispatch",
+        "@graph": [
+          {
+            "@type": "Article",
+            "@id": "https://dispatch.rc02.test:3129/articles/republic-in-the-open#article",
+            "headline": "A republic built in the open | Dispatch",
+            "url": "https://dispatch.rc02.test:3129/articles/republic-in-the-open",
+            "mainEntityOfPage": {
+              "@id": "https://dispatch.rc02.test:3129/articles/republic-in-the-open#webpage"
+            },
+            "publisher": {
+              "@id": "https://dispatch.rc02.test:3129/#identity"
+            },
+            "description": "Read independent civic reporting from Renegade Party Dispatch, with primary sources, clear context and corrections.",
+            "datePublished": "2026-10-14T02:03:20.552Z",
+            "dateModified": "2026-10-14T02:03:40.196Z",
+            "author": {
+              "@id": "https://dispatch.rc02.test:3129/authors/dispatch-editorial-board#person"
+            },
+            "image": {
+              "@id": "https://dispatch.rc02.test:3129/articles/republic-in-the-open#primaryimage"
+            },
+            "inLanguage": "en-US",
+            "articleSection": "Civic accountability"
+          },
+          {
+            "@type": "WebPage",
+            "@id": "https://dispatch.rc02.test:3129/articles/republic-in-the-open#webpage",
+            "url": "https://dispatch.rc02.test:3129/articles/republic-in-the-open",
+            "name": "A republic built in the open | Dispatch",
+            "isPartOf": {
+              "@id": "https://dispatch.rc02.test:3129/#website"
+            },
+            "breadcrumb": {
+              "@id": "https://dispatch.rc02.test:3129/articles/republic-in-the-open#breadcrumb"
+            },
+            "description": "Read independent civic reporting from Renegade Party Dispatch, with primary sources, clear context and corrections.",
+            "inLanguage": "en-US",
+            "datePublished": "2026-10-14T02:03:20.552Z",
+            "dateModified": "2026-10-14T02:03:40.196Z",
+            "primaryImageOfPage": {
+              "@id": "https://dispatch.rc02.test:3129/articles/republic-in-the-open#primaryimage"
+            },
+            "mainEntity": {
+              "@id": "https://dispatch.rc02.test:3129/articles/republic-in-the-open#article"
+            }
+          },
+          {
+            "@type": "BreadcrumbList",
+            "@id": "https://dispatch.rc02.test:3129/articles/republic-in-the-open#breadcrumb",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://dispatch.rc02.test:3129/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Articles",
+                "item": "https://dispatch.rc02.test:3129/articles"
+              },
+              {
+                "@type": "ListItem",
+                "position": 3,
+                "name": "A republic built in the open | Dispatch",
+                "item": "https://dispatch.rc02.test:3129/articles/republic-in-the-open"
+              }
+            ]
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://dispatch.rc02.test:3129/#website",
+            "url": "https://dispatch.rc02.test:3129/",
+            "name": "Renegade Party Dispatch",
+            "publisher": {
+              "@id": "https://dispatch.rc02.test:3129/#identity"
+            },
+            "description": "Independent civic reporting, local organizing and public accountability.",
+            "inLanguage": "en-US"
+          },
+          {
+            "@type": "Organization",
+            "@id": "https://dispatch.rc02.test:3129/#identity",
+            "name": "Renegade Party Dispatch",
+            "url": "https://dispatch.rc02.test:3129/"
+          },
+          {
+            "@type": "Person",
+            "@id": "https://dispatch.rc02.test:3129/authors/dispatch-editorial-board#person",
+            "name": "Dispatch Editorial Board"
+          },
+          {
+            "@type": "ImageObject",
+            "@id": "https://dispatch.rc02.test:3129/articles/republic-in-the-open#primaryimage",
+            "url": "https://dispatch.rc02.test:3129/media/3d1972a5-1409-4862-a829-37ce15c0a6a6",
+            "contentUrl": "https://dispatch.rc02.test:3129/media/3d1972a5-1409-4862-a829-37ce15c0a6a6",
+            "caption": "A republic built in the open | Dispatch"
+          }
+        ]
+      }
+    ]
+  },
+  "/articles/neighborhood-assemblies": {
+    "status": 200,
+    "title": "Neighborhood assemblies in practice | Dispatch",
+    "schemas": [
+      {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "name": "Neighborhood assemblies in practice | Dispatch",
+        "@graph": [
+          {
+            "@type": "Article",
+            "@id": "https://dispatch.rc02.test:3129/articles/neighborhood-assemblies#article",
+            "headline": "Neighborhood assemblies in practice | Dispatch",
+            "url": "https://dispatch.rc02.test:3129/articles/neighborhood-assemblies",
+            "mainEntityOfPage": {
+              "@id": "https://dispatch.rc02.test:3129/articles/neighborhood-assemblies#webpage"
+            },
+            "publisher": {
+              "@id": "https://dispatch.rc02.test:3129/#identity"
+            },
+            "description": "Read independent civic reporting from Renegade Party Dispatch, with primary sources, clear context and corrections.",
+            "datePublished": "2026-10-14T02:03:21.176Z",
+            "dateModified": "2026-10-14T02:03:21.217Z",
+            "author": {
+              "@id": "https://dispatch.rc02.test:3129/authors/dispatch-editorial-board#person"
+            },
+            "image": {
+              "@id": "https://dispatch.rc02.test:3129/articles/neighborhood-assemblies#primaryimage"
+            },
+            "inLanguage": "en-US",
+            "articleSection": "Civic accountability"
+          },
+          {
+            "@type": "WebPage",
+            "@id": "https://dispatch.rc02.test:3129/articles/neighborhood-assemblies#webpage",
+            "url": "https://dispatch.rc02.test:3129/articles/neighborhood-assemblies",
+            "name": "Neighborhood assemblies in practice | Dispatch",
+            "isPartOf": {
+              "@id": "https://dispatch.rc02.test:3129/#website"
+            },
+            "breadcrumb": {
+              "@id": "https://dispatch.rc02.test:3129/articles/neighborhood-assemblies#breadcrumb"
+            },
+            "description": "Read independent civic reporting from Renegade Party Dispatch, with primary sources, clear context and corrections.",
+            "inLanguage": "en-US",
+            "datePublished": "2026-10-14T02:03:21.176Z",
+            "dateModified": "2026-10-14T02:03:21.217Z",
+            "primaryImageOfPage": {
+              "@id": "https://dispatch.rc02.test:3129/articles/neighborhood-assemblies#primaryimage"
+            },
+            "mainEntity": {
+              "@id": "https://dispatch.rc02.test:3129/articles/neighborhood-assemblies#article"
+            }
+          },
+          {
+            "@type": "BreadcrumbList",
+            "@id": "https://dispatch.rc02.test:3129/articles/neighborhood-assemblies#breadcrumb",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://dispatch.rc02.test:3129/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Articles",
+                "item": "https://dispatch.rc02.test:3129/articles"
+              },
+              {
+                "@type": "ListItem",
+                "position": 3,
+                "name": "Neighborhood assemblies in practice | Dispatch",
+                "item": "https://dispatch.rc02.test:3129/articles/neighborhood-assemblies"
+              }
+            ]
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://dispatch.rc02.test:3129/#website",
+            "url": "https://dispatch.rc02.test:3129/",
+            "name": "Renegade Party Dispatch",
+            "publisher": {
+              "@id": "https://dispatch.rc02.test:3129/#identity"
+            },
+            "description": "Independent civic reporting, local organizing and public accountability.",
+            "inLanguage": "en-US"
+          },
+          {
+            "@type": "Organization",
+            "@id": "https://dispatch.rc02.test:3129/#identity",
+            "name": "Renegade Party Dispatch",
+            "url": "https://dispatch.rc02.test:3129/"
+          },
+          {
+            "@type": "Person",
+            "@id": "https://dispatch.rc02.test:3129/authors/dispatch-editorial-board#person",
+            "name": "Dispatch Editorial Board"
+          },
+          {
+            "@type": "ImageObject",
+            "@id": "https://dispatch.rc02.test:3129/articles/neighborhood-assemblies#primaryimage",
+            "url": "https://dispatch.rc02.test:3129/media/3d1972a5-1409-4862-a829-37ce15c0a6a6",
+            "contentUrl": "https://dispatch.rc02.test:3129/media/3d1972a5-1409-4862-a829-37ce15c0a6a6",
+            "caption": "Neighborhood assemblies in practice | Dispatch"
+          }
+        ]
+      }
+    ]
+  },
+  "/events/open-civic-assembly": {
+    "status": 200,
+    "title": "Open civic assembly",
+    "schemas": [
+      {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "name": "Open civic assembly",
+        "@graph": [
+          {
+            "@type": "WebPage",
+            "@id": "https://dispatch.rc02.test:3129/events/open-civic-assembly#webpage",
+            "url": "https://dispatch.rc02.test:3129/events/open-civic-assembly",
+            "name": "Open civic assembly",
+            "isPartOf": {
+              "@id": "https://dispatch.rc02.test:3129/#website"
+            },
+            "breadcrumb": {
+              "@id": "https://dispatch.rc02.test:3129/events/open-civic-assembly#breadcrumb"
+            },
+            "description": "A public meeting on transparent local government.",
+            "inLanguage": "en-US",
+            "datePublished": "2026-10-14T02:03:21.426Z",
+            "dateModified": "2026-10-14T02:03:21.426Z"
+          },
+          {
+            "@type": "BreadcrumbList",
+            "@id": "https://dispatch.rc02.test:3129/events/open-civic-assembly#breadcrumb",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://dispatch.rc02.test:3129/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Open civic assembly",
+                "item": "https://dispatch.rc02.test:3129/events/open-civic-assembly"
+              }
+            ]
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://dispatch.rc02.test:3129/#website",
+            "url": "https://dispatch.rc02.test:3129/",
+            "name": "Renegade Party Dispatch",
+            "publisher": {
+              "@id": "https://dispatch.rc02.test:3129/#identity"
+            },
+            "description": "Independent civic reporting, local organizing and public accountability.",
+            "inLanguage": "en-US"
+          },
+          {
+            "@type": "Organization",
+            "@id": "https://dispatch.rc02.test:3129/#identity",
+            "name": "Renegade Party Dispatch",
+            "url": "https://dispatch.rc02.test:3129/"
+          },
+          {
+            "@type": "Event",
+            "@id": "https://dispatch.rc02.test:3129/events/open-civic-assembly#event",
+            "name": "Open civic assembly",
+            "description": "A public meeting on transparent local government.",
+            "url": "https://dispatch.rc02.test:3129/events/open-civic-assembly",
+            "startDate": "2026-11-07T18:00:00.000Z",
+            "endDate": "2026-11-07T20:00:00.000Z",
+            "location": {
+              "@type": "Place",
+              "name": "Community Hall",
+              "address": {
+                "@type": "PostalAddress",
+                "streetAddress": "123 Civic Avenue",
+                "addressLocality": "Chicago"
+              }
+            },
+            "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+            "eventStatus": "https://schema.org/EventScheduled",
+            "organizer": {
+              "@type": "Organization",
+              "name": "Renegade Party Dispatch"
+            }
+          }
+        ]
+      }
+    ]
+  },
+  "/articles": {
+    "status": 200,
+    "title": "Articles \u2014 Renegade Party Dispatch",
+    "schemas": [
+      {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "name": "Articles",
+        "@graph": [
+          {
+            "@type": "CollectionPage",
+            "@id": "https://dispatch.rc02.test:3129/articles#webpage",
+            "url": "https://dispatch.rc02.test:3129/articles",
+            "name": "Articles \u2014 Renegade Party Dispatch",
+            "isPartOf": {
+              "@id": "https://dispatch.rc02.test:3129/#website"
+            },
+            "breadcrumb": {
+              "@id": "https://dispatch.rc02.test:3129/articles#breadcrumb"
+            },
+            "description": "Archive of published articles from Renegade Party Dispatch.",
+            "inLanguage": "en-US"
+          },
+          {
+            "@type": "BreadcrumbList",
+            "@id": "https://dispatch.rc02.test:3129/articles#breadcrumb",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://dispatch.rc02.test:3129/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Articles",
+                "item": "https://dispatch.rc02.test:3129/articles"
+              }
+            ]
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://dispatch.rc02.test:3129/#website",
+            "url": "https://dispatch.rc02.test:3129/",
+            "name": "Renegade Party Dispatch",
+            "publisher": {
+              "@id": "https://dispatch.rc02.test:3129/#identity"
+            },
+            "description": "Independent civic reporting, local organizing and public accountability.",
+            "inLanguage": "en-US"
+          },
+          {
+            "@type": "Organization",
+            "@id": "https://dispatch.rc02.test:3129/#identity",
+            "name": "Renegade Party Dispatch",
+            "url": "https://dispatch.rc02.test:3129/"
+          }
+        ]
+      }
+    ]
+  },
+  "/categories/civic-accountability": {
+    "status": 200,
+    "title": "Civic accountability",
+    "schemas": [
+      {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "name": "Civic accountability",
+        "@graph": [
+          {
+            "@type": "CollectionPage",
+            "@id": "https://dispatch.rc02.test:3129/categories/civic-accountability#webpage",
+            "url": "https://dispatch.rc02.test:3129/categories/civic-accountability",
+            "name": "Civic accountability",
+            "isPartOf": {
+              "@id": "https://dispatch.rc02.test:3129/#website"
+            },
+            "breadcrumb": {
+              "@id": "https://dispatch.rc02.test:3129/categories/civic-accountability#breadcrumb"
+            },
+            "description": "Independent civic reporting, local organizing and public accountability.",
+            "inLanguage": "en-US"
+          },
+          {
+            "@type": "BreadcrumbList",
+            "@id": "https://dispatch.rc02.test:3129/categories/civic-accountability#breadcrumb",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://dispatch.rc02.test:3129/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Civic accountability",
+                "item": "https://dispatch.rc02.test:3129/categories/civic-accountability"
+              }
+            ]
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://dispatch.rc02.test:3129/#website",
+            "url": "https://dispatch.rc02.test:3129/",
+            "name": "Renegade Party Dispatch",
+            "publisher": {
+              "@id": "https://dispatch.rc02.test:3129/#identity"
+            },
+            "description": "Independent civic reporting, local organizing and public accountability.",
+            "inLanguage": "en-US"
+          },
+          {
+            "@type": "Organization",
+            "@id": "https://dispatch.rc02.test:3129/#identity",
+            "name": "Renegade Party Dispatch",
+            "url": "https://dispatch.rc02.test:3129/"
+          }
+        ]
+      }
+    ]
+  },
+  "/topics/local-governance": {
+    "status": 200,
+    "title": "Local governance",
+    "schemas": [
+      {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "name": "Local governance",
+        "@graph": [
+          {
+            "@type": "CollectionPage",
+            "@id": "https://dispatch.rc02.test:3129/topics/local-governance#webpage",
+            "url": "https://dispatch.rc02.test:3129/topics/local-governance",
+            "name": "Local governance",
+            "isPartOf": {
+              "@id": "https://dispatch.rc02.test:3129/#website"
+            },
+            "breadcrumb": {
+              "@id": "https://dispatch.rc02.test:3129/topics/local-governance#breadcrumb"
+            },
+            "description": "Independent civic reporting, local organizing and public accountability.",
+            "inLanguage": "en-US"
+          },
+          {
+            "@type": "BreadcrumbList",
+            "@id": "https://dispatch.rc02.test:3129/topics/local-governance#breadcrumb",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://dispatch.rc02.test:3129/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Local governance",
+                "item": "https://dispatch.rc02.test:3129/topics/local-governance"
+              }
+            ]
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://dispatch.rc02.test:3129/#website",
+            "url": "https://dispatch.rc02.test:3129/",
+            "name": "Renegade Party Dispatch",
+            "publisher": {
+              "@id": "https://dispatch.rc02.test:3129/#identity"
+            },
+            "description": "Independent civic reporting, local organizing and public accountability.",
+            "inLanguage": "en-US"
+          },
+          {
+            "@type": "Organization",
+            "@id": "https://dispatch.rc02.test:3129/#identity",
+            "name": "Renegade Party Dispatch",
+            "url": "https://dispatch.rc02.test:3129/"
+          }
+        ]
+      }
+    ]
+  },
+  "/get-involved": {
+    "status": 200,
+    "title": "Get involved with the Dispatch",
+    "schemas": [
+      {
+        "@context": "https://schema.org",
+        "@type": "WebPage",
+        "name": "Get involved with the Dispatch",
+        "@graph": [
+          {
+            "@type": "WebPage",
+            "@id": "https://dispatch.rc02.test:3129/get-involved#webpage",
+            "url": "https://dispatch.rc02.test:3129/get-involved",
+            "name": "Get involved with the Dispatch",
+            "isPartOf": {
+              "@id": "https://dispatch.rc02.test:3129/#website"
+            },
+            "breadcrumb": {
+              "@id": "https://dispatch.rc02.test:3129/get-involved#breadcrumb"
+            },
+            "description": "Independent civic reporting, local organizing and public accountability.",
+            "inLanguage": "en-US",
+            "datePublished": "2026-10-14T02:03:37.437Z",
+            "dateModified": "2026-10-14T02:03:38.082Z"
+          },
+          {
+            "@type": "BreadcrumbList",
+            "@id": "https://dispatch.rc02.test:3129/get-involved#breadcrumb",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://dispatch.rc02.test:3129/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Get involved with the Dispatch",
+                "item": "https://dispatch.rc02.test:3129/get-involved"
+              }
+            ]
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://dispatch.rc02.test:3129/#website",
+            "url": "https://dispatch.rc02.test:3129/",
+            "name": "Renegade Party Dispatch",
+            "publisher": {
+              "@id": "https://dispatch.rc02.test:3129/#identity"
+            },
+            "description": "Independent civic reporting, local organizing and public accountability.",
+            "inLanguage": "en-US"
+          },
+          {
+            "@type": "Organization",
+            "@id": "https://dispatch.rc02.test:3129/#identity",
+            "name": "Renegade Party Dispatch",
+            "url": "https://dispatch.rc02.test:3129/"
+          }
+        ]
+      }
+    ]
+  },
+  "metadata": {
+    "schema": [
+      {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "name": "A republic built in the open | Dispatch",
+        "@graph": [
+          {
+            "@type": "Article",
+            "@id": "https://dispatch.rc02.test:3129/articles/republic-in-the-open#article",
+            "headline": "A republic built in the open | Dispatch",
+            "url": "https://dispatch.rc02.test:3129/articles/republic-in-the-open",
+            "mainEntityOfPage": {
+              "@id": "https://dispatch.rc02.test:3129/articles/republic-in-the-open#webpage"
+            },
+            "publisher": {
+              "@id": "https://dispatch.rc02.test:3129/#identity"
+            },
+            "description": "Read independent civic reporting from Renegade Party Dispatch, with primary sources, clear context and corrections.",
+            "datePublished": "2026-10-14T02:03:20.552Z",
+            "dateModified": "2026-10-14T02:03:40.196Z",
+            "author": {
+              "@id": "https://dispatch.rc02.test:3129/authors/dispatch-editorial-board#person"
+            },
+            "image": {
+              "@id": "https://dispatch.rc02.test:3129/articles/republic-in-the-open#primaryimage"
+            },
+            "inLanguage": "en-US",
+            "articleSection": "Civic accountability"
+          },
+          {
+            "@type": "WebPage",
+            "@id": "https://dispatch.rc02.test:3129/articles/republic-in-the-open#webpage",
+            "url": "https://dispatch.rc02.test:3129/articles/republic-in-the-open",
+            "name": "A republic built in the open | Dispatch",
+            "isPartOf": {
+              "@id": "https://dispatch.rc02.test:3129/#website"
+            },
+            "breadcrumb": {
+              "@id": "https://dispatch.rc02.test:3129/articles/republic-in-the-open#breadcrumb"
+            },
+            "description": "Read independent civic reporting from Renegade Party Dispatch, with primary sources, clear context and corrections.",
+            "inLanguage": "en-US",
+            "datePublished": "2026-10-14T02:03:20.552Z",
+            "dateModified": "2026-10-14T02:03:40.196Z",
+            "primaryImageOfPage": {
+              "@id": "https://dispatch.rc02.test:3129/articles/republic-in-the-open#primaryimage"
+            },
+            "mainEntity": {
+              "@id": "https://dispatch.rc02.test:3129/articles/republic-in-the-open#article"
+            }
+          },
+          {
+            "@type": "BreadcrumbList",
+            "@id": "https://dispatch.rc02.test:3129/articles/republic-in-the-open#breadcrumb",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "https://dispatch.rc02.test:3129/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Articles",
+                "item": "https://dispatch.rc02.test:3129/articles"
+              },
+              {
+                "@type": "ListItem",
+                "position": 3,
+                "name": "A republic built in the open | Dispatch",
+                "item": "https://dispatch.rc02.test:3129/articles/republic-in-the-open"
+              }
+            ]
+          },
+          {
+            "@type": "WebSite",
+            "@id": "https://dispatch.rc02.test:3129/#website",
+            "url": "https://dispatch.rc02.test:3129/",
+            "name": "Renegade Party Dispatch",
+            "publisher": {
+              "@id": "https://dispatch.rc02.test:3129/#identity"
+            },
+            "description": "Independent civic reporting, local organizing and public accountability.",
+            "inLanguage": "en-US"
+          },
+          {
+            "@type": "Organization",
+            "@id": "https://dispatch.rc02.test:3129/#identity",
+            "name": "Renegade Party Dispatch",
+            "url": "https://dispatch.rc02.test:3129/"
+          },
+          {
+            "@type": "Person",
+            "@id": "https://dispatch.rc02.test:3129/authors/dispatch-editorial-board#person",
+            "name": "Dispatch Editorial Board"
+          },
+          {
+            "@type": "ImageObject",
+            "@id": "https://dispatch.rc02.test:3129/articles/republic-in-the-open#primaryimage",
+            "url": "https://dispatch.rc02.test:3129/media/3d1972a5-1409-4862-a829-37ce15c0a6a6",
+            "contentUrl": "https://dispatch.rc02.test:3129/media/3d1972a5-1409-4862-a829-37ce15c0a6a6",
+            "caption": "A republic built in the open | Dispatch"
+          }
+        ]
+      }
+    ]
+  },
+  "derivatives": {
+    "original": {
+      "id": "3d1972a5-1409-4862-a829-37ce15c0a6a6",
+      "title": "Liberty and civic assembly",
+      "originalFilename": "liberty-banner.png",
+      "mimeType": "image/png",
+      "sizeBytes": 73970,
+      "width": 1200,
+      "height": 600,
+      "aspectRatio": 2,
+      "dominantColor": "#282828",
+      "colorPalette": [
+        {
+          "b": 40,
+          "g": 40,
+          "r": 40
+        },
+        {
+          "b": 47,
+          "g": 44,
+          "r": 57
+        }
+      ],
+      "focalPoint": {
+        "x": null,
+        "y": null
+      },
+      "cropSettings": null,
+      "url": "/media/3d1972a5-1409-4862-a829-37ce15c0a6a6",
+      "canDownload": true
+    },
+    "variants": [
+      {
+        "id": "31152425-b281-491e-b0a8-5145da50977b",
+        "recipeKey": "wide",
+        "label": "Wide (16:9) (JPEG)",
+        "format": "jpeg",
+        "width": 1280,
+        "height": 720,
+        "sizeBytes": 34670,
+        "bytesSaved": 39300,
+        "percentSaved": 53,
+        "processingState": "ready",
+        "errorMessage": null,
+        "url": "/media/3d1972a5-1409-4862-a829-37ce15c0a6a6?variant=wide&format=jpeg&v=1"
+      },
+      {
+        "id": "240f0f27-230e-4bf5-9f1d-49b21eecf22c",
+        "recipeKey": "wide",
+        "label": "Wide (16:9) (AVIF)",
+        "format": "avif",
+        "width": 1280,
+        "height": 720,
+        "sizeBytes": 23837,
+        "bytesSaved": 50133,
+        "percentSaved": 68,
+        "processingState": "ready",
+        "errorMessage": null,
+        "url": "/media/3d1972a5-1409-4862-a829-37ce15c0a6a6?variant=wide&format=avif&v=1"
+      },
+      {
+        "id": "873b253f-097f-4a91-a144-4840e0f58fe8",
+        "recipeKey": "wide",
+        "label": "Wide (16:9) (WEBP)",
+        "format": "webp",
+        "width": 1280,
+        "height": 720,
+        "sizeBytes": 22178,
+        "bytesSaved": 51792,
+        "percentSaved": 70,
+        "processingState": "ready",
+        "errorMessage": null,
+        "url": "/media/3d1972a5-1409-4862-a829-37ce15c0a6a6?variant=wide&format=webp&v=1"
+      },
+      {
+        "id": "ab628cf0-65d6-4e58-82ea-d1f63092bf37",
+        "recipeKey": "thumbnail",
+        "label": "Thumbnail (JPEG)",
+        "format": "jpeg",
+        "width": 400,
+        "height": 300,
+        "sizeBytes": 9846,
+        "bytesSaved": 64124,
+        "percentSaved": 87,
+        "processingState": "ready",
+        "errorMessage": null,
+        "url": "/media/3d1972a5-1409-4862-a829-37ce15c0a6a6?variant=thumbnail&format=jpeg&v=1"
+      },
+      {
+        "id": "c1492083-50d2-492c-96b4-0e111a3a3e79",
+        "recipeKey": "thumbnail",
+        "label": "Thumbnail (AVIF)",
+        "format": "avif",
+        "width": 400,
+        "height": 300,
+        "sizeBytes": 8717,
+        "bytesSaved": 65253,
+        "percentSaved": 88,
+        "processingState": "ready",
+        "errorMessage": null,
+        "url": "/media/3d1972a5-1409-4862-a829-37ce15c0a6a6?variant=thumbnail&format=avif&v=1"
+      },
+      {
+        "id": "c35a5fb7-c0a2-490e-9aa2-99923f3d8875",
+        "recipeKey": "thumbnail",
+        "label": "Thumbnail (WEBP)",
+        "format": "webp",
+        "width": 400,
+        "height": 300,
+        "sizeBytes": 7388,
+        "bytesSaved": 66582,
+        "percentSaved": 90,
+        "processingState": "ready",
+        "errorMessage": null,
+        "url": "/media/3d1972a5-1409-4862-a829-37ce15c0a6a6?variant=thumbnail&format=webp&v=1"
+      },
+      {
+        "id": "9be8d9fa-42b2-456f-87f5-6b824428a729",
+        "recipeKey": "square",
+        "label": "Square (1:1) (JPEG)",
+        "format": "jpeg",
+        "width": 800,
+        "height": 800,
+        "sizeBytes": 26956,
+        "bytesSaved": 47014,
+        "percentSaved": 64,
+        "processingState": "ready",
+        "errorMessage": null,
+        "url": "/media/3d1972a5-1409-4862-a829-37ce15c0a6a6?variant=square&format=jpeg&v=1"
+      },
+      {
+        "id": "bd600e17-3874-45dd-acab-6ef0df8f8f89",
+        "recipeKey": "square",
+        "label": "Square (1:1) (AVIF)",
+        "format": "avif",
+        "width": 800,
+        "height": 800,
+        "sizeBytes": 17974,
+        "bytesSaved": 55996,
+        "percentSaved": 76,
+        "processingState": "ready",
+        "errorMessage": null,
+        "url": "/media/3d1972a5-1409-4862-a829-37ce15c0a6a6?variant=square&format=avif&v=1"
+      },
+      {
+        "id": "fe8824da-456f-4a55-9a83-4516c867ac32",
+        "recipeKey": "square",
+        "label": "Square (1:1) (WEBP)",
+        "format": "webp",
+        "width": 800,
+        "height": 800,
+        "sizeBytes": 17212,
+        "bytesSaved": 56758,
+        "percentSaved": 77,
+        "processingState": "ready",
+        "errorMessage": null,
+        "url": "/media/3d1972a5-1409-4862-a829-37ce15c0a6a6?variant=square&format=webp&v=1"
+      },
+      {
+        "id": "8ca335e6-0423-4114-9a42-138143e78711",
+        "recipeKey": "portrait",
+        "label": "Portrait (3:4) (JPEG)",
+        "format": "jpeg",
+        "width": 800,
+        "height": 1067,
+        "sizeBytes": 27808,
+        "bytesSaved": 46162,
+        "percentSaved": 62,
+        "processingState": "ready",
+        "errorMessage": null,
+        "url": "/media/3d1972a5-1409-4862-a829-37ce15c0a6a6?variant=portrait&format=jpeg&v=1"
+      },
+      {
+        "id": "ddaee338-2e4c-402e-b842-f878dfc121c4",
+        "recipeKey": "portrait",
+        "label": "Portrait (3:4) (AVIF)",
+        "format": "avif",
+        "width": 800,
+        "height": 1067,
+        "sizeBytes": 17712,
+        "bytesSaved": 56258,
+        "percentSaved": 76,
+        "processingState": "ready",
+        "errorMessage": null,
+        "url": "/media/3d1972a5-1409-4862-a829-37ce15c0a6a6?variant=portrait&format=avif&v=1"
+      },
+      {
+        "id": "4c55a67e-37a1-42b9-beaa-3b001b291941",
+        "recipeKey": "portrait",
+        "label": "Portrait (3:4) (WEBP)",
+        "format": "webp",
+        "width": 800,
+        "height": 1067,
+        "sizeBytes": 16356,
+        "bytesSaved": 57614,
+        "percentSaved": 78,
+        "processingState": "ready",
+        "errorMessage": null,
+        "url": "/media/3d1972a5-1409-4862-a829-37ce15c0a6a6?variant=portrait&format=webp&v=1"
+      },
+      {
+        "id": "590eccad-a44a-4b24-ab04-3505af911076",
+        "recipeKey": "og",
+        "label": "Open Graph & Social (WEBP)",
+        "format": "webp",
+        "width": 1200,
+        "height": 630,
+        "sizeBytes": 22070,
+        "bytesSaved": 51900,
+        "percentSaved": 70,
+        "processingState": "ready",
+        "errorMessage": null,
+        "url": "/media/3d1972a5-1409-4862-a829-37ce15c0a6a6?variant=og&format=webp&v=1"
+      },
+      {
+        "id": "abb777bf-ceda-450d-9b5c-dcbcc891b672",
+        "recipeKey": "og",
+        "label": "Open Graph & Social (JPEG)",
+        "format": "jpeg",
+        "width": 1200,
+        "height": 630,
+        "sizeBytes": 33398,
+        "bytesSaved": 40572,
+        "percentSaved": 55,
+        "processingState": "ready",
+        "errorMessage": null,
+        "url": "/media/3d1972a5-1409-4862-a829-37ce15c0a6a6?variant=og&format=jpeg&v=1"
+      },
+      {
+        "id": "a9dd0bb0-a8e1-4c03-9df5-7ced43f64c28",
+        "recipeKey": "inline",
+        "label": "Inline Content (JPEG)",
+        "format": "jpeg",
+        "width": 960,
+        "height": 480,
+        "sizeBytes": 20939,
+        "bytesSaved": 53031,
+        "percentSaved": 72,
+        "processingState": "ready",
+        "errorMessage": null,
+        "url": "/media/3d1972a5-1409-4862-a829-37ce15c0a6a6?variant=inline&format=jpeg&v=1"
+      },
+      {
+        "id": "1e1634f8-3649-464f-b5ac-cf346359d86e",
+        "recipeKey": "inline",
+        "label": "Inline Content (AVIF)",
+        "format": "avif",
+        "width": 960,
+        "height": 480,
+        "sizeBytes": 17129,
+        "bytesSaved": 56841,
+        "percentSaved": 77,
+        "processingState": "ready",
+        "errorMessage": null,
+        "url": "/media/3d1972a5-1409-4862-a829-37ce15c0a6a6?variant=inline&format=avif&v=1"
+      },
+      {
+        "id": "41f7bb8a-6175-4617-853a-4632885cc65f",
+        "recipeKey": "inline",
+        "label": "Inline Content (WEBP)",
+        "format": "webp",
+        "width": 960,
+        "height": 480,
+        "sizeBytes": 15014,
+        "bytesSaved": 58956,
+        "percentSaved": 80,
+        "processingState": "ready",
+        "errorMessage": null,
+        "url": "/media/3d1972a5-1409-4862-a829-37ce15c0a6a6?variant=inline&format=webp&v=1"
+      },
+      {
+        "id": "1ead2041-7ca6-4227-9969-0efe26895b3b",
+        "recipeKey": "hero",
+        "label": "Hero (JPEG)",
+        "format": "jpeg",
+        "width": 1600,
+        "height": 900,
+        "sizeBytes": 48716,
+        "bytesSaved": 25254,
+        "percentSaved": 34,
+        "processingState": "ready",
+        "errorMessage": null,
+        "url": "/media/3d1972a5-1409-4862-a829-37ce15c0a6a6?variant=hero&format=jpeg&v=1"
+      },
+      {
+        "id": "e979ecdb-3d96-4b45-a6c2-b5a60432f6a0",
+        "recipeKey": "hero",
+        "label": "Hero (AVIF)",
+        "format": "avif",
+        "width": 1600,
+        "height": 900,
+        "sizeBytes": 31843,
+        "bytesSaved": 42127,
+        "percentSaved": 57,
+        "processingState": "ready",
+        "errorMessage": null,
+        "url": "/media/3d1972a5-1409-4862-a829-37ce15c0a6a6?variant=hero&format=avif&v=1"
+      },
+      {
+        "id": "d42e1da0-c867-426b-a0e6-70a157cb6680",
+        "recipeKey": "hero",
+        "label": "Hero (WEBP)",
+        "format": "webp",
+        "width": 1600,
+        "height": 900,
+        "sizeBytes": 30748,
+        "bytesSaved": 43222,
+        "percentSaved": 58,
+        "processingState": "ready",
+        "errorMessage": null,
+        "url": "/media/3d1972a5-1409-4862-a829-37ce15c0a6a6?variant=hero&format=webp&v=1"
+      }
+    ],
+    "summary": {
+      "totalVariants": 20,
+      "readyVariants": 20,
+      "totalVariantBytes": 450511,
+      "totalSavingsBytes": 1028889,
+      "averagePercentSaved": 70
+    }
+  },
+  "/sitemap.xml": {
+    "status": 200,
+    "headers": {
+      "accept-ch": "Sec-CH-Prefers-Color-Scheme",
+      "vary": "Sec-CH-Prefers-Color-Scheme, rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+      "critical-ch": "Sec-CH-Prefers-Color-Scheme",
+      "x-powered-by": "Next.js, Payload",
+      "cache-control": "public, max-age=60, s-maxage=300, stale-while-revalidate=3600",
+      "content-type": "application/xml; charset=utf-8",
+      "etag": "\"e0b8a8cc4c153b95434381d4fef32d6e818da00054f4b31a35b5da9ebdc7b207\"",
+      "date": "Wed, 14 Oct 2026 02:03:59 GMT",
+      "connection": "keep-alive",
+      "keep-alive": "timeout=5",
+      "transfer-encoding": "chunked"
+    },
+    "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><sitemapindex xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\"><sitemap><loc>https://dispatch.rc02.test:3129/sitemaps/1.xml</loc><lastmod>2026-10-14T02:03:40.196Z</lastmod></sitemap></sitemapindex>"
+  },
+  "https://dispatch.rc02.test:3129/sitemaps/1.xml": {
+    "status": 200,
+    "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?><urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\" xmlns:image=\"http://www.google.com/schemas/sitemap-image/1.1\"><url><loc>https://dispatch.rc02.test:3129/</loc></url><url><loc>https://dispatch.rc02.test:3129/about</loc><lastmod>2026-10-14T02:03:19.904Z</lastmod><image:image><image:loc>https://dispatch.rc02.test:3129/media/3d1972a5-1409-4862-a829-37ce15c0a6a6</image:loc></image:image></url><url><loc>https://dispatch.rc02.test:3129/articles</loc></url><url><loc>https://dispatch.rc02.test:3129/articles/neighborhood-assemblies</loc><lastmod>2026-10-14T02:03:21.217Z</lastmod><image:image><image:loc>https://dispatch.rc02.test:3129/media/3d1972a5-1409-4862-a829-37ce15c0a6a6</image:loc></image:image></url><url><loc>https://dispatch.rc02.test:3129/articles/republic-in-the-open</loc><lastmod>2026-10-14T02:03:40.196Z</lastmod><image:image><image:loc>https://dispatch.rc02.test:3129/media/3d1972a5-1409-4862-a829-37ce15c0a6a6</image:loc></image:image></url><url><loc>https://dispatch.rc02.test:3129/categories/civic-accountability</loc><lastmod>2026-10-14T02:03:01.570Z</lastmod></url><url><loc>https://dispatch.rc02.test:3129/events/open-civic-assembly</loc><lastmod>2026-10-14T02:03:21.426Z</lastmod></url><url><loc>https://dispatch.rc02.test:3129/get-involved</loc><lastmod>2026-10-14T02:03:38.082Z</lastmod></url><url><loc>https://dispatch.rc02.test:3129/topics/local-governance</loc><lastmod>2026-10-14T02:03:01.626Z</lastmod></url></urlset>"
+  },
+  "/robots.txt": {
+    "status": 200,
+    "headers": {
+      "accept-ch": "Sec-CH-Prefers-Color-Scheme",
+      "vary": "Sec-CH-Prefers-Color-Scheme, rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+      "critical-ch": "Sec-CH-Prefers-Color-Scheme",
+      "x-powered-by": "Next.js, Payload",
+      "cache-control": "public, max-age=0, must-revalidate",
+      "content-type": "text/plain",
+      "date": "Wed, 14 Oct 2026 02:03:59 GMT",
+      "connection": "keep-alive",
+      "keep-alive": "timeout=5",
+      "transfer-encoding": "chunked"
+    },
+    "body": "User-Agent: *\nAllow: /\nDisallow: /admin\nDisallow: /api\nDisallow: /preview\nDisallow: /setup\nDisallow: /guided-setup\nDisallow: /builder\nDisallow: /internal\nDisallow: /private\n\nSitemap: https://dispatch.rc02.test:3129/sitemap.xml\n"
+  },
+  "/feed.xml": {
+    "status": 200,
+    "headers": {
+      "accept-ch": "Sec-CH-Prefers-Color-Scheme",
+      "vary": "Sec-CH-Prefers-Color-Scheme, rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+      "critical-ch": "Sec-CH-Prefers-Color-Scheme",
+      "x-powered-by": "Next.js, Payload",
+      "cache-control": "public, max-age=300, s-maxage=3600, stale-while-revalidate=86400",
+      "content-type": "application/rss+xml; charset=utf-8",
+      "etag": "\"026fbc5bb24cf38881ea068dc9db28d352bc73013ba33626acde5d18c27fe0bd\"",
+      "date": "Wed, 14 Oct 2026 02:04:00 GMT",
+      "connection": "keep-alive",
+      "keep-alive": "timeout=5",
+      "transfer-encoding": "chunked"
+    },
+    "body": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<rss version=\"2.0\" xmlns:atom=\"http://www.w3.org/2005/Atom\" xmlns:dc=\"http://purl.org/dc/elements/1.1/\">\n  <channel>\n    <title>Renegade Party Dispatch</title>\n    <link>https://dispatch.rc02.test:3129</link>\n    <description>Independent civic reporting, local organizing and public accountability.</description>\n    <language>en-US</language>\n    <atom:link href=\"https://dispatch.rc02.test:3129/feed.xml\" rel=\"self\" type=\"application/rss+xml\"/>\n    <lastBuildDate>Wed, 14 Oct 2026 02:03:21 GMT</lastBuildDate>\n    <item>\n      <title>Neighborhood assemblies in practice | Dispatch</title>\n      <link>https://dispatch.rc02.test:3129/articles/neighborhood-assemblies</link>\n      <guid isPermaLink=\"false\">urn:renegade:content:c6d620b1-65ff-486f-b1d2-6818a73e17f8</guid>\n      <pubDate>Wed, 14 Oct 2026 02:03:21 GMT</pubDate>\n      <dc:creator>Dispatch Editorial Board</dc:creator>\n      <description><![CDATA[Read independent civic reporting from Renegade Party Dispatch, with primary sources, clear context and corrections.]]></description>\n    </item>\n    <item>\n      <title>A republic built in the open | Dispatch</title>\n      <link>https://dispatch.rc02.test:3129/articles/republic-in-the-open</link>\n      <guid isPermaLink=\"false\">urn:renegade:content:d4c4d139-4e3e-4bdb-a65b-df8ce23ca62f</guid>\n      <pubDate>Wed, 14 Oct 2026 02:03:20 GMT</pubDate>\n      <dc:creator>Dispatch Editorial Board</dc:creator>\n      <description><![CDATA[Read independent civic reporting from Renegade Party Dispatch, with primary sources, clear context and corrections.]]></description>\n    </item>\n  </channel>\n</rss>"
+  },
+  "/feed.json": {
+    "status": 200,
+    "headers": {
+      "accept-ch": "Sec-CH-Prefers-Color-Scheme",
+      "vary": "Sec-CH-Prefers-Color-Scheme, rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch",
+      "critical-ch": "Sec-CH-Prefers-Color-Scheme",
+      "x-powered-by": "Next.js, Payload",
+      "cache-control": "public, max-age=60, s-maxage=300, stale-while-revalidate=3600",
+      "content-type": "application/feed+json; charset=utf-8",
+      "etag": "\"fc9c3dea901f5cab67be4eda8ce07fa80049f0b63a2eb0a24eaf4af94b7a1c84\"",
+      "date": "Wed, 14 Oct 2026 02:04:00 GMT",
+      "connection": "keep-alive",
+      "keep-alive": "timeout=5",
+      "transfer-encoding": "chunked"
+    },
+    "body": "{\"version\":\"https://jsonfeed.org/version/1.1\",\"title\":\"Renegade Party Dispatch\",\"home_page_url\":\"https://dispatch.rc02.test:3129\",\"feed_url\":\"https://dispatch.rc02.test:3129/feed.json\",\"items\":[{\"id\":\"urn:renegade:content:c6d620b1-65ff-486f-b1d2-6818a73e17f8\",\"url\":\"https://dispatch.rc02.test:3129/articles/neighborhood-assemblies\",\"title\":\"Neighborhood assemblies in practice | Dispatch\",\"summary\":\"Read independent civic reporting from Renegade Party Dispatch, with primary sources, clear context and corrections.\",\"date_published\":\"2026-10-14T02:03:21.176Z\",\"date_modified\":\"2026-10-14T02:03:21.217Z\",\"authors\":[{\"name\":\"Dispatch Editorial Board\",\"url\":null}],\"image\":\"https://dispatch.rc02.test:3129/media/3d1972a5-1409-4862-a829-37ce15c0a6a6\"},{\"id\":\"urn:renegade:content:d4c4d139-4e3e-4bdb-a65b-df8ce23ca62f\",\"url\":\"https://dispatch.rc02.test:3129/articles/republic-in-the-open\",\"title\":\"A republic built in the open | Dispatch\",\"summary\":\"Read independent civic reporting from Renegade Party Dispatch, with primary sources, clear context and corrections.\",\"date_published\":\"2026-10-14T02:03:20.552Z\",\"date_modified\":\"2026-10-14T02:03:40.196Z\",\"authors\":[{\"name\":\"Dispatch Editorial Board\",\"url\":null}],\"image\":\"https://dispatch.rc02.test:3129/media/3d1972a5-1409-4862-a829-37ce15c0a6a6\"}]}"
+  },
+  "notFound": {
+    "status": 404
+  }
+}

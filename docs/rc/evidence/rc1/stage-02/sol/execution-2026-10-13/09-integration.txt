@@ -1,0 +1,334 @@
+
+> renegade-cms@0.1.0 test:integration
+> node scripts/run-integration.mjs --reporter=default --reporter=json --outputFile=scratch/sol-evidence/integration.json
+
+
+ RUN  v3.2.7 C:/Projects/RENEGADE CMS/sol-rc1-20261013
+
+[05:03:04] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+stderr | tests/integration/shared-contract-commerce-shop.integration.test.ts > Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks
+Failed to revalidate paths: Error: Invariant: static generation store missing in revalidatePath /articles/decentralized-truth
+    at revalidate (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\next\src\server\web\spec-extension\revalidate.ts:135:11)
+    at revalidatePath (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\next\src\server\web\spec-extension\revalidate.ts:125:10)
+    at persistWorkflow (C:\Projects\RENEGADE CMS\sol-rc1-20261013\src\modules\editorial\persistence.ts:553:7)
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at ensureRenegadePartyDemo (C:\Projects\RENEGADE CMS\sol-rc1-20261013\tests\helpers\renegadeparty-demo.ts:603:7)
+    at C:\Projects\RENEGADE CMS\sol-rc1-20261013\tests\integration\shared-contract-commerce-shop.integration.test.ts:186:12
+
+ ✓ tests/integration/shared-contract-commerce-shop.integration.test.ts (34 tests) 3117ms
+   ✓ Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks > CHECKOUT / ORDER: Lifecycle, Tampering Invariants & Reconciliation > 9. Proves exactly one canonical Order and one correct receipt created across duplicate deliveries  423ms
+[05:03:09] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+stderr | tests/integration/aud-08-audience-pass-gate.integration.test.ts > AUD-08 Audience Pass Gate — Comprehensive End-to-End Acceptance Integration
+Failed to revalidate paths: Error: Invariant: static generation store missing in revalidatePath /articles/decentralized-truth
+    at revalidate (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\next\src\server\web\spec-extension\revalidate.ts:135:11)
+    at revalidatePath (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\next\src\server\web\spec-extension\revalidate.ts:125:10)
+    at persistWorkflow (C:\Projects\RENEGADE CMS\sol-rc1-20261013\src\modules\editorial\persistence.ts:553:7)
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at ensureRenegadePartyDemo (C:\Projects\RENEGADE CMS\sol-rc1-20261013\tests\helpers\renegadeparty-demo.ts:603:7)
+    at C:\Projects\RENEGADE CMS\sol-rc1-20261013\tests\integration\aud-08-audience-pass-gate.integration.test.ts:90:12
+
+ ✓ tests/integration/aud-08-audience-pass-gate.integration.test.ts (10 tests) 3712ms
+   ✓ AUD-08 Audience Pass Gate — Comprehensive End-to-End Acceptance Integration > 1. Configures site sender identity, local mail sink, telecom emulator, and verifies unconfigured real providers degrade safely  304ms
+   ✓ AUD-08 Audience Pass Gate — Comprehensive End-to-End Acceptance Integration > 3. Confirms double opt-in, rejects expired/tampered/replayed tokens, updates preferences, reviews CSV import quarantine, and exports audience  321ms
+   ✓ AUD-08 Audience Pass Gate — Comprehensive End-to-End Acceptance Integration > 5. Composes responsive newsletter from canonical content, previews fallbacks, test sends, approves, and delivers through real local SMTP  498ms
+   ✓ AUD-08 Audience Pass Gate — Comprehensive End-to-End Acceptance Integration > 6. Proves no duplicate sends on concurrent execution, suppresses late unsubscribe, retries transient failures, and suppresses bounces/complaints  629ms
+   ✓ AUD-08 Audience Pass Gate — Comprehensive End-to-End Acceptance Integration > 8. Composes SMS/RCS variants, handles RCS fallback, enforces quiet hours, processes STOP/HELP keywords via emulator  461ms
+ ✓ tests/integration/shared-contract-affiliate-pod.integration.test.ts (28 tests) 26ms
+[05:03:15] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+stderr | tests/integration/shared-contract-audience-community.integration.test.ts > Shared Contract Proof: Audience, Community, Permissions/Privacy & Resilience
+Failed to revalidate paths: Error: Invariant: static generation store missing in revalidatePath /articles/decentralized-truth
+    at revalidate (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\next\src\server\web\spec-extension\revalidate.ts:135:11)
+    at revalidatePath (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\next\src\server\web\spec-extension\revalidate.ts:125:10)
+    at persistWorkflow (C:\Projects\RENEGADE CMS\sol-rc1-20261013\src\modules\editorial\persistence.ts:553:7)
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at ensureRenegadePartyDemo (C:\Projects\RENEGADE CMS\sol-rc1-20261013\tests\helpers\renegadeparty-demo.ts:603:7)
+    at C:\Projects\RENEGADE CMS\sol-rc1-20261013\tests\integration\shared-contract-audience-community.integration.test.ts:118:12
+
+ ✓ tests/integration/shared-contract-audience-community.integration.test.ts (20 tests) 3240ms
+[05:03:21] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+ ✓ tests/integration/rc08b-promotions.integration.test.ts (10 tests) 33538ms
+   ✓ RC08B persisted promotion boundaries > creates and edits a real timeline through scoped operator access, rejects foreign memberships, and hides deleted/private events  333ms
+   ✓ RC08B persisted promotion boundaries > persists consent, scopes replay by form/site, recovers a failed task and never repeats completed side effects  591ms
+   ✓ RC08B persisted promotion boundaries > keeps external delivery independent of in-app, suppresses late mute/block/address opt-out, and recovers a real disabled-transport failure  586ms
+   ✓ RC08B persisted promotion boundaries > compiles ten persisted canonical notifications into one deduplicated digest while in-app is off  673ms
+   ✓ RC08B persisted promotion boundaries > exports more than one page of contributions and messages, while a removed member gets own sent text but no foreign history  29345ms
+[05:03:57] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+ ✓ tests/integration/commerce-runtime-acceptance.integration.test.ts (1 test) 3717ms
+   ✓ RC08D-04: Commerce Runtime Closure & Acceptance Verification > proves catalog, low-stock race, cart authority, settlement, subscriptions, donations, affiliates, and fulfillment  3716ms
+[05:04:03] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+ ✓ tests/integration/rc05-pass2-commerce-routes.integration.test.ts (5 tests) 4513ms
+   ✓ RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security > proves the complete physical product lifecycle, server authority, and idempotent settlement  1859ms
+   ✓ RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security > defeats client price, quantity, and total tampering attempts across routes  801ms
+   ✓ RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security > proves webhook security boundaries: unsigned, invalid signature, replay, and race handling  650ms
+   ✓ RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security > proves multi-tenant boundaries and security against cross-site cart/order access  575ms
+   ✓ RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security > proves downstream partial failure handling and operator reconciliation  627ms
+ ✓ tests/integration/flow-06-workflow-pass-gate.integration.test.ts (1 test) 73ms
+[05:04:10] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[05:04:12] [32mINFO[39m: [36mCanonical neutral demo information architecture is ready.[39m
+ ✓ tests/integration/med-04-podcast-acceptance.integration.test.ts (1 test) 3004ms
+   ✓ MED-04 Podcast Publishing Workflow End-to-End Acceptance > creates show and two episodes, handles preview/scheduling, renders player/pages, validates RSS, handles range requests, maintains invariant GUIDs across slug rename, and restarts cleanly  1138ms
+[05:04:15] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+ ✓ tests/integration/comm-00-community-pass.integration.test.ts (11 tests) 1940ms
+[05:04:19] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+ ✓ tests/integration/community-cross-site-boundaries.integration.test.ts (7 tests) 2059ms
+   ✓ Community Domain Cross-Site, Multi-Member & Boundary Verification > 6. Full Journey & Moderator Audit Trail: Report, inspect, resolve, and verify tamper-evident audit chain  307ms
+[05:04:23] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[05:04:25] [32mINFO[39m: [36mCanonical neutral demo information architecture is ready.[39m
+ ✓ tests/integration/med-06-command-center.integration.test.ts (1 test) 5574ms
+   ✓ MED-06 Media Pass Release Gate — Comprehensive Acceptance Integration > exercises the complete 14-stage Mandatory Clean Demo workflow across PostgreSQL, durable storage, podcast feed, and video delivery  3427ms
+[05:04:31] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+ ✓ tests/integration/tenant-authorization-matrix.integration.test.ts (21 tests) 1142ms
+[05:04:34] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[05:04:36] [32mINFO[39m: [36mCanonical neutral demo information architecture is ready.[39m
+ ✓ tests/integration/disc-00-crawler-smoke.integration.test.ts (11 tests) 4561ms
+   ✓ DISC-00 Crawler-Facing Smoke Test Suite > serves canonical RSS 2.0 feed with caching and conditional GET support  366ms
+   ✓ DISC-00 Crawler-Facing Smoke Test Suite > serves valid sitemap index and child sitemaps with caching and conditional GET  750ms
+   ✓ DISC-00 Crawler-Facing Smoke Test Suite > serves JSON Feed 1.1 with ETag caching and conditional GET  308ms
+   ✓ DISC-00 Crawler-Facing Smoke Test Suite > serves content-scoped streams with stable entity IDs and conditional GET  301ms
+[05:04:40] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[05:04:42] [32mINFO[39m: [36mCanonical neutral demo information architecture is ready.[39m
+stderr | tests/integration/rc03-core-orchestration.integration.test.ts > RC-03 Core Orchestration Pass 1 End-to-End Suite > 2. Scheduled Publication: timezone-aware future scheduling, worker execution, lease locking & idempotency
+Failed to revalidate paths: Error: Invariant: static generation store missing in revalidatePath /articles/sched-art-86830413
+    at revalidate (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\next\src\server\web\spec-extension\revalidate.ts:135:11)
+    at revalidatePath (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\next\src\server\web\spec-extension\revalidate.ts:125:10)
+    at persistWorkflow (C:\Projects\RENEGADE CMS\sol-rc1-20261013\src\modules\editorial\persistence.ts:553:7)
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at publishScheduledArticleUnlocked (C:\Projects\RENEGADE CMS\sol-rc1-20261013\src\modules\editorial\persistence.ts:1018:3)
+    at withExecutionLock (C:\Projects\RENEGADE CMS\sol-rc1-20261013\src\modules\operations\execution-lock.ts:26:12)
+    at executeScheduledPublishJobUnlocked (C:\Projects\RENEGADE CMS\sol-rc1-20261013\src\modules\editorial\scheduler.ts:172:5)
+    at withExecutionLock (C:\Projects\RENEGADE CMS\sol-rc1-20261013\src\modules\operations\execution-lock.ts:26:12)
+    at C:\Projects\RENEGADE CMS\sol-rc1-20261013\tests\integration\rc03-core-orchestration.integration.test.ts:245:24
+    at file:///C:/Projects/RENEGADE%20CMS/sol-rc1-20261013/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20
+
+ ✓ tests/integration/rc03-core-orchestration.integration.test.ts (4 tests) 5797ms
+   ✓ RC-03 Core Orchestration Pass 1 End-to-End Suite > 1. Editorial Workflow: draft -> request review -> reject -> revise -> approve with permission boundaries & audit trail  1580ms
+   ✓ RC-03 Core Orchestration Pass 1 End-to-End Suite > 2. Scheduled Publication: timezone-aware future scheduling, worker execution, lease locking & idempotency  1400ms
+   ✓ RC-03 Core Orchestration Pass 1 End-to-End Suite > 3. Coordinated Release: rejects invalid article, media, distribution and newsletter references without false success  890ms
+[05:04:48] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+ ✓ tests/integration/starter-experiences.integration.test.ts (13 tests) 5037ms
+   ✓ Starter Experiences Integration Tests > Publication & Community Starter (publication-community) > installs the publication-community starter completely into Payload  2214ms
+   ✓ Starter Experiences Integration Tests > Publication & Community Starter (publication-community) > upgrades starter templates non-destructively without altering custom page content  327ms
+   ✓ Starter Experiences Integration Tests > Campaign & Commerce Starter (campaign-commerce) > installs the campaign-commerce starter completely into Payload  2137ms
+[05:04:55] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+ ✓ tests/integration/pre-06-presentation-pass-gate.integration.test.ts (4 tests) 3412ms
+   ✓ PRE-06 Presentation Pass Gate — PostgreSQL Integration Suite > 3. Legacy site migration end-to-end integration and quarantine boundary > executes preflight, imports into isolated site, verifies database, activates, and rolls back cleanly  2259ms
+[05:05:00] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[05:05:02] [32mINFO[39m: [36mCanonical neutral demo information architecture is ready.[39m
+ ✓ tests/integration/canonical-information-architecture.integration.test.ts (12 tests) 2418ms
+[05:05:05] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[05:05:07] [32mINFO[39m: [36mCanonical neutral demo information architecture is ready.[39m
+ ✓ tests/integration/pub-04-publishing-floor.integration.test.ts (6 tests) 3301ms
+   ✓ PUB-04 publishing floor integration contract > keeps saved edits out of the public body index and indexes them immediately upon republish  620ms
+   ✓ PUB-04 publishing floor integration contract > Requirement 6: local public search finds unique phrase in body projection and highlights excerpt  312ms
+[05:05:10] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[05:05:12] [32mINFO[39m: [36mCanonical neutral demo information architecture is ready.[39m
+ ✓ tests/integration/disc-06-discovery-pass-gate.integration.test.ts (9 tests) 3823ms
+   ✓ DISC-06 Discovery Pass Gate — Comprehensive End-to-End Proof > 4. Fetches and parses sitemap index/children, robots.txt, and site feeds; verifies indexability filters  600ms
+   ✓ DISC-06 Discovery Pass Gate — Comprehensive End-to-End Proof > 5. Searches unique title/body/transcript terms, facets, pagination, safe highlights, rebuild, and drift repair  601ms
+ ✓ tests/integration/public-experiment-and-telemetry.integration.test.ts (6 tests) 13ms
+[05:05:16] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+ ✓ tests/integration/aud-public-subscription-journey.integration.test.ts (4 tests) 2382ms
+   ✓ RC-04 Public Subscription Journey & Audience System Integration > rejects invalid inputs and enforces public rate limiting against abuse  766ms
+   ✓ RC-04 Public Subscription Journey & Audience System Integration > proves full journey: request -> confirmation -> preferences -> unsubscribe -> suppression -> re-subscribe  597ms
+[05:05:20] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+ ✓ tests/integration/phase-b-publisher-acceptance.integration.test.ts (4 tests) 496ms
+[05:05:23] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[05:05:25] [32mINFO[39m: [36mCanonical neutral demo information architecture is ready.[39m
+ ✓ tests/integration/pre-04-reusable-composition.integration.test.ts (5 tests) 2335ms
+ ✓ tests/integration/flow-05-localization-pass-gate.integration.test.ts (3 tests) 14ms
+[05:05:29] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[05:05:31] [32mINFO[39m: [36mCanonical neutral demo information architecture is ready.[39m
+ ✓ tests/integration/med-03-variants.integration.test.ts (1 test) 4510ms
+   ✓ MED-03 image variant lifecycle & governance integration > exercises real image upload, metadata extraction, variant generation, delivery headers, crop regeneration, and GC protection  2590ms
+[05:05:35] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[05:05:37] [32mINFO[39m: [36mCanonical neutral demo information architecture is ready.[39m
+stderr | tests/integration/editorial-acceptance.integration.test.ts > M04-C editorial acceptance > creates, reviews, previews, schedules, publishes exactly once, restores, and prevents embargo leakage
+Failed to revalidate paths: Error: Invariant: static generation store missing in revalidatePath /articles/m04-c-op-ed-29121b13
+    at revalidate (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\next\src\server\web\spec-extension\revalidate.ts:135:11)
+    at revalidatePath (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\next\src\server\web\spec-extension\revalidate.ts:125:10)
+    at persistWorkflow (C:\Projects\RENEGADE CMS\sol-rc1-20261013\src\modules\editorial\persistence.ts:553:7)
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at publishScheduledArticleUnlocked (C:\Projects\RENEGADE CMS\sol-rc1-20261013\src\modules\editorial\persistence.ts:1018:3)
+    at withExecutionLock (C:\Projects\RENEGADE CMS\sol-rc1-20261013\src\modules\operations\execution-lock.ts:26:12)
+    at handler (C:\Projects\RENEGADE CMS\sol-rc1-20261013\src\modules\editorial\tasks.ts:32:23)
+    at Object.editorial-publish (file:///C:/Projects/RENEGADE%20CMS/sol-rc1-20261013/node_modules/payload/dist/queues/operations/runJobs/runJob/getRunTaskFunction.js:65:37)
+    at handler (file:///C:/Projects/RENEGADE%20CMS/sol-rc1-20261013/node_modules/payload/dist/queues/operations/runJobs/index.js:260:25)
+    at runJob (file:///C:/Projects/RENEGADE%20CMS/sol-rc1-20261013/node_modules/payload/dist/queues/operations/runJobs/runJob/index.js:9:9)
+
+[05:05:40] [32mINFO[39m:
+    [35mevent[39m: "editorial.job.publish"
+    [35marticleId[39m: "28003f20-730f-4e9c-93fa-88191e5c2d49"
+    [35midempotencyKey[39m: "schedule-29121b13"
+    [35mpublished[39m: true
+    [35mqueue[39m: "operations"
+stderr | tests/integration/editorial-acceptance.integration.test.ts > M04-C editorial acceptance > creates, reviews, previews, schedules, publishes exactly once, restores, and prevents embargo leakage
+Failed to revalidate paths: Error: Invariant: static generation store missing in revalidatePath /articles/m04-c-op-ed-29121b13
+    at revalidate (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\next\src\server\web\spec-extension\revalidate.ts:135:11)
+    at revalidatePath (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\next\src\server\web\spec-extension\revalidate.ts:125:10)
+    at persistWorkflow (C:\Projects\RENEGADE CMS\sol-rc1-20261013\src\modules\editorial\persistence.ts:553:7)
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at C:\Projects\RENEGADE CMS\sol-rc1-20261013\tests\integration\editorial-acceptance.integration.test.ts:240:5
+    at file:///C:/Projects/RENEGADE%20CMS/sol-rc1-20261013/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20
+
+stderr | tests/integration/editorial-acceptance.integration.test.ts > M04-C editorial acceptance > creates, reviews, previews, schedules, publishes exactly once, restores, and prevents embargo leakage
+Failed to revalidate paths: Error: Invariant: static generation store missing in revalidatePath /articles/m04-c-op-ed-29121b13
+    at revalidate (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\next\src\server\web\spec-extension\revalidate.ts:135:11)
+    at revalidatePath (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\next\src\server\web\spec-extension\revalidate.ts:125:10)
+    at persistWorkflow (C:\Projects\RENEGADE CMS\sol-rc1-20261013\src\modules\editorial\persistence.ts:553:7)
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at C:\Projects\RENEGADE CMS\sol-rc1-20261013\tests\integration\editorial-acceptance.integration.test.ts:269:5
+    at file:///C:/Projects/RENEGADE%20CMS/sol-rc1-20261013/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20
+
+ ✓ tests/integration/editorial-acceptance.integration.test.ts (2 tests) 6442ms
+   ✓ M04-C editorial acceptance > creates, reviews, previews, schedules, publishes exactly once, restores, and prevents embargo leakage  4158ms
+   ✓ M04-C editorial acceptance > promotes a public discussion post into an editorial draft while keeping the original post intact  318ms
+ ✓ tests/integration/integrations-admin-api.integration.test.ts (8 tests) 14ms
+[05:05:45] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+ ✓ tests/integration/setup-first-run.integration.test.ts (6 tests) 4071ms
+   ✓ first-run onboarding provisioning > creates the owner profile with a valid, unique handle  358ms
+   ✓ first-run onboarding provisioning > is idempotent: re-running keeps the same owner profile handle  386ms
+   ✓ first-run onboarding provisioning > exercises full Lean profile lifecycle with publishing defaults  1070ms
+   ✓ first-run onboarding provisioning > exercises full Standard profile lifecycle with publishing defaults  1956ms
+[05:05:52] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[05:05:54] [32mINFO[39m: [36mCanonical neutral demo information architecture is ready.[39m
+ ✓ tests/integration/media-acceptance.integration.test.ts (1 test) 3224ms
+   ✓ M10 media publication acceptance > fixture-syncs an episode and a video twice, publishes ordered book chapters, and preserves derived media boundaries  856ms
+[05:05:58] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[05:06:00] [32mINFO[39m: [36mCanonical neutral demo information architecture is ready.[39m
+ ✓ tests/integration/med-01-upload-sessions.integration.test.ts (1 test) 3276ms
+   ✓ MED-01 durable upload sessions PostgreSQL integration > exercises complete session lifecycle: creation, chunking, idempotency, finalization, recovery, cancel, cleanup, and attachment  698ms
+[05:06:03] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+ ✓ tests/integration/rc03-restart-recovery.integration.test.ts (2 tests) 23593ms
+   ✓ RC03 real durable jobs and local federation boundary > durable pending publication survives competing fresh job runners and publishes one canonical revision  18600ms
+   ✓ RC03 real durable jobs and local federation boundary > queues one local signed outbox message and truthfully retains a deliberate inbox failure  4912ms
+[05:06:29] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+ ✓ tests/integration/pre-05-legacy-migration.integration.test.ts (1 test) 2744ms
+   ✓ PRE-05 Legacy Site Migration Integration Tests > executes end-to-end migration into isolated site, verifies database records, activates, and cleanly rolls back  2598ms
+[05:06:34] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+ ✓ tests/integration/rc08d-lock-projection.integration.test.ts (8 tests) 794ms
+[05:06:37] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[05:06:39] [32mINFO[39m: [36mCanonical neutral demo information architecture is ready.[39m
+stderr | tests/integration/flow-00-editorial-pass-gate.integration.test.ts > FLOW-00 editorial pass gate integration > proves full FLOW-00 contract: draft -> review -> quality gate waiver -> schedule -> worker -> publish -> last-public-revision protection -> unpublish -> archive
+Failed to revalidate paths: Error: Invariant: static generation store missing in revalidatePath /articles/flow-00-pass-gate-349a0da4
+    at revalidate (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\next\src\server\web\spec-extension\revalidate.ts:135:11)
+    at revalidatePath (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\next\src\server\web\spec-extension\revalidate.ts:125:10)
+    at persistWorkflow (C:\Projects\RENEGADE CMS\sol-rc1-20261013\src\modules\editorial\persistence.ts:553:7)
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at publishScheduledArticleUnlocked (C:\Projects\RENEGADE CMS\sol-rc1-20261013\src\modules\editorial\persistence.ts:1018:3)
+    at withExecutionLock (C:\Projects\RENEGADE CMS\sol-rc1-20261013\src\modules\operations\execution-lock.ts:26:12)
+    at reconcileScheduledPublishJobs (C:\Projects\RENEGADE CMS\sol-rc1-20261013\src\modules\editorial\persistence.ts:1134:23)
+    at C:\Projects\RENEGADE CMS\sol-rc1-20261013\tests\integration\flow-00-editorial-pass-gate.integration.test.ts:163:30
+    at file:///C:/Projects/RENEGADE%20CMS/sol-rc1-20261013/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20
+
+stderr | tests/integration/flow-00-editorial-pass-gate.integration.test.ts > FLOW-00 editorial pass gate integration > proves full FLOW-00 contract: draft -> review -> quality gate waiver -> schedule -> worker -> publish -> last-public-revision protection -> unpublish -> archive
+Failed to revalidate paths: Error: Invariant: static generation store missing in revalidatePath /articles/flow-00-pass-gate-349a0da4
+    at revalidate (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\next\src\server\web\spec-extension\revalidate.ts:135:11)
+    at revalidatePath (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\next\src\server\web\spec-extension\revalidate.ts:125:10)
+    at persistWorkflow (C:\Projects\RENEGADE CMS\sol-rc1-20261013\src\modules\editorial\persistence.ts:553:7)
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at C:\Projects\RENEGADE CMS\sol-rc1-20261013\tests\integration\flow-00-editorial-pass-gate.integration.test.ts:182:5
+    at file:///C:/Projects/RENEGADE%20CMS/sol-rc1-20261013/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20
+
+stderr | tests/integration/flow-00-editorial-pass-gate.integration.test.ts > FLOW-00 editorial pass gate integration > proves full FLOW-00 contract: draft -> review -> quality gate waiver -> schedule -> worker -> publish -> last-public-revision protection -> unpublish -> archive
+Failed to revalidate paths: Error: Invariant: static generation store missing in revalidatePath /articles/flow-00-pass-gate-349a0da4
+    at revalidate (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\next\src\server\web\spec-extension\revalidate.ts:135:11)
+    at revalidatePath (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\next\src\server\web\spec-extension\revalidate.ts:125:10)
+    at persistWorkflow (C:\Projects\RENEGADE CMS\sol-rc1-20261013\src\modules\editorial\persistence.ts:553:7)
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at C:\Projects\RENEGADE CMS\sol-rc1-20261013\tests\integration\flow-00-editorial-pass-gate.integration.test.ts:217:5
+    at file:///C:/Projects/RENEGADE%20CMS/sol-rc1-20261013/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20
+
+ ✓ tests/integration/flow-00-editorial-pass-gate.integration.test.ts (1 test) 5286ms
+   ✓ FLOW-00 editorial pass gate integration > proves full FLOW-00 contract: draft -> review -> quality gate waiver -> schedule -> worker -> publish -> last-public-revision protection -> unpublish -> archive  3321ms
+[05:06:44] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+ ✓ tests/integration/pre-01-theme-lifecycle.integration.test.ts (2 tests) 665ms
+[05:06:47] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+stderr | tests/integration/flow-03-scheduler-api.integration.test.ts > FLOW-03 Scheduling & Calendar Integration Suite > 3. Worker lease locking & idempotent execution publishes ONLY the target approved revision
+Failed to revalidate paths: Error: Invariant: static generation store missing in revalidatePath /articles/flow-03-sched-b3a66008
+    at revalidate (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\next\src\server\web\spec-extension\revalidate.ts:135:11)
+    at revalidatePath (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\next\src\server\web\spec-extension\revalidate.ts:125:10)
+    at persistWorkflow (C:\Projects\RENEGADE CMS\sol-rc1-20261013\src\modules\editorial\persistence.ts:553:7)
+    at processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at publishScheduledArticleUnlocked (C:\Projects\RENEGADE CMS\sol-rc1-20261013\src\modules\editorial\persistence.ts:1018:3)
+    at withExecutionLock (C:\Projects\RENEGADE CMS\sol-rc1-20261013\src\modules\operations\execution-lock.ts:26:12)
+    at executeScheduledPublishJobUnlocked (C:\Projects\RENEGADE CMS\sol-rc1-20261013\src\modules\editorial\scheduler.ts:172:5)
+    at withExecutionLock (C:\Projects\RENEGADE CMS\sol-rc1-20261013\src\modules\operations\execution-lock.ts:26:12)
+    at C:\Projects\RENEGADE CMS\sol-rc1-20261013\tests\integration\flow-03-scheduler-api.integration.test.ts:172:21
+    at file:///C:/Projects/RENEGADE%20CMS/sol-rc1-20261013/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20
+
+ ✓ tests/integration/flow-03-scheduler-api.integration.test.ts (5 tests) 3052ms
+   ✓ FLOW-03 Scheduling & Calendar Integration Suite > 1. Schedules an article around a DST edge in test timezone America/Chicago  450ms
+   ✓ FLOW-03 Scheduling & Calendar Integration Suite > 2. Creating a newer draft (rev sequence N+1) post-schedule does NOT alter scheduled target revision  387ms
+   ✓ FLOW-03 Scheduling & Calendar Integration Suite > 3. Worker lease locking & idempotent execution publishes ONLY the target approved revision  773ms
+[05:06:52] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+ ✓ tests/integration/ai-control-plane.integration.test.ts (1 test) 6220ms
+   ✓ AI control plane persistence > stores an encrypted credential and review decision across database reads  5932ms
+[05:07:00] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+ ✓ tests/integration/shop-08-local-donation-checkout.integration.test.ts (1 test) 1637ms
+   ✓ SHOP-08 local donation checkout through public routes and durable payment job > settles one gift, one order and one receipt across a replay  1636ms
+ ✓ tests/integration/experiences-runtime.integration.test.ts (3 tests) 6ms
+[05:07:04] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[05:07:06] [32mINFO[39m: [36mCanonical neutral demo information architecture is ready.[39m
+ ✓ tests/integration/long-form-quality-center.integration.test.ts (1 test) 2304ms
+   ✓ long-form and Quality Center acceptance > publishes ordered chapters, preserves a chapter redirect, and retains deterministic quality lifecycle state  381ms
+[05:07:08] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[05:07:10] [32mINFO[39m: [36mCanonical neutral demo information architecture is ready.[39m
+ ✓ tests/integration/page-builder-acceptance.integration.test.ts (3 tests) 2042ms
+[05:07:12] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[05:07:14] [32mINFO[39m: [36mCanonical neutral demo information architecture is ready.[39m
+ ✓ tests/integration/content-release-acceptance.integration.test.ts (1 test) 2394ms
+   ✓ coordinated content release acceptance > durably schedules and releases an approved product once  511ms
+ ✓ tests/integration/flow-01-workflow-api.integration.test.ts (3 tests) 6ms
+[05:07:16] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[05:07:18] [32mINFO[39m: [36mCanonical neutral demo information architecture is ready.[39m
+ ✓ tests/integration/discoverability-acceptance.integration.test.ts (1 test) 2258ms
+   ✓ discoverability acceptance > converges search and redirects for a persisted public record without crossing sites  322ms
+[05:07:21] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+ ✓ tests/integration/installation.integration.test.ts (3 tests) 220ms
+[05:07:23] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[05:07:23] [32mINFO[39m:
+    [35mevent[39m: "operations.job.heartbeat"
+    [35mobservedAt[39m: "2026-10-13T10:07:23.527Z"
+    [35mversion[39m: "0.1.0-dev"
+[05:07:23] [33mWARN[39m:
+    [35mevent[39m: "operations.job.forced_failure"
+    [35mjobId[39m: "640238ee-6abd-4cae-8318-2c5e403b76fd"
+    [35mmarker[39m: "c1d121cb-45ae-4232-a3d6-a8a6183be951"
+    [35mattempt[39m: 1
+[05:07:23] [31mERROR[39m:
+    [35mevent[39m: "operations.job.attempt_failed"
+    [35mjobId[39m: "640238ee-6abd-4cae-8318-2c5e403b76fd"
+    [35mattempt[39m: 1
+[05:07:23] [33mWARN[39m:
+    [35mevent[39m: "operations.job.forced_failure"
+    [35mjobId[39m: "640238ee-6abd-4cae-8318-2c5e403b76fd"
+    [35mmarker[39m: "c1d121cb-45ae-4232-a3d6-a8a6183be951"
+    [35mattempt[39m: 2
+[05:07:23] [31mERROR[39m:
+    [35mevent[39m: "operations.job.attempt_failed"
+    [35mjobId[39m: "640238ee-6abd-4cae-8318-2c5e403b76fd"
+    [35mattempt[39m: 2
+[05:07:24] [33mWARN[39m:
+    [35mevent[39m: "operations.job.forced_failure"
+    [35mjobId[39m: "640238ee-6abd-4cae-8318-2c5e403b76fd"
+    [35mmarker[39m: "c1d121cb-45ae-4232-a3d6-a8a6183be951"
+    [35mattempt[39m: 3
+[05:07:24] [31mERROR[39m:
+    [35mevent[39m: "operations.job.attempt_failed"
+    [35mjobId[39m: "640238ee-6abd-4cae-8318-2c5e403b76fd"
+    [35mattempt[39m: 3
+ ✓ tests/integration/operations-jobs.integration.test.ts (3 tests) 12149ms
+   ✓ PostgreSQL operations jobs > uses bounded exponential retry and retains terminal failure evidence  476ms
+   ✓ PostgreSQL operations jobs > runs a future-scheduled job after the queueing process has exited  11440ms
+ ✓ tests/integration/upgrade-migration.integration.test.ts (1 test) 13640ms
+   ✓ previous-release upgrade acceptance > keeps an explicit, advanceable pre-Second-Pass upgrade boundary  13639ms
+[05:07:52] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+ ✓ tests/integration/payload-postgres.integration.test.ts (1 test) 318ms
+   ✓ Payload PostgreSQL integration > writes and reads a scoped publication record through Payload  317ms
+
+ Test Files  49 passed (49)
+      Tests  291 passed (291)
+   Start at  05:03:01
+   Duration  291.67s (transform 2.67s, setup 0ms, collect 81.23s, tests 200.11s, environment 6ms, prepare 2.93s)
+
+JSON report written to C:/Projects/RENEGADE CMS/sol-rc1-20261013/scratch/sol-evidence/integration.json

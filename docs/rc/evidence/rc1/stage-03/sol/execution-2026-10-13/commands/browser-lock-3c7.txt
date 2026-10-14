@@ -1,0 +1,55 @@
+
+Running 1 test using 1 worker
+
+node : (node:31616) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+At line:2 char:121
++ ... iagnostic'; node node_modules/@playwright/test/cli.js test 04-documen ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ((node:31616) Wa... env being set.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  1 scratch\sol-specs\04-document-locks.spec.ts:4:1 › native settings locks acquire, reject concurrent mutation, renew and release through the UI (1.0m)
+Testing stopped early after 1 maximum allowed failures.
+
+
+  1) scratch\sol-specs\04-document-locks.spec.ts:4:1 › native settings locks acquire, reject concurrent mutation, renew and release through the UI
+
+    Error: expect(received).toBeGreaterThan(expected)
+
+    Expected: > 1791888723882
+    Received:   1791888723882
+
+    Call Log:
+    - Timeout 45000ms exceeded while waiting on the predicate
+
+      30 |   expect(after.siteName).toBe(before.siteName)
+      31 |   await page.getByLabel('Site Name', { exact: true }).fill(title)
+    > 32 |   await expect.poll(async () => Date.parse((await locks())[0].updatedAt), { timeout: 45_000 }).toBeGreaterThan(Date.parse(acquired.updatedAt))
+         |                                                                                                ^
+      33 |   // Restore the edited field and use the admin navigation; closing a context is not release proof.
+      34 |   const menu = page.getByRole('button', { name: 'Open Menu', exact: true })
+      35 |   if (await menu.isVisible()) await menu.click()
+        at C:\Projects\RENEGADE CMS\sol-rc1-20261013\scratch\sol-specs\04-document-locks.spec.ts:32:96
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    scratch\sol-traces\lock-3c7-diagnostic\04-document-locks-native-s-559c7--and-release-through-the-UI\test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    scratch\sol-traces\lock-3c7-diagnostic\04-document-locks-native-s-559c7--and-release-through-the-UI\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: scratch\sol-traces\lock-3c7-diagnostic\04-document-locks-native-s-559c7--and-release-through-the-UI\error-context.md
+
+    attachment #4: trace (application/zip) ─────────────────────────────────────────────────────────
+    scratch\sol-traces\lock-3c7-diagnostic\04-document-locks-native-s-559c7--and-release-through-the-UI\trace.zip
+    Usage:
+
+        npx playwright show-trace scratch\sol-traces\lock-3c7-diagnostic\04-document-locks-native-s-559c7--and-release-through-the-UI\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    scratch\sol-specs\04-document-locks.spec.ts:4:1 › native settings locks acquire, reject concurrent mutation, renew and release through the UI
+  1 error was not a part of any test, see above for details

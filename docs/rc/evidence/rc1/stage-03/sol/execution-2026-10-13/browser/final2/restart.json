@@ -1,0 +1,14 @@
+{
+  "request": {
+    "nonce": 1791929250033
+  },
+  "previous": {
+    "web": 21996,
+    "worker": 20048
+  },
+  "current": {
+    "web": 7884,
+    "worker": 28696
+  },
+  "restartedAt": "2026-10-13T22:07:30.452Z"
+}

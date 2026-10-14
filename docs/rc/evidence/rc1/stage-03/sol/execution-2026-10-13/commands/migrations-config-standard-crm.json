@@ -1,0 +1,16 @@
+{
+  "sourceSha": "1d0ada7c91b887e02aa8b7b7e48a48f8a599ed18",
+  "command": "npm.cmd run db:migrate",
+  "exitCode": 0,
+  "database": "solrc1_20261013_cfg_standard_crm_release_acceptance",
+  "nonsecretEnvironment": {
+    "NODE_ENV": "production",
+    "LOCAL_E2E_TEST_MODE": "false",
+    "ENABLE_TEST_ROUTES": "false",
+    "MEDIA_DIR": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-config-standard-crm-media",
+    "DEPLOYMENT_PROFILE": "Standard",
+    "RENEGADE_MODULES": "crm"
+  },
+  "durationSeconds": 16.164798736572266,
+  "log": "scratch\\sol-evidence\\migrations-config-standard-crm.txt"
+}

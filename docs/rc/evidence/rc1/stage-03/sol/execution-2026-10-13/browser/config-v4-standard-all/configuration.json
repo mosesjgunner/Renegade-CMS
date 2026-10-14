@@ -1,0 +1,1298 @@
+{
+  "profile": "Standard",
+  "requestedModules": "all",
+  "actualCollections": [
+    "activity-events",
+    "albums",
+    "analytics-consent-records",
+    "analytics-events",
+    "analytics-goals",
+    "analytics-rollups",
+    "api-clients",
+    "api-request-records",
+    "article-family-content",
+    "audience-experiments",
+    "audience-frequency-policies",
+    "audience-lists",
+    "audience-memberships",
+    "audience-segments",
+    "authors",
+    "automation-definitions",
+    "automation-failures",
+    "automation-runs",
+    "book-chapters",
+    "book-editions",
+    "book-parts",
+    "books",
+    "brands",
+    "calendar-entry-audits",
+    "campaigns",
+    "carts",
+    "catalog-import-runs",
+    "categories",
+    "checkout-proposals",
+    "checkout-sessions",
+    "command-center-preferences",
+    "commerce-disputes",
+    "commerce-reconciliation-cases",
+    "commerce-refunds",
+    "consent-events",
+    "contact-taggings",
+    "contact-tags",
+    "contacts",
+    "content",
+    "content-releases",
+    "conversion-goals",
+    "deals-opportunities",
+    "delivery-identities",
+    "delivery-receipts",
+    "digest-runs",
+    "digital-delivery-grants",
+    "digital-download-events",
+    "discussion-posts",
+    "discussions",
+    "donation-campaigns",
+    "donation-events",
+    "donation-intents",
+    "donations",
+    "edit-sessions",
+    "editorial-assignments",
+    "editorial-comments",
+    "editorial-discussions",
+    "email-deliveries",
+    "email-delivery-events",
+    "email-messages",
+    "email-templates",
+    "entitlements",
+    "events",
+    "execution-events",
+    "experience-rules",
+    "experience-variants",
+    "experiment-analyses",
+    "experiment-assignments",
+    "experiment-decisions",
+    "experiment-events",
+    "experiment-variants",
+    "experiments",
+    "external-posts",
+    "form-definitions",
+    "form-schemas",
+    "form-submissions",
+    "forum-sections",
+    "forums",
+    "graphic-documents",
+    "identity-audit-events",
+    "identity-tokens",
+    "inbound-network-activities",
+    "integration-audit-events",
+    "interaction-records",
+    "interviews",
+    "inventory-reservations",
+    "linked-identities",
+    "livestreams",
+    "manual-fulfillment-packages",
+    "markdown-conversion-reports",
+    "media-asset-versions",
+    "media-assets",
+    "media-blobs",
+    "media-derivatives",
+    "media-governance-incidents",
+    "media-jobs",
+    "media-upload-sessions",
+    "media-usages",
+    "media-variants",
+    "member-recovery-codes",
+    "member-sessions",
+    "member-site-roles",
+    "members",
+    "merchant-connections",
+    "metric-snapshots",
+    "network-access-decisions",
+    "network-audit-events",
+    "network-delivery-attempts",
+    "network-relationships",
+    "network-signing-keys",
+    "next-actions",
+    "notification-channels",
+    "notification-preferences",
+    "notifications",
+    "orders",
+    "organizations",
+    "outbound-network-deliveries",
+    "owner-assignments",
+    "page-layouts",
+    "payload-locked-documents",
+    "payload-migrations",
+    "payload-preferences",
+    "payment-attempts",
+    "payment-intents",
+    "payment-method-capabilities",
+    "payment-webhook-events",
+    "plan-revisions",
+    "pod-connections",
+    "pod-jobs",
+    "podcast-episodes",
+    "podcast-seasons",
+    "podcast-shows",
+    "preferences",
+    "preview-tokens",
+    "products",
+    "profiles",
+    "promotions",
+    "public-redirects",
+    "publications",
+    "quality-exceptions",
+    "quality-issues",
+    "quality-policies",
+    "quality-reports",
+    "quality-rules",
+    "quality-scans",
+    "quality-waivers",
+    "quick-capture-drafts",
+    "realtime-events",
+    "realtime-presence",
+    "recipient-snapshots",
+    "relationship-notes",
+    "relationship-records",
+    "relationships",
+    "remote-actors",
+    "remote-instances",
+    "remote-objects",
+    "revision-records",
+    "scheduled-publish-jobs",
+    "sections",
+    "series",
+    "sites",
+    "social-accounts",
+    "social-drafts",
+    "social-network-variants",
+    "social-publish-attempts",
+    "social-queue-items",
+    "sources",
+    "spaces",
+    "subscriber-confirmation-tokens",
+    "subscribers",
+    "subscription-events",
+    "subscriptions",
+    "supporters",
+    "suppressions",
+    "tags",
+    "taxonomy-redirects",
+    "team-audit-events",
+    "team-invitations",
+    "team-memberships",
+    "telecom-deliveries",
+    "telecom-delivery-events",
+    "telecom-messages",
+    "timeline-memberships",
+    "timelines",
+    "topics",
+    "traffic-allocations",
+    "transcript-revisions",
+    "tts-outputs",
+    "users",
+    "video-assets",
+    "video-captions",
+    "video-channels",
+    "video-playlists",
+    "videos",
+    "webhook-deliveries",
+    "webhook-subscriptions",
+    "work-conversations",
+    "work-messages",
+    "workflow-items"
+  ],
+  "sourceRegisteredCollections": [
+    "users",
+    "sites",
+    "page-layouts",
+    "execution-events",
+    "api-clients",
+    "api-request-records",
+    "webhook-subscriptions",
+    "webhook-deliveries",
+    "integration-audit-events",
+    "ai-connections",
+    "ai-credentials",
+    "ai-proposals",
+    "brands",
+    "members",
+    "linked-identities",
+    "member-sessions",
+    "identity-tokens",
+    "member-recovery-codes",
+    "identity-audit-events",
+    "member-site-roles",
+    "profiles",
+    "spaces",
+    "authors",
+    "publications",
+    "relationships",
+    "team-memberships",
+    "team-invitations",
+    "team-audit-events",
+    "editorial-assignments",
+    "editorial-discussions",
+    "editorial-comments",
+    "work-conversations",
+    "work-messages",
+    "realtime-events",
+    "realtime-presence",
+    "media-assets",
+    "media-asset-versions",
+    "media-governance-incidents",
+    "media-blobs",
+    "media-variants",
+    "media-upload-sessions",
+    "sections",
+    "categories",
+    "topics",
+    "tags",
+    "series",
+    "taxonomy-redirects",
+    "public-redirects",
+    "content-releases",
+    "content",
+    "article-family-content",
+    "markdown-conversion-reports",
+    "revision-records",
+    "preview-tokens",
+    "scheduled-publish-jobs",
+    "books",
+    "book-parts",
+    "book-chapters",
+    "book-editions",
+    "podcast-shows",
+    "podcast-seasons",
+    "podcast-episodes",
+    "video-channels",
+    "video-playlists",
+    "videos",
+    "video-assets",
+    "video-captions",
+    "interviews",
+    "livestreams",
+    "transcript-revisions",
+    "media-jobs",
+    "tts-outputs",
+    "graphic-documents",
+    "media-derivatives",
+    "edit-sessions",
+    "quick-capture-drafts",
+    "social-accounts",
+    "social-drafts",
+    "social-network-variants",
+    "social-queue-items",
+    "social-publish-attempts",
+    "external-posts",
+    "campaigns",
+    "calendar-entry-audits",
+    "events",
+    "timelines",
+    "timeline-memberships",
+    "sources",
+    "albums",
+    "media-usages",
+    "forum-sections",
+    "forums",
+    "discussions",
+    "discussion-posts",
+    "calendar-entries",
+    "network-signing-keys",
+    "remote-instances",
+    "remote-actors",
+    "remote-objects",
+    "network-relationships",
+    "inbound-network-activities",
+    "outbound-network-deliveries",
+    "network-delivery-attempts",
+    "network-access-decisions",
+    "network-audit-events",
+    "form-definitions",
+    "form-schemas",
+    "form-submissions",
+    "submission-attachments",
+    "contacts",
+    "organizations",
+    "relationship-records",
+    "contact-tags",
+    "contact-taggings",
+    "interaction-records",
+    "relationship-notes",
+    "deals-opportunities",
+    "owner-assignments",
+    "next-actions",
+    "workflow-items",
+    "audience-lists",
+    "audience-segments",
+    "audience-memberships",
+    "subscriber-confirmation-tokens",
+    "subscribers",
+    "consent-events",
+    "preferences",
+    "suppressions",
+    "email-messages",
+    "email-templates",
+    "delivery-identities",
+    "email-deliveries",
+    "email-delivery-events",
+    "telecom-messages",
+    "telecom-deliveries",
+    "telecom-delivery-events",
+    "activity-events",
+    "notifications",
+    "notification-preferences",
+    "notification-channels",
+    "digest-definitions",
+    "digest-runs",
+    "delivery-receipts",
+    "automation-definitions",
+    "automation-runs",
+    "automation-failures",
+    "recipient-snapshots",
+    "audience-frequency-policies",
+    "audience-experiments",
+    "analytics-events",
+    "analytics-consent-records",
+    "analytics-rollups",
+    "metric-snapshots",
+    "analytics-goals",
+    "command-center-preferences",
+    "experience-rules",
+    "experience-variants",
+    "experiments",
+    "experiment-variants",
+    "traffic-allocations",
+    "experiment-assignments",
+    "conversion-goals",
+    "experiment-events",
+    "experiment-analyses",
+    "experiment-decisions",
+    "quality-policies",
+    "quality-rules",
+    "quality-scans",
+    "quality-issues",
+    "quality-exceptions",
+    "quality-waivers",
+    "quality-reports",
+    "merchant-connections",
+    "payment-method-capabilities",
+    "products",
+    "digital-delivery-grants",
+    "digital-download-events",
+    "catalog-import-runs",
+    "carts",
+    "promotions",
+    "checkout-proposals",
+    "inventory-reservations",
+    "checkout-sessions",
+    "payment-intents",
+    "payment-attempts",
+    "orders",
+    "payment-webhook-events",
+    "commerce-refunds",
+    "commerce-disputes",
+    "commerce-reconciliation-cases",
+    "supporters",
+    "entitlements",
+    "plan-revisions",
+    "subscriptions",
+    "subscription-events",
+    "donation-campaigns",
+    "donation-intents",
+    "donations",
+    "donation-events",
+    "pod-connections",
+    "pod-jobs",
+    "manual-fulfillment-packages",
+    "payload-kv",
+    "payload-jobs",
+    "payload-locked-documents",
+    "payload-preferences",
+    "payload-migrations"
+  ],
+  "closedStores": {
+    "ai-connections": 403,
+    "ai-credentials": 403,
+    "ai-proposals": 403,
+    "calendar-entries": 403,
+    "digest-definitions": 403,
+    "submission-attachments": 403,
+    "payload-jobs": 403,
+    "payload-kv": 403
+  },
+  "internalStoreBoundary": "Internal stores omitted by access map; HTTP 403 or unavailable 404, not a browser business-workflow claim.",
+  "collectionResults": {
+    "events": 200,
+    "merchant-connections": 200,
+    "forum-sections": 200,
+    "books": 200,
+    "email-messages": 200,
+    "sources": 200
+  },
+  "locking": [
+    {
+      "slug": "users",
+      "enabled": true
+    },
+    {
+      "slug": "sites",
+      "enabled": true
+    },
+    {
+      "slug": "page-layouts",
+      "enabled": true
+    },
+    {
+      "slug": "execution-events",
+      "enabled": true
+    },
+    {
+      "slug": "api-clients",
+      "enabled": false
+    },
+    {
+      "slug": "api-request-records",
+      "enabled": false
+    },
+    {
+      "slug": "webhook-subscriptions",
+      "enabled": false
+    },
+    {
+      "slug": "webhook-deliveries",
+      "enabled": false
+    },
+    {
+      "slug": "integration-audit-events",
+      "enabled": false
+    },
+    {
+      "slug": "ai-connections",
+      "enabled": true
+    },
+    {
+      "slug": "ai-credentials",
+      "enabled": true
+    },
+    {
+      "slug": "ai-proposals",
+      "enabled": true
+    },
+    {
+      "slug": "brands",
+      "enabled": true
+    },
+    {
+      "slug": "members",
+      "enabled": true
+    },
+    {
+      "slug": "linked-identities",
+      "enabled": true
+    },
+    {
+      "slug": "member-sessions",
+      "enabled": true
+    },
+    {
+      "slug": "identity-tokens",
+      "enabled": true
+    },
+    {
+      "slug": "member-recovery-codes",
+      "enabled": true
+    },
+    {
+      "slug": "identity-audit-events",
+      "enabled": true
+    },
+    {
+      "slug": "member-site-roles",
+      "enabled": true
+    },
+    {
+      "slug": "profiles",
+      "enabled": true
+    },
+    {
+      "slug": "spaces",
+      "enabled": true
+    },
+    {
+      "slug": "authors",
+      "enabled": true
+    },
+    {
+      "slug": "publications",
+      "enabled": true
+    },
+    {
+      "slug": "relationships",
+      "enabled": false
+    },
+    {
+      "slug": "team-memberships",
+      "enabled": false
+    },
+    {
+      "slug": "team-invitations",
+      "enabled": false
+    },
+    {
+      "slug": "team-audit-events",
+      "enabled": false
+    },
+    {
+      "slug": "editorial-assignments",
+      "enabled": false
+    },
+    {
+      "slug": "editorial-discussions",
+      "enabled": false
+    },
+    {
+      "slug": "editorial-comments",
+      "enabled": false
+    },
+    {
+      "slug": "work-conversations",
+      "enabled": false
+    },
+    {
+      "slug": "work-messages",
+      "enabled": false
+    },
+    {
+      "slug": "realtime-events",
+      "enabled": false
+    },
+    {
+      "slug": "realtime-presence",
+      "enabled": false
+    },
+    {
+      "slug": "media-assets",
+      "enabled": true
+    },
+    {
+      "slug": "media-asset-versions",
+      "enabled": true
+    },
+    {
+      "slug": "media-governance-incidents",
+      "enabled": true
+    },
+    {
+      "slug": "media-blobs",
+      "enabled": true
+    },
+    {
+      "slug": "media-variants",
+      "enabled": true
+    },
+    {
+      "slug": "media-upload-sessions",
+      "enabled": true
+    },
+    {
+      "slug": "sections",
+      "enabled": true
+    },
+    {
+      "slug": "categories",
+      "enabled": true
+    },
+    {
+      "slug": "topics",
+      "enabled": true
+    },
+    {
+      "slug": "tags",
+      "enabled": true
+    },
+    {
+      "slug": "series",
+      "enabled": true
+    },
+    {
+      "slug": "taxonomy-redirects",
+      "enabled": true
+    },
+    {
+      "slug": "public-redirects",
+      "enabled": true
+    },
+    {
+      "slug": "content-releases",
+      "enabled": false
+    },
+    {
+      "slug": "content",
+      "enabled": true
+    },
+    {
+      "slug": "article-family-content",
+      "enabled": true
+    },
+    {
+      "slug": "markdown-conversion-reports",
+      "enabled": true
+    },
+    {
+      "slug": "revision-records",
+      "enabled": true
+    },
+    {
+      "slug": "preview-tokens",
+      "enabled": true
+    },
+    {
+      "slug": "scheduled-publish-jobs",
+      "enabled": true
+    },
+    {
+      "slug": "books",
+      "enabled": false
+    },
+    {
+      "slug": "book-parts",
+      "enabled": false
+    },
+    {
+      "slug": "book-chapters",
+      "enabled": false
+    },
+    {
+      "slug": "book-editions",
+      "enabled": false
+    },
+    {
+      "slug": "podcast-shows",
+      "enabled": false
+    },
+    {
+      "slug": "podcast-seasons",
+      "enabled": false
+    },
+    {
+      "slug": "podcast-episodes",
+      "enabled": false
+    },
+    {
+      "slug": "video-channels",
+      "enabled": false
+    },
+    {
+      "slug": "video-playlists",
+      "enabled": false
+    },
+    {
+      "slug": "videos",
+      "enabled": false
+    },
+    {
+      "slug": "video-assets",
+      "enabled": false
+    },
+    {
+      "slug": "video-captions",
+      "enabled": false
+    },
+    {
+      "slug": "interviews",
+      "enabled": false
+    },
+    {
+      "slug": "livestreams",
+      "enabled": false
+    },
+    {
+      "slug": "transcript-revisions",
+      "enabled": false
+    },
+    {
+      "slug": "media-jobs",
+      "enabled": false
+    },
+    {
+      "slug": "tts-outputs",
+      "enabled": false
+    },
+    {
+      "slug": "graphic-documents",
+      "enabled": false
+    },
+    {
+      "slug": "media-derivatives",
+      "enabled": false
+    },
+    {
+      "slug": "edit-sessions",
+      "enabled": false
+    },
+    {
+      "slug": "quick-capture-drafts",
+      "enabled": false
+    },
+    {
+      "slug": "social-accounts",
+      "enabled": false
+    },
+    {
+      "slug": "social-drafts",
+      "enabled": false
+    },
+    {
+      "slug": "social-network-variants",
+      "enabled": false
+    },
+    {
+      "slug": "social-queue-items",
+      "enabled": false
+    },
+    {
+      "slug": "social-publish-attempts",
+      "enabled": false
+    },
+    {
+      "slug": "external-posts",
+      "enabled": false
+    },
+    {
+      "slug": "campaigns",
+      "enabled": false
+    },
+    {
+      "slug": "calendar-entry-audits",
+      "enabled": true
+    },
+    {
+      "slug": "events",
+      "enabled": false
+    },
+    {
+      "slug": "timelines",
+      "enabled": false
+    },
+    {
+      "slug": "timeline-memberships",
+      "enabled": false
+    },
+    {
+      "slug": "sources",
+      "enabled": false
+    },
+    {
+      "slug": "albums",
+      "enabled": false
+    },
+    {
+      "slug": "media-usages",
+      "enabled": true
+    },
+    {
+      "slug": "forum-sections",
+      "enabled": false
+    },
+    {
+      "slug": "forums",
+      "enabled": false
+    },
+    {
+      "slug": "discussions",
+      "enabled": false
+    },
+    {
+      "slug": "discussion-posts",
+      "enabled": false
+    },
+    {
+      "slug": "calendar-entries",
+      "enabled": false
+    },
+    {
+      "slug": "network-signing-keys",
+      "enabled": false
+    },
+    {
+      "slug": "remote-instances",
+      "enabled": false
+    },
+    {
+      "slug": "remote-actors",
+      "enabled": false
+    },
+    {
+      "slug": "remote-objects",
+      "enabled": false
+    },
+    {
+      "slug": "network-relationships",
+      "enabled": false
+    },
+    {
+      "slug": "inbound-network-activities",
+      "enabled": false
+    },
+    {
+      "slug": "outbound-network-deliveries",
+      "enabled": false
+    },
+    {
+      "slug": "network-delivery-attempts",
+      "enabled": false
+    },
+    {
+      "slug": "network-access-decisions",
+      "enabled": false
+    },
+    {
+      "slug": "network-audit-events",
+      "enabled": false
+    },
+    {
+      "slug": "form-definitions",
+      "enabled": false
+    },
+    {
+      "slug": "form-schemas",
+      "enabled": false
+    },
+    {
+      "slug": "form-submissions",
+      "enabled": false
+    },
+    {
+      "slug": "submission-attachments",
+      "enabled": false
+    },
+    {
+      "slug": "contacts",
+      "enabled": false
+    },
+    {
+      "slug": "organizations",
+      "enabled": false
+    },
+    {
+      "slug": "relationship-records",
+      "enabled": false
+    },
+    {
+      "slug": "contact-tags",
+      "enabled": false
+    },
+    {
+      "slug": "contact-taggings",
+      "enabled": false
+    },
+    {
+      "slug": "interaction-records",
+      "enabled": false
+    },
+    {
+      "slug": "relationship-notes",
+      "enabled": false
+    },
+    {
+      "slug": "deals-opportunities",
+      "enabled": false
+    },
+    {
+      "slug": "owner-assignments",
+      "enabled": false
+    },
+    {
+      "slug": "next-actions",
+      "enabled": false
+    },
+    {
+      "slug": "workflow-items",
+      "enabled": false
+    },
+    {
+      "slug": "audience-lists",
+      "enabled": false
+    },
+    {
+      "slug": "audience-segments",
+      "enabled": false
+    },
+    {
+      "slug": "audience-memberships",
+      "enabled": false
+    },
+    {
+      "slug": "subscriber-confirmation-tokens",
+      "enabled": false
+    },
+    {
+      "slug": "subscribers",
+      "enabled": false
+    },
+    {
+      "slug": "consent-events",
+      "enabled": false
+    },
+    {
+      "slug": "preferences",
+      "enabled": false
+    },
+    {
+      "slug": "suppressions",
+      "enabled": false
+    },
+    {
+      "slug": "email-messages",
+      "enabled": false
+    },
+    {
+      "slug": "email-templates",
+      "enabled": true
+    },
+    {
+      "slug": "delivery-identities",
+      "enabled": false
+    },
+    {
+      "slug": "email-deliveries",
+      "enabled": false
+    },
+    {
+      "slug": "email-delivery-events",
+      "enabled": true
+    },
+    {
+      "slug": "telecom-messages",
+      "enabled": true
+    },
+    {
+      "slug": "telecom-deliveries",
+      "enabled": true
+    },
+    {
+      "slug": "telecom-delivery-events",
+      "enabled": true
+    },
+    {
+      "slug": "activity-events",
+      "enabled": false
+    },
+    {
+      "slug": "notifications",
+      "enabled": false
+    },
+    {
+      "slug": "notification-preferences",
+      "enabled": false
+    },
+    {
+      "slug": "notification-channels",
+      "enabled": false
+    },
+    {
+      "slug": "digest-definitions",
+      "enabled": false
+    },
+    {
+      "slug": "digest-runs",
+      "enabled": false
+    },
+    {
+      "slug": "delivery-receipts",
+      "enabled": false
+    },
+    {
+      "slug": "automation-definitions",
+      "enabled": false
+    },
+    {
+      "slug": "automation-runs",
+      "enabled": true
+    },
+    {
+      "slug": "automation-failures",
+      "enabled": true
+    },
+    {
+      "slug": "recipient-snapshots",
+      "enabled": true
+    },
+    {
+      "slug": "audience-frequency-policies",
+      "enabled": true
+    },
+    {
+      "slug": "audience-experiments",
+      "enabled": true
+    },
+    {
+      "slug": "analytics-events",
+      "enabled": false
+    },
+    {
+      "slug": "analytics-consent-records",
+      "enabled": false
+    },
+    {
+      "slug": "analytics-rollups",
+      "enabled": false
+    },
+    {
+      "slug": "metric-snapshots",
+      "enabled": false
+    },
+    {
+      "slug": "analytics-goals",
+      "enabled": false
+    },
+    {
+      "slug": "command-center-preferences",
+      "enabled": false
+    },
+    {
+      "slug": "experience-rules",
+      "enabled": false
+    },
+    {
+      "slug": "experience-variants",
+      "enabled": false
+    },
+    {
+      "slug": "experiments",
+      "enabled": false
+    },
+    {
+      "slug": "experiment-variants",
+      "enabled": false
+    },
+    {
+      "slug": "traffic-allocations",
+      "enabled": false
+    },
+    {
+      "slug": "experiment-assignments",
+      "enabled": false
+    },
+    {
+      "slug": "conversion-goals",
+      "enabled": false
+    },
+    {
+      "slug": "experiment-events",
+      "enabled": false
+    },
+    {
+      "slug": "experiment-analyses",
+      "enabled": false
+    },
+    {
+      "slug": "experiment-decisions",
+      "enabled": false
+    },
+    {
+      "slug": "quality-policies",
+      "enabled": false
+    },
+    {
+      "slug": "quality-rules",
+      "enabled": false
+    },
+    {
+      "slug": "quality-scans",
+      "enabled": false
+    },
+    {
+      "slug": "quality-issues",
+      "enabled": false
+    },
+    {
+      "slug": "quality-exceptions",
+      "enabled": false
+    },
+    {
+      "slug": "quality-waivers",
+      "enabled": false
+    },
+    {
+      "slug": "quality-reports",
+      "enabled": false
+    },
+    {
+      "slug": "merchant-connections",
+      "enabled": false
+    },
+    {
+      "slug": "payment-method-capabilities",
+      "enabled": false
+    },
+    {
+      "slug": "products",
+      "enabled": false
+    },
+    {
+      "slug": "digital-delivery-grants",
+      "enabled": false
+    },
+    {
+      "slug": "digital-download-events",
+      "enabled": false
+    },
+    {
+      "slug": "catalog-import-runs",
+      "enabled": false
+    },
+    {
+      "slug": "carts",
+      "enabled": false
+    },
+    {
+      "slug": "promotions",
+      "enabled": false
+    },
+    {
+      "slug": "checkout-proposals",
+      "enabled": false
+    },
+    {
+      "slug": "inventory-reservations",
+      "enabled": false
+    },
+    {
+      "slug": "checkout-sessions",
+      "enabled": false
+    },
+    {
+      "slug": "payment-intents",
+      "enabled": false
+    },
+    {
+      "slug": "payment-attempts",
+      "enabled": false
+    },
+    {
+      "slug": "orders",
+      "enabled": false
+    },
+    {
+      "slug": "payment-webhook-events",
+      "enabled": false
+    },
+    {
+      "slug": "commerce-refunds",
+      "enabled": false
+    },
+    {
+      "slug": "commerce-disputes",
+      "enabled": false
+    },
+    {
+      "slug": "commerce-reconciliation-cases",
+      "enabled": false
+    },
+    {
+      "slug": "supporters",
+      "enabled": false
+    },
+    {
+      "slug": "entitlements",
+      "enabled": false
+    },
+    {
+      "slug": "plan-revisions",
+      "enabled": false
+    },
+    {
+      "slug": "subscriptions",
+      "enabled": false
+    },
+    {
+      "slug": "subscription-events",
+      "enabled": false
+    },
+    {
+      "slug": "donation-campaigns",
+      "enabled": false
+    },
+    {
+      "slug": "donation-intents",
+      "enabled": false
+    },
+    {
+      "slug": "donations",
+      "enabled": false
+    },
+    {
+      "slug": "donation-events",
+      "enabled": false
+    },
+    {
+      "slug": "pod-connections",
+      "enabled": false
+    },
+    {
+      "slug": "pod-jobs",
+      "enabled": false
+    },
+    {
+      "slug": "manual-fulfillment-packages",
+      "enabled": false
+    },
+    {
+      "slug": "payload-kv",
+      "enabled": false
+    },
+    {
+      "slug": "payload-jobs",
+      "enabled": false
+    },
+    {
+      "slug": "payload-locked-documents",
+      "enabled": false
+    },
+    {
+      "slug": "payload-preferences",
+      "enabled": false
+    },
+    {
+      "slug": "payload-migrations",
+      "enabled": false
+    }
+  ],
+  "tasks": [
+    "operations-heartbeat",
+    "operations-forced-failure",
+    "execution-outbox-dispatch",
+    "execution-outbox-handle",
+    "webhook-delivery-dispatch",
+    "editorial-publish",
+    "media-upload-cleanup",
+    "community-message-attachment-cleanup",
+    "community-message-attachment-scan",
+    "content-release-execute",
+    "media-import",
+    "media-render",
+    "media-variant-generate",
+    "media-transcribe",
+    "media-tts",
+    "video-process",
+    "media-usage-reconcile",
+    "audio-recipe-task",
+    "social-publish",
+    "network-delivery",
+    "audience-email-delivery",
+    "audience-newsletter-dispatch",
+    "audience-form-intake",
+    "community-email-dispatch",
+    "analytics-retention-cleanup",
+    "quality-scan",
+    "commerce-abandon-checkouts",
+    "commerce-process-payment-event",
+    "commerce-reconcile-payments",
+    "commerce-reconcile-subscriptions"
+  ],
+  "actualFirstRun": true,
+  "actualPublicMutation": "4f22c98e-3ab1-49b3-a9de-c764b2e772e9",
+  "nativeSaveReload": true
+}

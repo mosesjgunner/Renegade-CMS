@@ -1,0 +1,10 @@
+[
+  {
+    "method": "POST",
+    "url": "https://dispatch.rc02.test:3129/api/admin/staff/invite",
+    "status": 201,
+    "startedDateTime": "2026-10-13T10:14:47.156Z",
+    "time": 557.3999999999942,
+    "requestBodyRetainedPrivately": true
+  }
+]

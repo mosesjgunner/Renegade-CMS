@@ -1,0 +1,455 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "05-http-authorization",
+      "06-scheduled-publication",
+      "07-minipaint",
+      "08-theme-rollback",
+      "09-private-model-boundaries",
+      "--config=scratch/playwright.sol.config.ts"
+    ],
+    "configFile": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\playwright.sol.config.ts",
+    "rootDir": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/scratch/sol-specs",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/scratch/sol-traces/supplemental-d564",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/scratch/sol-specs",
+        "testIgnore": [],
+        "testMatch": ["**/*.@(spec|test).?(c|m)[jt]s?(x)"],
+        "timeout": 600000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      ["list", null],
+      [
+        "json",
+        {
+          "outputFile": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-browser\\supplemental-d564\\results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.62.1",
+    "workers": 1,
+    "webServer": {
+      "command": "node scratch/sol-runtime.mjs",
+      "cwd": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013",
+      "url": "https://dispatch.rc02.test:3129/api/setup/readiness",
+      "reuseExistingServer": false,
+      "ignoreHTTPSErrors": true,
+      "timeout": 120000,
+      "env": {
+        "DATABASE_URL": "postgresql://solrc1:[REDACTED]@127.0.0.1:15433/solrc1_20261013_browser_5666_release_acceptance",
+        "UPGRADE_MIGRATION_DATABASE_URL": "postgresql://solrc1:[REDACTED]@127.0.0.1:15433/solrc1_20261013_upgrade_acceptance",
+        "PAYLOAD_SECRET": "[REDACTED]",
+        "APP_URL": "https://dispatch.rc02.test:3129",
+        "PORT": "3128",
+        "HOSTNAME": "127.0.0.1",
+        "NODE_ENV": "production",
+        "PROXY_MODE": "trusted",
+        "TRUSTED_PROXY_HOPS": "1",
+        "DEPLOYMENT_PROFILE": "Standard",
+        "RENEGADE_MODULES": "all",
+        "RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT": "false",
+        "LOCAL_E2E_TEST_MODE": "false",
+        "ENABLE_TEST_ROUTES": "false",
+        "DISABLE_PAYLOAD_HMR": "true",
+        "MEDIA_DIR": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/scratch/sol-browser-media-5666",
+        "EMAIL_MODE": "smtp",
+        "SMTP_HOST": "127.0.0.1",
+        "SMTP_PORT": "3152",
+        "SMTP_SECURE": "false",
+        "EMAIL_FROM": "Renegade Sol <noreply@renegadeparty.test>",
+        "NODE_EXTRA_CA_CERTS": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/scratch/rc02-tls/cert.pem",
+        "NODE_OPTIONS": "--max-old-space-size=768 --import=file:///C:/Projects/RENEGADE%20CMS/sol-rc1-20261013/src/scripts/rc02-network.mjs"
+      }
+    }
+  },
+  "suites": [
+    {
+      "title": "05-http-authorization.spec.ts",
+      "file": "05-http-authorization.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "five real HTTP actors prove two-site reads, mutations, object substitutions, custom views and grant revocation",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 600000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 76974,
+                  "errors": [],
+                  "stdout": [
+                    {
+                      "text": "Completed native authorization cases for owner\n"
+                    },
+                    {
+                      "text": "Completed native authorization cases for administrator\n"
+                    },
+                    {
+                      "text": "Completed native authorization cases for staff\n"
+                    },
+                    {
+                      "text": "Completed native authorization cases for member\n"
+                    },
+                    {
+                      "text": "Completed native authorization cases for anonymous\n"
+                    }
+                  ],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-13T21:44:10.189Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\supplemental-d564\\05-http-authorization-five-b3cee--views-and-grant-revocation\\trace.zip"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "[REDACTED RECOVERY CODE]-[REDACTED RECOVERY CODE]",
+          "file": "05-http-authorization.spec.ts",
+          "line": 17,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "06-scheduled-publication.spec.ts",
+      "file": "06-scheduled-publication.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "scheduled publication uses the actual worker, immutable revision, restart and public refetch",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 600000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 7353,
+                  "error": {
+                    "message": "Error: {\"error\":\"Schedule Validation Failed\",\"violations\":[{\"ruleId\":\"missing-approval\",\"severity\":\"error\",\"message\":\"Item status is \\\"draft\\\". Only approved content can be scheduled.\",\"evidence\":{\"currentStatus\":\"draft\"}}]}\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m200\u001b[39m\nReceived: \u001b[31m422\u001b[39m",
+                    "stack": "Error: {\"error\":\"Schedule Validation Failed\",\"violations\":[{\"ruleId\":\"missing-approval\",\"severity\":\"error\",\"message\":\"Item status is \\\"draft\\\". Only approved content can be scheduled.\",\"evidence\":{\"currentStatus\":\"draft\"}}]}\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m200\u001b[39m\nReceived: \u001b[31m422\u001b[39m\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\06-scheduled-publication.spec.ts:39:52",
+                    "location": {
+                      "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\06-scheduled-publication.spec.ts",
+                      "column": 52,
+                      "line": 39
+                    },
+                    "snippet": "  37 |     expectedSequence: family.currentRevisionSequence,\n  38 |   } })\n> 39 |   expect(schedule.status(), await schedule.text()).toBe(200)\n     |                                                    ^\n  40 |   const jobsUrl = `${process.env.APP_URL}/api/scheduled-publish-jobs?where[article][equals]=${family.id}&depth=0`\n  41 |   const queued = (await (await owner.request.get(jobsUrl)).json()).docs\n  42 |   expect(queued).toHaveLength(1)"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\06-scheduled-publication.spec.ts",
+                        "column": 52,
+                        "line": 39
+                      },
+                      "message": "Error: {\"error\":\"Schedule Validation Failed\",\"violations\":[{\"ruleId\":\"missing-approval\",\"severity\":\"error\",\"message\":\"Item status is \\\"draft\\\". Only approved content can be scheduled.\",\"evidence\":{\"currentStatus\":\"draft\"}}]}\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m200\u001b[39m\nReceived: \u001b[31m422\u001b[39m\n\n  37 |     expectedSequence: family.currentRevisionSequence,\n  38 |   } })\n> 39 |   expect(schedule.status(), await schedule.text()).toBe(200)\n     |                                                    ^\n  40 |   const jobsUrl = `${process.env.APP_URL}/api/scheduled-publish-jobs?where[article][equals]=${family.id}&depth=0`\n  41 |   const queued = (await (await owner.request.get(jobsUrl)).json()).docs\n  42 |   expect(queued).toHaveLength(1)\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\06-scheduled-publication.spec.ts:39:52"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-13T21:45:28.258Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\supplemental-d564\\06-scheduled-publication-s-ab8d7--restart-and-public-refetch\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\supplemental-d564\\06-scheduled-publication-s-ab8d7--restart-and-public-refetch\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\supplemental-d564\\06-scheduled-publication-s-ab8d7--restart-and-public-refetch\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\06-scheduled-publication.spec.ts",
+                    "column": 52,
+                    "line": 39
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "[REDACTED RECOVERY CODE]-[REDACTED RECOVERY CODE]",
+          "file": "06-scheduled-publication.spec.ts",
+          "line": 12,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "07-minipaint.spec.ts",
+      "file": "07-minipaint.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "miniPaint draws actual pixels, saves a new version and preserves original bytes after restart",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 600000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 15910,
+                  "error": {
+                    "message": "Error: {\"replacement\":{\"id\":\"b480b5f9-a0ae-4f65-8ca8-9633475fcbe2\",\"site\":{\"id\":\"9d2b48e0-4244-45b9-b436-059c96562a75\",\"name\":\"Sol administrator permitted sites\",\"slug\":\"renegadeparty\",\"description\":\"Independent civic reporting, local organizing and public accountability.\",\"lifecycle\":\"active\",\"communityRegistrationPolicy\":\"open\",\"commentReactionCodes\":[\"thumbs_up\",\"heart\",\"insightful\",\"applause\"],\"updatedAt\":\"2026-10-13T21:44:50.060Z\",\"createdAt\":\"2026-10-13T10:28:01.930Z\"},\"publication\":null,\"space\":null,\"owner\":{\"id\":\"fafe5788-53fc-4fd4-9da2-763846a31701\",\"displayName\":\"Renegade Party Dispatch\",\"email\":\"editor@renegadeparty.test\",\"status\":\"active\",\"disabledAt\":null,\"archivedAt\":null,\"restrictedAt\":null,\"suspendedAt\":null,\"deactivatedAt\":null,\"deletionPendingAt\":null,\"deletedAt\":null,\"exportRequestedAt\":null,\"deletionRequestedAt\":null,\"verifiedEmailAt\":null,\"moderationReason\":null,\"stateReason\":null,\"updatedAt\":\"2026-10-13T10:28:01.964Z\",\"createdAt\":\"2026-10-13T10:28:01.963Z\"},\"title\":\"Sol drawn version 1791927949176\",\"kind\":\"image\",\"storageLocation\":\"9d2b48e0-4244-45b9-b436-059c96562a75/290b0dd8-d351-4c0c-9408-6b0d3a1105ad.png\",\"storageProvider\":\"local\",\"originalBlob\":{\"id\":\"49ba4744-a708-42d0-91a6-1a770a5f5a15\",\"site\":{\"id\":\"9d2b48e0-4244-45b9-b436-059c96562a75\",\"name\":\"Sol administrator permitted sites\",\"slug\":\"renegadeparty\",\"description\":\"Independent civic reporting, local organizing and public accountability.\",\"lifecycle\":\"active\",\"communityRegistrationPolicy\":\"open\",\"commentReactionCodes\":[\"thumbs_up\",\"heart\",\"insightful\",\"applause\"],\"updatedAt\":\"2026-10-13T21:44:50.060Z\",\"createdAt\":\"2026-10-13T10:28:01.930Z\"},\"publication\":null,\"space\":null,\"checksum\":\"sha256:734ed7e9a28904d051b63d34d687fa8c4e9aa5844d668010cf64ade4da08039f\",\"storageKey\":\"9d2b48e0-4244-45b9-b436-059c96562a75/290b0dd8-d351-4c0c-9408-6b0d3a1105ad.png\",\"storageProvider\":\"local\",\"mimeType\":\"image/png\",\"sizeBytes\":154390,\"state\":\"ready\",\"updatedAt\":\"2026-10-13T21:45:49.938Z\",\"createdAt\":\"2026-10-13T21:45:49.938Z\"},\"originalFilename\":\"Sol drawn version 1791927949176.png\",\"mimeType\":\"image/png\",\"sizeBytes\":154390,\"checksum\":\"sha256:734ed7e9a28904d051b63d34d687fa8c4e9aa5844d668010cf64ade4da08039f\",\"width\":1200,\"height\":600,\"durationSeconds\":null,\"audioMetadata\":null,\"videoMetadata\":null,\"altText\":\"Actual browser drawing acceptance\",\"focalPoint\":{\"x\":null,\"y\":null},\"aspectRatio\":null,\"dominantColor\":null,\"colorPalette\":null,\"cropSettings\":null,\"caption\":null,\"description\":null,\"creatorCredit\":null,\"credits\":null,\"source\":null,\"copyrightOwner\":null,\"license\":null,\"licenseType\":null,\"licenseUrl\":null,\"rightsSourceUrl\":null,\"rightsExpiresAt\":null,\"embargoUntil\":null,\"usageRestrictions\":null,\"consentReference\":null,\"modelReleaseReference\":null,\"propertyReleaseReference\":null,\"governanceEnabled\":false,\"customMetadata\":null,\"processingState\":\"ready\",\"publicPolicy\":\"published-use\",\"tags\":[],\"collections\":[],\"variants\":[],\"replaceGloballyWith\":null,\"originalExportAllowed\":true,\"rightsStatus\":\"approved\",\"retentionMode\":\"permanent\",\"retentionExpiresAt\":null,\"retentionHold\":\"none\",\"removeFromDiscovery\":false,\"tombstoneLabel\":null,\"updatedAt\":\"2026-10-13T21:45:49.962Z\",\"createdAt\":\"2026-10-13T21:45:49.962Z\"}}\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m200\u001b[39m\nReceived: \u001b[31m201\u001b[39m",
+                    "stack": "Error: {\"replacement\":{\"id\":\"b480b5f9-a0ae-4f65-8ca8-9633475fcbe2\",\"site\":{\"id\":\"9d2b48e0-4244-45b9-b436-059c96562a75\",\"name\":\"Sol administrator permitted sites\",\"slug\":\"renegadeparty\",\"description\":\"Independent civic reporting, local organizing and public accountability.\",\"lifecycle\":\"active\",\"communityRegistrationPolicy\":\"open\",\"commentReactionCodes\":[\"thumbs_up\",\"heart\",\"insightful\",\"applause\"],\"updatedAt\":\"2026-10-13T21:44:50.060Z\",\"createdAt\":\"2026-10-13T10:28:01.930Z\"},\"publication\":null,\"space\":null,\"owner\":{\"id\":\"fafe5788-53fc-4fd4-9da2-763846a31701\",\"displayName\":\"Renegade Party Dispatch\",\"email\":\"editor@renegadeparty.test\",\"status\":\"active\",\"disabledAt\":null,\"archivedAt\":null,\"restrictedAt\":null,\"suspendedAt\":null,\"deactivatedAt\":null,\"deletionPendingAt\":null,\"deletedAt\":null,\"exportRequestedAt\":null,\"deletionRequestedAt\":null,\"verifiedEmailAt\":null,\"moderationReason\":null,\"stateReason\":null,\"updatedAt\":\"2026-10-13T10:28:01.964Z\",\"createdAt\":\"2026-10-13T10:28:01.963Z\"},\"title\":\"Sol drawn version 1791927949176\",\"kind\":\"image\",\"storageLocation\":\"9d2b48e0-4244-45b9-b436-059c96562a75/290b0dd8-d351-4c0c-9408-6b0d3a1105ad.png\",\"storageProvider\":\"local\",\"originalBlob\":{\"id\":\"49ba4744-a708-42d0-91a6-1a770a5f5a15\",\"site\":{\"id\":\"9d2b48e0-4244-45b9-b436-059c96562a75\",\"name\":\"Sol administrator permitted sites\",\"slug\":\"renegadeparty\",\"description\":\"Independent civic reporting, local organizing and public accountability.\",\"lifecycle\":\"active\",\"communityRegistrationPolicy\":\"open\",\"commentReactionCodes\":[\"thumbs_up\",\"heart\",\"insightful\",\"applause\"],\"updatedAt\":\"2026-10-13T21:44:50.060Z\",\"createdAt\":\"2026-10-13T10:28:01.930Z\"},\"publication\":null,\"space\":null,\"checksum\":\"sha256:734ed7e9a28904d051b63d34d687fa8c4e9aa5844d668010cf64ade4da08039f\",\"storageKey\":\"9d2b48e0-4244-45b9-b436-059c96562a75/290b0dd8-d351-4c0c-9408-6b0d3a1105ad.png\",\"storageProvider\":\"local\",\"mimeType\":\"image/png\",\"sizeBytes\":154390,\"state\":\"ready\",\"updatedAt\":\"2026-10-13T21:45:49.938Z\",\"createdAt\":\"2026-10-13T21:45:49.938Z\"},\"originalFilename\":\"Sol drawn version 1791927949176.png\",\"mimeType\":\"image/png\",\"sizeBytes\":154390,\"checksum\":\"sha256:734ed7e9a28904d051b63d34d687fa8c4e9aa5844d668010cf64ade4da08039f\",\"width\":1200,\"height\":600,\"durationSeconds\":null,\"audioMetadata\":null,\"videoMetadata\":null,\"altText\":\"Actual browser drawing acceptance\",\"focalPoint\":{\"x\":null,\"y\":null},\"aspectRatio\":null,\"dominantColor\":null,\"colorPalette\":null,\"cropSettings\":null,\"caption\":null,\"description\":null,\"creatorCredit\":null,\"credits\":null,\"source\":null,\"copyrightOwner\":null,\"license\":null,\"licenseType\":null,\"licenseUrl\":null,\"rightsSourceUrl\":null,\"rightsExpiresAt\":null,\"embargoUntil\":null,\"usageRestrictions\":null,\"consentReference\":null,\"modelReleaseReference\":null,\"propertyReleaseReference\":null,\"governanceEnabled\":false,\"customMetadata\":null,\"processingState\":\"ready\",\"publicPolicy\":\"published-use\",\"tags\":[],\"collections\":[],\"variants\":[],\"replaceGloballyWith\":null,\"originalExportAllowed\":true,\"rightsStatus\":\"approved\",\"retentionMode\":\"permanent\",\"retentionExpiresAt\":null,\"retentionHold\":\"none\",\"removeFromDiscovery\":false,\"tombstoneLabel\":null,\"updatedAt\":\"2026-10-13T21:45:49.962Z\",\"createdAt\":\"2026-10-13T21:45:49.962Z\"}}\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m200\u001b[39m\nReceived: \u001b[31m201\u001b[39m\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\07-minipaint.spec.ts:41:52",
+                    "location": {
+                      "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\07-minipaint.spec.ts",
+                      "column": 52,
+                      "line": 41
+                    },
+                    "snippet": "  39 |   await editor.getByRole('button', { name: 'Save version', exact: true }).click()\n  40 |   const response = await saved\n> 41 |   expect(response.status(), await response.text()).toBe(200)\n     |                                                    ^\n  42 |   const replacement = (await response.json()).replacement\n  43 |   expect(replacement.id).not.toBe(original.id)\n  44 |   const editedBytes = await (await owner.request.get(`${process.env.APP_URL}/media/${replacement.id}`)).body()"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\07-minipaint.spec.ts",
+                        "column": 52,
+                        "line": 41
+                      },
+                      "message": "Error: {\"replacement\":{\"id\":\"b480b5f9-a0ae-4f65-8ca8-9633475fcbe2\",\"site\":{\"id\":\"9d2b48e0-4244-45b9-b436-059c96562a75\",\"name\":\"Sol administrator permitted sites\",\"slug\":\"renegadeparty\",\"description\":\"Independent civic reporting, local organizing and public accountability.\",\"lifecycle\":\"active\",\"communityRegistrationPolicy\":\"open\",\"commentReactionCodes\":[\"thumbs_up\",\"heart\",\"insightful\",\"applause\"],\"updatedAt\":\"2026-10-13T21:44:50.060Z\",\"createdAt\":\"2026-10-13T10:28:01.930Z\"},\"publication\":null,\"space\":null,\"owner\":{\"id\":\"fafe5788-53fc-4fd4-9da2-763846a31701\",\"displayName\":\"Renegade Party Dispatch\",\"email\":\"editor@renegadeparty.test\",\"status\":\"active\",\"disabledAt\":null,\"archivedAt\":null,\"restrictedAt\":null,\"suspendedAt\":null,\"deactivatedAt\":null,\"deletionPendingAt\":null,\"deletedAt\":null,\"exportRequestedAt\":null,\"deletionRequestedAt\":null,\"verifiedEmailAt\":null,\"moderationReason\":null,\"stateReason\":null,\"updatedAt\":\"2026-10-13T10:28:01.964Z\",\"createdAt\":\"2026-10-13T10:28:01.963Z\"},\"title\":\"Sol drawn version 1791927949176\",\"kind\":\"image\",\"storageLocation\":\"9d2b48e0-4244-45b9-b436-059c96562a75/290b0dd8-d351-4c0c-9408-6b0d3a1105ad.png\",\"storageProvider\":\"local\",\"originalBlob\":{\"id\":\"49ba4744-a708-42d0-91a6-1a770a5f5a15\",\"site\":{\"id\":\"9d2b48e0-4244-45b9-b436-059c96562a75\",\"name\":\"Sol administrator permitted sites\",\"slug\":\"renegadeparty\",\"description\":\"Independent civic reporting, local organizing and public accountability.\",\"lifecycle\":\"active\",\"communityRegistrationPolicy\":\"open\",\"commentReactionCodes\":[\"thumbs_up\",\"heart\",\"insightful\",\"applause\"],\"updatedAt\":\"2026-10-13T21:44:50.060Z\",\"createdAt\":\"2026-10-13T10:28:01.930Z\"},\"publication\":null,\"space\":null,\"checksum\":\"sha256:734ed7e9a28904d051b63d34d687fa8c4e9aa5844d668010cf64ade4da08039f\",\"storageKey\":\"9d2b48e0-4244-45b9-b436-059c96562a75/290b0dd8-d351-4c0c-9408-6b0d3a1105ad.png\",\"storageProvider\":\"local\",\"mimeType\":\"image/png\",\"sizeBytes\":154390,\"state\":\"ready\",\"updatedAt\":\"2026-10-13T21:45:49.938Z\",\"createdAt\":\"2026-10-13T21:45:49.938Z\"},\"originalFilename\":\"Sol drawn version 1791927949176.png\",\"mimeType\":\"image/png\",\"sizeBytes\":154390,\"checksum\":\"sha256:734ed7e9a28904d051b63d34d687fa8c4e9aa5844d668010cf64ade4da08039f\",\"width\":1200,\"height\":600,\"durationSeconds\":null,\"audioMetadata\":null,\"videoMetadata\":null,\"altText\":\"Actual browser drawing acceptance\",\"focalPoint\":{\"x\":null,\"y\":null},\"aspectRatio\":null,\"dominantColor\":null,\"colorPalette\":null,\"cropSettings\":null,\"caption\":null,\"description\":null,\"creatorCredit\":null,\"credits\":null,\"source\":null,\"copyrightOwner\":null,\"license\":null,\"licenseType\":null,\"licenseUrl\":null,\"rightsSourceUrl\":null,\"rightsExpiresAt\":null,\"embargoUntil\":null,\"usageRestrictions\":null,\"consentReference\":null,\"modelReleaseReference\":null,\"propertyReleaseReference\":null,\"governanceEnabled\":false,\"customMetadata\":null,\"processingState\":\"ready\",\"publicPolicy\":\"published-use\",\"tags\":[],\"collections\":[],\"variants\":[],\"replaceGloballyWith\":null,\"originalExportAllowed\":true,\"rightsStatus\":\"approved\",\"retentionMode\":\"permanent\",\"retentionExpiresAt\":null,\"retentionHold\":\"none\",\"removeFromDiscovery\":false,\"tombstoneLabel\":null,\"updatedAt\":\"2026-10-13T21:45:49.962Z\",\"createdAt\":\"2026-10-13T21:45:49.962Z\"}}\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m200\u001b[39m\nReceived: \u001b[31m201\u001b[39m\n\n  39 |   await editor.getByRole('button', { name: 'Save version', exact: true }).click()\n  40 |   const response = await saved\n> 41 |   expect(response.status(), await response.text()).toBe(200)\n     |                                                    ^\n  42 |   const replacement = (await response.json()).replacement\n  43 |   expect(replacement.id).not.toBe(original.id)\n  44 |   const editedBytes = await (await owner.request.get(`${process.env.APP_URL}/media/${replacement.id}`)).body()\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\07-minipaint.spec.ts:41:52"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-13T21:45:36.651Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\supplemental-d564\\07-minipaint-miniPaint-dra-3ea22-riginal-bytes-after-restart\\test-failed-1.png"
+                    },
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\supplemental-d564\\07-minipaint-miniPaint-dra-3ea22-riginal-bytes-after-restart\\test-failed-2.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\supplemental-d564\\07-minipaint-miniPaint-dra-3ea22-riginal-bytes-after-restart\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\supplemental-d564\\07-minipaint-miniPaint-dra-3ea22-riginal-bytes-after-restart\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\07-minipaint.spec.ts",
+                    "column": 52,
+                    "line": 41
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "[REDACTED RECOVERY CODE]-[REDACTED RECOVERY CODE]",
+          "file": "07-minipaint.spec.ts",
+          "line": 8,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "08-theme-rollback.spec.ts",
+      "file": "08-theme-rollback.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "actual theme rollback restores public presentation and preserves canonical content",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 600000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 13611,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-13T21:45:54.790Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\supplemental-d564\\08-theme-rollback-actual-t-524a4-preserves-canonical-content\\trace.zip"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "[REDACTED RECOVERY CODE]-[REDACTED RECOVERY CODE]",
+          "file": "08-theme-rollback.spec.ts",
+          "line": 7,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "09-private-model-boundaries.spec.ts",
+      "file": "09-private-model-boundaries.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "private identity stores and remaining native module factories enforce persisted authority",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 600000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 22055,
+                  "errors": [],
+                  "stdout": [
+                    {
+                      "text": "Completed additional model boundaries for owner\n"
+                    },
+                    {
+                      "text": "Completed additional model boundaries for administrator\n"
+                    },
+                    {
+                      "text": "Completed additional model boundaries for staff\n"
+                    },
+                    {
+                      "text": "Completed additional model boundaries for member\n"
+                    },
+                    {
+                      "text": "Completed additional model boundaries for anonymous\n"
+                    }
+                  ],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-13T21:46:08.660Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\supplemental-d564\\09-private-model-boundarie-f44c2-enforce-persisted-authority\\trace.zip"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "[REDACTED RECOVERY CODE]-[REDACTED RECOVERY CODE]",
+          "file": "09-private-model-boundaries.spec.ts",
+          "line": 9,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-13T21:44:05.718Z",
+    "duration": 145801.211,
+    "expected": 3,
+    "skipped": 0,
+    "unexpected": 2,
+    "flaky": 0
+  }
+}

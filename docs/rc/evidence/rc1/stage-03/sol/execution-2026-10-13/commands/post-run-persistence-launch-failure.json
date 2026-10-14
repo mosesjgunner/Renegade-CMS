@@ -1,0 +1,6 @@
+{
+  "command": "node scratch/check-final-persistence.mjs",
+  "cwd": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS",
+  "exitCode": 1,
+  "outcome": "Wrong checkout; explicit isolated environment file missing. Stopped before DB connection, no data access. Rerun in verified isolated checkout."
+}

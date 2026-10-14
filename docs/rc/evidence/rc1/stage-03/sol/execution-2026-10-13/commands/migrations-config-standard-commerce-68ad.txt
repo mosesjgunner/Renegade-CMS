@@ -1,0 +1,13 @@
+
+> renegade-cms@0.1.0 db:migrate
+> npm run payload -- migrate
+
+
+> renegade-cms@0.1.0 payload
+> cross-env NODE_OPTIONS=--no-deprecation payload migrate
+
+[17:36:34] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[17:36:34] [32mINFO[39m: [36mReading migration files from C:\Projects\RENEGADE CMS\sol-rc1-20261013\src\migrations[39m
+[17:36:35] [32mINFO[39m: [36mMigrating: 20261013_180000_rc1_editorial_calendar_audits[39m
+[17:36:36] [32mINFO[39m: [36mMigrated:  20261013_180000_rc1_editorial_calendar_audits (238ms)[39m
+[17:36:36] [32mINFO[39m: [36mDone.[39m

@@ -1,0 +1,15 @@
+import os,sys,time,json,subprocess
+from pathlib import Path
+sys.stdout.reconfigure(encoding="utf-8")
+env=os.environ.copy()
+envfile=sys.argv[1];label=sys.argv[2]
+env.update(SOL_BROWSER_ENV=envfile,SOL_REPORT_RUN=label,NODE_ENV="production",APP_URL="https://dispatch.rc02.test:3129")
+cmd="node node_modules/@playwright/test/cli.js test --config=scratch/playwright.sol.config.ts --max-failures=1"
+if len(sys.argv)>3:cmd+=" "+sys.argv[3]
+start=time.time()
+with Path(f"scratch/sol-evidence/browser-{label}.txt").open("w",encoding="utf-8") as log:
+ result=subprocess.run(cmd,shell=True,env=env,stdout=log,stderr=subprocess.STDOUT)
+record={"command":cmd,"exitCode":result.returncode,"sourceSha":subprocess.check_output(["git","rev-parse","HEAD"],text=True).strip(),"environmentFile":envfile,"reportOverride":label,"durationSeconds":time.time()-start,"resultFile":f"scratch/sol-browser/{label}/results.json"}
+Path(f"scratch/sol-evidence/browser-{label}.json").write_text(json.dumps(record,indent=2))
+print(label,"browser exit",result.returncode,flush=True)
+sys.exit(result.returncode)

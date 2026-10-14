@@ -1,0 +1,20 @@
+
+> renegade-cms@0.1.0 db:migrate
+> npm run payload -- migrate
+
+
+> renegade-cms@0.1.0 payload
+> cross-env NODE_OPTIONS=--no-deprecation payload migrate
+
+C:\Projects\RENEGADE CMS\sol-rc1-20261013\src\modules\core\config.ts:283
+  if (invalid.length) throw new ConfigurationError([...new Set(invalid)].sort())
+                            ^
+
+ConfigurationError: Invalid configuration: EMAIL_MODE
+    at loadConfig (C:\Projects\RENEGADE CMS\sol-rc1-20261013\src\modules\core\config.ts:283:29)
+    at <anonymous> (C:\Projects\RENEGADE CMS\sol-rc1-20261013\src\payload.config.ts:17:16) {
+  keys: [ 'EMAIL_MODE' ],
+  code: 'CONFIGURATION_INVALID'
+}
+
+Node.js v24.19.0

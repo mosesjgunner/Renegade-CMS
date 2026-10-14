@@ -1,0 +1,198 @@
+{
+  "status": "STAGE 02 SOL PASS",
+  "signedOffBy": "Sol",
+  "date": "2026-10-13",
+  "sourceSha": "f487dcb67f0649ffc1ecd09b9a47cc845d705f61",
+  "sourceClean": true,
+  "commands": [
+    {
+      "gate": "01-ci",
+      "command": "npm.cmd ci --include=dev",
+      "exitCode": 0,
+      "sourceSha": "f487dcb67f0649ffc1ecd09b9a47cc845d705f61",
+      "retainedLog": "01-ci.txt"
+    },
+    {
+      "gate": "02-format",
+      "command": "npm.cmd run format:check",
+      "exitCode": 0,
+      "durationSeconds": 29.425833225250244,
+      "sourceSha": "f487dcb67f0649ffc1ecd09b9a47cc845d705f61",
+      "log": "scratch/sol-evidence/02-format.log",
+      "retainedLog": "02-format.txt"
+    },
+    {
+      "gate": "03-lint",
+      "command": "npm.cmd run lint",
+      "exitCode": 0,
+      "durationSeconds": 22.4480984210968,
+      "sourceSha": "f487dcb67f0649ffc1ecd09b9a47cc845d705f61",
+      "log": "scratch/sol-evidence/03-lint.log",
+      "retainedLog": "03-lint.txt"
+    },
+    {
+      "gate": "04-typecheck",
+      "command": "npm.cmd run typecheck",
+      "exitCode": 0,
+      "durationSeconds": 6.432687282562256,
+      "sourceSha": "f487dcb67f0649ffc1ecd09b9a47cc845d705f61",
+      "log": "scratch/sol-evidence/04-typecheck.log",
+      "retainedLog": "04-typecheck.txt"
+    },
+    {
+      "gate": "05-unit",
+      "command": "npm.cmd test -- --reporter=default --reporter=json --outputFile=scratch/sol-evidence/unit.json",
+      "exitCode": 0,
+      "durationSeconds": 28.121344089508057,
+      "sourceSha": "f487dcb67f0649ffc1ecd09b9a47cc845d705f61",
+      "log": "scratch/sol-evidence/05-unit.log",
+      "retainedLog": "05-unit.txt"
+    },
+    {
+      "gate": "06-fresh",
+      "command": "npm.cmd run test:migrations:fresh",
+      "exitCode": 0,
+      "durationSeconds": 13.790008783340454,
+      "sourceSha": "f487dcb67f0649ffc1ecd09b9a47cc845d705f61",
+      "log": "scratch/sol-evidence/06-fresh.log",
+      "retainedLog": "06-fresh.txt"
+    },
+    {
+      "gate": "07-upgrade",
+      "command": "npm.cmd run test:migrations:upgrade",
+      "exitCode": 0,
+      "durationSeconds": 11.9025559425354,
+      "sourceSha": "f487dcb67f0649ffc1ecd09b9a47cc845d705f61",
+      "log": "scratch/sol-evidence/07-upgrade.log",
+      "retainedLog": "07-upgrade.txt"
+    },
+    {
+      "gate": "08-commerce",
+      "command": "npm.cmd run test:migrations:commerce",
+      "exitCode": 0,
+      "durationSeconds": 6.406318187713623,
+      "sourceSha": "f487dcb67f0649ffc1ecd09b9a47cc845d705f61",
+      "log": "scratch/sol-evidence/08-commerce.log",
+      "retainedLog": "08-commerce.txt"
+    },
+    {
+      "gate": "09-integration",
+      "command": "npm.cmd run test:integration -- --reporter=default --reporter=json --outputFile=scratch/sol-evidence/integration.json",
+      "exitCode": 0,
+      "durationSeconds": 292.94398975372314,
+      "sourceSha": "f487dcb67f0649ffc1ecd09b9a47cc845d705f61",
+      "log": "scratch/sol-evidence/09-integration.log",
+      "retainedLog": "09-integration.txt"
+    },
+    {
+      "gate": "10-build",
+      "command": "npm.cmd run build",
+      "exitCode": 0,
+      "durationSeconds": 45.17222285270691,
+      "sourceSha": "f487dcb67f0649ffc1ecd09b9a47cc845d705f61",
+      "log": "scratch/sol-evidence/10-build.log",
+      "retainedLog": "10-build.txt"
+    },
+    {
+      "gate": "11-bundles",
+      "command": "npm.cmd run verify:presentation-bundles",
+      "exitCode": 0,
+      "durationSeconds": 0.5602438449859619,
+      "sourceSha": "f487dcb67f0649ffc1ecd09b9a47cc845d705f61",
+      "log": "scratch/sol-evidence/11-bundles.log",
+      "retainedLog": "11-bundles.txt"
+    }
+  ],
+  "counts": {
+    "commandsPassed": 11,
+    "commandsFailed": 0,
+    "commandsSkipped": 0,
+    "commandsUnexecuted": 0,
+    "unit": {
+      "numTotalTests": 1248,
+      "numPassedTests": 1248,
+      "numFailedTests": 0,
+      "numPendingTests": 0,
+      "files": 190
+    },
+    "integration": {
+      "numTotalTests": 291,
+      "numPassedTests": 291,
+      "numFailedTests": 0,
+      "numPendingTests": 0,
+      "files": 49
+    }
+  },
+  "environment": {
+    "node": "v24.19.0",
+    "npm": "11.17.0",
+    "databaseContainer": "sol-rc1-20261013-postgres",
+    "containerLabel": "purpose=disposable-sol-rc1-20261013",
+    "databaseHost": "127.0.0.1",
+    "databasePort": 15433,
+    "freshAndIntegrationDatabase": "solrc1_20261013_release_acceptance",
+    "upgradeDatabase": "solrc1_20261013_upgrade_acceptance",
+    "commerceDatabase": "solrc1_20261013_commerce_release_acceptance",
+    "media": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-quality-media",
+    "envFallback": false,
+    "initialTestAuth": false,
+    "integrationBoundary": "Some existing local fixtures explicitly enable test authentication; not ordinary browser proof.",
+    "externalProviderCalls": false,
+    "imageDigest": null
+  },
+  "artifactHashes": [
+    {
+      "path": "01-ci.txt",
+      "sha256": "d151492e3b615ec331da8b3d76f994e9fa69f93b3744ab050cbdac1ab8f1764a"
+    },
+    {
+      "path": "02-format.txt",
+      "sha256": "4503a427d12444f81cee2db3eeb003376341ab1a0dc03c78b98a17039259d721"
+    },
+    {
+      "path": "03-lint.txt",
+      "sha256": "21bc1be0c5bdf8aa3d17e5054ee50ac44f79d99f01c0cb3661e198642761671d"
+    },
+    {
+      "path": "04-typecheck.txt",
+      "sha256": "03ca8766e5865fefe65140e820f55f478a62893538e30a202a3e8166bbc07293"
+    },
+    {
+      "path": "05-unit.txt",
+      "sha256": "9877f81592247a1e69babab5711d6589a2f247d9488986d23c270631ce793dbf"
+    },
+    {
+      "path": "06-fresh.txt",
+      "sha256": "69ae8c20dddd9e5c861813c1346ded42ca9ffedd792c795cb2ae42e68dac073c"
+    },
+    {
+      "path": "07-upgrade.txt",
+      "sha256": "9faabf99899b978ba2c4c1a7de16154c7fb8221cec50de094f6612d3a3d3c5e7"
+    },
+    {
+      "path": "08-commerce.txt",
+      "sha256": "7bdb60ba74b8c1f05e01333ed56ae945eece3924ccaa4718b76e46e18ec9a59e"
+    },
+    {
+      "path": "09-integration.txt",
+      "sha256": "a2232c114c758065a4481da7d9b08aaef6fef485f1f1c32df7c941b2eed904d1"
+    },
+    {
+      "path": "10-build.txt",
+      "sha256": "436a079aaf2dad1553dec0ab889a7304601bbf908c1af0f2a3d03a281e1c09f7"
+    },
+    {
+      "path": "11-bundles.txt",
+      "sha256": "4e0432e443c74d592cf86678a5b882d2f30bd5f7cee6f162a2fd524f778d49af"
+    }
+  ],
+  "repairs": [
+    "Private uploaded digital fixture",
+    "Strict site/provider adapter binding and safe unconfigured errors",
+    "Explicit artwork/placement preflight and HTTP/body error agreement",
+    "Failed-job/manual-handoff completion and complete sibling pagination",
+    "Real validated shipping normalization and no invented address",
+    "Durable fulfillment recovery after paid receipt persistence"
+  ],
+  "laterGates": "Stage 03 ordinary browser and authorization, then the remaining assigned stages; RC1 NOT READY."
+}

@@ -1,0 +1,63 @@
+{
+  "contentId": "1b8f416a-6086-4103-a672-c55c55dc8c9b",
+  "articleId": "cd1d8e0f-c075-4c31-ac0c-e67883f9635d",
+  "approvedRevision": "bdb11ed6-9e0c-41b8-9d58-4d42b4ac2023",
+  "scheduledFor": "2026-10-14T02:12:58",
+  "canonicalSourceAudit": {
+    "id": "58157794-1f86-4fd3-bc91-f4325bc53e82",
+    "calendarEntry": null,
+    "article": "cd1d8e0f-c075-4c31-ac0c-e67883f9635d",
+    "action": "calendar.scheduled",
+    "actor": "c740a9a0-5470-41fc-bd86-e5a8da35d2c6",
+    "before": {},
+    "after": {
+      "timeZone": "UTC",
+      "scheduledFor": "2026-10-14T02:12:58.000Z",
+      "localFormatted": "2026-10-14 02:12:58 (UTC)"
+    },
+    "createdAt": "2026-10-14T02:12:25.001Z",
+    "updatedAt": "2026-10-14T02:12:25.001Z"
+  },
+  "persistedJob": {
+    "id": "a5e64ce7-f6d7-4652-812e-ff3dfbf01937",
+    "article": "cd1d8e0f-c075-4c31-ac0c-e67883f9635d",
+    "job": "ff772447-c360-454d-a5e7-bf169c61c60f",
+    "revision": "bdb11ed6-9e0c-41b8-9d58-4d42b4ac2023",
+    "scheduledFor": "2026-10-14T02:12:58.000Z",
+    "timeZone": "UTC",
+    "idempotencyKey": "sched-cal-cd1d8e0f-c075-4c31-ac0c-e67883f9635d-1791943944680",
+    "status": "completed",
+    "leaseOwner": null,
+    "leaseExpiresAt": null,
+    "retryCount": 0,
+    "maxRetries": 3,
+    "lastError": null,
+    "createdBy": "c740a9a0-5470-41fc-bd86-e5a8da35d2c6",
+    "updatedAt": "2026-10-14T02:12:59.723Z",
+    "createdAt": "2026-10-14T02:12:24.952Z"
+  },
+  "workerJob": {
+    "id": "ff772447-c360-454d-a5e7-bf169c61c60f",
+    "task_slug": "editorial-publish",
+    "completed_at": "2026-10-14T02:12:59.758Z",
+    "has_error": false,
+    "total_tried": "1"
+  },
+  "publicBodySha256": "039a2320fd77d71a792c08ecae718cf05fa40b6f056e63d6293174d58579d035",
+  "restart": {
+    "request": {
+      "nonce": 1791943945349,
+      "reason": "scheduled publication restart"
+    },
+    "previous": {
+      "web": 820,
+      "worker": 31988
+    },
+    "current": {
+      "web": 31152,
+      "worker": 7204
+    },
+    "restartedAt": "2026-10-14T02:12:25.877Z"
+  },
+  "laterDraftIsolated": true
+}

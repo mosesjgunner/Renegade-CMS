@@ -1,0 +1,490 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "05-http-authorization",
+      "06-scheduled-publication",
+      "07-minipaint",
+      "08-theme-rollback",
+      "--config=scratch/playwright.sol.config.ts"
+    ],
+    "configFile": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\playwright.sol.config.ts",
+    "rootDir": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/scratch/sol-specs",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/scratch/sol-traces/supplemental-1d0",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/scratch/sol-specs",
+        "testIgnore": [],
+        "testMatch": ["**/*.@(spec|test).?(c|m)[jt]s?(x)"],
+        "timeout": 600000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      ["list", null],
+      [
+        "json",
+        {
+          "outputFile": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-browser\\supplemental-1d0\\results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.62.1",
+    "workers": 1,
+    "webServer": {
+      "command": "node scratch/sol-runtime.mjs",
+      "cwd": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013",
+      "url": "https://dispatch.rc02.test:3129/api/setup/readiness",
+      "reuseExistingServer": false,
+      "ignoreHTTPSErrors": true,
+      "timeout": 120000,
+      "env": {
+        "DATABASE_URL": "postgresql://solrc1:[REDACTED]@127.0.0.1:15433/solrc1_20261013_browser_5666_release_acceptance",
+        "UPGRADE_MIGRATION_DATABASE_URL": "postgresql://solrc1:[REDACTED]@127.0.0.1:15433/solrc1_20261013_upgrade_acceptance",
+        "PAYLOAD_SECRET": "[REDACTED]",
+        "APP_URL": "https://dispatch.rc02.test:3129",
+        "PORT": "3128",
+        "HOSTNAME": "127.0.0.1",
+        "NODE_ENV": "production",
+        "PROXY_MODE": "trusted",
+        "TRUSTED_PROXY_HOPS": "1",
+        "DEPLOYMENT_PROFILE": "Standard",
+        "RENEGADE_MODULES": "all",
+        "RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT": "false",
+        "LOCAL_E2E_TEST_MODE": "false",
+        "ENABLE_TEST_ROUTES": "false",
+        "DISABLE_PAYLOAD_HMR": "true",
+        "MEDIA_DIR": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/scratch/sol-browser-media-5666",
+        "EMAIL_MODE": "smtp",
+        "SMTP_HOST": "127.0.0.1",
+        "SMTP_PORT": "3152",
+        "SMTP_SECURE": "false",
+        "EMAIL_FROM": "Renegade Sol <noreply@renegadeparty.test>",
+        "NODE_EXTRA_CA_CERTS": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/scratch/rc02-tls/cert.pem",
+        "NODE_OPTIONS": "--max-old-space-size=768 --import=file:///C:/Projects/RENEGADE%20CMS/sol-rc1-20261013/src/scripts/rc02-network.mjs"
+      }
+    }
+  },
+  "suites": [
+    {
+      "title": "05-http-authorization.spec.ts",
+      "file": "05-http-authorization.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "five real HTTP actors prove two-site reads, mutations, object substitutions, custom views and grant revocation",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 600000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 67762,
+                  "error": {
+                    "message": "Error: owner: foreign revision-records creation\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m403\u001b[39m\nReceived: \u001b[31m400\u001b[39m",
+                    "stack": "Error: owner: foreign revision-records creation\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m403\u001b[39m\nReceived: \u001b[31m400\u001b[39m\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:206:94",
+                    "location": {
+                      "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                      "column": 94,
+                      "line": 206
+                    },
+                    "snippet": "  204 |         if (object.collection === 'sites') data.slug = `denied-${role}-${stamp}`\n  205 |         const deniedCreate = await actor.request.post(`${base}/api/${object.collection}`, { data })\n> 206 |         expect.soft(deniedCreate.status(), `${role}: foreign ${object.collection} creation`).toBe(403)\n      |                                                                                              ^\n  207 |         expect.soft((await (await owner.request.get(countURL)).json()).totalDocs, `${role}: denied create preserves ${object.collection} count`).toBe(countBefore)\n  208 |       }\n  209 |       const patch = await actor.request.patch(`${base}/api/${object.collection}/${object.b.id}`, { data: {"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                        "column": 94,
+                        "line": 206
+                      },
+                      "message": "Error: owner: foreign revision-records creation\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m403\u001b[39m\nReceived: \u001b[31m400\u001b[39m\n\n  204 |         if (object.collection === 'sites') data.slug = `denied-${role}-${stamp}`\n  205 |         const deniedCreate = await actor.request.post(`${base}/api/${object.collection}`, { data })\n> 206 |         expect.soft(deniedCreate.status(), `${role}: foreign ${object.collection} creation`).toBe(403)\n      |                                                                                              ^\n  207 |         expect.soft((await (await owner.request.get(countURL)).json()).totalDocs, `${role}: denied create preserves ${object.collection} count`).toBe(countBefore)\n  208 |       }\n  209 |       const patch = await actor.request.patch(`${base}/api/${object.collection}/${object.b.id}`, { data: {\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:206:94"
+                    },
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                        "column": 84,
+                        "line": 239
+                      },
+                      "message": "Error: administrator: instance-wide settings authority\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m403\u001b[39m\nReceived: \u001b[31m200\u001b[39m\n\n  237 |     const settingsBefore = await (await owner.request.get(`${base}/api/globals/site-settings`)).json()\n  238 |     const globalWrite = await actor.request.post(`${base}/api/globals/site-settings`, { data: { siteName: `Sol ${role} instance-wide mutation` } })\n> 239 |     expect.soft(globalWrite.status(), `${role}: instance-wide settings authority`).toBe(role === 'owner' ? 200 : 403)\n      |                                                                                    ^\n  240 |     if (role !== 'owner') expect.soft((await (await owner.request.get(`${base}/api/globals/site-settings`)).json()).siteName).toBe(settingsBefore.siteName)\n  241 |     else expect((await owner.request.post(`${base}/api/globals/site-settings`, { data: { siteName: settingsBefore.siteName } })).status()).toBe(200)\n  242 |     for (const path of ['/api/admin/ai/connections', '/api/admin/audience/command-center', '/api/admin/integrations']) {\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:239:84"
+                    },
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                        "column": 127,
+                        "line": 240
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m\"FOREIGN LOCK MUTATION\"\u001b[39m\nReceived: \u001b[31m\"Sol administrator instance-wide mutation\"\u001b[39m\n\n  238 |     const globalWrite = await actor.request.post(`${base}/api/globals/site-settings`, { data: { siteName: `Sol ${role} instance-wide mutation` } })\n  239 |     expect.soft(globalWrite.status(), `${role}: instance-wide settings authority`).toBe(role === 'owner' ? 200 : 403)\n> 240 |     if (role !== 'owner') expect.soft((await (await owner.request.get(`${base}/api/globals/site-settings`)).json()).siteName).toBe(settingsBefore.siteName)\n      |                                                                                                                               ^\n  241 |     else expect((await owner.request.post(`${base}/api/globals/site-settings`, { data: { siteName: settingsBefore.siteName } })).status()).toBe(200)\n  242 |     for (const path of ['/api/admin/ai/connections', '/api/admin/audience/command-center', '/api/admin/integrations']) {\n  243 |       for (const target of [sites.site, sites.foreignSite]) {\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:240:127"
+                    },
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                        "column": 84,
+                        "line": 239
+                      },
+                      "message": "Error: staff: instance-wide settings authority\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m403\u001b[39m\nReceived: \u001b[31m200\u001b[39m\n\n  237 |     const settingsBefore = await (await owner.request.get(`${base}/api/globals/site-settings`)).json()\n  238 |     const globalWrite = await actor.request.post(`${base}/api/globals/site-settings`, { data: { siteName: `Sol ${role} instance-wide mutation` } })\n> 239 |     expect.soft(globalWrite.status(), `${role}: instance-wide settings authority`).toBe(role === 'owner' ? 200 : 403)\n      |                                                                                    ^\n  240 |     if (role !== 'owner') expect.soft((await (await owner.request.get(`${base}/api/globals/site-settings`)).json()).siteName).toBe(settingsBefore.siteName)\n  241 |     else expect((await owner.request.post(`${base}/api/globals/site-settings`, { data: { siteName: settingsBefore.siteName } })).status()).toBe(200)\n  242 |     for (const path of ['/api/admin/ai/connections', '/api/admin/audience/command-center', '/api/admin/integrations']) {\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:239:84"
+                    },
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                        "column": 127,
+                        "line": 240
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m\"Sol \u001b[7madministrator\u001b[27m instance-wide mutation\"\u001b[39m\nReceived: \u001b[31m\"Sol \u001b[7mstaff\u001b[27m instance-wide mutation\"\u001b[39m\n\n  238 |     const globalWrite = await actor.request.post(`${base}/api/globals/site-settings`, { data: { siteName: `Sol ${role} instance-wide mutation` } })\n  239 |     expect.soft(globalWrite.status(), `${role}: instance-wide settings authority`).toBe(role === 'owner' ? 200 : 403)\n> 240 |     if (role !== 'owner') expect.soft((await (await owner.request.get(`${base}/api/globals/site-settings`)).json()).siteName).toBe(settingsBefore.siteName)\n      |                                                                                                                               ^\n  241 |     else expect((await owner.request.post(`${base}/api/globals/site-settings`, { data: { siteName: settingsBefore.siteName } })).status()).toBe(200)\n  242 |     for (const path of ['/api/admin/ai/connections', '/api/admin/audience/command-center', '/api/admin/integrations']) {\n  243 |       for (const target of [sites.site, sites.foreignSite]) {\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:240:127"
+                    }
+                  ],
+                  "stdout": [
+                    {
+                      "text": "Completed native authorization cases for owner\n"
+                    },
+                    {
+                      "text": "Completed native authorization cases for administrator\n"
+                    },
+                    {
+                      "text": "Completed native authorization cases for staff\n"
+                    },
+                    {
+                      "text": "Completed native authorization cases for member\n"
+                    },
+                    {
+                      "text": "Completed native authorization cases for anonymous\n"
+                    }
+                  ],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-13T21:02:48.510Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\supplemental-1d0\\05-http-authorization-five-b3cee--views-and-grant-revocation\\test-failed-1.png"
+                    },
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\supplemental-1d0\\05-http-authorization-five-b3cee--views-and-grant-revocation\\test-failed-2.png"
+                    },
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\supplemental-1d0\\05-http-authorization-five-b3cee--views-and-grant-revocation\\test-failed-4.png"
+                    },
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\supplemental-1d0\\05-http-authorization-five-b3cee--views-and-grant-revocation\\test-failed-3.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\supplemental-1d0\\05-http-authorization-five-b3cee--views-and-grant-revocation\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\supplemental-1d0\\05-http-authorization-five-b3cee--views-and-grant-revocation\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                    "column": 94,
+                    "line": 206
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "[REDACTED RECOVERY CODE]-[REDACTED RECOVERY CODE]",
+          "file": "05-http-authorization.spec.ts",
+          "line": 44,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "06-scheduled-publication.spec.ts",
+      "file": "06-scheduled-publication.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "scheduled publication uses the actual worker, immutable revision, restart and public refetch",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 600000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 138,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m201\u001b[39m\nReceived: \u001b[31m403\u001b[39m",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m201\u001b[39m\nReceived: \u001b[31m403\u001b[39m\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\06-scheduled-publication.spec.ts:22:28",
+                    "location": {
+                      "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\06-scheduled-publication.spec.ts",
+                      "column": 28,
+                      "line": 22
+                    },
+                    "snippet": "  20 |     status: 'draft', body: lexical(phrase), summary: 'Independent ordinary scheduled publication acceptance.',\n  21 |   } })\n> 22 |   expect(created.status()).toBe(201)\n     |                            ^\n  23 |   const content = (await created.json()).doc\n  24 |   const publicUrl = `${process.env.APP_URL}${content.canonicalPath}`\n  25 |   expect((await anonymous.request.get(publicUrl)).status()).toBe(404)"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\06-scheduled-publication.spec.ts",
+                        "column": 28,
+                        "line": 22
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m201\u001b[39m\nReceived: \u001b[31m403\u001b[39m\n\n  20 |     status: 'draft', body: lexical(phrase), summary: 'Independent ordinary scheduled publication acceptance.',\n  21 |   } })\n> 22 |   expect(created.status()).toBe(201)\n     |                            ^\n  23 |   const content = (await created.json()).doc\n  24 |   const publicUrl = `${process.env.APP_URL}${content.canonicalPath}`\n  25 |   expect((await anonymous.request.get(publicUrl)).status()).toBe(404)\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\06-scheduled-publication.spec.ts:22:28"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-13T21:03:58.168Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\supplemental-1d0\\06-scheduled-publication-s-ab8d7--restart-and-public-refetch\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\supplemental-1d0\\06-scheduled-publication-s-ab8d7--restart-and-public-refetch\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\06-scheduled-publication.spec.ts",
+                    "column": 28,
+                    "line": 22
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "[REDACTED RECOVERY CODE]-[REDACTED RECOVERY CODE]",
+          "file": "06-scheduled-publication.spec.ts",
+          "line": 11,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "07-minipaint.spec.ts",
+      "file": "07-minipaint.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "miniPaint draws actual pixels, saves a new version and preserves original bytes after restart",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 600000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 236,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m201\u001b[39m\nReceived: \u001b[31m403\u001b[39m",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m201\u001b[39m\nReceived: \u001b[31m403\u001b[39m\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\07-minipaint.spec.ts:16:29",
+                    "location": {
+                      "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\07-minipaint.spec.ts",
+                      "column": 29,
+                      "line": 16
+                    },
+                    "snippet": "  14 |     file: { name: 'minipaint-original.png', mimeType: 'image/png', buffer: source },\n  15 |   } })\n> 16 |   expect(uploaded.status()).toBe(201)\n     |                             ^\n  17 |   const original = (await uploaded.json()).asset\n  18 |   expect((await owner.request.patch(`${process.env.APP_URL}/api/media-assets/${original.id}`, { data: { publicPolicy: 'private' } })).status()).toBe(200)\n  19 |   await page.goto(`/admin/collections/media-assets/${original.id}`)"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\07-minipaint.spec.ts",
+                        "column": 29,
+                        "line": 16
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m201\u001b[39m\nReceived: \u001b[31m403\u001b[39m\n\n  14 |     file: { name: 'minipaint-original.png', mimeType: 'image/png', buffer: source },\n  15 |   } })\n> 16 |   expect(uploaded.status()).toBe(201)\n     |                             ^\n  17 |   const original = (await uploaded.json()).asset\n  18 |   expect((await owner.request.patch(`${process.env.APP_URL}/api/media-assets/${original.id}`, { data: { publicPolicy: 'private' } })).status()).toBe(200)\n  19 |   await page.goto(`/admin/collections/media-assets/${original.id}`)\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\07-minipaint.spec.ts:16:29"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-13T21:03:59.083Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\supplemental-1d0\\07-minipaint-miniPaint-dra-3ea22-riginal-bytes-after-restart\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\supplemental-1d0\\07-minipaint-miniPaint-dra-3ea22-riginal-bytes-after-restart\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\supplemental-1d0\\07-minipaint-miniPaint-dra-3ea22-riginal-bytes-after-restart\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\07-minipaint.spec.ts",
+                    "column": 29,
+                    "line": 16
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "[REDACTED RECOVERY CODE]-[REDACTED RECOVERY CODE]",
+          "file": "07-minipaint.spec.ts",
+          "line": 7,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "08-theme-rollback.spec.ts",
+      "file": "08-theme-rollback.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "actual theme rollback restores public presentation and preserves canonical content",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 600000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 3,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 85,
+                  "error": {
+                    "message": "TypeError: The \"data\" argument must be of type string or an instance of Buffer, TypedArray, or DataView. Received undefined",
+                    "stack": "TypeError: The \"data\" argument must be of type string or an instance of Buffer, TypedArray, or DataView. Received undefined\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\08-theme-rollback.spec.ts:10:44",
+                    "location": {
+                      "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\08-theme-rollback.spec.ts",
+                      "column": 44,
+                      "line": 10
+                    },
+                    "snippet": "   8 |   const site = JSON.parse(readFileSync(`${output}/two-sites.json`, 'utf8')).site\n   9 |   const before = await (await owner.request.get(`${process.env.APP_URL}/api/content?depth=0&limit=100&sort=id`)).json()\n> 10 |   const fingerprint = createHash('sha256').update(JSON.stringify(before.docs)).digest('hex')\n     |                                            ^\n  11 |   const themeURL = `${process.env.APP_URL}/api/admin/themes?site=${site}`\n  12 |   const initial = await (await owner.request.get(themeURL)).json()\n  13 |   const change = async (action: string, extra = {}) => {"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\08-theme-rollback.spec.ts",
+                        "column": 44,
+                        "line": 10
+                      },
+                      "message": "TypeError: The \"data\" argument must be of type string or an instance of Buffer, TypedArray, or DataView. Received undefined\n\n   8 |   const site = JSON.parse(readFileSync(`${output}/two-sites.json`, 'utf8')).site\n   9 |   const before = await (await owner.request.get(`${process.env.APP_URL}/api/content?depth=0&limit=100&sort=id`)).json()\n> 10 |   const fingerprint = createHash('sha256').update(JSON.stringify(before.docs)).digest('hex')\n     |                                            ^\n  11 |   const themeURL = `${process.env.APP_URL}/api/admin/themes?site=${site}`\n  12 |   const initial = await (await owner.request.get(themeURL)).json()\n  13 |   const change = async (action: string, extra = {}) => {\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\08-theme-rollback.spec.ts:10:44"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-13T21:03:59.896Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\supplemental-1d0\\08-theme-rollback-actual-t-524a4-preserves-canonical-content\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\supplemental-1d0\\08-theme-rollback-actual-t-524a4-preserves-canonical-content\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\08-theme-rollback.spec.ts",
+                    "column": 44,
+                    "line": 10
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "[REDACTED RECOVERY CODE]-[REDACTED RECOVERY CODE]",
+          "file": "08-theme-rollback.spec.ts",
+          "line": 6,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-13T21:02:44.155Z",
+    "duration": 76295.493,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 4,
+    "flaky": 0
+  }
+}

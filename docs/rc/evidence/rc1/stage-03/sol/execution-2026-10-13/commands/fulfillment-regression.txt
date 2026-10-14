@@ -1,0 +1,20 @@
+
+ RUN  v3.2.7 C:/Projects/RENEGADE CMS/sol-rc1-20261013
+
+[04:45:19] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+ ✓ tests/integration/rc05-pass2-commerce-routes.integration.test.ts (5 tests) 5274ms
+   ✓ RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security > proves the complete physical product lifecycle, server authority, and idempotent settlement  2453ms
+   ✓ RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security > defeats client price, quantity, and total tampering attempts across routes  943ms
+   ✓ RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security > proves webhook security boundaries: unsigned, invalid signature, replay, and race handling  668ms
+   ✓ RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security > proves multi-tenant boundaries and security against cross-site cart/order access  579ms
+   ✓ RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security > proves downstream partial failure handling and operator reconciliation  629ms
+[04:45:27] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+ ✓ tests/integration/commerce-runtime-acceptance.integration.test.ts (1 test) 3380ms
+   ✓ RC08D-04: Commerce Runtime Closure & Acceptance Verification > proves catalog, low-stock race, cart authority, settlement, subscriptions, donations, affiliates, and fulfillment  3378ms
+
+ Test Files  2 passed (2)
+      Tests  6 passed (6)
+   Start at  04:45:15
+   Duration  15.30s (transform 1.31s, setup 0ms, collect 6.00s, tests 8.65s, environment 0ms, prepare 164ms)
+
+JSON report written to C:/Projects/RENEGADE CMS/sol-rc1-20261013/scratch/sol-evidence/fulfillment-regression.json

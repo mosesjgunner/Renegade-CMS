@@ -1,0 +1,8 @@
+
+> renegade-cms@0.1.0 typecheck
+> tsc --noEmit
+
+tests/integration/editorial-transaction-boundary.integration.test.ts(77,5): error TS2322: Type 'string | number | null' is not assignable to type 'string | number | Promise<string | number> | undefined'.
+  Type 'null' is not assignable to type 'string | number | Promise<string | number> | undefined'.
+tests/integration/editorial-transaction-boundary.integration.test.ts(126,5): error TS2322: Type 'string | number | null' is not assignable to type 'string | number | Promise<string | number> | undefined'.
+  Type 'null' is not assignable to type 'string | number | Promise<string | number> | undefined'.

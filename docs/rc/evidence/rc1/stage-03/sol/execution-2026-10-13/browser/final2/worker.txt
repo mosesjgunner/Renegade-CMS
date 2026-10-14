@@ -1,0 +1,387 @@
+(node:20048) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:20048) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[17:05:32] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[17:05:40] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[17:05:50] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[17:06:01] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[17:06:09] [32mINFO[39m: [36mRunning 1 jobs.[39m
+    [35mnew[39m: 1
+    [35mretrying[39m: 0
+[17:06:15] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[17:06:20] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[17:06:20] [32mINFO[39m: [36mRunning 1 jobs.[39m
+    [35mnew[39m: 1
+    [35mretrying[39m: 0
+[17:06:31] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[17:06:40] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[17:06:41] [32mINFO[39m: [36mRunning 3 jobs.[39m
+    [35mnew[39m: 3
+    [35mretrying[39m: 0
+[17:06:50] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[17:07:00] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[17:07:02] [32mINFO[39m: [36mRunning 1 jobs.[39m
+    [35mnew[39m: 1
+    [35mretrying[39m: 0
+[17:07:02] [32mINFO[39m: [36mRunning 1 jobs.[39m
+    [35mnew[39m: 1
+    [35mretrying[39m: 0
+[17:07:06] [32mINFO[39m: [36mRunning 1 jobs.[39m
+    [35mnew[39m: 1
+    [35mretrying[39m: 0
+[17:07:11] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[17:07:20] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[17:07:24] [32mINFO[39m: [36mRunning 1 jobs.[39m
+    [35mnew[39m: 1
+    [35mretrying[39m: 0
+(node:28696) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:28696) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[17:07:37] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[17:07:37] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[17:07:38] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[17:07:40] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[17:07:50] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[17:08:00] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[17:08:10] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[17:08:21] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+(node:34656) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:34656) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[17:11:08] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[17:11:09] [32mINFO[39m: [36mRunning 6 jobs.[39m
+    [35mnew[39m: 6
+    [35mretrying[39m: 0
+[17:11:09] [32mINFO[39m:
+    [35mevent[39m: "operations.job.heartbeat"
+    [35mobservedAt[39m: "2026-10-13T22:11:09.157Z"
+    [35mversion[39m: "0.1.0-dev"
+[17:11:10] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[17:11:20] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[17:11:30] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[17:11:40] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[17:11:50] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[17:11:51] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[17:12:00] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[17:12:10] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[17:12:20] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[17:12:30] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[17:12:40] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[17:12:50] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[17:13:00] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[17:13:11] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[17:13:20] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[17:13:21] [32mINFO[39m: [36mRunning 1 jobs.[39m
+    [35mnew[39m: 1
+    [35mretrying[39m: 0
+[17:13:30] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[17:13:40] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[17:13:41] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[17:13:50] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[17:14:00] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[17:14:10] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[17:14:20] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[17:14:31] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[17:14:40] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[17:14:41] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[17:14:50] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[17:15:00] [32mINFO[39m: [36mRunning 7 jobs.[39m
+    [35mnew[39m: 7
+    [35mretrying[39m: 0
+[17:15:00] [32mINFO[39m:
+    [35mevent[39m: "operations.job.heartbeat"
+    [35mobservedAt[39m: "2026-10-13T22:15:00.487Z"
+    [35mversion[39m: "0.1.0-dev"
+[17:15:10] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[17:15:20] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[17:15:30] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[17:15:40] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[17:15:51] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[17:16:00] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[17:16:10] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[17:16:20] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[17:16:30] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[17:16:40] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[17:16:50] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[17:17:00] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[17:17:10] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[17:17:20] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[17:17:30] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[17:17:41] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[17:17:50] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[17:18:01] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[17:18:02] [32mINFO[39m: [36mRunning 1 jobs.[39m
+    [35mnew[39m: 1
+    [35mretrying[39m: 0
+[17:18:07] [32mINFO[39m: [36mRunning 1 jobs.[39m
+    [35mnew[39m: 1
+    [35mretrying[39m: 0
+[17:18:11] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[17:18:20] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[17:18:31] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[17:18:40] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[17:18:50] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[17:19:01] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[17:19:10] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[17:19:20] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[17:19:21] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[17:19:26] [32mINFO[39m: [36mRunning 1 jobs.[39m
+    [35mnew[39m: 1
+    [35mretrying[39m: 0
+[17:19:31] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[17:19:36] [32mINFO[39m: [36mRunning 1 jobs.[39m
+    [35mnew[39m: 1
+    [35mretrying[39m: 0
+[17:19:42] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[17:19:42] [32mINFO[39m: [36mRunning 1 jobs.[39m
+    [35mnew[39m: 1
+    [35mretrying[39m: 0
+(node:33484) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:33484) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[17:19:57] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[17:19:58] [32mINFO[39m: [36mRunning 3 jobs.[39m
+    [35mnew[39m: 3
+    [35mretrying[39m: 0
+Failed to revalidate paths: Error: Invariant: static generation store missing in revalidatePath /articles/scheduled-worker-1791929952331
+    at revalidate [90m(C:\Projects\RENEGADE CMS\sol-rc1-20261013\[39mnode_modules\[4mnext[24m\src\server\web\spec-extension\revalidate.ts:135:11[90m)[39m
+    at revalidatePath [90m(C:\Projects\RENEGADE CMS\sol-rc1-20261013\[39mnode_modules\[4mnext[24m\src\server\web\spec-extension\revalidate.ts:125:10[90m)[39m
+    at persistWorkflow [90m(C:\Projects\RENEGADE CMS\sol-rc1-20261013\[39msrc\modules\editorial\persistence.ts:553:7[90m)[39m
+[90m    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)[39m
+    at async publishScheduledArticleUnlocked [90m(C:\Projects\RENEGADE CMS\sol-rc1-20261013\[39msrc\modules\editorial\persistence.ts:1018:3[90m)[39m
+    at async withExecutionLock [90m(C:\Projects\RENEGADE CMS\sol-rc1-20261013\[39msrc\modules\operations\execution-lock.ts:26:12[90m)[39m
+    at async handler [90m(C:\Projects\RENEGADE CMS\sol-rc1-20261013\[39msrc\modules\editorial\tasks.ts:32:23[90m)[39m
+    at async Object.editorial-publish [90m(C:\Projects\RENEGADE CMS\sol-rc1-20261013\[39mnode_modules\[4mpayload[24m\src\queues\operations\runJobs\runJob\getRunTaskFunction.ts:135:29[90m)[39m
+    at async handler [90m(C:\Projects\RENEGADE CMS\sol-rc1-20261013\[39mnode_modules\[4mpayload[24m\src\queues\operations\runJobs\index.ts:348:13[90m)[39m
+    at async runJob [90m(C:\Projects\RENEGADE CMS\sol-rc1-20261013\[39mnode_modules\[4mpayload[24m\src\queues\operations\runJobs\runJob\index.ts:46:5[90m)[39m
+[17:19:59] [32mINFO[39m:
+    [35mevent[39m: "editorial.job.publish"
+    [35marticleId[39m: "fdaf4e9f-f803-4098-a969-b59e4a12e476"
+    [35midempotencyKey[39m: "sched-cal-fdaf4e9f-f803-4098-a969-b59e4a12e476-1791929954020"
+    [35mpublished[39m: true
+    [35mqueue[39m: "operations"
+[17:20:00] [32mINFO[39m: [36mRunning 6 jobs.[39m
+    [35mnew[39m: 6
+    [35mretrying[39m: 0
+[17:20:00] [32mINFO[39m:
+    [35mevent[39m: "operations.job.heartbeat"
+    [35mobservedAt[39m: "2026-10-13T22:20:00.953Z"
+    [35mversion[39m: "0.1.0-dev"
+[17:20:02] [32mINFO[39m: [36mRunning 1 jobs.[39m
+    [35mnew[39m: 1
+    [35mretrying[39m: 0
+[17:20:10] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[17:20:21] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[17:20:31] [32mINFO[39m: [36mRunning 5 jobs.[39m
+    [35mnew[39m: 5
+    [35mretrying[39m: 0
+[17:20:40] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+(node:13596) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:13596) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[20:39:38] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[20:39:39] [32mINFO[39m: [36mRunning 7 jobs.[39m
+    [35mnew[39m: 7
+    [35mretrying[39m: 0
+[20:39:39] [32mINFO[39m:
+    [35mevent[39m: "operations.job.heartbeat"
+    [35mobservedAt[39m: "2026-10-14T01:39:39.049Z"
+    [35mversion[39m: "0.1.0-dev"
+[20:39:40] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[20:39:50] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[20:39:51] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+(node:34968) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:34968) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[20:39:59] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[20:40:00] [32mINFO[39m: [36mRunning 4 jobs.[39m
+    [35mnew[39m: 4
+    [35mretrying[39m: 0
+[20:40:00] [32mINFO[39m:
+    [35mevent[39m: "operations.job.heartbeat"
+    [35mobservedAt[39m: "2026-10-14T01:40:00.968Z"
+    [35mversion[39m: "0.1.0-dev"
+[20:40:25] [32mINFO[39m: [36mRunning 1 jobs.[39m
+    [35mnew[39m: 1
+    [35mretrying[39m: 0
+Failed to revalidate paths: Error: Invariant: static generation store missing in revalidatePath /articles/scheduled-worker-1791941988228
+    at revalidate [90m(C:\Projects\RENEGADE CMS\sol-rc1-20261013\[39mnode_modules\[4mnext[24m\src\server\web\spec-extension\revalidate.ts:135:11[90m)[39m
+    at revalidatePath [90m(C:\Projects\RENEGADE CMS\sol-rc1-20261013\[39mnode_modules\[4mnext[24m\src\server\web\spec-extension\revalidate.ts:125:10[90m)[39m
+    at persistWorkflow [90m(C:\Projects\RENEGADE CMS\sol-rc1-20261013\[39msrc\modules\editorial\persistence.ts:553:7[90m)[39m
+[90m    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)[39m
+    at async publishScheduledArticleUnlocked [90m(C:\Projects\RENEGADE CMS\sol-rc1-20261013\[39msrc\modules\editorial\persistence.ts:1018:3[90m)[39m
+    at async withExecutionLock [90m(C:\Projects\RENEGADE CMS\sol-rc1-20261013\[39msrc\modules\operations\execution-lock.ts:26:12[90m)[39m
+    at async handler [90m(C:\Projects\RENEGADE CMS\sol-rc1-20261013\[39msrc\modules\editorial\tasks.ts:32:23[90m)[39m
+    at async Object.editorial-publish [90m(C:\Projects\RENEGADE CMS\sol-rc1-20261013\[39mnode_modules\[4mpayload[24m\src\queues\operations\runJobs\runJob\getRunTaskFunction.ts:135:29[90m)[39m
+    at async handler [90m(C:\Projects\RENEGADE CMS\sol-rc1-20261013\[39mnode_modules\[4mpayload[24m\src\queues\operations\runJobs\index.ts:348:13[90m)[39m
+    at async runJob [90m(C:\Projects\RENEGADE CMS\sol-rc1-20261013\[39mnode_modules\[4mpayload[24m\src\queues\operations\runJobs\runJob\index.ts:46:5[90m)[39m
+[20:40:26] [32mINFO[39m:
+    [35mevent[39m: "editorial.job.publish"
+    [35marticleId[39m: "0fe8e7ab-ed7a-4044-a4bc-06eb6d3e2334"
+    [35midempotencyKey[39m: "sched-cal-0fe8e7ab-ed7a-4044-a4bc-06eb6d3e2334-1791941990094"
+    [35mpublished[39m: true
+    [35mqueue[39m: "operations"

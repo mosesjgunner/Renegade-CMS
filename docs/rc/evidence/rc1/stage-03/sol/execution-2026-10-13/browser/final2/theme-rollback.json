@@ -1,0 +1,45 @@
+{
+  "initialState": {
+    "revision": 6,
+    "active": {
+      "id": "renegade-party",
+      "digest": "a469188d8a636c5ad7197c0a7e03e93a53df5465173cb6cbe0be6d1ed843956f",
+      "tokens": {
+        "color.accent": "#b91c1c",
+        "color.canvas": "#f8f6f0"
+      },
+      "version": "1.0.0",
+      "renderer": "renegade-party"
+    },
+    "draft": null,
+    "previous": {
+      "id": "neutral-starter",
+      "digest": "4fa1f5b8e862384aaa242048b9087e3f5e5e515df80d8fa2acd9364448fc18e3",
+      "tokens": {},
+      "version": "1.0.0",
+      "renderer": "neutral-starter"
+    }
+  },
+  "finalState": {
+    "revision": 9,
+    "active": {
+      "id": "renegade-party",
+      "digest": "a469188d8a636c5ad7197c0a7e03e93a53df5465173cb6cbe0be6d1ed843956f",
+      "tokens": {
+        "color.accent": "#b91c1c",
+        "color.canvas": "#f8f6f0"
+      },
+      "version": "1.0.0",
+      "renderer": "renegade-party"
+    },
+    "draft": null,
+    "previous": {
+      "id": "neutral-starter",
+      "digest": "4fa1f5b8e862384aaa242048b9087e3f5e5e515df80d8fa2acd9364448fc18e3",
+      "tokens": {},
+      "version": "1.0.0",
+      "renderer": "neutral-starter"
+    }
+  },
+  "contentSha256": "04a87416582d015eea2904fd0a4d664395da29147b0fe767f174af936e93b493"
+}

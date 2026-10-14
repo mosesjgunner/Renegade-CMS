@@ -1,0 +1,195 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "--config=scratch/playwright.sol.config.ts",
+      "--max-failures=1"
+    ],
+    "configFile": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\playwright.sol.config.ts",
+    "rootDir": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/scratch/config-specs",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 1,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/scratch/sol-traces/config-v3-standard-all",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/scratch/config-specs",
+        "testIgnore": [],
+        "testMatch": ["**/*.@(spec|test).?(c|m)[jt]s?(x)"],
+        "timeout": 600000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      ["list", null],
+      [
+        "json",
+        {
+          "outputFile": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-browser\\config-v3-standard-all\\results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.62.1",
+    "workers": 1,
+    "webServer": {
+      "command": "node scratch/sol-runtime.mjs",
+      "cwd": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013",
+      "url": "https://dispatch.rc02.test:3129/api/setup/readiness",
+      "reuseExistingServer": false,
+      "ignoreHTTPSErrors": true,
+      "timeout": 120000,
+      "env": {
+        "DATABASE_URL": "postgresql://solrc1:[REDACTED]@127.0.0.1:15433/solrc1_20261013_cfg_v3_standard_all_release_acceptance",
+        "UPGRADE_MIGRATION_DATABASE_URL": "postgresql://solrc1:[REDACTED]@127.0.0.1:15433/solrc1_20261013_upgrade_acceptance",
+        "PAYLOAD_SECRET": "[REDACTED]",
+        "APP_URL": "https://dispatch.rc02.test:3129",
+        "PORT": "3128",
+        "HOSTNAME": "127.0.0.1",
+        "NODE_ENV": "production",
+        "PROXY_MODE": "trusted",
+        "TRUSTED_PROXY_HOPS": "1",
+        "DEPLOYMENT_PROFILE": "Standard",
+        "RENEGADE_MODULES": "all",
+        "RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT": "false",
+        "LOCAL_E2E_TEST_MODE": "false",
+        "ENABLE_TEST_ROUTES": "false",
+        "DISABLE_PAYLOAD_HMR": "true",
+        "MEDIA_DIR": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-config-v3-standard-all-media",
+        "EMAIL_MODE": "disabled",
+        "SMTP_HOST": "127.0.0.1",
+        "SMTP_PORT": "3152",
+        "SMTP_SECURE": "false",
+        "EMAIL_FROM": "Renegade Sol <noreply@renegadeparty.test>",
+        "NODE_EXTRA_CA_CERTS": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/scratch/rc02-tls/cert.pem",
+        "SOL_ARTIFACT_ROOT": "scratch/sol-browser/config-v3-standard-all",
+        "SOL_BROWSER_RUN": "config-v3-standard-all",
+        "SOL_CONFIGURATION_RUN": "true",
+        "NODE_OPTIONS": "--max-old-space-size=768 --import=file:///C:/Projects/RENEGADE%20CMS/sol-rc1-20261013/src/scripts/rc02-network.mjs"
+      }
+    }
+  },
+  "suites": [
+    {
+      "title": "configuration.spec.ts",
+      "file": "configuration.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "ordinary configuration boot, first-run, registered collections and an actual publishing mutation",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 600000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 9643,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  - 3\u001b[39m\n\u001b[31m+ Received  + 0\u001b[39m\n\n\u001b[33m@@ -20,11 +20,10 @@\u001b[39m\n\u001b[2m    \"book-chapters\",\u001b[22m\n\u001b[2m    \"book-editions\",\u001b[22m\n\u001b[2m    \"book-parts\",\u001b[22m\n\u001b[2m    \"books\",\u001b[22m\n\u001b[2m    \"brands\",\u001b[22m\n\u001b[32m-   \"calendar-entries\",\u001b[39m\n\u001b[2m    \"calendar-entry-audits\",\u001b[22m\n\u001b[2m    \"campaigns\",\u001b[22m\n\u001b[2m    \"carts\",\u001b[22m\n\u001b[2m    \"catalog-import-runs\",\u001b[22m\n\u001b[2m    \"categories\",\u001b[22m\n\u001b[33m@@ -42,11 +41,10 @@\u001b[39m\n\u001b[2m    \"content-releases\",\u001b[22m\n\u001b[2m    \"conversion-goals\",\u001b[22m\n\u001b[2m    \"deals-opportunities\",\u001b[22m\n\u001b[2m    \"delivery-identities\",\u001b[22m\n\u001b[2m    \"delivery-receipts\",\u001b[22m\n\u001b[32m-   \"digest-definitions\",\u001b[39m\n\u001b[2m    \"digest-runs\",\u001b[22m\n\u001b[2m    \"digital-delivery-grants\",\u001b[22m\n\u001b[2m    \"digital-download-events\",\u001b[22m\n\u001b[2m    \"discussion-posts\",\u001b[22m\n\u001b[2m    \"discussions\",\u001b[22m\n\u001b[33m@@ -167,11 +165,10 @@\u001b[39m\n\u001b[2m    \"social-network-variants\",\u001b[22m\n\u001b[2m    \"social-publish-attempts\",\u001b[22m\n\u001b[2m    \"social-queue-items\",\u001b[22m\n\u001b[2m    \"sources\",\u001b[22m\n\u001b[2m    \"spaces\",\u001b[22m\n\u001b[32m-   \"submission-attachments\",\u001b[39m\n\u001b[2m    \"subscriber-confirmation-tokens\",\u001b[22m\n\u001b[2m    \"subscribers\",\u001b[22m\n\u001b[2m    \"subscription-events\",\u001b[22m\n\u001b[2m    \"subscriptions\",\u001b[22m\n\u001b[2m    \"supporters\",\u001b[22m",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  - 3\u001b[39m\n\u001b[31m+ Received  + 0\u001b[39m\n\n\u001b[33m@@ -20,11 +20,10 @@\u001b[39m\n\u001b[2m    \"book-chapters\",\u001b[22m\n\u001b[2m    \"book-editions\",\u001b[22m\n\u001b[2m    \"book-parts\",\u001b[22m\n\u001b[2m    \"books\",\u001b[22m\n\u001b[2m    \"brands\",\u001b[22m\n\u001b[32m-   \"calendar-entries\",\u001b[39m\n\u001b[2m    \"calendar-entry-audits\",\u001b[22m\n\u001b[2m    \"campaigns\",\u001b[22m\n\u001b[2m    \"carts\",\u001b[22m\n\u001b[2m    \"catalog-import-runs\",\u001b[22m\n\u001b[2m    \"categories\",\u001b[22m\n\u001b[33m@@ -42,11 +41,10 @@\u001b[39m\n\u001b[2m    \"content-releases\",\u001b[22m\n\u001b[2m    \"conversion-goals\",\u001b[22m\n\u001b[2m    \"deals-opportunities\",\u001b[22m\n\u001b[2m    \"delivery-identities\",\u001b[22m\n\u001b[2m    \"delivery-receipts\",\u001b[22m\n\u001b[32m-   \"digest-definitions\",\u001b[39m\n\u001b[2m    \"digest-runs\",\u001b[22m\n\u001b[2m    \"digital-delivery-grants\",\u001b[22m\n\u001b[2m    \"digital-download-events\",\u001b[22m\n\u001b[2m    \"discussion-posts\",\u001b[22m\n\u001b[2m    \"discussions\",\u001b[22m\n\u001b[33m@@ -167,11 +165,10 @@\u001b[39m\n\u001b[2m    \"social-network-variants\",\u001b[22m\n\u001b[2m    \"social-publish-attempts\",\u001b[22m\n\u001b[2m    \"social-queue-items\",\u001b[22m\n\u001b[2m    \"sources\",\u001b[22m\n\u001b[2m    \"spaces\",\u001b[22m\n\u001b[32m-   \"submission-attachments\",\u001b[39m\n\u001b[2m    \"subscriber-confirmation-tokens\",\u001b[22m\n\u001b[2m    \"subscribers\",\u001b[22m\n\u001b[2m    \"subscription-events\",\u001b[22m\n\u001b[2m    \"subscriptions\",\u001b[22m\n\u001b[2m    \"supporters\",\u001b[22m\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\config-specs\\configuration.spec.ts:52:29",
+                    "location": {
+                      "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\config-specs\\configuration.spec.ts",
+                      "column": 29,
+                      "line": 52
+                    },
+                    "snippet": "  50 |   const internalStores = ['payload-jobs', 'payload-kv']\n  51 |   const omitted = [...nativeDenied, ...internalStores]\n> 52 |   expect(actualCollections).toEqual(expected.collections.map(c => c.slug).filter(slug => !omitted.includes(slug)).sort())\n     |                             ^\n  53 |   const closedStores: Record<string, number> = {}\n  54 |   for (const slug of nativeDenied) {\n  55 |     const response = await page.request.get(`/api/${slug}?limit=1`)"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\config-specs\\configuration.spec.ts",
+                        "column": 29,
+                        "line": 52
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  - 3\u001b[39m\n\u001b[31m+ Received  + 0\u001b[39m\n\n\u001b[33m@@ -20,11 +20,10 @@\u001b[39m\n\u001b[2m    \"book-chapters\",\u001b[22m\n\u001b[2m    \"book-editions\",\u001b[22m\n\u001b[2m    \"book-parts\",\u001b[22m\n\u001b[2m    \"books\",\u001b[22m\n\u001b[2m    \"brands\",\u001b[22m\n\u001b[32m-   \"calendar-entries\",\u001b[39m\n\u001b[2m    \"calendar-entry-audits\",\u001b[22m\n\u001b[2m    \"campaigns\",\u001b[22m\n\u001b[2m    \"carts\",\u001b[22m\n\u001b[2m    \"catalog-import-runs\",\u001b[22m\n\u001b[2m    \"categories\",\u001b[22m\n\u001b[33m@@ -42,11 +41,10 @@\u001b[39m\n\u001b[2m    \"content-releases\",\u001b[22m\n\u001b[2m    \"conversion-goals\",\u001b[22m\n\u001b[2m    \"deals-opportunities\",\u001b[22m\n\u001b[2m    \"delivery-identities\",\u001b[22m\n\u001b[2m    \"delivery-receipts\",\u001b[22m\n\u001b[32m-   \"digest-definitions\",\u001b[39m\n\u001b[2m    \"digest-runs\",\u001b[22m\n\u001b[2m    \"digital-delivery-grants\",\u001b[22m\n\u001b[2m    \"digital-download-events\",\u001b[22m\n\u001b[2m    \"discussion-posts\",\u001b[22m\n\u001b[2m    \"discussions\",\u001b[22m\n\u001b[33m@@ -167,11 +165,10 @@\u001b[39m\n\u001b[2m    \"social-network-variants\",\u001b[22m\n\u001b[2m    \"social-publish-attempts\",\u001b[22m\n\u001b[2m    \"social-queue-items\",\u001b[22m\n\u001b[2m    \"sources\",\u001b[22m\n\u001b[2m    \"spaces\",\u001b[22m\n\u001b[32m-   \"submission-attachments\",\u001b[39m\n\u001b[2m    \"subscriber-confirmation-tokens\",\u001b[22m\n\u001b[2m    \"subscribers\",\u001b[22m\n\u001b[2m    \"subscription-events\",\u001b[22m\n\u001b[2m    \"subscriptions\",\u001b[22m\n\u001b[2m    \"supporters\",\u001b[22m\n\n  50 |   const internalStores = ['payload-jobs', 'payload-kv']\n  51 |   const omitted = [...nativeDenied, ...internalStores]\n> 52 |   expect(actualCollections).toEqual(expected.collections.map(c => c.slug).filter(slug => !omitted.includes(slug)).sort())\n     |                             ^\n  53 |   const closedStores: Record<string, number> = {}\n  54 |   for (const slug of nativeDenied) {\n  55 |     const response = await page.request.get(`/api/${slug}?limit=1`)\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\config-specs\\configuration.spec.ts:52:29"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-14T01:56:15.127Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\config-v3-standard-all\\configuration-ordinary-con-772b6--actual-publishing-mutation\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\config-v3-standard-all\\configuration-ordinary-con-772b6--actual-publishing-mutation\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\config-v3-standard-all\\configuration-ordinary-con-772b6--actual-publishing-mutation\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\config-specs\\configuration.spec.ts",
+                    "column": 29,
+                    "line": 52
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "[REDACTED RECOVERY CODE]-[REDACTED RECOVERY CODE]",
+          "file": "configuration.spec.ts",
+          "line": 6,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "message": "\u001b[31mTesting stopped early after 1 maximum allowed failures.\u001b[39m"
+    }
+  ],
+  "stats": {
+    "startTime": "2026-10-14T01:56:07.026Z",
+    "duration": 18432.069,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

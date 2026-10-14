@@ -1,0 +1,210 @@
+
+Running 1 test using 1 worker
+
+node : (node:25480) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+At line:2 char:129
++ ... -cold-nav'; node node_modules/@playwright/test/cli.js test 05-http-au ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ((node:25480) Wa... env being set.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  1 scratch\sol-specs\05-http-authorization.spec.ts:44:1 › five real HTTP actors prove two-site reads, mutations, object substitutions, custom views and grant revocation (1.4m)
+Testing stopped early after 1 maximum allowed failures.
+
+
+  1) scratch\sol-specs\05-http-authorization.spec.ts:44:1 › five real HTTP actors prove two-site reads, mutations, object substitutions, custom views and grant revocation
+
+    Error: owner: own article-family-content mutation
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 200
+    Received: 400
+
+      177 |         if (role === 'staff' && object.collection === 'sites') expect.soft(ownWrite.status()).toBe(403)
+      178 |         else {
+    > 179 |           expect.soft(ownWrite.status(), `${role}: own ${object.collection} mutation`).toBe(200)
+          |                                                                                        ^
+      180 |           expect.soft((await (await owner.request.get(`${base}/api/${object.collection}/${object.a.id}`)).json())[object.field]).toBe(ownValue)
+      181 |         }
+      182 |       }
+        at C:\Projects\RENEGADE CMS\sol-rc1-20261013\scratch\sol-specs\05-http-authorization.spec.ts:179:88
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: "Sol owner permitted article-family-content"
+    Received: null
+
+      178 |         else {
+      179 |           expect.soft(ownWrite.status(), `${role}: own ${object.collection} mutation`).toBe(200)
+    > 180 |           expect.soft((await (await owner.request.get(`${base}/api/${object.collection}/${object.a.id}`)).json())[object.field]).toBe(ownValue)
+          |                                                                                                                                  ^
+      181 |         }
+      182 |       }
+      183 |       const foreignRead = await actor.request.get(`${base}/api/${object.collection}/${object.b.id}?depth=0`)
+        at C:\Projects\RENEGADE CMS\sol-rc1-20261013\scratch\sol-specs\05-http-authorization.spec.ts:180:130
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 200
+    Received: 400
+
+      198 |         [object.field]: `Sol ${role} foreign mutation`,
+      199 |       } })
+    > 200 |       if (role === 'owner' && !object.readOnly) expect.soft(patch.status()).toBe(200)
+          |                                                                             ^
+      201 |       else {
+      202 |         expect.soft([403, 404], `${role}: foreign ${object.collection} mutation`).toContain(patch.status())
+      203 |         const after = await (await owner.request.get(`${base}/api/${object.collection}/${object.b.id}?depth=0`)).json()
+        at C:\Projects\RENEGADE CMS\sol-rc1-20261013\scratch\sol-specs\05-http-authorization.spec.ts:200:77
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 200
+    Received: 400
+
+      212 |             continue
+      213 |           }
+    > 214 |           expect.soft(moved.status()).toBe(200)
+          |                                       ^
+      215 |           expect((await owner.request.patch(`${base}/api/${object.collection}/${object.a.id}`, { data: { [scopeField]: object.parentA ?? sites.site } })).status()).toBe(200)
+      216 |         } else expect.soft([403, 404], `${role}: reassign ${object.collection} to foreign site`).toContain(moved.status())
+      217 |       }
+        at C:\Projects\RENEGADE CMS\sol-rc1-20261013\scratch\sol-specs\05-http-authorization.spec.ts:214:39
+
+    Error: administrator: own article-family-content mutation
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 200
+    Received: 400
+
+      177 |         if (role === 'staff' && object.collection === 'sites') expect.soft(ownWrite.status()).toBe(403)
+      178 |         else {
+    > 179 |           expect.soft(ownWrite.status(), `${role}: own ${object.collection} mutation`).toBe(200)
+          |                                                                                        ^
+      180 |           expect.soft((await (await owner.request.get(`${base}/api/${object.collection}/${object.a.id}`)).json())[object.field]).toBe(ownValue)
+      181 |         }
+      182 |       }
+        at C:\Projects\RENEGADE CMS\sol-rc1-20261013\scratch\sol-specs\05-http-authorization.spec.ts:179:88
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: "Sol administrator permitted article-family-content"
+    Received: null
+
+      178 |         else {
+      179 |           expect.soft(ownWrite.status(), `${role}: own ${object.collection} mutation`).toBe(200)
+    > 180 |           expect.soft((await (await owner.request.get(`${base}/api/${object.collection}/${object.a.id}`)).json())[object.field]).toBe(ownValue)
+          |                                                                                                                                  ^
+      181 |         }
+      182 |       }
+      183 |       const foreignRead = await actor.request.get(`${base}/api/${object.collection}/${object.b.id}?depth=0`)
+        at C:\Projects\RENEGADE CMS\sol-rc1-20261013\scratch\sol-specs\05-http-authorization.spec.ts:180:130
+
+    Error: administrator: substituted private foreign blob
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 403
+    Received: 200
+
+      239 |         const ownBefore = await (await owner.request.get(`${base}/api/media-assets/${privateMedia.a.id}?depth=0`)).json()
+      240 |         const substituted = await actor.request.patch(`${base}/api/media-assets/${privateMedia.a.id}`, { data: { originalBlob: relId(privateMedia.b.originalBlob) } })
+    > 241 |         expect.soft(substituted.status(), `${role}: substituted private foreign blob`).toBe(403)
+          |                                                                                        ^
+      242 |         expect.soft((await (await owner.request.get(`${base}/api/media-assets/${privateMedia.a.id}?depth=0`)).json()).originalBlob).toBe(ownBefore.originalBlob)
+      243 |       }
+      244 |       const before = await (await owner.request.get(`${base}/api/article-family-content/${families[1].id}?depth=0`)).json()
+        at C:\Projects\RENEGADE CMS\sol-rc1-20261013\scratch\sol-specs\05-http-authorization.spec.ts:241:88
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: "3b072567-731f-444c-9df9-04b47a233a4a"
+    Received: "54c9e180-44ce-4ade-b314-3a9c53cdf670"
+
+      240 |         const substituted = await actor.request.patch(`${base}/api/media-assets/${privateMedia.a.id}`, { data: { originalBlob: relId(privateMedia.b.originalBlob) } })
+      241 |         expect.soft(substituted.status(), `${role}: substituted private foreign blob`).toBe(403)
+    > 242 |         expect.soft((await (await owner.request.get(`${base}/api/media-assets/${privateMedia.a.id}?depth=0`)).json()).originalBlob).toBe(ownBefore.originalBlob)
+          |                                                                                                                                     ^
+      243 |       }
+      244 |       const before = await (await owner.request.get(`${base}/api/article-family-content/${families[1].id}?depth=0`)).json()
+      245 |       for (const data of [{ action: 'schedule', startsAt: '2030-01-01T12:00:00' }, { action: 'cancel' }]) {
+        at C:\Projects\RENEGADE CMS\sol-rc1-20261013\scratch\sol-specs\05-http-authorization.spec.ts:242:133
+
+    Error: staff: own article-family-content mutation
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 200
+    Received: 400
+
+      177 |         if (role === 'staff' && object.collection === 'sites') expect.soft(ownWrite.status()).toBe(403)
+      178 |         else {
+    > 179 |           expect.soft(ownWrite.status(), `${role}: own ${object.collection} mutation`).toBe(200)
+          |                                                                                        ^
+      180 |           expect.soft((await (await owner.request.get(`${base}/api/${object.collection}/${object.a.id}`)).json())[object.field]).toBe(ownValue)
+      181 |         }
+      182 |       }
+        at C:\Projects\RENEGADE CMS\sol-rc1-20261013\scratch\sol-specs\05-http-authorization.spec.ts:179:88
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: "Sol staff permitted article-family-content"
+    Received: null
+
+      178 |         else {
+      179 |           expect.soft(ownWrite.status(), `${role}: own ${object.collection} mutation`).toBe(200)
+    > 180 |           expect.soft((await (await owner.request.get(`${base}/api/${object.collection}/${object.a.id}`)).json())[object.field]).toBe(ownValue)
+          |                                                                                                                                  ^
+      181 |         }
+      182 |       }
+      183 |       const foreignRead = await actor.request.get(`${base}/api/${object.collection}/${object.b.id}?depth=0`)
+        at C:\Projects\RENEGADE CMS\sol-rc1-20261013\scratch\sol-specs\05-http-authorization.spec.ts:180:130
+
+    Error: staff: substituted private foreign blob
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 403
+    Received: 200
+
+      239 |         const ownBefore = await (await owner.request.get(`${base}/api/media-assets/${privateMedia.a.id}?depth=0`)).json()
+      240 |         const substituted = await actor.request.patch(`${base}/api/media-assets/${privateMedia.a.id}`, { data: { originalBlob: relId(privateMedia.b.originalBlob) } })
+    > 241 |         expect.soft(substituted.status(), `${role}: substituted private foreign blob`).toBe(403)
+          |                                                                                        ^
+      242 |         expect.soft((await (await owner.request.get(`${base}/api/media-assets/${privateMedia.a.id}?depth=0`)).json()).originalBlob).toBe(ownBefore.originalBlob)
+      243 |       }
+      244 |       const before = await (await owner.request.get(`${base}/api/article-family-content/${families[1].id}?depth=0`)).json()
+        at C:\Projects\RENEGADE CMS\sol-rc1-20261013\scratch\sol-specs\05-http-authorization.spec.ts:241:88
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    scratch\sol-traces\authorization-fa35-cold-nav\05-http-authorization-five-b3cee--views-and-grant-revocation\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    scratch\sol-traces\authorization-fa35-cold-nav\05-http-authorization-five-b3cee--views-and-grant-revocation\test-failed-3.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #3: screenshot (image/png) ──────────────────────────────────────────────────────────
+    scratch\sol-traces\authorization-fa35-cold-nav\05-http-authorization-five-b3cee--views-and-grant-revocation\test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #4: screenshot (image/png) ──────────────────────────────────────────────────────────
+    scratch\sol-traces\authorization-fa35-cold-nav\05-http-authorization-five-b3cee--views-and-grant-revocation\test-failed-4.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: scratch\sol-traces\authorization-fa35-cold-nav\05-http-authorization-five-b3cee--views-and-grant-revocation\error-context.md
+
+    attachment #6: trace (application/zip) ─────────────────────────────────────────────────────────
+    scratch\sol-traces\authorization-fa35-cold-nav\05-http-authorization-five-b3cee--views-and-grant-revocation\trace.zip
+    Usage:
+
+        npx playwright show-trace scratch\sol-traces\authorization-fa35-cold-nav\05-http-authorization-five-b3cee--views-and-grant-revocation\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    scratch\sol-specs\05-http-authorization.spec.ts:44:1 › five real HTTP actors prove two-site reads, mutations, object substitutions, custom views and grant revocation
+  1 error was not a part of any test, see above for details

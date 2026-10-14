@@ -1,0 +1,20 @@
+
+> renegade-cms@0.1.0 build
+> node scripts/build.mjs
+
+▲ Next.js 16.3.8 (Turbopack)
+✓ Running next.config.ts took 215ms
+- Experiments (use with caution):
+  ⨯ turbopackServerFastRefresh
+  ✓ webpackMemoryOptimizations
+
+  Creating an optimized production build ...
+✓ Compiled successfully in 19.0s
+  Running TypeScript ...
+scratch/sol-evidence/harness-before-final/05-http-authorization.spec.ts(1,30): error TS2307: Cannot find module '../sol-browser-helpers' or its corresponding type declarations.
+scratch/sol-evidence/harness-before-final/06-scheduled-publication.spec.ts(1,30): error TS2307: Cannot find module '../sol-browser-helpers' or its corresponding type declarations.
+scratch/sol-evidence/harness-before-final/07-minipaint.spec.ts(1,30): error TS2307: Cannot find module '../sol-browser-helpers' or its corresponding type declarations.
+scratch/sol-evidence/harness-before-final/07-minipaint.spec.ts(38,38): error TS7006: Parameter 'r' implicitly has an 'any' type.
+scratch/sol-evidence/harness-before-final/08-theme-rollback.spec.ts(1,30): error TS2307: Cannot find module '../sol-browser-helpers' or its corresponding type declarations.
+scratch/sol-evidence/harness-before-final/09-private-model-boundaries.spec.ts(3,30): error TS2307: Cannot find module '../sol-browser-helpers' or its corresponding type declarations.
+Failed to type check.

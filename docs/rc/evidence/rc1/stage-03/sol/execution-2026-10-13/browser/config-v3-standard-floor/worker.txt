@@ -1,0 +1,552 @@
+(node:13240) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:13240) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+[20:55:53] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[20:56:00] [32mINFO[39m: [36mRunning 4 jobs.[39m
+    [35mnew[39m: 4
+    [35mretrying[39m: 0
+[20:56:00] [31mERROR[39m: [36mError running task 1. Attempt 1[39m
+    [35mjob[39m: {
+      "id": "1e8395f4-fe92-4b87-aa8c-b82bf044b22a",
+      "input": {},
+      "completedAt": null,
+      "totalTried": 0,
+      "hasError": false,
+      "error": null,
+      "log": [],
+      "taskSlug": "webhook-delivery-dispatch",
+      "queue": "operations",
+      "processing": true,
+      "concurrencyKey": "integrations.webhooks.dispatch",
+      "meta": {
+        "scheduled": true
+      },
+      "updatedAt": "2026-10-14T01:56:00.260Z",
+      "createdAt": "2026-10-14T01:55:53.349Z",
+      "taskStatus": {},
+      "waitUntil": "2026-10-14T01:56:00.538Z"
+    }
+    [35mtaskSlug[39m: "webhook-delivery-dispatch"
+    err: {
+      "type": "TaskError",
+      "message": "The collection with slug webhook-deliveries can't be found. Find Operation.",
+      "stack":
+          Error: The collection with slug webhook-deliveries can't be found. Find Operation.
+              at Object.webhook-delivery-dispatch (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\runJob\getRunTaskFunction.ts:153:15)
+              at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+              at async handler (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\index.ts:348:13)
+              at async runJob (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\runJob\index.ts:46:5)
+              at async runSingleJob (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\index.ts:422:24)
+              at async Promise.all (index 1)
+              at async runJobs (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\index.ts:503:21)
+              at async Object.run (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\localAPI.ts:304:12)
+              at async Timeout.cycle (C:\Projects\RENEGADE CMS\sol-rc1-20261013\src\scripts\run-jobs-worker.ts:23:7)
+      "args": {
+        "type": "Object",
+        "message": "The collection with slug webhook-deliveries can't be found. Find Operation.",
+        "stack":
+
+        "executedAt": "2026-10-14T01:56:00.284Z",
+        "input": {},
+        "job": {
+          "id": "1e8395f4-fe92-4b87-aa8c-b82bf044b22a",
+          "input": {},
+          "completedAt": null,
+          "totalTried": 0,
+          "hasError": false,
+          "error": null,
+          "log": [],
+          "taskSlug": "webhook-delivery-dispatch",
+          "queue": "operations",
+          "processing": true,
+          "concurrencyKey": "integrations.webhooks.dispatch",
+          "meta": {
+            "scheduled": true
+          },
+          "updatedAt": "2026-10-14T01:56:00.260Z",
+          "createdAt": "2026-10-14T01:55:53.349Z",
+          "taskStatus": {},
+          "waitUntil": "2026-10-14T01:56:00.538Z"
+        },
+        "output": {},
+        "retriesConfig": {
+          "attempts": 2,
+          "backoff": {
+            "delay": 250,
+            "type": "exponential"
+          }
+        },
+        "taskConfig": {
+          "slug": "webhook-delivery-dispatch",
+          "label": "Deliver outbound webhooks",
+          "inputSchema": [],
+          "outputSchema": [],
+          "retries": {
+            "attempts": 2,
+            "backoff": {
+              "delay": 250,
+              "type": "exponential"
+            }
+          },
+          "schedule": [
+            {
+              "cron": "*/10 * * * * *",
+              "queue": "operations"
+            }
+          ]
+        },
+        "taskID": "1",
+        "taskSlug": "webhook-delivery-dispatch",
+        "taskStatus": null,
+        "workflowConfig": {
+          "slug": "singleTask"
+        }
+      }
+    }
+[20:56:01] [32mINFO[39m: [36mRunning 1 jobs.[39m
+    [35mnew[39m: 0
+    [35mretrying[39m: 1
+[20:56:01] [31mERROR[39m: [36mError running task 1. Attempt 2[39m
+    [35mjob[39m: {
+      "id": "1e8395f4-fe92-4b87-aa8c-b82bf044b22a",
+      "input": {},
+      "completedAt": null,
+      "totalTried": 1,
+      "hasError": false,
+      "error": null,
+      "log": [
+        {
+          "id": "6acee130990def33b8dd283f",
+          "executedAt": "2026-10-14T01:56:00.284Z",
+          "completedAt": "2026-10-14T01:56:00.288Z",
+          "taskSlug": "webhook-delivery-dispatch",
+          "taskID": "1",
+          "input": {},
+          "output": {},
+          "state": "failed",
+          "error": {
+            "name": "Error",
+            "stack": "Error: The collection with slug webhook-deliveries can't be found. Find Operation.\n    at Object.webhook-delivery-dispatch (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\runJob\getRunTaskFunction.ts:153:15)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async handler (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\index.ts:348:13)\n    at async runJob (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\runJob\index.ts:46:5)\n    at async runSingleJob (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\index.ts:422:24)\n    at async Promise.all (index 1)\n    at async runJobs (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\index.ts:503:21)\n    at async Object.run (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\localAPI.ts:304:12)\n    at async Timeout.cycle (C:\Projects\RENEGADE CMS\sol-rc1-20261013\src\scripts\run-jobs-worker.ts:23:7)",
+            "message": "The collection with slug webhook-deliveries can't be found. Find Operation.",
+            "cancelled": false
+          }
+        }
+      ],
+      "taskSlug": "webhook-delivery-dispatch",
+      "queue": "operations",
+      "processing": true,
+      "concurrencyKey": "integrations.webhooks.dispatch",
+      "meta": {
+        "scheduled": true
+      },
+      "updatedAt": "2026-10-14T01:56:01.455Z",
+      "createdAt": "2026-10-14T01:55:53.349Z",
+      "taskStatus": {
+        "webhook-delivery-dispatch": {
+          "1": {
+            "complete": false,
+            "input": {},
+            "output": {},
+            "taskSlug": "webhook-delivery-dispatch",
+            "totalTried": 1
+          }
+        }
+      },
+      "waitUntil": "2026-10-14T01:56:01.965Z"
+    }
+    [35mtaskSlug[39m: "webhook-delivery-dispatch"
+    err: {
+      "type": "TaskError",
+      "message": "The collection with slug webhook-deliveries can't be found. Find Operation.",
+      "stack":
+          Error: The collection with slug webhook-deliveries can't be found. Find Operation.
+              at Object.webhook-delivery-dispatch (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\runJob\getRunTaskFunction.ts:153:15)
+              at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+              at async handler (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\index.ts:348:13)
+              at async runJob (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\runJob\index.ts:46:5)
+              at async runSingleJob (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\index.ts:422:24)
+              at async Promise.all (index 0)
+              at async runJobs (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\index.ts:503:21)
+              at async Object.run (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\localAPI.ts:304:12)
+              at async Timeout.cycle (C:\Projects\RENEGADE CMS\sol-rc1-20261013\src\scripts\run-jobs-worker.ts:23:7)
+      "args": {
+        "type": "Object",
+        "message": "The collection with slug webhook-deliveries can't be found. Find Operation.",
+        "stack":
+
+        "executedAt": "2026-10-14T01:56:01.464Z",
+        "input": {},
+        "job": {
+          "id": "1e8395f4-fe92-4b87-aa8c-b82bf044b22a",
+          "input": {},
+          "completedAt": null,
+          "totalTried": 1,
+          "hasError": false,
+          "error": null,
+          "log": [
+            {
+              "id": "6acee130990def33b8dd283f",
+              "executedAt": "2026-10-14T01:56:00.284Z",
+              "completedAt": "2026-10-14T01:56:00.288Z",
+              "taskSlug": "webhook-delivery-dispatch",
+              "taskID": "1",
+              "input": {},
+              "output": {},
+              "state": "failed",
+              "error": {
+                "name": "Error",
+                "stack":
+                    Error: The collection with slug webhook-deliveries can't be found. Find Operation.
+                        at Object.webhook-delivery-dispatch (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\runJob\getRunTaskFunction.ts:153:15)
+                        at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+                        at async handler (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\index.ts:348:13)
+                        at async runJob (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\runJob\index.ts:46:5)
+                        at async runSingleJob (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\index.ts:422:24)
+                        at async Promise.all (index 1)
+                        at async runJobs (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\index.ts:503:21)
+                        at async Object.run (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\localAPI.ts:304:12)
+                        at async Timeout.cycle (C:\Projects\RENEGADE CMS\sol-rc1-20261013\src\scripts\run-jobs-worker.ts:23:7)
+                "message": "The collection with slug webhook-deliveries can't be found. Find Operation.",
+                "cancelled": false
+              }
+            }
+          ],
+          "taskSlug": "webhook-delivery-dispatch",
+          "queue": "operations",
+          "processing": true,
+          "concurrencyKey": "integrations.webhooks.dispatch",
+          "meta": {
+            "scheduled": true
+          },
+          "updatedAt": "2026-10-14T01:56:01.455Z",
+          "createdAt": "2026-10-14T01:55:53.349Z",
+          "taskStatus": {
+            "webhook-delivery-dispatch": {
+              "1": {
+                "complete": false,
+                "input": {},
+                "output": {},
+                "taskSlug": "webhook-delivery-dispatch",
+                "totalTried": 1
+              }
+            }
+          },
+          "waitUntil": "2026-10-14T01:56:01.965Z"
+        },
+        "output": {},
+        "retriesConfig": {
+          "attempts": 2,
+          "backoff": {
+            "delay": 250,
+            "type": "exponential"
+          }
+        },
+        "taskConfig": {
+          "slug": "webhook-delivery-dispatch",
+          "label": "Deliver outbound webhooks",
+          "inputSchema": [],
+          "outputSchema": [],
+          "retries": {
+            "attempts": 2,
+            "backoff": {
+              "delay": 250,
+              "type": "exponential"
+            }
+          },
+          "schedule": [
+            {
+              "cron": "*/10 * * * * *",
+              "queue": "operations"
+            }
+          ]
+        },
+        "taskID": "1",
+        "taskSlug": "webhook-delivery-dispatch",
+        "taskStatus": {
+          "complete": false,
+          "input": {},
+          "output": {},
+          "taskSlug": "webhook-delivery-dispatch",
+          "totalTried": 1
+        },
+        "workflowConfig": {
+          "slug": "singleTask"
+        }
+      }
+    }
+[20:56:02] [32mINFO[39m: [36mRunning 1 jobs.[39m
+    [35mnew[39m: 0
+    [35mretrying[39m: 1
+[20:56:02] [31mERROR[39m: [36mError running task 1. Attempt 3 - max retries reached[39m
+    [35mjob[39m: {
+      "id": "1e8395f4-fe92-4b87-aa8c-b82bf044b22a",
+      "input": {},
+      "completedAt": null,
+      "totalTried": 3,
+      "hasError": true,
+      "error": {
+        "name": "Error",
+        "stack": "Error: The collection with slug webhook-deliveries can't be found. Find Operation.\n    at Object.webhook-delivery-dispatch (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\runJob\getRunTaskFunction.ts:153:15)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async handler (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\index.ts:348:13)\n    at async runJob (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\runJob\index.ts:46:5)\n    at async runSingleJob (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\index.ts:422:24)\n    at async Promise.all (index 0)\n    at async runJobs (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\index.ts:503:21)\n    at async Object.run (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\localAPI.ts:304:12)\n    at async Timeout.cycle (C:\Projects\RENEGADE CMS\sol-rc1-20261013\src\scripts\run-jobs-worker.ts:23:7)",
+        "message": "The collection with slug webhook-deliveries can't be found. Find Operation.",
+        "cancelled": false
+      },
+      "log": [
+        {
+          "id": "6acee130990def33b8dd283f",
+          "executedAt": "2026-10-14T01:56:00.284Z",
+          "completedAt": "2026-10-14T01:56:00.288Z",
+          "taskSlug": "webhook-delivery-dispatch",
+          "taskID": "1",
+          "input": {},
+          "output": {},
+          "state": "failed",
+          "error": {
+            "name": "Error",
+            "stack": "Error: The collection with slug webhook-deliveries can't be found. Find Operation.\n    at Object.webhook-delivery-dispatch (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\runJob\getRunTaskFunction.ts:153:15)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async handler (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\index.ts:348:13)\n    at async runJob (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\runJob\index.ts:46:5)\n    at async runSingleJob (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\index.ts:422:24)\n    at async Promise.all (index 1)\n    at async runJobs (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\index.ts:503:21)\n    at async Object.run (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\localAPI.ts:304:12)\n    at async Timeout.cycle (C:\Projects\RENEGADE CMS\sol-rc1-20261013\src\scripts\run-jobs-worker.ts:23:7)",
+            "message": "The collection with slug webhook-deliveries can't be found. Find Operation.",
+            "cancelled": false
+          }
+        },
+        {
+          "id": "6acee131990def33b8dd2842",
+          "executedAt": "2026-10-14T01:56:01.464Z",
+          "completedAt": "2026-10-14T01:56:01.465Z",
+          "taskSlug": "webhook-delivery-dispatch",
+          "taskID": "1",
+          "input": {},
+          "output": {},
+          "state": "failed",
+          "error": {
+            "name": "Error",
+            "stack": "Error: The collection with slug webhook-deliveries can't be found. Find Operation.\n    at Object.webhook-delivery-dispatch (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\runJob\getRunTaskFunction.ts:153:15)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async handler (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\index.ts:348:13)\n    at async runJob (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\runJob\index.ts:46:5)\n    at async runSingleJob (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\index.ts:422:24)\n    at async Promise.all (index 0)\n    at async runJobs (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\index.ts:503:21)\n    at async Object.run (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\localAPI.ts:304:12)\n    at async Timeout.cycle (C:\Projects\RENEGADE CMS\sol-rc1-20261013\src\scripts\run-jobs-worker.ts:23:7)",
+            "message": "The collection with slug webhook-deliveries can't be found. Find Operation.",
+            "cancelled": false
+          }
+        },
+        {
+          "id": "6acee132990def33b8dd2843",
+          "executedAt": "2026-10-14T01:56:02.680Z",
+          "completedAt": "2026-10-14T01:56:02.680Z",
+          "taskSlug": "webhook-delivery-dispatch",
+          "taskID": "1",
+          "input": {},
+          "output": {},
+          "state": "failed",
+          "error": {
+            "name": "Error",
+            "stack": "Error: The collection with slug webhook-deliveries can't be found. Find Operation.\n    at Object.webhook-delivery-dispatch (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\runJob\getRunTaskFunction.ts:153:15)\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async handler (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\index.ts:348:13)\n    at async runJob (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\runJob\index.ts:46:5)\n    at async runSingleJob (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\index.ts:422:24)\n    at async Promise.all (index 0)\n    at async runJobs (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\index.ts:503:21)\n    at async Object.run (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\localAPI.ts:304:12)\n    at async Timeout.cycle (C:\Projects\RENEGADE CMS\sol-rc1-20261013\src\scripts\run-jobs-worker.ts:23:7)",
+            "message": "The collection with slug webhook-deliveries can't be found. Find Operation.",
+            "cancelled": false
+          }
+        }
+      ],
+      "taskSlug": "webhook-delivery-dispatch",
+      "queue": "operations",
+      "processing": false,
+      "concurrencyKey": "integrations.webhooks.dispatch",
+      "meta": {
+        "scheduled": true
+      },
+      "updatedAt": "2026-10-14T01:56:02.682Z",
+      "createdAt": "2026-10-14T01:55:53.349Z",
+      "taskStatus": {
+        "webhook-delivery-dispatch": {
+          "1": {
+            "complete": false,
+            "input": {},
+            "output": {},
+            "taskSlug": "webhook-delivery-dispatch",
+            "totalTried": 3
+          }
+        }
+      },
+      "waitUntil": "2026-10-14T01:56:01.965Z"
+    }
+    [35mtaskSlug[39m: "webhook-delivery-dispatch"
+    err: {
+      "type": "TaskError",
+      "message": "The collection with slug webhook-deliveries can't be found. Find Operation.",
+      "stack":
+          Error: The collection with slug webhook-deliveries can't be found. Find Operation.
+              at Object.webhook-delivery-dispatch (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\runJob\getRunTaskFunction.ts:153:15)
+              at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+              at async handler (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\index.ts:348:13)
+              at async runJob (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\runJob\index.ts:46:5)
+              at async runSingleJob (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\index.ts:422:24)
+              at async Promise.all (index 0)
+              at async runJobs (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\index.ts:503:21)
+              at async Object.run (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\localAPI.ts:304:12)
+              at async Timeout.cycle (C:\Projects\RENEGADE CMS\sol-rc1-20261013\src\scripts\run-jobs-worker.ts:23:7)
+      "args": {
+        "type": "Object",
+        "message": "The collection with slug webhook-deliveries can't be found. Find Operation.",
+        "stack":
+
+        "executedAt": "2026-10-14T01:56:02.680Z",
+        "input": {},
+        "job": {
+          "id": "1e8395f4-fe92-4b87-aa8c-b82bf044b22a",
+          "input": {},
+          "completedAt": null,
+          "totalTried": 3,
+          "hasError": true,
+          "error": {
+            "name": "Error",
+            "stack":
+                Error: The collection with slug webhook-deliveries can't be found. Find Operation.
+                    at Object.webhook-delivery-dispatch (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\runJob\getRunTaskFunction.ts:153:15)
+                    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+                    at async handler (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\index.ts:348:13)
+                    at async runJob (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\runJob\index.ts:46:5)
+                    at async runSingleJob (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\index.ts:422:24)
+                    at async Promise.all (index 0)
+                    at async runJobs (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\index.ts:503:21)
+                    at async Object.run (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\localAPI.ts:304:12)
+                    at async Timeout.cycle (C:\Projects\RENEGADE CMS\sol-rc1-20261013\src\scripts\run-jobs-worker.ts:23:7)
+            "message": "The collection with slug webhook-deliveries can't be found. Find Operation.",
+            "cancelled": false
+          },
+          "log": [
+            {
+              "id": "6acee130990def33b8dd283f",
+              "executedAt": "2026-10-14T01:56:00.284Z",
+              "completedAt": "2026-10-14T01:56:00.288Z",
+              "taskSlug": "webhook-delivery-dispatch",
+              "taskID": "1",
+              "input": {},
+              "output": {},
+              "state": "failed",
+              "error": {
+                "name": "Error",
+                "stack":
+                    Error: The collection with slug webhook-deliveries can't be found. Find Operation.
+                        at Object.webhook-delivery-dispatch (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\runJob\getRunTaskFunction.ts:153:15)
+                        at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+                        at async handler (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\index.ts:348:13)
+                        at async runJob (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\runJob\index.ts:46:5)
+                        at async runSingleJob (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\index.ts:422:24)
+                        at async Promise.all (index 1)
+                        at async runJobs (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\index.ts:503:21)
+                        at async Object.run (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\localAPI.ts:304:12)
+                        at async Timeout.cycle (C:\Projects\RENEGADE CMS\sol-rc1-20261013\src\scripts\run-jobs-worker.ts:23:7)
+                "message": "The collection with slug webhook-deliveries can't be found. Find Operation.",
+                "cancelled": false
+              }
+            },
+            {
+              "id": "6acee131990def33b8dd2842",
+              "executedAt": "2026-10-14T01:56:01.464Z",
+              "completedAt": "2026-10-14T01:56:01.465Z",
+              "taskSlug": "webhook-delivery-dispatch",
+              "taskID": "1",
+              "input": {},
+              "output": {},
+              "state": "failed",
+              "error": {
+                "name": "Error",
+                "stack":
+                    Error: The collection with slug webhook-deliveries can't be found. Find Operation.
+                        at Object.webhook-delivery-dispatch (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\runJob\getRunTaskFunction.ts:153:15)
+                        at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+                        at async handler (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\index.ts:348:13)
+                        at async runJob (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\runJob\index.ts:46:5)
+                        at async runSingleJob (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\index.ts:422:24)
+                        at async Promise.all (index 0)
+                        at async runJobs (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\index.ts:503:21)
+                        at async Object.run (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\localAPI.ts:304:12)
+                        at async Timeout.cycle (C:\Projects\RENEGADE CMS\sol-rc1-20261013\src\scripts\run-jobs-worker.ts:23:7)
+                "message": "The collection with slug webhook-deliveries can't be found. Find Operation.",
+                "cancelled": false
+              }
+            },
+            {
+              "id": "6acee132990def33b8dd2843",
+              "executedAt": "2026-10-14T01:56:02.680Z",
+              "completedAt": "2026-10-14T01:56:02.680Z",
+              "taskSlug": "webhook-delivery-dispatch",
+              "taskID": "1",
+              "input": {},
+              "output": {},
+              "state": "failed",
+              "error": {
+                "name": "Error",
+                "stack":
+                    Error: The collection with slug webhook-deliveries can't be found. Find Operation.
+                        at Object.webhook-delivery-dispatch (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\runJob\getRunTaskFunction.ts:153:15)
+                        at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+                        at async handler (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\index.ts:348:13)
+                        at async runJob (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\runJob\index.ts:46:5)
+                        at async runSingleJob (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\index.ts:422:24)
+                        at async Promise.all (index 0)
+                        at async runJobs (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\operations\runJobs\index.ts:503:21)
+                        at async Object.run (C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\payload\src\queues\localAPI.ts:304:12)
+                        at async Timeout.cycle (C:\Projects\RENEGADE CMS\sol-rc1-20261013\src\scripts\run-jobs-worker.ts:23:7)
+                "message": "The collection with slug webhook-deliveries can't be found. Find Operation.",
+                "cancelled": false
+              }
+            }
+          ],
+          "taskSlug": "webhook-delivery-dispatch",
+          "queue": "operations",
+          "processing": false,
+          "concurrencyKey": "integrations.webhooks.dispatch",
+          "meta": {
+            "scheduled": true
+          },
+          "updatedAt": "2026-10-14T01:56:02.682Z",
+          "createdAt": "2026-10-14T01:55:53.349Z",
+          "taskStatus": {
+            "webhook-delivery-dispatch": {
+              "1": {
+                "complete": false,
+                "input": {},
+                "output": {},
+                "taskSlug": "webhook-delivery-dispatch",
+                "totalTried": 3
+              }
+            }
+          },
+          "waitUntil": "2026-10-14T01:56:01.965Z"
+        },
+        "output": {},
+        "retriesConfig": {
+          "attempts": 2,
+          "backoff": {
+            "delay": 250,
+            "type": "exponential"
+          }
+        },
+        "taskConfig": {
+          "slug": "webhook-delivery-dispatch",
+          "label": "Deliver outbound webhooks",
+          "inputSchema": [],
+          "outputSchema": [],
+          "retries": {
+            "attempts": 2,
+            "backoff": {
+              "delay": 250,
+              "type": "exponential"
+            }
+          },
+          "schedule": [
+            {
+              "cron": "*/10 * * * * *",
+              "queue": "operations"
+            }
+          ]
+        },
+        "taskID": "1",
+        "taskSlug": "webhook-delivery-dispatch",
+        "taskStatus": {
+          "complete": false,
+          "input": {},
+          "output": {},
+          "taskSlug": "webhook-delivery-dispatch",
+          "totalTried": 2
+        },
+        "workflowConfig": {
+          "slug": "singleTask"
+        }
+      }
+    }

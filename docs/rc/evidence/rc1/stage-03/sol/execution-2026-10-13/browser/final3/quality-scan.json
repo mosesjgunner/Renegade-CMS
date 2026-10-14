@@ -1,0 +1,24 @@
+{
+  "id": "5a93f341-45de-4318-a034-eb339cb01b8e",
+  "site": "644e5b04-06f4-4202-a306-5b4e7329ebf5",
+  "publication": null,
+  "space": null,
+  "owner": null,
+  "policy": null,
+  "targetType": "document",
+  "targetId": "78a3c410-80a9-42b3-ab8c-6fa02418ffbb",
+  "revisionId": null,
+  "status": "completed",
+  "startedAt": "2026-10-14T02:04:04.070Z",
+  "completedAt": "2026-10-14T02:04:04.070Z",
+  "job": "b4d0725f-6b0a-4ee0-aa6b-6e5cf4c60523",
+  "summary": {
+    "created": 0,
+    "updated": 0,
+    "findings": 0,
+    "reopened": 0,
+    "resolved": 0
+  },
+  "updatedAt": "2026-10-14T02:04:04.161Z",
+  "createdAt": "2026-10-14T02:04:03.836Z"
+}

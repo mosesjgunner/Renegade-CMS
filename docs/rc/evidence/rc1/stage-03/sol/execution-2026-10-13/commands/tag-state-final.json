@@ -1,0 +1,8 @@
+{
+  "sourceSha": "d311396876fabc104826e4375d26feef0b5e2b39",
+  "tagRefsObservedOnly": ["ef13d2031bafca5f07ce09c2ace529fcd6f9be9a refs/tags/v0.1.0-rc.1"],
+  "unchangedFromEarlierStageSnapshot": true,
+  "tagCreatedByThisStage": false,
+  "command": "git show-ref --tags",
+  "exitCode": 0
+}

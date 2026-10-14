@@ -1,0 +1,57 @@
+
+Running 13 tests using 1 worker
+
+node : (node:31364) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+At line:2 char:77
++ ... test:3129'; node node_modules/@playwright/test/cli.js test --config=s ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ((node:31364) Wa... env being set.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 scratch\sol-specs\01-site-build.spec.ts:5:1 › RC-02: ordinary operator builds Renegade Party Dispatch from an empty install (1.5m)
+  ok  2 scratch\sol-specs\02-staff-invitation.spec.ts:9:3 › Staff and Administrator Identity, WebAuthn & Document Lock Journey › 1. Owner invites staff through Security, staff enrolls and logs in with WebAuthn (21.3s)
+  ok  3 scratch\sol-specs\02-staff-invitation.spec.ts:111:3 › Staff and Administrator Identity, WebAuthn & Document Lock Journey › 2. Administrator invitation, passkey enrollment and privilege bounds (8.3s)
+  ok  4 scratch\sol-specs\02-staff-invitation.spec.ts:175:3 › Staff and Administrator Identity, WebAuthn & Document Lock Journey › 3. Identity negatives: expired invitations, wrong WebAuthn origin/challenge (67ms)
+  ok  5 scratch\sol-specs\02-staff-invitation.spec.ts:208:3 › Staff and Administrator Identity, WebAuthn & Document Lock Journey › 4. Session revocation and role protection (4.6s)
+(node:6232) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+(node:6232) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  6 scratch\sol-specs\02-staff-invitation.spec.ts:231:3 › Staff and Administrator Identity, WebAuthn & Document Lock Journey › 5. Supported offline owner recovery CLI rotates credentials and revokes sessions (13.9s)
+  ok  7 scratch\sol-specs\02-staff-invitation.spec.ts:278:3 › Staff and Administrator Identity, WebAuthn & Document Lock Journey › 6. Real browser document lock acquisition, conflict, and release (7.4s)
+  ok  8 scratch\sol-specs\03-identity-negatives.spec.ts:55:3 › Ordinary identity negatives with persisted-state assertions › creates a second site through owner REST and preserves canonical operator grants (159ms)
+  x   9 scratch\sol-specs\03-identity-negatives.spec.ts:75:3 › Ordinary identity negatives with persisted-state assertions › rejects a genuinely expired invitation without issuing credentials or sessions (729ms)
+Testing stopped early after 1 maximum allowed failures.
+
+
+  1) scratch\sol-specs\03-identity-negatives.spec.ts:75:3 › Ordinary identity negatives with persisted-state assertions › rejects a genuinely expired invitation without issuing credentials or sessions
+
+    error: operator does not exist: text = uuid
+
+      34 |   await client.connect()
+      35 |   try {
+    > 36 |     return (await client.query(`SELECT
+         |             ^
+      37 |       (SELECT count(*)::int FROM passkeys WHERE user_id=$1) AS passkeys,
+      38 |       (SELECT count(*)::int FROM recovery_codes WHERE user_id=$1) AS recovery_codes,
+      39 |       (SELECT count(*)::int FROM admin_sessions WHERE user_id=$1) AS sessions,
+        at C:\Projects\RENEGADE CMS\sol-rc1-20261013\node_modules\pg\lib\client.js:631:17
+        at persisted (C:\Projects\RENEGADE CMS\sol-rc1-20261013\scratch\sol-specs\03-identity-negatives.spec.ts:36:13)
+        at C:\Projects\RENEGADE CMS\sol-rc1-20261013\scratch\sol-specs\03-identity-negatives.spec.ts:78:20
+
+    Error Context: scratch\sol-traces\ordinary\03-identity-negatives-Ordi-13c84-ing-credentials-or-sessions\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    scratch\sol-traces\ordinary\03-identity-negatives-Ordi-13c84-ing-credentials-or-sessions\trace.zip
+    Usage:
+
+        npx playwright show-trace scratch\sol-traces\ordinary\03-identity-negatives-Ordi-13c84-ing-credentials-or-sessions\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    scratch\sol-specs\03-identity-negatives.spec.ts:75:3 › Ordinary identity negatives with persisted-state assertions › rejects a genuinely expired invitation without issuing credentials or sessions
+  4 did not run
+  8 passed (2.6m)
+  1 error was not a part of any test, see above for details

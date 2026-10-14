@@ -1,0 +1,82 @@
+[
+  {
+    "gate": "02-format",
+    "command": "npm.cmd run format:check",
+    "exitCode": 0,
+    "durationSeconds": 23.800277709960938,
+    "sourceSha": "d56431bc7f927b94d69e5d396285285464f288be",
+    "log": "scratch/sol-evidence/02-format.log"
+  },
+  {
+    "gate": "03-lint",
+    "command": "npm.cmd run lint",
+    "exitCode": 0,
+    "durationSeconds": 28.39438486099243,
+    "sourceSha": "d56431bc7f927b94d69e5d396285285464f288be",
+    "log": "scratch/sol-evidence/03-lint.log"
+  },
+  {
+    "gate": "04-typecheck",
+    "command": "npm.cmd run typecheck",
+    "exitCode": 0,
+    "durationSeconds": 9.44024133682251,
+    "sourceSha": "d56431bc7f927b94d69e5d396285285464f288be",
+    "log": "scratch/sol-evidence/04-typecheck.log"
+  },
+  {
+    "gate": "05-unit",
+    "command": "npm.cmd test -- --reporter=default --reporter=json --outputFile=scratch/sol-evidence/unit.json",
+    "exitCode": 0,
+    "durationSeconds": 25.812148332595825,
+    "sourceSha": "d56431bc7f927b94d69e5d396285285464f288be",
+    "log": "scratch/sol-evidence/05-unit.log"
+  },
+  {
+    "gate": "06-fresh",
+    "command": "npm.cmd run test:migrations:fresh",
+    "exitCode": 0,
+    "durationSeconds": 15.92039942741394,
+    "sourceSha": "d56431bc7f927b94d69e5d396285285464f288be",
+    "log": "scratch/sol-evidence/06-fresh.log"
+  },
+  {
+    "gate": "07-upgrade",
+    "command": "npm.cmd run test:migrations:upgrade",
+    "exitCode": 0,
+    "durationSeconds": 31.496883630752563,
+    "sourceSha": "d56431bc7f927b94d69e5d396285285464f288be",
+    "log": "scratch/sol-evidence/07-upgrade.log"
+  },
+  {
+    "gate": "08-commerce",
+    "command": "npm.cmd run test:migrations:commerce",
+    "exitCode": 0,
+    "durationSeconds": 8.135868549346924,
+    "sourceSha": "d56431bc7f927b94d69e5d396285285464f288be",
+    "log": "scratch/sol-evidence/08-commerce.log"
+  },
+  {
+    "gate": "09-integration",
+    "command": "npm.cmd run test:integration -- --reporter=default --reporter=json --outputFile=scratch/sol-evidence/integration.json",
+    "exitCode": 0,
+    "durationSeconds": 295.8149378299713,
+    "sourceSha": "d56431bc7f927b94d69e5d396285285464f288be",
+    "log": "scratch/sol-evidence/09-integration.log"
+  },
+  {
+    "gate": "10-build",
+    "command": "npm.cmd run build",
+    "exitCode": 0,
+    "durationSeconds": 68.18513512611389,
+    "sourceSha": "d56431bc7f927b94d69e5d396285285464f288be",
+    "log": "scratch/sol-evidence/10-build.log"
+  },
+  {
+    "gate": "11-bundles",
+    "command": "npm.cmd run verify:presentation-bundles",
+    "exitCode": 0,
+    "durationSeconds": 0.5958998203277588,
+    "sourceSha": "d56431bc7f927b94d69e5d396285285464f288be",
+    "log": "scratch/sol-evidence/11-bundles.log"
+  }
+]

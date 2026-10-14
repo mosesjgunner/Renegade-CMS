@@ -1,0 +1,11 @@
+[
+  {
+    "label": "lean-floor",
+    "command": "node node_modules/@playwright/test/cli.js test --config=scratch/playwright.sol.config.ts --max-failures=1",
+    "sourceSha": "8a5ac9d795fa5256797b651aad141fa3c69fffa2",
+    "exitCode": 1,
+    "durationSeconds": 46.448740005493164,
+    "environmentFile": "scratch/.env.sol-config-lean-floor",
+    "resultFile": "scratch/sol-browser/config-lean-floor/results.json"
+  }
+]

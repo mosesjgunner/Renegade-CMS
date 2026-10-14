@@ -1,0 +1,10 @@
+
+> renegade-cms@0.1.0 generate:importmap
+> cross-env RENEGADE_MODULES=all RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT=true npm run payload -- generate:importmap
+
+
+> renegade-cms@0.1.0 payload
+> cross-env NODE_OPTIONS=--no-deprecation payload generate:importmap
+
+Generating import map
+Writing import map to C:\Projects\RENEGADE CMS\sol-rc1-20261013\src\app\(payload)\admin\importMap.js

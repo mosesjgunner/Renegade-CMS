@@ -1,0 +1,36 @@
+import { readFileSync, writeFileSync, mkdirSync } from 'node:fs'
+import { resolve } from 'node:path'
+import { randomBytes } from 'node:crypto'
+import pg from 'pg'
+const original = Object.fromEntries(readFileSync('.env.rc02', 'utf8').trim().split(/\r?\n/).map(l => {
+  const at=l.indexOf('='); return [l.slice(0,at),l.slice(at+1)]
+}))
+const url = new URL(original.DATABASE_URL)
+if (url.hostname !== '127.0.0.1' || url.port !== '15433' || url.username !== 'solrc1' || !url.pathname.startsWith('/solrc1_20261013_')) throw Error('Owned disposable PostgreSQL endpoint required')
+const batch=process.env.SOL_CONFIG_BATCH ?? ''
+if(batch && !/^v[0-9]+$/.test(batch))throw Error('Owned batch label required')
+url.pathname='/postgres'
+const client = new pg.Client({ connectionString: url.href }); await client.connect()
+try {
+  for (const [label, profile, modules] of [
+    ['lean-floor','Lean',''],['standard-floor','Standard',''],
+    ['standard-all','Standard','all'],['lean-all','Lean','all'],
+    ['standard-commerce','Standard','commerce'],['standard-crm','Standard','crm'],
+  ]) {
+    const runLabel=batch ? `${batch}-${label}` : label
+    const database = `solrc1_20261013_cfg_${runLabel.replaceAll('-','_')}_release_acceptance`
+    if ((await client.query('SELECT 1 FROM pg_database WHERE datname=$1',[database])).rowCount) throw Error(`Fresh configuration database already exists: ${database}`)
+    await client.query(`CREATE DATABASE "${database}"`)
+    const media = resolve(`scratch/sol-config-${runLabel}-media`)
+    if (!media.startsWith(resolve('scratch')+'\\')) throw Error('Owned media required')
+    mkdirSync(media,{recursive:true})
+    url.pathname='/'+database
+    const env = { ...original, DATABASE_URL: url.href, PAYLOAD_SECRET:randomBytes(32).toString('hex'),
+      MEDIA_DIR:media, DEPLOYMENT_PROFILE:profile, RENEGADE_MODULES:modules,
+      RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT:'false', LOCAL_E2E_TEST_MODE:'false', ENABLE_TEST_ROUTES:'false',
+      NODE_ENV:'production', EMAIL_MODE:'disabled', SOL_ARTIFACT_ROOT:`scratch/sol-browser/config-${runLabel}`,
+      SOL_BROWSER_RUN:`config-${runLabel}`, SOL_CONFIGURATION_RUN:'true' }
+    writeFileSync(`scratch/.env.sol-config-${runLabel}`,Object.entries(env).map(([k,v])=>`${k}=${v}`).join('\n')+'\n')
+    console.log('Created owned empty configuration database:',database)
+  }
+} finally { await client.end() }

@@ -1,0 +1,5 @@
+
+> renegade-cms@0.1.0 verify:presentation-bundles
+> node scripts/verify-presentation-bundles.mjs
+
+Presentation bundle boundary verified: public route excludes editor/Puck modules.

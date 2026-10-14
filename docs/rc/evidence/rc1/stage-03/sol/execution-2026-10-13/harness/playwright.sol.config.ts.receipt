@@ -1,0 +1,33 @@
+import { defineConfig } from '@playwright/test'
+import { readFileSync } from 'node:fs'
+import { createHash, X509Certificate } from 'node:crypto'
+import { resolve } from 'node:path'
+import { pathToFileURL } from 'node:url'
+import '../src/scripts/rc02-network.mjs'
+
+const envFile = process.env.SOL_BROWSER_ENV ?? '.env.rc02'
+const env = Object.fromEntries(readFileSync(envFile, 'utf8').trim().split(/\r?\n/).map(line => {
+  const at = line.indexOf('=')
+  return [line.slice(0, at), line.slice(at + 1)]
+}))
+if (!new URL(env.DATABASE_URL).pathname.startsWith('/solrc1_20261013_') ||
+    !new URL(env.DATABASE_URL).pathname.endsWith('_release_acceptance')) throw new Error('Sol disposable database required')
+if (env.LOCAL_E2E_TEST_MODE !== 'false' || env.ENABLE_TEST_ROUTES !== 'false' || env.NODE_ENV !== 'production')
+  throw new Error('Ordinary production acceptance requires test authentication and routes OFF')
+if (!resolve(env.MEDIA_DIR).startsWith(resolve('scratch'))) throw new Error('Isolated media path required')
+env.NODE_OPTIONS = `--max-old-space-size=768 --import=${pathToFileURL(resolve('src/scripts/rc02-network.mjs')).href}`
+Object.assign(process.env, env)
+const cert = new X509Certificate(readFileSync('scratch/rc02-tls/cert.pem'))
+const pin = createHash('sha256').update(cert.publicKey.export({ type: 'spki', format: 'der' })).digest('base64')
+const run = process.env.SOL_REPORT_RUN ?? process.env.SOL_BROWSER_RUN ?? 'ordinary'
+export default defineConfig({
+  expect: { timeout: 60_000 },
+  testDir: process.env.SOL_CONFIGURATION_RUN === 'true' ? './config-specs' : './sol-specs', workers: 1, timeout: 600_000,
+  outputDir: `sol-traces/${run}`,
+  reporter: [['list'], ['json', { outputFile: resolve(`scratch/sol-browser/${run}/results.json`) }]],
+  use: { baseURL: env.APP_URL, browserName: 'chromium', ignoreHTTPSErrors: true,
+    launchOptions: { args: ['--host-resolver-rules=MAP dispatch.rc02.test 127.0.0.1', `--ignore-certificate-errors-spki-list=${pin}`] },
+    trace: 'on', screenshot: 'only-on-failure', actionTimeout: 20_000, navigationTimeout: 60_000 },
+  webServer: { command: 'node scratch/sol-runtime.mjs', cwd: resolve('.'), url: `${env.APP_URL}/api/setup/readiness`,
+    reuseExistingServer: false, ignoreHTTPSErrors: true, timeout: 120_000, env },
+})

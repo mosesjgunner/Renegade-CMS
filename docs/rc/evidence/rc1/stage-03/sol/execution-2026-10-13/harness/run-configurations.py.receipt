@@ -1,0 +1,26 @@
+import os,sys,subprocess,time,json
+from pathlib import Path
+sys.stdout.reconfigure(encoding='utf-8')
+results=[]
+batch=os.environ.get('SOL_CONFIG_BATCH','')
+assert not batch or __import__('re').fullmatch(r'v[0-9]+',batch)
+for label in ['lean-floor','standard-floor','standard-all','lean-all','standard-commerce','standard-crm']:
+ runLabel=f'{batch}-{label}' if batch else label
+ env=os.environ.copy()
+ env.pop('SOL_REPORT_RUN', None)
+ env['SOL_BROWSER_ENV']=f'scratch/.env.sol-config-{runLabel}'
+ env['SOL_CONFIGURATION_RUN']='true'
+ env['SOL_BROWSER_RUN']=f'config-{runLabel}'
+ env['NODE_ENV']='production';env['APP_URL']='https://dispatch.rc02.test:3129'
+ command='node node_modules/@playwright/test/cli.js test --config=scratch/playwright.sol.config.ts --max-failures=1'
+ started=time.time()
+ print('START configuration',label,flush=True)
+ with Path(f'scratch/sol-evidence/browser-config-{runLabel}.txt').open('w',encoding='utf-8') as log:
+  run=subprocess.run(command,shell=True,env=env,stdout=log,stderr=subprocess.STDOUT)
+ record={'label':runLabel,'command':command,'sourceSha':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),
+  'exitCode':run.returncode,'durationSeconds':time.time()-started,'environmentFile':env['SOL_BROWSER_ENV'],
+  'resultFile':f'scratch/sol-browser/config-{runLabel}/results.json'}
+ results.append(record)
+ Path(f'scratch/sol-evidence/configuration-gates-{batch or "initial"}.json').write_text(json.dumps(results,indent=2))
+ print('END configuration',label,'exit',run.returncode,flush=True)
+ if run.returncode:sys.exit(run.returncode)

@@ -1,0 +1,13 @@
+import { readFileSync, writeFileSync } from 'node:fs'
+import { loadConfig } from '@/modules/core/config'
+import { PROFILE_GUIDANCE } from '@/modules/extensions/profiles'
+const env = Object.fromEntries(readFileSync('.env.rc02','utf8').trim().split(/\r?\n/).map(l=>{const a=l.indexOf('=');return[l.slice(0,a),l.slice(a+1)]}))
+const rows=[]
+for (const profile of ['Lean','Standard','Media','Scale'] as const) {
+  const actual=loadConfig({ ...env, DEPLOYMENT_PROFILE:profile })
+  if(actual.deploymentProfile!==profile)throw Error('Resource profile mismatch')
+  rows.push({ profile:actual.deploymentProfile, guidance:PROFILE_GUIDANCE[profile],
+    requestedModules:env.RENEGADE_MODULES, ordinaryTestAuthOff:env.LOCAL_E2E_TEST_MODE === 'false' })
+}
+writeFileSync('scratch/sol-evidence/resource-profile-guidance.json',JSON.stringify({ sourceScope:'Configuration parsing and published guidance; not a capacity benchmark.',rows },null,2))
+console.log('Validated Lean, Standard, Media and Scale configuration parsing and guidance.')

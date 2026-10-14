@@ -1,0 +1,12 @@
+import json,hashlib,subprocess,sys
+from pathlib import Path
+assert not subprocess.check_output(["git","status","--porcelain"],text=True).strip(), "Frozen tracked source must be clean"
+paths=[*Path("scratch/sol-specs").glob("*.ts"),*Path("scratch/config-specs").glob("*.ts")]
+paths += [Path("scratch")/n for n in ["playwright.sol.config.ts","sol-runtime.mjs","sol-browser-helpers.ts","sol-smtp-sink.mjs","run-browser.py","run-configurations.py"]]
+record={"sourceSha":subprocess.check_output(["git","rev-parse","HEAD"],text=True).strip(),"tree":subprocess.check_output(["git","rev-parse","HEAD^{tree}"],text=True).strip(),"trackedStatus":"clean","harness":{str(p):hashlib.sha256(p.read_bytes()).hexdigest() for p in paths}}
+label=sys.argv[1];mode=sys.argv[2] if len(sys.argv)>2 else "before"
+f=Path(f"scratch/sol-evidence/freeze-{label}-{mode}.json");f.write_text(json.dumps(record,indent=2))
+if mode=="after":
+ before=json.loads(Path(f"scratch/sol-evidence/freeze-{label}-before.json").read_text())
+ assert before==record,"Source or harness changed during acceptance"
+print(label,mode,"frozen source and harness verified")

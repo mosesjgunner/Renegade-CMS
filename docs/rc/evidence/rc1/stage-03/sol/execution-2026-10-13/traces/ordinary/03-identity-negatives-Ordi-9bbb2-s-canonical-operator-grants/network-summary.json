@@ -1,0 +1,42 @@
+[
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/api/sites?depth=0",
+    "status": 200,
+    "startedDateTime": "2026-10-13T10:14:46.985Z",
+    "time": 11.459000000002561,
+    "requestBodyRetainedPrivately": false
+  },
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/api/users/me",
+    "status": 200,
+    "startedDateTime": "2026-10-13T10:14:47.002Z",
+    "time": 14.687000000005355,
+    "requestBodyRetainedPrivately": false
+  },
+  {
+    "method": "POST",
+    "url": "https://dispatch.rc02.test:3129/api/sites",
+    "status": 201,
+    "startedDateTime": "2026-10-13T10:14:47.020Z",
+    "time": 47.272999999986496,
+    "requestBodyRetainedPrivately": true
+  },
+  {
+    "method": "POST",
+    "url": "https://dispatch.rc02.test:3129/api/member-site-roles",
+    "status": 201,
+    "startedDateTime": "2026-10-13T10:14:47.072Z",
+    "time": 22.38100000002305,
+    "requestBodyRetainedPrivately": true
+  },
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/api/member-site-roles?depth=0&limit=100",
+    "status": 200,
+    "startedDateTime": "2026-10-13T10:14:47.098Z",
+    "time": 14.743000000016764,
+    "requestBodyRetainedPrivately": false
+  }
+]

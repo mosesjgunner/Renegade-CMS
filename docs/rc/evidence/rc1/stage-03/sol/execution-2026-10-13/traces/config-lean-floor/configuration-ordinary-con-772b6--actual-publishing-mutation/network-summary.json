@@ -1,0 +1,218 @@
+[
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/setup",
+    "status": 307,
+    "startedDateTime": "2026-10-14T01:40:50.551Z",
+    "time": 501.163,
+    "requestBodyRetainedPrivately": false
+  },
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/_next/static/chunks/10_sadu1qy7pp.css",
+    "status": 200,
+    "startedDateTime": "2026-10-14T01:40:51.162Z",
+    "time": 28.015,
+    "requestBodyRetainedPrivately": false
+  },
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/_next/static/chunks/2_d35ecozp5l6.css",
+    "status": 200,
+    "startedDateTime": "2026-10-14T01:40:51.162Z",
+    "time": 27.795,
+    "requestBodyRetainedPrivately": false
+  },
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/setup",
+    "status": 200,
+    "startedDateTime": "2026-10-14T01:40:51.051Z",
+    "time": 48.504,
+    "requestBodyRetainedPrivately": false
+  },
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/_next/static/media/5f402bd2d8eef81a-s.p.40bho2kviej2o.woff2",
+    "status": 200,
+    "startedDateTime": "2026-10-14T01:40:51.159Z",
+    "time": 17.512,
+    "requestBodyRetainedPrivately": false
+  },
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/_next/static/media/83afe278b6a6bb3c-s.p.2bn3s6zvc0dyp.woff2",
+    "status": 200,
+    "startedDateTime": "2026-10-14T01:40:51.161Z",
+    "time": 17.677,
+    "requestBodyRetainedPrivately": false
+  },
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/_next/static/chunks/0if-vqkhyn-zc.js",
+    "status": 200,
+    "startedDateTime": "2026-10-14T01:40:51.169Z",
+    "time": 34.568,
+    "requestBodyRetainedPrivately": false
+  },
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/_next/static/chunks/0wf2rmyoojkx7.js",
+    "status": 200,
+    "startedDateTime": "2026-10-14T01:40:51.169Z",
+    "time": 33.369,
+    "requestBodyRetainedPrivately": false
+  },
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/_next/static/chunks/33t46atd3n2zd.js",
+    "status": 200,
+    "startedDateTime": "2026-10-14T01:40:51.169Z",
+    "time": 50.827,
+    "requestBodyRetainedPrivately": false
+  },
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/_next/static/media/70bc3e132a0a741e-s.p.3t6q91iet4nsy.woff2",
+    "status": 200,
+    "startedDateTime": "2026-10-14T01:40:51.161Z",
+    "time": 21.046,
+    "requestBodyRetainedPrivately": false
+  },
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/_next/static/chunks/1tw5_upsy-qj_.js",
+    "status": 200,
+    "startedDateTime": "2026-10-14T01:40:51.169Z",
+    "time": 43.925,
+    "requestBodyRetainedPrivately": false
+  },
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/_next/static/chunks/0e92bm1hlummm.js",
+    "status": 200,
+    "startedDateTime": "2026-10-14T01:40:51.169Z",
+    "time": 42.226,
+    "requestBodyRetainedPrivately": false
+  },
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/_next/static/chunks/3ozi4wby-xl_5.js",
+    "status": 200,
+    "startedDateTime": "2026-10-14T01:40:51.169Z",
+    "time": 41.562000000000005,
+    "requestBodyRetainedPrivately": false
+  },
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/_next/static/chunks/3e944higud48i.js",
+    "status": 200,
+    "startedDateTime": "2026-10-14T01:40:51.169Z",
+    "time": 47.717999999999996,
+    "requestBodyRetainedPrivately": false
+  },
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/_next/static/chunks/turbopack-0mv79w43jdm6g.js",
+    "status": 200,
+    "startedDateTime": "2026-10-14T01:40:51.169Z",
+    "time": 39.008,
+    "requestBodyRetainedPrivately": false
+  },
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/_next/static/chunks/0vaio3-af1qz7.js",
+    "status": 200,
+    "startedDateTime": "2026-10-14T01:40:51.169Z",
+    "time": 50.480999999999995,
+    "requestBodyRetainedPrivately": false
+  },
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/_next/static/media/9433d1a810498265-s.p.1hij5ex6k3v9q.woff2",
+    "status": 200,
+    "startedDateTime": "2026-10-14T01:40:51.161Z",
+    "time": 23.29,
+    "requestBodyRetainedPrivately": false
+  },
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/_next/static/chunks/1qbtb6h34xmb6.js",
+    "status": 200,
+    "startedDateTime": "2026-10-14T01:40:51.351Z",
+    "time": 5.119,
+    "requestBodyRetainedPrivately": false
+  },
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/api/analytics/consent",
+    "status": 200,
+    "startedDateTime": "2026-10-14T01:40:51.542Z",
+    "time": 17.997,
+    "requestBodyRetainedPrivately": false
+  },
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/?_rsc=8GS-JCuSzIFeC4bZ",
+    "status": 200,
+    "startedDateTime": "2026-10-14T01:40:51.556Z",
+    "time": 11.126000000000001,
+    "requestBodyRetainedPrivately": false
+  },
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/?_rsc=jElBLz5SrlENg6Iv",
+    "status": 200,
+    "startedDateTime": "2026-10-14T01:40:51.592Z",
+    "time": 7.431,
+    "requestBodyRetainedPrivately": false
+  },
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/search?_rsc=8GS-JCuSzIFeC4bZ",
+    "status": 200,
+    "startedDateTime": "2026-10-14T01:40:51.743Z",
+    "time": 14.846,
+    "requestBodyRetainedPrivately": false
+  },
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/articles?_rsc=8GS-JCuSzIFeC4bZ",
+    "status": 200,
+    "startedDateTime": "2026-10-14T01:40:51.742Z",
+    "time": 15.071,
+    "requestBodyRetainedPrivately": false
+  },
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/articles?_rsc=jElBLz5SrlENg6Iv",
+    "status": 200,
+    "startedDateTime": "2026-10-14T01:40:51.762Z",
+    "time": 12.137,
+    "requestBodyRetainedPrivately": false
+  },
+  {
+    "method": "GET",
+    "url": "https://dispatch.rc02.test:3129/search?_rsc=jElBLz5SrlENg6Iv",
+    "status": 200,
+    "startedDateTime": "2026-10-14T01:40:51.761Z",
+    "time": 11.155,
+    "requestBodyRetainedPrivately": false
+  },
+  {
+    "method": "POST",
+    "url": "https://dispatch.rc02.test:3129/api/setup/options",
+    "status": 200,
+    "startedDateTime": "2026-10-14T01:40:53.429Z",
+    "time": 23.526000000000003,
+    "requestBodyRetainedPrivately": true
+  },
+  {
+    "method": "POST",
+    "url": "https://dispatch.rc02.test:3129/api/setup/complete",
+    "status": 400,
+    "startedDateTime": "2026-10-14T01:40:53.493Z",
+    "time": 136.88400000000001,
+    "requestBodyRetainedPrivately": true
+  }
+]

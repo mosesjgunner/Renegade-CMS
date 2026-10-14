@@ -1,0 +1,54 @@
+
+Running 18 tests using 1 worker
+
+node : (node:26728) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+At line:2 char:329
++ ... ol-final2'; node node_modules/@playwright/test/cli.js test --config=s ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ((node:26728) Wa... env being set.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok  1 scratch\sol-specs\01-site-build.spec.ts:6:1 › RC-02: ordinary operator builds Renegade Party Dispatch from an empty install (2.2m)
+  ok  2 scratch\sol-specs\02-staff-invitation.spec.ts:10:3 › Staff and Administrator Identity, WebAuthn & Document Lock Journey › 1. Owner invites staff through Security, staff enrolls and logs in with WebAuthn (20.8s)
+  ok  3 scratch\sol-specs\02-staff-invitation.spec.ts:112:3 › Staff and Administrator Identity, WebAuthn & Document Lock Journey › 2. Administrator invitation, passkey enrollment and privilege bounds (7.9s)
+  ok  4 scratch\sol-specs\02-staff-invitation.spec.ts:176:3 › Staff and Administrator Identity, WebAuthn & Document Lock Journey › 3. Identity negatives: expired invitations, wrong WebAuthn origin/challenge (48ms)
+  x   5 scratch\sol-specs\02-staff-invitation.spec.ts:209:3 › Staff and Administrator Identity, WebAuthn & Document Lock Journey › 4. Session revocation and role protection (7.1s)
+Testing stopped early after 1 maximum allowed failures.
+
+
+  1) scratch\sol-specs\02-staff-invitation.spec.ts:209:3 › Staff and Administrator Identity, WebAuthn & Document Lock Journey › 4. Session revocation and role protection
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 200
+    Received: 400
+
+      220 |     // Explicit logout revokes session
+      221 |     const staleAdmin = await browser.newContext({ storageState: await adminCtx.storageState(), ignoreHTTPSErrors: true })
+    > 222 |     expect((await staleAdmin.request.get(`${appUrl}/api/admin/ai/connections`)).status()).toBe(200)
+          |                                                                                           ^
+      223 |     const logoutRes = await page.request.post(`${appUrl}/api/auth/logout`)
+      224 |     expect(logoutRes.ok()).toBe(true)
+      225 |     expect((await staleAdmin.cookies()).some(c => c.name === 'renegade-passkey')).toBe(true)
+        at C:\Projects\RENEGADE CMS\sol-rc1-20261013\scratch\sol-specs\02-staff-invitation.spec.ts:222:91
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    scratch\sol-traces\final2\02-staff-invitation-Staff--cf4e2-ocation-and-role-protection\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: scratch\sol-traces\final2\02-staff-invitation-Staff--cf4e2-ocation-and-role-protection\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    scratch\sol-traces\final2\02-staff-invitation-Staff--cf4e2-ocation-and-role-protection\trace.zip
+    Usage:
+
+        npx playwright show-trace scratch\sol-traces\final2\02-staff-invitation-Staff--cf4e2-ocation-and-role-protection\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    scratch\sol-specs\02-staff-invitation.spec.ts:209:3 › Staff and Administrator Identity, WebAuthn & Document Lock Journey › 4. Session revocation and role protection
+  13 did not run
+  4 passed (3.0m)
+  1 error was not a part of any test, see above for details

@@ -1,0 +1,79 @@
+
+Running 1 test using 1 worker
+
+(node:31664) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  1 scratch\config-specs\configuration.spec.ts:6:1 › ordinary configuration boot, first-run, registered collections and an actual publishing mutation (9.6s)
+Testing stopped early after 1 maximum allowed failures.
+
+
+  1) scratch\config-specs\configuration.spec.ts:6:1 › ordinary configuration boot, first-run, registered collections and an actual publishing mutation
+
+    Error: expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 3
+    + Received  + 0
+
+    @@ -20,11 +20,10 @@
+        "book-chapters",
+        "book-editions",
+        "book-parts",
+        "books",
+        "brands",
+    -   "calendar-entries",
+        "calendar-entry-audits",
+        "campaigns",
+        "carts",
+        "catalog-import-runs",
+        "categories",
+    @@ -42,11 +41,10 @@
+        "content-releases",
+        "conversion-goals",
+        "deals-opportunities",
+        "delivery-identities",
+        "delivery-receipts",
+    -   "digest-definitions",
+        "digest-runs",
+        "digital-delivery-grants",
+        "digital-download-events",
+        "discussion-posts",
+        "discussions",
+    @@ -167,11 +165,10 @@
+        "social-network-variants",
+        "social-publish-attempts",
+        "social-queue-items",
+        "sources",
+        "spaces",
+    -   "submission-attachments",
+        "subscriber-confirmation-tokens",
+        "subscribers",
+        "subscription-events",
+        "subscriptions",
+        "supporters",
+
+      50 |   const internalStores = ['payload-jobs', 'payload-kv']
+      51 |   const omitted = [...nativeDenied, ...internalStores]
+    > 52 |   expect(actualCollections).toEqual(expected.collections.map(c => c.slug).filter(slug => !omitted.includes(slug)).sort())
+         |                             ^
+      53 |   const closedStores: Record<string, number> = {}
+      54 |   for (const slug of nativeDenied) {
+      55 |     const response = await page.request.get(`/api/${slug}?limit=1`)
+        at C:\Projects\RENEGADE CMS\sol-rc1-20261013\scratch\config-specs\configuration.spec.ts:52:29
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    scratch\sol-traces\config-v3-standard-all\configuration-ordinary-con-772b6--actual-publishing-mutation\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: scratch\sol-traces\config-v3-standard-all\configuration-ordinary-con-772b6--actual-publishing-mutation\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    scratch\sol-traces\config-v3-standard-all\configuration-ordinary-con-772b6--actual-publishing-mutation\trace.zip
+    Usage:
+
+        npx playwright show-trace scratch\sol-traces\config-v3-standard-all\configuration-ordinary-con-772b6--actual-publishing-mutation\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    scratch\config-specs\configuration.spec.ts:6:1 › ordinary configuration boot, first-run, registered collections and an actual publishing mutation
+  1 error was not a part of any test, see above for details

@@ -1,0 +1,552 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "05-http-authorization",
+      "--config=scratch/playwright.sol.config.ts",
+      "--max-failures=1"
+    ],
+    "configFile": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\playwright.sol.config.ts",
+    "rootDir": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/scratch/sol-specs",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 1,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/scratch/sol-traces/authorization-3c7-scoped-objects",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/scratch/sol-specs",
+        "testIgnore": [],
+        "testMatch": ["**/*.@(spec|test).?(c|m)[jt]s?(x)"],
+        "timeout": 600000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      ["list", null],
+      [
+        "json",
+        {
+          "outputFile": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-browser\\authorization-3c7-scoped-objects\\results.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.62.1",
+    "workers": 1,
+    "webServer": {
+      "command": "node scratch/sol-runtime.mjs",
+      "cwd": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013",
+      "url": "https://dispatch.rc02.test:3129/api/setup/readiness",
+      "reuseExistingServer": false,
+      "ignoreHTTPSErrors": true,
+      "timeout": 120000,
+      "env": {
+        "DATABASE_URL": "postgresql://solrc1:[REDACTED]@127.0.0.1:15433/solrc1_20261013_browser_5666_release_acceptance",
+        "UPGRADE_MIGRATION_DATABASE_URL": "postgresql://solrc1:[REDACTED]@127.0.0.1:15433/solrc1_20261013_upgrade_acceptance",
+        "PAYLOAD_SECRET": "[REDACTED]",
+        "APP_URL": "https://dispatch.rc02.test:3129",
+        "PORT": "3128",
+        "HOSTNAME": "127.0.0.1",
+        "NODE_ENV": "production",
+        "PROXY_MODE": "trusted",
+        "TRUSTED_PROXY_HOPS": "1",
+        "DEPLOYMENT_PROFILE": "Standard",
+        "RENEGADE_MODULES": "all",
+        "RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT": "false",
+        "LOCAL_E2E_TEST_MODE": "false",
+        "ENABLE_TEST_ROUTES": "false",
+        "DISABLE_PAYLOAD_HMR": "true",
+        "MEDIA_DIR": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/scratch/sol-browser-media-5666",
+        "EMAIL_MODE": "smtp",
+        "SMTP_HOST": "127.0.0.1",
+        "SMTP_PORT": "3152",
+        "SMTP_SECURE": "false",
+        "EMAIL_FROM": "Renegade Sol <noreply@renegadeparty.test>",
+        "NODE_EXTRA_CA_CERTS": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/scratch/rc02-tls/cert.pem",
+        "NODE_OPTIONS": "--max-old-space-size=768 --import=file:///C:/Projects/RENEGADE%20CMS/sol-rc1-20261013/src/scripts/rc02-network.mjs"
+      }
+    }
+  },
+  "suites": [
+    {
+      "title": "05-http-authorization.spec.ts",
+      "file": "05-http-authorization.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "five real HTTP actors prove two-site reads, mutations, object substitutions, custom views and grant revocation",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 600000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 39840,
+                  "error": {
+                    "message": "Error: owner: /api/admin/audience/command-center at 9d2b48e0-4244-45b9-b436-059c96562a75\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m200\u001b[39m\nReceived: \u001b[31m503\u001b[39m",
+                    "stack": "Error: owner: /api/admin/audience/command-center at 9d2b48e0-4244-45b9-b436-059c96562a75\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m200\u001b[39m\nReceived: \u001b[31m503\u001b[39m\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:182:68",
+                    "location": {
+                      "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                      "column": 68,
+                      "line": 182
+                    },
+                    "snippet": "  180 |       for (const target of [sites.site, sites.foreignSite]) {\n  181 |         const res = await actor.request.get(`${base}${path}?siteId=${target}`)\n> 182 |         expect.soft(res.status(), `${role}: ${path} at ${target}`).toBe(\n      |                                                                    ^\n  183 |           (role === 'owner' || (['administrator', 'staff'].includes(role) && target === sites.site)) ? 200 : 403,\n  184 |         )\n  185 |         observations.push({ role, path, site: target, status: res.status() })"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                        "column": 68,
+                        "line": 182
+                      },
+                      "message": "Error: owner: /api/admin/audience/command-center at 9d2b48e0-4244-45b9-b436-059c96562a75\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m200\u001b[39m\nReceived: \u001b[31m503\u001b[39m\n\n  180 |       for (const target of [sites.site, sites.foreignSite]) {\n  181 |         const res = await actor.request.get(`${base}${path}?siteId=${target}`)\n> 182 |         expect.soft(res.status(), `${role}: ${path} at ${target}`).toBe(\n      |                                                                    ^\n  183 |           (role === 'owner' || (['administrator', 'staff'].includes(role) && target === sites.site)) ? 200 : 403,\n  184 |         )\n  185 |         observations.push({ role, path, site: target, status: res.status() })\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:182:68"
+                    },
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                        "column": 68,
+                        "line": 182
+                      },
+                      "message": "Error: owner: /api/admin/audience/command-center at a8d1f8fc-2cd7-4faf-8d69-2ea31827823c\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m200\u001b[39m\nReceived: \u001b[31m503\u001b[39m\n\n  180 |       for (const target of [sites.site, sites.foreignSite]) {\n  181 |         const res = await actor.request.get(`${base}${path}?siteId=${target}`)\n> 182 |         expect.soft(res.status(), `${role}: ${path} at ${target}`).toBe(\n      |                                                                    ^\n  183 |           (role === 'owner' || (['administrator', 'staff'].includes(role) && target === sites.site)) ? 200 : 403,\n  184 |         )\n  185 |         observations.push({ role, path, site: target, status: res.status() })\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:182:68"
+                    },
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                        "column": 83,
+                        "line": 166
+                      },
+                      "message": "Error: administrator: foreign sites mutation\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoContain\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // indexOf\u001b[22m\n\nExpected value: \u001b[32m200\u001b[39m\nReceived array: \u001b[31m[403, 404]\u001b[39m\n\n  164 |       if (role === 'owner') expect.soft(patch.status()).toBe(200)\n  165 |       else {\n> 166 |         expect.soft([403, 404], `${role}: foreign ${object.collection} mutation`).toContain(patch.status())\n      |                                                                                   ^\n  167 |         const after = await (await owner.request.get(`${base}/api/${object.collection}/${object.b.id}?depth=0`)).json()\n  168 |         expect.soft(after[object.field], `${role}: protected ${object.collection} state`).toEqual(before[object.field])\n  169 |       }\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:166:83"
+                    },
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                        "column": 91,
+                        "line": 168
+                      },
+                      "message": "Error: administrator: protected sites state\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\nExpected: \u001b[32m\"Sol \u001b[7mowne\u001b[27mr foreign mutation\"\u001b[39m\nReceived: \u001b[31m\"Sol \u001b[7madministrato\u001b[27mr foreign mutation\"\u001b[39m\n\n  166 |         expect.soft([403, 404], `${role}: foreign ${object.collection} mutation`).toContain(patch.status())\n  167 |         const after = await (await owner.request.get(`${base}/api/${object.collection}/${object.b.id}?depth=0`)).json()\n> 168 |         expect.soft(after[object.field], `${role}: protected ${object.collection} state`).toEqual(before[object.field])\n      |                                                                                           ^\n  169 |       }\n  170 |       if (permitted && object.collection !== 'sites' && !object.noSiteMove) {\n  171 |         const moved = await actor.request.patch(`${base}/api/${object.collection}/${object.a.id}`, { data: { site: sites.foreignSite } })\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:168:91"
+                    },
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                        "column": 36,
+                        "line": 159
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoContain\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // indexOf\u001b[22m\n\nExpected value: \u001b[32m200\u001b[39m\nReceived array: \u001b[31m[403, 404]\u001b[39m\n\n  157 |       const foreignRead = await actor.request.get(`${base}/api/${object.collection}/${object.b.id}?depth=0`)\n  158 |       if (role === 'owner' || object.publicRead) expect.soft(foreignRead.status()).toBe(200)\n> 159 |       else expect.soft([403, 404]).toContain(foreignRead.status())\n      |                                    ^\n  160 |       const before = await (await owner.request.get(`${base}/api/${object.collection}/${object.b.id}?depth=0`)).json()\n  161 |       const patch = await actor.request.patch(`${base}/api/${object.collection}/${object.b.id}`, { data: {\n  162 |         [object.field]: `Sol ${role} foreign mutation`,\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:159:36"
+                    },
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                        "column": 83,
+                        "line": 166
+                      },
+                      "message": "Error: administrator: foreign social-accounts mutation\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoContain\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // indexOf\u001b[22m\n\nExpected value: \u001b[32m200\u001b[39m\nReceived array: \u001b[31m[403, 404]\u001b[39m\n\n  164 |       if (role === 'owner') expect.soft(patch.status()).toBe(200)\n  165 |       else {\n> 166 |         expect.soft([403, 404], `${role}: foreign ${object.collection} mutation`).toContain(patch.status())\n      |                                                                                   ^\n  167 |         const after = await (await owner.request.get(`${base}/api/${object.collection}/${object.b.id}?depth=0`)).json()\n  168 |         expect.soft(after[object.field], `${role}: protected ${object.collection} state`).toEqual(before[object.field])\n  169 |       }\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:166:83"
+                    },
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                        "column": 91,
+                        "line": 168
+                      },
+                      "message": "Error: administrator: protected social-accounts state\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\nExpected: \u001b[32m\"Sol \u001b[7mowne\u001b[27mr foreign mutation\"\u001b[39m\nReceived: \u001b[31m\"Sol \u001b[7madministrato\u001b[27mr foreign mutation\"\u001b[39m\n\n  166 |         expect.soft([403, 404], `${role}: foreign ${object.collection} mutation`).toContain(patch.status())\n  167 |         const after = await (await owner.request.get(`${base}/api/${object.collection}/${object.b.id}?depth=0`)).json()\n> 168 |         expect.soft(after[object.field], `${role}: protected ${object.collection} state`).toEqual(before[object.field])\n      |                                                                                           ^\n  169 |       }\n  170 |       if (permitted && object.collection !== 'sites' && !object.noSiteMove) {\n  171 |         const moved = await actor.request.patch(`${base}/api/${object.collection}/${object.a.id}`, { data: { site: sites.foreignSite } })\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:168:91"
+                    },
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                        "column": 98,
+                        "line": 175
+                      },
+                      "message": "Error: administrator: reassign social-accounts to foreign site\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoContain\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // indexOf\u001b[22m\n\nExpected value: \u001b[32m200\u001b[39m\nReceived array: \u001b[31m[403, 404]\u001b[39m\n\n  173 |           expect.soft(moved.status()).toBe(200)\n  174 |           expect((await owner.request.patch(`${base}/api/${object.collection}/${object.a.id}`, { data: { site: sites.site } })).status()).toBe(200)\n> 175 |         } else expect.soft([403, 404], `${role}: reassign ${object.collection} to foreign site`).toContain(moved.status())\n      |                                                                                                  ^\n  176 |       }\n  177 |       observations.push({ role, collection: object.collection, ownRead: ownRead.status(), foreignRead: foreignRead.status(), foreignMutation: patch.status() })\n  178 |     }\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:175:98"
+                    },
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                        "column": 36,
+                        "line": 159
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoContain\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // indexOf\u001b[22m\n\nExpected value: \u001b[32m200\u001b[39m\nReceived array: \u001b[31m[403, 404]\u001b[39m\n\n  157 |       const foreignRead = await actor.request.get(`${base}/api/${object.collection}/${object.b.id}?depth=0`)\n  158 |       if (role === 'owner' || object.publicRead) expect.soft(foreignRead.status()).toBe(200)\n> 159 |       else expect.soft([403, 404]).toContain(foreignRead.status())\n      |                                    ^\n  160 |       const before = await (await owner.request.get(`${base}/api/${object.collection}/${object.b.id}?depth=0`)).json()\n  161 |       const patch = await actor.request.patch(`${base}/api/${object.collection}/${object.b.id}`, { data: {\n  162 |         [object.field]: `Sol ${role} foreign mutation`,\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:159:36"
+                    },
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                        "column": 83,
+                        "line": 166
+                      },
+                      "message": "Error: administrator: foreign api-clients mutation\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoContain\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // indexOf\u001b[22m\n\nExpected value: \u001b[32m200\u001b[39m\nReceived array: \u001b[31m[403, 404]\u001b[39m\n\n  164 |       if (role === 'owner') expect.soft(patch.status()).toBe(200)\n  165 |       else {\n> 166 |         expect.soft([403, 404], `${role}: foreign ${object.collection} mutation`).toContain(patch.status())\n      |                                                                                   ^\n  167 |         const after = await (await owner.request.get(`${base}/api/${object.collection}/${object.b.id}?depth=0`)).json()\n  168 |         expect.soft(after[object.field], `${role}: protected ${object.collection} state`).toEqual(before[object.field])\n  169 |       }\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:166:83"
+                    },
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                        "column": 91,
+                        "line": 168
+                      },
+                      "message": "Error: administrator: protected api-clients state\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\nExpected: \u001b[32m\"Sol \u001b[7mowne\u001b[27mr foreign mutation\"\u001b[39m\nReceived: \u001b[31m\"Sol \u001b[7madministrato\u001b[27mr foreign mutation\"\u001b[39m\n\n  166 |         expect.soft([403, 404], `${role}: foreign ${object.collection} mutation`).toContain(patch.status())\n  167 |         const after = await (await owner.request.get(`${base}/api/${object.collection}/${object.b.id}?depth=0`)).json()\n> 168 |         expect.soft(after[object.field], `${role}: protected ${object.collection} state`).toEqual(before[object.field])\n      |                                                                                           ^\n  169 |       }\n  170 |       if (permitted && object.collection !== 'sites' && !object.noSiteMove) {\n  171 |         const moved = await actor.request.patch(`${base}/api/${object.collection}/${object.a.id}`, { data: { site: sites.foreignSite } })\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:168:91"
+                    },
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                        "column": 98,
+                        "line": 175
+                      },
+                      "message": "Error: administrator: reassign api-clients to foreign site\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoContain\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // indexOf\u001b[22m\n\nExpected value: \u001b[32m200\u001b[39m\nReceived array: \u001b[31m[403, 404]\u001b[39m\n\n  173 |           expect.soft(moved.status()).toBe(200)\n  174 |           expect((await owner.request.patch(`${base}/api/${object.collection}/${object.a.id}`, { data: { site: sites.site } })).status()).toBe(200)\n> 175 |         } else expect.soft([403, 404], `${role}: reassign ${object.collection} to foreign site`).toContain(moved.status())\n      |                                                                                                  ^\n  176 |       }\n  177 |       observations.push({ role, collection: object.collection, ownRead: ownRead.status(), foreignRead: foreignRead.status(), foreignMutation: patch.status() })\n  178 |     }\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:175:98"
+                    },
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                        "column": 83,
+                        "line": 166
+                      },
+                      "message": "Error: administrator: foreign forum-sections mutation\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoContain\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // indexOf\u001b[22m\n\nExpected value: \u001b[32m200\u001b[39m\nReceived array: \u001b[31m[403, 404]\u001b[39m\n\n  164 |       if (role === 'owner') expect.soft(patch.status()).toBe(200)\n  165 |       else {\n> 166 |         expect.soft([403, 404], `${role}: foreign ${object.collection} mutation`).toContain(patch.status())\n      |                                                                                   ^\n  167 |         const after = await (await owner.request.get(`${base}/api/${object.collection}/${object.b.id}?depth=0`)).json()\n  168 |         expect.soft(after[object.field], `${role}: protected ${object.collection} state`).toEqual(before[object.field])\n  169 |       }\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:166:83"
+                    },
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                        "column": 91,
+                        "line": 168
+                      },
+                      "message": "Error: administrator: protected forum-sections state\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\nExpected: \u001b[32m\"Sol \u001b[7mowne\u001b[27mr foreign mutation\"\u001b[39m\nReceived: \u001b[31m\"Sol \u001b[7madministrato\u001b[27mr foreign mutation\"\u001b[39m\n\n  166 |         expect.soft([403, 404], `${role}: foreign ${object.collection} mutation`).toContain(patch.status())\n  167 |         const after = await (await owner.request.get(`${base}/api/${object.collection}/${object.b.id}?depth=0`)).json()\n> 168 |         expect.soft(after[object.field], `${role}: protected ${object.collection} state`).toEqual(before[object.field])\n      |                                                                                           ^\n  169 |       }\n  170 |       if (permitted && object.collection !== 'sites' && !object.noSiteMove) {\n  171 |         const moved = await actor.request.patch(`${base}/api/${object.collection}/${object.a.id}`, { data: { site: sites.foreignSite } })\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:168:91"
+                    },
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                        "column": 98,
+                        "line": 175
+                      },
+                      "message": "Error: administrator: reassign forum-sections to foreign site\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoContain\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // indexOf\u001b[22m\n\nExpected value: \u001b[32m200\u001b[39m\nReceived array: \u001b[31m[403, 404]\u001b[39m\n\n  173 |           expect.soft(moved.status()).toBe(200)\n  174 |           expect((await owner.request.patch(`${base}/api/${object.collection}/${object.a.id}`, { data: { site: sites.site } })).status()).toBe(200)\n> 175 |         } else expect.soft([403, 404], `${role}: reassign ${object.collection} to foreign site`).toContain(moved.status())\n      |                                                                                                  ^\n  176 |       }\n  177 |       observations.push({ role, collection: object.collection, ownRead: ownRead.status(), foreignRead: foreignRead.status(), foreignMutation: patch.status() })\n  178 |     }\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:175:98"
+                    },
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                        "column": 36,
+                        "line": 159
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoContain\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // indexOf\u001b[22m\n\nExpected value: \u001b[32m200\u001b[39m\nReceived array: \u001b[31m[403, 404]\u001b[39m\n\n  157 |       const foreignRead = await actor.request.get(`${base}/api/${object.collection}/${object.b.id}?depth=0`)\n  158 |       if (role === 'owner' || object.publicRead) expect.soft(foreignRead.status()).toBe(200)\n> 159 |       else expect.soft([403, 404]).toContain(foreignRead.status())\n      |                                    ^\n  160 |       const before = await (await owner.request.get(`${base}/api/${object.collection}/${object.b.id}?depth=0`)).json()\n  161 |       const patch = await actor.request.patch(`${base}/api/${object.collection}/${object.b.id}`, { data: {\n  162 |         [object.field]: `Sol ${role} foreign mutation`,\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:159:36"
+                    },
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                        "column": 83,
+                        "line": 166
+                      },
+                      "message": "Error: administrator: foreign discussions mutation\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoContain\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // indexOf\u001b[22m\n\nExpected value: \u001b[32m200\u001b[39m\nReceived array: \u001b[31m[403, 404]\u001b[39m\n\n  164 |       if (role === 'owner') expect.soft(patch.status()).toBe(200)\n  165 |       else {\n> 166 |         expect.soft([403, 404], `${role}: foreign ${object.collection} mutation`).toContain(patch.status())\n      |                                                                                   ^\n  167 |         const after = await (await owner.request.get(`${base}/api/${object.collection}/${object.b.id}?depth=0`)).json()\n  168 |         expect.soft(after[object.field], `${role}: protected ${object.collection} state`).toEqual(before[object.field])\n  169 |       }\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:166:83"
+                    },
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                        "column": 91,
+                        "line": 168
+                      },
+                      "message": "Error: administrator: protected discussions state\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\nExpected: \u001b[32m\"Sol \u001b[7mowne\u001b[27mr foreign mutation\"\u001b[39m\nReceived: \u001b[31m\"Sol \u001b[7madministrato\u001b[27mr foreign mutation\"\u001b[39m\n\n  166 |         expect.soft([403, 404], `${role}: foreign ${object.collection} mutation`).toContain(patch.status())\n  167 |         const after = await (await owner.request.get(`${base}/api/${object.collection}/${object.b.id}?depth=0`)).json()\n> 168 |         expect.soft(after[object.field], `${role}: protected ${object.collection} state`).toEqual(before[object.field])\n      |                                                                                           ^\n  169 |       }\n  170 |       if (permitted && object.collection !== 'sites' && !object.noSiteMove) {\n  171 |         const moved = await actor.request.patch(`${base}/api/${object.collection}/${object.a.id}`, { data: { site: sites.foreignSite } })\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:168:91"
+                    },
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                        "column": 98,
+                        "line": 175
+                      },
+                      "message": "Error: administrator: reassign discussions to foreign site\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoContain\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // indexOf\u001b[22m\n\nExpected value: \u001b[32m200\u001b[39m\nReceived array: \u001b[31m[403, 404]\u001b[39m\n\n  173 |           expect.soft(moved.status()).toBe(200)\n  174 |           expect((await owner.request.patch(`${base}/api/${object.collection}/${object.a.id}`, { data: { site: sites.site } })).status()).toBe(200)\n> 175 |         } else expect.soft([403, 404], `${role}: reassign ${object.collection} to foreign site`).toContain(moved.status())\n      |                                                                                                  ^\n  176 |       }\n  177 |       observations.push({ role, collection: object.collection, ownRead: ownRead.status(), foreignRead: foreignRead.status(), foreignMutation: patch.status() })\n  178 |     }\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:175:98"
+                    },
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                        "column": 36,
+                        "line": 159
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoContain\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // indexOf\u001b[22m\n\nExpected value: \u001b[32m200\u001b[39m\nReceived array: \u001b[31m[403, 404]\u001b[39m\n\n  157 |       const foreignRead = await actor.request.get(`${base}/api/${object.collection}/${object.b.id}?depth=0`)\n  158 |       if (role === 'owner' || object.publicRead) expect.soft(foreignRead.status()).toBe(200)\n> 159 |       else expect.soft([403, 404]).toContain(foreignRead.status())\n      |                                    ^\n  160 |       const before = await (await owner.request.get(`${base}/api/${object.collection}/${object.b.id}?depth=0`)).json()\n  161 |       const patch = await actor.request.patch(`${base}/api/${object.collection}/${object.b.id}`, { data: {\n  162 |         [object.field]: `Sol ${role} foreign mutation`,\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:159:36"
+                    },
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                        "column": 83,
+                        "line": 166
+                      },
+                      "message": "Error: administrator: foreign discussion-posts mutation\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoContain\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // indexOf\u001b[22m\n\nExpected value: \u001b[32m200\u001b[39m\nReceived array: \u001b[31m[403, 404]\u001b[39m\n\n  164 |       if (role === 'owner') expect.soft(patch.status()).toBe(200)\n  165 |       else {\n> 166 |         expect.soft([403, 404], `${role}: foreign ${object.collection} mutation`).toContain(patch.status())\n      |                                                                                   ^\n  167 |         const after = await (await owner.request.get(`${base}/api/${object.collection}/${object.b.id}?depth=0`)).json()\n  168 |         expect.soft(after[object.field], `${role}: protected ${object.collection} state`).toEqual(before[object.field])\n  169 |       }\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:166:83"
+                    },
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                        "column": 91,
+                        "line": 168
+                      },
+                      "message": "Error: administrator: protected discussion-posts state\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\nExpected: \u001b[32m\"Sol \u001b[7mowne\u001b[27mr foreign mutation\"\u001b[39m\nReceived: \u001b[31m\"Sol \u001b[7madministrato\u001b[27mr foreign mutation\"\u001b[39m\n\n  166 |         expect.soft([403, 404], `${role}: foreign ${object.collection} mutation`).toContain(patch.status())\n  167 |         const after = await (await owner.request.get(`${base}/api/${object.collection}/${object.b.id}?depth=0`)).json()\n> 168 |         expect.soft(after[object.field], `${role}: protected ${object.collection} state`).toEqual(before[object.field])\n      |                                                                                           ^\n  169 |       }\n  170 |       if (permitted && object.collection !== 'sites' && !object.noSiteMove) {\n  171 |         const moved = await actor.request.patch(`${base}/api/${object.collection}/${object.a.id}`, { data: { site: sites.foreignSite } })\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:168:91"
+                    },
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                        "column": 68,
+                        "line": 182
+                      },
+                      "message": "Error: administrator: /api/admin/audience/command-center at 9d2b48e0-4244-45b9-b436-059c96562a75\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m200\u001b[39m\nReceived: \u001b[31m503\u001b[39m\n\n  180 |       for (const target of [sites.site, sites.foreignSite]) {\n  181 |         const res = await actor.request.get(`${base}${path}?siteId=${target}`)\n> 182 |         expect.soft(res.status(), `${role}: ${path} at ${target}`).toBe(\n      |                                                                    ^\n  183 |           (role === 'owner' || (['administrator', 'staff'].includes(role) && target === sites.site)) ? 200 : 403,\n  184 |         )\n  185 |         observations.push({ role, path, site: target, status: res.status() })\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:182:68"
+                    },
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                        "column": 68,
+                        "line": 194
+                      },
+                      "message": "Error: administrator: private foreign bytes\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoContain\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // indexOf\u001b[22m\n\nExpected value: \u001b[32m200\u001b[39m\nReceived array: \u001b[31m[403, 404]\u001b[39m\n\n  192 |     const foreignBytes = await actor.request.get(`${base}/media/${privateMedia.b.id}`)\n  193 |     if (role === 'owner') expect.soft(foreignBytes.status()).toBe(200)\n> 194 |     else expect.soft([403, 404], `${role}: private foreign bytes`).toContain(foreignBytes.status())\n      |                                                                    ^\n  195 |   }\n  196 |\n  197 |   // Deleting the canonical grant must revoke authority in an existing, real session.\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:194:68"
+                    },
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                        "column": 36,
+                        "line": 159
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoContain\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // indexOf\u001b[22m\n\nExpected value: \u001b[32m200\u001b[39m\nReceived array: \u001b[31m[403, 404]\u001b[39m\n\n  157 |       const foreignRead = await actor.request.get(`${base}/api/${object.collection}/${object.b.id}?depth=0`)\n  158 |       if (role === 'owner' || object.publicRead) expect.soft(foreignRead.status()).toBe(200)\n> 159 |       else expect.soft([403, 404]).toContain(foreignRead.status())\n      |                                    ^\n  160 |       const before = await (await owner.request.get(`${base}/api/${object.collection}/${object.b.id}?depth=0`)).json()\n  161 |       const patch = await actor.request.patch(`${base}/api/${object.collection}/${object.b.id}`, { data: {\n  162 |         [object.field]: `Sol ${role} foreign mutation`,\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:159:36"
+                    },
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                        "column": 83,
+                        "line": 166
+                      },
+                      "message": "Error: staff: foreign social-accounts mutation\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoContain\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // indexOf\u001b[22m\n\nExpected value: \u001b[32m200\u001b[39m\nReceived array: \u001b[31m[403, 404]\u001b[39m\n\n  164 |       if (role === 'owner') expect.soft(patch.status()).toBe(200)\n  165 |       else {\n> 166 |         expect.soft([403, 404], `${role}: foreign ${object.collection} mutation`).toContain(patch.status())\n      |                                                                                   ^\n  167 |         const after = await (await owner.request.get(`${base}/api/${object.collection}/${object.b.id}?depth=0`)).json()\n  168 |         expect.soft(after[object.field], `${role}: protected ${object.collection} state`).toEqual(before[object.field])\n  169 |       }\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:166:83"
+                    },
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                        "column": 91,
+                        "line": 168
+                      },
+                      "message": "Error: staff: protected social-accounts state\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\nExpected: \u001b[32m\"Sol \u001b[7madministrator\u001b[27m foreign mutation\"\u001b[39m\nReceived: \u001b[31m\"Sol \u001b[7mstaff\u001b[27m foreign mutation\"\u001b[39m\n\n  166 |         expect.soft([403, 404], `${role}: foreign ${object.collection} mutation`).toContain(patch.status())\n  167 |         const after = await (await owner.request.get(`${base}/api/${object.collection}/${object.b.id}?depth=0`)).json()\n> 168 |         expect.soft(after[object.field], `${role}: protected ${object.collection} state`).toEqual(before[object.field])\n      |                                                                                           ^\n  169 |       }\n  170 |       if (permitted && object.collection !== 'sites' && !object.noSiteMove) {\n  171 |         const moved = await actor.request.patch(`${base}/api/${object.collection}/${object.a.id}`, { data: { site: sites.foreignSite } })\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:168:91"
+                    },
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                        "column": 98,
+                        "line": 175
+                      },
+                      "message": "Error: staff: reassign social-accounts to foreign site\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoContain\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // indexOf\u001b[22m\n\nExpected value: \u001b[32m200\u001b[39m\nReceived array: \u001b[31m[403, 404]\u001b[39m\n\n  173 |           expect.soft(moved.status()).toBe(200)\n  174 |           expect((await owner.request.patch(`${base}/api/${object.collection}/${object.a.id}`, { data: { site: sites.site } })).status()).toBe(200)\n> 175 |         } else expect.soft([403, 404], `${role}: reassign ${object.collection} to foreign site`).toContain(moved.status())\n      |                                                                                                  ^\n  176 |       }\n  177 |       observations.push({ role, collection: object.collection, ownRead: ownRead.status(), foreignRead: foreignRead.status(), foreignMutation: patch.status() })\n  178 |     }\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:175:98"
+                    },
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                        "column": 36,
+                        "line": 159
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoContain\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // indexOf\u001b[22m\n\nExpected value: \u001b[32m200\u001b[39m\nReceived array: \u001b[31m[403, 404]\u001b[39m\n\n  157 |       const foreignRead = await actor.request.get(`${base}/api/${object.collection}/${object.b.id}?depth=0`)\n  158 |       if (role === 'owner' || object.publicRead) expect.soft(foreignRead.status()).toBe(200)\n> 159 |       else expect.soft([403, 404]).toContain(foreignRead.status())\n      |                                    ^\n  160 |       const before = await (await owner.request.get(`${base}/api/${object.collection}/${object.b.id}?depth=0`)).json()\n  161 |       const patch = await actor.request.patch(`${base}/api/${object.collection}/${object.b.id}`, { data: {\n  162 |         [object.field]: `Sol ${role} foreign mutation`,\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:159:36"
+                    },
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                        "column": 83,
+                        "line": 166
+                      },
+                      "message": "Error: staff: foreign api-clients mutation\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoContain\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // indexOf\u001b[22m\n\nExpected value: \u001b[32m200\u001b[39m\nReceived array: \u001b[31m[403, 404]\u001b[39m\n\n  164 |       if (role === 'owner') expect.soft(patch.status()).toBe(200)\n  165 |       else {\n> 166 |         expect.soft([403, 404], `${role}: foreign ${object.collection} mutation`).toContain(patch.status())\n      |                                                                                   ^\n  167 |         const after = await (await owner.request.get(`${base}/api/${object.collection}/${object.b.id}?depth=0`)).json()\n  168 |         expect.soft(after[object.field], `${role}: protected ${object.collection} state`).toEqual(before[object.field])\n  169 |       }\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:166:83"
+                    },
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                        "column": 91,
+                        "line": 168
+                      },
+                      "message": "Error: staff: protected api-clients state\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\nExpected: \u001b[32m\"Sol \u001b[7madministrator\u001b[27m foreign mutation\"\u001b[39m\nReceived: \u001b[31m\"Sol \u001b[7mstaff\u001b[27m foreign mutation\"\u001b[39m\n\n  166 |         expect.soft([403, 404], `${role}: foreign ${object.collection} mutation`).toContain(patch.status())\n  167 |         const after = await (await owner.request.get(`${base}/api/${object.collection}/${object.b.id}?depth=0`)).json()\n> 168 |         expect.soft(after[object.field], `${role}: protected ${object.collection} state`).toEqual(before[object.field])\n      |                                                                                           ^\n  169 |       }\n  170 |       if (permitted && object.collection !== 'sites' && !object.noSiteMove) {\n  171 |         const moved = await actor.request.patch(`${base}/api/${object.collection}/${object.a.id}`, { data: { site: sites.foreignSite } })\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:168:91"
+                    },
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                        "column": 98,
+                        "line": 175
+                      },
+                      "message": "Error: staff: reassign api-clients to foreign site\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoContain\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // indexOf\u001b[22m\n\nExpected value: \u001b[32m200\u001b[39m\nReceived array: \u001b[31m[403, 404]\u001b[39m\n\n  173 |           expect.soft(moved.status()).toBe(200)\n  174 |           expect((await owner.request.patch(`${base}/api/${object.collection}/${object.a.id}`, { data: { site: sites.site } })).status()).toBe(200)\n> 175 |         } else expect.soft([403, 404], `${role}: reassign ${object.collection} to foreign site`).toContain(moved.status())\n      |                                                                                                  ^\n  176 |       }\n  177 |       observations.push({ role, collection: object.collection, ownRead: ownRead.status(), foreignRead: foreignRead.status(), foreignMutation: patch.status() })\n  178 |     }\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:175:98"
+                    },
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                        "column": 83,
+                        "line": 166
+                      },
+                      "message": "Error: staff: foreign forum-sections mutation\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoContain\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // indexOf\u001b[22m\n\nExpected value: \u001b[32m200\u001b[39m\nReceived array: \u001b[31m[403, 404]\u001b[39m\n\n  164 |       if (role === 'owner') expect.soft(patch.status()).toBe(200)\n  165 |       else {\n> 166 |         expect.soft([403, 404], `${role}: foreign ${object.collection} mutation`).toContain(patch.status())\n      |                                                                                   ^\n  167 |         const after = await (await owner.request.get(`${base}/api/${object.collection}/${object.b.id}?depth=0`)).json()\n  168 |         expect.soft(after[object.field], `${role}: protected ${object.collection} state`).toEqual(before[object.field])\n  169 |       }\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:166:83"
+                    },
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                        "column": 91,
+                        "line": 168
+                      },
+                      "message": "Error: staff: protected forum-sections state\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\nExpected: \u001b[32m\"Sol \u001b[7madministrator\u001b[27m foreign mutation\"\u001b[39m\nReceived: \u001b[31m\"Sol \u001b[7mstaff\u001b[27m foreign mutation\"\u001b[39m\n\n  166 |         expect.soft([403, 404], `${role}: foreign ${object.collection} mutation`).toContain(patch.status())\n  167 |         const after = await (await owner.request.get(`${base}/api/${object.collection}/${object.b.id}?depth=0`)).json()\n> 168 |         expect.soft(after[object.field], `${role}: protected ${object.collection} state`).toEqual(before[object.field])\n      |                                                                                           ^\n  169 |       }\n  170 |       if (permitted && object.collection !== 'sites' && !object.noSiteMove) {\n  171 |         const moved = await actor.request.patch(`${base}/api/${object.collection}/${object.a.id}`, { data: { site: sites.foreignSite } })\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:168:91"
+                    },
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                        "column": 98,
+                        "line": 175
+                      },
+                      "message": "Error: staff: reassign forum-sections to foreign site\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoContain\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // indexOf\u001b[22m\n\nExpected value: \u001b[32m200\u001b[39m\nReceived array: \u001b[31m[403, 404]\u001b[39m\n\n  173 |           expect.soft(moved.status()).toBe(200)\n  174 |           expect((await owner.request.patch(`${base}/api/${object.collection}/${object.a.id}`, { data: { site: sites.site } })).status()).toBe(200)\n> 175 |         } else expect.soft([403, 404], `${role}: reassign ${object.collection} to foreign site`).toContain(moved.status())\n      |                                                                                                  ^\n  176 |       }\n  177 |       observations.push({ role, collection: object.collection, ownRead: ownRead.status(), foreignRead: foreignRead.status(), foreignMutation: patch.status() })\n  178 |     }\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:175:98"
+                    },
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                        "column": 36,
+                        "line": 159
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoContain\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // indexOf\u001b[22m\n\nExpected value: \u001b[32m200\u001b[39m\nReceived array: \u001b[31m[403, 404]\u001b[39m\n\n  157 |       const foreignRead = await actor.request.get(`${base}/api/${object.collection}/${object.b.id}?depth=0`)\n  158 |       if (role === 'owner' || object.publicRead) expect.soft(foreignRead.status()).toBe(200)\n> 159 |       else expect.soft([403, 404]).toContain(foreignRead.status())\n      |                                    ^\n  160 |       const before = await (await owner.request.get(`${base}/api/${object.collection}/${object.b.id}?depth=0`)).json()\n  161 |       const patch = await actor.request.patch(`${base}/api/${object.collection}/${object.b.id}`, { data: {\n  162 |         [object.field]: `Sol ${role} foreign mutation`,\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:159:36"
+                    },
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                        "column": 83,
+                        "line": 166
+                      },
+                      "message": "Error: staff: foreign discussions mutation\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoContain\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // indexOf\u001b[22m\n\nExpected value: \u001b[32m200\u001b[39m\nReceived array: \u001b[31m[403, 404]\u001b[39m\n\n  164 |       if (role === 'owner') expect.soft(patch.status()).toBe(200)\n  165 |       else {\n> 166 |         expect.soft([403, 404], `${role}: foreign ${object.collection} mutation`).toContain(patch.status())\n      |                                                                                   ^\n  167 |         const after = await (await owner.request.get(`${base}/api/${object.collection}/${object.b.id}?depth=0`)).json()\n  168 |         expect.soft(after[object.field], `${role}: protected ${object.collection} state`).toEqual(before[object.field])\n  169 |       }\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:166:83"
+                    },
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                        "column": 91,
+                        "line": 168
+                      },
+                      "message": "Error: staff: protected discussions state\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\nExpected: \u001b[32m\"Sol \u001b[7madministrator\u001b[27m foreign mutation\"\u001b[39m\nReceived: \u001b[31m\"Sol \u001b[7mstaff\u001b[27m foreign mutation\"\u001b[39m\n\n  166 |         expect.soft([403, 404], `${role}: foreign ${object.collection} mutation`).toContain(patch.status())\n  167 |         const after = await (await owner.request.get(`${base}/api/${object.collection}/${object.b.id}?depth=0`)).json()\n> 168 |         expect.soft(after[object.field], `${role}: protected ${object.collection} state`).toEqual(before[object.field])\n      |                                                                                           ^\n  169 |       }\n  170 |       if (permitted && object.collection !== 'sites' && !object.noSiteMove) {\n  171 |         const moved = await actor.request.patch(`${base}/api/${object.collection}/${object.a.id}`, { data: { site: sites.foreignSite } })\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:168:91"
+                    },
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                        "column": 98,
+                        "line": 175
+                      },
+                      "message": "Error: staff: reassign discussions to foreign site\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoContain\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // indexOf\u001b[22m\n\nExpected value: \u001b[32m200\u001b[39m\nReceived array: \u001b[31m[403, 404]\u001b[39m\n\n  173 |           expect.soft(moved.status()).toBe(200)\n  174 |           expect((await owner.request.patch(`${base}/api/${object.collection}/${object.a.id}`, { data: { site: sites.site } })).status()).toBe(200)\n> 175 |         } else expect.soft([403, 404], `${role}: reassign ${object.collection} to foreign site`).toContain(moved.status())\n      |                                                                                                  ^\n  176 |       }\n  177 |       observations.push({ role, collection: object.collection, ownRead: ownRead.status(), foreignRead: foreignRead.status(), foreignMutation: patch.status() })\n  178 |     }\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:175:98"
+                    },
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                        "column": 36,
+                        "line": 159
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoContain\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // indexOf\u001b[22m\n\nExpected value: \u001b[32m200\u001b[39m\nReceived array: \u001b[31m[403, 404]\u001b[39m\n\n  157 |       const foreignRead = await actor.request.get(`${base}/api/${object.collection}/${object.b.id}?depth=0`)\n  158 |       if (role === 'owner' || object.publicRead) expect.soft(foreignRead.status()).toBe(200)\n> 159 |       else expect.soft([403, 404]).toContain(foreignRead.status())\n      |                                    ^\n  160 |       const before = await (await owner.request.get(`${base}/api/${object.collection}/${object.b.id}?depth=0`)).json()\n  161 |       const patch = await actor.request.patch(`${base}/api/${object.collection}/${object.b.id}`, { data: {\n  162 |         [object.field]: `Sol ${role} foreign mutation`,\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:159:36"
+                    },
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                        "column": 83,
+                        "line": 166
+                      },
+                      "message": "Error: staff: foreign discussion-posts mutation\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoContain\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // indexOf\u001b[22m\n\nExpected value: \u001b[32m200\u001b[39m\nReceived array: \u001b[31m[403, 404]\u001b[39m\n\n  164 |       if (role === 'owner') expect.soft(patch.status()).toBe(200)\n  165 |       else {\n> 166 |         expect.soft([403, 404], `${role}: foreign ${object.collection} mutation`).toContain(patch.status())\n      |                                                                                   ^\n  167 |         const after = await (await owner.request.get(`${base}/api/${object.collection}/${object.b.id}?depth=0`)).json()\n  168 |         expect.soft(after[object.field], `${role}: protected ${object.collection} state`).toEqual(before[object.field])\n  169 |       }\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:166:83"
+                    },
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                        "column": 91,
+                        "line": 168
+                      },
+                      "message": "Error: staff: protected discussion-posts state\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\nExpected: \u001b[32m\"Sol \u001b[7madministrator\u001b[27m foreign mutation\"\u001b[39m\nReceived: \u001b[31m\"Sol \u001b[7mstaff\u001b[27m foreign mutation\"\u001b[39m\n\n  166 |         expect.soft([403, 404], `${role}: foreign ${object.collection} mutation`).toContain(patch.status())\n  167 |         const after = await (await owner.request.get(`${base}/api/${object.collection}/${object.b.id}?depth=0`)).json()\n> 168 |         expect.soft(after[object.field], `${role}: protected ${object.collection} state`).toEqual(before[object.field])\n      |                                                                                           ^\n  169 |       }\n  170 |       if (permitted && object.collection !== 'sites' && !object.noSiteMove) {\n  171 |         const moved = await actor.request.patch(`${base}/api/${object.collection}/${object.a.id}`, { data: { site: sites.foreignSite } })\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:168:91"
+                    },
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                        "column": 68,
+                        "line": 182
+                      },
+                      "message": "Error: staff: /api/admin/audience/command-center at 9d2b48e0-4244-45b9-b436-059c96562a75\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m200\u001b[39m\nReceived: \u001b[31m503\u001b[39m\n\n  180 |       for (const target of [sites.site, sites.foreignSite]) {\n  181 |         const res = await actor.request.get(`${base}${path}?siteId=${target}`)\n> 182 |         expect.soft(res.status(), `${role}: ${path} at ${target}`).toBe(\n      |                                                                    ^\n  183 |           (role === 'owner' || (['administrator', 'staff'].includes(role) && target === sites.site)) ? 200 : 403,\n  184 |         )\n  185 |         observations.push({ role, path, site: target, status: res.status() })\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:182:68"
+                    },
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                        "column": 68,
+                        "line": 194
+                      },
+                      "message": "Error: staff: private foreign bytes\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoContain\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // indexOf\u001b[22m\n\nExpected value: \u001b[32m200\u001b[39m\nReceived array: \u001b[31m[403, 404]\u001b[39m\n\n  192 |     const foreignBytes = await actor.request.get(`${base}/media/${privateMedia.b.id}`)\n  193 |     if (role === 'owner') expect.soft(foreignBytes.status()).toBe(200)\n> 194 |     else expect.soft([403, 404], `${role}: private foreign bytes`).toContain(foreignBytes.status())\n      |                                                                    ^\n  195 |   }\n  196 |\n  197 |   // Deleting the canonical grant must revoke authority in an existing, real session.\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts:194:68"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-13T20:20:48.336Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\authorization-3c7-scoped-objects\\05-http-authorization-five-b3cee--views-and-grant-revocation\\test-failed-1.png"
+                    },
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\authorization-3c7-scoped-objects\\05-http-authorization-five-b3cee--views-and-grant-revocation\\test-failed-2.png"
+                    },
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\authorization-3c7-scoped-objects\\05-http-authorization-five-b3cee--views-and-grant-revocation\\test-failed-3.png"
+                    },
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\authorization-3c7-scoped-objects\\05-http-authorization-five-b3cee--views-and-grant-revocation\\test-failed-4.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\authorization-3c7-scoped-objects\\05-http-authorization-five-b3cee--views-and-grant-revocation\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-traces\\authorization-3c7-scoped-objects\\05-http-authorization-five-b3cee--views-and-grant-revocation\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-specs\\05-http-authorization.spec.ts",
+                    "column": 68,
+                    "line": 182
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "[REDACTED RECOVERY CODE]-[REDACTED RECOVERY CODE]",
+          "file": "05-http-authorization.spec.ts",
+          "line": 41,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "message": "\u001b[31mTesting stopped early after 1 maximum allowed failures.\u001b[39m"
+    }
+  ],
+  "stats": {
+    "startTime": "2026-10-13T20:20:44.136Z",
+    "duration": 45379.512,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

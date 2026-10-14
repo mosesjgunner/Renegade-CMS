@@ -1,0 +1,9 @@
+{
+  "command": "node node_modules/@playwright/test/cli.js test --config=scratch/playwright.sol.config.ts --max-failures=1 06-scheduled-publication.spec.ts",
+  "exitCode": 0,
+  "sourceSha": "8a5ac9d795fa5256797b651aad141fa3c69fffa2",
+  "environmentFile": "scratch/.env.sol-final2",
+  "reportOverride": "scheduled-8a5ac9d",
+  "durationSeconds": 60.15741682052612,
+  "resultFile": "scratch/sol-browser/scheduled-8a5ac9d/results.json"
+}

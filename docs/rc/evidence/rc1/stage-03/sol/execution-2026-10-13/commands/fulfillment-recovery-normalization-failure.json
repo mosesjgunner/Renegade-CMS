@@ -1,0 +1,534 @@
+{
+  "numTotalTestSuites": 10,
+  "numPassedTestSuites": 6,
+  "numFailedTestSuites": 4,
+  "numPendingTestSuites": 0,
+  "numTotalTests": 40,
+  "numPassedTests": 38,
+  "numFailedTests": 2,
+  "numPendingTests": 0,
+  "numTodoTests": 0,
+  "snapshot": {
+    "added": 0,
+    "failure": false,
+    "filesAdded": 0,
+    "filesRemoved": 0,
+    "filesRemovedList": [],
+    "filesUnmatched": 0,
+    "filesUpdated": 0,
+    "matched": 0,
+    "total": 0,
+    "unchecked": 0,
+    "uncheckedKeysByFile": [],
+    "unmatched": 0,
+    "updated": 0,
+    "didUpdate": false
+  },
+  "startTime": 1791885453017,
+  "success": false,
+  "testResults": [
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": ["RC08D-04: Commerce Runtime Closure & Acceptance Verification"],
+          "fullName": "RC08D-04: Commerce Runtime Closure & Acceptance Verification proves catalog, low-stock race, cart authority, settlement, subscriptions, donations, affiliates, and fulfillment",
+          "status": "failed",
+          "title": "proves catalog, low-stock race, cart authority, settlement, subscriptions, donations, affiliates, and fulfillment",
+          "duration": 2035.4631000000002,
+          "failureMessages": [
+            "Error: Shipping address requires operator reconciliation: Street address is required. City is required. Postal code is required. Country must be a valid 2-letter ISO 3166-1 alpha-2 code.\n    at finalizeVerifiedOrder (C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\src\\modules\\commerce\\service.ts:981:15)\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at Object.handler (C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\src\\modules\\commerce\\tasks.ts:388:23)\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\tests\\integration\\commerce-runtime-acceptance.integration.test.ts:423:5\n    at file:///C:/Projects/RENEGADE%20CMS/sol-rc1-20261013/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+          ],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791885466954,
+      "endTime": 1791885468989.4631,
+      "status": "failed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/tests/integration/commerce-runtime-acceptance.integration.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security"
+          ],
+          "fullName": "RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security proves the complete physical product lifecycle, server authority, and idempotent settlement",
+          "status": "failed",
+          "title": "proves the complete physical product lifecycle, server authority, and idempotent settlement",
+          "duration": 1670.7648,
+          "failureMessages": [
+            "Error: Shipping address requires operator reconciliation: Street address is required. City is required. Postal code is required. Country must be a valid 2-letter ISO 3166-1 alpha-2 code.\n    at finalizeVerifiedOrder (C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\src\\modules\\commerce\\service.ts:981:15)\n    at processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at Object.handler (C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\src\\modules\\commerce\\tasks.ts:388:23)\n    at C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\tests\\integration\\rc05-pass2-commerce-routes.integration.test.ts:235:5\n    at file:///C:/Projects/RENEGADE%20CMS/sol-rc1-20261013/node_modules/@vitest/runner/dist/chunk-hooks.js:752:20"
+          ],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security"
+          ],
+          "fullName": "RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security defeats client price, quantity, and total tampering attempts across routes",
+          "status": "passed",
+          "title": "defeats client price, quantity, and total tampering attempts across routes",
+          "duration": 760.0428999999999,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security"
+          ],
+          "fullName": "RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security proves webhook security boundaries: unsigned, invalid signature, replay, and race handling",
+          "status": "passed",
+          "title": "proves webhook security boundaries: unsigned, invalid signature, replay, and race handling",
+          "duration": 615.9461999999994,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security"
+          ],
+          "fullName": "RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security proves multi-tenant boundaries and security against cross-site cart/order access",
+          "status": "passed",
+          "title": "proves multi-tenant boundaries and security against cross-site cart/order access",
+          "duration": 595.0590999999995,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security"
+          ],
+          "fullName": "RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security proves downstream partial failure handling and operator reconciliation",
+          "status": "passed",
+          "title": "proves downstream partial failure handling and operator reconciliation",
+          "duration": 646.5054,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791885460606,
+      "endTime": 1791885464895.5054,
+      "status": "failed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/tests/integration/rc05-pass2-commerce-routes.integration.test.ts"
+    },
+    {
+      "assertionResults": [
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "CHECKOUT / ORDER: Lifecycle, Tampering Invariants & Reconciliation"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks CHECKOUT / ORDER: Lifecycle, Tampering Invariants & Reconciliation 1. Creates an empty guest cart with cryptographic guest token",
+          "status": "passed",
+          "title": "1. Creates an empty guest cart with cryptographic guest token",
+          "duration": 1.3172999999997046,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "CHECKOUT / ORDER: Lifecycle, Tampering Invariants & Reconciliation"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks CHECKOUT / ORDER: Lifecycle, Tampering Invariants & Reconciliation 2. Defeats client price/totals tampering via authoritative catalog re-resolution",
+          "status": "passed",
+          "title": "2. Defeats client price/totals tampering via authoritative catalog re-resolution",
+          "duration": 1.9885000000003856,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "CHECKOUT / ORDER: Lifecycle, Tampering Invariants & Reconciliation"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks CHECKOUT / ORDER: Lifecycle, Tampering Invariants & Reconciliation 3. Recovers cart across sessions via hashed token without leaking plaintext",
+          "status": "passed",
+          "title": "3. Recovers cart across sessions via hashed token without leaking plaintext",
+          "duration": 21.576100000000224,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "CHECKOUT / ORDER: Lifecycle, Tampering Invariants & Reconciliation"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks CHECKOUT / ORDER: Lifecycle, Tampering Invariants & Reconciliation 4. Calculates valid shipping and jurisdiction tax with exact integer allocation",
+          "status": "passed",
+          "title": "4. Calculates valid shipping and jurisdiction tax with exact integer allocation",
+          "duration": 0.7475000000004002,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "CHECKOUT / ORDER: Lifecycle, Tampering Invariants & Reconciliation"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks CHECKOUT / ORDER: Lifecycle, Tampering Invariants & Reconciliation 5. Creates checkout proposal and verifies cryptographic integrity hash",
+          "status": "passed",
+          "title": "5. Creates checkout proposal and verifies cryptographic integrity hash",
+          "duration": 0.9961000000002969,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "CHECKOUT / ORDER: Lifecycle, Tampering Invariants & Reconciliation"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks CHECKOUT / ORDER: Lifecycle, Tampering Invariants & Reconciliation 6. Initiates hosted checkout and delivers verified signed payment webhook event",
+          "status": "passed",
+          "title": "6. Initiates hosted checkout and delivers verified signed payment webhook event",
+          "duration": 0.7012999999997191,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "CHECKOUT / ORDER: Lifecycle, Tampering Invariants & Reconciliation"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks CHECKOUT / ORDER: Lifecycle, Tampering Invariants & Reconciliation 7. Delivers duplicate, delayed, and out-of-order events with deterministic monotonic reduction",
+          "status": "passed",
+          "title": "7. Delivers duplicate, delayed, and out-of-order events with deterministic monotonic reduction",
+          "duration": 0.6246999999993932,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "CHECKOUT / ORDER: Lifecycle, Tampering Invariants & Reconciliation"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks CHECKOUT / ORDER: Lifecycle, Tampering Invariants & Reconciliation 8. Reconciles payment attempts under simulated worker interruption/restart",
+          "status": "passed",
+          "title": "8. Reconciles payment attempts under simulated worker interruption/restart",
+          "duration": 0.21219999999993888,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "CHECKOUT / ORDER: Lifecycle, Tampering Invariants & Reconciliation"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks CHECKOUT / ORDER: Lifecycle, Tampering Invariants & Reconciliation 9. Proves exactly one canonical Order and one correct receipt created across duplicate deliveries",
+          "status": "passed",
+          "title": "9. Proves exactly one canonical Order and one correct receipt created across duplicate deliveries",
+          "duration": 417.96329999999944,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "CHECKOUT / ORDER: Lifecycle, Tampering Invariants & Reconciliation"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks CHECKOUT / ORDER: Lifecycle, Tampering Invariants & Reconciliation 10. Executes refunds and disputes, transitioning order state safely with dual control",
+          "status": "passed",
+          "title": "10. Executes refunds and disputes, transitioning order state safely with dual control",
+          "duration": 0.47659999999996217,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "CHECKOUT / ORDER: Lifecycle, Tampering Invariants & Reconciliation"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks CHECKOUT / ORDER: Lifecycle, Tampering Invariants & Reconciliation 11. Verifies subsequent catalog mutations or archiving do NOT corrupt historical order facts",
+          "status": "passed",
+          "title": "11. Verifies subsequent catalog mutations or archiving do NOT corrupt historical order facts",
+          "duration": 75.5011000000004,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "MEMBER / SUBSCRIPTION: Identity Merge, Lifecycle, Dunning & Entitlements"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks MEMBER / SUBSCRIPTION: Identity Merge, Lifecycle, Dunning & Entitlements 12. Merges guest and member carts safely and blocks cross-site guest cart theft",
+          "status": "passed",
+          "title": "12. Merges guest and member carts safely and blocks cross-site guest cart theft",
+          "duration": 0.6611999999995533,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "MEMBER / SUBSCRIPTION: Identity Merge, Lifecycle, Dunning & Entitlements"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks MEMBER / SUBSCRIPTION: Identity Merge, Lifecycle, Dunning & Entitlements 13 & 14. Publishes subscription plan, starts active subscription, and grants gated access",
+          "status": "passed",
+          "title": "13 & 14. Publishes subscription plan, starts active subscription, and grants gated access",
+          "duration": 0.5682999999999083,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "MEMBER / SUBSCRIPTION: Identity Merge, Lifecycle, Dunning & Entitlements"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks MEMBER / SUBSCRIPTION: Identity Merge, Lifecycle, Dunning & Entitlements 15 & 16. Handles failed renewal: transitions to past_due dunning grace period without erasing evidence",
+          "status": "passed",
+          "title": "15 & 16. Handles failed renewal: transitions to past_due dunning grace period without erasing evidence",
+          "duration": 0.1669000000001688,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "MEMBER / SUBSCRIPTION: Identity Merge, Lifecycle, Dunning & Entitlements"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks MEMBER / SUBSCRIPTION: Identity Merge, Lifecycle, Dunning & Entitlements 17. Executes recovery on successful invoice OR deterministic terminal cancellation",
+          "status": "passed",
+          "title": "17. Executes recovery on successful invoice OR deterministic terminal cancellation",
+          "duration": 0.1504000000004453,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "MEMBER / SUBSCRIPTION: Identity Merge, Lifecycle, Dunning & Entitlements"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks MEMBER / SUBSCRIPTION: Identity Merge, Lifecycle, Dunning & Entitlements 18. Confirms plan change, cancellation scheduling at period end, and immediate resumption",
+          "status": "passed",
+          "title": "18. Confirms plan change, cancellation scheduling at period end, and immediate resumption",
+          "duration": 0.11450000000058935,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "MEMBER / SUBSCRIPTION: Identity Merge, Lifecycle, Dunning & Entitlements"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks MEMBER / SUBSCRIPTION: Identity Merge, Lifecycle, Dunning & Entitlements 19. Verifies invoices, metrics, and billing history segregated by currency",
+          "status": "passed",
+          "title": "19. Verifies invoices, metrics, and billing history segregated by currency",
+          "duration": 0.37489999999979773,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "MEMBER / SUBSCRIPTION: Identity Merge, Lifecycle, Dunning & Entitlements"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks MEMBER / SUBSCRIPTION: Identity Merge, Lifecycle, Dunning & Entitlements 20. Simulates restart during renewal processing and proves zero duplicate side effects",
+          "status": "passed",
+          "title": "20. Simulates restart during renewal processing and proves zero duplicate side effects",
+          "duration": 0.17489999999997963,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "DONATIONS: Campaigns, Ingestion, Recognition, Progress & Reversals"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks DONATIONS: Campaigns, Ingestion, Recognition, Progress & Reversals 21. Creates campaign and ingests one-time donation with fee-cover math and receipt",
+          "status": "passed",
+          "title": "21. Creates campaign and ingests one-time donation with fee-cover math and receipt",
+          "duration": 0.501100000000406,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "DONATIONS: Campaigns, Ingestion, Recognition, Progress & Reversals"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks DONATIONS: Campaigns, Ingestion, Recognition, Progress & Reversals 22. Links recurring donation installments to canonical supporter identity",
+          "status": "passed",
+          "title": "22. Links recurring donation installments to canonical supporter identity",
+          "duration": 1.731999999999971,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "DONATIONS: Campaigns, Ingestion, Recognition, Progress & Reversals"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks DONATIONS: Campaigns, Ingestion, Recognition, Progress & Reversals 23 & 24. Respects distinct recognition levels and projects privacy on public donor walls",
+          "status": "passed",
+          "title": "23 & 24. Respects distinct recognition levels and projects privacy on public donor walls",
+          "duration": 0.14679999999952997,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "DONATIONS: Campaigns, Ingestion, Recognition, Progress & Reversals"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks DONATIONS: Campaigns, Ingestion, Recognition, Progress & Reversals 25. Calculates donation goal progress strictly in campaign currency and excludes failed/refunded gifts",
+          "status": "passed",
+          "title": "25. Calculates donation goal progress strictly in campaign currency and excludes failed/refunded gifts",
+          "duration": 0.17080000000078144,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "DONATIONS: Campaigns, Ingestion, Recognition, Progress & Reversals"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks DONATIONS: Campaigns, Ingestion, Recognition, Progress & Reversals 26 & 27. Provisions supporter entitlement on settlement and revokes it deterministically on refund",
+          "status": "passed",
+          "title": "26 & 27. Provisions supporter entitlement on settlement and revokes it deterministically on refund",
+          "duration": 0.8217999999997119,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "DONATIONS: Campaigns, Ingestion, Recognition, Progress & Reversals"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks DONATIONS: Campaigns, Ingestion, Recognition, Progress & Reversals 28. Cancels recurring donation subscription without corrupting settled financial history",
+          "status": "passed",
+          "title": "28. Cancels recurring donation subscription without corrupting settled financial history",
+          "duration": 0.0945000000001528,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "DONATIONS: Campaigns, Ingestion, Recognition, Progress & Reversals"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks DONATIONS: Campaigns, Ingestion, Recognition, Progress & Reversals 29. Reconciles delayed and duplicate donation payment evidence with exact deduplication",
+          "status": "passed",
+          "title": "29. Reconciles delayed and duplicate donation payment evidence with exact deduplication",
+          "duration": 0.5425999999997657,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "DONATIONS: Campaigns, Ingestion, Recognition, Progress & Reversals"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks DONATIONS: Campaigns, Ingestion, Recognition, Progress & Reversals 30. Proves donor anonymization clears personal PII while preserving required financial audit facts",
+          "status": "passed",
+          "title": "30. Proves donor anonymization clears personal PII while preserving required financial audit facts",
+          "duration": 0.19589999999971042,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "FINANCIAL ATTACKS: Totals, Checkout, Webhooks, Coupons, Inventory, Tokens & Transitions"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks FINANCIAL ATTACKS: Totals, Checkout, Webhooks, Coupons, Inventory, Tokens & Transitions 31a. Defeats totals attack: negative values, floating point numbers, and non-integer minor units",
+          "status": "passed",
+          "title": "31a. Defeats totals attack: negative values, floating point numbers, and non-integer minor units",
+          "duration": 0.4499999999998181,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "FINANCIAL ATTACKS: Totals, Checkout, Webhooks, Coupons, Inventory, Tokens & Transitions"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks FINANCIAL ATTACKS: Totals, Checkout, Webhooks, Coupons, Inventory, Tokens & Transitions 31b. Defeats checkout attack: expired proposal or modified cart version during checkout",
+          "status": "passed",
+          "title": "31b. Defeats checkout attack: expired proposal or modified cart version during checkout",
+          "duration": 0.21019999999953143,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "FINANCIAL ATTACKS: Totals, Checkout, Webhooks, Coupons, Inventory, Tokens & Transitions"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks FINANCIAL ATTACKS: Totals, Checkout, Webhooks, Coupons, Inventory, Tokens & Transitions 31c. Defeats webhook validation attack: forged signature, tampered body, replay of old events",
+          "status": "passed",
+          "title": "31c. Defeats webhook validation attack: forged signature, tampered body, replay of old events",
+          "duration": 0.21600000000034925,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "FINANCIAL ATTACKS: Totals, Checkout, Webhooks, Coupons, Inventory, Tokens & Transitions"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks FINANCIAL ATTACKS: Totals, Checkout, Webhooks, Coupons, Inventory, Tokens & Transitions 31d. Defeats coupons attack: invalid code, expired promo, and negative discount values",
+          "status": "passed",
+          "title": "31d. Defeats coupons attack: invalid code, expired promo, and negative discount values",
+          "duration": 0.3127999999996973,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "FINANCIAL ATTACKS: Totals, Checkout, Webhooks, Coupons, Inventory, Tokens & Transitions"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks FINANCIAL ATTACKS: Totals, Checkout, Webhooks, Coupons, Inventory, Tokens & Transitions 31e. Defeats inventory attack: ordering more than tracked stock",
+          "status": "passed",
+          "title": "31e. Defeats inventory attack: ordering more than tracked stock",
+          "duration": 0.3396000000002459,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "FINANCIAL ATTACKS: Totals, Checkout, Webhooks, Coupons, Inventory, Tokens & Transitions"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks FINANCIAL ATTACKS: Totals, Checkout, Webhooks, Coupons, Inventory, Tokens & Transitions 31f. Defeats token attack: digital delivery HMAC token forging and tampering",
+          "status": "passed",
+          "title": "31f. Defeats token attack: digital delivery HMAC token forging and tampering",
+          "duration": 0.2581000000000131,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "FINANCIAL ATTACKS: Totals, Checkout, Webhooks, Coupons, Inventory, Tokens & Transitions"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks FINANCIAL ATTACKS: Totals, Checkout, Webhooks, Coupons, Inventory, Tokens & Transitions 31g. Defeats redirects attack: credentials or non-http protocols in checkout return URLs",
+          "status": "passed",
+          "title": "31g. Defeats redirects attack: credentials or non-http protocols in checkout return URLs",
+          "duration": 0.8666999999995824,
+          "failureMessages": [],
+          "meta": {}
+        },
+        {
+          "ancestorTitles": [
+            "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks",
+            "FINANCIAL ATTACKS: Totals, Checkout, Webhooks, Coupons, Inventory, Tokens & Transitions"
+          ],
+          "fullName": "Shared Contract Proof: Checkout/Order, Member/Subscription, Donations & Financial Attacks FINANCIAL ATTACKS: Totals, Checkout, Webhooks, Coupons, Inventory, Tokens & Transitions 31h. Defeats money-state transition attack: transitioning refunded/cancelled attempts back to succeeded",
+          "status": "passed",
+          "title": "31h. Defeats money-state transition attack: transitioning refunded/cancelled attempts back to succeeded",
+          "duration": 0.2537000000002081,
+          "failureMessages": [],
+          "meta": {}
+        }
+      ],
+      "startTime": 1791885457907,
+      "endTime": 1791885458439.2537,
+      "status": "passed",
+      "message": "",
+      "name": "C:/Projects/RENEGADE CMS/sol-rc1-20261013/tests/integration/shared-contract-commerce-shop.integration.test.ts"
+    }
+  ]
+}

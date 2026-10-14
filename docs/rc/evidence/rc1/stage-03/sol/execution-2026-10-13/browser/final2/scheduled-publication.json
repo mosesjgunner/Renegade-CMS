@@ -1,0 +1,63 @@
+{
+  "contentId": "455ed56c-8929-4d79-8b66-989bb229fce2",
+  "articleId": "0fe8e7ab-ed7a-4044-a4bc-06eb6d3e2334",
+  "approvedRevision": "4424dd44-256b-46b2-864a-ec6f5c85c722",
+  "scheduledFor": "2026-10-14T01:40:24",
+  "canonicalSourceAudit": {
+    "id": "6623c5e6-f90c-4201-ab26-3a209fd19f54",
+    "calendarEntry": null,
+    "article": "0fe8e7ab-ed7a-4044-a4bc-06eb6d3e2334",
+    "action": "calendar.scheduled",
+    "actor": "a88f22ca-665c-4819-bc91-25b9d8f906a0",
+    "before": {},
+    "after": {
+      "timeZone": "UTC",
+      "scheduledFor": "2026-10-14T01:40:24.000Z",
+      "localFormatted": "2026-10-14 01:40:24 (UTC)"
+    },
+    "createdAt": "2026-10-14T01:39:50.395Z",
+    "updatedAt": "2026-10-14T01:39:50.396Z"
+  },
+  "persistedJob": {
+    "id": "e4dbc1c7-fc11-47ba-84c7-5e0fdb4dbbec",
+    "article": "0fe8e7ab-ed7a-4044-a4bc-06eb6d3e2334",
+    "job": "6bb1ecfd-c9bf-4f67-ade5-5982b83675aa",
+    "revision": "4424dd44-256b-46b2-864a-ec6f5c85c722",
+    "scheduledFor": "2026-10-14T01:40:24.000Z",
+    "timeZone": "UTC",
+    "idempotencyKey": "sched-cal-0fe8e7ab-ed7a-4044-a4bc-06eb6d3e2334-1791941990094",
+    "status": "completed",
+    "leaseOwner": null,
+    "leaseExpiresAt": null,
+    "retryCount": 0,
+    "maxRetries": 3,
+    "lastError": null,
+    "createdBy": "a88f22ca-665c-4819-bc91-25b9d8f906a0",
+    "updatedAt": "2026-10-14T01:40:26.082Z",
+    "createdAt": "2026-10-14T01:39:50.347Z"
+  },
+  "workerJob": {
+    "id": "6bb1ecfd-c9bf-4f67-ade5-5982b83675aa",
+    "task_slug": "editorial-publish",
+    "completed_at": "2026-10-14T01:40:26.124Z",
+    "has_error": false,
+    "total_tried": "1"
+  },
+  "publicBodySha256": "772ba5b47f859bbdd1cbddea12d45dc0bc95456f8c629722c531ff1965ebd83e",
+  "restart": {
+    "request": {
+      "nonce": 1791941990857,
+      "reason": "scheduled publication restart"
+    },
+    "previous": {
+      "web": 6972,
+      "worker": 13596
+    },
+    "current": {
+      "web": 31212,
+      "worker": 34968
+    },
+    "restartedAt": "2026-10-14T01:39:51.553Z"
+  },
+  "laterDraftIsolated": true
+}

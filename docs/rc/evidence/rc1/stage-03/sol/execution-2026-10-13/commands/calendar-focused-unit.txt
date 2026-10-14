@@ -1,0 +1,9 @@
+
+ RUN  v3.2.7 C:/Projects/RENEGADE CMS/sol-rc1-20261013
+
+ ✓ tests/unit/calendar-lifecycle-boundary.test.ts (2 tests) 24ms
+
+ Test Files  1 passed (1)
+      Tests  2 passed (2)
+   Start at  16:52:23
+   Duration  571ms (transform 74ms, setup 0ms, collect 142ms, tests 24ms, environment 0ms, prepare 116ms)

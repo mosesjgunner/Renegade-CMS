@@ -1,0 +1,17 @@
+{
+  "origin": "denied",
+  "challenge": "denied",
+  "replay": "denied",
+  "before": {
+    "passkeys": 0,
+    "recovery_codes": 0,
+    "sessions": 0,
+    "consumed": false
+  },
+  "after": {
+    "passkeys": 1,
+    "recovery_codes": 10,
+    "sessions": 0,
+    "consumed": true
+  }
+}

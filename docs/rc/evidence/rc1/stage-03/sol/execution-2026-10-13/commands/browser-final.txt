@@ -1,0 +1,54 @@
+
+Running 18 tests using 1 worker
+
+node : (node:28692) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+At line:2 char:124
++ ... sol-final'; node node_modules/@playwright/test/cli.js test --config=s ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ((node:28692) Wa... env being set.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x   1 scratch\sol-specs\01-site-build.spec.ts:6:1 › RC-02: ordinary operator builds Renegade Party Dispatch from an empty install (14.7s)
+Testing stopped early after 1 maximum allowed failures.
+
+
+  1) scratch\sol-specs\01-site-build.spec.ts:6:1 › RC-02: ordinary operator builds Renegade Party Dispatch from an empty install › Owner enrollment and blank Standard onboarding
+
+    Error: expect(page).toHaveURL(expected) failed
+
+    Expected pattern: /\/admin/
+    Received string:  "https://dispatch.rc02.test:3129/login"
+    Timeout: 5000ms
+
+    Call log:
+      - Expect "toHaveURL" with timeout 5000ms
+        3 × locator resolved to <html lang="en" class="inter_31011fd-module__jtyeTG__variable newsreader_c8da6703-module__BVKz_G__variable jetbrains_mono_32dfc0ee-module__kJDCNG__variable">…</html>
+          - unexpected value "https://dispatch.rc02.test:3129/login"
+        - waiting for "https://dispatch.rc02.test:3129/admin" navigation to finish...
+
+
+      85 |       await page.getByLabel('Owner / Staff Email').fill('editor@renegadeparty.test')
+      86 |       await page.getByRole('button', { name: /Authenticate with Passkey/ }).click()
+    > 87 |       await expect(page).toHaveURL(/\/admin/)
+         |                          ^
+      88 |       writeFileSync('scratch/sol-owner-authenticator.json', JSON.stringify((await cdp.send('WebAuthn.getCredentials', { authenticatorId })).credentials))
+      89 |       await context.storageState({ path: 'scratch/rc02-owner.json' })
+      90 |       await page.goto('/admin')
+        at C:\Projects\RENEGADE CMS\sol-rc1-20261013\scratch\sol-specs\01-site-build.spec.ts:87:26
+        at C:\Projects\RENEGADE CMS\sol-rc1-20261013\scratch\sol-specs\01-site-build.spec.ts:53:5
+
+    Error Context: scratch\sol-traces\final\01-site-build-RC-02-ordina-e5eb1-patch-from-an-empty-install\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    scratch\sol-traces\final\01-site-build-RC-02-ordina-e5eb1-patch-from-an-empty-install\trace.zip
+    Usage:
+
+        npx playwright show-trace scratch\sol-traces\final\01-site-build-RC-02-ordina-e5eb1-patch-from-an-empty-install\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    scratch\sol-specs\01-site-build.spec.ts:6:1 › RC-02: ordinary operator builds Renegade Party Dispatch from an empty install
+  17 did not run
+  1 error was not a part of any test, see above for details

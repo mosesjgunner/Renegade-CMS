@@ -1,0 +1,66 @@
+[
+  {
+    "gate": "02-format",
+    "command": "npm.cmd run format:check",
+    "exitCode": 0,
+    "durationSeconds": 26.943751335144043,
+    "sourceSha": "a7dae95e5e7d44a5023328264c0662bd7e8aaef1",
+    "log": "scratch/sol-evidence/02-format.log"
+  },
+  {
+    "gate": "03-lint",
+    "command": "npm.cmd run lint",
+    "exitCode": 0,
+    "durationSeconds": 23.520182609558105,
+    "sourceSha": "a7dae95e5e7d44a5023328264c0662bd7e8aaef1",
+    "log": "scratch/sol-evidence/03-lint.log"
+  },
+  {
+    "gate": "04-typecheck",
+    "command": "npm.cmd run typecheck",
+    "exitCode": 0,
+    "durationSeconds": 8.83944058418274,
+    "sourceSha": "a7dae95e5e7d44a5023328264c0662bd7e8aaef1",
+    "log": "scratch/sol-evidence/04-typecheck.log"
+  },
+  {
+    "gate": "05-unit",
+    "command": "npm.cmd test -- --reporter=default --reporter=json --outputFile=scratch/sol-evidence/unit.json",
+    "exitCode": 0,
+    "durationSeconds": 28.80061388015747,
+    "sourceSha": "a7dae95e5e7d44a5023328264c0662bd7e8aaef1",
+    "log": "scratch/sol-evidence/05-unit.log"
+  },
+  {
+    "gate": "06-fresh",
+    "command": "npm.cmd run test:migrations:fresh",
+    "exitCode": 0,
+    "durationSeconds": 18.62522006034851,
+    "sourceSha": "a7dae95e5e7d44a5023328264c0662bd7e8aaef1",
+    "log": "scratch/sol-evidence/06-fresh.log"
+  },
+  {
+    "gate": "07-upgrade",
+    "command": "npm.cmd run test:migrations:upgrade",
+    "exitCode": 0,
+    "durationSeconds": 15.236724853515625,
+    "sourceSha": "a7dae95e5e7d44a5023328264c0662bd7e8aaef1",
+    "log": "scratch/sol-evidence/07-upgrade.log"
+  },
+  {
+    "gate": "08-commerce",
+    "command": "npm.cmd run test:migrations:commerce",
+    "exitCode": 0,
+    "durationSeconds": 7.083798885345459,
+    "sourceSha": "a7dae95e5e7d44a5023328264c0662bd7e8aaef1",
+    "log": "scratch/sol-evidence/08-commerce.log"
+  },
+  {
+    "gate": "09-integration",
+    "command": "npm.cmd run test:integration -- --reporter=default --reporter=json --outputFile=scratch/sol-evidence/integration.json",
+    "exitCode": 1,
+    "durationSeconds": 310.1449148654938,
+    "sourceSha": "a7dae95e5e7d44a5023328264c0662bd7e8aaef1",
+    "log": "scratch/sol-evidence/09-integration.log"
+  }
+]

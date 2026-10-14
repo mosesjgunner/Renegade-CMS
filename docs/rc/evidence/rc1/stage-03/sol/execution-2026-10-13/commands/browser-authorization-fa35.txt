@@ -1,0 +1,57 @@
+
+Running 1 test using 1 worker
+
+node : (node:24088) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+At line:7 char:366
++ ... tion-fa35'; node node_modules/@playwright/test/cli.js test 05-http-au ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ((node:24088) Wa... env being set.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  1 scratch\sol-specs\05-http-authorization.spec.ts:44:1 › five real HTTP actors prove two-site reads, mutations, object substitutions, custom views and grant revocation (11.2s)
+Testing stopped early after 1 maximum allowed failures.
+
+
+  1) scratch\sol-specs\05-http-authorization.spec.ts:44:1 › five real HTTP actors prove two-site reads, mutations, object substitutions, custom views and grant revocation
+
+    Error: expect(page).toHaveURL(expected) failed
+
+    Expected pattern: /\/admin/
+    Received string:  "https://dispatch.rc02.test:3129/login"
+    Timeout: 5000ms
+
+    Call log:
+      - Expect "toHaveURL" with timeout 5000ms
+        3 × locator resolved to <html lang="en" class="inter_31011fd-module__jtyeTG__variable newsreader_c8da6703-module__BVKz_G__variable jetbrains_mono_32dfc0ee-module__kJDCNG__variable">…</html>
+          - unexpected value "https://dispatch.rc02.test:3129/login"
+        - waiting for "https://dispatch.rc02.test:3129/admin" navigation to finish...
+
+
+      37 |     await expect(page.getByRole('alert').filter({ hasText: 'could not be verified' })).toBeVisible()
+      38 |   }
+    > 39 |   await expect(page).toHaveURL(/\/admin/)
+         |                      ^
+      40 |   expect((await context.cookies()).some(c => c.name === 'renegade-passkey')).toBe(true)
+      41 |   return context
+      42 | }
+        at passkeyLogin (C:\Projects\RENEGADE CMS\sol-rc1-20261013\scratch\sol-specs\05-http-authorization.spec.ts:39:22)
+        at C:\Projects\RENEGADE CMS\sol-rc1-20261013\scratch\sol-specs\05-http-authorization.spec.ts:46:17
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    scratch\sol-traces\authorization-fa35\05-http-authorization-five-b3cee--views-and-grant-revocation\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: scratch\sol-traces\authorization-fa35\05-http-authorization-five-b3cee--views-and-grant-revocation\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    scratch\sol-traces\authorization-fa35\05-http-authorization-five-b3cee--views-and-grant-revocation\trace.zip
+    Usage:
+
+        npx playwright show-trace scratch\sol-traces\authorization-fa35\05-http-authorization-five-b3cee--views-and-grant-revocation\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    scratch\sol-specs\05-http-authorization.spec.ts:44:1 › five real HTTP actors prove two-site reads, mutations, object substitutions, custom views and grant revocation
+  1 error was not a part of any test, see above for details

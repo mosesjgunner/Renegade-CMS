@@ -1,0 +1,57 @@
+
+Running 1 test using 1 worker
+
+node : (node:27348) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+At line:2 char:139
++ ... rsistence'; node node_modules/@playwright/test/cli.js test 05-http-au ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ((node:27348) Wa... env being set.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  1 scratch\sol-specs\05-http-authorization.spec.ts:41:1 › five real HTTP actors prove two-site reads, mutations, object substitutions, custom views and grant revocation (2.4s)
+Testing stopped early after 1 maximum allowed failures.
+
+
+  1) scratch\sol-specs\05-http-authorization.spec.ts:41:1 › five real HTTP actors prove two-site reads, mutations, object substitutions, custom views and grant revocation
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: getByRole('alert')
+    Expected substring: "could not be verified"
+    Error: strict mode violation: getByRole('alert') resolved to 2 elements:
+        1) <div role="alert" class="p-3 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800 text-xs text-red-700 dark:text-red-300">⚠️ Passkey sign-in could not be verified.</div> aka getByText('⚠️ Passkey sign-in could not')
+        2) <div role="alert" aria-live="assertive" id="__next-route-announcer__"></div> aka locator('[id="__next-route-announcer__"]')
+
+    Call log:
+      - Expect "toContainText" with timeout 5000ms
+      - waiting for getByRole('alert')
+
+
+      32 |     writeFileSync(credentialFile, JSON.stringify(credentials))
+      33 |     if (verified.ok()) break
+    > 34 |     await expect(page.getByRole('alert')).toContainText('could not be verified')
+         |                                           ^
+      35 |   }
+      36 |   await expect(page).toHaveURL(/\/admin/)
+      37 |   expect((await context.cookies()).some(c => c.name === 'renegade-passkey')).toBe(true)
+        at passkeyLogin (C:\Projects\RENEGADE CMS\sol-rc1-20261013\scratch\sol-specs\05-http-authorization.spec.ts:34:43)
+        at C:\Projects\RENEGADE CMS\sol-rc1-20261013\scratch\sol-specs\05-http-authorization.spec.ts:42:17
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    scratch\sol-traces\authorization-3c7-counter-persistence\05-http-authorization-five-b3cee--views-and-grant-revocation\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: scratch\sol-traces\authorization-3c7-counter-persistence\05-http-authorization-five-b3cee--views-and-grant-revocation\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    scratch\sol-traces\authorization-3c7-counter-persistence\05-http-authorization-five-b3cee--views-and-grant-revocation\trace.zip
+    Usage:
+
+        npx playwright show-trace scratch\sol-traces\authorization-3c7-counter-persistence\05-http-authorization-five-b3cee--views-and-grant-revocation\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    scratch\sol-specs\05-http-authorization.spec.ts:41:1 › five real HTTP actors prove two-site reads, mutations, object substitutions, custom views and grant revocation
+  1 error was not a part of any test, see above for details

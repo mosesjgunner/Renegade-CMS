@@ -1,0 +1,52 @@
+{
+  "sourceScope": "Configuration parsing and published guidance; not a capacity benchmark.",
+  "rows": [
+    {
+      "profile": "Lean",
+      "guidance": {
+        "memory": "1 GB-class VPS",
+        "allowedHeavyWork": false,
+        "explanation": "Queue or externally delegate AI, graph, transcoding, rendering, imports and realtime; preserve reads, forms, authentication, payments and core jobs."
+      },
+      "requestedModules": "all",
+      "ordinaryTestAuthOff": true
+    },
+    {
+      "profile": "Standard",
+      "guidance": {
+        "memory": "2 GB+",
+        "allowedHeavyWork": true,
+        "explanation": "Use workers for imports and media work."
+      },
+      "requestedModules": "all",
+      "ordinaryTestAuthOff": true
+    },
+    {
+      "profile": "Media",
+      "guidance": {
+        "memory": "4 GB+ with worker",
+        "allowedHeavyWork": true,
+        "explanation": "Run media work in a separate constrained worker."
+      },
+      "requestedModules": "all",
+      "ordinaryTestAuthOff": true
+    },
+    {
+      "profile": "Scale",
+      "guidance": {
+        "memory": "Measured capacity required",
+        "allowedHeavyWork": true,
+        "explanation": "Increase concurrency only after queue and public-read measurements."
+      },
+      "requestedModules": "all",
+      "ordinaryTestAuthOff": true
+    }
+  ],
+  "sourceSha": "d311396876fabc104826e4375d26feef0b5e2b39",
+  "command": "npx.cmd tsx scratch/profile-guidance.ts",
+  "exitCode": 0,
+  "passed": 4,
+  "failed": 0,
+  "skipped": 0,
+  "unexecuted": 0
+}

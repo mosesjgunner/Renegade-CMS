@@ -1,0 +1,20 @@
+{
+  "database": "solrc1_20261013_browser_final3_release_acceptance",
+  "databaseCounts": {
+    "sites": 0,
+    "users": 0,
+    "members": 0,
+    "content": 0,
+    "linked_identities": 0,
+    "member_sessions": 0
+  },
+  "mediaEntries": 0,
+  "nonsecretEnvironment": {
+    "NODE_ENV": "production",
+    "LOCAL_E2E_TEST_MODE": "false",
+    "ENABLE_TEST_ROUTES": "false",
+    "MEDIA_DIR": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-final3-media",
+    "DEPLOYMENT_PROFILE": "Standard",
+    "RENEGADE_MODULES": "all"
+  }
+}

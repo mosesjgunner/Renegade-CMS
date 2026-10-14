@@ -1,0 +1,4 @@
+tests/integration/shared-contract-commerce-shop.integration.test.ts(790,49): error TS2339: Property 'state' does not exist on type 'string | number | boolean | unknown[] | { [k: string]: unknown; }'.
+  Property 'state' does not exist on type 'string'.
+tests/integration/shared-contract-commerce-shop.integration.test.ts(791,62): error TS2339: Property 'planId' does not exist on type 'string | number | boolean | unknown[] | { [k: string]: unknown; }'.
+  Property 'planId' does not exist on type 'string'.

@@ -1,0 +1,469 @@
+{
+  "profile": "Lean",
+  "requestedModules": "",
+  "actualCollections": [
+    "article-family-content",
+    "audience-experiments",
+    "audience-frequency-policies",
+    "authors",
+    "automation-failures",
+    "automation-runs",
+    "brands",
+    "calendar-entry-audits",
+    "catalog-import-runs",
+    "categories",
+    "checkout-proposals",
+    "content",
+    "digital-delivery-grants",
+    "digital-download-events",
+    "donation-campaigns",
+    "donation-events",
+    "donation-intents",
+    "donations",
+    "email-delivery-events",
+    "email-templates",
+    "execution-events",
+    "identity-audit-events",
+    "identity-tokens",
+    "inventory-reservations",
+    "linked-identities",
+    "manual-fulfillment-packages",
+    "markdown-conversion-reports",
+    "media-asset-versions",
+    "media-assets",
+    "media-blobs",
+    "media-governance-incidents",
+    "media-upload-sessions",
+    "media-usages",
+    "media-variants",
+    "member-recovery-codes",
+    "member-sessions",
+    "member-site-roles",
+    "members",
+    "page-layouts",
+    "payload-locked-documents",
+    "payload-migrations",
+    "payload-preferences",
+    "plan-revisions",
+    "pod-connections",
+    "pod-jobs",
+    "preview-tokens",
+    "profiles",
+    "promotions",
+    "public-redirects",
+    "publications",
+    "recipient-snapshots",
+    "revision-records",
+    "scheduled-publish-jobs",
+    "sections",
+    "series",
+    "sites",
+    "spaces",
+    "subscription-events",
+    "subscriptions",
+    "tags",
+    "taxonomy-redirects",
+    "telecom-deliveries",
+    "telecom-delivery-events",
+    "telecom-messages",
+    "topics",
+    "users"
+  ],
+  "sourceRegisteredCollections": [
+    "users",
+    "sites",
+    "page-layouts",
+    "execution-events",
+    "ai-connections",
+    "ai-credentials",
+    "ai-proposals",
+    "brands",
+    "members",
+    "linked-identities",
+    "member-sessions",
+    "identity-tokens",
+    "member-recovery-codes",
+    "identity-audit-events",
+    "member-site-roles",
+    "profiles",
+    "spaces",
+    "authors",
+    "publications",
+    "media-assets",
+    "media-asset-versions",
+    "media-governance-incidents",
+    "media-blobs",
+    "media-variants",
+    "media-upload-sessions",
+    "sections",
+    "categories",
+    "topics",
+    "tags",
+    "series",
+    "taxonomy-redirects",
+    "public-redirects",
+    "content",
+    "article-family-content",
+    "markdown-conversion-reports",
+    "revision-records",
+    "preview-tokens",
+    "scheduled-publish-jobs",
+    "calendar-entry-audits",
+    "media-usages",
+    "email-templates",
+    "email-delivery-events",
+    "telecom-messages",
+    "telecom-deliveries",
+    "telecom-delivery-events",
+    "automation-runs",
+    "automation-failures",
+    "recipient-snapshots",
+    "audience-frequency-policies",
+    "audience-experiments",
+    "digital-delivery-grants",
+    "digital-download-events",
+    "catalog-import-runs",
+    "promotions",
+    "checkout-proposals",
+    "inventory-reservations",
+    "plan-revisions",
+    "subscriptions",
+    "subscription-events",
+    "donation-campaigns",
+    "donation-intents",
+    "donations",
+    "donation-events",
+    "pod-connections",
+    "pod-jobs",
+    "manual-fulfillment-packages",
+    "payload-kv",
+    "payload-jobs",
+    "payload-locked-documents",
+    "payload-preferences",
+    "payload-migrations"
+  ],
+  "closedStores": {
+    "ai-connections": 403,
+    "ai-credentials": 403,
+    "ai-proposals": 403,
+    "calendar-entries": 404,
+    "digest-definitions": 404,
+    "submission-attachments": 404,
+    "payload-jobs": 403,
+    "payload-kv": 403
+  },
+  "internalStoreBoundary": "Internal stores omitted by access map; HTTP 403 or unavailable 404, not a browser business-workflow claim.",
+  "collectionResults": {
+    "events": 404,
+    "merchant-connections": 404,
+    "forum-sections": 404,
+    "books": 404,
+    "email-messages": 404,
+    "sources": 404
+  },
+  "locking": [
+    {
+      "slug": "users",
+      "enabled": true
+    },
+    {
+      "slug": "sites",
+      "enabled": true
+    },
+    {
+      "slug": "page-layouts",
+      "enabled": true
+    },
+    {
+      "slug": "execution-events",
+      "enabled": true
+    },
+    {
+      "slug": "ai-connections",
+      "enabled": true
+    },
+    {
+      "slug": "ai-credentials",
+      "enabled": true
+    },
+    {
+      "slug": "ai-proposals",
+      "enabled": true
+    },
+    {
+      "slug": "brands",
+      "enabled": true
+    },
+    {
+      "slug": "members",
+      "enabled": true
+    },
+    {
+      "slug": "linked-identities",
+      "enabled": true
+    },
+    {
+      "slug": "member-sessions",
+      "enabled": true
+    },
+    {
+      "slug": "identity-tokens",
+      "enabled": true
+    },
+    {
+      "slug": "member-recovery-codes",
+      "enabled": true
+    },
+    {
+      "slug": "identity-audit-events",
+      "enabled": true
+    },
+    {
+      "slug": "member-site-roles",
+      "enabled": true
+    },
+    {
+      "slug": "profiles",
+      "enabled": true
+    },
+    {
+      "slug": "spaces",
+      "enabled": true
+    },
+    {
+      "slug": "authors",
+      "enabled": true
+    },
+    {
+      "slug": "publications",
+      "enabled": true
+    },
+    {
+      "slug": "media-assets",
+      "enabled": true
+    },
+    {
+      "slug": "media-asset-versions",
+      "enabled": true
+    },
+    {
+      "slug": "media-governance-incidents",
+      "enabled": true
+    },
+    {
+      "slug": "media-blobs",
+      "enabled": true
+    },
+    {
+      "slug": "media-variants",
+      "enabled": true
+    },
+    {
+      "slug": "media-upload-sessions",
+      "enabled": true
+    },
+    {
+      "slug": "sections",
+      "enabled": true
+    },
+    {
+      "slug": "categories",
+      "enabled": true
+    },
+    {
+      "slug": "topics",
+      "enabled": true
+    },
+    {
+      "slug": "tags",
+      "enabled": true
+    },
+    {
+      "slug": "series",
+      "enabled": true
+    },
+    {
+      "slug": "taxonomy-redirects",
+      "enabled": true
+    },
+    {
+      "slug": "public-redirects",
+      "enabled": true
+    },
+    {
+      "slug": "content",
+      "enabled": true
+    },
+    {
+      "slug": "article-family-content",
+      "enabled": true
+    },
+    {
+      "slug": "markdown-conversion-reports",
+      "enabled": true
+    },
+    {
+      "slug": "revision-records",
+      "enabled": true
+    },
+    {
+      "slug": "preview-tokens",
+      "enabled": true
+    },
+    {
+      "slug": "scheduled-publish-jobs",
+      "enabled": true
+    },
+    {
+      "slug": "calendar-entry-audits",
+      "enabled": true
+    },
+    {
+      "slug": "media-usages",
+      "enabled": true
+    },
+    {
+      "slug": "email-templates",
+      "enabled": true
+    },
+    {
+      "slug": "email-delivery-events",
+      "enabled": true
+    },
+    {
+      "slug": "telecom-messages",
+      "enabled": true
+    },
+    {
+      "slug": "telecom-deliveries",
+      "enabled": true
+    },
+    {
+      "slug": "telecom-delivery-events",
+      "enabled": true
+    },
+    {
+      "slug": "automation-runs",
+      "enabled": true
+    },
+    {
+      "slug": "automation-failures",
+      "enabled": true
+    },
+    {
+      "slug": "recipient-snapshots",
+      "enabled": true
+    },
+    {
+      "slug": "audience-frequency-policies",
+      "enabled": true
+    },
+    {
+      "slug": "audience-experiments",
+      "enabled": true
+    },
+    {
+      "slug": "digital-delivery-grants",
+      "enabled": false
+    },
+    {
+      "slug": "digital-download-events",
+      "enabled": false
+    },
+    {
+      "slug": "catalog-import-runs",
+      "enabled": false
+    },
+    {
+      "slug": "promotions",
+      "enabled": false
+    },
+    {
+      "slug": "checkout-proposals",
+      "enabled": false
+    },
+    {
+      "slug": "inventory-reservations",
+      "enabled": false
+    },
+    {
+      "slug": "plan-revisions",
+      "enabled": false
+    },
+    {
+      "slug": "subscriptions",
+      "enabled": false
+    },
+    {
+      "slug": "subscription-events",
+      "enabled": false
+    },
+    {
+      "slug": "donation-campaigns",
+      "enabled": false
+    },
+    {
+      "slug": "donation-intents",
+      "enabled": false
+    },
+    {
+      "slug": "donations",
+      "enabled": false
+    },
+    {
+      "slug": "donation-events",
+      "enabled": false
+    },
+    {
+      "slug": "pod-connections",
+      "enabled": false
+    },
+    {
+      "slug": "pod-jobs",
+      "enabled": false
+    },
+    {
+      "slug": "manual-fulfillment-packages",
+      "enabled": false
+    },
+    {
+      "slug": "payload-kv",
+      "enabled": false
+    },
+    {
+      "slug": "payload-jobs",
+      "enabled": false
+    },
+    {
+      "slug": "payload-locked-documents",
+      "enabled": false
+    },
+    {
+      "slug": "payload-preferences",
+      "enabled": false
+    },
+    {
+      "slug": "payload-migrations",
+      "enabled": false
+    }
+  ],
+  "tasks": [
+    "operations-heartbeat",
+    "operations-forced-failure",
+    "execution-outbox-dispatch",
+    "execution-outbox-handle",
+    "webhook-delivery-dispatch",
+    "editorial-publish",
+    "media-upload-cleanup",
+    "community-message-attachment-cleanup",
+    "community-message-attachment-scan",
+    "media-variant-generate",
+    "audio-recipe-task",
+    "audience-form-intake",
+    "community-email-dispatch",
+    "commerce-reconcile-subscriptions"
+  ],
+  "actualFirstRun": true,
+  "actualPublicMutation": "ebffc6c4-ff56-40e0-b0f7-7c174d25103f",
+  "nativeSaveReload": true
+}

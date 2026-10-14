@@ -1,0 +1,67 @@
+const artifactRoot = process.env.SOL_ARTIFACT_ROOT ?? 'scratch/sol-browser/source-5666'
+import { test, expect } from '@playwright/test'
+import { writeFileSync, readFileSync } from 'node:fs'
+
+test('native settings locks acquire, reject concurrent mutation, renew and release through the UI', async ({ browser }) => {
+  const owner = await browser.newContext({ storageState: 'scratch/rc02-owner.json', ignoreHTTPSErrors: true })
+  const staff = await browser.newContext({ storageState: 'scratch/rc02-staff-session.json', ignoreHTTPSErrors: true })
+  const page = await owner.newPage()
+  const other = await staff.newPage()
+  const me = (await (await owner.request.get(`${process.env.APP_URL}/api/users/me`)).json()).user
+  const staffMe = (await (await staff.request.get(`${process.env.APP_URL}/api/users/me`)).json()).user
+  const sites = JSON.parse(readFileSync(`${artifactRoot}/two-sites.json`,'utf8'))
+  const staffMember = typeof staffMe.member === 'object' ? staffMe.member.id : staffMe.member
+  expect(staffMember).toBeTruthy()
+  // Instance-wide settings require all-site authority. Grant the actual fixture
+  // staff both sites for this competing-editor case, then revoke the extra grant.
+  const granted = await owner.request.post(`${process.env.APP_URL}/api/member-site-roles`, { data: {
+    member: staffMember, site: sites.foreignSite, role: 'community-manager',
+  } })
+  expect(granted.status()).toBe(201)
+  const additionalGrant = (await granted.json()).doc.id
+  try {
+  const locks = async () => {
+    const res = await owner.request.get(`${process.env.APP_URL}/api/payload-locked-documents?where[globalSlug][equals]=site-settings&depth=0`)
+    expect(res.status()).toBe(200)
+    return (await res.json()).docs
+  }
+  await page.goto('/admin/globals/site-settings')
+  await expect(page.getByLabel('Site Name', { exact: true })).toBeVisible()
+  const title = await page.getByLabel('Site Name', { exact: true }).inputValue()
+  await page.getByLabel('Site Name', { exact: true }).fill(title + ' lock proof')
+  await expect.poll(async () => (await locks()).length).toBe(1)
+  const acquired = (await locks())[0]
+  expect(typeof acquired.user.value === 'object' ? acquired.user.value.id : acquired.user.value).toBe(me.id)
+  await other.goto('/admin/globals/site-settings')
+  await expect(other.getByRole('heading', { name: 'Document locked', exact: true })).toBeVisible()
+  await other.locator('#document-locked-view-read-only').click()
+  await expect(other.getByLabel('Site Name', { exact: true })).toBeDisabled()
+  const before = await (await owner.request.get(`${process.env.APP_URL}/api/globals/site-settings`)).json()
+  const denied = await staff.request.post(`${process.env.APP_URL}/api/globals/site-settings`, { data: { siteName: 'FOREIGN LOCK MUTATION' } })
+  expect(denied.status()).toBe(423)
+  const after = await (await owner.request.get(`${process.env.APP_URL}/api/globals/site-settings`)).json()
+  expect(after.siteName).toBe(before.siteName)
+  // Native locking renews on editor activity after its debounce interval.
+  await new Promise(resolve => setTimeout(resolve, 11_000))
+  await page.getByLabel('Site Name', { exact: true }).fill(title + ' renewed lock proof')
+  await expect.poll(async () => Date.parse((await locks())[0].updatedAt), { timeout: 45_000 }).toBeGreaterThan(Date.parse(acquired.updatedAt))
+  await page.getByLabel('Site Name', { exact: true }).fill(title)
+  // Restore the edited field and use the admin navigation; closing a context is not release proof.
+  const menu = page.getByRole('button', { name: 'Open Menu', exact: true })
+  if (await menu.isVisible()) await menu.click()
+  await page.getByRole('link', { name: 'Dashboard', exact: true }).first().click()
+  const leave = page.getByRole('button', { name: 'Leave anyway', exact: true })
+  if (await leave.isVisible()) await leave.click()
+  await expect(page.getByRole('heading', { name: 'Dashboard', exact: true })).toBeVisible()
+  await expect.poll(async () => (await locks()).length).toBe(0)
+  await other.goto('/admin/globals/site-settings')
+  await expect(other.getByRole('heading', { name: 'Document locked', exact: true })).toHaveCount(0)
+  await expect(other.getByLabel('Site Name', { exact: true })).toBeEnabled()
+  writeFileSync(`${artifactRoot}/document-locks.json`, JSON.stringify({ holder: me.id,
+    acquired: acquired.updatedAt, foreignWriteStatus: denied.status(), protectedStateUnchanged: true, released: true }, null, 2))
+  } finally {
+    expect((await owner.request.delete(`${process.env.APP_URL}/api/member-site-roles/${additionalGrant}`)).status()).toBe(200)
+    await owner.close()
+    await staff.close()
+  }
+})

@@ -1,0 +1,6 @@
+{
+  "command": "node scratch/check-final-persistence.mjs",
+  "exitCode": 1,
+  "database": "solrc1_20261013_browser_final3_release_acceptance",
+  "outcome": "Supplemental readonly count used nonexistent blob_objects instead of canonical media_blobs. Approved/draft retention checks completed before count error; count corrected and entire readonly check rerun."
+}

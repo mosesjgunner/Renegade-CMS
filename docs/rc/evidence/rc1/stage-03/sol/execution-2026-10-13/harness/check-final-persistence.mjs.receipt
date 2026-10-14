@@ -1,0 +1,14 @@
+import {readFileSync,writeFileSync} from 'node:fs'
+import pg from 'pg'
+const e=Object.fromEntries(readFileSync('scratch/.env.sol-final3','utf8').trim().split(/\r?\n/).map(l=>{const i=l.indexOf('=');return[l.slice(0,i),l.slice(i+1)]}))
+const u=new URL(e.DATABASE_URL);if(u.hostname!=='127.0.0.1'||u.port!=='15433'||u.pathname!=='/solrc1_20261013_browser_final3_release_acceptance')throw Error('Owned final3 required')
+const proof=JSON.parse(readFileSync('scratch/sol-browser/final3/scheduled-publication.json','utf8'))
+const c=new pg.Client({connectionString:u.href});await c.connect();try {
+ const family=(await c.query('SELECT current_revision_id, latest_published_revision_id FROM article_family_content WHERE id=$1',[proof.articleId])).rows[0]
+ const revisions=(await c.query('SELECT id, document::text AS document FROM revision_records WHERE article_id=$1',[proof.articleId])).rows
+ const drafts=revisions.filter(r=>r.document.includes('UNAPPROVED FUTURE BODY'))
+ if(family.latest_published_revision_id!==proof.approvedRevision || drafts.length!==1 || family.current_revision_id!==drafts[0].id)throw Error('Persisted approved publication and later draft must remain distinct and retained')
+ const counts={};for(const table of ['sites','users','members','content','media_assets','media_blobs','scheduled_publish_jobs','calendar_entry_audits'])counts[table]=Number((await c.query(`SELECT count(*) AS count FROM "${table}"`)).rows[0].count)
+ writeFileSync('scratch/sol-evidence/final3-persisted-state.json',JSON.stringify({database:u.pathname.slice(1),command:'node scratch/check-final-persistence.mjs',exitCode:0,articleId:proof.articleId,currentDraftRevision:family.current_revision_id,publishedApprovedRevision:family.latest_published_revision_id,laterUnapprovedDraftRetained:true,counts},null,2))
+ console.log('Persisted approved publication and latest later draft remain distinct; product state retained')
+} finally {await c.end()}

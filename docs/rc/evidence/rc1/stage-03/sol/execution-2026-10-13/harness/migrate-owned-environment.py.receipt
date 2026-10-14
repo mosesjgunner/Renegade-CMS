@@ -1,0 +1,26 @@
+import os, sys, subprocess, json, time
+from pathlib import Path
+from urllib.parse import urlparse
+sys.stdout.reconfigure(encoding='utf-8')
+envfile=Path(sys.argv[1]); label=sys.argv[2]
+assert not Path('.env').exists(), 'Ordinary acceptance cannot use a fallback .env'
+env=os.environ.copy()
+for line in envfile.read_text().splitlines():
+ key,value=line.split('=',1);env[key]=value
+target=urlparse(env['DATABASE_URL'])
+assert target.hostname=='127.0.0.1' and target.port==15433 and target.username=='solrc1'
+assert target.path.startswith('/solrc1_20261013_') and target.path.endswith('_release_acceptance')
+assert env['LOCAL_E2E_TEST_MODE']=='false' and env['ENABLE_TEST_ROUTES']=='false' and env['NODE_ENV']=='production'
+out=Path(f'scratch/sol-evidence/migrations-{label}.txt')
+start=time.time()
+with out.open('w',encoding='utf-8') as log:
+ result=subprocess.run('npm.cmd run db:migrate',shell=True,env=env,stdout=log,stderr=subprocess.STDOUT)
+receipt={'sourceSha':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),
+ 'command':'npm.cmd run db:migrate','exitCode':result.returncode,'database':target.path[1:],
+ 'nonsecretEnvironment':{'NODE_ENV':env['NODE_ENV'],'LOCAL_E2E_TEST_MODE':env['LOCAL_E2E_TEST_MODE'],
+ 'ENABLE_TEST_ROUTES':env['ENABLE_TEST_ROUTES'],'MEDIA_DIR':env['MEDIA_DIR'],
+ 'DEPLOYMENT_PROFILE':env['DEPLOYMENT_PROFILE'],'RENEGADE_MODULES':env['RENEGADE_MODULES']},
+ 'durationSeconds':time.time()-start,'log':str(out)}
+Path(f'scratch/sol-evidence/migrations-{label}.json').write_text(json.dumps(receipt,indent=2))
+print(label,'migration exit',result.returncode)
+sys.exit(result.returncode)

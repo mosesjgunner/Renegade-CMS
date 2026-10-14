@@ -1,0 +1,23 @@
+(node:20712) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+▲ Next.js 16.3.8
+- Local:         http://127.0.0.1:3128
+- Network:       http://127.0.0.1:3128
+✓ Ready in 0ms
+✓ Running next.config took 10ms
+[20:40:41] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+Renegade CMS setup token (expires in 15 minutes; use once): [REDACTED]
+[setup/complete] Unexpected installation failure: c: The collection with slug team-memberships can't be found. Find Operation.
+    at Z [90m(C:\Projects\RENEGADE CMS\sol-rc1-20261013\.next\standalone\[39m.next\server\chunks\_0u0f5y7._.js:322:274875[90m)[39m
+    at ik.find [90m(C:\Projects\RENEGADE CMS\sol-rc1-20261013\.next\standalone\[39m.next\server\chunks\_0u0f5y7._.js:328:6658[90m)[39m
+    at c [90m(C:\Projects\RENEGADE CMS\sol-rc1-20261013\.next\standalone\[39m.next\server\chunks\src_modules_operations_08ru58e._.js:1:2476[90m)[39m
+    at p [90m(C:\Projects\RENEGADE CMS\sol-rc1-20261013\.next\standalone\[39m.next\server\chunks\src_modules_operations_08ru58e._.js:1:2923[90m)[39m
+    at async w [90m(C:\Projects\RENEGADE CMS\sol-rc1-20261013\.next\standalone\[39m.next\server\chunks\src_modules_operations_08ru58e._.js:4:928[90m)[39m
+    at async d [90m(C:\Projects\RENEGADE CMS\sol-rc1-20261013\.next\standalone\[39m.next\server\chunks\[root-of-the-server]__00am7-x._.js:1:6020[90m)[39m
+    at async Q [90m(C:\Projects\RENEGADE CMS\sol-rc1-20261013\.next\standalone\[39m.next\server\chunks\[root-of-the-server]__00am7-x._.js:1:9962[90m)[39m {
+  data: [1mnull[22m,
+  isOperational: [33mtrue[39m,
+  isPublic: [33mfalse[39m,
+  status: [33m500[39m,
+  [cause]: [1mnull[22m
+}

@@ -1,0 +1,11 @@
+
+ RUN  v3.2.7 C:/Projects/RENEGADE CMS/sol-rc1-20261013
+
+ ✓ tests/unit/production-installer.test.ts (6 tests) 7ms
+ ✓ tests/unit/staff-enrollment.test.ts (13 tests) 14ms
+ ✓ tests/unit/installation-readiness.test.ts (7 tests) 6ms
+
+ Test Files  3 passed (3)
+      Tests  26 passed (26)
+   Start at  05:18:04
+   Duration  3.82s (transform 1.15s, setup 0ms, collect 4.10s, tests 27ms, environment 1ms, prepare 437ms)

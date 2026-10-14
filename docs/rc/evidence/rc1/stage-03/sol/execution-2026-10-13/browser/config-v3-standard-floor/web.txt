@@ -1,0 +1,119 @@
+(node:3132) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+▲ Next.js 16.3.8
+- Local:         http://127.0.0.1:3128
+- Network:       http://127.0.0.1:3128
+✓ Ready in 0ms
+✓ Running next.config took 10ms
+[20:55:48] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+Renegade CMS setup token (expires in 15 minutes; use once): [REDACTED]
+[20:55:59] [31mERROR[39m: [36mYou are not allowed to perform this action.[39m
+    err: {
+      "type": "F",
+      "message": "You are not allowed to perform this action.",
+      "stack":
+          F: You are not allowed to perform this action.
+              at rp (C:\Projects\RENEGADE CMS\sol-rc1-20261013\.next\standalone\.next\server\chunks\_0u0f5y7._.js:302:17055)
+              at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+              at async cj (C:\Projects\RENEGADE CMS\sol-rc1-20261013\.next\standalone\.next\server\chunks\_0u0f5y7._.js:302:146349)
+              at async ih (C:\Projects\RENEGADE CMS\sol-rc1-20261013\.next\standalone\.next\server\chunks\_0u0f5y7._.js:302:232192)
+              at async y (C:\Projects\RENEGADE CMS\sol-rc1-20261013\.next\standalone\.next\server\chunks\_0_cd-fp._.js:1:8594)
+              at async C:\Projects\RENEGADE CMS\sol-rc1-20261013\.next\standalone\.next\server\chunks\_0_cd-fp._.js:1:16998
+              at async rQ.do (C:\Projects\RENEGADE CMS\sol-rc1-20261013\.next\standalone\node_modules\next\dist\compiled\next-server\app-route-turbo.runtime.prod.js:5:23405)
+              at async rQ.handle (C:\Projects\RENEGADE CMS\sol-rc1-20261013\.next\standalone\node_modules\next\dist\compiled\next-server\app-route-turbo.runtime.prod.js:5:28801)
+              at async J (C:\Projects\RENEGADE CMS\sol-rc1-20261013\.next\standalone\.next\server\chunks\_0_cd-fp._.js:1:21276)
+              at async rQ.handleResponse (C:\Projects\RENEGADE CMS\sol-rc1-20261013\.next\standalone\node_modules\next\dist\compiled\next-server\app-route-turbo.runtime.prod.js:1:135787)
+      "data": null,
+      "isOperational": true,
+      "isPublic": true,
+      "status": 403,
+      "name": "F"
+    }
+[20:55:59] [31mERROR[39m: [36mYou are not allowed to perform this action.[39m
+    err: {
+      "type": "F",
+      "message": "You are not allowed to perform this action.",
+      "stack":
+          F: You are not allowed to perform this action.
+              at rp (C:\Projects\RENEGADE CMS\sol-rc1-20261013\.next\standalone\.next\server\chunks\_0u0f5y7._.js:302:17055)
+              at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+              at async cj (C:\Projects\RENEGADE CMS\sol-rc1-20261013\.next\standalone\.next\server\chunks\_0u0f5y7._.js:302:146349)
+              at async ih (C:\Projects\RENEGADE CMS\sol-rc1-20261013\.next\standalone\.next\server\chunks\_0u0f5y7._.js:302:232192)
+              at async y (C:\Projects\RENEGADE CMS\sol-rc1-20261013\.next\standalone\.next\server\chunks\_0_cd-fp._.js:1:8594)
+              at async C:\Projects\RENEGADE CMS\sol-rc1-20261013\.next\standalone\.next\server\chunks\_0_cd-fp._.js:1:16998
+              at async rQ.do (C:\Projects\RENEGADE CMS\sol-rc1-20261013\.next\standalone\node_modules\next\dist\compiled\next-server\app-route-turbo.runtime.prod.js:5:23405)
+              at async rQ.handle (C:\Projects\RENEGADE CMS\sol-rc1-20261013\.next\standalone\node_modules\next\dist\compiled\next-server\app-route-turbo.runtime.prod.js:5:28801)
+              at async J (C:\Projects\RENEGADE CMS\sol-rc1-20261013\.next\standalone\.next\server\chunks\_0_cd-fp._.js:1:21276)
+              at async rQ.handleResponse (C:\Projects\RENEGADE CMS\sol-rc1-20261013\.next\standalone\node_modules\next\dist\compiled\next-server\app-route-turbo.runtime.prod.js:1:135787)
+      "data": null,
+      "isOperational": true,
+      "isPublic": true,
+      "status": 403,
+      "name": "F"
+    }
+[20:56:00] [31mERROR[39m: [36mYou are not allowed to perform this action.[39m
+    err: {
+      "type": "F",
+      "message": "You are not allowed to perform this action.",
+      "stack":
+          F: You are not allowed to perform this action.
+              at rp (C:\Projects\RENEGADE CMS\sol-rc1-20261013\.next\standalone\.next\server\chunks\_0u0f5y7._.js:302:17055)
+              at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+              at async cj (C:\Projects\RENEGADE CMS\sol-rc1-20261013\.next\standalone\.next\server\chunks\_0u0f5y7._.js:302:146349)
+              at async ih (C:\Projects\RENEGADE CMS\sol-rc1-20261013\.next\standalone\.next\server\chunks\_0u0f5y7._.js:302:232192)
+              at async y (C:\Projects\RENEGADE CMS\sol-rc1-20261013\.next\standalone\.next\server\chunks\_0_cd-fp._.js:1:8594)
+              at async C:\Projects\RENEGADE CMS\sol-rc1-20261013\.next\standalone\.next\server\chunks\_0_cd-fp._.js:1:16998
+              at async rQ.do (C:\Projects\RENEGADE CMS\sol-rc1-20261013\.next\standalone\node_modules\next\dist\compiled\next-server\app-route-turbo.runtime.prod.js:5:23405)
+              at async rQ.handle (C:\Projects\RENEGADE CMS\sol-rc1-20261013\.next\standalone\node_modules\next\dist\compiled\next-server\app-route-turbo.runtime.prod.js:5:28801)
+              at async J (C:\Projects\RENEGADE CMS\sol-rc1-20261013\.next\standalone\.next\server\chunks\_0_cd-fp._.js:1:21276)
+              at async rQ.handleResponse (C:\Projects\RENEGADE CMS\sol-rc1-20261013\.next\standalone\node_modules\next\dist\compiled\next-server\app-route-turbo.runtime.prod.js:1:135787)
+      "data": null,
+      "isOperational": true,
+      "isPublic": true,
+      "status": 403,
+      "name": "F"
+    }
+[20:56:00] [31mERROR[39m: [36mYou are not allowed to perform this action.[39m
+    err: {
+      "type": "F",
+      "message": "You are not allowed to perform this action.",
+      "stack":
+          F: You are not allowed to perform this action.
+              at rp (C:\Projects\RENEGADE CMS\sol-rc1-20261013\.next\standalone\.next\server\chunks\_0u0f5y7._.js:302:17055)
+              at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+              at async cj (C:\Projects\RENEGADE CMS\sol-rc1-20261013\.next\standalone\.next\server\chunks\_0u0f5y7._.js:302:146349)
+              at async ih (C:\Projects\RENEGADE CMS\sol-rc1-20261013\.next\standalone\.next\server\chunks\_0u0f5y7._.js:302:232192)
+              at async y (C:\Projects\RENEGADE CMS\sol-rc1-20261013\.next\standalone\.next\server\chunks\_0_cd-fp._.js:1:8594)
+              at async C:\Projects\RENEGADE CMS\sol-rc1-20261013\.next\standalone\.next\server\chunks\_0_cd-fp._.js:1:16998
+              at async rQ.do (C:\Projects\RENEGADE CMS\sol-rc1-20261013\.next\standalone\node_modules\next\dist\compiled\next-server\app-route-turbo.runtime.prod.js:5:23405)
+              at async rQ.handle (C:\Projects\RENEGADE CMS\sol-rc1-20261013\.next\standalone\node_modules\next\dist\compiled\next-server\app-route-turbo.runtime.prod.js:5:28801)
+              at async J (C:\Projects\RENEGADE CMS\sol-rc1-20261013\.next\standalone\.next\server\chunks\_0_cd-fp._.js:1:21276)
+              at async rQ.handleResponse (C:\Projects\RENEGADE CMS\sol-rc1-20261013\.next\standalone\node_modules\next\dist\compiled\next-server\app-route-turbo.runtime.prod.js:1:135787)
+      "data": null,
+      "isOperational": true,
+      "isPublic": true,
+      "status": 403,
+      "name": "F"
+    }
+[20:56:00] [31mERROR[39m: [36mYou are not allowed to perform this action.[39m
+    err: {
+      "type": "F",
+      "message": "You are not allowed to perform this action.",
+      "stack":
+          F: You are not allowed to perform this action.
+              at rp (C:\Projects\RENEGADE CMS\sol-rc1-20261013\.next\standalone\.next\server\chunks\_0u0f5y7._.js:302:17055)
+              at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+              at async cj (C:\Projects\RENEGADE CMS\sol-rc1-20261013\.next\standalone\.next\server\chunks\_0u0f5y7._.js:302:146349)
+              at async ih (C:\Projects\RENEGADE CMS\sol-rc1-20261013\.next\standalone\.next\server\chunks\_0u0f5y7._.js:302:232192)
+              at async y (C:\Projects\RENEGADE CMS\sol-rc1-20261013\.next\standalone\.next\server\chunks\_0_cd-fp._.js:1:8594)
+              at async C:\Projects\RENEGADE CMS\sol-rc1-20261013\.next\standalone\.next\server\chunks\_0_cd-fp._.js:1:16998
+              at async rQ.do (C:\Projects\RENEGADE CMS\sol-rc1-20261013\.next\standalone\node_modules\next\dist\compiled\next-server\app-route-turbo.runtime.prod.js:5:23405)
+              at async rQ.handle (C:\Projects\RENEGADE CMS\sol-rc1-20261013\.next\standalone\node_modules\next\dist\compiled\next-server\app-route-turbo.runtime.prod.js:5:28801)
+              at async J (C:\Projects\RENEGADE CMS\sol-rc1-20261013\.next\standalone\.next\server\chunks\_0_cd-fp._.js:1:21276)
+              at async rQ.handleResponse (C:\Projects\RENEGADE CMS\sol-rc1-20261013\.next\standalone\node_modules\next\dist\compiled\next-server\app-route-turbo.runtime.prod.js:1:135787)
+      "data": null,
+      "isOperational": true,
+      "isPublic": true,
+      "status": 403,
+      "name": "F"
+    }

@@ -1,0 +1,16 @@
+{
+  "sourceSha": "68ad999c40066321be7539973a911dd6808409cb",
+  "command": "npm.cmd run db:migrate",
+  "exitCode": 0,
+  "database": "solrc1_20261013_cfg_lean_all_release_acceptance",
+  "nonsecretEnvironment": {
+    "NODE_ENV": "production",
+    "LOCAL_E2E_TEST_MODE": "false",
+    "ENABLE_TEST_ROUTES": "false",
+    "MEDIA_DIR": "C:\\Projects\\RENEGADE CMS\\sol-rc1-20261013\\scratch\\sol-config-lean-all-media",
+    "DEPLOYMENT_PROFILE": "Lean",
+    "RENEGADE_MODULES": "all"
+  },
+  "durationSeconds": 13.774352788925171,
+  "log": "scratch\\sol-evidence\\migrations-config-lean-all-68ad.txt"
+}

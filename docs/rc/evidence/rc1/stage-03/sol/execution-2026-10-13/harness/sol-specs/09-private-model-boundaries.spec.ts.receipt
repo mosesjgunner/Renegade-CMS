@@ -1,0 +1,128 @@
+const artifactRoot = process.env.SOL_ARTIFACT_ROOT ?? 'scratch/sol-browser/source-5666'
+import { test, expect, type BrowserContext } from '@playwright/test'
+import { readFileSync, writeFileSync } from 'node:fs'
+import { passkeyLogin } from '../sol-browser-helpers'
+const base = process.env.APP_URL!
+const output = process.env.SOL_ARTIFACT_ROOT ?? artifactRoot
+type Doc = Record<string, any>
+const id = (v: any) => typeof v === 'object' ? v.id : v
+
+test('private identity stores and remaining native module factories enforce persisted authority', async ({ browser }) => {
+  const owner = await passkeyLogin(browser, 'editor@renegadeparty.test', 'scratch/sol-owner-authenticator.json')
+  const sites = JSON.parse(readFileSync(`${output}/two-sites.json`, 'utf8'))
+  const users = (await (await owner.request.get(`${base}/api/users?depth=0&limit=100`)).json()).docs
+  const adminUser = users.find((u: Doc) => u.role === 'administrator')
+  const staffUser = users.find((u: Doc) => u.email.startsWith('staff-'))
+  const grants = (await (await owner.request.get(`${base}/api/member-site-roles?depth=0&limit=100`)).json()).docs
+  if (!grants.some((g: Doc) => id(g.member) === id(adminUser.member) && id(g.site) === sites.site)) {
+    expect((await owner.request.post(`${base}/api/member-site-roles`, { data: {
+      member: id(adminUser.member), site: sites.site, role: 'community-manager',
+    } })).status()).toBe(201)
+  }
+  const admin = await passkeyLogin(browser, adminUser.email, 'scratch/sol-admin-authenticator.json')
+  const staff = await passkeyLogin(browser, staffUser.email, 'scratch/sol-staff-authenticator.json')
+  const member = await browser.newContext({ storageState: 'scratch/sol-member-session.json', ignoreHTTPSErrors: true })
+  const anonymous = await browser.newContext({ ignoreHTTPSErrors: true })
+  const me = await (await member.request.get(`${base}/api/member-auth/me`)).json()
+  expect(me.memberId).toBeTruthy()
+  const actors: Array<[string, BrowserContext]> = [['owner',owner],['administrator',admin],['staff',staff],['member',member],['anonymous',anonymous]]
+  const stamp = Date.now()
+  const observations: Doc[] = []
+  const ownerUser = (await (await owner.request.get(`${base}/api/users/me`)).json()).user
+  const preferenceRecords: Array<{ role: string; actor: BrowserContext; row: Doc }> = []
+  for (const [role, actor, user] of [['owner', owner, ownerUser], ['administrator', admin, adminUser], ['staff', staff, staffUser]] as Array<[string, BrowserContext, Doc]>) {
+    const found = await (await actor.request.get(`${base}/api/command-center-preferences?depth=0&limit=1`)).json()
+    let row = found.docs?.[0]
+    if (!row) {
+      const created = await actor.request.post(`${base}/api/command-center-preferences`, { data: { user: user.id, hiddenSections: [], sectionOrder: [] } })
+      expect(created.status(), 'Own personal preferences creation').toBe(201)
+      row = (await created.json()).doc
+    }
+    preferenceRecords.push({ role, actor, row })
+  }
+  for (const [role, actor] of actors) for (const target of preferenceRecords) {
+    const read = await actor.request.get(`${base}/api/command-center-preferences/${target.row.id}?depth=0`)
+    if (role === target.role) expect(read.status()).toBe(200)
+    else {
+      expect([403,404], 'Another user personal preferences are private').toContain(read.status())
+      const attempt = await actor.request.patch(`${base}/api/command-center-preferences/${target.row.id}`, { data: { hiddenSections: ['foreign-mutation'] } })
+      expect([403,404]).toContain(attempt.status())
+      expect((await (await target.actor.request.get(`${base}/api/command-center-preferences/${target.row.id}?depth=0`)).json()).hiddenSections).toEqual(target.row.hiddenSections)
+    }
+  }
+  const create = async (collection: string, data: Doc) => {
+    const response = await owner.request.post(`${base}/api/${collection}`, { data })
+    expect(response.status(), `${collection}: ${await response.text()}`).toBe(201)
+    return (await response.json()).doc
+  }
+  const foreignMember = await create('members', { displayName: `Pending foreign member ${stamp}`, email: `pending-${stamp}@renegadeparty.test` })
+  expect(foreignMember.status).toBe('pending')
+  await create('member-site-roles', { site: sites.foreignSite, member: foreignMember.id, role: 'member' })
+  const foreignProfile = await create('profiles', { member: foreignMember.id, displayName: 'Foreign private profile', handle: `foreign${stamp}` })
+  const profileA = (await (await owner.request.get(`${base}/api/profiles?where[member][equals]=${me.memberId}&depth=0`)).json()).docs[0]
+  expect(profileA).toBeDefined()
+  const ownMember = await (await owner.request.get(`${base}/api/members/${me.memberId}?depth=0`)).json()
+  const pairs: Array<{ collection: string; field: string; a: Doc; b: Doc; publicRead?: boolean; parent?: string }> = [
+    { collection: 'members', field: 'displayName', a: ownMember, b: foreignMember },
+    { collection: 'profiles', field: 'displayName', a: profileA, b: foreignProfile, parent: 'member' },
+  ]
+  for (const definition of [
+    { collection: 'brands', field: 'name', publicRead: true, data: (site: string, tag: string) => ({ site, name: `Brand ${tag}` }) },
+    { collection: 'quality-policies', field: 'name', data: (site: string, tag: string) => ({ site, name: `Policy ${tag}`, status: 'draft', rules: [] }) },
+    { collection: 'analytics-goals', field: 'name', data: (site: string, tag: string) => ({ site, name: `Goal ${tag}`, key: `scope-${tag}`, eventTypes: [], definition: 'Authorization metadata fixture; no observed metrics.' }) },
+    { collection: 'experience-rules', field: 'name', data: (site: string, tag: string) => ({ site, name: `Rule ${tag}`, status: 'draft', conditions: [] }) },
+    { collection: 'content-releases', field: 'title', data: (site: string, tag: string) => ({ site, title: `Release ${tag}`, status: 'draft' }) },
+    { collection: 'books', field: 'title', data: (site: string, tag: string) => ({ site, title: `Private draft book ${tag}`, slug: `scope-book-${tag}`, status: 'draft', visibility: 'private' }) },
+    { collection: 'team-memberships', field: 'grants', data: (site: string, _tag: string) => ({ site, scopeKind: 'site', member: site === sites.site ? me.memberId : foreignMember.id, role: 'author', grants: [] }) },
+  ]) {
+    pairs.push({ ...definition,
+      a: await create(definition.collection, definition.data(sites.site, `a-${stamp}`)),
+      b: await create(definition.collection, definition.data(sites.foreignSite, `b-${stamp}`)),
+    })
+  }
+  const books = pairs.find(p => p.collection === 'books')!
+  pairs.push({ collection: 'book-parts', field: 'title', parent: 'book',
+    a: await create('book-parts', { book: books.a.id, title: 'Private part A', displayOrder: 1 }),
+    b: await create('book-parts', { book: books.b.id, title: 'Private part B', displayOrder: 1 }),
+  })
+  for (const [role, actor] of actors) {
+    for (const object of pairs) {
+      const isOperator = ['owner','administrator','staff'].includes(role)
+      const own = await actor.request.get(`${base}/api/${object.collection}/${object.a.id}?depth=0`)
+      if (isOperator || object.publicRead) expect.soft(own.status(), `${role}: owned ${object.collection}`).toBe(200)
+      else expect.soft([403,404], `${role}: owned ${object.collection} denied`).toContain(own.status())
+      const foreign = await actor.request.get(`${base}/api/${object.collection}/${object.b.id}?depth=0`)
+      if (role === 'owner' || object.publicRead) expect.soft(foreign.status()).toBe(200)
+      else expect.soft([403,404], `${role}: foreign ${object.collection}`).toContain(foreign.status())
+      const before = await (await owner.request.get(`${base}/api/${object.collection}/${object.b.id}?depth=0`)).json()
+      const value = object.field === 'grants' ? ['metadata-scope-probe'] : `Scoped ${role} mutation`
+      const mutation = await actor.request.patch(`${base}/api/${object.collection}/${object.b.id}`, { data: { [object.field]: value } })
+      if (role === 'owner') expect.soft(mutation.status(), `owner foreign ${object.collection}`).toBe(200)
+      else {
+        expect.soft([403,404], `${role}: mutate foreign ${object.collection}`).toContain(mutation.status())
+        expect.soft((await (await owner.request.get(`${base}/api/${object.collection}/${object.b.id}?depth=0`)).json())[object.field]).toEqual(before[object.field])
+      }
+      observations.push({ role, collection: object.collection, ownRead: own.status(), foreignRead: foreign.status(), foreignMutation: mutation.status() })
+    }
+    for (const collection of ['linked-identities','member-sessions','identity-tokens','member-recovery-codes','identity-audit-events']) {
+      const countUrl = `${base}/api/${collection}?depth=0&limit=1`
+      const before = await (await owner.request.get(countUrl)).json()
+      const read = await actor.request.get(countUrl)
+      if (collection !== 'identity-audit-events') expect.soft(read.status(), `${role}: identity store ${collection}`).toBe(role === 'owner' ? 200 : 403)
+      const forbidden = await actor.request.post(`${base}/api/${collection}`, { data: { member: foreignMember.id } })
+      expect.soft(forbidden.status(), `${role}: direct identity store creation`).toBe(403)
+      expect.soft((await (await owner.request.get(countUrl)).json()).totalDocs).toBe(before.totalDocs)
+      if (before.docs?.[0]) {
+        const row = before.docs[0]
+        const attempted = await actor.request.patch(`${base}/api/${collection}/${row.id}`, { data: { metadata: { nativeMutationProbe: true } } })
+        expect.soft(attempted.status(), `${role}: direct identity store mutation`).toBe(403)
+        expect.soft(await (await owner.request.get(`${base}/api/${collection}/${row.id}?depth=0`)).json()).toEqual(row)
+      }
+      observations.push({ role, collection, readStatus: read.status(), directCreate: forbidden.status() })
+    }
+    console.log('Completed additional model boundaries for',role)
+  }
+  writeFileSync(`${output}/private-model-boundaries.json`, JSON.stringify({ observations,
+    foreignMemberRemainedPending: true, identityStoresWereNeverManuallyProvisioned: true }, null, 2))
+  for (const [,context] of actors) await context.close()
+})

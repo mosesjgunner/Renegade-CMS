@@ -1,0 +1,52 @@
+
+Running 4 tests using 1 worker
+
+node : (node:22584) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+At line:2 char:121
++ ... iagnostic'; node node_modules/@playwright/test/cli.js test 03-identit ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ((node:22584) Wa... env being set.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 scratch\sol-specs\03-identity-negatives.spec.ts:55:3 › Ordinary identity negatives with persisted-state assertions › creates a second site through owner REST and preserves canonical operator grants (415ms)
+  ok 2 scratch\sol-specs\03-identity-negatives.spec.ts:79:3 › Ordinary identity negatives with persisted-state assertions › rejects a genuinely expired invitation without issuing credentials or sessions (1.4s)
+  ok 3 scratch\sol-specs\03-identity-negatives.spec.ts:89:3 › Ordinary identity negatives with persisted-state assertions › rejects a real invitation at a foreign site without consuming it (1.0s)
+  x  4 scratch\sol-specs\03-identity-negatives.spec.ts:98:3 › Ordinary identity negatives with persisted-state assertions › valid authenticator response rejects wrong origin and challenge, then enrolls once and rejects replay (2.1s)
+Testing stopped early after 1 maximum allowed failures.
+
+
+  1) scratch\sol-specs\03-identity-negatives.spec.ts:98:3 › Ordinary identity negatives with persisted-state assertions › valid authenticator response rejects wrong origin and challenge, then enrolls once and rejects replay
+
+    Error: expect(received).toBe(expected) // Object.is equality
+
+    Expected: 400
+    Received: 500
+
+      111 |         clientDataJSON: Buffer.from(JSON.stringify({ ...clientData, ...change })).toString('base64url') } }
+      112 |       const res = await context.request.post(`${base}/api/auth/passkey/enroll`, { data: { action: 'complete', enrollmentToken: invitation.enrollmentToken, credential: altered } })
+    > 113 |       expect(res.status()).toBe(400)
+          |                            ^
+      114 |       expect((await res.json()).code).toBe('VERIFICATION_FAILED')
+      115 |       expect(await persisted(invitation.user.id)).toEqual(before)
+      116 |     }
+        at C:\Projects\RENEGADE CMS\sol-rc1-20261013\scratch\sol-specs\03-identity-negatives.spec.ts:113:28
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    scratch\sol-traces\identity-diagnostic\03-identity-negatives-Ordi-14e02-lls-once-and-rejects-replay\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: scratch\sol-traces\identity-diagnostic\03-identity-negatives-Ordi-14e02-lls-once-and-rejects-replay\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    scratch\sol-traces\identity-diagnostic\03-identity-negatives-Ordi-14e02-lls-once-and-rejects-replay\trace.zip
+    Usage:
+
+        npx playwright show-trace scratch\sol-traces\identity-diagnostic\03-identity-negatives-Ordi-14e02-lls-once-and-rejects-replay\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    scratch\sol-specs\03-identity-negatives.spec.ts:98:3 › Ordinary identity negatives with persisted-state assertions › valid authenticator response rejects wrong origin and challenge, then enrolls once and rejects replay
+  3 passed (11.1s)
+  1 error was not a part of any test, see above for details

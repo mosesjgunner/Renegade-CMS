@@ -1,0 +1,102 @@
+import { test, expect } from '@playwright/test'
+import { readFileSync, mkdirSync, writeFileSync } from 'node:fs'
+import config from '@payload-config'
+import { loadConfig } from '@/modules/core/config'
+
+test('ordinary configuration boot, first-run, registered collections and an actual publishing mutation', async ({ page, context, browser }) => {
+  const profile = process.env.DEPLOYMENT_PROFILE!
+  const run = process.env.SOL_BROWSER_RUN!
+  const output = `scratch/sol-browser/${run}`
+  mkdirSync(output, { recursive: true })
+  expect(process.env.LOCAL_E2E_TEST_MODE).toBe('false')
+  const cdp = await context.newCDPSession(page)
+  await cdp.send('WebAuthn.enable')
+  await cdp.send('WebAuthn.addVirtualAuthenticator', { options: { protocol: 'ctap2', transport: 'internal',
+    hasResidentKey: true, hasUserVerification: true, isUserVerified: true, automaticPresenceSimulation: true } })
+  await page.goto('/setup')
+  await expect(page.getByRole('heading', { name: 'Make this site yours.' })).toBeVisible()
+  const token = readFileSync(`${output}/web.log`, 'utf8').match(/Renegade CMS setup token .*?: ([A-Za-z0-9_-]{43})/)?.[1] ?? ''
+  expect(token).toHaveLength(43)
+  await page.getByLabel('Bootstrap token').fill(token)
+  await page.getByLabel('Owner email').fill('configuration-owner@renegadeparty.test')
+  await page.getByRole('button', { name: 'Continue', exact: true }).click()
+  await page.getByLabel('Site or publication name').fill(`Sol ${profile} configuration`)
+  await page.getByLabel('Description').fill('Ordinary isolated profile and module acceptance.')
+  await page.getByLabel('Site slug').fill('sol-configuration')
+  await page.getByLabel('Primary URL').fill(process.env.APP_URL!)
+  await page.getByLabel('Locale').fill('en-US')
+  await page.getByLabel('Timezone').fill('America/Chicago')
+  await page.getByRole('button', { name: 'Continue', exact: true }).click()
+  await page.getByLabel('Starter site type').selectOption('blank-minimal')
+  await page.getByLabel('Create starter pages and sample content').uncheck()
+  await page.getByRole('button', { name: 'Continue', exact: true }).click()
+  await page.getByText(profile, { exact: true }).click()
+  await page.getByLabel('Search indexing').selectOption('noindex')
+  await page.getByRole('button', { name: 'Continue', exact: true }).click()
+  await page.getByRole('button', { name: 'Enroll passkey & create site' }).click()
+  await expect(page.getByRole('heading', { name: 'Your site is ready to shape.' })).toBeVisible({ timeout: 30_000 })
+  expect((await page.request.post('/api/auth/logout')).status()).toBe(200)
+  await context.clearCookies()
+  await page.goto('/login')
+  await page.getByLabel('Owner / Staff Email').fill('configuration-owner@renegadeparty.test')
+  await page.getByRole('button', { name: /Authenticate with Passkey/ }).click()
+  await expect(page).toHaveURL(/\/admin/)
+  const access = await page.request.get('/api/access')
+  expect(access.status()).toBe(200)
+  const accessModel = await access.json()
+  const expected = await config
+  const actualCollections = Object.keys(accessModel.collections).sort()
+  const nativeDenied = ['ai-connections', 'ai-credentials', 'ai-proposals', 'calendar-entries', 'digest-definitions', 'submission-attachments']
+  const internalStores = ['payload-jobs', 'payload-kv']
+  const omitted = [...nativeDenied, ...internalStores]
+  expect(actualCollections).toEqual(expected.collections.map(c => c.slug).filter(slug => !omitted.includes(slug)).sort())
+  const closedStores: Record<string, number> = {}
+  for (const slug of nativeDenied) {
+    const response = await page.request.get(`/api/${slug}?limit=1`)
+    closedStores[slug] = response.status()
+    expect(response.status()).toBe(expected.collections.some(c => c.slug === slug) ? 403 : 404)
+  }
+  for (const slug of internalStores) {
+    const response = await page.request.get(`/api/${slug}?limit=1`)
+    closedStores[slug] = response.status()
+    expect([403, 404]).toContain(response.status())
+  }
+  const enabled = loadConfig()
+  expect(enabled.deploymentProfile).toBe(profile)
+  const sites = await (await page.request.get('/api/sites?depth=0')).json()
+  const siteId = sites.docs[0].id
+  const title = `Profile ${profile} published state ${Date.now()}`
+  const created = await page.request.post('/api/content', { data: { site: siteId, contentType: 'article',
+    title, slug: `configuration-${Date.now()}`, status: 'draft', body: { root: { type: 'root', version: 1,
+      direction: null, format: '', indent: 0, children: [{ type: 'paragraph', version: 1,
+        direction: null, format: '', indent: 0, children: [{ type: 'text', version: 1, text: title,
+          format: 0, detail: 0, mode: 'normal', style: '' }] }] } } } })
+  expect(created.status()).toBe(201)
+  const content = (await created.json()).doc
+  const anonymous = await browser.newContext({ ignoreHTTPSErrors: true })
+  expect((await anonymous.request.get(`${process.env.APP_URL}${content.canonicalPath}`)).status()).toBe(404)
+  for (const status of ['review', 'approved', 'published'])
+    expect((await page.request.patch(`/api/content/${content.id}`, { data: { status } })).status()).toBe(200)
+  const publicPage = await anonymous.newPage()
+  await publicPage.goto(`${process.env.APP_URL}${content.canonicalPath}`)
+  await expect(publicPage.getByRole('heading', { name: title, exact: true })).toBeVisible()
+  const collections: Record<string, number> = {}
+  for (const slug of ['events', 'merchant-connections', 'forum-sections', 'books', 'email-messages', 'sources']) {
+    const response = await page.request.get(`/api/${slug}?limit=1`)
+    collections[slug] = response.status()
+    if (actualCollections.includes(slug)) expect(response.status()).toBe(200)
+    else expect(response.status()).toBe(404)
+  }
+  await page.goto('/admin/globals/site-settings')
+  await expect(page.getByLabel('Site Name', { exact: true })).toBeVisible()
+  const savedName = `Sol ${profile} saved native setting`
+  await page.getByLabel('Site Name', { exact: true }).fill(savedName)
+  await page.getByRole('button', { name: 'Save', exact: true }).click()
+  await page.reload()
+  await expect(page.getByLabel('Site Name', { exact: true })).toHaveValue(savedName)
+  await page.screenshot({ path: `${output}/native-settings.png`, fullPage: true })
+  writeFileSync(`${output}/configuration.json`, JSON.stringify({ profile, requestedModules: process.env.RENEGADE_MODULES,
+    actualCollections, sourceRegisteredCollections: expected.collections.map(c => c.slug), closedStores, internalStoreBoundary: 'Internal stores omitted by access map; HTTP 403 or unavailable 404, not a browser business-workflow claim.', collectionResults: collections, locking: expected.collections.map(c => ({ slug: c.slug, enabled: c.lockDocuments !== false })),
+    tasks: (expected.jobs.tasks ?? []).map(t => t.slug), actualFirstRun: true, actualPublicMutation: content.id, nativeSaveReload: true }, null, 2))
+  await anonymous.close()
+})

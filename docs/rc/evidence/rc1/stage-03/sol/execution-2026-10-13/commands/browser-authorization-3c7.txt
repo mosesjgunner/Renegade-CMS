@@ -1,0 +1,67 @@
+
+Running 1 test using 1 worker
+
+node : (node:33888) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+At line:2 char:130
++ ... iagnostic'; node node_modules/@playwright/test/cli.js test 05-http-au ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ((node:33888) Wa... env being set.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  1 scratch\sol-specs\05-http-authorization.spec.ts:31:1 › five real HTTP actors prove two-site reads, mutations, object substitutions, custom views and grant revocation (25.0s)
+Testing stopped early after 1 maximum allowed failures.
+
+
+  1) scratch\sol-specs\05-http-authorization.spec.ts:31:1 › five real HTTP actors prove two-site reads, mutations, object substitutions, custom views and grant revocation
+
+    Error: expect(page).toHaveURL(expected) failed
+
+    Expected pattern: /\/members\/settings/
+    Received string:  "https://dispatch.rc02.test:3129/member-auth/verify?token=[REDACTED]"
+    Timeout: 5000ms
+
+    Call log:
+      - Expect "toHaveURL" with timeout 5000ms
+        14 × locator resolved to <html lang="en" class="inter_31011fd-module__jtyeTG__variable newsreader_c8da6703-module__BVKz_G__variable jetbrains_mono_32dfc0ee-module__kJDCNG__variable">…</html>
+           - unexpected value "https://dispatch.rc02.test:3129/member-auth/verify?token=[REDACTED]"
+
+
+      61 |   }).toBe(true)
+      62 |   await memberPage.goto(link)
+    > 63 |   await expect(memberPage).toHaveURL(/\/members\/settings/)
+         |                            ^
+      64 |   const me = await (await member.request.get(`${base}/api/member-auth/me`)).json()
+      65 |   expect(me.memberId).toBeTruthy()
+      66 |   const membership = await owner.request.post(`${base}/api/member-site-roles`, { data: {
+        at C:\Projects\RENEGADE CMS\sol-rc1-20261013\scratch\sol-specs\05-http-authorization.spec.ts:63:28
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    scratch\sol-traces\authorization-3c7-diagnostic\05-http-authorization-five-b3cee--views-and-grant-revocation\test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    scratch\sol-traces\authorization-3c7-diagnostic\05-http-authorization-five-b3cee--views-and-grant-revocation\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #3: screenshot (image/png) ──────────────────────────────────────────────────────────
+    scratch\sol-traces\authorization-3c7-diagnostic\05-http-authorization-five-b3cee--views-and-grant-revocation\test-failed-3.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #4: screenshot (image/png) ──────────────────────────────────────────────────────────
+    scratch\sol-traces\authorization-3c7-diagnostic\05-http-authorization-five-b3cee--views-and-grant-revocation\test-failed-4.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: scratch\sol-traces\authorization-3c7-diagnostic\05-http-authorization-five-b3cee--views-and-grant-revocation\error-context.md
+
+    attachment #6: trace (application/zip) ─────────────────────────────────────────────────────────
+    scratch\sol-traces\authorization-3c7-diagnostic\05-http-authorization-five-b3cee--views-and-grant-revocation\trace.zip
+    Usage:
+
+        npx playwright show-trace scratch\sol-traces\authorization-3c7-diagnostic\05-http-authorization-five-b3cee--views-and-grant-revocation\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    scratch\sol-specs\05-http-authorization.spec.ts:31:1 › five real HTTP actors prove two-site reads, mutations, object substitutions, custom views and grant revocation
+  1 error was not a part of any test, see above for details

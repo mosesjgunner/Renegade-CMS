@@ -1,0 +1,10 @@
+
+ RUN  v3.2.7 C:/Projects/RENEGADE CMS/sol-rc1-20261013
+
+ ✓ tests/unit/fulfillment-provider-boundaries.test.ts (6 tests) 16ms
+ ✓ tests/unit/shop-03-pod-fulfillment.test.ts (26 tests) 17ms
+
+ Test Files  2 passed (2)
+      Tests  32 passed (32)
+   Start at  04:44:16
+   Duration  570ms (transform 229ms, setup 0ms, collect 428ms, tests 33ms, environment 0ms, prepare 182ms)

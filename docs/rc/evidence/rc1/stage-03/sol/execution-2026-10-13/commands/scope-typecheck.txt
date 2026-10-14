@@ -1,0 +1,5 @@
+
+> renegade-cms@0.1.0 typecheck
+> tsc --noEmit
+
+scratch/configuration.spec.ts(86,12): error TS18048: 'expected.jobs.tasks' is possibly 'undefined'.
