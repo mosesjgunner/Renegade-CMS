@@ -430,7 +430,11 @@ export async function getMediaCommandCenterOverview(
   const assets = assetsResult.docs as unknown as Array<Record<string, unknown>>
   const usages = usagesResult.docs as unknown as Array<Record<string, unknown>>
   const sessions = sessionsResult.docs as unknown as Array<Record<string, unknown>>
-  const jobs = jobsResult.docs as unknown as Array<Record<string, unknown>>
+  const jobs = (jobsResult.docs as unknown as Array<Record<string, unknown>>).filter((j) => {
+    const input = j.input as Record<string, unknown> | undefined
+    if (input?.siteId && String(input.siteId) !== siteId) return false
+    return true
+  })
   const videoAssets = videoAssetsResult.docs as unknown as Array<Record<string, unknown>>
 
   // Build usage indexes
@@ -813,6 +817,21 @@ export async function getMediaCommandCenterOverview(
   }
 }
 
+async function assertMediaAssetScope(payload: Payload, mediaId: string, siteId: string) {
+  const asset = await payload.findByID({
+    collection: 'media-assets',
+    id: mediaId,
+    depth: 0,
+    overrideAccess: true,
+  })
+  if (!asset) throw new MediaWorkflowError('Media asset not found.', 404)
+  const assetSite = id(asset.site)
+  if (assetSite && assetSite !== siteId) {
+    throw new MediaWorkflowError('Media asset belongs to a foreign site.', 403)
+  }
+  return asset
+}
+
 /** Executes direct actions from the unified Media Command Center. */
 export async function executeCommandCenterAction(
   payload: Payload,
@@ -834,8 +853,11 @@ export async function executeCommandCenterAction(
         depth: 0,
         overrideAccess: true,
       })
-      if (!job) throw new MediaWorkflowError('Media job not found.')
+      if (!job) throw new MediaWorkflowError('Media job not found.', 404)
       const input = (job as { input?: Record<string, unknown> }).input ?? {}
+      if (input.siteId && String(input.siteId) !== siteId) {
+        throw new MediaWorkflowError('Media job belongs to a foreign site.', 403)
+      }
       const task = String((job as { task?: string }).task ?? 'media-variant-generate')
 
       const queued = await payload.jobs.queue({
@@ -863,6 +885,15 @@ export async function executeCommandCenterAction(
       const { jobId, videoAssetId, sessionId } = params
 
       if (videoAssetId) {
+        const va = (await payload.findByID({
+          collection: 'video-assets' as never,
+          id: String(videoAssetId),
+          depth: 0,
+          overrideAccess: true,
+        })) as unknown as Record<string, unknown> | null
+        if (va && va.site && id(va.site) !== siteId) {
+          throw new MediaWorkflowError('Video asset belongs to a foreign site.', 403)
+        }
         await payload.update({
           collection: 'video-assets' as never,
           id: String(videoAssetId),
@@ -873,6 +904,18 @@ export async function executeCommandCenterAction(
       }
 
       if (jobId) {
+        const job = await payload.findByID({
+          collection: 'media-jobs' as never,
+          id: String(jobId),
+          depth: 0,
+          overrideAccess: true,
+        })
+        if (job) {
+          const input = (job as { input?: Record<string, unknown> }).input ?? {}
+          if (input.siteId && String(input.siteId) !== siteId) {
+            throw new MediaWorkflowError('Media job belongs to a foreign site.', 403)
+          }
+        }
         await payload.update({
           collection: 'media-jobs' as never,
           id: String(jobId),
@@ -898,6 +941,7 @@ export async function executeCommandCenterAction(
     case 'repair-metadata': {
       await assertMediaPermission(payload, user as never, scope, 'content.edit')
       const mediaId = String(params.mediaId ?? '')
+      await assertMediaAssetScope(payload, mediaId, siteId)
       const updated = await updateMediaMetadata(payload, user as never, {
         mediaId,
         scope,
@@ -917,6 +961,7 @@ export async function executeCommandCenterAction(
     case 'impact-preview': {
       await assertMediaPermission(payload, user as never, scope, 'content.read')
       const mediaId = String(params.mediaId ?? '')
+      await assertMediaAssetScope(payload, mediaId, siteId)
       const impact = await previewReplacementImpact(payload, siteId, mediaId)
       return { impact }
     }
@@ -924,6 +969,7 @@ export async function executeCommandCenterAction(
     case 'inspect-usages': {
       await assertMediaPermission(payload, user as never, scope, 'content.read')
       const mediaId = String(params.mediaId ?? '')
+      await assertMediaAssetScope(payload, mediaId, siteId)
       const usages = await payload.find({
         collection: 'media-usages',
         where: {
@@ -953,13 +999,7 @@ export async function executeCommandCenterAction(
     case 'regenerate-variants': {
       await assertMediaPermission(payload, user as never, scope, 'content.edit')
       const mediaId = String(params.mediaId ?? '')
-      const asset = await payload.findByID({
-        collection: 'media-assets',
-        id: mediaId,
-        depth: 0,
-        overrideAccess: true,
-      })
-      if (!asset) throw new MediaWorkflowError('Media asset not found.')
+      const asset = await assertMediaAssetScope(payload, mediaId, siteId)
 
       if (asset.kind === 'video') {
         const videoAsset = await payload.find({
@@ -993,6 +1033,7 @@ export async function executeCommandCenterAction(
     case 'archive-asset': {
       await assertMediaPermission(payload, user as never, scope, 'content.edit')
       const mediaId = String(params.mediaId ?? '')
+      await assertMediaAssetScope(payload, mediaId, siteId)
       const updated = await payload.update({
         collection: 'media-assets',
         id: mediaId,

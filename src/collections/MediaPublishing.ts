@@ -6,6 +6,7 @@ import {
   operatorSiteUpdateAccess,
   operatorRelatedSiteAccess,
   operatorAllSitesAccess,
+  resolveOperatorGrantContext,
 } from '../modules/operations/operator-grants'
 import {
   canonicalSlug,
@@ -94,12 +95,55 @@ function mediaCollectionAccess(
       }
     : parents[slug]
       ? operatorRelatedSiteAccess(...parents[slug])
-      : {
-          create: () => false,
-          update: () => false,
-          delete: () => false,
-          read: operatorAllSitesAccess,
-        }
+      : slug === 'media-jobs'
+        ? {
+            create: (async (args) => {
+              const grant = await resolveOperatorGrantContext(args.req.payload, args.req.user)
+              if (!grant.authorized) return false
+              if (grant.isGlobalOwner) return true
+              const siteId = relationId(
+                (
+                  (args.data as Record<string, unknown> | undefined)?.input as
+                    | Record<string, unknown>
+                    | undefined
+                )?.siteId,
+              )
+              if (!siteId) return grant.authorized
+              return grant.authorizedSiteIds.includes(siteId)
+            }) as Access,
+            read: (async (args) => {
+              const grant = await resolveOperatorGrantContext(args.req.payload, args.req.user)
+              if (!grant.authorized) return false
+              if (grant.isGlobalOwner) return true
+              if (args.id) {
+                const job = await args.req.payload.findByID({
+                  collection: 'media-jobs',
+                  id: args.id,
+                  depth: 0,
+                  overrideAccess: true,
+                })
+                const siteId = relationId(
+                  (job?.input as Record<string, unknown> | undefined)?.siteId,
+                )
+                if (siteId) return grant.authorizedSiteIds.includes(siteId)
+              }
+              return true
+            }) as Access,
+            update: (async ({ req }) => {
+              const grant = await resolveOperatorGrantContext(req.payload, req.user)
+              return grant.authorized
+            }) as Access,
+            delete: (async ({ req }) => {
+              const grant = await resolveOperatorGrantContext(req.payload, req.user)
+              return grant.authorized
+            }) as Access,
+          }
+        : {
+            create: () => false,
+            update: () => false,
+            delete: () => false,
+            read: operatorAllSitesAccess,
+          }
   const status = fields.find((field) => 'name' in field && field.name === 'status')
   const publicStatus =
     status?.type === 'select' &&
