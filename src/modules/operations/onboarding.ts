@@ -198,19 +198,21 @@ export async function provisionOnboardingSite(
     { email: { equals: ownerEmail } },
     { displayName: input.name, email: ownerEmail, status: 'active' },
   )
-  await upsert(
-    payload,
-    'team-memberships',
-    { scopeKey: { equals: `site:${site.id}` }, member: { equals: member.id } },
-    {
-      scopeKind: 'site',
-      site: site.id,
-      member: member.id,
-      role: 'owner',
-      grants: [],
-      status: 'active',
-    },
-  )
+  if (payload.collections?.['team-memberships']) {
+    await upsert(
+      payload,
+      'team-memberships',
+      { scopeKey: { equals: `site:${site.id}` }, member: { equals: member.id } },
+      {
+        scopeKind: 'site',
+        site: site.id,
+        member: member.id,
+        role: 'owner',
+        grants: [],
+        status: 'active',
+      },
+    )
+  }
   await upsert(
     payload,
     'member-site-roles',
