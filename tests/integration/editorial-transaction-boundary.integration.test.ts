@@ -2,6 +2,7 @@ import { beforeAll, describe, expect, it } from 'vitest'
 import { createLocalReq, getPayload, ValidationError, type Payload } from 'payload'
 import config from '@payload-config'
 import { randomUUID } from 'node:crypto'
+import { seed } from '../../src/scripts/seed'
 import { transactionPayload } from '@/modules/core/transaction-payload'
 import {
   createEditorialArticle,
@@ -19,6 +20,7 @@ describe('actual PostgreSQL editorial scheduling transaction', () => {
   beforeAll(async () => {
     expect(process.env.DATABASE_URL).toContain('_release_acceptance')
     payload = await getPayload({ config })
+    await seed(payload)
     const site = (
       await payload.find({
         collection: 'sites',
