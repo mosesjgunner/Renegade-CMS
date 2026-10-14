@@ -15,6 +15,7 @@ import {
   readConsent,
 } from '@/modules/analytics/privacy'
 import { loadConfig } from '@/modules/core/config'
+import { publicSiteForHost } from '@/modules/public/site-scope'
 
 const allowed = new Set<EventType>([
   'page_view',
@@ -28,7 +29,7 @@ const allowed = new Set<EventType>([
 export async function POST(request: Request) {
   const runtime = loadConfig()
   const payload = await getPayload({ config })
-  const body = (await request.json()) as {
+  const body = (await request.json().catch(() => null)) as {
     id?: string
     siteId?: string
     eventType?: EventType
@@ -36,14 +37,30 @@ export async function POST(request: Request) {
     occurredAt?: string
     sessionId?: string
     anonymousId?: string
-  }
+  } | null
   if (
+    !body ||
+    typeof body.siteId !== 'string' ||
     !body.siteId ||
     !body.eventType ||
     !allowed.has(body.eventType) ||
-    !body.path?.startsWith('/')
+    typeof body.path !== 'string' ||
+    !body.path.startsWith('/') ||
+    body.path.length > 2048 ||
+    (body.id !== undefined && typeof body.id !== 'string') ||
+    (body.occurredAt !== undefined &&
+      (typeof body.occurredAt !== 'string' || !Number.isFinite(Date.parse(body.occurredAt))))
   )
     return NextResponse.json({ error: 'Invalid minimal analytics event.' }, { status: 400 })
+  const siteId = await publicSiteForHost(
+    payload,
+    request.headers.get('host') ?? new URL(request.url).host,
+  )
+  if (!siteId || body.siteId !== siteId)
+    return NextResponse.json(
+      { error: 'Analytics site does not match this publication.' },
+      { status: 404 },
+    )
   const policy = privacyPolicyFromSettings(
     await payload.findGlobal({ slug: 'site-settings', overrideAccess: true }),
   )

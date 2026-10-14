@@ -1,6 +1,7 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
+import { checkOperatorSiteAccess } from '@/modules/operations/operator-grants'
 
 const operator = (user: { role?: string } | null | undefined) =>
   ['owner', 'administrator', 'staff'].includes(String(user?.role))
@@ -12,6 +13,8 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Staff access required.' }, { status: 403 })
   const siteId = new URL(request.url).searchParams.get('siteId')
   if (!siteId) return NextResponse.json({ error: 'siteId is required.' }, { status: 400 })
+  if (!(await checkOperatorSiteAccess(payload, auth.user, siteId)))
+    return NextResponse.json({ error: 'Staff site access required.' }, { status: 403 })
   const [events, consent] = await Promise.all([
     payload.find({
       collection: 'analytics-events',

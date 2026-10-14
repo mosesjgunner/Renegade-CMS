@@ -3,6 +3,7 @@ import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
 import { loadConfig } from '@/modules/core/config'
 import { normalizeConsentChoices } from '@/modules/analytics/contracts'
+import { publicSiteForHost, samePublicOrigin } from '@/modules/public/site-scope'
 import {
   browserPrivacySignals,
   consentSetCookie,
@@ -30,8 +31,23 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   const runtime = loadConfig()
   const payload = await getPayload({ config })
-  const body = (await request.json()) as { siteId?: string; choices?: Record<string, boolean> }
-  if (!body.siteId) return NextResponse.json({ error: 'siteId is required.' }, { status: 400 })
+  const body = (await request.json().catch(() => null)) as {
+    siteId?: string
+    choices?: Record<string, boolean>
+  } | null
+  if (!body || typeof body.siteId !== 'string' || !body.siteId)
+    return NextResponse.json({ error: 'siteId is required.' }, { status: 400 })
+  const siteId = await publicSiteForHost(
+    payload,
+    request.headers.get('host') ?? new URL(request.url).host,
+  )
+  if (!siteId || body.siteId !== siteId)
+    return NextResponse.json(
+      { error: 'Consent site does not match this publication.' },
+      { status: 404 },
+    )
+  if (request.headers.get('origin') && !(await samePublicOrigin(payload, request, false)))
+    return NextResponse.json({ error: 'Origin access denied.' }, { status: 403 })
   const sites = await payload.find({
     collection: 'sites',
     where: { id: { equals: body.siteId } },
