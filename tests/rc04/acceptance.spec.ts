@@ -552,7 +552,7 @@ test('real members, forum reply notification, preferences, moderation, private m
       'PATCH',
       '/api/member-auth/profile',
       { relationshipNotifications: { messages: false } },
-      410,
+      200,
     )
     await api(bob, 'GET', `/api/community/profiles/${a.profile.handle}`, undefined, 404)
     const thread = await api(
