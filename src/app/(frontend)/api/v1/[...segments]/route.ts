@@ -147,8 +147,12 @@ export async function GET(request: Request, context: { params: Promise<{ segment
       page = Math.max(1, Number(url.searchParams.get('page') ?? 1)),
       limit = Math.min(100, Math.max(1, Number(url.searchParams.get('limit') ?? 25)))
     const where: any = { site: { equals: auth.credential.siteId } }
+    if (auth.credential.publicationId) where.publication = { equals: auth.credential.publicationId }
+    if (auth.credential.spaceId) where.space = { equals: auth.credential.spaceId }
     const requestedStatus = url.searchParams.get('status')
     const canReadDrafts = auth.credential.scopes.includes('content.draft.read')
+    if (requestedStatus && !['published', 'updated'].includes(requestedStatus) && !canReadDrafts)
+      return problem(403, 'insufficient_scope', 'Draft content requires content.draft.read.')
     if (requestedStatus) where.and = [{ status: { equals: requestedStatus } }]
     else if (!canReadDrafts) where.and = [{ status: { in: ['published', 'updated'] } }]
     const result = await auth.payload.find({
