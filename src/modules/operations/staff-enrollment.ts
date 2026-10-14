@@ -587,6 +587,35 @@ export async function completeStaffPasskeyEnrollment(
         overrideAccess: true,
       })
     }
+    if (payload.collections?.['team-memberships']) {
+      const teamCheck = await payload.find({
+        collection: 'team-memberships',
+        where: {
+          and: [
+            { scopeKey: { equals: 'site:' + details.siteId } },
+            { member: { equals: memberId } },
+          ],
+        },
+        depth: 0,
+        limit: 1,
+        overrideAccess: true,
+      })
+      if (!teamCheck.docs.length) {
+        await payload.create({
+          collection: 'team-memberships' as never,
+          data: {
+            scopeKey: 'site:' + details.siteId,
+            scopeKind: 'site',
+            site: details.siteId,
+            member: memberId,
+            role: details.role === 'administrator' ? 'administrator' : 'editor',
+            status: 'active',
+            grants: ['content.read', 'content.edit'],
+          } as never,
+          overrideAccess: true,
+        })
+      }
+    }
   }
 
   // Audit completion
