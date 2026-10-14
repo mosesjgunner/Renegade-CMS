@@ -78,6 +78,8 @@ interface DashboardData {
       name: string
       description: string
       state: string
+      configurationStatus: 'configured' | 'unconfigured' | 'unavailable'
+      configurationIssue: string | null
       goalKey: string
       winnerDecision?: {
         selectedVariantId?: string
@@ -666,7 +668,9 @@ export function TelemetryCommandCenter() {
                   >
                     {experiment.isWinnerApproved
                       ? '★ WINNER SELECTED'
-                      : `STATUS: ${experiment.definition.state.toUpperCase()}`}
+                      : experiment.definition.configurationStatus !== 'configured'
+                        ? experiment.definition.configurationStatus.toUpperCase()
+                        : `STATUS: ${experiment.definition.state.toUpperCase()}`}
                   </span>
                   <h2 className="text-xl font-bold text-stone-900 dark:text-white">
                     {experiment.definition.name}
@@ -684,6 +688,12 @@ export function TelemetryCommandCenter() {
                 </p>
               </div>
 
+              {experiment.definition.configurationStatus !== 'configured' && (
+                <p role="status" className="mt-4 text-sm text-stone-600 dark:text-stone-300">
+                  {experiment.definition.configurationIssue} The variants below are a template
+                  preview; no experiment is running.
+                </p>
+              )}
               {experiment.definition.winnerDecision && (
                 <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs dark:border-amber-900 dark:bg-amber-950/40">
                   <p className="font-bold text-amber-900 dark:text-amber-200">
@@ -792,67 +802,71 @@ export function TelemetryCommandCenter() {
             </div>
 
             {/* Human Winner Approval Workflow */}
-            {!experiment.isWinnerApproved && (
-              <div className="mt-6 rounded-xl border border-stone-300 bg-white p-6 shadow-sm dark:border-stone-700 dark:bg-stone-900">
-                <h4 className="text-base font-bold text-stone-900 dark:text-white">
-                  Human Winner Approval Workflow
-                </h4>
-                <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">
-                  In strict conformance with experimentation ethics, algorithms never automatically
-                  deploy winners. A human operator must review statistical evidence, select the
-                  variant, and record a documented rationale.
-                </p>
+            {!experiment.isWinnerApproved &&
+              experiment.definition.configurationStatus === 'configured' &&
+              ['running', 'paused', 'stopped', 'inconclusive'].includes(
+                experiment.definition.state,
+              ) && (
+                <div className="mt-6 rounded-xl border border-stone-300 bg-white p-6 shadow-sm dark:border-stone-700 dark:bg-stone-900">
+                  <h4 className="text-base font-bold text-stone-900 dark:text-white">
+                    Human Winner Approval Workflow
+                  </h4>
+                  <p className="text-xs text-stone-500 dark:text-stone-400 mt-1">
+                    In strict conformance with experimentation ethics, algorithms never
+                    automatically deploy winners. A human operator must review statistical evidence,
+                    select the variant, and record a documented rationale.
+                  </p>
 
-                {approvalSuccess && (
-                  <div className="mt-4 rounded-lg bg-emerald-50 p-3 text-xs text-emerald-900 border border-emerald-200 dark:bg-emerald-950 dark:text-emerald-200">
-                    {approvalSuccess}
-                  </div>
-                )}
+                  {approvalSuccess && (
+                    <div className="mt-4 rounded-lg bg-emerald-50 p-3 text-xs text-emerald-900 border border-emerald-200 dark:bg-emerald-950 dark:text-emerald-200">
+                      {approvalSuccess}
+                    </div>
+                  )}
 
-                <form onSubmit={handleApproveWinner} className="mt-4 space-y-4">
-                  <div>
-                    <label className="block text-xs font-bold uppercase text-stone-700 dark:text-stone-300 mb-1">
-                      Winning Variant
-                    </label>
-                    <select
-                      value={winnerVariantId}
-                      onChange={(e) => setWinnerVariantId(e.target.value)}
-                      className="w-full max-w-md rounded-lg border border-stone-300 bg-white p-2 text-sm text-stone-900 dark:border-stone-700 dark:bg-stone-800 dark:text-white"
+                  <form onSubmit={handleApproveWinner} className="mt-4 space-y-4">
+                    <div>
+                      <label className="block text-xs font-bold uppercase text-stone-700 dark:text-stone-300 mb-1">
+                        Winning Variant
+                      </label>
+                      <select
+                        value={winnerVariantId}
+                        onChange={(e) => setWinnerVariantId(e.target.value)}
+                        className="w-full max-w-md rounded-lg border border-stone-300 bg-white p-2 text-sm text-stone-900 dark:border-stone-700 dark:bg-stone-800 dark:text-white"
+                      >
+                        {experiment.variantStats.map((v) => (
+                          <option key={v.id} value={v.id}>
+                            {v.name} ({v.id})
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="block text-xs font-bold uppercase text-stone-700 dark:text-stone-300 mb-1">
+                        Documented Reason & Evidence Rationale (Mandatory)
+                      </label>
+                      <textarea
+                        required
+                        value={approvalReason}
+                        onChange={(e) => setApprovalReason(e.target.value)}
+                        rows={3}
+                        placeholder="e.g., Evaluated 30-day trial. Variant demonstrates superior conversion without harming reader retention."
+                        className="w-full rounded-lg border border-stone-300 bg-white p-2.5 text-xs text-stone-900 dark:border-stone-700 dark:bg-stone-800 dark:text-white"
+                      />
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={approvingWinner || !approvalReason.trim()}
+                      className="rounded-lg bg-stone-900 px-5 py-2 text-xs font-bold text-white shadow hover:bg-stone-800 disabled:opacity-50 dark:bg-stone-100 dark:text-stone-900 dark:hover:bg-white"
                     >
-                      {experiment.variantStats.map((v) => (
-                        <option key={v.id} value={v.id}>
-                          {v.name} ({v.id})
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs font-bold uppercase text-stone-700 dark:text-stone-300 mb-1">
-                      Documented Reason & Evidence Rationale (Mandatory)
-                    </label>
-                    <textarea
-                      required
-                      value={approvalReason}
-                      onChange={(e) => setApprovalReason(e.target.value)}
-                      rows={3}
-                      placeholder="e.g., Evaluated 30-day trial. Variant demonstrates superior conversion without harming reader retention."
-                      className="w-full rounded-lg border border-stone-300 bg-white p-2.5 text-xs text-stone-900 dark:border-stone-700 dark:bg-stone-800 dark:text-white"
-                    />
-                  </div>
-
-                  <button
-                    type="submit"
-                    disabled={approvingWinner || !approvalReason.trim()}
-                    className="rounded-lg bg-stone-900 px-5 py-2 text-xs font-bold text-white shadow hover:bg-stone-800 disabled:opacity-50 dark:bg-stone-100 dark:text-stone-900 dark:hover:bg-white"
-                  >
-                    {approvingWinner
-                      ? 'Recording Audit Approval…'
-                      : 'Approve & Permanently Deploy Winner'}
-                  </button>
-                </form>
-              </div>
-            )}
+                      {approvingWinner
+                        ? 'Recording Audit Approval…'
+                        : 'Approve & Permanently Deploy Winner'}
+                    </button>
+                  </form>
+                </div>
+              )}
           </div>
         </div>
       )}

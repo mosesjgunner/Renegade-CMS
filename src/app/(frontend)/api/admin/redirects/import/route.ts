@@ -1,6 +1,7 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
+import { resolveOperatorGrantContext } from '@/modules/operations/operator-grants'
 import {
   importRedirectRules,
   parseRedirectsCsv,
@@ -24,13 +25,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Import payload content is empty.' }, { status: 400 })
     }
 
-    const sites = await payload.find({
-      collection: 'sites',
-      limit: 1,
-      depth: 0,
-      overrideAccess: true,
-    })
-    const siteId = sites.docs[0]?.id ? String(sites.docs[0].id) : 'default-site'
+    const grant = await resolveOperatorGrantContext(payload, auth.user)
+    const siteId = new URL(request.url).searchParams.get('siteId') || grant.authorizedSiteIds[0]
+    if (
+      !grant.authorized ||
+      !siteId ||
+      (!grant.isGlobalOwner && !grant.authorizedSiteIds.includes(siteId))
+    )
+      return NextResponse.json({ error: 'Staff site access required.' }, { status: 403 })
 
     let parsedRules: RedirectRuleInput[] = []
     let parseErrors: string[] = []

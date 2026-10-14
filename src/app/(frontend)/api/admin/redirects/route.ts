@@ -2,6 +2,10 @@ import config from '@payload-config'
 import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
 import {
+  checkOperatorRecordAccess,
+  resolveOperatorGrantContext,
+} from '@/modules/operations/operator-grants'
+import {
   listRedirectRules,
   toRedirectInput,
   validateRedirectRuleInput,
@@ -19,9 +23,18 @@ export async function GET(request: Request) {
 
   const url = new URL(request.url)
   const siteId = url.searchParams.get('siteId') || undefined
+  const grant = await resolveOperatorGrantContext(payload, auth.user)
+  if (
+    !grant.authorized ||
+    (siteId && !grant.isGlobalOwner && !grant.authorizedSiteIds.includes(siteId))
+  )
+    return NextResponse.json({ error: 'Staff site access required.' }, { status: 403 })
 
   try {
-    const rules = await listRedirectRules(payload, siteId)
+    const scopes = siteId ? [siteId] : grant.isGlobalOwner ? [undefined] : grant.authorizedSiteIds
+    const rules = (
+      await Promise.all(scopes.map((scope) => listRedirectRules(payload, scope)))
+    ).flat()
     return NextResponse.json({ rules })
   } catch (error) {
     return NextResponse.json(
@@ -50,13 +63,26 @@ export async function POST(request: Request) {
       enabled?: boolean
     }
 
-    const sites = await payload.find({
-      collection: 'sites',
-      limit: 1,
-      depth: 0,
-      overrideAccess: true,
-    })
-    const siteId = body.siteId || (sites.docs[0]?.id ? String(sites.docs[0].id) : 'default-site')
+    const grant = await resolveOperatorGrantContext(payload, auth.user)
+    if (!grant.authorized)
+      return NextResponse.json({ error: 'Staff site access required.' }, { status: 403 })
+    let siteId = body.siteId || grant.authorizedSiteIds[0]
+    if (body.id) {
+      if (!(await checkOperatorRecordAccess(payload, auth.user, 'public-redirects', body.id)))
+        return NextResponse.json({ error: 'Staff site access required.' }, { status: 403 })
+      const current = await payload.findByID({
+        collection: 'public-redirects',
+        id: body.id,
+        depth: 0,
+        overrideAccess: true,
+      })
+      const boundSite = typeof current.site === 'object' ? current.site?.id : current.site
+      if (body.siteId && body.siteId !== boundSite)
+        return NextResponse.json({ error: 'Redirect belongs to another site.' }, { status: 403 })
+      siteId = String(boundSite ?? '')
+    }
+    if (!siteId || (!grant.isGlobalOwner && !grant.authorizedSiteIds.includes(siteId)))
+      return NextResponse.json({ error: 'Staff site access required.' }, { status: 403 })
 
     const existingRules = await listRedirectRules(payload, siteId)
     const validation = validateRedirectRuleInput(body, existingRules.map(toRedirectInput))
@@ -118,6 +144,8 @@ export async function DELETE(request: Request) {
   if (!id) {
     return NextResponse.json({ error: 'Redirect rule ID is required.' }, { status: 400 })
   }
+  if (!(await checkOperatorRecordAccess(payload, auth.user, 'public-redirects', id)))
+    return NextResponse.json({ error: 'Staff site access required.' }, { status: 403 })
 
   try {
     await payload.delete({

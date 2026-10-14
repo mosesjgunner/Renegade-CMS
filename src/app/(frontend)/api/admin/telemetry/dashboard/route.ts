@@ -11,6 +11,7 @@ import {
 } from '@/modules/analytics/contracts'
 import { analyzeExperiment } from '@/modules/experiences/contracts'
 import { getActivePublicExperiment } from '@/modules/experiences/public-experiment'
+import { resolveOperatorGrantContext } from '@/modules/operations/operator-grants'
 
 const isOperator = (user: { role?: string } | null | undefined) =>
   ['owner', 'administrator', 'staff'].includes(String(user?.role))
@@ -25,12 +26,19 @@ export async function GET(request: Request) {
 
   const url = new URL(request.url)
   const siteIdParam = url.searchParams.get('siteId')
+  const grant = await resolveOperatorGrantContext(payload, auth.user)
+  if (
+    !grant.authorized ||
+    (siteIdParam && !grant.isGlobalOwner && !grant.authorizedSiteIds.includes(siteIdParam))
+  )
+    return NextResponse.json({ error: 'Staff site access required.' }, { status: 403 })
   const startDateParam = url.searchParams.get('startDate')
   const endDateParam = url.searchParams.get('endDate')
 
   // 1. Fetch available sites
   const sitesRes = await payload.find({
     collection: 'sites',
+    ...(grant.isGlobalOwner ? {} : { where: { id: { in: grant.authorizedSiteIds } } }),
     limit: 50,
     depth: 0,
     overrideAccess: true,
@@ -43,7 +51,9 @@ export async function GET(request: Request) {
     }
   })
 
-  const activeSiteId = siteIdParam || (sites[0]?.id ?? 'default-site')
+  const activeSiteId = siteIdParam || sites[0]?.id
+  if (!activeSiteId || !sites.some((site) => site.id === activeSiteId))
+    return NextResponse.json({ error: 'Choose an available site.' }, { status: 400 })
 
   // 2. Compute date window (default last 30 days)
   const now = new Date()
@@ -118,6 +128,7 @@ export async function GET(request: Request) {
       payload
         .find({
           collection: 'suppressions',
+          where: { site: { equals: activeSiteId } },
           limit: 1000,
           depth: 0,
           overrideAccess: true,

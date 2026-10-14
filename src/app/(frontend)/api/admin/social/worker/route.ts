@@ -2,6 +2,7 @@ import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
 import { executeSocialQueueItem } from '@/modules/social/tasks'
+import { resolveOperatorGrantContext } from '@/modules/operations/operator-grants'
 
 const staffOnly = (user: { role?: string } | null | undefined) =>
   ['owner', 'administrator', 'publisher', 'staff'].includes(String(user?.role))
@@ -17,7 +18,8 @@ export async function POST(request: Request) {
     const isAuthorizedSecret =
       configuredSecret && workerSecretHeader && configuredSecret === workerSecretHeader
 
-    if (!isAuthorizedSecret && !staffOnly(auth.user)) {
+    const grant = await resolveOperatorGrantContext(payload, auth.user)
+    if (!isAuthorizedSecret && (!staffOnly(auth.user) || !grant.authorized)) {
       return NextResponse.json({ error: 'Unauthorized.' }, { status: 403 })
     }
 
@@ -27,6 +29,9 @@ export async function POST(request: Request) {
         and: [
           { status: { equals: 'scheduled' } },
           { scheduledFor: { less_than_equal: new Date().toISOString() } },
+          ...(!isAuthorizedSecret && !grant.isGlobalOwner
+            ? [{ 'account.site': { in: grant.authorizedSiteIds } }]
+            : []),
         ],
       },
       limit: 20,

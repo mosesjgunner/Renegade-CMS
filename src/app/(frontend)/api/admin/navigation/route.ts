@@ -4,6 +4,10 @@ import { revalidatePath } from 'next/cache'
 import { NextResponse } from 'next/server'
 
 import { normalizeNavigation, validateNavigation } from '@/modules/public/navigation'
+import {
+  checkOperatorRecordAccess,
+  resolveOperatorGrantContext,
+} from '@/modules/operations/operator-grants'
 
 export const runtime = 'nodejs'
 
@@ -17,6 +21,14 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
   const publicationId = searchParams.get('publicationId')
   const siteId = searchParams.get('siteId')
+  const grant = await resolveOperatorGrantContext(payload, auth.user)
+  if (
+    !grant.authorized ||
+    (siteId && !grant.isGlobalOwner && !grant.authorizedSiteIds.includes(siteId)) ||
+    (publicationId &&
+      !(await checkOperatorRecordAccess(payload, auth.user, 'publications', publicationId)))
+  )
+    return NextResponse.json({ error: 'Staff site access required.' }, { status: 403 })
 
   const pubWhere: Record<string, unknown> = publicationId
     ? { id: { equals: publicationId } }
@@ -26,7 +38,9 @@ export async function GET(request: Request) {
 
   const publications = await payload.find({
     collection: 'publications',
-    where: pubWhere as never,
+    where: {
+      and: [pubWhere, ...(grant.isGlobalOwner ? [] : [{ site: { in: grant.authorizedSiteIds } }])],
+    } as never,
     limit: 1,
     depth: 0,
     overrideAccess: true,
@@ -34,6 +48,7 @@ export async function GET(request: Request) {
 
   const pub = publications.docs[0] as unknown as Record<string, unknown> | undefined
   const navigation = normalizeNavigation(pub?.navigation)
+  if (!pub) return NextResponse.json({ publicationId: null, navigation, targets: [] })
 
   // Also query published pages and articles for easy target selection
   const site = typeof pub?.site === 'string' ? pub.site : (pub?.site as { id?: string })?.id
@@ -77,6 +92,12 @@ export async function POST(request: Request) {
     }
 
     const validated = validateNavigation(body.navigation)
+    const grant = await resolveOperatorGrantContext(payload, auth.user)
+    if (
+      !grant.authorized ||
+      (body.siteId && !grant.isGlobalOwner && !grant.authorizedSiteIds.includes(body.siteId))
+    )
+      return NextResponse.json({ error: 'Staff site access required.' }, { status: 403 })
 
     let targetPublicationId = body.publicationId
     if (!targetPublicationId) {
@@ -85,7 +106,12 @@ export async function POST(request: Request) {
         : { and: [{ status: { equals: 'active' } }, { visibility: { equals: 'public' } }] }
       const pubs = await payload.find({
         collection: 'publications',
-        where: pubWhere as never,
+        where: {
+          and: [
+            pubWhere,
+            ...(grant.isGlobalOwner ? [] : [{ site: { in: grant.authorizedSiteIds } }]),
+          ],
+        } as never,
         limit: 1,
         depth: 0,
         overrideAccess: true,
@@ -96,6 +122,8 @@ export async function POST(request: Request) {
     if (!targetPublicationId) {
       return NextResponse.json({ error: 'Publication not found.' }, { status: 404 })
     }
+    if (!(await checkOperatorRecordAccess(payload, auth.user, 'publications', targetPublicationId)))
+      return NextResponse.json({ error: 'Staff site access required.' }, { status: 403 })
 
     await payload.update({
       collection: 'publications',

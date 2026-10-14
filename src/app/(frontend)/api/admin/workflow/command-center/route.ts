@@ -2,10 +2,12 @@ import { readFile } from 'node:fs/promises'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
+import { categorizeWorkflowQueues, type WorkflowItem } from '@/modules/editorial/cmos-workflow'
 import { getWorkflowQueuesForUser } from '@/modules/editorial/cmos-persistence'
 import { getUnresolvedComments } from '@/modules/editorial/comments'
 import { getLocalizationEngine } from '@/modules/editorial/localization/service'
 import { sanitizeErrorLog } from '@/modules/editorial/scheduler'
+import { resolveOperatorGrantContext } from '@/modules/operations/operator-grants'
 
 export const runtime = 'nodejs'
 
@@ -17,7 +19,20 @@ export async function GET(request: Request) {
   }
 
   const url = new URL(request.url)
-  const siteId = url.searchParams.get('siteId') || undefined
+  const grant = await resolveOperatorGrantContext(payload, auth.user)
+  const requestedSiteId = url.searchParams.get('siteId') || undefined
+  const siteIds = requestedSiteId
+    ? [requestedSiteId]
+    : grant.isGlobalOwner
+      ? null
+      : grant.authorizedSiteIds
+  if (
+    !grant.authorized ||
+    (!grant.isGlobalOwner &&
+      (grant.authorizedSiteIds.length === 0 ||
+        (requestedSiteId && !grant.authorizedSiteIds.includes(requestedSiteId))))
+  )
+    return NextResponse.json({ error: 'Staff site access required.' }, { status: 403 })
   const now = url.searchParams.get('now') || new Date().toISOString()
 
   const userId = String(auth.user.id)
@@ -40,15 +55,49 @@ export async function GET(request: Request) {
 
   try {
     // 1. Queues (My Work & Team Queues)
-    const queues = await getWorkflowQueuesForUser(payload, {
-      userId,
-      role: isPublisher ? 'publisher' : 'editor',
-      siteId,
-      now,
-    })
+    const snapshots = await Promise.all(
+      (siteIds ?? [undefined]).map((siteId) =>
+        getWorkflowQueuesForUser(payload, {
+          userId,
+          role: isPublisher ? 'publisher' : 'editor',
+          siteId,
+          now,
+        }),
+      ),
+    )
+    const scopedItems = new Map<string, WorkflowItem>()
+    for (const snapshot of snapshots)
+      for (const section of [snapshot.personal, snapshot.team])
+        for (const items of Object.values(section))
+          for (const item of items) scopedItems.set(item.id, item)
+    const queues = categorizeWorkflowQueues([...scopedItems.values()], userId, now)
 
-    // 2. Unresolved Comments
-    const comments = getUnresolvedComments()
+    const permittedDocuments = new Set<string>()
+    if (siteIds) {
+      const [content, articles] = await Promise.all([
+        payload.find({
+          collection: 'content',
+          where: { site: { in: siteIds } },
+          depth: 0,
+          limit: 0,
+          pagination: false,
+          overrideAccess: true,
+        }),
+        payload.find({
+          collection: 'article-family-content',
+          where: { 'content.site': { in: siteIds } },
+          depth: 0,
+          limit: 0,
+          pagination: false,
+          overrideAccess: true,
+        }),
+      ])
+      for (const doc of [...content.docs, ...articles.docs]) permittedDocuments.add(String(doc.id))
+    }
+    // Process-local stores need the same persisted site boundary as database records.
+    const comments = getUnresolvedComments().filter(
+      (comment) => !siteIds || permittedDocuments.has(comment.articleId),
+    )
 
     // 3. Due / Overdue items
     const allItems = [
@@ -115,7 +164,15 @@ export async function GET(request: Request) {
 
     // 5. Localization / Translations
     const locEngine = getLocalizationEngine()
-    const translationGroups = locEngine.getAllGroups().map((g) => ({
+    const visibleGroups = locEngine
+      .getAllGroups()
+      .filter((g) => !siteIds || permittedDocuments.has(g.sourceDocumentId))
+    const groupIds = new Set(visibleGroups.map((group) => group.id))
+    const visibleRequests = locEngine
+      .getAllRequests()
+      .filter((r) => !siteIds || groupIds.has(r.groupId))
+    const requestIds = new Set(visibleRequests.map((request) => request.id))
+    const translationGroups = visibleGroups.map((g) => ({
       id: g.id,
       conceptualId: g.conceptualId,
       sourceLocale: g.sourceLocale,
@@ -123,7 +180,7 @@ export async function GET(request: Request) {
       variants: Object.keys(g.variants),
       directLink: `/admin/workflow?tab=translations&groupId=${encodeURIComponent(g.id)}`,
     }))
-    const translationRequests = locEngine.getAllRequests().map((r) => {
+    const translationRequests = visibleRequests.map((r) => {
       const grp = locEngine.getGroup(r.groupId)
       const variant = grp?.variants[r.targetLocale]
       return {
@@ -143,7 +200,16 @@ export async function GET(request: Request) {
     // 6. Notification Failures from Outbox
     const outbox = locEngine.notificationManager.getOutbox()
     const notificationFailures = outbox
-      .filter((n) => n.status === 'failed')
+      .filter(
+        (n) =>
+          n.status === 'failed' &&
+          (!siteIds ||
+            permittedDocuments.has(
+              String(n.payload.sourceDocumentId ?? n.payload.articleId ?? ''),
+            ) ||
+            groupIds.has(String(n.payload.groupId ?? '')) ||
+            requestIds.has(String(n.payload.requestId ?? ''))),
+      )
       .map((n) => ({
         id: n.id,
         eventType: n.eventType,
@@ -162,6 +228,7 @@ export async function GET(request: Request) {
       ) => Promise<{ docs: Array<Record<string, unknown>> }>
       const releasesDocs = await finder({
         collection: 'content-releases',
+        ...(siteIds ? { where: { site: { in: siteIds } } } : {}),
         limit: 10,
         sort: '-createdAt',
         overrideAccess: true,
@@ -191,6 +258,7 @@ export async function GET(request: Request) {
       ) => Promise<{ docs: Array<Record<string, unknown>> }>
       const jobsDocs = await finder({
         collection: 'scheduled-publish-jobs',
+        ...(siteIds ? { where: { 'article.content.site': { in: siteIds } } } : {}),
         limit: 20,
         sort: '-scheduledFor',
         overrideAccess: true,

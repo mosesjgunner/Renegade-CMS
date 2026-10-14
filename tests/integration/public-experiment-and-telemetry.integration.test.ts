@@ -52,6 +52,8 @@ describe('Public Experiment & Consent-Safe Telemetry Integration — Prompt 5', 
       const resolution = resolvePublicExperimentVariant({
         experiment: {
           ...CANONICAL_PUBLIC_EXPERIMENT,
+          configurationStatus: 'configured',
+          configurationIssue: null,
           dbId: 'exp-1',
           siteId: 'site-1',
           winnerDecision: null,
@@ -265,6 +267,8 @@ describe('Public Experiment & Consent-Safe Telemetry Integration — Prompt 5', 
       const resolvedAfterWinner = resolvePublicExperimentVariant({
         experiment: {
           ...CANONICAL_PUBLIC_EXPERIMENT,
+          configurationStatus: 'configured',
+          configurationIssue: null,
           dbId: 'exp-1',
           siteId: 'site-default',
           state: 'winner-selected',
