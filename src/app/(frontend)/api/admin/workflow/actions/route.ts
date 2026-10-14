@@ -49,15 +49,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'articleId and action are required.' }, { status: 400 })
     }
 
-    if (
-      !(await checkOperatorRecordAccess(
-        payload,
-        auth.user,
-        'article-family-content',
-        body.articleId,
-        'content.site',
-      ))
-    ) {
+    if (!(await checkOperatorRecordAccess(payload, auth.user, 'content', body.articleId))) {
       return NextResponse.json({ error: 'Staff site access required.' }, { status: 403 })
     }
 

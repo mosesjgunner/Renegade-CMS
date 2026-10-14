@@ -1,20 +1,9 @@
 import { beforeAll, describe, expect, it, vi } from 'vitest'
 import { type Payload } from 'payload'
 
-vi.mock('payload', async (importOriginal) => {
-  const actual = await importOriginal<Record<string, unknown>>()
-  return {
-    ...actual,
-    getPayload: vi.fn().mockResolvedValue({
-      update: vi.fn().mockResolvedValue({}),
-      find: vi.fn().mockResolvedValue({ docs: [] }),
-      findByID: vi.fn().mockResolvedValue(null),
-    }),
-  }
-})
-
 import {
   executeWorkflowAction,
+  bulkExecuteWorkflowItems,
   getWorkflowAuditHistory,
   getWorkflowItemForArticle,
   getWorkflowQueuesForUser,
@@ -30,11 +19,27 @@ describe('FLOW-01 Workflow Integration & API Layer', () => {
   let payload: Payload
   const articleId = `art-test-${Date.now()}`
 
+  const documents = new Map<string, Record<string, unknown>>()
   beforeAll(async () => {
+    documents.set(articleId, {
+      id: articleId,
+      site: 'test-site',
+      owner: 'user-author-10',
+      status: 'draft',
+      auditMetadata: {},
+    })
     payload = {
-      update: vi.fn().mockResolvedValue({}),
-      find: vi.fn().mockResolvedValue({ docs: [] }),
-      findByID: vi.fn().mockResolvedValue(null),
+      update: vi.fn(async ({ id, data }) => {
+        const doc = documents.get(id)
+        if (!doc) throw new Error('Not found')
+        const updated = { ...doc, ...data }
+        documents.set(id, updated)
+        return updated
+      }),
+      find: vi.fn(async ({ collection }) => ({
+        docs: collection === 'content' ? [...documents.values()] : [],
+      })),
+      findByID: vi.fn(async ({ id }) => documents.get(id) ?? null),
     } as unknown as Payload
   })
 
@@ -118,5 +123,54 @@ describe('FLOW-01 Workflow Integration & API Layer', () => {
     expect(auditTrail.some((a) => a.action === 'workflow.submitted_for_review')).toBe(true)
     expect(auditTrail.some((a) => a.action === 'workflow.decided_approved')).toBe(true)
     expect(auditTrail.some((a) => a.action === 'workflow.draft_saved')).toBe(true)
+  })
+  it('4. rejects missing records and failed writes without inventing workflow state', async () => {
+    await expect(getWorkflowItemForArticle(payload, 'missing-content')).rejects.toThrow(
+      'Content record not found',
+    )
+    const id = articleId + '-failure'
+    documents.set(id, {
+      id,
+      site: 'test-site',
+      owner: 'author-failure',
+      status: 'draft',
+      auditMetadata: {},
+    })
+    vi.mocked(payload.update).mockRejectedValueOnce(new Error('database write failed'))
+    await expect(
+      executeWorkflowAction(payload, {
+        articleId: id,
+        action: 'submit',
+        actor: { id: 'author-failure', role: 'author' },
+      }),
+    ).rejects.toThrow('database write failed')
+    expect((await getWorkflowItemForArticle(payload, id)).status).toBe('draft')
+    expect(documents.get(id)?.status).toBe('draft')
+  })
+
+  it('5. reports failed bulk persistence as failure and preserves successful writes', async () => {
+    const ids = [articleId + '-bulk-fail', articleId + '-bulk-ok']
+    for (const id of ids)
+      documents.set(id, {
+        id,
+        site: 'test-site',
+        owner: 'bulk-author',
+        status: 'draft',
+        auditMetadata: {},
+      })
+    vi.mocked(payload.update).mockRejectedValueOnce(new Error('bulk database write failed'))
+    const result = await bulkExecuteWorkflowItems(payload, {
+      articleIds: ids,
+      action: 'reassign',
+      actor: { id: 'bulk-editor', role: 'publisher' },
+      update: { priority: 'high' },
+    })
+    expect(result.succeededCount).toBe(1)
+    expect(result.failedCount).toBe(1)
+    expect(result.results[0]).toMatchObject({ success: false, error: 'bulk database write failed' })
+    expect(
+      (documents.get(ids[0])?.auditMetadata as Record<string, unknown>).cmosWorkflow,
+    ).toBeUndefined()
+    expect((await getWorkflowItemForArticle(payload, ids[1])).assignment.priority).toBe('high')
   })
 })

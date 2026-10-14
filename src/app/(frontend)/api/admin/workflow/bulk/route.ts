@@ -1,6 +1,7 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
+import { checkOperatorRecordAccess } from '@/modules/operations/operator-grants'
 import { bulkExecuteWorkflowItems } from '@/modules/editorial/cmos-persistence'
 import type { EditorialRole } from '@/modules/editorial/workflow'
 import type { Priority } from '@/modules/editorial/cmos-workflow'
@@ -31,11 +32,21 @@ export async function POST(request: Request) {
       )
     }
 
+    for (const id of body.articleIds) {
+      if (
+        typeof id !== 'string' ||
+        !(await checkOperatorRecordAccess(payload, auth.user, 'content', id))
+      )
+        return NextResponse.json({ error: 'Staff site access required.' }, { status: 403 })
+    }
+
     const userRoleStr = String(auth.user.role)
     const actorRole: EditorialRole =
-      userRoleStr === 'owner' || userRoleStr === 'administrator'
+      userRoleStr === 'owner'
         ? body.role || 'publisher'
-        : 'editor'
+        : userRoleStr === 'administrator'
+          ? 'publisher'
+          : 'editor'
 
     const result = await bulkExecuteWorkflowItems(payload, {
       articleIds: body.articleIds,
