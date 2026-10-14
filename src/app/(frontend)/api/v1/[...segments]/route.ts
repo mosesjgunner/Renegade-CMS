@@ -49,13 +49,28 @@ const clientRecord = (doc: Record<string, any>): MachineCredential => ({
 })
 
 function version(request: Request) {
-  const requested = request.headers.get('x-renegade-api-version') ?? request.headers.get('accept')
-  if (!requested || requested.includes('v1')) return null
-  return problem(
-    406,
-    'unsupported_version',
-    'Only API version v1 is supported. Deprecated versions return 410 after their published sunset date.',
-  )
+  const apiVersion = request.headers.get('x-renegade-api-version')
+  if (apiVersion) {
+    if (!apiVersion.includes('v1')) {
+      return problem(
+        406,
+        'unsupported_version',
+        'Only API version v1 is supported. Deprecated versions return 410 after their published sunset date.',
+      )
+    }
+    return null
+  }
+  const accept = request.headers.get('accept')
+  if (accept && (accept.includes('vnd.renegade') || accept.includes('version='))) {
+    if (!accept.includes('v1')) {
+      return problem(
+        406,
+        'unsupported_version',
+        'Only API version v1 is supported. Deprecated versions return 410 after their published sunset date.',
+      )
+    }
+  }
+  return null
 }
 async function authenticate(request: Request, scope: IntegrationScope) {
   const token = request.headers.get('authorization')?.match(/^Bearer (.+)$/i)?.[1]
