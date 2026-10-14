@@ -74,6 +74,34 @@ function payloadDouble() {
 }
 
 describe('first-run onboarding', () => {
+  it.each([false, true])(
+    'provisions canonical ownership with collaboration registered=%s',
+    async (registered) => {
+      const payload = payloadDouble()
+      const find = payload.find
+      payload.find = async (args) => {
+        if (args.collection === 'team-memberships' && !registered)
+          throw new Error('Optional collaboration collection is not registered')
+        return find(args)
+      }
+      Object.assign(payload, { collections: registered ? { 'team-memberships': {} } : {} })
+      await provisionOnboardingSite(
+        payload as never,
+        'owner@example.test',
+        input({ starterContent: false }),
+      )
+      expect(
+        payload.records.filter((record) => record.collection === 'team-memberships'),
+      ).toHaveLength(registered ? 1 : 0)
+      const site = payload.records.find((record) => record.collection === 'sites')!
+      const member = payload.records.find((record) => record.collection === 'members')!
+      expect(payload.records.filter((record) => record.collection === 'member-site-roles')).toEqual(
+        [expect.objectContaining({ site: site.id, member: member.id, role: 'community-manager' })],
+      )
+      expect(payload.globals['site-settings']).toMatchObject({ siteName: input().name })
+    },
+  )
+
   it('keeps the installed host bound to its site when another site is added', async () => {
     const payload = payloadDouble()
     payload.globals['site-settings'] = {
