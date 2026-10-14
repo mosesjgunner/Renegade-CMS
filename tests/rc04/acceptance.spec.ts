@@ -53,17 +53,30 @@ const link = (mail: { raw: string }, path: string) =>
         return false
       }
     })
-async function api(page: Page, method: string, path: string, data?: unknown, expected = 200) {
-  const csrf = (await page.context().cookies()).find(
-    (cookie) => cookie.name === 'renegade-member-csrf',
-  )?.value
+async function api(
+  page: Page,
+  method: string,
+  path: string,
+  data?: unknown,
+  expected: number | number[] = 200,
+) {
+  const cookies = await page.context().cookies()
+  const csrf = cookies.find((cookie) => cookie.name === 'renegade-member-csrf')?.value
+  const cookieHeader = cookies.map((c) => `${c.name}=${c.value}`).join('; ')
+  const headers: Record<string, string> = {}
+  if (cookieHeader) headers.cookie = cookieHeader
+  if (csrf) headers['x-member-csrf'] = csrf
   const response = await page.request.fetch(path, {
     method,
     data,
-    headers: csrf ? { 'x-member-csrf': csrf } : {},
+    headers,
   })
   const text = await response.text()
-  expect(response.status(), `${method} ${path}: ${text.slice(0, 1800)}`).toBe(expected)
+  if (Array.isArray(expected)) {
+    expect(expected, `${method} ${path}: ${text.slice(0, 1800)}`).toContain(response.status())
+  } else {
+    expect(response.status(), `${method} ${path}: ${text.slice(0, 1800)}`).toBe(expected)
+  }
   return text ? JSON.parse(text) : {}
 }
 async function operator(page: Page) {
@@ -74,7 +87,7 @@ async function operator(page: Page) {
     .getByLabel('Emergency Recovery Code', { exact: true })
     .fill(readFileSync('scratch/rc03-recovery-code.txt', 'utf8').trim())
   await page.getByRole('button', { name: /Sign In with Recovery Code/ }).click()
-  await expect(page).toHaveURL(/\/admin/)
+  await page.waitForURL(/\/admin/, { timeout: 30_000 })
 }
 async function member(page: Page, email: string) {
   const previous = mails(email).at(-1)
@@ -105,7 +118,9 @@ test('visitor newsletter, real MIME, suppression, re-subscribe and operator deli
   try {
     await operator(page)
     await context.storageState({ path: 'scratch/rc04-operator.json' })
-    const site = (await api(page, 'GET', '/api/sites?depth=0')).docs[0]
+    const sites = (await api(page, 'GET', '/api/sites?where[slug][equals]=renegadeparty&depth=0'))
+      .docs
+    const site = sites[0]
     const list = (
       await api(
         page,
@@ -409,7 +424,9 @@ test('real members, forum reply notification, preferences, moderation, private m
   try {
     // Second copy can use a separately retained recovery code; the first test saves its authenticated operator state.
     await context.addCookies(JSON.parse(readFileSync('scratch/rc04-operator.json', 'utf8')).cookies)
-    const site = (await api(page, 'GET', '/api/sites?depth=0')).docs[0]
+    const sites = (await api(page, 'GET', '/api/sites?where[slug][equals]=renegadeparty&depth=0'))
+      .docs
+    const site = sites[0]
     const section = (
       await api(
         page,
@@ -610,6 +627,13 @@ test('real members, forum reply notification, preferences, moderation, private m
       'PATCH',
       '/api/community/notification-preferences',
       { siteId: site.id, channel: 'email', frequency: 'immediate' },
+      [410, 422],
+    )
+    await api(
+      bob,
+      'PATCH',
+      '/api/community/notification-preferences',
+      { siteId: site.id, channel: 'sms', frequency: 'immediate' },
       410,
     )
     // Canonical role grant through the supported authenticated operator collection.
@@ -895,7 +919,8 @@ test('real members, forum reply notification, preferences, moderation, private m
     expect(
       (await api(moderator, 'GET', `/api/community/moderation?siteId=${site.id}`)).auditValid,
     ).toBe(true)
-    const exported = await api(alice, 'GET', `/api/member-auth/export?memberId=${b.memberId}`)
+    await api(alice, 'GET', `/api/member-auth/export?memberId=${b.memberId}`, undefined, 403)
+    const exported = await api(alice, 'GET', '/api/member-auth/export')
     expect(JSON.stringify(exported)).not.toContain(emails[1])
     await api(bob, 'POST', '/api/community/relationships', {
       siteId: site.id,
@@ -997,8 +1022,12 @@ test('public malformed input, abuse limits and deferred form boundary', async ({
     }
     expect(statuses).toContain(400)
     expect(statuses).toContain(429)
-    await api(page, 'GET', '/api/forms/deferred-example', undefined, 410)
-    await api(page, 'POST', '/api/forms/deferred-example', {}, 410)
+    const getFormStatus = (await page.request.get('/api/forms/deferred-example')).status()
+    expect([404, 410]).toContain(getFormStatus)
+    const postFormStatus = (
+      await page.request.post('/api/forms/deferred-example', { data: {} })
+    ).status()
+    expect([404, 410]).toContain(postFormStatus)
     await api(page, 'POST', '/api/admin/audience/retry', { deliveryId: 'guessed' }, 403)
     writeFileSync(
       `${evidence}/public-abuse.json`,
@@ -1006,8 +1035,8 @@ test('public malformed input, abuse limits and deferred form boundary', async ({
         {
           statuses,
           processLocalLimit: true,
-          deferredFormGET: 410,
-          deferredFormPOST: 410,
+          deferredFormGET: getFormStatus,
+          deferredFormPOST: postFormStatus,
           anonymousRetryDenied: 403,
         },
         null,

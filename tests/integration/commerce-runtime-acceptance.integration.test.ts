@@ -52,9 +52,10 @@ describe('RC08D-04: Commerce Runtime Closure & Acceptance Verification', () => {
     const siteId = demo.siteId
     const suffix = randomUUID().slice(0, 8)
 
-    process.env.LOCAL_E2E_TEST_MODE = 'true'
+    process.env.COMMERCE_LOCAL_TEST_CHECKOUT_ENABLED = 'true'
     process.env.COMMERCE_GUEST_ORDER_SECRET = 'rc08d04-guest-order-secret-very-long-32chars'
     process.env.COMMERCE_TEST_WEBHOOK_SECRET = 'rc08d04-webhook-secret-long-enough'
+    process.env.COMMERCE_DELIVERY_SECRET = 'rc08d04-delivery-secret-long-enough-32chars'
 
     // Enable commerce checkout in global settings
     const settings = await payload.findGlobal({ slug: 'site-settings', overrideAccess: true })

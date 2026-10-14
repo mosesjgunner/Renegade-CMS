@@ -1,0 +1,67 @@
+# Stage 04 — Commerce, Audience, Community, and Provider Evidence Matrix
+
+Release: `v0.1.0-rc.1`  
+Stage: **Stage 04 — Commerce, Audience, Community, and Provider Integration**  
+Evaluator: **Gemini**  
+Date: 2026-10-14  
+
+This document details the exact execution evidence for every shipping workflow in Stage 04, verified via authentic browser, API, and operator interfaces on a dedicated disposable database (`renegade_rc04_1791964700484_release_acceptance`) and isolated media directory.
+
+---
+
+## 1. Commerce Runtime & Checkout Workflows
+
+| Workflow Area | Requirement / Scenario | Test Proof & Command | Outcome & Key Assertions | Status |
+|---|---|---|---|---|
+| **Catalog & Low-Stock Race** | Product with 1 unit in stock. Customer A adds item to Cart A; Customer B adds same item to Cart B. | `node --env-file=.env.rc04 scripts/run-integration.mjs tests/integration/commerce-runtime-acceptance.integration.test.ts` (Section 1 & 5) | Customer A completes checkout proposal and settles order. Inventory decrements to 0. Customer B checkout initiation is rejected with inventory unavailable error (HTTP 400). | **PASS** |
+| **Server-Authoritative Pricing** | Client attempts to tamper with prices, quantities, or cart subtotals. | `tests/integration/commerce-runtime-acceptance.integration.test.ts` (Section 2), `tests/integration/rc05-pass2-commerce-routes.integration.test.ts` (Test 2) | Negative quantity rejected (HTTP 400). Tampered proposal hash or modified cart version rejected during checkout initiation. Prices computed authoritatively from database offers. | **PASS** |
+| **Guest / Member Cart Isolation & Merge** | Anonymous visitor creates guest cart; authenticates as member; carts merge cleanly without cross-site leakage. | `tests/unit/shop-02-tampering-and-invariants.test.ts`, `tests/integration/rc05-pass2-commerce-routes.integration.test.ts` (Test 4) | Guest cart items re-bound to member session. Cross-site guest cart token theft strictly rejected ("Cross-site cart access denied"). | **PASS** |
+| **Site / Merchant Binding** | Merchant connection and payment method capabilities scoped to tenant site. | `tests/integration/commerce-runtime-acceptance.integration.test.ts`, `tests/unit/commerce-merchant-selection.test.ts` | Capability resolved from active merchant connection matching tenant `siteId`. Cross-site merchant access rejected. | **PASS** |
+| **Deterministic Payment Path** | Test checkout initiated on supported test host; guest token cookie issued; payment confirmed. | `tests/integration/commerce-runtime-acceptance.integration.test.ts` (Section 3), `tests/integration/shop-08-local-donation-checkout.integration.test.ts` | Guest cookie verified via HMAC; test payment confirmation endpoint redirects to return URL (HTTP 303); payment attempt state marked pending/settling. | **PASS** |
+| **Signed Webhook Settlement & Replay** | Payment provider webhook delivered with HMAC signature; replay attempt processed idempotently. | `tests/integration/commerce-runtime-acceptance.integration.test.ts` (Section 4), `tests/integration/rc05-pass2-commerce-routes.integration.test.ts` (Test 3) | Unsigned/forged webhook rejected (HTTP 400/401). Valid signed webhook transitions order to `paid`, decrements inventory, creates receipt job. Duplicate webhook replay processed idempotently without double-fulfillment. | **PASS** |
+| **Digital Delivery Grant & Download** | Order containing digital product generates time-limited signed download grant key; file served byte-for-byte. | `tests/integration/commerce-runtime-acceptance.integration.test.ts` (Section 6) | `GET /api/commerce/download/[grantKey]` returns HTTP 200 with matching file bytes, correct headers (`Content-Disposition: attachment`), and increments download count. | **PASS** |
+| **Digital Download Revocation & Tampering** | Revoked or expired download grant key; corrupted HMAC signature. | `tests/integration/commerce-runtime-acceptance.integration.test.ts` (Section 6) | Tampered grant key rejected (HTTP 400/404). Exceeded download limit returns HTTP 410 Gone. Unauthorized access denied. | **PASS** |
+| **Refunds & Exception Handling** | Admin issues full refund on paid order; associated download grants revoked. | `tests/integration/commerce-runtime-acceptance.integration.test.ts` (Section 7) | `POST /api/admin/commerce/refunds` creates refund record, transitions order to `refunded`, and immediately invalidates digital download grant key (HTTP 410). | **PASS** |
+| **Subscriptions & Entitlements** | Member purchases recurring subscription; entitlement granted; access to gated content verified. | `tests/integration/commerce-runtime-acceptance.integration.test.ts` (Section 8), `tests/integration/shared-contract-commerce-shop.integration.test.ts` | Plan published; subscription created; `recomputeSubscriptionEntitlements` grants active entitlement; access check `hasEntitlement` returns true. | **PASS** |
+| **Subscription Cancellation & Dunning** | Member cancels subscription; entitlement retained until billing period end; dunning on failure. | `tests/integration/commerce-runtime-acceptance.integration.test.ts` (Section 8) | Subscription transitions to `cancelled`; entitlement remains valid until `currentPeriodEnd`; expired subscription revokes entitlement. | **PASS** |
+| **Donations, Privacy & Reversal** | Supporter makes donation with anonymous display privacy; donation reversed on dispute. | `tests/integration/commerce-runtime-acceptance.integration.test.ts` (Section 9), `tests/integration/shop-08-local-donation-checkout.integration.test.ts` | Donation intent created; checkout completes; donor name excluded from public supporter feed; `reverseDonation` restores campaign balance accurately. | **PASS** |
+| **Advertised Affiliate Behavior** | Outbound affiliate referral link resolved; destination URL checked against security whitelist; conversion recorded. | `tests/integration/commerce-runtime-acceptance.integration.test.ts` (Section 10), `tests/integration/shared-contract-affiliate-pod.integration.test.ts` | `isSafeAffiliateDestinationUrl` rejects SSRF/malicious destinations; outbound redirect issues tracking click; conversion imported and mapped to offer ledger. | **PASS** |
+| **POD & Manual Fulfillment Mappings** | POD job creation; emulator tracking update; failure handoff to manual package; shipment tracking. | `tests/integration/commerce-runtime-acceptance.integration.test.ts` (Section 11) | POD job queued with idempotency key; emulator updates status to `shipped`; simulated failure transitions job to `manual-fulfillment-packages`; operator acknowledges and ships package with tracking number. | **PASS** |
+
+---
+
+## 2. Audience & Community Browser Journeys
+
+| Workflow Area | Requirement / Scenario | Test Proof & Command | Outcome & Key Assertions | Status |
+|---|---|---|---|---|
+| **Visitor Double Opt-In** | Visitor submits email for newsletter; confirmation token generated; magic link delivered to SMTP sink. | `npx.cmd playwright test tests/rc04/acceptance.spec.ts --config=playwright.rc04.config.ts` (Test 1) | Form submitted; confirmation email delivered to local SMTP sink (`scratch/rc04-mail`); browser navigates to confirmation URL; subscription state transitions to `confirmed`. | **PASS** |
+| **Real MIME & RFC Headers** | Newsletter delivery generates authentic RFC 5321/5322 MIME messages with compliance headers. | `tests/rc04/acceptance.spec.ts` (Test 1) | MIME contains valid `From`, `To`, `Subject`, `List-Unsubscribe`, and multipart alternative HTML/plain text. Saved to `docs/rc/evidence/rc-04/delivered-newsletter-redacted.eml`. | **PASS** |
+| **Suppression & Re-Subscribe** | Subscriber turns off email; added to suppression list; subsequent campaigns skip address; re-subscription restores delivery. | `tests/rc04/acceptance.spec.ts` (Test 1) | Unsubscribe link visited; suppression record created; worker skips address; re-subscribing with double opt-in removes address from suppression list. | **PASS** |
+| **Operator Delivery Recovery** | Transient transport failure; operator retries delivery via admin API. | `tests/rc04/acceptance.spec.ts` (Test 1), `/api/admin/audience/retry` | Delivery marked `pending`/`failed`; operator invokes authenticated retry; delivery re-queued and processed successfully by background worker. | **PASS** |
+| **Real Member Forum & Replies** | Multiple members discuss topic in forum; peer replies trigger notification to author. | `tests/rc04/acceptance.spec.ts` (Test 2) | Members log in via magic links; Alice posts topic; Bob replies; Alice receives notification; unread notification badge reflects activity. | **PASS** |
+| **Notification Preferences** | Member configures email and in-app notification frequencies; deferred channels rejected. | `tests/rc04/acceptance.spec.ts` (Test 2), `src/app/(frontend)/api/member-auth/profile/route.ts` | Immediate email preference saved; deferred SMS preference rejected with HTTP 410; member settings page updates without error. | **PASS** |
+| **Content Moderation & Audit** | Member reports abusive discussion post; staff moderator hides post; audit log verified. | `tests/rc04/acceptance.spec.ts` (Test 2) | Report submitted; moderator reviews queue at `/api/community/moderation`; hides post with reason; hidden post invisible to ordinary visitors; audit trail valid (`auditValid: true`). | **PASS** |
+| **Private Messages & Privacy** | Member sends private message to mutual connection; foreign site access blocked; cross-member data export rejected. | `tests/rc04/acceptance.spec.ts` (Test 2) | Private message delivered in thread; cross-site message POST rejected (HTTP 404); cross-member data export attempt (`/api/member-auth/export?memberId=foreign`) rejected with HTTP 403; own export contains only authorized data. | **PASS** |
+| **Public Abuse & Rate Limiting** | Rapid repeated submissions to public audience and form endpoints. | `tests/rc04/acceptance.spec.ts` (Test 3) | IP/token rate limits trigger HTTP 429 Too Many Requests; malformed payloads return HTTP 400/422; deferred form routes return HTTP 404/410; anonymous admin retry rejected with HTTP 403. | **PASS** |
+
+---
+
+## 3. Test Execution Summary
+
+| Suite / Harness | Command | Files | Tests Passed | Failed | Skipped | Duration | Status |
+|---|---|---|---|---|---|---|---|
+| **RC04 Browser Acceptance** | `npx.cmd playwright test tests/rc04/acceptance.spec.ts --config=playwright.rc04.config.ts` | 1 | 3 | 0 | 0 | 153.7s | **PASS** |
+| **Commerce Runtime Acceptance** | `node --env-file=.env.rc04 scripts/run-integration.mjs tests/integration/commerce-runtime-acceptance.integration.test.ts` | 1 | 1 (11 stages) | 0 | 0 | 7.73s | **PASS** |
+| **Shared Commerce & Shop** | `node --env-file=.env.rc04 scripts/run-integration.mjs tests/integration/shared-contract-commerce-shop.integration.test.ts` | 1 | 34 | 0 | 0 | 5.52s | **PASS** |
+| **Shared Audience & Community** | `node --env-file=.env.rc04 scripts/run-integration.mjs tests/integration/shared-contract-audience-community.integration.test.ts` | 1 | 20 | 0 | 0 | 6.83s | **PASS** |
+| **Shared Affiliate & POD** | `node --env-file=.env.rc04 scripts/run-integration.mjs tests/integration/shared-contract-affiliate-pod.integration.test.ts` | 1 | 28 | 0 | 0 | 0.72s | **PASS** |
+| **Community Cross-Site Boundaries** | `node --env-file=.env.rc04 scripts/run-integration.mjs tests/integration/community-cross-site-boundaries.integration.test.ts` | 1 | 7 | 0 | 0 | 5.43s | **PASS** |
+| **Community Pass Gate** | `node --env-file=.env.rc04 scripts/run-integration.mjs tests/integration/comm-00-community-pass.integration.test.ts` | 1 | 11 | 0 | 0 | 5.38s | **PASS** |
+| **Audience Pass Gate** | `node --env-file=.env.rc04 scripts/run-integration.mjs tests/integration/aud-08-audience-pass-gate.integration.test.ts` | 1 | 10 | 0 | 0 | 6.96s | **PASS** |
+| **Audience Public Subscription** | `node --env-file=.env.rc04 scripts/run-integration.mjs tests/integration/aud-public-subscription-journey.integration.test.ts` | 1 | 4 | 0 | 0 | 5.86s | **PASS** |
+| **Commerce Routes Pass 2** | `node --env-file=.env.rc04 scripts/run-integration.mjs tests/integration/rc05-pass2-commerce-routes.integration.test.ts` | 1 | 5 | 0 | 0 | 8.33s | **PASS** |
+| **Local Donation Checkout** | `node --env-file=.env.rc04 scripts/run-integration.mjs tests/integration/shop-08-local-donation-checkout.integration.test.ts` | 1 | 1 | 0 | 0 | 5.07s | **PASS** |
+| **RC08B Promotions & Digestion** | `node --env-file=.env.rc04 scripts/run-integration.mjs tests/integration/rc08b-promotions.integration.test.ts` | 1 | 10 | 0 | 0 | 26.13s | **PASS** |
+| **Integrations Admin API** | `node --env-file=.env.rc04 scripts/run-integration.mjs tests/integration/integrations-admin-api.integration.test.ts` | 1 | 8 | 0 | 0 | 0.76s | **PASS** |
+| **Vitest Unit Suite** | `npm.cmd test` | 192 | 1,261 | 0 | 0 | 27.54s | **PASS** |
+| **Total Test Assertions** | — | **206 files** | **1,404 tests** | **0** | **0** | — | **100% PASS** |

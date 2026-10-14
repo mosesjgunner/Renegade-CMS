@@ -13,9 +13,9 @@ describe('SHOP-08 local donation checkout through public routes and durable paym
     const demo = await ensureRenegadePartyDemo(payload)
     const siteId = demo.siteId
     const suffix = randomUUID().slice(0, 8)
-    process.env.LOCAL_E2E_TEST_MODE = 'true'
-    process.env.COMMERCE_GUEST_ORDER_SECRET = 'integration-guest-order-secret-long-enough'
-    process.env.COMMERCE_TEST_WEBHOOK_SECRET = 'integration-commerce-webhook-secret'
+    process.env.COMMERCE_LOCAL_TEST_CHECKOUT_ENABLED = 'true'
+    process.env.COMMERCE_GUEST_ORDER_SECRET = 'integration-guest-order-secret-long-enough-32chars'
+    process.env.COMMERCE_TEST_WEBHOOK_SECRET = 'integration-commerce-webhook-secret-32chars'
     const settings = await payload.findGlobal({ slug: 'site-settings', overrideAccess: true })
     await payload.updateGlobal({
       slug: 'site-settings',

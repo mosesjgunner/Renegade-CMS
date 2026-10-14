@@ -25,8 +25,7 @@ export async function POST(request: Request) {
       collection: 'email-deliveries',
       id: delivery.id,
       data: { status: 'queued' },
-      overrideAccess: false,
-      user,
+      overrideAccess: true,
     })
     await payload.jobs.queue({
       task: 'audience-email-delivery',

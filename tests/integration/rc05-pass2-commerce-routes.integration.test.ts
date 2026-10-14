@@ -26,9 +26,10 @@ describe('RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security
     const siteId = demo.siteId
     const suffix = randomUUID().slice(0, 8)
 
-    process.env.LOCAL_E2E_TEST_MODE = 'true'
+    process.env.COMMERCE_LOCAL_TEST_CHECKOUT_ENABLED = 'true'
     process.env.COMMERCE_GUEST_ORDER_SECRET = 'rc05-pass2-guest-order-secret-very-long-32chars'
-    process.env.COMMERCE_TEST_WEBHOOK_SECRET = 'rc05-pass2-webhook-secret-long-enough'
+    process.env.COMMERCE_TEST_WEBHOOK_SECRET = 'rc05-pass2-webhook-secret-long-enough-32chars'
+    process.env.COMMERCE_DELIVERY_SECRET = 'rc05-pass2-delivery-secret-long-enough-32chars'
 
     // Enable commerce checkout in global settings
     const settings = await payload.findGlobal({ slug: 'site-settings', overrideAccess: true })

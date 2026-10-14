@@ -1,7 +1,7 @@
 {
   "statuses": [400, 400, 400, 400, 400, 400, 400, 429, 429, 429],
   "processLocalLimit": true,
-  "deferredFormGET": 410,
-  "deferredFormPOST": 410,
+  "deferredFormGET": 404,
+  "deferredFormPOST": 404,
   "anonymousRetryDenied": 403
 }

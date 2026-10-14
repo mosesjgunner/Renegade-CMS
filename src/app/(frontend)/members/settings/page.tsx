@@ -70,7 +70,6 @@ export default function MemberSettingsPage() {
       'coverAlt',
       'locale',
       'timeZone',
-      'relationshipNotifications',
     ]
     const changes = Object.fromEntries(
       editable
