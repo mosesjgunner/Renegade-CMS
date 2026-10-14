@@ -108,12 +108,23 @@ export const executionOutboxHandleTask = {
   retries: { attempts: 2, backoff: { delay: 250, type: 'exponential' } },
   concurrency: ({ input }: { input: { eventId: string } }) => `execution.event:${input.eventId}`,
   handler: async ({ input, req }: { input: { eventId: string }; req: any }) => {
-    const event = (await req.payload.findByID({
+    const raw = (await req.payload.findByID({
       collection: 'execution-events' as never,
       id: input.eventId,
       depth: 0,
       overrideAccess: true,
-    } as never)) as unknown as ExecutionEvent & { state: string; attempts: number }
+    } as never)) as Record<string, any>
+    if (!raw) return { output: {} }
+    const siteId =
+      typeof raw.siteId === 'string'
+        ? raw.siteId
+        : typeof raw.site === 'object' && raw.site
+          ? raw.site.id
+          : String(raw.site ?? '')
+    const event = { ...raw, siteId } as unknown as ExecutionEvent & {
+      state: string
+      attempts: number
+    }
     if (event.state === 'processed' || event.state === 'cancelled' || event.state === 'dead-letter')
       return { output: {} }
     try {
