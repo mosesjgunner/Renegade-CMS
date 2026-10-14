@@ -99,7 +99,9 @@ export async function POST(request: Request) {
       data: { site: siteId, member: memberId, displayName: '', providerReferences: [] },
       overrideAccess: true,
     })
-  const idempotencyKey = String(input.idempotencyKey ?? '').trim()
+  const idempotencyKey = String(
+    input.idempotencyKey ?? input.previewHash ?? request.headers.get('idempotency-key') ?? '',
+  ).trim()
   if (!idempotencyKey || idempotencyKey.length > 160)
     return NextResponse.json({ error: 'A bounded Idempotency-Key is required.' }, { status: 400 })
   const grantKey = `${source}:${createHash('sha256').update(`${siteId}|${memberId}|${idempotencyKey}`).digest('hex')}`
@@ -123,6 +125,7 @@ export async function POST(request: Request) {
   const now = new Date().toISOString()
   const snapshot = {
     id: String(plan.id),
+    name: String(plan.name),
     planKey: String(plan.planKey),
     revision: Number(plan.revision),
     publishedAt: String(plan.publishedAt),
