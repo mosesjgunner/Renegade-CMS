@@ -60,6 +60,23 @@ const event = (overrides: Partial<NormalizedPaymentEvent> = {}): NormalizedPayme
 })
 
 describe('SHOP-04 payment provider contract', () => {
+  it.each([undefined, null, 'invalid', []])(
+    'rejects correctly signed deterministic events without an evidence object (%j)',
+    (sanitizedEvidence) => {
+      const adapter = createDeterministicPaymentAdapter({ secret: 'local-signing-fixture' })
+      const raw = JSON.stringify({ ...event(), sanitizedEvidence })
+      const signature = createHmac('sha256', 'local-signing-fixture').update(raw).digest('hex')
+      expect(adapter.normalizeSignedWebhook(raw, signature)).toBeNull()
+    },
+  )
+
+  it('accepts signed deterministic events with an empty evidence object for reference correlation', () => {
+    const adapter = createDeterministicPaymentAdapter({ secret: 'local-signing-fixture' })
+    const expected = event({ sanitizedEvidence: {} })
+    const raw = JSON.stringify(expected)
+    const signature = createHmac('sha256', 'local-signing-fixture').update(raw).digest('hex')
+    expect(adapter.normalizeSignedWebhook(raw, signature)).toEqual(expected)
+  })
   it('creates one deterministic hosted checkout for replay and never accepts payment data', async () => {
     const adapter = createDeterministicPaymentAdapter({ secret: 'fixture-secret' })
     const first = await adapter.createHostedCheckout(checkout)
