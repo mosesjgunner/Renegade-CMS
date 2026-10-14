@@ -1,5 +1,5 @@
 import { beforeAll, describe, expect, it } from 'vitest'
-import { createLocalReq, getPayload, type Payload } from 'payload'
+import { createLocalReq, getPayload, ValidationError, type Payload } from 'payload'
 import config from '@payload-config'
 import { randomUUID } from 'node:crypto'
 import { transactionPayload } from '@/modules/core/transaction-payload'
@@ -102,7 +102,19 @@ describe('actual PostgreSQL editorial scheduling transaction', () => {
           overrideAccess: true,
           data: { action: 'integration.invalid-source', createdAt: new Date().toISOString() },
         }),
-      ).rejects.toThrow('canonical article source is required')
+      ).rejects.toMatchObject({
+        name: ValidationError.name,
+        status: 400,
+        data: {
+          collection: 'calendar-entry-audits',
+          errors: [
+            {
+              path: 'article',
+              message: 'A calendar entry or canonical article source is required.',
+            },
+          ],
+        },
+      })
     } finally {
       if (transactionID) await payload.db.rollbackTransaction(transactionID)
     }
