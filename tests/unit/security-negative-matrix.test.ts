@@ -94,7 +94,11 @@ describe('Stage 05: Authenticated Security Negative Matrix', () => {
       let mutationCount = 0
       const query = vi.fn(async (sql: string) => {
         const trimmed = sql.trim().toUpperCase()
-        if (trimmed.startsWith('UPDATE') || trimmed.startsWith('INSERT') || trimmed.startsWith('DELETE')) {
+        if (
+          trimmed.startsWith('UPDATE') ||
+          trimmed.startsWith('INSERT') ||
+          trimmed.startsWith('DELETE')
+        ) {
           mutationCount++
         }
         return { rows: [] }
@@ -318,27 +322,33 @@ describe('Stage 05: Authenticated Security Negative Matrix', () => {
 
       // RFC 1918 Private ranges
       await expect(assertSafeOutboundUrl('http://10.0.0.1/', publicDns)).rejects.toThrow('private')
-      await expect(assertSafeOutboundUrl('http://172.16.0.1/', publicDns)).rejects.toThrow('private')
+      await expect(assertSafeOutboundUrl('http://172.16.0.1/', publicDns)).rejects.toThrow(
+        'private',
+      )
       await expect(assertSafeOutboundUrl('http://192.168.1.1/', publicDns)).rejects.toThrow(
         'private',
       )
 
       // AWS / GCP Metadata
       await expect(
-        assertSafeOutboundUrl('https://example.test/', async () => [{ address: '169.254.169.254' }]),
+        assertSafeOutboundUrl('https://example.test/', async () => [
+          { address: '169.254.169.254' },
+        ]),
       ).rejects.toThrow('private')
 
       // Non-HTTPS
-      await expect(assertSafeOutboundUrl('ftp://example.test/', publicDns)).rejects.toThrow(
-        'HTTPS',
-      )
+      await expect(assertSafeOutboundUrl('ftp://example.test/', publicDns)).rejects.toThrow('HTTPS')
     })
 
     it('rejects public-to-private redirects', async () => {
       const fetcher: typeof fetch = async () =>
         new Response(null, { status: 302, headers: { location: 'http://127.0.0.1:3000/internal' } })
       await expect(
-        safeFetch('https://example.test/', {}, { fetcher, resolve: async () => [{ address: '93.184.216.34' }] }),
+        safeFetch(
+          'https://example.test/',
+          {},
+          { fetcher, resolve: async () => [{ address: '93.184.216.34' }] },
+        ),
       ).rejects.toThrow('private')
     })
 
