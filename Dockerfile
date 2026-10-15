@@ -10,6 +10,16 @@ COPY package.json package-lock.json ./
 COPY scripts ./scripts
 RUN npm ci --omit=dev
 
+# Upstream npm esbuild executables embed older Go standard libraries. Keep the
+# supported esbuild API/version, but build the shipped executable from its exact
+# upstream source with a patched Go toolchain and retain inspectable build info.
+FROM golang:1.27.2-alpine AS esbuild-runtime
+WORKDIR /src
+ADD --checksum=sha256:04cb2d38fb6af093577aa8bf174add7286099b65ef7854480cbbb8ff061cef1f https://codeload.github.com/evanw/esbuild/tar.gz/609683d892977362a0f99026cb74b96263d728a9 /tmp/esbuild.tar.gz
+RUN tar -xzf /tmp/esbuild.tar.gz --strip-components=1 -C /src && \
+    CGO_ENABLED=0 go build -trimpath -buildvcs=false -o /out/esbuild ./cmd/esbuild && \
+    go version -m /out/esbuild > /out/esbuild-build.txt
+
 FROM node:24-alpine AS builder
 ARG BUILD_SHA
 ENV BUILD_SHA=$BUILD_SHA
@@ -26,6 +36,14 @@ LABEL org.opencontainers.image.version=$APP_VERSION \
 	org.opencontainers.image.revision=$BUILD_SHA
 ENV NODE_ENV=production PORT=3000 HOSTNAME=0.0.0.0
 ENV APP_VERSION=$APP_VERSION BUILD_SHA=$BUILD_SHA
+# npm is an operational CLI in this image. Patch its bundled compatible leaves
+# without re-resolving npm's private development/test dependency graph.
+RUN npm install --global npm@12.2.0 && \
+    npm install --prefix /opt/npm-patches --ignore-scripts --no-audit --no-fund --save-exact brace-expansion@5.0.12 undici@6.28.1 && \
+    rm -rf /usr/local/lib/node_modules/npm/node_modules/brace-expansion /usr/local/lib/node_modules/npm/node_modules/undici && \
+    cp -a /opt/npm-patches/node_modules/brace-expansion /usr/local/lib/node_modules/npm/node_modules/brace-expansion && \
+    cp -a /opt/npm-patches/node_modules/undici /usr/local/lib/node_modules/npm/node_modules/undici && \
+    rm -rf /opt/npm-patches
 RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 nextjs
 RUN mkdir -p /app/media /tmp/renegade-worker && chown -R nextjs:nodejs /app /tmp/renegade-worker
 # The web server uses Next's standalone output. Payload's migration and worker
@@ -42,6 +60,9 @@ COPY --from=builder --chown=nextjs:nodejs /app/next.config.ts /app/tsconfig.json
 COPY --from=builder --chown=nextjs:nodejs /app/src ./src
 COPY --from=builder --chown=nextjs:nodejs /app/docker ./docker
 COPY --from=builder --chown=nextjs:nodejs /app/theme-packages ./theme-packages
+COPY --from=esbuild-runtime /out/esbuild /tmp/runtime-esbuild
+COPY --from=esbuild-runtime /out/esbuild-build.txt ./esbuild-build.txt
+RUN node docker/install-runtime-esbuild.mjs && rm /tmp/runtime-esbuild
 USER nextjs
 EXPOSE 3000
 CMD ["node", "standalone/server.js"]

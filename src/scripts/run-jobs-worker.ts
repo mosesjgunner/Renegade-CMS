@@ -16,28 +16,8 @@ const payload = await getPayload({ config })
 let stopping = false
 let timer: NodeJS.Timeout | undefined
 
-const database = payload.db as typeof payload.db & {
-  pool?: {
-    query: (text: string, values?: unknown[]) => Promise<unknown>
-  }
-}
-
-// Reset stale processing flags from previous crashed worker processes on boot
-await database.pool
-  ?.query(
-    'UPDATE payload_jobs SET processing = false WHERE processing = true AND completed_at IS NULL',
-  )
-  .catch(() => undefined)
-
 async function cycle(): Promise<void> {
   try {
-    // Release any job stuck processing without updates for >30s
-    await database.pool
-      ?.query(
-        "UPDATE payload_jobs SET processing = false WHERE processing = true AND completed_at IS NULL AND updated_at < now() - interval '30 seconds'",
-      )
-      .catch(() => undefined)
-
     if (workerProfile !== 'commerce-only') {
       await payload.jobs.handleSchedules({ queue: 'operations' })
       await payload.jobs.run({ queue: 'operations' })
