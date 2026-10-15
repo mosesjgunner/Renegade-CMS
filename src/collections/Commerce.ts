@@ -1037,8 +1037,52 @@ export const DonationEvents: CollectionConfig = {
     { name: 'evidence', type: 'json', defaultValue: {} },
   ],
 }
+function normalizeSourceWhere(where: any): any {
+  if (!where || typeof where !== 'object') return where
+  if (Array.isArray(where)) return where.map(normalizeSourceWhere)
+  for (const [key, val] of Object.entries(where)) {
+    if (
+      key === 'source' &&
+      val &&
+      typeof val === 'object' &&
+      'equals' in (val as Record<string, unknown>)
+    ) {
+      const eq = String((val as Record<string, unknown>).equals ?? '')
+      if (eq && !eq.includes(':')) {
+        return {
+          or: [
+            { source: { equals: eq } },
+            { source: { equals: `subscription:${eq}` } },
+            { source: { equals: `order:${eq}` } },
+          ],
+        }
+      }
+    }
+  }
+  const result: Record<string, any> = {}
+  for (const [key, val] of Object.entries(where)) {
+    result[key] = val && typeof val === 'object' ? normalizeSourceWhere(val) : val
+  }
+  return result
+}
+
 export const Entitlements: CollectionConfig = {
   ...base('entitlements', 'entitlement'),
+  hooks: {
+    beforeOperation: [
+      ({ args, operation }) => {
+        if (
+          (operation === 'read' || operation === 'count') &&
+          args &&
+          'where' in args &&
+          args.where
+        ) {
+          ;(args as { where: unknown }).where = normalizeSourceWhere(args.where)
+        }
+        return args
+      },
+    ],
+  },
   fields: [
     ...ownerFields(),
     ref('supporter', 'supporters', true),
