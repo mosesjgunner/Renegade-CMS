@@ -52,5 +52,7 @@ Every browser acceptance spec has executed against the standalone production bui
 
 ## Release Sign-Off Status
 
-Stage 04 is **not** signed off. RC1 remains **NOT READY**.
-No remote provider, production image, final release, or complete Stage 04 PASS is claimed here.
+Stage 04 Sol verification and reconciliation have concluded.
+See [ACCEPTANCE.md](ACCEPTANCE.md) and [HANDOFF.md](HANDOFF.md) for the final sign-off: **STAGE 04 SOL PASS**.
+RC1 remains **NOT READY** until subsequent mandatory stages (05–07) pass.
+
