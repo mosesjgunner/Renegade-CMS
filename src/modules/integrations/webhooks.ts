@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any -- Payload collection documents are runtime-shaped. */
 import { randomUUID } from 'node:crypto'
 
-import { isPrivateAddress } from '../core/external-boundary'
+import { isPrivateAddress, readBoundedText, safeFetch } from '../core/external-boundary'
 import type { ExecutionEvent } from '../execution/contracts'
 import {
   MAX_WEBHOOK_PAYLOAD_BYTES,
@@ -13,6 +13,11 @@ import {
 
 export const WEBHOOK_PAYLOAD_VERSION = '2026-08-31'
 export const WEBHOOK_TIMESTAMP_TOLERANCE_SECONDS = 300
+
+// Injected transports remain available to isolated adapter contract tests. Real
+// production requests validate DNS at connection time and never follow redirects.
+const webhookRequest: typeof fetch = (input, init) =>
+  safeFetch(String(input), init, { maxRedirects: 0, maxBytes: MAX_WEBHOOK_PAYLOAD_BYTES })
 
 type Store = {
   find: (args: any) => Promise<{ docs: Array<Record<string, any>> }>
@@ -139,7 +144,7 @@ export async function deliverWebhook(
   store: Store,
   deliveryId: string,
   resolveSecret: WebhookSecretResolver = resolveWebhookSecret,
-  request: typeof fetch = fetch,
+  request: typeof fetch = webhookRequest,
 ) {
   const delivery = await store.findByID({
     collection: 'webhook-deliveries',
@@ -182,7 +187,7 @@ export async function deliverWebhook(
       delivery,
       subscription,
       response.status,
-      webhookAuditResponse(await response.text()),
+      webhookAuditResponse(await readBoundedText(response, MAX_WEBHOOK_PAYLOAD_BYTES)),
     )
   } catch (error) {
     return completeDelivery(store, delivery, subscription, 599, webhookAuditResponse(error))
@@ -251,7 +256,7 @@ export async function redeliverWebhook(store: Store, deliveryId: string) {
 export async function verifyWebhookEndpoint(
   target: string,
   secret: string,
-  request: typeof fetch = fetch,
+  request: typeof fetch = webhookRequest,
 ) {
   supportedTarget(target)
   const challenge = randomUUID()

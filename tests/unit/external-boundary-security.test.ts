@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest'
 
 import {
   assertSafeOutboundUrl,
+  isPrivateAddress,
   readBoundedJson,
   safeFetch,
   safeRelativeRedirect,
@@ -17,6 +18,41 @@ import {
 const publicDns = async () => [{ address: '93.184.216.34' }]
 
 describe('external boundary hardening', () => {
+  it('rejects bracketed, mapped and link-local IPv6 private destinations', async () => {
+    for (const address of [
+      '[::1]',
+      '::ffff:127.0.0.1',
+      '[::ffff:7f00:1]',
+      '::ffff:a00:1',
+      'fea0::1',
+    ]) {
+      expect(isPrivateAddress(address)).toBe(true)
+    }
+    for (const host of ['[::1]', '[::ffff:127.0.0.1]', '[::ffff:10.0.0.1]']) {
+      await expect(assertSafeOutboundUrl(`https://${host}/`, publicDns)).rejects.toThrow('private')
+    }
+  })
+
+  it('rejects cross-origin redirects before forwarding provider credentials', async () => {
+    let requests = 0
+    await expect(
+      safeFetch(
+        'https://example.test/',
+        { headers: { authorization: 'secret-fixture' } },
+        {
+          resolve: publicDns,
+          fetcher: async () => {
+            requests++
+            return new Response(null, {
+              status: 307,
+              headers: { location: 'https://foreign.test/' },
+            })
+          },
+        },
+      ),
+    ).rejects.toThrow('Cross-origin')
+    expect(requests).toBe(1)
+  })
   it('rejects localhost and private-address SSRF targets before fetching', async () => {
     await expect(assertSafeOutboundUrl('http://localhost/', publicDns)).rejects.toThrow('private')
     await expect(assertSafeOutboundUrl('http://10.0.0.7/', publicDns)).rejects.toThrow('private')

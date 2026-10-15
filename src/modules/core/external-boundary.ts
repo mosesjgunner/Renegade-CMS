@@ -1,5 +1,6 @@
 import { isIP } from 'node:net'
 import { lookup } from 'node:dns/promises'
+import { Agent } from 'undici'
 
 const MAX_REDIRECTS = 3
 const MAX_RESPONSE_BYTES = 2 * 1024 * 1024
@@ -11,6 +12,16 @@ export type Lookup = (
 ) => Promise<Array<{ address: string }>>
 
 export function isPrivateAddress(address: string): boolean {
+  address = address.toLowerCase().replace(/^\[|\]$/g, '')
+  // WHATWG URLs normalize mapped IPv4 to hexadecimal IPv6 groups.
+  const mapped = address.match(/^::ffff:([0-9a-f]{1,4}):([0-9a-f]{1,4})$/)
+  if (mapped) {
+    const bits = (parseInt(mapped[1], 16) * 65536 + parseInt(mapped[2], 16)) >>> 0
+    return isPrivateAddress(
+      [bits >>> 24, (bits >>> 16) & 255, (bits >>> 8) & 255, bits & 255].join('.'),
+    )
+  }
+  if (address.startsWith('::ffff:')) return isPrivateAddress(address.slice(7))
   if (isIP(address) === 4) {
     const [a, b] = address.split('.').map(Number)
     return (
@@ -23,13 +34,13 @@ export function isPrivateAddress(address: string): boolean {
       (a === 192 && b === 168)
     )
   }
-  const normalized = address.toLowerCase().replace(/^::ffff:/, '')
+  const normalized = address
   return (
     normalized === '::1' ||
     normalized === '::' ||
     normalized.startsWith('fc') ||
     normalized.startsWith('fd') ||
-    normalized.startsWith('fe80:')
+    /^fe[89ab][0-9a-f]:/.test(normalized)
   )
 }
 
@@ -75,20 +86,52 @@ export async function safeFetch(
     allowPrivate?: boolean
     allowedContentTypes?: readonly string[]
     retries?: number
+    maxRedirects?: number
   } = {},
 ): Promise<Response> {
   const fetcher = options.fetcher ?? fetch
+  const maxRedirects = options.maxRedirects ?? MAX_REDIRECTS
   const maxBytes = options.maxBytes ?? MAX_RESPONSE_BYTES
   const timeoutMs = options.timeoutMs ?? REQUEST_TIMEOUT_MS
   let url = await assertSafeOutboundUrl(input, options.resolve, options)
-  for (let redirect = 0; redirect <= MAX_REDIRECTS; redirect += 1) {
+  for (let redirect = 0; redirect <= maxRedirects; redirect += 1) {
     const timeoutSignal = AbortSignal.timeout(timeoutMs)
     const signal = init.signal ? AbortSignal.any([init.signal, timeoutSignal]) : timeoutSignal
-    const response = await fetcher(url, {
-      ...init,
-      redirect: 'manual',
-      signal,
-    })
+    // Validate the addresses used by the socket itself, closing the DNS rebinding
+    // gap between URL preflight and fetch's independent DNS resolution.
+    const agent = options.fetcher
+      ? undefined
+      : new Agent({
+          connect: {
+            lookup: (hostname, lookupOptions, callback) => {
+              lookup(hostname, { all: true, verbatim: true })
+                .then((addresses) => {
+                  if (
+                    !addresses.length ||
+                    (!options.allowPrivate &&
+                      addresses.some(({ address }) => isPrivateAddress(address)))
+                  ) {
+                    callback(new Error('Outbound URL resolves to a private destination.'), [], 4)
+                    return
+                  }
+                  if (lookupOptions.all) callback(null, addresses)
+                  else callback(null, addresses[0].address, addresses[0].family)
+                })
+                .catch((error: Error) => callback(error, [], 4))
+            },
+          },
+        })
+    let response: Response
+    try {
+      response = await fetcher(url, {
+        ...init,
+        redirect: 'manual',
+        signal,
+        ...(agent ? { dispatcher: agent } : {}),
+      })
+    } finally {
+      void agent?.close()
+    }
     if (![301, 302, 303, 307, 308].includes(response.status)) {
       if (Number(response.headers.get('content-length') ?? 0) > maxBytes)
         throw new Error('Outbound response exceeds the size limit.')
@@ -101,9 +144,16 @@ export async function safeFetch(
       return response
     }
     const location = response.headers.get('location')
-    if (!location || redirect === MAX_REDIRECTS)
-      throw new Error('Outbound redirect is not allowed.')
-    url = await assertSafeOutboundUrl(new URL(location, url).toString(), options.resolve, options)
+    await response.body?.cancel()
+    if (!location || redirect === maxRedirects) throw new Error('Outbound redirect is not allowed.')
+    const next = await assertSafeOutboundUrl(
+      new URL(location, url).toString(),
+      options.resolve,
+      options,
+    )
+    if (next.origin !== url.origin)
+      throw new Error('Cross-origin outbound redirect is not allowed.')
+    url = next
   }
   throw new Error('Outbound redirect is not allowed.')
 }
@@ -112,6 +162,14 @@ export async function readBoundedJson(
   response: Response,
   maxBytes = MAX_RESPONSE_BYTES,
 ): Promise<unknown> {
+  const text = await readBoundedText(response, maxBytes)
+  return text === null ? null : JSON.parse(text)
+}
+
+export async function readBoundedText(
+  response: Response,
+  maxBytes = MAX_RESPONSE_BYTES,
+): Promise<string | null> {
   const reader = response.body?.getReader()
   if (!reader) return null
   const chunks: Uint8Array[] = []
@@ -126,7 +184,7 @@ export async function readBoundedJson(
     }
     chunks.push(value)
   }
-  return JSON.parse(new TextDecoder().decode(Buffer.concat(chunks)))
+  return new TextDecoder().decode(Buffer.concat(chunks))
 }
 
 /** Only permit same-origin relative returns; payment completion is never inferred from redirects. */
