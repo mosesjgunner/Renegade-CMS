@@ -36,7 +36,14 @@ LABEL org.opencontainers.image.version=$APP_VERSION \
 	org.opencontainers.image.revision=$BUILD_SHA
 ENV NODE_ENV=production PORT=3000 HOSTNAME=0.0.0.0
 ENV APP_VERSION=$APP_VERSION BUILD_SHA=$BUILD_SHA
-RUN npm install --global npm@12.2.0
+# npm is an operational CLI in this image. Patch its bundled compatible leaves
+# without re-resolving npm's private development/test dependency graph.
+RUN npm install --global npm@12.2.0 && \
+    npm install --prefix /opt/npm-patches --ignore-scripts --no-audit --no-fund --save-exact brace-expansion@5.0.12 undici@6.28.1 && \
+    rm -rf /usr/local/lib/node_modules/npm/node_modules/brace-expansion /usr/local/lib/node_modules/npm/node_modules/undici && \
+    cp -a /opt/npm-patches/node_modules/brace-expansion /usr/local/lib/node_modules/npm/node_modules/brace-expansion && \
+    cp -a /opt/npm-patches/node_modules/undici /usr/local/lib/node_modules/npm/node_modules/undici && \
+    rm -rf /opt/npm-patches
 RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 nextjs
 RUN mkdir -p /app/media /tmp/renegade-worker && chown -R nextjs:nodejs /app /tmp/renegade-worker
 # The web server uses Next's standalone output. Payload's migration and worker
