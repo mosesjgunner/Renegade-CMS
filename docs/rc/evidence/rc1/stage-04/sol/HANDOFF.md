@@ -24,18 +24,18 @@ Independently signed by Sol, 2026-10-15 (America/Chicago).
 
 All 10 required quality gates passed on the reconciled candidate source `f0a728c03d45c284813e2e7c5ea23167394800de`:
 
-| Gate | Command | Exit Code | Verified Outcome | Status |
-| :--- | :--- | :---: | :--- | :---: |
-| **01 Typecheck** | `npm.cmd run typecheck` | 0 | 0 errors (`tsc --noEmit`) | **PASS** |
-| **02 Lint** | `npm.cmd run lint` | 0 | 0 errors, 0 warnings (`eslint . --max-warnings=0`) | **PASS** |
-| **03 Format** | `npm.cmd run format:check` | 0 | 0 style violations (`prettier --check .`) | **PASS** |
-| **04 Full Unit** | `npm.cmd test` | 0 | **195 test files passed, 1,290 passed tests**, 0 failed | **PASS** |
-| **05 Fresh Schema** | `npm.cmd run test:migrations:fresh` | 0 | 116 migrations executed twice, schema verified | **PASS** |
-| **06 Upgrade Rehearsal** | `npm.cmd run test:migrations:upgrade` | 0 | Synthetic fixture upgrade passed from baseline | **PASS** |
-| **07 Commerce Schema** | `npm.cmd run test:migrations:commerce` | 0 | All commerce tables, relationships, and version columns verified | **PASS** |
-| **08 Integration** | `node scripts/run-integration.mjs tests/integration/...` | 0 | **12 Stage 04 integration files, 141 passed tests**; full suite 298 passed | **PASS** |
-| **09 Production Build** | `npm.cmd run build` | 0 | 144 routes compiled (`NODE_ENV=production`, `LOCAL_E2E_TEST_MODE=false`) | **PASS** |
-| **10 Presentation Bundles** | `npm.cmd run verify:presentation-bundles` | 0 | Public route excludes editor/Puck modules | **PASS** |
+| Gate                        | Command                                                  | Exit Code | Verified Outcome                                                           |  Status  |
+| :-------------------------- | :------------------------------------------------------- | :-------: | :------------------------------------------------------------------------- | :------: |
+| **01 Typecheck**            | `npm.cmd run typecheck`                                  |     0     | 0 errors (`tsc --noEmit`)                                                  | **PASS** |
+| **02 Lint**                 | `npm.cmd run lint`                                       |     0     | 0 errors, 0 warnings (`eslint . --max-warnings=0`)                         | **PASS** |
+| **03 Format**               | `npm.cmd run format:check`                               |     0     | 0 style violations (`prettier --check .`)                                  | **PASS** |
+| **04 Full Unit**            | `npm.cmd test`                                           |     0     | **195 test files passed, 1,290 passed tests**, 0 failed                    | **PASS** |
+| **05 Fresh Schema**         | `npm.cmd run test:migrations:fresh`                      |     0     | 116 migrations executed twice, schema verified                             | **PASS** |
+| **06 Upgrade Rehearsal**    | `npm.cmd run test:migrations:upgrade`                    |     0     | Synthetic fixture upgrade passed from baseline                             | **PASS** |
+| **07 Commerce Schema**      | `npm.cmd run test:migrations:commerce`                   |     0     | All commerce tables, relationships, and version columns verified           | **PASS** |
+| **08 Integration**          | `node scripts/run-integration.mjs tests/integration/...` |     0     | **12 Stage 04 integration files, 141 passed tests**; full suite 298 passed | **PASS** |
+| **09 Production Build**     | `npm.cmd run build`                                      |     0     | 144 routes compiled (`NODE_ENV=production`, `LOCAL_E2E_TEST_MODE=false`)   | **PASS** |
+| **10 Presentation Bundles** | `npm.cmd run verify:presentation-bundles`                |     0     | Public route excludes editor/Puck modules                                  | **PASS** |
 
 ---
 
@@ -51,6 +51,7 @@ All 10 required quality gates passed on the reconciled candidate source `f0a728c
 ## 4. Changed Files
 
 The reconciled candidate integrates 53 modified files across commerce, audience, community, and operational boundaries:
+
 - `src/collections/Commerce.ts`: Entitlements beforeOperation query normalizer for unprefixed subscription IDs.
 - `src/collections/Sites.ts`: Creator community manager role and operator site grants.
 - `src/collections/MediaPublishing.ts`: Media permissions operator fallback.
@@ -69,6 +70,7 @@ The reconciled candidate integrates 53 modified files across commerce, audience,
 ## 5. Unresolved External Prerequisites
 
 Retained truthfully as genuine external prerequisites:
+
 1. **Stripe Live / Sandbox API**: `STRIPE_SECRET_KEY` and `STRIPE_WEBHOOK_SECRET` unconfigured.
 2. **SendGrid / Postmark / Twilio Live API**: Live telecom and email provider credentials unconfigured.
 3. **Printful Live API**: `PRINTFUL_API_KEY` unconfigured.

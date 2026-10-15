@@ -25,18 +25,18 @@ Independently verified and signed by Sol, 2026-10-15 (America/Chicago).
 
 All 10 required quality gates passed on the reconciled candidate source `f0a728c03d45c284813e2e7c5ea23167394800de` with zero errors, zero warnings, and zero skipped assertions:
 
-| Gate | Command | Exit Code | Verified Counts & Results | Duration |
-| :--- | :--- | :---: | :--- | :---: |
-| **01 Typecheck** | `npm.cmd run typecheck` | **0** | 0 errors (`tsc --noEmit`) | 5.8s |
-| **02 Lint** | `npm.cmd run lint` | **0** | 0 errors, 0 warnings (`eslint . --max-warnings=0`) | 20.2s |
-| **03 Format** | `npm.cmd run format:check` | **0** | All matched files use Prettier style | 27.5s |
-| **04 Full Unit** | `npm.cmd test` | **0** | **195 test files passed, 1,290 passed tests**, 0 failed | 26.2s |
-| **05 Fresh Schema** | `npm.cmd run test:migrations:fresh` | **0** | 116 migrations executed twice, schema verified | 12.1s |
-| **06 Upgrade Rehearsal** | `npm.cmd run test:migrations:upgrade` | **0** | Synthetic fixture upgrade passed from baseline `20260914_110000_med_05_video_workflow` | 11.8s |
-| **07 Commerce Schema** | `npm.cmd run test:migrations:commerce` | **0** | All commerce tables, relationships, and version columns verified | 6.2s |
-| **08 Integration Suites** | `node scripts/run-integration.mjs tests/integration/...` | **0** | **12 Stage 04 integration files, 141 passed tests**; full suite 298 passed | 66.6s |
-| **09 Production Build** | `npm.cmd run build` | **0** | 144 routes compiled (`NODE_ENV=production`, `LOCAL_E2E_TEST_MODE=false`) | 64.2s |
-| **10 Presentation Bundles** | `npm.cmd run verify:presentation-bundles` | **0** | Public route excludes editor/Puck modules | 0.5s |
+| Gate                        | Command                                                  | Exit Code | Verified Counts & Results                                                              | Duration |
+| :-------------------------- | :------------------------------------------------------- | :-------: | :------------------------------------------------------------------------------------- | :------: |
+| **01 Typecheck**            | `npm.cmd run typecheck`                                  |   **0**   | 0 errors (`tsc --noEmit`)                                                              |   5.8s   |
+| **02 Lint**                 | `npm.cmd run lint`                                       |   **0**   | 0 errors, 0 warnings (`eslint . --max-warnings=0`)                                     |  20.2s   |
+| **03 Format**               | `npm.cmd run format:check`                               |   **0**   | All matched files use Prettier style                                                   |  27.5s   |
+| **04 Full Unit**            | `npm.cmd test`                                           |   **0**   | **195 test files passed, 1,290 passed tests**, 0 failed                                |  26.2s   |
+| **05 Fresh Schema**         | `npm.cmd run test:migrations:fresh`                      |   **0**   | 116 migrations executed twice, schema verified                                         |  12.1s   |
+| **06 Upgrade Rehearsal**    | `npm.cmd run test:migrations:upgrade`                    |   **0**   | Synthetic fixture upgrade passed from baseline `20260914_110000_med_05_video_workflow` |  11.8s   |
+| **07 Commerce Schema**      | `npm.cmd run test:migrations:commerce`                   |   **0**   | All commerce tables, relationships, and version columns verified                       |   6.2s   |
+| **08 Integration Suites**   | `node scripts/run-integration.mjs tests/integration/...` |   **0**   | **12 Stage 04 integration files, 141 passed tests**; full suite 298 passed             |  66.6s   |
+| **09 Production Build**     | `npm.cmd run build`                                      |   **0**   | 144 routes compiled (`NODE_ENV=production`, `LOCAL_E2E_TEST_MODE=false`)               |  64.2s   |
+| **10 Presentation Bundles** | `npm.cmd run verify:presentation-bundles`                |   **0**   | Public route excludes editor/Puck modules                                              |   0.5s   |
 
 ---
 
@@ -44,21 +44,22 @@ All 10 required quality gates passed on the reconciled candidate source `f0a728c
 
 All Stage 04 browser specs executed against the standalone production build on disposable database `solrc04_20261014_browser3_release_acceptance` via Playwright with production mode, real reverse proxy TLS (`dispatch.rc02.test:3129`), local SMTP sink, and zero harness mutations (`harnessUnchanged: true`):
 
-| Spec Run Label | Target Spec & Configuration | Exit Code | Passed Cases | Duration | Evidence Receipt |
-| :--- | :--- | :---: | :---: | :---: | :--- |
-| `stage04-core-c0d4` | `acceptance.spec.ts`, `commerce.spec.ts`, `subscriptions.spec.ts`, `donations.spec.mjs` | **0** | 6 / 6 | 160.7s | `scratch/sol-evidence/stage04-core-c0d4.json` |
-| `orchestration-c0d4` | `orchestration.spec.ts` | **0** | 1 / 1 | 49.3s | `scratch/sol-evidence/orchestration-c0d4.json` |
-| `promotions-c9d8-clean` | `promotions.spec.ts` | **0** | 1 / 1 | 68.6s | `scratch/sol-evidence/promotions-c9d8-clean.json` |
-| `scoped-operators-627a-clean` | `scoped-operators.spec.mjs` | **0** | 1 / 1 | 71.5s | `scratch/sol-evidence/scoped-operators-627a-clean.json` |
-| `ai-627a` | `ai.spec.mjs` | **0** | 1 / 1 | 10.7s | `scratch/sol-evidence/ai-627a.json` |
-| `webhooks-dca5-clean` | `webhooks.spec.mjs` | **0** | 1 / 1 | 112.3s | `scratch/sol-evidence/webhooks-dca5-clean.json` |
-| `stripe-b536-clean` | `stripe.spec.ts` | **0** | 1 / 1 | 8.9s | `scratch/sol-evidence/stripe-b536-clean.json` |
+| Spec Run Label                | Target Spec & Configuration                                                             | Exit Code | Passed Cases | Duration | Evidence Receipt                                        |
+| :---------------------------- | :-------------------------------------------------------------------------------------- | :-------: | :----------: | :------: | :------------------------------------------------------ |
+| `stage04-core-c0d4`           | `acceptance.spec.ts`, `commerce.spec.ts`, `subscriptions.spec.ts`, `donations.spec.mjs` |   **0**   |    6 / 6     |  160.7s  | `scratch/sol-evidence/stage04-core-c0d4.json`           |
+| `orchestration-c0d4`          | `orchestration.spec.ts`                                                                 |   **0**   |    1 / 1     |  49.3s   | `scratch/sol-evidence/orchestration-c0d4.json`          |
+| `promotions-c9d8-clean`       | `promotions.spec.ts`                                                                    |   **0**   |    1 / 1     |  68.6s   | `scratch/sol-evidence/promotions-c9d8-clean.json`       |
+| `scoped-operators-627a-clean` | `scoped-operators.spec.mjs`                                                             |   **0**   |    1 / 1     |  71.5s   | `scratch/sol-evidence/scoped-operators-627a-clean.json` |
+| `ai-627a`                     | `ai.spec.mjs`                                                                           |   **0**   |    1 / 1     |  10.7s   | `scratch/sol-evidence/ai-627a.json`                     |
+| `webhooks-dca5-clean`         | `webhooks.spec.mjs`                                                                     |   **0**   |    1 / 1     |  112.3s  | `scratch/sol-evidence/webhooks-dca5-clean.json`         |
+| `stripe-b536-clean`           | `stripe.spec.ts`                                                                        |   **0**   |    1 / 1     |   8.9s   | `scratch/sol-evidence/stripe-b536-clean.json`           |
 
 ---
 
 ## 4. Key Business Capabilities & Security Invariants Proven
 
 ### A. Commerce & Checkout Authority
+
 1. **Low-Stock Concurrency Race**: Product seeded with inventory = 1. Customer A and Customer B simultaneously attempt purchase. Customer A completes proposal checkout and settles order; inventory decrements to 0. Customer B checkout initiation is rejected with inventory unavailable error (HTTP 400).
 2. **Server-Authoritative Pricing**: Client-side tampering with price, quantities, taxes, or order totals is rejected. Proposals bind cryptographically to item SKUs, prices, taxes, and cart versions; multi-tab race and tampered hashes are rejected.
 3. **Cart Isolation & Authenticated Merge**: Guest cart tokens cannot be hijacked across sites. Anonymous visitor items merge cleanly into member cart upon authentication with serializable database transaction and version check.
@@ -71,6 +72,7 @@ All Stage 04 browser specs executed against the standalone production build on d
 10. **Fulfillment Resilience**: POD job submission to emulator; simulated failure transitions cleanly to `manual-fulfillment-packages`; operator acknowledges and ships package with tracking number.
 
 ### B. Audience & Community Journeys
+
 1. **Double Opt-In Newsletter**: Visitor submits email; token generated and delivered to local SMTP sink; confirmation URL visited; subscription confirmed. Deliveries conform to RFC 5321/5322 with valid `From`, `To`, `List-Unsubscribe`, and multipart alternative HTML/plain text.
 2. **Suppression & Re-Subscription**: Unsubscribe link visited; suppression record created; background worker skips suppressed address; re-subscribing with double opt-in removes suppression.
 3. **Delivery Recovery & Stale Lock Cleanup**: Transient transport failures retried via authenticated `/api/admin/audience/retry` endpoint and processed by background worker with automated stale lock cleanup.
@@ -106,6 +108,7 @@ The following 16 Sol repairs (originally developed and frozen in `sol-rc04-20261
 ## 6. Provider Boundaries & Unresolved External Prerequisites
 
 Every provider integration conforms to the provider boundary model:
+
 - **Local Transports & Simulators**: Local SMTP sink captures 100% of emails; telecom emulator captures SMS/RCS; local payment gateway processes HMAC-signed checkout; emulator captures Printful fulfillment.
 - **Unconfigured States**: Safe, non-crashing behavior confirmed when live provider keys are absent.
 - **Unresolved External Prerequisites** (truthfully retained):

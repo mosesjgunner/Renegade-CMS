@@ -55,4 +55,3 @@ Every browser acceptance spec has executed against the standalone production bui
 Stage 04 Sol verification and reconciliation have concluded.
 See [ACCEPTANCE.md](ACCEPTANCE.md) and [HANDOFF.md](HANDOFF.md) for the final sign-off: **STAGE 04 SOL PASS**.
 RC1 remains **NOT READY** until subsequent mandatory stages (05–07) pass.
-
