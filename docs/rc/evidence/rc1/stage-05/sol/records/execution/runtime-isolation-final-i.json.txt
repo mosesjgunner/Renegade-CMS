@@ -1,0 +1,148 @@
+[
+  {
+    "name": "/solrc05-20261015i-renegade-web-1",
+    "imageId": "sha256:27e60ef383a6e012bb23821f0f31740df8449cf5fca072a7fe751b2bef4f8e3f",
+    "user": "nextjs",
+    "labels": {
+      "com.docker.compose.config-hash": "cc7ce2947aa35f75d6780f3df0ae14ef10da3fd63ba081bf7f3487b54b6edbf2",
+      "com.docker.compose.container-number": "1",
+      "com.docker.compose.depends_on": "migrate:service_completed_successfully:false",
+      "com.docker.compose.image": "sha256:b5aa63666938a38d3049adbddb4116188bc4b1186c44e6a05f456a278c6c2c02",
+      "com.docker.compose.oneoff": "False",
+      "com.docker.compose.project": "solrc05-20261015i",
+      "com.docker.compose.project.config_files": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\compose.production.yaml,C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\compose.override.yaml",
+      "com.docker.compose.project.environment_file": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\.env.compose",
+      "com.docker.compose.project.working_dir": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015",
+      "com.docker.compose.service": "renegade-web",
+      "com.docker.compose.version": "5.5.1",
+      "org.opencontainers.image.revision": "6d9c492ae13ba1d8194082716f8b103c8be59c3a",
+      "org.opencontainers.image.version": "0.1.0-rc.1"
+    },
+    "environment": {
+      "BUILD_SHA": "6d9c492ae13ba1d8194082716f8b103c8be59c3a",
+      "RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT": "true",
+      "RENEGADE_MODULES": "all",
+      "PROXY_MODE": "trusted",
+      "APP_URL": "https://dispatch.rc02.test:3139",
+      "SMTP_PORT": "3137",
+      "MEDIA_DIR": "/app/media",
+      "APP_VERSION": "0.1.0-rc.1",
+      "LOCAL_E2E_TEST_MODE": "false",
+      "SMTP_HOST": "host.docker.internal",
+      "NODE_ENV": "production",
+      "EMAIL_MODE": "smtp",
+      "STORAGE_DRIVER": "local",
+      "ENABLE_TEST_ROUTES": "false"
+    },
+    "mounts": [
+      {
+        "Type": "volume",
+        "Name": "solrc05-20261015i_renegade_media",
+        "Source": "/var/lib/docker/volumes/solrc05-20261015i_renegade_media/_data",
+        "Destination": "/app/media",
+        "Driver": "local",
+        "Mode": "rw",
+        "RW": true,
+        "Propagation": ""
+      }
+    ],
+    "networkNames": [
+      "solrc05-20261015i_default"
+    ],
+    "ports": {
+      "3000/tcp": [
+        {
+          "HostIp": "127.0.0.1",
+          "HostPort": "3138"
+        }
+      ]
+    }
+  },
+  {
+    "name": "/solrc05-20261015i-renegade-worker-1",
+    "imageId": "sha256:27e60ef383a6e012bb23821f0f31740df8449cf5fca072a7fe751b2bef4f8e3f",
+    "user": "nextjs",
+    "labels": {
+      "com.docker.compose.config-hash": "1c92a0c71a4002749ccea523b6d12833851bd52150deba8c776e2a9ff02c0da9",
+      "com.docker.compose.container-number": "1",
+      "com.docker.compose.depends_on": "migrate:service_completed_successfully:false",
+      "com.docker.compose.image": "sha256:b5aa63666938a38d3049adbddb4116188bc4b1186c44e6a05f456a278c6c2c02",
+      "com.docker.compose.oneoff": "False",
+      "com.docker.compose.project": "solrc05-20261015i",
+      "com.docker.compose.project.config_files": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\compose.production.yaml,C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\compose.override.yaml",
+      "com.docker.compose.project.environment_file": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\.env.compose",
+      "com.docker.compose.project.working_dir": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015",
+      "com.docker.compose.service": "renegade-worker",
+      "com.docker.compose.version": "5.5.1",
+      "org.opencontainers.image.revision": "6d9c492ae13ba1d8194082716f8b103c8be59c3a",
+      "org.opencontainers.image.version": "0.1.0-rc.1"
+    },
+    "environment": {
+      "BUILD_SHA": "6d9c492ae13ba1d8194082716f8b103c8be59c3a",
+      "SMTP_PORT": "3137",
+      "PROXY_MODE": "trusted",
+      "NODE_ENV": "production",
+      "LOCAL_E2E_TEST_MODE": "false",
+      "RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT": "true",
+      "STORAGE_DRIVER": "local",
+      "EMAIL_MODE": "smtp",
+      "MEDIA_DIR": "/app/media",
+      "RENEGADE_MODULES": "all",
+      "ENABLE_TEST_ROUTES": "false",
+      "SMTP_HOST": "host.docker.internal",
+      "APP_URL": "https://dispatch.rc02.test:3139",
+      "APP_VERSION": "0.1.0-rc.1"
+    },
+    "mounts": [
+      {
+        "Type": "volume",
+        "Name": "solrc05-20261015i_renegade_media",
+        "Source": "/var/lib/docker/volumes/solrc05-20261015i_renegade_media/_data",
+        "Destination": "/app/media",
+        "Driver": "local",
+        "Mode": "rw",
+        "RW": true,
+        "Propagation": ""
+      }
+    ],
+    "networkNames": [
+      "solrc05-20261015i_default"
+    ],
+    "ports": {}
+  },
+  {
+    "name": "/solrc05-20261015i-postgres-1",
+    "imageId": "sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94",
+    "user": "",
+    "labels": {
+      "com.docker.compose.config-hash": "c8f1189e0189711619bb6438538358980190e0b1f171125fb1e2b62a22a94a4e",
+      "com.docker.compose.container-number": "1",
+      "com.docker.compose.depends_on": "",
+      "com.docker.compose.image": "sha256:747d5ed1fdeeb124b880fbe3d7c6557d2c4064ae41d6b6297d417882effce4be",
+      "com.docker.compose.oneoff": "False",
+      "com.docker.compose.project": "solrc05-20261015i",
+      "com.docker.compose.project.config_files": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\compose.production.yaml,C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\compose.override.yaml",
+      "com.docker.compose.project.environment_file": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\.env.compose",
+      "com.docker.compose.project.working_dir": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015",
+      "com.docker.compose.service": "postgres",
+      "com.docker.compose.version": "5.5.1"
+    },
+    "environment": {},
+    "mounts": [
+      {
+        "Type": "volume",
+        "Name": "solrc05-20261015i_renegade_postgres_data",
+        "Source": "/var/lib/docker/volumes/solrc05-20261015i_renegade_postgres_data/_data",
+        "Destination": "/var/lib/postgresql/data",
+        "Driver": "local",
+        "Mode": "rw",
+        "RW": true,
+        "Propagation": ""
+      }
+    ],
+    "networkNames": [
+      "solrc05-20261015i_default"
+    ],
+    "ports": {}
+  }
+]

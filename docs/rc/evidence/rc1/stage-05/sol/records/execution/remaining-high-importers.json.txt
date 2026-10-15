@@ -1,0 +1,12 @@
+[
+  {
+    "path": "/usr/local/lib/node_modules/npm/node_modules/make-fetch-happen/lib/cache/policy.js",
+    "line": 1,
+    "source": "const CacheSemantics = require('http-cache-semantics')"
+  },
+  {
+    "path": "/app/node_modules/chokidar/index.js",
+    "line": 11,
+    "source": "const braces = require('braces');"
+  }
+]

@@ -1,0 +1,18 @@
+{
+  "command": [
+    "npm.cmd",
+    "run",
+    "status:operational",
+    "--",
+    "--compose-file",
+    "compose.production.yaml",
+    "--env-file",
+    ".env.compose"
+  ],
+  "exitCode": 0,
+  "durationSeconds": 1.915348768234253,
+  "sourceSha": "6d9c492ae13ba1d8194082716f8b103c8be59c3a",
+  "sourceStatus": "",
+  "log": "scratch\\sol-evidence\\host-status-6d9c.log",
+  "logSha256": "eb16c80051ed899b5c6533a0614263df0ded62275929b498684774f729fe2f14"
+}

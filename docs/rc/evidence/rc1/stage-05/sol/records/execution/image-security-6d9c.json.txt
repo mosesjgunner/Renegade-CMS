@@ -1,0 +1,16 @@
+{
+  "command": [
+    "node",
+    "node_modules/@playwright/test/cli.js",
+    "test",
+    "--config",
+    "scratch/playwright.image.config.ts",
+    "security.spec.ts"
+  ],
+  "exitCode": 0,
+  "durationSeconds": 316.37426352500916,
+  "sourceSha": "6d9c492ae13ba1d8194082716f8b103c8be59c3a",
+  "sourceStatus": "",
+  "log": "scratch\\sol-evidence\\image-security-6d9c.log",
+  "logSha256": "46efa8ba69676aaca753ae6fdcb7f53e3644cb5b10d1119da97965131b34af26"
+}

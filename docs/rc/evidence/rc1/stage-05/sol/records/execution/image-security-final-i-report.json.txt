@@ -1,0 +1,159 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "--config",
+      "scratch/playwright.image.config.ts",
+      "security.spec.ts"
+    ],
+    "configFile": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\playwright.image.config.ts",
+    "rootDir": "C:/Projects/RENEGADE CMS/sol-rc05-20261015/scratch/image-specs",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Projects/RENEGADE CMS/sol-rc05-20261015/scratch/sol-browser-artifacts/image-security-final-i-report",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "C:/Projects/RENEGADE CMS/sol-rc05-20261015/scratch/image-specs",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 900000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "scratch/sol-evidence/image-security-final-i-report.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.62.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "security.spec.ts",
+      "file": "security.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "production image: ordinary setup, authenticated denies, durable protected state and security lifecycle",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 900000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 310354,
+                  "errors": [],
+                  "stdout": [
+                    {
+                      "text": "VERIFIED ordinary owner WebAuthn setup\n"
+                    },
+                    {
+                      "text": "VERIFIED wrong WebAuthn origin and challenge denied before session issuance\n"
+                    },
+                    {
+                      "text": "VERIFIED genuine assertion replay denied; no extra session\n"
+                    },
+                    {
+                      "text": "VERIFIED authenticated actual webhook adapter rejects private IPv4, mapped IPv6, metadata and private DNS; no subscriptions created\n"
+                    },
+                    {
+                      "text": "VERIFIED staff genuine enrollment, foreign read/write/delete/AI/private bytes denied; protected state unchanged; logout invalidates retained cookie\n"
+                    },
+                    {
+                      "text": "VERIFIED administrator genuine enrollment, foreign read/write/delete/AI/private bytes denied; protected state unchanged; logout invalidates retained cookie\n"
+                    },
+                    {
+                      "text": "VERIFIED anonymous private bytes and test-route bypass denied\n"
+                    },
+                    {
+                      "text": "VERIFIED actual MIME magic-link member, CSRF missing/mismatch denied with unchanged state, member admin denial and revoke-all\n"
+                    },
+                    {
+                      "text": "VERIFIED genuine five-minute WebAuthn challenge expiry denied without session issuance\n"
+                    },
+                    {
+                      "text": "VERIFIED ordinary owner recovery succeeds once; replay creates no session\n"
+                    }
+                  ],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-15T21:20:17.996Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-browser-artifacts\\image-security-final-i-report\\security-production-image--5df8f-tate-and-security-lifecycle\\trace.zip"
+                    }
+                  ]
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "a7e9410bcc1ef00e9656-4e52ec5be4b7095563d4",
+          "file": "security.spec.ts",
+          "line": 5,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-15T21:20:17.560Z",
+    "duration": 311367.389,
+    "expected": 1,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  }
+}

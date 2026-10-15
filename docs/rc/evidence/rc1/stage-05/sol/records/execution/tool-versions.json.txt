@@ -1,0 +1,28 @@
+{
+  "node": {
+    "command": [
+      "node",
+      "--version"
+    ],
+    "exitCode": 0,
+    "version": "v24.19.0"
+  },
+  "npm": {
+    "command": [
+      "npm.cmd",
+      "--version"
+    ],
+    "exitCode": 0,
+    "version": "11.17.0"
+  },
+  "docker": {
+    "command": [
+      "docker",
+      "version",
+      "--format",
+      "{{.Server.Version}}"
+    ],
+    "exitCode": 0,
+    "version": "29.8.0"
+  }
+}

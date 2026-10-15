@@ -1,0 +1,16 @@
+{
+  "command": [
+    "node",
+    "node_modules/@playwright/test/cli.js",
+    "test",
+    "--config",
+    "scratch/playwright.image.config.ts",
+    "input-limits.spec.ts"
+  ],
+  "exitCode": 0,
+  "durationSeconds": 2.9943552017211914,
+  "sourceSha": "6d9c492ae13ba1d8194082716f8b103c8be59c3a",
+  "sourceStatus": "",
+  "log": "scratch\\sol-evidence\\image-input-limits-final-i.log",
+  "logSha256": "4d6bc575cbdf564dfcaf80a1d4aa6a383d96054289fb251c0c19495629697676"
+}

@@ -1,0 +1,13 @@
+{
+  "command": [
+    "npm.cmd",
+    "ci",
+    "--include=dev"
+  ],
+  "exitCode": 0,
+  "durationSeconds": 88.88107657432556,
+  "sourceSha": "036e369e65162f0506f57d4124aa142e65fbc207",
+  "sourceStatus": "",
+  "log": "scratch\\sol-evidence\\install-036e.log",
+  "logSha256": "93409c02910abdecfa76f159b6e77e5e243beb3730564119bb576ff2c4ab3ebc"
+}

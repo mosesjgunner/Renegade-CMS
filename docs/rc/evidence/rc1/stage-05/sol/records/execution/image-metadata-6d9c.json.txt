@@ -1,0 +1,87 @@
+[
+    {
+        "Id": "sha256:27e60ef383a6e012bb23821f0f31740df8449cf5fca072a7fe751b2bef4f8e3f",
+        "RepoTags": [
+            "renegade-cms:sol-stage05-6d9c492"
+        ],
+        "RepoDigests": [
+            "renegade-cms@sha256:27e60ef383a6e012bb23821f0f31740df8449cf5fca072a7fe751b2bef4f8e3f"
+        ],
+        "Comment": "buildkit.dockerfile.v0",
+        "Created": "2026-10-15T21:08:48.936496621Z",
+        "Config": {
+            "User": "nextjs",
+            "ExposedPorts": {
+                "3000/tcp": {}
+            },
+            "Env": [
+                "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "NODE_VERSION=24.22.0",
+                "YARN_VERSION=1.22.22",
+                "NODE_ENV=production",
+                "PORT=3000",
+                "HOSTNAME=0.0.0.0",
+                "APP_VERSION=0.1.0-rc.1",
+                "BUILD_SHA=6d9c492ae13ba1d8194082716f8b103c8be59c3a"
+            ],
+            "Entrypoint": [
+                "docker-entrypoint.sh"
+            ],
+            "Cmd": [
+                "node",
+                "standalone/server.js"
+            ],
+            "WorkingDir": "/app",
+            "Labels": {
+                "org.opencontainers.image.revision": "6d9c492ae13ba1d8194082716f8b103c8be59c3a",
+                "org.opencontainers.image.version": "0.1.0-rc.1"
+            },
+            "ArgsEscaped": true
+        },
+        "Architecture": "amd64",
+        "Os": "linux",
+        "Size": 1613290425,
+        "RootFS": {
+            "Type": "layers",
+            "Layers": [
+                "sha256:74d97c428c51a828f9051a7a40a53ff1fc99e54fc30323ce36760701b0b7f711",
+                "sha256:097adc8e8de750358e0bc505a53d7f3055534238d0d4a0b9e3092b720de39b51",
+                "sha256:2ea56cd9a304c4091b108300290afb99cc0d4568f3d3ca9fabe095080a1d898c",
+                "sha256:88d9dfe7274031e3ec59d86af7044d33b0e0fefbfff973941722387fa39ff914",
+                "sha256:5f145b52126f5840cd183b58efbe6c8de778303fb70d456187bb28b9a14f71ad",
+                "sha256:c5243db66cbb0065c19b3a33c22de83c7f49d0c5558288ec3c99f20b7a2cdace",
+                "sha256:896324e24a6b611fe0a3ea2fadb7674092a6ef2d0fc267af9383acd097fc856d",
+                "sha256:0a4b981d243dc99275a9abc95177d37a7e70a87ee353271a26a3dcc0adfa7c57",
+                "sha256:2461e1d1ff9e2b45b4de2527a3ffbb2976b5f49241dcd0a6e543d26db7d43c1c",
+                "sha256:73506dc62ece103f7a9f8e60b576ae6400e1996f1f70834e9cebe25494857f94",
+                "sha256:57e06d4e969fd2085a2160f84e37a5b6545fc91165b02b39566f101020461fad",
+                "sha256:e5dbf7c7755488927bc815f25fe378e6869942cdf9973d9425b52313583296ec",
+                "sha256:cb8740be5af46562efe3860111185ab3124317362db1d5856eb45aa4307a50d1",
+                "sha256:09b2eece9ca8b5a37b60ddb152a0865ac125688f231f60e9c95d5770bc3e3d3e",
+                "sha256:3f43a0b1bacc4279e570a115f4486181526eadeb394bfd59a363e742237db3b5",
+                "sha256:494bce9fce44a700646673ccb987ff700f0b8f8b91917ddb9e357f0f08856694",
+                "sha256:dc91c616890167e38c62a7029e19882ef84d0bf950636cc7c99db53636fbd50c",
+                "sha256:32e02aba6dc4aa38b2c36d733e0a0955505d1c6de64c85958d7e5e7993400abf",
+                "sha256:885f223558132b4494d21df84278c13cee1bc4b218b1af4156aec4704d897fad",
+                "sha256:8038185d8c35004c4a8ff9bf7ae5f67c313bbe947d4e65ae492654870ac20374",
+                "sha256:6017ae0a9f01fedf6b96e7114be1fdc3e8355131a87e0033a63385347d42a01a"
+            ]
+        },
+        "Metadata": {
+            "LastTagTime": "2026-10-15T21:09:10.454045542Z"
+        },
+        "Descriptor": {
+            "mediaType": "application/vnd.oci.image.index.v1+json",
+            "digest": "sha256:27e60ef383a6e012bb23821f0f31740df8449cf5fca072a7fe751b2bef4f8e3f",
+            "size": 856
+        },
+        "Identity": {
+            "Build": [
+                {
+                    "Ref": "k4nukg2quozxiz81tccp0rtpl",
+                    "CreatedAt": "2026-10-15T21:09:19.497735836Z"
+                }
+            ]
+        }
+    }
+]

@@ -1,0 +1,16 @@
+{
+  "command": [
+    "docker",
+    "exec",
+    "solrc05-20261015g-renegade-web-1",
+    "npm",
+    "run",
+    "db:status"
+  ],
+  "exitCode": 0,
+  "durationSeconds": 6.1543498039245605,
+  "sourceSha": "6d9c492ae13ba1d8194082716f8b103c8be59c3a",
+  "sourceStatus": "",
+  "log": "scratch\\sol-evidence\\image-db-status-6d9c.log",
+  "logSha256": "6fbff6ca9950db6a999f8f1a3e16bbde3d243962fc4d976615bcdf78cbbe2e18"
+}

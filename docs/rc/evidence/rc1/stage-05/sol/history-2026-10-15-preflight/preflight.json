@@ -1,0 +1,136 @@
+{
+  "recordedAtUtc": "2026-10-15T20:14:13.268163+00:00",
+  "reviewedHead": "0dc4d7bb1988a3e682f404437fd441e60c5edc18",
+  "outcome": "STAGE 05 BLOCKED",
+  "acceptanceTests": {
+    "passed": 0,
+    "failed": 0,
+    "skipped": 0
+  },
+  "downstreamAcceptance": "unexecuted after prerequisite failure",
+  "initialMainStatus": "clean before Sol evidence additions",
+  "runtimeStarted": false,
+  "receipts": [
+    {
+      "cwd": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS",
+      "argv": ["git", "rev-parse", "HEAD"],
+      "exitCode": 0,
+      "stdout": "0dc4d7bb1988a3e682f404437fd441e60c5edc18\n",
+      "stderr": ""
+    },
+    {
+      "cwd": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS",
+      "argv": ["git", "rev-parse", "HEAD^{tree}"],
+      "exitCode": 0,
+      "stdout": "88fbe2d184d39bd474d6ff7df681d4d5ad9bb187\n",
+      "stderr": ""
+    },
+    {
+      "cwd": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS",
+      "argv": ["git", "status", "--short"],
+      "exitCode": 0,
+      "stdout": "?? docs/rc/evidence/rc1/stage-05/sol/\n",
+      "stderr": ""
+    },
+    {
+      "cwd": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS",
+      "argv": ["git", "worktree", "list"],
+      "exitCode": 0,
+      "stdout": "C:/Projects/RENEGADE CMS/Renegade-CMS             0dc4d7bb [main]\nC:/Projects/RENEGADE CMS/Events-Release-Candidate 4e73c86f (detached HEAD)\nC:/Projects/RENEGADE CMS/rc08c-candidate          aede4e66 [rc08c-closure]\nC:/Projects/RENEGADE CMS/rc08c-final-01908f3      01908f39 (detached HEAD)\nC:/Projects/RENEGADE CMS/rc08c-verify-9ec71fb     d32b5d85 (detached HEAD)\nC:/Projects/RENEGADE CMS/rc08d-reconcile-0159f6b  0159f6bf (detached HEAD)\nC:/Projects/RENEGADE CMS/rc08d07-3dcce7e          3dcce7ec (detached HEAD)\nC:/Projects/RENEGADE CMS/rc08d07-7f0ef9f          7f0ef9f2 (detached HEAD)\nC:/Projects/RENEGADE CMS/Renegade-CMS-ci-fix      1d81814f [fix/podcast-discovery-site-resolution]\nC:/Projects/RENEGADE CMS/sol-rc04-20261014        b5369e78 (detached HEAD)\nC:/Projects/RENEGADE CMS/sol-rc1-20261013         d3113968 (detached HEAD)\n",
+      "stderr": ""
+    },
+    {
+      "cwd": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS",
+      "argv": ["git", "log", "--all", "--oneline", "--", "docs/rc/evidence/rc1/stage-04/sol"],
+      "exitCode": 0,
+      "stdout": "b7c2a20f 11\ne2bfbeb4 docs(rc1): update stage 04 sol verification evidence receipts and quality gates\n",
+      "stderr": ""
+    },
+    {
+      "cwd": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS",
+      "argv": [
+        "git",
+        "merge-base",
+        "--is-ancestor",
+        "b5369e78faa228d7e0b4375d9a3147b164363b2c",
+        "b7c2a20f10b128caa89e9347a54929b45964cc6e"
+      ],
+      "exitCode": 1,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "cwd": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS",
+      "argv": [
+        "git",
+        "merge-base",
+        "--is-ancestor",
+        "b7c2a20f10b128caa89e9347a54929b45964cc6e",
+        "0dc4d7bb1988a3e682f404437fd441e60c5edc18"
+      ],
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "cwd": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS",
+      "argv": [
+        "git",
+        "diff",
+        "--stat",
+        "b5369e78faa228d7e0b4375d9a3147b164363b2c",
+        "b7c2a20f10b128caa89e9347a54929b45964cc6e",
+        "--",
+        "src",
+        "tests",
+        "Dockerfile",
+        "package.json",
+        "package-lock.json"
+      ],
+      "exitCode": 0,
+      "stdout": " Dockerfile                                         |   1 +\n src/app/(frontend)/api/admin/ai/preview/route.ts   |   3 -\n .../api/admin/ai/proposals/[id]/route.ts           |   3 -\n src/app/(frontend)/api/admin/ai/proposals/route.ts |   5 -\n .../(frontend)/api/admin/commerce/refunds/route.ts | 463 ++++++++++++++-------\n .../admin/commerce/subscriptions/grant/route.ts    |   5 +-\n src/app/(frontend)/api/admin/navigation/route.ts   |  32 +-\n .../(frontend)/api/admin/redirects/import/route.ts |  16 +-\n src/app/(frontend)/api/admin/redirects/route.ts    |  44 +-\n .../api/admin/semantic-url/preview/route.ts        |  17 -\n .../(frontend)/api/admin/social/worker/route.ts    |   7 +-\n .../api/admin/telemetry/dashboard/route.ts         |  13 +-\n .../api/admin/telemetry/experiment/winner/route.ts |  86 ++--\n .../(frontend)/api/admin/telemetry/funnel/route.ts |  11 +-\n .../(frontend)/api/admin/workflow/actions/route.ts |  10 +-\n .../(frontend)/api/admin/workflow/bulk/route.ts    |  15 +-\n .../api/admin/workflow/command-center/route.ts     |  92 +---\n src/app/(frontend)/api/analytics/collect/route.ts  |  23 +-\n src/app/(frontend)/api/analytics/consent/route.ts  |  20 +-\n src/app/(frontend)/api/analytics/report/route.ts   |   3 -\n .../(frontend)/api/commerce/cart/merge/route.ts    | 429 +++++++++----------\n src/app/(frontend)/api/experiences/active/route.ts |   8 +-\n .../(frontend)/api/member-auth/profile/route.ts    |   9 +\n src/app/(frontend)/api/v1/[...segments]/route.ts   | 227 ++++------\n src/app/(frontend)/members/settings/page.tsx       |   1 -\n src/collections/Commerce.ts                        |  44 --\n src/collections/Integrations.ts                    |   1 -\n src/collections/MediaPublishing.ts                 |  56 +--\n src/collections/Sites.ts                           |  35 --\n .../20261014_220000_rc1_cart_and_worker_schema.ts  |  33 --\n .../20261014_230000_rc1_machine_request_scope.ts   |  14 -\n src/migrations/index.ts                            |  12 -\n src/modules/admin/TelemetryCommandCenter.tsx       | 130 +++---\n src/modules/commerce/payment-provider.ts           |  25 +-\n src/modules/commerce/refund-execution.ts           | 316 --------------\n src/modules/community/message-attachments.ts       |  12 +-\n src/modules/editorial/cmos-persistence.ts          | 132 +++---\n src/modules/experiences/public-experiment.ts       | 155 +++----\n src/modules/integrations/webhooks.ts               |  17 +-\n src/modules/media/command-center.ts                |  59 +--\n src/modules/media/workflow.ts                      |   4 -\n src/modules/operations/staff-enrollment.ts         |  29 --\n src/modules/operations/tasks.ts                    |  15 +-\n src/payload-types.ts                               |   2 -\n src/scripts/run-jobs-worker.ts                     |  20 -\n .../flow-01-workflow-api.integration.test.ts       |  84 +---\n ...ic-experiment-and-telemetry.integration.test.ts |   4 -\n .../rc03-core-orchestration.integration.test.ts    |  10 -\n .../rc05-pass2-commerce-routes.integration.test.ts |   2 -\n .../rc1-cart-worker-schema.integration.test.ts     |  87 ----\n tests/rc04/acceptance.spec.ts                      |   2 +-\n tests/unit/public-experiment-configuration.test.ts | 133 ------\n tests/unit/refund-reconciliation.test.ts           | 122 ------\n tests/unit/security-negative-matrix.test.ts        | 433 +++++++++++++++++++\n tests/unit/shop-04-payment-operations.test.ts      |  17 -\n 55 files changed, 1344 insertions(+), 2204 deletions(-)\n",
+      "stderr": ""
+    },
+    {
+      "cwd": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS",
+      "argv": [
+        "git",
+        "diff",
+        "--stat",
+        "b7c2a20f10b128caa89e9347a54929b45964cc6e",
+        "0dc4d7bb1988a3e682f404437fd441e60c5edc18"
+      ],
+      "exitCode": 0,
+      "stdout": " .../rc1/stage-05/gemini/EVIDENCE_MATRIX.md         | 162 +++++++++++++++++++++\n docs/rc/evidence/rc1/stage-05/gemini/HANDOFF.md    | 125 ++++++++++++++++\n tests/unit/security-negative-matrix.test.ts        |  24 ++-\n 3 files changed, 304 insertions(+), 7 deletions(-)\n",
+      "stderr": ""
+    },
+    {
+      "cwd": "C:\\Projects\\RENEGADE CMS\\sol-rc04-20261014",
+      "argv": ["git", "rev-parse", "HEAD"],
+      "exitCode": 0,
+      "stdout": "b5369e78faa228d7e0b4375d9a3147b164363b2c\n",
+      "stderr": ""
+    },
+    {
+      "cwd": "C:\\Projects\\RENEGADE CMS\\sol-rc04-20261014",
+      "argv": ["git", "status", "--short"],
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "cwd": "C:\\Projects\\RENEGADE CMS\\sol-rc04-20261014",
+      "argv": ["git", "ls-files", "docs/rc/evidence/rc1/stage-04/sol"],
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "cwd": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS",
+      "argv": ["rg", "-n", "STAGE 04 SOL PASS|Stage 04.*signed off", "docs/rc/evidence/rc1"],
+      "exitCode": 0,
+      "stdout": "docs/rc/evidence/rc1\\stage-05\\sol\\IMAGE_SECURITY_ACCEPTANCE.md:13:- [Stage 04 Sol record](../../stage-04/sol/WORK-IN-PROGRESS.md) explicitly says Stage 04 is not signed off. No Stage 04 Sol PASS handoff was located in the inspected RC1 evidence or history for that directory. The isolated Stage 04 checkout has no tracked `docs/rc/evidence/rc1/stage-04/sol/` directory.\ndocs/rc/evidence/rc1\\stage-04\\sol\\WORK-IN-PROGRESS.md:3:Stage 04 is not signed off. RC1 remains NOT READY.\ndocs/rc/evidence/rc1\\stage-04\\sol\\WORK-IN-PROGRESS.md:55:Stage 04 is **not** signed off. RC1 remains **NOT READY**.\n",
+      "stderr": ""
+    }
+  ]
+}

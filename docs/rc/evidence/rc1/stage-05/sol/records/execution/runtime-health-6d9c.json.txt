@@ -1,0 +1,16 @@
+{
+  "command": [
+    "docker",
+    "exec",
+    "solrc05-20261015g-renegade-web-1",
+    "node",
+    "-e",
+    "Promise.all(['/health/live','/health/ready'].map(async p=>{let r=await fetch('http://127.0.0.1:3000'+p);if(!r.ok)process.exitCode=1;console.log(p,r.status,await r.text())}))"
+  ],
+  "exitCode": 0,
+  "durationSeconds": 2.396261692047119,
+  "sourceSha": "6d9c492ae13ba1d8194082716f8b103c8be59c3a",
+  "sourceStatus": "",
+  "log": "scratch\\sol-evidence\\runtime-health-6d9c.log",
+  "logSha256": "8c569a49a0343819138596df4013ac6a0f9857755e18245cfcae1e8ac9e243dd"
+}

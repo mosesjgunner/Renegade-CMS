@@ -1,0 +1,83 @@
+[
+    {
+        "Id": "sha256:322781e9b582a768693930ff9f097f37be38f146842db59dfd0197e77d28a0a8",
+        "RepoTags": [
+            "renegade-cms:sol-stage05-13d0cecf"
+        ],
+        "RepoDigests": [
+            "renegade-cms@sha256:322781e9b582a768693930ff9f097f37be38f146842db59dfd0197e77d28a0a8"
+        ],
+        "Comment": "buildkit.dockerfile.v0",
+        "Created": "2026-10-15T20:41:45.481884615Z",
+        "Config": {
+            "User": "nextjs",
+            "ExposedPorts": {
+                "3000/tcp": {}
+            },
+            "Env": [
+                "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "NODE_VERSION=24.22.0",
+                "YARN_VERSION=1.22.22",
+                "NODE_ENV=production",
+                "PORT=3000",
+                "HOSTNAME=0.0.0.0",
+                "APP_VERSION=0.1.0-rc.1",
+                "BUILD_SHA=13d0cecfcf471252e3764e983145585f20e524b2"
+            ],
+            "Entrypoint": [
+                "docker-entrypoint.sh"
+            ],
+            "Cmd": [
+                "node",
+                "standalone/server.js"
+            ],
+            "WorkingDir": "/app",
+            "Labels": {
+                "org.opencontainers.image.revision": "13d0cecfcf471252e3764e983145585f20e524b2",
+                "org.opencontainers.image.version": "0.1.0-rc.1"
+            },
+            "ArgsEscaped": true
+        },
+        "Architecture": "amd64",
+        "Os": "linux",
+        "Size": 1494481797,
+        "RootFS": {
+            "Type": "layers",
+            "Layers": [
+                "sha256:74d97c428c51a828f9051a7a40a53ff1fc99e54fc30323ce36760701b0b7f711",
+                "sha256:097adc8e8de750358e0bc505a53d7f3055534238d0d4a0b9e3092b720de39b51",
+                "sha256:2ea56cd9a304c4091b108300290afb99cc0d4568f3d3ca9fabe095080a1d898c",
+                "sha256:88d9dfe7274031e3ec59d86af7044d33b0e0fefbfff973941722387fa39ff914",
+                "sha256:5f145b52126f5840cd183b58efbe6c8de778303fb70d456187bb28b9a14f71ad",
+                "sha256:3d7a80e62dcddd6a579325d03628837978a73f59dd6e0d4fb9117966eb850c8d",
+                "sha256:556cf19303401e7f134cde7eff67c1ffe74e73555ee355a4833f1f099c481623",
+                "sha256:db9f1aa3813f11a5afdfed42c145e3bf1fc47a2baef5694963ade0b4b12b2946",
+                "sha256:cef3ed250642122987f372c19446e4dc5c573633a5d2886dd04dde0fbb1167af",
+                "sha256:33f3c1106bdf3cddfa4d88b8600765bc520216917c3f6b957406c1e9a5eef26a",
+                "sha256:05be2187b1064273a8de2b5b73c5861a77e5f9f9e00019eeffd13a9c5b45f103",
+                "sha256:4660378671a37fc41837bcf1dbea9b4ed5555152924a38156d0aae7c08cef14c",
+                "sha256:dfd7a9b30109d6252e86b8c5963b8230c149c6db3cce31537b646ebcb0b0c8fa",
+                "sha256:999bf5de8c962b64a979551aca30fa9821df93f788071fd00d92b6cc2f2ed4e7",
+                "sha256:0755ef48e6f784e418a01f288c2621cd5d211b1e3d33975611250dec7dad8704",
+                "sha256:a9c84d77ab7c4862e2482643a06f8bab960bd46b9e1b95af46cfb1e562ad6982",
+                "sha256:e77f6fb3be0e43c01ad8fbba5483a69a4ec54b51ea2da093351770a56521cf26"
+            ]
+        },
+        "Metadata": {
+            "LastTagTime": "2026-10-15T20:42:18.653898314Z"
+        },
+        "Descriptor": {
+            "mediaType": "application/vnd.oci.image.index.v1+json",
+            "digest": "sha256:322781e9b582a768693930ff9f097f37be38f146842db59dfd0197e77d28a0a8",
+            "size": 856
+        },
+        "Identity": {
+            "Build": [
+                {
+                    "Ref": "bdj4bvuvw3m0ol6r80x6092ob",
+                    "CreatedAt": "2026-10-15T20:42:43.418757816Z"
+                }
+            ]
+        }
+    }
+]

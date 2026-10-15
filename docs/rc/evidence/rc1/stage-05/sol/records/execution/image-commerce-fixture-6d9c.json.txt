@@ -1,0 +1,16 @@
+{
+  "command": [
+    "docker",
+    "exec",
+    "solrc05-20261015g-renegade-web-1",
+    "node",
+    "/tmp/run-image-fixture.mjs",
+    "commerce"
+  ],
+  "exitCode": 0,
+  "durationSeconds": 8.98941421508789,
+  "sourceSha": "6d9c492ae13ba1d8194082716f8b103c8be59c3a",
+  "sourceStatus": "",
+  "log": "scratch\\sol-evidence\\image-commerce-fixture-6d9c.log",
+  "logSha256": "a041d1610a0ec371b3d7fa4c8b8ffb0c5ab594c9c616b8f0b6911ee69b4d6c22"
+}

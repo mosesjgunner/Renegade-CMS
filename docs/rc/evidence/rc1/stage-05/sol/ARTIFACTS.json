@@ -1,0 +1,1823 @@
+{
+  "sourceSha": "6d9c492ae13ba1d8194082716f8b103c8be59c3a",
+  "gitTree": "67dbc493c6f9eac371b4cdad17da800302090db3",
+  "recordedAtUtc": "2026-10-15T21:33:30.252224+00:00",
+  "publicArtifacts": [
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\admin-csrf-probe.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\admin-csrf-probe.json",
+      "originalSha256": "e51ca4289dbbeb1ae78084d5ee6d30e4c6edf9c78b951203d229781d5481fe11",
+      "publicSha256": "e51ca4289dbbeb1ae78084d5ee6d30e4c6edf9c78b951203d229781d5481fe11",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\admin-csrf-probe.log",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\admin-csrf-probe.log",
+      "originalSha256": "7183f0952d36c09edd084cfa3d008740174fb612f65480c6bd94742bcac00c62",
+      "publicSha256": "7183f0952d36c09edd084cfa3d008740174fb612f65480c6bd94742bcac00c62",
+      "redacted": false
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\compose-stop-6d9c-g.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\compose-stop-6d9c-g.json",
+      "originalSha256": "f7aa12062d24472930ad535c536d11b2c6b8fd32ea5858ab4764e537f4c8b188",
+      "publicSha256": "f7aa12062d24472930ad535c536d11b2c6b8fd32ea5858ab4764e537f4c8b188",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\compose-stop-6d9c-g.log",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\compose-stop-6d9c-g.log",
+      "originalSha256": "e0e0a17029f9fb87f847feb3dd7135e3c4d8f00eff5b71b4bf53a6e19de2b2ae",
+      "publicSha256": "e0e0a17029f9fb87f847feb3dd7135e3c4d8f00eff5b71b4bf53a6e19de2b2ae",
+      "redacted": false
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\compose-up-6d9c.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\compose-up-6d9c.json",
+      "originalSha256": "2d11fd95768cc01cac7b962614ee43e0a3ea05cab1765f717ce96268cf8ce4d5",
+      "publicSha256": "2d11fd95768cc01cac7b962614ee43e0a3ea05cab1765f717ce96268cf8ce4d5",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\compose-up-6d9c.log",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\compose-up-6d9c.log",
+      "originalSha256": "13f05ba26f8d243701dccbc2eb315af5a7a20c40a15c171cf55ebe595aafd1b1",
+      "publicSha256": "13f05ba26f8d243701dccbc2eb315af5a7a20c40a15c171cf55ebe595aafd1b1",
+      "redacted": false
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\compose-up-final-i.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\compose-up-final-i.json",
+      "originalSha256": "98610b125d6b23f0c9593bd7fc891eec39b6c5363c5bb17ad37b79c81e8711ed",
+      "publicSha256": "98610b125d6b23f0c9593bd7fc891eec39b6c5363c5bb17ad37b79c81e8711ed",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\compose-up-final-i.log",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\compose-up-final-i.log",
+      "originalSha256": "d16ad70a21c2a178bdae7b981e4adfe5a8f7a0e52862c19b126872d686cad899",
+      "publicSha256": "d16ad70a21c2a178bdae7b981e4adfe5a8f7a0e52862c19b126872d686cad899",
+      "redacted": false
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\CVE-2024-24790-primary.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\CVE-2024-24790-primary.json",
+      "originalSha256": "d5730567d1682225ec6fb3dc25ccc72e71347edc822edc29013b646d1000c228",
+      "publicSha256": "d5730567d1682225ec6fb3dc25ccc72e71347edc822edc29013b646d1000c228",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\CVE-2025-68121-primary.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\CVE-2025-68121-primary.json",
+      "originalSha256": "43efdc1899f3ae49717593459ceabb56b3367d80a7dd92a7b58ded66c27ec866",
+      "publicSha256": "43efdc1899f3ae49717593459ceabb56b3367d80a7dd92a7b58ded66c27ec866",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\CVE-2026-102276-primary.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\CVE-2026-102276-primary.json",
+      "originalSha256": "fbd46c4961def4a40b52ffec98ac6964ad8a71cd8819eb9914bfaae8f7207bff",
+      "publicSha256": "fbd46c4961def4a40b52ffec98ac6964ad8a71cd8819eb9914bfaae8f7207bff",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\CVE-2026-102278-primary.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\CVE-2026-102278-primary.json",
+      "originalSha256": "848b5c6b217a63254ece548c3936b7fc48e76781c200416016ebea68cd2db6f3",
+      "publicSha256": "848b5c6b217a63254ece548c3936b7fc48e76781c200416016ebea68cd2db6f3",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\CVE-2026-19534-primary.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\CVE-2026-19534-primary.json",
+      "originalSha256": "ec3a75aea507b6f5985148b3478b6068a8c514f826e0130cf53e4a2c6cc21c5d",
+      "publicSha256": "ec3a75aea507b6f5985148b3478b6068a8c514f826e0130cf53e4a2c6cc21c5d",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\CVE-2026-93748-primary.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\CVE-2026-93748-primary.json",
+      "originalSha256": "f2dd5c20770a125e8b6dacb645be8b5fda0c4d562b6df79701b3599eff869cc2",
+      "publicSha256": "f2dd5c20770a125e8b6dacb645be8b5fda0c4d562b6df79701b3599eff869cc2",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\dependency-command-receipts.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\dependency-command-receipts.json",
+      "originalSha256": "c320d18d83a6936bc9a29a99f823d9e382120151aaa8b3e510a602ad905dad3d",
+      "publicSha256": "c320d18d83a6936bc9a29a99f823d9e382120151aaa8b3e510a602ad905dad3d",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\entire-image-cve-results.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\entire-image-cve-results.json",
+      "originalSha256": "867a19020304330c8e2a7ecd08ad4c3a320a2f94e1e515321295c58eb5f498c6",
+      "publicSha256": "867a19020304330c8e2a7ecd08ad4c3a320a2f94e1e515321295c58eb5f498c6",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\esbuild-latest.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\esbuild-latest.json",
+      "originalSha256": "7a6838097b106ef5d8877fd543a1e25c46e5eb1730945fb7e57bc467c12c7c8c",
+      "publicSha256": "7a6838097b106ef5d8877fd543a1e25c46e5eb1730945fb7e57bc467c12c7c8c",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\esbuild-source-download.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\esbuild-source-download.json",
+      "originalSha256": "f309d7251ca4086adfe1563c9d4aaec46c47de78e72886778609a1ba3518388c",
+      "publicSha256": "f309d7251ca4086adfe1563c9d4aaec46c47de78e72886778609a1ba3518388c",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\esbuild-source-ref.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\esbuild-source-ref.json",
+      "originalSha256": "594584e6b96c47668899ebbc45864ecdcc5facb36d5be6cf825f5a8e24a0fec2",
+      "publicSha256": "594584e6b96c47668899ebbc45864ecdcc5facb36d5be6cf825f5a8e24a0fec2",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\final-advisory-dispositions.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\final-advisory-dispositions.json",
+      "originalSha256": "93921ada489c40e85d7dd7944479ee924c5b30094b08200b793bbf99ebfc3611",
+      "publicSha256": "93921ada489c40e85d7dd7944479ee924c5b30094b08200b793bbf99ebfc3611",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\final-i-migrate.log",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\final-i-migrate.log",
+      "originalSha256": "a18d5ece5bf7821e8fa0a1a49dd14e17918640359148ae8d25b9635707a4eed9",
+      "publicSha256": "a18d5ece5bf7821e8fa0a1a49dd14e17918640359148ae8d25b9635707a4eed9",
+      "redacted": false
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\final-i-renegade-web.log",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\final-i-renegade-web.log",
+      "originalSha256": "00f482734a4202f8296fdda8685e60498082af5ef0197b2c0dae0837344629b7",
+      "publicSha256": "00f482734a4202f8296fdda8685e60498082af5ef0197b2c0dae0837344629b7",
+      "redacted": false
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\final-i-renegade-worker.log",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\final-i-renegade-worker.log",
+      "originalSha256": "3454f37eebdff24de029f3d8c3441010c9e5186bec58deec776192a55f5e2799",
+      "publicSha256": "3454f37eebdff24de029f3d8c3441010c9e5186bec58deec776192a55f5e2799",
+      "redacted": false
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\history-older-image-probes\\final-image-db-status.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\final-image-db-status.json",
+      "originalSha256": "960c7f36888b123acafeb151baa04deed74d6a57ecbd832fb5f066a6cb6d6fe3",
+      "publicSha256": "960c7f36888b123acafeb151baa04deed74d6a57ecbd832fb5f066a6cb6d6fe3",
+      "redacted": false,
+      "format": "JSON",
+      "scope": "Historical earlier-image probe; inspect embedded revision/receipt sourceSha, not the final candidate."
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\history-older-image-probes\\final-image-db-status.log",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\final-image-db-status.log",
+      "originalSha256": "ae715c1a68b3a2bef03d3f0b2684ed4d55b9a79f8584291ed59fb312ff0d7dc7",
+      "publicSha256": "ae715c1a68b3a2bef03d3f0b2684ed4d55b9a79f8584291ed59fb312ff0d7dc7",
+      "redacted": false,
+      "scope": "Historical earlier-image probe; inspect embedded revision/receipt sourceSha, not the final candidate."
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\history-older-image-probes\\final-image-filesystem.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\final-image-filesystem.json",
+      "originalSha256": "9b25168b57e729bddfdffbe88246076ccac5b813381feafb268f4ba6e149f859",
+      "publicSha256": "9b25168b57e729bddfdffbe88246076ccac5b813381feafb268f4ba6e149f859",
+      "redacted": false,
+      "format": "JSON",
+      "scope": "Historical earlier-image probe; inspect embedded revision/receipt sourceSha, not the final candidate."
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\history-older-image-probes\\final-image-filesystem.stderr.log",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\final-image-filesystem.stderr.log",
+      "originalSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "publicSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "redacted": false,
+      "scope": "Historical earlier-image probe; inspect embedded revision/receipt sourceSha, not the final candidate."
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\history-older-image-probes\\final-image-history.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\final-image-history.json",
+      "originalSha256": "8bc0cae1bb16ed8ee8a0371b54fc40cd63f676da0595aef3983566c5df2034c4",
+      "publicSha256": "8bc0cae1bb16ed8ee8a0371b54fc40cd63f676da0595aef3983566c5df2034c4",
+      "redacted": false,
+      "format": "NDJSON",
+      "scope": "Historical earlier-image probe; inspect embedded revision/receipt sourceSha, not the final candidate."
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\history-older-image-probes\\final-image-history.stderr.log",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\final-image-history.stderr.log",
+      "originalSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "publicSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "redacted": false,
+      "scope": "Historical earlier-image probe; inspect embedded revision/receipt sourceSha, not the final candidate."
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\history-older-image-probes\\final-image-metadata.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\final-image-metadata.json",
+      "originalSha256": "ac86f03c44c7f9621289add71ee1336e5ba5f94b79b97a373b4bcd80368181ce",
+      "publicSha256": "ac86f03c44c7f9621289add71ee1336e5ba5f94b79b97a373b4bcd80368181ce",
+      "redacted": false,
+      "format": "JSON",
+      "scope": "Historical earlier-image probe; inspect embedded revision/receipt sourceSha, not the final candidate."
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\history-older-image-probes\\final-image-metadata.stderr.log",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\final-image-metadata.stderr.log",
+      "originalSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "publicSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "redacted": false,
+      "scope": "Historical earlier-image probe; inspect embedded revision/receipt sourceSha, not the final candidate."
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\final-image-summary.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\final-image-summary.json",
+      "originalSha256": "a278c2489f2ffec21bf8575b12ad21e114ce15c45c8e8070118e9deb94152dd1",
+      "publicSha256": "a278c2489f2ffec21bf8575b12ad21e114ce15c45c8e8070118e9deb94152dd1",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\history-older-image-probes\\final-install.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\final-install.json",
+      "originalSha256": "bdfe3c0d9081f35bb870d4ef9deac4d09075e079f08dd8663099bba024888a53",
+      "publicSha256": "bdfe3c0d9081f35bb870d4ef9deac4d09075e079f08dd8663099bba024888a53",
+      "redacted": false,
+      "format": "JSON",
+      "scope": "Historical earlier-image probe; inspect embedded revision/receipt sourceSha, not the final candidate."
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\history-older-image-probes\\final-install.log",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\final-install.log",
+      "originalSha256": "d1f6b3f939951a34d89f900c37f7787e85e5498cf813ffea2e84c89456a4f5ae",
+      "publicSha256": "d1f6b3f939951a34d89f900c37f7787e85e5498cf813ffea2e84c89456a4f5ae",
+      "redacted": false,
+      "scope": "Historical earlier-image probe; inspect embedded revision/receipt sourceSha, not the final candidate."
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\final-leak-and-private-byte-inspection.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\final-leak-and-private-byte-inspection.json",
+      "originalSha256": "3311e36a5b10956ddfcffd8429a4102d35b4de0eaf1c81a359ea3819d3d79d4f",
+      "publicSha256": "3311e36a5b10956ddfcffd8429a4102d35b4de0eaf1c81a359ea3819d3d79d4f",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\final-quality-counts.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\final-quality-counts.json",
+      "originalSha256": "5af83b591b80f6bbe874a8869540fb2355e8efa413d012a8cfc7b7ce4157e6e6",
+      "publicSha256": "5af83b591b80f6bbe874a8869540fb2355e8efa413d012a8cfc7b7ce4157e6e6",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\GHSA-67mh-4wv8-2f99.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\GHSA-67mh-4wv8-2f99.json",
+      "originalSha256": "3f06e7473c2e6247e8a6444dd586d062a94621821523031d8762365621f29e26",
+      "publicSha256": "3f06e7473c2e6247e8a6444dd586d062a94621821523031d8762365621f29e26",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\GHSA-82fw-gwwq-j7x9.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\GHSA-82fw-gwwq-j7x9.json",
+      "originalSha256": "b640d6b4a43f633f56fcb3f7ae416a5e965b838ea5c014d0dc0015b6c1699201",
+      "publicSha256": "b640d6b4a43f633f56fcb3f7ae416a5e965b838ea5c014d0dc0015b6c1699201",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\GHSA-vfj7-8cjw-p6xm.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\GHSA-vfj7-8cjw-p6xm.json",
+      "originalSha256": "2ddb4a23a2b060e6b8b7c1a4dbf8693153be4ff8f5a2c478120ea6d8044c7bcb",
+      "publicSha256": "2ddb4a23a2b060e6b8b7c1a4dbf8693153be4ff8f5a2c478120ea6d8044c7bcb",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\global-runner-graph-6d9c.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\global-runner-graph-6d9c.json",
+      "originalSha256": "1f05b5a0e3db89b8fb35790115e54a5f4cf30b2c484872af21a7d5e880a054c6",
+      "publicSha256": "1f05b5a0e3db89b8fb35790115e54a5f4cf30b2c484872af21a7d5e880a054c6",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\global-runner-graph-6d9c.stderr.log",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\global-runner-graph-6d9c.stderr.log",
+      "originalSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "publicSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "redacted": false
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\go-current-releases.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\go-current-releases.json",
+      "originalSha256": "1c4adcd4a38044b2ee040eb1a640c06f8d76b3afa59fd117f5fb633ba6651f78",
+      "publicSha256": "1c4adcd4a38044b2ee040eb1a640c06f8d76b3afa59fd117f5fb633ba6651f78",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\host-status-6d9c.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\host-status-6d9c.json",
+      "originalSha256": "44c2f7d9bba78402070d58a970e15539f8ac83f6af7c75863d548e79a6b2d655",
+      "publicSha256": "44c2f7d9bba78402070d58a970e15539f8ac83f6af7c75863d548e79a6b2d655",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\host-status-6d9c.log",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\host-status-6d9c.log",
+      "originalSha256": "eb16c80051ed899b5c6533a0614263df0ded62275929b498684774f729fe2f14",
+      "publicSha256": "eb16c80051ed899b5c6533a0614263df0ded62275929b498684774f729fe2f14",
+      "redacted": false
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\image-admin-csrf-6d9c.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\image-admin-csrf-6d9c.json",
+      "originalSha256": "cc676354bbff8f4666ad9af0dbf4c4bfcb3d096f6f4690a2fe58ec47cb1c09c4",
+      "publicSha256": "cc676354bbff8f4666ad9af0dbf4c4bfcb3d096f6f4690a2fe58ec47cb1c09c4",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\image-admin-csrf-6d9c.log",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\image-admin-csrf-6d9c.log",
+      "originalSha256": "19339f7dba9af1ccd520bbcc9c09b13a00f872c02dea9e0c780cf56c3f3add15",
+      "publicSha256": "19339f7dba9af1ccd520bbcc9c09b13a00f872c02dea9e0c780cf56c3f3add15",
+      "redacted": false
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\image-admin-csrf-final-i.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\image-admin-csrf-final-i.json",
+      "originalSha256": "6bacda1bdf535256bb904634f3ec6e5e5ea6f8f7b4435a44cdbaf6fc21449598",
+      "publicSha256": "6bacda1bdf535256bb904634f3ec6e5e5ea6f8f7b4435a44cdbaf6fc21449598",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\image-admin-csrf-final-i.log",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\image-admin-csrf-final-i.log",
+      "originalSha256": "58cab33c2bcaf5ea95d750dc1b60034c33052de9b1f04f0003d19c5bc977abf4",
+      "publicSha256": "58cab33c2bcaf5ea95d750dc1b60034c33052de9b1f04f0003d19c5bc977abf4",
+      "redacted": false
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\image-bootstrap-6d9c.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\image-bootstrap-6d9c.json",
+      "originalSha256": "67a2cb8a6abe7add9e594c0a321e6dc088acee8cf0798d0e1bda31f32cb9a1ca",
+      "publicSha256": "67a2cb8a6abe7add9e594c0a321e6dc088acee8cf0798d0e1bda31f32cb9a1ca",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\image-bootstrap-6d9c.log",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\image-bootstrap-6d9c.log",
+      "originalSha256": "fad8fe6bd8fcd14cadc713fc813f40ae95ba62420c4f73e95560a8dc0985b707",
+      "publicSha256": "50de50aeabee31c57a753173b17bf207e93c48a10f211a4d48627cbd8bb35a08",
+      "redacted": true
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\image-bootstrap-final-i.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\image-bootstrap-final-i.json",
+      "originalSha256": "8079160a0df2314ce43ebe50345e51a1d2910b56879c5517fb023d4b506eb933",
+      "publicSha256": "8079160a0df2314ce43ebe50345e51a1d2910b56879c5517fb023d4b506eb933",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\image-bootstrap-final-i.log",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\image-bootstrap-final-i.log",
+      "originalSha256": "1c3385948f80d32179108df1060df6a03288a6b8f6ada8f6028dbdac789b795e",
+      "publicSha256": "3b3360097907e8c9b4c65d0c03880fc6a5a81c8d9b6329c1e9bfc11d9ce11d03",
+      "redacted": true
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\image-build-6d9c.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\image-build-6d9c.json",
+      "originalSha256": "03bc9852f87fb62af5422e6b9ea882c9e7ca0a8e45bc51bfa3cb301c604f0d7f",
+      "publicSha256": "03bc9852f87fb62af5422e6b9ea882c9e7ca0a8e45bc51bfa3cb301c604f0d7f",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\image-build-6d9c.log",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\image-build-6d9c.log",
+      "originalSha256": "8a00f5ca7e84c4753396f9b46c7c297c400dbaef9d459f39e9907058e300e95f",
+      "publicSha256": "8a00f5ca7e84c4753396f9b46c7c297c400dbaef9d459f39e9907058e300e95f",
+      "redacted": false
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\image-commerce-fixture-6d9c.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\image-commerce-fixture-6d9c.json",
+      "originalSha256": "42956f124406c6826731a579a5a7de4ca7611179eb0e0785fffc4eebf1f02c2a",
+      "publicSha256": "42956f124406c6826731a579a5a7de4ca7611179eb0e0785fffc4eebf1f02c2a",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\image-commerce-fixture-6d9c.log",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\image-commerce-fixture-6d9c.log",
+      "originalSha256": "a041d1610a0ec371b3d7fa4c8b8ffb0c5ab594c9c616b8f0b6911ee69b4d6c22",
+      "publicSha256": "a041d1610a0ec371b3d7fa4c8b8ffb0c5ab594c9c616b8f0b6911ee69b4d6c22",
+      "redacted": false
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\image-db-status-6d9c.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\image-db-status-6d9c.json",
+      "originalSha256": "ab8119f0c85d5fc546c05a46e013bce599ea4e48c99379ea1c1c23b1c68cdcde",
+      "publicSha256": "ab8119f0c85d5fc546c05a46e013bce599ea4e48c99379ea1c1c23b1c68cdcde",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\image-db-status-6d9c.log",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\image-db-status-6d9c.log",
+      "originalSha256": "6fbff6ca9950db6a999f8f1a3e16bbde3d243962fc4d976615bcdf78cbbe2e18",
+      "publicSha256": "6fbff6ca9950db6a999f8f1a3e16bbde3d243962fc4d976615bcdf78cbbe2e18",
+      "redacted": false
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\image-filesystem-6d9c-complete.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\image-filesystem-6d9c-complete.json",
+      "originalSha256": "4e43a52efef4d74c4e9ded35a3d4f7f561ed04fbe654a3127f85950df0680fb4",
+      "publicSha256": "4e43a52efef4d74c4e9ded35a3d4f7f561ed04fbe654a3127f85950df0680fb4",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\image-filesystem-6d9c.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\image-filesystem-6d9c.json",
+      "originalSha256": "75fda9544ff6e016cb6204d01b4d6fd9197cb0a3933aca924de932cc5f63a089",
+      "publicSha256": "75fda9544ff6e016cb6204d01b4d6fd9197cb0a3933aca924de932cc5f63a089",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\image-filesystem-6d9c.stderr.log",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\image-filesystem-6d9c.stderr.log",
+      "originalSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "publicSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "redacted": false
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\image-history-6d9c.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\image-history-6d9c.json",
+      "originalSha256": "2f8d88b05cd8b7d2499939a46de205e7d927783496cb2947945ebcf710936f8f",
+      "publicSha256": "2f8d88b05cd8b7d2499939a46de205e7d927783496cb2947945ebcf710936f8f",
+      "redacted": false,
+      "format": "NDJSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\image-history-6d9c.stderr.log",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\image-history-6d9c.stderr.log",
+      "originalSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "publicSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "redacted": false
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\image-input-limits-final-i.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\image-input-limits-final-i.json",
+      "originalSha256": "e45abc562a419eade1ffb1f879d6cc16e058c5747f5243ad879edfdd334da959",
+      "publicSha256": "e45abc562a419eade1ffb1f879d6cc16e058c5747f5243ad879edfdd334da959",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\image-input-limits-final-i.log",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\image-input-limits-final-i.log",
+      "originalSha256": "4d6bc575cbdf564dfcaf80a1d4aa6a383d96054289fb251c0c19495629697676",
+      "publicSha256": "4d6bc575cbdf564dfcaf80a1d4aa6a383d96054289fb251c0c19495629697676",
+      "redacted": false
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\image-metadata-6d9c.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\image-metadata-6d9c.json",
+      "originalSha256": "a251df9862a0864f199a18b610428072ae0ab025cc634e947d3bc62e4aed0a33",
+      "publicSha256": "a251df9862a0864f199a18b610428072ae0ab025cc634e947d3bc62e4aed0a33",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\image-metadata-6d9c.stderr.log",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\image-metadata-6d9c.stderr.log",
+      "originalSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "publicSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "redacted": false
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\image-security-6d9c.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\image-security-6d9c.json",
+      "originalSha256": "88282525b980c19767150e9ff889f1bd8d601a410e4aed86b89d532fbc149943",
+      "publicSha256": "88282525b980c19767150e9ff889f1bd8d601a410e4aed86b89d532fbc149943",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\image-security-6d9c.log",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\image-security-6d9c.log",
+      "originalSha256": "46efa8ba69676aaca753ae6fdcb7f53e3644cb5b10d1119da97965131b34af26",
+      "publicSha256": "46efa8ba69676aaca753ae6fdcb7f53e3644cb5b10d1119da97965131b34af26",
+      "redacted": false
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\image-security-final-i.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\image-security-final-i.json",
+      "originalSha256": "264c320a615c35b9c8d7c12a92f13bbad71ab5ec3822e5e1fd7a9ee6d4a03762",
+      "publicSha256": "264c320a615c35b9c8d7c12a92f13bbad71ab5ec3822e5e1fd7a9ee6d4a03762",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\image-security-final-i.log",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\image-security-final-i.log",
+      "originalSha256": "d3d6d6b87eb63a8120bbb1dab8fc67da474287b49cc9485b119ab9658ad37045",
+      "publicSha256": "d3d6d6b87eb63a8120bbb1dab8fc67da474287b49cc9485b119ab9658ad37045",
+      "redacted": false
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\image-upgrade-fixture-6d9c.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\image-upgrade-fixture-6d9c.json",
+      "originalSha256": "584eac9b33a0a60a7df9db0c7d6a59733ebab406cd7a1005e11eebd8f6bd95d0",
+      "publicSha256": "584eac9b33a0a60a7df9db0c7d6a59733ebab406cd7a1005e11eebd8f6bd95d0",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\image-upgrade-fixture-6d9c.log",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\image-upgrade-fixture-6d9c.log",
+      "originalSha256": "7d193e95c3107036165996ec55635bf4396985c7323efba81c5141f9dadeed94",
+      "publicSha256": "7d193e95c3107036165996ec55635bf4396985c7323efba81c5141f9dadeed94",
+      "redacted": false
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\initial-advisories-final-disposition.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\initial-advisories-final-disposition.json",
+      "originalSha256": "69fbd519e3975d12e7542679d086831a2b6b1997638b96809ab7d66499d16271",
+      "publicSha256": "69fbd519e3975d12e7542679d086831a2b6b1997638b96809ab7d66499d16271",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\install-036e.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\install-036e.json",
+      "originalSha256": "5c8adf067ab69c97641b1f81411b5f066ba04337dd1e084b7cc7c20e622b800a",
+      "publicSha256": "5c8adf067ab69c97641b1f81411b5f066ba04337dd1e084b7cc7c20e622b800a",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\install-036e.log",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\install-036e.log",
+      "originalSha256": "93409c02910abdecfa76f159b6e77e5e243beb3730564119bb576ff2c4ab3ebc",
+      "publicSha256": "93409c02910abdecfa76f159b6e77e5e243beb3730564119bb576ff2c4ab3ebc",
+      "redacted": false
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\npm-latest.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\npm-latest.json",
+      "originalSha256": "6a1a79187a7b04149722d9d6f379cd9e07cf78bcb2f52179ad4774395aa393d6",
+      "publicSha256": "6a1a79187a7b04149722d9d6f379cd9e07cf78bcb2f52179ad4774395aa393d6",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\permissions-6d9c.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\permissions-6d9c.json",
+      "originalSha256": "65bf63752d88d986996734c8b60826b79dfe9706734b29fd606f6d81b3dfc91b",
+      "publicSha256": "65bf63752d88d986996734c8b60826b79dfe9706734b29fd606f6d81b3dfc91b",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\permissions-6d9c.log",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\permissions-6d9c.log",
+      "originalSha256": "3f179e56bb1bfa960acfe2cd29ee583dc141c5402b4980aa987fac75fa41af27",
+      "publicSha256": "3f179e56bb1bfa960acfe2cd29ee583dc141c5402b4980aa987fac75fa41af27",
+      "redacted": false
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\rebuilt-esbuild-binaries.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\rebuilt-esbuild-binaries.json",
+      "originalSha256": "edff78509f249ecf5b2489bf328705bf883c30c4776eaaf0fff46f05887ba135",
+      "publicSha256": "edff78509f249ecf5b2489bf328705bf883c30c4776eaaf0fff46f05887ba135",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\remaining-high-importers.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\remaining-high-importers.json",
+      "originalSha256": "4bf699fc38913a2cf669a07378270e9fd907d0a7fdc3f7adbeae4f60591eab5d",
+      "publicSha256": "4bf699fc38913a2cf669a07378270e9fd907d0a7fdc3f7adbeae4f60591eab5d",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\restart-persistence-6d9c.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\restart-persistence-6d9c.json",
+      "originalSha256": "076412d45e6c7ced6e9fb9e4c5f2425bbcb8c9e7f3a86eb7b7c552ea2760db73",
+      "publicSha256": "076412d45e6c7ced6e9fb9e4c5f2425bbcb8c9e7f3a86eb7b7c552ea2760db73",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\restart-persistence-final-i.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\restart-persistence-final-i.json",
+      "originalSha256": "d968dba5b7c0309f481c3a07883029150521e9c30e987415e44947cc7cf78f31",
+      "publicSha256": "d968dba5b7c0309f481c3a07883029150521e9c30e987415e44947cc7cf78f31",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\restart-state-after-6d9c.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\restart-state-after-6d9c.json",
+      "originalSha256": "5c99e198d153daead6d518954e1675472a0ca520b4aa37114af88d5b46bc93ea",
+      "publicSha256": "5c99e198d153daead6d518954e1675472a0ca520b4aa37114af88d5b46bc93ea",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\restart-state-after-final-i.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\restart-state-after-final-i.json",
+      "originalSha256": "f9ca9b97d4dc59ddaa4890d61e62144e25260b5ba635b84b72f69b5656450f89",
+      "publicSha256": "f9ca9b97d4dc59ddaa4890d61e62144e25260b5ba635b84b72f69b5656450f89",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\restart-state-before-6d9c.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\restart-state-before-6d9c.json",
+      "originalSha256": "5c99e198d153daead6d518954e1675472a0ca520b4aa37114af88d5b46bc93ea",
+      "publicSha256": "5c99e198d153daead6d518954e1675472a0ca520b4aa37114af88d5b46bc93ea",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\restart-state-before-final-i.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\restart-state-before-final-i.json",
+      "originalSha256": "f9ca9b97d4dc59ddaa4890d61e62144e25260b5ba635b84b72f69b5656450f89",
+      "publicSha256": "f9ca9b97d4dc59ddaa4890d61e62144e25260b5ba635b84b72f69b5656450f89",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\runner-audit-6d9c.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\runner-audit-6d9c.json",
+      "originalSha256": "03e9d14bfe9e5265b61204a4f18de8957be8e09f0d5318d256f118307eac435f",
+      "publicSha256": "03e9d14bfe9e5265b61204a4f18de8957be8e09f0d5318d256f118307eac435f",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\runner-audit-6d9c.stderr.log",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\runner-audit-6d9c.stderr.log",
+      "originalSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "publicSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "redacted": false
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\runner-graph-6d9c.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\runner-graph-6d9c.json",
+      "originalSha256": "a90aae0d49809259a37e8d7e09025ba27f885b5e0a944a7e8a24af930da2b4d7",
+      "publicSha256": "a90aae0d49809259a37e8d7e09025ba27f885b5e0a944a7e8a24af930da2b4d7",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\runner-graph-6d9c.stderr.log",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\runner-graph-6d9c.stderr.log",
+      "originalSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "publicSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "redacted": false
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\runtime-health-6d9c.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\runtime-health-6d9c.json",
+      "originalSha256": "ed2e9ce3f2b3da4badc2c5bb631ef318cbf91ec594377bb7693fc5edaef43e19",
+      "publicSha256": "ed2e9ce3f2b3da4badc2c5bb631ef318cbf91ec594377bb7693fc5edaef43e19",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\runtime-health-6d9c.log",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\runtime-health-6d9c.log",
+      "originalSha256": "8c569a49a0343819138596df4013ac6a0f9857755e18245cfcae1e8ac9e243dd",
+      "publicSha256": "8c569a49a0343819138596df4013ac6a0f9857755e18245cfcae1e8ac9e243dd",
+      "redacted": false
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\runtime-health-final-i.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\runtime-health-final-i.json",
+      "originalSha256": "e0b339ea0fddc01de58f8035e441f81bb59752232b1b0754fd86f8809dac780b",
+      "publicSha256": "e0b339ea0fddc01de58f8035e441f81bb59752232b1b0754fd86f8809dac780b",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\runtime-health-final-i.log",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\runtime-health-final-i.log",
+      "originalSha256": "8c569a49a0343819138596df4013ac6a0f9857755e18245cfcae1e8ac9e243dd",
+      "publicSha256": "8c569a49a0343819138596df4013ac6a0f9857755e18245cfcae1e8ac9e243dd",
+      "redacted": false
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\runtime-isolation-6d9c.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\runtime-isolation-6d9c.json",
+      "originalSha256": "11114ba74c05c0b1794a5ce413dae65fea279cfa4f5be0aac60427c979710e2e",
+      "publicSha256": "11114ba74c05c0b1794a5ce413dae65fea279cfa4f5be0aac60427c979710e2e",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\runtime-isolation-final-i.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\runtime-isolation-final-i.json",
+      "originalSha256": "3397956b1abb7725054398736ab42d4a18affda1817697aeddaa9ce8f84f991a",
+      "publicSha256": "3397956b1abb7725054398736ab42d4a18affda1817697aeddaa9ce8f84f991a",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\runtime-signing-secret-6d9c.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\runtime-signing-secret-6d9c.json",
+      "originalSha256": "fb1e6a36a1278331013bb0432a991fcbc357af5e8abfd90af8c8736576902fa8",
+      "publicSha256": "fb1e6a36a1278331013bb0432a991fcbc357af5e8abfd90af8c8736576902fa8",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\runtime-signing-secret-6d9c.log",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\runtime-signing-secret-6d9c.log",
+      "originalSha256": "78897cdc0f1f13c6e2f21d762ac8b0347f5f3f82c25610fa47091b74dba0f26e",
+      "publicSha256": "78897cdc0f1f13c6e2f21d762ac8b0347f5f3f82c25610fa47091b74dba0f26e",
+      "redacted": false
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\runtime-signing-secret-final-i.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\runtime-signing-secret-final-i.json",
+      "originalSha256": "68d48076b2ccc8279ba723309c12d744ecfaeb7e27a1af106141da598ec85d01",
+      "publicSha256": "68d48076b2ccc8279ba723309c12d744ecfaeb7e27a1af106141da598ec85d01",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\runtime-signing-secret-final-i.log",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\runtime-signing-secret-final-i.log",
+      "originalSha256": "78897cdc0f1f13c6e2f21d762ac8b0347f5f3f82c25610fa47091b74dba0f26e",
+      "publicSha256": "78897cdc0f1f13c6e2f21d762ac8b0347f5f3f82c25610fa47091b74dba0f26e",
+      "redacted": false
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\runtime-signing-secret.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\runtime-signing-secret.json",
+      "originalSha256": "63ca249cc179d4c9bda7634429c2c24abf89fbd9649f82ccc23afcecbdfbb623",
+      "publicSha256": "63ca249cc179d4c9bda7634429c2c24abf89fbd9649f82ccc23afcecbdfbb623",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\tool-versions.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\tool-versions.json",
+      "originalSha256": "482fa67b5b7b8c9fa396b3e4863681b0e5f815e7802a19b2bf2198ed00809010",
+      "publicSha256": "482fa67b5b7b8c9fa396b3e4863681b0e5f815e7802a19b2bf2198ed00809010",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\whole-image-initial-advisories.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\whole-image-initial-advisories.json",
+      "originalSha256": "2e4e96f265bea846d33725f24fe86736ec3c4f60749e6594ce394212e1d91a45",
+      "publicSha256": "2e4e96f265bea846d33725f24fe86736ec3c4f60749e6594ce394212e1d91a45",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\whole-image-results-6d9c.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\whole-image-results-6d9c.json",
+      "originalSha256": "38ace289e27656ab3c01c142e9fbd7dd92271272d9d7ef26f6ca450d7b938979",
+      "publicSha256": "38ace289e27656ab3c01c142e9fbd7dd92271272d9d7ef26f6ca450d7b938979",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\whole-image-scan-6d9c.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\whole-image-scan-6d9c.json",
+      "originalSha256": "883912cc341af056750798d68257275b87050c1c75497716221806639c3a6919",
+      "publicSha256": "883912cc341af056750798d68257275b87050c1c75497716221806639c3a6919",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\whole-image-scan-6d9c.log",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\whole-image-scan-6d9c.log",
+      "originalSha256": "238f005df35bcd0e15add48e632344ae47891c122c8df9238568fd8f54a9b482",
+      "publicSha256": "238f005df35bcd0e15add48e632344ae47891c122c8df9238568fd8f54a9b482",
+      "redacted": false
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\worker-health-6d9c.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\worker-health-6d9c.json",
+      "originalSha256": "5ffd2626c6d255b2a7c8391b0e9d59df7803c916649b5935609ae8a46339c7d3",
+      "publicSha256": "5ffd2626c6d255b2a7c8391b0e9d59df7803c916649b5935609ae8a46339c7d3",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\worker-health-6d9c.log",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\worker-health-6d9c.log",
+      "originalSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "publicSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "redacted": false
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\worker-health-final-i.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\worker-health-final-i.json",
+      "originalSha256": "d003d42c08d1db949d55ab5d9afa855f50191de75745d39377b0ee77e0e1d00b",
+      "publicSha256": "d003d42c08d1db949d55ab5d9afa855f50191de75745d39377b0ee77e0e1d00b",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\worker-health-final-i.log",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\worker-health-final-i.log",
+      "originalSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "publicSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "redacted": false
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\image-admin-csrf-final-i-report.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\scratch\\sol-evidence\\image-admin-csrf-final-i-report.json",
+      "originalSha256": "e145ac8577fe773c2412b9e1abdb73fb3dffe79b93f6a640998419108af9f952",
+      "publicSha256": "e145ac8577fe773c2412b9e1abdb73fb3dffe79b93f6a640998419108af9f952",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\image-input-limits-final-i-report.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\scratch\\sol-evidence\\image-input-limits-final-i-report.json",
+      "originalSha256": "c5129bc6e8360c17dbf4d840c034d9ee8f7d283274bdf786bb4d538b311ef6ed",
+      "publicSha256": "c5129bc6e8360c17dbf4d840c034d9ee8f7d283274bdf786bb4d538b311ef6ed",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\image-security-final-i-report.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\scratch\\sol-evidence\\image-security-final-i-report.json",
+      "originalSha256": "a5f57e5a85795772879c6a2534c5ac80a6224e0ff754314b1ff65ea939ac8dab",
+      "publicSha256": "a5f57e5a85795772879c6a2534c5ac80a6224e0ff754314b1ff65ea939ac8dab",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\quality\\02-format.log",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence-6d9c\\02-format.log",
+      "originalSha256": "4e7ad5a4bb82acb493af63ba70df93c21282e4e3b64245513c3579303ca60236",
+      "publicSha256": "4e7ad5a4bb82acb493af63ba70df93c21282e4e3b64245513c3579303ca60236",
+      "redacted": false
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\quality\\03-lint.log",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence-6d9c\\03-lint.log",
+      "originalSha256": "f011c50578458ac2327c25aef3f14adb7f4fe80201f783faeb93eb2cebd28d66",
+      "publicSha256": "f011c50578458ac2327c25aef3f14adb7f4fe80201f783faeb93eb2cebd28d66",
+      "redacted": false
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\quality\\04-typecheck.log",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence-6d9c\\04-typecheck.log",
+      "originalSha256": "ed8b276999b794e52239dd39072af1b51bd2d208c6226d2d0c7cf8a2e835c11b",
+      "publicSha256": "ed8b276999b794e52239dd39072af1b51bd2d208c6226d2d0c7cf8a2e835c11b",
+      "redacted": false
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\quality\\05-unit.log",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence-6d9c\\05-unit.log",
+      "originalSha256": "dcfd776758df62bd22f65855fce5a93b95e473ded76b92dff335dfeba32a6663",
+      "publicSha256": "dcfd776758df62bd22f65855fce5a93b95e473ded76b92dff335dfeba32a6663",
+      "redacted": false
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\quality\\06-fresh.log",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence-6d9c\\06-fresh.log",
+      "originalSha256": "29744ebf78c8e8254da50287e181ff44574b770347cc1ff7a23a9b6b3cd04b6c",
+      "publicSha256": "29744ebf78c8e8254da50287e181ff44574b770347cc1ff7a23a9b6b3cd04b6c",
+      "redacted": false
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\quality\\07-upgrade.log",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence-6d9c\\07-upgrade.log",
+      "originalSha256": "7f2dde676055085ad1f9d3d5b3b02d045684ef1ba0c2e5e597e4a5f06073cb9d",
+      "publicSha256": "7f2dde676055085ad1f9d3d5b3b02d045684ef1ba0c2e5e597e4a5f06073cb9d",
+      "redacted": false
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\quality\\08-commerce.log",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence-6d9c\\08-commerce.log",
+      "originalSha256": "4c6b9938662c86eab64a53c09a479e62bccddba8fa097e497f9f30ec308ba86e",
+      "publicSha256": "4c6b9938662c86eab64a53c09a479e62bccddba8fa097e497f9f30ec308ba86e",
+      "redacted": false
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\quality\\09-integration.log",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence-6d9c\\09-integration.log",
+      "originalSha256": "04f8f3d70ebfe9a8b29ae3aa030b54c78db922ecd63317c0b460dee2102a8c9e",
+      "publicSha256": "04f8f3d70ebfe9a8b29ae3aa030b54c78db922ecd63317c0b460dee2102a8c9e",
+      "redacted": false
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\quality\\10-build.log",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence-6d9c\\10-build.log",
+      "originalSha256": "a0ac5e45d5d4352ca24b0fc378430e2a2732f25d19ac240f4d6ec63fdcc9ee85",
+      "publicSha256": "a0ac5e45d5d4352ca24b0fc378430e2a2732f25d19ac240f4d6ec63fdcc9ee85",
+      "redacted": false
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\quality\\11-bundles.log",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence-6d9c\\11-bundles.log",
+      "originalSha256": "178940faf39c0d748fa514ad7186c46eddfa1a54ed3f1b97f74e3698c544ef61",
+      "publicSha256": "178940faf39c0d748fa514ad7186c46eddfa1a54ed3f1b97f74e3698c544ef61",
+      "redacted": false
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\quality\\gates.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence-6d9c\\gates.json",
+      "originalSha256": "792342b60c6e80480d33a80fa5436baeecbf25a952973cedfb6854b291d1a1e5",
+      "publicSha256": "792342b60c6e80480d33a80fa5436baeecbf25a952973cedfb6854b291d1a1e5",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\quality\\integration.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence-6d9c\\integration.json",
+      "originalSha256": "12863cd4d58964075b07680f46ccf3903b07388f842086ae39093b5483b4650f",
+      "publicSha256": "12863cd4d58964075b07680f46ccf3903b07388f842086ae39093b5483b4650f",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\quality\\unit.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence-6d9c\\unit.json",
+      "originalSha256": "52242eb31e4622daa05df09de44d47aed9b48f58bd7c929b0624da725a607840",
+      "publicSha256": "52242eb31e4622daa05df09de44d47aed9b48f58bd7c929b0624da725a607840",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\primary-go\\GO-2023-2102.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\primary-go\\GO-2023-2102.json",
+      "originalSha256": "f66939d53445a4d7574d1e476d06cba4152b387b3b625ccb51c3ec542340ed84",
+      "publicSha256": "f66939d53445a4d7574d1e476d06cba4152b387b3b625ccb51c3ec542340ed84",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\primary-go\\GO-2023-2185.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\primary-go\\GO-2023-2185.json",
+      "originalSha256": "ee7248ed0eb2a9c5c223268674ca926aa8d57ea897f966ea542c4283503e6648",
+      "publicSha256": "ee7248ed0eb2a9c5c223268674ca926aa8d57ea897f966ea542c4283503e6648",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\primary-go\\GO-2024-2687.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\primary-go\\GO-2024-2687.json",
+      "originalSha256": "2087502178f6fb312b3a77b5fa72bcb452172c2ec6800b56409e8331766feb16",
+      "publicSha256": "2087502178f6fb312b3a77b5fa72bcb452172c2ec6800b56409e8331766feb16",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\primary-go\\GO-2024-2887.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\primary-go\\GO-2024-2887.json",
+      "originalSha256": "394fb6e1bf6bf3922fd21169912aac667f4db26c767614b085d084759a7884e3",
+      "publicSha256": "394fb6e1bf6bf3922fd21169912aac667f4db26c767614b085d084759a7884e3",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\primary-go\\GO-2024-3106.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\primary-go\\GO-2024-3106.json",
+      "originalSha256": "9db502b9fce8916d9b36fcca62c5ec1f207ddbfc71ee38ff47f7c020b9170189",
+      "publicSha256": "9db502b9fce8916d9b36fcca62c5ec1f207ddbfc71ee38ff47f7c020b9170189",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\primary-go\\GO-2025-4155.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\primary-go\\GO-2025-4155.json",
+      "originalSha256": "49c2edcbaac29e167a8d893d952c598edc41a6adbae36d4952a985b125a0c74d",
+      "publicSha256": "49c2edcbaac29e167a8d893d952c598edc41a6adbae36d4952a985b125a0c74d",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\primary-go\\GO-2026-4337.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\primary-go\\GO-2026-4337.json",
+      "originalSha256": "df1a6110a54bb08c2d5c8726971cd51069a30f48deea2cace5e5cf97893def37",
+      "publicSha256": "df1a6110a54bb08c2d5c8726971cd51069a30f48deea2cace5e5cf97893def37",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\primary-go\\GO-2026-4341.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\primary-go\\GO-2026-4341.json",
+      "originalSha256": "793c9ed07e9cb09703932118676b276891394c3ad607c89d0a627feb7c3bf109",
+      "publicSha256": "793c9ed07e9cb09703932118676b276891394c3ad607c89d0a627feb7c3bf109",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\primary-go\\GO-2026-4601.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\primary-go\\GO-2026-4601.json",
+      "originalSha256": "4ff9e79cc2660ca42160c072879b402164ea3240301f47d86b18c13579090b4f",
+      "publicSha256": "4ff9e79cc2660ca42160c072879b402164ea3240301f47d86b18c13579090b4f",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\primary-go\\GO-2026-4870.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\primary-go\\GO-2026-4870.json",
+      "originalSha256": "21de62394b41f5e008c751414bfad65492e114e9b2186e13fbf83d72e1b3f808",
+      "publicSha256": "21de62394b41f5e008c751414bfad65492e114e9b2186e13fbf83d72e1b3f808",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\primary-go\\GO-2026-4918.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\primary-go\\GO-2026-4918.json",
+      "originalSha256": "cf690ff9affe270dba8096b45883bb17dd8ac6ce43cfdf031bc218e3a54e2bc4",
+      "publicSha256": "cf690ff9affe270dba8096b45883bb17dd8ac6ce43cfdf031bc218e3a54e2bc4",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\primary-go\\GO-2026-4946.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\primary-go\\GO-2026-4946.json",
+      "originalSha256": "632daf59e86d28eb2b53d8f75adfc832c389213f0926db50f5f41404511cc596",
+      "publicSha256": "632daf59e86d28eb2b53d8f75adfc832c389213f0926db50f5f41404511cc596",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\primary-go\\GO-2026-4947.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\primary-go\\GO-2026-4947.json",
+      "originalSha256": "769b4dc8c0abc8b137eb055f9f58cdc8361182447e42ead392e0528eb05222e7",
+      "publicSha256": "769b4dc8c0abc8b137eb055f9f58cdc8361182447e42ead392e0528eb05222e7",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\primary-go\\GO-2026-4970.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\primary-go\\GO-2026-4970.json",
+      "originalSha256": "7cd0f040d0f20a62a8535191c5078a0602fe21eeb8348ca61a3115aed239bea9",
+      "publicSha256": "7cd0f040d0f20a62a8535191c5078a0602fe21eeb8348ca61a3115aed239bea9",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\primary-go\\GO-2026-4971.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\primary-go\\GO-2026-4971.json",
+      "originalSha256": "b8f9bbfe15af49db7bff521201e4acbfbea4b5d652149a23137ba222693b7421",
+      "publicSha256": "b8f9bbfe15af49db7bff521201e4acbfbea4b5d652149a23137ba222693b7421",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\primary-go\\GO-2026-4977.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\primary-go\\GO-2026-4977.json",
+      "originalSha256": "0e4ac0b5be17849fd6decac446f67f762b03080eb217c17a980aae33e82536c0",
+      "publicSha256": "0e4ac0b5be17849fd6decac446f67f762b03080eb217c17a980aae33e82536c0",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\primary-go\\GO-2026-4981.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\primary-go\\GO-2026-4981.json",
+      "originalSha256": "0b014f31a74551871fefcc920e8cf20da279874fb5a28f2ec9089bce533e0ef8",
+      "publicSha256": "0b014f31a74551871fefcc920e8cf20da279874fb5a28f2ec9089bce533e0ef8",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\primary-go\\GO-2026-4986.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\primary-go\\GO-2026-4986.json",
+      "originalSha256": "9e7fc34d023a7639568470e63f5cd4c2b59ecbe8abd14835f3f7240924fa7e79",
+      "publicSha256": "9e7fc34d023a7639568470e63f5cd4c2b59ecbe8abd14835f3f7240924fa7e79",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\primary-go\\GO-2026-5026.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\primary-go\\GO-2026-5026.json",
+      "originalSha256": "6c8aed80ae71362ee6a2c4ca36ace9d5f6d991040d5242ffc4713e2a7a9a750c",
+      "publicSha256": "6c8aed80ae71362ee6a2c4ca36ace9d5f6d991040d5242ffc4713e2a7a9a750c",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\primary-go\\GO-2026-5037.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\primary-go\\GO-2026-5037.json",
+      "originalSha256": "030c6f2bbcfd5f8c4a88d86705f70d57259136115cc7dc092141e948a1d331a6",
+      "publicSha256": "030c6f2bbcfd5f8c4a88d86705f70d57259136115cc7dc092141e948a1d331a6",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\primary-go\\GO-2026-5038.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\primary-go\\GO-2026-5038.json",
+      "originalSha256": "d37c57ccea415d869b2caa229819269fcce06829ba618129b07a6028d7bba6b9",
+      "publicSha256": "d37c57ccea415d869b2caa229819269fcce06829ba618129b07a6028d7bba6b9",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\primary-go\\GO-2026-5972.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\primary-go\\GO-2026-5972.json",
+      "originalSha256": "0a5decf07d8113ebbbd7d126d55d5d463df99fa02dc965d6be252dee342339c6",
+      "publicSha256": "0a5decf07d8113ebbbd7d126d55d5d463df99fa02dc965d6be252dee342339c6",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\primary-go\\GO-2026-6088.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\primary-go\\GO-2026-6088.json",
+      "originalSha256": "8a0a8b03822e77aeb92698759ed61a6eac38de4f58e1205419d13a22758f9836",
+      "publicSha256": "8a0a8b03822e77aeb92698759ed61a6eac38de4f58e1205419d13a22758f9836",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\primary-go\\GO-2026-6089.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\primary-go\\GO-2026-6089.json",
+      "originalSha256": "a2b4097de79210e5aaabb90365a70657a6fb19811fe3b6f093f7ee78efb728f5",
+      "publicSha256": "a2b4097de79210e5aaabb90365a70657a6fb19811fe3b6f093f7ee78efb728f5",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\primary-go\\GO-2026-6090.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\primary-go\\GO-2026-6090.json",
+      "originalSha256": "a095ce22d74407d8422f4214aa9193527771a036a19ff4099990106f28fb2cb7",
+      "publicSha256": "a095ce22d74407d8422f4214aa9193527771a036a19ff4099990106f28fb2cb7",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\primary-go\\GO-2026-6091.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\primary-go\\GO-2026-6091.json",
+      "originalSha256": "33cff0a977c052c465d2856b544f654807a5bc9048ed5e90796cb21184b18766",
+      "publicSha256": "33cff0a977c052c465d2856b544f654807a5bc9048ed5e90796cb21184b18766",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\primary-go\\GO-2026-6218.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\primary-go\\GO-2026-6218.json",
+      "originalSha256": "28092def611c88e5c6b14494576edf21cb04fd431aaef944a1d2987b17af3c09",
+      "publicSha256": "28092def611c88e5c6b14494576edf21cb04fd431aaef944a1d2987b17af3c09",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\primary-go\\GO-2026-6607.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\primary-go\\GO-2026-6607.json",
+      "originalSha256": "f4bf7540a2b1f5671a55ab2445ed6071036a699dcd9ec215ac73f7a57aadc8d6",
+      "publicSha256": "f4bf7540a2b1f5671a55ab2445ed6071036a699dcd9ec215ac73f7a57aadc8d6",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\primary-go\\GO-2026-6609.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\primary-go\\GO-2026-6609.json",
+      "originalSha256": "3a47edb3f881a474a00b696392923a6f97a8b84fb8ca90cf440c1b2b32366ea7",
+      "publicSha256": "3a47edb3f881a474a00b696392923a6f97a8b84fb8ca90cf440c1b2b32366ea7",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\primary-go\\GO-2026-6611.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\primary-go\\GO-2026-6611.json",
+      "originalSha256": "5e89ac4314a24eac41111b71ef4544f22836c7b1baf48747e31c5c1d8282c3de",
+      "publicSha256": "5e89ac4314a24eac41111b71ef4544f22836c7b1baf48747e31c5c1d8282c3de",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\scanner\\provenance.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\scanner\\provenance.json",
+      "originalSha256": "f662ba720b7472f6ec0e5d6933009b8d781b41ef36e48926cacb2d5301e4e8f8",
+      "publicSha256": "f662ba720b7472f6ec0e5d6933009b8d781b41ef36e48926cacb2d5301e4e8f8",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\scanner\\metadata.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\scanner\\cache\\db\\metadata.json",
+      "originalSha256": "5ddbf370ab3c4208012b3591271417577a4dad5dcf20f6578ef60f638a5f8468",
+      "publicSha256": "5ddbf370ab3c4208012b3591271417577a4dad5dcf20f6578ef60f638a5f8468",
+      "redacted": false,
+      "format": "JSON"
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\harness\\record.py.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\record.py",
+      "originalSha256": "f91836d3048be03696e6b26de09b882162a5ad29f93129bd46a2cb8dc7c41fad",
+      "publicSha256": "f91836d3048be03696e6b26de09b882162a5ad29f93129bd46a2cb8dc7c41fad",
+      "redacted": false
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\harness\\run-gates-6d9c.py.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\run-gates-6d9c.py",
+      "originalSha256": "14d9300d06b8b0d0a1b43e6ab9e2391819d9389c680982e8998b1770786052c3",
+      "publicSha256": "14d9300d06b8b0d0a1b43e6ab9e2391819d9389c680982e8998b1770786052c3",
+      "redacted": false
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\harness\\playwright.image.config.ts.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\playwright.image.config.ts",
+      "originalSha256": "2553fc6e5c33ad2249a306968001c3adf6c0100a64f92ed1dfcc0d00e1175da2",
+      "publicSha256": "2553fc6e5c33ad2249a306968001c3adf6c0100a64f92ed1dfcc0d00e1175da2",
+      "redacted": false
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\harness\\security.spec.ts.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\image-specs\\security.spec.ts",
+      "originalSha256": "8aef22af4aad5df912068aa84ac6148e7b392fd08c91a3f8d72def17169ff919",
+      "publicSha256": "8aef22af4aad5df912068aa84ac6148e7b392fd08c91a3f8d72def17169ff919",
+      "redacted": false
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\harness\\admin-csrf.spec.ts.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\image-specs\\admin-csrf.spec.ts",
+      "originalSha256": "8e6942a76475f4cbb833a150343d11afd7f2613d78b777345da0eb969bd36dcd",
+      "publicSha256": "8e6942a76475f4cbb833a150343d11afd7f2613d78b777345da0eb969bd36dcd",
+      "redacted": false
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\harness\\input-limits.spec.ts.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\image-specs\\input-limits.spec.ts",
+      "originalSha256": "2c7e9ee43d49d4775de072a2a6b0d6cf204f3e239585473d205fbf45abb06b20",
+      "publicSha256": "2c7e9ee43d49d4775de072a2a6b0d6cf204f3e239585473d205fbf45abb06b20",
+      "redacted": false
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\harness\\inspect-image.mjs.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\inspect-image.mjs",
+      "originalSha256": "169f865e060c62f67b4b28c05f2264869b05d013a5e5799f44b2d49a332eb479",
+      "publicSha256": "169f865e060c62f67b4b28c05f2264869b05d013a5e5799f44b2d49a332eb479",
+      "redacted": false
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\harness\\runtime-persistence-final-i.py.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\runtime-persistence-final-i.py",
+      "originalSha256": "623c0b9970d9bfa480178c30f8ade60b89389e63f2ff0e0f0db96d715e888507",
+      "publicSha256": "623c0b9970d9bfa480178c30f8ade60b89389e63f2ff0e0f0db96d715e888507",
+      "redacted": false
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\harness\\run-image-fixture.mjs.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\run-image-fixture.mjs",
+      "originalSha256": "8e8a467fd4e8231de907c8098ec4b6b8fbbc750b9067652fd57f6179553ac1bd",
+      "publicSha256": "8e8a467fd4e8231de907c8098ec4b6b8fbbc750b9067652fd57f6179553ac1bd",
+      "redacted": false
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\harness\\proxy.mjs.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\proxy.mjs",
+      "originalSha256": "c062ef3131d1304a7a79078f5aaf7171ac9bbafffba3df435a001094842e7dba",
+      "publicSha256": "c062ef3131d1304a7a79078f5aaf7171ac9bbafffba3df435a001094842e7dba",
+      "redacted": false
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\harness\\smtp.mjs.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\smtp.mjs",
+      "originalSha256": "5199b76c58e460727d9d7341edc46e37cfe7e227bda4b8f3e66689f5ca5d220a",
+      "publicSha256": "5199b76c58e460727d9d7341edc46e37cfe7e227bda4b8f3e66689f5ca5d220a",
+      "redacted": false
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\harness\\compose.override.yaml.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\compose.override.yaml",
+      "originalSha256": "7b71948ae9a11129edde60deded1b2aa8c890bfc82e2850ed553654cd06c1019",
+      "publicSha256": "7b71948ae9a11129edde60deded1b2aa8c890bfc82e2850ed553654cd06c1019",
+      "redacted": false
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\harness\\check-runtime-secret.mjs.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\check-runtime-secret.mjs",
+      "originalSha256": "3c13157cedb73d031f650ffc66f1d6643f6e2638c1ff0490db3a5ac2171b5f2b",
+      "publicSha256": "3c13157cedb73d031f650ffc66f1d6643f6e2638c1ff0490db3a5ac2171b5f2b",
+      "redacted": false
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\evidence-format-check.json.txt",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\evidence-format-check.json",
+      "originalSha256": "b0a95c2d4b8415573229e5a2f68ff8262ba792b7c9aa76766b349f6ce830d727",
+      "publicSha256": "b0a95c2d4b8415573229e5a2f68ff8262ba792b7c9aa76766b349f6ce830d727",
+      "redacted": false,
+      "scope": "Documentation-format verification after evidence packaging."
+    },
+    {
+      "publicPath": "docs\\rc\\evidence\\rc1\\stage-05\\sol\\records\\execution\\evidence-format-check.log",
+      "privateOriginal": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\evidence-format-check.log",
+      "originalSha256": "4e7ad5a4bb82acb493af63ba70df93c21282e4e3b64245513c3579303ca60236",
+      "publicSha256": "4e7ad5a4bb82acb493af63ba70df93c21282e4e3b64245513c3579303ca60236",
+      "redacted": false,
+      "scope": "Documentation-format verification after evidence packaging."
+    }
+  ],
+  "privateArtifacts": [
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-browser-artifacts\\image-admin-csrf-final-i-report\\.last-run.json",
+      "bytes": 45,
+      "sha256": "91d1c43004802cd49950d78eb11c8fa7d05da8ffffe219a8b13b2f561bc00903"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-browser-artifacts\\image-input-limits-final-i-report\\.last-run.json",
+      "bytes": 45,
+      "sha256": "91d1c43004802cd49950d78eb11c8fa7d05da8ffffe219a8b13b2f561bc00903"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-browser-artifacts\\image-security-final-i-report\\.last-run.json",
+      "bytes": 45,
+      "sha256": "91d1c43004802cd49950d78eb11c8fa7d05da8ffffe219a8b13b2f561bc00903"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-browser-artifacts\\image-security-final-i-report\\security-production-image--5df8f-tate-and-security-lifecycle\\trace.zip",
+      "bytes": 6933738,
+      "sha256": "75eae89ff901628acfbc42e83533f01d6992c210d865506def7db43c1829114c"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-browser-artifacts\\image-input-limits-final-i-report\\input-limits-real-HTTP-upl-59cf7-aries-leave-media-unchanged\\trace.zip",
+      "bytes": 51687,
+      "sha256": "3522d196e03c2b5263e12f128d357199b1e1a7e7bf44b77de8b80e4c389fb6ea"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-browser-artifacts\\image-admin-csrf-final-i-report\\admin-csrf-retained-genuin-3c21f-gh-a-foreign-browser-origin\\trace.zip",
+      "bytes": 15811,
+      "sha256": "0471f5032549bbab4e211a2b7f588a883c89ddf4dd216bbeb6c7e27227283381"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-private-traces\\image-security-final-i-report\\ordinary-setup.png",
+      "bytes": 66327,
+      "sha256": "beb5dde228bb331b1bd702afbc1857e35d8f50141f641d9f89ae6449129a04d0"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-private-traces\\image-security-final-i-report\\security-complete.png",
+      "bytes": 35003,
+      "sha256": "f8ef17fd8d7c66aafab0d00cf543cdbbf818c03a6b544bf6173de4fb5b8df9e3"
+    }
+  ],
+  "privateEnvironmentFiles": [
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\.env.acceptance",
+      "sha256": "4b0084178d6b270cc34c1acd9a09c4a5ba4ead9bc273b6bf2eaca18fe76a966f"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\.env.compose",
+      "sha256": "84d097a3ad11722f91582b449895f7684a936eecf4fdfc4814e464a9ad843998"
+    }
+  ],
+  "nativeQualityEnvironment": {
+    "DATABASE_URL": "postgres://solrc05@127.0.0.1:15435/solrc05_20261015_quality_release_acceptance",
+    "APP_URL": "https://dispatch.rc02.test:3139",
+    "PROXY_MODE": "trusted",
+    "NODE_ENV": "test",
+    "LOCAL_E2E_TEST_MODE": "false",
+    "ENABLE_TEST_ROUTES": "false",
+    "MEDIA_DIR": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\quality-media",
+    "STORAGE_DRIVER": "local",
+    "EMAIL_MODE": "disabled",
+    "RENEGADE_MODULES": "all",
+    "RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT": "true",
+    "UPGRADE_MIGRATION_DATABASE_URL": "postgres://solrc05@127.0.0.1:15435/solrc05_20261015_upgrade_acceptance"
+  },
+  "runtimeEnvironment": "records/execution/runtime-isolation-final-i.json.txt",
+  "artifactPolicy": "JSON execution captures use .json.txt to preserve original bytes; authentication traces and screenshots stay private. Public logs redact capabilities; original hashes and local paths are retained.",
+  "scopeNote": "sourceSha identifies the final candidate, not a retrospective assignment to every artifact. Historical failed attempts and primary-source inputs retain their own recorded source/scope. Evidence packaging does not rename the executable image.",
+  "privateHistoricalArtifacts": [
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt1\\image-browser.json",
+      "bytes": 436,
+      "sha256": "2bba27e327889abc42c194d641ccb62da8868edadde5e8eac8f21ae93b3f77e4"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt1\\image-browser.log",
+      "bytes": 3451,
+      "sha256": "43b3bf0740859ce034e2adea61d8889fe03e26ff2c3c0a63e97258f489662453"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt1\\runtime-security-observations.json",
+      "bytes": 166,
+      "sha256": "9d59e4b9500d0a78b4bd7c4001f06fa725b2966640b9cc72ccd8465691107463"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt1\\image-results\\.last-run.json",
+      "bytes": 96,
+      "sha256": "2dac20bc059e5c2af126eb981603f539f009945bb0971ed19312953f22ad5e2f"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt1\\image-results\\security-production-image--5df8f-tate-and-security-lifecycle\\error-context.md",
+      "bytes": 16092,
+      "sha256": "942c1b0658018b0c8a5c292978c3a7de2b256786aec5f8553ced9addef098cef"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt1\\image-results\\security-production-image--5df8f-tate-and-security-lifecycle\\test-failed-2.png",
+      "bytes": 4254,
+      "sha256": "3878570f4a62a0d65f57cf1754e0269e56ec797f4e36e26b44c172eb6e800401"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt1\\image-results\\security-production-image--5df8f-tate-and-security-lifecycle\\trace.zip",
+      "bytes": 3197471,
+      "sha256": "71b269bbf5788439af9024ba51fdd9beb0b970c7aab072c7c7a87ec678569eba"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt2\\image-browser.json",
+      "bytes": 436,
+      "sha256": "2bba27e327889abc42c194d641ccb62da8868edadde5e8eac8f21ae93b3f77e4"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt2\\image-browser2.log",
+      "bytes": 6173,
+      "sha256": "7c3a2a2eab06d880d49a4618d62ff6470c3dc882d1ed3b39e69bf059ef5a7818"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt2\\runtime-security-observations.json",
+      "bytes": 385,
+      "sha256": "af5edfea97c0eb59dcc167cefbf897ca9218176ef6b10d98d8f4e0bec9d22963"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt2\\image-results\\.last-run.json",
+      "bytes": 96,
+      "sha256": "2dac20bc059e5c2af126eb981603f539f009945bb0971ed19312953f22ad5e2f"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt2\\image-results\\security-production-image--5df8f-tate-and-security-lifecycle\\error-context.md",
+      "bytes": 32182,
+      "sha256": "0e98bebcb03200835dafac0e49e696bdd35ffd0934ca42b97827a20463d69679"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt2\\image-results\\security-production-image--5df8f-tate-and-security-lifecycle\\test-failed-1.png",
+      "bytes": 35003,
+      "sha256": "f8ef17fd8d7c66aafab0d00cf543cdbbf818c03a6b544bf6173de4fb5b8df9e3"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt2\\image-results\\security-production-image--5df8f-tate-and-security-lifecycle\\test-failed-2.png",
+      "bytes": 4254,
+      "sha256": "3878570f4a62a0d65f57cf1754e0269e56ec797f4e36e26b44c172eb6e800401"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt2\\image-results\\security-production-image--5df8f-tate-and-security-lifecycle\\test-failed-3.png",
+      "bytes": 35567,
+      "sha256": "f49cc5e1fc8dc46f08d7fdaad56cfaddb0da0c4d76690912cbe19aa7122f9123"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt2\\image-results\\security-production-image--5df8f-tate-and-security-lifecycle\\trace.zip",
+      "bytes": 5169319,
+      "sha256": "f8c8940dacd1df7b5ece41ce6ad3113e8e2023cfd9cac593fb2c79fa8096ea01"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt3\\image-browser.json",
+      "bytes": 436,
+      "sha256": "2bba27e327889abc42c194d641ccb62da8868edadde5e8eac8f21ae93b3f77e4"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt3\\image-browser3.log",
+      "bytes": 5996,
+      "sha256": "89afa1e4384fbe4aaddc30b6d057eb025d0cf3ee301425e73d20be820a078f76"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt3\\runtime-security-observations.json",
+      "bytes": 793,
+      "sha256": "97160902d236bff919c4ad56abccefae029c8f56d7234e77d07103189ccba635"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt3\\image-results\\.last-run.json",
+      "bytes": 96,
+      "sha256": "2dac20bc059e5c2af126eb981603f539f009945bb0971ed19312953f22ad5e2f"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt3\\image-results\\security-production-image--5df8f-tate-and-security-lifecycle\\error-context.md",
+      "bytes": 29110,
+      "sha256": "a4ccdd3c047959ea537c4fbab7458059fba8bdb3a8b1eda2c21a10db8f701af2"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt3\\image-results\\security-production-image--5df8f-tate-and-security-lifecycle\\test-failed-1.png",
+      "bytes": 35003,
+      "sha256": "f8ef17fd8d7c66aafab0d00cf543cdbbf818c03a6b544bf6173de4fb5b8df9e3"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt3\\image-results\\security-production-image--5df8f-tate-and-security-lifecycle\\test-failed-2.png",
+      "bytes": 4254,
+      "sha256": "3878570f4a62a0d65f57cf1754e0269e56ec797f4e36e26b44c172eb6e800401"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt3\\image-results\\security-production-image--5df8f-tate-and-security-lifecycle\\test-failed-3.png",
+      "bytes": 67552,
+      "sha256": "b4ce56a876aa9b699b1310c38d1c7cd306a9f828df0438befcdd6fbdafbdfc28"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt3\\image-results\\security-production-image--5df8f-tate-and-security-lifecycle\\test-failed-4.png",
+      "bytes": 35567,
+      "sha256": "f49cc5e1fc8dc46f08d7fdaad56cfaddb0da0c4d76690912cbe19aa7122f9123"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt3\\image-results\\security-production-image--5df8f-tate-and-security-lifecycle\\test-failed-5.png",
+      "bytes": 35567,
+      "sha256": "f49cc5e1fc8dc46f08d7fdaad56cfaddb0da0c4d76690912cbe19aa7122f9123"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt3\\image-results\\security-production-image--5df8f-tate-and-security-lifecycle\\trace.zip",
+      "bytes": 5370472,
+      "sha256": "acd3bb0ac66e00428c151b58477b6158917cd5b2aa1b20447a3e1499c4ee46f8"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt4-9f154bfb\\admin-csrf-probe.json",
+      "bytes": 465,
+      "sha256": "e51ca4289dbbeb1ae78084d5ee6d30e4c6edf9c78b951203d229781d5481fe11"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt4-9f154bfb\\admin-csrf-probe.log",
+      "bytes": 2939,
+      "sha256": "7183f0952d36c09edd084cfa3d008740174fb612f65480c6bd94742bcac00c62"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt4-9f154bfb\\image-browser.json",
+      "bytes": 436,
+      "sha256": "2bba27e327889abc42c194d641ccb62da8868edadde5e8eac8f21ae93b3f77e4"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt4-9f154bfb\\image-browser4.json",
+      "bytes": 437,
+      "sha256": "b0e434ac567ecdf26eef5928e490a3ad45aea1f6c388b9f4e09c7e602e18df57"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt4-9f154bfb\\image-browser4.log",
+      "bytes": 1499,
+      "sha256": "653bdc3503fa85629e690fc888c452243c639b9f457a4bedf3b4e1e18c373e70"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt4-9f154bfb\\restart-persistence.json",
+      "bytes": 629,
+      "sha256": "4573e37eff92fd5eac748901e8cd01de29b92689d32cf7530255a5a8198a3a90"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt4-9f154bfb\\restart-state-after.json",
+      "bytes": 831,
+      "sha256": "c619942e5dd2f08e27c00060ab309f7e4b1d4428be741231d9479ca68bce9cee"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt4-9f154bfb\\restart-state-before.json",
+      "bytes": 831,
+      "sha256": "c619942e5dd2f08e27c00060ab309f7e4b1d4428be741231d9479ca68bce9cee"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt4-9f154bfb\\runtime-isolation.json",
+      "bytes": 6397,
+      "sha256": "9eca18589e6f06b76246a5d49f1d55dc29e0e5744ca5070a5304ef3a5a80e80f"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt4-9f154bfb\\runtime-security-observations.json",
+      "bytes": 1122,
+      "sha256": "162153879cbe2123db32b16aecbd8a41bce32ad54264a91d9eaddf3b7f00ef6b"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt4-9f154bfb\\image-results\\.last-run.json",
+      "bytes": 96,
+      "sha256": "f986595fde6386cdc97061c85adf18be671a58b9ff0c2e5b262ab14d7ca3c850"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt4-9f154bfb\\image-results\\admin-csrf-retained-genuin-3c21f-gh-a-foreign-browser-origin\\error-context.md",
+      "bytes": 1600,
+      "sha256": "3c07159b774f79a1b0e25332a0b6e2f71b80d0c1aae99b3059a095253352b831"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt4-9f154bfb\\image-results\\admin-csrf-retained-genuin-3c21f-gh-a-foreign-browser-origin\\test-failed-1.png",
+      "bytes": 4254,
+      "sha256": "3878570f4a62a0d65f57cf1754e0269e56ec797f4e36e26b44c172eb6e800401"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt4-9f154bfb\\image-results\\admin-csrf-retained-genuin-3c21f-gh-a-foreign-browser-origin\\trace.zip",
+      "bytes": 12227,
+      "sha256": "78610ec37227215931664fc263a59de28955ce5f930abeb6bf0cfe9596d85975"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt5-13d0cecf\\final-image-filesystem.json",
+      "bytes": 129538,
+      "sha256": "9b25168b57e729bddfdffbe88246076ccac5b813381feafb268f4ba6e149f859"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt5-13d0cecf\\final-image-metadata.json",
+      "bytes": 3693,
+      "sha256": "ac86f03c44c7f9621289add71ee1336e5ba5f94b79b97a373b4bcd80368181ce"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt5-13d0cecf\\final-runner-audit.json",
+      "bytes": 5371,
+      "sha256": "8b61955b037d20d6154a260e2303c8f77cbb9b8a381567b07ae88c7cea477c4d"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt5-13d0cecf\\final-runner-graph.json",
+      "bytes": 180291,
+      "sha256": "0bd148193e38af9b4ca27acfd592364c4af105246ec9ab6c22aeb2a48fa190b2"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt5-13d0cecf\\image-final-security.json",
+      "bytes": 467,
+      "sha256": "a6b68c13de3470d51fbd03b050d34b3baf8b654f87c75c520e11b08f640fa0e6"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt5-13d0cecf\\image-final-security.log",
+      "bytes": 4847,
+      "sha256": "06f24bfc391bf6d8822779c85d254a5c8273f1f3ca5d4308717a58aba6777a0d"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt5-13d0cecf\\runtime-security-observations.json",
+      "bytes": 385,
+      "sha256": "af5edfea97c0eb59dcc167cefbf897ca9218176ef6b10d98d8f4e0bec9d22963"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt5-13d0cecf\\image-results\\.last-run.json",
+      "bytes": 96,
+      "sha256": "2dac20bc059e5c2af126eb981603f539f009945bb0971ed19312953f22ad5e2f"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt5-13d0cecf\\image-results\\security-production-image--5df8f-tate-and-security-lifecycle\\error-context.md",
+      "bytes": 32752,
+      "sha256": "7b4799b95b753f646545e10f4395c62f918f19cc1a45dc9d1cb0805626a2b80b"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt5-13d0cecf\\image-results\\security-production-image--5df8f-tate-and-security-lifecycle\\test-failed-1.png",
+      "bytes": 35003,
+      "sha256": "f8ef17fd8d7c66aafab0d00cf543cdbbf818c03a6b544bf6173de4fb5b8df9e3"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt5-13d0cecf\\image-results\\security-production-image--5df8f-tate-and-security-lifecycle\\test-failed-2.png",
+      "bytes": 4254,
+      "sha256": "3878570f4a62a0d65f57cf1754e0269e56ec797f4e36e26b44c172eb6e800401"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt5-13d0cecf\\image-results\\security-production-image--5df8f-tate-and-security-lifecycle\\test-failed-3.png",
+      "bytes": 4254,
+      "sha256": "3878570f4a62a0d65f57cf1754e0269e56ec797f4e36e26b44c172eb6e800401"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt5-13d0cecf\\image-results\\security-production-image--5df8f-tate-and-security-lifecycle\\trace.zip",
+      "bytes": 1917120,
+      "sha256": "57a5ee8d72c3fe662d6b397b2691be0955731e479d47d0e4507a4e8975886d97"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt6-036e\\admin-csrf-before-nocors.ts.txt",
+      "bytes": 2351,
+      "sha256": "7f787d53af8f6e54efdd14d2f0f58ff0a4029447e023c218527e1fbb415f3192"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt6-036e\\admin-csrf-browser-observations.json",
+      "bytes": 142,
+      "sha256": "679ff50953c656dd1bed9e9646b4c916416b08ad25c4ce6ba885f3c30279ba8e"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt6-036e\\admin-csrf-nocors.ts.txt",
+      "bytes": 2366,
+      "sha256": "e90fb3f9c1999b0b3984b32d18e8ec9018f1edff2ea3d0ff6517b67583328a26"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt6-036e\\image-admin-csrf-036e-cdp.json",
+      "bytes": 475,
+      "sha256": "532374e96183863e81be353339cafa33687f192ea669809993c7ae095ef88f6e"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt6-036e\\image-admin-csrf-036e-cdp.log",
+      "bytes": 354,
+      "sha256": "b07f3f0c9ef9e36a7cd4edfd1a2c6efb347ad067388f9d7ed5b11cd701a6eaa3"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt6-036e\\image-admin-csrf-036e.json",
+      "bytes": 470,
+      "sha256": "d115cf7d727faf8a9292953559c7832e277476fcdf0573a4cc4264a6c3850a03"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt6-036e\\image-admin-csrf-036e.log",
+      "bytes": 3022,
+      "sha256": "a9051b69efb13085fad4ab8ad94afe5124ed20f5e7e967cdefaf920a5752357c"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt6-036e\\image-security-036e.json",
+      "bytes": 466,
+      "sha256": "bd267a890fa7e33ead653193084c2cba339e587689f3ccc25d2509bb838dacb0"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt6-036e\\image-security-036e.log",
+      "bytes": 1499,
+      "sha256": "d7152a2475991de8896da4aafe997af621a54f96cabbecbff9add78833bc3169"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt6-036e\\runtime-security-observations.json",
+      "bytes": 1122,
+      "sha256": "162153879cbe2123db32b16aecbd8a41bce32ad54264a91d9eaddf3b7f00ef6b"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt6-036e\\image-results\\.last-run.json",
+      "bytes": 96,
+      "sha256": "f986595fde6386cdc97061c85adf18be671a58b9ff0c2e5b262ab14d7ca3c850"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt6-036e\\image-results\\admin-csrf-retained-genuin-3c21f-gh-a-foreign-browser-origin\\error-context.md",
+      "bytes": 3168,
+      "sha256": "ebfa2d95164f589570c0c57b396357c8f1471fb928ea63b305c7f5fc58c0563d"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt6-036e\\image-results\\admin-csrf-retained-genuin-3c21f-gh-a-foreign-browser-origin\\test-failed-1.png",
+      "bytes": 4254,
+      "sha256": "3878570f4a62a0d65f57cf1754e0269e56ec797f4e36e26b44c172eb6e800401"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt6-036e\\image-results\\admin-csrf-retained-genuin-3c21f-gh-a-foreign-browser-origin\\trace.zip",
+      "bytes": 16892,
+      "sha256": "0506d17165d9e50892945b28ff29def3587fe6568d31b36f80bed7b5d6b3e6f6"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt7-6d9c\\admin-csrf-browser-observations.json",
+      "bytes": 142,
+      "sha256": "679ff50953c656dd1bed9e9646b4c916416b08ad25c4ce6ba885f3c30279ba8e"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt7-6d9c\\image-admin-csrf-6d9c.json",
+      "bytes": 470,
+      "sha256": "cc676354bbff8f4666ad9af0dbf4c4bfcb3d096f6f4690a2fe58ec47cb1c09c4"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt7-6d9c\\image-admin-csrf-6d9c.log",
+      "bytes": 353,
+      "sha256": "19339f7dba9af1ccd520bbcc9c09b13a00f872c02dea9e0c780cf56c3f3add15"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt7-6d9c\\image-security-6d9c.json",
+      "bytes": 467,
+      "sha256": "88282525b980c19767150e9ff889f1bd8d601a410e4aed86b89d532fbc149943"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt7-6d9c\\image-security-6d9c.log",
+      "bytes": 1498,
+      "sha256": "46efa8ba69676aaca753ae6fdcb7f53e3644cb5b10d1119da97965131b34af26"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt7-6d9c\\runtime-security-observations.json",
+      "bytes": 1122,
+      "sha256": "162153879cbe2123db32b16aecbd8a41bce32ad54264a91d9eaddf3b7f00ef6b"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt7-6d9c\\image-results\\.last-run.json",
+      "bytes": 45,
+      "sha256": "91d1c43004802cd49950d78eb11c8fa7d05da8ffffe219a8b13b2f561bc00903"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt7-6d9c\\image-results\\admin-csrf-retained-genuin-3c21f-gh-a-foreign-browser-origin\\trace.zip",
+      "bytes": 15844,
+      "sha256": "cb75dd37759ef5bcef36ac757647c8097a6ffdcd21fba11c0d08940e20d6257c"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt8-tracing-h\\image-security-final-h.json",
+      "bytes": 469,
+      "sha256": "e74e4e2db4ea45c47cb1adf12807ec70405d9de867cfad531ef55de63a55a59b"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt8-tracing-h\\image-security-final-h.log",
+      "bytes": 2997,
+      "sha256": "eaff1ca217baca3f054724793082e25bf682980fcba54f821f4d9d36465679e9"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\attempt8-tracing-h\\security.spec.ts.txt",
+      "bytes": 15762,
+      "sha256": "9a27f4bb62b0421c8c564c1effc1013ddbdde139d247f0b99f23d801df30b0f6"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\image-cli-operational.log",
+      "bytes": 970,
+      "sha256": "6bc7b8546ce37a39a0b0509c397e33b5fb09fb934fdb54b6041ba2fe5d4cdc72"
+    },
+    {
+      "privatePath": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-evidence\\image-cli-operational.json",
+      "bytes": 433,
+      "sha256": "8bd21ebe5e24a3acf4160ec5c943b77becbb4b5cff838d2669aa51f2de041cf4"
+    }
+  ]
+}

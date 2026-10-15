@@ -1,0 +1,6 @@
+{
+  "commit": "609683d892977362a0f99026cb74b96263d728a9",
+  "url": "https://codeload.github.com/evanw/esbuild/tar.gz/609683d892977362a0f99026cb74b96263d728a9",
+  "sha256": "04cb2d38fb6af093577aa8bf174add7286099b65ef7854480cbbb8ff061cef1f",
+  "bytes": 2011018
+}

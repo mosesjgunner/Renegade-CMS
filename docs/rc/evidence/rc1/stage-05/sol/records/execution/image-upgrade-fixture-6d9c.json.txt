@@ -1,0 +1,16 @@
+{
+  "command": [
+    "docker",
+    "exec",
+    "solrc05-20261015g-renegade-web-1",
+    "node",
+    "/tmp/run-image-fixture.mjs",
+    "upgrade"
+  ],
+  "exitCode": 0,
+  "durationSeconds": 9.785012006759644,
+  "sourceSha": "6d9c492ae13ba1d8194082716f8b103c8be59c3a",
+  "sourceStatus": "",
+  "log": "scratch\\sol-evidence\\image-upgrade-fixture-6d9c.log",
+  "logSha256": "7d193e95c3107036165996ec55635bf4396985c7323efba81c5141f9dadeed94"
+}

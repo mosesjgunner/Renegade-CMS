@@ -1,0 +1,16 @@
+{
+  "command": [
+    "docker",
+    "exec",
+    "solrc05-20261015g-renegade-web-1",
+    "npm",
+    "run",
+    "installation:recover"
+  ],
+  "exitCode": 0,
+  "durationSeconds": 9.449517488479614,
+  "sourceSha": "6d9c492ae13ba1d8194082716f8b103c8be59c3a",
+  "sourceStatus": "",
+  "log": "scratch\\sol-evidence\\image-bootstrap-6d9c.log",
+  "logSha256": "fad8fe6bd8fcd14cadc713fc813f40ae95ba62420c4f73e95560a8dc0985b707"
+}

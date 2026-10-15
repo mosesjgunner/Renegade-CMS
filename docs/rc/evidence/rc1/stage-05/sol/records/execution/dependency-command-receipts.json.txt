@@ -1,0 +1,53 @@
+[
+  {
+    "sourceSha": "6d9c492ae13ba1d8194082716f8b103c8be59c3a",
+    "command": [
+      "docker",
+      "run",
+      "--rm",
+      "renegade-cms:sol-stage05-6d9c492",
+      "npm",
+      "ls",
+      "--all",
+      "--omit=dev",
+      "--json"
+    ],
+    "exitCode": 0,
+    "artifact": "scratch\\sol-evidence\\runner-graph-confirmed.json",
+    "sha256": "a90aae0d49809259a37e8d7e09025ba27f885b5e0a944a7e8a24af930da2b4d7"
+  },
+  {
+    "sourceSha": "6d9c492ae13ba1d8194082716f8b103c8be59c3a",
+    "command": [
+      "docker",
+      "run",
+      "--rm",
+      "renegade-cms:sol-stage05-6d9c492",
+      "npm",
+      "ls",
+      "--global",
+      "--all",
+      "--omit=dev",
+      "--json"
+    ],
+    "exitCode": 0,
+    "artifact": "scratch\\sol-evidence\\global-runner-graph-confirmed.json",
+    "sha256": "1f05b5a0e3db89b8fb35790115e54a5f4cf30b2c484872af21a7d5e880a054c6"
+  },
+  {
+    "sourceSha": "6d9c492ae13ba1d8194082716f8b103c8be59c3a",
+    "command": [
+      "docker",
+      "run",
+      "--rm",
+      "renegade-cms:sol-stage05-6d9c492",
+      "npm",
+      "audit",
+      "--omit=dev",
+      "--json"
+    ],
+    "exitCode": 1,
+    "artifact": "scratch\\sol-evidence\\runner-audit-confirmed.json",
+    "sha256": "03e9d14bfe9e5265b61204a4f18de8957be8e09f0d5318d256f118307eac435f"
+  }
+]

@@ -1,0 +1,52 @@
+{
+  "sourceSha": "6d9c492ae13ba1d8194082716f8b103c8be59c3a",
+  "configuredSecretsChecked": 4,
+  "surfacesAndTraceEntriesChecked": 425,
+  "configuredSecretFindings": [],
+  "deniedHttpBodiesInspected": 32,
+  "deniedPrivateResponses": [
+    {
+      "trace": "scratch\\sol-browser-artifacts\\image-security-final-i-report\\security-production-image--5df8f-tate-and-security-lifecycle\\trace.zip",
+      "status": 404,
+      "bodyBytes": 9,
+      "privatePngBytesAbsent": true
+    },
+    {
+      "trace": "scratch\\sol-browser-artifacts\\image-security-final-i-report\\security-production-image--5df8f-tate-and-security-lifecycle\\trace.zip",
+      "status": 404,
+      "bodyBytes": 9,
+      "privatePngBytesAbsent": true
+    },
+    {
+      "trace": "scratch\\sol-browser-artifacts\\image-security-final-i-report\\security-production-image--5df8f-tate-and-security-lifecycle\\trace.zip",
+      "status": 404,
+      "bodyBytes": 9,
+      "privatePngBytesAbsent": true
+    },
+    {
+      "trace": "scratch\\sol-browser-artifacts\\image-input-limits-final-i-report\\input-limits-real-HTTP-upl-59cf7-aries-leave-media-unchanged\\trace.zip",
+      "status": 404,
+      "bodyBytes": 9,
+      "privatePngBytesAbsent": true
+    }
+  ],
+  "traceArtifacts": [
+    {
+      "path": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-browser-artifacts\\image-security-final-i-report\\security-production-image--5df8f-tate-and-security-lifecycle\\trace.zip",
+      "bytes": 6933738,
+      "sha256": "75eae89ff901628acfbc42e83533f01d6992c210d865506def7db43c1829114c"
+    },
+    {
+      "path": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-browser-artifacts\\image-input-limits-final-i-report\\input-limits-real-HTTP-upl-59cf7-aries-leave-media-unchanged\\trace.zip",
+      "bytes": 51687,
+      "sha256": "3522d196e03c2b5263e12f128d357199b1e1a7e7bf44b77de8b80e4c389fb6ea"
+    },
+    {
+      "path": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015\\scratch\\sol-browser-artifacts\\image-admin-csrf-final-i-report\\admin-csrf-retained-genuin-3c21f-gh-a-foreign-browser-origin\\trace.zip",
+      "bytes": 15811,
+      "sha256": "0471f5032549bbab4e211a2b7f588a883c89ddf4dd216bbeb6c7e27227283381"
+    }
+  ],
+  "scope": "Runtime configured values, browser trace resources, image metadata/history/inventory/build and web/worker/migration logs. Expected authentication capabilities remain private; operator bootstrap output is intentionally private.",
+  "exitCode": 0
+}

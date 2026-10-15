@@ -1,0 +1,27 @@
+import { test, expect } from '@playwright/test'
+import { readFileSync, writeFileSync } from 'node:fs'
+
+test('real HTTP upload limit and private-byte response boundaries leave media unchanged', async ({page,context,browser}) => {
+  await context.addCookies(JSON.parse(readFileSync('scratch/image-owner.json','utf8')).cookies)
+  expect((await page.request.get('/api/auth/passkeys')).status()).toBe(200)
+  const before=await (await page.request.get('/api/media-assets?depth=0&limit=100')).json()
+  const sites=await (await page.request.get('/api/sites?depth=0')).json()
+  const bytes=readFileSync('fixtures/renegadeparty-demo/assets/logo.png')
+  const oversized=Buffer.alloc(26*1024*1024);oversized.set(bytes)
+  const result=await page.request.post('/api/media/upload',{multipart:{siteId:sites.docs[0].id,title:'Rejected actual oversized HTTP fixture',file:{name:'oversized.png',mimeType:'image/png',buffer:oversized}}})
+  expect(result.status()).toBe(413)
+  expect(await result.text()).toContain('limit')
+  expect(await (await page.request.get('/api/media-assets?depth=0&limit=100')).json()).toEqual(before)
+  const privateAsset=before.docs.find((d:any)=>d.publicPolicy==='private')
+  expect(privateAsset).toBeTruthy()
+  const positive=await page.request.get(`/media/${privateAsset.id}`)
+  expect(positive.status()).toBe(200);expect(await positive.body()).toEqual(bytes)
+  const guest=await browser.newContext({baseURL:'https://dispatch.rc02.test:3139',ignoreHTTPSErrors:true})
+  const denied=await guest.request.get(`/media/${privateAsset.id}`)
+  expect([401,403,404]).toContain(denied.status())
+  const deniedBytes=await denied.body()
+  expect(deniedBytes.equals(bytes)).toBe(false)
+  expect(deniedBytes.subarray(0,8).equals(bytes.subarray(0,8))).toBe(false)
+  writeFileSync('scratch/sol-evidence/input-private-bytes-observations.json',JSON.stringify({sentBytes:oversized.length,uploadStatus:413,protectedMediaUnchanged:true,authorizedOriginalByteEquality:true,anonymousPrivateStatus:denied.status(),privatePngBytesNotStreamed:true},null,2))
+  await guest.close()
+})

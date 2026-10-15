@@ -1,0 +1,23 @@
+import os, sys, subprocess, time, json
+from pathlib import Path
+sys.stdout.reconfigure(encoding='utf-8')
+out=Path('scratch/sol-evidence-6d9c');out.mkdir(exist_ok=True)
+env=os.environ.copy()
+env.update(dict(line.split('=',1) for line in Path('.env.acceptance').read_text().splitlines()))
+assert env['DATABASE_URL']=='postgres://solrc05@127.0.0.1:15435/solrc05_20261015_quality_release_acceptance'
+assert env['LOCAL_E2E_TEST_MODE']=='false'
+gates=[('02-format','npm.cmd run format:check'),('03-lint','npm.cmd run lint'),('04-typecheck','npm.cmd run typecheck'),('05-unit','npm.cmd test -- --reporter=default --reporter=json --outputFile=scratch/sol-evidence-6d9c/unit.json'),('06-fresh','npm.cmd run test:migrations:fresh'),('07-upgrade','npm.cmd run test:migrations:upgrade'),('08-commerce','npm.cmd run test:migrations:commerce'),('09-integration','npm.cmd run test:integration -- --reporter=default --reporter=json --outputFile=scratch/sol-evidence-6d9c/integration.json'),('10-build','npm.cmd run build'),('11-bundles','npm.cmd run verify:presentation-bundles')]
+results=[]
+for name,cmd in gates[int(os.environ.get('SOL_START_GATE','0')):]:
+    e=env.copy()
+    if name=='05-unit':
+        for k in list(e):
+            if k.startswith('COMMERCE_'):e.pop(k)
+    if name=='08-commerce':e['DATABASE_URL']=e['DATABASE_URL'].replace('_quality_','_commerce_')
+    if name in ['10-build','11-bundles']:e.update(NODE_ENV='production',APP_URL='https://dispatch.rc02.test:3139')
+    print('START',name,flush=True); start=time.time()
+    with (out/(name+'.log')).open('w',encoding='utf-8') as log:r=subprocess.run(cmd,shell=True,env=e,stdout=log,stderr=subprocess.STDOUT)
+    results.append(dict(command=cmd,exitCode=r.returncode,durationSeconds=time.time()-start,sourceSha=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),log=str(out/(name+'.log'))))
+    (out/'gates.json').write_text(json.dumps(results,indent=2))
+    print('END',name,r.returncode,flush=True)
+    if r.returncode:sys.exit(r.returncode)

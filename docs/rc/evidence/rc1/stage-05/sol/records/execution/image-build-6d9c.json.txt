@@ -1,0 +1,23 @@
+{
+  "command": [
+    "docker",
+    "build",
+    "--target",
+    "runner",
+    "--build-arg",
+    "BUILD_SHA=6d9c492ae13ba1d8194082716f8b103c8be59c3a",
+    "--build-arg",
+    "APP_VERSION=0.1.0-rc.1",
+    "--tag",
+    "renegade-cms:sol-stage05-6d9c492",
+    "--iidfile",
+    "scratch/image-id-6d9c.txt",
+    "."
+  ],
+  "exitCode": 0,
+  "durationSeconds": 180.78408241271973,
+  "sourceSha": "6d9c492ae13ba1d8194082716f8b103c8be59c3a",
+  "sourceStatus": "",
+  "log": "scratch\\sol-evidence\\image-build-6d9c.log",
+  "logSha256": "8a00f5ca7e84c4753396f9b46c7c297c400dbaef9d459f39e9907058e300e95f"
+}

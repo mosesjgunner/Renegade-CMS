@@ -1,11 +1,7 @@
-# Stage 05 Sol handoff
+# Stage 05 verification evidence handoff
 
-**STAGE 05 BLOCKED. RC1 NOT READY.** Sol, 2026-10-15 (America/Chicago).
+The preflight source-containment blocker was repaired through the actual branch merge and subsequent verified fixes. Historical preflight evidence is retained under `history-2026-10-15-preflight/`.
 
-Reviewed clean main `0dc4d7bb1988a3e682f404437fd441e60c5edc18` and Gemini image-source claim `b7c2a20f10b128caa89e9347a54929b45964cc6e`. Stage 04 Sol explicitly remains unsigned; its isolated repair source `b5369e78faa228d7e0b4375d9a3147b164363b2c` is not an ancestor of the Stage 05 claimed source (exit 1; 55 source/test/build paths differ).
+See [the current tested implementation handoff](../gemini/HANDOFF.md), [IMAGE_SECURITY_ACCEPTANCE.md](IMAGE_SECURITY_ACCEPTANCE.md), [SUMMARY.json](SUMMARY.json) and [ARTIFACTS.json](ARTIFACTS.json). These records contain real production-image and authenticated security executions. Stage 04 Sol is signed off on main and contained by ancestry in candidate `3f464a69`. Independent Stage 05 Sol acceptance remains pending.
 
-Changed files: this handoff, `IMAGE_SECURITY_ACCEPTANCE.md`, and `preflight.json` only. Executable source and historical evidence are preserved. Evidence is based on the exact reviewed commits; the documentation commit does not represent a tested image.
-
-Provenance inspection only: **0 acceptance tests executed**. Dependency audit, primary-source advisory refresh, image/digest/revision verification, runner inspection, disposable web/worker persistence/CLI and runtime security negatives remain **unexecuted** after the first failed prerequisite. Gemini's digest and security dispositions are not independently accepted.
-
-See [acceptance decision](IMAGE_SECURITY_ACCEPTANCE.md) and [command receipts](preflight.json). Required prerequisite: finish the existing Stage 04 Sol acceptance, reconcile its actual source, and freeze a clean candidate before Stage 05 runtime acceptance. No later stage started; no tag, push, publication, deployment or existing data changes.
+**STAGE 05 GEMINI COMPLETE — independent Sol acceptance pending; RC1 NOT READY.**

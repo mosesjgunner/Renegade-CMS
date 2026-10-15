@@ -9,3 +9,9 @@ docs/rc/evidence/rc-08d/reconciliation-2026-10-07/*.log -text
 
 # Preserve RC1 baseline hashes, raw command output and archived report bytes.
 docs/rc/evidence/rc1/stage-01/** -text whitespace=cr-at-eol
+
+# Captured output includes literal trailing whitespace; preserve its hashes.
+# These exceptions cover evidence bytes only, never executable source/tests.
+docs/rc/evidence/rc1/stage-05/sol/records/** -text whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
+docs/rc/evidence/rc1/stage-05/sol/history-2026-10-15-preflight/** -text whitespace=cr-at-eol
+docs/rc/evidence/rc1/stage-05/gemini/history-2026-10-15/** -text whitespace=-blank-at-eol,cr-at-eol

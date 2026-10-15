@@ -1,0 +1,1 @@
+{"ref":"refs/tags/v0.28.2","node_id":"MDM6UmVmNjExMzcxNTM6cmVmcy90YWdzL3YwLjI4LjI=","url":"https://api.github.com/repos/evanw/esbuild/git/refs/tags/v0.28.2","object":{"sha":"609683d892977362a0f99026cb74b96263d728a9","type":"commit","url":"https://api.github.com/repos/evanw/esbuild/git/commits/609683d892977362a0f99026cb74b96263d728a9"}}

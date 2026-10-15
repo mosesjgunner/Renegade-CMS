@@ -1,0 +1,16 @@
+{
+  "unit": {
+    "files": 196,
+    "passed": 1295,
+    "failed": 0,
+    "skipped": 0,
+    "total": 1295
+  },
+  "integration": {
+    "files": 51,
+    "passed": 298,
+    "failed": 0,
+    "skipped": 0,
+    "total": 298
+  }
+}

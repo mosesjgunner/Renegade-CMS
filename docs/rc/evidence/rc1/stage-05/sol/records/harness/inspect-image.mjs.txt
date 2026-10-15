@@ -1,0 +1,26 @@
+import fs from 'node:fs'
+import path from 'node:path'
+import { createRequire } from 'node:module'
+const packages = [], unversionedManifests = [], traces = [], suspectFiles = []
+function walk(dir) {
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const file = path.join(dir, entry.name)
+    if (entry.isSymbolicLink()) continue
+    if (entry.isDirectory()) walk(file)
+    else if (entry.name === 'package.json') {
+      try { const pkg = JSON.parse(fs.readFileSync(file)); if(pkg.name && pkg.version) packages.push({ path:file, name:pkg.name, version:pkg.version }); else unversionedManifests.push({path:file,name:pkg.name??null,version:pkg.version??null}) } catch {}
+    } else if (file.endsWith('.nft.json')) {
+      const trace = JSON.parse(fs.readFileSync(file)); traces.push({path:file, files:trace.files?.length, missing:(trace.files??[]).filter(f=>!fs.existsSync(path.resolve(path.dirname(file),f)))})
+    } else if (/^\.env($|\.)|^id_rsa$|^.*\.(key|pem)$/.test(entry.name)) suspectFiles.push(file)
+  }
+}
+walk('/app')
+walk('/usr/local/lib/node_modules')
+const require = createRequire('/app/package.json')
+const sharp = require('sharp')
+const png = await sharp({create:{width:1,height:1,channels:4,background:'#fff'}}).png().toBuffer()
+const modules = {}
+for (const name of ['payload','@payloadcms/db-postgres','tsx','sharp','undici','vitest','eslint','@playwright/test']) {
+  try { modules[name] = require.resolve(name) } catch { modules[name] = null }
+}
+console.log(JSON.stringify({uid:process.getuid(),gid:process.getgid(),node:process.version,platform:process.platform,arch:process.arch,buildSha:process.env.BUILD_SHA,provenance:JSON.parse(fs.readFileSync('/app/build-provenance.json')),standaloneProvenance:JSON.parse(fs.readFileSync('/app/standalone/build-provenance.json')),esbuildBuild:fs.existsSync('/app/esbuild-build.txt')?fs.readFileSync('/app/esbuild-build.txt','utf8'):null,esbuildReplacements:fs.existsSync('/app/esbuild-runtime-replacements.json')?JSON.parse(fs.readFileSync('/app/esbuild-runtime-replacements.json')):null,modules,sharpPngBytes:png.length,packages,unversionedManifests,traces,suspectFiles},null,2))

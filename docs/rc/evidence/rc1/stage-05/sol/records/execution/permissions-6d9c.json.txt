@@ -1,0 +1,16 @@
+{
+  "command": [
+    "docker",
+    "exec",
+    "solrc05-20261015g-renegade-web-1",
+    "node",
+    "-e",
+    "const fs=require('node:fs');let denied=false;try{fs.accessSync('/root',fs.constants.W_OK)}catch{denied=true};fs.accessSync('/app/media',fs.constants.R_OK|fs.constants.W_OK);if(process.getuid()===0||!denied)process.exit(1);console.log(JSON.stringify({uid:process.getuid(),gid:process.getgid(),rootDirectoryWriteDenied:denied,mediaReadableWritable:true,pid1:fs.readFileSync('/proc/1/status','utf8').split('\\n').filter(x=>/^(Uid|Gid|CapEff):/.test(x))}))"
+  ],
+  "exitCode": 0,
+  "durationSeconds": 0.11911273002624512,
+  "sourceSha": "6d9c492ae13ba1d8194082716f8b103c8be59c3a",
+  "sourceStatus": "",
+  "log": "scratch\\sol-evidence\\permissions-6d9c.log",
+  "logSha256": "3f179e56bb1bfa960acfe2cd29ee583dc141c5402b4980aa987fac75fa41af27"
+}

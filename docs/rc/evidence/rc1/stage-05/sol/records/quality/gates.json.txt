@@ -1,0 +1,72 @@
+[
+  {
+    "command": "npm.cmd run format:check",
+    "exitCode": 0,
+    "durationSeconds": 40.55719494819641,
+    "sourceSha": "6d9c492ae13ba1d8194082716f8b103c8be59c3a",
+    "log": "scratch\\sol-evidence-6d9c\\02-format.log"
+  },
+  {
+    "command": "npm.cmd run lint",
+    "exitCode": 0,
+    "durationSeconds": 33.11539030075073,
+    "sourceSha": "6d9c492ae13ba1d8194082716f8b103c8be59c3a",
+    "log": "scratch\\sol-evidence-6d9c\\03-lint.log"
+  },
+  {
+    "command": "npm.cmd run typecheck",
+    "exitCode": 0,
+    "durationSeconds": 8.804198980331421,
+    "sourceSha": "6d9c492ae13ba1d8194082716f8b103c8be59c3a",
+    "log": "scratch\\sol-evidence-6d9c\\04-typecheck.log"
+  },
+  {
+    "command": "npm.cmd test -- --reporter=default --reporter=json --outputFile=scratch/sol-evidence-6d9c/unit.json",
+    "exitCode": 0,
+    "durationSeconds": 28.623994827270508,
+    "sourceSha": "6d9c492ae13ba1d8194082716f8b103c8be59c3a",
+    "log": "scratch\\sol-evidence-6d9c\\05-unit.log"
+  },
+  {
+    "command": "npm.cmd run test:migrations:fresh",
+    "exitCode": 0,
+    "durationSeconds": 16.91938304901123,
+    "sourceSha": "6d9c492ae13ba1d8194082716f8b103c8be59c3a",
+    "log": "scratch\\sol-evidence-6d9c\\06-fresh.log"
+  },
+  {
+    "command": "npm.cmd run test:migrations:upgrade",
+    "exitCode": 0,
+    "durationSeconds": 14.31839370727539,
+    "sourceSha": "6d9c492ae13ba1d8194082716f8b103c8be59c3a",
+    "log": "scratch\\sol-evidence-6d9c\\07-upgrade.log"
+  },
+  {
+    "command": "npm.cmd run test:migrations:commerce",
+    "exitCode": 0,
+    "durationSeconds": 8.035919904708862,
+    "sourceSha": "6d9c492ae13ba1d8194082716f8b103c8be59c3a",
+    "log": "scratch\\sol-evidence-6d9c\\08-commerce.log"
+  },
+  {
+    "command": "npm.cmd run test:integration -- --reporter=default --reporter=json --outputFile=scratch/sol-evidence-6d9c/integration.json",
+    "exitCode": 0,
+    "durationSeconds": 314.024129152298,
+    "sourceSha": "6d9c492ae13ba1d8194082716f8b103c8be59c3a",
+    "log": "scratch\\sol-evidence-6d9c\\09-integration.log"
+  },
+  {
+    "command": "npm.cmd run build",
+    "exitCode": 0,
+    "durationSeconds": 31.06242036819458,
+    "sourceSha": "6d9c492ae13ba1d8194082716f8b103c8be59c3a",
+    "log": "scratch\\sol-evidence-6d9c\\10-build.log"
+  },
+  {
+    "command": "npm.cmd run verify:presentation-bundles",
+    "exitCode": 0,
+    "durationSeconds": 0.4545109272003174,
+    "sourceSha": "6d9c492ae13ba1d8194082716f8b103c8be59c3a",
+    "log": "scratch\\sol-evidence-6d9c\\11-bundles.log"
+  }
+]

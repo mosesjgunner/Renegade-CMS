@@ -1,0 +1,13 @@
+import { mkdirSync } from 'node:fs'
+import { spawnSync } from 'node:child_process'
+const kind=process.argv[2]
+if(!['upgrade','commerce'].includes(kind))throw new Error('Explicit fixture kind required')
+const url=new URL(process.env.DATABASE_URL)
+if(url.hostname!=='postgres'||url.pathname!=='/renegade'||process.env.LOCAL_E2E_TEST_MODE!=='false'||process.env.ENABLE_TEST_ROUTES!=='false')throw new Error('Unexpected runtime target')
+url.pathname=kind==='upgrade'?'/solrc05_20261015_upgrade_acceptance':'/solrc05_20261015_commerce_release_acceptance'
+const media='/tmp/solrc05-'+kind+'-fixture-media';mkdirSync(media,{recursive:true})
+const env={...process.env,MEDIA_DIR:media}
+if(kind==='upgrade')env.UPGRADE_MIGRATION_DATABASE_URL=url.href
+else env.DATABASE_URL=url.href
+const child=spawnSync('npm',['run',kind==='upgrade'?'test:migrations:upgrade':'test:migrations:commerce'],{env,stdio:'inherit',cwd:'/app'})
+process.exit(child.status??1)

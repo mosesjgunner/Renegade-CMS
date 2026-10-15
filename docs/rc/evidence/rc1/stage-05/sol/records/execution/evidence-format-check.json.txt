@@ -1,0 +1,13 @@
+{
+  "command": [
+    "npm.cmd",
+    "run",
+    "format:check"
+  ],
+  "exitCode": 0,
+  "durationSeconds": 27.414181232452393,
+  "sourceSha": "6d9c492ae13ba1d8194082716f8b103c8be59c3a",
+  "sourceStatus": " M docs/rc/BLOCKERS.md\n M docs/rc/HANDOFF.md\n M docs/rc/RC1-SCOPE.md\n M docs/rc/SECURITY_LEDGER.md\n M docs/rc/evidence/rc1/stage-05/gemini/HANDOFF.md\n M docs/rc/evidence/rc1/stage-05/sol/HANDOFF.md\n M docs/rc/evidence/rc1/stage-05/sol/IMAGE_SECURITY_ACCEPTANCE.md\n?? docs/rc/evidence/rc1/stage-05/gemini/history-2026-10-15/\n?? docs/rc/evidence/rc1/stage-05/sol/ARTIFACTS.json\n?? docs/rc/evidence/rc1/stage-05/sol/CHANGED-FILES.txt\n?? docs/rc/evidence/rc1/stage-05/sol/SUMMARY.json\n?? docs/rc/evidence/rc1/stage-05/sol/history-2026-10-15-preflight/\n?? docs/rc/evidence/rc1/stage-05/sol/records/\n",
+  "log": "scratch\\sol-evidence\\evidence-format-check.log",
+  "logSha256": "4e7ad5a4bb82acb493af63ba70df93c21282e4e3b64245513c3579303ca60236"
+}

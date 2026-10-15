@@ -1,0 +1,16 @@
+[
+  {
+    "package": "@esbuild/linux-x64",
+    "version": "0.28.2",
+    "path": "/app/node_modules/@esbuild/linux-x64/bin/esbuild",
+    "sha256": "64f114584012e4507a1291177aee27abc3a4a7d060dc1e04eaf75cd990d5f854",
+    "actualVersion": "0.28.2"
+  },
+  {
+    "package": "esbuild",
+    "version": "0.28.2",
+    "path": "/app/node_modules/esbuild/bin/esbuild",
+    "sha256": "64f114584012e4507a1291177aee27abc3a4a7d060dc1e04eaf75cd990d5f854",
+    "actualVersion": "0.28.2"
+  }
+]

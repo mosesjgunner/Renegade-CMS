@@ -1,0 +1,129 @@
+{
+  "sourceSha": "6d9c492ae13ba1d8194082716f8b103c8be59c3a",
+  "fullProjectAuditMetadata": {
+    "vulnerabilities": {
+      "info": 0,
+      "low": 0,
+      "moderate": 2,
+      "high": 9,
+      "critical": 0,
+      "total": 11
+    },
+    "dependencies": {
+      "prod": 523,
+      "dev": 415,
+      "optional": 154,
+      "peer": 6,
+      "peerOptional": 0,
+      "total": 1012
+    }
+  },
+  "currentAdvisories": [
+    {
+      "id": "GHSA-82fw-gwwq-j7x9",
+      "url": "https://github.com/advisories/GHSA-82fw-gwwq-j7x9",
+      "title": "Vitest: Path Traversal / Arbitrary File Read via @vitest/mocker Redirect Mock",
+      "severity": "moderate",
+      "affectedPackages": [
+        {
+          "name": "@vitest/mocker",
+          "range": ">=2.1.0 <4.1.11",
+          "paths": [
+            "node_modules/vitest/node_modules/@vitest/mocker"
+          ],
+          "installedVersions": [
+            {
+              "path": "node_modules/vitest/node_modules/@vitest/mocker",
+              "version": "3.2.7"
+            }
+          ]
+        },
+        {
+          "name": "vitest",
+          "range": ">=2.1.0 <4.1.11",
+          "paths": [
+            "node_modules/vitest"
+          ],
+          "installedVersions": [
+            {
+              "path": "node_modules/vitest",
+              "version": "3.2.7"
+            }
+          ]
+        }
+      ],
+      "installedInRunner": [],
+      "upstreamSnapshot": "GHSA-82fw-gwwq-j7x9.json",
+      "role": "test/development server",
+      "preconditions": "Reachable mocker plugin HMR registration or token-authenticated browser-mode RPC; malicious redirect mock can read filesystem.",
+      "applicationImports": "vitest configuration and tests only; no production source imports.",
+      "disposition": "NONBLOCKING for this image: no vitest or @vitest/mocker manifests anywhere in runner and no runtime resolver entry. Test command is vitest run, not a publicly bound Vite mock server.",
+      "remediation": "Upgrade to maintained Vitest >=4.1.11 in a separately validated tooling change; 3.x has no maintained patch. Do not expose a mocker dev server.",
+      "sourceSha": "6d9c492ae13ba1d8194082716f8b103c8be59c3a"
+    },
+    {
+      "id": "GHSA-vfj7-8cjw-p6xm",
+      "url": "https://github.com/advisories/GHSA-vfj7-8cjw-p6xm",
+      "title": "braces vulnerable to stack-exhaustion denial of service through deeply nested patterns",
+      "severity": "high",
+      "affectedPackages": [
+        {
+          "name": "braces",
+          "range": "<=3.0.3",
+          "paths": [
+            "node_modules/braces"
+          ],
+          "installedVersions": [
+            {
+              "path": "node_modules/braces",
+              "version": "3.0.3"
+            }
+          ]
+        }
+      ],
+      "installedInRunner": [
+        {
+          "path": "/app/node_modules/braces/package.json",
+          "name": "braces",
+          "version": "3.0.3"
+        }
+      ],
+      "upstreamSnapshot": "GHSA-vfj7-8cjw-p6xm.json",
+      "role": "retained optional Sass/chokidar watcher tooling in root node_modules; absent from standalone",
+      "preconditions": "Attacker-controlled deeply nested brace patterns must reach recursive compile/expand walkers.",
+      "applicationImports": "No application/script imports of braces or micromatch. Root chokidar 3.6.0 imports braces; dependency explanation resolves via sass 1.77.4 and Next optional Sass peer. Standalone has no braces/micromatch.",
+      "disposition": "BOUNDED NONBLOCKING: package remains in full runner, so not a clean audit. Shipping web runs standalone precompiled assets; worker executes versioned source, not user watch patterns. No application path was found that supplies user patterns to watcher/compiler. Operator-controlled builds/source remain trusted. Reassess if watch/build features or arbitrary source extensions become remotely available.",
+      "remediation": "Primary advisory reports no patched version. Retain explicit reachability boundary; do not force a cosmetic downgrade or claim package absence.",
+      "sourceSha": "6d9c492ae13ba1d8194082716f8b103c8be59c3a"
+    },
+    {
+      "id": "GHSA-ch52-4w7c-c8xp",
+      "cve": "CVE-2026-93748",
+      "url": "https://github.com/advisories/GHSA-ch52-4w7c-c8xp",
+      "severity": "high",
+      "title": "http-cache-semantics max-stale handling can disclose cross-user cached responses",
+      "upstreamSnapshot": "CVE-2026-93748-primary.json",
+      "installedInRunner": [
+        {
+          "path": "/usr/local/lib/node_modules/npm/node_modules/http-cache-semantics/package.json",
+          "name": "http-cache-semantics",
+          "version": "4.2.0"
+        }
+      ],
+      "role": "global npm operational CLI registry HTTP cache",
+      "importingCode": "/usr/local/lib/node_modules/npm/node_modules/make-fetch-happen/lib/cache/policy.js:1",
+      "exploitPreconditions": "http-cache-semantics through 4.2.0 fails to properly validate security-zeroed cache entries when processing client max-stale directives, allowing unauthenticated attackers to retrieve cached responses belonging to other users. Attackers can request the same URL with a large max-stale value to obtain another user's Set-Cookie session credentials from shared-cache entries that were deliberately zeroed for security reasons.",
+      "productionReachability": "Physical library remains in global npm. Shipping web uses Next standalone; worker uses npm run to start tsx. No src or scripts code imports npm global cache or executes package installation/execution from HTTP input. There is no shared HTTP-user cache service backed by this library.",
+      "remediation": "Primary advisory has no patched version. Reassess before adding runtime package installation, registry proxying or shared credential-bearing npm caching.",
+      "disposition": "BOUNDED NONBLOCKING for the tested immutable web/worker/CLI commands; not a claim that the library is fixed or absent."
+    }
+  ],
+  "removedProjectAdvisory": {
+    "id": "GHSA-67mh-4wv8-2f99",
+    "disposition": "All esbuild paths now 0.28.2; binaries rebuilt with Go 1.27.2. No esbuild <=0.24.2 in final inventory."
+  },
+  "wholeImageHighCount": 2,
+  "wholeImageCriticalCount": 0,
+  "rawScannerExitCode": 1,
+  "decision": "Two explicitly bounded high findings; no shipping critical finding accepted."
+}
