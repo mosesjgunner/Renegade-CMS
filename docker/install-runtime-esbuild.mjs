@@ -25,6 +25,7 @@ function visit(directory) {
   }
 }
 visit('/app/node_modules')
+visit('/app/standalone/node_modules')
 if (!replaced.some((p) => p.package === 'esbuild')) throw new Error('No runtime esbuild found.')
 writeFileSync('/app/esbuild-runtime-replacements.json', JSON.stringify(replaced, null, 2) + '\n')
 console.log(`Installed patched Go esbuild executable at ${replaced.length} runtime package paths.`)
