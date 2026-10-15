@@ -91,9 +91,15 @@ export function externalWebhookEnvelope(event: ExecutionEvent) {
 export async function enqueueWebhookDeliveries(store: Store, event: ExecutionEvent) {
   const envelope = externalWebhookEnvelope(event)
   if (!envelope) return 0
+  const siteId =
+    typeof (event as any).siteId === 'string'
+      ? (event as any).siteId
+      : typeof (event as any).site === 'object' && (event as any).site
+        ? (event as any).site.id
+        : String((event as any).site ?? '')
   const subscriptions = await store.find({
     collection: 'webhook-subscriptions',
-    where: { and: [{ site: { equals: event.siteId } }, { status: { equals: 'active' } }] },
+    where: { and: [{ site: { equals: siteId } }, { status: { equals: 'active' } }] },
     depth: 0,
     limit: 1000,
     overrideAccess: true,

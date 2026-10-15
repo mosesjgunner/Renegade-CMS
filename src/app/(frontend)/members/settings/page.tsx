@@ -66,6 +66,7 @@ export default function MemberSettingsPage() {
       'fieldAudience',
       'links',
       'discoveryOptOut',
+      'relationshipNotifications',
       'avatarAlt',
       'coverAlt',
       'locale',

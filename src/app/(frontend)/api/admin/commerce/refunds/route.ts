@@ -2,11 +2,9 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
-import { previewRefund, receiptMessageSnapshot } from '@/modules/commerce/payment-operations'
-import {
-  configuredPaymentProvider,
-  PaymentProviderError,
-} from '@/modules/commerce/payment-provider'
+import { previewRefund } from '@/modules/commerce/payment-operations'
+import { executeRefund } from '@/modules/commerce/refund-execution'
+import { withExecutionLock } from '@/modules/operations/execution-lock'
 
 import { resolveOperatorGrantContext } from '@/modules/operations/operator-grants'
 
@@ -20,342 +18,181 @@ export async function POST(request: Request) {
   const grant = await resolveOperatorGrantContext(payload, auth?.user)
   if (!grant.authorized) return NextResponse.json({ error: 'Unauthorized.' }, { status: 403 })
   const input = (await request.json()) as {
-    action?: 'preview' | 'request' | 'approve'
+    action?: 'preview' | 'request' | 'approve' | 'reconcile'
     orderId?: string
     amountMinor?: string
     reason?: string
     refundId?: string
   }
   const actorId = String((auth.user as any)?.id ?? '')
-  if (input.action === 'approve') {
-    const refund: any = await db.findByID({
-      collection: 'commerce-refunds',
-      id: String(input.refundId ?? ''),
-      depth: 1,
-      overrideAccess: true,
-    })
-    if (!refund || refund.state !== 'awaiting-approval')
-      return NextResponse.json({ error: 'Refund is not awaiting approval.' }, { status: 409 })
-    const refundSite = relationId(refund.site)
-    if (!refundSite || (!grant.isGlobalOwner && !grant.authorizedSiteIds.includes(refundSite))) {
+  const operate = async () => {
+    if (input.action === 'approve' || input.action === 'reconcile') {
+      const refund: any = await db.findByID({
+        collection: 'commerce-refunds',
+        id: String(input.refundId ?? ''),
+        depth: 1,
+        overrideAccess: true,
+      })
+      if (!refund) return NextResponse.json({ error: 'Refund not found.' }, { status: 404 })
+      const refundSite = relationId(refund.site)
+      if (!refundSite || (!grant.isGlobalOwner && !grant.authorizedSiteIds.includes(refundSite))) {
+        return NextResponse.json(
+          { error: 'Forbidden. Object belongs to another site.' },
+          { status: 403 },
+        )
+      }
+      if (input.action === 'reconcile') {
+        if (refund.state !== 'succeeded')
+          return NextResponse.json(
+            { error: 'Only a confirmed refund can reconcile account updates.' },
+            { status: 409 },
+          )
+        return executeRefund(db, refund.id)
+      }
+      if (refund.state !== 'awaiting-approval')
+        return NextResponse.json({ error: 'Refund is not awaiting approval.' }, { status: 409 })
+      if (refund.requestedBy === actorId)
+        return NextResponse.json(
+          { error: 'A second operator must approve this refund.' },
+          { status: 409 },
+        )
+      await db.update({
+        collection: 'commerce-refunds',
+        id: refund.id,
+        data: {
+          approvedBy: actorId,
+          state: 'previewed',
+          auditLog: [
+            ...(refund.auditLog ?? []),
+            { kind: 'approved', actorId, at: new Date().toISOString() },
+          ],
+        },
+        overrideAccess: true,
+      })
+      return executeRefund(db, refund.id)
+    }
+    const order: any = await payload
+      .findByID({
+        collection: 'orders',
+        id: String(input.orderId ?? ''),
+        depth: 0,
+        overrideAccess: true,
+      })
+      .catch(() => null)
+    if (!order) return NextResponse.json({ error: 'Order not found.' }, { status: 404 })
+    const orderSite = relationId(order.site)
+    if (!orderSite || (!grant.isGlobalOwner && !grant.authorizedSiteIds.includes(orderSite))) {
       return NextResponse.json(
         { error: 'Forbidden. Object belongs to another site.' },
         { status: 403 },
       )
     }
-    if (refund.requestedBy === actorId)
-      return NextResponse.json(
-        { error: 'A second operator must approve this refund.' },
-        { status: 409 },
-      )
-    await db.update({
-      collection: 'commerce-refunds',
-      id: refund.id,
-      data: {
-        approvedBy: actorId,
-        state: 'previewed',
-        auditLog: [
-          ...(refund.auditLog ?? []),
-          { kind: 'approved', actorId, at: new Date().toISOString() },
-        ],
-      },
-      overrideAccess: true,
-    })
-    return executeRefund(db, refund.id)
-  }
-  const order: any = await payload
-    .findByID({
-      collection: 'orders',
-      id: String(input.orderId ?? ''),
+    const attempts = await db.find({
+      collection: 'payment-attempts',
+      where: { checkoutSession: { equals: relationId(order.checkoutSession) } },
+      sort: '-attempt',
+      limit: 1,
       depth: 0,
       overrideAccess: true,
     })
-    .catch(() => null)
-  if (!order) return NextResponse.json({ error: 'Order not found.' }, { status: 404 })
-  const orderSite = relationId(order.site)
-  if (!orderSite || (!grant.isGlobalOwner && !grant.authorizedSiteIds.includes(orderSite))) {
-    return NextResponse.json(
-      { error: 'Forbidden. Object belongs to another site.' },
-      { status: 403 },
-    )
-  }
-  const attempts = await db.find({
-    collection: 'payment-attempts',
-    where: { checkoutSession: { equals: relationId(order.checkoutSession) } },
-    sort: '-attempt',
-    limit: 1,
-    depth: 0,
-    overrideAccess: true,
-  })
-  const attempt: any = attempts.docs[0]
-  if (!attempt?.providerPaymentReference)
-    return NextResponse.json(
-      { error: 'No refundable provider payment is recorded.' },
-      { status: 409 },
-    )
-  const priorRefunds = await db.find({
-    collection: 'commerce-refunds',
-    where: {
-      and: [
-        { order: { equals: order.id } },
-        { state: { in: ['processing', 'succeeded', 'unknown', 'awaiting-approval'] } },
-      ],
-    },
-    limit: 100,
-    overrideAccess: true,
-  })
-  const refundedMinor = priorRefunds.docs
-    .reduce(
-      (sum: bigint, row: any) => (row.state === 'succeeded' ? sum + BigInt(row.amountMinor) : sum),
-      0n,
-    )
-    .toString()
-  let preview
-  try {
-    preview = previewRefund({
-      capturedAmountMinor: order.amountMinor,
-      alreadyRefundedAmountMinor: refundedMinor,
-      requestedAmountMinor: String(input.amountMinor ?? ''),
-      currency: order.currency,
-      orderState: order.state,
-      ...(process.env.COMMERCE_REFUND_DUAL_CONTROL_THRESHOLD_MINOR
-        ? { dualControlThresholdMinor: process.env.COMMERCE_REFUND_DUAL_CONTROL_THRESHOLD_MINOR }
-        : {}),
-    })
-  } catch (error) {
-    return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Invalid refund.' },
-      { status: 422 },
-    )
-  }
-  if (input.action === 'preview') return NextResponse.json({ preview })
-  if (!input.reason?.trim())
-    return NextResponse.json({ error: 'An audited refund reason is required.' }, { status: 400 })
-  const key = `refund:${order.id}:${priorRefunds.totalDocs + 1}:${preview.requestedAmountMinor}`
-  const existing = await db.find({
-    collection: 'commerce-refunds',
-    where: { idempotencyKey: { equals: key } },
-    limit: 1,
-    overrideAccess: true,
-  })
-  if (existing.docs.length) return NextResponse.json({ refund: existing.docs[0], replay: true })
-  const record: any = await db.create({
-    collection: 'commerce-refunds',
-    data: {
-      site: order.site,
-      publication: order.publication,
-      space: order.space,
-      order: order.id,
-      paymentAttempt: attempt.id,
-      idempotencyKey: key,
-      amountMinor: preview.requestedAmountMinor,
-      currency: order.currency,
-      kind: preview.outcome,
-      state: preview.requiresSecondApproval ? 'awaiting-approval' : 'previewed',
-      reason: input.reason.trim(),
-      requestedBy: actorId,
-      downstreamPolicy: {
-        fulfillment: 'manual-review',
-        entitlement: preview.outcome === 'full' ? 'revoke-after-provider-success' : 'retain',
-      },
-      auditLog: [{ kind: 'requested', actorId, at: new Date().toISOString(), preview }],
-    },
-    overrideAccess: true,
-  })
-  if (preview.requiresSecondApproval)
-    return NextResponse.json({ refund: record, approvalRequired: true }, { status: 202 })
-  return executeRefund(db, record.id)
-}
-
-async function executeRefund(payload: any, refundId: string) {
-  const refund: any = await payload.findByID({
-    collection: 'commerce-refunds',
-    id: refundId,
-    depth: 1,
-    overrideAccess: true,
-  })
-  if (['processing', 'succeeded', 'failed', 'unknown'].includes(refund.state))
-    return NextResponse.json({ refund, replay: true })
-  const attempt: any = refund.paymentAttempt
-  const order: any = refund.order
-  await payload.update({
-    collection: 'commerce-refunds',
-    id: refund.id,
-    data: { state: 'processing' },
-    overrideAccess: true,
-  })
-  try {
-    const provider = configuredPaymentProvider(attempt.providerKey)
-    const result = await provider.refund({
-      providerPaymentReference: attempt.providerPaymentReference,
-      amountMinor: refund.amountMinor,
-      currency: refund.currency,
-      idempotencyKey: refund.idempotencyKey,
-      reason: 'requested_by_customer',
-    })
-    const state = result.state
-    const correctionReceipt =
-      state === 'succeeded'
-        ? receiptMessageSnapshot({
-            orderNumber: order.orderNumber,
-            receiptNumber: `${order.receipt?.receiptNumber ?? order.orderNumber}-R${refund.id}`,
-            recipientEmail: String(order.partySnapshot?.email ?? ''),
-            amountMinor: refund.amountMinor,
-            currency: refund.currency,
-            correctionOf: String(order.receipt?.receiptNumber ?? ''),
-          })
-        : null
-    const updated = await payload.update({
+    const attempt: any = attempts.docs[0]
+    if (!attempt?.providerPaymentReference)
+      return NextResponse.json(
+        { error: 'No refundable provider payment is recorded.' },
+        { status: 409 },
+      )
+    const priorRefunds = await db.find({
       collection: 'commerce-refunds',
-      id: refund.id,
-      data: {
-        state,
-        providerRefundReference: result.providerRefundReference,
-        providerEvidence: { state: result.state, amountMinor: result.amountMinor },
-        correctionReceipt,
-        auditLog: [
-          ...(refund.auditLog ?? []),
-          { kind: `provider-${state}`, at: new Date().toISOString() },
+      where: {
+        and: [
+          { order: { equals: order.id } },
+          { state: { in: ['processing', 'succeeded', 'unknown', 'awaiting-approval'] } },
         ],
       },
+      limit: 100,
       overrideAccess: true,
     })
-    if (state === 'succeeded') {
-      const all = await payload.find({
-        collection: 'commerce-refunds',
-        where: { and: [{ order: { equals: order.id } }, { state: { equals: 'succeeded' } }] },
-        limit: 100,
-        overrideAccess: true,
+    const refundedMinor = priorRefunds.docs
+      .reduce(
+        (sum: bigint, row: any) =>
+          row.state === 'succeeded' ? sum + BigInt(row.amountMinor) : sum,
+        0n,
+      )
+      .toString()
+    let preview
+    try {
+      preview = previewRefund({
+        capturedAmountMinor: order.amountMinor,
+        alreadyRefundedAmountMinor: refundedMinor,
+        requestedAmountMinor: String(input.amountMinor ?? ''),
+        currency: order.currency,
+        orderState: order.state,
+        ...(process.env.COMMERCE_REFUND_DUAL_CONTROL_THRESHOLD_MINOR
+          ? { dualControlThresholdMinor: process.env.COMMERCE_REFUND_DUAL_CONTROL_THRESHOLD_MINOR }
+          : {}),
       })
-      const refunded = all.docs.reduce((sum: bigint, row: any) => sum + BigInt(row.amountMinor), 0n)
-      const full = refunded >= BigInt(order.amountMinor)
-      await payload.update({
-        collection: 'orders',
-        id: order.id,
-        data: {
-          state: full ? 'refunded' : order.state,
-          refundExtension: {
-            refundedAmountMinor: refunded.toString(),
-            state: full ? 'full' : 'partial',
-          },
-          transitionLog: [
-            ...(order.transitionLog ?? []),
-            {
-              kind: full ? 'full-refund' : 'partial-refund',
-              refundId: refund.id,
-              amountMinor: refund.amountMinor,
-              at: new Date().toISOString(),
-            },
-          ],
-        },
-        overrideAccess: true,
-      })
-      await payload.update({
-        collection: 'payment-attempts',
-        id: attempt.id,
-        data: {
-          state: full ? 'refunded' : 'partially-refunded',
-          refundedAmountMinor: refunded.toString(),
-        },
-        overrideAccess: true,
-      })
-      if (full) {
-        const matchingEntitlements = await payload.find({
-          collection: 'entitlements',
-          where: { source: { equals: `order:${order.id}` } },
-          limit: 100,
-          overrideAccess: true,
-        })
-        const nowIso = new Date().toISOString()
-        for (const ent of matchingEntitlements.docs) {
-          await payload.update({
-            collection: 'entitlements',
-            id: ent.id,
-            data: {
-              revokedAt: nowIso,
-              endsAt: nowIso,
-            },
-            overrideAccess: true,
-          })
-        }
-      }
-      if (correctionReceipt?.recipient) {
-        const key = `commerce-refund-receipt:${refund.id}`
-        const messages = await payload.find({
-          collection: 'email-messages',
-          where: { idempotencyKey: { equals: key } },
-          limit: 1,
-          overrideAccess: true,
-        })
-        const message =
-          messages.docs[0] ??
-          (await payload.create({
-            collection: 'email-messages',
-            data: {
-              site: relationId(order.site),
-              subject: correctionReceipt.subject,
-              purpose: correctionReceipt.purpose,
-              kind: 'transactional',
-              status: 'queued',
-              blocks: [
-                { type: 'heading', text: correctionReceipt.subject },
-                {
-                  type: 'text',
-                  text: `Refund ${refund.amountMinor} ${refund.currency} for order ${order.orderNumber}.`,
-                },
-              ],
-              idempotencyKey: key,
-            },
-            overrideAccess: true,
-          }))
-        const deliveries = await payload.find({
-          collection: 'email-deliveries',
-          where: { idempotencyKey: { equals: key } },
-          limit: 1,
-          overrideAccess: true,
-        })
-        if (!deliveries.docs.length) {
-          const delivery = await payload.create({
-            collection: 'email-deliveries',
-            data: {
-              message: message.id,
-              recipientEmail: correctionReceipt.recipient,
-              idempotencyKey: key,
-              status: 'queued',
-              messageSnapshot: correctionReceipt,
-            },
-            overrideAccess: true,
-          })
-          await payload.jobs.queue({
-            task: 'audience-email-delivery',
-            input: { deliveryId: String(delivery.id) },
-            queue: 'operations',
-          })
-        }
-      }
+    } catch (error) {
+      return NextResponse.json(
+        { error: error instanceof Error ? error.message : 'Invalid refund.' },
+        { status: 422 },
+      )
     }
-    return NextResponse.json({ refund: updated })
-  } catch (error) {
-    const unknown = error instanceof PaymentProviderError && !error.outcomeKnown
-    const updated = await payload.update({
+    if (input.action === 'preview') return NextResponse.json({ preview })
+    if (!input.reason?.trim())
+      return NextResponse.json({ error: 'An audited refund reason is required.' }, { status: 400 })
+    const key = `refund:${order.id}:${priorRefunds.totalDocs + 1}:${preview.requestedAmountMinor}`
+    const existing = await db.find({
       collection: 'commerce-refunds',
-      id: refund.id,
+      where: { idempotencyKey: { equals: key } },
+      limit: 1,
+      overrideAccess: true,
+    })
+    if (existing.docs.length) return NextResponse.json({ refund: existing.docs[0], replay: true })
+    const record: any = await db.create({
+      collection: 'commerce-refunds',
       data: {
-        state: unknown ? 'unknown' : 'failed',
-        providerEvidence: {
-          code: error instanceof PaymentProviderError ? error.code : 'provider-error',
-          message: error instanceof Error ? error.message.slice(0, 300) : 'failed',
+        site: order.site,
+        publication: order.publication,
+        space: order.space,
+        order: order.id,
+        paymentAttempt: attempt.id,
+        idempotencyKey: key,
+        amountMinor: preview.requestedAmountMinor,
+        currency: order.currency,
+        kind: preview.outcome,
+        state: preview.requiresSecondApproval ? 'awaiting-approval' : 'previewed',
+        reason: input.reason.trim(),
+        requestedBy: actorId,
+        downstreamPolicy: {
+          fulfillment: 'manual-review',
+          entitlement: preview.outcome === 'full' ? 'revoke-after-provider-success' : 'retain',
         },
-        auditLog: [
-          ...(refund.auditLog ?? []),
-          { kind: unknown ? 'provider-unknown' : 'provider-failed', at: new Date().toISOString() },
-        ],
+        auditLog: [{ kind: 'requested', actorId, at: new Date().toISOString(), preview }],
       },
       overrideAccess: true,
     })
-    return NextResponse.json(
-      { refund: updated, reconcileRequired: unknown },
-      { status: unknown ? 202 : 502 },
-    )
+    if (preview.requiresSecondApproval)
+      return NextResponse.json({ refund: record, approvalRequired: true }, { status: 202 })
+    return executeRefund(db, record.id)
   }
+  let lockOrderId = String(input.orderId ?? '')
+  if (input.action === 'approve' || input.action === 'reconcile') {
+    const target: any = await db
+      .findByID({
+        collection: 'commerce-refunds',
+        id: String(input.refundId ?? ''),
+        depth: 0,
+        overrideAccess: true,
+      })
+      .catch(() => null)
+    if (!target) return NextResponse.json({ error: 'Refund not found.' }, { status: 404 })
+    const site = relationId(target.site)
+    if (!site || (!grant.isGlobalOwner && !grant.authorizedSiteIds.includes(site)))
+      return NextResponse.json(
+        { error: 'Forbidden. Object belongs to another site.' },
+        { status: 403 },
+      )
+    lockOrderId = relationId(target.order)
+  }
+  return withExecutionLock(payload, `commerce.refund.order:${lockOrderId}`, operate)
 }

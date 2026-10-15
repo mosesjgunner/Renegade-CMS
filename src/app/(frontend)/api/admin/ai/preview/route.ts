@@ -3,6 +3,7 @@ import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
 import { AI_TASKS } from '@/modules/ai/contracts'
 import { buildInspectableContext } from '@/modules/ai/gateway'
+import { checkOperatorSiteAccess } from '@/modules/operations/operator-grants'
 import {
   AI_WORKFLOW_TASKS,
   loadAiWorkflowTarget,
@@ -25,6 +26,8 @@ export async function POST(request: Request) {
     }
     if (!body.targetId || !body.siteId || !AI_WORKFLOW_TASKS.includes(body.task as AiWorkflowTask))
       throw new Error('Choose a workflow, target, and site.')
+    if (!(await checkOperatorSiteAccess(payload, auth.user, body.siteId)))
+      return NextResponse.json({ error: 'Staff site access required.' }, { status: 403 })
     const task = body.task as AiWorkflowTask
     const target = await loadAiWorkflowTarget(payload, task, body.targetId, body.selection)
     if (target.siteId !== body.siteId)

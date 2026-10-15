@@ -529,6 +529,7 @@ describe('RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security
 
     const rawPayload = JSON.stringify({
       providerEventId: `evt_sec_${suffix}`,
+      occurredAt: new Date().toISOString(),
       providerReference: `det_ref_${suffix}`,
       kind: 'succeeded',
       amountMinor: '2500',
@@ -598,6 +599,7 @@ describe('RC-05 Pass 2: Commerce Acceptance, Idempotency, Concurrency & Security
     // 5. Simultaneous duplicate event race
     const rawRace = JSON.stringify({
       providerEventId: `evt_race_${suffix}`,
+      occurredAt: new Date().toISOString(),
       providerReference: `det_ref_${suffix}`,
       kind: 'succeeded',
       amountMinor: '2500',

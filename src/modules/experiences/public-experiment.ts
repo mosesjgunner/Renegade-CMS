@@ -63,76 +63,111 @@ export const CANONICAL_PUBLIC_EXPERIMENT: {
   ],
 }
 
-/** Retrieves or provisions the canonical public experiment in Payload. */
+/** Load persisted experiment identity and variants; the blueprint alone is not an active experiment. */
 export async function getActivePublicExperiment(payload: Payload, siteId?: string) {
-  let dbExperiment: Record<string, unknown> | null = null
-
-  if (siteId) {
-    try {
-      const existing = await payload.find({
-        collection: 'experiments',
+  const empty = {
+    ...CANONICAL_PUBLIC_EXPERIMENT,
+    dbId: null as string | null,
+    siteId: siteId ?? '',
+    state: 'draft' as ExperimentState,
+    collectionEnabled: false,
+    configurationStatus: 'unconfigured' as 'unconfigured' | 'configured' | 'unavailable',
+    configurationIssue: 'No persisted experiment is configured.' as string | null,
+    winnerDecision: null as {
+      selectedVariantId: string | undefined
+      reason: string
+      decidedAt: string
+      approvedBy: unknown
+    } | null,
+  }
+  if (!siteId) return empty
+  try {
+    const existing = await payload.find({
+      collection: 'experiments',
+      where: {
+        and: [{ site: { equals: siteId } }, { name: { equals: CANONICAL_PUBLIC_EXPERIMENT.name } }],
+      },
+      limit: 1,
+      depth: 0,
+      overrideAccess: true,
+    })
+    const experiment = existing.docs[0]
+    if (!experiment) return empty
+    const [variants, decisions] = await Promise.all([
+      payload.find({
+        collection: 'experiment-variants',
+        where: { and: [{ site: { equals: siteId } }, { experiment: { equals: experiment.id } }] },
+        limit: 0,
+        pagination: false,
+        depth: 0,
+        overrideAccess: true,
+      }),
+      payload.find({
+        collection: 'experiment-decisions',
         where: {
           and: [
             { site: { equals: siteId } },
-            { name: { equals: CANONICAL_PUBLIC_EXPERIMENT.name } },
+            { experiment: { equals: experiment.id } },
+            { decision: { equals: 'winner-selected' } },
           ],
         },
+        sort: '-decidedAt',
         limit: 1,
-        depth: 1,
+        depth: 0,
         overrideAccess: true,
-      } as never)
-      if (existing.docs.length > 0) {
-        dbExperiment = existing.docs[0] as unknown as Record<string, unknown>
-      }
-    } catch {
-      // Database query best effort
-    }
-  }
-
-  // Check if a human winner decision has been recorded
-  let winnerDecision: Record<string, unknown> | null = null
-  try {
-    const decisions = await payload.find({
-      collection: 'experiment-decisions',
-      where: {
-        experiment: {
-          equals: dbExperiment?.id ? String(dbExperiment.id) : CANONICAL_PUBLIC_EXPERIMENT.id,
-        },
-      },
-      sort: '-decidedAt',
-      limit: 1,
-      depth: 1,
-      overrideAccess: true,
-    } as never)
-    if (decisions.docs.length > 0) {
-      winnerDecision = decisions.docs[0] as unknown as Record<string, unknown>
+      }),
+    ])
+    const configured =
+      variants.docs.length > 0 &&
+      variants.docs.reduce((sum, variant) => sum + variant.allocation, 0) === 100 &&
+      variants.docs.filter((variant) => variant.isControl).length === 1
+    const decision = configured ? decisions.docs[0] : undefined
+    const winner =
+      typeof decision?.selectedVariant === 'object'
+        ? decision.selectedVariant?.id
+        : decision?.selectedVariant
+    return {
+      ...empty,
+      id: String(experiment.id),
+      dbId: String(experiment.id),
+      name: experiment.name,
+      description: experiment.description ?? '',
+      assignmentSalt: experiment.assignmentSalt,
+      state: (configured
+        ? decision
+          ? 'winner-selected'
+          : (experiment.state ?? 'draft')
+        : 'draft') as ExperimentState,
+      collectionEnabled: configured && experiment.collectionEnabled !== false,
+      configurationStatus: configured ? ('configured' as const) : ('unconfigured' as const),
+      configurationIssue: configured
+        ? null
+        : 'Configure variants totaling 100 percent with one control.',
+      variants: configured
+        ? variants.docs.map((variant) => ({
+            ...CANONICAL_PUBLIC_EXPERIMENT.variants[variant.isControl ? 0 : 1],
+            id: String(variant.id),
+            name: variant.name,
+            isControl: Boolean(variant.isControl),
+            allocation: variant.allocation,
+            registeredComponent: variant.registeredComponent,
+          }))
+        : CANONICAL_PUBLIC_EXPERIMENT.variants,
+      winnerDecision: decision
+        ? {
+            selectedVariantId: winner ? String(winner) : undefined,
+            reason: decision.reason,
+            decidedAt: decision.decidedAt,
+            approvedBy: decision.approvedBy,
+          }
+        : null,
     }
   } catch {
-    // Non-blocking decision check
-  }
-
-  const state: ExperimentState = winnerDecision
-    ? 'winner-selected'
-    : ((dbExperiment?.state as ExperimentState) ?? CANONICAL_PUBLIC_EXPERIMENT.state)
-  const selectedVariantId = winnerDecision
-    ? typeof winnerDecision.selectedVariant === 'string'
-      ? winnerDecision.selectedVariant
-      : (winnerDecision.selectedVariant as { id?: string } | undefined)?.id
-    : undefined
-
-  return {
-    ...CANONICAL_PUBLIC_EXPERIMENT,
-    dbId: dbExperiment?.id ? String(dbExperiment.id) : CANONICAL_PUBLIC_EXPERIMENT.id,
-    siteId: siteId ?? 'default-site',
-    state,
-    winnerDecision: winnerDecision
-      ? {
-          selectedVariantId,
-          reason: String(winnerDecision.reason ?? ''),
-          decidedAt: String(winnerDecision.decidedAt ?? ''),
-          approvedBy: winnerDecision.approvedBy,
-        }
-      : null,
+    return {
+      ...empty,
+      configurationStatus: 'unavailable' as const,
+      configurationIssue: 'Experiment records could not be loaded.',
+    }
   }
 }
 

@@ -317,7 +317,30 @@ export function createDeterministicPaymentAdapter(input: {
         return null
       try {
         const value = JSON.parse(rawBody) as NormalizedPaymentEvent
-        return value?.providerEventId && value?.providerReference ? value : null
+        if (
+          !value ||
+          typeof value.providerEventId !== 'string' ||
+          !value.providerEventId ||
+          typeof value.providerReference !== 'string' ||
+          !value.providerReference ||
+          ![
+            'action-required',
+            'processing',
+            'succeeded',
+            'failed',
+            'cancelled',
+            'partially-refunded',
+            'refunded',
+            'disputed',
+          ].includes(value.kind) ||
+          typeof value.occurredAt !== 'string' ||
+          !Number.isFinite(Date.parse(value.occurredAt)) ||
+          !value.sanitizedEvidence ||
+          typeof value.sanitizedEvidence !== 'object' ||
+          Array.isArray(value.sanitizedEvidence)
+        )
+          return null
+        return value
       } catch {
         return null
       }

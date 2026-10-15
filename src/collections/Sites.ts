@@ -39,6 +39,41 @@ export const Sites: CollectionConfig = {
         return data
       },
     ],
+    afterChange: [
+      async ({ doc, req, operation }) => {
+        if (operation === 'create' && req.user?.role === 'owner') {
+          let memberId =
+            typeof req.user.member === 'object' && req.user.member !== null
+              ? (req.user.member as { id: string }).id
+              : req.user.member
+          if (!memberId && req.user.email) {
+            const memberRes = await req.payload.find({
+              collection: 'members',
+              where: { email: { equals: req.user.email } },
+              depth: 0,
+              limit: 1,
+              overrideAccess: true,
+              req,
+            })
+            memberId = memberRes.docs[0]?.id
+          }
+          if (memberId) {
+            await req.payload.create({
+              collection: 'member-site-roles',
+              data: {
+                site: doc.id,
+                member: memberId,
+                role: 'community-manager',
+                grantedByUserId: req.user.id,
+              },
+              overrideAccess: true,
+              req,
+            })
+          }
+        }
+        return doc
+      },
+    ],
   },
   fields: [
     { name: 'name', type: 'text', required: true },

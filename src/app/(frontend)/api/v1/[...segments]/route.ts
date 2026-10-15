@@ -1,6 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any -- Payload's dynamic collection API is intentionally untyped at this boundary. */
 import config from '@payload-config'
-import { getPayload } from 'payload'
+import { createLocalReq, getPayload } from 'payload'
+import { createHash } from 'node:crypto'
+import { transactionPayload } from '@/modules/core/transaction-payload'
+import { withExecutionLock } from '@/modules/operations/execution-lock'
 
 import {
   authenticateMachineCredential,
@@ -46,13 +49,28 @@ const clientRecord = (doc: Record<string, any>): MachineCredential => ({
 })
 
 function version(request: Request) {
-  const requested = request.headers.get('x-renegade-api-version') ?? request.headers.get('accept')
-  if (!requested || requested.includes('v1')) return null
-  return problem(
-    406,
-    'unsupported_version',
-    'Only API version v1 is supported. Deprecated versions return 410 after their published sunset date.',
-  )
+  const apiVersion = request.headers.get('x-renegade-api-version')
+  if (apiVersion) {
+    if (!apiVersion.includes('v1')) {
+      return problem(
+        406,
+        'unsupported_version',
+        'Only API version v1 is supported. Deprecated versions return 410 after their published sunset date.',
+      )
+    }
+    return null
+  }
+  const accept = request.headers.get('accept')
+  if (accept && (accept.includes('vnd.renegade') || accept.includes('version='))) {
+    if (!accept.includes('v1')) {
+      return problem(
+        406,
+        'unsupported_version',
+        'Only API version v1 is supported. Deprecated versions return 410 after their published sunset date.',
+      )
+    }
+  }
+  return null
 }
 async function authenticate(request: Request, scope: IntegrationScope) {
   const token = request.headers.get('authorization')?.match(/^Bearer (.+)$/i)?.[1]
@@ -147,8 +165,12 @@ export async function GET(request: Request, context: { params: Promise<{ segment
       page = Math.max(1, Number(url.searchParams.get('page') ?? 1)),
       limit = Math.min(100, Math.max(1, Number(url.searchParams.get('limit') ?? 25)))
     const where: any = { site: { equals: auth.credential.siteId } }
+    if (auth.credential.publicationId) where.publication = { equals: auth.credential.publicationId }
+    if (auth.credential.spaceId) where.space = { equals: auth.credential.spaceId }
     const requestedStatus = url.searchParams.get('status')
     const canReadDrafts = auth.credential.scopes.includes('content.draft.read')
+    if (requestedStatus && !['published', 'updated'].includes(requestedStatus) && !canReadDrafts)
+      return problem(403, 'insufficient_scope', 'Draft content requires content.draft.read.')
     if (requestedStatus) where.and = [{ status: { equals: requestedStatus } }]
     else if (!canReadDrafts) where.and = [{ status: { in: ['published', 'updated'] } }]
     const result = await auth.payload.find({
@@ -298,79 +320,134 @@ export async function POST(request: Request, context: { params: Promise<{ segmen
   const body = (await request.json().catch(() => null)) as Record<string, any> | null
   if (!body) return problem(400, 'validation_error', 'Request body must be JSON.')
   if (segments[0] === 'content') {
-    const key = request.headers.get('idempotency-key')
-    if (!key || key.length > 255)
+    const suppliedKey = request.headers.get('idempotency-key')
+    if (!suppliedKey || suppliedKey.length > 255)
       return problem(
         400,
         'idempotency_required',
         'An Idempotency-Key header is required for writes.',
       )
-    const prior = await auth.payload.find({
-      collection: 'api-request-records' as never,
-      where: { idempotencyKey: { equals: key } },
-      limit: 1,
-      depth: 0,
-      overrideAccess: true,
-    } as never)
-    if (prior.docs[0])
-      return json((prior.docs[0] as any).response, Number((prior.docs[0] as any).responseStatus), {
-        'idempotency-replayed': 'true',
-      })
-    const fields: Record<string, string> = {}
-    if (!body.title) fields.title = 'is required'
-    if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(String(body.slug ?? '')))
-      fields.slug = 'must be a canonical slug'
-    if (!String(body.canonical_path ?? '').startsWith('/'))
-      fields.canonical_path = 'must be an absolute path'
-    if (Object.keys(fields).length)
-      return problem(422, 'validation_error', 'One or more fields are invalid.', fields)
-    const created = await auth.payload.create({
-      collection: 'content' as never,
-      data: {
-        site: auth.credential.siteId,
-        publication: auth.credential.publicationId ?? undefined,
-        space: auth.credential.spaceId ?? undefined,
-        contentType: body.content_type ?? 'article',
-        title: body.title,
-        slug: body.slug,
-        canonicalPath: body.canonical_path,
-        summary: body.summary,
-        excerpt: body.excerpt,
-        status: body.status ?? 'draft',
-      } as never,
-      overrideAccess: true,
-    } as never)
-    const response = { data: contentView(created as Record<string, any>) }
-    await auth.payload.create({
-      collection: 'api-request-records' as never,
-      data: {
-        site: auth.credential.siteId,
-        publication: auth.credential.publicationId ?? undefined,
-        space: auth.credential.spaceId ?? undefined,
-        client: auth.credential.id,
-        idempotencyKey: key,
-        method: 'POST',
-        path: '/api/v1/content',
-        responseStatus: 201,
-        response,
-      } as never,
-      overrideAccess: true,
-    } as never)
-    await recordExecutionEvent(auth.payload as any, {
-      siteId: auth.credential.siteId,
-      tenantId: auth.credential.publicationId ?? auth.credential.siteId,
-      actor: { kind: 'service', id: auth.credential.id },
-      eventType: 'content.created',
-      idempotencyKey: `event:${key}`,
-      privacyClass: 'public',
-      payload: {
-        contentId: String(created.id),
-        status: (created as any).status,
-        contentType: (created as any).contentType,
-        canonicalPath: (created as any).canonicalPath,
-      },
+    if (body.status && body.status !== 'draft')
+      return problem(
+        422,
+        'validation_error',
+        'Machine authoring creates drafts. Publication requires editorial approval.',
+        { status: 'must be draft' },
+      )
+    const key = createHash('sha256')
+      .update(`${auth.credential.siteId}|${auth.credential.id}|POST|/api/v1/content|${suppliedKey}`)
+      .digest('hex')
+    const requestHash = createHash('sha256').update(JSON.stringify(body)).digest('hex')
+    return withExecutionLock(auth.payload, `integration.request:${key}`, async () => {
+      const transactionID = await auth.payload.db.beginTransaction()
+      if (!transactionID)
+        return problem(503, 'temporarily_unavailable', 'The write could not begin. Retry later.')
+      const req = await createLocalReq({}, auth.payload)
+      req.transactionID = transactionID
+      const store = transactionPayload(auth.payload, req)
+      try {
+        const response = await (async () => {
+          const prior = await store.find({
+            collection: 'api-request-records' as never,
+            where: {
+              or: [
+                { idempotencyKey: { equals: key } },
+                {
+                  and: [
+                    { idempotencyKey: { equals: suppliedKey } },
+                    { client: { equals: auth.credential.id } },
+                    { site: { equals: auth.credential.siteId } },
+                  ],
+                },
+              ],
+            },
+            limit: 1,
+            depth: 0,
+            overrideAccess: true,
+          } as never)
+          if (prior.docs[0] && (prior.docs[0] as any).requestHash !== requestHash)
+            return problem(
+              409,
+              'idempotency_conflict',
+              'This key already identifies another request or a historical receipt requiring review.',
+            )
+          if (prior.docs[0])
+            return json(
+              (prior.docs[0] as any).response,
+              Number((prior.docs[0] as any).responseStatus),
+              {
+                'idempotency-replayed': 'true',
+              },
+            )
+          const fields: Record<string, string> = {}
+          if (!body.title) fields.title = 'is required'
+          if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(String(body.slug ?? '')))
+            fields.slug = 'must be a canonical slug'
+          if (!String(body.canonical_path ?? '').startsWith('/'))
+            fields.canonical_path = 'must be an absolute path'
+          if (Object.keys(fields).length)
+            return problem(422, 'validation_error', 'One or more fields are invalid.', fields)
+          const created = await store.create({
+            collection: 'content' as never,
+            data: {
+              site: auth.credential.siteId,
+              publication: auth.credential.publicationId ?? undefined,
+              space: auth.credential.spaceId ?? undefined,
+              contentType: body.content_type ?? 'article',
+              title: body.title,
+              slug: body.slug,
+              canonicalPath: body.canonical_path,
+              summary: body.summary,
+              excerpt: body.excerpt,
+              status: body.status ?? 'draft',
+            } as never,
+            overrideAccess: true,
+          } as never)
+          const response = { data: contentView(created as Record<string, any>) }
+          await store.create({
+            collection: 'api-request-records' as never,
+            data: {
+              site: auth.credential.siteId,
+              publication: auth.credential.publicationId ?? undefined,
+              space: auth.credential.spaceId ?? undefined,
+              client: auth.credential.id,
+              idempotencyKey: key,
+              requestHash,
+              method: 'POST',
+              path: '/api/v1/content',
+              responseStatus: 201,
+              response,
+            } as never,
+            overrideAccess: true,
+          } as never)
+          await recordExecutionEvent(store as any, {
+            siteId: auth.credential.siteId,
+            tenantId: auth.credential.publicationId ?? auth.credential.siteId,
+            actor: { kind: 'service', id: auth.credential.id },
+            eventType: 'content.created',
+            idempotencyKey: `event:${key}`,
+            privacyClass: 'public',
+            payload: {
+              contentId: String(created.id),
+              status: (created as any).status,
+              contentType: (created as any).contentType,
+              canonicalPath: (created as any).canonicalPath,
+            },
+          })
+          return json(response, 201)
+        })()
+        if (response.status < 400) await auth.payload.db.commitTransaction(transactionID)
+        else await auth.payload.db.rollbackTransaction(transactionID)
+        return response
+      } catch {
+        await auth.payload.db.rollbackTransaction(transactionID)
+        return problem(
+          503,
+          'write_incomplete',
+          'The write was not completed. Refresh the resource before retrying.',
+        )
+      }
     })
-    return json(response, 201)
   }
   if (segments[0] === 'webhooks' && !segments[1]) {
     if (

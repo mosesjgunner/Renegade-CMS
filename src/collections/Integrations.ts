@@ -108,6 +108,7 @@ export const ApiRequestRecords: CollectionConfig = {
     ...scopeFields,
     { name: 'client', type: 'relationship', relationTo: 'api-clients' as never, required: true },
     { name: 'idempotencyKey', type: 'text', required: true, unique: true, index: true },
+    { name: 'requestHash', type: 'text' },
     { name: 'method', type: 'text', required: true },
     { name: 'path', type: 'text', required: true },
     { name: 'responseStatus', type: 'number', required: true },

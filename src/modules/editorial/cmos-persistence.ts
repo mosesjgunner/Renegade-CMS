@@ -62,22 +62,14 @@ export async function getWorkflowItemForArticle(
   articleId: string,
   actorUserId?: string,
 ): Promise<WorkflowItem> {
-  // Check if item exists in store
-  const existing = workflowItemsStore.get(articleId)
+  const doc = (await payload.findByID({
+    collection: 'content',
+    id: articleId,
+    depth: 0,
+    overrideAccess: true,
+  } as never)) as unknown as Record<string, unknown> | null
+  if (!doc) throw new WorkflowStateError('Content record not found.')
 
-  // Fetch article from Payload DB if available
-  let doc: Record<string, unknown> | null = null
-  try {
-    doc = (await payload.findByID({
-      collection: 'content',
-      id: articleId,
-      overrideAccess: true,
-    } as never)) as unknown as Record<string, unknown>
-  } catch {
-    // Fallback if not found in DB
-  }
-
-  if (!doc && existing) return existing
   const persisted = (doc?.auditMetadata as { cmosWorkflow?: WorkflowItem } | undefined)
     ?.cmosWorkflow
   let revision: Record<string, unknown> | undefined
@@ -169,6 +161,27 @@ export async function getWorkflowItemForArticle(
 export function saveWorkflowItem(item: WorkflowItem): WorkflowItem {
   workflowItemsStore.set(item.id, item)
   return item
+}
+
+async function persistWorkflowItem(payload: Payload, item: WorkflowItem): Promise<void> {
+  const doc = await payload.findByID({
+    collection: 'content',
+    id: item.id,
+    depth: 0,
+    overrideAccess: true,
+  } as never)
+  if (!doc) throw new WorkflowStateError('Content record not found.')
+  const auditMetadata =
+    (doc as unknown as { auditMetadata?: Record<string, unknown> }).auditMetadata || {}
+  await payload.update({
+    collection: 'content',
+    id: item.id,
+    data: {
+      status: canonicalStatus(item.status),
+      auditMetadata: { ...auditMetadata, cmosWorkflow: item },
+    },
+    overrideAccess: true,
+  } as never)
 }
 
 export async function executeWorkflowAction(
@@ -264,30 +277,8 @@ export async function executeWorkflowAction(
       throw new WorkflowStateError(`Unsupported action "${input.action}".`)
   }
 
-  // Persist before returning success. Canonical content hooks synchronize its editorial companion.
-  try {
-    const doc = await payload.findByID({
-      collection: 'content',
-      id: input.articleId,
-      depth: 0,
-      overrideAccess: true,
-    } as never)
-    if (doc) {
-      const auditMetadata =
-        (doc as unknown as { auditMetadata?: Record<string, unknown> } | null)?.auditMetadata || {}
-      await payload.update({
-        collection: 'content',
-        id: input.articleId,
-        data: {
-          status: canonicalStatus(updatedItem.status),
-          auditMetadata: { ...auditMetadata, cmosWorkflow: updatedItem },
-        },
-        overrideAccess: true,
-      } as never)
-    }
-  } catch {
-    // If content record is not in database, updatedItem is still saved in memory store below
-  }
+  // A failed database write must not become a successful process-local transition.
+  await persistWorkflowItem(payload, updatedItem)
   saveWorkflowItem(updatedItem)
 
   return updatedItem
@@ -297,27 +288,17 @@ export async function getWorkflowQueuesForUser(
   payload: Payload,
   input: { userId: string; role: string; siteId?: string | null; now?: string },
 ) {
-  // Hydrate from DB if articles exist
-  try {
-    const docsResult = await payload.find({
-      collection: 'content',
-      limit: 100,
-      overrideAccess: true,
-      ...(input.siteId ? { where: { site: { equals: input.siteId } } } : {}),
-    } as never)
-    if (docsResult && Array.isArray(docsResult.docs)) {
-      for (const doc of docsResult.docs) {
-        const id = String((doc as unknown as { id: unknown }).id)
-        await getWorkflowItemForArticle(payload, id, input.userId)
-      }
-    }
-  } catch {
-    // Fall back to memory store
-  }
-
-  // Return all items in store
-  const allItems = Array.from(workflowItemsStore.values())
-  const filtered = input.siteId ? allItems.filter((i) => i.siteId === input.siteId) : allItems
+  const docsResult = await payload.find({
+    collection: 'content',
+    limit: 0,
+    pagination: false,
+    depth: 0,
+    overrideAccess: true,
+    ...(input.siteId ? { where: { site: { equals: input.siteId } } } : {}),
+  } as never)
+  const filtered = await Promise.all(
+    docsResult.docs.map((doc) => getWorkflowItemForArticle(payload, String(doc.id), input.userId)),
+  )
 
   return categorizeWorkflowQueues(filtered, input.userId, input.now)
 }
@@ -348,28 +329,15 @@ export async function bulkExecuteWorkflowItems(
   for (const res of result.results) {
     if (res.success && res.updatedItem) {
       try {
-        const doc = await payload.findByID({
-          collection: 'content',
-          id: res.itemId,
-          depth: 0,
-          overrideAccess: true,
-        } as never)
-        if (doc) {
-          const auditMetadata =
-            (doc as unknown as { auditMetadata?: Record<string, unknown> } | null)?.auditMetadata ||
-            {}
-          await payload.update({
-            collection: 'content',
-            id: res.itemId,
-            data: {
-              status: canonicalStatus(res.updatedItem.status),
-              auditMetadata: { ...auditMetadata, cmosWorkflow: res.updatedItem },
-            },
-            overrideAccess: true,
-          } as never)
-        }
-      } catch {
-        // Content record might not exist in database for in-memory items
+        await persistWorkflowItem(payload, res.updatedItem)
+      } catch (error) {
+        res.success = false
+        res.error = error instanceof Error ? error.message : 'Workflow persistence failed.'
+        delete res.updatedItem
+        delete res.status
+        result.succeededCount--
+        result.failedCount++
+        continue
       }
       saveWorkflowItem(res.updatedItem)
     }

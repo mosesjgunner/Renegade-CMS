@@ -95,6 +95,16 @@ describe('RC-03 Core Orchestration Pass 1 End-to-End Suite', () => {
       comment: 'Ready for editorial review',
     })
     expect(submittedItem.status).toBe('review')
+    expect(
+      (
+        await payload.findByID({
+          collection: 'content',
+          id: articleId,
+          depth: 0,
+          overrideAccess: true,
+        })
+      ).status,
+    ).toBe('review')
 
     // C. Permission boundary: Author cannot approve their own review
     await expect(

@@ -1,3 +1,5 @@
+import * as rc1MachineRequestScope from './20261014_230000_rc1_machine_request_scope'
+import * as rc1CartWorkerSchema from './20261014_220000_rc1_cart_and_worker_schema'
 import * as migration_20261006_013000_rc08b_federation_ids from './20261006_013000_rc08b_federation_ids'
 import * as rc1UuidSchemaRepair from './20261013_160000_rc1_uuid_schema_repair'
 import * as rc1EditorialCalendarAudits from './20261013_180000_rc1_editorial_calendar_audits'
@@ -667,5 +669,15 @@ export const migrations = [
     up: rc1EditorialCalendarAudits.up,
     down: rc1EditorialCalendarAudits.down,
     name: '20261013_180000_rc1_editorial_calendar_audits',
+  },
+  {
+    up: rc1CartWorkerSchema.up,
+    down: rc1CartWorkerSchema.down,
+    name: '20261014_220000_rc1_cart_and_worker_schema',
+  },
+  {
+    up: rc1MachineRequestScope.up,
+    down: rc1MachineRequestScope.down,
+    name: '20261014_230000_rc1_machine_request_scope',
   },
 ]

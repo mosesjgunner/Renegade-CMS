@@ -3,6 +3,7 @@ import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
 import { loadConfig } from '@/modules/core/config'
 import { privacyPolicyFromSettings } from '@/modules/analytics/privacy'
+import { publicSiteForHost } from '@/modules/public/site-scope'
 import {
   getActivePublicExperiment,
   resolvePublicExperimentVariant,
@@ -15,7 +16,10 @@ export async function GET(request: Request) {
   const policy = privacyPolicyFromSettings(settings)
 
   const url = new URL(request.url)
-  const siteId = url.searchParams.get('siteId') ?? undefined
+  const siteId = await publicSiteForHost(payload, request.headers.get('host') ?? url.host)
+  const requestedSiteId = url.searchParams.get('siteId')
+  if (!siteId || (requestedSiteId && requestedSiteId !== siteId))
+    return NextResponse.json({ error: 'Experience not found for this site.' }, { status: 404 })
 
   const experiment = await getActivePublicExperiment(payload, siteId)
   const resolution = resolvePublicExperimentVariant({
@@ -32,6 +36,8 @@ export async function GET(request: Request) {
       name: experiment.name,
       description: experiment.description,
       state: experiment.state,
+      configurationStatus: experiment.configurationStatus,
+      configurationIssue: experiment.configurationIssue,
       goalKey: experiment.goalKey,
       winnerDecision: experiment.winnerDecision,
     },

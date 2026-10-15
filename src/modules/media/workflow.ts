@@ -113,6 +113,10 @@ export async function assertMediaPermission(
   try {
     await assertTeamPermission(payload as never, memberId, scope, permission)
   } catch {
+    if (scope.siteId) {
+      const hasSiteAccess = await checkOperatorSiteAccess(payload, user, scope.siteId)
+      if (hasSiteAccess) return
+    }
     throw new MediaWorkflowError('Site scope access denied.', 403)
   }
 }

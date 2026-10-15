@@ -9,6 +9,7 @@ import {
 } from '@/modules/ai/workflows'
 import { relationId } from '@/modules/ai/connections'
 import { decodeProposalValue } from '@/modules/ai/persistence'
+import { checkOperatorSiteAccess } from '@/modules/operations/operator-grants'
 
 export const runtime = 'nodejs'
 type Doc = Record<string, unknown> & { id: string }
@@ -27,6 +28,8 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   }
   if (!body.siteId || !['apply', 'decline'].includes(String(body.decision)))
     return fail('Site and decision are required.')
+  if (!(await checkOperatorSiteAccess(payload, auth.user, body.siteId)))
+    return fail('Staff site access required.', 403)
   let proposal: Doc
   try {
     proposal = (await payload.findByID({

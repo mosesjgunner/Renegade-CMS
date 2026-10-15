@@ -1,6 +1,7 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
+import { resolveOperatorGrantContext } from '@/modules/operations/operator-grants'
 import {
   attributeCampaignFunnel,
   maskSuppressedIdentity,
@@ -20,7 +21,14 @@ export async function GET(request: Request) {
 
   const url = new URL(request.url)
   const campaign = url.searchParams.get('campaign') ?? 'autumn-sovereign-launch'
-  const siteId = url.searchParams.get('siteId') ?? 'default-site'
+  const grant = await resolveOperatorGrantContext(payload, auth.user)
+  const siteId = url.searchParams.get('siteId') ?? grant.authorizedSiteIds[0]
+  if (
+    !grant.authorized ||
+    !siteId ||
+    (!grant.isGlobalOwner && !grant.authorizedSiteIds.includes(siteId))
+  )
+    return NextResponse.json({ error: 'Staff site access required.' }, { status: 403 })
 
   // Query events matching this campaign or related in time
   const [eventsRes, suppressionsRes] = await Promise.all([
@@ -37,6 +45,7 @@ export async function GET(request: Request) {
     payload
       .find({
         collection: 'suppressions',
+        where: { site: { equals: siteId } },
         limit: 500,
         depth: 0,
         overrideAccess: true,

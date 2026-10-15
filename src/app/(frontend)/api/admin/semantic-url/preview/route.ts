@@ -3,6 +3,10 @@ import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
 import { canDiscoverPublic } from '@/modules/public/contracts'
 import {
+  checkOperatorRecordAccess,
+  resolveOperatorGrantContext,
+} from '@/modules/operations/operator-grants'
+import {
   readRouteTemplates,
   readRouteTemplatesBySite,
   resolvePublicUrl,
@@ -26,6 +30,18 @@ export async function POST(request: Request) {
     }
     const slug = typeof body.slug === 'string' ? body.slug.slice(0, 300) : ''
     const kind: SemanticKind = body.contentType === 'page' ? 'page' : 'article'
+    const grant = await resolveOperatorGrantContext(payload, auth.user)
+    if (
+      !grant.authorized ||
+      (typeof body.siteId === 'string' &&
+        body.siteId &&
+        !grant.isGlobalOwner &&
+        !grant.authorizedSiteIds.includes(body.siteId)) ||
+      (typeof body.id === 'string' &&
+        body.id &&
+        !(await checkOperatorRecordAccess(payload, auth.user, 'content', body.id)))
+    )
+      return NextResponse.json({ error: 'Staff site access required.' }, { status: 403 })
     if (!slug.trim()) return NextResponse.json({ path: null, willRedirect: false })
     const settings = (await payload.findGlobal({
       slug: 'site-settings',
@@ -47,6 +63,7 @@ export async function POST(request: Request) {
         existing = null
       }
     }
+    if (!siteId) siteId = grant.authorizedSiteIds[0] ?? ''
     const templates = routeTemplatesForSite(
       siteId,
       readRouteTemplates(settings.semanticRouteTemplates),
