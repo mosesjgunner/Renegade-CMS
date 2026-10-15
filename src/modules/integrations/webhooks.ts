@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any -- Payload collection documents are runtime-shaped. */
 import { randomUUID } from 'node:crypto'
 
+import { isPrivateAddress } from '../core/external-boundary'
 import type { ExecutionEvent } from '../execution/contracts'
 import {
   MAX_WEBHOOK_PAYLOAD_BYTES,
@@ -30,7 +31,7 @@ export const resolveWebhookSecret: WebhookSecretResolver = async (reference) => 
 
 const id = (value: unknown) =>
   String(typeof value === 'object' && value ? (value as { id?: unknown }).id : value)
-const supportedTarget = (target: string) => {
+export const supportedTarget = (target: string) => {
   const url = new URL(target)
   const isTest = process.env.NODE_ENV === 'test' || process.env.VITEST === 'true'
   if (url.protocol !== 'https:' && !(isTest && url.protocol === 'http:'))
@@ -38,7 +39,11 @@ const supportedTarget = (target: string) => {
   if (
     url.username ||
     url.password ||
-    (!isTest && ['localhost', '127.0.0.1', '[::1]'].includes(url.hostname))
+    (!isTest &&
+      (['localhost', '127.0.0.1', '[::1]', 'metadata.google.internal', 'instance-data'].includes(
+        url.hostname.toLowerCase(),
+      ) ||
+        isPrivateAddress(url.hostname)))
   )
     throw new Error('Webhook target is not permitted.')
   return url

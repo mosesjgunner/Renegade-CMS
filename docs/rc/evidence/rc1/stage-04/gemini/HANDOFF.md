@@ -23,27 +23,27 @@ Gemini, 2026-10-14 (America/Chicago).
 
 ## 2. Gate Outcomes Summary
 
-| Gate / Suite | Command | Exit Code | Counts | Status |
-|---|---|---|---|---|
-| **TypeScript** | `npm.cmd run typecheck` | 0 | 0 errors | **PASS** |
-| **Lint** | `npm.cmd run lint` | 0 | 0 errors, 0 warnings | **PASS** |
-| **Format** | `npm.cmd run format:check` | 0 | 0 style violations | **PASS** |
-| **Unit Test Suite** | `npm.cmd test` | 0 | 192 files, 1,261 passed | **PASS** |
-| **Presentation Bundles** | `npm.cmd run verify:presentation-bundles` | 0 | Verified (editor excluded from public routes) | **PASS** |
-| **Production Build** | `npm.cmd run build` | 0 | 144 routes generated | **PASS** |
-| **RC04 Browser Acceptance** | `npx.cmd playwright test tests/rc04/acceptance.spec.ts --config=playwright.rc04.config.ts` | 0 | 3 passed (153.7s) | **PASS** |
-| **Commerce Runtime Acceptance** | `node --env-file=.env.rc04 scripts/run-integration.mjs tests/integration/commerce-runtime-acceptance.integration.test.ts` | 0 | 1 test (11 stages, 7.73s) | **PASS** |
-| **Shared Commerce & Shop** | `node --env-file=.env.rc04 scripts/run-integration.mjs tests/integration/shared-contract-commerce-shop.integration.test.ts` | 0 | 34 passed (5.52s) | **PASS** |
-| **Shared Audience & Community** | `node --env-file=.env.rc04 scripts/run-integration.mjs tests/integration/shared-contract-audience-community.integration.test.ts` | 0 | 20 passed (6.83s) | **PASS** |
-| **Shared Affiliate & POD** | `node --env-file=.env.rc04 scripts/run-integration.mjs tests/integration/shared-contract-affiliate-pod.integration.test.ts` | 0 | 28 passed (0.72s) | **PASS** |
-| **Community Cross-Site Boundaries** | `node --env-file=.env.rc04 scripts/run-integration.mjs tests/integration/community-cross-site-boundaries.integration.test.ts` | 0 | 7 passed (5.43s) | **PASS** |
-| **Community Pass Gate** | `node --env-file=.env.rc04 scripts/run-integration.mjs tests/integration/comm-00-community-pass.integration.test.ts` | 0 | 11 passed (5.38s) | **PASS** |
-| **Audience Pass Gate** | `node --env-file=.env.rc04 scripts/run-integration.mjs tests/integration/aud-08-audience-pass-gate.integration.test.ts` | 0 | 10 passed (6.96s) | **PASS** |
-| **Audience Public Subscription** | `node --env-file=.env.rc04 scripts/run-integration.mjs tests/integration/aud-public-subscription-journey.integration.test.ts` | 0 | 4 passed (5.86s) | **PASS** |
-| **Commerce Routes Pass 2** | `node --env-file=.env.rc04 scripts/run-integration.mjs tests/integration/rc05-pass2-commerce-routes.integration.test.ts` | 0 | 5 passed (8.33s) | **PASS** |
-| **Local Donation Checkout** | `node --env-file=.env.rc04 scripts/run-integration.mjs tests/integration/shop-08-local-donation-checkout.integration.test.ts` | 0 | 1 passed (5.07s) | **PASS** |
-| **RC08B Promotions & Digestion** | `node --env-file=.env.rc04 scripts/run-integration.mjs tests/integration/rc08b-promotions.integration.test.ts` | 0 | 10 passed (26.13s) | **PASS** |
-| **Integrations Admin API** | `node --env-file=.env.rc04 scripts/run-integration.mjs tests/integration/integrations-admin-api.integration.test.ts` | 0 | 8 passed (0.76s) | **PASS** |
+| Gate / Suite                        | Command                                                                                                                          | Exit Code | Counts                                        | Status   |
+| ----------------------------------- | -------------------------------------------------------------------------------------------------------------------------------- | --------- | --------------------------------------------- | -------- |
+| **TypeScript**                      | `npm.cmd run typecheck`                                                                                                          | 0         | 0 errors                                      | **PASS** |
+| **Lint**                            | `npm.cmd run lint`                                                                                                               | 0         | 0 errors, 0 warnings                          | **PASS** |
+| **Format**                          | `npm.cmd run format:check`                                                                                                       | 0         | 0 style violations                            | **PASS** |
+| **Unit Test Suite**                 | `npm.cmd test`                                                                                                                   | 0         | 192 files, 1,261 passed                       | **PASS** |
+| **Presentation Bundles**            | `npm.cmd run verify:presentation-bundles`                                                                                        | 0         | Verified (editor excluded from public routes) | **PASS** |
+| **Production Build**                | `npm.cmd run build`                                                                                                              | 0         | 144 routes generated                          | **PASS** |
+| **RC04 Browser Acceptance**         | `npx.cmd playwright test tests/rc04/acceptance.spec.ts --config=playwright.rc04.config.ts`                                       | 0         | 3 passed (153.7s)                             | **PASS** |
+| **Commerce Runtime Acceptance**     | `node --env-file=.env.rc04 scripts/run-integration.mjs tests/integration/commerce-runtime-acceptance.integration.test.ts`        | 0         | 1 test (11 stages, 7.73s)                     | **PASS** |
+| **Shared Commerce & Shop**          | `node --env-file=.env.rc04 scripts/run-integration.mjs tests/integration/shared-contract-commerce-shop.integration.test.ts`      | 0         | 34 passed (5.52s)                             | **PASS** |
+| **Shared Audience & Community**     | `node --env-file=.env.rc04 scripts/run-integration.mjs tests/integration/shared-contract-audience-community.integration.test.ts` | 0         | 20 passed (6.83s)                             | **PASS** |
+| **Shared Affiliate & POD**          | `node --env-file=.env.rc04 scripts/run-integration.mjs tests/integration/shared-contract-affiliate-pod.integration.test.ts`      | 0         | 28 passed (0.72s)                             | **PASS** |
+| **Community Cross-Site Boundaries** | `node --env-file=.env.rc04 scripts/run-integration.mjs tests/integration/community-cross-site-boundaries.integration.test.ts`    | 0         | 7 passed (5.43s)                              | **PASS** |
+| **Community Pass Gate**             | `node --env-file=.env.rc04 scripts/run-integration.mjs tests/integration/comm-00-community-pass.integration.test.ts`             | 0         | 11 passed (5.38s)                             | **PASS** |
+| **Audience Pass Gate**              | `node --env-file=.env.rc04 scripts/run-integration.mjs tests/integration/aud-08-audience-pass-gate.integration.test.ts`          | 0         | 10 passed (6.96s)                             | **PASS** |
+| **Audience Public Subscription**    | `node --env-file=.env.rc04 scripts/run-integration.mjs tests/integration/aud-public-subscription-journey.integration.test.ts`    | 0         | 4 passed (5.86s)                              | **PASS** |
+| **Commerce Routes Pass 2**          | `node --env-file=.env.rc04 scripts/run-integration.mjs tests/integration/rc05-pass2-commerce-routes.integration.test.ts`         | 0         | 5 passed (8.33s)                              | **PASS** |
+| **Local Donation Checkout**         | `node --env-file=.env.rc04 scripts/run-integration.mjs tests/integration/shop-08-local-donation-checkout.integration.test.ts`    | 0         | 1 passed (5.07s)                              | **PASS** |
+| **RC08B Promotions & Digestion**    | `node --env-file=.env.rc04 scripts/run-integration.mjs tests/integration/rc08b-promotions.integration.test.ts`                   | 0         | 10 passed (26.13s)                            | **PASS** |
+| **Integrations Admin API**          | `node --env-file=.env.rc04 scripts/run-integration.mjs tests/integration/integrations-admin-api.integration.test.ts`             | 0         | 8 passed (0.76s)                              | **PASS** |
 
 ---
 

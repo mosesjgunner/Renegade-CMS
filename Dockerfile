@@ -41,6 +41,7 @@ COPY --from=builder --chown=nextjs:nodejs /app/build-provenance.json ./
 COPY --from=builder --chown=nextjs:nodejs /app/next.config.ts /app/tsconfig.json ./
 COPY --from=builder --chown=nextjs:nodejs /app/src ./src
 COPY --from=builder --chown=nextjs:nodejs /app/docker ./docker
+COPY --from=builder --chown=nextjs:nodejs /app/theme-packages ./theme-packages
 USER nextjs
 EXPOSE 3000
 CMD ["node", "standalone/server.js"]
