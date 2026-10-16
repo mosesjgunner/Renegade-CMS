@@ -1,0 +1,14 @@
+{
+  "command": [
+    "docker",
+    "stop",
+    "solrc05-independent-20261015-renegade-web-1",
+    "solrc05-independent-20261015-renegade-worker-1"
+  ],
+  "exitCode": 0,
+  "durationSeconds": 0.4291503429412842,
+  "sourceSha": "3f464a6903ff26e7489179df29749f065cb55299",
+  "sourceStatus": "",
+  "log": "scratch\\sol-evidence\\independent-first-runtime-stop.log",
+  "logSha256": "3c6bbf124d3096e6054555f31a7ccd44d85e35b7633dbac57954d0d60c5f03d9"
+}

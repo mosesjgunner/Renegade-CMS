@@ -1,87 +1,124 @@
 {
-  "sourceSha": "6d9c492ae13ba1d8194082716f8b103c8be59c3a",
+  "status": "STAGE 05 SOL PASS",
+  "signedBy": "Sol",
+  "dateAmericaChicago": "2026-10-15",
+  "sourceSha": "3f464a6903ff26e7489179df29749f065cb55299",
   "image": {
-    "sourceSha": "6d9c492ae13ba1d8194082716f8b103c8be59c3a",
-    "imageIndexDigest": "sha256:27e60ef383a6e012bb23821f0f31740df8449cf5fca072a7fe751b2bef4f8e3f",
-    "platformManifestDigest": "sha256:b5aa63666938a38d3049adbddb4116188bc4b1186c44e6a05f456a278c6c2c02",
-    "configDigest": "sha256:234a30c43471d876a3780cf5c60d3cbd0871a612f7ad7149f28f6f173f292e19",
-    "nodeBaseDigest": "sha256:44fce696f38ba8c987c4db89954051000bbd05ffd8d8659ba15ed4a8602e937f",
-    "goBuildBaseDigest": "sha256:f92b6ef800e499660581efdabdf25d9d817a9d124eaf900924f0504e7e27e12d",
-    "sourceContext": "C:\\Projects\\RENEGADE CMS\\sol-rc05-20261015",
-    "buildArguments": {
-      "BUILD_SHA": "6d9c492ae13ba1d8194082716f8b103c8be59c3a",
-      "APP_VERSION": "0.1.0-rc.1"
-    },
-    "imageTags": ["renegade-cms:sol-stage05-6d9c492"],
-    "labels": {
-      "org.opencontainers.image.revision": "6d9c492ae13ba1d8194082716f8b103c8be59c3a",
+    "sourceSha": "3f464a6903ff26e7489179df29749f065cb55299",
+    "gitTree": "4ac6c231f28530b70cccf676ba5be09c1aef276a",
+    "imageIndexDigest": "sha256:56dd7485646e358edffe1cc017e9ae150081f39fc07232ccd729ad6f8d51fb46",
+    "platformManifestDigest": "sha256:b67dec88b0dcebcbe16b72549adab8da5f951b1893d0d5074e2a04dc44ec8b77",
+    "configDigest": "sha256:1b7fd290ac9ccfc7efa402d8f91b05dd500960c92fe279ae3e1b3945296f65ce",
+    "ociLabels": {
+      "org.opencontainers.image.revision": "3f464a6903ff26e7489179df29749f065cb55299",
       "org.opencontainers.image.version": "0.1.0-rc.1"
     },
-    "architecture": "amd64",
-    "os": "linux",
-    "configuredUser": "nextjs",
-    "gitTree": "67dbc493c6f9eac371b4cdad17da800302090db3",
+    "runtimeBuildSha": "3f464a6903ff26e7489179df29749f065cb55299",
+    "rootProvenance": {
+      "sourceSha": "3f464a6903ff26e7489179df29749f065cb55299",
+      "clean": null,
+      "version": "0.1.0",
+      "lockfileSha256": "f6e204e51dea49eab765231225bde88c973d8b6f0c4261b1973d495799fc72b2"
+    },
+    "standaloneProvenance": {
+      "sourceSha": "3f464a6903ff26e7489179df29749f065cb55299",
+      "clean": null,
+      "version": "0.1.0",
+      "lockfileSha256": "f6e204e51dea49eab765231225bde88c973d8b6f0c4261b1973d495799fc72b2"
+    },
+    "node": "v24.22.0",
+    "uid": 1001,
+    "gid": 65533,
+    "versionedManifests": 761,
+    "unversionedManifests": 453,
+    "tracingManifests": 277,
+    "missingTracedFiles": 0,
+    "sharpPngBytes": 91,
     "dockerfileSha256": "a2914aa1bb6d8945dc1b5345f42ffd61acbc612a979525e0231a3e37ffca1a2e",
-    "dockerignoreSha256": "8dd8cab934acbb66049ca770a08d04ce5570a6a09c4a8a8c36c67b5537824af2"
+    "dockerignoreSha256": "8dd8cab934acbb66049ca770a08d04ce5570a6a09c4a8a8c36c67b5537824af2",
+    "baseDigests": [
+      "docker.io/library/node:24-alpine@sha256:44fce696f38ba8c987c4db89954051000bbd05ffd8d8659ba15ed4a8602e937f",
+      "docker.io/library/golang:1.27.2-alpine@sha256:f92b6ef800e499660581efdabdf25d9d817a9d124eaf900924f0504e7e27e12d"
+    ],
+    "executableChanges": false,
+    "rc1Ready": false
   },
   "qualityCounts": {
     "unit": {
       "files": 196,
       "passed": 1295,
       "failed": 0,
-      "skipped": 0,
-      "total": 1295
+      "skipped": 0
     },
     "integration": {
       "files": 51,
       "passed": 298,
       "failed": 0,
-      "skipped": 0,
-      "total": 298
+      "skipped": 0
     }
   },
   "browserReports": [
     {
-      "label": "image-security-final-i",
+      "label": "independent-security-b",
       "stats": {
-        "startTime": "2026-10-15T21:20:17.560Z",
-        "duration": 311367.389,
+        "startTime": "2026-10-16T02:02:46.775Z",
+        "duration": 318162.45,
         "expected": 1,
         "skipped": 0,
         "unexpected": 0,
         "flaky": 0
-      },
-      "exitCode": 0
+      }
     },
     {
-      "label": "image-admin-csrf-final-i",
+      "label": "independent-admin-csrf-b",
       "stats": {
-        "startTime": "2026-10-15T21:25:29.607Z",
-        "duration": 2140.409,
+        "startTime": "2026-10-16T02:08:11.442Z",
+        "duration": 2209.742,
         "expected": 1,
         "skipped": 0,
         "unexpected": 0,
         "flaky": 0
-      },
-      "exitCode": 0
+      }
     },
     {
-      "label": "image-input-limits-final-i",
+      "label": "independent-input-limits-b",
       "stats": {
-        "startTime": "2026-10-15T21:25:49.709Z",
-        "duration": 2567.8909999999996,
+        "startTime": "2026-10-16T02:08:14.311Z",
+        "duration": 3251.592,
         "expected": 1,
         "skipped": 0,
         "unexpected": 0,
         "flaky": 0
-      },
-      "exitCode": 0
+      }
+    },
+    {
+      "label": "independent-post-restart-b",
+      "stats": {
+        "startTime": "2026-10-16T02:09:11.945Z",
+        "duration": 6133.984,
+        "expected": 1,
+        "skipped": 0,
+        "unexpected": 0,
+        "flaky": 0
+      }
     }
   ],
   "wholeImageCritical": 0,
   "wholeImageHigh": 2,
   "rawVulnerabilityScannerExit": 1,
-  "status": "STAGE 05 GEMINI COMPLETE",
-  "independentSolSignoff": false,
-  "rc1Ready": false
+  "independentSolSignoff": true,
+  "rc1Ready": false,
+  "repairs": [
+    "Rejected nonexistent full Gemini SHA and rebuilt from actual clean commit.",
+    "Corrected advisory exploit/range and blanket dev-dependency exclusion claims."
+  ],
+  "runtimeProject": "solrc05-independent-20261015b",
+  "productionCodeChanged": false,
+  "readinessNegatives": {
+    "emptySchema": 503,
+    "missingCriticalColumn": 503,
+    "databaseUnavailable": 503,
+    "restoredControls": 200,
+    "exitCode": 0
+  }
 }

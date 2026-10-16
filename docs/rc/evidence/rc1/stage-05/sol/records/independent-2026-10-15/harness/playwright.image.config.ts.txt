@@ -1,0 +1,8 @@
+import { defineConfig } from '@playwright/test'
+import { resolve } from 'node:path'
+import { readFileSync } from 'node:fs'
+import { createHash, X509Certificate } from 'node:crypto'
+import '../src/scripts/rc02-network.mjs'
+const cert = new X509Certificate(readFileSync('scratch/tls-final/cert.pem'))
+const pin = createHash('sha256').update(cert.publicKey.export({type:'spki',format:'der'})).digest('base64')
+export default defineConfig({testDir:'./image-specs',workers:1,timeout:900_000,expect:{timeout:30000},outputDir:resolve('scratch/sol-browser-artifacts',process.env.REPORT_LABEL??'default'),reporter:[['list'],['json',{outputFile:`scratch/sol-evidence/${process.env.REPORT_LABEL ?? 'image-browser'}.json`}]],use:{baseURL:'https://dispatch.rc02.test:3159',ignoreHTTPSErrors:true,trace:'on',screenshot:'only-on-failure',actionTimeout:30000,launchOptions:{args:['--host-resolver-rules=MAP *.rc02.test 127.0.0.1',`--ignore-certificate-errors-spki-list=${pin}`]}}})

@@ -1,0 +1,13 @@
+{
+  "command": [
+    "docker",
+    "stop",
+    "sol-stage05-schema-negative"
+  ],
+  "exitCode": 0,
+  "durationSeconds": 0.29035210609436035,
+  "sourceSha": "3f464a6903ff26e7489179df29749f065cb55299",
+  "sourceStatus": "",
+  "log": "scratch\\sol-evidence\\independent-schema-first-stop.log",
+  "logSha256": "66be95bfe9a1e844251aa8cc9079c97cee23dc431c2d0d9292d53e7c596b25e0"
+}

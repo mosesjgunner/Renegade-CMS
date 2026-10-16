@@ -1,0 +1,5 @@
+{
+  "checksumsUrl": "https://github.com/aquasecurity/trivy/releases/download/v0.76.0/trivy_0.76.0_checksums.txt",
+  "archiveSha256": "7b4762a5a5326cb4b83dfd2bb5d9aaf15a1ed867c75cad7dd8b38840a28e7be6",
+  "binarySha256": "51e50a34f8739424bc88282602d10945b25249ffdb51703fe3c9453c20217c42"
+}

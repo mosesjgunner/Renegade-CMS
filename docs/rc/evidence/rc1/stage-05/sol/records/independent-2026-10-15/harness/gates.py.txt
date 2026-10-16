@@ -1,0 +1,15 @@
+import os,subprocess,json,time,sys
+from pathlib import Path
+out=Path('scratch/independent'); env=os.environ.copy(); env.update(dict(x.split('=',1) for x in Path('.env.acceptance').read_text().splitlines() if '=' in x))
+assert '15436/solrc05_independent_quality_release_acceptance' in env['DATABASE_URL']
+gates=[('format','npm.cmd run format:check'),('lint','npm.cmd run lint'),('types','npm.cmd run typecheck'),('unit','npm.cmd test -- --reporter=default --reporter=json --outputFile=scratch/independent/unit.json'),('fresh','npm.cmd run test:migrations:fresh'),('upgrade','npm.cmd run test:migrations:upgrade'),('commerce','npm.cmd run test:migrations:commerce'),('integration','npm.cmd run test:integration -- --reporter=default --reporter=json --outputFile=scratch/independent/integration.json'),('build','npm.cmd run build'),('bundles','npm.cmd run verify:presentation-bundles')]
+results=[]
+for name,cmd in gates[int(os.environ.get('SOL_START_GATE','0')):]:
+ e=env.copy()
+ if name=='commerce':e['DATABASE_URL']=e['DATABASE_URL'].replace('_quality_','_commerce_')
+ if name in ['build','bundles']:e['NODE_ENV']='production'
+ print('START',name,flush=True);start=time.time()
+ with (out/(name+'.log')).open('wb') as log:r=subprocess.run(cmd,shell=True,env=e,stdout=log,stderr=subprocess.STDOUT)
+ results.append(dict(command=cmd,exitCode=r.returncode,durationSeconds=time.time()-start,sourceSha=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),log=str(out/(name+'.log'))))
+ (out/'gates.json').write_text(json.dumps(results,indent=2));print('END',name,r.returncode,flush=True)
+ if r.returncode:sys.exit(r.returncode)

@@ -1,0 +1,87 @@
+[
+    {
+        "Id": "sha256:56dd7485646e358edffe1cc017e9ae150081f39fc07232ccd729ad6f8d51fb46",
+        "RepoTags": [
+            "renegade-cms:sol-independent-3f464a69"
+        ],
+        "RepoDigests": [
+            "renegade-cms@sha256:56dd7485646e358edffe1cc017e9ae150081f39fc07232ccd729ad6f8d51fb46"
+        ],
+        "Comment": "buildkit.dockerfile.v0",
+        "Created": "2026-10-16T01:59:21.281525745Z",
+        "Config": {
+            "User": "nextjs",
+            "ExposedPorts": {
+                "3000/tcp": {}
+            },
+            "Env": [
+                "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                "NODE_VERSION=24.22.0",
+                "YARN_VERSION=1.22.22",
+                "NODE_ENV=production",
+                "PORT=3000",
+                "HOSTNAME=0.0.0.0",
+                "APP_VERSION=0.1.0-rc.1",
+                "BUILD_SHA=3f464a6903ff26e7489179df29749f065cb55299"
+            ],
+            "Entrypoint": [
+                "docker-entrypoint.sh"
+            ],
+            "Cmd": [
+                "node",
+                "standalone/server.js"
+            ],
+            "WorkingDir": "/app",
+            "Labels": {
+                "org.opencontainers.image.revision": "3f464a6903ff26e7489179df29749f065cb55299",
+                "org.opencontainers.image.version": "0.1.0-rc.1"
+            },
+            "ArgsEscaped": true
+        },
+        "Architecture": "amd64",
+        "Os": "linux",
+        "Size": 1613299744,
+        "RootFS": {
+            "Type": "layers",
+            "Layers": [
+                "sha256:74d97c428c51a828f9051a7a40a53ff1fc99e54fc30323ce36760701b0b7f711",
+                "sha256:097adc8e8de750358e0bc505a53d7f3055534238d0d4a0b9e3092b720de39b51",
+                "sha256:2ea56cd9a304c4091b108300290afb99cc0d4568f3d3ca9fabe095080a1d898c",
+                "sha256:88d9dfe7274031e3ec59d86af7044d33b0e0fefbfff973941722387fa39ff914",
+                "sha256:5f145b52126f5840cd183b58efbe6c8de778303fb70d456187bb28b9a14f71ad",
+                "sha256:2e46d129e5981edbb740c411f95e51feb3ec35701dd5e94b7c9def1f889bc155",
+                "sha256:61329675b8f5de171372b3d4e24c457f6ce785756c30e68e47a5ff825688833b",
+                "sha256:f39db0e91e02ae0ff4f23e9105fa5bcd01c2ebe8048d96479c19186150f10796",
+                "sha256:b85416b37bdf3371a143e24a815a40a4e3145af22cd8ca1c15b7f7f85474d02c",
+                "sha256:a06095ee0f925c7ac37d388aed5ada2320a572a7cd7fb76a455aff2934d2b76f",
+                "sha256:7ea9263441789f16e0c75ac43cd466cfe2ec943bb87814a91dcc87a2397ad59c",
+                "sha256:6fe8176c26183bdfd6fccd588e3a57bee3a058ddffe311d9b5106bbee0c4fce5",
+                "sha256:daf7a5ed8d187497687a309fa36a83a04cac86f9fc1b5881698600abb93ca973",
+                "sha256:1c90d2e23bdedecb855733d168bcebb81020f397fb1cba090286c06f2c2c00f7",
+                "sha256:305a8a7579475c1a1139b0c643ab0f09cfa98c43efbaec6b6b7e46194b0635b7",
+                "sha256:1bdaa039e754f55df3a6993488bf7980c97a33fccbbbc430b69557093f0d16bc",
+                "sha256:207f6662efc6056268f0f3f8031e7751ee4718a94602dedc0002487958248c9c",
+                "sha256:d10b28e8f611e1a927695539149b30e0761402bb9ec8d8874ae44b118b264a94",
+                "sha256:dccfcbd03ff622e64d963ca9ade1de79c87a537d7f70c620db5b2dcc9c7437be",
+                "sha256:9fd808ebffeb157573df980faf2e51fed5563bd77275a312f4bdf8b6c14f1eca",
+                "sha256:bf04e71030ee4679b09c3ed5393ee1338ef41f4aa59e769e1414f64829a91c1b"
+            ]
+        },
+        "Metadata": {
+            "LastTagTime": "2026-10-16T01:59:42.981284662Z"
+        },
+        "Descriptor": {
+            "mediaType": "application/vnd.oci.image.index.v1+json",
+            "digest": "sha256:56dd7485646e358edffe1cc017e9ae150081f39fc07232ccd729ad6f8d51fb46",
+            "size": 856
+        },
+        "Identity": {
+            "Build": [
+                {
+                    "Ref": "qa7ptodzdx7b3p1pj9exwh7uz",
+                    "CreatedAt": "2026-10-16T01:59:56.499713662Z"
+                }
+            ]
+        }
+    }
+]

@@ -1,0 +1,18 @@
+{
+  "command": [
+    "docker",
+    "run",
+    "--rm",
+    "renegade-cms:sol-independent-3f464a69",
+    "npm",
+    "audit",
+    "--omit=dev",
+    "--json"
+  ],
+  "exitCode": 1,
+  "durationSeconds": 4.099245309829712,
+  "sourceSha": "3f464a6903ff26e7489179df29749f065cb55299",
+  "sourceStatus": "",
+  "log": "scratch\\sol-evidence\\independent-runner-audit.log",
+  "logSha256": "03e9d14bfe9e5265b61204a4f18de8957be8e09f0d5318d256f118307eac435f"
+}

@@ -1,0 +1,16 @@
+{
+  "command": [
+    "docker",
+    "exec",
+    "solrc05-independent-20261015b-renegade-web-1",
+    "npm",
+    "run",
+    "db:status"
+  ],
+  "exitCode": 0,
+  "durationSeconds": 21.75028944015503,
+  "sourceSha": "3f464a6903ff26e7489179df29749f065cb55299",
+  "sourceStatus": "",
+  "log": "scratch\\sol-evidence\\independent-db-status-b.log",
+  "logSha256": "3ad0749c2f7603ede3b733c1018b0ccca6ebf0e1d118e1899139693d46f695a7"
+}

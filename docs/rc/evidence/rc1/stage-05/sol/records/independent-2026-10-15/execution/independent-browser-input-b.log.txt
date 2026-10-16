@@ -1,0 +1,8 @@
+
+Running 1 test using 1 worker
+
+(node:9224) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 scratch\image-specs\input-limits.spec.ts:4:1 › real HTTP upload limit and private-byte response boundaries leave media unchanged (2.5s)
+
+  1 passed (3.3s)

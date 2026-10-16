@@ -1,0 +1,12 @@
+{
+  "command": [
+    "python",
+    "scratch/readiness-negative.py"
+  ],
+  "exitCode": 0,
+  "durationSeconds": 14.207078456878662,
+  "sourceSha": "3f464a6903ff26e7489179df29749f065cb55299",
+  "sourceStatus": "",
+  "log": "scratch\\sol-evidence\\independent-readiness-negatives.log",
+  "logSha256": "56eec69205adec62910a3bf05d2cda0a909da0e947e5414b123f624d69b09bfe"
+}

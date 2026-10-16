@@ -1,0 +1,6 @@
+{
+  "origin": "https://attacker.rc02.test:3159",
+  "authenticatedCookieSent": true,
+  "serverStatus": 403,
+  "browserReadDeniedByCors": true
+}

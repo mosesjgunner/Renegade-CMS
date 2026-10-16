@@ -1,0 +1,24 @@
+{
+  "command": [
+    "docker",
+    "compose",
+    "--project-name",
+    "solrc05-independent-20261015",
+    "--env-file",
+    ".env.compose",
+    "-f",
+    "compose.production.yaml",
+    "-f",
+    "scratch/compose.override.yaml",
+    "up",
+    "-d",
+    "--no-build",
+    "--wait"
+  ],
+  "exitCode": 0,
+  "durationSeconds": 37.864603757858276,
+  "sourceSha": "3f464a6903ff26e7489179df29749f065cb55299",
+  "sourceStatus": "",
+  "log": "scratch\\sol-evidence\\independent-compose-up.log",
+  "logSha256": "c51d6ad686d14f1c15948c0affeb990d87a0460da88e7885d6758be9ca95b18a"
+}

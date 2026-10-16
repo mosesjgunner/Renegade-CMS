@@ -1,0 +1,72 @@
+[
+  {
+    "command": "npm.cmd run format:check",
+    "exitCode": 0,
+    "durationSeconds": 27.372486352920532,
+    "sourceSha": "3f464a6903ff26e7489179df29749f065cb55299",
+    "log": "scratch\\independent\\format.log"
+  },
+  {
+    "command": "npm.cmd run lint",
+    "exitCode": 0,
+    "durationSeconds": 20.304722547531128,
+    "sourceSha": "3f464a6903ff26e7489179df29749f065cb55299",
+    "log": "scratch\\independent\\lint.log"
+  },
+  {
+    "command": "npm.cmd run typecheck",
+    "exitCode": 0,
+    "durationSeconds": 5.901606559753418,
+    "sourceSha": "3f464a6903ff26e7489179df29749f065cb55299",
+    "log": "scratch\\independent\\types.log"
+  },
+  {
+    "command": "npm.cmd test -- --reporter=default --reporter=json --outputFile=scratch/independent/unit.json",
+    "exitCode": 0,
+    "durationSeconds": 26.25392436981201,
+    "sourceSha": "3f464a6903ff26e7489179df29749f065cb55299",
+    "log": "scratch\\independent\\unit.log"
+  },
+  {
+    "command": "npm.cmd run test:migrations:fresh",
+    "exitCode": 0,
+    "durationSeconds": 14.794508457183838,
+    "sourceSha": "3f464a6903ff26e7489179df29749f065cb55299",
+    "log": "scratch\\independent\\fresh.log"
+  },
+  {
+    "command": "npm.cmd run test:migrations:upgrade",
+    "exitCode": 0,
+    "durationSeconds": 11.82233715057373,
+    "sourceSha": "3f464a6903ff26e7489179df29749f065cb55299",
+    "log": "scratch\\independent\\upgrade.log"
+  },
+  {
+    "command": "npm.cmd run test:migrations:commerce",
+    "exitCode": 0,
+    "durationSeconds": 23.34538960456848,
+    "sourceSha": "3f464a6903ff26e7489179df29749f065cb55299",
+    "log": "scratch\\independent\\commerce.log"
+  },
+  {
+    "command": "npm.cmd run test:integration -- --reporter=default --reporter=json --outputFile=scratch/independent/integration.json",
+    "exitCode": 0,
+    "durationSeconds": 410.7379755973816,
+    "sourceSha": "3f464a6903ff26e7489179df29749f065cb55299",
+    "log": "scratch\\independent\\integration.log"
+  },
+  {
+    "command": "npm.cmd run build",
+    "exitCode": 0,
+    "durationSeconds": 85.72786831855774,
+    "sourceSha": "3f464a6903ff26e7489179df29749f065cb55299",
+    "log": "scratch\\independent\\build.log"
+  },
+  {
+    "command": "npm.cmd run verify:presentation-bundles",
+    "exitCode": 0,
+    "durationSeconds": 0.400620698928833,
+    "sourceSha": "3f464a6903ff26e7489179df29749f065cb55299",
+    "log": "scratch\\independent\\bundles.log"
+  }
+]

@@ -1,0 +1,22 @@
+{
+  "command": [
+    "docker",
+    "run",
+    "--rm",
+    "--network",
+    "none",
+    "renegade-cms:sol-independent-3f464a69",
+    "npm",
+    "ls",
+    "--global",
+    "--all",
+    "--omit=dev",
+    "--json"
+  ],
+  "exitCode": 0,
+  "durationSeconds": 5.834068059921265,
+  "sourceSha": "3f464a6903ff26e7489179df29749f065cb55299",
+  "sourceStatus": "",
+  "log": "scratch\\sol-evidence\\independent-global-graph.log",
+  "logSha256": "1f05b5a0e3db89b8fb35790115e54a5f4cf30b2c484872af21a7d5e880a054c6"
+}

@@ -1,0 +1,30 @@
+[
+  {
+    "command": "npm.cmd run format:check",
+    "exitCode": 0,
+    "durationSeconds": 28.937028646469116,
+    "sourceSha": "3f464a6903ff26e7489179df29749f065cb55299",
+    "log": "scratch\\independent\\format.log"
+  },
+  {
+    "command": "npm.cmd run lint",
+    "exitCode": 0,
+    "durationSeconds": 20.93040943145752,
+    "sourceSha": "3f464a6903ff26e7489179df29749f065cb55299",
+    "log": "scratch\\independent\\lint.log"
+  },
+  {
+    "command": "npm.cmd run typecheck",
+    "exitCode": 0,
+    "durationSeconds": 17.802092790603638,
+    "sourceSha": "3f464a6903ff26e7489179df29749f065cb55299",
+    "log": "scratch\\independent\\types.log"
+  },
+  {
+    "command": "npm.cmd test -- --reporter=default --reporter=json --outputFile=scratch/independent/unit.json",
+    "exitCode": 1,
+    "durationSeconds": 27.413185596466064,
+    "sourceSha": "3f464a6903ff26e7489179df29749f065cb55299",
+    "log": "scratch\\independent\\unit.log"
+  }
+]

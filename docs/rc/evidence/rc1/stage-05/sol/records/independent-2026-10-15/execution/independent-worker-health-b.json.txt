@@ -1,0 +1,15 @@
+{
+  "command": [
+    "docker",
+    "exec",
+    "solrc05-independent-20261015b-renegade-worker-1",
+    "node",
+    "docker/worker-healthcheck.mjs"
+  ],
+  "exitCode": 0,
+  "durationSeconds": 0.2002723217010498,
+  "sourceSha": "3f464a6903ff26e7489179df29749f065cb55299",
+  "sourceStatus": "",
+  "log": "scratch\\sol-evidence\\independent-worker-health-b.log",
+  "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

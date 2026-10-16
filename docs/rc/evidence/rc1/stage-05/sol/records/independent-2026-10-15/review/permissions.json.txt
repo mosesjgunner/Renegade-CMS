@@ -1,0 +1,26 @@
+{
+  "command": [
+    "docker",
+    "exec",
+    "-i",
+    "solrc05-independent-20261015b-renegade-web-1",
+    "node",
+    "-"
+  ],
+  "exitCode": 0,
+  "web": {
+    "uid": 1001,
+    "gid": 65533,
+    "rootWriteDenied": true,
+    "mediaWritable": true
+  },
+  "worker": {
+    "uid": 1001,
+    "gid": 65533,
+    "sharedMediaMatches": true,
+    "heartbeat": {
+      "observedAt": "2026-10-16T02:03:15.065Z",
+      "pid": 30
+    }
+  }
+}

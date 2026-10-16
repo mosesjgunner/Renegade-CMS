@@ -1,0 +1,265 @@
+▲ Next.js 16.3.8
+- Local:         http://localhost:3000
+- Network:       http://0.0.0.0:3000
+✓ Ready in 0ms
+✓ Running next.config took 3ms
+[02:16:13] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+▲ Next.js 16.3.8
+- Local:         http://localhost:3000
+- Network:       http://0.0.0.0:3000
+✓ Ready in 0ms
+✓ Running next.config took 5ms
+[02:16:24] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+Readiness database check failed: Error: Failed query: select count(*) from "sites"
+params: 
+    at b.queryWithCache (.next/server/chunks/_0gl9fdz._.js:290:68193)
+    at async (.next/server/chunks/_0gl9fdz._.js:290:71752)
+    at async Object.o [as countDistinct] (.next/server/chunks/_0gl9fdz._.js:3:198)
+    at async f (.next/server/chunks/_0gl9fdz._.js:52:2486)
+    at async cz (.next/server/chunks/_0gl9fdz._.js:302:147408)
+    at async o (.next/server/chunks/[root-of-the-server]__0ew__k7._.js:1:5602)
+    at async Q (.next/server/chunks/[root-of-the-server]__0ew__k7._.js:9:3681) {
+  query: 'select count(*) from "sites"',
+  params: [],
+  [cause]: error: relation "sites" does not exist
+      at async (.next/server/chunks/_0gl9fdz._.js:290:71967)
+      at async b.queryWithCache (.next/server/chunks/_0gl9fdz._.js:290:68168)
+      at async (.next/server/chunks/_0gl9fdz._.js:290:71752)
+      at async Object.o [as countDistinct] (.next/server/chunks/_0gl9fdz._.js:3:198)
+      at async f (.next/server/chunks/_0gl9fdz._.js:52:2486)
+      at async cz (.next/server/chunks/_0gl9fdz._.js:302:147408)
+      at async o (.next/server/chunks/[root-of-the-server]__0ew__k7._.js:1:5602) {
+    length: 104,
+    severity: 'ERROR',
+    code: '42P01',
+    detail: undefined,
+    hint: undefined,
+    position: '22',
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'parse_relation.c',
+    line: '1449',
+    routine: 'parserOpenTable'
+  }
+}
+Readiness check failed: critical runtime columns missing in schema
+error: terminating connection due to administrator command
+    at ignore-listed frames {
+  length: 116,
+  severity: 'FATAL',
+  code: '57P01',
+  detail: undefined,
+  hint: undefined,
+  position: undefined,
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'postgres.c',
+  line: '3315',
+  routine: 'ProcessInterrupts',
+  client: Client {
+    _events: [Object: null prototype] { error: [Function (anonymous)] },
+    _eventsCount: 1,
+    _maxListeners: undefined,
+    connectionParameters: ConnectionParameters {
+      user: 'renegade',
+      database: 'sol_stage05_schema_b_release_acceptance',
+      port: 5432,
+      host: 'postgres',
+      binary: false,
+      options: undefined,
+      ssl: false,
+      client_encoding: '',
+      replication: undefined,
+      isDomainSocket: false,
+      application_name: undefined,
+      fallback_application_name: undefined,
+      statement_timeout: false,
+      lock_timeout: false,
+      idle_in_transaction_session_timeout: false,
+      query_timeout: false,
+      connect_timeout: 0
+    },
+    user: 'renegade',
+    database: 'sol_stage05_schema_b_release_acceptance',
+    port: 5432,
+    host: 'postgres',
+    replication: undefined,
+    _Promise: [Function: Promise],
+    _types: TypeOverrides { _types: [Object], text: {}, binary: {} },
+    _ending: true,
+    _ended: false,
+    _connecting: false,
+    _connected: true,
+    _connectionError: false,
+    _queryable: false,
+    _activeQuery: null,
+    enableChannelBinding: false,
+    connection: Connection {
+      _events: [Object: null prototype],
+      _eventsCount: 23,
+      _maxListeners: undefined,
+      stream: [Socket],
+      _keepAlive: false,
+      _keepAliveInitialDelayMillis: 0,
+      parsedStatements: {},
+      ssl: false,
+      _ending: true,
+      _emitMessage: false,
+      _connecting: true,
+      Symbol(shapeMode): false,
+      Symbol(kCapture): false
+    },
+    _queryQueue: [],
+    binary: false,
+    processID: 1855,
+    secretKey: -1473614313,
+    ssl: false,
+    _connectionTimeoutMillis: 0,
+    _connectionCallback: null,
+    saslSession: null,
+    release: [Function (anonymous)],
+    readyForQuery: true,
+    hasExecuted: true,
+    _poolUseCount: 12,
+    Symbol(shapeMode): false,
+    Symbol(kCapture): false
+  }
+}
+⨯ uncaughtException:  error: terminating connection due to administrator command
+    at ignore-listed frames {
+  length: 116,
+  severity: 'FATAL',
+  code: '57P01',
+  detail: undefined,
+  hint: undefined,
+  position: undefined,
+  internalPosition: undefined,
+  internalQuery: undefined,
+  where: undefined,
+  schema: undefined,
+  table: undefined,
+  column: undefined,
+  dataType: undefined,
+  constraint: undefined,
+  file: 'postgres.c',
+  line: '3315',
+  routine: 'ProcessInterrupts',
+  client: Client {
+    _events: [Object: null prototype] { error: [Function (anonymous)] },
+    _eventsCount: 1,
+    _maxListeners: undefined,
+    connectionParameters: ConnectionParameters {
+      user: 'renegade',
+      database: 'sol_stage05_schema_b_release_acceptance',
+      port: 5432,
+      host: 'postgres',
+      binary: false,
+      options: undefined,
+      ssl: false,
+      client_encoding: '',
+      replication: undefined,
+      isDomainSocket: false,
+      application_name: undefined,
+      fallback_application_name: undefined,
+      statement_timeout: false,
+      lock_timeout: false,
+      idle_in_transaction_session_timeout: false,
+      query_timeout: false,
+      connect_timeout: 0
+    },
+    user: 'renegade',
+    database: 'sol_stage05_schema_b_release_acceptance',
+    port: 5432,
+    host: 'postgres',
+    replication: undefined,
+    _Promise: [Function: Promise],
+    _types: TypeOverrides { _types: [Object], text: {}, binary: {} },
+    _ending: true,
+    _ended: false,
+    _connecting: false,
+    _connected: true,
+    _connectionError: false,
+    _queryable: false,
+    _activeQuery: null,
+    enableChannelBinding: false,
+    connection: Connection {
+      _events: [Object: null prototype],
+      _eventsCount: 23,
+      _maxListeners: undefined,
+      stream: [Socket],
+      _keepAlive: false,
+      _keepAliveInitialDelayMillis: 0,
+      parsedStatements: {},
+      ssl: false,
+      _ending: true,
+      _emitMessage: false,
+      _connecting: true,
+      Symbol(shapeMode): false,
+      Symbol(kCapture): false
+    },
+    _queryQueue: [],
+    binary: false,
+    processID: 1855,
+    secretKey: -1473614313,
+    ssl: false,
+    _connectionTimeoutMillis: 0,
+    _connectionCallback: null,
+    saslSession: null,
+    release: [Function (anonymous)],
+    readyForQuery: true,
+    hasExecuted: true,
+    _poolUseCount: 12,
+    Symbol(shapeMode): false,
+    Symbol(kCapture): false
+  }
+}
+Readiness database check failed: Error: Failed query: select count(*) from "sites"
+params: 
+    at b.queryWithCache (.next/server/chunks/_0gl9fdz._.js:290:68193)
+    at async (.next/server/chunks/_0gl9fdz._.js:290:71752)
+    at async Object.o [as countDistinct] (.next/server/chunks/_0gl9fdz._.js:3:198)
+    at async f (.next/server/chunks/_0gl9fdz._.js:52:2486)
+    at async cz (.next/server/chunks/_0gl9fdz._.js:302:147408)
+    at async o (.next/server/chunks/[root-of-the-server]__0ew__k7._.js:1:5602)
+    at async Q (.next/server/chunks/[root-of-the-server]__0ew__k7._.js:9:3681) {
+  query: 'select count(*) from "sites"',
+  params: [],
+  [cause]: error: database "sol_stage05_schema_b_release_acceptance" is not currently accepting connections
+      at async (.next/server/chunks/_0gl9fdz._.js:290:71967)
+      at async b.queryWithCache (.next/server/chunks/_0gl9fdz._.js:290:68168)
+      at async (.next/server/chunks/_0gl9fdz._.js:290:71752)
+      at async Object.o [as countDistinct] (.next/server/chunks/_0gl9fdz._.js:3:198)
+      at async f (.next/server/chunks/_0gl9fdz._.js:52:2486)
+      at async cz (.next/server/chunks/_0gl9fdz._.js:302:147408)
+      at async o (.next/server/chunks/[root-of-the-server]__0ew__k7._.js:1:5602) {
+    length: 151,
+    severity: 'FATAL',
+    code: '55000',
+    detail: undefined,
+    hint: undefined,
+    position: undefined,
+    internalPosition: undefined,
+    internalQuery: undefined,
+    where: undefined,
+    schema: undefined,
+    table: undefined,
+    column: undefined,
+    dataType: undefined,
+    constraint: undefined,
+    file: 'postinit.c',
+    line: '353',
+    routine: 'CheckMyDatabase'
+  }
+}

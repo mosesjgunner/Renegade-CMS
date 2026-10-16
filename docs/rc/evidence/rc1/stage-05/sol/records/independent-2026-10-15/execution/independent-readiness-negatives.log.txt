@@ -1,0 +1,1 @@
+Fresh schema, critical-column and database-unavailable probes pass with restored controls

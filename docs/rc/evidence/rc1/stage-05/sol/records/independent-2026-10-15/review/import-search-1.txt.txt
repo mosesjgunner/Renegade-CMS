@@ -1,0 +1,35 @@
+node_modules/micromatch\index.js:4:const braces = require('braces');
+node_modules/micromatch\index.js:427:    for (let str of braces(String(pattern), options)) {
+node_modules/micromatch\index.js:438: * const { braces } = require('micromatch');
+node_modules/micromatch\index.js:439: * console.log(braces('foo/{a,b,c}/bar'));
+node_modules/micromatch\index.js:442: * console.log(braces('foo/{a,b,c}/bar', { expand: true }));
+node_modules/micromatch\index.js:446: * @param {Object} `options` Any [options](#options) to change how expansion is performed. See the [braces][] library for all available options.
+node_modules/micromatch\index.js:451:micromatch.braces = (pattern, options) => {
+node_modules/micromatch\index.js:456:  return braces(pattern, options);
+node_modules/micromatch\index.js:460: * Expand braces
+node_modules/micromatch\index.js:465:  return micromatch.braces(pattern, { ...options, expand: true });
+node_modules/micromatch\README.md:42:    + [Braces](#braces)
+node_modules/micromatch\README.md:106:* **[Advanced globbing](#extended-globbing)** - Supports [extglobs](#extglobs), [braces](#braces-1), and [POSIX brackets](#posix-bracket-expressions), and support for escaping special characters with `\` or quotes.
+node_modules/micromatch\README.md:110:* **[Safe](https://github.com/micromatch/braces#braces-is-safe)** - Micromatch is not subject to DoS with brace patterns like minimatch and multimatch.
+node_modules/micromatch\README.md:119:* [brace expansion](https://github.com/micromatch/braces) (`foo/{1..5}.md`, `bar/{a,b,c}.js`)
+node_modules/micromatch\README.md:435:### [.braces](index.js#L451)
+node_modules/micromatch\README.md:442:* `options` **{Object}**: Any [options](#options) to change how expansion is performed. See the [braces](https://github.com/micromatch/braces) library for all available options.
+node_modules/micromatch\README.md:448:const { braces } = require('micromatch');
+node_modules/micromatch\README.md:449:console.log(braces('foo/{a,b,c}/bar'));
+node_modules/micromatch\README.md:452:console.log(braces('foo/{a,b,c}/bar', { expand: true }));
+node_modules/micromatch\README.md:494:| `strictBrackets`      | `boolean`      | `undefined` | Throw an error if brackets, braces, or parens are imbalanced. |
+node_modules/micromatch\README.md:777:Visit [braces](https://github.com/micromatch/braces) to see the full range of features and options related to brace expansion, or to create brace matching or expansion related issues.
+node_modules/micromatch\README.md:881:# .makeRe - braces
+node_modules/micromatch\README.md:885:# .makeRe braces - range (expanded)
+node_modules/micromatch\README.md:889:# .makeRe braces - range (compiled)
+node_modules/micromatch\README.md:893:# .makeRe braces - nested ranges (expanded)
+node_modules/micromatch\README.md:897:# .makeRe braces - nested ranges (compiled)
+node_modules/micromatch\README.md:901:# .makeRe braces - set (compiled)
+node_modules/micromatch\README.md:905:# .makeRe braces - nested sets (compiled)
+node_modules/micromatch\README.md:966:* [braces](https://www.npmjs.com/package/braces): Bash-like brace expansion, implemented in JavaScript. Safer than other brace expansion libs, with complete support… [more](https://github.com/micromatch/braces) | [homepage](https://github.com/micromatch/braces "Bash-like brace expansion, implemented in JavaScript. Safer than other brace expansion libs, with complete support for the Bash 4.3 braces specification, without sacrificing speed.")
+node_modules/micromatch\README.md:970:* [nanomatch](https://www.npmjs.com/package/nanomatch): Fast, minimal glob matcher for node.js. Similar to micromatch, minimatch and multimatch, but complete Bash… [more](https://github.com/micromatch/nanomatch) | [homepage](https://github.com/micromatch/nanomatch "Fast, minimal glob matcher for node.js. Similar to micromatch, minimatch and multimatch, but complete Bash 4.3 wildcard support only (no support for exglobs, posix brackets or braces)")
+node_modules/micromatch\package.json:40:    "braces": "^3.0.3",
+node_modules/micromatch\package.json:104:        "braces",
+node_modules/chokidar\package.json:18:    "braces": "~3.0.2",
+node_modules/chokidar\index.js:11:const braces = require('braces');
+node_modules/chokidar\index.js:258:    const expandedPath = path.includes(BRACE_START) ? braces.expand(path) : [path];

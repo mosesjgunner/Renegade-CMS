@@ -1,0 +1,9 @@
+{
+  "sentBytes": 27262976,
+  "uploadStatus": 413,
+  "spoofedMimeAndOverlongTitleStatus": 400,
+  "protectedMediaUnchanged": true,
+  "authorizedOriginalByteEquality": true,
+  "anonymousPrivateStatus": 404,
+  "privatePngBytesNotStreamed": true
+}

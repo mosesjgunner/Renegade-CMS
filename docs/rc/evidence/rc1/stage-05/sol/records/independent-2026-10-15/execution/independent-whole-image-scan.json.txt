@@ -1,0 +1,29 @@
+{
+  "command": [
+    "scratch/scanner/trivy.exe",
+    "image",
+    "--scanners",
+    "vuln",
+    "--pkg-types",
+    "os,library",
+    "--cache-dir",
+    "scratch/scanner/cache",
+    "--skip-version-check",
+    "--format",
+    "json",
+    "--list-all-pkgs",
+    "--output",
+    "scratch/sol-evidence/independent-whole-image-results.json",
+    "--exit-code",
+    "1",
+    "--severity",
+    "HIGH,CRITICAL",
+    "renegade-cms:sol-independent-3f464a69"
+  ],
+  "exitCode": 1,
+  "durationSeconds": 37.29190015792847,
+  "sourceSha": "3f464a6903ff26e7489179df29749f065cb55299",
+  "sourceStatus": "",
+  "log": "scratch\\sol-evidence\\independent-whole-image-scan.log",
+  "logSha256": "db9a60aa6c484469c5faf82febc951e6d5b62700a73b80eecbcd800598ab4d7d"
+}

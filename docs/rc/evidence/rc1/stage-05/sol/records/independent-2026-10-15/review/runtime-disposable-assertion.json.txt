@@ -1,0 +1,7 @@
+{
+  "project": "solrc05-independent-20261015",
+  "existingContainers": "",
+  "existingVolumes": "",
+  "qualityContainer": "sol-stage05-independent-postgres",
+  "qualityLabel": "rc1.disposable=sol-stage05-independent-20261015"
+}

@@ -1,0 +1,20 @@
+{
+  "claimedSource": "3f464a6962f91eb8f1ef9c80f4f9f4d7efd89d6e",
+  "commitLookup": {
+    "command": [
+      "git",
+      "cat-file",
+      "-e",
+      "3f464a6962f91eb8f1ef9c80f4f9f4d7efd89d6e^{commit}"
+    ],
+    "exitCode": 128,
+    "stderr": "fatal: Not a valid object name 3f464a6962f91eb8f1ef9c80f4f9f4d7efd89d6e^{commit}\n"
+  },
+  "actualCommit": "3f464a6903ff26e7489179df29749f065cb55299",
+  "imageIndex": "sha256:494cd5173012bb7d0616632e7e4dcdd11396217d7c203adcb62c09026d13c69f",
+  "labels": {
+    "org.opencontainers.image.revision": "3f464a6962f91eb8f1ef9c80f4f9f4d7efd89d6e",
+    "org.opencontainers.image.version": "0.1.0-rc.1"
+  },
+  "decision": "Rejected for source-to-image acceptance; independent rebuild required."
+}

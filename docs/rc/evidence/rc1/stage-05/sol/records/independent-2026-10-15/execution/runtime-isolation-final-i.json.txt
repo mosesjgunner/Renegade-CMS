@@ -1,0 +1,148 @@
+[
+  {
+    "name": "/solrc05-independent-20261015b-renegade-web-1",
+    "imageId": "sha256:56dd7485646e358edffe1cc017e9ae150081f39fc07232ccd729ad6f8d51fb46",
+    "user": "nextjs",
+    "labels": {
+      "com.docker.compose.config-hash": "c02e449412ebdb2d9497883b487a7c7b50f510b739340e65181f0773a28af838",
+      "com.docker.compose.container-number": "1",
+      "com.docker.compose.depends_on": "migrate:service_completed_successfully:false",
+      "com.docker.compose.image": "sha256:b67dec88b0dcebcbe16b72549adab8da5f951b1893d0d5074e2a04dc44ec8b77",
+      "com.docker.compose.oneoff": "False",
+      "com.docker.compose.project": "solrc05-independent-20261015b",
+      "com.docker.compose.project.config_files": "C:\\Projects\\RENEGADE CMS\\sol-stage05-independent-20261015\\compose.production.yaml,C:\\Projects\\RENEGADE CMS\\sol-stage05-independent-20261015\\scratch\\compose.override.yaml",
+      "com.docker.compose.project.environment_file": "C:\\Projects\\RENEGADE CMS\\sol-stage05-independent-20261015\\.env.compose",
+      "com.docker.compose.project.working_dir": "C:\\Projects\\RENEGADE CMS\\sol-stage05-independent-20261015",
+      "com.docker.compose.service": "renegade-web",
+      "com.docker.compose.version": "5.5.1",
+      "org.opencontainers.image.revision": "3f464a6903ff26e7489179df29749f065cb55299",
+      "org.opencontainers.image.version": "0.1.0-rc.1"
+    },
+    "environment": {
+      "PROXY_MODE": "trusted",
+      "APP_URL": "https://dispatch.rc02.test:3159",
+      "NODE_ENV": "production",
+      "BUILD_SHA": "3f464a6903ff26e7489179df29749f065cb55299",
+      "APP_VERSION": "0.1.0-rc.1",
+      "EMAIL_MODE": "smtp",
+      "RENEGADE_MODULES": "all",
+      "LOCAL_E2E_TEST_MODE": "false",
+      "RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT": "true",
+      "SMTP_PORT": "3157",
+      "SMTP_HOST": "host.docker.internal",
+      "STORAGE_DRIVER": "local",
+      "ENABLE_TEST_ROUTES": "false",
+      "MEDIA_DIR": "/app/media"
+    },
+    "mounts": [
+      {
+        "Type": "volume",
+        "Name": "solrc05-independent-20261015b_renegade_media",
+        "Source": "/var/lib/docker/volumes/solrc05-independent-20261015b_renegade_media/_data",
+        "Destination": "/app/media",
+        "Driver": "local",
+        "Mode": "rw",
+        "RW": true,
+        "Propagation": ""
+      }
+    ],
+    "networkNames": [
+      "solrc05-independent-20261015b_default"
+    ],
+    "ports": {
+      "3000/tcp": [
+        {
+          "HostIp": "127.0.0.1",
+          "HostPort": "3158"
+        }
+      ]
+    }
+  },
+  {
+    "name": "/solrc05-independent-20261015b-renegade-worker-1",
+    "imageId": "sha256:56dd7485646e358edffe1cc017e9ae150081f39fc07232ccd729ad6f8d51fb46",
+    "user": "nextjs",
+    "labels": {
+      "com.docker.compose.config-hash": "cc5a586aae96527dff2e225afdd5055fb3f0ef481c48c2bdc10d0d6692767724",
+      "com.docker.compose.container-number": "1",
+      "com.docker.compose.depends_on": "migrate:service_completed_successfully:false",
+      "com.docker.compose.image": "sha256:b67dec88b0dcebcbe16b72549adab8da5f951b1893d0d5074e2a04dc44ec8b77",
+      "com.docker.compose.oneoff": "False",
+      "com.docker.compose.project": "solrc05-independent-20261015b",
+      "com.docker.compose.project.config_files": "C:\\Projects\\RENEGADE CMS\\sol-stage05-independent-20261015\\compose.production.yaml,C:\\Projects\\RENEGADE CMS\\sol-stage05-independent-20261015\\scratch\\compose.override.yaml",
+      "com.docker.compose.project.environment_file": "C:\\Projects\\RENEGADE CMS\\sol-stage05-independent-20261015\\.env.compose",
+      "com.docker.compose.project.working_dir": "C:\\Projects\\RENEGADE CMS\\sol-stage05-independent-20261015",
+      "com.docker.compose.service": "renegade-worker",
+      "com.docker.compose.version": "5.5.1",
+      "org.opencontainers.image.revision": "3f464a6903ff26e7489179df29749f065cb55299",
+      "org.opencontainers.image.version": "0.1.0-rc.1"
+    },
+    "environment": {
+      "RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT": "true",
+      "NODE_ENV": "production",
+      "BUILD_SHA": "3f464a6903ff26e7489179df29749f065cb55299",
+      "APP_VERSION": "0.1.0-rc.1",
+      "EMAIL_MODE": "smtp",
+      "RENEGADE_MODULES": "all",
+      "STORAGE_DRIVER": "local",
+      "ENABLE_TEST_ROUTES": "false",
+      "APP_URL": "https://dispatch.rc02.test:3159",
+      "SMTP_HOST": "host.docker.internal",
+      "LOCAL_E2E_TEST_MODE": "false",
+      "PROXY_MODE": "trusted",
+      "SMTP_PORT": "3157",
+      "MEDIA_DIR": "/app/media"
+    },
+    "mounts": [
+      {
+        "Type": "volume",
+        "Name": "solrc05-independent-20261015b_renegade_media",
+        "Source": "/var/lib/docker/volumes/solrc05-independent-20261015b_renegade_media/_data",
+        "Destination": "/app/media",
+        "Driver": "local",
+        "Mode": "rw",
+        "RW": true,
+        "Propagation": ""
+      }
+    ],
+    "networkNames": [
+      "solrc05-independent-20261015b_default"
+    ],
+    "ports": {}
+  },
+  {
+    "name": "/solrc05-independent-20261015b-postgres-1",
+    "imageId": "sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94",
+    "user": "",
+    "labels": {
+      "com.docker.compose.config-hash": "cc9640c5c5e84a48a74869fc5bfddc5b81b6bcb555e0532b55f09208473ec7f9",
+      "com.docker.compose.container-number": "1",
+      "com.docker.compose.depends_on": "",
+      "com.docker.compose.image": "sha256:747d5ed1fdeeb124b880fbe3d7c6557d2c4064ae41d6b6297d417882effce4be",
+      "com.docker.compose.oneoff": "False",
+      "com.docker.compose.project": "solrc05-independent-20261015b",
+      "com.docker.compose.project.config_files": "C:\\Projects\\RENEGADE CMS\\sol-stage05-independent-20261015\\compose.production.yaml,C:\\Projects\\RENEGADE CMS\\sol-stage05-independent-20261015\\scratch\\compose.override.yaml",
+      "com.docker.compose.project.environment_file": "C:\\Projects\\RENEGADE CMS\\sol-stage05-independent-20261015\\.env.compose",
+      "com.docker.compose.project.working_dir": "C:\\Projects\\RENEGADE CMS\\sol-stage05-independent-20261015",
+      "com.docker.compose.service": "postgres",
+      "com.docker.compose.version": "5.5.1"
+    },
+    "environment": {},
+    "mounts": [
+      {
+        "Type": "volume",
+        "Name": "solrc05-independent-20261015b_renegade_postgres_data",
+        "Source": "/var/lib/docker/volumes/solrc05-independent-20261015b_renegade_postgres_data/_data",
+        "Destination": "/var/lib/postgresql/data",
+        "Driver": "local",
+        "Mode": "rw",
+        "RW": true,
+        "Propagation": ""
+      }
+    ],
+    "networkNames": [
+      "solrc05-independent-20261015b_default"
+    ],
+    "ports": {}
+  }
+]

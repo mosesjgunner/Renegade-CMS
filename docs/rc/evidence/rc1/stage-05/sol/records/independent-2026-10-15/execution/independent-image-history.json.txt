@@ -1,0 +1,16 @@
+{
+  "command": [
+    "docker",
+    "history",
+    "--no-trunc",
+    "--format",
+    "{{json .}}",
+    "renegade-cms:sol-independent-3f464a69"
+  ],
+  "exitCode": 0,
+  "durationSeconds": 0.10574626922607422,
+  "sourceSha": "3f464a6903ff26e7489179df29749f065cb55299",
+  "sourceStatus": "",
+  "log": "scratch\\sol-evidence\\independent-image-history.log",
+  "logSha256": "957a38e42fc73aaa11818194518e1b27c1a0157ad6758246b9873657c480a815"
+}

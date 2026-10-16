@@ -1,0 +1,25 @@
+{
+  "command": [
+    "npm.cmd",
+    "ci",
+    "--include=dev"
+  ],
+  "exitCode": 0,
+  "sourceSha": "3f464a6903ff26e7489179df29749f065cb55299",
+  "log": "scratch/independent/install.log",
+  "node": "v24.19.0",
+  "npm": "11.17.0",
+  "environment": {
+    "qualityDatabase": "solrc05_independent_quality_release_acceptance",
+    "upgradeDatabase": "solrc05_independent_upgrade_acceptance",
+    "commerceDatabase": "solrc05_independent_commerce_release_acceptance",
+    "loopbackPostgresPort": 15436,
+    "runtimeProjects": [
+      "solrc05-independent-20261015",
+      "solrc05-independent-20261015b"
+    ],
+    "localTestAuthentication": false,
+    "testRoutes": false,
+    "dotenvFallback": false
+  }
+}

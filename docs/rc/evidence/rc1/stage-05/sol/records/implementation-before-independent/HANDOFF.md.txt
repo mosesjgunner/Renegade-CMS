@@ -1,0 +1,7 @@
+# Stage 05 verification evidence handoff
+
+The preflight source-containment blocker was repaired through the actual branch merge and subsequent verified fixes. Historical preflight evidence is retained under `history-2026-10-15-preflight/`.
+
+See [the current tested implementation handoff](../gemini/HANDOFF.md), [IMAGE_SECURITY_ACCEPTANCE.md](IMAGE_SECURITY_ACCEPTANCE.md), [SUMMARY.json](SUMMARY.json) and [ARTIFACTS.json](ARTIFACTS.json). These records contain real production-image and authenticated security executions. Stage 04 Sol is signed off on main and contained by ancestry in candidate `3f464a69`. Independent Stage 05 Sol acceptance remains pending.
+
+**STAGE 05 GEMINI COMPLETE — independent Sol acceptance pending; RC1 NOT READY.**

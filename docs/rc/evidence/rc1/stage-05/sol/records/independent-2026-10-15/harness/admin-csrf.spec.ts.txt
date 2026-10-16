@@ -1,0 +1,34 @@
+import { test, expect } from '@playwright/test'
+import { readFileSync, writeFileSync } from 'node:fs'
+test('retained genuine owner session cannot mutate through a foreign browser origin', async ({ page, context }) => {
+  await context.addCookies(JSON.parse(readFileSync('scratch/image-owner.json','utf8')).cookies)
+  const before = await (await page.request.get('/api/publications?depth=0')).json()
+  const publication = before.docs[0]
+  const navigation = await (await page.request.get(`/api/admin/navigation?publicationId=${publication.id}`)).json()
+  const response = await page.request.post('/api/admin/navigation', {headers:{Origin:'https://attacker.rc02.test','content-type':'text/plain'},data:JSON.stringify({publicationId:publication.id,navigation:navigation.navigation})})
+  expect(response.status()).toBe(403)
+  const after = await (await page.request.get('/api/publications?depth=0')).json()
+  expect(after).toEqual(before)
+  const cdp = await context.newCDPSession(page)
+  await cdp.send('Security.setIgnoreCertificateErrors', {ignore:true})
+  await page.goto('https://attacker.rc02.test:3159/csrf-fixture')
+  await cdp.send('Network.enable')
+  const requests = new Map(), requestHeaders = new Map(), responses = new Map(), failures: string[] = []
+  cdp.on('Network.requestWillBeSent', e => { if(e.request.url.includes('/api/admin/navigation') && e.request.method === 'POST') requests.set(e.requestId,e.request) })
+  cdp.on('Network.requestWillBeSentExtraInfo', e => requestHeaders.set(e.requestId,e.headers))
+  cdp.on('Network.responseReceivedExtraInfo', e => responses.set(e.requestId,e))
+  cdp.on('Network.loadingFailed', e => failures.push(e.errorText))
+  await page.evaluate(async ({id,nav}) => {
+    await fetch('https://dispatch.rc02.test:3159/api/admin/navigation',{method:'POST',credentials:'include',headers:{'content-type':'text/plain'},body:JSON.stringify({publicationId:id,navigation:nav})}).catch(()=>undefined)
+  },{id:publication.id,nav:navigation.navigation})
+  await expect.poll(() => [...requests.keys()].some(id=>responses.get(id)?.statusCode===403)).toBe(true)
+  const id = [...requests.keys()].find(id=>responses.get(id)?.statusCode===403)!
+  const headers = requestHeaders.get(id) ?? requests.get(id).headers
+  const header = (name: string) => Object.entries(headers).find(([key])=>key.toLowerCase()===name)?.[1] as string|undefined
+  expect(header('origin')).toBe('https://attacker.rc02.test:3159')
+  expect(Boolean(header('cookie')?.includes('renegade-passkey='))).toBe(true)
+  writeFileSync('scratch/sol-evidence/admin-csrf-browser-observations.json',JSON.stringify({origin:header('origin'),authenticatedCookieSent:true,serverStatus:403,browserReadDeniedByCors:failures.length>0},null,2))
+  expect(await (await page.request.get('/api/publications?depth=0')).json()).toEqual(before)
+  const allowed = await page.request.post('/api/admin/navigation',{headers:{Origin:'https://dispatch.rc02.test:3159'},data:{publicationId:publication.id,navigation:navigation.navigation}})
+  expect(allowed.status()).toBe(200)
+})

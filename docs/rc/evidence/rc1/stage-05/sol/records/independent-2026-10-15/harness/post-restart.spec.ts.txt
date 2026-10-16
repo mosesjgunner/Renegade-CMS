@@ -1,0 +1,14 @@
+import { test, expect } from '@playwright/test'
+import { readFileSync } from 'node:fs'
+test('post-restart persisted real owner session still authorizes original private bytes', async ({page,context}) => {
+ await context.addCookies(JSON.parse(readFileSync('scratch/image-owner.json','utf8')).cookies)
+ expect((await page.request.get('/api/auth/passkeys')).status()).toBe(200)
+ const sites=await (await page.request.get('/api/sites?depth=0')).json()
+ expect(sites.docs).toHaveLength(2)
+ const media=await (await page.request.get('/api/media-assets?depth=0&limit=100')).json()
+ const asset=media.docs.find((d:any)=>d.publicPolicy==='private');expect(asset).toBeTruthy()
+ const response=await page.request.get(`/media/${asset.id}`);expect(response.status()).toBe(200)
+ expect(await response.body()).toEqual(readFileSync('fixtures/renegadeparty-demo/assets/logo.png'))
+ await page.goto('/admin');await expect(page).not.toHaveURL(/\/login/)
+ await page.screenshot({path:'scratch/sol-private-traces/post-restart.png'})
+})

@@ -1,0 +1,2 @@
+126:self.chokidar = _cliPkgRequires.chokidar;
+13805:      watcher = J.watch$2$x(self.chokidar, path, {disableGlobbing: true, usePolling: poll});

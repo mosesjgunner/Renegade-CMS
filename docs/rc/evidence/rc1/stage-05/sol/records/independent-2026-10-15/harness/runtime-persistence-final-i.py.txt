@@ -1,0 +1,29 @@
+from pathlib import Path
+import json,subprocess,time,re
+out=Path('scratch/sol-evidence')
+e=dict(line.split('=',1) for line in Path('.env.compose').read_text().splitlines() if '=' in line)
+project=e['RENEGADE_INSTANCE'];assert project=='solrc05-independent-20261015b'
+web=project+'-renegade-web-1';worker=project+'-renegade-worker-1'
+meta=json.loads(subprocess.check_output(['docker','inspect',web,worker,project+'-postgres-1']))
+allowed={'APP_URL','NODE_ENV','EMAIL_MODE','MEDIA_DIR','BUILD_SHA','APP_VERSION','LOCAL_E2E_TEST_MODE','ENABLE_TEST_ROUTES','STORAGE_DRIVER','PROXY_MODE','RENEGADE_MODULES','RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT','SMTP_HOST','SMTP_PORT'}
+image=json.loads(Path('scratch/sol-evidence/independent-image-metadata.json').read_text())[0]
+config_digest=re.search(r'exporting config (sha256:[a-f0-9]{64})',Path('scratch/sol-evidence/independent-image-build.log').read_text()).group(1)
+redacted=[]
+for m in meta:
+ assert m['Config']['Labels']['com.docker.compose.project']==project
+ if 'postgres' not in m['Name']:assert m['Image'] in [image['Id'],config_digest]
+ redacted.append(dict(name=m['Name'],imageId=m['Image'],user=m['Config'].get('User'),labels=m['Config']['Labels'],environment={k:v for k,v in (s.split('=',1) for s in m['Config']['Env']) if k in allowed},mounts=m['Mounts'],networkNames=list(m['NetworkSettings']['Networks']),ports=m['HostConfig']['PortBindings']))
+(out/'runtime-isolation-final-i.json').write_text(json.dumps(redacted,indent=2))
+query="SELECT jsonb_build_object('users',(SELECT jsonb_agg(to_jsonb(t) ORDER BY id) FROM (SELECT id,email,role FROM users) t),'content',(SELECT jsonb_agg(to_jsonb(t) ORDER BY id) FROM (SELECT id,title,site_id,status FROM content) t),'media',(SELECT jsonb_agg(to_jsonb(t) ORDER BY id) FROM (SELECT id,checksum,site_id,public_policy,original_blob_id FROM media_assets) t),'installation',(SELECT jsonb_agg(to_jsonb(t)) FROM (SELECT state FROM installation_state) t))"
+args=['docker','exec',project+'-postgres-1','psql','-U','renegade','-d','renegade','-tAc',query]
+before=subprocess.check_output(args);(out/'restart-state-before-final-i.json').write_bytes(before)
+code="const fs=require('node:fs');fs.writeFileSync('/app/media/sol-stage05-persistence.txt',process.env.BUILD_SHA);console.log(require('node:crypto').createHash('sha256').update(fs.readFileSync('/app/media/sol-stage05-persistence.txt')).digest('hex'))"
+value=subprocess.check_output(['docker','exec',web,'node','-e',code]).strip().decode()
+start=time.time();p=subprocess.run(['docker','restart',web,worker],capture_output=True)
+after=subprocess.check_output(args);(out/'restart-state-after-final-i.json').write_bytes(after);assert after==before
+reads={}
+for name in [web,worker]:
+ code="console.log(require('node:crypto').createHash('sha256').update(require('node:fs').readFileSync('/app/media/sol-stage05-persistence.txt')).digest('hex'))"
+ reads[name]=subprocess.check_output(['docker','exec',name,'node','-e',code]).decode().strip();assert reads[name]==value
+(out/'restart-persistence-final-i.json').write_text(json.dumps(dict(sourceSha=e['BUILD_SHA'],command=['docker','restart',web,worker],exitCode=p.returncode,durationSeconds=time.time()-start,protectedDbStateUnchanged=True,mediaSha256=value,mediaReads=reads),indent=2))
+print('Restart exit',p.returncode,'protected state unchanged; web/worker media checks',len(reads))

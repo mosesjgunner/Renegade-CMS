@@ -1,0 +1,166 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "C:\\Projects\\RENEGADE CMS\\sol-stage05-independent-20261015\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "--config",
+      "scratch/playwright.image.config.ts",
+      "security.spec.ts"
+    ],
+    "configFile": "C:\\Projects\\RENEGADE CMS\\sol-stage05-independent-20261015\\scratch\\playwright.image.config.ts",
+    "rootDir": "C:/Projects/RENEGADE CMS/sol-stage05-independent-20261015/scratch/image-specs",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Projects/RENEGADE CMS/sol-stage05-independent-20261015/scratch/sol-browser-artifacts/independent-security",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "C:/Projects/RENEGADE CMS/sol-stage05-independent-20261015/scratch/image-specs",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 900000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "scratch/sol-evidence/independent-security.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.62.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "security.spec.ts",
+      "file": "security.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "production image: ordinary setup, authenticated denies, durable protected state and security lifecycle",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 900000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 5970,
+                  "error": {
+                    "message": "Error: tracing.start: Tracing has been already started",
+                    "stack": "Error: tracing.start: Tracing has been already started\n    at C:\\Projects\\RENEGADE CMS\\sol-stage05-independent-20261015\\scratch\\image-specs\\security.spec.ts:52:27",
+                    "location": {
+                      "file": "C:\\Projects\\RENEGADE CMS\\sol-stage05-independent-20261015\\scratch\\image-specs\\security.spec.ts",
+                      "column": 27,
+                      "line": 52
+                    },
+                    "snippet": "  50 |   await api(page, 'POST', '/api/auth/logout')\n  51 |   const anonymous = await browser.newContext({ baseURL: 'https://dispatch.rc02.test:3159', ignoreHTTPSErrors: true })\n> 52 |   await anonymous.tracing.start({screenshots:true,snapshots:true,sources:true})\n     |                           ^\n  53 |   const guest = await anonymous.newPage()\n  54 |   let validAssertion: any\n  55 |   await page.route('**/api/auth/passkey/complete', async (route) => {"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-stage05-independent-20261015\\scratch\\image-specs\\security.spec.ts",
+                        "column": 27,
+                        "line": 52
+                      },
+                      "message": "Error: tracing.start: Tracing has been already started\n\n  50 |   await api(page, 'POST', '/api/auth/logout')\n  51 |   const anonymous = await browser.newContext({ baseURL: 'https://dispatch.rc02.test:3159', ignoreHTTPSErrors: true })\n> 52 |   await anonymous.tracing.start({screenshots:true,snapshots:true,sources:true})\n     |                           ^\n  53 |   const guest = await anonymous.newPage()\n  54 |   let validAssertion: any\n  55 |   await page.route('**/api/auth/passkey/complete', async (route) => {\n    at C:\\Projects\\RENEGADE CMS\\sol-stage05-independent-20261015\\scratch\\image-specs\\security.spec.ts:52:27"
+                    }
+                  ],
+                  "stdout": [
+                    {
+                      "text": "VERIFIED ordinary owner WebAuthn setup\n"
+                    }
+                  ],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-16T02:01:39.303Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-stage05-independent-20261015\\scratch\\sol-browser-artifacts\\independent-security\\security-production-image--5df8f-tate-and-security-lifecycle\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-stage05-independent-20261015\\scratch\\sol-browser-artifacts\\independent-security\\security-production-image--5df8f-tate-and-security-lifecycle\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-stage05-independent-20261015\\scratch\\sol-browser-artifacts\\independent-security\\security-production-image--5df8f-tate-and-security-lifecycle\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "C:\\Projects\\RENEGADE CMS\\sol-stage05-independent-20261015\\scratch\\image-specs\\security.spec.ts",
+                    "column": 27,
+                    "line": 52
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "a7e9410bcc1ef00e9656-4e52ec5be4b7095563d4",
+          "file": "security.spec.ts",
+          "line": 5,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-16T02:01:38.872Z",
+    "duration": 7179.796,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

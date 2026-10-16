@@ -1,0 +1,14 @@
+services:
+  postgres:
+    command: ['postgres', '-c', 'max_locks_per_transaction=256']
+  migrate:
+    environment: &mail
+      WEBHOOK_SECRET_RC05: ${WEBHOOK_SECRET_RC05}
+      EMAIL_FROM: rc05@example.test
+      SMTP_HOST: host.docker.internal
+      SMTP_PORT: '3157'
+      SMTP_SECURE: 'false'
+  renegade-web:
+    environment: *mail
+  renegade-worker:
+    environment: *mail

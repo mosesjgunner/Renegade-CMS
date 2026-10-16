@@ -1,0 +1,27 @@
+import subprocess,json,zipfile,hashlib
+from pathlib import Path
+out=Path('scratch/independent'); project='solrc05-independent-20261015b'; env=dict(x.split('=',1) for x in Path('.env.compose').read_text().splitlines() if '=' in x)
+secrets={k:env[k].encode() for k in ['PAYLOAD_SECRET','POSTGRES_PASSWORD','WEBHOOK_SECRET_RC05']}; quality=dict(x.split('=',1) for x in Path('.env.acceptance').read_text().splitlines() if '=' in x);secrets['QUALITY_PAYLOAD_SECRET']=quality['PAYLOAD_SECRET'].encode(); matches=[]; checked=[]
+for role in ['renegade-web','renegade-worker','migrate']:
+ r=subprocess.run(['docker','logs',project+'-'+role+'-1'],capture_output=True);f=out/(role+'-private.log');f.write_bytes(r.stdout+r.stderr)
+files=list(Path('scratch/sol-evidence').glob('*.log'))+list(out.glob('*.log'))+[Path('scratch/sol-evidence/independent-image-metadata.json')]
+for f in files:
+ data=f.read_bytes();checked.append(str(f))
+ for key,value in secrets.items():
+  if value in data:matches.append({'path':str(f),'secretName':key})
+for f in Path('scratch/sol-browser-artifacts').rglob('trace.zip'):
+ with zipfile.ZipFile(f) as z:
+  for name in z.namelist():
+   data=z.read(name)
+   for key,value in secrets.items():
+    if value in data:matches.append({'path':str(f)+'!'+name,'secretName':key})
+ checked.append(str(f))
+code=r"""const fs=require('node:fs'),path=require('node:path');const values=JSON.parse(fs.readFileSync(0,'utf8'));let files=0,bytes=0,matches=[];function walk(dir){for(const e of fs.readdirSync(dir,{withFileTypes:true})){const p=path.join(dir,e.name);if(e.isSymbolicLink())continue;if(e.isDirectory())walk(p);else{const b=fs.readFileSync(p);files++;bytes+=b.length;for(const [name,v] of Object.entries(values)){if(b.includes(Buffer.from(v)))matches.push({path:p,secretName:name})}}}}walk('/app');walk('/usr/local/lib/node_modules');console.log(JSON.stringify({files,bytes,matches}));process.exit(matches.length?1:0)"""
+# Keep supplied values out of argv and stdout; the child reads a JSON payload from stdin.
+payload=json.dumps({k:v.decode() for k,v in secrets.items()})
+# node executes source from a file mounted read-only, stdin contains only values.
+Path('scratch/scan-image-secrets.cjs').write_text(code)
+r=subprocess.run(['docker','run','--rm','--network','none','-i','-v',str(Path('scratch/scan-image-secrets.cjs').resolve())+':/scan.cjs:ro','renegade-cms:sol-independent-3f464a69','node','/scan.cjs'],input=payload.encode(),capture_output=True)
+assert r.returncode==0,r.stderr.decode(); filesystem=json.loads(r.stdout)
+result={'sourceSha':env['BUILD_SHA'],'checkedSecretNames':list(secrets),'checkedLogAndTracePaths':checked,'logTraceMatches':matches,'filesystem':filesystem,'privateEvidenceBoundary':'Bootstrap CLI token, authorized browser session/machine/magic-link capabilities and recovery codes are intentional private artifacts; originals are never published. Public copies redact setup tokens.'}
+(out/'leak-inspection.json').write_text(json.dumps(result,indent=2));assert not matches;print('Configured deployment secrets absent from checked filesystem, logs and traces')

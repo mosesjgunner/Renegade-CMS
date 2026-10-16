@@ -1,0 +1,38 @@
+
+Running 1 test using 1 worker
+
+(node:23820) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+VERIFIED ordinary owner WebAuthn setup
+  x  1 scratch\image-specs\security.spec.ts:5:1 › production image: ordinary setup, authenticated denies, durable protected state and security lifecycle (6.0s)
+
+
+  1) scratch\image-specs\security.spec.ts:5:1 › production image: ordinary setup, authenticated denies, durable protected state and security lifecycle 
+
+    Error: tracing.start: Tracing has been already started
+
+      50 |   await api(page, 'POST', '/api/auth/logout')
+      51 |   const anonymous = await browser.newContext({ baseURL: 'https://dispatch.rc02.test:3159', ignoreHTTPSErrors: true })
+    > 52 |   await anonymous.tracing.start({screenshots:true,snapshots:true,sources:true})
+         |                           ^
+      53 |   const guest = await anonymous.newPage()
+      54 |   let validAssertion: any
+      55 |   await page.route('**/api/auth/passkey/complete', async (route) => {
+        at C:\Projects\RENEGADE CMS\sol-stage05-independent-20261015\scratch\image-specs\security.spec.ts:52:27
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    scratch\sol-browser-artifacts\independent-security\security-production-image--5df8f-tate-and-security-lifecycle\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: scratch\sol-browser-artifacts\independent-security\security-production-image--5df8f-tate-and-security-lifecycle\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    scratch\sol-browser-artifacts\independent-security\security-production-image--5df8f-tate-and-security-lifecycle\trace.zip
+    Usage:
+
+        npx playwright show-trace scratch\sol-browser-artifacts\independent-security\security-production-image--5df8f-tate-and-security-lifecycle\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    scratch\image-specs\security.spec.ts:5:1 › production image: ordinary setup, authenticated denies, durable protected state and security lifecycle 

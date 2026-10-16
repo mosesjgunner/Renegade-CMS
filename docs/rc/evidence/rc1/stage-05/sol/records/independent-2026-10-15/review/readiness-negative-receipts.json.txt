@@ -1,0 +1,239 @@
+{
+  "sourceSha": "3f464a6903ff26e7489179df29749f065cb55299",
+  "image": "renegade-cms:sol-independent-3f464a69",
+  "database": "sol_stage05_schema_b_release_acceptance",
+  "container": "sol-stage05-schema-negative-b",
+  "rows": [
+    {
+      "command": [
+        "docker",
+        "exec",
+        "solrc05-independent-20261015b-postgres-1",
+        "createdb",
+        "-U",
+        "renegade",
+        "sol_stage05_schema_b_release_acceptance"
+      ],
+      "exitCode": 0,
+      "durationSeconds": 0.1356050968170166,
+      "log": "schema-create.log"
+    },
+    {
+      "command": [
+        "docker",
+        "run",
+        "-d",
+        "--name",
+        "sol-stage05-schema-negative-b",
+        "--label",
+        "rc1.disposable=sol-stage05-independent-20261015",
+        "--network",
+        "solrc05-independent-20261015b_default",
+        "--env-file",
+        ".env.schema",
+        "-p",
+        "127.0.0.1:3168:3000",
+        "renegade-cms:sol-independent-3f464a69"
+      ],
+      "exitCode": 0,
+      "durationSeconds": 0.32108497619628906,
+      "log": "schema-web-start.log"
+    },
+    {
+      "probe": "empty-schema-rejected",
+      "url": "http://127.0.0.1:3168/health/ready",
+      "status": 503,
+      "body": {
+        "status": "not_ready",
+        "checks": {
+          "database": "unavailable"
+        }
+      }
+    },
+    {
+      "command": [
+        "docker",
+        "run",
+        "--rm",
+        "--network",
+        "solrc05-independent-20261015b_default",
+        "--env-file",
+        ".env.schema",
+        "renegade-cms:sol-independent-3f464a69",
+        "npm",
+        "run",
+        "db:migrate"
+      ],
+      "exitCode": 0,
+      "durationSeconds": 8.876497983932495,
+      "log": "schema-migrate.log"
+    },
+    {
+      "command": [
+        "docker",
+        "restart",
+        "sol-stage05-schema-negative-b"
+      ],
+      "exitCode": 0,
+      "durationSeconds": 0.4588639736175537,
+      "log": "schema-restart-after-migrate.log"
+    },
+    {
+      "probe": "schema-ready-control",
+      "url": "http://127.0.0.1:3168/health/ready",
+      "status": 200,
+      "body": {
+        "status": "ready",
+        "checks": {
+          "database": "ok",
+          "migrations": "applied"
+        }
+      }
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "solrc05-independent-20261015b-postgres-1",
+        "psql",
+        "-U",
+        "renegade",
+        "-d",
+        "sol_stage05_schema_b_release_acceptance",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-tAc",
+        "ALTER TABLE events RENAME COLUMN required_entitlement TO rc05_probe_missing_entitlement"
+      ],
+      "exitCode": 0,
+      "durationSeconds": 0.09520602226257324,
+      "log": "schema-inject-missing-column.log"
+    },
+    {
+      "probe": "critical-column-rejected",
+      "url": "http://127.0.0.1:3168/health/ready",
+      "status": 503,
+      "body": {
+        "status": "not_ready",
+        "checks": {
+          "database": "ok",
+          "schema": "corrupted"
+        }
+      }
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "solrc05-independent-20261015b-postgres-1",
+        "psql",
+        "-U",
+        "renegade",
+        "-d",
+        "sol_stage05_schema_b_release_acceptance",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-tAc",
+        "ALTER TABLE events RENAME COLUMN rc05_probe_missing_entitlement TO required_entitlement"
+      ],
+      "exitCode": 0,
+      "durationSeconds": 0.0899345874786377,
+      "log": "schema-restore-column.log"
+    },
+    {
+      "probe": "restored-schema-ready",
+      "url": "http://127.0.0.1:3168/health/ready",
+      "status": 200,
+      "body": {
+        "status": "ready",
+        "checks": {
+          "database": "ok",
+          "migrations": "applied"
+        }
+      }
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "solrc05-independent-20261015b-postgres-1",
+        "psql",
+        "-U",
+        "renegade",
+        "-d",
+        "postgres",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-tAc",
+        "ALTER DATABASE sol_stage05_schema_b_release_acceptance ALLOW_CONNECTIONS false"
+      ],
+      "exitCode": 0,
+      "durationSeconds": 0.08848786354064941,
+      "log": "schema-deny-connections.log"
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "solrc05-independent-20261015b-postgres-1",
+        "psql",
+        "-U",
+        "renegade",
+        "-d",
+        "postgres",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-tAc",
+        "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname='sol_stage05_schema_b_release_acceptance' AND pid<>pg_backend_pid()"
+      ],
+      "exitCode": 0,
+      "durationSeconds": 0.1012260913848877,
+      "log": "schema-terminate-probe-connections.log"
+    },
+    {
+      "probe": "database-unavailable-rejected",
+      "url": "http://127.0.0.1:3168/health/ready",
+      "status": 503,
+      "body": {
+        "status": "not_ready",
+        "checks": {
+          "database": "unavailable"
+        }
+      }
+    },
+    {
+      "command": [
+        "docker",
+        "exec",
+        "solrc05-independent-20261015b-postgres-1",
+        "psql",
+        "-U",
+        "renegade",
+        "-d",
+        "postgres",
+        "-v",
+        "ON_ERROR_STOP=1",
+        "-tAc",
+        "ALTER DATABASE sol_stage05_schema_b_release_acceptance ALLOW_CONNECTIONS true"
+      ],
+      "exitCode": 0,
+      "durationSeconds": 0.08902382850646973,
+      "log": "schema-enable-connections.log"
+    },
+    {
+      "probe": "database-restored-ready",
+      "url": "http://127.0.0.1:3168/health/ready",
+      "status": 200,
+      "body": {
+        "status": "ready",
+        "checks": {
+          "database": "ok",
+          "migrations": "applied"
+        }
+      }
+    }
+  ],
+  "businessStatusMutations": false,
+  "schemaRestored": true,
+  "databaseConnectionsRestored": true
+}

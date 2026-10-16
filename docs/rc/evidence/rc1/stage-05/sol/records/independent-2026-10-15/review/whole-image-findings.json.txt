@@ -1,0 +1,18 @@
+[
+  {
+    "target": "Node.js",
+    "id": "CVE-2026-93687",
+    "package": "braces",
+    "version": "3.0.3",
+    "severity": "HIGH",
+    "fixed": null
+  },
+  {
+    "target": "Node.js",
+    "id": "CVE-2026-93748",
+    "package": "http-cache-semantics",
+    "version": "4.2.0",
+    "severity": "HIGH",
+    "fixed": null
+  }
+]

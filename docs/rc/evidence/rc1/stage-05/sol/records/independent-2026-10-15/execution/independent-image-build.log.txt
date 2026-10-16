@@ -1,0 +1,485 @@
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile:
+#1 transferring dockerfile: 4.00kB 0.0s done
+#1 DONE 0.2s
+
+#2 [internal] load metadata for docker.io/library/node:24-alpine
+#2 ...
+
+#3 [auth] library/node:pull token for registry-1.docker.io
+#3 DONE 0.0s
+
+#4 [auth] library/golang:pull token for registry-1.docker.io
+#4 DONE 0.0s
+
+#5 [internal] load metadata for docker.io/library/golang:1.27.2-alpine
+#5 DONE 1.1s
+
+#2 [internal] load metadata for docker.io/library/node:24-alpine
+#2 DONE 1.1s
+
+#6 [internal] load .dockerignore
+#6 transferring context:
+#6 transferring context: 290B done
+#6 DONE 0.2s
+
+#7 [esbuild-runtime 3/4] ADD --checksum=sha256:04cb2d38fb6af093577aa8bf174add7286099b65ef7854480cbbb8ff061cef1f https://codeload.github.com/evanw/esbuild/tar.gz/609683d892977362a0f99026cb74b96263d728a9 /tmp/esbuild.tar.gz
+#7 DONE 0.0s
+
+#8 [production-dependencies 1/5] FROM docker.io/library/node:24-alpine@sha256:44fce696f38ba8c987c4db89954051000bbd05ffd8d8659ba15ed4a8602e937f
+#8 resolve docker.io/library/node:24-alpine@sha256:44fce696f38ba8c987c4db89954051000bbd05ffd8d8659ba15ed4a8602e937f 0.0s done
+#8 DONE 0.0s
+
+#9 [esbuild-runtime 1/4] FROM docker.io/library/golang:1.27.2-alpine@sha256:f92b6ef800e499660581efdabdf25d9d817a9d124eaf900924f0504e7e27e12d
+#9 resolve docker.io/library/golang:1.27.2-alpine@sha256:f92b6ef800e499660581efdabdf25d9d817a9d124eaf900924f0504e7e27e12d 0.0s done
+#9 DONE 0.0s
+
+#10 [production-dependencies 2/5] WORKDIR /app
+#10 CACHED
+
+#11 [internal] load build context
+#11 transferring context: 70.35MB 4.9s
+#11 transferring context: 154.97MB 10.0s
+#11 ...
+
+#12 [runner  3/18] RUN npm install --global npm@12.2.0 &&     npm install --prefix /opt/npm-patches --ignore-scripts --no-audit --no-fund --save-exact brace-expansion@5.0.12 undici@6.28.1 &&     rm -rf /usr/local/lib/node_modules/npm/node_modules/brace-expansion /usr/local/lib/node_modules/npm/node_modules/undici &&     cp -a /opt/npm-patches/node_modules/brace-expansion /usr/local/lib/node_modules/npm/node_modules/brace-expansion &&     cp -a /opt/npm-patches/node_modules/undici /usr/local/lib/node_modules/npm/node_modules/undici &&     rm -rf /opt/npm-patches
+#12 ...
+
+#11 [internal] load build context
+#11 transferring context: 242.16MB 15.0s
+#11 transferring context: 332.93MB 20.1s
+#11 transferring context: 395.42MB 25.1s
+#11 ...
+
+#12 [runner  3/18] RUN npm install --global npm@12.2.0 &&     npm install --prefix /opt/npm-patches --ignore-scripts --no-audit --no-fund --save-exact brace-expansion@5.0.12 undici@6.28.1 &&     rm -rf /usr/local/lib/node_modules/npm/node_modules/brace-expansion /usr/local/lib/node_modules/npm/node_modules/undici &&     cp -a /opt/npm-patches/node_modules/brace-expansion /usr/local/lib/node_modules/npm/node_modules/brace-expansion &&     cp -a /opt/npm-patches/node_modules/undici /usr/local/lib/node_modules/npm/node_modules/undici &&     rm -rf /opt/npm-patches
+#12 26.51 
+#12 26.51 removed 8 packages, and changed 72 packages in 23s
+#12 26.51 
+#12 26.51 15 packages are looking for funding
+#12 26.51   run `npm fund` for details
+#12 29.08 
+#12 29.08 added 3 packages in 2s
+#12 DONE 29.5s
+
+#11 [internal] load build context
+#11 ...
+
+#13 [runner  4/18] RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 nextjs
+#13 DONE 0.5s
+
+#11 [internal] load build context
+#11 transferring context: 474.09MB 30.1s
+#11 ...
+
+#14 [runner  5/18] RUN mkdir -p /app/media /tmp/renegade-worker && chown -R nextjs:nodejs /app /tmp/renegade-worker
+#14 DONE 0.4s
+
+#11 [internal] load build context
+#11 transferring context: 569.06MB 35.2s
+#11 transferring context: 660.84MB 40.2s
+#11 transferring context: 686.53MB 41.7s done
+#11 DONE 41.7s
+
+#15 [production-dependencies 3/5] COPY package.json package-lock.json ./
+#15 CACHED
+
+#16 [production-dependencies 4/5] COPY scripts ./scripts
+#16 CACHED
+
+#17 [dependencies 5/5] RUN npm ci
+#17 CACHED
+
+#18 [builder 3/5] COPY --from=dependencies /app/node_modules ./node_modules
+#18 CACHED
+
+#19 [builder 4/5] COPY . .
+#19 DONE 9.5s
+
+#20 [builder 5/5] RUN npm run build
+#20 1.478 
+#20 1.478 > renegade-cms@0.1.0 build
+#20 1.478 > node scripts/build.mjs
+#20 1.478 
+#20 4.213 ▲ Next.js 16.3.8 (Turbopack)
+#20 6.088 ✓ Running next.config.ts took 1869ms
+#20 6.106 Attention: Next.js now collects completely anonymous telemetry regarding usage.
+#20 6.106 This information is used to shape Next.js' roadmap and prioritize features.
+#20 6.106 You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+#20 6.106 https://nextjs.org/telemetry
+#20 6.106 
+#20 6.161 - Experiments (use with caution):
+#20 6.161   ⨯ turbopackServerFastRefresh
+#20 6.161   ✓ webpackMemoryOptimizations
+#20 6.161 
+#20 6.332   Creating an optimized production build ...
+#20 78.43 ✓ Compiled successfully in 70s
+#20 78.71   Running TypeScript ...
+#20 114.9   Finished TypeScript in 36.2s ...
+#20 114.9   Collecting page data using 7 workers ...
+#20 119.4   Generating static pages using 7 workers (0/144) ...
+#20 119.5   Generating static pages using 7 workers (36/144) 
+#20 119.6   Generating static pages using 7 workers (72/144) 
+#20 119.6   Generating static pages using 7 workers (108/144) 
+#20 119.7 ✓ Generating static pages using 7 workers (144/144) in 371ms
+#20 119.7   Finalizing page optimization ...
+#20 121.8 
+#20 121.9 Route (app)
+#20 121.9 ┌ ƒ /
+#20 121.9 ├ ○ /_not-found
+#20 121.9 ├ ƒ /.well-known/nodeinfo
+#20 121.9 ├ ƒ /.well-known/webfinger
+#20 121.9 ├ ƒ /[...path]
+#20 121.9 ├ ƒ /admin/[[...segments]]
+#20 121.9 ├ ƒ /admin/ai
+#20 121.9 ├ ƒ /admin/audience
+#20 121.9 ├ ƒ /admin/catalog
+#20 121.9 ├ ƒ /admin/catalog/preview/[id]
+#20 121.9 ├ ƒ /admin/commerce
+#20 121.9 ├ ƒ /admin/fulfillment
+#20 121.9 ├ ƒ /admin/migration
+#20 121.9 ├ ƒ /admin/releases
+#20 121.9 ├ ƒ /admin/social
+#20 121.9 ├ ƒ /admin/telemetry
+#20 121.9 ├ ƒ /admin/workflow
+#20 121.9 ├ ƒ /ap/actors/[handle]
+#20 121.9 ├ ƒ /ap/actors/[handle]/followers
+#20 121.9 ├ ƒ /ap/actors/[handle]/following
+#20 121.9 ├ ƒ /ap/actors/[handle]/inbox
+#20 121.9 ├ ƒ /ap/actors/[handle]/outbox
+#20 121.9 ├ ƒ /api/[...slug]
+#20 121.9 ├ ƒ /api/admin/ai/connections
+#20 121.9 ├ ƒ /api/admin/ai/preview
+#20 121.9 ├ ƒ /api/admin/ai/proposals
+#20 121.9 ├ ƒ /api/admin/ai/proposals/[id]
+#20 121.9 ├ ƒ /api/admin/ai/sites
+#20 121.9 ├ ƒ /api/admin/audience/command-center
+#20 121.9 ├ ƒ /api/admin/audience/intake
+#20 121.9 ├ ƒ /api/admin/audience/retry
+#20 121.9 ├ ƒ /api/admin/calendar/schedule
+#20 121.9 ├ ƒ /api/admin/catalog
+#20 121.9 ├ ƒ /api/admin/catalog/import
+#20 121.9 ├ ƒ /api/admin/commerce/affiliate
+#20 121.9 ├ ƒ /api/admin/commerce/dashboard
+#20 121.9 ├ ƒ /api/admin/commerce/donations
+#20 121.9 ├ ƒ /api/admin/commerce/receipts/[orderId]/resend
+#20 121.9 ├ ƒ /api/admin/commerce/reconcile
+#20 121.9 ├ ƒ /api/admin/commerce/refunds
+#20 121.9 ├ ƒ /api/admin/commerce/subscriptions
+#20 121.9 ├ ƒ /api/admin/commerce/subscriptions/grant
+#20 121.9 ├ ƒ /api/admin/commerce/webhooks/[eventId]/retry
+#20 121.9 ├ ƒ /api/admin/content/preview
+#20 121.9 ├ ƒ /api/admin/discovery
+#20 121.9 ├ ƒ /api/admin/discovery/ai-suggestion/accept
+#20 121.9 ├ ƒ /api/admin/discovery/audit
+#20 121.9 ├ ƒ /api/admin/fulfillment
+#20 121.9 ├ ƒ /api/admin/indexing/export
+#20 121.9 ├ ƒ /api/admin/indexing/search/reconcile
+#20 121.9 ├ ƒ /api/admin/integrations
+#20 121.9 ├ ƒ /api/admin/navigation
+#20 121.9 ├ ƒ /api/admin/notifications
+#20 121.9 ├ ƒ /api/admin/redirects
+#20 121.9 ├ ƒ /api/admin/redirects/export
+#20 121.9 ├ ƒ /api/admin/redirects/import
+#20 121.9 ├ ƒ /api/admin/releases
+#20 121.9 ├ ƒ /api/admin/releases/[id]
+#20 121.9 ├ ƒ /api/admin/schedule-health
+#20 121.9 ├ ƒ /api/admin/semantic-url/preview
+#20 121.9 ├ ƒ /api/admin/social/accounts
+#20 121.9 ├ ƒ /api/admin/social/analytics
+#20 121.9 ├ ƒ /api/admin/social/dispatch
+#20 121.9 ├ ƒ /api/admin/social/worker
+#20 121.9 ├ ƒ /api/admin/staff/invite
+#20 121.9 ├ ƒ /api/admin/starters
+#20 121.9 ├ ƒ /api/admin/telecom/simulate
+#20 121.9 ├ ƒ /api/admin/telemetry/dashboard
+#20 121.9 ├ ƒ /api/admin/telemetry/experiment/winner
+#20 121.9 ├ ƒ /api/admin/telemetry/funnel
+#20 121.9 ├ ƒ /api/admin/themes
+#20 121.9 ├ ƒ /api/admin/translations
+#20 121.9 ├ ƒ /api/admin/webhooks
+#20 121.9 ├ ƒ /api/admin/workflow/actions
+#20 121.9 ├ ƒ /api/admin/workflow/audit
+#20 121.9 ├ ƒ /api/admin/workflow/bulk
+#20 121.9 ├ ƒ /api/admin/workflow/command-center
+#20 121.9 ├ ƒ /api/admin/workflow/comments
+#20 121.9 ├ ƒ /api/admin/workflow/queues
+#20 121.9 ├ ƒ /api/admin/workflow/templates
+#20 121.9 ├ ƒ /api/analytics/collect
+#20 121.9 ├ ƒ /api/analytics/consent
+#20 121.9 ├ ƒ /api/analytics/report
+#20 121.9 ├ ƒ /api/auth/enrollment
+#20 121.9 ├ ƒ /api/auth/logout
+#20 121.9 ├ ƒ /api/auth/passkey/complete
+#20 121.9 ├ ƒ /api/auth/passkey/enroll
+#20 121.9 ├ ƒ /api/auth/passkey/options
+#20 121.9 ├ ƒ /api/auth/passkeys
+#20 121.9 ├ ƒ /api/auth/recovery
+#20 121.9 ├ ƒ /api/calendar/export
+#20 121.9 ├ ƒ /api/commerce/affiliate/conversions
+#20 121.9 ├ ƒ /api/commerce/affiliate/redirect
+#20 121.9 ├ ƒ /api/commerce/cart
+#20 121.9 ├ ƒ /api/commerce/cart/merge
+#20 121.9 ├ ƒ /api/commerce/checkout/initiate
+#20 121.9 ├ ƒ /api/commerce/checkout/methods
+#20 121.9 ├ ƒ /api/commerce/checkout/status
+#20 121.9 ├ ƒ /api/commerce/checkout/test/confirm
+#20 121.9 ├ ƒ /api/commerce/crypto/verify
+#20 121.9 ├ ƒ /api/commerce/donations/campaign/[campaignId]
+#20 121.9 ├ ƒ /api/commerce/donations/intent
+#20 121.9 ├ ƒ /api/commerce/donations/privacy
+#20 121.9 ├ ƒ /api/commerce/download/[grantKey]
+#20 121.9 ├ ƒ /api/commerce/proposal
+#20 121.9 ├ ƒ /api/commerce/referrals/claim
+#20 121.9 ├ ƒ /api/commerce/subscriptions
+#20 121.9 ├ ƒ /api/commerce/subscriptions/checkout
+#20 121.9 ├ ƒ /api/commerce/subscriptions/plans
+#20 121.9 ├ ƒ /api/commerce/webhooks/[provider]
+#20 121.9 ├ ƒ /api/community/blocks
+#20 121.9 ├ ƒ /api/community/comments
+#20 121.9 ├ ƒ /api/community/conversations
+#20 121.9 ├ ƒ /api/community/conversations/[conversationId]
+#20 121.9 ├ ƒ /api/community/directory
+#20 121.9 ├ ƒ /api/community/history
+#20 121.9 ├ ƒ /api/community/message-requests
+#20 121.9 ├ ƒ /api/community/messages
+#20 121.9 ├ ƒ /api/community/messages/report
+#20 121.9 ├ ƒ /api/community/moderation
+#20 121.9 ├ ƒ /api/community/moderation-sites
+#20 121.9 ├ ƒ /api/community/moderation/appeals
+#20 121.9 ├ ƒ /api/community/notification-preferences
+#20 121.9 ├ ƒ /api/community/notification-unsubscribe
+#20 121.9 ├ ƒ /api/community/notifications
+#20 121.9 ├ ƒ /api/community/posts
+#20 121.9 ├ ƒ /api/community/profiles/[handle]
+#20 121.9 ├ ƒ /api/community/reactions
+#20 121.9 ├ ƒ /api/community/relationships
+#20 121.9 ├ ƒ /api/community/reports
+#20 121.9 ├ ƒ /api/community/threads
+#20 121.9 ├ ƒ /api/email/webhook
+#20 121.9 ├ ƒ /api/experiences/active
+#20 121.9 ├ ƒ /api/experiences/conversion
+#20 121.9 ├ ƒ /api/experiences/exposure
+#20 121.9 ├ ƒ /api/forms/[formId]
+#20 121.9 ├ ƒ /api/foundation-smoke
+#20 121.9 ├ ƒ /api/graphql
+#20 121.9 ├ ƒ /api/graphql-playground
+#20 121.9 ├ ƒ /api/layouts
+#20 121.9 ├ ƒ /api/layouts/[id]
+#20 121.9 ├ ƒ /api/layouts/[id]/choices
+#20 121.9 ├ ƒ /api/layouts/[id]/rollback
+#20 121.9 ├ ƒ /api/layouts/overview
+#20 121.9 ├ ƒ /api/layouts/patterns
+#20 121.9 ├ ƒ /api/layouts/templates
+#20 121.9 ├ ƒ /api/media
+#20 121.9 ├ ƒ /api/media/[id]
+#20 121.9 ├ ƒ /api/media/[id]/variants
+#20 121.9 ├ ƒ /api/media/attach
+#20 121.9 ├ ƒ /api/media/command-center
+#20 121.9 ├ ƒ /api/media/governance
+#20 121.9 ├ ƒ /api/media/sessions
+#20 121.9 ├ ƒ /api/media/sessions/[id]
+#20 121.9 ├ ƒ /api/media/upload
+#20 121.9 ├ ƒ /api/member-auth/deactivate
+#20 121.9 ├ ƒ /api/member-auth/delete
+#20 121.9 ├ ƒ /api/member-auth/export
+#20 121.9 ├ ƒ /api/member-auth/link
+#20 121.9 ├ ƒ /api/member-auth/link/email
+#20 121.9 ├ ƒ /api/member-auth/link/email/confirm
+#20 121.9 ├ ƒ /api/member-auth/logout
+#20 121.9 ├ ƒ /api/member-auth/magic-link/complete
+#20 121.9 ├ ƒ /api/member-auth/magic-link/request
+#20 121.9 ├ ƒ /api/member-auth/me
+#20 121.9 ├ ƒ /api/member-auth/passkey/login/complete
+#20 121.9 ├ ƒ /api/member-auth/passkey/login/options
+#20 121.9 ├ ƒ /api/member-auth/passkey/register/complete
+#20 121.9 ├ ƒ /api/member-auth/passkey/register/options
+#20 121.9 ├ ƒ /api/member-auth/profile
+#20 121.9 ├ ƒ /api/member-auth/profile-media
+#20 121.9 ├ ƒ /api/member-auth/reactivate
+#20 121.9 ├ ƒ /api/member-auth/sessions
+#20 121.9 ├ ƒ /api/member-auth/sessions/[id]/revoke
+#20 121.9 ├ ƒ /api/member-auth/sessions/revoke-all
+#20 121.9 ├ ƒ /api/member-auth/unlink
+#20 121.9 ├ ƒ /api/migration/legacy/activate/[runId]
+#20 121.9 ├ ƒ /api/migration/legacy/execute
+#20 121.9 ├ ƒ /api/migration/legacy/inspect
+#20 121.9 ├ ƒ /api/migration/legacy/preflight
+#20 121.9 ├ ƒ /api/migration/legacy/report/[runId]
+#20 121.9 ├ ƒ /api/migration/legacy/rollback/[runId]
+#20 121.9 ├ ƒ /api/operations/diagnostics
+#20 121.9 ├ ƒ /api/operations/support-bundle
+#20 121.9 ├ ƒ /api/presentation/export
+#20 121.9 ├ ƒ /api/presentation/import
+#20 121.9 ├ ƒ /api/realtime/drafts/[articleId]/checkpoint
+#20 121.9 ├ ƒ /api/realtime/presence
+#20 121.9 ├ ƒ /api/realtime/stream
+#20 121.9 ├ ƒ /api/setup/complete
+#20 121.9 ├ ƒ /api/setup/options
+#20 121.9 ├ ƒ /api/setup/readiness
+#20 121.9 ├ ƒ /api/subscribers/confirm
+#20 121.9 ├ ƒ /api/subscribers/preferences
+#20 121.9 ├ ƒ /api/subscribers/subscribe
+#20 121.9 ├ ƒ /api/subscribers/unsubscribe
+#20 121.9 ├ ƒ /api/v1/[...segments]
+#20 121.9 ├ ƒ /api/v1/attachments/presign
+#20 121.9 ├ ƒ /api/v1/moderation/cases
+#20 121.9 ├ ƒ /api/v1/moderation/cases/batch
+#20 121.9 ├ ƒ /api/v1/moderation/cases/export
+#20 121.9 ├ ƒ /api/v1/notifications
+#20 121.9 ├ ƒ /api/v1/notifications/[id]/read
+#20 121.9 ├ ƒ /api/v1/notifications/mark-all-read
+#20 121.9 ├ ƒ /api/v1/notifications/stream
+#20 121.9 ├ ƒ /api/v1/sites/[site_id]/comments/[comment_id]/reactions
+#20 121.9 ├ ƒ /api/v1/sites/[site_id]/spaces/[space_id]
+#20 121.9 ├ ƒ /api/v1/sites/[site_id]/threads/[thread_id]
+#20 121.9 ├ ƒ /api/v1/sites/[site_id]/threads/[thread_id]/comments
+#20 121.9 ├ ƒ /api/v1/sites/[site_id]/threads/[thread_id]/comments/[comment_id]
+#20 121.9 ├ ƒ /api/v1/sites/[site_id]/threads/[thread_id]/subscriptions
+#20 121.9 ├ ƒ /api/v1/sites/[site_id]/topics
+#20 121.9 ├ ƒ /api/v1/sites/[site_id]/topics/[topic_id]
+#20 121.9 ├ ƒ /api/v1/sites/[site_id]/topics/[topic_id]/read
+#20 121.9 ├ ƒ /articles
+#20 121.9 ├ ƒ /articles/[slug]
+#20 121.9 ├ ƒ /builder/[id]
+#20 121.9 ├ ƒ /builder/[id]/preview
+#20 121.9 ├ ƒ /calendar
+#20 121.9 ├ ƒ /cart
+#20 121.9 ├ ƒ /checkout/cancel
+#20 121.9 ├ ƒ /checkout/return
+#20 121.9 ├ ƒ /checkout/test/[reference]
+#20 121.9 ├ ƒ /connections
+#20 121.9 ├ ƒ /donate
+#20 121.9 ├ ƒ /donate/[campaignId]
+#20 121.9 ├ ƒ /enroll
+#20 121.9 ├ ƒ /events
+#20 121.9 ├ ƒ /events/[slug]/ics
+#20 121.9 ├ ƒ /events/feed.ics
+#20 121.9 ├ ƒ /feed.json
+#20 121.9 ├ ƒ /feed.xml
+#20 121.9 ├ ƒ /feeds/[scope]/[slug]
+#20 121.9 ├ ƒ /forms/[formId]
+#20 121.9 ├ ƒ /forums
+#20 121.9 ├ ƒ /forums/[forumSlug]
+#20 121.9 ├ ƒ /forums/[forumSlug]/[topicSlug]
+#20 121.9 ├ ƒ /graphics-studio
+#20 121.9 ├ ƒ /guided-setup
+#20 121.9 ├ ƒ /health/live
+#20 121.9 ├ ƒ /health/ready
+#20 121.9 ├ ƒ /login
+#20 121.9 ├ ƒ /media/[id]
+#20 121.9 ├ ƒ /member-auth
+#20 121.9 ├ ƒ /member-auth/verify
+#20 121.9 ├ ƒ /members
+#20 121.9 ├ ƒ /members/[handle]
+#20 121.9 ├ ƒ /members/settings
+#20 121.9 ├ ƒ /messages
+#20 121.9 ├ ƒ /network
+#20 121.9 ├ ƒ /nodeinfo/2.1
+#20 121.9 ├ ƒ /notifications
+#20 121.9 ├ ƒ /ops/rebuild-notification-counters
+#20 121.9 ├ ƒ /podcasts/[slug]
+#20 121.9 ├ ƒ /podcasts/[slug]/feed.xml
+#20 121.9 ├ ƒ /podcasts/episodes/[slug]
+#20 121.9 ├ ƒ /podcasts/episodes/[slug]/chapters.json
+#20 121.9 ├ ƒ /podcasts/episodes/[slug]/transcript
+#20 121.9 ├ ƒ /pos
+#20 121.9 ├ ƒ /preferences
+#20 121.9 ├ ƒ /preview/article/[token]
+#20 121.9 ├ ƒ /robots.txt
+#20 121.9 ├ ƒ /search
+#20 121.9 ├ ƒ /setup
+#20 121.9 ├ ƒ /sitemap.xml
+#20 121.9 ├ ƒ /sitemaps/[page]
+#20 121.9 ├ ƒ /social-studio
+#20 121.9 ├ ƒ /store
+#20 121.9 ├ ƒ /subscribe
+#20 121.9 ├ ƒ /subscribe/confirm
+#20 121.9 ├ ƒ /subscribe/preferences
+#20 121.9 ├ ƒ /unsubscribe
+#20 121.9 ├ ƒ /video-captions/[id]
+#20 121.9 ├ ƒ /video-media/[id]/[filename]
+#20 121.9 ├ ƒ /videos
+#20 121.9 └ ƒ /videos/[slug]
+#20 121.9 
+#20 121.9 
+#20 121.9 ƒ Proxy (Middleware)
+#20 121.9 
+#20 121.9 ○  (Static)   prerendered as static content
+#20 121.9 ƒ  (Dynamic)  server-rendered on demand
+#20 121.9 
+#20 122.5 Built source 3f464a6903ff26e7489179df29749f065cb55299; clean source: null.
+#20 122.6 npm notice
+#20 122.6 npm notice New major version of npm available! 11.19.1 -> 12.2.0
+#20 122.6 npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+#20 122.6 npm notice To update run: npm install -g npm@12.2.0
+#20 122.6 npm notice
+#20 DONE 123.1s
+
+#21 [runner  6/18] COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./standalone
+#21 DONE 2.2s
+
+#22 [runner  7/18] COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./standalone/.next/static
+#22 DONE 0.2s
+
+#23 [production-dependencies 5/5] RUN npm ci --omit=dev
+#23 CACHED
+
+#24 [runner  8/18] COPY --from=builder --chown=nextjs:nodejs /app/public ./standalone/public
+#24 DONE 0.1s
+
+#25 [runner  9/18] COPY --from=production-dependencies --chown=nextjs:nodejs /app/node_modules ./node_modules
+#25 ...
+
+#26 [esbuild-runtime 2/4] WORKDIR /src
+#26 CACHED
+
+#27 [esbuild-runtime 3/4] ADD --checksum=sha256:04cb2d38fb6af093577aa8bf174add7286099b65ef7854480cbbb8ff061cef1f https://codeload.github.com/evanw/esbuild/tar.gz/609683d892977362a0f99026cb74b96263d728a9 /tmp/esbuild.tar.gz
+#27 CACHED
+
+#28 [esbuild-runtime 4/4] RUN tar -xzf /tmp/esbuild.tar.gz --strip-components=1 -C /src &&     CGO_ENABLED=0 go build -trimpath -buildvcs=false -o /out/esbuild ./cmd/esbuild &&     go version -m /out/esbuild > /out/esbuild-build.txt
+#28 CACHED
+
+#25 [runner  9/18] COPY --from=production-dependencies --chown=nextjs:nodejs /app/node_modules ./node_modules
+#25 DONE 30.4s
+
+#29 [runner 10/18] COPY --from=builder --chown=nextjs:nodejs /app/package.json /app/package-lock.json ./
+#29 DONE 0.3s
+
+#30 [runner 11/18] COPY --from=builder --chown=nextjs:nodejs /app/build-provenance.json ./
+#30 DONE 0.0s
+
+#31 [runner 12/18] COPY --from=builder --chown=nextjs:nodejs /app/next.config.ts /app/tsconfig.json ./
+#31 DONE 0.0s
+
+#32 [runner 13/18] COPY --from=builder --chown=nextjs:nodejs /app/src ./src
+#32 DONE 0.2s
+
+#33 [runner 14/18] COPY --from=builder --chown=nextjs:nodejs /app/docker ./docker
+#33 DONE 0.0s
+
+#34 [runner 15/18] COPY --from=builder --chown=nextjs:nodejs /app/theme-packages ./theme-packages
+#34 DONE 0.0s
+
+#35 [runner 16/18] COPY --from=esbuild-runtime /out/esbuild /tmp/runtime-esbuild
+#35 DONE 0.1s
+
+#36 [runner 17/18] COPY --from=esbuild-runtime /out/esbuild-build.txt ./esbuild-build.txt
+#36 DONE 0.0s
+
+#37 [runner 18/18] RUN node docker/install-runtime-esbuild.mjs && rm /tmp/runtime-esbuild
+#37 1.278 Installed patched Go esbuild executable at 2 runtime package paths.
+#37 DONE 1.3s
+
+#38 exporting to image
+#38 exporting layers
+#38 exporting layers 21.6s done
+#38 exporting manifest sha256:b67dec88b0dcebcbe16b72549adab8da5f951b1893d0d5074e2a04dc44ec8b77 0.0s done
+#38 exporting config sha256:1b7fd290ac9ccfc7efa402d8f91b05dd500960c92fe279ae3e1b3945296f65ce done
+#38 exporting attestation manifest sha256:e84bface39059264b14c2c194591008884b6949b1b5db97a00acf44deef9980c 0.0s done
+#38 exporting manifest list sha256:56dd7485646e358edffe1cc017e9ae150081f39fc07232ccd729ad6f8d51fb46 done
+#38 naming to docker.io/library/renegade-cms:sol-independent-3f464a69 done
+#38 unpacking to docker.io/library/renegade-cms:sol-independent-3f464a69
+#38 unpacking to docker.io/library/renegade-cms:sol-independent-3f464a69 13.5s done
+#38 DONE 35.3s

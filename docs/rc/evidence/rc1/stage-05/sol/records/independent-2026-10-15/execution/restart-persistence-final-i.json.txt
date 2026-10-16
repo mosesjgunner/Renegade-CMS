@@ -1,0 +1,17 @@
+{
+  "sourceSha": "3f464a6903ff26e7489179df29749f065cb55299",
+  "command": [
+    "docker",
+    "restart",
+    "solrc05-independent-20261015b-renegade-web-1",
+    "solrc05-independent-20261015b-renegade-worker-1"
+  ],
+  "exitCode": 0,
+  "durationSeconds": 1.2418155670166016,
+  "protectedDbStateUnchanged": true,
+  "mediaSha256": "b3310e56b7bb2e9cf2d6e5c6625bbf1ab2791e20861ccbf7640a782ffea6ec33",
+  "mediaReads": {
+    "solrc05-independent-20261015b-renegade-web-1": "b3310e56b7bb2e9cf2d6e5c6625bbf1ab2791e20861ccbf7640a782ffea6ec33",
+    "solrc05-independent-20261015b-renegade-worker-1": "b3310e56b7bb2e9cf2d6e5c6625bbf1ab2791e20861ccbf7640a782ffea6ec33"
+  }
+}

@@ -1,0 +1,34 @@
+[
+  {
+    "command": [
+      "rg",
+      "-n",
+      "braces|micromatch|chokidar|http-cache-semantics",
+      "src",
+      "scripts"
+    ],
+    "exitCode": 1,
+    "log": "import-search-0.txt"
+  },
+  {
+    "command": [
+      "rg",
+      "-n",
+      "braces",
+      "node_modules/chokidar",
+      "node_modules/micromatch"
+    ],
+    "exitCode": 0,
+    "log": "import-search-1.txt"
+  },
+  {
+    "command": [
+      "rg",
+      "-n",
+      "chokidar",
+      "node_modules/sass/sass.dart.js"
+    ],
+    "exitCode": 0,
+    "log": "import-search-2.txt"
+  }
+]

@@ -1,0 +1,40 @@
+{
+  "sourceSha": "3f464a6903ff26e7489179df29749f065cb55299",
+  "gitTree": "4ac6c231f28530b70cccf676ba5be09c1aef276a",
+  "imageIndexDigest": "sha256:56dd7485646e358edffe1cc017e9ae150081f39fc07232ccd729ad6f8d51fb46",
+  "platformManifestDigest": "sha256:b67dec88b0dcebcbe16b72549adab8da5f951b1893d0d5074e2a04dc44ec8b77",
+  "configDigest": "sha256:1b7fd290ac9ccfc7efa402d8f91b05dd500960c92fe279ae3e1b3945296f65ce",
+  "ociLabels": {
+    "org.opencontainers.image.revision": "3f464a6903ff26e7489179df29749f065cb55299",
+    "org.opencontainers.image.version": "0.1.0-rc.1"
+  },
+  "runtimeBuildSha": "3f464a6903ff26e7489179df29749f065cb55299",
+  "rootProvenance": {
+    "sourceSha": "3f464a6903ff26e7489179df29749f065cb55299",
+    "clean": null,
+    "version": "0.1.0",
+    "lockfileSha256": "f6e204e51dea49eab765231225bde88c973d8b6f0c4261b1973d495799fc72b2"
+  },
+  "standaloneProvenance": {
+    "sourceSha": "3f464a6903ff26e7489179df29749f065cb55299",
+    "clean": null,
+    "version": "0.1.0",
+    "lockfileSha256": "f6e204e51dea49eab765231225bde88c973d8b6f0c4261b1973d495799fc72b2"
+  },
+  "node": "v24.22.0",
+  "uid": 1001,
+  "gid": 65533,
+  "versionedManifests": 761,
+  "unversionedManifests": 453,
+  "tracingManifests": 277,
+  "missingTracedFiles": 0,
+  "sharpPngBytes": 91,
+  "dockerfileSha256": "a2914aa1bb6d8945dc1b5345f42ffd61acbc612a979525e0231a3e37ffca1a2e",
+  "dockerignoreSha256": "8dd8cab934acbb66049ca770a08d04ce5570a6a09c4a8a8c36c67b5537824af2",
+  "baseDigests": [
+    "docker.io/library/node:24-alpine@sha256:44fce696f38ba8c987c4db89954051000bbd05ffd8d8659ba15ed4a8602e937f",
+    "docker.io/library/golang:1.27.2-alpine@sha256:f92b6ef800e499660581efdabdf25d9d817a9d124eaf900924f0504e7e27e12d"
+  ],
+  "executableChanges": false,
+  "rc1Ready": false
+}

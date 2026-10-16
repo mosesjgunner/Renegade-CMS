@@ -1,0 +1,39 @@
+from pathlib import Path
+import subprocess,json,time,urllib.request,urllib.error
+w=Path.cwd();out=w/'scratch/independent';project='solrc05-independent-20261015b';db='sol_stage05_schema_release_acceptance';container='sol-stage05-schema-negative';network=project+'_default';image='renegade-cms:sol-independent-3f464a69';pg=project+'-postgres-1';rows=[]
+def call(args,label):
+ start=time.time();r=subprocess.run(args,capture_output=True);(out/(label+'.log')).write_bytes(r.stdout+r.stderr);rows.append({'command':args,'exitCode':r.returncode,'durationSeconds':time.time()-start,'log':label+'.log'});assert r.returncode==0,(label,r.stderr.decode());return r
+# New named DB only; createdb refuses any preexisting name.
+call(['docker','exec',pg,'createdb','-U','renegade',db],'schema-create')
+e=dict(x.split('=',1) for x in Path('.env.compose').read_text().splitlines() if '=' in x)
+app={'NODE_ENV':'production','DATABASE_URL':'postgresql://renegade:'+e['POSTGRES_PASSWORD']+'@postgres:5432/'+db,'PAYLOAD_SECRET':e['PAYLOAD_SECRET'],'APP_URL':e['APP_URL'],'PROXY_MODE':'trusted','TRUSTED_PROXY_HOPS':'1','STORAGE_DRIVER':'local','MEDIA_DIR':'/app/media','EMAIL_MODE':'disabled','RENEGADE_MODULES':'all','RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT':'true','LOCAL_E2E_TEST_MODE':'false','ENABLE_TEST_ROUTES':'false','BUILD_SHA':e['BUILD_SHA']}
+Path('.env.schema').write_text('\n'.join(k+'='+v for k,v in app.items()))
+call(['docker','run','-d','--name',container,'--label','rc1.disposable=sol-stage05-independent-20261015','--network',network,'--env-file','.env.schema','-p','127.0.0.1:3168:3000',image],'schema-web-start')
+def probe(expected,label):
+ for attempt in range(40):
+  try:
+   try:r=urllib.request.urlopen('http://127.0.0.1:3168/health/ready',timeout=10);status=r.status;data=r.read()
+   except urllib.error.HTTPError as er:status=er.code;data=er.read()
+   body=json.loads(data);assert status==expected,(label,status,body)
+   for key in ['POSTGRES_PASSWORD','PAYLOAD_SECRET','WEBHOOK_SECRET_RC05']:assert e[key].encode() not in data
+   rows.append({'probe':label,'url':'http://127.0.0.1:3168/health/ready','status':status,'body':body});return body
+  except (urllib.error.URLError,ConnectionError):time.sleep(1)
+ raise RuntimeError('probe startup timed out '+label)
+probe(503,'empty-schema-rejected')
+call(['docker','run','--rm','--network',network,'--env-file','.env.schema',image,'npm','run','db:migrate'],'schema-migrate')
+call(['docker','restart',container],'schema-restart-after-migrate');probe(200,'schema-ready-control')
+def sql(query,label):return call(['docker','exec',pg,'psql','-U','renegade','-d',db,'-v','ON_ERROR_STOP=1','-tAc',query],label)
+try:
+ sql('ALTER TABLE events RENAME COLUMN required_entitlement TO rc05_probe_missing_entitlement','schema-inject-missing-column');b=probe(503,'critical-column-rejected');assert b['checks']['schema']=='corrupted'
+finally:sql('ALTER TABLE events RENAME COLUMN rc05_probe_missing_entitlement TO required_entitlement','schema-restore-column')
+probe(200,'restored-schema-ready')
+try:
+ sql('ALTER DATABASE '+db+' ALLOW_CONNECTIONS false','schema-deny-connections')
+ sql("SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname='"+db+"' AND pid<>pg_backend_pid()",'schema-terminate-probe-connections')
+ b=probe(503,'database-unavailable-rejected');assert b['checks']['database']=='unavailable'
+finally:
+ # Connect through the maintenance DB while the probe DB itself rejects connections.
+ call(['docker','exec',pg,'psql','-U','renegade','-d','postgres','-v','ON_ERROR_STOP=1','-tAc','ALTER DATABASE '+db+' ALLOW_CONNECTIONS true'],'schema-enable-connections')
+probe(200,'database-restored-ready')
+r=subprocess.run(['docker','logs',container],capture_output=True);(out/'schema-runtime-private.log').write_bytes(r.stdout+r.stderr)
+(out/'readiness-negative-receipts.json').write_text(json.dumps({'sourceSha':e['BUILD_SHA'],'image':image,'database':db,'container':container,'rows':rows,'businessStatusMutations':False,'schemaRestored':True,'databaseConnectionsRestored':True},indent=2));print('Fresh schema, critical-column and database-unavailable probes pass with restored controls')

@@ -1,0 +1,85 @@
+{
+  "sourceSha": "3f464a6903ff26e7489179df29749f065cb55299",
+  "imageIndexDigest": "sha256:56dd7485646e358edffe1cc017e9ae150081f39fc07232ccd729ad6f8d51fb46",
+  "findings": [
+    {
+      "id": "GHSA-vfj7-8cjw-p6xm",
+      "cve": "CVE-2026-93687",
+      "severity": "high",
+      "installed": [
+        {
+          "path": "/app/node_modules/braces",
+          "version": "3.0.3"
+        }
+      ],
+      "importers": [
+        "/app/node_modules/chokidar/index.js",
+        "/app/node_modules/micromatch/index.js"
+      ],
+      "runtimeClassification": "Installed in runner root; Sass/chokidar watcher and glob tooling. Absent from precompiled standalone tree. No src or shipping script imports of braces, micromatch or chokidar.",
+      "exploitPrerequisite": "Untrusted deeply nested brace patterns reaching recursive compile/expand walkers. Character-length limits alone do not prevent the advisory.",
+      "patchOption": "Current primary GitHub advisory has no patched version. Do not override with an invented version.",
+      "disposition": "BOUNDED_NONBLOCKING for immutable standalone web, registered worker and versioned-source operational CLI; no untrusted watcher/glob input path identified. Reassess remote builds, watcher services or arbitrary executable source extensions.",
+      "evidence": [
+        "independent-filesystem.log",
+        "import-searches.json",
+        "independent-root-graph.log",
+        "independent-whole-image-results.json"
+      ]
+    },
+    {
+      "id": "GHSA-ch52-4w7c-c8xp",
+      "cve": "CVE-2026-93748",
+      "severity": "high",
+      "installed": [
+        {
+          "path": "/usr/local/lib/node_modules/npm/node_modules/http-cache-semantics",
+          "version": "4.2.0"
+        }
+      ],
+      "importers": [
+        "/usr/local/lib/node_modules/npm/node_modules/make-fetch-happen/lib/cache/policy.js"
+      ],
+      "runtimeClassification": "Global npm operator registry-cache dependency; absent from app/standalone packages. Application has no npm registry installation endpoint.",
+      "exploitPrerequisite": "Shared credential-bearing HTTP cache and adversarial max-stale reuse as described by the advisory; the package maintainer disputes the RFC premise.",
+      "patchOption": "No patched version in current GitHub advisory; still listed and not withdrawn. Maintainer dispute retained as context, not a reason to suppress.",
+      "disposition": "BOUNDED_NONBLOCKING for shipped immutable web/worker and tested db/recovery CLI. Reassess runtime dependency installation/shared credential-bearing registry cache.",
+      "evidence": [
+        "independent-global-graph.log",
+        "npm-cache-importer.txt",
+        "cache-upstream-comments.json",
+        "independent-whole-image-results.json"
+      ]
+    },
+    {
+      "id": "GHSA-82fw-gwwq-j7x9",
+      "cve": "CVE-2026-84373",
+      "severity": "moderate",
+      "installed": [
+        {
+          "path": "native node_modules/vitest",
+          "version": "3.2.7"
+        },
+        {
+          "path": "native node_modules/@vitest/mocker",
+          "version": "3.2.7"
+        }
+      ],
+      "runtimeClassification": "Native dev/test dependency; neither package manifest nor module is present anywhere inventoried in the runner.",
+      "exploitPrerequisite": "Vitest development-server redirect mock path allowing file traversal/read; Gemini range <1.0.1 and arbitrary-mock-code prerequisite are rejected.",
+      "patchOption": "Affected stable range >=2.1.0 <4.1.11, patched 4.1.11; prerelease >=5.0.0-beta.1 <5.0.0-rc.2 separately patched 5.0.0-rc.2. Major tooling migration not needed for immutable production commands.",
+      "disposition": "DEV_TEST_ONLY; run tests locally without exposing the development server. No blanket dev-package exclusion claim: Playwright remains in runner.",
+      "evidence": [
+        "audit-full.json",
+        "independent-filesystem.log",
+        "GHSA-82fw-gwwq-j7x9.json"
+      ]
+    }
+  ],
+  "inactiveGeminiFinding": {
+    "id": "GHSA-67mh-4wv8-2f99",
+    "installedEsbuild": "0.28.2",
+    "reportedAffectedRange": "<=0.24.2",
+    "decision": "Not installed at vulnerable version. Entire-image Go binary scan has no reported high/critical result; both replacements retain Go 1.27.2 build info."
+  }
+}

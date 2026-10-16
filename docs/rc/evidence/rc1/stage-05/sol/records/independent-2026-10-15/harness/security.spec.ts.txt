@@ -1,0 +1,209 @@
+import { test, expect } from '@playwright/test'
+import { readFileSync, writeFileSync, readdirSync, statSync, mkdirSync } from 'node:fs'
+import { execFileSync } from 'node:child_process'
+
+test('production image: ordinary setup, authenticated denies, durable protected state and security lifecycle', async ({ page, context, browser }) => {
+  const traceDir = `scratch/sol-private-traces/${process.env.REPORT_LABEL ?? 'default'}`
+  mkdirSync(traceDir, {recursive:true})
+  const results: any[] = []
+  const record = (name: string, data: any = {}) => {
+    results.push({ name, ...data })
+    writeFileSync('scratch/sol-evidence/runtime-security-observations.json', JSON.stringify(results, null, 2))
+    console.log('VERIFIED', name)
+  }
+  const sql = (query: string) => execFileSync('docker', ['exec', 'solrc05-independent-20261015b-postgres-1', 'psql', '-U', 'renegade', '-d', 'renegade', '-tAc', query], { encoding: 'utf8' }).trim()
+  const sessions = () => sql('SELECT count(*) FROM admin_sessions')
+  const api = async (client: any, method: string, url: string, data?: any, status = 200) => {
+    const res = await client.request.fetch(url, { method, data })
+    expect(res.status(), `${method} ${url}: ${(await res.text()).slice(0, 500)}`).toBe(status)
+    return res.json()
+  }
+  const cdp = await context.newCDPSession(page)
+  await cdp.send('Security.setIgnoreCertificateErrors', { ignore: true })
+  await cdp.send('WebAuthn.enable')
+  await cdp.send('WebAuthn.addVirtualAuthenticator', { options: { protocol: 'ctap2', transport: 'internal', hasResidentKey: true, hasUserVerification: true, isUserVerified: true, automaticPresenceSimulation: true } })
+  const token = readFileSync('scratch/bootstrap-token.txt', 'utf8').trim()
+  await page.goto('/setup')
+  await page.getByLabel('Bootstrap token').fill(token)
+  await page.getByLabel('Owner email').fill('owner@rc05.example.test')
+  await page.getByRole('button', { name: 'Continue', exact: true }).click()
+  await page.getByLabel('Site or publication name').fill('Stage 05 image acceptance')
+  await page.getByLabel('Description').fill('Disposable image security acceptance')
+  await page.getByLabel('Site slug').fill('rc05')
+  await page.getByLabel('Primary URL').fill('https://dispatch.rc02.test:3159')
+  await page.getByLabel('Locale').fill('en-US')
+  await page.getByLabel('Timezone').fill('America/Chicago')
+  await page.getByRole('button', { name: 'Continue', exact: true }).click()
+  await page.getByLabel('Starter site type').selectOption('blank-minimal')
+  await page.getByLabel('Create starter pages and sample content').uncheck()
+  await page.getByRole('button', { name: 'Continue', exact: true }).click()
+  await page.getByText('Standard', { exact: true }).click()
+  await page.getByLabel('Search indexing').selectOption('noindex')
+  await page.getByRole('button', { name: 'Continue', exact: true }).click()
+  await page.getByRole('button', { name: 'Enroll passkey & create site' }).click()
+  await expect(page.getByRole('heading', { name: 'Your site is ready to shape.' })).toBeVisible({ timeout: 60000 })
+  const recoveryCodes = await page.locator('ul.font-mono li').allTextContents()
+  expect(recoveryCodes).toHaveLength(10)
+  await page.screenshot({ path: `${traceDir}/ordinary-setup.png` })
+  record('ordinary owner WebAuthn setup', { passkeys: sql('SELECT count(*) FROM passkeys') })
+
+  await api(page, 'POST', '/api/auth/logout')
+  const anonymous = await browser.newContext({ baseURL: 'https://dispatch.rc02.test:3159', ignoreHTTPSErrors: true })
+  const guest = await anonymous.newPage()
+  let validAssertion: any
+  await page.route('**/api/auth/passkey/complete', async (route) => {
+    validAssertion = route.request().postDataJSON()
+    const before = sessions()
+    for (const change of [{ origin: 'https://foreign.example.test' }, { challenge: 'incorrect-challenge' }]) {
+      const bad = structuredClone(validAssertion)
+      const clientData = JSON.parse(Buffer.from(bad.response.clientDataJSON, 'base64url').toString())
+      bad.response.clientDataJSON = Buffer.from(JSON.stringify({ ...clientData, ...change })).toString('base64url')
+      await api(guest, 'POST', '/api/auth/passkey/complete', bad, 400)
+      expect(sessions()).toBe(before)
+    }
+    record('wrong WebAuthn origin and challenge denied before session issuance')
+    await route.continue()
+  })
+  await page.goto('/login')
+  await page.getByLabel('Owner / Staff Email').fill('owner@rc05.example.test')
+  await page.getByRole('button', { name: /Authenticate with Passkey/ }).click()
+  await expect(page).toHaveURL(/\/admin/)
+  await page.unroute('**/api/auth/passkey/complete')
+  let before = sessions()
+  await api(guest, 'POST', '/api/auth/passkey/complete', validAssertion, 400)
+  expect(sessions()).toBe(before)
+  expect((await anonymous.cookies()).some(c => c.name === 'renegade-passkey')).toBe(false)
+  record('genuine assertion replay denied; no extra session')
+
+  // Create an authentic pending challenge now; allow its real five-minute TTL
+  // to elapse while exercising the other domains. No DB clock/status changes.
+  const pending = (await api(page, 'POST', '/api/auth/passkey/options', { email: 'owner@rc05.example.test' })).options
+  const expiresAfter = Date.now() + 302000
+  const expiredAssertion = await page.evaluate(async (opts) => {
+    const bytes = (s: string) => Uint8Array.from(atob(s.replace(/-/g, '+').replace(/_/g, '/')), c => c.charCodeAt(0))
+    const credential = await navigator.credentials.get({ publicKey: { ...opts, challenge: bytes(opts.challenge), allowCredentials: opts.allowCredentials?.map((c: any) => ({ ...c, id: bytes(c.id) })) } })
+    return (credential as any).toJSON()
+  }, pending)
+
+  const own = (await api(page, 'GET', '/api/sites?depth=0')).docs[0]
+  const publication = (await api(page, 'GET', '/api/publications?depth=0')).docs[0]
+  const machine = await api(page, 'POST', '/api/admin/integrations', { action: 'create-client', name: 'RC05 egress security client', siteId: own.id, scopes: ['webhooks.manage'] }, 201)
+  const subscriptionsBefore = (await api(page, 'GET', '/api/webhook-subscriptions?depth=0')).totalDocs
+  for (const target of ['https://127.0.0.1/private', 'https://10.0.0.1/private', 'https://169.254.169.254/latest/meta-data', 'https://[::1]/', 'https://[::ffff:127.0.0.1]/', 'https://localhost./']) {
+    const denied = await guest.request.post('/api/v1/webhooks', { headers: { authorization: `Bearer ${machine.token}` }, data: { events: ['content.published'], target, secret_ref: 'RC05' } })
+    expect(denied.status(), `unsafe target ${target}`).toBe(422)
+  }
+  expect((await api(page, 'GET', '/api/webhook-subscriptions?depth=0')).totalDocs).toBe(subscriptionsBefore)
+  record('authenticated actual webhook adapter rejects private IPv4, mapped IPv6, metadata and private DNS; no subscriptions created')
+
+  const foreign = (await api(page, 'POST', '/api/sites', { name: 'Foreign private site', slug: 'rc05-foreign', primaryUrl: 'https://foreign.rc05.test' }, 201)).doc
+  const foreignPublication = (await api(page, 'POST', '/api/publications', { site: foreign.id, name: 'Foreign', slug: 'rc05-foreign', visibility: 'private' }, 201)).doc
+  const foreignContent = (await api(page, 'POST', '/api/content', { site: foreign.id, publication: foreignPublication.id, title: 'PROTECTED RC05 PRIVATE CONTENT', slug: 'protected-rc05', contentType: 'article', workflowStatus: 'draft' }, 201)).doc
+  const protectedBefore = await api(page, 'GET', `/api/content/${foreignContent.id}?depth=0`)
+  const upload = await page.request.post('/api/media/upload', { multipart: { siteId: foreign.id, title: 'RC05 PRIVATE MEDIA', altText: 'Private fixture', file: { name: 'private.png', mimeType: 'image/png', buffer: readFileSync('fixtures/renegadeparty-demo/assets/logo.png') } } })
+  expect(upload.status()).toBe(201)
+  const asset = (await upload.json()).asset
+  await api(page, 'PATCH', `/api/media-assets/${asset.id}`, { publicPolicy: 'private' })
+  await expect.poll(async () => (await api(page, 'GET', `/api/media-assets/${asset.id}?depth=0`)).aspectRatio, { timeout: 60000 }).toBe(1)
+  await new Promise(resolve => setTimeout(resolve, 2000))
+  const privateBefore = await api(page, 'GET', `/api/media-assets/${asset.id}?depth=0`)
+  const privatePath = `/media/${asset.id}`
+  const authorizedBytes = await page.request.get(privatePath)
+  expect(authorizedBytes.status()).toBe(200)
+  expect(await authorizedBytes.body()).toEqual(readFileSync('fixtures/renegadeparty-demo/assets/logo.png'))
+  for (const role of ['staff', 'administrator']) {
+    const email = `${role}@rc05.example.test`
+    const invitation = await api(page, 'POST', '/api/admin/staff/invite', { email, role, siteId: own.id }, 201)
+    const actor = await browser.newContext({ baseURL: 'https://dispatch.rc02.test:3159', ignoreHTTPSErrors: true })
+    const client = await actor.newPage()
+    const device = await actor.newCDPSession(client)
+    await device.send('Security.setIgnoreCertificateErrors', { ignore: true })
+    await device.send('WebAuthn.enable')
+    await device.send('WebAuthn.addVirtualAuthenticator', { options: { protocol: 'ctap2', transport: 'internal', hasResidentKey: true, hasUserVerification: true, isUserVerified: true, automaticPresenceSimulation: true } })
+    await client.goto(invitation.enrollmentUrl)
+    await client.getByRole('button', { name: /Register Hardware Passkey/ }).click()
+    await expect(client.getByRole('status')).toContainText('Passkey registered successfully')
+    await client.getByRole('button', { name: /I saved my codes/ }).click()
+    await client.waitForURL(/\/login/)
+    await client.getByLabel('Owner / Staff Email').fill(email)
+    await client.getByRole('button', { name: /Authenticate with Passkey/ }).click()
+    await client.waitForURL(/\/admin/)
+    const denied = await client.request.get(`/api/content/${foreignContent.id}?depth=0`)
+    expect([403, 404]).toContain(denied.status())
+    expect(await denied.text()).not.toContain('PROTECTED RC05 PRIVATE CONTENT')
+    for (const method of ['PATCH', 'DELETE']) {
+      const response = await client.request.fetch(`/api/content/${foreignContent.id}`, { method, data: method === 'PATCH' ? { title: 'ATTACK' } : undefined })
+      expect([403, 404]).toContain(response.status())
+    }
+    await api(client, 'POST', '/api/admin/ai/preview', { siteId: foreign.id, targetId: foreignContent.id, task: 'editor.improve-selection', selection: 'private' }, 403)
+    const bytes = await client.request.get(privatePath)
+    expect([401, 403, 404]).toContain(bytes.status())
+    expect((await bytes.body()).includes(readFileSync('fixtures/renegadeparty-demo/assets/logo.png'))).toBe(false)
+    expect(await api(page, 'GET', `/api/content/${foreignContent.id}?depth=0`)).toEqual(protectedBefore)
+    expect(await api(page, 'GET', `/api/media-assets/${asset.id}?depth=0`)).toEqual(privateBefore)
+    const cookie = (await actor.cookies()).find(c => c.name === 'renegade-passkey')!
+    await api(client, 'POST', '/api/auth/logout')
+    const revoked = await guest.request.get('/api/auth/passkeys', { headers: { cookie: `${cookie.name}=${cookie.value}` } })
+    expect(revoked.status()).toBe(401)
+    await actor.close()
+    record(`${role} genuine enrollment, foreign read/write/delete/AI/private bytes denied; protected state unchanged; logout invalidates retained cookie`)
+  }
+
+  const anonPrivate = await guest.request.get(privatePath)
+  expect([401, 403, 404]).toContain(anonPrivate.status())
+  const bypass = await guest.request.post('/api/test/seed', { data: {} })
+  expect([403, 404, 405]).toContain(bypass.status())
+  record('anonymous private bytes and test-route bypass denied')
+
+  const memberContext = await browser.newContext({ baseURL: 'https://dispatch.rc02.test:3159', ignoreHTTPSErrors: true })
+  const member = await memberContext.newPage()
+  const mailAfter = Date.now()
+  await member.goto('/member-auth')
+  await member.getByLabel('Email address', { exact: true }).fill('member@rc05.example.test')
+  await member.getByRole('button', { name: /Email.*link|Send.*link/i }).click()
+  let magic = ''
+  await expect.poll(() => {
+    for (const name of readdirSync('scratch/rc04-mail').filter(n => n.endsWith('.eml'))) {
+      if (statSync(`scratch/rc04-mail/${name}`).mtimeMs < mailAfter) continue
+      const raw = readFileSync(`scratch/rc04-mail/${name}`, 'utf8').replace(/=\r\n/g, '').replace(/=([0-9A-F]{2})/gi, (_, n) => String.fromCharCode(parseInt(n, 16)))
+      const match = raw.match(/https:\/\/[^\s<>"']+\/member-auth\/verify\?token=[A-Za-z0-9_-]+/)
+      if (match) magic = match[0]
+    }
+    return Boolean(magic)
+  }, { timeout: 30000 }).toBe(true)
+  await member.goto(magic)
+  await expect(member.getByRole('status')).toHaveText('Signed in.')
+  const memberBefore = await api(member, 'GET', '/api/member-auth/me')
+  const sessionState = (result: any) => result.sessions.map((s: any) => ({id:s.id,expiresAt:s.expiresAt,revokedAt:s.revokedAt}))
+  const sessionBefore = sessionState(await api(member, 'GET', '/api/member-auth/sessions'))
+  await api(member, 'PATCH', '/api/member-auth/profile', { displayName: 'CSRF ATTACK' }, 403)
+  const wrongCsrf = await member.request.patch('/api/member-auth/profile', { headers: { 'x-member-csrf': 'wrong' }, data: { displayName: 'CSRF ATTACK' } })
+  expect(wrongCsrf.status()).toBe(403)
+  expect(await api(member, 'GET', '/api/member-auth/me')).toEqual(memberBefore)
+  expect(sessionState(await api(member, 'GET', '/api/member-auth/sessions'))).toEqual(sessionBefore)
+  const memberAdmin = await member.request.post('/api/sites', { data: { name: 'UNAUTHORIZED', slug: 'attack' } })
+  expect(memberAdmin.status()).toBe(403)
+  const retained = (await memberContext.cookies()).map(c => `${c.name}=${c.value}`).join('; ')
+  const csrf = (await memberContext.cookies()).find(c => c.name === 'renegade-member-csrf')!.value
+  const revoke = await member.request.post('/api/member-auth/sessions/revoke-all', { headers: { 'x-member-csrf': csrf } })
+  expect(revoke.status()).toBe(200)
+  const revokedMember = await guest.request.get('/api/member-auth/sessions', { headers: { cookie: retained } })
+  expect(revokedMember.status()).toBe(401)
+  record('actual MIME magic-link member, CSRF missing/mismatch denied with unchanged state, member admin denial and revoke-all')
+
+  // Real time, real stored challenge, genuine signed assertion; no expiry mutation.
+  while (Date.now() < expiresAfter) await new Promise(resolve => setTimeout(resolve, Math.min(10000, expiresAfter - Date.now())))
+  before = sessions()
+  await api(guest, 'POST', '/api/auth/passkey/complete', expiredAssertion, 400)
+  expect(sessions()).toBe(before)
+  record('genuine five-minute WebAuthn challenge expiry denied without session issuance')
+  await api(guest, 'POST', '/api/auth/recovery', { email: 'owner@rc05.example.test', recoveryCode: recoveryCodes[0] })
+  before = sessions()
+  await api(page, 'POST', '/api/auth/recovery', { email: 'owner@rc05.example.test', recoveryCode: recoveryCodes[0] }, 400)
+  expect(sessions()).toBe(before)
+  record('ordinary owner recovery succeeds once; replay creates no session')
+  await page.screenshot({ path: `${traceDir}/security-complete.png` })
+  await context.storageState({ path: 'scratch/image-owner.json' })
+  await memberContext.close()
+  await anonymous.close()
+})

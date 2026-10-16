@@ -1,0 +1,33 @@
+[
+  {
+    "name": "ordinary owner WebAuthn setup",
+    "passkeys": "1"
+  },
+  {
+    "name": "wrong WebAuthn origin and challenge denied before session issuance"
+  },
+  {
+    "name": "genuine assertion replay denied; no extra session"
+  },
+  {
+    "name": "authenticated actual webhook adapter rejects private IPv4, mapped IPv6, metadata and private DNS; no subscriptions created"
+  },
+  {
+    "name": "staff genuine enrollment, foreign read/write/delete/AI/private bytes denied; protected state unchanged; logout invalidates retained cookie"
+  },
+  {
+    "name": "administrator genuine enrollment, foreign read/write/delete/AI/private bytes denied; protected state unchanged; logout invalidates retained cookie"
+  },
+  {
+    "name": "anonymous private bytes and test-route bypass denied"
+  },
+  {
+    "name": "actual MIME magic-link member, CSRF missing/mismatch denied with unchanged state, member admin denial and revoke-all"
+  },
+  {
+    "name": "genuine five-minute WebAuthn challenge expiry denied without session issuance"
+  },
+  {
+    "name": "ordinary owner recovery succeeds once; replay creates no session"
+  }
+]

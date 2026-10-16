@@ -1,0 +1,5 @@
+{
+  "sha": "3f464a6903ff26e7489179df29749f065cb55299",
+  "status": "",
+  "rejectedHandoffSha": "3f464a6962f91eb8f1ef9c80f4f9f4d7efd89d6e"
+}

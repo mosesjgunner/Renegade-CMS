@@ -1,0 +1,8 @@
+
+Running 1 test using 1 worker
+
+(node:17112) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 scratch\image-specs\post-restart.spec.ts:3:1 › post-restart persisted real owner session still authorizes original private bytes (5.4s)
+
+  1 passed (6.1s)

@@ -1,0 +1,16 @@
+{
+  "command": [
+    "node",
+    "node_modules/@playwright/test/cli.js",
+    "test",
+    "--config",
+    "scratch/playwright.image.config.ts",
+    "admin-csrf.spec.ts"
+  ],
+  "exitCode": 0,
+  "durationSeconds": 2.6638898849487305,
+  "sourceSha": "3f464a6903ff26e7489179df29749f065cb55299",
+  "sourceStatus": "",
+  "log": "scratch\\sol-evidence\\independent-browser-csrf-b.log",
+  "logSha256": "d33ca5ddf9089f6a087b6a001578ee356cd168b2c0f97214efd25bdbe85e68c2"
+}

@@ -1,0 +1,14 @@
+import subprocess,json,sys
+from pathlib import Path
+image='renegade-cms:sol-independent-3f464a69';out=Path('scratch/sol-evidence')
+def run(label,args,expected=0):
+ r=subprocess.run(['python','scratch/record.py',label,*args]);assert r.returncode==expected,(label,r.returncode)
+r=subprocess.run(['docker','image','inspect',image],capture_output=True);assert r.returncode==0
+(out/'independent-image-metadata.json').write_bytes(r.stdout)
+meta=json.loads(r.stdout)[0];assert meta['Config']['Labels']['org.opencontainers.image.revision']=='3f464a6903ff26e7489179df29749f065cb55299'
+run('independent-filesystem',['docker','run','--rm','--network','none','-v',str(Path('scratch/inspect-image.mjs').resolve())+':/inspect.mjs:ro',image,'node','/inspect.mjs'])
+run('independent-root-graph',['docker','run','--rm','--network','none',image,'npm','ls','--all','--omit=dev','--json'])
+run('independent-global-graph',['docker','run','--rm','--network','none',image,'npm','ls','--global','--all','--omit=dev','--json'])
+run('independent-runner-audit',['docker','run','--rm',image,'npm','audit','--omit=dev','--json'],1)
+run('independent-image-history',['docker','history','--no-trunc','--format','{{json .}}',image])
+run('independent-whole-image-scan',['scratch/scanner/trivy.exe','image','--scanners','vuln','--pkg-types','os,library','--cache-dir','scratch/scanner/cache','--skip-version-check','--format','json','--list-all-pkgs','--output','scratch/sol-evidence/independent-whole-image-results.json','--exit-code','1','--severity','HIGH,CRITICAL',image],1)

@@ -1,0 +1,18 @@
+import os,sys,subprocess,time,json,hashlib
+from pathlib import Path
+label=sys.argv[1];args=sys.argv[2:]
+out=Path('scratch/sol-evidence');out.mkdir(exist_ok=True,parents=True)
+env=os.environ.copy()
+if Path('.env.acceptance').exists():env.update(dict(line.split('=',1) for line in Path('.env.acceptance').read_text().splitlines() if '=' in line))
+if args[:2] == ['docker','compose']:
+    # Compose must use its explicit environment file, never quality-run variables.
+    for filename in ['.env.acceptance','.env.compose']:
+        if Path(filename).exists():
+            for line in Path(filename).read_text().splitlines():
+                if '=' in line: env.pop(line.split('=',1)[0],None)
+start=time.time()
+with (out/(label+'.log')).open('wb') as log:p=subprocess.run(args,env=env,stdout=log,stderr=subprocess.STDOUT)
+record=dict(command=args,exitCode=p.returncode,durationSeconds=time.time()-start,sourceSha=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),sourceStatus=subprocess.check_output(['git','status','--porcelain'],text=True),log=str(out/(label+'.log')),logSha256=hashlib.sha256((out/(label+'.log')).read_bytes()).hexdigest())
+(out/(label+'.json')).write_text(json.dumps(record,indent=2))
+print(label,'exit',p.returncode,flush=True)
+sys.exit(p.returncode)

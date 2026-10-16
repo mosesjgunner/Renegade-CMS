@@ -1,0 +1,20 @@
+{
+  "command": [
+    "docker",
+    "run",
+    "--rm",
+    "--network",
+    "none",
+    "-v",
+    "C:\\Projects\\RENEGADE CMS\\sol-stage05-independent-20261015\\scratch\\inspect-image.mjs:/inspect.mjs:ro",
+    "renegade-cms:sol-independent-3f464a69",
+    "node",
+    "/inspect.mjs"
+  ],
+  "exitCode": 0,
+  "durationSeconds": 1.6536080837249756,
+  "sourceSha": "3f464a6903ff26e7489179df29749f065cb55299",
+  "sourceStatus": "",
+  "log": "scratch\\sol-evidence\\independent-filesystem.log",
+  "logSha256": "3dfa634a3e2d225ea333096e8262e53a56b5dc4c01958389ed83064cceaf8179"
+}
