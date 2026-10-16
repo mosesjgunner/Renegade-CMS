@@ -1,0 +1,12 @@
+{
+    "gate":  "operational-restore",
+    "command":  "npm.cmd run restore:operational -- --archive \u003cdir\u003e --target-version 0.1.0 --isolated --authorize-restore --env-file scratch/s07-restore.env",
+    "sha":  "9b1272151458227f98750d1094b307cd97267815",
+    "exitCode":  0,
+    "project":  "rc1s07-restore",
+    "healthReady":  200,
+    "status":  "{\"status\":\"ready\",\"checks\":{\"database\":\"ok\",\"migrations\":\"applied\"}}",
+    "webStatus":  "Up (healthy) on 127.0.0.1:3378",
+    "workerStatus":  "Up (healthy)",
+    "postgresStatus":  "Up (healthy)"
+}

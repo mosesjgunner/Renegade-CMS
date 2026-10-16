@@ -1,0 +1,9 @@
+{
+    "gate":  "docker-build",
+    "command":  "docker build --build-arg BUILD_SHA=9b1272151458227f98750d1094b307cd97267815 -t renegade-cms:final-9b127215 .",
+    "sha":  "9b1272151458227f98750d1094b307cd97267815",
+    "exitCode":  0,
+    "image":  "renegade-cms:final-9b127215",
+    "imageId":  "sha256:58d37513510a8932cb0ea2d356f563ca067d3e548910bce538ab86132b6e049f",
+    "ociRevision":  "9b1272151458227f98750d1094b307cd97267815"
+}

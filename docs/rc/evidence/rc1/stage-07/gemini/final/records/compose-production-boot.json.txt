@@ -1,0 +1,21 @@
+{
+    "gate":  "compose-production-boot",
+    "command":  "docker compose -f compose.production.yaml --env-file scratch/s07.env -p rc1s07-final up -d --no-build",
+    "sha":  "9b1272151458227f98750d1094b307cd97267815",
+    "exitCode":  0,
+    "services":  {
+                     "renegade_worker":  "Up (healthy)",
+                     "postgres":  "Up (healthy) on postgres:17.6-alpine",
+                     "renegade_web":  "Up (healthy) on 127.0.0.1:3278 proxied to https://dispatch.rc02.test:3279",
+                     "migrate":  "Exited (0)"
+                 },
+    "probes":  {
+                   "testMode":  "false",
+                   "setup":  200,
+                   "testRoutes":  "false",
+                   "healthReady":  200,
+                   "login":  200,
+                   "user":  "uid=1001(nextjs)",
+                   "testReset":  404
+               }
+}

@@ -1,0 +1,21 @@
+{
+    "gate":  "operational-backup",
+    "command":  "npm.cmd run backup:operational -- --output scratch/s07-backup --maintenance-window-confirmed --env-file scratch/s07.env",
+    "sha":  "9b1272151458227f98750d1094b307cd97267815",
+    "exitCode":  0,
+    "archive":  "scratch/s07-backup/renegade-backup-2026-10-16T22-17-26-682Z",
+    "files":  [
+                  {
+                      "path":  "database.dump",
+                      "sha256":  "sha256:9caa0686c33370746e515a0dff9b09e19c7adca3afc342ff3f2c35182229341c",
+                      "bytes":  1694550
+                  },
+                  {
+                      "path":  "media.tar.gz",
+                      "sha256":  "sha256:4f9a439528edf5a1ae91d1795de084a6d0d6eabf8746fd3532ea2b3ef79ce8ce",
+                      "bytes":  97
+                  }
+              ],
+    "migrations":  112,
+    "secretsExcluded":  true
+}
