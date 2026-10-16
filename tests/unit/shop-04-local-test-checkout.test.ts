@@ -96,6 +96,33 @@ describe('local checkout boundary', () => {
     expect(event.signature).toBe(createHmac('sha256', 'secret').update(event.raw).digest('hex'))
   })
 
+  it('confirms the configured local host behind a proxy without accepting other hosts', async () => {
+    vi.stubEnv('LOCAL_E2E_TEST_MODE', 'false')
+    vi.stubEnv('COMMERCE_LOCAL_TEST_CHECKOUT_ENABLED', 'true')
+    vi.stubEnv('COMMERCE_GUEST_ORDER_SECRET', 'guest-secret-with-at-least-32-characters')
+    vi.stubEnv('COMMERCE_TEST_WEBHOOK_SECRET', 'webhook-secret-with-at-least-32-characters')
+    vi.stubEnv('APP_URL', 'https://dispatch.test')
+    const proxied = (host: string, cookie = 'renegade_checkout_session-1=authorized') =>
+      new Request('http://0.0.0.0:3000/api/commerce/checkout/test/confirm', {
+        method: 'POST',
+        headers: { host, cookie, 'content-type': 'application/x-www-form-urlencoded' },
+        body: 'reference=det_cs_0123456789abcdef01234567',
+      })
+    try {
+      expect((await POST(proxied('other.test'))).status).toBe(404)
+      expect((await POST(proxied('public.example'))).status).toBe(404)
+      expect((await POST(proxied('dispatch.test', ''))).status).toBe(403)
+      expect(state.webhook).not.toHaveBeenCalled()
+      expect((await POST(proxied('dispatch.test'))).status).toBe(303)
+      expect(state.webhook).toHaveBeenCalledTimes(1)
+      vi.stubEnv('COMMERCE_LOCAL_TEST_CHECKOUT_ENABLED', 'false')
+      expect((await POST(proxied('dispatch.test'))).status).toBe(404)
+      expect(state.webhook).toHaveBeenCalledTimes(1)
+    } finally {
+      vi.unstubAllEnvs()
+    }
+  })
+
   it('supports configured local test payment without enabling E2E mode or a public host', () => {
     vi.stubEnv('LOCAL_E2E_TEST_MODE', 'false')
     vi.stubEnv('COMMERCE_LOCAL_TEST_CHECKOUT_ENABLED', 'true')

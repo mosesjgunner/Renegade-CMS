@@ -14,7 +14,9 @@ const id = (value: unknown) =>
     : String(value ?? '')
 
 export async function POST(request: Request) {
-  if (!localTestCheckoutEnabled(request.url))
+  // Match the checkout page's public host check behind the production proxy.
+  const host = request.headers.get('host') ?? new URL(request.url).host
+  if (!localTestCheckoutEnabled(`http://${host}`))
     return NextResponse.json({ error: 'Local test checkout is disabled.' }, { status: 404 })
   const body = await request.formData()
   const reference = body.get('reference')
