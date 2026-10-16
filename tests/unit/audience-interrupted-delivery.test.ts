@@ -56,6 +56,13 @@ describe('interrupted audience transport acceptance', () => {
     expect(state.send).not.toHaveBeenCalled()
     expect(payload.update).toHaveBeenCalledTimes(1)
   })
+
+  it('does not dispatch an already accepted delivery again', async () => {
+    const payload = await recover('accepted')
+    expect(state.send).not.toHaveBeenCalled()
+    expect(state.reconcile).not.toHaveBeenCalled()
+    expect(payload.update).not.toHaveBeenCalled()
+  })
   it('accepts only confirmed reconciliation from the original provider without another send', async () => {
     state.reconcile.mockResolvedValue({
       ok: true,
