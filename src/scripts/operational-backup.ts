@@ -68,6 +68,7 @@ async function capture(commandArgs: string[]) {
 
 let stopped = false
 try {
+  await mkdir(path.resolve(output), { recursive: true })
   await mkdir(backupRoot, { recursive: false })
   // This explicit quiesce window prevents writes between the native DB dump and media capture.
   await run('docker', [...composeArgs, 'stop', 'renegade-web', 'renegade-worker'])
@@ -102,6 +103,8 @@ try {
       '/app/media',
       '--exclude=./.upload-sessions',
       '--exclude=.upload-sessions',
+      '--exclude=./.renegade/backup-status.json',
+      '--exclude=.renegade/backup-status.json',
       '-czf',
       '-',
       '.',
