@@ -139,7 +139,9 @@ export async function POST(request: Request) {
   )
     return NextResponse.json({ error: 'A valid receipt email is required.' }, { status: 422 })
   const siteId = id(campaign.site)
-  const requestSiteId = await catalogSiteForHost(payload, request.headers.get('host'))
+  const requestSiteId = await catalogSiteForHost(payload, request.headers.get('host')).catch(
+    () => null,
+  )
   if (!siteId || siteId !== requestSiteId)
     return NextResponse.json({ error: 'Campaign not found.' }, { status: 404 })
   const setting: any = await payload.findGlobal({

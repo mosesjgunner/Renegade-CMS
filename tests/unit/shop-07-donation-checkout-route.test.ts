@@ -6,10 +6,16 @@ const state = vi.hoisted(() => ({
   checkout: vi.fn(),
   retrieve: vi.fn(),
   campaignSite: 'site-1',
+  unavailableHost: false,
 }))
 
 vi.mock('@payload-config', () => ({ default: {} }))
-vi.mock('@/modules/commerce/site-scope', () => ({ catalogSiteForHost: async () => 'site-1' }))
+vi.mock('@/modules/commerce/site-scope', () => ({
+  catalogSiteForHost: async () => {
+    if (state.unavailableHost) throw new Error('Catalog site unavailable for this host.')
+    return 'site-1'
+  },
+}))
 vi.mock('@/modules/commerce/donations', () => ({
   assertDonationIntent: () => undefined,
   feeCoverAmount: () => '0',
@@ -113,6 +119,7 @@ describe('SHOP-07 hosted donation checkout', () => {
     state.records.clear()
     state.calls.length = 0
     state.campaignSite = 'site-1'
+    state.unavailableHost = false
     delete process.env.LOCAL_E2E_TEST_MODE
     state.checkout.mockReset().mockResolvedValue({
       actionUrl: 'https://checkout.stripe.test/session',
@@ -146,6 +153,13 @@ describe('SHOP-07 hosted donation checkout', () => {
     expect((await POST(request())).status).toBe(201)
     expect((await POST(request({ recognition: 'private' }))).status).toBe(409)
     expect(state.checkout).toHaveBeenCalledTimes(1)
+  })
+
+  it('rejects an unmapped host without creating a payment or calling the provider', async () => {
+    state.unavailableHost = true
+    expect((await POST(request())).status).toBe(404)
+    expect(state.calls).toHaveLength(0)
+    expect(state.checkout).not.toHaveBeenCalled()
   })
 
   it('fails closed for recurring billing until a recurring provider mapping exists', async () => {
