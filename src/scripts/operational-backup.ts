@@ -1,7 +1,7 @@
 import { mkdir, rm, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { spawn } from 'node:child_process'
-import { createReadStream, createWriteStream } from 'node:fs'
+import { runOperationalProcess } from './operational-process'
 import {
   createOperationalBackupManifest,
   verifyOperationalBackup,
@@ -36,19 +36,7 @@ const composeArgs = [
 await assertOperationalEnv(envFile)
 
 function run(command: string, commandArgs: string[], outputFile?: string, inputFile?: string) {
-  return new Promise<void>((resolve, reject) => {
-    const child = spawn(command, commandArgs, {
-      stdio: [inputFile ? 'pipe' : 'inherit', outputFile ? 'pipe' : 'inherit', 'inherit'],
-    })
-    if (outputFile) child.stdout!.pipe(createWriteStream(outputFile))
-    if (inputFile) createReadStream(inputFile).pipe(child.stdin!)
-    child.on('error', reject)
-    child.on('close', (code) =>
-      code === 0
-        ? resolve()
-        : reject(new Error(`${command} ${commandArgs.join(' ')} failed (${code})`)),
-    )
-  })
+  return runOperationalProcess(command, commandArgs, { outputFile, inputFile })
 }
 async function capture(commandArgs: string[]) {
   return await new Promise<string>((resolve, reject) => {

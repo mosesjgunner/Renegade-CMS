@@ -1,5 +1,5 @@
 ﻿import { spawn } from 'node:child_process'
-import { createReadStream } from 'node:fs'
+import { runOperationalProcess } from './operational-process'
 import path from 'node:path'
 import { assertRestoreSafety, verifyOperationalBackup } from '../modules/operations/backup'
 import { assertRestoreVersionCompatibility } from '../modules/operations/lifecycle'
@@ -34,18 +34,7 @@ const composeArgs = [
 ]
 await assertOperationalEnv(envFile)
 function run(commandArgs: string[], inputFile?: string) {
-  return new Promise<void>((resolve, reject) => {
-    const child = spawn('docker', commandArgs, {
-      stdio: [inputFile ? 'pipe' : 'inherit', 'inherit', 'inherit'],
-    })
-    if (inputFile) createReadStream(inputFile).pipe(child.stdin!)
-    child.on('error', reject)
-    child.on('close', (code) =>
-      code === 0
-        ? resolve()
-        : reject(new Error(`docker ${commandArgs.join(' ')} failed (${code})`)),
-    )
-  })
+  return runOperationalProcess('docker', commandArgs, { inputFile })
 }
 function capture(commandArgs: string[]) {
   return new Promise<string>((resolve, reject) => {
