@@ -1,0 +1,176 @@
+﻿{
+  "kind": "read-only handoff prerequisite check; not release acceptance",
+  "scriptSha256": "74e06b3f68fdde2fbddc7b40d9ef06ce7e9f9984c0822cf9556b5628a301724e",
+  "candidateSha": "6ca6fb63fee0b68ba64aba13428424f0a17d1d94",
+  "readyToStart": false,
+  "acceptancePass": false,
+  "reasons": ["Sol Stage 6 does not have a leading PASS verdict"],
+  "receipts": [
+    {
+      "stage": 1,
+      "path": "docs/rc/evidence/rc1/stage-01/sol/HANDOFF.md",
+      "status": "STAGE 01 SOL PASS",
+      "sha256": "08fa2931b1646e1156197fdcbfd397fefa512f39a06e21479ef5b0ecd8c88aa4"
+    },
+    {
+      "stage": 2,
+      "path": "docs/rc/evidence/rc1/stage-02/sol/HANDOFF.md",
+      "status": "STAGE 02 SOL PASS",
+      "sha256": "5299e95f402053bacfbe334138b7df6f3355cb0dbe8f90ed791d6f651868a9a5"
+    },
+    {
+      "stage": 3,
+      "path": "docs/rc/evidence/rc1/stage-03/sol/HANDOFF.md",
+      "status": "STAGE 03 SOL PASS",
+      "sha256": "0452bf7dbd3ad1a59529672751e4f0a19e438c95b0f9416b7f9aa6c850e36f32"
+    },
+    {
+      "stage": 4,
+      "path": "docs/rc/evidence/rc1/stage-04/sol/HANDOFF.md",
+      "status": "STAGE 04 SOL PASS",
+      "sha256": "cc26c1c97ffc0bea22349c8982c5698641aa160a579eece830888cbc9919baa0"
+    },
+    {
+      "stage": 5,
+      "path": "docs/rc/evidence/rc1/stage-05/sol/HANDOFF.md",
+      "status": "STAGE 05 SOL PASS",
+      "sha256": "e10ed43713589182abf12b0400377ab09c182cd9014b68f8c9b54216c45cb661"
+    },
+    {
+      "stage": 6,
+      "path": "docs/rc/evidence/rc1/stage-06/sol/HANDOFF.md",
+      "status": "STAGE 06 BLOCKED",
+      "sha256": "a40396b309e34b0f567903aa354e8ab94ebe642e873ab07b020348c54f43ad41"
+    }
+  ],
+  "commands": [
+    {
+      "command": [
+        "git",
+        "-C",
+        "C:\\Projects\\RENEGADE CMS\\rc1-stage07-prepared-6ca6fb63",
+        "rev-parse",
+        "HEAD"
+      ],
+      "exitCode": 0,
+      "output": ["6ca6fb63fee0b68ba64aba13428424f0a17d1d94"]
+    },
+    {
+      "command": [
+        "git",
+        "-C",
+        "C:\\Projects\\RENEGADE CMS\\rc1-stage07-prepared-6ca6fb63",
+        "rev-parse",
+        "HEAD^{tree}"
+      ],
+      "exitCode": 0,
+      "output": ["529a07ca48f24253777c90c623c62e327be38629"]
+    },
+    {
+      "command": [
+        "git",
+        "-C",
+        "C:\\Projects\\RENEGADE CMS\\rc1-stage07-prepared-6ca6fb63",
+        "status",
+        "--porcelain=v1",
+        "--untracked-files=all"
+      ],
+      "exitCode": 0,
+      "output": []
+    },
+    {
+      "command": [
+        "git",
+        "-C",
+        "C:\\Projects\\RENEGADE CMS\\rc1-stage07-prepared-6ca6fb63",
+        "merge-base",
+        "--is-ancestor",
+        "f487dcb67f0649ffc1ecd09b9a47cc845d705f61",
+        "6ca6fb63fee0b68ba64aba13428424f0a17d1d94"
+      ],
+      "exitCode": 0,
+      "output": []
+    },
+    {
+      "command": [
+        "git",
+        "-C",
+        "C:\\Projects\\RENEGADE CMS\\rc1-stage07-prepared-6ca6fb63",
+        "merge-base",
+        "--is-ancestor",
+        "d311396876fabc104826e4375d26feef0b5e2b39",
+        "6ca6fb63fee0b68ba64aba13428424f0a17d1d94"
+      ],
+      "exitCode": 0,
+      "output": []
+    },
+    {
+      "command": [
+        "git",
+        "-C",
+        "C:\\Projects\\RENEGADE CMS\\rc1-stage07-prepared-6ca6fb63",
+        "merge-base",
+        "--is-ancestor",
+        "b5369e78faa228d7e0b4375d9a3147b164363b2c",
+        "6ca6fb63fee0b68ba64aba13428424f0a17d1d94"
+      ],
+      "exitCode": 0,
+      "output": []
+    },
+    {
+      "command": [
+        "git",
+        "-C",
+        "C:\\Projects\\RENEGADE CMS\\rc1-stage07-prepared-6ca6fb63",
+        "merge-base",
+        "--is-ancestor",
+        "f0a728c03d45c284813e2e7c5ea23167394800de",
+        "6ca6fb63fee0b68ba64aba13428424f0a17d1d94"
+      ],
+      "exitCode": 0,
+      "output": []
+    },
+    {
+      "command": [
+        "git",
+        "-C",
+        "C:\\Projects\\RENEGADE CMS\\rc1-stage07-prepared-6ca6fb63",
+        "merge-base",
+        "--is-ancestor",
+        "3f464a6903ff26e7489179df29749f065cb55299",
+        "6ca6fb63fee0b68ba64aba13428424f0a17d1d94"
+      ],
+      "exitCode": 0,
+      "output": []
+    },
+    {
+      "command": [
+        "git",
+        "-C",
+        "C:\\Projects\\RENEGADE CMS\\rc1-stage07-prepared-6ca6fb63",
+        "merge-base",
+        "--is-ancestor",
+        "51fa1c2310519ae478905e365befe6114c5ddcc1",
+        "6ca6fb63fee0b68ba64aba13428424f0a17d1d94"
+      ],
+      "exitCode": 0,
+      "output": []
+    },
+    {
+      "command": [
+        "git",
+        "-C",
+        "C:\\Projects\\RENEGADE CMS\\rc1-stage07-prepared-6ca6fb63",
+        "merge-base",
+        "--is-ancestor",
+        "45713b95d8b0ad28a15c017c10425fbde8cf3532",
+        "6ca6fb63fee0b68ba64aba13428424f0a17d1d94"
+      ],
+      "exitCode": 0,
+      "output": []
+    }
+  ],
+  "environmentFilesRead": false,
+  "runtimeStarted": false,
+  "limitation": "Leading signatures and ancestry are necessary only. Raw execution receipts, dirty Stage 01 manifest, impacted workflows and image binding still require independent review."
+}

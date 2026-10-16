@@ -1,0 +1,56 @@
+import {test,expect} from '@playwright/test'
+import {readFileSync,writeFileSync} from 'node:fs'
+import {api,member} from './helpers'
+
+test('ordinary complimentary entitlement grant and truthful unavailable recurring checkout',async({page,browser,context})=>{
+  await context.addCookies(JSON.parse(readFileSync('scratch/resume-operator.json','utf8')).cookies)
+  const site=(await api(page,'GET','/api/sites?where[id][equals]=e569115f-2594-45ee-9a0f-0214f5f942b5&depth=0')).docs[0]
+  const plan=(await api(page,'POST','/api/plan-revisions',{site:site.id,planKey:`sol-membership-${Date.now()}`,revision:1,name:'Sol membership',lifecycle:'published',interval:'month',intervalCount:1,amountMinor:'1000',currency:'USD',trialDays:0,trialEligibility:'none',entitlements:[{siteId:site.id,resource:'publication',capability:'read-premium',term:'subscription'}],cancelPolicy:'period_end',changePolicy:'period_end',taxPolicy:'exclusive',providerMappings:{},publishedAt:new Date().toISOString()},201)).doc
+  await api(page,'PATCH',`/api/plan-revisions/${plan.id}`,{amountMinor:'1'},403)
+  const customerContext=await browser.newContext({baseURL:process.env.APP_URL,ignoreHTTPSErrors:true})
+  const customer=await customerContext.newPage()
+  try {
+    const digital=(await api(page,'GET','/api/products?where[kind][equals]=digital&limit=10&depth=0')).docs[0]
+    expect(digital).toBeTruthy()
+    const guestCart=await api(customer,'POST','/api/commerce/cart',{productId:digital.id,variantSku:digital.variants[0].sku,quantity:1})
+    await api(customer,'POST','/api/commerce/cart/merge',{},401)
+    const identity=await member(customer,`sol-subscriber-${Date.now()}@example.test`)
+    const memberCookies=await customerContext.cookies()
+    const cookieHeader=memberCookies.map(c=>`${c.name}=${c.value}`).join('; ')
+    const mergeHeaders={cookie:cookieHeader,'x-member-csrf':memberCookies.find(c=>c.name==='renegade-member-csrf')!.value}
+    expect((await customer.request.post('/api/commerce/cart/merge',{data:{},headers:{cookie:cookieHeader}})).status()).toBe(403)
+    const concurrent=await Promise.all([0,1].map(()=>customer.request.post('/api/commerce/cart/merge',{data:{},headers:mergeHeaders})))
+    expect(concurrent.map(r=>r.status()).sort()).toEqual([200,404])
+    const merged=await concurrent.find(r=>r.status()===200)!.json()
+    expect(merged.cart.items.some((item:any)=>item.productId===digital.id)).toBe(true)
+    const persisted=await api(customer,'GET','/api/commerce/cart')
+    expect(persisted.cart.id).toBe(merged.cart.id)
+    expect(persisted.cart.id).not.toBe(guestCart.cart.id)
+    expect(persisted.cart.items.find((item:any)=>item.productId===digital.id).quantity).toBe(1)
+    await api(customer,'POST','/api/commerce/cart/merge',{},[400,404])
+    const listed=await api(customer,'GET','/api/commerce/subscriptions/plans')
+    expect(listed.plans.find((p:any)=>p.id===plan.id).available).toBe(false)
+    const cookies=await customerContext.cookies()
+    const csrf=cookies.find(c=>c.name==='renegade-member-csrf')!.value
+    const checkout=await customer.request.post('/api/commerce/subscriptions/checkout',{data:{planRevisionId:plan.id},headers:{cookie:cookies.map(c=>`${c.name}=${c.value}`).join('; '),'x-member-csrf':csrf,'idempotency-key':`sol-recurring-${Date.now()}`}})
+    expect(checkout.status()).toBe(422)
+    expect((await checkout.json()).error).toContain('no active recurring provider mapping')
+    const before=await api(customer,'GET','/api/commerce/subscriptions')
+    expect(before.subscriptions).toEqual([])
+    const request={siteId:site.id,memberId:identity.memberId,planRevisionId:plan.id,expiresAt:new Date(Date.now()+86400000).toISOString(),reason:'Explicit local complimentary acceptance'}
+    await api(customer,'POST','/api/admin/commerce/subscriptions/grant',{...request,action:'preview'},403)
+    const preview=await api(page,'POST','/api/admin/commerce/subscriptions/grant',{...request,action:'preview'})
+    expect(preview.payment).toBeNull()
+    const granted=await api(page,'POST','/api/admin/commerce/subscriptions/grant',{...request,action:'grant',previewHash:preview.previewHash},201)
+    const replay=await api(page,'POST','/api/admin/commerce/subscriptions/grant',{...request,action:'grant',previewHash:preview.previewHash})
+    expect(replay.subscriptionId).toBe(granted.subscriptionId)
+    const subscriptions=await api(customer,'GET','/api/commerce/subscriptions')
+    expect(subscriptions.subscriptions).toHaveLength(1)
+    const entitlements=await api(page,'GET',`/api/entitlements?where[site][equals]=${site.id}&depth=0`)
+    expect(entitlements.docs.some((e:any)=>e.capability==='read-premium')).toBe(true)
+    await customer.goto('/members/settings')
+    await expect(customer.getByText('Sol membership',{exact:true}).first()).toBeVisible()
+    await customer.screenshot({path:'scratch/resume-business-results/subscription-unconfigured.png',fullPage:true})
+    writeFileSync('scratch/resume-business-results/subscription-boundary.json',JSON.stringify({planId:plan.id,checkoutStatus:422,checkoutCreatedSubscription:false,preview,granted,replay,subscriptions,externalPrerequisite:{adapter:'stripe-test',requiredEnvironmentNames:['COMMERCE_STRIPE_TEST_ENABLED','COMMERCE_STRIPE_TEST_SECRET_KEY','COMMERCE_STRIPE_TEST_WEBHOOK_SECRET'],credentialsProvided:false,approvedSandboxPriceMappingProvided:false,providerOutcomeExecuted:false}},null,2))
+  }finally{await customerContext.close()}
+})

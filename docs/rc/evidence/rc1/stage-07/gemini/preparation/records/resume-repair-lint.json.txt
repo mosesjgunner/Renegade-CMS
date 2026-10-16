@@ -1,0 +1,11 @@
+{
+  "command": [
+    "npm.cmd",
+    "run",
+    "lint"
+  ],
+  "exitCode": 0,
+  "durationSeconds": 31.61414074897766,
+  "sourceSha": "45713b95d8b0ad28a15c017c10425fbde8cf3532",
+  "logSha256": "f011c50578458ac2327c25aef3f14adb7f4fe80201f783faeb93eb2cebd28d66"
+}

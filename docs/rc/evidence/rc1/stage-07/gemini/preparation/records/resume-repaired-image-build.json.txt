@@ -1,0 +1,19 @@
+{
+  "command": [
+    "docker",
+    "build",
+    "--target",
+    "runner",
+    "--build-arg",
+    "APP_VERSION=0.1.0-rc.1",
+    "--build-arg",
+    "BUILD_SHA=51fa1c2310519ae478905e365befe6114c5ddcc1",
+    "--tag",
+    "renegade-cms:sol06-51fa1c23",
+    "."
+  ],
+  "exitCode": 0,
+  "durationSeconds": 337.44232988357544,
+  "sourceSha": "51fa1c2310519ae478905e365befe6114c5ddcc1",
+  "logSha256": "222307b8726e4c71f63d0b0f7424fc5de9c867c2dc3c36d170f0adf3dace295d"
+}

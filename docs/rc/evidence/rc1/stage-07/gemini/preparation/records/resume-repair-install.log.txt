@@ -1,0 +1,24 @@
+npm warn deprecated deep-diff@1.0.2: Package no longer supported. Contact Support at https://www.npmjs.com/support for more info.
+
+> renegade-cms@0.1.0 postinstall
+> node scripts/apply-patches.mjs
+
+Applied ordinary global REST document-lock enforcement patch.
+Applied RC08D-01 patch to getIsLocked.js
+
+added 869 packages, and audited 870 packages in 2m
+
+271 packages are looking for funding
+  run `npm fund` for details
+
+11 vulnerabilities (2 moderate, 9 high)
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.
+npm warn allow-scripts 2 packages have install scripts not yet covered by allowScripts:
+npm warn allow-scripts   esbuild@0.28.2 (postinstall: node install.js)
+npm warn allow-scripts   unrs-resolver@1.12.2 (postinstall: node postinstall.js)
+npm warn allow-scripts
+npm warn allow-scripts Run `npm approve-scripts --allow-scripts-pending` to review, or `npm approve-scripts <pkg>` to allow.

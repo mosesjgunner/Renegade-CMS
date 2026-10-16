@@ -1,0 +1,321 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "--config",
+      "scratch/resume-business.config.ts",
+      "acceptance.spec.ts",
+      "commerce.spec.ts",
+      "--grep",
+      "visitor newsletter|real members|ordinary guest cart"
+    ],
+    "configFile": "C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\resume-business.config.ts",
+    "rootDir": "C:/Projects/RENEGADE CMS/sol-stage06-independent-20261016/scratch/resume-business-specs",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Projects/RENEGADE CMS/sol-stage06-independent-20261016/scratch/sol-browser-artifacts/resume-business-browser",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "C:/Projects/RENEGADE CMS/sol-stage06-independent-20261016/scratch/resume-business-specs",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 900000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "scratch/records/resume-business-browser.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.62.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "acceptance.spec.ts",
+      "file": "acceptance.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "visitor newsletter, real MIME, suppression, re-subscribe and operator delivery recovery",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 900000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 443,
+                  "error": {
+                    "message": "Error: tracing.start: Tracing has been already started",
+                    "stack": "Error: tracing.start: Tracing has been already started\n    at C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\resume-business-specs\\acceptance.spec.ts:123:25",
+                    "location": {
+                      "file": "C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\resume-business-specs\\acceptance.spec.ts",
+                      "column": 25,
+                      "line": 123
+                    },
+                    "snippet": "  121 |   let visitor: BrowserContext | undefined\n  122 |   page.on('pageerror', (error) => errors.push(error.message))\n> 123 |   await context.tracing.start({ screenshots: true, snapshots: true, sources: true })\n      |                         ^\n  124 |   try {\n  125 |     await operator(page)\n  126 |     await context.storageState({ path: 'scratch/resume-operator.json' })"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\resume-business-specs\\acceptance.spec.ts",
+                        "column": 25,
+                        "line": 123
+                      },
+                      "message": "Error: tracing.start: Tracing has been already started\n\n  121 |   let visitor: BrowserContext | undefined\n  122 |   page.on('pageerror', (error) => errors.push(error.message))\n> 123 |   await context.tracing.start({ screenshots: true, snapshots: true, sources: true })\n      |                         ^\n  124 |   try {\n  125 |     await operator(page)\n  126 |     await context.storageState({ path: 'scratch/resume-operator.json' })\n    at C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\resume-business-specs\\acceptance.spec.ts:123:25"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-16T09:26:57.977Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\sol-browser-artifacts\\resume-business-browser\\acceptance-visitor-newslet-64748--operator-delivery-recovery\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\sol-browser-artifacts\\resume-business-browser\\acceptance-visitor-newslet-64748--operator-delivery-recovery\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\sol-browser-artifacts\\resume-business-browser\\acceptance-visitor-newslet-64748--operator-delivery-recovery\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\resume-business-specs\\acceptance.spec.ts",
+                    "column": 25,
+                    "line": 123
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "6bf654160f377cf56a60-db7b332fb7401925ee5c",
+          "file": "acceptance.spec.ts",
+          "line": 115,
+          "column": 1
+        },
+        {
+          "title": "real members, forum reply notification, preferences, moderation, private messages and session persistence",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 900000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 1,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 461,
+                  "error": {
+                    "message": "Error: tracing.start: Tracing has been already started",
+                    "stack": "Error: tracing.start: Tracing has been already started\n    at C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\resume-business-specs\\acceptance.spec.ts:428:25",
+                    "location": {
+                      "file": "C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\resume-business-specs\\acceptance.spec.ts",
+                      "column": 25,
+                      "line": 428
+                    },
+                    "snippet": "  426 |   context,\n  427 | }) => {\n> 428 |   await context.tracing.start({ screenshots: true, snapshots: true, sources: true })\n      |                         ^\n  429 |   const contexts: BrowserContext[] = []\n  430 |   try {\n  431 |     // Second copy can use a separately retained recovery code; the first test saves its authenticated operator state."
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\resume-business-specs\\acceptance.spec.ts",
+                        "column": 25,
+                        "line": 428
+                      },
+                      "message": "Error: tracing.start: Tracing has been already started\n\n  426 |   context,\n  427 | }) => {\n> 428 |   await context.tracing.start({ screenshots: true, snapshots: true, sources: true })\n      |                         ^\n  429 |   const contexts: BrowserContext[] = []\n  430 |   try {\n  431 |     // Second copy can use a separately retained recovery code; the first test saves its authenticated operator state.\n    at C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\resume-business-specs\\acceptance.spec.ts:428:25"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-16T09:27:04.078Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\sol-browser-artifacts\\resume-business-browser\\acceptance-real-members-fo-f26d3-ges-and-session-persistence\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\sol-browser-artifacts\\resume-business-browser\\acceptance-real-members-fo-f26d3-ges-and-session-persistence\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\sol-browser-artifacts\\resume-business-browser\\acceptance-real-members-fo-f26d3-ges-and-session-persistence\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\resume-business-specs\\acceptance.spec.ts",
+                    "column": 25,
+                    "line": 428
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "6bf654160f377cf56a60-7be255022a6954e1ade1",
+          "file": "acceptance.spec.ts",
+          "line": 423,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "commerce.spec.ts",
+      "file": "commerce.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "ordinary guest cart UI, local settlement worker, signed replay, stock reservation and refund",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 900000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 2,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 204,
+                  "error": {
+                    "message": "Error: ENOENT: no such file or directory, open 'C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\resume-operator.json'",
+                    "stack": "Error: ENOENT: no such file or directory, open 'C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\resume-operator.json'\n    at C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\resume-business-specs\\commerce.spec.ts:6:39",
+                    "location": {
+                      "file": "C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\resume-business-specs\\commerce.spec.ts",
+                      "column": 39,
+                      "line": 6
+                    },
+                    "snippet": "  4 |\n  5 | test('ordinary guest cart UI, local settlement worker, signed replay, stock reservation and refund', async ({browser, page, context}) => {\n> 6 |   await context.addCookies(JSON.parse(readFileSync('scratch/resume-operator.json','utf8')).cookies)\n    |                                       ^\n  7 |   const call = async (p:any, method:string, url:string, data?:unknown, code=200) => {\n  8 |     const cookies=await p.context().cookies()\n  9 |     const response=await p.request.fetch(url,{method,data,headers:{cookie:cookies.map((c:any)=>`${c.name}=${c.value}`).join('; ')}})"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\resume-business-specs\\commerce.spec.ts",
+                        "column": 39,
+                        "line": 6
+                      },
+                      "message": "Error: ENOENT: no such file or directory, open 'C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\resume-operator.json'\n\n  4 |\n  5 | test('ordinary guest cart UI, local settlement worker, signed replay, stock reservation and refund', async ({browser, page, context}) => {\n> 6 |   await context.addCookies(JSON.parse(readFileSync('scratch/resume-operator.json','utf8')).cookies)\n    |                                       ^\n  7 |   const call = async (p:any, method:string, url:string, data?:unknown, code=200) => {\n  8 |     const cookies=await p.context().cookies()\n  9 |     const response=await p.request.fetch(url,{method,data,headers:{cookie:cookies.map((c:any)=>`${c.name}=${c.value}`).join('; ')}})\n    at C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\resume-business-specs\\commerce.spec.ts:6:39"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-16T09:27:23.291Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\sol-browser-artifacts\\resume-business-browser\\commerce-ordinary-guest-ca-09c99-tock-reservation-and-refund\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\sol-browser-artifacts\\resume-business-browser\\commerce-ordinary-guest-ca-09c99-tock-reservation-and-refund\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\sol-browser-artifacts\\resume-business-browser\\commerce-ordinary-guest-ca-09c99-tock-reservation-and-refund\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\resume-business-specs\\commerce.spec.ts",
+                    "column": 39,
+                    "line": 6
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "8109404adeb653b0236f-8853fa81e36f9701126f",
+          "file": "commerce.spec.ts",
+          "line": 5,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-16T09:26:56.576Z",
+    "duration": 27146.687,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 3,
+    "flaky": 0
+  }
+}

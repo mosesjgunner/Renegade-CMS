@@ -1,0 +1,14 @@
+{
+  "command": [
+    "npx.cmd",
+    "playwright",
+    "test",
+    "--config",
+    "scratch/resume-business.config.ts",
+    "commerce.spec.ts"
+  ],
+  "exitCode": 1,
+  "durationSeconds": 183.19247889518738,
+  "sourceSha": "51fa1c2310519ae478905e365befe6114c5ddcc1",
+  "logSha256": "5e470d4db753bc237ff0f685ac8cc64ecf92a8959091659d2d86dc204752cc78"
+}

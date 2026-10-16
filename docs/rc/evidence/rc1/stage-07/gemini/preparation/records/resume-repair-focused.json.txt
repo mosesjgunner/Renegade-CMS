@@ -1,0 +1,12 @@
+{
+  "command": [
+    "node",
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "tests/unit/shop-04-local-test-checkout.test.ts"
+  ],
+  "exitCode": 0,
+  "durationSeconds": 1.8512558937072754,
+  "sourceSha": "51fa1c2310519ae478905e365befe6114c5ddcc1",
+  "logSha256": "86fa07dffc9d7ac8570e18bf1d19525e1cce5bf2347a6979e5052e10a6ea59aa"
+}

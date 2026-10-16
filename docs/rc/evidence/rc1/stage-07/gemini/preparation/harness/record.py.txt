@@ -1,0 +1,7 @@
+import os,sys,subprocess,time,json,hashlib
+from pathlib import Path
+label=sys.argv[1];args=sys.argv[2:];out=Path('scratch/records');out.mkdir(exist_ok=True,parents=True)
+start=time.time()
+with (out/(label+'.log')).open('wb') as log:p=subprocess.run(args,stdout=log,stderr=subprocess.STDOUT)
+data=dict(command=args,exitCode=p.returncode,durationSeconds=time.time()-start,sourceSha=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),logSha256=hashlib.sha256((out/(label+'.log')).read_bytes()).hexdigest())
+(out/(label+'.json')).write_text(json.dumps(data,indent=2));print(label,'exit',p.returncode,flush=True);sys.exit(p.returncode)

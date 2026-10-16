@@ -1,0 +1,17 @@
+{
+  "command": [
+    "npx.cmd",
+    "playwright",
+    "test",
+    "--config",
+    "scratch/resume-business.config.ts",
+    "acceptance.spec.ts",
+    "commerce.spec.ts",
+    "--grep",
+    "visitor newsletter|real members|ordinary guest cart"
+  ],
+  "exitCode": 1,
+  "durationSeconds": 30.51885962486267,
+  "sourceSha": "51fa1c2310519ae478905e365befe6114c5ddcc1",
+  "logSha256": "19046e4f7bb6762dca513004229307fd7063bb1dbe3d24522cdbae0895fbe014"
+}

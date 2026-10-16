@@ -1,3 +1,5 @@
+> RC1 handoff preparation, 2026-10-16: **BLOCKED**. Proxy confirmation is repaired and 1,296 units pass, but the new image and mandatory recovery/upgrade/final gates are incomplete. [Current evidence and limits](../rc/evidence/rc1/stage-07/gemini/PREPARATION.md). No accepted distribution or release tag is produced.
+
 > RC1 release draft status, 2026-10-16: **NOT READY; STAGE 07 BLOCKED** by the signed Stage 06 prerequisite. No final candidate/image is accepted for distribution. See the [current blocked handoff](../rc/evidence/rc1/stage-07/gemini/HANDOFF.md). Earlier dated release prose below is historical; no release or tag action was performed.
 
 # Release notes — blocked draft

@@ -1,0 +1,250 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "--config",
+      "scratch/resume-business.config.ts",
+      "acceptance.spec.ts",
+      "commerce.spec.ts",
+      "--grep",
+      "visitor newsletter|real members|ordinary guest cart"
+    ],
+    "configFile": "C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\resume-business.config.ts",
+    "rootDir": "C:/Projects/RENEGADE CMS/sol-stage06-independent-20261016/scratch/resume-business-specs",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 1,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Projects/RENEGADE CMS/sol-stage06-independent-20261016/scratch/sol-browser-artifacts/resume-business-browser-2",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "C:/Projects/RENEGADE CMS/sol-stage06-independent-20261016/scratch/resume-business-specs",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 900000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "scratch/records/resume-business-browser-2.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.62.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "acceptance.spec.ts",
+      "file": "acceptance.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "visitor newsletter, real MIME, suppression, re-subscribe and operator delivery recovery",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 900000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 165803,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-16T09:27:46.077Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "6bf654160f377cf56a60-db7b332fb7401925ee5c",
+          "file": "acceptance.spec.ts",
+          "line": 115,
+          "column": 1
+        },
+        {
+          "title": "real members, forum reply notification, preferences, moderation, private messages and session persistence",
+          "ok": true,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 900000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "passed",
+                  "duration": 57515,
+                  "errors": [],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-16T09:30:32.000Z",
+                  "annotations": [],
+                  "attachments": []
+                }
+              ],
+              "status": "expected"
+            }
+          ],
+          "id": "6bf654160f377cf56a60-7be255022a6954e1ade1",
+          "file": "acceptance.spec.ts",
+          "line": 423,
+          "column": 1
+        }
+      ]
+    },
+    {
+      "title": "commerce.spec.ts",
+      "file": "commerce.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "ordinary guest cart UI, local settlement worker, signed replay, stock reservation and refund",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 900000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 32643,
+                  "error": {
+                    "message": "TimeoutError: locator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('link', { name: /Complete/ })\u001b[22m\n",
+                    "stack": "TimeoutError: locator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('link', { name: /Complete/ })\u001b[22m\n\n    at C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\resume-business-specs\\commerce.spec.ts:55:53",
+                    "location": {
+                      "file": "C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\resume-business-specs\\commerce.spec.ts",
+                      "column": 53,
+                      "line": 55
+                    },
+                    "snippet": "  53 |     expect(proposal.pricingSnapshot.subtotalMinor).toBe('6500')\n  54 |     await buyer.getByRole('button',{name:/Confirm & Pay/}).click()\n> 55 |     await buyer.getByRole('link',{name:/Complete/}).click()\n     |                                                     ^\n  56 |     await expect(buyer.getByRole('heading',{name:'Local test checkout'})).toBeVisible()\n  57 |     const reference=buyer.url().split('/').at(-1)\n  58 |     expect((await rival.request.get(`/checkout/test/${reference}`)).status()).toBe(404)"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\resume-business-specs\\commerce.spec.ts",
+                        "column": 53,
+                        "line": 55
+                      },
+                      "message": "TimeoutError: locator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByRole('link', { name: /Complete/ })\u001b[22m\n\n\n  53 |     expect(proposal.pricingSnapshot.subtotalMinor).toBe('6500')\n  54 |     await buyer.getByRole('button',{name:/Confirm & Pay/}).click()\n> 55 |     await buyer.getByRole('link',{name:/Complete/}).click()\n     |                                                     ^\n  56 |     await expect(buyer.getByRole('heading',{name:'Local test checkout'})).toBeVisible()\n  57 |     const reference=buyer.url().split('/').at(-1)\n  58 |     expect((await rival.request.get(`/checkout/test/${reference}`)).status()).toBe(404)\n    at C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\resume-business-specs\\commerce.spec.ts:55:53"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-16T09:31:29.557Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\sol-browser-artifacts\\resume-business-browser-2\\commerce-ordinary-guest-ca-09c99-tock-reservation-and-refund\\test-failed-1.png"
+                    },
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\sol-browser-artifacts\\resume-business-browser-2\\commerce-ordinary-guest-ca-09c99-tock-reservation-and-refund\\test-failed-3.png"
+                    },
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\sol-browser-artifacts\\resume-business-browser-2\\commerce-ordinary-guest-ca-09c99-tock-reservation-and-refund\\test-failed-2.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\sol-browser-artifacts\\resume-business-browser-2\\commerce-ordinary-guest-ca-09c99-tock-reservation-and-refund\\error-context.md"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\resume-business-specs\\commerce.spec.ts",
+                    "column": 53,
+                    "line": 55
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "8109404adeb653b0236f-8853fa81e36f9701126f",
+          "file": "commerce.spec.ts",
+          "line": 5,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "message": "\u001b[31mTesting stopped early after 1 maximum allowed failures.\u001b[39m"
+    }
+  ],
+  "stats": {
+    "startTime": "2026-10-16T09:27:45.642Z",
+    "duration": 256662.415,
+    "expected": 2,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

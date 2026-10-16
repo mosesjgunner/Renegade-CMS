@@ -1,0 +1,45 @@
+
+Running 3 tests using 1 worker
+
+(node:7460) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ok 1 scratch\resume-business-specs\acceptance.spec.ts:115:1 › visitor newsletter, real MIME, suppression, re-subscribe and operator delivery recovery (2.8m)
+  ok 2 scratch\resume-business-specs\acceptance.spec.ts:423:1 › real members, forum reply notification, preferences, moderation, private messages and session persistence (57.5s)
+  x  3 scratch\resume-business-specs\commerce.spec.ts:5:1 › ordinary guest cart UI, local settlement worker, signed replay, stock reservation and refund (32.6s)
+Testing stopped early after 1 maximum allowed failures.
+
+
+  1) scratch\resume-business-specs\commerce.spec.ts:5:1 › ordinary guest cart UI, local settlement worker, signed replay, stock reservation and refund 
+
+    TimeoutError: locator.click: Timeout 30000ms exceeded.
+    Call log:
+      - waiting for getByRole('link', { name: /Complete/ })
+
+
+      53 |     expect(proposal.pricingSnapshot.subtotalMinor).toBe('6500')
+      54 |     await buyer.getByRole('button',{name:/Confirm & Pay/}).click()
+    > 55 |     await buyer.getByRole('link',{name:/Complete/}).click()
+         |                                                     ^
+      56 |     await expect(buyer.getByRole('heading',{name:'Local test checkout'})).toBeVisible()
+      57 |     const reference=buyer.url().split('/').at(-1)
+      58 |     expect((await rival.request.get(`/checkout/test/${reference}`)).status()).toBe(404)
+        at C:\Projects\RENEGADE CMS\sol-stage06-independent-20261016\scratch\resume-business-specs\commerce.spec.ts:55:53
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    scratch\sol-browser-artifacts\resume-business-browser-2\commerce-ordinary-guest-ca-09c99-tock-reservation-and-refund\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #2: screenshot (image/png) ──────────────────────────────────────────────────────────
+    scratch\sol-browser-artifacts\resume-business-browser-2\commerce-ordinary-guest-ca-09c99-tock-reservation-and-refund\test-failed-3.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    attachment #3: screenshot (image/png) ──────────────────────────────────────────────────────────
+    scratch\sol-browser-artifacts\resume-business-browser-2\commerce-ordinary-guest-ca-09c99-tock-reservation-and-refund\test-failed-2.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: scratch\sol-browser-artifacts\resume-business-browser-2\commerce-ordinary-guest-ca-09c99-tock-reservation-and-refund\error-context.md
+
+  1 failed
+    scratch\resume-business-specs\commerce.spec.ts:5:1 › ordinary guest cart UI, local settlement worker, signed replay, stock reservation and refund 
+  2 passed (4.3m)
+  1 error was not a part of any test, see above for details

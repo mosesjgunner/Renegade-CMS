@@ -1,0 +1,39 @@
+from pathlib import Path
+import json, re, hashlib, subprocess
+root=Path.cwd()
+dest=Path('C:/Projects/RENEGADE CMS/Renegade-CMS/docs/rc/evidence/rc1/stage-07/gemini/preparation')
+dest.mkdir(parents=True,exist_ok=True)
+secretValues=[]
+for f in Path('scratch').glob('*.env'):
+    for line in f.read_text().splitlines():
+        if '=' in line:
+            key,value=line.split('=',1)
+            if re.search('SECRET|PASSWORD|TOKEN|KEY',key) and value: secretValues.append(value)
+token=Path('scratch/bootstrap-token.txt')
+if token.exists(): secretValues.append(token.read_text().strip())
+def sanitize(data):
+    text=data.decode('utf8',errors='replace')
+    for value in secretValues: text=text.replace(value,'[REDACTED_DISPOSABLE_SECRET]')
+    text=re.sub(r'(Renegade CMS setup token[^\r\n]*?: [REDACTED_DISPOSABLE_TOKEN]
+    text=re.sub(r'([?&]token=)[A-Za-z0-9_.-]+',r'\1[REDACTED_TOKEN]',text)
+    return text.encode('utf8')
+records=list(Path('scratch/records').glob('resume-*'))
+records += list(Path('scratch/scratch/records').glob('resume-*'))
+harness=[Path('scratch')/name for name in ['prepare-resume.py','resume-runtime.py','resume-snapshot.py','resume-verify.py','prepare-business-resume.py','resume-business-run.py','resume-business.config.ts','record.py','playwright.config.ts','resume-configure-local-commerce.py','resume-commerce-run.py','prepare-extra-business.py','resume-populated-restore.py','resume-populated-snapshot.py','resume-populated-source.yaml','resume-populated-restore.yaml','resume-local-commerce.yaml','resume-repair-quality.py','resume-after-quality.py','resume-engine-probe.py','smtp.mjs','proxy-switch.mjs','export-resume.py']]
+harness += list(Path('scratch/resume-business-specs').glob('*.ts'))+list(Path('scratch/resume-business-specs').glob('*.mjs'))
+harness += [Path('scratch/specs/restored.spec.ts'),Path('scratch/specs/resume-populated-restored.spec.ts')]
+manifest=[]
+for prefix,paths in [('records',records),('harness',harness),('results',list(Path('scratch/resume-business-results').glob('*.json')))]:
+    for p in paths:
+        if not p.is_file(): continue
+        data=sanitize(p.read_bytes())
+        if any(v.encode() in data for v in secretValues if v): raise ValueError('Unredacted canary')
+        target=dest/prefix/(p.name+'.txt');target.parent.mkdir(exist_ok=True)
+        target.write_bytes(data)
+        manifest.append({'path':str(target.relative_to(dest)).replace('\\','/'),'sha256':hashlib.sha256(data).hexdigest(),'bytes':len(data),'originalPrivatePath':str(p.resolve()),'originalSha256':hashlib.sha256(p.read_bytes()).hexdigest()})
+private=[]
+for pattern in ['scratch/sol-browser-artifacts/resume-*/**/trace.zip','scratch/resume-business-results/*.zip','scratch/private-browser/*.png','scratch/rc04-mail/*.eml','scratch/*-device.json','scratch/resume-final-image-backup/**/database.dump','scratch/resume-final-image-backup/**/media.tar.gz','scratch/resume-populated-backup/**/database.dump','scratch/resume-populated-backup/**/media.tar.gz']:
+    for p in root.glob(pattern):
+        if p.is_file(): private.append({'path':str(p),'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'reason':'private credential-bearing evidence or archive; not exported'})
+(dest/'ARTIFACTS.json').write_text(json.dumps({'purpose':'Stage 06 prerequisite continuation during Stage 07 handoff preparation; not final acceptance','sourceSha':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),'publicFiles':manifest,'privateArtifacts':private,'canaryScan':'all exported copies checked against known disposable environment secret values'},indent=2)+'\n')
+print('Exported',len(manifest),'sanitized files and',len(private),'private evidence hashes')

@@ -1,0 +1,12 @@
+from pathlib import Path
+import json,subprocess,time
+args=['docker','version','--format','{{.Server.Version}}']
+start=time.monotonic()
+try:
+    result=subprocess.run(args,capture_output=True,text=True,timeout=15)
+    data={'command':args,'exitCode':result.returncode,'stdout':result.stdout,'stderr':result.stderr,'status':'completed','durationSeconds':time.monotonic()-start}
+except subprocess.TimeoutExpired:
+    data={'command':args,'exitCode':None,'status':'TIMEOUT','timeoutSeconds':15,'durationSeconds':time.monotonic()-start}
+Path('scratch/records/resume-engine-probe.json').write_text(json.dumps(data,indent=2))
+print(json.dumps(data))
+raise SystemExit(0 if data.get('exitCode')==0 else 1)

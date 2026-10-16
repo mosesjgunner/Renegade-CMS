@@ -1,0 +1,89 @@
+﻿{
+  "verdict": "STAGE 07 BLOCKED",
+  "date": "2026-10-16",
+  "timezone": "America/Chicago",
+  "purpose": "Stage 07 handoff preparation and bounded Stage 06 prerequisite repair; no final acceptance",
+  "preparedCandidate": "6ca6fb63fee0b68ba64aba13428424f0a17d1d94",
+  "preparedCheckout": "C:/Projects/RENEGADE CMS/rc1-stage07-prepared-6ca6fb63",
+  "testedRepairSource": "45713b95d8b0ad28a15c017c10425fbde8cf3532",
+  "quality": {
+    "installExit": 0,
+    "formatExit": 0,
+    "lintExit": 0,
+    "typecheckExit": 0,
+    "unitExit": 0,
+    "unitFiles": 196,
+    "passed": 1296,
+    "failed": 0,
+    "skipped": 0
+  },
+  "earlierImageProof": {
+    "source": "51fa1c2310519ae478905e365befe6114c5ddcc1",
+    "indexDigest": "sha256:7518f5e5555b4c23dbdd350768124c37bb2d2382d2a28fc9e847a5520a5b7f0d",
+    "buildExit": 0,
+    "bootExit": 0,
+    "backupExit": 0,
+    "restoreExit": 0,
+    "browserExit": 0,
+    "browserPassed": 1,
+    "browserFailed": 0,
+    "browserSkipped": 0,
+    "mediaFilesMatched": 21,
+    "tablesMatched": 306,
+    "tablesCompared": 309,
+    "tableDifferences": ["payload_jobs", "payload_jobs_log", "payload_jobs_stats"]
+  },
+  "businessPopulation": {
+    "runtimeSource": "51fa1c2310519ae478905e365befe6114c5ddcc1",
+    "combinedInvocationExit": 1,
+    "passedCases": [
+      "ordinary audience and local SMTP recovery",
+      "ordinary community and private messages"
+    ],
+    "failedCase": "commerce; missing disposable configuration, then confirmation proxy defect independently reproduced",
+    "wholeSuitePassed": false
+  },
+  "repairedImage": {
+    "source": "45713b95d8b0ad28a15c017c10425fbde8cf3532",
+    "buildClientExit": 4294967295,
+    "status": "canceled after shared Docker HTTP 500",
+    "acceptedDigest": null,
+    "engineProbe": "TIMEOUT after 15 seconds",
+    "ownPauseCommandExit": 1,
+    "compilerFailureDiagnosed": false
+  },
+  "unexecutedDependentCases": [
+    "commerce rerun on repaired image",
+    "donation and complimentary subscription population on repaired image",
+    "populated archive/empty restore/ordinary refetch",
+    "interrupted message/outbox/payment/fulfillment effects and pending-work restore",
+    "authentic supported predecessor upgrade/rollback",
+    "all 18 final Stage 07 acceptance gate groups"
+  ],
+  "preflight": {
+    "command": [
+      "powershell.exe",
+      "-NoProfile",
+      "-ExecutionPolicy",
+      "Bypass",
+      "-File",
+      "docs/rc/evidence/rc1/stage-07/gemini/preflight.ps1",
+      "-Repository",
+      "C:/Projects/RENEGADE CMS/rc1-stage07-prepared-6ca6fb63",
+      "-CandidateSha",
+      "6ca6fb63fee0b68ba64aba13428424f0a17d1d94"
+    ],
+    "exitCode": 1,
+    "expectedRefusal": true,
+    "reason": "Sol Stage 6 does not have a leading PASS verdict"
+  },
+  "safety": {
+    "testAuth": false,
+    "externalChargeOrDelivery": false,
+    "existingInstallationLifecycleAction": false,
+    "sharedEngineReset": false,
+    "tagCreatedOrMoved": false,
+    "pushPublishDeploy": false,
+    "additionalMainEditsPreserved": true
+  }
+}

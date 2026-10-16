@@ -1,0 +1,21 @@
+{
+  "command": [
+    "node",
+    "node_modules/tsx/dist/cli.mjs",
+    "src/scripts/operational-restore.ts",
+    "--archive",
+    "scratch\\resume-final-image-backup\\renegade-backup-2026-10-16T09-25-12-918Z",
+    "--target-version",
+    "0.1.0-rc.1",
+    "--isolated",
+    "--authorize-restore",
+    "--compose-file",
+    "scratch/restore.yaml",
+    "--env-file",
+    "scratch/resume-final-restore.env"
+  ],
+  "exitCode": 0,
+  "durationSeconds": 44.0547821521759,
+  "sourceSha": "51fa1c2310519ae478905e365befe6114c5ddcc1",
+  "logSha256": "338ac41f22296413cc67363a91305fa12adaaa28c9cdc9f6a3f8c957000ec3ac"
+}

@@ -1,0 +1,11 @@
+from pathlib import Path
+import subprocess,os,sys,json,hashlib
+env=os.environ.copy()
+private=dict(line.split('=',1) for line in Path('scratch/resume-local-commerce.env').read_text().splitlines() if '=' in line)
+env.update(APP_URL=private['APP_URL'],COMMERCE_TEST_WEBHOOK_SECRET=private['COMMERCE_TEST_WEBHOOK_SECRET'],REPORT_LABEL='resume-commerce-'+sys.argv[1])
+Path('scratch/active-upstream.txt').write_text('3178')
+specs=sys.argv[2:] or ['commerce.spec.ts']
+Path('scratch/records/resume-commerce-harness-'+sys.argv[1]+'.json').write_text(json.dumps({'specs':[{'path':s,'sha256':hashlib.sha256((Path('scratch/resume-business-specs')/s).read_bytes()).hexdigest()} for s in specs],'diagnosticAssertions':'Checkout initiate must return 200 and local confirm must return 303 before awaiting return URL; navigation wait capped at 30 seconds, no behavioral assertions removed'},indent=2))
+args=['npx.cmd','playwright','test','--config','scratch/resume-business.config.ts']+specs
+result=subprocess.run(['python','scratch/record.py','resume-commerce-command-'+sys.argv[1]]+args,env=env)
+raise SystemExit(result.returncode)

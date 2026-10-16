@@ -1,0 +1,20 @@
+from pathlib import Path
+import subprocess,secrets,json
+private=Path('scratch/resume-local-commerce.env')
+env=dict(line.split('=',1) for line in (private if private.exists() else Path('scratch/resume-source.env')).read_text().splitlines() if '=' in line)
+assert env['RENEGADE_INSTANCE']=='solrc06-independent-20261016'
+sha=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
+env.update(BUILD_SHA=sha,RENEGADE_IMAGE_TAG='handoff-'+sha[:8])
+env['COMMERCE_LOCAL_TEST_CHECKOUT_ENABLED']='true'
+for key in ['COMMERCE_GUEST_ORDER_SECRET','COMMERCE_TEST_WEBHOOK_SECRET','COMMERCE_DELIVERY_SECRET']:
+    env.setdefault(key,secrets.token_hex(32))
+Path('scratch/resume-local-commerce.env').write_text('\n'.join(k+'='+v for k,v in env.items())+'\n')
+over='services:\n'
+for service in ['renegade-web','renegade-worker']:
+    over += '  '+service+':\n    environment:\n'
+    for k in ['COMMERCE_LOCAL_TEST_CHECKOUT_ENABLED','COMMERCE_GUEST_ORDER_SECRET','COMMERCE_TEST_WEBHOOK_SECRET','COMMERCE_DELIVERY_SECRET']:
+        over += '      '+k+': ${'+k+'}\n'
+Path('scratch/resume-local-commerce.yaml').write_text(over)
+args=['docker','compose','--project-name',env['RENEGADE_INSTANCE'],'--env-file','scratch/resume-local-commerce.env','-f','scratch/source.yaml','-f','scratch/resume-local-commerce.yaml','up','-d','--no-deps','--no-build','--wait','renegade-web','renegade-worker']
+subprocess.run(['python','scratch/record.py','resume-local-commerce-configuration-'+sha[:8]]+args,check=True)
+print('Explicit local-only checkout enabled for disposable .test origin; test authentication remains off')

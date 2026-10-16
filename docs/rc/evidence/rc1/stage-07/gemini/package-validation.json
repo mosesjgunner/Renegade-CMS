@@ -1,0 +1,30 @@
+{
+  "publicArtifactHashesMatched": 91,
+  "privateArtifactHashesRetained": 36,
+  "localLinksResolved": 35,
+  "preflightSelfHashMatches": true,
+  "preparedCheckoutClean": true,
+  "preparedExecutableSourceEqualsRepair": true,
+  "additionalGeneratedOutputDeletions": [
+    ".next-editorial-2/standalone/public/vendor/minipaint/dist/bundle.js",
+    ".next-editorial-2/standalone/public/vendor/minipaint/dist/bundle.js.LICENSE.txt",
+    ".next-editorial-2/standalone/public/vendor/minipaint/dist/bundle.js.map",
+    ".next-editorial-3/standalone/public/vendor/minipaint/dist/bundle.js",
+    ".next-editorial-3/standalone/public/vendor/minipaint/dist/bundle.js.LICENSE.txt",
+    ".next-editorial-3/standalone/public/vendor/minipaint/dist/bundle.js.map",
+    ".next-editorial/standalone/public/vendor/minipaint/dist/bundle.js",
+    ".next-editorial/standalone/public/vendor/minipaint/dist/bundle.js.LICENSE.txt",
+    ".next-editorial/standalone/public/vendor/minipaint/dist/bundle.js.map",
+    ".next-shop08-restart/standalone/public/vendor/minipaint/dist/bundle.js",
+    ".next-shop08-restart/standalone/public/vendor/minipaint/dist/bundle.js.LICENSE.txt",
+    ".next-shop08-restart/standalone/public/vendor/minipaint/dist/bundle.js.map"
+  ],
+  "generatedOutputsExcludedByDockerContext": true,
+  "documentationFormatCheckExit": 0,
+  "documentationDiffCheckExit": 0,
+  "initialPreflightInvocation": "Windows script policy blocked -File; rerun with process-only -ExecutionPolicy Bypass succeeded as expected refusal; no persistent policy changed",
+  "releaseAcceptance": false,
+  "initialFullTreeValidation": "Initial docs-only allowlist also found 12 deleted generated .next-* bundle files. Final comparison enumerates those paths and verifies Docker excludes them; executable-input comparison remained equal.",
+  "initialRawReceiptDiffCheckExit": 2,
+  "rawReceiptPreservation": "Applied the existing repository evidence-only .gitattributes convention to the three new captured-data directories, preserving literal output whitespace and hashes; preflight script line endings are byte-preserved. Source/test whitespace checks are unchanged."
+}

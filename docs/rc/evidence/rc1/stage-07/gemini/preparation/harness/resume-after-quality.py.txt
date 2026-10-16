@@ -1,0 +1,22 @@
+from pathlib import Path
+import json,subprocess,time
+out=Path('scratch/records')
+deadline=time.monotonic()+900
+while not (out/'resume-repair-unit.json').exists():
+    if time.monotonic()>deadline: raise TimeoutError('Quality prerequisite did not complete')
+    time.sleep(1)
+for gate in ['install','format','lint','types','unit']:
+    assert json.loads((out/('resume-repair-'+gate+'.json')).read_text())['exitCode']==0,gate
+sha=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
+assert sha=='45713b95d8b0ad28a15c017c10425fbde8cf3532'
+assert not subprocess.check_output(['git','status','--porcelain'],text=True).strip()
+def run(args):
+    r=subprocess.run(args)
+    if r.returncode: raise SystemExit(r.returncode)
+run(['python','scratch/record.py','resume-host-and-npm-versions','node','-e',"console.log(JSON.stringify({node:process.version,npm:require('node:child_process').execFileSync('npm.cmd',['--version'],{shell:true}).toString().trim(),platform:process.platform,arch:process.arch}))"])
+run(['python','scratch/record.py','resume-repair-image-build','docker','build','--target','runner','--build-arg','APP_VERSION=0.1.0-rc.1','--build-arg','BUILD_SHA='+sha,'--tag','renegade-cms:handoff-'+sha[:8],'.'])
+run(['python','scratch/resume-configure-local-commerce.py'])
+run(['python','scratch/resume-commerce-run.py','6'])
+run(['python','scratch/resume-commerce-run.py','7','subscriptions.spec.ts','donations.spec.mjs'])
+run(['python','scratch/resume-populated-restore.py'])
+print('Candidate repair, ordinary local business population and populated restore chain completed')

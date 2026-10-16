@@ -1,0 +1,11 @@
+import subprocess,os
+os.environ.update(DATABASE_URL='postgresql://disposable:unreachable@127.0.0.1:1/handoff_repair_release_acceptance',APP_URL='https://dispatch.rc02.test:3179',PAYLOAD_SECRET='unit-only-disposable-secret-at-least-thirty-two-characters',RENEGADE_MODULES='all',LOCAL_E2E_TEST_MODE='false',ENABLE_TEST_ROUTES='false')
+for label,args in [
+ ('install',['npm.cmd','ci','--include=dev']),
+ ('format',['npm.cmd','run','format:check']),
+ ('lint',['npm.cmd','run','lint']),
+ ('types',['npm.cmd','run','typecheck']),
+ ('unit',['npm.cmd','test','--','--reporter=json','--outputFile=scratch/records/resume-repair-unit-results.json'])
+]:
+    r=subprocess.run(['python','scratch/record.py','resume-repair-'+label]+args)
+    if r.returncode: raise SystemExit(r.returncode)

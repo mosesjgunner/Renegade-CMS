@@ -1,0 +1,11 @@
+from pathlib import Path
+import hashlib,json
+base=Path('C:/Projects/RENEGADE CMS/sol-rc04-20261014/scratch/sol-stage04')
+fixture=json.loads(Path('scratch/records/source-business.json').read_text())
+manifest=[]
+for name in ['helpers.ts','subscriptions.spec.ts','donations.spec.mjs']:
+    source=base/name;text=source.read_text()
+    for old,new in [('scratch/sol-owner-authenticator.json','scratch/owner-device.json'),('editor@renegadeparty.test','owner@rc06.example.test'),('where[slug][equals]=renegadeparty','where[id][equals]='+fixture['siteId']),('scratch/sol-stage04-results','scratch/resume-business-results'),('scratch/rc04-operator.json','scratch/resume-operator.json')]: text=text.replace(old,new)
+    target=Path('scratch/resume-business-specs')/name;target.write_text(text)
+    manifest.append({'original':str(source),'originalSha256':hashlib.sha256(source.read_bytes()).hexdigest(),'adapted':str(target),'adaptedSha256':hashlib.sha256(target.read_bytes()).hexdigest()})
+Path('scratch/records/resume-extra-business-harness.json').write_text(json.dumps({'specs':manifest,'assertionsChanged':False,'remoteProviderCalls':False},indent=2))

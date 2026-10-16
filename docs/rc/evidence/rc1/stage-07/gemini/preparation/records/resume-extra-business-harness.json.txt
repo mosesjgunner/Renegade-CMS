@@ -1,0 +1,24 @@
+{
+  "specs": [
+    {
+      "original": "C:\\Projects\\RENEGADE CMS\\sol-rc04-20261014\\scratch\\sol-stage04\\helpers.ts",
+      "originalSha256": "05586457cb6923ebe19a33ac9788a557993ff158d74dd2b2d76544860cc2fe96",
+      "adapted": "scratch\\resume-business-specs\\helpers.ts",
+      "adaptedSha256": "3b2752572c928b285b3bfb6656cb006f2cb80db54be9d684a2174b8172575b4d"
+    },
+    {
+      "original": "C:\\Projects\\RENEGADE CMS\\sol-rc04-20261014\\scratch\\sol-stage04\\subscriptions.spec.ts",
+      "originalSha256": "0c2c9b87917b513ccc9bc0ef6563366ec2ad261dc505accb5d0645678151e214",
+      "adapted": "scratch\\resume-business-specs\\subscriptions.spec.ts",
+      "adaptedSha256": "4b7c4b8d1ae48f359eb06b91d78cc85f17a9fad839b67cd42a61faa3394566ad"
+    },
+    {
+      "original": "C:\\Projects\\RENEGADE CMS\\sol-rc04-20261014\\scratch\\sol-stage04\\donations.spec.mjs",
+      "originalSha256": "b05d9928f3d56efe2fe3345e002aa666d77006774676e87b2650a072f9d24910",
+      "adapted": "scratch\\resume-business-specs\\donations.spec.mjs",
+      "adaptedSha256": "2dd1b43cba24ac4c2e5a6e797b94eee4652db3abd87d1e343976a5d5b19f70b2"
+    }
+  ],
+  "assertionsChanged": false,
+  "remoteProviderCalls": false
+}

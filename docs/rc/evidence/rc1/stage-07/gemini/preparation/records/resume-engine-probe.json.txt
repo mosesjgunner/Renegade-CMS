@@ -1,0 +1,12 @@
+{
+  "command": [
+    "docker",
+    "version",
+    "--format",
+    "{{.Server.Version}}"
+  ],
+  "exitCode": null,
+  "status": "TIMEOUT",
+  "timeoutSeconds": 15,
+  "durationSeconds": 15.025269400008256
+}

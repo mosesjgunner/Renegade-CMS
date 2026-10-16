@@ -1,0 +1,34 @@
+from pathlib import Path
+import subprocess, os, json, time, threading, sys
+attempt = sys.argv[1] if len(sys.argv)>1 else '2'
+env = os.environ.copy()
+env.update(APP_URL='https://dispatch.rc02.test:3179', COMMERCE_TEST_WEBHOOK_SECRET='development-only', REPORT_LABEL='resume-business-browser-'+attempt)
+Path('scratch/active-upstream.txt').write_text('3178')
+Path('scratch/rc04-worker-mode.txt').write_text('smtp')
+Path('scratch/rc04-worker-restart.json').write_text(json.dumps({'mode':'smtp','boundary':'existing disposable production worker'}))
+Path('scratch/resume-disabled-worker.yaml').write_text("services:\n  renegade-worker:\n    environment:\n      EMAIL_MODE: disabled\n")
+stop = threading.Event()
+failures = []
+def control():
+    mode = 'smtp'
+    while not stop.wait(0.5):
+        desired = Path('scratch/rc04-worker-mode.txt').read_text().strip()
+        if desired == mode: continue
+        if desired not in ['smtp','disabled']: failures.append('Invalid worker mode'); return
+        args=['docker','compose','--project-name','solrc06-independent-20261016','--env-file','scratch/resume-source.env','-f','scratch/source.yaml']
+        if desired == 'disabled': args += ['-f','scratch/resume-disabled-worker.yaml']
+        args += ['up','-d','--no-deps','--no-build','--wait','renegade-worker']
+        r = subprocess.run(['python','scratch/record.py','resume-worker-mode-'+desired+'-'+attempt]+args, timeout=180)
+        if r.returncode: failures.append('Worker mode recreation failed'); return
+        mode = desired
+        Path('scratch/rc04-worker-restart.json').write_text(json.dumps({'mode':mode,'realComposeRecreation':True}))
+thread = threading.Thread(target=control,daemon=True);thread.start()
+try:
+    # First populate audience and real member/community history, then commerce.
+    args=['npx.cmd','playwright','test','--config','scratch/resume-business.config.ts','acceptance.spec.ts','commerce.spec.ts','--grep','visitor newsletter|real members|ordinary guest cart']
+    result = subprocess.run(['python','scratch/record.py','resume-business-command-'+attempt]+args,env=env)
+finally:
+    stop.set();thread.join(timeout=190)
+    Path('scratch/rc04-smtp-mode.txt').write_text('accept')
+if failures: print('Controller failures:',failures);raise SystemExit(1)
+raise SystemExit(result.returncode)

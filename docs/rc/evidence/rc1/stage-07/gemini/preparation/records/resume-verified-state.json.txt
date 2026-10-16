@@ -1,0 +1,74 @@
+{
+  "sourceSha": "51fa1c2310519ae478905e365befe6114c5ddcc1",
+  "indexDigest": "sha256:7518f5e5555b4c23dbdd350768124c37bb2d2382d2a28fc9e847a5520a5b7f0d",
+  "mediaFilesExpected": 21,
+  "mediaFilesMatched": 21,
+  "mediaDifferences": {},
+  "tableCount": 309,
+  "tablesMatching": 306,
+  "tableDifferences": {
+    "payload_jobs_stats": {
+      "source": {
+        "rows": 1,
+        "rowDigestMd5": "ddbc7ee83f1d9f486b0a7d0c29ff6756"
+      },
+      "restored": {
+        "rows": 1,
+        "rowDigestMd5": "66f7c74589a94815e4a458d08d03c495"
+      }
+    },
+    "payload_jobs_log": {
+      "source": {
+        "rows": 3949,
+        "rowDigestMd5": "b195a24436e1a0805855b2879f0a5c0f"
+      },
+      "restored": {
+        "rows": 3939,
+        "rowDigestMd5": "bd858082dfade5ac857f577952cd7436"
+      }
+    },
+    "payload_jobs": {
+      "source": {
+        "rows": 3953,
+        "rowDigestMd5": "8a459f22297387f94c00a597eed0fe32"
+      },
+      "restored": {
+        "rows": 3943,
+        "rowDigestMd5": "8e9572564d76a99ab4241e3e665ab21e"
+      }
+    }
+  },
+  "services": [
+    {
+      "name": "/solrc06-resume-restored-20261016-renegade-web-1",
+      "imageConfigId": "sha256:7518f5e5555b4c23dbdd350768124c37bb2d2382d2a28fc9e847a5520a5b7f0d",
+      "configuredImage": "renegade-cms:sol06-51fa1c23",
+      "user": "nextjs",
+      "health": "healthy",
+      "testAuth": false,
+      "buildSha": "51fa1c2310519ae478905e365befe6114c5ddcc1",
+      "mounts": [
+        {
+          "name": "solrc06-resume-restored-20261016_renegade_restore_media",
+          "destination": "/app/media"
+        }
+      ]
+    },
+    {
+      "name": "/solrc06-resume-restored-20261016-renegade-worker-1",
+      "imageConfigId": "sha256:7518f5e5555b4c23dbdd350768124c37bb2d2382d2a28fc9e847a5520a5b7f0d",
+      "configuredImage": "renegade-cms:sol06-51fa1c23",
+      "user": "nextjs",
+      "health": "healthy",
+      "testAuth": false,
+      "buildSha": "51fa1c2310519ae478905e365befe6114c5ddcc1",
+      "mounts": [
+        {
+          "name": "solrc06-resume-restored-20261016_renegade_restore_media",
+          "destination": "/app/media"
+        }
+      ]
+    }
+  ],
+  "scope": "repaired image boot, ordinary auth and bounded media/content/identity restore; not complete business recovery or predecessor upgrade"
+}

@@ -1,0 +1,11 @@
+{
+  "command": [
+    "npm.cmd",
+    "ci",
+    "--include=dev"
+  ],
+  "exitCode": 0,
+  "durationSeconds": 95.98930764198303,
+  "sourceSha": "45713b95d8b0ad28a15c017c10425fbde8cf3532",
+  "logSha256": "06813b7b2d3e68a9a01134e069971bf70d7299ce7f4c957a68f6355c97b69fcf"
+}

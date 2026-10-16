@@ -1,0 +1,454 @@
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 4.00kB 0.0s done
+#1 DONE 0.1s
+
+#2 [internal] load metadata for docker.io/library/golang:1.27.2-alpine
+#2 ...
+
+#3 [auth] library/golang:pull token for registry-1.docker.io
+#3 DONE 0.0s
+
+#4 [auth] library/node:pull token for registry-1.docker.io
+#4 DONE 0.0s
+
+#5 [internal] load metadata for docker.io/library/node:24-alpine
+#5 ...
+
+#2 [internal] load metadata for docker.io/library/golang:1.27.2-alpine
+#2 DONE 1.0s
+
+#5 [internal] load metadata for docker.io/library/node:24-alpine
+#5 DONE 1.0s
+
+#6 [internal] load .dockerignore
+#6 transferring context: 290B done
+#6 DONE 0.0s
+
+#7 [esbuild-runtime 3/4] ADD --checksum=sha256:04cb2d38fb6af093577aa8bf174add7286099b65ef7854480cbbb8ff061cef1f https://codeload.github.com/evanw/esbuild/tar.gz/609683d892977362a0f99026cb74b96263d728a9 /tmp/esbuild.tar.gz
+#7 DONE 0.0s
+
+#8 [esbuild-runtime 1/4] FROM docker.io/library/golang:1.27.2-alpine@sha256:f92b6ef800e499660581efdabdf25d9d817a9d124eaf900924f0504e7e27e12d
+#8 resolve docker.io/library/golang:1.27.2-alpine@sha256:f92b6ef800e499660581efdabdf25d9d817a9d124eaf900924f0504e7e27e12d 0.0s done
+#8 DONE 0.0s
+
+#9 [production-dependencies 1/5] FROM docker.io/library/node:24-alpine@sha256:44fce696f38ba8c987c4db89954051000bbd05ffd8d8659ba15ed4a8602e937f
+#9 resolve docker.io/library/node:24-alpine@sha256:44fce696f38ba8c987c4db89954051000bbd05ffd8d8659ba15ed4a8602e937f 0.0s done
+#9 DONE 0.0s
+
+#10 [production-dependencies 2/5] WORKDIR /app
+#10 CACHED
+
+#11 [runner  3/18] RUN npm install --global npm@12.2.0 &&     npm install --prefix /opt/npm-patches --ignore-scripts --no-audit --no-fund --save-exact brace-expansion@5.0.12 undici@6.28.1 &&     rm -rf /usr/local/lib/node_modules/npm/node_modules/brace-expansion /usr/local/lib/node_modules/npm/node_modules/undici &&     cp -a /opt/npm-patches/node_modules/brace-expansion /usr/local/lib/node_modules/npm/node_modules/brace-expansion &&     cp -a /opt/npm-patches/node_modules/undici /usr/local/lib/node_modules/npm/node_modules/undici &&     rm -rf /opt/npm-patches
+#11 CACHED
+
+#12 [runner  4/18] RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 nextjs
+#12 CACHED
+
+#13 [runner  5/18] RUN mkdir -p /app/media /tmp/renegade-worker && chown -R nextjs:nodejs /app /tmp/renegade-worker
+#13 CACHED
+
+#14 [internal] load build context
+#14 transferring context: 307.06kB 0.7s done
+#14 DONE 0.8s
+
+#15 [dependencies 5/5] RUN npm ci
+#15 CACHED
+
+#16 [builder 3/5] COPY --from=dependencies /app/node_modules ./node_modules
+#16 CACHED
+
+#17 [production-dependencies 3/5] COPY package.json package-lock.json ./
+#17 CACHED
+
+#18 [production-dependencies 4/5] COPY scripts ./scripts
+#18 CACHED
+
+#19 [builder 4/5] COPY . .
+#19 CACHED
+
+#20 [builder 5/5] RUN npm run build
+#20 1.593 
+#20 1.593 > renegade-cms@0.1.0 build
+#20 1.593 > node scripts/build.mjs
+#20 1.593 
+#20 2.458 ▲ Next.js 16.3.8 (Turbopack)
+#20 2.797 ✓ Running next.config.ts took 337ms
+#20 2.811 Attention: Next.js now collects completely anonymous telemetry regarding usage.
+#20 2.811 This information is used to shape Next.js' roadmap and prioritize features.
+#20 2.811 You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+#20 2.811 https://nextjs.org/telemetry
+#20 2.811 
+#20 2.839 - Experiments (use with caution):
+#20 2.839   ⨯ turbopackServerFastRefresh
+#20 2.839   ✓ webpackMemoryOptimizations
+#20 2.841 
+#20 2.956   Creating an optimized production build ...
+#20 202.1 ✓ Compiled successfully in 3.3min
+#20 202.1   Running TypeScript ...
+#20 215.2 ✓ Finished writing to filesystem cache in 13.7s
+#20 262.5   Finished TypeScript in 60s ...
+#20 262.5   Collecting page data using 7 workers ...
+#20 266.0   Generating static pages using 7 workers (0/144) ...
+#20 266.0   Generating static pages using 7 workers (36/144) 
+#20 266.1   Generating static pages using 7 workers (72/144) 
+#20 266.1   Generating static pages using 7 workers (108/144) 
+#20 266.3 ✓ Generating static pages using 7 workers (144/144) in 311ms
+#20 266.3   Finalizing page optimization ...
+#20 267.9 
+#20 267.9 Route (app)
+#20 267.9 ┌ ƒ /
+#20 267.9 ├ ○ /_not-found
+#20 267.9 ├ ƒ /.well-known/nodeinfo
+#20 267.9 ├ ƒ /.well-known/webfinger
+#20 267.9 ├ ƒ /[...path]
+#20 267.9 ├ ƒ /admin/[[...segments]]
+#20 267.9 ├ ƒ /admin/ai
+#20 267.9 ├ ƒ /admin/audience
+#20 267.9 ├ ƒ /admin/catalog
+#20 267.9 ├ ƒ /admin/catalog/preview/[id]
+#20 267.9 ├ ƒ /admin/commerce
+#20 267.9 ├ ƒ /admin/fulfillment
+#20 267.9 ├ ƒ /admin/migration
+#20 267.9 ├ ƒ /admin/releases
+#20 267.9 ├ ƒ /admin/social
+#20 267.9 ├ ƒ /admin/telemetry
+#20 267.9 ├ ƒ /admin/workflow
+#20 267.9 ├ ƒ /ap/actors/[handle]
+#20 267.9 ├ ƒ /ap/actors/[handle]/followers
+#20 267.9 ├ ƒ /ap/actors/[handle]/following
+#20 267.9 ├ ƒ /ap/actors/[handle]/inbox
+#20 267.9 ├ ƒ /ap/actors/[handle]/outbox
+#20 267.9 ├ ƒ /api/[...slug]
+#20 267.9 ├ ƒ /api/admin/ai/connections
+#20 267.9 ├ ƒ /api/admin/ai/preview
+#20 267.9 ├ ƒ /api/admin/ai/proposals
+#20 267.9 ├ ƒ /api/admin/ai/proposals/[id]
+#20 267.9 ├ ƒ /api/admin/ai/sites
+#20 267.9 ├ ƒ /api/admin/audience/command-center
+#20 267.9 ├ ƒ /api/admin/audience/intake
+#20 267.9 ├ ƒ /api/admin/audience/retry
+#20 267.9 ├ ƒ /api/admin/calendar/schedule
+#20 267.9 ├ ƒ /api/admin/catalog
+#20 267.9 ├ ƒ /api/admin/catalog/import
+#20 267.9 ├ ƒ /api/admin/commerce/affiliate
+#20 267.9 ├ ƒ /api/admin/commerce/dashboard
+#20 267.9 ├ ƒ /api/admin/commerce/donations
+#20 267.9 ├ ƒ /api/admin/commerce/receipts/[orderId]/resend
+#20 267.9 ├ ƒ /api/admin/commerce/reconcile
+#20 267.9 ├ ƒ /api/admin/commerce/refunds
+#20 267.9 ├ ƒ /api/admin/commerce/subscriptions
+#20 267.9 ├ ƒ /api/admin/commerce/subscriptions/grant
+#20 267.9 ├ ƒ /api/admin/commerce/webhooks/[eventId]/retry
+#20 267.9 ├ ƒ /api/admin/content/preview
+#20 267.9 ├ ƒ /api/admin/discovery
+#20 267.9 ├ ƒ /api/admin/discovery/ai-suggestion/accept
+#20 267.9 ├ ƒ /api/admin/discovery/audit
+#20 267.9 ├ ƒ /api/admin/fulfillment
+#20 267.9 ├ ƒ /api/admin/indexing/export
+#20 267.9 ├ ƒ /api/admin/indexing/search/reconcile
+#20 267.9 ├ ƒ /api/admin/integrations
+#20 267.9 ├ ƒ /api/admin/navigation
+#20 267.9 ├ ƒ /api/admin/notifications
+#20 267.9 ├ ƒ /api/admin/redirects
+#20 267.9 ├ ƒ /api/admin/redirects/export
+#20 267.9 ├ ƒ /api/admin/redirects/import
+#20 267.9 ├ ƒ /api/admin/releases
+#20 267.9 ├ ƒ /api/admin/releases/[id]
+#20 267.9 ├ ƒ /api/admin/schedule-health
+#20 267.9 ├ ƒ /api/admin/semantic-url/preview
+#20 267.9 ├ ƒ /api/admin/social/accounts
+#20 267.9 ├ ƒ /api/admin/social/analytics
+#20 267.9 ├ ƒ /api/admin/social/dispatch
+#20 267.9 ├ ƒ /api/admin/social/worker
+#20 267.9 ├ ƒ /api/admin/staff/invite
+#20 267.9 ├ ƒ /api/admin/starters
+#20 267.9 ├ ƒ /api/admin/telecom/simulate
+#20 267.9 ├ ƒ /api/admin/telemetry/dashboard
+#20 267.9 ├ ƒ /api/admin/telemetry/experiment/winner
+#20 267.9 ├ ƒ /api/admin/telemetry/funnel
+#20 267.9 ├ ƒ /api/admin/themes
+#20 267.9 ├ ƒ /api/admin/translations
+#20 267.9 ├ ƒ /api/admin/webhooks
+#20 267.9 ├ ƒ /api/admin/workflow/actions
+#20 267.9 ├ ƒ /api/admin/workflow/audit
+#20 267.9 ├ ƒ /api/admin/workflow/bulk
+#20 267.9 ├ ƒ /api/admin/workflow/command-center
+#20 267.9 ├ ƒ /api/admin/workflow/comments
+#20 267.9 ├ ƒ /api/admin/workflow/queues
+#20 267.9 ├ ƒ /api/admin/workflow/templates
+#20 267.9 ├ ƒ /api/analytics/collect
+#20 267.9 ├ ƒ /api/analytics/consent
+#20 267.9 ├ ƒ /api/analytics/report
+#20 267.9 ├ ƒ /api/auth/enrollment
+#20 267.9 ├ ƒ /api/auth/logout
+#20 267.9 ├ ƒ /api/auth/passkey/complete
+#20 267.9 ├ ƒ /api/auth/passkey/enroll
+#20 267.9 ├ ƒ /api/auth/passkey/options
+#20 267.9 ├ ƒ /api/auth/passkeys
+#20 267.9 ├ ƒ /api/auth/recovery
+#20 267.9 ├ ƒ /api/calendar/export
+#20 267.9 ├ ƒ /api/commerce/affiliate/conversions
+#20 267.9 ├ ƒ /api/commerce/affiliate/redirect
+#20 267.9 ├ ƒ /api/commerce/cart
+#20 267.9 ├ ƒ /api/commerce/cart/merge
+#20 267.9 ├ ƒ /api/commerce/checkout/initiate
+#20 267.9 ├ ƒ /api/commerce/checkout/methods
+#20 267.9 ├ ƒ /api/commerce/checkout/status
+#20 267.9 ├ ƒ /api/commerce/checkout/test/confirm
+#20 267.9 ├ ƒ /api/commerce/crypto/verify
+#20 267.9 ├ ƒ /api/commerce/donations/campaign/[campaignId]
+#20 267.9 ├ ƒ /api/commerce/donations/intent
+#20 267.9 ├ ƒ /api/commerce/donations/privacy
+#20 267.9 ├ ƒ /api/commerce/download/[grantKey]
+#20 267.9 ├ ƒ /api/commerce/proposal
+#20 267.9 ├ ƒ /api/commerce/referrals/claim
+#20 267.9 ├ ƒ /api/commerce/subscriptions
+#20 267.9 ├ ƒ /api/commerce/subscriptions/checkout
+#20 267.9 ├ ƒ /api/commerce/subscriptions/plans
+#20 267.9 ├ ƒ /api/commerce/webhooks/[provider]
+#20 267.9 ├ ƒ /api/community/blocks
+#20 267.9 ├ ƒ /api/community/comments
+#20 267.9 ├ ƒ /api/community/conversations
+#20 267.9 ├ ƒ /api/community/conversations/[conversationId]
+#20 267.9 ├ ƒ /api/community/directory
+#20 267.9 ├ ƒ /api/community/history
+#20 267.9 ├ ƒ /api/community/message-requests
+#20 267.9 ├ ƒ /api/community/messages
+#20 267.9 ├ ƒ /api/community/messages/report
+#20 267.9 ├ ƒ /api/community/moderation
+#20 267.9 ├ ƒ /api/community/moderation-sites
+#20 267.9 ├ ƒ /api/community/moderation/appeals
+#20 267.9 ├ ƒ /api/community/notification-preferences
+#20 267.9 ├ ƒ /api/community/notification-unsubscribe
+#20 267.9 ├ ƒ /api/community/notifications
+#20 267.9 ├ ƒ /api/community/posts
+#20 267.9 ├ ƒ /api/community/profiles/[handle]
+#20 267.9 ├ ƒ /api/community/reactions
+#20 267.9 ├ ƒ /api/community/relationships
+#20 267.9 ├ ƒ /api/community/reports
+#20 267.9 ├ ƒ /api/community/threads
+#20 267.9 ├ ƒ /api/email/webhook
+#20 267.9 ├ ƒ /api/experiences/active
+#20 267.9 ├ ƒ /api/experiences/conversion
+#20 267.9 ├ ƒ /api/experiences/exposure
+#20 267.9 ├ ƒ /api/forms/[formId]
+#20 267.9 ├ ƒ /api/foundation-smoke
+#20 267.9 ├ ƒ /api/graphql
+#20 267.9 ├ ƒ /api/graphql-playground
+#20 267.9 ├ ƒ /api/layouts
+#20 267.9 ├ ƒ /api/layouts/[id]
+#20 267.9 ├ ƒ /api/layouts/[id]/choices
+#20 267.9 ├ ƒ /api/layouts/[id]/rollback
+#20 267.9 ├ ƒ /api/layouts/overview
+#20 267.9 ├ ƒ /api/layouts/patterns
+#20 267.9 ├ ƒ /api/layouts/templates
+#20 267.9 ├ ƒ /api/media
+#20 267.9 ├ ƒ /api/media/[id]
+#20 267.9 ├ ƒ /api/media/[id]/variants
+#20 267.9 ├ ƒ /api/media/attach
+#20 267.9 ├ ƒ /api/media/command-center
+#20 267.9 ├ ƒ /api/media/governance
+#20 267.9 ├ ƒ /api/media/sessions
+#20 267.9 ├ ƒ /api/media/sessions/[id]
+#20 267.9 ├ ƒ /api/media/upload
+#20 267.9 ├ ƒ /api/member-auth/deactivate
+#20 267.9 ├ ƒ /api/member-auth/delete
+#20 267.9 ├ ƒ /api/member-auth/export
+#20 267.9 ├ ƒ /api/member-auth/link
+#20 267.9 ├ ƒ /api/member-auth/link/email
+#20 267.9 ├ ƒ /api/member-auth/link/email/confirm
+#20 267.9 ├ ƒ /api/member-auth/logout
+#20 267.9 ├ ƒ /api/member-auth/magic-link/complete
+#20 267.9 ├ ƒ /api/member-auth/magic-link/request
+#20 267.9 ├ ƒ /api/member-auth/me
+#20 267.9 ├ ƒ /api/member-auth/passkey/login/complete
+#20 267.9 ├ ƒ /api/member-auth/passkey/login/options
+#20 267.9 ├ ƒ /api/member-auth/passkey/register/complete
+#20 267.9 ├ ƒ /api/member-auth/passkey/register/options
+#20 267.9 ├ ƒ /api/member-auth/profile
+#20 267.9 ├ ƒ /api/member-auth/profile-media
+#20 267.9 ├ ƒ /api/member-auth/reactivate
+#20 267.9 ├ ƒ /api/member-auth/sessions
+#20 267.9 ├ ƒ /api/member-auth/sessions/[id]/revoke
+#20 267.9 ├ ƒ /api/member-auth/sessions/revoke-all
+#20 267.9 ├ ƒ /api/member-auth/unlink
+#20 267.9 ├ ƒ /api/migration/legacy/activate/[runId]
+#20 267.9 ├ ƒ /api/migration/legacy/execute
+#20 267.9 ├ ƒ /api/migration/legacy/inspect
+#20 267.9 ├ ƒ /api/migration/legacy/preflight
+#20 267.9 ├ ƒ /api/migration/legacy/report/[runId]
+#20 267.9 ├ ƒ /api/migration/legacy/rollback/[runId]
+#20 267.9 ├ ƒ /api/operations/diagnostics
+#20 267.9 ├ ƒ /api/operations/support-bundle
+#20 267.9 ├ ƒ /api/presentation/export
+#20 267.9 ├ ƒ /api/presentation/import
+#20 267.9 ├ ƒ /api/realtime/drafts/[articleId]/checkpoint
+#20 267.9 ├ ƒ /api/realtime/presence
+#20 267.9 ├ ƒ /api/realtime/stream
+#20 267.9 ├ ƒ /api/setup/complete
+#20 267.9 ├ ƒ /api/setup/options
+#20 267.9 ├ ƒ /api/setup/readiness
+#20 267.9 ├ ƒ /api/subscribers/confirm
+#20 267.9 ├ ƒ /api/subscribers/preferences
+#20 267.9 ├ ƒ /api/subscribers/subscribe
+#20 267.9 ├ ƒ /api/subscribers/unsubscribe
+#20 267.9 ├ ƒ /api/v1/[...segments]
+#20 267.9 ├ ƒ /api/v1/attachments/presign
+#20 267.9 ├ ƒ /api/v1/moderation/cases
+#20 267.9 ├ ƒ /api/v1/moderation/cases/batch
+#20 267.9 ├ ƒ /api/v1/moderation/cases/export
+#20 267.9 ├ ƒ /api/v1/notifications
+#20 267.9 ├ ƒ /api/v1/notifications/[id]/read
+#20 267.9 ├ ƒ /api/v1/notifications/mark-all-read
+#20 267.9 ├ ƒ /api/v1/notifications/stream
+#20 267.9 ├ ƒ /api/v1/sites/[site_id]/comments/[comment_id]/reactions
+#20 267.9 ├ ƒ /api/v1/sites/[site_id]/spaces/[space_id]
+#20 267.9 ├ ƒ /api/v1/sites/[site_id]/threads/[thread_id]
+#20 267.9 ├ ƒ /api/v1/sites/[site_id]/threads/[thread_id]/comments
+#20 267.9 ├ ƒ /api/v1/sites/[site_id]/threads/[thread_id]/comments/[comment_id]
+#20 267.9 ├ ƒ /api/v1/sites/[site_id]/threads/[thread_id]/subscriptions
+#20 267.9 ├ ƒ /api/v1/sites/[site_id]/topics
+#20 267.9 ├ ƒ /api/v1/sites/[site_id]/topics/[topic_id]
+#20 267.9 ├ ƒ /api/v1/sites/[site_id]/topics/[topic_id]/read
+#20 267.9 ├ ƒ /articles
+#20 267.9 ├ ƒ /articles/[slug]
+#20 267.9 ├ ƒ /builder/[id]
+#20 267.9 ├ ƒ /builder/[id]/preview
+#20 267.9 ├ ƒ /calendar
+#20 267.9 ├ ƒ /cart
+#20 267.9 ├ ƒ /checkout/cancel
+#20 267.9 ├ ƒ /checkout/return
+#20 267.9 ├ ƒ /checkout/test/[reference]
+#20 267.9 ├ ƒ /connections
+#20 267.9 ├ ƒ /donate
+#20 267.9 ├ ƒ /donate/[campaignId]
+#20 267.9 ├ ƒ /enroll
+#20 267.9 ├ ƒ /events
+#20 267.9 ├ ƒ /events/[slug]/ics
+#20 267.9 ├ ƒ /events/feed.ics
+#20 267.9 ├ ƒ /feed.json
+#20 267.9 ├ ƒ /feed.xml
+#20 267.9 ├ ƒ /feeds/[scope]/[slug]
+#20 267.9 ├ ƒ /forms/[formId]
+#20 267.9 ├ ƒ /forums
+#20 267.9 ├ ƒ /forums/[forumSlug]
+#20 267.9 ├ ƒ /forums/[forumSlug]/[topicSlug]
+#20 267.9 ├ ƒ /graphics-studio
+#20 267.9 ├ ƒ /guided-setup
+#20 267.9 ├ ƒ /health/live
+#20 267.9 ├ ƒ /health/ready
+#20 267.9 ├ ƒ /login
+#20 267.9 ├ ƒ /media/[id]
+#20 267.9 ├ ƒ /member-auth
+#20 267.9 ├ ƒ /member-auth/verify
+#20 267.9 ├ ƒ /members
+#20 267.9 ├ ƒ /members/[handle]
+#20 267.9 ├ ƒ /members/settings
+#20 267.9 ├ ƒ /messages
+#20 267.9 ├ ƒ /network
+#20 267.9 ├ ƒ /nodeinfo/2.1
+#20 267.9 ├ ƒ /notifications
+#20 267.9 ├ ƒ /ops/rebuild-notification-counters
+#20 267.9 ├ ƒ /podcasts/[slug]
+#20 267.9 ├ ƒ /podcasts/[slug]/feed.xml
+#20 267.9 ├ ƒ /podcasts/episodes/[slug]
+#20 267.9 ├ ƒ /podcasts/episodes/[slug]/chapters.json
+#20 267.9 ├ ƒ /podcasts/episodes/[slug]/transcript
+#20 267.9 ├ ƒ /pos
+#20 267.9 ├ ƒ /preferences
+#20 267.9 ├ ƒ /preview/article/[token]
+#20 267.9 ├ ƒ /robots.txt
+#20 267.9 ├ ƒ /search
+#20 267.9 ├ ƒ /setup
+#20 267.9 ├ ƒ /sitemap.xml
+#20 267.9 ├ ƒ /sitemaps/[page]
+#20 267.9 ├ ƒ /social-studio
+#20 267.9 ├ ƒ /store
+#20 267.9 ├ ƒ /subscribe
+#20 267.9 ├ ƒ /subscribe/confirm
+#20 267.9 ├ ƒ /subscribe/preferences
+#20 267.9 ├ ƒ /unsubscribe
+#20 267.9 ├ ƒ /video-captions/[id]
+#20 267.9 ├ ƒ /video-media/[id]/[filename]
+#20 267.9 ├ ƒ /videos
+#20 267.9 └ ƒ /videos/[slug]
+#20 267.9 
+#20 267.9 
+#20 267.9 ƒ Proxy (Middleware)
+#20 267.9 
+#20 267.9 ○  (Static)   prerendered as static content
+#20 267.9 ƒ  (Dynamic)  server-rendered on demand
+#20 267.9 
+#20 268.2 Built source 51fa1c2310519ae478905e365befe6114c5ddcc1; clean source: null.
+#20 268.3 npm notice
+#20 268.3 npm notice New major version of npm available! 11.19.1 -> 12.2.0
+#20 268.3 npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.0
+#20 268.3 npm notice To update run: npm install -g npm@12.2.0
+#20 268.3 npm notice
+#20 DONE 268.6s
+
+#21 [runner  6/18] COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./standalone
+#21 DONE 1.4s
+
+#22 [runner  7/18] COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./standalone/.next/static
+#22 DONE 0.1s
+
+#23 [production-dependencies 5/5] RUN npm ci --omit=dev
+#23 CACHED
+
+#24 [runner  8/18] COPY --from=builder --chown=nextjs:nodejs /app/public ./standalone/public
+#24 DONE 0.0s
+
+#25 [esbuild-runtime 2/4] WORKDIR /src
+#25 CACHED
+
+#26 [esbuild-runtime 3/4] ADD --checksum=sha256:04cb2d38fb6af093577aa8bf174add7286099b65ef7854480cbbb8ff061cef1f https://codeload.github.com/evanw/esbuild/tar.gz/609683d892977362a0f99026cb74b96263d728a9 /tmp/esbuild.tar.gz
+#26 CACHED
+
+#27 [esbuild-runtime 4/4] RUN tar -xzf /tmp/esbuild.tar.gz --strip-components=1 -C /src &&     CGO_ENABLED=0 go build -trimpath -buildvcs=false -o /out/esbuild ./cmd/esbuild &&     go version -m /out/esbuild > /out/esbuild-build.txt
+#27 CACHED
+
+#28 [runner  9/18] COPY --from=production-dependencies --chown=nextjs:nodejs /app/node_modules ./node_modules
+#28 DONE 23.5s
+
+#29 [runner 10/18] COPY --from=builder --chown=nextjs:nodejs /app/package.json /app/package-lock.json ./
+#29 DONE 0.2s
+
+#30 [runner 11/18] COPY --from=builder --chown=nextjs:nodejs /app/build-provenance.json ./
+#30 DONE 0.0s
+
+#31 [runner 12/18] COPY --from=builder --chown=nextjs:nodejs /app/next.config.ts /app/tsconfig.json ./
+#31 DONE 0.0s
+
+#32 [runner 13/18] COPY --from=builder --chown=nextjs:nodejs /app/src ./src
+#32 DONE 0.1s
+
+#33 [runner 14/18] COPY --from=builder --chown=nextjs:nodejs /app/docker ./docker
+#33 DONE 0.0s
+
+#34 [runner 15/18] COPY --from=builder --chown=nextjs:nodejs /app/theme-packages ./theme-packages
+#34 DONE 0.0s
+
+#35 [runner 16/18] COPY --from=esbuild-runtime /out/esbuild /tmp/runtime-esbuild
+#35 DONE 0.1s
+
+#36 [runner 17/18] COPY --from=esbuild-runtime /out/esbuild-build.txt ./esbuild-build.txt
+#36 DONE 0.0s
+
+#37 [runner 18/18] RUN node docker/install-runtime-esbuild.mjs && rm /tmp/runtime-esbuild
+#37 0.540 Installed patched Go esbuild executable at 2 runtime package paths.
+#37 DONE 0.6s
+
+#38 exporting to image
+#38 exporting layers
+#38 exporting layers 19.5s done
+#38 exporting manifest sha256:40d47b0bbea0f0214d8db1d3b43e90b1b4a8a02165c79324a65cd404a7bed842 done
+#38 exporting config sha256:f4d23c35f9fdc3f241cc008f8353e66cffa4fe6b3c6b25c14221b1613e48ac4e done
+#38 exporting attestation manifest sha256:c0420810cbb48d259ab159475bb5d0d3f64aaad9b0a7b6e4e53735734cd6476c 0.0s done
+#38 exporting manifest list sha256:7518f5e5555b4c23dbdd350768124c37bb2d2382d2a28fc9e847a5520a5b7f0d done
+#38 naming to docker.io/library/renegade-cms:sol06-51fa1c23 done
+#38 unpacking to docker.io/library/renegade-cms:sol06-51fa1c23
+#38 unpacking to docker.io/library/renegade-cms:sol06-51fa1c23 11.8s done
+#38 DONE 31.4s

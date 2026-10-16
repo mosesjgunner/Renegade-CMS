@@ -1,0 +1,10 @@
+
+ RUN  v3.2.7 C:/Projects/RENEGADE CMS/sol-stage06-independent-20261016
+
+ ✓ tests/unit/shop-04-local-test-checkout.test.ts (7 tests) 23ms
+
+ Test Files  1 passed (1)
+      Tests  7 passed (7)
+   Start at  04:39:09
+   Duration  995ms (transform 129ms, setup 0ms, collect 231ms, tests 23ms, environment 0ms, prepare 177ms)
+

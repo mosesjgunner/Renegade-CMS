@@ -1,0 +1,9 @@
+{
+  "attempt": "resume-commerce-command-4",
+  "outcome": "interrupted; not PASS",
+  "reason": "Long return-URL wait hid confirmation response; stopped only identified Playwright CLI and its children, then strengthened the harness to assert checkout and confirmation response codes",
+  "termination": "taskkill.exe /PID 10300 /T /F after checking exact executable command and isolated worktree",
+  "recordedCommandExitCode": 1,
+  "subsequentDiagnosis": "resume-commerce-command-5 directly observed local confirmation HTTP 404; reverse-proxy host check repaired in 45713b95d8b0ad28a15c017c10425fbde8cf3532",
+  "productBusinessRowsManuallyChanged": false
+}

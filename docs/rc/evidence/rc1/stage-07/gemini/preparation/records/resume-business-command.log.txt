@@ -1,0 +1,99 @@
+
+Running 3 tests using 1 worker
+
+(node:1080) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  1 scratch\resume-business-specs\acceptance.spec.ts:115:1 › visitor newsletter, real MIME, suppression, re-subscribe and operator delivery recovery (443ms)
+(node:20672) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  2 scratch\resume-business-specs\acceptance.spec.ts:423:1 › real members, forum reply notification, preferences, moderation, private messages and session persistence (461ms)
+(node:26060) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  x  3 scratch\resume-business-specs\commerce.spec.ts:5:1 › ordinary guest cart UI, local settlement worker, signed replay, stock reservation and refund (204ms)
+
+
+  1) scratch\resume-business-specs\acceptance.spec.ts:115:1 › visitor newsletter, real MIME, suppression, re-subscribe and operator delivery recovery 
+
+    Error: tracing.start: Tracing has been already started
+
+      121 |   let visitor: BrowserContext | undefined
+      122 |   page.on('pageerror', (error) => errors.push(error.message))
+    > 123 |   await context.tracing.start({ screenshots: true, snapshots: true, sources: true })
+          |                         ^
+      124 |   try {
+      125 |     await operator(page)
+      126 |     await context.storageState({ path: 'scratch/resume-operator.json' })
+        at C:\Projects\RENEGADE CMS\sol-stage06-independent-20261016\scratch\resume-business-specs\acceptance.spec.ts:123:25
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    scratch\sol-browser-artifacts\resume-business-browser\acceptance-visitor-newslet-64748--operator-delivery-recovery\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: scratch\sol-browser-artifacts\resume-business-browser\acceptance-visitor-newslet-64748--operator-delivery-recovery\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    scratch\sol-browser-artifacts\resume-business-browser\acceptance-visitor-newslet-64748--operator-delivery-recovery\trace.zip
+    Usage:
+
+        npx playwright show-trace scratch\sol-browser-artifacts\resume-business-browser\acceptance-visitor-newslet-64748--operator-delivery-recovery\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) scratch\resume-business-specs\acceptance.spec.ts:423:1 › real members, forum reply notification, preferences, moderation, private messages and session persistence 
+
+    Error: tracing.start: Tracing has been already started
+
+      426 |   context,
+      427 | }) => {
+    > 428 |   await context.tracing.start({ screenshots: true, snapshots: true, sources: true })
+          |                         ^
+      429 |   const contexts: BrowserContext[] = []
+      430 |   try {
+      431 |     // Second copy can use a separately retained recovery code; the first test saves its authenticated operator state.
+        at C:\Projects\RENEGADE CMS\sol-stage06-independent-20261016\scratch\resume-business-specs\acceptance.spec.ts:428:25
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    scratch\sol-browser-artifacts\resume-business-browser\acceptance-real-members-fo-f26d3-ges-and-session-persistence\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: scratch\sol-browser-artifacts\resume-business-browser\acceptance-real-members-fo-f26d3-ges-and-session-persistence\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    scratch\sol-browser-artifacts\resume-business-browser\acceptance-real-members-fo-f26d3-ges-and-session-persistence\trace.zip
+    Usage:
+
+        npx playwright show-trace scratch\sol-browser-artifacts\resume-business-browser\acceptance-real-members-fo-f26d3-ges-and-session-persistence\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) scratch\resume-business-specs\commerce.spec.ts:5:1 › ordinary guest cart UI, local settlement worker, signed replay, stock reservation and refund 
+
+    Error: ENOENT: no such file or directory, open 'C:\Projects\RENEGADE CMS\sol-stage06-independent-20261016\scratch\resume-operator.json'
+
+      4 |
+      5 | test('ordinary guest cart UI, local settlement worker, signed replay, stock reservation and refund', async ({browser, page, context}) => {
+    > 6 |   await context.addCookies(JSON.parse(readFileSync('scratch/resume-operator.json','utf8')).cookies)
+        |                                       ^
+      7 |   const call = async (p:any, method:string, url:string, data?:unknown, code=200) => {
+      8 |     const cookies=await p.context().cookies()
+      9 |     const response=await p.request.fetch(url,{method,data,headers:{cookie:cookies.map((c:any)=>`${c.name}=${c.value}`).join('; ')}})
+        at C:\Projects\RENEGADE CMS\sol-stage06-independent-20261016\scratch\resume-business-specs\commerce.spec.ts:6:39
+
+    attachment #1: screenshot (image/png) ──────────────────────────────────────────────────────────
+    scratch\sol-browser-artifacts\resume-business-browser\commerce-ordinary-guest-ca-09c99-tock-reservation-and-refund\test-failed-1.png
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+    Error Context: scratch\sol-browser-artifacts\resume-business-browser\commerce-ordinary-guest-ca-09c99-tock-reservation-and-refund\error-context.md
+
+    attachment #3: trace (application/zip) ─────────────────────────────────────────────────────────
+    scratch\sol-browser-artifacts\resume-business-browser\commerce-ordinary-guest-ca-09c99-tock-reservation-and-refund\trace.zip
+    Usage:
+
+        npx playwright show-trace scratch\sol-browser-artifacts\resume-business-browser\commerce-ordinary-guest-ca-09c99-tock-reservation-and-refund\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3 failed
+    scratch\resume-business-specs\acceptance.spec.ts:115:1 › visitor newsletter, real MIME, suppression, re-subscribe and operator delivery recovery 
+    scratch\resume-business-specs\acceptance.spec.ts:423:1 › real members, forum reply notification, preferences, moderation, private messages and session persistence 
+    scratch\resume-business-specs\commerce.spec.ts:5:1 › ordinary guest cart UI, local settlement worker, signed replay, stock reservation and refund 

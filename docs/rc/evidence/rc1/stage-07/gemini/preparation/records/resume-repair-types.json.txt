@@ -1,0 +1,11 @@
+{
+  "command": [
+    "npm.cmd",
+    "run",
+    "typecheck"
+  ],
+  "exitCode": 0,
+  "durationSeconds": 9.889774799346924,
+  "sourceSha": "45713b95d8b0ad28a15c017c10425fbde8cf3532",
+  "logSha256": "ed8b276999b794e52239dd39072af1b51bd2d208c6226d2d0c7cf8a2e835c11b"
+}

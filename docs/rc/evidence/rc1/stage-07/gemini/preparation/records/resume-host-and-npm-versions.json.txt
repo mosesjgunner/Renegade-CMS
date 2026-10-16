@@ -1,0 +1,11 @@
+{
+  "command": [
+    "node",
+    "-e",
+    "console.log(JSON.stringify({node:process.version,npm:require('node:child_process').execFileSync('npm.cmd',['--version'],{shell:true}).toString().trim(),platform:process.platform,arch:process.arch}))"
+  ],
+  "exitCode": 0,
+  "durationSeconds": 0.34517765045166016,
+  "sourceSha": "45713b95d8b0ad28a15c017c10425fbde8cf3532",
+  "logSha256": "2f6f02a13b083eef6ac9550714fa0f3931d7bb0005dbe410325dd7d54f49cb9d"
+}

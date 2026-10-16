@@ -1,0 +1,107 @@
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 30B 0.0s
+#1 transferring dockerfile: 4.00kB 0.0s done
+#1 DONE 0.2s
+
+#2 [internal] load metadata for docker.io/library/golang:1.27.2-alpine
+#2 ...
+
+#3 [auth] library/golang:pull token for registry-1.docker.io
+#3 DONE 0.0s
+
+#4 [auth] library/node:pull token for registry-1.docker.io
+#4 DONE 0.0s
+
+#5 [internal] load metadata for docker.io/library/node:24-alpine
+#5 DONE 1.3s
+
+#2 [internal] load metadata for docker.io/library/golang:1.27.2-alpine
+#2 DONE 1.3s
+
+#6 [internal] load .dockerignore
+#6 transferring context: 290B done
+#6 DONE 0.0s
+
+#7 [internal] load build context
+#7 DONE 0.0s
+
+#8 [esbuild-runtime 3/4] ADD --checksum=sha256:04cb2d38fb6af093577aa8bf174add7286099b65ef7854480cbbb8ff061cef1f https://codeload.github.com/evanw/esbuild/tar.gz/609683d892977362a0f99026cb74b96263d728a9 /tmp/esbuild.tar.gz
+#8 DONE 0.0s
+
+#9 [production-dependencies 1/5] FROM docker.io/library/node:24-alpine@sha256:44fce696f38ba8c987c4db89954051000bbd05ffd8d8659ba15ed4a8602e937f
+#9 resolve docker.io/library/node:24-alpine@sha256:44fce696f38ba8c987c4db89954051000bbd05ffd8d8659ba15ed4a8602e937f 0.0s done
+#9 DONE 0.0s
+
+#10 [esbuild-runtime 1/4] FROM docker.io/library/golang:1.27.2-alpine@sha256:f92b6ef800e499660581efdabdf25d9d817a9d124eaf900924f0504e7e27e12d
+#10 resolve docker.io/library/golang:1.27.2-alpine@sha256:f92b6ef800e499660581efdabdf25d9d817a9d124eaf900924f0504e7e27e12d 0.0s done
+#10 DONE 0.0s
+
+#11 [production-dependencies 2/5] WORKDIR /app
+#11 CACHED
+
+#7 [internal] load build context
+#7 transferring context: 1.34MB 0.9s done
+#7 DONE 1.0s
+
+#12 [runner  3/18] RUN npm install --global npm@12.2.0 &&     npm install --prefix /opt/npm-patches --ignore-scripts --no-audit --no-fund --save-exact brace-expansion@5.0.12 undici@6.28.1 &&     rm -rf /usr/local/lib/node_modules/npm/node_modules/brace-expansion /usr/local/lib/node_modules/npm/node_modules/undici &&     cp -a /opt/npm-patches/node_modules/brace-expansion /usr/local/lib/node_modules/npm/node_modules/brace-expansion &&     cp -a /opt/npm-patches/node_modules/undici /usr/local/lib/node_modules/npm/node_modules/undici &&     rm -rf /opt/npm-patches
+#12 ...
+
+#13 [production-dependencies 3/5] COPY package.json package-lock.json ./
+#13 CACHED
+
+#14 [production-dependencies 4/5] COPY scripts ./scripts
+#14 CACHED
+
+#15 [dependencies 5/5] RUN npm ci
+#15 CACHED
+
+#16 [builder 3/5] COPY --from=dependencies /app/node_modules ./node_modules
+#16 CACHED
+
+#17 [builder 4/5] COPY . .
+#17 DONE 14.8s
+
+#12 [runner  3/18] RUN npm install --global npm@12.2.0 &&     npm install --prefix /opt/npm-patches --ignore-scripts --no-audit --no-fund --save-exact brace-expansion@5.0.12 undici@6.28.1 &&     rm -rf /usr/local/lib/node_modules/npm/node_modules/brace-expansion /usr/local/lib/node_modules/npm/node_modules/undici &&     cp -a /opt/npm-patches/node_modules/brace-expansion /usr/local/lib/node_modules/npm/node_modules/brace-expansion &&     cp -a /opt/npm-patches/node_modules/undici /usr/local/lib/node_modules/npm/node_modules/undici &&     rm -rf /opt/npm-patches
+#12 ...
+
+#18 [builder 5/5] RUN npm run build
+#18 1.089 
+#18 1.089 > renegade-cms@0.1.0 build
+#18 1.089 > node scripts/build.mjs
+#18 1.089 
+#18 2.316 ▲ Next.js 16.3.8 (Turbopack)
+#18 ...
+
+#12 [runner  3/18] RUN npm install --global npm@12.2.0 &&     npm install --prefix /opt/npm-patches --ignore-scripts --no-audit --no-fund --save-exact brace-expansion@5.0.12 undici@6.28.1 &&     rm -rf /usr/local/lib/node_modules/npm/node_modules/brace-expansion /usr/local/lib/node_modules/npm/node_modules/undici &&     cp -a /opt/npm-patches/node_modules/brace-expansion /usr/local/lib/node_modules/npm/node_modules/brace-expansion &&     cp -a /opt/npm-patches/node_modules/undici /usr/local/lib/node_modules/npm/node_modules/undici &&     rm -rf /opt/npm-patches
+#12 16.89 
+#12 16.89 removed 8 packages, and changed 72 packages in 16s
+#12 16.89 
+#12 16.89 15 packages are looking for funding
+#12 16.89   run `npm fund` for details
+#12 18.51 
+#12 18.51 added 3 packages in 1s
+#12 DONE 18.6s
+
+#19 [runner  4/18] RUN addgroup --system --gid 1001 nodejs && adduser --system --uid 1001 nextjs
+#19 DONE 0.3s
+
+#18 [builder 5/5] RUN npm run build
+#18 ...
+
+#20 [runner  5/18] RUN mkdir -p /app/media /tmp/renegade-worker && chown -R nextjs:nodejs /app /tmp/renegade-worker
+#20 DONE 0.2s
+
+#18 [builder 5/5] RUN npm run build
+#18 3.422 ✓ Running next.config.ts took 1105ms
+#18 3.434 Attention: Next.js now collects completely anonymous telemetry regarding usage.
+#18 3.434 This information is used to shape Next.js' roadmap and prioritize features.
+#18 3.434 You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+#18 3.434 https://nextjs.org/telemetry
+#18 3.434 
+#18 3.464 - Experiments (use with caution):
+#18 3.464   ⨯ turbopackServerFastRefresh
+#18 3.464   ✓ webpackMemoryOptimizations
+#18 3.464 
+#18 3.571   Creating an optimized production build ...

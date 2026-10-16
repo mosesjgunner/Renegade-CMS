@@ -1,0 +1,27 @@
+from pathlib import Path
+import json, subprocess, hashlib
+out=Path('scratch/records')
+binding=json.loads((out/'resume-final-image-binding.json').read_text())
+project='solrc06-resume-restored-20261016'
+script="""const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');let result={};function walk(p){for(const d of fs.readdirSync(p,{withFileTypes:true})){let q=path.join(p,d.name);if(d.isDirectory())walk(q);else if(d.isFile()){let b=fs.readFileSync(q);result['./'+path.relative('/app/media',q)]={bytes:b.length,sha256:crypto.createHash('sha256').update(b).digest('hex')}}}}walk('/app/media');console.log(JSON.stringify(result))"""
+actual=json.loads(subprocess.check_output(['docker','exec',project+'-renegade-web-1','node','-e',script],text=True))
+expected=binding['mediaFiles']
+differences={p:{'expected':v,'actual':actual.get(p)} for p,v in expected.items() if actual.get(p)!=v}
+assert not differences
+before=json.loads((out/'resume-final-source.json').read_text())['tables']
+after=json.loads((out/'resume-final-restored.json').read_text())['tables']
+tableDiff={p:{'source':v,'restored':after.get(p)} for p,v in before.items() if after.get(p)!=v}
+containers=json.loads(subprocess.check_output(['docker','inspect',project+'-renegade-web-1',project+'-renegade-worker-1'],text=True))
+services=[]
+for c in containers:
+    assert c['Image']==binding['Id'] or c['Config']['Image']=='renegade-cms:sol06-51fa1c23'
+    assert c['Config']['Labels']['com.docker.compose.project']==project
+    assert c['State']['Health']['Status']=='healthy'
+    assert c['Config']['User']=='nextjs'
+    environment=dict(s.split('=',1) for s in c['Config']['Env'] if '=' in s)
+    assert environment['LOCAL_E2E_TEST_MODE']=='false'
+    assert environment['BUILD_SHA']==binding['sourceSha']
+    services.append({'name':c['Name'],'imageConfigId':c['Image'],'configuredImage':c['Config']['Image'],'user':c['Config']['User'],'health':c['State']['Health']['Status'],'testAuth':False,'buildSha':environment['BUILD_SHA'],'mounts':[{'name':m.get('Name'),'destination':m['Destination']} for m in c['Mounts']]})
+result={'sourceSha':binding['sourceSha'],'indexDigest':binding['Id'],'mediaFilesExpected':len(expected),'mediaFilesMatched':len(expected)-len(differences),'mediaDifferences':differences,'tableCount':len(before),'tablesMatching':len(before)-len(tableDiff),'tableDifferences':tableDiff,'services':services,'scope':'repaired image boot, ordinary auth and bounded media/content/identity restore; not complete business recovery or predecessor upgrade'}
+(out/'resume-verified-state.json').write_text(json.dumps(result,indent=2))
+print('All',len(expected),'archived media files match; table differences:',','.join(tableDiff))

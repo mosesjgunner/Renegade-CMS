@@ -1,0 +1,79 @@
+import { test, expect } from '@playwright/test'
+import { writeFileSync } from 'node:fs'
+import { api, operator } from './helpers'
+
+test('real anonymous donation checkout, persisted gift, recognition privacy and refund reversal', async ({ page, browser }) => {
+  await operator(page)
+  const prior=(await api(page,'GET','/api/donations?where[lifecycle][equals]=succeeded&limit=100&depth=0')).docs
+  for(const gift of prior){
+    const paymentId=typeof gift.paymentIntent==='object'?gift.paymentIntent.id:gift.paymentIntent
+    const payment=await api(page,'GET',`/api/payment-intents/${paymentId}?depth=0`)
+    const order=(await api(page,'GET',`/api/orders?where[checkoutSession][equals]=${payment.checkoutSession}&depth=0`)).docs[0]
+    if(order?.state!=='refunded')continue
+    const refunds=(await api(page,'GET',`/api/commerce-refunds?where[order][equals]=${order.id}&depth=0`)).docs.filter(r=>r.state==='succeeded')
+    for(const refund of refunds)await api(page,'POST','/api/admin/commerce/refunds',{action:'reconcile',refundId:refund.id})
+    expect((await api(page,'GET',`/api/donations/${gift.id}?depth=0`)).lifecycle).toBe('refunded')
+  }
+  const stamp=Date.now().toString()
+  const site=(await api(page,'GET','/api/sites?where[id][equals]=e569115f-2594-45ee-9a0f-0214f5f942b5&depth=0')).docs[0]
+  const campaign=(await api(page,'POST','/api/donation-campaigns',{
+    site:site.id,campaignKey:`sol-giving-${stamp}`,version:1,title:'Sol local giving',
+    purpose:'Local acceptance without tax deductibility claims',allowedAmounts:['500'],currency:'USD',
+    recurrence:['one-time'],privacyDefault:'private',disclosures:['No tax status or deductibility is represented.'],lifecycle:'draft',
+  },201)).doc
+  await api(page,'PATCH',`/api/donation-campaigns/${campaign.id}`,{lifecycle:'active'})
+  const donorContext=await browser.newContext({baseURL:process.env.APP_URL,ignoreHTTPSErrors:true})
+  const strangerContext=await browser.newContext({baseURL:process.env.APP_URL,ignoreHTTPSErrors:true})
+  const donor=await donorContext.newPage(), stranger=await strangerContext.newPage()
+  await donorContext.tracing.start({screenshots:true,snapshots:true,sources:true})
+  try {
+    const input={campaignId:campaign.id,currency:'USD',amountMinor:'500',recurrence:'one-time',recognition:'public',publicDisplayName:`Donor ${stamp}`,email:`donor-${stamp}@example.test`}
+    const headers={'idempotency-key':`sol-donation-${stamp}`}
+    const post=async(data,status)=>{
+      const response=await donor.request.post('/api/commerce/donations/intent',{data,headers})
+      expect(response.status(),await response.text()).toBe(status)
+      return response.json()
+    }
+    await post({...input,amountMinor:'-1'},422)
+    const started=await post(input,201)
+    expect(started.providerMode).toBe('deterministic-test')
+    expect(started.amountMinor).toBe('500')
+    const replay=await post(input,200)
+    expect(replay.paymentIntentId).toBe(started.paymentIntentId)
+    await post({...input,amountMinor:'400',customAmount:true},409)
+    await api(stranger,'GET',`/api/commerce/checkout/status?session=${started.sessionId}`,undefined,403)
+    await donor.goto(started.actionUrl)
+    await expect(donor.getByRole('heading',{name:'Local test checkout'})).toBeVisible()
+    await donor.getByRole('button',{name:'Confirm test payment'}).click()
+    await donor.waitForURL(/checkout\/return\?session=/)
+    await expect.poll(async()=> (await api(donor,'GET',`/api/commerce/checkout/status?session=${started.sessionId}`)).order?.state,{timeout:60000}).toBe('paid')
+    const gifts=(await api(page,'GET',`/api/donations?where[paymentIntent][equals]=${started.paymentIntentId}&depth=0`)).docs
+    expect(gifts).toHaveLength(1)
+    const gift=gifts[0]
+    expect(gift.lifecycle).toBe('succeeded')
+    expect(gift.baseAmountMinor).toBe('500')
+    const campaignPath=`/api/commerce/donations/campaign/${campaign.id}`
+    let publicState=await api(stranger,'GET',campaignPath)
+    expect(publicState.donorWall.some(row=>row.displayName===input.publicDisplayName)).toBe(true)
+    expect(JSON.stringify(publicState)).not.toContain(input.email)
+    const supporterId=typeof gift.supporter==='object'?gift.supporter.id:gift.supporter
+    await api(stranger,'PATCH','/api/admin/commerce/donations',{supporterId,action:'privacy',visibilityPreference:'private'},403)
+    await api(page,'PATCH','/api/admin/commerce/donations',{supporterId,action:'privacy',visibilityPreference:'private'})
+    publicState=await api(stranger,'GET',campaignPath)
+    expect(publicState.donorWall).toEqual([])
+    const orders=(await api(page,'GET',`/api/orders?where[checkoutSession][equals]=${started.sessionId}&depth=0`)).docs
+    expect(orders).toHaveLength(1)
+    const refund=await api(page,'POST','/api/admin/commerce/refunds',{action:'request',orderId:orders[0].id,amountMinor:orders[0].amountMinor,reason:'Local donation acceptance refund'})
+    await expect.poll(async()=> (await api(page,'GET',`/api/donations/${gift.id}?depth=0`)).lifecycle,{timeout:60000}).toBe('refunded')
+    await api(page,'POST','/api/admin/commerce/refunds',{action:'reconcile',refundId:refund.refund.id})
+    const corrections=(await api(page,'GET',`/api/donation-events?where[eventKey][equals]=operator-refund:${refund.refund.id}&depth=0`)).docs
+    expect(corrections).toHaveLength(1)
+    await api(page,'PATCH','/api/admin/commerce/donations',{supporterId,action:'mask-retention'})
+    expect((await api(page,'GET',`/api/supporters/${supporterId}?depth=0`)).emailHash).toBeNull()
+    expect((await api(page,'GET',`/api/donations/${gift.id}?depth=0`)).id).toBe(gift.id)
+    writeFileSync('scratch/resume-business-results/donations.json',JSON.stringify({campaignId:campaign.id,sessionId:started.sessionId,giftId:gift.id,supporterId,replaySamePayment:true,recognitionHidden:true,refunded:true,auditRetained:true},null,2))
+  }finally{
+    await donorContext.tracing.stop({path:'scratch/resume-business-results/donation-private-trace.zip'})
+    await donorContext.close();await strangerContext.close()
+  }
+})

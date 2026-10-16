@@ -1,0 +1,25 @@
+{
+  "command": [
+    "docker",
+    "compose",
+    "--project-name",
+    "solrc06-independent-20261016",
+    "--env-file",
+    "scratch/resume-local-commerce.env",
+    "-f",
+    "scratch/source.yaml",
+    "-f",
+    "scratch/resume-local-commerce.yaml",
+    "up",
+    "-d",
+    "--no-deps",
+    "--no-build",
+    "--wait",
+    "renegade-web",
+    "renegade-worker"
+  ],
+  "exitCode": 0,
+  "durationSeconds": 11.79198670387268,
+  "sourceSha": "51fa1c2310519ae478905e365befe6114c5ddcc1",
+  "logSha256": "0c3d3463e0f224687469964a7a2fed56c8e6483f2caf57eb2675adfe2af1ee2b"
+}

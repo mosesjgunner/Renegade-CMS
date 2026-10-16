@@ -1,0 +1,32 @@
+from pathlib import Path
+import json,subprocess,secrets,hashlib,os
+out=Path('scratch/records')
+env=dict(line.split('=',1) for line in Path('scratch/resume-local-commerce.env').read_text().splitlines() if '=' in line)
+assert env['RENEGADE_INSTANCE']=='solrc06-independent-20261016'
+sha=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
+assert env['BUILD_SHA']==sha
+keys=['COMMERCE_LOCAL_TEST_CHECKOUT_ENABLED','COMMERCE_GUEST_ORDER_SECRET','COMMERCE_TEST_WEBHOOK_SECRET','COMMERCE_DELIVERY_SECRET']
+addition=''.join('      '+key+': ${'+key+'}\n' for key in keys)
+for source,target in [('source.yaml','resume-populated-source.yaml'),('restore.yaml','resume-populated-restore.yaml')]:
+    text=Path('scratch/'+source).read_text().replace('      EMAIL_MODE: smtp\n','      EMAIL_MODE: smtp\n'+addition)
+    Path('scratch/'+target).write_text(text)
+def run(label,args): subprocess.run(['python','scratch/record.py',label]+args,check=True)
+run('resume-populated-backup',['node','node_modules/tsx/dist/cli.mjs','src/scripts/operational-backup.ts','--output','scratch/resume-populated-backup','--maintenance-window-confirmed','--compose-file','scratch/resume-populated-source.yaml','--env-file','scratch/resume-local-commerce.env'])
+archive=next(Path('scratch/resume-populated-backup').glob('renegade-backup-*'))
+manifest=json.loads((archive/'manifest.json').read_text());assert manifest['renegade']['buildSha']==sha
+target=env.copy();target.update(RENEGADE_RESTORE_INSTANCE='solrc06-populated-restored-20261016',RENEGADE_RESTORE_WEB_BIND='127.0.0.1:3228',PAYLOAD_SECRET=secrets.token_hex(48),POSTGRES_PASSWORD=secrets.token_hex(24))
+Path('scratch/resume-populated-restore.env').write_text('\n'.join(k+'='+v for k,v in target.items())+'\n')
+run('resume-populated-restore',['node','node_modules/tsx/dist/cli.mjs','src/scripts/operational-restore.ts','--archive',str(archive),'--target-version','0.1.0-rc.1','--isolated','--authorize-restore','--compose-file','scratch/resume-populated-restore.yaml','--env-file','scratch/resume-populated-restore.env'])
+s=Path('scratch/resume-snapshot.py').read_text().replace("'solrc06-resume-restored-20261016']","'solrc06-resume-restored-20261016','solrc06-populated-restored-20261016']")
+Path('scratch/resume-populated-snapshot.py').write_text(s)
+for project,label in [('solrc06-independent-20261016','resume-populated-source'),('solrc06-populated-restored-20261016','resume-populated-restored')]:
+    subprocess.run(['python','scratch/resume-populated-snapshot.py',project,label],check=True)
+# Keep the logical recovery origin, but switch only this disposable proxy's upstream.
+Path('scratch/active-upstream.txt').write_text('3228')
+spec=Path('scratch/specs/restored.spec.ts').read_text().replace('scratch/private-browser/restored-','scratch/private-browser/resume-populated-restored-').replace('scratch/records/restored-http.json','scratch/records/resume-populated-restored-http.json')
+spec=spec.replace("'outbound-network-deliveries']","'outbound-network-deliveries','email-deliveries','manual-fulfillment-packages','payment-webhook-events','payment-attempts']")
+Path('scratch/specs/resume-populated-restored.spec.ts').write_text(spec)
+os.environ['REPORT_LABEL']='resume-populated-restored-browser'
+run('resume-populated-restored-browser',['npx.cmd','playwright','test','--config','scratch/playwright.config.ts','resume-populated-restored.spec.ts'])
+(out/'resume-populated-archive.json').write_text(json.dumps({'sourceSha':sha,'archive':str(archive.resolve()),'manifest':manifest,'checksums':{p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in archive.iterdir() if p.is_file()},'secretBoundary':'Fresh target DB password and Payload secret; retained local commerce keys model recovery of same logical installation. No live provider configured.'},indent=2))
+print('Populated supported backup, empty restore and ordinary authentication completed')

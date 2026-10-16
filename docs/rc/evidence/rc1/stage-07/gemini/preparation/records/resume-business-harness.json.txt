@@ -1,0 +1,19 @@
+{
+  "testAuthentication": false,
+  "sessionCreation": "ordinary owner WebAuthn and member MIME links; no minted sessions",
+  "adaptations": "existing disposable site ID, operator email/device file, private output paths and dedicated spec directory; assertions unchanged",
+  "specs": [
+    {
+      "original": "C:\\Projects\\RENEGADE CMS\\sol-rc04-20261014\\scratch\\sol-stage04\\acceptance.spec.ts",
+      "originalSha256": "b577dbffff127ae29bbdd2dde26e5447a41175bd2e5769c4ea9b5f4d90cd21fd",
+      "adapted": "scratch\\resume-business-specs\\acceptance.spec.ts",
+      "adaptedSha256": "fe4e047b065678ff39259701a3929f6d6c9b7d9eb1bb7f991415acd90548d96c"
+    },
+    {
+      "original": "C:\\Projects\\RENEGADE CMS\\sol-rc04-20261014\\scratch\\sol-stage04\\commerce.spec.ts",
+      "originalSha256": "414abe1faad0d9e23d4ec009f26756dbc375db0164d6324f2e86030112f20091",
+      "adapted": "scratch\\resume-business-specs\\commerce.spec.ts",
+      "adaptedSha256": "b73980a95b397a92bfd8010b10e91f24bcced15f26137f5fbf115dc8f05c4e10"
+    }
+  ]
+}

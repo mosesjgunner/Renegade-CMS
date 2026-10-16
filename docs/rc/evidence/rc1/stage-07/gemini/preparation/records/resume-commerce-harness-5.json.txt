@@ -1,0 +1,9 @@
+{
+  "specs": [
+    {
+      "path": "commerce.spec.ts",
+      "sha256": "b0254642bea0b0d197ab82e6f4418e12cf13b9a29eba4c823a7d4ee17dbcf6d4"
+    }
+  ],
+  "diagnosticAssertions": "Checkout initiate must return 200 and local confirm must return 303 before awaiting return URL; navigation wait capped at 30 seconds, no behavioral assertions removed"
+}

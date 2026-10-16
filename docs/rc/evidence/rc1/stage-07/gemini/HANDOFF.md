@@ -1,5 +1,7 @@
 # Stage 07 Gemini assignment handoff
 
+> Preparation continuation, 2026-10-16: [Start here](START-HERE.md). Clean prepared candidate `6ca6fb63fee0b68ba64aba13428424f0a17d1d94` contains tested repair source `45713b95d8b0ad28a15c017c10425fbde8cf3532`. Fresh install, format/lint/typecheck and all 1,296 units pass. The backup-tool image `51fa1c23` now has successful bounded restore/auth/media proof, and ordinary audience/community population passed. A new proxy-confirmation defect was repaired, but the new image build was canceled after another shared Docker HTTP 500; no new-candidate commerce or populated restore PASS exists. [Preparation results and remaining prerequisites](PREPARATION.md) supplement the earlier audit below. Stage 06 remains unsigned/BLOCKED, additional main edits are preserved outside the prepared candidate, and final Stage 07 acceptance remains BLOCKED. No tag, push, publication or deployment.
+
 **STAGE 07 BLOCKED. RC1 NOT READY.** Inspected 2026-10-16 (America/Chicago), by Codex executing the requested Gemini-stage assignment. This is a prerequisite audit, not Gemini model execution or independent Sol acceptance.
 
 Inspected HEAD: `9ea590a1706b44674e914aee71bba21e16e0484b`; committed tree: `3c8d10416919349da5bc80803615e336d15acf25`. Latest executable repair: `51fa1c2310519ae478905e365befe6114c5ddcc1`. No final release candidate was frozen. The six pre-existing untracked Stage 06 Gemini receipts were preserved. This change adds documentation/evidence only; no executable files change.

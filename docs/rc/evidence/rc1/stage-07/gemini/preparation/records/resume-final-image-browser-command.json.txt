@@ -1,0 +1,14 @@
+{
+  "command": [
+    "npx.cmd",
+    "playwright",
+    "test",
+    "--config",
+    "scratch/playwright.config.ts",
+    "restored.spec.ts"
+  ],
+  "exitCode": 0,
+  "durationSeconds": 26.071948289871216,
+  "sourceSha": "51fa1c2310519ae478905e365befe6114c5ddcc1",
+  "logSha256": "de572d3bf64fe1137d7198961dc03cf93dbe7d81ce891514715257c13a8d34c9"
+}

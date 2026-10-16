@@ -20,3 +20,9 @@ docs/rc/evidence/rc1/stage-05/gemini/history-2026-10-15/** -text whitespace=-bla
 docs/rc/evidence/rc1/stage-06/sol/records/** -text whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
 docs/rc/evidence/rc1/stage-06/sol/harness/** -text whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
 docs/rc/evidence/rc1/stage-06/sol/lease-proof/** -text whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
+
+# Preserve Stage 07 preparation receipt bytes and the hashed preflight script.
+docs/rc/evidence/rc1/stage-07/gemini/preparation/records/** -text whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
+docs/rc/evidence/rc1/stage-07/gemini/preparation/harness/** -text whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
+docs/rc/evidence/rc1/stage-07/gemini/preparation/results/** -text whitespace=-blank-at-eol,-blank-at-eof,cr-at-eol
+docs/rc/evidence/rc1/stage-07/gemini/preflight.ps1 -text

@@ -1,0 +1,116 @@
+import { expect, test, type BrowserContext, type Page } from '@playwright/test'
+import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs'
+import { createHash } from 'node:crypto'
+
+const evidence = 'scratch/resume-business-results'
+const workerMode = () =>
+  existsSync('scratch/rc04-worker-restart.json')
+    ? JSON.parse(readFileSync('scratch/rc04-worker-restart.json', 'utf8')).mode
+    : 'starting'
+const decoded = (raw: string) =>
+  Buffer.from(
+    raw
+      .replace(/=\r\n/g, '')
+      .replace(/=([0-9A-F]{2})/gi, (_, code) => String.fromCharCode(parseInt(code, 16))),
+    'latin1',
+  ).toString('utf8')
+function mails(email: string) {
+  return readdirSync('scratch/rc04-mail')
+    .filter((name) => name.endsWith('.json'))
+    .map((name) => JSON.parse(readFileSync(`scratch/rc04-mail/${name}`, 'utf8')))
+    .filter((mail) => mail.recipient.includes(email))
+    .map((mail) => ({ ...mail, raw: readFileSync(`scratch/rc04-mail/${mail.file}`, 'utf8') }))
+    .sort((a, b) => Number(a.file.split('.')[0]) - Number(b.file.split('.')[0]))
+}
+async function delivered(email: string, subject?: string, after = 0) {
+  await expect
+    .poll(
+      () =>
+        mails(email).filter(
+          (mail) =>
+            Number(mail.file.split('.')[0]) > after &&
+            (!subject || decoded(mail.raw).includes(subject)),
+        ).length,
+      { timeout: 60_000 },
+    )
+    .toBeGreaterThan(0)
+  return mails(email)
+    .filter(
+      (mail) =>
+        Number(mail.file.split('.')[0]) > after &&
+        (!subject || decoded(mail.raw).includes(subject)),
+    )
+    .at(-1)!
+}
+const link = (mail: { raw: string }, path: string) =>
+  [...decoded(mail.raw).matchAll(/https?:\/\/[^\s<>"']+/g)]
+    .map((match) => match[0])
+    .find((value) => {
+      try {
+        const url = new URL(value)
+        return url.pathname === path && url.searchParams.has('token')
+      } catch {
+        return false
+      }
+    })
+async function api(
+  page: Page,
+  method: string,
+  path: string,
+  data?: unknown,
+  expected: number | number[] = 200,
+) {
+  const cookies = await page.context().cookies()
+  const csrf = cookies.find((cookie) => cookie.name === 'renegade-member-csrf')?.value
+  const cookieHeader = cookies.map((c) => `${c.name}=${c.value}`).join('; ')
+  const headers: Record<string, string> = {}
+  if (cookieHeader) headers.cookie = cookieHeader
+  if (csrf) headers['x-member-csrf'] = csrf
+  const response = await page.request.fetch(path, {
+    method,
+    data,
+    headers,
+  })
+  const text = await response.text()
+  if (Array.isArray(expected)) {
+    expect(expected, `${method} ${path}: ${text.slice(0, 1800)}`).toContain(response.status())
+  } else {
+    expect(response.status(), `${method} ${path}: ${text.slice(0, 1800)}`).toBe(expected)
+  }
+  return text ? JSON.parse(text) : {}
+}
+async function operator(page: Page) {
+  const cdp = await page.context().newCDPSession(page)
+  await cdp.send('WebAuthn.enable')
+  const { authenticatorId } = await cdp.send('WebAuthn.addVirtualAuthenticator', { options: {
+    protocol: 'ctap2', transport: 'internal', hasResidentKey: true, hasUserVerification: true,
+    isUserVerified: true, automaticPresenceSimulation: true,
+  } })
+  for (const credential of JSON.parse(readFileSync('scratch/owner-device.json', 'utf8')))
+    await cdp.send('WebAuthn.addCredential', { authenticatorId, credential })
+  await page.goto('/login')
+  await page.getByLabel('Owner / Staff Email').fill('owner@rc06.example.test')
+  await page.getByRole('button', { name: /Authenticate with Passkey/ }).click()
+  await page.waitForURL(/\/admin/, { timeout: 60_000 })
+  writeFileSync('scratch/owner-device.json', JSON.stringify((await cdp.send('WebAuthn.getCredentials', {authenticatorId})).credentials))
+}
+
+async function member(page: Page, email: string) {
+  const previous = mails(email).at(-1)
+  await page.goto('/member-auth')
+  await page.getByLabel('Email address', { exact: true }).fill(email)
+  await page.getByRole('button', { name: /Email.*link|Send.*link/i }).click()
+  const mail = await delivered(
+    email,
+    'single-use link',
+    previous ? Number(previous.file.split('.')[0]) : 0,
+  )
+  const url = link(mail, '/member-auth/verify')
+  expect(url).toBeTruthy()
+  await page.goto(url!)
+  await expect(page.getByRole('status')).toHaveText('Signed in.')
+  return api(page, 'GET', '/api/member-auth/me')
+}
+
+
+export {api,member,operator}
