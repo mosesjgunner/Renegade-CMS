@@ -14,6 +14,7 @@ import {
   scheduleEditorialPublication,
 } from '../../src/modules/editorial/persistence'
 import { queueActivityDelivery } from '../../src/modules/social/activitypub-runtime'
+import { ensureRenegadePartyDemo } from '../helpers/renegadeparty-demo'
 
 const runProcess = promisify(execFile)
 let payload: Payload
@@ -21,6 +22,8 @@ beforeAll(async () => {
   if (!new URL(process.env.DATABASE_URL!).pathname.endsWith('_release_acceptance'))
     throw new Error('Disposable RC database required')
   payload = await getPayload({ config })
+  // Idempotent: guarantees site, publication and user records exist on a freshly migrated database.
+  await ensureRenegadePartyDemo(payload)
 })
 afterAll(async () => {
   await payload?.db.destroy?.()
