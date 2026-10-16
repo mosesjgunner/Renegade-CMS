@@ -102,7 +102,23 @@ export const emailDeliveryTask = {
     // An unknown outcome is never retried against a different transport. Reconcile
     // first when the current provider can prove the stable idempotency key.
     const adapter = selectEmailDeliveryAdapter(loadConfig())
-    if (delivery.status === 'unknown') {
+    if (delivery.status === 'sending') {
+      await req.payload.update({
+        collection: 'email-deliveries',
+        id: delivery.id,
+        data: {
+          status: 'unknown',
+          outcome: {
+            code: 'interrupted_send',
+            message: 'Interrupted send; provider acceptance requires reconciliation.',
+            retryable: false,
+          },
+        },
+        overrideAccess: true,
+      })
+    }
+    if (['sending', 'unknown'].includes(delivery.status)) {
+      if (!delivery.provider || delivery.provider !== adapter.id) return { output: {} }
       const reconciled = await adapter.reconcile?.({
         idempotencyKey: delivery.idempotencyKey,
         providerMessageId: delivery.providerMessageId,
@@ -124,7 +140,11 @@ export const emailDeliveryTask = {
     await req.payload.update({
       collection: 'email-deliveries',
       id: delivery.id,
-      data: { status: 'sending', attempts: Number(delivery.attempts || 0) + 1 },
+      data: {
+        status: 'sending',
+        provider: adapter.id,
+        attempts: Number(delivery.attempts || 0) + 1,
+      },
       overrideAccess: true,
     })
     if (!adapter.capabilities.includes(category)) {
