@@ -1,0 +1,10 @@
+{
+    "gate":  "unit",
+    "command":  "npm.cmd test",
+    "sha":  "5bda8bdd4dd517a9c487eda44bf7a00ab767f460",
+    "exitCode":  0,
+    "database":  "fresh_release_acceptance (disposable rc1s07-final-pg:55437)",
+    "started":  "2026-10-16T16:52:22.3606808-05:00",
+    "ended":  "2026-10-16T16:52:46.6845133-05:00",
+    "node":  "v24.19.0"
+}

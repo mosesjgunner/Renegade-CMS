@@ -1,0 +1,10 @@
+{
+    "gate":  "types",
+    "command":  "npm.cmd run typecheck",
+    "sha":  "9b1272151458227f98750d1094b307cd97267815",
+    "exitCode":  0,
+    "database":  "fresh_release_acceptance (disposable rc1s07-final-pg:55437)",
+    "started":  "2026-10-16T17:02:05.8372970-05:00",
+    "ended":  "2026-10-16T17:02:13.1452633-05:00",
+    "node":  "v24.19.0"
+}

@@ -1,0 +1,10 @@
+{
+    "gate":  "integration",
+    "command":  "npm.cmd run test:integration",
+    "sha":  "5bda8bdd4dd517a9c487eda44bf7a00ab767f460",
+    "exitCode":  1,
+    "database":  "integration_release_acceptance (disposable rc1s07-final-pg:55437)",
+    "started":  "2026-10-16T16:53:13.9081137-05:00",
+    "ended":  "2026-10-16T16:55:01.3436845-05:00",
+    "node":  "v24.19.0"
+}
