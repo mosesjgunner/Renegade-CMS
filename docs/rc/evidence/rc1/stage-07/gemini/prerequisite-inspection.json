@@ -1,0 +1,183 @@
+﻿{
+  "date": "2026-10-16",
+  "timezone": "America/Chicago",
+  "role": "Stage 07 Gemini assignment executed by Codex",
+  "verdict": "STAGE 07 BLOCKED",
+  "inspectedHead": "9ea590a1706b44674e914aee71bba21e16e0484b",
+  "inspectedTree": "3c8d10416919349da5bc80803615e336d15acf25",
+  "firstFailure": "Stage 06 independent Sol handoff explicitly BLOCKED",
+  "acceptanceStarted": false,
+  "acceptanceCounts": {
+    "passed": 0,
+    "failed": 0,
+    "skipped": 0,
+    "unexecutedGateGroups": 18
+  },
+  "testCaseCounts": null,
+  "testCaseCountReason": "No acceptance runner invoked; test discovery was not run",
+  "runtime": {
+    "database": "none targeted",
+    "media": "none targeted",
+    "compose": "none targeted",
+    "testAuthentication": "no runtime launched",
+    "envFallback": "no environment file loaded"
+  },
+  "commands": [
+    {
+      "command": ["git", "rev-parse", "HEAD"],
+      "exitCode": 0,
+      "output": ["9ea590a1706b44674e914aee71bba21e16e0484b"]
+    },
+    {
+      "command": ["git", "rev-parse", "HEAD^{tree}"],
+      "exitCode": 0,
+      "output": ["3c8d10416919349da5bc80803615e336d15acf25"]
+    },
+    {
+      "command": ["git", "status", "--porcelain=v1", "--untracked-files=all"],
+      "exitCode": 0,
+      "output": [
+        "?? docs/rc/evidence/rc1/stage-06/gemini/BACKUP-RESTORE-RECEIPT.md",
+        "?? docs/rc/evidence/rc1/stage-06/gemini/EVIDENCE_MATRIX.md",
+        "?? docs/rc/evidence/rc1/stage-06/gemini/HANDOFF.md",
+        "?? docs/rc/evidence/rc1/stage-06/gemini/INCIDENT-LOGS.md",
+        "?? docs/rc/evidence/rc1/stage-06/gemini/ISOLATION-PROOF.md",
+        "?? docs/rc/evidence/rc1/stage-06/gemini/RECOVERY-RECEIPT.md"
+      ]
+    },
+    {
+      "command": [
+        "git",
+        "merge-base",
+        "--is-ancestor",
+        "c9cc33e10de8465bc173e23fca209886262db7de",
+        "9ea590a1706b44674e914aee71bba21e16e0484b"
+      ],
+      "exitCode": 0,
+      "output": []
+    },
+    {
+      "command": [
+        "git",
+        "merge-base",
+        "--is-ancestor",
+        "f487dcb67f0649ffc1ecd09b9a47cc845d705f61",
+        "9ea590a1706b44674e914aee71bba21e16e0484b"
+      ],
+      "exitCode": 0,
+      "output": []
+    },
+    {
+      "command": [
+        "git",
+        "merge-base",
+        "--is-ancestor",
+        "d311396876fabc104826e4375d26feef0b5e2b39",
+        "9ea590a1706b44674e914aee71bba21e16e0484b"
+      ],
+      "exitCode": 0,
+      "output": []
+    },
+    {
+      "command": [
+        "git",
+        "merge-base",
+        "--is-ancestor",
+        "b5369e78faa228d7e0b4375d9a3147b164363b2c",
+        "9ea590a1706b44674e914aee71bba21e16e0484b"
+      ],
+      "exitCode": 0,
+      "output": []
+    },
+    {
+      "command": [
+        "git",
+        "merge-base",
+        "--is-ancestor",
+        "f0a728c03d45c284813e2e7c5ea23167394800de",
+        "9ea590a1706b44674e914aee71bba21e16e0484b"
+      ],
+      "exitCode": 0,
+      "output": []
+    },
+    {
+      "command": [
+        "git",
+        "merge-base",
+        "--is-ancestor",
+        "3f464a6903ff26e7489179df29749f065cb55299",
+        "9ea590a1706b44674e914aee71bba21e16e0484b"
+      ],
+      "exitCode": 0,
+      "output": []
+    },
+    {
+      "command": [
+        "git",
+        "merge-base",
+        "--is-ancestor",
+        "51fa1c2310519ae478905e365befe6114c5ddcc1",
+        "9ea590a1706b44674e914aee71bba21e16e0484b"
+      ],
+      "exitCode": 0,
+      "output": []
+    },
+    {
+      "command": [
+        "git",
+        "diff",
+        "--name-status",
+        "3f464a6903ff26e7489179df29749f065cb55299",
+        "9ea590a1706b44674e914aee71bba21e16e0484b",
+        "--",
+        "src",
+        "scripts",
+        "docker",
+        "Dockerfile",
+        "package.json",
+        "package-lock.json",
+        "patches",
+        "tests",
+        "next.config.ts",
+        "payload.config.ts"
+      ],
+      "exitCode": 0,
+      "output": ["M\tsrc/scripts/operational-backup.ts"]
+    },
+    {
+      "command": ["git", "rev-parse", "v0.1.0-rc.1^{commit}"],
+      "exitCode": 0,
+      "output": ["2aa4957ac044694714cb4dfc52fb76f7c4109262"]
+    }
+  ],
+  "inspectedReceiptHashes": [
+    {
+      "path": "docs/rc/evidence/rc1/stage-01/sol/HANDOFF.md",
+      "sha256": "08fa2931b1646e1156197fdcbfd397fefa512f39a06e21479ef5b0ecd8c88aa4"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-02/sol/HANDOFF.md",
+      "sha256": "5299e95f402053bacfbe334138b7df6f3355cb0dbe8f90ed791d6f651868a9a5"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-03/sol/HANDOFF.md",
+      "sha256": "0452bf7dbd3ad1a59529672751e4f0a19e438c95b0f9416b7f9aa6c850e36f32"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-04/sol/HANDOFF.md",
+      "sha256": "cc26c1c97ffc0bea22349c8982c5698641aa160a579eece830888cbc9919baa0"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-05/sol/HANDOFF.md",
+      "sha256": "e10ed43713589182abf12b0400377ab09c182cd9014b68f8c9b54216c45cb661"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-06/sol/HANDOFF.md",
+      "sha256": "c8095e61f1bccab1997b6cfa6a87b02af8cc2997e1421f0a559a3b57e68b4c82"
+    },
+    {
+      "path": "docs/rc/evidence/rc1/stage-06/sol/SUMMARY.json",
+      "sha256": "5120f513549fa78d3f77b2fa311145731998fc3ff0c25d33dcffdafc085df9a1"
+    }
+  ]
+}

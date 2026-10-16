@@ -1,3 +1,5 @@
+> RC1 release draft status, 2026-10-16: **NOT READY; STAGE 07 BLOCKED** by the signed Stage 06 prerequisite. No final candidate/image is accepted for distribution. See the [current blocked handoff](../rc/evidence/rc1/stage-07/gemini/HANDOFF.md). Earlier dated release prose below is historical; no release or tag action was performed.
+
 # Release notes — blocked draft
 
 Package version: `0.1.0`. Release verdict on 2026-10-06: **FAIL / NOT READY**. No beta release, tag or push was performed.

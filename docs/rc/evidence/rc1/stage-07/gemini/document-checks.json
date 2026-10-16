@@ -1,0 +1,13 @@
+﻿{
+  "formatEvidenceExit": 0,
+  "diffCheckExit": 0,
+  "receiptHashAndLinkValidationExit": 0,
+  "changedDocumentationFormatCheck": {
+    "initialExit": 1,
+    "initialIssue": "New document-checks.json required formatting",
+    "repair": "node node_modules/prettier/bin/prettier.cjs --write docs/rc/evidence/rc1/stage-07/gemini/document-checks.json",
+    "rerunExit": 0,
+    "scope": "All 10 changed existing Markdown documents and the stage-07/gemini directory"
+  },
+  "acceptanceTestsExecuted": false
+}
