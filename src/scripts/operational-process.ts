@@ -24,7 +24,8 @@ export async function runOperationalProcess(
         async (error: NodeJS.ErrnoException) => {
           // Catalogue readers such as pg_restore -l may finish before EOF. Only
           // tolerate their early input closure when the command itself succeeds.
-          if (error.code !== 'EPIPE' && error.code !== 'ERR_STREAM_PREMATURE_CLOSE') throw error
+          if (!['EPIPE', 'EOF', 'ERR_STREAM_PREMATURE_CLOSE'].includes(error.code ?? ''))
+            throw error
           await exited
         },
       ),
