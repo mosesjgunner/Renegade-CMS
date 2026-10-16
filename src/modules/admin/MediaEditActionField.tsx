@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useDocumentInfo } from '@payloadcms/ui'
 import { ImageEditorModal, type ImageEditorAsset } from '../media/image-editor'
 

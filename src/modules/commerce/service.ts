@@ -20,7 +20,7 @@ import {
   validateShippingAddressForPod,
   type FulfillmentLineItem,
 } from './fulfillment-plan'
-import { createManualFulfillmentPackage, MANUAL_FULFILLMENT_DISCLAIMER } from './manual-fulfillment'
+import { createManualFulfillmentPackage } from './manual-fulfillment'
 import type { PodConnectionRecord } from './pod-connection'
 
 export type CartLine = {

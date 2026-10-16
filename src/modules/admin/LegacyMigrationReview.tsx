@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import { useState } from 'react'
 import type { MigrationReport } from '../portability/legacy-migration/types'
 
 export default function LegacyMigrationReview({

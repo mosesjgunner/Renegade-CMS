@@ -6,7 +6,6 @@ import {
   CMoSWorkflowEngine,
   evaluateQueueMembership,
   validateWorkflowTemplate,
-  WorkflowPermissionError,
   WorkflowStateError,
   type BulkOperationResult,
   type Priority,

@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { Payload } from 'payload'
-import { randomUUID } from 'node:crypto'
 
 import { starterDefinitions } from './definitions'
 import type { StarterId, StarterInstallStatus } from './contracts'
@@ -151,7 +150,7 @@ export async function installStarter(
     { displayName: starter.name, email: ownerEmail, status: 'active' },
   )
 
-  const ownerProfile = await upsertRecord(
+  await upsertRecord(
     payload,
     'profiles',
     { member: { equals: ownerMember.id } },

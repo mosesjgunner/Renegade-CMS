@@ -1,4 +1,3 @@
-import React from 'react'
 import { mediaVariantUrl, standardRecipes, type VariantFormat } from './variant-contracts'
 
 export type ResponsiveMediaInput = {

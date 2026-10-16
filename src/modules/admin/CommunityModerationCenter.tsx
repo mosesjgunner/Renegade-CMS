@@ -17,16 +17,6 @@ type Report = {
   createdAt: string
 }
 
-type ModerationCase = {
-  id: string
-  siteId: string
-  targetType: string
-  targetId: string
-  status: string
-  createdAt: string
-  lastReportedAt: string
-}
-
 type ModerationActionRecord = {
   id: string
   siteId: string
@@ -52,7 +42,6 @@ type AuditRecord = {
 export default function CommunityModerationCenter() {
   const [siteId, setSiteId] = useState('')
   const [reports, setReports] = useState<Report[]>([])
-  const [cases, setCases] = useState<ModerationCase[]>([])
   const [actions, setActions] = useState<ModerationActionRecord[]>([])
   const [auditLog, setAuditLog] = useState<AuditRecord[]>([])
   const [auditValid, setAuditValid] = useState<boolean>(false)
@@ -81,7 +70,6 @@ export default function CommunityModerationCenter() {
       if (!reportsRes.ok || !modRes.ok) {
         setDataUnavailable(true)
         setReports([])
-        setCases([])
         setActions([])
         setAuditLog([])
         setAuditValid(false)
@@ -95,7 +83,6 @@ export default function CommunityModerationCenter() {
       if (reportsRes.ok) {
         const rData = await reportsRes.json()
         setReports(rData.reports ?? [])
-        setCases(rData.cases ?? [])
       }
 
       if (modRes.ok) {

@@ -1,13 +1,11 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import type {
   CoordinatedRelease,
   ReleaseArtifactItem,
   ReleaseGateRuleResult,
-  ReleaseGateSnapshot,
-  ReleaseStatus,
 } from '../releases/contracts'
 
 const STATUS_COLORS: Record<string, { bg: string; text: string; border: string }> = {

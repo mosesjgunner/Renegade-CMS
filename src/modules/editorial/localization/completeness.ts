@@ -1,9 +1,4 @@
-import type {
-  CompletenessFinding,
-  LocaleVariant,
-  RichTextNode,
-  TranslationCompletenessReport,
-} from './contracts'
+import type { CompletenessFinding, RichTextNode, TranslationCompletenessReport } from './contracts'
 
 // Whitelist of standard supported rich text / layout node types
 export const SUPPORTED_RICH_TEXT_NODE_TYPES = new Set([

@@ -203,15 +203,6 @@ export class PinterestAdapter implements SocialProviderAdapter {
 
       // 1. Carousel Pin (2 to 5 images)
       if (variant.attachments.length > 1) {
-        const items: Array<{ title?: string; description?: string; link?: string }> = []
-        for (const att of variant.attachments) {
-          const publicUrl = await mediaResolver.resolveUrl(att.mediaAssetId)
-          items.push({
-            title: settings?.pinTitle,
-            description: variant.text,
-            link: variant.linkUrl,
-          })
-        }
         // In Pinterest API v5, multiple images in media_source are passed via items
         mediaSource = {
           source_type: 'multiple_image_urls',

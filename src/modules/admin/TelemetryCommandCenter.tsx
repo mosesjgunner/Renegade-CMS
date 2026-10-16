@@ -1,7 +1,6 @@
 'use client'
 
-import React, { useCallback, useEffect, useState } from 'react'
-import Link from 'next/link'
+import { useCallback, useEffect, useState } from 'react'
 
 interface DashboardData {
   activeSiteId: string
@@ -274,7 +273,6 @@ export function TelemetryCommandCenter() {
     sourceFreshness,
     uncertaintyAndMissingData,
     privacyConsent,
-    coreMetrics,
     financialSummary,
     campaignFunnels,
     experiment,

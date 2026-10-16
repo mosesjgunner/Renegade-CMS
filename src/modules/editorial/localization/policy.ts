@@ -1,12 +1,7 @@
 import type { ReleaseGateRuleWaiver } from '../../releases/contracts'
 import { assertHumanReviewApproved } from './adapter'
 import { evaluateTranslationCompleteness } from './completeness'
-import type {
-  LocaleVariant,
-  SourceRevisionPin,
-  TranslationGroup,
-  TranslationRequest,
-} from './contracts'
+import type { LocaleVariant, TranslationGroup, TranslationRequest } from './contracts'
 import { computeHreflangAlternates } from './hreflang'
 
 export interface LocalizationPolicyEvaluationContext {
@@ -195,7 +190,7 @@ export function evaluateLocalizationQualityPolicy(
   const mediaRights = context.sourceMediaRights || {}
   const expiredOrUnapprovedMedia: string[] = []
   if (context.variant.mediaChoices) {
-    for (const [mediaId, choice] of Object.entries(context.variant.mediaChoices)) {
+    for (const mediaId of Object.keys(context.variant.mediaChoices)) {
       const rights = mediaRights[mediaId]
       if (rights) {
         if (rights.status && rights.status !== 'approved') {

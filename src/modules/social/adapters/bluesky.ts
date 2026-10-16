@@ -3,7 +3,6 @@ import {
   type AccountConstraints,
   type AdapterResult,
   type AuthContext,
-  type DeliveryReceipt,
   type MediaResolver,
   type NormalizedAnalytics,
   type NormalizedRemotePost,

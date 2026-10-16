@@ -1,12 +1,11 @@
 'use client'
 
-import React, { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import type {
   CommandCenterOverview,
   HonestMediaState,
   MediaAssetSummary,
 } from '../media/command-center'
-import { MediaUploader } from '../media/MediaUploader'
 import { ImageEditorModal, type ImageEditorAsset } from '../media/image-editor'
 
 type Tab = 'overview' | 'assets' | 'queue' | 'podcasts' | 'videos' | 'governance'

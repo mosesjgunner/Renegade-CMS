@@ -6,16 +6,12 @@ export default async function MediaLibrary({ initPageResult, searchParams }: Adm
   const user = initPageResult.req.user as { site?: { id?: string } } | undefined
   // Site selection is deliberately explicit; a staff user without a scoped site cannot upload into an accidental tenant.
   let siteId = String(user?.site?.id ?? '')
-  let isLegacyView = false
 
   if (searchParams) {
     const resolvedParams = (await searchParams) as Record<string, string | string[] | undefined>
     const paramSite = resolvedParams?.siteId
     if (typeof paramSite === 'string') {
       siteId = paramSite
-    }
-    if (resolvedParams?.view === 'legacy') {
-      isLegacyView = true
     }
   }
 

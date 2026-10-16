@@ -1,6 +1,5 @@
 import type {
   CommunityAction,
-  CommunityActor,
   CommunityPolicyContext,
   CommunityPolicyDecision,
   CommunityPublicProfile,

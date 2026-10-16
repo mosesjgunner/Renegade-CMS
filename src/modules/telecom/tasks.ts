@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import type { TaskConfig } from 'payload'
-import { loadConfig } from '../core/config'
 import {
   checkRecipientQuietHours,
   hasTelecomConsent,

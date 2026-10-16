@@ -1,4 +1,4 @@
-import { createHash, createHmac, randomBytes, timingSafeEqual } from 'node:crypto'
+import { createHash } from 'node:crypto'
 
 // ============================================================================
 // GSM 7-bit Alphabet and Encoding Constants

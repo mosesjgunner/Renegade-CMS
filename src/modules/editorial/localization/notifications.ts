@@ -2,7 +2,6 @@ import { randomUUID } from 'node:crypto'
 
 import type {
   InAppNotification,
-  NotificationChannel,
   NotificationEventType,
   NotificationOutboxItem,
   NotificationPreferences,

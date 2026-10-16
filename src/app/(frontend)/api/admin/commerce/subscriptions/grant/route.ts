@@ -8,7 +8,6 @@ import {
   recomputeSubscriptionEntitlements,
 } from '@/modules/commerce/subscription-service'
 
-const staffOnly = (role: unknown) => ['owner', 'administrator', 'staff'].includes(String(role))
 const fingerprint = (
   memberId: string,
   planId: string,

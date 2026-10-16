@@ -1,5 +1,3 @@
-import type { QualityGateSnapshot, QualityWaiverAuthorization } from '../contracts'
-
 export type LocaleCode = string // e.g. 'en', 'es', 'fr', 'de', 'ja'
 
 export type TranslationStatus =

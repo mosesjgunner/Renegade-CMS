@@ -2,11 +2,7 @@ import config from '@payload-config'
 import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
 import { resolveOperatorGrantContext } from '@/modules/operations/operator-grants'
-import {
-  attributeCampaignFunnel,
-  maskSuppressedIdentity,
-  type FirstPartyEvent,
-} from '@/modules/analytics/contracts'
+import { maskSuppressedIdentity, type FirstPartyEvent } from '@/modules/analytics/contracts'
 
 const isOperator = (user: { role?: string } | null | undefined) =>
   ['owner', 'administrator', 'staff'].includes(String(user?.role))

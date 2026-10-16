@@ -21,7 +21,6 @@ import {
   evaluateCanonicalPostStatus,
   type CanonicalSocialPost,
   type SocialDeliveryRecord,
-  type SocialPostVariant,
 } from './models'
 import { executeVariantDelivery, type QueueProcessingOptions } from './queue'
 

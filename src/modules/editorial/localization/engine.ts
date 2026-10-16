@@ -4,16 +4,13 @@ import { type TranslationDraftRequest, type TranslationProviderAdapter } from '.
 import type {
   LocaleCode,
   LocaleVariant,
-  NotificationEventType,
   SourceRevisionPin,
-  TranslationDraftAttribution,
   TranslationGroup,
   TranslationRequest,
-  TranslationStatus,
 } from './contracts'
 import { computeHreflangAlternates } from './hreflang'
 import { NotificationManager } from './notifications'
-import { evaluateLocalizationQualityPolicy, type LocalizationPolicyReport } from './policy'
+import { evaluateLocalizationQualityPolicy } from './policy'
 import { WebhookEngine } from './webhooks'
 
 export interface CreateTranslationGroupInput {

@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
-import React, { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { type SocialNetwork } from '../social/contracts'
 import {
   createCanonicalSocialPost,
@@ -66,7 +66,6 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
   )
 
   const [imageUrl, setImageUrl] = useState<string>('')
-  const [imageRole, setImageRole] = useState<'image' | 'video'>('image')
   const [pinterestBoardId, setPinterestBoardId] = useState<string>('board-announcements')
   const [telegramChatId, setTelegramChatId] = useState<string>('@renegade_broadcast')
   const [discordWebhookUrl, setDiscordWebhookUrl] = useState<string>('')
@@ -115,7 +114,6 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
     : canonicalPost.baseCopy
 
   // Platform limits for active tab
-  const platformRules = PLATFORM_MEDIA_RULES[activeAccount.network]
   const charLimit =
     activeAccount.network === 'x'
       ? 280

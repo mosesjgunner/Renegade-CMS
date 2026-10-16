@@ -7,7 +7,6 @@ import {
   maskSuppressedIdentity,
   attributeCampaignFunnel,
   type FirstPartyEvent,
-  type MetricSnapshot,
 } from '@/modules/analytics/contracts'
 import { analyzeExperiment } from '@/modules/experiences/contracts'
 import { getActivePublicExperiment } from '@/modules/experiences/public-experiment'

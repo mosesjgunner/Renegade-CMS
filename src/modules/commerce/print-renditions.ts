@@ -1,4 +1,4 @@
-import { createHash, createHmac, timingSafeEqual } from 'node:crypto'
+import { createHmac, timingSafeEqual } from 'node:crypto'
 import type { PlacementBounds, PrintAreaType } from './pod-contract'
 
 export const COLOR_FIDELITY_DISCLAIMER =

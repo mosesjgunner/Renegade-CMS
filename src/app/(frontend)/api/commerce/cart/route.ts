@@ -212,7 +212,6 @@ export async function POST(request: Request) {
 
     let cart: VersionedCart
     let newGuestToken: string | undefined
-    let isNewCart = false
 
     if (cartDoc) {
       cart = {
@@ -238,7 +237,6 @@ export async function POST(request: Request) {
         updatedAt: String(cartDoc.updatedAt),
       }
     } else {
-      isNewCart = true
       let guestHash: string | undefined
       if (!memberId) {
         const generated = generateGuestToken()
@@ -461,7 +459,7 @@ export async function PATCH(request: Request) {
 export async function DELETE(request: Request) {
   const payload = await getPayload({ config })
   try {
-    const { siteId, cartDoc } = await resolveCartContext(request, payload)
+    const { cartDoc } = await resolveCartContext(request, payload)
     if (!cartDoc) {
       return NextResponse.json({ error: 'Cart not found.' }, { status: 404 })
     }

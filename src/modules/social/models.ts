@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto'
-import { type SocialAttachment, type SocialNetwork, type SocialState } from './contracts'
+import { type SocialAttachment, type SocialNetwork } from './contracts'
 
 export type CanonicalPostStatus =
   | 'draft'

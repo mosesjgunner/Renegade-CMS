@@ -108,19 +108,6 @@ export function toDeterministicUuid(key: string): string {
 //        unknown tags, event handlers
 // Allowed link protocols: http, https, mailto
 // ---------------------------------------------------------------------------
-const ALLOWED_TAGS = new Set([
-  'p',
-  'b',
-  'i',
-  'em',
-  'strong',
-  'a',
-  'ul',
-  'ol',
-  'li',
-  'blockquote',
-  'code',
-])
 
 function isSafeLinkUrl(value: string): boolean {
   if (!value) return false

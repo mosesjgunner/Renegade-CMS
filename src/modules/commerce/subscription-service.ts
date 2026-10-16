@@ -10,7 +10,6 @@ type PayloadLike = {
   create(input: any): Promise<any>
   update(input: any): Promise<any>
 }
-const rel = (value: any) => String(typeof value === 'object' && value ? value.id : (value ?? ''))
 
 /** An unchanged provider price preserves the immutable agreement bought by this member. */
 export function resolveProviderPlanChange<T extends { providerMappings?: unknown }>(

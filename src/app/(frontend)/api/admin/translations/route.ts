@@ -6,7 +6,6 @@ import {
   getLocalizationEngine,
 } from '@/modules/editorial/localization/service'
 import { evaluateTranslationCompleteness } from '@/modules/editorial/localization/completeness'
-import { computeHreflangAlternates } from '@/modules/editorial/localization/hreflang'
 
 export const runtime = 'nodejs'
 

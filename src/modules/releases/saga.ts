@@ -1,4 +1,3 @@
-import { randomUUID } from 'node:crypto'
 import type { Payload } from 'payload'
 
 import type {
@@ -34,7 +33,6 @@ export async function executeDatabaseStep(
   lastKnownGoodState: Record<string, unknown>
   url?: string
 }> {
-  const at = new Date().toISOString()
   const targetType = item.targetType || item.type
   const revisionId = item.pinnedRevisionId || item.revisionId
   const itemId = item.id || item.key || `${targetType}:${item.targetId}`
@@ -111,7 +109,7 @@ export async function executeDatabaseStep(
       }
 
       const nextBlocks = item.pinnedSnapshot?.blocks || layout?.blocks
-      const updated = (await payload.update({
+      await payload.update({
         collection: 'page-layouts' as never,
         id: item.targetId,
         context: { publishPresentation: true },
@@ -121,7 +119,7 @@ export async function executeDatabaseStep(
           publishedRevision: Number(layout?.revision || 1) + 1,
         },
         overrideAccess: true,
-      } as never)) as unknown as Doc
+      } as never)
 
       return {
         output: { published: true, surface: layout?.surface, slot: layout?.slot },

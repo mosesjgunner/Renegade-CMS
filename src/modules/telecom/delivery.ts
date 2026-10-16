@@ -1,4 +1,3 @@
-import type { AppConfig } from '../core/config'
 import type {
   RecipientTelecomCapability,
   RcsContent,

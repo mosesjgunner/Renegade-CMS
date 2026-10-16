@@ -2,7 +2,6 @@ import { createHash, randomBytes, randomUUID } from 'node:crypto'
 import {
   assertMoney,
   computeConversionSourceHash,
-  evaluatePricingFreshness,
   interpolateSubId,
   isSafeAffiliateDestinationUrl,
   type AffiliateClick,

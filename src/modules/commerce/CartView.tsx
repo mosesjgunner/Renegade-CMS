@@ -1,11 +1,11 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import type { VersionedCart } from './cart'
 import type { PricingSnapshot } from './pricing'
 import type { CheckoutProposal } from './proposal'
-import type { RawAddressInput, ShippingRate } from './shipping'
+import type { RawAddressInput } from './shipping'
 
 export function CartView() {
   const [cart, setCart] = useState<VersionedCart | null>(null)

@@ -10,7 +10,6 @@ import {
   type CanonicalSocialPost,
   type SocialDeliveryRecord,
   type SocialPostVariant,
-  type VariantDeliveryStatus,
 } from './models'
 import { sanitizeSocialLog } from './security'
 

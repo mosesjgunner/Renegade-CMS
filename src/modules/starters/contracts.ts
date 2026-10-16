@@ -1,4 +1,4 @@
-import type { LayoutBlock, PageLayout, PresentationField } from '../public/page-builder'
+import type { LayoutBlock } from '../public/page-builder'
 import type { ThemeId } from '../public/contracts'
 
 export type StarterId = 'publication-community' | 'campaign-commerce'

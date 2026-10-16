@@ -16,7 +16,7 @@ import type {
   ReleaseGateSnapshot,
   ReleaseStatus,
 } from './contracts'
-import { computeReleaseFingerprint, evaluateReleaseGates, isGateSnapshotValid } from './gates'
+import { evaluateReleaseGates, isGateSnapshotValid } from './gates'
 import { executeReleaseSaga, rollbackReleaseSaga } from './saga'
 
 type Doc = Record<string, any>

@@ -1,4 +1,4 @@
-import { createHash, randomBytes } from 'node:crypto'
+import { randomBytes } from 'node:crypto'
 import {
   calculateSmsSegments,
   estimateTelecomCost,
@@ -6,7 +6,6 @@ import {
   type RcsContent,
   type RecipientTelecomCapability,
   type TelecomCostEstimate,
-  type TelecomDeliveryFailure,
   type TelecomProviderCapabilities,
 } from './contracts'
 import type {

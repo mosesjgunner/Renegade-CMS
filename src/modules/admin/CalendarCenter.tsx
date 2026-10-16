@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import type { CalendarProjection } from '@/modules/calendar/contracts'
 
 export type CalendarFilterState = {

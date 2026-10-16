@@ -1,6 +1,4 @@
-import { randomUUID } from 'node:crypto'
 import type { Payload } from 'payload'
-import { loadConfig } from '@/modules/core/config'
 import {
   browserPrivacySignals,
   privacyPolicyFromSettings,
@@ -8,7 +6,6 @@ import {
 } from '@/modules/analytics/privacy'
 import { analyticsAllowed, isBotOrInternal } from '@/modules/analytics/contracts'
 import { deterministicAssignment, type ExperimentState, type Variant } from './contracts'
-import { createExperiencesRuntimeService, type ExperienceDefinition } from './service'
 
 export interface PublicExperimentVariantConfig extends Variant {
   name: string

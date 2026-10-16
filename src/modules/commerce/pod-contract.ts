@@ -1,5 +1,3 @@
-import { createHash } from 'node:crypto'
-
 export const POD_ADAPTER_CONTRACT_VERSION = 'shop-03.v1' as const
 
 export type PodProviderState =

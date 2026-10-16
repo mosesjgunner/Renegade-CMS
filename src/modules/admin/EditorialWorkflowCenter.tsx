@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import type { Priority, WorkflowAuditEvent, WorkflowItem } from '../editorial/cmos-workflow'
 import type { CommentTarget, ReviewComment, RevisionComparisonDiff } from '../editorial/comments'

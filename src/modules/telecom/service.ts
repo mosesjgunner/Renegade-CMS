@@ -6,7 +6,6 @@ import {
   parseInboundKeyword,
   telecomDigest,
   type QuietHoursPolicy,
-  type RcsContent,
 } from './contracts'
 
 type Store = any

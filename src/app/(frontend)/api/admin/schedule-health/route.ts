@@ -15,7 +15,6 @@ export async function GET(req: NextRequest) {
   try {
     const payload = await getPayload({ config: configPromise })
     const { searchParams } = new URL(req.url)
-    const siteId = searchParams.get('siteId')
     const limit = parseInt(searchParams.get('limit') ?? '50', 10)
 
     const now = new Date()

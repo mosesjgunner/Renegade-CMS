@@ -33,14 +33,10 @@ export async function resolveInboxCandidates(
   event: InboxEvent,
 ): Promise<Candidate[]> {
   const p = event.payload
-  const siteId = String(p.site_id ?? p.siteId ?? '')
   const targetType = String(
     p.target_type ??
       p.targetType ??
       (event.eventType.startsWith('comment.') ? 'comment' : 'forum_post'),
-  )
-  const targetId = String(
-    p.target_id ?? p.targetId ?? p.comment_id ?? p.commentId ?? p.post_id ?? p.postId ?? '',
   )
   const members = new Map<string, Candidate>()
   const add = (ids: string[], reason: string) =>

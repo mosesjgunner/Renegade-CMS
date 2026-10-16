@@ -768,10 +768,8 @@ export type RawCalendarItemInput = {
  */
 export function projectUnifiedAudienceCalendar(
   items: readonly RawCalendarItemInput[],
-  options: { referenceDate?: Date } = {},
+  _options: { referenceDate?: Date } = {},
 ): UnifiedCampaignCalendarItem[] {
-  const now = options.referenceDate ?? new Date()
-
   return items.map((item, index) => {
     const warnings: string[] = []
     let hasFrequencyConflict = false

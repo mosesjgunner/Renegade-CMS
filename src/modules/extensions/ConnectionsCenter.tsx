@@ -88,7 +88,7 @@ export function ConnectionsCenter({
 }) {
   const [connections, setConnections] = useState<OperationalConnection[]>([...initialConnections])
   const [deliveries, setDeliveries] = useState<WebhookDeliveryItem[]>([...initialDeliveries])
-  const [auditEvents, setAuditEvents] = useState<IntegrationAuditItem[]>([...initialAuditEvents])
+  const [auditEvents] = useState<IntegrationAuditItem[]>([...initialAuditEvents])
 
   const [activeTab, setActiveTab] = useState<'overview' | 'webhooks' | 'vault' | 'audit'>(
     'overview',
