@@ -149,7 +149,10 @@ export async function POST(request: Request) {
   })
   if (!setting.adminExperience?.optionalCapabilities?.commerceCheckout)
     return NextResponse.json({ error: 'Checkout is not available.' }, { status: 503 })
-  const providerKey = localTestCheckoutEnabled(request.url) ? 'deterministic-test' : 'stripe-test'
+  const host = request.headers.get('host') ?? new URL(request.url).host
+  const providerKey = localTestCheckoutEnabled(`http://${host}`)
+    ? 'deterministic-test'
+    : 'stripe-test'
   const merchants = await payload.find({
     collection: 'merchant-connections',
     where: { and: [{ site: { equals: siteId } }, { status: { equals: 'active' } }] },

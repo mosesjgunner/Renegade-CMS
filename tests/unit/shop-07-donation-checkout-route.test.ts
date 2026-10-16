@@ -181,4 +181,38 @@ describe('SHOP-07 hosted donation checkout', () => {
     expect((await replay.json()).actionUrl).toBe('/checkout/test/det_cs_0123456789abcdef01234567')
     expect(state.retrieve).not.toHaveBeenCalled()
   })
+
+  it('selects explicit local checkout behind a proxy only for the configured test host', async () => {
+    vi.stubEnv('LOCAL_E2E_TEST_MODE', 'false')
+    vi.stubEnv('COMMERCE_LOCAL_TEST_CHECKOUT_ENABLED', 'true')
+    vi.stubEnv('COMMERCE_TEST_WEBHOOK_SECRET', 'unit-test-webhook-secret-long-enough')
+    vi.stubEnv('APP_URL', 'https://dispatch.rc02.test:3179')
+    try {
+      const proxied = (host: string, key: string) => {
+        const original = request({}, key)
+        const headers = new Headers(original.headers)
+        headers.set('host', host)
+        return new Request('http://0.0.0.0:3000/api/commerce/donations/intent', {
+          method: 'POST',
+          headers,
+          body: original.body,
+          duplex: 'half',
+        } as RequestInit)
+      }
+      const local = await POST(proxied('dispatch.rc02.test:3179', 'proxied-local-donation-123456'))
+      expect(local.status).toBe(201)
+      expect((await local.json()).providerMode).toBe('deterministic-test')
+      const foreign = await POST(proxied('other.rc02.test:3179', 'proxied-foreign-donation-123456'))
+      expect(foreign.status).toBe(201)
+      expect((await foreign.json()).providerMode).toBe('provider-test')
+      vi.stubEnv('COMMERCE_LOCAL_TEST_CHECKOUT_ENABLED', 'false')
+      const disabled = await POST(
+        proxied('dispatch.rc02.test:3179', 'proxied-disabled-donation-123456'),
+      )
+      expect(disabled.status).toBe(201)
+      expect((await disabled.json()).providerMode).toBe('provider-test')
+    } finally {
+      vi.unstubAllEnvs()
+    }
+  })
 })
