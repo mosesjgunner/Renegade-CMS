@@ -1,0 +1,32 @@
+{
+  "command": [
+    "docker",
+    "compose",
+    "--project-name",
+    "solrc06-independent-20261016",
+    "--env-file",
+    "scratch/source.env",
+    "-f",
+    "scratch/source.yaml",
+    "run",
+    "--rm",
+    "--no-deps",
+    "--name",
+    "solrc06-lease-recover",
+    "-v",
+    "C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\lease-worker.ts:/app/acceptance-lease.ts:ro",
+    "-v",
+    "C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\lease-proof:/proof",
+    "--entrypoint",
+    "node",
+    "renegade-worker",
+    "--import",
+    "tsx",
+    "acceptance-lease.ts",
+    "recover"
+  ],
+  "exitCode": 0,
+  "durationSeconds": 7.138676166534424,
+  "sourceSha": "badaa6f4d9f9566b81d5ee29c14a8744f94adc7e",
+  "logSha256": "6d77abae4653f7977a9f8bc00c75516f9d3c63a2648dc7f41cb51c1a96d779ea"
+}

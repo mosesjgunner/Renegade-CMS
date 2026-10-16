@@ -1,0 +1,6 @@
+{
+  "project": "solrc06-restored-20261016",
+  "tables": {},
+  "tableCount": 0,
+  "totalRows": 0
+}

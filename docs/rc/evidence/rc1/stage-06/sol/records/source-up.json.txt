@@ -1,0 +1,20 @@
+{
+  "command": [
+    "docker",
+    "compose",
+    "--project-name",
+    "solrc06-independent-20261016",
+    "--env-file",
+    "scratch/source.env",
+    "-f",
+    "scratch/source.yaml",
+    "up",
+    "-d",
+    "--no-build",
+    "--wait"
+  ],
+  "exitCode": 1,
+  "durationSeconds": 18.999408721923828,
+  "sourceSha": "badaa6f4d9f9566b81d5ee29c14a8744f94adc7e",
+  "logSha256": "840cf989f06ecd3bec7c8054ffc60c9edd19120ed8683caa25f7eb6215d37876"
+}

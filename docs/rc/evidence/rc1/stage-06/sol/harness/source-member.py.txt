@@ -1,0 +1,11 @@
+from pathlib import Path
+import json,zipfile
+trace=next(Path('scratch/sol-browser-artifacts/source-browser').rglob('trace.zip'))
+with zipfile.ZipFile(trace) as z:
+ for name in z.namelist():
+  if name.endswith('.network'):
+   for line in z.read(name).decode().splitlines():
+    snap=json.loads(line).get('snapshot',{})
+    if snap.get('request',{}).get('url','').endswith('/api/member-auth/me'):
+     content=snap['response']['content'];data=json.loads(z.read('resources/'+content['_sha1']))
+     Path('scratch/records/source-member-identity.json').write_text(json.dumps({'memberId':data['memberId'],'siteId':data['siteId']},indent=2));print('Source ordinary member identity recovered from original HTTP response')

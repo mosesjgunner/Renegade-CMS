@@ -1,0 +1,197 @@
+{
+  "actors": [
+    {
+      "role": "owner",
+      "method": "ordinary login using retained virtual hardware credential",
+      "forgedSessions": 0
+    },
+    {
+      "role": "staff",
+      "method": "ordinary login using retained virtual hardware credential",
+      "forgedSessions": 0
+    },
+    {
+      "role": "member",
+      "method": "new ordinary MIME magic link",
+      "memberId": "ddac2775-db7f-4981-9911-9bfd6c895bea",
+      "forgedSessions": 0
+    }
+  ],
+  "categories": {
+    "users": {
+      "totalDocs": 2,
+      "returned": 2,
+      "ids": [
+        "7e04bfca-4e91-48cb-af00-bcd4ba24ce54",
+        "e04beda8-0c2b-4307-849a-f33a1a7bada3"
+      ]
+    },
+    "members": {
+      "totalDocs": 3,
+      "returned": 3,
+      "ids": [
+        "4879aa98-d9f4-4abc-9214-801f685c3f19",
+        "4cae0d88-57cb-4b51-a435-502082e7ad64",
+        "ddac2775-db7f-4981-9911-9bfd6c895bea"
+      ]
+    },
+    "member-site-roles": {
+      "totalDocs": 2,
+      "returned": 2,
+      "ids": [
+        "4ddb8b2e-a7b5-478f-918b-0089a653bbde",
+        "a3cacd3a-f708-4f4a-bbb9-b0b4e758969c"
+      ]
+    },
+    "media-assets": {
+      "totalDocs": 1,
+      "returned": 1,
+      "ids": [
+        "43652967-92f0-483c-a813-271a27c47db2"
+      ]
+    },
+    "content": {
+      "totalDocs": 2,
+      "returned": 2,
+      "ids": [
+        "0871879e-a6d5-41b0-970f-4c546465a93d",
+        "2b4f2aa3-f799-4c37-9e2b-0cefa867cdfe"
+      ]
+    },
+    "article-family-content": {
+      "totalDocs": 1,
+      "returned": 1,
+      "ids": [
+        "792e1333-c840-4ef7-9c7b-a16de72bbcd0"
+      ]
+    },
+    "audience-lists": {
+      "totalDocs": 0,
+      "returned": 0,
+      "ids": []
+    },
+    "subscribers": {
+      "totalDocs": 0,
+      "returned": 0,
+      "ids": []
+    },
+    "audience-memberships": {
+      "totalDocs": 0,
+      "returned": 0,
+      "ids": []
+    },
+    "consent-events": {
+      "totalDocs": 0,
+      "returned": 0,
+      "ids": []
+    },
+    "email-messages": {
+      "totalDocs": 0,
+      "returned": 0,
+      "ids": []
+    },
+    "contacts": {
+      "totalDocs": 1,
+      "returned": 1,
+      "ids": [
+        "f940499d-f932-4c3b-8593-ba293276a1c8"
+      ]
+    },
+    "forum-sections": {
+      "totalDocs": 0,
+      "returned": 0,
+      "ids": []
+    },
+    "forums": {
+      "totalDocs": 0,
+      "returned": 0,
+      "ids": []
+    },
+    "discussions": {
+      "totalDocs": 0,
+      "returned": 0,
+      "ids": []
+    },
+    "discussion-posts": {
+      "totalDocs": 0,
+      "returned": 0,
+      "ids": []
+    },
+    "merchant-connections": {
+      "totalDocs": 0,
+      "returned": 0,
+      "ids": []
+    },
+    "payment-method-capabilities": {
+      "totalDocs": 0,
+      "returned": 0,
+      "ids": []
+    },
+    "products": {
+      "totalDocs": 0,
+      "returned": 0,
+      "ids": []
+    },
+    "orders": {
+      "totalDocs": 0,
+      "returned": 0,
+      "ids": []
+    },
+    "digital-delivery-grants": {
+      "totalDocs": 0,
+      "returned": 0,
+      "ids": []
+    },
+    "commerce-refunds": {
+      "totalDocs": 0,
+      "returned": 0,
+      "ids": []
+    },
+    "supporters": {
+      "totalDocs": 0,
+      "returned": 0,
+      "ids": []
+    },
+    "subscriptions": {
+      "totalDocs": 0,
+      "returned": 0,
+      "ids": []
+    },
+    "entitlements": {
+      "totalDocs": 0,
+      "returned": 0,
+      "ids": []
+    },
+    "donation-campaigns": {
+      "totalDocs": 0,
+      "returned": 0,
+      "ids": []
+    },
+    "donation-intents": {
+      "totalDocs": 0,
+      "returned": 0,
+      "ids": []
+    },
+    "donations": {
+      "totalDocs": 0,
+      "returned": 0,
+      "ids": []
+    },
+    "scheduled-publish-jobs": {
+      "totalDocs": 1,
+      "returned": 1,
+      "ids": [
+        "281a6244-3c21-465c-a098-ee4b5d189dbd"
+      ]
+    },
+    "outbound-network-deliveries": {
+      "totalDocs": 0,
+      "returned": 0,
+      "ids": []
+    }
+  },
+  "media": {
+    "bytes": 4205,
+    "sha256": "97df0ecac3746e73f93420443b00c601b59aa68073e40a6272ec8cd758dbd882"
+  }
+}

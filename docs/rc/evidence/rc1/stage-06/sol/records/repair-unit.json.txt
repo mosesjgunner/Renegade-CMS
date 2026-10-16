@@ -1,0 +1,13 @@
+{
+  "command": [
+    "npm.cmd",
+    "test",
+    "--",
+    "--reporter=json",
+    "--outputFile=scratch/records/repair-unit-results.json"
+  ],
+  "exitCode": 0,
+  "durationSeconds": 32.812310218811035,
+  "sourceSha": "51fa1c2310519ae478905e365befe6114c5ddcc1",
+  "logSha256": "468459268a88b72820b6d0025309525f322fb105b3e76760ae9c02cf63050c0f"
+}

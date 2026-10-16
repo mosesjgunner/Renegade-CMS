@@ -1,0 +1,9 @@
+C:\Projects\RENEGADE CMS\sol-stage06-independent-20261016\src\modules\operations\backup.ts:116
+      throw new Error(`Operational backup checksum mismatch: ${file.path}`)
+            ^
+
+Error: Operational backup checksum mismatch: media.tar.gz
+    at verifyOperationalBackup (C:\Projects\RENEGADE CMS\sol-stage06-independent-20261016\src\modules\operations\backup.ts:116:13)
+    at async <anonymous> (C:\Projects\RENEGADE CMS\sol-stage06-independent-20261016\src\scripts\operational-restore.ts:64:18)
+
+Node.js v24.19.0

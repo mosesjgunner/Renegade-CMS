@@ -1,0 +1,18 @@
+{
+  "command": [
+    "docker",
+    "compose",
+    "--project-name",
+    "solrc06-independent-20261016",
+    "--env-file",
+    "scratch/source.env",
+    "-f",
+    "scratch/source.yaml",
+    "stop",
+    "renegade-worker"
+  ],
+  "exitCode": 0,
+  "durationSeconds": 0.6424145698547363,
+  "sourceSha": "badaa6f4d9f9566b81d5ee29c14a8744f94adc7e",
+  "logSha256": "df3f7be09ed624e720455efe843d41562c2c5a8db67a1f381e50378a45ed6850"
+}

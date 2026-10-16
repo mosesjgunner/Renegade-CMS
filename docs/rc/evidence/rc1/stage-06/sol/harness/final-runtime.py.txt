@@ -1,0 +1,27 @@
+from pathlib import Path
+import json,subprocess,secrets,hashlib,tarfile,os
+out=Path('scratch/records');sha='51fa1c2310519ae478905e365befe6114c5ddcc1'
+assert json.loads((out/'repaired-image-build.json').read_text())['exitCode']==0
+def run(label,args):subprocess.run(['python','scratch/record.py',label]+args,check=True)
+env=dict(line.split('=',1) for line in Path('scratch/source.env').read_text().splitlines() if '=' in line);env.update(BUILD_SHA=sha,RENEGADE_IMAGE_TAG='sol06-51fa1c23')
+Path('scratch/source.env').write_text('\n'.join(k+'='+v for k,v in env.items())+'\n')
+run('final-image-source-boot',['docker','compose','--project-name',env['RENEGADE_INSTANCE'],'--env-file','scratch/source.env','-f','scratch/source.yaml','up','-d','--no-build','--wait'])
+run('final-image-backup',['node','node_modules/tsx/dist/cli.mjs','src/scripts/operational-backup.ts','--output','scratch/final-image-backup','--maintenance-window-confirmed','--compose-file','scratch/source.yaml','--env-file','scratch/source.env'])
+archive=next(Path('scratch/final-image-backup').glob('renegade-backup-*'));manifest=json.loads((archive/'manifest.json').read_text());assert manifest['renegade']['buildSha']==sha
+target=env.copy();target.update(RENEGADE_RESTORE_INSTANCE='solrc06-final-restored-20261016',RENEGADE_RESTORE_WEB_BIND='127.0.0.1:3208',PAYLOAD_SECRET=secrets.token_hex(48),POSTGRES_PASSWORD=secrets.token_hex(24))
+Path('scratch/final-restore.env').write_text('\n'.join(k+'='+v for k,v in target.items())+'\n')
+run('final-image-restore',['node','node_modules/tsx/dist/cli.mjs','src/scripts/operational-restore.ts','--archive',str(archive),'--target-version','0.1.0-rc.1','--isolated','--authorize-restore','--compose-file','scratch/restore.yaml','--env-file','scratch/final-restore.env'])
+image=json.loads(subprocess.check_output(['docker','image','inspect','renegade-cms:sol06-51fa1c23'],text=True))[0]
+hostHash=hashlib.sha256(Path('src/scripts/operational-backup.ts').read_bytes()).hexdigest()
+check="const fs=require('node:fs'),c=require('node:crypto');console.log(JSON.stringify({backupScriptSha256:c.createHash('sha256').update(fs.readFileSync('src/scripts/operational-backup.ts')).digest('hex'),buildSha:process.env.BUILD_SHA,testAuth:process.env.LOCAL_E2E_TEST_MODE,revision:JSON.parse(fs.readFileSync('build-provenance.json')).sourceSha}))"
+runtime=json.loads(subprocess.check_output(['docker','exec','solrc06-final-restored-20261016-renegade-web-1','node','-e',check],text=True));assert runtime['backupScriptSha256']==hostHash and runtime['buildSha']==sha and runtime['testAuth']=='false' and runtime['revision']==sha
+with tarfile.open(archive/'media.tar.gz') as tar:media={m.name:{'bytes':m.size,'sha256':hashlib.sha256(tar.extractfile(m).read()).hexdigest()} for m in tar.getmembers() if m.isfile()}
+assert './.renegade/backup-status.json' not in media
+(out/'final-image-binding.json').write_text(json.dumps({'sourceSha':sha,'Id':image['Id'],'RepoDigests':image.get('RepoDigests'),'labels':image['Config']['Labels'],'runtime':runtime,'hostBackupScriptSha256':hostHash,'archiveManifest':manifest,'archiveChecksums':{p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in archive.iterdir() if p.is_file()},'mediaFiles':media},indent=2))
+subprocess.run(['python','scratch/snapshot.py','solrc06-independent-20261016','final-source'],check=True)
+subprocess.run(['python','scratch/snapshot.py','solrc06-final-restored-20261016','final-restored'],check=True)
+Path('scratch/active-upstream.txt').write_text('3208')
+os.environ['REPORT_LABEL']='final-image-restored-browser'
+run('final-image-browser-command',['npx.cmd','playwright','test','--config','scratch/playwright.config.ts','restored.spec.ts'])
+print('New exact-source production image backup, empty restore and ordinary authentication completed')
+

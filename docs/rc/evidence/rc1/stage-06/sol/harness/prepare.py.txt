@@ -1,0 +1,24 @@
+from pathlib import Path
+import secrets,json,subprocess,hashlib
+root=Path.cwd(); out=root/'scratch/records';out.mkdir(parents=True,exist_ok=True)
+base=Path('docs/rc/evidence/rc1/stage-05/sol/records/independent-2026-10-15/harness')
+for name in ['generate-tls.mjs','proxy.mjs','smtp.mjs']:
+    source=base/(name+'.txt')
+    if not source.exists():source=Path('docs/rc/evidence/rc1/stage-05/sol/records/harness')/(name+'.txt')
+    text=source.read_text().replace('3159','3179').replace('3158','3178').replace("listen(3137", "listen(3177").replace("listen(3157", "listen(3177")
+    (root/'scratch'/name).write_text(text)
+env={ 'RENEGADE_INSTANCE':'solrc06-independent-20261016','RENEGADE_RESTORE_INSTANCE':'solrc06-restored-20261016','POSTGRES_PASSWORD':secrets.token_hex(24),'PAYLOAD_SECRET':secrets.token_hex(48),'APP_URL':'https://dispatch.rc02.test:3179','PROXY_MODE':'reverse-proxy','TRUSTED_PROXY_HOPS':'1','RENEGADE_IMAGE':'renegade-cms','RENEGADE_IMAGE_TAG':'sol-independent-3f464a69','APP_VERSION':'0.1.0-rc.1','BUILD_SHA':'3f464a6903ff26e7489179df29749f065cb55299','RENEGADE_WEB_BIND':'127.0.0.1:3178','RENEGADE_RESTORE_WEB_BIND':'127.0.0.1:3188','LOCAL_E2E_TEST_MODE':'false','RENEGADE_MODULES':'all','RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT':'true','EMAIL_MODE':'smtp'}
+for suffix in ['source','restore']:
+    data=env.copy()
+    if suffix=='restore':data.update(POSTGRES_PASSWORD=secrets.token_hex(24),PAYLOAD_SECRET=secrets.token_hex(48))
+    (root/f'scratch/{suffix}.env').write_text('\n'.join(f'{k}={v}' for k,v in data.items())+'\n')
+# Use a frozen copy with an explicit local-only SMTP sink and larger PG lock budget.
+for source,target in [('compose.production.yaml','source.yaml'),('compose.restore.yaml','restore.yaml')]:
+    text=Path(source).read_text()
+    text=text.replace('image: postgres:17.6-alpine',"image: postgres:17.6-alpine\n    command: ['postgres', '-c', 'max_locks_per_transaction=256']",1)
+    text=text.replace('EMAIL_MODE: ${EMAIL_MODE:-disabled}', 'EMAIL_MODE: smtp').replace('EMAIL_MODE: disabled','EMAIL_MODE: smtp')
+    text=text.replace('EMAIL_MODE: smtp',"EMAIL_MODE: smtp\n      EMAIL_FROM: rc06@example.test\n      SMTP_HOST: host.docker.internal\n      SMTP_PORT: '3177'\n      SMTP_SECURE: 'false'")
+    (root/'scratch'/target).write_text(text)
+manifest={'sourceSha':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),'imageExecutableSha':env['BUILD_SHA'],'projects':[env['RENEGADE_INSTANCE'],env['RENEGADE_RESTORE_INSTANCE']],'testAuthentication':False,'envFallback':False,'SMTP':'explicit local TCP sink :3177; no outbound provider','sourceStatus':subprocess.check_output(['git','status','--porcelain'],text=True),'harness':{str(p.relative_to(root)):hashlib.sha256(p.read_bytes()).hexdigest() for p in (root/'scratch').glob('*') if p.is_file() and p.suffix not in ['.env']}}
+(out/'environment.json').write_text(json.dumps(manifest,indent=2))
+print('Disposable environment prepared; no existing resources modified')

@@ -1,0 +1,12 @@
+{
+  "siteId": "e569115f-2594-45ee-9a0f-0214f5f942b5",
+  "publicationId": "2e388246-34fa-4aeb-a55b-b05cad65416f",
+  "articleId": "2b4f2aa3-f799-4c37-9e2b-0cefa867cdfe",
+  "assetId": "43652967-92f0-483c-a813-271a27c47db2",
+  "actors": [
+    "owner WebAuthn",
+    "staff WebAuthn",
+    "member MIME magic link"
+  ],
+  "cookiesForged": 0
+}

@@ -1,0 +1,28 @@
+{
+  "status": "BLOCKED",
+  "readOnlyProbes": [
+    {
+      "command": [
+        "docker",
+        "version",
+        "--format",
+        "{{.Server.Version}}"
+      ],
+      "exitCode": null,
+      "status": "TIMEOUT after 15 seconds; no result promoted",
+      "stdout": "",
+      "stderr": "",
+      "durationSeconds": 15.02091121673584
+    }
+  ],
+  "priorObservedEngineError": "docker buildx history ls: HTTP 500 Internal Server Error from dockerDesktopLinuxEngine/_ping",
+  "imageBuild": "Own build client canceled after engine API failure; no completed image/digest accepted. Preserve actual recorded exit 4294967295.",
+  "recoveryNotAuthorized": "No shared Docker Desktop restart, WSL shutdown, prune, volume deletion or existing-installation action performed.",
+  "availabilityLimit": "Previously healthy existing installation state cannot be reverified after engine management failure. No claim of unchanged availability.",
+  "unexecuted": [
+    "New-image web/worker and CLI binding",
+    "New-image complete backup/empty restore/ordinary login",
+    "Further interruption/settlement and pending-job restore cases",
+    "Authentic predecessor upgrade/rollback"
+  ]
+}

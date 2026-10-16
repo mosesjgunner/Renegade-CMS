@@ -1,0 +1,14 @@
+{
+  "source": "actual successful assertion authenticatorData bytes 33..36 in source trace",
+  "updates": {
+    "owner": {
+      "oldSignCount": 1,
+      "observedAuthenticSignCount": 2
+    },
+    "staff": {
+      "oldSignCount": 2,
+      "observedAuthenticSignCount": 2
+    }
+  },
+  "applicationStateModified": false
+}

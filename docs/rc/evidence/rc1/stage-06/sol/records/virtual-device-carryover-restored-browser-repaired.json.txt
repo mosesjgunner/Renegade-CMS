@@ -1,0 +1,14 @@
+{
+  "source": "scratch\\sol-browser-artifacts\\restored-browser-repaired\\restored-restored-ordinary-5333b-and-original-media-equality\\trace.zip actual assertion authenticatorData bytes 33..36",
+  "updates": {
+    "owner": {
+      "oldSignCount": 2,
+      "observedAuthenticSignCount": 3
+    },
+    "staff": {
+      "oldSignCount": 2,
+      "observedAuthenticSignCount": 3
+    }
+  },
+  "applicationStateModified": false
+}

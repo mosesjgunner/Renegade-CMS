@@ -1,0 +1,15 @@
+{
+  "Id": "sha256:56dd7485646e358edffe1cc017e9ae150081f39fc07232ccd729ad6f8d51fb46",
+  "RepoTags": [
+    "renegade-cms:sol-independent-3f464a69"
+  ],
+  "RepoDigests": [
+    "renegade-cms@sha256:56dd7485646e358edffe1cc017e9ae150081f39fc07232ccd729ad6f8d51fb46"
+  ],
+  "Architecture": "amd64",
+  "Os": "linux",
+  "labels": {
+    "org.opencontainers.image.revision": "3f464a6903ff26e7489179df29749f065cb55299",
+    "org.opencontainers.image.version": "0.1.0-rc.1"
+  }
+}

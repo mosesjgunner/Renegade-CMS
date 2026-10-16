@@ -1,0 +1,83 @@
+{
+  "matchedTables": 306,
+  "totalTables": 309,
+  "differences": {
+    "payload_jobs_stats": {
+      "source": {
+        "rows": 1,
+        "rowDigestMd5": "5330b87e2e875140025ac1780637a35b"
+      },
+      "restored": {
+        "rows": 1,
+        "rowDigestMd5": "e4a2f452e1504594bd4addc6c27d7fbb"
+      }
+    },
+    "payload_jobs_log": {
+      "source": {
+        "rows": 240,
+        "rowDigestMd5": "6314855970d8c196ffd12329ff43e609"
+      },
+      "restored": {
+        "rows": 212,
+        "rowDigestMd5": "f72bd636009f12b5b25d07fb874e16ff"
+      }
+    },
+    "payload_jobs": {
+      "source": {
+        "rows": 248,
+        "rowDigestMd5": "59ff7b7e66565f9a12cf81d9bfca3f7b"
+      },
+      "restored": {
+        "rows": 220,
+        "rowDigestMd5": "6242b14bc8634fc3256e1d58295b0675"
+      }
+    }
+  },
+  "differenceBoundary": "Payload queue schedule housekeeping only; source snapshot taken later than backup, both workers booted. No business-table mismatch.",
+  "restoredMediaFiles": 21,
+  "allMediaBytesAndSha256Match": true,
+  "publicationStates": {
+    "solrc06-independent-20261016": {
+      "job": {
+        "id": "281a6244-3c21-465c-a098-ee4b5d189dbd",
+        "article_id": "792e1333-c840-4ef7-9c7b-a16de72bbcd0",
+        "job_id": "48bf334c-9e5b-4ed9-b565-f3f75cc786ca",
+        "revision_id": "b4a1244f-7b50-455d-bbea-1d9633e51d98",
+        "scheduled_for": "2026-10-16T05:20:50.745+00:00",
+        "time_zone": "UTC",
+        "idempotency_key": "sol06-real-lease-1792128048884",
+        "status": "completed",
+        "created_by_id": "7e04bfca-4e91-48cb-af00-bcd4ba24ce54",
+        "updated_at": "2026-10-16T05:21:06.007+00:00",
+        "created_at": "2026-10-16T05:20:49.964+00:00",
+        "lease_owner": null,
+        "lease_expires_at": null,
+        "retry_count": 0,
+        "max_retries": 3,
+        "last_error": null
+      },
+      "publicationEvents": 1
+    },
+    "solrc06-repaired-restored-20261016": {
+      "job": {
+        "id": "281a6244-3c21-465c-a098-ee4b5d189dbd",
+        "article_id": "792e1333-c840-4ef7-9c7b-a16de72bbcd0",
+        "job_id": "48bf334c-9e5b-4ed9-b565-f3f75cc786ca",
+        "revision_id": "b4a1244f-7b50-455d-bbea-1d9633e51d98",
+        "scheduled_for": "2026-10-16T05:20:50.745+00:00",
+        "time_zone": "UTC",
+        "idempotency_key": "sol06-real-lease-1792128048884",
+        "status": "completed",
+        "created_by_id": "7e04bfca-4e91-48cb-af00-bcd4ba24ce54",
+        "updated_at": "2026-10-16T05:21:06.007+00:00",
+        "created_at": "2026-10-16T05:20:49.964+00:00",
+        "lease_owner": null,
+        "lease_expires_at": null,
+        "retry_count": 0,
+        "max_retries": 3,
+        "last_error": null
+      },
+      "publicationEvents": 1
+    }
+  }
+}

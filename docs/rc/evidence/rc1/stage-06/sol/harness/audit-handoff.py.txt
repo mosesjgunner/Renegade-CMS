@@ -1,0 +1,20 @@
+from pathlib import Path
+import json,hashlib,subprocess,tarfile
+repo=Path('C:/Projects/RENEGADE CMS/Renegade-CMS');out=Path('scratch/records')
+archive=next((repo/'scratch/stage06-backup').glob('renegade-backup-*'))
+m=json.loads((archive/'manifest.json').read_text());checks=[]
+for entry in m['files']:
+ p=archive/entry['path'];sha='sha256:'+hashlib.sha256(p.read_bytes()).hexdigest();checks.append({'file':entry['path'],'bytes':p.stat().st_size,'sha256':sha,'matchesManifest':sha==entry['sha256'] and p.stat().st_size==entry['bytes']})
+with tarfile.open(archive/'media.tar.gz') as tar:
+ members=tar.getmembers();names=[x.name for x in members]
+ unsafe=[n for n in names if n.startswith('/') or '..' in Path(n).parts]
+ envfiles=[n for n in names if Path(n).name.startswith('.env')]
+r={'archive':str(archive),'checksums':checks,'migrationCount':len(m['migrationState']),'archiveBuildSha':m['renegade']['buildSha'],'mediaEntries':len(names),'mediaFiles':sum(x.isfile() for x in members),'unsafeMediaPaths':unsafe,'environmentFilesInMedia':envfiles,'declaredExclusions':m['exclusions'],'manifestSha256':hashlib.sha256((archive/'manifest.json').read_bytes()).hexdigest()}
+raw=(repo/'scratch/stage06/verify-results.json').read_text();data=json.loads(raw[raw.index('{'):]);counts=data['checks']['categoryCounts'];r['geminiCounts']={'matching':sum(v['match'] for v in counts.values()),'mismatches':{k:v for k,v in counts.items() if not v['match']},'emptyCategories':[k for k,v in counts.items() if v['source']==0]}
+r['untrustedHarnessFindings']=['verify-restored-data.ts imports SignJWT and signs cookie for a preselected session; no ordinary owner/staff/member authentication','verify-restored-data.ts never asserts category equality and always exits zero after runVerification resolves','stage06-business-lifecycle.ts sets processing/leaseOwner/leaseExpiresAt directly then backdates lease expiration; no actual process interruption','source fixtures use overrideAccess and ensureRenegadePartyDemo, not an ordinary accepted business graph','INCIDENT-LOGS prose is not process kill evidence']
+r['ancestry']={}
+for sha in ['3f464a6903ff26e7489179df29749f065cb55299','51cbceec','4ec89319','826fd156','b5369e78']:
+ exists=subprocess.run(['git','cat-file','-e',sha+'^{commit}'],capture_output=True).returncode==0
+ r['ancestry'][sha]={'exists':exists,'ancestor':exists and subprocess.run(['git','merge-base','--is-ancestor',sha,'HEAD']).returncode==0}
+r['nonDocumentationChanges']=subprocess.check_output(['git','diff','--name-only','3f464a6903ff26e7489179df29749f065cb55299','HEAD','--','.',':!docs'],text=True).splitlines()
+(out/'gemini-independent-audit.json').write_text(json.dumps(r,indent=2));print(json.dumps({k:v for k,v in r.items() if k not in ['declaredExclusions','untrustedHarnessFindings']},indent=2))

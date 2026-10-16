@@ -1,0 +1,46 @@
+// Local TLS termination mirrors a normal reverse proxy without modifying hosts.
+import { createServer } from 'node:https'
+import { request } from 'node:http'
+import { readFileSync } from 'node:fs'
+createServer(
+  {
+    key: readFileSync('scratch/tls-final/key.pem'),
+    cert: readFileSync('scratch/tls-final/cert.pem'),
+  },
+  (incoming, outgoing) => {
+    if (incoming.headers.host === 'attacker.rc02.test:3179' && incoming.url === '/csrf-fixture') {
+      outgoing.writeHead(200, { 'content-type': 'text/html', 'cache-control': 'no-store' })
+      outgoing.end('<!doctype html><title>Independent local attack origin</title>')
+      return
+    }
+    const upstream = request(
+      {
+        hostname: '127.0.0.1',
+        port: 3188,
+        path: incoming.url,
+        method: incoming.method,
+        headers: {
+          ...incoming.headers,
+          'x-forwarded-proto': 'https',
+          'x-forwarded-host': incoming.headers.host,
+          'x-forwarded-for': incoming.socket.remoteAddress,
+        },
+      },
+      (response) => {
+        outgoing.writeHead(response.statusCode, response.headers)
+        response.on('error', () => outgoing.destroy())
+        response.pipe(outgoing)
+      },
+    )
+    upstream.on('error', () => {
+      if (outgoing.headersSent) {
+        outgoing.destroy()
+        return
+      }
+      outgoing.writeHead(502)
+      outgoing.end('Upstream restarting')
+    })
+    incoming.pipe(upstream)
+  },
+).listen(3179, '127.0.0.1')
+

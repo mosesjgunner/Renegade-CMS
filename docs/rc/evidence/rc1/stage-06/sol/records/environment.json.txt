@@ -1,0 +1,21 @@
+{
+  "sourceSha": "badaa6f4d9f9566b81d5ee29c14a8744f94adc7e",
+  "imageExecutableSha": "3f464a6903ff26e7489179df29749f065cb55299",
+  "projects": [
+    "solrc06-independent-20261016",
+    "solrc06-restored-20261016"
+  ],
+  "testAuthentication": false,
+  "envFallback": false,
+  "SMTP": "explicit local TCP sink :3177; no outbound provider",
+  "sourceStatus": "",
+  "harness": {
+    "scratch\\generate-tls.mjs": "291fa69cd248d379cc00c38d1942e5377c63b7029cda334fd6a074a0a1c72463",
+    "scratch\\prepare.py": "8dc4979c2aa056e8cf53eca55a026fe4cd5a368b6452fb5e1608c4916f78294b",
+    "scratch\\proxy.mjs": "cc189bfc0e0931803042b85d98f3ff269d1ef6ce05ab3ce8b3f584b06e270bb0",
+    "scratch\\record.py": "64bc6e2d64a6f6b7230220c27ce64434f1b443abf6d2599a7c008fa7e3ed04db",
+    "scratch\\restore.yaml": "439840f8076219943a9690b5fb6d08c97a46425cb3ba42c11aaa501d0842ff85",
+    "scratch\\smtp.mjs": "c695b95226677530bb22cb77aa6794d0ddc9ac9fbcc2204d9e43f9d0c6b65f67",
+    "scratch\\source.yaml": "039fea90dcd02017cd10fffc45b2834e0856a738a3733e4f9291e7af730e84ff"
+  }
+}

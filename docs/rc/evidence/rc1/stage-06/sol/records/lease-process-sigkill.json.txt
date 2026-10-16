@@ -1,0 +1,13 @@
+{
+  "command": [
+    "docker",
+    "kill",
+    "--signal",
+    "KILL",
+    "solrc06-lease-crash"
+  ],
+  "exitCode": 0,
+  "durationSeconds": 0.2975151538848877,
+  "sourceSha": "badaa6f4d9f9566b81d5ee29c14a8744f94adc7e",
+  "logSha256": "01ddce0c407dbf18c50e62505cc8066553ed866ee17b7f343542b619fe68a36c"
+}

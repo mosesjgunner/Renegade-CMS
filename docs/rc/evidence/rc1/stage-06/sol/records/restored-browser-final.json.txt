@@ -1,0 +1,162 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "--config",
+      "scratch/playwright.config.ts",
+      "restored.spec.ts"
+    ],
+    "configFile": "C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\playwright.config.ts",
+    "rootDir": "C:/Projects/RENEGADE CMS/sol-stage06-independent-20261016/scratch/specs",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Projects/RENEGADE CMS/sol-stage06-independent-20261016/scratch/sol-browser-artifacts/restored-browser-final",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "C:/Projects/RENEGADE CMS/sol-stage06-independent-20261016/scratch/specs",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 900000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "scratch/records/restored-browser-final.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.62.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "restored.spec.ts",
+      "file": "restored.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "restored ordinary owner staff member login, HTTP refetch and original media equality",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 900000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 4971,
+                  "error": {
+                    "message": "TypeError: Cannot read properties of undefined (reading 'id')",
+                    "stack": "TypeError: Cannot read properties of undefined (reading 'id')\n    at C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\specs\\restored.spec.ts:17:124",
+                    "location": {
+                      "file": "C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\specs\\restored.spec.ts",
+                      "column": 124,
+                      "line": 17
+                    },
+                    "snippet": "  15 |   const media=await page.request.get(`/media/${fixture.assetId}`);expect(media.status()).toBe(200);const bytes=await media.body();expect(bytes).toEqual(readFileSync('fixtures/renegadeparty-demo/assets/logo.png'));report.media={bytes:bytes.length,sha256:createHash('sha256').update(bytes).digest('hex')}\n  16 |   if(role==='owner'){\n> 17 |    expectedMemberId=(await api(page,'GET','/api/members?where[email][equals]=member%40rc06.example.test&depth=0')).docs[0].id\n     |                                                                                                                            ^\n  18 |    for(const collection of ['users','members','member-site-roles','media-assets','content','article-family-content','audience-lists','subscribers','audience-memberships','consent-events','email-messages','contacts','forum-sections','forums','discussions','discussion-posts','merchant-connections','payment-method-capabilities','products','orders','digital-delivery-grants','commerce-refunds','supporters','subscriptions','entitlements','donation-campaigns','donation-intents','donations','scheduled-publish-jobs','outbound-network-deliveries']){const data=await api(page,'GET',`/api/${collection}?depth=0&limit=100`);report.categories[collection]={totalDocs:data.totalDocs,returned:data.docs.length,ids:data.docs.map((d:any)=>d.id).sort()}}\n  19 |   }\n  20 |   report.actors.push({role,method:'ordinary login using retained virtual hardware credential',forgedSessions:0});await page.screenshot({path:`scratch/private-browser/restored-${role}.png`});await api(page,'POST','/api/auth/logout');await context.close()"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\specs\\restored.spec.ts",
+                        "column": 124,
+                        "line": 17
+                      },
+                      "message": "TypeError: Cannot read properties of undefined (reading 'id')\n\n  15 |   const media=await page.request.get(`/media/${fixture.assetId}`);expect(media.status()).toBe(200);const bytes=await media.body();expect(bytes).toEqual(readFileSync('fixtures/renegadeparty-demo/assets/logo.png'));report.media={bytes:bytes.length,sha256:createHash('sha256').update(bytes).digest('hex')}\n  16 |   if(role==='owner'){\n> 17 |    expectedMemberId=(await api(page,'GET','/api/members?where[email][equals]=member%40rc06.example.test&depth=0')).docs[0].id\n     |                                                                                                                            ^\n  18 |    for(const collection of ['users','members','member-site-roles','media-assets','content','article-family-content','audience-lists','subscribers','audience-memberships','consent-events','email-messages','contacts','forum-sections','forums','discussions','discussion-posts','merchant-connections','payment-method-capabilities','products','orders','digital-delivery-grants','commerce-refunds','supporters','subscriptions','entitlements','donation-campaigns','donation-intents','donations','scheduled-publish-jobs','outbound-network-deliveries']){const data=await api(page,'GET',`/api/${collection}?depth=0&limit=100`);report.categories[collection]={totalDocs:data.totalDocs,returned:data.docs.length,ids:data.docs.map((d:any)=>d.id).sort()}}\n  19 |   }\n  20 |   report.actors.push({role,method:'ordinary login using retained virtual hardware credential',forgedSessions:0});await page.screenshot({path:`scratch/private-browser/restored-${role}.png`});await api(page,'POST','/api/auth/logout');await context.close()\n    at C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\specs\\restored.spec.ts:17:124"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-16T05:21:20.622Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\sol-browser-artifacts\\restored-browser-final\\restored-restored-ordinary-5333b-and-original-media-equality\\test-failed-1.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\sol-browser-artifacts\\restored-browser-final\\restored-restored-ordinary-5333b-and-original-media-equality\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\sol-browser-artifacts\\restored-browser-final\\restored-restored-ordinary-5333b-and-original-media-equality\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\specs\\restored.spec.ts",
+                    "column": 124,
+                    "line": 17
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "05a827c656e651fcbf93-ec77c81ad5a3ecba34b3",
+          "file": "restored.spec.ts",
+          "line": 5,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-16T05:21:20.156Z",
+    "duration": 5872.047,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

@@ -1,0 +1,31 @@
+ Network solrc06-independent-20261016_default Creating 
+ Volume solrc06-independent-20261016_renegade_media Creating 
+ Volume solrc06-independent-20261016_renegade_postgres_data Creating 
+ Volume solrc06-independent-20261016_renegade_media Creating 
+ Volume solrc06-independent-20261016_renegade_postgres_data Creating 
+ Network solrc06-independent-20261016_default Creating 
+ Volume solrc06-independent-20261016_renegade_media Created 
+ Volume solrc06-independent-20261016_renegade_media Created 
+ Volume solrc06-independent-20261016_renegade_postgres_data Created 
+ Volume solrc06-independent-20261016_renegade_postgres_data Created 
+ Network solrc06-independent-20261016_default Created 
+ Network solrc06-independent-20261016_default Created 
+ Container solrc06-independent-20261016-postgres-1 Creating 
+ Container solrc06-independent-20261016-postgres-1 Created 
+ Container solrc06-independent-20261016-migrate-1 Creating 
+ Container solrc06-independent-20261016-migrate-1 Created 
+ Container solrc06-independent-20261016-renegade-worker-1 Creating 
+ Container solrc06-independent-20261016-renegade-web-1 Creating 
+ Container solrc06-independent-20261016-renegade-worker-1 Created 
+ Container solrc06-independent-20261016-renegade-web-1 Created 
+ Container solrc06-independent-20261016-postgres-1 Starting 
+ Container solrc06-independent-20261016-postgres-1 Started 
+ Container solrc06-independent-20261016-postgres-1 Waiting 
+ Container solrc06-independent-20261016-postgres-1 Healthy 
+ Container solrc06-independent-20261016-migrate-1 Starting 
+ Container solrc06-independent-20261016-migrate-1 Started 
+ Container solrc06-independent-20261016-migrate-1 Waiting 
+ Container solrc06-independent-20261016-migrate-1 Waiting 
+ Container solrc06-independent-20261016-migrate-1 Error service "migrate" didn't complete successfully: exit 1
+ Container solrc06-independent-20261016-migrate-1 Error service "migrate" didn't complete successfully: exit 1
+service "migrate" didn't complete successfully: exit 1

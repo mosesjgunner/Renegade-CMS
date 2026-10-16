@@ -1,0 +1,2 @@
+solrc06-independent-20261016-renegade-web-1
+solrc06-independent-20261016-renegade-worker-1

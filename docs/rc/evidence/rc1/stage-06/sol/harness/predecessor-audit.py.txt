@@ -1,0 +1,13 @@
+from pathlib import Path
+import subprocess,json
+out=Path('scratch/records');repo=Path('C:/Projects/RENEGADE CMS/Renegade-CMS')
+def command(args):
+ p=subprocess.run(args,text=True,capture_output=True);return {'command':args,'exitCode':p.returncode,'stdout':p.stdout.strip()}
+r={'tag':command(['git','rev-parse','v0.1.0-rc.1^{commit}']),'tagObject':command(['git','show-ref','--tags']),'required':['immutable supported predecessor commit and image digest/version','representative database/media archive created through predecessor supported workflows','nonsecret configuration, enabled module and migration manifest','approved predecessor-to-candidate and rollback expectations'],'locatedQualifyingPredecessor':False,'limitation':'Inspection covers supplied stage handoff, current scope, historical receipts and named operational archive; it is not proof that no predecessor exists anywhere.'}
+image=subprocess.run(['docker','image','inspect','a9de7319f92a'],capture_output=True,text=True)
+if image.returncode==0:
+ data=json.loads(image.stdout)[0];r['existingInstallationImageReadOnly']={'Id':data['Id'],'RepoTags':data.get('RepoTags'),'labels':data['Config'].get('Labels'),'decision':'Not a supported predecessor receipt; no representative secret-excluded prior-state archive or migration provenance supplied. Existing installations never modified.'}
+root=repo/'scratch/stage06-backup';r['suppliedOperationalArchives']=[]
+for p in root.glob('*/manifest.json'):
+ m=json.loads(p.read_text());r['suppliedOperationalArchives'].append({'manifest':str(p),'buildSha':m['renegade']['buildSha'],'version':m['renegade']['version'],'migrationCount':len(m['migrationState']),'decision':'Current accepted candidate snapshot; not predecessor proof.'})
+(out/'predecessor-access-blocker.json').write_text(json.dumps(r,indent=2));print('No qualifying authentic predecessor in inspected handoff artifacts; no substitute upgrade attempted')

@@ -1,0 +1,4 @@
+ Container solrc06-independent-20261016-renegade-worker-1 Stopping 
+ Container solrc06-independent-20261016-renegade-web-1 Stopping 
+ Container solrc06-independent-20261016-renegade-web-1 Stopped 
+ Container solrc06-independent-20261016-renegade-worker-1 Stopped 

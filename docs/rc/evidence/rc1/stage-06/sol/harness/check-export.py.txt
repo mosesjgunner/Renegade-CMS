@@ -1,0 +1,19 @@
+from pathlib import Path
+import json,hashlib,re
+dest=Path('C:/Projects/RENEGADE CMS/Renegade-CMS/docs/rc/evidence/rc1/stage-06/sol');manifest=json.loads((dest/'ARTIFACTS.json').read_text());secrets=[]
+for file in Path('scratch').glob('*.env'):
+ for line in file.read_text().splitlines():
+  if '=' in line:
+   k,v=line.split('=',1)
+   if re.search('SECRET|PASSWORD|TOKEN|KEY',k) and len(v)>12:secrets.append(v.encode())
+secrets.append(Path('scratch/bootstrap-token.txt').read_text().strip().encode())
+for f in manifest['publicFiles']:
+ p=dest/f['path'];assert hashlib.sha256(p.read_bytes()).hexdigest()==f['sha256'],str(p)
+for p in dest.rglob('*'):
+ if p.is_file():
+  data=p.read_bytes()
+  assert not any(secret in data for secret in secrets),'Private canary in '+str(p)
+for file in [dest/'OPERATIONS_ACCEPTANCE.md',dest/'HANDOFF.md']:
+ for target in re.findall(r'\]\(([^)]+)\)',file.read_text()):
+  if '://' not in target:assert (file.parent/target).exists(),'Missing link '+target
+print('Verified',len(manifest['publicFiles']),'public hashes, local report links and known secret exclusions')

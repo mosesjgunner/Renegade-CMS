@@ -1,0 +1,13 @@
+ Container solrc06-lease-recover Creating 
+ Container solrc06-lease-recover Created 
+[05:21:05] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+Failed to revalidate paths: Error: Invariant: static generation store missing in revalidatePath /articles/sol06-real-lease-1792128048884
+    at revalidate (/app/node_modules/next/src/server/web/spec-extension/revalidate.ts:135:11)
+    at revalidatePath (/app/node_modules/next/src/server/web/spec-extension/revalidate.ts:125:10)
+    at persistWorkflow (/app/src/modules/editorial/persistence.ts:553:7)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at async publishScheduledArticleUnlocked (/app/src/modules/editorial/persistence.ts:1018:3)
+    at async withExecutionLock (/app/src/modules/operations/execution-lock.ts:26:12)
+    at async executeScheduledPublishJobUnlocked (/app/src/modules/editorial/scheduler.ts:172:5)
+    at async withExecutionLock (/app/src/modules/operations/execution-lock.ts:26:12)
+    at async <anonymous> (/app/acceptance-lease.ts:28:15)

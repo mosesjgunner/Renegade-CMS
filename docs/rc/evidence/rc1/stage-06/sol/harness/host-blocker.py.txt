@@ -1,0 +1,12 @@
+from pathlib import Path
+import subprocess,json,time
+out=Path('scratch/records');results=[]
+for args in [['docker','version','--format','{{.Server.Version}}']]:
+ start=time.time()
+ try:
+  p=subprocess.run(args,text=True,capture_output=True,timeout=15);result={'command':args,'exitCode':p.returncode,'stdout':p.stdout,'stderr':p.stderr}
+ except subprocess.TimeoutExpired as e:
+  result={'command':args,'exitCode':None,'status':'TIMEOUT after 15 seconds; no result promoted','stdout':str(e.stdout or ''),'stderr':str(e.stderr or '')}
+ result['durationSeconds']=time.time()-start;results.append(result)
+data={'status':'BLOCKED','readOnlyProbes':results,'priorObservedEngineError':'docker buildx history ls: HTTP 500 Internal Server Error from dockerDesktopLinuxEngine/_ping','imageBuild':'Own build client canceled after engine API failure; no completed image/digest accepted. Preserve actual recorded exit 4294967295.','recoveryNotAuthorized':'No shared Docker Desktop restart, WSL shutdown, prune, volume deletion or existing-installation action performed.','availabilityLimit':'Previously healthy existing installation state cannot be reverified after engine management failure. No claim of unchanged availability.','unexecuted':['New-image web/worker and CLI binding','New-image complete backup/empty restore/ordinary login','Further interruption/settlement and pending-job restore cases','Authentic predecessor upgrade/rollback']}
+(out/'HOST_RUNTIME_BLOCKER.json').write_text(json.dumps(data,indent=2));print('Shared engine failure recorded; no reset or existing-installation action')

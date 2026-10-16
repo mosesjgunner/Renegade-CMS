@@ -1,0 +1,34 @@
+from pathlib import Path
+import json,re,hashlib,subprocess,shutil
+root=Path.cwd();dest=Path('C:/Projects/RENEGADE CMS/Renegade-CMS/docs/rc/evidence/rc1/stage-06/sol');dest.mkdir(parents=True,exist_ok=True)
+secretValues=[]
+for file in Path('scratch').glob('*.env'):
+ for line in file.read_text().splitlines():
+  if '=' in line:
+   k,v=line.split('=',1)
+   if re.search('SECRET|PASSWORD|TOKEN|KEY',k) and v:secretValues.append(v)
+if Path('scratch/bootstrap-token.txt').exists():secretValues.append(Path('scratch/bootstrap-token.txt').read_text().strip())
+def sanitized(data):
+ text=data.decode('utf8',errors='replace')
+ text=re.sub(r'(Renegade CMS setup token[^\r\n]*?: [REDACTED_DISPOSABLE_TOKEN]
+ for value in secretValues:text=text.replace(value,'[REDACTED_DISPOSABLE_SECRET]')
+ return text.encode('utf8')
+manifest=[]
+for prefix,paths in [('records',list(Path('scratch/records').glob('*'))+list(Path('scratch/scratch/records').glob('*.json'))),('lease-proof',list(Path('scratch/lease-proof').glob('*.json'))),('harness',list(Path('scratch').glob('*.py'))+list(Path('scratch').glob('*.mjs'))+list(Path('scratch').glob('*.ts*'))+list(Path('scratch/specs').glob('*.ts*')))]:
+ for p in paths:
+  if not p.is_file():continue
+  target=dest/prefix/(p.name if p.name.endswith('.txt') else p.name+'.txt');target.parent.mkdir(exist_ok=True);data=sanitized(p.read_bytes());target.write_bytes(data)
+  manifest.append({'path':str(target.relative_to(dest)).replace('\\','/'),'sha256':hashlib.sha256(data).hexdigest(),'bytes':len(data),'originalPrivatePath':str(p.resolve()),'originalSha256':hashlib.sha256(p.read_bytes()).hexdigest()})
+private=[]
+for pattern in ['scratch/sol-browser-artifacts/**/trace.zip','scratch/private-browser/*.png','scratch/rc04-mail/*.eml','scratch/*-device.json','scratch/**/database.dump','scratch/**/media.tar.gz']:
+ for p in root.glob(pattern):
+  if p.is_file():private.append({'path':str(p),'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest(),'reason':'Retained privately: credentials, MIME links, recovery codes or database/media archive'})
+(dest/'ARTIFACTS.json').write_text(json.dumps({'publicFiles':manifest,'privateArtifacts':private,'redaction':'Only copies are redacted. Original histories, receipts, sessions and archives remain unchanged.'},indent=2)+'\n')
+candidate=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip();binding=json.loads(Path('scratch/records/final-image-binding.json').read_text()) if Path('scratch/records/final-image-binding.json').exists() else None
+summary={'verdict':'STAGE 06 BLOCKED','candidateSha':candidate,'applicationImage':binding['Id'] if binding else 'pending: repaired image build canceled after shared engine API failure','acceptedRuntimeImageSourceSha':'3f464a6903ff26e7489179df29749f065cb55299','quality':{'unitFiles':196,'passed':1295,'failed':0,'skipped':0},'acceptedBrowserInvocations':4,'earlierUnsuccessfulBrowserInvocations':3,'acceptedScope':'Bounded ordinary identity/media/draft restore, publication lease recovery/replay, project isolation and operational archive guards. Not complete multi-module business recovery or authentic predecessor upgrade.','mandatoryOpen':['Shared Docker engine access, repaired image completion and affected new-image runtime rerun','Interrupted message/outbox/payment/fulfillment settlement, failed-only retry and pending-work restore without duplicate external effects','Populated ordinary audience/community/commerce history in the independently restored graph; empty categories do not prove recovery','Authentic supported predecessor artifact/archive/configuration/migration provenance and upgrade/rollback runtime'],'commands':[]}
+for p in Path('scratch/records').glob('*.json'):
+ try:data=json.loads(p.read_text())
+ except (ValueError,UnicodeError):continue
+ if isinstance(data,dict) and 'command' in data and 'exitCode' in data:summary['commands'].append({'record':p.name,**{k:data.get(k) for k in ['command','exitCode','durationSeconds','sourceSha']}})
+(dest/'SUMMARY.json').write_text(json.dumps(summary,indent=2)+'\n')
+print('Sanitized evidence exported:',len(manifest),'public files;',len(private),'private artifact hashes')

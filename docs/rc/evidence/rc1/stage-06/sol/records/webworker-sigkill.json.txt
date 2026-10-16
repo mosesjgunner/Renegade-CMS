@@ -1,0 +1,14 @@
+{
+  "command": [
+    "docker",
+    "kill",
+    "--signal",
+    "KILL",
+    "solrc06-independent-20261016-renegade-web-1",
+    "solrc06-independent-20261016-renegade-worker-1"
+  ],
+  "exitCode": 0,
+  "durationSeconds": 0.35367751121520996,
+  "sourceSha": "badaa6f4d9f9566b81d5ee29c14a8744f94adc7e",
+  "logSha256": "98eadfde082a0ab9b71402160d6ec8ce4da3eee92c6cb476df41b9d5fa377e9e"
+}

@@ -1,0 +1,31 @@
+import subprocess,json,hashlib,tarfile
+from pathlib import Path
+def run(label,args):subprocess.run(['python','scratch/record.py',label]+args,check=True)
+project='solrc06-independent-20261016'
+Path('scratch/backup').mkdir(exist_ok=True)
+run('source-quiesce',['docker','compose','--project-name',project,'--env-file','scratch/source.env','-f','scratch/source.yaml','stop','renegade-web','renegade-worker'])
+subprocess.run(['python','scratch/snapshot.py',project,'source-before-backup'],check=True)
+run('operational-backup',['node','node_modules/tsx/dist/cli.mjs','src/scripts/operational-backup.ts','--output','scratch/backup','--maintenance-window-confirmed','--compose-file','scratch/source.yaml','--env-file','scratch/source.env'])
+archive=next(Path('scratch/backup').glob('renegade-backup-*'));manifest=json.loads((archive/'manifest.json').read_text());checks=[]
+for f in manifest['files']:
+ data=(archive/f['path']).read_bytes();checks.append({'path':f['path'],'bytes':len(data),'sha256':'sha256:'+hashlib.sha256(data).hexdigest(),'valid':f['sha256']=='sha256:'+hashlib.sha256(data).hexdigest() and f['bytes']==len(data)})
+with tarfile.open(archive/'media.tar.gz') as tar:
+ media={x.name:{'bytes':x.size,'sha256':hashlib.sha256(tar.extractfile(x).read()).hexdigest()} for x in tar.getmembers() if x.isfile()}
+secrets=dict(line.split('=',1) for line in Path('scratch/source.env').read_text().splitlines() if '=' in line)
+with (Path('scratch')/'database-private.sql').open('wb') as stream:
+ with (archive/'database.dump').open('rb') as dump:subprocess.run(['docker','run','--rm','-i','postgres:17.6-alpine','pg_restore','-f','-'],stdin=dump,stdout=stream,check=True)
+sql=Path('scratch/database-private.sql').read_bytes();secretScan={k:{'sqlMatches':sql.count(secrets[k].encode()),'mediaMatches':0} for k in ['POSTGRES_PASSWORD','PAYLOAD_SECRET']}
+with tarfile.open(archive/'media.tar.gz') as tar:
+ for entry in tar.getmembers():
+  if entry.isfile():
+   data=tar.extractfile(entry).read()
+   for k in secretScan:secretScan[k]['mediaMatches']+=data.count(secrets[k].encode())
+Path('scratch/archive-path.txt').write_text(str(archive.resolve()))
+Path('scratch/records/backup-inspection.json').write_text(json.dumps({'archive':str(archive),'files':checks,'media':media,'secretCanaryOccurrences':secretScan,'environmentFiles':[n for n in media if Path(n).name.startswith('.env')],'manifestBuildSha':manifest['renegade']['buildSha'],'migrationCount':len(manifest['migrationState'])},indent=2))
+assert all(c['valid'] for c in checks)
+assert not any(v['sqlMatches'] or v['mediaMatches'] for v in secretScan.values())
+run('restore-empty-postgres',['docker','compose','--project-name','solrc06-restored-20261016','--env-file','scratch/restore.env','-f','scratch/restore.yaml','up','-d','--wait','postgres'])
+subprocess.run(['python','scratch/snapshot.py','solrc06-restored-20261016','restore-empty'],check=True)
+run('operational-restore',['node','node_modules/tsx/dist/cli.mjs','src/scripts/operational-restore.ts','--archive',str(archive),'--target-version','0.1.0-rc.1','--isolated','--authorize-restore','--compose-file','scratch/restore.yaml','--env-file','scratch/restore.env'])
+subprocess.run(['python','scratch/snapshot.py','solrc06-restored-20261016','restored-before-login'],check=True)
+print('Independent backup/restore and secret-canary inspection complete')

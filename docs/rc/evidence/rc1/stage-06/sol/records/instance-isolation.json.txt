@@ -1,0 +1,185 @@
+{
+  "containers": [
+    {
+      "name": "/solrc06-independent-20261016-postgres-1",
+      "image": "sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94",
+      "startedAt": "2026-10-16T05:13:25.849439646Z",
+      "status": "running",
+      "networks": [
+        "solrc06-independent-20261016_default"
+      ],
+      "mounts": [
+        {
+          "type": "volume",
+          "name": "solrc06-independent-20261016_renegade_postgres_data",
+          "destination": "/var/lib/postgresql/data"
+        }
+      ],
+      "ports": {
+        "5432/tcp": null
+      },
+      "runtime": {
+        "LOCAL_E2E_TEST_MODE": null,
+        "ENABLE_TEST_ROUTES": null,
+        "APP_URL": null,
+        "PROXY_MODE": null,
+        "RENEGADE_MODULES": null,
+        "EMAIL_MODE": null,
+        "BUILD_SHA": null
+      }
+    },
+    {
+      "name": "/solrc06-independent-20261016-renegade-web-1",
+      "image": "sha256:56dd7485646e358edffe1cc017e9ae150081f39fc07232ccd729ad6f8d51fb46",
+      "startedAt": "2026-10-16T05:18:11.721150047Z",
+      "status": "running",
+      "networks": [
+        "solrc06-independent-20261016_default"
+      ],
+      "mounts": [
+        {
+          "type": "volume",
+          "name": "solrc06-independent-20261016_renegade_media",
+          "destination": "/app/media"
+        }
+      ],
+      "ports": {
+        "3000/tcp": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "3178"
+          }
+        ]
+      },
+      "runtime": {
+        "LOCAL_E2E_TEST_MODE": "false",
+        "ENABLE_TEST_ROUTES": "false",
+        "APP_URL": "https://dispatch.rc02.test:3179",
+        "PROXY_MODE": "trusted",
+        "RENEGADE_MODULES": "all",
+        "EMAIL_MODE": "smtp",
+        "BUILD_SHA": "3f464a6903ff26e7489179df29749f065cb55299"
+      }
+    },
+    {
+      "name": "/solrc06-independent-20261016-renegade-worker-1",
+      "image": "sha256:56dd7485646e358edffe1cc017e9ae150081f39fc07232ccd729ad6f8d51fb46",
+      "startedAt": "2026-10-16T05:21:06.680211266Z",
+      "status": "running",
+      "networks": [
+        "solrc06-independent-20261016_default"
+      ],
+      "mounts": [
+        {
+          "type": "volume",
+          "name": "solrc06-independent-20261016_renegade_media",
+          "destination": "/app/media"
+        }
+      ],
+      "ports": {
+        "3000/tcp": null
+      },
+      "runtime": {
+        "LOCAL_E2E_TEST_MODE": "false",
+        "ENABLE_TEST_ROUTES": "false",
+        "APP_URL": "https://dispatch.rc02.test:3179",
+        "PROXY_MODE": "trusted",
+        "RENEGADE_MODULES": "all",
+        "EMAIL_MODE": "smtp",
+        "BUILD_SHA": "3f464a6903ff26e7489179df29749f065cb55299"
+      }
+    },
+    {
+      "name": "/solrc06-restored-20261016-postgres-1",
+      "image": "sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94",
+      "startedAt": "2026-10-16T05:18:13.20159391Z",
+      "status": "running",
+      "networks": [
+        "solrc06-restored-20261016_default"
+      ],
+      "mounts": [
+        {
+          "type": "volume",
+          "name": "solrc06-restored-20261016_renegade_restore_postgres_data",
+          "destination": "/var/lib/postgresql/data"
+        }
+      ],
+      "ports": {
+        "5432/tcp": null
+      },
+      "runtime": {
+        "LOCAL_E2E_TEST_MODE": null,
+        "ENABLE_TEST_ROUTES": null,
+        "APP_URL": null,
+        "PROXY_MODE": null,
+        "RENEGADE_MODULES": null,
+        "EMAIL_MODE": null,
+        "BUILD_SHA": null
+      }
+    },
+    {
+      "name": "/solrc06-restored-20261016-renegade-web-1",
+      "image": "sha256:56dd7485646e358edffe1cc017e9ae150081f39fc07232ccd729ad6f8d51fb46",
+      "startedAt": "2026-10-16T05:18:49.513001189Z",
+      "status": "running",
+      "networks": [
+        "solrc06-restored-20261016_default"
+      ],
+      "mounts": [
+        {
+          "type": "volume",
+          "name": "solrc06-restored-20261016_renegade_restore_media",
+          "destination": "/app/media"
+        }
+      ],
+      "ports": {
+        "3000/tcp": [
+          {
+            "HostIp": "127.0.0.1",
+            "HostPort": "3188"
+          }
+        ]
+      },
+      "runtime": {
+        "LOCAL_E2E_TEST_MODE": "false",
+        "ENABLE_TEST_ROUTES": "false",
+        "APP_URL": "https://dispatch.rc02.test:3179",
+        "PROXY_MODE": "trusted",
+        "RENEGADE_MODULES": "all",
+        "EMAIL_MODE": "smtp",
+        "BUILD_SHA": "3f464a6903ff26e7489179df29749f065cb55299"
+      }
+    },
+    {
+      "name": "/solrc06-restored-20261016-renegade-worker-1",
+      "image": "sha256:56dd7485646e358edffe1cc017e9ae150081f39fc07232ccd729ad6f8d51fb46",
+      "startedAt": "2026-10-16T05:18:49.338800024Z",
+      "status": "running",
+      "networks": [
+        "solrc06-restored-20261016_default"
+      ],
+      "mounts": [
+        {
+          "type": "volume",
+          "name": "solrc06-restored-20261016_renegade_restore_media",
+          "destination": "/app/media"
+        }
+      ],
+      "ports": {
+        "3000/tcp": null
+      },
+      "runtime": {
+        "LOCAL_E2E_TEST_MODE": "false",
+        "ENABLE_TEST_ROUTES": "false",
+        "APP_URL": "https://dispatch.rc02.test:3179",
+        "PROXY_MODE": "trusted",
+        "RENEGADE_MODULES": "all",
+        "EMAIL_MODE": "smtp",
+        "BUILD_SHA": "3f464a6903ff26e7489179df29749f065cb55299"
+      }
+    }
+  ],
+  "secretsDistinct": true,
+  "databaseUrisDistinct": true,
+  "logicalOrigin": "Same origin models recovery DNS cutover; actual loopback bindings and networks/volumes differ."
+}

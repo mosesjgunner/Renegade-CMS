@@ -1,0 +1,6 @@
+import os,subprocess,json,time
+from pathlib import Path
+os.environ.update(DATABASE_URL='postgresql://disposable:unreachable@127.0.0.1:1/sol06_repair_release_acceptance',APP_URL='https://dispatch.rc02.test:3179',PAYLOAD_SECRET='unit-only-disposable-secret-at-least-thirty-two-characters',RENEGADE_MODULES='all',LOCAL_E2E_TEST_MODE='false')
+for label,args in [('repair-lint',['npm.cmd','run','lint']),('repair-types',['npm.cmd','run','typecheck']),('repair-unit',['npm.cmd','test','--','--reporter=json','--outputFile=scratch/records/repair-unit-results.json'])]:
+ code=subprocess.run(['python','scratch/record.py',label]+args).returncode
+ if code:raise SystemExit(code)

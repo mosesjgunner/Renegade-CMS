@@ -1,0 +1,66 @@
+{
+  "matchedTables": 303,
+  "totalTables": 309,
+  "differences": {
+    "payload_jobs_stats": {
+      "source": {
+        "rows": 1,
+        "rowDigestMd5": "caaf2015ec9fced6e2302d552ffb2391"
+      },
+      "restored": {
+        "rows": 1,
+        "rowDigestMd5": "b80bf5feaeeae06a85aec16774dc3dbe"
+      }
+    },
+    "payload_jobs": {
+      "source": {
+        "rows": 50,
+        "rowDigestMd5": "75cf6163bdba4123333a5fb35e31928f"
+      },
+      "restored": {
+        "rows": 52,
+        "rowDigestMd5": "d35542da9127e1edfbadadb97c0e6b93"
+      }
+    },
+    "passkeys": {
+      "source": {
+        "rows": 2,
+        "rowDigestMd5": "b2bb5a4ba4e73fa68037c57903a40112"
+      },
+      "restored": {
+        "rows": 2,
+        "rowDigestMd5": "c5625a613837332598a1424ae2448821"
+      }
+    },
+    "payload_jobs_log": {
+      "source": {
+        "rows": 42,
+        "rowDigestMd5": "ba2e470436ea503003f03ab2abfa37a6"
+      },
+      "restored": {
+        "rows": 48,
+        "rowDigestMd5": "43cd97f10dfacf7eb4a6954684c17b32"
+      }
+    },
+    "admin_auth_audit_events": {
+      "source": {
+        "rows": 7,
+        "rowDigestMd5": "9f6d58efdaff0e82eecbbccb7a95addd"
+      },
+      "restored": {
+        "rows": 8,
+        "rowDigestMd5": "d74114a640a0ecd7260c489ca80b5301"
+      }
+    },
+    "admin_auth_rate_limits": {
+      "source": {
+        "rows": 2,
+        "rowDigestMd5": "38bbcd78069dbc0684a0f5e3a704396d"
+      },
+      "restored": {
+        "rows": 3,
+        "rowDigestMd5": "b1a8fd84c48130488d5c9bf7115ba662"
+      }
+    }
+  }
+}

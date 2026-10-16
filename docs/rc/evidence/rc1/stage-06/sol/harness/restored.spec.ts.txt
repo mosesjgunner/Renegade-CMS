@@ -1,0 +1,27 @@
+import {test,expect} from '@playwright/test'
+import {readFileSync,writeFileSync,readdirSync,statSync} from 'node:fs'
+import {createHash} from 'node:crypto'
+const origin='https://dispatch.rc02.test:3179'
+test('restored ordinary owner staff member login, HTTP refetch and original media equality',async({browser})=>{
+ const fixture=JSON.parse(readFileSync('scratch/records/source-business.json','utf8'));const report:any={actors:[],categories:{}};let expectedMemberId=''
+ const api=async(client:any,method:string,url:string,data?:any,status=200)=>{const r=await client.request.fetch(url,{method,data});expect(r.status(),`${method} ${url}: ${(await r.text()).slice(0,400)}`).toBe(status);return r.json()}
+ for(const role of ['owner','staff']){
+  const context=await browser.newContext({baseURL:origin,ignoreHTTPSErrors:true});const page=await context.newPage();const cdp=await context.newCDPSession(page);await cdp.send('Security.setIgnoreCertificateErrors',{ignore:true});await cdp.send('WebAuthn.enable');const device=await cdp.send('WebAuthn.addVirtualAuthenticator',{options:{protocol:'ctap2',transport:'internal',hasResidentKey:true,hasUserVerification:true,isUserVerified:true,automaticPresenceSimulation:true}})
+  for(const credential of JSON.parse(readFileSync(`scratch/${role}-device.json`,'utf8')))await cdp.send('WebAuthn.addCredential',{authenticatorId:device.authenticatorId,credential})
+  await page.goto('/login');await page.getByLabel('Owner / Staff Email').fill(`${role}@rc06.example.test`);await page.getByRole('button',{name:/Authenticate with Passkey/}).click();await page.waitForURL(/\/admin/,{timeout:60000})
+  const me=await api(page,'GET','/api/users/me');expect(me.user.email).toBe(`${role}@rc06.example.test`)
+  writeFileSync(`scratch/${role}-device.json`,JSON.stringify((await cdp.send('WebAuthn.getCredentials',{authenticatorId:device.authenticatorId})).credentials))
+  await api(page,'GET',`/api/content/${fixture.articleId}?depth=0`)
+  const media=await page.request.get(`/media/${fixture.assetId}`);expect(media.status()).toBe(200);const bytes=await media.body();expect(bytes).toEqual(readFileSync('fixtures/renegadeparty-demo/assets/logo.png'));report.media={bytes:bytes.length,sha256:createHash('sha256').update(bytes).digest('hex')}
+  if(role==='owner'){
+   expectedMemberId=JSON.parse(readFileSync('scratch/records/source-member-identity.json','utf8')).memberId
+   for(const collection of ['users','members','member-site-roles','media-assets','content','article-family-content','audience-lists','subscribers','audience-memberships','consent-events','email-messages','contacts','forum-sections','forums','discussions','discussion-posts','merchant-connections','payment-method-capabilities','products','orders','digital-delivery-grants','commerce-refunds','supporters','subscriptions','entitlements','donation-campaigns','donation-intents','donations','scheduled-publish-jobs','outbound-network-deliveries']){const data=await api(page,'GET',`/api/${collection}?depth=0&limit=100`);report.categories[collection]={totalDocs:data.totalDocs,returned:data.docs.length,ids:data.docs.map((d:any)=>d.id).sort()}}
+  }
+  report.actors.push({role,method:'ordinary login using retained virtual hardware credential',forgedSessions:0});await page.screenshot({path:`scratch/private-browser/restored-${role}.png`});await api(page,'POST','/api/auth/logout');await context.close()
+ }
+ const context=await browser.newContext({baseURL:origin,ignoreHTTPSErrors:true});const page=await context.newPage();const after=Date.now();await page.goto('/member-auth');await page.getByLabel('Email address',{exact:true}).fill('member@rc06.example.test');await page.getByRole('button',{name:/Email.*link|Send.*link/i}).click();let magic=''
+ await expect.poll(()=>{for(const name of readdirSync('scratch/rc04-mail').filter(n=>n.endsWith('.eml'))){if(statSync(`scratch/rc04-mail/${name}`).mtimeMs<after)continue;const raw=readFileSync(`scratch/rc04-mail/${name}`,'utf8').replace(/=\r\n/g,'').replace(/=([0-9A-F]{2})/gi,(_,n)=>String.fromCharCode(parseInt(n,16)));const match=raw.match(/https:\/\/[^\s<>"']+\/member-auth\/verify\?token=[A-Za-z0-9_-]+/);if(match)magic=match[0]}return Boolean(magic)},{timeout:30000}).toBe(true)
+ await page.goto(magic);await expect(page.getByRole('status')).toHaveText('Signed in.');const me=await api(page,'GET','/api/member-auth/me');expect(me.memberId).toBe(expectedMemberId);expect(me.siteId).toBe(fixture.siteId);report.actors.push({role:'member',method:'new ordinary MIME magic link',memberId:me.memberId,forgedSessions:0});await context.close()
+ writeFileSync('scratch/records/restored-http.json',JSON.stringify(report,null,2))
+})
+

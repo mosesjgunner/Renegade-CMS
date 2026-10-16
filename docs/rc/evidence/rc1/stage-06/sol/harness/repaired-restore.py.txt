@@ -1,0 +1,8 @@
+from pathlib import Path
+import json,secrets,subprocess
+env=dict(line.split('=',1) for line in Path('scratch/restore.env').read_text().splitlines() if '=' in line)
+env.update(RENEGADE_RESTORE_INSTANCE='solrc06-repaired-restored-20261016',RENEGADE_RESTORE_WEB_BIND='127.0.0.1:3198',POSTGRES_PASSWORD=secrets.token_hex(24),PAYLOAD_SECRET=secrets.token_hex(48))
+Path('scratch/repaired-restore.env').write_text('\n'.join(k+'='+v for k,v in env.items())+'\n')
+args=['node','node_modules/tsx/dist/cli.mjs','src/scripts/operational-restore.ts','--archive',Path('scratch/repaired-archive-path.txt').read_text(),'--target-version','0.1.0-rc.1','--isolated','--authorize-restore','--compose-file','scratch/restore.yaml','--env-file','scratch/repaired-restore.env']
+subprocess.run(['python','scratch/record.py','repaired-operational-restore']+args,check=True)
+print('Repaired-tool archive restored to another fresh empty project')

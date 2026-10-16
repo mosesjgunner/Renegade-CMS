@@ -1,0 +1,22 @@
+from pathlib import Path
+import subprocess,time,json
+root=Path.cwd();proof=root/'scratch/lease-proof';proof.mkdir(exist_ok=True)
+compose=['docker','compose','--project-name','solrc06-independent-20261016','--env-file','scratch/source.env','-f','scratch/source.yaml']
+def run(label,args):subprocess.run(['python','scratch/record.py',label]+args,check=True)
+run('worker-stop-before-lease',compose+['stop','renegade-worker'])
+def worker(mode,name):return compose+['run','--rm','--no-deps','--name',name,'-v',str(root/'scratch/lease-worker.ts')+':/app/acceptance-lease.ts:ro','-v',str(proof)+':/proof','--entrypoint','node','renegade-worker','--import','tsx','acceptance-lease.ts',mode]
+run('lease-prepare',worker('prepare','solrc06-lease-prepare'))
+with Path('scratch/records/lease-crash-process.log').open('wb') as log:
+ child=subprocess.Popen(worker('crash','solrc06-lease-crash'),stdout=log,stderr=subprocess.STDOUT)
+ started=time.time()
+ while not (proof/'lease-boundary.json').exists():
+  if child.poll() is not None:raise RuntimeError('Lease process exited before boundary')
+  if time.time()-started>60:raise RuntimeError('Lease boundary timeout')
+  time.sleep(.25)
+ run('lease-process-sigkill',['docker','kill','--signal','KILL','solrc06-lease-crash'])
+ code=child.wait(timeout=30)
+ Path('scratch/records/lease-killed-exit.json').write_text(json.dumps({'exitCode':code,'signal':'SIGKILL','boundary':'after real scheduler persisted processing lease; test hook only pauses continuation','command':worker('crash','solrc06-lease-crash')}))
+ time.sleep(2.1)
+run('lease-recover-and-replay',worker('recover','solrc06-lease-recover'))
+run('shipping-worker-resume',compose+['up','-d','--no-deps','--wait','renegade-worker'])
+print('Actual process killed at durable lease; natural expiry and production scheduler recovery/replay completed')

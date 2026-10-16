@@ -1,0 +1,21 @@
+{
+  "command": [
+    "node",
+    "node_modules/tsx/dist/cli.mjs",
+    "src/scripts/operational-restore.ts",
+    "--archive",
+    "scratch\\corrupt-archive",
+    "--target-version",
+    "0.1.0-rc.1",
+    "--isolated",
+    "--authorize-restore",
+    "--compose-file",
+    "scratch/restore.yaml",
+    "--env-file",
+    "scratch/restore.env"
+  ],
+  "exitCode": 1,
+  "durationSeconds": 0.5936806201934814,
+  "sourceSha": "51fa1c2310519ae478905e365befe6114c5ddcc1",
+  "logSha256": "6aaa65084320af02a8a903edcc2800e50ba67a6c54ba9a6f78a2a615f556bfce"
+}

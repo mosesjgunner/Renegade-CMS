@@ -1,0 +1,13 @@
+import subprocess,json,hashlib,sys
+from pathlib import Path
+project=sys.argv[1];label=sys.argv[2]
+assert project in ['solrc06-independent-20261016','solrc06-restored-20261016','solrc06-repaired-restored-20261016','solrc06-final-restored-20261016']
+def sql(q):return subprocess.run(['docker','exec','-i',project+'-postgres-1','psql','-U','renegade','-d','renegade','-At'],input=q,text=True,stdout=subprocess.PIPE,check=True).stdout.strip()
+tables=sql("SELECT tablename FROM pg_tables WHERE schemaname='public' ORDER BY tablename").splitlines();result={};queries=[]
+for table in tables:
+ if not table.replace('_','').isalnum():raise ValueError(table)
+ queries.append("SELECT '"+table+"',count(*),md5(coalesce(string_agg(row_json, chr(10) ORDER BY row_json),'')) FROM (SELECT row_to_json(t)::text row_json FROM \""+table+'" t) j')
+for line in sql(' UNION ALL '.join(queries)).splitlines() if queries else []:
+ table,count,digest=line.split('|');result[table]={'rows':int(count),'rowDigestMd5':digest}
+output={'project':project,'tables':result,'tableCount':len(result),'totalRows':sum(t['rows'] for t in result.values())}
+Path('scratch/records/'+label+'.json').write_text(json.dumps(output,indent=2));print(label,len(result),'tables',output['totalRows'],'rows')

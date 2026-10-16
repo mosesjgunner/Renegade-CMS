@@ -1,0 +1,4 @@
+{
+  "memberId": "ddac2775-db7f-4981-9911-9bfd6c895bea",
+  "siteId": "e569115f-2594-45ee-9a0f-0214f5f942b5"
+}

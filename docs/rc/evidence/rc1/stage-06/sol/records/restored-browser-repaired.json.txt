@@ -1,0 +1,172 @@
+{
+  "config": {
+    "argv": [
+      "C:\\Program Files\\nodejs\\node.exe",
+      "C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\node_modules\\@playwright\\test\\cli.js",
+      "test",
+      "--config",
+      "scratch/playwright.config.ts",
+      "restored.spec.ts"
+    ],
+    "configFile": "C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\playwright.config.ts",
+    "rootDir": "C:/Projects/RENEGADE CMS/sol-stage06-independent-20261016/scratch/specs",
+    "failOnFlakyTests": false,
+    "forbidOnly": false,
+    "fullyParallel": false,
+    "globalSetup": null,
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 1
+    },
+    "preserveOutput": "always",
+    "projects": [
+      {
+        "outputDir": "C:/Projects/RENEGADE CMS/sol-stage06-independent-20261016/scratch/sol-browser-artifacts/restored-browser-repaired",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 1
+        },
+        "id": "",
+        "name": "",
+        "testDir": "C:/Projects/RENEGADE CMS/sol-stage06-independent-20261016/scratch/specs",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 900000
+      }
+    ],
+    "quiet": false,
+    "reporter": [
+      [
+        "list",
+        null
+      ],
+      [
+        "json",
+        {
+          "outputFile": "scratch/records/restored-browser-repaired.json"
+        }
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "shard": null,
+    "tags": [],
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.62.1",
+    "workers": 1,
+    "webServer": null
+  },
+  "suites": [
+    {
+      "title": "restored.spec.ts",
+      "file": "restored.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [
+        {
+          "title": "restored ordinary owner staff member login, HTTP refetch and original media equality",
+          "ok": false,
+          "tags": [],
+          "tests": [
+            {
+              "timeout": 900000,
+              "annotations": [],
+              "expectedStatus": "passed",
+              "projectId": "",
+              "projectName": "",
+              "results": [
+                {
+                  "workerIndex": 0,
+                  "parallelIndex": 0,
+                  "status": "failed",
+                  "duration": 17184,
+                  "error": {
+                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoContain\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // indexOf\u001b[22m\n\nExpected substring: \u001b[32m\"member@rc06.example.test\"\u001b[39m\nReceived string:    \u001b[31m\"{\\\"memberId\\\":\\\"ddac2775-db7f-4981-9911-9bfd6c895bea\\\",\\\"profile\\\":{\\\"id\\\":\\\"ff6f9cbf-d28b-4892-a97d-154ba587a30e\\\",\\\"member\\\":\\\"ddac2775-db7f-4981-9911-9bfd6c895bea\\\",\\\"displayName\\\":\\\"New member\\\",\\\"handle\\\":\\\"member-9bfd6c895bea\\\",\\\"handleChangedAt\\\":null,\\\"handleHistory\\\":null,\\\"avatar\\\":null,\\\"cover\\\":null,\\\"avatarAlt\\\":null,\\\"coverAlt\\\":null,\\\"locale\\\":null,\\\"timeZone\\\":null,\\\"discoveryOptOut\\\":false,\\\"bio\\\":null,\\\"links\\\":null,\\\"preferences\\\":{},\\\"visibility\\\":\\\"private\\\",\\\"fieldAudience\\\":null,\\\"layoutTheme\\\":null,\\\"updatedAt\\\":\\\"2026-10-16T05:15:54.689Z\\\",\\\"createdAt\\\":\\\"2026-10-16T05:15:54.689Z\\\",\\\"relationshipNotifications\\\":{}},\\\"siteId\\\":\\\"e569115f-2594-45ee-9a0f-0214f5f942b5\\\"}\"\u001b[39m",
+                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoContain\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // indexOf\u001b[22m\n\nExpected substring: \u001b[32m\"member@rc06.example.test\"\u001b[39m\nReceived string:    \u001b[31m\"{\\\"memberId\\\":\\\"ddac2775-db7f-4981-9911-9bfd6c895bea\\\",\\\"profile\\\":{\\\"id\\\":\\\"ff6f9cbf-d28b-4892-a97d-154ba587a30e\\\",\\\"member\\\":\\\"ddac2775-db7f-4981-9911-9bfd6c895bea\\\",\\\"displayName\\\":\\\"New member\\\",\\\"handle\\\":\\\"member-9bfd6c895bea\\\",\\\"handleChangedAt\\\":null,\\\"handleHistory\\\":null,\\\"avatar\\\":null,\\\"cover\\\":null,\\\"avatarAlt\\\":null,\\\"coverAlt\\\":null,\\\"locale\\\":null,\\\"timeZone\\\":null,\\\"discoveryOptOut\\\":false,\\\"bio\\\":null,\\\"links\\\":null,\\\"preferences\\\":{},\\\"visibility\\\":\\\"private\\\",\\\"fieldAudience\\\":null,\\\"layoutTheme\\\":null,\\\"updatedAt\\\":\\\"2026-10-16T05:15:54.689Z\\\",\\\"createdAt\\\":\\\"2026-10-16T05:15:54.689Z\\\",\\\"relationshipNotifications\\\":{}},\\\"siteId\\\":\\\"e569115f-2594-45ee-9a0f-0214f5f942b5\\\"}\"\u001b[39m\n    at C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\specs\\restored.spec.ts:22:169",
+                    "location": {
+                      "file": "C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\specs\\restored.spec.ts",
+                      "column": 169,
+                      "line": 22
+                    },
+                    "snippet": "  20 |  const context=await browser.newContext({baseURL:origin,ignoreHTTPSErrors:true});const page=await context.newPage();const after=Date.now();await page.goto('/member-auth');await page.getByLabel('Email address',{exact:true}).fill('member@rc06.example.test');await page.getByRole('button',{name:/Email.*link|Send.*link/i}).click();let magic=''\n  21 |  await expect.poll(()=>{for(const name of readdirSync('scratch/rc04-mail').filter(n=>n.endsWith('.eml'))){if(statSync(`scratch/rc04-mail/${name}`).mtimeMs<after)continue;const raw=readFileSync(`scratch/rc04-mail/${name}`,'utf8').replace(/=\\r\\n/g,'').replace(/=([0-9A-F]{2})/gi,(_,n)=>String.fromCharCode(parseInt(n,16)));const match=raw.match(/https:\\/\\/[^\\s<>\"']+\\/member-auth\\/verify\\?token=[A-Za-z0-9_-]+/);if(match)magic=match[0]}return Boolean(magic)},{timeout:30000}).toBe(true)\n> 22 |  await page.goto(magic);await expect(page.getByRole('status')).toHaveText('Signed in.');const me=await api(page,'GET','/api/member-auth/me');expect(JSON.stringify(me)).toContain('member@rc06.example.test');report.actors.push({role:'member',method:'new ordinary MIME magic link',forgedSessions:0});await context.close()\n     |                                                                                                                                                                         ^\n  23 |  writeFileSync('scratch/records/restored-http.json',JSON.stringify(report,null,2))\n  24 | })\n  25 |"
+                  },
+                  "errors": [
+                    {
+                      "location": {
+                        "file": "C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\specs\\restored.spec.ts",
+                        "column": 169,
+                        "line": 22
+                      },
+                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoContain\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // indexOf\u001b[22m\n\nExpected substring: \u001b[32m\"member@rc06.example.test\"\u001b[39m\nReceived string:    \u001b[31m\"{\\\"memberId\\\":\\\"ddac2775-db7f-4981-9911-9bfd6c895bea\\\",\\\"profile\\\":{\\\"id\\\":\\\"ff6f9cbf-d28b-4892-a97d-154ba587a30e\\\",\\\"member\\\":\\\"ddac2775-db7f-4981-9911-9bfd6c895bea\\\",\\\"displayName\\\":\\\"New member\\\",\\\"handle\\\":\\\"member-9bfd6c895bea\\\",\\\"handleChangedAt\\\":null,\\\"handleHistory\\\":null,\\\"avatar\\\":null,\\\"cover\\\":null,\\\"avatarAlt\\\":null,\\\"coverAlt\\\":null,\\\"locale\\\":null,\\\"timeZone\\\":null,\\\"discoveryOptOut\\\":false,\\\"bio\\\":null,\\\"links\\\":null,\\\"preferences\\\":{},\\\"visibility\\\":\\\"private\\\",\\\"fieldAudience\\\":null,\\\"layoutTheme\\\":null,\\\"updatedAt\\\":\\\"2026-10-16T05:15:54.689Z\\\",\\\"createdAt\\\":\\\"2026-10-16T05:15:54.689Z\\\",\\\"relationshipNotifications\\\":{}},\\\"siteId\\\":\\\"e569115f-2594-45ee-9a0f-0214f5f942b5\\\"}\"\u001b[39m\n\n  20 |  const context=await browser.newContext({baseURL:origin,ignoreHTTPSErrors:true});const page=await context.newPage();const after=Date.now();await page.goto('/member-auth');await page.getByLabel('Email address',{exact:true}).fill('member@rc06.example.test');await page.getByRole('button',{name:/Email.*link|Send.*link/i}).click();let magic=''\n  21 |  await expect.poll(()=>{for(const name of readdirSync('scratch/rc04-mail').filter(n=>n.endsWith('.eml'))){if(statSync(`scratch/rc04-mail/${name}`).mtimeMs<after)continue;const raw=readFileSync(`scratch/rc04-mail/${name}`,'utf8').replace(/=\\r\\n/g,'').replace(/=([0-9A-F]{2})/gi,(_,n)=>String.fromCharCode(parseInt(n,16)));const match=raw.match(/https:\\/\\/[^\\s<>\"']+\\/member-auth\\/verify\\?token=[A-Za-z0-9_-]+/);if(match)magic=match[0]}return Boolean(magic)},{timeout:30000}).toBe(true)\n> 22 |  await page.goto(magic);await expect(page.getByRole('status')).toHaveText('Signed in.');const me=await api(page,'GET','/api/member-auth/me');expect(JSON.stringify(me)).toContain('member@rc06.example.test');report.actors.push({role:'member',method:'new ordinary MIME magic link',forgedSessions:0});await context.close()\n     |                                                                                                                                                                         ^\n  23 |  writeFileSync('scratch/records/restored-http.json',JSON.stringify(report,null,2))\n  24 | })\n  25 |\n    at C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\specs\\restored.spec.ts:22:169"
+                    }
+                  ],
+                  "stdout": [],
+                  "stderr": [],
+                  "retry": 0,
+                  "startTime": "2026-10-16T05:20:08.993Z",
+                  "annotations": [],
+                  "attachments": [
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\sol-browser-artifacts\\restored-browser-repaired\\restored-restored-ordinary-5333b-and-original-media-equality\\test-failed-1.png"
+                    },
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\sol-browser-artifacts\\restored-browser-repaired\\restored-restored-ordinary-5333b-and-original-media-equality\\test-failed-2.png"
+                    },
+                    {
+                      "name": "screenshot",
+                      "contentType": "image/png",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\sol-browser-artifacts\\restored-browser-repaired\\restored-restored-ordinary-5333b-and-original-media-equality\\test-failed-3.png"
+                    },
+                    {
+                      "name": "error-context",
+                      "contentType": "text/markdown",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\sol-browser-artifacts\\restored-browser-repaired\\restored-restored-ordinary-5333b-and-original-media-equality\\error-context.md"
+                    },
+                    {
+                      "name": "trace",
+                      "contentType": "application/zip",
+                      "path": "C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\sol-browser-artifacts\\restored-browser-repaired\\restored-restored-ordinary-5333b-and-original-media-equality\\trace.zip"
+                    }
+                  ],
+                  "errorLocation": {
+                    "file": "C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\specs\\restored.spec.ts",
+                    "column": 169,
+                    "line": 22
+                  }
+                }
+              ],
+              "status": "unexpected"
+            }
+          ],
+          "id": "05a827c656e651fcbf93-ec77c81ad5a3ecba34b3",
+          "file": "restored.spec.ts",
+          "line": 5,
+          "column": 1
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2026-10-16T05:20:08.516Z",
+    "duration": 18127.601,
+    "expected": 0,
+    "skipped": 0,
+    "unexpected": 1,
+    "flaky": 0
+  }
+}

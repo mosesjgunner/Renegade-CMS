@@ -1,0 +1,18 @@
+{
+  "command": [
+    "node",
+    "node_modules/tsx/dist/cli.mjs",
+    "src/scripts/operational-backup.ts",
+    "--output",
+    "scratch/backup",
+    "--maintenance-window-confirmed",
+    "--compose-file",
+    "scratch/source.yaml",
+    "--env-file",
+    "scratch/source.env"
+  ],
+  "exitCode": 0,
+  "durationSeconds": 12.602747678756714,
+  "sourceSha": "badaa6f4d9f9566b81d5ee29c14a8744f94adc7e",
+  "logSha256": "ce318efd57ba26499e07fd7782dcec660f5f47066f6d01fe1594f02541c22c4b"
+}

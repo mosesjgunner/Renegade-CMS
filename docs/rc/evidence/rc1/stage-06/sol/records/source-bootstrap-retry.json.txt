@@ -1,0 +1,14 @@
+{
+  "command": [
+    "docker",
+    "exec",
+    "solrc06-independent-20261016-renegade-web-1",
+    "npm",
+    "run",
+    "installation:recover"
+  ],
+  "exitCode": 0,
+  "durationSeconds": 10.691275835037231,
+  "sourceSha": "badaa6f4d9f9566b81d5ee29c14a8744f94adc7e",
+  "logSha256": "bcffc417fc17dbab75bb14154ad450d9f493054e4076cd0ee62356449c0ebbd2"
+}

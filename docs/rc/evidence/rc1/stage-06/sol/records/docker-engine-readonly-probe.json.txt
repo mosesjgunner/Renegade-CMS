@@ -1,0 +1,12 @@
+{
+  "command": [
+    "docker",
+    "version",
+    "--format",
+    "{{.Server.Version}}"
+  ],
+  "exitCode": 4294967295,
+  "durationSeconds": 40.749972105026245,
+  "sourceSha": "51fa1c2310519ae478905e365befe6114c5ddcc1",
+  "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

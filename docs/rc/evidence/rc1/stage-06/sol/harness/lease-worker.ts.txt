@@ -1,0 +1,33 @@
+import config from '/app/src/payload.config.ts'
+import {getPayload} from '/app/node_modules/payload/dist/index.js'
+import {createEditorialArticle,requestEditorialReview,decideEditorialReview,scheduleEditorialPublication} from '/app/src/modules/editorial/persistence.ts'
+import {executeScheduledPublishJob} from '/app/src/modules/editorial/scheduler.ts'
+import {readFileSync,writeFileSync} from 'node:fs'
+const payload=await getPayload({config});const mode=process.argv[2]
+if(mode==='prepare'){
+ const site=(await payload.find({collection:'sites',limit:1,overrideAccess:true})).docs[0]
+ const pub=(await payload.find({collection:'publications',limit:1,overrideAccess:true})).docs[0]
+ const owner=(await payload.find({collection:'users',where:{role:{equals:'owner'}},limit:1,overrideAccess:true})).docs[0]
+ const actor={id:owner.id,role:'publisher' as const};const key='sol06-real-lease-'+Date.now()
+ const bundle=await createEditorialArticle(payload,{siteId:site.id,publicationId:pub.id,title:'Actual process interruption recovery',slug:key,canonicalPath:'/articles/'+key,sourceMarkdown:'# Durable worker recovery\n\nActual process termination, natural lease expiry and retry.',actor,actorUserId:owner.id})
+ await requestEditorialReview(payload,{articleId:bundle.article.id,actor,actorUserId:owner.id})
+ await decideEditorialReview(payload,{articleId:bundle.article.id,actor,actorUserId:owner.id,approved:true})
+ await scheduleEditorialPublication(payload,{articleId:bundle.article.id,actor,actorUserId:owner.id,scheduledFor:new Date(Date.now()+1000).toISOString(),timeZone:'UTC',idempotencyKey:key})
+ const job=(await payload.find({collection:'scheduled-publish-jobs',where:{idempotencyKey:{equals:key}},limit:1,overrideAccess:true})).docs[0]
+ writeFileSync('/proof/lease-fixture.json',JSON.stringify({articleId:bundle.article.id,jobId:job.id,key}))
+ console.log('Prepared real supported domain lifecycle; no direct business-state edits')
+}else{
+ const fixture=JSON.parse(readFileSync('/proof/lease-fixture.json','utf8'))
+ if(mode==='crash'){
+  const update=payload.update.bind(payload)
+  payload.update=(async(args:any)=>{const result=await update(args);if(args.collection==='scheduled-publish-jobs'&&args.data.status==='processing'){
+   writeFileSync('/proof/lease-boundary.json',JSON.stringify({jobId:fixture.jobId,processPid:process.pid,leaseOwner:args.data.leaseOwner,leaseExpiresAt:args.data.leaseExpiresAt,observedAt:new Date().toISOString()}))
+   await new Promise(()=>{})
+  }return result}) as any
+ }
+ const result=await executeScheduledPublishJob(payload,fixture.jobId,{workerId:mode==='crash'?'sol06-killed-process':'sol06-survivor',leaseDurationSeconds:2})
+ const replay=mode==='recover'?await executeScheduledPublishJob(payload,fixture.jobId,{workerId:'sol06-replay'}):null
+ writeFileSync('/proof/lease-'+mode+'.json',JSON.stringify({result,replay,observedAt:new Date().toISOString()}))
+ if(mode==='recover'&&(!result.success||!result.published||!replay?.success))throw Error('Recovery failed')
+}
+await payload.destroy();process.exit(0)

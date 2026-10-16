@@ -1,0 +1,22 @@
+import {test,expect} from '@playwright/test'
+import {readFileSync,writeFileSync} from 'node:fs'
+import {execFileSync} from 'node:child_process'
+const origin='https://dispatch.rc02.test:3179'
+test('ordinary source mutation remains isolated; web and worker SIGKILL preserves business effects and sessions',async({browser})=>{
+ const result:any={};const fixture=JSON.parse(readFileSync('scratch/records/source-business.json','utf8'))
+ const api=async(client:any,method:string,url:string,data?:any,status=200)=>{const r=await client.request.fetch(url,{method,data});expect(r.status(),`${method} ${url}: ${(await r.text()).slice(0,400)}`).toBe(status);return r.json()}
+ const login=async(port:number)=>{
+  writeFileSync('scratch/active-upstream.txt',String(port));const context=await browser.newContext({baseURL:origin,ignoreHTTPSErrors:true});const page=await context.newPage();const cdp=await context.newCDPSession(page);await cdp.send('Security.setIgnoreCertificateErrors',{ignore:true});await cdp.send('WebAuthn.enable');const device=await cdp.send('WebAuthn.addVirtualAuthenticator',{options:{protocol:'ctap2',transport:'internal',hasResidentKey:true,hasUserVerification:true,isUserVerified:true,automaticPresenceSimulation:true}})
+  for(const credential of JSON.parse(readFileSync('scratch/owner-device.json','utf8')))await cdp.send('WebAuthn.addCredential',{authenticatorId:device.authenticatorId,credential})
+  await page.goto('/login');await page.getByLabel('Owner / Staff Email').fill('owner@rc06.example.test');await page.getByRole('button',{name:/Authenticate with Passkey/}).click();await page.waitForURL(/\/admin/,{timeout:60000});writeFileSync('scratch/owner-device.json',JSON.stringify((await cdp.send('WebAuthn.getCredentials',{authenticatorId:device.authenticatorId})).credentials));return {page,context}
+ }
+ const source=await login(3178)
+ const contact=(await api(source.page,'POST','/api/contacts',{site:fixture.siteId,displayName:'Sol cross instance probe',email:'isolation@rc06.example.test',status:'lead'},201)).doc
+ const before=await api(source.page,'GET',`/api/contacts/${contact.id}?depth=0`)
+ execFileSync('python',['scratch/record.py','webworker-sigkill','docker','kill','--signal','KILL','solrc06-independent-20261016-renegade-web-1','solrc06-independent-20261016-renegade-worker-1'],{stdio:'pipe'})
+ execFileSync('python',['scratch/record.py','webworker-restart','docker','compose','--project-name','solrc06-independent-20261016','--env-file','scratch/source.env','-f','scratch/source.yaml','up','-d','--no-deps','--wait','renegade-web','renegade-worker'],{stdio:'pipe'})
+ expect(await api(source.page,'GET',`/api/contacts/${contact.id}?depth=0`)).toEqual(before);const me=await api(source.page,'GET','/api/users/me');expect(me.user.email).toBe('owner@rc06.example.test');await api(source.page,'POST','/api/auth/logout');await source.context.close()
+ result.source={contactId:contact.id,restartRetainedContactAndSession:true}
+ const restored=await login(3188);const denied=await restored.page.request.get(`/api/contacts/${contact.id}?depth=0`);expect(denied.status()).toBe(404);const query=await api(restored.page,'GET','/api/contacts?where[displayName][equals]=Sol%20cross%20instance%20probe&depth=0');expect(query.totalDocs).toBe(0);result.restored={foreignIdStatus:denied.status(),matchingProbeCount:query.totalDocs};await api(restored.page,'POST','/api/auth/logout');await restored.context.close()
+ writeFileSync('scratch/records/isolation-browser-observations.json',JSON.stringify(result,null,2))
+})

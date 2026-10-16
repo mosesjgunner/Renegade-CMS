@@ -1,0 +1,16 @@
+from pathlib import Path
+import json,subprocess,hashlib
+out=Path('scratch/records');fixture=json.loads(Path('scratch/lease-proof/lease-fixture.json').read_text())
+def sql(project,q):return subprocess.run(['docker','exec','-i',project+'-postgres-1','psql','-U','renegade','-d','renegade','-At'],input=q,text=True,stdout=subprocess.PIPE,check=True).stdout.strip()
+article=fixture['articleId'];job=fixture['jobId']
+q="SELECT json_build_object('job', (SELECT row_to_json(j) FROM scheduled_publish_jobs j WHERE id='"+job+"'), 'article',(SELECT json_build_object('id',id,'lifecycle',lifecycle,'workflowAudit',workflow_audit,'publishedRevision',latest_published_revision_id) FROM article_family_content WHERE id='"+article+"'))"
+data=json.loads(sql('solrc06-independent-20261016',q));(out/'lease-effect-before-restart.json').write_text(json.dumps(data,indent=2))
+images=json.loads(subprocess.check_output(['docker','image','inspect','renegade-cms:sol-independent-3f464a69'],text=True));image=images[0]
+(out/'image-binding.json').write_text(json.dumps({k:image.get(k) for k in ['Id','RepoTags','RepoDigests','Architecture','Os']}|{'labels':image['Config']['Labels']},indent=2))
+containers=json.loads(subprocess.check_output(['docker','inspect']+[p+'-'+s+'-1' for p in ['solrc06-independent-20261016','solrc06-restored-20261016'] for s in ['postgres','renegade-web','renegade-worker']],text=True));safe=[];environment={}
+for c in containers:
+ env=dict(x.split('=',1) for x in c['Config']['Env'] if '=' in x);environment[c['Name']]=env
+ safe.append({'name':c['Name'],'image':c['Image'],'startedAt':c['State']['StartedAt'],'status':c['State']['Status'],'networks':list(c['NetworkSettings']['Networks']),'mounts':[{'type':m['Type'],'name':m.get('Name'),'destination':m['Destination']} for m in c['Mounts']],'ports':c['NetworkSettings']['Ports'],'runtime':{k:env.get(k) for k in ['LOCAL_E2E_TEST_MODE','ENABLE_TEST_ROUTES','APP_URL','PROXY_MODE','RENEGADE_MODULES','EMAIL_MODE','BUILD_SHA']}})
+a=environment['/solrc06-independent-20261016-renegade-web-1'];b=environment['/solrc06-restored-20261016-renegade-web-1']
+(out/'instance-isolation.json').write_text(json.dumps({'containers':safe,'secretsDistinct':a['PAYLOAD_SECRET']!=b['PAYLOAD_SECRET'],'databaseUrisDistinct':a['DATABASE_URL']!=b['DATABASE_URL'],'logicalOrigin':'Same origin models recovery DNS cutover; actual loopback bindings and networks/volumes differ.'},indent=2))
+print('Runtime source, topology and lease effects recorded')

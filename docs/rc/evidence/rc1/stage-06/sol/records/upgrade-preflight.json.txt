@@ -1,0 +1,23 @@
+{
+  "command": [
+    "node",
+    "node_modules/tsx/dist/cli.mjs",
+    "src/scripts/operational-upgrade.ts",
+    "--target-image-tag",
+    "sol-independent-3f464a69",
+    "--target-version",
+    "0.1.0-rc.1",
+    "--backup",
+    "C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\backup\\renegade-backup-2026-10-16T05-17-59-566Z",
+    "--preflight",
+    "--compose-file",
+    "scratch/source.yaml",
+    "--env-file",
+    "scratch/source.env",
+    "--maintenance-window-confirmed"
+  ],
+  "exitCode": 0,
+  "durationSeconds": 0.9794807434082031,
+  "sourceSha": "badaa6f4d9f9566b81d5ee29c14a8744f94adc7e",
+  "logSha256": "f70e124feb08df3ec4b3c22aeb8a555e5468e7cb6e1518f1037a2aa888a5e1b9"
+}

@@ -1,0 +1,41 @@
+from pathlib import Path
+base=Path('docs/rc/evidence/rc1/stage-05/sol/records/independent-2026-10-15/harness')
+text=(base/'playwright.image.config.ts.txt').read_text().replace("'./image-specs'","'./specs'").replace("'../src/", "'../src/").replace('3159','3179').replace('scratch/sol-evidence','scratch/records')
+Path('scratch/playwright.config.ts').write_text(text)
+Path('scratch/specs').mkdir(exist_ok=True)
+source=(base/'security.spec.ts.txt').read_text()
+setup=source[source.index('  const cdp ='):source.index("  await api(page, 'POST', '/api/auth/logout')")]
+setup=setup.replace("await cdp.send('WebAuthn.addVirtualAuthenticator'", "const ownerDevice = await cdp.send('WebAuthn.addVirtualAuthenticator'")
+setup=setup.replace('3159','3179').replace('rc05','rc06').replace('Stage 05','Stage 06')
+prefix="""import {test,expect} from '@playwright/test'
+import {readFileSync,writeFileSync,readdirSync,statSync,mkdirSync} from 'node:fs'
+const origin='https://dispatch.rc02.test:3179'
+test('ordinary source setup, owner and staff enrollment, member mail authentication and persisted fixtures',async({page,context,browser})=>{
+const traceDir='scratch/private-browser';mkdirSync(traceDir,{recursive:true})
+const api=async(client:any,method:string,url:string,data?:any,status=200)=>{const r=await client.request.fetch(url,{method,data});expect(r.status(),`${method} ${url}: ${(await r.text()).slice(0,400)}`).toBe(status);return r.json()}
+const record=(name:string,data:any={})=>console.log('VERIFIED',name,JSON.stringify(data))
+const sql=(_q:string)=>'runtime browser proof'
+"""
+suffix="""
+writeFileSync('scratch/owner-device.json',JSON.stringify((await cdp.send('WebAuthn.getCredentials',{authenticatorId:ownerDevice.authenticatorId})).credentials))
+await api(page,'POST','/api/auth/logout')
+await page.goto('/login');await page.getByLabel('Owner / Staff Email').fill('owner@rc06.example.test');await page.getByRole('button',{name:/Authenticate with Passkey/}).click();await page.waitForURL(/\\/admin/)
+const own=(await api(page,'GET','/api/sites?depth=0')).docs[0]
+const publication=(await api(page,'GET','/api/publications?depth=0')).docs[0]
+const article=(await api(page,'POST','/api/content',{site:own.id,publication:publication.id,title:'Recovery durable draft',slug:'recovery-durable-draft',contentType:'article',workflowStatus:'draft'},201)).doc
+const media=await page.request.post('/api/media/upload',{multipart:{siteId:own.id,title:'Restore byte equality',altText:'Acceptance logo',file:{name:'restore.png',mimeType:'image/png',buffer:readFileSync('fixtures/renegadeparty-demo/assets/logo.png')}}});expect(media.status()).toBe(201);const asset=(await media.json()).asset
+await expect.poll(async()=> (await api(page,'GET',`/api/media-assets/${asset.id}?depth=0`)).aspectRatio,{timeout:60000}).toBe(1)
+const invitation=await api(page,'POST','/api/admin/staff/invite',{email:'staff@rc06.example.test',role:'staff',siteId:own.id},201)
+const staffContext=await browser.newContext({baseURL:origin,ignoreHTTPSErrors:true});const staff=await staffContext.newPage();const sd=await staffContext.newCDPSession(staff);await sd.send('Security.setIgnoreCertificateErrors',{ignore:true});await sd.send('WebAuthn.enable');const sa=await sd.send('WebAuthn.addVirtualAuthenticator',{options:{protocol:'ctap2',transport:'internal',hasResidentKey:true,hasUserVerification:true,isUserVerified:true,automaticPresenceSimulation:true}})
+await staff.goto(invitation.enrollmentUrl);await staff.getByRole('button',{name:/Register Hardware Passkey/}).click();await expect(staff.getByRole('status')).toContainText('Passkey registered successfully');await staff.getByRole('button',{name:/I saved my codes/}).click();await staff.waitForURL(/\\/login/);await staff.getByLabel('Owner / Staff Email').fill('staff@rc06.example.test');await staff.getByRole('button',{name:/Authenticate with Passkey/}).click();await staff.waitForURL(/\\/admin/)
+writeFileSync('scratch/staff-device.json',JSON.stringify((await sd.send('WebAuthn.getCredentials',{authenticatorId:sa.authenticatorId})).credentials))
+await api(staff,'GET',`/api/content/${article.id}?depth=0`)
+await api(staff,'POST','/api/auth/logout');await staffContext.close()
+const mc=await browser.newContext({baseURL:origin,ignoreHTTPSErrors:true});const member=await mc.newPage();const mailAfter=Date.now();await member.goto('/member-auth');await member.getByLabel('Email address',{exact:true}).fill('member@rc06.example.test');await member.getByRole('button',{name:/Email.*link|Send.*link/i}).click();let magic='';await expect.poll(()=>{for(const name of readdirSync('scratch/rc04-mail').filter(n=>n.endsWith('.eml'))){if(statSync(`scratch/rc04-mail/${name}`).mtimeMs<mailAfter)continue;const raw=readFileSync(`scratch/rc04-mail/${name}`,'utf8').replace(/=\\r\\n/g,'').replace(/=([0-9A-F]{2})/gi,(_,n)=>String.fromCharCode(parseInt(n,16)));const match=raw.match(/https:\\/\\/[^\\s<>"']+\\/member-auth\\/verify\\?token=[A-Za-z0-9_-]+/);if(match)magic=match[0]}return Boolean(magic)},{timeout:30000}).toBe(true);await member.goto(magic);await expect(member.getByRole('status')).toHaveText('Signed in.');await api(member,'GET','/api/member-auth/me');await mc.close()
+await api(page,'POST','/api/auth/logout')
+writeFileSync('scratch/records/source-business.json',JSON.stringify({siteId:own.id,publicationId:publication.id,articleId:article.id,assetId:asset.id,actors:['owner WebAuthn','staff WebAuthn','member MIME magic link'],cookiesForged:0},null,2))
+await page.screenshot({path:'scratch/private-browser/source-complete.png'})
+})
+"""
+Path('scratch/specs/setup.spec.ts').write_text(prefix+setup+suffix)
+print('Browser harness prepared')

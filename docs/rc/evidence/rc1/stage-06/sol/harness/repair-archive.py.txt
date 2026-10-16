@@ -1,0 +1,23 @@
+from pathlib import Path
+import subprocess,json,tarfile,hashlib,shutil
+out=Path('scratch/records');dest=Path('scratch/repaired-backup-parent/new-child');assert not dest.exists()
+args=['node','node_modules/tsx/dist/cli.mjs','src/scripts/operational-backup.ts','--output',str(dest),'--maintenance-window-confirmed','--compose-file','scratch/source.yaml','--env-file','scratch/source.env']
+subprocess.run(['python','scratch/record.py','repaired-operational-backup']+args,check=True)
+archive=next(dest.glob('renegade-backup-*'));manifest=json.loads((archive/'manifest.json').read_text())
+with tarfile.open(archive/'media.tar.gz') as tar:
+ files={m.name:{'bytes':m.size,'sha256':hashlib.sha256(tar.extractfile(m).read()).hexdigest()} for m in tar.getmembers() if m.isfile()}
+assert './.renegade/backup-status.json' not in files
+info={'operatorToolSha':subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),'applicationImageSha':manifest['renegade']['buildSha'],'createdAbsentParent':dest.exists(),'backupStatusExcluded':True,'mediaFiles':files,'manifest':manifest,'artifactChecksums':{p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in archive.iterdir() if p.is_file()}}
+(out/'repaired-backup-inspection.json').write_text(json.dumps(info,indent=2));Path('scratch/repaired-archive-path.txt').write_text(str(archive.resolve()))
+# Validate deliberate corruption before any existing target action.
+corrupt=Path('scratch/corrupt-archive');shutil.copytree(archive,corrupt)
+with (corrupt/'media.tar.gz').open('ab') as stream:stream.write(b'deliberate-disposable-corruption')
+restore=['node','node_modules/tsx/dist/cli.mjs','src/scripts/operational-restore.ts','--archive',str(corrupt),'--target-version','0.1.0-rc.1','--isolated','--authorize-restore','--compose-file','scratch/restore.yaml','--env-file','scratch/restore.env']
+code=subprocess.run(['python','scratch/record.py','corrupt-restore-rejection']+restore).returncode
+assert code==1
+assert 'checksum mismatch: media.tar.gz' in (out/'corrupt-restore-rejection.log').read_text()
+restore[restore.index(str(corrupt))]=str(archive)
+code=subprocess.run(['python','scratch/record.py','running-target-restore-rejection']+restore).returncode
+assert code==1
+assert 'already running' in (out/'running-target-restore-rejection.log').read_text()
+print('Repaired backup creates missing destination and excludes stale diagnostic; corruption and running-target guards reject safely')

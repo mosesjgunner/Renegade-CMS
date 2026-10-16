@@ -1,0 +1,586 @@
+{
+  "verdict": "STAGE 06 BLOCKED",
+  "candidateSha": "51fa1c2310519ae478905e365befe6114c5ddcc1",
+  "applicationImage": "pending: repaired image build canceled after shared engine API failure",
+  "acceptedRuntimeImageSourceSha": "3f464a6903ff26e7489179df29749f065cb55299",
+  "quality": {
+    "unitFiles": 196,
+    "passed": 1295,
+    "failed": 0,
+    "skipped": 0
+  },
+  "acceptedBrowserInvocations": 4,
+  "earlierUnsuccessfulBrowserInvocations": 3,
+  "acceptedScope": "Bounded ordinary identity/media/draft restore, publication lease recovery/replay, project isolation and operational archive guards. Not complete multi-module business recovery or authentic predecessor upgrade.",
+  "mandatoryOpen": [
+    "Shared Docker engine access, repaired image completion and affected new-image runtime rerun",
+    "Interrupted message/outbox/payment/fulfillment settlement, failed-only retry and pending-work restore without duplicate external effects",
+    "Populated ordinary audience/community/commerce history in the independently restored graph; empty categories do not prove recovery",
+    "Authentic supported predecessor artifact/archive/configuration/migration provenance and upgrade/rollback runtime"
+  ],
+  "commands": [
+    {
+      "record": "corrupt-restore-rejection.json",
+      "command": [
+        "node",
+        "node_modules/tsx/dist/cli.mjs",
+        "src/scripts/operational-restore.ts",
+        "--archive",
+        "scratch\\corrupt-archive",
+        "--target-version",
+        "0.1.0-rc.1",
+        "--isolated",
+        "--authorize-restore",
+        "--compose-file",
+        "scratch/restore.yaml",
+        "--env-file",
+        "scratch/restore.env"
+      ],
+      "exitCode": 1,
+      "durationSeconds": 0.5936806201934814,
+      "sourceSha": "51fa1c2310519ae478905e365befe6114c5ddcc1"
+    },
+    {
+      "record": "docker-engine-readonly-probe.json",
+      "command": ["docker", "version", "--format", "{{.Server.Version}}"],
+      "exitCode": 4294967295,
+      "durationSeconds": 40.749972105026245,
+      "sourceSha": "51fa1c2310519ae478905e365befe6114c5ddcc1"
+    },
+    {
+      "record": "lease-killed-exit.json",
+      "command": [
+        "docker",
+        "compose",
+        "--project-name",
+        "solrc06-independent-20261016",
+        "--env-file",
+        "scratch/source.env",
+        "-f",
+        "scratch/source.yaml",
+        "run",
+        "--rm",
+        "--no-deps",
+        "--name",
+        "solrc06-lease-crash",
+        "-v",
+        "C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\lease-worker.ts:/app/acceptance-lease.ts:ro",
+        "-v",
+        "C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\lease-proof:/proof",
+        "--entrypoint",
+        "node",
+        "renegade-worker",
+        "--import",
+        "tsx",
+        "acceptance-lease.ts",
+        "crash"
+      ],
+      "exitCode": 137,
+      "durationSeconds": null,
+      "sourceSha": null
+    },
+    {
+      "record": "lease-prepare.json",
+      "command": [
+        "docker",
+        "compose",
+        "--project-name",
+        "solrc06-independent-20261016",
+        "--env-file",
+        "scratch/source.env",
+        "-f",
+        "scratch/source.yaml",
+        "run",
+        "--rm",
+        "--no-deps",
+        "--name",
+        "solrc06-lease-prepare",
+        "-v",
+        "C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\lease-worker.ts:/app/acceptance-lease.ts:ro",
+        "-v",
+        "C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\lease-proof:/proof",
+        "--entrypoint",
+        "node",
+        "renegade-worker",
+        "--import",
+        "tsx",
+        "acceptance-lease.ts",
+        "prepare"
+      ],
+      "exitCode": 0,
+      "durationSeconds": 8.10318112373352,
+      "sourceSha": "badaa6f4d9f9566b81d5ee29c14a8744f94adc7e"
+    },
+    {
+      "record": "lease-process-sigkill.json",
+      "command": ["docker", "kill", "--signal", "KILL", "solrc06-lease-crash"],
+      "exitCode": 0,
+      "durationSeconds": 0.2975151538848877,
+      "sourceSha": "badaa6f4d9f9566b81d5ee29c14a8744f94adc7e"
+    },
+    {
+      "record": "lease-recover-and-replay.json",
+      "command": [
+        "docker",
+        "compose",
+        "--project-name",
+        "solrc06-independent-20261016",
+        "--env-file",
+        "scratch/source.env",
+        "-f",
+        "scratch/source.yaml",
+        "run",
+        "--rm",
+        "--no-deps",
+        "--name",
+        "solrc06-lease-recover",
+        "-v",
+        "C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\lease-worker.ts:/app/acceptance-lease.ts:ro",
+        "-v",
+        "C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\lease-proof:/proof",
+        "--entrypoint",
+        "node",
+        "renegade-worker",
+        "--import",
+        "tsx",
+        "acceptance-lease.ts",
+        "recover"
+      ],
+      "exitCode": 0,
+      "durationSeconds": 7.138676166534424,
+      "sourceSha": "badaa6f4d9f9566b81d5ee29c14a8744f94adc7e"
+    },
+    {
+      "record": "operational-backup.json",
+      "command": [
+        "node",
+        "node_modules/tsx/dist/cli.mjs",
+        "src/scripts/operational-backup.ts",
+        "--output",
+        "scratch/backup",
+        "--maintenance-window-confirmed",
+        "--compose-file",
+        "scratch/source.yaml",
+        "--env-file",
+        "scratch/source.env"
+      ],
+      "exitCode": 0,
+      "durationSeconds": 12.602747678756714,
+      "sourceSha": "badaa6f4d9f9566b81d5ee29c14a8744f94adc7e"
+    },
+    {
+      "record": "operational-restore.json",
+      "command": [
+        "node",
+        "node_modules/tsx/dist/cli.mjs",
+        "src/scripts/operational-restore.ts",
+        "--archive",
+        "scratch\\backup\\renegade-backup-2026-10-16T05-17-59-566Z",
+        "--target-version",
+        "0.1.0-rc.1",
+        "--isolated",
+        "--authorize-restore",
+        "--compose-file",
+        "scratch/restore.yaml",
+        "--env-file",
+        "scratch/restore.env"
+      ],
+      "exitCode": 0,
+      "durationSeconds": 41.40865755081177,
+      "sourceSha": "badaa6f4d9f9566b81d5ee29c14a8744f94adc7e"
+    },
+    {
+      "record": "quiesce-owned-source-during-build.json",
+      "command": [
+        "docker",
+        "compose",
+        "--project-name",
+        "solrc06-independent-20261016",
+        "--env-file",
+        "scratch/source.env",
+        "-f",
+        "scratch/source.yaml",
+        "stop",
+        "renegade-web",
+        "renegade-worker"
+      ],
+      "exitCode": 1,
+      "durationSeconds": 62.179670095443726,
+      "sourceSha": "51fa1c2310519ae478905e365befe6114c5ddcc1"
+    },
+    {
+      "record": "repair-format.json",
+      "command": ["npm.cmd", "run", "format:check"],
+      "exitCode": 0,
+      "durationSeconds": 30.990384817123413,
+      "sourceSha": "51fa1c2310519ae478905e365befe6114c5ddcc1"
+    },
+    {
+      "record": "repair-lint.json",
+      "command": ["npm.cmd", "run", "lint"],
+      "exitCode": 0,
+      "durationSeconds": 27.99737811088562,
+      "sourceSha": "51fa1c2310519ae478905e365befe6114c5ddcc1"
+    },
+    {
+      "record": "repair-types.json",
+      "command": ["npm.cmd", "run", "typecheck"],
+      "exitCode": 0,
+      "durationSeconds": 23.778852462768555,
+      "sourceSha": "51fa1c2310519ae478905e365befe6114c5ddcc1"
+    },
+    {
+      "record": "repair-unit.json",
+      "command": [
+        "npm.cmd",
+        "test",
+        "--",
+        "--reporter=json",
+        "--outputFile=scratch/records/repair-unit-results.json"
+      ],
+      "exitCode": 0,
+      "durationSeconds": 32.812310218811035,
+      "sourceSha": "51fa1c2310519ae478905e365befe6114c5ddcc1"
+    },
+    {
+      "record": "repaired-image-build.json",
+      "command": [
+        "docker",
+        "build",
+        "--target",
+        "runner",
+        "--build-arg",
+        "APP_VERSION=0.1.0-rc.1",
+        "--build-arg",
+        "BUILD_SHA=51fa1c2310519ae478905e365befe6114c5ddcc1",
+        "--tag",
+        "renegade-cms:sol06-51fa1c23",
+        "."
+      ],
+      "exitCode": 4294967295,
+      "durationSeconds": 356.58211064338684,
+      "sourceSha": "51fa1c2310519ae478905e365befe6114c5ddcc1"
+    },
+    {
+      "record": "repaired-operational-backup.json",
+      "command": [
+        "node",
+        "node_modules/tsx/dist/cli.mjs",
+        "src/scripts/operational-backup.ts",
+        "--output",
+        "scratch\\repaired-backup-parent\\new-child",
+        "--maintenance-window-confirmed",
+        "--compose-file",
+        "scratch/source.yaml",
+        "--env-file",
+        "scratch/source.env"
+      ],
+      "exitCode": 0,
+      "durationSeconds": 18.45139718055725,
+      "sourceSha": "51fa1c2310519ae478905e365befe6114c5ddcc1"
+    },
+    {
+      "record": "repaired-operational-restore.json",
+      "command": [
+        "node",
+        "node_modules/tsx/dist/cli.mjs",
+        "src/scripts/operational-restore.ts",
+        "--archive",
+        "C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\repaired-backup-parent\\new-child\\renegade-backup-2026-10-16T05-26-14-242Z",
+        "--target-version",
+        "0.1.0-rc.1",
+        "--isolated",
+        "--authorize-restore",
+        "--compose-file",
+        "scratch/restore.yaml",
+        "--env-file",
+        "scratch/repaired-restore.env"
+      ],
+      "exitCode": 0,
+      "durationSeconds": 85.38551473617554,
+      "sourceSha": "51fa1c2310519ae478905e365befe6114c5ddcc1"
+    },
+    {
+      "record": "restore-empty-postgres.json",
+      "command": [
+        "docker",
+        "compose",
+        "--project-name",
+        "solrc06-restored-20261016",
+        "--env-file",
+        "scratch/restore.env",
+        "-f",
+        "scratch/restore.yaml",
+        "up",
+        "-d",
+        "--wait",
+        "postgres"
+      ],
+      "exitCode": 0,
+      "durationSeconds": 6.1943135261535645,
+      "sourceSha": "badaa6f4d9f9566b81d5ee29c14a8744f94adc7e"
+    },
+    {
+      "record": "running-target-restore-rejection.json",
+      "command": [
+        "node",
+        "node_modules/tsx/dist/cli.mjs",
+        "src/scripts/operational-restore.ts",
+        "--archive",
+        "scratch\\repaired-backup-parent\\new-child\\renegade-backup-2026-10-16T05-26-14-242Z",
+        "--target-version",
+        "0.1.0-rc.1",
+        "--isolated",
+        "--authorize-restore",
+        "--compose-file",
+        "scratch/restore.yaml",
+        "--env-file",
+        "scratch/restore.env"
+      ],
+      "exitCode": 1,
+      "durationSeconds": 3.4732863903045654,
+      "sourceSha": "51fa1c2310519ae478905e365befe6114c5ddcc1"
+    },
+    {
+      "record": "shipping-worker-resume.json",
+      "command": [
+        "docker",
+        "compose",
+        "--project-name",
+        "solrc06-independent-20261016",
+        "--env-file",
+        "scratch/source.env",
+        "-f",
+        "scratch/source.yaml",
+        "up",
+        "-d",
+        "--no-deps",
+        "--wait",
+        "renegade-worker"
+      ],
+      "exitCode": 0,
+      "durationSeconds": 5.880053997039795,
+      "sourceSha": "badaa6f4d9f9566b81d5ee29c14a8744f94adc7e"
+    },
+    {
+      "record": "source-bootstrap-retry.json",
+      "command": [
+        "docker",
+        "exec",
+        "solrc06-independent-20261016-renegade-web-1",
+        "npm",
+        "run",
+        "installation:recover"
+      ],
+      "exitCode": 0,
+      "durationSeconds": 10.691275835037231,
+      "sourceSha": "badaa6f4d9f9566b81d5ee29c14a8744f94adc7e"
+    },
+    {
+      "record": "source-bootstrap.json",
+      "command": [
+        "docker",
+        "exec",
+        "solrc06-independent-20261016-renegade-web-1",
+        "npm",
+        "run",
+        "installation:recover"
+      ],
+      "exitCode": 1,
+      "durationSeconds": 0.10303235054016113,
+      "sourceSha": "badaa6f4d9f9566b81d5ee29c14a8744f94adc7e"
+    },
+    {
+      "record": "source-quiesce.json",
+      "command": [
+        "docker",
+        "compose",
+        "--project-name",
+        "solrc06-independent-20261016",
+        "--env-file",
+        "scratch/source.env",
+        "-f",
+        "scratch/source.yaml",
+        "stop",
+        "renegade-web",
+        "renegade-worker"
+      ],
+      "exitCode": 0,
+      "durationSeconds": 0.1948235034942627,
+      "sourceSha": "badaa6f4d9f9566b81d5ee29c14a8744f94adc7e"
+    },
+    {
+      "record": "source-up-repaired.json",
+      "command": [
+        "docker",
+        "compose",
+        "--project-name",
+        "solrc06-independent-20261016",
+        "--env-file",
+        "scratch/source.env",
+        "-f",
+        "scratch/source.yaml",
+        "up",
+        "-d",
+        "--no-build",
+        "--wait"
+      ],
+      "exitCode": 0,
+      "durationSeconds": 25.291433811187744,
+      "sourceSha": "badaa6f4d9f9566b81d5ee29c14a8744f94adc7e"
+    },
+    {
+      "record": "source-up.json",
+      "command": [
+        "docker",
+        "compose",
+        "--project-name",
+        "solrc06-independent-20261016",
+        "--env-file",
+        "scratch/source.env",
+        "-f",
+        "scratch/source.yaml",
+        "up",
+        "-d",
+        "--no-build",
+        "--wait"
+      ],
+      "exitCode": 1,
+      "durationSeconds": 18.999408721923828,
+      "sourceSha": "badaa6f4d9f9566b81d5ee29c14a8744f94adc7e"
+    },
+    {
+      "record": "stop-earlier-owned-repaired-restore.json",
+      "command": [
+        "docker",
+        "compose",
+        "--project-name",
+        "solrc06-repaired-restored-20261016",
+        "--env-file",
+        "scratch/repaired-restore.env",
+        "-f",
+        "scratch/restore.yaml",
+        "stop",
+        "renegade-web",
+        "renegade-worker"
+      ],
+      "exitCode": 0,
+      "durationSeconds": 2.319539785385132,
+      "sourceSha": "51fa1c2310519ae478905e365befe6114c5ddcc1"
+    },
+    {
+      "record": "stop-earlier-owned-restore.json",
+      "command": [
+        "docker",
+        "compose",
+        "--project-name",
+        "solrc06-restored-20261016",
+        "--env-file",
+        "scratch/restore.env",
+        "-f",
+        "scratch/restore.yaml",
+        "stop",
+        "renegade-web",
+        "renegade-worker"
+      ],
+      "exitCode": 0,
+      "durationSeconds": 3.0430550575256348,
+      "sourceSha": "51fa1c2310519ae478905e365befe6114c5ddcc1"
+    },
+    {
+      "record": "stop-owned-earlier-restore-db.json",
+      "command": [
+        "docker",
+        "compose",
+        "--project-name",
+        "solrc06-restored-20261016",
+        "--env-file",
+        "scratch/restore.env",
+        "-f",
+        "scratch/restore.yaml",
+        "stop",
+        "postgres"
+      ],
+      "exitCode": 1,
+      "durationSeconds": 62.17609691619873,
+      "sourceSha": "51fa1c2310519ae478905e365befe6114c5ddcc1"
+    },
+    {
+      "record": "upgrade-preflight.json",
+      "command": [
+        "node",
+        "node_modules/tsx/dist/cli.mjs",
+        "src/scripts/operational-upgrade.ts",
+        "--target-image-tag",
+        "sol-independent-3f464a69",
+        "--target-version",
+        "0.1.0-rc.1",
+        "--backup",
+        "C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\backup\\renegade-backup-2026-10-16T05-17-59-566Z",
+        "--preflight",
+        "--compose-file",
+        "scratch/source.yaml",
+        "--env-file",
+        "scratch/source.env",
+        "--maintenance-window-confirmed"
+      ],
+      "exitCode": 0,
+      "durationSeconds": 0.9794807434082031,
+      "sourceSha": "badaa6f4d9f9566b81d5ee29c14a8744f94adc7e"
+    },
+    {
+      "record": "webworker-restart.json",
+      "command": [
+        "docker",
+        "compose",
+        "--project-name",
+        "solrc06-independent-20261016",
+        "--env-file",
+        "scratch/source.env",
+        "-f",
+        "scratch/source.yaml",
+        "up",
+        "-d",
+        "--no-deps",
+        "--wait",
+        "renegade-web",
+        "renegade-worker"
+      ],
+      "exitCode": 0,
+      "durationSeconds": 6.539771556854248,
+      "sourceSha": "badaa6f4d9f9566b81d5ee29c14a8744f94adc7e"
+    },
+    {
+      "record": "webworker-sigkill.json",
+      "command": [
+        "docker",
+        "kill",
+        "--signal",
+        "KILL",
+        "solrc06-independent-20261016-renegade-web-1",
+        "solrc06-independent-20261016-renegade-worker-1"
+      ],
+      "exitCode": 0,
+      "durationSeconds": 0.35367751121520996,
+      "sourceSha": "badaa6f4d9f9566b81d5ee29c14a8744f94adc7e"
+    },
+    {
+      "record": "worker-stop-before-lease.json",
+      "command": [
+        "docker",
+        "compose",
+        "--project-name",
+        "solrc06-independent-20261016",
+        "--env-file",
+        "scratch/source.env",
+        "-f",
+        "scratch/source.yaml",
+        "stop",
+        "renegade-worker"
+      ],
+      "exitCode": 0,
+      "durationSeconds": 0.6424145698547363,
+      "sourceSha": "badaa6f4d9f9566b81d5ee29c14a8744f94adc7e"
+    }
+  ]
+}

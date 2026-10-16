@@ -1,0 +1,19 @@
+{
+  "command": [
+    "docker",
+    "compose",
+    "--project-name",
+    "solrc06-restored-20261016",
+    "--env-file",
+    "scratch/restore.env",
+    "-f",
+    "scratch/restore.yaml",
+    "stop",
+    "renegade-web",
+    "renegade-worker"
+  ],
+  "exitCode": 0,
+  "durationSeconds": 3.0430550575256348,
+  "sourceSha": "51fa1c2310519ae478905e365befe6114c5ddcc1",
+  "logSha256": "08d454caf4d1d898f8a87024b8d967c3ea5ccc7f3ac7d8611714c8d1c8b3807a"
+}

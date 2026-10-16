@@ -1,0 +1,18 @@
+{
+  "command": [
+    "docker",
+    "compose",
+    "--project-name",
+    "solrc06-restored-20261016",
+    "--env-file",
+    "scratch/restore.env",
+    "-f",
+    "scratch/restore.yaml",
+    "stop",
+    "postgres"
+  ],
+  "exitCode": 1,
+  "durationSeconds": 62.17609691619873,
+  "sourceSha": "51fa1c2310519ae478905e365befe6114c5ddcc1",
+  "logSha256": "1926c4eaa2c8208d62c51fc09d88983991f0f4aad0d48f3019459a9530d9a6d5"
+}

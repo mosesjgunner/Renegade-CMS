@@ -1,0 +1,5 @@
+
+> renegade-cms@0.1.0 test
+> vitest run tests/unit --reporter=json --outputFile=scratch/records/repair-unit-results.json
+
+JSON report written to C:/Projects/RENEGADE CMS/sol-stage06-independent-20261016/scratch/records/repair-unit-results.json

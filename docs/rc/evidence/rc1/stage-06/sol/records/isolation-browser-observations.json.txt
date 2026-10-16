@@ -1,0 +1,10 @@
+{
+  "source": {
+    "contactId": "f940499d-f932-4c3b-8593-ba293276a1c8",
+    "restartRetainedContactAndSession": true
+  },
+  "restored": {
+    "foreignIdStatus": 404,
+    "matchingProbeCount": 0
+  }
+}

@@ -1,0 +1,24 @@
+from pathlib import Path
+import zipfile,json,base64,sys
+label=sys.argv[1] if len(sys.argv)>1 else 'source-browser'
+trace=next(Path('scratch/sol-browser-artifacts',label).rglob('trace.zip'))
+observed={}
+with zipfile.ZipFile(trace) as archive:
+ for name in archive.namelist():
+  if name.endswith('.network'):
+   for line in archive.read(name).decode().splitlines():
+    value=json.loads(line);req=value.get('snapshot',{}).get('request',{})
+    if '/api/auth/passkey/complete' not in req.get('url',''):continue
+    posted=req.get('postData',{});text=posted.get('text')
+    if not text and posted.get('_sha1'):text=archive.read('resources/'+posted['_sha1']).decode()
+    if text:
+     data=json.loads(text);auth=data['response']['authenticatorData'];raw=base64.urlsafe_b64decode(auth+'='*((-len(auth))%4));observed[data['id']]=int.from_bytes(raw[33:37],'big')
+updates={}
+for role in ['owner','staff']:
+ path=Path(f'scratch/{role}-device.json');credentials=json.loads(path.read_text())
+ for credential in credentials:
+  key=credential['credentialId'];urlkey=base64.urlsafe_b64encode(base64.b64decode(key)).decode().rstrip('=')
+  if urlkey in observed:
+   updates[role]={'oldSignCount':credential['signCount'],'observedAuthenticSignCount':observed[urlkey]};credential['signCount']=observed[urlkey]
+ path.write_text(json.dumps(credentials))
+Path('scratch/records/virtual-device-carryover-'+label+'.json').write_text(json.dumps({'source':str(trace)+' actual assertion authenticatorData bytes 33..36','updates':updates,'applicationStateModified':False},indent=2));print('Retained virtual device counters recovered from actual assertions',updates)

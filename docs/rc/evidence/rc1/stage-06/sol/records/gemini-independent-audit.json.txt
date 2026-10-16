@@ -1,0 +1,77 @@
+{
+  "archive": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\scratch\\stage06-backup\\renegade-backup-2026-10-16T03-52-48-360Z",
+  "checksums": [
+    {
+      "file": "database.dump",
+      "bytes": 1755521,
+      "sha256": "sha256:25ba8104adaa5bdced33cf1b66e72a30aab095ed48de06a922f15bb2c4f45993",
+      "matchesManifest": true
+    },
+    {
+      "file": "media.tar.gz",
+      "bytes": 9454468,
+      "sha256": "sha256:05fc1d779d21d291948e4e8a056daa7fa7d613441b172c17d0821c65c5dfc61a",
+      "matchesManifest": true
+    }
+  ],
+  "migrationCount": 116,
+  "archiveBuildSha": "3f464a6903ff26e7489179df29749f065cb55299",
+  "mediaEntries": 1003,
+  "mediaFiles": 616,
+  "unsafeMediaPaths": [],
+  "environmentFilesInMedia": [],
+  "declaredExclusions": [
+    "environment variables and .env files",
+    "database passwords",
+    "Payload secrets",
+    "provider credentials",
+    "archive encryption keys",
+    "rebuildable backup diagnostic status"
+  ],
+  "manifestSha256": "10a34532e6cf90b969dff40c33d40b4b88b512a2a7bde5b88b042066388ce243",
+  "geminiCounts": {
+    "matching": 29,
+    "mismatches": {
+      "contacts": {
+        "source": 7,
+        "restored": 5,
+        "match": false
+      }
+    },
+    "emptyCategories": [
+      "subscriptions"
+    ]
+  },
+  "untrustedHarnessFindings": [
+    "verify-restored-data.ts imports SignJWT and signs cookie for a preselected session; no ordinary owner/staff/member authentication",
+    "verify-restored-data.ts never asserts category equality and always exits zero after runVerification resolves",
+    "stage06-business-lifecycle.ts sets processing/leaseOwner/leaseExpiresAt directly then backdates lease expiration; no actual process interruption",
+    "source fixtures use overrideAccess and ensureRenegadePartyDemo, not an ordinary accepted business graph",
+    "INCIDENT-LOGS prose is not process kill evidence"
+  ],
+  "ancestry": {
+    "3f464a6903ff26e7489179df29749f065cb55299": {
+      "exists": true,
+      "ancestor": true
+    },
+    "51cbceec": {
+      "exists": false,
+      "ancestor": false
+    },
+    "4ec89319": {
+      "exists": true,
+      "ancestor": true
+    },
+    "826fd156": {
+      "exists": true,
+      "ancestor": true
+    },
+    "b5369e78": {
+      "exists": true,
+      "ancestor": true
+    }
+  },
+  "nonDocumentationChanges": [
+    ".gitattributes"
+  ]
+}
