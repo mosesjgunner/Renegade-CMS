@@ -2,6 +2,12 @@ import { spawn } from 'node:child_process'
 import { createReadStream, createWriteStream } from 'node:fs'
 import { pipeline } from 'node:stream/promises'
 
+// Launch TypeScript CLIs through Node so Windows never needs to execute a .cmd
+// wrapper or interpolate operator-supplied paths through a shell.
+export function runOperationalScript(script: string, args: string[]) {
+  return runOperationalProcess(process.execPath, ['--import', 'tsx', script, ...args])
+}
+
 // A successful child exit alone does not prove that its archive reached disk.
 export async function runOperationalProcess(
   command: string,

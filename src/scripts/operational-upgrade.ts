@@ -1,4 +1,4 @@
-import { spawn } from 'node:child_process'
+import { runOperationalScript } from './operational-process'
 import { verifyOperationalBackup } from '../modules/operations/backup'
 import {
   assertDestructiveOperationAuthorized,
@@ -34,27 +34,15 @@ const backup: UpgradeBackup = backupArchive
 const plan = createUpgradePlan({ targetImageTag, backup })
 
 async function createBackup() {
-  await new Promise<void>((resolve, reject) => {
-    const child = spawn(
-      process.platform === 'win32' ? 'npx.cmd' : 'npx',
-      [
-        'tsx',
-        'src/scripts/operational-backup.ts',
-        '--output',
-        backupOutput!,
-        '--maintenance-window-confirmed',
-        '--compose-file',
-        target.composeFile,
-        '--env-file',
-        target.envFile,
-      ],
-      { stdio: 'inherit' },
-    )
-    child.on('error', reject)
-    child.on('close', (code) =>
-      code === 0 ? resolve() : reject(new Error(`Pre-upgrade backup failed (${code}).`)),
-    )
-  })
+  await runOperationalScript('src/scripts/operational-backup.ts', [
+    '--output',
+    backupOutput!,
+    '--maintenance-window-confirmed',
+    '--compose-file',
+    target.composeFile,
+    '--env-file',
+    target.envFile,
+  ])
 }
 
 await runDocker(target, ['config', '--quiet'])

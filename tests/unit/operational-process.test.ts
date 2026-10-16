@@ -2,7 +2,7 @@ import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
 import { afterEach, describe, expect, it } from 'vitest'
-import { runOperationalProcess } from '../../src/scripts/operational-process'
+import { runOperationalProcess, runOperationalScript } from '../../src/scripts/operational-process'
 
 const roots: string[] = []
 async function fixture() {
@@ -15,6 +15,19 @@ afterEach(async () => {
 })
 
 describe('operational archive process IO', () => {
+  it('launches TypeScript with literal operator arguments and paths containing spaces', async () => {
+    const root = await fixture()
+    const script = path.join(root, 'operational child.mts')
+    const output = path.join(root, 'result with spaces.json')
+    const args = ['quoted "value"', '$(never-execute)', 'a&b', 'line\nvalue']
+    await writeFile(
+      script,
+      "import { writeFileSync } from 'node:fs'; const args: string[] = process.argv.slice(2); writeFileSync(args[0], JSON.stringify(args.slice(1)))",
+    )
+    await runOperationalScript(script, [output, ...args])
+    expect(JSON.parse(await readFile(output, 'utf8'))).toEqual(args)
+  })
+
   it('awaits the complete binary archive on disk before returning', async () => {
     const root = await fixture()
     const inputFile = path.join(root, 'input.dump')

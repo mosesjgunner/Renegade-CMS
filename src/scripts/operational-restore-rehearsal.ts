@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto'
-import { spawn } from 'node:child_process'
+import { runOperationalProcess, runOperationalScript } from './operational-process'
 import { readFile } from 'node:fs/promises'
 import path from 'node:path'
 import { projectNameFromEnvFile } from './operational-compose'
@@ -25,15 +25,7 @@ if (!archive || !targetVersion || !sourceUrl || !restoredUrl || !publicPath || !
   )
 
 function run(command: string, commandArgs: string[]) {
-  return new Promise<void>((resolve, reject) => {
-    const child = spawn(command, commandArgs, { stdio: 'inherit' })
-    child.on('error', reject)
-    child.on('close', (code) =>
-      code === 0
-        ? resolve()
-        : reject(new Error(`${command} ${commandArgs.join(' ')} failed (${code})`)),
-    )
-  })
+  return runOperationalProcess(command, commandArgs)
 }
 const sha256 = (value: Uint8Array) => createHash('sha256').update(value).digest('hex')
 const get = async (origin: string, pathname: string) => {
@@ -57,11 +49,7 @@ await run('docker', [
   '--volumes',
   '--remove-orphans',
 ])
-const npm = process.platform === 'win32' ? 'npm.cmd' : 'npm'
-await run(npm, [
-  'run',
-  'restore:operational',
-  '--',
+await runOperationalScript('src/scripts/operational-restore.ts', [
   '--archive',
   path.resolve(archive),
   '--target-version',
