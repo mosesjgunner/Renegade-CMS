@@ -8,10 +8,12 @@ import {
 import {
   captureDocker,
   has,
+  imageSourceSha,
   migrationState,
   runDocker,
   value,
   verifyReadiness,
+  type ComposeTarget,
 } from './operational-compose'
 
 const targetImageTag = value('--target-image-tag')
@@ -27,7 +29,11 @@ const target = {
   composeFile: value('--compose-file', 'compose.production.yaml')!,
   envFile: value('--env-file', '.env.production')!,
 }
-const upgradedTarget = { ...target, imageTag: targetImageTag, appVersion: targetVersion }
+const upgradedTarget: ComposeTarget = {
+  ...target,
+  imageTag: targetImageTag,
+  appVersion: targetVersion,
+}
 const backup: UpgradeBackup = backupArchive
   ? { kind: 'existing', archive: backupArchive }
   : { kind: 'create', output: backupOutput! }
@@ -78,6 +84,9 @@ else await createBackup()
 let maintenanceActive = false
 try {
   await runDocker(upgradedTarget, ['pull', 'migrate', 'renegade-web', 'renegade-worker'])
+  // Derive the new runtime identity only after the old installation's backup.
+  // The operator's existing env file still describes the predecessor image.
+  upgradedTarget.buildSha = await imageSourceSha(upgradedTarget)
   await runDocker(target, ['stop', 'renegade-web', 'renegade-worker'])
   maintenanceActive = true
   await runDocker(upgradedTarget, ['run', '--rm', '--no-deps', 'migrate'])
@@ -96,6 +105,7 @@ try {
         status: 'upgraded',
         targetImageTag,
         targetVersion,
+        targetSourceSha: upgradedTarget.buildSha,
         migrationsBeforeUpgrade: currentMigrations,
       },
       null,

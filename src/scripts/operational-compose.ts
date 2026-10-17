@@ -6,6 +6,7 @@ export type ComposeTarget = {
   envFile: string
   imageTag?: string
   appVersion?: string
+  buildSha?: string
 }
 
 export function projectNameFromEnvFile(
@@ -28,6 +29,7 @@ const commandEnvironment = (target: ComposeTarget) => ({
   ...process.env,
   ...(target.imageTag ? { RENEGADE_IMAGE_TAG: target.imageTag } : {}),
   ...(target.appVersion ? { APP_VERSION: target.appVersion } : {}),
+  ...(target.buildSha ? { BUILD_SHA: target.buildSha } : {}),
 })
 
 export const composeArgs = (target: ComposeTarget) => [
@@ -90,6 +92,38 @@ export async function migrationState(target: ComposeTarget) {
     'SELECT name FROM payload_migrations ORDER BY name',
   ])
   return result ? result.split(/\r?\n/).filter(Boolean) : []
+}
+
+export function parseImageSourceSha(output: string) {
+  const provenance = JSON.parse(output) as {
+    root?: { sourceSha?: unknown }
+    standalone?: { sourceSha?: unknown }
+  } | null
+  const sourceSha = provenance?.root?.sourceSha
+  if (
+    typeof sourceSha !== 'string' ||
+    !/^[a-f0-9]{40}$/.test(sourceSha) ||
+    provenance?.standalone?.sourceSha !== sourceSha
+  )
+    throw new Error(
+      'Target image requires matching root and standalone full source SHA provenance.',
+    )
+  return sourceSha
+}
+
+export async function imageSourceSha(target: ComposeTarget) {
+  return parseImageSourceSha(
+    await captureDocker(target, [
+      'run',
+      '--rm',
+      '--no-deps',
+      '--entrypoint',
+      'node',
+      'renegade-web',
+      '-e',
+      "const fs=require('node:fs');console.log(JSON.stringify({root:JSON.parse(fs.readFileSync('/app/build-provenance.json','utf8')),standalone:JSON.parse(fs.readFileSync('/app/standalone/build-provenance.json','utf8'))}))",
+    ]),
+  )
 }
 
 export async function verifyReadiness(target: ComposeTarget) {
