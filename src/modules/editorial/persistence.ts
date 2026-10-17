@@ -100,7 +100,14 @@ export type EditorialPresentation = {
   updatedAt: string | null
   previewMode: 'desktop' | 'mobile'
   preview: boolean
-  heroMedia: { id: string; url: string; altText: string; width?: number; height?: number } | null
+  heroMedia: {
+    id: string
+    url: string
+    altText: string
+    width?: number
+    height?: number
+    variants: Array<{ recipeKey: string; format: string; processingState: string }>
+  } | null
   relatedContent: Array<{ id: string; title: string; href: string }>
 }
 
@@ -1229,6 +1236,28 @@ export async function buildArticlePresentation(
         } as never)
         .catch(() => undefined)) as Doc | undefined)
     : undefined
+  const heroVariants = heroMedia
+    ? ((
+        await payload.find({
+          collection: 'media-variants',
+          where: {
+            and: [
+              { asset: { equals: heroMediaId } },
+              { site: { equals: idOf(bundle.content.site) } },
+              { recipeKey: { equals: 'hero' } },
+              { processingState: { equals: 'ready' } },
+            ],
+          },
+          limit: 10,
+          depth: 0,
+          overrideAccess: true,
+        } as never)
+      ).docs as Array<{
+        recipeKey?: string | null
+        format?: string | null
+        processingState?: string | null
+      }>)
+    : []
 
   return {
     contentId: String(bundle.content.id),
@@ -1295,6 +1324,11 @@ export async function buildArticlePresentation(
             altText: String(heroMedia.altText || heroMedia.title || ''),
             width: typeof heroMedia.width === 'number' ? heroMedia.width : undefined,
             height: typeof heroMedia.height === 'number' ? heroMedia.height : undefined,
+            variants: heroVariants.map((variant) => ({
+              recipeKey: String(variant.recipeKey),
+              format: String(variant.format),
+              processingState: String(variant.processingState),
+            })),
           }
         : null,
   }

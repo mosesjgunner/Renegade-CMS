@@ -45,8 +45,7 @@ export function getResponsiveImageAttrs(
   const recipe = standardRecipes[variantKey]!
   const priority = Boolean(options?.priority || recipe.priority === 'eager')
 
-  // These are rendition dimensions, not the private original dimensions. This
-  // prevents layout shift while keeping the original out of public markup.
+  // Reserve rendition dimensions while a ready derivative is available.
   let width = recipe.width
   const sourceAspect =
     !isString && mediaInput.width && mediaInput.height
@@ -60,28 +59,28 @@ export function getResponsiveImageAttrs(
     width = Math.min(width, Math.round(height * sourceAspect))
   const alt = options?.alt || (!isString && mediaInput.altText) || ''
 
+  const ready = isString
+    ? []
+    : (mediaInput.variants ?? []).filter(
+        (variant) => variant.recipeKey === variantKey && variant.processingState === 'ready',
+      )
   const variantUrl = (format: VariantFormat) => mediaVariantUrl(id, variantKey, format)
-
-  // Modern sources: AVIF first, then WebP, then JPEG/PNG fallback
-  const sources = [
-    {
-      type: 'image/avif',
-      srcSet: `${variantUrl('avif')} ${width}w`,
-    },
-    {
-      type: 'image/webp',
-      srcSet: `${variantUrl('webp')} ${width}w`,
-    },
-  ]
-
-  const fallbackSrc = variantUrl('jpeg')
-  const fallbackSrcSet = `${variantUrl('jpeg')} ${width}w`
+  const hasFormat = (format: VariantFormat) => ready.some((variant) => variant.format === format)
+  const sources = (['avif', 'webp'] as const).filter(hasFormat).map((format) => ({
+    type: `image/${format}`,
+    srcSet: `${variantUrl(format)} ${width}w`,
+  }))
+  const fallbackFormat = (['jpeg', 'png', 'webp', 'avif'] as const).find(hasFormat)
+  const fallbackSrc = fallbackFormat
+    ? variantUrl(fallbackFormat)
+    : `/media/${encodeURIComponent(id)}`
+  const fallbackSrcSet = fallbackFormat ? `${fallbackSrc} ${width}w` : undefined
 
   return {
     id,
     alt,
-    width,
-    height,
+    width: fallbackFormat ? width : !isString && mediaInput.width ? mediaInput.width : width,
+    height: fallbackFormat ? height : !isString && mediaInput.height ? mediaInput.height : height,
     loading: priority ? ('eager' as const) : ('lazy' as const),
     decoding: 'async' as const,
     sizes: options?.sizes || '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw',

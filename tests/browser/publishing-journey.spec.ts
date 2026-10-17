@@ -8,9 +8,8 @@ import { getPayload } from 'payload'
 import { ensureBootstrap } from '@/modules/operations/installation'
 import { loadConfig } from '@/modules/core/config'
 import { createEditorialPreviewToken } from '@/modules/editorial/persistence'
-import { createOperationalBackupManifest } from '@/modules/operations/backup'
 
-test('complete 16-step publisher journey through public and admin HTTP/browser boundaries', async ({
+test('publisher setup, media, page, article, preview, discovery and redirect', async ({
   page,
   context,
   playwright,
@@ -56,9 +55,17 @@ test('complete 16-step publisher journey through public and admin HTTP/browser b
   // --------------------------------------------------------------------------
   const slug = `journey-${randomUUID().slice(0, 8)}`
   const ownerEmail = `${slug}@owner.test`
+  const appUrl = process.env.APP_URL ?? 'http://localhost:3110'
+  const browserServerErrors: string[] = []
 
   page.on('console', (msg) => console.log('[BROWSER CONSOLE]', msg.text()))
   page.on('pageerror', (err) => console.log('[BROWSER ERROR]', err.message))
+  page.on('response', (response) => {
+    if (response.status() >= 500) {
+      console.log('[BROWSER SERVER ERROR]', response.status(), response.url())
+      browserServerErrors.push(`${response.status()} ${response.url()}`)
+    }
+  })
 
   await page.goto('/setup')
   await expect(page.getByRole('heading', { name: 'Make this site yours.' })).toBeVisible()
@@ -77,7 +84,7 @@ test('complete 16-step publisher journey through public and admin HTTP/browser b
   // --------------------------------------------------------------------------
   await page.getByLabel('Site or publication name').fill('Renegade Dispatch')
   await page.getByLabel('Site slug').fill(slug)
-  await page.getByLabel('Primary URL').fill('http://localhost:3110')
+  await page.getByLabel('Primary URL').fill(appUrl)
   await page.getByRole('button', { name: 'Continue' }).click()
 
   // Brand & starter defaults
@@ -158,7 +165,10 @@ test('complete 16-step publisher journey through public and admin HTTP/browser b
   expect(existsSync(assetPath!)).toBe(true)
 
   // Anonymous draft/private check: raw media asset is not public without public usage
-  const anonRequest = await playwright.request.newContext({ baseURL: 'http://localhost:3110' })
+  const anonRequest = await playwright.request.newContext({
+    baseURL: appUrl,
+    ignoreHTTPSErrors: true,
+  })
   const anonMediaResponse = await anonRequest.get(`/media/${mediaAssetId}`)
   expect(anonMediaResponse.status()).toBe(404)
   await anonRequest.dispose()
@@ -294,6 +304,11 @@ test('complete 16-step publisher journey through public and admin HTTP/browser b
   // --------------------------------------------------------------------------
   await page.goto(postCanonicalPath)
   await expect(page.getByRole('heading', { name: 'The Renegade Manifesto' })).toBeVisible()
+  const heroImage = page.getByRole('img', { name: 'A landscape photograph' })
+  await expect(heroImage).toBeVisible()
+  await expect
+    .poll(() => heroImage.evaluate((image: HTMLImageElement) => image.naturalWidth))
+    .toBeGreaterThan(0)
   await expect(page.getByText('Independent voices defining autonomous publishing.')).toBeVisible()
   await expect(page.getByText('Autonomous journalism lives here without compromise.')).toBeVisible()
 
@@ -377,29 +392,5 @@ test('complete 16-step publisher journey through public and admin HTTP/browser b
   })
   expect(authCheck.status()).not.toBe(401)
   expect(authCheck.status()).not.toBe(403)
-
-  // --------------------------------------------------------------------------
-  // STEP 15: Operational backup
-  // --------------------------------------------------------------------------
-  const backupMediaDir = path.resolve(process.env.MEDIA_DIR ?? 'media')
-  const manifest = await createOperationalBackupManifest(backupMediaDir, {
-    createdAt: new Date().toISOString(),
-    renegade: { version: '0.1.0', buildSha: 'test-sha' },
-    postgresql: { version: '17' },
-    consistency: { mode: 'maintenance-window', confirmedAt: new Date().toISOString() },
-    includedComponents: [
-      'postgresql-data',
-      'media-and-local-generated-assets',
-      'db-extension-and-capability-state',
-      'non-secret-installation-metadata',
-    ],
-    migrationState: ['20260831_200000_member_identity_foundation'],
-    installation: { storageDriver: 'local', mediaDir: 'media', imageTag: null },
-  }).catch(() => null)
-  expect(manifest === null || typeof manifest.format === 'string').toBe(true)
-
-  // --------------------------------------------------------------------------
-  // STEP 16: Isolated instance restore readiness
-  // --------------------------------------------------------------------------
-  expect(true).toBe(true)
+  expect(browserServerErrors).toEqual([])
 })

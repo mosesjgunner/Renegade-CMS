@@ -205,6 +205,11 @@ describe('MED-03 image variant engine & contracts', () => {
         altText: 'A stunning mountain view',
         width: 1600,
         height: 900,
+        variants: [
+          { recipeKey: 'hero', format: 'avif', processingState: 'ready' },
+          { recipeKey: 'hero', format: 'webp', processingState: 'ready' },
+          { recipeKey: 'hero', format: 'jpeg', processingState: 'ready' },
+        ],
       },
       { variant: 'hero', priority: true },
     )
@@ -219,6 +224,24 @@ describe('MED-03 image variant engine & contracts', () => {
     expect(attrs.sources[1]?.type).toBe('image/webp')
     expect(attrs.sources[1]?.srcSet).toContain('format=webp')
     expect(attrs.sources[0]?.srcSet).toContain('1600w')
+  })
+
+  it('uses the authorized original while a requested derivative is unavailable', () => {
+    const attrs = getResponsiveImageAttrs(
+      {
+        id: 'asset-pending',
+        altText: 'A new image',
+        width: 800,
+        height: 600,
+        variants: [{ recipeKey: 'hero', format: 'avif', processingState: 'processing' }],
+      },
+      { variant: 'hero' },
+    )
+    expect(attrs.src).toBe('/media/asset-pending')
+    expect(attrs.srcSet).toBeUndefined()
+    expect(attrs.sources).toEqual([])
+    expect(attrs.width).toBe(800)
+    expect(attrs.height).toBe(600)
   })
 
   it('7b. Immutable rendition addressing includes checksum and the bounded recipe contract', () => {
