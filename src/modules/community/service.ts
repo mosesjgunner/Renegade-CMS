@@ -452,9 +452,16 @@ export async function getOrCreateAttachedDiscussion(
 
   if (existing) {
     // If canonical path or title changed on parent content, update metadata without orphaning thread
-    if (existing.canonicalPath !== input.canonicalPath || existing.title !== input.title) {
+    if (
+      existing.canonicalPath !== input.canonicalPath ||
+      existing.title !== input.title ||
+      (input.commentsPolicy && existing.commentsPolicy !== input.commentsPolicy)
+    ) {
       if (typeof payload.update === 'function') {
-        const updateData: Record<string, unknown> = { title: input.title }
+        const updateData: Record<string, unknown> = {
+          title: input.title,
+          ...(input.commentsPolicy ? { commentsPolicy: input.commentsPolicy } : {}),
+        }
         let newPath = existing.canonicalPath
         if (existing.canonicalPath !== input.canonicalPath) {
           const conflicting = await payload.find({
@@ -486,6 +493,7 @@ export async function getOrCreateAttachedDiscussion(
           ...existing,
           canonicalPath: newPath,
           title: input.title,
+          commentsPolicy: input.commentsPolicy ?? existing.commentsPolicy,
         }
       }
       return existing
@@ -541,6 +549,7 @@ export async function addComment(
     attachedToId: input.attachedToId,
     title: input.title,
     canonicalPath: input.canonicalPath,
+    commentsPolicy: input.commentsPolicy,
   })
 
   const decision = evaluateCommunityPolicy(

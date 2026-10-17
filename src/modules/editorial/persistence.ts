@@ -65,7 +65,10 @@ export type EditorialArticleInput = {
 }
 
 export type EditorialPresentation = {
+  contentId: string
+  siteId: string
   contentType?: string
+  commentsPolicy: 'open' | 'members' | 'closed'
   title: string
   subtitle: string | null
   excerpt: string | null
@@ -1228,7 +1231,12 @@ export async function buildArticlePresentation(
     : undefined
 
   return {
+    contentId: String(bundle.content.id),
+    siteId: idOf(bundle.content.site),
     contentType: String(bundle.content.contentType),
+    commentsPolicy: ['open', 'members', 'closed'].includes(String(bundle.content.commentsPolicy))
+      ? (String(bundle.content.commentsPolicy) as 'open' | 'members' | 'closed')
+      : 'closed',
     title: String(bundle.content.title),
     subtitle: bundle.content.subtitle ? String(bundle.content.subtitle) : null,
     excerpt: bundle.content.summary

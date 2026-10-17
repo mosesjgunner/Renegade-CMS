@@ -11,11 +11,15 @@ export default async function PublishingCenter({ initPageResult, params }: Admin
     where: { contentType: { equals: kind } },
     depth: 0,
     limit: 50,
+    sort: '-updatedAt',
     req: initPageResult.req,
   } as never)
   return (
     <main className="gutter--left gutter--right">
       <h1>{label}</h1>
+      <p>
+        <Link href="/admin">Dashboard</Link> / {label}
+      </p>
       <p>
         {kind === 'page'
           ? 'Create durable site pages with a hierarchy and template intent.'
@@ -33,21 +37,48 @@ export default async function PublishingCenter({ initPageResult, params }: Admin
           <Link href={`/admin/collections/content/create?contentType=${kind}`}>Create {noun}</Link>
         )}
       </p>
+      <p>
+        Save a draft in the editor, then use its discovery panel to open a saved preview. Set status
+        to published and save to make its public URL available.
+      </p>
       {result.docs.length ? (
         <ul>
-          {result.docs.map((doc: { id: string; title?: string | null }) => (
-            <li key={doc.id}>
-              <Link href={`/admin/collections/content/${doc.id}`}>
-                {doc.title || `Untitled ${noun}`}
-              </Link>
-            </li>
-          ))}
+          {result.docs.map(
+            (doc: {
+              id: string
+              title?: string | null
+              status?: string | null
+              canonicalPath?: string | null
+            }) => (
+              <li key={doc.id}>
+                <Link href={`/admin/collections/content/${doc.id}`}>
+                  {doc.title || `Untitled ${noun}`}
+                </Link>{' '}
+                ({doc.status || 'draft'})
+                {doc.canonicalPath && ['published', 'updated'].includes(doc.status ?? '') ? (
+                  <>
+                    {' '}
+                    ·{' '}
+                    <Link href={doc.canonicalPath} target="_blank" rel="noreferrer">
+                      View public {noun.toLowerCase()}
+                    </Link>
+                  </>
+                ) : null}
+              </li>
+            ),
+          )}
         </ul>
       ) : (
         <p>
           No {label.toLowerCase()} yet. Create your first {noun.toLowerCase()} to begin a draft.
         </p>
       )}
+      {result.hasNextPage ? (
+        <p>
+          Showing the 50 most recent {label.toLowerCase()}.{' '}
+          <Link href="/admin/collections/content">Find older items in All content</Link>.
+        </p>
+      ) : null}
     </main>
   )
 }

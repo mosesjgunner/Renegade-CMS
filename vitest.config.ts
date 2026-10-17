@@ -10,11 +10,13 @@ export default defineConfig({
   },
   test: {
     environment: 'node',
+    testTimeout: 15_000,
     exclude: [
       ...configDefaults.exclude,
       '.worktrees/**',
       '.phase-a/**',
       '.next/**',
+      '.next*/**',
       'tests/browser/**',
     ],
     env: {

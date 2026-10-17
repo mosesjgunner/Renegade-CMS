@@ -149,6 +149,7 @@ const publisherFieldGroups = (fields: Field[]): Field[] => {
         'space',
         'owner',
         'contentType',
+        'contentTypeEntry',
         'title',
         'subtitle',
         'body',
@@ -1029,6 +1030,11 @@ export const Content: CollectionConfig = {
       type: 'select',
       required: true,
       options: ['article', 'page', 'book', 'podcast', 'video', 'product', 'event', 'campaign'],
+    },
+    {
+      name: 'contentTypeEntry',
+      type: 'ui',
+      admin: { components: { Field: '@/modules/admin/ContentTypeEntry#ContentTypeEntry' } },
     },
     { name: 'title', type: 'text', required: true },
     {

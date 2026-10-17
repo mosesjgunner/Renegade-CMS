@@ -24,10 +24,6 @@ const eslintConfig = [
   ...nextCoreWebVitals,
   ...nextTypescript,
   {
-    files: ['src/migrations/*.ts'],
-    rules: { '@typescript-eslint/no-unused-vars': 'off' },
-  },
-  {
     rules: {
       '@typescript-eslint/no-explicit-any': 'off',
       '@typescript-eslint/no-unused-vars': 'off',

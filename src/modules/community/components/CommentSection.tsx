@@ -1,8 +1,18 @@
 'use client'
 
+import Link from 'next/link'
 import React, { useState, useEffect, useCallback } from 'react'
 
 import type { CommentNode } from '@/modules/community/thread-lifecycle'
+
+function csrfHeader(): Record<string, string> {
+  const token = document.cookie
+    .split(';')
+    .map((part) => part.trim())
+    .find((part) => part.startsWith('renegade-member-csrf='))
+    ?.split('=')[1]
+  return token ? { 'x-member-csrf': decodeURIComponent(token) } : {}
+}
 
 interface CommentItem {
   id: string
@@ -28,6 +38,7 @@ interface CommentSectionProps {
   canonicalPath: string
   title?: string
   siteId?: string
+  commentsPolicy?: 'open' | 'members' | 'closed'
   initialComments?: Array<CommentItem | CommentNode | Record<string, unknown>>
 }
 
@@ -37,6 +48,7 @@ export function CommentSection({
   canonicalPath,
   title = 'Discussion',
   siteId = 'default',
+  commentsPolicy = 'open',
   initialComments,
 }: CommentSectionProps) {
   const formattedInitial: CommentItem[] = (initialComments ?? []).map((c: any) => ({
@@ -54,6 +66,7 @@ export function CommentSection({
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
   const [currentMemberId, setCurrentMemberId] = useState<string | null>(null)
+  const [authChecked, setAuthChecked] = useState(false)
   const [replyingToId, setReplyingToId] = useState<string | null>(null)
   const [replyText, setReplyText] = useState('')
   const [editingCommentId, setEditingCommentId] = useState<string | null>(null)
@@ -74,6 +87,8 @@ export function CommentSection({
         }
       } catch {
         // anonymous viewer
+      } finally {
+        if (isMounted) setAuthChecked(true)
       }
     }
     checkAuth()
@@ -115,7 +130,7 @@ export function CommentSection({
 
       const res = await fetch('/api/community/comments', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...csrfHeader() },
         body: JSON.stringify({
           siteId,
           attachedToId,
@@ -156,7 +171,7 @@ export function CommentSection({
 
       const res = await fetch('/api/community/comments', {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...csrfHeader() },
         body: JSON.stringify({
           siteId,
           commentId,
@@ -188,7 +203,7 @@ export function CommentSection({
 
       const res = await fetch('/api/community/comments', {
         method: 'DELETE',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...csrfHeader() },
         body: JSON.stringify({
           siteId,
           commentId,
@@ -212,7 +227,7 @@ export function CommentSection({
     try {
       const res = await fetch('/api/community/reactions', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...csrfHeader() },
         body: JSON.stringify({
           siteId,
           targetType: 'post',
@@ -235,7 +250,7 @@ export function CommentSection({
     try {
       const res = await fetch('/api/community/reports', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...csrfHeader() },
         body: JSON.stringify({
           siteId,
           targetType: 'post',
@@ -283,30 +298,47 @@ export function CommentSection({
         </div>
       )}
 
-      {/* Post comment form */}
-      <form onSubmit={(e) => handleSubmit(e)} className="space-y-3">
-        <label htmlFor="comment-input" className="sr-only">
-          Add to the discussion
-        </label>
-        <textarea
-          id="comment-input"
-          value={commentText}
-          onChange={(e) => setCommentText(e.target.value)}
-          placeholder="Share your perspective or ask a question..."
-          rows={3}
-          className="w-full px-4 py-3 rounded-lg border border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
-          disabled={submitting}
-        />
-        <div className="flex justify-end">
-          <button
-            type="submit"
-            disabled={submitting || !commentText.trim()}
-            className="px-5 py-2.5 bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-medium text-sm rounded-lg transition-colors shadow-sm"
+      {commentsPolicy === 'closed' ? (
+        <p className="rounded-lg border border-stone-200 bg-stone-50 px-4 py-3 text-sm text-stone-600 dark:border-stone-800 dark:bg-stone-900/50 dark:text-stone-400">
+          Comments are closed for this post.
+        </p>
+      ) : authChecked && !currentMemberId ? (
+        <p className="rounded-lg border border-stone-200 bg-stone-50 px-4 py-3 text-sm text-stone-700 dark:border-stone-800 dark:bg-stone-900/50 dark:text-stone-300">
+          <Link
+            href="/member-auth"
+            className="font-semibold text-red-600 hover:underline dark:text-red-400"
           >
-            {submitting ? 'Posting...' : 'Post Comment'}
-          </button>
-        </div>
-      </form>
+            Sign in
+          </Link>{' '}
+          to join the discussion.
+        </p>
+      ) : authChecked ? (
+        <form onSubmit={(e) => handleSubmit(e)} className="space-y-3">
+          <label htmlFor="comment-input" className="sr-only">
+            Add to the discussion
+          </label>
+          <textarea
+            id="comment-input"
+            value={commentText}
+            onChange={(e) => setCommentText(e.target.value)}
+            placeholder="Share your perspective or ask a question..."
+            rows={3}
+            className="w-full px-4 py-3 rounded-lg border border-stone-300 dark:border-stone-700 bg-white dark:bg-stone-900 text-stone-900 dark:text-stone-100 placeholder-stone-400 focus:outline-none focus:ring-2 focus:ring-red-500 text-sm"
+            disabled={submitting}
+          />
+          <div className="flex justify-end">
+            <button
+              type="submit"
+              disabled={submitting || !commentText.trim()}
+              className="px-5 py-2.5 bg-red-600 hover:bg-red-700 disabled:opacity-50 text-white font-medium text-sm rounded-lg transition-colors shadow-sm"
+            >
+              {submitting ? 'Posting...' : 'Post Comment'}
+            </button>
+          </div>
+        </form>
+      ) : (
+        <p className="text-sm text-stone-500">Checking sign-in status...</p>
+      )}
 
       {/* Comments listing */}
       {loading ? (
@@ -388,14 +420,16 @@ export function CommentSection({
                             </button>
                           </>
                         )}
-                        <button
-                          type="button"
-                          onClick={() => handleReport(comment.id)}
-                          className="hover:text-red-500 transition-colors"
-                          title="Report comment"
-                        >
-                          Report
-                        </button>
+                        {currentMemberId && commentsPolicy !== 'closed' ? (
+                          <button
+                            type="button"
+                            onClick={() => handleReport(comment.id)}
+                            className="hover:text-red-500 transition-colors"
+                            title="Report comment"
+                          >
+                            Report
+                          </button>
+                        ) : null}
                       </div>
                     </header>
 
@@ -435,39 +469,43 @@ export function CommentSection({
                     )}
 
                     <footer className="flex items-center gap-3 pt-1">
-                      <div className="flex items-center gap-1.5">
-                        {['👍', '❤️', '🔥', '👏'].map((emoji) => {
-                          const hasReacted = comment.viewerReactions?.includes(emoji)
-                          return (
-                            <button
-                              key={emoji}
-                              type="button"
-                              onClick={() => handleReaction(comment.id, emoji)}
-                              className={`inline-flex items-center gap-1 px-2.5 py-1 text-xs rounded-full border transition-colors ${
-                                hasReacted
-                                  ? 'border-red-400 dark:border-red-600 bg-red-50 dark:bg-red-950/50 text-red-700 dark:text-red-300 font-semibold'
-                                  : 'border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900/50 hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-300'
-                              }`}
-                            >
-                              <span>{emoji}</span>
-                              {comment.reactions?.[emoji] ? (
-                                <span className="font-medium">{comment.reactions[emoji]}</span>
-                              ) : null}
-                            </button>
-                          )
-                        })}
-                      </div>
+                      {currentMemberId && commentsPolicy !== 'closed' ? (
+                        <div className="flex items-center gap-1.5">
+                          {['👍', '❤️', '🔥', '👏'].map((emoji) => {
+                            const hasReacted = comment.viewerReactions?.includes(emoji)
+                            return (
+                              <button
+                                key={emoji}
+                                type="button"
+                                onClick={() => handleReaction(comment.id, emoji)}
+                                className={`inline-flex items-center gap-1 px-2.5 py-1 text-xs rounded-full border transition-colors ${
+                                  hasReacted
+                                    ? 'border-red-400 dark:border-red-600 bg-red-50 dark:bg-red-950/50 text-red-700 dark:text-red-300 font-semibold'
+                                    : 'border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900/50 hover:bg-stone-100 dark:hover:bg-stone-800 text-stone-700 dark:text-stone-300'
+                                }`}
+                              >
+                                <span>{emoji}</span>
+                                {comment.reactions?.[emoji] ? (
+                                  <span className="font-medium">{comment.reactions[emoji]}</span>
+                                ) : null}
+                              </button>
+                            )
+                          })}
+                        </div>
+                      ) : null}
 
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setReplyingToId(replyingToId === comment.id ? null : comment.id)
-                          setReplyText('')
-                        }}
-                        className="text-xs text-stone-500 hover:text-stone-800 dark:hover:text-stone-200 font-medium"
-                      >
-                        Reply
-                      </button>
+                      {currentMemberId && commentsPolicy !== 'closed' ? (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setReplyingToId(replyingToId === comment.id ? null : comment.id)
+                            setReplyText('')
+                          }}
+                          className="text-xs text-stone-500 hover:text-stone-800 dark:hover:text-stone-200 font-medium"
+                        >
+                          Reply
+                        </button>
+                      ) : null}
                     </footer>
 
                     {replyingToId === comment.id ? (

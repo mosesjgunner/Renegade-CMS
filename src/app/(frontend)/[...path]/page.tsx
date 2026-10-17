@@ -282,6 +282,24 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
           }}
         />
         <EditorialArticleView themeId={settings.themeId} article={editorialArticle} />
+        {editorialArticle.contentType === 'article' ? (
+          <main className="mx-auto max-w-4xl px-6 pb-16">
+            <CommentSection
+              attachedToId={editorialArticle.contentId}
+              attachedToCollection="content"
+              canonicalPath={editorialArticle.canonicalPath}
+              title={editorialArticle.title}
+              siteId={editorialArticle.siteId}
+              commentsPolicy={editorialArticle.commentsPolicy}
+              initialComments={await getPublicSsrComments(payload, {
+                canonicalContentId: editorialArticle.contentId,
+                siteId: editorialArticle.siteId,
+                contentStatus: editorialArticle.status,
+                isIndexable: Boolean(discovery.indexability.indexable),
+              })}
+            />
+          </main>
+        ) : null}
       </>
     )
   }

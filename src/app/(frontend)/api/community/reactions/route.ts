@@ -1,5 +1,6 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
+import { verifyCsrf } from '@/modules/identity/member-identity'
 
 import {
   resolveCommunityActor,
@@ -8,6 +9,9 @@ import {
 } from '@/modules/community/service'
 
 export async function POST(request: Request) {
+  if (!verifyCsrf(request.headers)) {
+    return Response.json({ error: 'Invalid CSRF token' }, { status: 403 })
+  }
   const payload = await getPayload({ config })
   const body = (await request.json().catch(() => ({}))) as Record<string, unknown>
   const siteId = String(body.siteId ?? '')

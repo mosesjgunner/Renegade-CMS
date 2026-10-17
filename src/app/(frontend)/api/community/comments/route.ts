@@ -1,5 +1,6 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
+import { verifyCsrf } from '@/modules/identity/member-identity'
 
 import {
   addComment,
@@ -61,6 +62,9 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  if (!verifyCsrf(request.headers)) {
+    return Response.json({ error: 'Invalid CSRF token' }, { status: 403 })
+  }
   const payload = await getPayload({ config })
   const body = (await request.json().catch(() => ({}))) as Record<string, unknown>
   const siteId = String(body.siteId ?? '')
@@ -75,14 +79,42 @@ export async function POST(request: Request) {
   }
 
   try {
+    const requestedCollection = String(body.attachedToCollection ?? 'content')
+    if (!['content', 'media-assets', 'albums'].includes(requestedCollection)) {
+      return Response.json({ error: 'Unsupported comment target' }, { status: 400 })
+    }
+    const attachedToCollection = requestedCollection as 'content' | 'media-assets' | 'albums'
+    let commentsPolicy: 'open' | 'members' | 'closed' = 'open'
+    if (attachedToCollection === 'content') {
+      const content = (await payload
+        .findByID({
+          collection: 'content',
+          id: String(body.attachedToId),
+          depth: 0,
+          overrideAccess: true,
+        })
+        .catch(() => null)) as unknown as Record<string, unknown> | null
+      const contentSite =
+        typeof content?.site === 'string'
+          ? content.site
+          : String((content?.site as { id?: unknown } | undefined)?.id ?? '')
+      if (!content || contentSite !== siteId) {
+        return Response.json({ error: 'Content not found' }, { status: 404 })
+      }
+      commentsPolicy = ['open', 'members', 'closed'].includes(String(content.commentsPolicy))
+        ? (String(content.commentsPolicy) as 'open' | 'members' | 'closed')
+        : 'closed'
+    }
+
     const post = await addComment(
       payload,
       {
         siteId,
-        attachedToCollection: (body.attachedToCollection as 'content') ?? 'content',
+        attachedToCollection,
         attachedToId: String(body.attachedToId),
         canonicalPath: String(body.canonicalPath ?? `/content/${body.attachedToId}`),
         title: String(body.title ?? 'Discussion'),
+        commentsPolicy,
         authorMemberId: actor.memberId,
         body: String(body.body),
         parentPostId: body.parentPostId ? String(body.parentPostId) : undefined,
@@ -100,6 +132,9 @@ export async function POST(request: Request) {
 }
 
 export async function PATCH(request: Request) {
+  if (!verifyCsrf(request.headers)) {
+    return Response.json({ error: 'Invalid CSRF token' }, { status: 403 })
+  }
   const payload = await getPayload({ config })
   const body = (await request.json().catch(() => ({}))) as Record<string, unknown>
   const siteId = String(body.siteId ?? '')
@@ -136,6 +171,9 @@ export async function PATCH(request: Request) {
 }
 
 export async function DELETE(request: Request) {
+  if (!verifyCsrf(request.headers)) {
+    return Response.json({ error: 'Invalid CSRF token' }, { status: 403 })
+  }
   const payload = await getPayload({ config })
   const body = (await request.json().catch(() => ({}))) as Record<string, unknown>
   const siteId = String(body.siteId ?? '')

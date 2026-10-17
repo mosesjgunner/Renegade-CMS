@@ -190,6 +190,7 @@ export interface AddCommentInput {
   attachedToId: string
   canonicalPath: string
   title: string
+  commentsPolicy?: CommentsPolicy
   authorMemberId: string
   body: string
   parentPostId?: string
