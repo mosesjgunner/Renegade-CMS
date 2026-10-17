@@ -1,5 +1,5 @@
 import config from '@payload-config'
-import { getPayload } from 'payload'
+import { createLocalReq, getPayload } from 'payload'
 import { NextResponse } from 'next/server'
 import {
   createReviewComment,
@@ -75,7 +75,54 @@ export async function POST(request: Request) {
     }
 
     if (action === 'compare') {
-      const diff = compareEditorialRevisions(body.revisionA, body.revisionB)
+      const articleId = typeof body.articleId === 'string' ? body.articleId.trim() : ''
+      if (!articleId) {
+        return NextResponse.json({ error: 'An article is required.' }, { status: 400 })
+      }
+      const req = await createLocalReq({ user: auth.user }, payload)
+      const articles = await payload.find({
+        collection: 'article-family-content',
+        where: { content: { equals: articleId } },
+        limit: 1,
+        depth: 0,
+        overrideAccess: false,
+        req,
+      })
+      const article = articles.docs[0]
+      if (!article) {
+        return NextResponse.json({ error: 'No accessible saved revisions found.' }, { status: 404 })
+      }
+      const revisions = await payload.find({
+        collection: 'revision-records',
+        where: { article: { equals: article.id } },
+        sort: '-sequence',
+        limit: 2,
+        depth: 0,
+        overrideAccess: false,
+        req,
+      })
+      if (revisions.docs.length < 2) {
+        return NextResponse.json(
+          { error: 'Two saved revisions are required for comparison.' },
+          { status: 409 },
+        )
+      }
+      const [current, previous] = revisions.docs as Array<{
+        sequence: number
+        document?: { document?: Record<string, unknown> }
+      }>
+      const diff = compareEditorialRevisions(
+        {
+          articleId,
+          revisionSequence: previous.sequence,
+          body: previous.document?.document,
+        },
+        {
+          articleId,
+          revisionSequence: current.sequence,
+          body: current.document?.document,
+        },
+      )
       return NextResponse.json({ success: true, diff })
     }
 

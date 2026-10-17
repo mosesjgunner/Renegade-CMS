@@ -324,38 +324,19 @@ export default function EditorialWorkflowCenter() {
   }
 
   const handleCompareRevisions = async (item: WorkflowItem) => {
+    setError(null)
     try {
-      const revA = {
-        articleId: item.id,
-        revisionSequence: item.currentRevisionSequence - 1,
-        title: `Draft Version ${item.currentRevisionSequence - 1}`,
-        summary: 'Original draft before changes requested',
-        body: 'Original draft paragraph one. Missing campaign banner and legal footer.',
-        media: { heroImage: 'media-001', altText: 'Default image' },
-        seoTitle: 'Old Title',
-      }
-      const revB = {
-        articleId: item.id,
-        revisionSequence: item.currentRevisionSequence,
-        title: `Revised Version ${item.currentRevisionSequence}`,
-        summary: 'Revised draft addressing reviewer comments',
-        body: 'Revised draft with campaign banner, improved typography, and legal footer.',
-        media: { heroImage: 'media-002', altText: 'Hero campaign visual' },
-        seoTitle: 'Optimized Campaign Title',
-      }
-
       const res = await fetch('/api/admin/workflow/comments', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'compare', revisionA: revA, revisionB: revB }),
+        body: JSON.stringify({ action: 'compare', articleId: item.id }),
       })
       const result = await res.json()
-      if (result.diff) {
-        setDiffData(result.diff)
-        setIsDiffModalOpen(true)
-      }
-    } catch {
-      // fallback
+      if (!res.ok) throw new Error(result.error || 'Revision comparison failed.')
+      setDiffData(result.diff)
+      setIsDiffModalOpen(true)
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Revision comparison failed.')
     }
   }
 
@@ -584,15 +565,17 @@ export default function EditorialWorkflowCenter() {
                             Priority: {item.assignment.priority}
                           </span>
                           <div className="flex gap-2">
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation()
-                                handleCompareRevisions(item)
-                              }}
-                              className="text-indigo-600 hover:text-indigo-800 font-semibold"
-                            >
-                              Diff
-                            </button>
+                            {item.currentRevisionSequence > 1 && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  handleCompareRevisions(item)
+                                }}
+                                className="text-indigo-600 hover:text-indigo-800 font-semibold"
+                              >
+                                Diff
+                              </button>
+                            )}
                             <Link
                               href={`/admin/collections/content/${item.id}?revision=${item.currentRevisionSequence}`}
                               className="text-indigo-600 hover:text-indigo-800 font-semibold"
@@ -748,12 +731,14 @@ export default function EditorialWorkflowCenter() {
                             : '—'}
                         </td>
                         <td className="px-4 py-3 text-right space-x-2">
-                          <button
-                            onClick={() => handleCompareRevisions(item)}
-                            className="text-indigo-600 hover:text-indigo-800 font-semibold"
-                          >
-                            Compare
-                          </button>
+                          {item.currentRevisionSequence > 1 && (
+                            <button
+                              onClick={() => handleCompareRevisions(item)}
+                              className="text-indigo-600 hover:text-indigo-800 font-semibold"
+                            >
+                              Compare
+                            </button>
+                          )}
                           <button
                             onClick={() => {
                               handleSelectItem(item.id)
@@ -1388,7 +1373,7 @@ export default function EditorialWorkflowCenter() {
             <div className="flex justify-between items-center pb-3 border-b border-stone-200 dark:border-stone-800">
               <div>
                 <h3 className="text-lg font-bold text-stone-900 dark:text-stone-100">
-                  Revision Comparison Diff
+                  Saved revision body comparison
                 </h3>
                 <span className="text-xs text-stone-500">
                   Comparing Revision #{diffData.fromRevision} → Revision #{diffData.toRevision} for

@@ -1,22 +1,22 @@
 'use client'
 
-import { useDocumentInfo, useField } from '@payloadcms/ui'
+import { useField, useFormInitializing } from '@payloadcms/ui'
 import Link from 'next/link'
 import { useEffect } from 'react'
 
 /** Keep the shared content editor aligned with the Post and Page entry points. */
 export function ContentTypeEntry() {
-  const { id } = useDocumentInfo()
   const { value, setValue } = useField<string>({ path: 'contentType' })
+  const initializing = useFormInitializing()
 
   useEffect(() => {
-    if (id || value) return
+    if (initializing || !window.location.pathname.endsWith('/create') || value) return
     const requested = new URLSearchParams(window.location.search).get('contentType')
     if (requested === 'article' || requested === 'page') setValue(requested)
-  }, [id, value, setValue])
+  }, [initializing, value, setValue])
 
   const kind = value === 'page' ? 'page' : value === 'article' ? 'post' : null
-  if (!kind) return null
+  if (!kind) return <p>Choose Post or Page above before saving.</p>
   return (
     <p>
       Editing a {kind}.{' '}

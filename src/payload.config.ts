@@ -37,6 +37,7 @@ export default buildConfig({
         security: { Component: './modules/admin/SecurityCenter', path: '/security' },
         posts: { Component: './modules/admin/PublishingCenter', path: '/posts' },
         pages: { Component: './modules/admin/PublishingCenter', path: '/pages' },
+        history: { Component: './modules/admin/RevisionHistoryAdmin', path: '/history' },
         navigation: { Component: './modules/admin/NavigationCenter', path: '/navigation' },
         mediaLibrary: { Component: './modules/admin/MediaLibrary', path: '/media-library' },
         indexing: { Component: './modules/admin/IndexingCenter', path: '/indexing' },

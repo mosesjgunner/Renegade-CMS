@@ -146,7 +146,7 @@ test('complete 16-step publisher journey through public and admin HTTP/browser b
 
   // Verify real filesystem bytes exist
   const relativeKey = String(uploadJson.asset.storageLocation)
-  const candidatePath1 = path.resolve('media', relativeKey)
+  const candidatePath1 = path.resolve(process.env.MEDIA_DIR ?? 'media', relativeKey)
   const candidatePath2 = path.resolve('.next/standalone/media', relativeKey)
   const assetPath = existsSync(candidatePath1)
     ? candidatePath1
