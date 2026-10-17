@@ -1,0 +1,24 @@
+import { test, expect } from '@playwright/test'
+import { readFileSync, writeFileSync } from 'node:fs'
+import { operator, api } from './helpers'
+
+test('owner configures the restored site origin through ordinary authenticated settings', async ({page}) => {
+  await operator(page)
+  const siteId = JSON.parse(readFileSync('scratch/records/source-business.json','utf8')).siteId
+  const origin = process.env.APP_URL!
+  await page.goto('/admin/globals/site-settings')
+  await page.getByLabel('Canonical Origin', {exact:true}).fill(origin)
+  const save=page.getByRole('button',{name:/^Save$/}).first()
+  await expect(save).toBeEnabled()
+  await save.click()
+  await expect.poll(async()=> (await api(page,'GET','/api/globals/site-settings')).canonicalOrigin).toBe(origin)
+  const settings=await api(page,'GET','/api/globals/site-settings')
+  await api(page,'POST','/api/globals/site-settings',{
+    canonicalOriginsBySite:{...settings.canonicalOriginsBySite,[siteId]:origin},
+  })
+  await page.reload()
+  await expect(page.getByLabel('Canonical Origin',{exact:true})).toHaveValue(origin)
+  const persisted=await api(page,'GET','/api/globals/site-settings')
+  expect(persisted.canonicalOriginsBySite[siteId]).toBe(origin)
+  writeFileSync('scratch/records/rehost-settings.json',JSON.stringify({siteId,origin,method:'ordinary owner WebAuthn; native UI lock/save then authenticated global API; reload verified'},null,2))
+})

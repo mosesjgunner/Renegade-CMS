@@ -1,0 +1,68 @@
+[
+  {
+    "gate": "populated-restore",
+    "command": [
+      "node",
+      "--import",
+      "tsx",
+      "src/scripts/operational-restore.ts",
+      "--archive",
+      "C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\unblock-final-populated-backup\\renegade-backup-2026-10-16T21-22-31-774Z",
+      "--target-version",
+      "0.1.0",
+      "--isolated",
+      "--authorize-restore",
+      "--compose-file",
+      "scratch/review.restore.yaml",
+      "--env-file",
+      "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-review-restore2-20261016.env"
+    ],
+    "sourceSha": "9a834f6560db30bb6e9ba1ab9199992e09f39c63",
+    "exitCode": 0,
+    "expectedExit": 0,
+    "durationSeconds": 47.65
+  },
+  {
+    "gate": "populated-backup",
+    "command": [
+      "node",
+      "--import",
+      "tsx",
+      "src/scripts/operational-backup.ts",
+      "--output",
+      "scratch/review-new-backup-parent2",
+      "--maintenance-window-confirmed",
+      "--compose-file",
+      "scratch/review.restore.yaml",
+      "--env-file",
+      "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-review-restore2-20261016.env"
+    ],
+    "sourceSha": "9a834f6560db30bb6e9ba1ab9199992e09f39c63",
+    "exitCode": 0,
+    "expectedExit": 0,
+    "durationSeconds": 12.8
+  },
+  {
+    "gate": "roundtrip-restore",
+    "command": [
+      "node",
+      "--import",
+      "tsx",
+      "src/scripts/operational-restore.ts",
+      "--archive",
+      "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-new-backup-parent2\\renegade-backup-2026-10-16T22-53-29-277Z",
+      "--target-version",
+      "0.1.0",
+      "--isolated",
+      "--authorize-restore",
+      "--compose-file",
+      "scratch/review.restore.yaml",
+      "--env-file",
+      "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-review-roundtrip2-20261016.env"
+    ],
+    "sourceSha": "9a834f6560db30bb6e9ba1ab9199992e09f39c63",
+    "exitCode": 0,
+    "expectedExit": 0,
+    "durationSeconds": 40.62
+  }
+]

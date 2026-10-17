@@ -1,0 +1,11 @@
+from pathlib import Path
+import subprocess,json,tarfile,hashlib
+out=Path('scratch/review-upgrade-fixed-checks');report=json.loads((out/'UPGRADE_ROLLBACK.json').read_text());archive=Path(report['fullRollbackArchive'])
+with tarfile.open(archive/'media.tar.gz') as tar:expected={m.name.removeprefix('./'):dict(bytes=m.size,sha256=hashlib.sha256(tar.extractfile(m).read()).hexdigest()) for m in tar.getmembers() if m.isfile()}
+js="const fs=require('node:fs'),p=require('node:path'),c=require('node:crypto');let r={};function walk(d){for(const e of fs.readdirSync(d,{withFileTypes:true})){let f=p.join(d,e.name);if(e.isDirectory())walk(f);else if(e.isFile()){let b=fs.readFileSync(f);r[p.relative('/app/media',f)]={bytes:b.length,sha256:c.createHash('sha256').update(b).digest('hex')}}}}walk('/app/media');console.log(JSON.stringify(r))"
+results=[]
+for phase,project in [('after-same-schema-rollforward','sol-review-authentic-upgrade2-20261016'),('full-predecessor-rollback','sol-review-authentic-rollback2-20261016')]:
+ actual=json.loads(subprocess.check_output(['docker','exec',project+'-renegade-web-1','node','-e',js],text=True));diff=[k for k,v in expected.items() if actual.get(k)!=v];assert not diff,(phase,diff)
+ extras={k:v for k,v in actual.items() if k not in expected};assert set(extras)<={'.renegade/backup-status.json'},(phase,list(extras))
+ results.append(dict(phase=phase,project=project,archivedMediaFiles=len(expected),matched=len(expected),mismatches=diff,extraPaths=list(extras),extraExplanation='Supported backup health diagnostic is excluded from portable archives'))
+report['allArchivedMediaVerification']=results;(out/'UPGRADE_ROLLBACK.json').write_text(json.dumps(report,indent=2)+'\n');print('PASS: every archived media file matches in upgraded and complete-rollback projects;',len(expected),'files per project',flush=True)

@@ -1,0 +1,13 @@
+from pathlib import Path
+import subprocess,os,json,time,secrets
+out=Path('scratch/review-provenance-checks');out.mkdir(exist_ok=True)
+sha=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
+assert not subprocess.check_output(['git','status','--porcelain'],text=True).strip()
+env=os.environ.copy();env.update(DATABASE_URL='postgresql://build:build@127.0.0.1:1/review_build_acceptance',PAYLOAD_SECRET=secrets.token_hex(48),APP_URL='http://localhost:3000',RENEGADE_MODULES='all',RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT='true',LOCAL_E2E_TEST_MODE='false',BUILD_SHA=sha)
+records=[]
+for label,args in [('format',['npm.cmd','run','format:check']),('lint',['npm.cmd','run','lint']),('types',['npm.cmd','run','typecheck']),('unit',['npm.cmd','test']),('build',['npm.cmd','run','build']),('bundles',['npm.cmd','run','verify:presentation-bundles'])]:
+ start=time.time()
+ with (out/(label+'.log')).open('wb') as log:r=subprocess.run(args,env=env,stdout=log,stderr=subprocess.STDOUT)
+ records.append(dict(gate=label,command=args,sourceSha=sha,exitCode=r.returncode,durationSeconds=round(time.time()-start,2),clean=not subprocess.check_output(['git','status','--porcelain'],text=True).strip()))
+ (out/'commands.json').write_text(json.dumps(records,indent=2)+'\n');print(label,'exit',r.returncode,flush=True)
+ if r.returncode:raise SystemExit(r.returncode)

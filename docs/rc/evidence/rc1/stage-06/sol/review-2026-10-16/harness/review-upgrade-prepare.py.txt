@@ -1,0 +1,27 @@
+from pathlib import Path
+import subprocess,json,secrets,hashlib,shutil,time
+root=Path.cwd();out=root/'scratch/review-upgrade-checks';out.mkdir(exist_ok=True)
+sha=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip();oldsha='01908f39a3ce40b5eae5d4dec64b981e103d5fb1'
+project='sol-review-authentic-upgrade-20261016';assert project not in subprocess.check_output(['docker','ps','-a','--format','{{.Names}}'],text=True)
+archive=Path('C:/Projects/RENEGADE CMS/rc08c-candidate/scratch/rc08c/backups/renegade-backup-2026-10-06T16-55-11-354Z')
+manifest=json.loads((archive/'manifest.json').read_text());assert manifest['renegade']['buildSha']==oldsha
+for item in manifest['files']:
+    data=(archive/item['path']).read_bytes();assert len(data)==item['bytes'] and 'sha256:'+hashlib.sha256(data).hexdigest()==item['sha256']
+image=json.loads(subprocess.check_output(['docker','image','inspect','renegade-rc08c:01908f3'],text=True))[0]
+assert image['Config']['Labels']['org.opencontainers.image.revision']==oldsha
+e=dict(RENEGADE_INSTANCE=project,RENEGADE_RESTORE_INSTANCE=project,POSTGRES_PASSWORD=secrets.token_hex(24),PAYLOAD_SECRET=secrets.token_hex(48),APP_URL='https://dispatch.rc02.test:3399',PROXY_MODE='direct',RENEGADE_IMAGE='renegade-rc08c',RENEGADE_IMAGE_TAG='01908f3',APP_VERSION='0.1.0',BUILD_SHA=oldsha,RENEGADE_RESTORE_WEB_BIND='127.0.0.1:3345',RENEGADE_MODULES='all',LOCAL_E2E_TEST_MODE='false')
+Path('scratch/sol-review-authentic-upgrade.env').write_text('\n'.join(k+'='+v for k,v in e.items())+'\n')
+compose=Path('compose.restore.yaml').read_text().replace('    image: ${RENEGADE_IMAGE:-renegade-cms}:${RENEGADE_IMAGE_TAG:-local}','    image: ${RENEGADE_IMAGE:-renegade-cms}:${RENEGADE_IMAGE_TAG:-local}\n    pull_policy: never')
+compose=compose.replace('    image: postgres:17.6-alpine','    image: postgres:17.6-alpine\n    command: [postgres, -c, max_locks_per_transaction=256]')
+compose+='\nnetworks:\n  default:\n    internal: true\n'
+Path('scratch/review.upgrade.restore.yaml').write_text(compose)
+private=root/'scratch/review-upgrade-private';private.mkdir(exist_ok=True)
+original=Path('C:/Projects/RENEGADE CMS/sol-stage06-independent-20261016/scratch/unblock-private/predecessor-hardware.json')
+shutil.copyfile(original,private/'hardware.json')
+spec=Path('C:/Projects/RENEGADE CMS/sol-stage06-independent-20261016/scratch/upgrade-specs/predecessor.spec.ts').read_text().replace('scratch/unblock-private/predecessor-hardware.json','scratch/review-upgrade-private/hardware.json').replace('scratch/unblock-20261016','scratch/review-upgrade-checks')
+Path('scratch/specs/20-predecessor.spec.ts').write_text(spec)
+args=['node','--import','tsx','src/scripts/operational-restore.ts','--archive',str(archive),'--target-version','0.1.0','--isolated','--authorize-restore','--compose-file','scratch/review.upgrade.restore.yaml','--env-file','scratch/sol-review-authentic-upgrade.env']
+started=time.time()
+with (out/'authentic-predecessor-restore.private.log').open('wb') as log:r=subprocess.run(args,stdout=log,stderr=subprocess.STDOUT)
+(out/'predecessor-binding.json').write_text(json.dumps(dict(toolSourceSha=sha,predecessorSha=oldsha,imageId=image['Id'],archive=str(archive),manifestSha256=hashlib.sha256((archive/'manifest.json').read_bytes()).hexdigest(),migrationCount=len(manifest['migrationState']),hardwareSourcePrivate=str(original),hardwareSha256=hashlib.sha256(original.read_bytes()).hexdigest(),command=args,exitCode=r.returncode,durationSeconds=round(time.time()-started,2),transport='Immutable local images; Compose pull_policy never. Not registry publication or arbitrary customer-upgrade proof.'),indent=2)+'\n')
+print('authentic predecessor restore exit',r.returncode,flush=True);raise SystemExit(r.returncode)

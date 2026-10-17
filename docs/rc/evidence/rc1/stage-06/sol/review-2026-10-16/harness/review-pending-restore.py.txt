@@ -1,0 +1,45 @@
+from pathlib import Path
+import subprocess,json,secrets,time,hashlib,tarfile,shutil
+root=Path.cwd();out=root/'scratch/review-pending-checks';sha=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
+source='sol-review-restore2-20261016';target='sol-review-pending-20261016';compose='scratch/review.pending.restore.yaml';sourceEnv='scratch/sol-review-restore2-20261016.env'
+receipts=[]
+def run(label,args):
+    started=time.time()
+    with (out/(label+'.private.log')).open('wb') as log:r=subprocess.run(args,stdout=log,stderr=subprocess.STDOUT)
+    receipts.append(dict(gate=label,command=args,sourceSha=sha,exitCode=r.returncode,durationSeconds=round(time.time()-started,2)))
+    (out/'commands.json').write_text(json.dumps(receipts,indent=2)+'\n')
+    print(label,'exit',r.returncode,flush=True)
+    if r.returncode:raise RuntimeError(label+' failed')
+def base(project,env):return ['docker','compose','--project-name',project,'--env-file',env,'-f',compose]
+def snapshot(project,label):
+    def sql(q):return subprocess.run(['docker','exec','-i',project+'-postgres-1','psql','-U','renegade','-d','renegade','-At'],input=q,text=True,stdout=subprocess.PIPE,check=True).stdout.strip()
+    tables=sql("SELECT tablename FROM pg_tables WHERE schemaname='public' ORDER BY tablename").splitlines();queries=[]
+    for table in tables:
+        assert table.replace('_','').isalnum()
+        queries.append("SELECT '"+table+"',count(*),md5(coalesce(string_agg(row_json, chr(10) ORDER BY row_json),'')) FROM (SELECT row_to_json(t)::text row_json FROM \""+table+'" t) j')
+    result={}
+    for line in sql(' UNION ALL '.join(queries)).splitlines():
+        table,count,digest=line.split('|');result[table]=dict(rows=int(count),rowDigestMd5=digest)
+    (out/(label+'.json')).write_text(json.dumps(result,indent=2)+'\n');return result
+assert target not in subprocess.check_output(['docker','ps','-a','--format','{{.Names}}'],text=True)
+proof=root/'scratch/review-publication-proof'
+run('prepare-supported-publication',base(source,sourceEnv)+['run','--rm','--no-deps','-v',str(proof/'worker.ts.txt')+':/app/acceptance-lease.ts:ro','-v',str(proof)+':/proof','--entrypoint','node','renegade-worker','--import','tsx','acceptance-lease.ts','prepare'])
+before=snapshot(source,'source-before-backup')
+run('pending-backup',['node','--import','tsx','src/scripts/operational-backup.ts','--output','scratch/review-pending-backup','--maintenance-window-confirmed','--compose-file',compose,'--env-file',sourceEnv])
+archive=next(Path('scratch/review-pending-backup').glob('renegade-backup-*'))
+manifest=json.loads((archive/'manifest.json').read_text());assert manifest['renegade']['buildSha']==sha
+running=subprocess.check_output(['docker','ps','--format','{{.Names}}'],text=True).splitlines();assert source+'-renegade-worker-1' not in running
+e=dict(line.split('=',1) for line in Path(sourceEnv).read_text().splitlines() if '=' in line)
+e.update(RENEGADE_INSTANCE=target,RENEGADE_RESTORE_INSTANCE=target,RENEGADE_RESTORE_WEB_BIND='127.0.0.1:3344',PAYLOAD_SECRET=secrets.token_hex(48),POSTGRES_PASSWORD=secrets.token_hex(24))
+env='scratch/sol-review-pending-20261016.env';Path(env).write_text('\n'.join(k+'='+v for k,v in e.items())+'\n')
+run('pending-restore',['node','--import','tsx','src/scripts/operational-restore.ts','--archive',str(archive),'--target-version','0.1.0','--isolated','--authorize-restore','--compose-file',compose,'--env-file',env])
+after=snapshot(target,'restored-before-recovery')
+diff={k:dict(source=v,restored=after.get(k)) for k,v in before.items() if after.get(k)!=v}
+assert set(diff)<={'payload_jobs','payload_jobs_log','payload_jobs_stats'},list(diff)
+with tarfile.open(archive/'media.tar.gz') as tar:media={m.name:dict(bytes=m.size,sha256=hashlib.sha256(tar.extractfile(m).read()).hexdigest()) for m in tar.getmembers() if m.isfile()}
+script="const fs=require('node:fs'),p=require('node:path'),c=require('node:crypto');let r={};function walk(d){for(const e of fs.readdirSync(d,{withFileTypes:true})){let f=p.join(d,e.name);if(e.isDirectory())walk(f);else if(e.isFile()){let b=fs.readFileSync(f);r['./'+p.relative('/app/media',f)]={bytes:b.length,sha256:c.createHash('sha256').update(b).digest('hex')}}}}walk('/app/media');console.log(JSON.stringify(r))"
+actual=json.loads(subprocess.check_output(['docker','exec',target+'-renegade-web-1','node','-e',script],text=True));assert all(actual.get(k)==v for k,v in media.items())
+for original,name in [('unblock-business-pending.json','payment.json'),('unblock-community-pending.json','community.json')]:shutil.copyfile(root/'scratch'/original,root/'scratch/review-business-proof'/name)
+(out/'pending-restore-comparison.json').write_text(json.dumps(dict(sourceSha=sha,archive=str(archive.resolve()),source=source,target=target,tableCount=len(before),tablesMatching=len(before)-len(diff),tableDifferences=diff,mediaFilesMatching=len(media),pendingWorkerPause='scale 0 preserves queued work until real process recovery probes; ordinary shipping worker is enabled after probes',manifestSha256=hashlib.sha256((archive/'manifest.json').read_bytes()).hexdigest()),indent=2)+'\n')
+Path('scratch/active-upstream.txt').write_text('3344')
+print('PASS: pending-work archive restored;',len(before)-len(diff),'table digests and',len(media),'media files equal',flush=True)

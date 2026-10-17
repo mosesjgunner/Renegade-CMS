@@ -1,0 +1,18 @@
+{
+  "expectedSource": "df8999449b6b2485c6e3339f3389c12ef5a618e0",
+  "runtime": {
+    "project": "sol-review-authentic-upgrade-20261016",
+    "image": "renegade-rc08c:sol-review-df899944",
+    "imageId": "sha256:240a6552a07624f08ae473d9c98b97c28ea44e6904e60b4182952f5fbd848530",
+    "buildSha": "01908f39a3ce40b5eae5d4dec64b981e103d5fb1",
+    "uid": "nextjs",
+    "testAuth": "false",
+    "health": "healthy"
+  },
+  "embedded": {
+    "sourceSha": "df8999449b6b2485c6e3339f3389c12ef5a618e0",
+    "clean": null,
+    "version": "0.1.0",
+    "lockfileSha256": "f6e204e51dea49eab765231225bde88c973d8b6f0c4261b1973d495799fc72b2"
+  }
+}

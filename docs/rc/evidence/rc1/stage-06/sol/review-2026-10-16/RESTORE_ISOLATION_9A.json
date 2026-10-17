@@ -1,0 +1,12 @@
+{
+  "sourceSha": "9a834f6560db30bb6e9ba1ab9199992e09f39c63",
+  "archiveSource": {
+    "version": "0.1.0-rc.1",
+    "buildSha": "73333b03375075596f1600b853f99f1dc27fae9a"
+  },
+  "mediaFilesMatched": 21,
+  "volumesDisjoint": true,
+  "networksDisjoint": true,
+  "projects": ["sol-review-restore2-20261016", "sol-review-roundtrip2-20261016"],
+  "scope": "Operational populated archive roundtrip and media verification; does not by itself prove browser identities or pending business recovery"
+}

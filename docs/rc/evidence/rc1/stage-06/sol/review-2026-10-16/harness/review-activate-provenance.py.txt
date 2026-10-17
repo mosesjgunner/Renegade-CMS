@@ -1,0 +1,12 @@
+from pathlib import Path
+import subprocess,json
+sha=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
+file=Path('scratch/sol-review-pending-20261016.env')
+e=dict(line.split('=',1) for line in file.read_text().splitlines() if '=' in line)
+assert e['RENEGADE_INSTANCE']=='sol-review-pending-20261016'
+e.update(BUILD_SHA=sha,RENEGADE_IMAGE_TAG='sol-review-'+sha[:8])
+file.write_text('\n'.join(k+'='+v for k,v in e.items())+'\n')
+args=['docker','compose','--project-name',e['RENEGADE_INSTANCE'],'--env-file',str(file),'-f','scratch/review.pending.restore.yaml','up','-d','--no-deps','--scale','renegade-worker=1','--wait','renegade-web','renegade-worker']
+with Path('scratch/review-provenance-runtime/activate-image.log').open('wb') as log:r=subprocess.run(args,stdout=log,stderr=subprocess.STDOUT)
+Path('scratch/review-provenance-runtime/activate-image.json').write_text(json.dumps(dict(command=args,sourceSha=sha,exitCode=r.returncode,schemaChanges=False,scope='Recreate only the owned disposable restored web/worker with the audience execution lock and accepted delivery guard'),indent=2)+'\n')
+print('final image activation exit',r.returncode,flush=True);raise SystemExit(r.returncode)

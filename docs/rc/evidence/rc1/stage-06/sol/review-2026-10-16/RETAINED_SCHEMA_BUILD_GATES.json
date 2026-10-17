@@ -1,0 +1,75 @@
+[
+  {
+    "gate": "fresh",
+    "command": ["npm.cmd", "run", "test:migrations:fresh"],
+    "sourceSha": "a5e93e27917aab3a7a2ef6053d424ebe07cd5573",
+    "exitCode": 0,
+    "durationSeconds": 12.41,
+    "disposableDatabaseContainer": "sol-gemini-review-gates-20261016",
+    "disposablePort": "50199"
+  },
+  {
+    "gate": "upgrade-fixture",
+    "command": ["npm.cmd", "run", "test:migrations:upgrade"],
+    "sourceSha": "a5e93e27917aab3a7a2ef6053d424ebe07cd5573",
+    "exitCode": 0,
+    "durationSeconds": 13.87,
+    "disposableDatabaseContainer": "sol-gemini-review-gates-20261016",
+    "disposablePort": "50199"
+  },
+  {
+    "gate": "commerce",
+    "command": ["npm.cmd", "run", "test:migrations:commerce"],
+    "sourceSha": "a5e93e27917aab3a7a2ef6053d424ebe07cd5573",
+    "exitCode": 0,
+    "durationSeconds": 14.36,
+    "disposableDatabaseContainer": "sol-gemini-review-gates-20261016",
+    "disposablePort": "50199"
+  },
+  {
+    "gate": "integration",
+    "command": ["npm.cmd", "run", "test:integration"],
+    "sourceSha": "a5e93e27917aab3a7a2ef6053d424ebe07cd5573",
+    "exitCode": 0,
+    "durationSeconds": 318.68,
+    "disposableDatabaseContainer": "sol-gemini-review-gates-20261016",
+    "disposablePort": "50199"
+  },
+  {
+    "gate": "build",
+    "command": ["npm.cmd", "run", "build"],
+    "sourceSha": "a5e93e27917aab3a7a2ef6053d424ebe07cd5573",
+    "exitCode": 0,
+    "durationSeconds": 81.31,
+    "disposableDatabaseContainer": "sol-gemini-review-gates-20261016",
+    "disposablePort": "50199"
+  },
+  {
+    "gate": "bundles",
+    "command": ["npm.cmd", "run", "verify:presentation-bundles"],
+    "sourceSha": "a5e93e27917aab3a7a2ef6053d424ebe07cd5573",
+    "exitCode": 0,
+    "durationSeconds": 0.38,
+    "disposableDatabaseContainer": "sol-gemini-review-gates-20261016",
+    "disposablePort": "50199"
+  },
+  {
+    "gate": "image",
+    "command": [
+      "docker",
+      "build",
+      "--target",
+      "runner",
+      "--build-arg",
+      "BUILD_SHA=a5e93e27917aab3a7a2ef6053d424ebe07cd5573",
+      "-t",
+      "renegade-cms:sol-review-a5e93e27",
+      "."
+    ],
+    "sourceSha": "a5e93e27917aab3a7a2ef6053d424ebe07cd5573",
+    "exitCode": 0,
+    "durationSeconds": 297.65,
+    "disposableDatabaseContainer": "sol-gemini-review-gates-20261016",
+    "disposablePort": "50199"
+  }
+]

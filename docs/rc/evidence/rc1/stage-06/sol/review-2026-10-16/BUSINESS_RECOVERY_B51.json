@@ -1,0 +1,81 @@
+{
+  "sourceSha": "b51f8113eeefdd7ab1c9920d5b84dfe756f1ec31",
+  "project": "sol-review-pending-20261016",
+  "boundaries": {
+    "payment": {
+      "exitCode": 137,
+      "signal": "SIGKILL",
+      "boundary": {
+        "eventId": "428647cb-33c5-410e-ad9c-6e7abf308fa2",
+        "point": "after real payment/order/fulfillment effects; before inbox processed acknowledgement",
+        "orders": [
+          {
+            "id": "dda37a9e-85b7-4097-a675-89353c27d149",
+            "state": "paid"
+          }
+        ],
+        "pid": 1
+      },
+      "sourceSha": "b51f8113eeefdd7ab1c9920d5b84dfe756f1ec31"
+    },
+    "community": {
+      "exitCode": 137,
+      "signal": "SIGKILL",
+      "boundary": {
+        "row": {
+          "id": "01a1470c-8ce5-76e3-8063-93ee65013a45",
+          "status": "sending",
+          "attempts": 1
+        },
+        "point": "real SMTP accepted; before durable accepted update",
+        "pid": 1
+      },
+      "sourceSha": "b51f8113eeefdd7ab1c9920d5b84dfe756f1ec31"
+    },
+    "publication": {
+      "exitCode": 137,
+      "signal": "SIGKILL",
+      "boundary": {
+        "jobId": "20475a49-ef4d-4505-9c94-78ea8913dc7c",
+        "processPid": 1,
+        "leaseOwner": "sol06-killed-process",
+        "leaseExpiresAt": "2026-10-16T23:30:13.915Z",
+        "observedAt": "2026-10-16T23:30:12.065Z"
+      },
+      "sourceSha": "b51f8113eeefdd7ab1c9920d5b84dfe756f1ec31"
+    }
+  },
+  "payment": {
+    "orders": [
+      {
+        "id": "dda37a9e-85b7-4097-a675-89353c27d149",
+        "state": "paid"
+      }
+    ],
+    "grants": ["01a1470c-a627-7a73-8dc4-94a981ca4715"],
+    "packages": [
+      {
+        "id": "01a1470c-a643-714d-832e-d45236188121",
+        "status": "pending_acknowledgement"
+      }
+    ],
+    "eventState": "processed",
+    "attempts": 2
+  },
+  "paymentReplayUnchanged": true,
+  "community": {
+    "id": "01a1470c-8ce5-76e3-8063-93ee65013a45",
+    "status": "unknown",
+    "attempts": 1,
+    "error": "Interrupted send; provider acceptance requires reconciliation."
+  },
+  "communityAcceptedLocalMIMECount": 1,
+  "communityReplayUnchanged": true,
+  "publication": {
+    "articleId": "2f25a17f-192f-472d-979f-33dd17794e01",
+    "events": 1,
+    "contentStatus": "published"
+  },
+  "ordinaryBrowserExit": 0,
+  "scope": "Current image; genuine queued work archived and restored before recovery; no direct business-state or lease edits"
+}

@@ -1,0 +1,28 @@
+import {test,expect} from '@playwright/test'
+import {writeFileSync} from 'node:fs'
+import {api,member,operator} from './helpers'
+test('real member message and consent create durable local community outbox work',async({page,browser})=>{
+ await operator(page)
+ const siteId='e569115f-2594-45ee-9a0f-0214f5f942b5'
+ const contexts=await Promise.all([browser.newContext({baseURL:process.env.APP_URL,ignoreHTTPSErrors:true}),browser.newContext({baseURL:process.env.APP_URL,ignoreHTTPSErrors:true})])
+ const alice=await contexts[0].newPage(),bob=await contexts[1].newPage()
+ try{
+  const stamp=Date.now();const email='outbox-bob-'+stamp+'@example.test'
+  const a=await member(alice,'outbox-alice-'+stamp+'@example.test'),b=await member(bob,email)
+  await api(bob,'PATCH','/api/member-auth/profile',{relationshipNotifications:{messages:true}})
+  await api(bob,'PATCH','/api/community/notification-preferences',{siteId,channel:'email',frequency:'immediate',email})
+  await api(bob,'PATCH','/api/community/notification-preferences',{siteId,channel:'in_app',frequency:'immediate'})
+  const conversation=(await api(alice,'POST','/api/community/conversations',{siteId,targetMemberId:b.memberId},201)).conversation
+  const input={siteId,conversationId:conversation.id,body:'Durable recovery message '+stamp,idempotencyKey:'recovery-message-'+stamp}
+  const sent=await api(alice,'POST','/api/community/messages',input,201)
+  const replay=await api(alice,'POST','/api/community/messages',input,[200,201])
+  expect(replay.message.id).toBe(sent.message.id)
+  const messages=(await api(bob,'GET',`/api/community/messages?siteId=${siteId}&conversationId=${conversation.id}`)).messages
+  expect(messages.filter((m:any)=>m.id===sent.message.id)).toHaveLength(1)
+  const notifications=(await api(bob,'GET',`/api/community/notifications?siteId=${siteId}`)).notifications
+  expect(notifications.length).toBeGreaterThan(0)
+  await contexts[0].storageState({path:'scratch/unblock-private/outbox-alice.json'})
+  await contexts[1].storageState({path:'scratch/unblock-private/outbox-bob.json'})
+  writeFileSync('scratch/unblock-community-pending.json',JSON.stringify({siteId,memberId:b.memberId,actorMemberId:a.memberId,email,conversationId:conversation.id,messageId:sent.message.id,input}))
+ }finally{await Promise.all(contexts.map(c=>c.close()))}
+})

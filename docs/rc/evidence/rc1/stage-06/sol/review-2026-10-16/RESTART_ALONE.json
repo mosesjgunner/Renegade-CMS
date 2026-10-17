@@ -1,0 +1,22 @@
+[
+  {
+    "command": ["npm.cmd", "run", "test:migrations:fresh"],
+    "sourceSha": "a5e93e27917aab3a7a2ef6053d424ebe07cd5573",
+    "exitCode": 0,
+    "database": "review_restart_alone_release_acceptance",
+    "durationSeconds": 36.41
+  },
+  {
+    "command": [
+      "npm.cmd",
+      "run",
+      "test:integration",
+      "--",
+      "tests/integration/rc03-restart-recovery.integration.test.ts"
+    ],
+    "sourceSha": "a5e93e27917aab3a7a2ef6053d424ebe07cd5573",
+    "exitCode": 0,
+    "database": "review_restart_alone_release_acceptance",
+    "durationSeconds": 35.49
+  }
+]

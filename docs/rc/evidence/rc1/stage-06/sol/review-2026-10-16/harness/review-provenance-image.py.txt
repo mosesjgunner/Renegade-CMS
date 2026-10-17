@@ -1,0 +1,7 @@
+from pathlib import Path
+import subprocess,json,time
+out=Path('scratch/review-provenance-checks');sha=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
+assert not subprocess.check_output(['git','status','--porcelain'],text=True).strip()
+args=['docker','build','--target','runner','--build-arg','BUILD_SHA='+sha,'-t','renegade-cms:sol-review-'+sha[:8],'.'];start=time.time()
+with (out/'image.log').open('wb') as log:r=subprocess.run(args,stdout=log,stderr=subprocess.STDOUT)
+(out/'image.json').write_text(json.dumps(dict(command=args,sourceSha=sha,exitCode=r.returncode,durationSeconds=round(time.time()-start,2)),indent=2)+'\n');print('current image exit',r.returncode,flush=True);raise SystemExit(r.returncode)

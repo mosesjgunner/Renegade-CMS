@@ -1,0 +1,35 @@
+import { test, expect } from '@playwright/test'
+import { readFileSync, writeFileSync } from 'node:fs'
+import { createHash } from 'node:crypto'
+test('authentic predecessor owner hardware and archived state survive the lifecycle phase', async ({page,context}) => {
+  const cdp=await context.newCDPSession(page)
+  await cdp.send('Security.setIgnoreCertificateErrors',{ignore:true})
+  await cdp.send('WebAuthn.enable')
+  const {authenticatorId}=await cdp.send('WebAuthn.addVirtualAuthenticator',{options:{protocol:'ctap2',transport:'internal',hasResidentKey:true,hasUserVerification:true,isUserVerified:true,automaticPresenceSimulation:true}})
+  const file='scratch/review-upgrade-private/hardware.json'
+  for(const credential of JSON.parse(readFileSync(file,'utf8')).credentials)await cdp.send('WebAuthn.addCredential',{authenticatorId,credential})
+  await page.goto('/login')
+  await page.getByLabel('Owner / Staff Email').fill('editor@renegadeparty.test')
+  await page.getByRole('button',{name:/Authenticate with Passkey/}).click()
+  await page.waitForURL(/\/admin/,{timeout:60000})
+  const me=await page.request.get('/api/users/me');expect(me.status()).toBe(200);expect((await me.json()).user.email).toBe('editor@renegadeparty.test')
+  writeFileSync(file,JSON.stringify(await cdp.send('WebAuthn.getCredentials',{authenticatorId})))
+  const evidenceDir=process.env.UPGRADE_EVIDENCE_DIR??'scratch/review-upgrade-checks'
+  const report:any={phase:process.env.UPGRADE_PHASE,authentication:'ordinary preserved WebAuthn credential; no forged session',collections:{}}
+  for(const collection of ['users','sites','media-assets','content','publications']){
+    const r=await page.request.get(`/api/${collection}?depth=0&limit=100`);expect(r.status(),collection).toBe(200)
+    const data=await r.json();report.collections[collection]={count:data.totalDocs,ids:data.docs.map((d:any)=>d.id).sort()}
+    if(collection==='media-assets'){
+      expect(data.docs.length).toBeGreaterThan(0)
+      const asset=data.docs[0];const response=await page.request.get(`/media/${asset.id}`);expect(response.status()).toBe(200)
+      report.media={id:asset.id,sha256:createHash('sha256').update(await response.body()).digest('hex')}
+    }
+  }
+  const settings=await page.request.get('/api/globals/site-settings?depth=0');expect(settings.status()).toBe(200)
+  report.settings=(await settings.json()).id
+  if(!process.env.UPGRADE_PHASE!.startsWith('before')){
+    const before=JSON.parse(readFileSync(`${evidenceDir}/predecessor-before.json`,'utf8'))
+    expect(report.collections).toEqual(before.collections);expect(report.media).toEqual(before.media)
+  }
+  writeFileSync(`${evidenceDir}/predecessor-${process.env.UPGRADE_PHASE}.json`,JSON.stringify(report,null,2))
+})

@@ -1,0 +1,40 @@
+from pathlib import Path
+import subprocess,time,json,shutil
+root=Path.cwd();proof=root/'scratch/review-provenance-email-proof';proof.mkdir(exist_ok=True)
+source=Path('C:/Projects/RENEGADE CMS/sol-stage06-independent-20261016/scratch/unblock-email-crash.ts.txt').read_text()
+source=source.replace("'e569115f-2594-45ee-9a0f-0214f5f942b5'", "JSON.parse(readFileSync('/proof/source-business.json','utf8')).siteId")
+(proof/'email-worker.ts.txt').write_text(source)
+shutil.copyfile('scratch/records/source-business.json',proof/'source-business.json')
+compose=['docker','compose','--project-name','sol-review-pending-20261016','--env-file','scratch/sol-review-pending-20261016.env','-f','scratch/review.pending.restore.yaml']
+def worker(mode):return compose+['run','--rm','--no-deps','--name','sol-review-provenance-email-'+mode,'-v',str(proof/'email-worker.ts.txt')+':/app/acceptance-email.ts:ro','-v',str(proof)+':/proof','--entrypoint','node','renegade-worker','--import','tsx','acceptance-email.ts',mode]
+def run(label,args):
+    with Path('scratch/review-provenance-runtime/'+label+'.private.log').open('wb') as log:
+        subprocess.run(args,stdout=log,stderr=subprocess.STDOUT,check=True)
+run('email-worker-stop',compose+['stop','renegade-worker'])
+try:
+    run('email-prepare',worker('prepare'))
+    with Path('scratch/review-provenance-runtime/email-crash.private.log').open('wb') as log:
+        child=subprocess.Popen(worker('crash'),stdout=log,stderr=subprocess.STDOUT)
+        started=time.time()
+        try:
+            while not (proof/'email-boundary.json').exists():
+                if child.poll() is not None:raise RuntimeError('Email worker exited before SMTP boundary')
+                if time.time()-started>90:raise RuntimeError('Email SMTP boundary timeout')
+                time.sleep(.25)
+            subprocess.run(['docker','kill','--signal','KILL','sol-review-provenance-email-crash'],check=True,stdout=subprocess.DEVNULL)
+            code=child.wait(timeout=30)
+            assert code==137,code
+        finally:
+            if child.poll() is None:
+                subprocess.run(['docker','kill','sol-review-provenance-email-crash'],stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
+                child.wait(timeout=30)
+    run('email-recover',worker('recover'))
+    run('email-replay',worker('replay'))
+    fixture=json.loads((proof/'email-fixture.json').read_text())
+    count=sum(fixture['email'] in json.loads(p.read_text())['recipient'] for p in Path('scratch/rc04-mail').glob('*.json'))
+    recovery=json.loads((proof/'email-recover.json').read_text()); replay=json.loads((proof/'email-replay.json').read_text())
+    assert count==1 and recovery['status']=='unknown' and recovery['attempts']==1 and replay==recovery,(count,recovery,replay)
+    Path('scratch/review-provenance-runtime/email-crash-proof.json').write_text(json.dumps(dict(sourceSha=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),killedExit=code,signal='SIGKILL',boundary=json.loads((proof/'email-boundary.json').read_text()),acceptedLocalMIMECount=count,recovered=recovery,replayUnchanged=True,scope='Local SMTP; uncertain provider acceptance is held for reconciliation without resend'),indent=2)+'\n')
+    print('PASS: real SMTP acceptance, SIGKILL, recovery and replay; exactly one MIME; status unknown',flush=True)
+finally:
+    run('email-worker-resume',compose+['up','-d','--no-deps','--scale','renegade-worker=1','--wait','renegade-worker'])

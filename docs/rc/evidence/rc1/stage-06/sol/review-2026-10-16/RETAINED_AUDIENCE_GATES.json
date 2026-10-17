@@ -1,0 +1,66 @@
+[
+  {
+    "label": "format",
+    "command": ["npm.cmd", "run", "format:check"],
+    "sourceSha": "56786472039f11dd00e9b4e3ad96e21839c4344a",
+    "exitCode": 0,
+    "durationSeconds": 39.89,
+    "mode": "full",
+    "dirty": false
+  },
+  {
+    "label": "lint",
+    "command": ["npm.cmd", "run", "lint"],
+    "sourceSha": "56786472039f11dd00e9b4e3ad96e21839c4344a",
+    "exitCode": 0,
+    "durationSeconds": 29.68,
+    "mode": "full",
+    "dirty": false
+  },
+  {
+    "label": "types",
+    "command": ["npm.cmd", "run", "typecheck"],
+    "sourceSha": "56786472039f11dd00e9b4e3ad96e21839c4344a",
+    "exitCode": 0,
+    "durationSeconds": 7.06,
+    "mode": "full",
+    "dirty": false
+  },
+  {
+    "label": "unit",
+    "command": ["npm.cmd", "test"],
+    "sourceSha": "56786472039f11dd00e9b4e3ad96e21839c4344a",
+    "exitCode": 0,
+    "durationSeconds": 29.95,
+    "mode": "full",
+    "dirty": false
+  },
+  {
+    "label": "integration",
+    "command": ["npm.cmd", "run", "test:integration"],
+    "sourceSha": "56786472039f11dd00e9b4e3ad96e21839c4344a",
+    "exitCode": 0,
+    "durationSeconds": 326.4,
+    "mode": "full",
+    "dirty": false
+  },
+  {
+    "label": "image",
+    "command": [
+      "docker",
+      "build",
+      "--target",
+      "runner",
+      "--build-arg",
+      "BUILD_SHA=56786472039f11dd00e9b4e3ad96e21839c4344a",
+      "-t",
+      "renegade-cms:sol-review-56786472",
+      "."
+    ],
+    "sourceSha": "56786472039f11dd00e9b4e3ad96e21839c4344a",
+    "exitCode": 4294967295,
+    "durationSeconds": 129.95,
+    "mode": "full",
+    "dirty": false
+  }
+]

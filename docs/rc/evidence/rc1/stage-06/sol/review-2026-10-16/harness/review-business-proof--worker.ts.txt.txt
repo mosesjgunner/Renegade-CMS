@@ -1,0 +1,52 @@
+import config from '/app/src/payload.config.ts'
+import {getPayload} from '/app/node_modules/payload/dist/index.js'
+import {processPaymentEventTask} from '/app/src/modules/commerce/tasks.ts'
+import {queueCommunityWindow,sendCommunityDelivery} from '/app/src/modules/community/external-notifications.ts'
+import {readFileSync,writeFileSync} from 'node:fs'
+const payload=await getPayload({config});const mode=process.argv[2]
+const business=JSON.parse(readFileSync('/proof/payment.json','utf8'))
+const community=JSON.parse(readFileSync('/proof/community.json','utf8'))
+const pool=(payload.db as any).pool
+if(mode==='community-prepare'){
+ const prefs=await pool.query("SELECT rules FROM notification_preferences WHERE site_id=$1 AND member_id=$2 AND channel='email' AND kind='all'",[community.siteId,community.memberId])
+ const start=prefs.rows[0].rules.deliveryEnabledAt
+ const ids=await queueCommunityWindow(payload,community.siteId,community.memberId,'immediate',start,new Date().toISOString())
+ if(!ids?.length)throw Error('Real consent/message did not produce a delivery window')
+ const rows=await pool.query('SELECT id,status,attempts FROM audience_delivery_outbox WHERE id=ANY($1::uuid[])',[ids])
+ writeFileSync('/proof/community-window.json',JSON.stringify({ids,rows:rows.rows,email:community.email}))
+}else if(mode.startsWith('community-')){
+ const fixture=JSON.parse(readFileSync('/proof/community-window.json','utf8'));const id=fixture.ids[0]
+ if(mode==='community-crash'){
+  const query=pool.query.bind(pool)
+  pool.query=(async(sql:any,values:any)=>{
+   if(typeof sql==='string'&&sql.startsWith('UPDATE audience_delivery_outbox SET status=$2')&&values?.[0]===id&&values[1]==='accepted'){
+    const row=(await query('SELECT id,status,attempts FROM audience_delivery_outbox WHERE id=$1',[id])).rows[0]
+    writeFileSync('/proof/community-boundary.json',JSON.stringify({row,point:'real SMTP accepted; before durable accepted update',pid:process.pid}));await new Promise(()=>{})
+   }
+   return query(sql,values)
+  }) as any
+ }
+ await sendCommunityDelivery(payload,id)
+ const row=(await pool.query('SELECT id,status,attempts,error FROM audience_delivery_outbox WHERE id=$1',[id])).rows[0]
+ writeFileSync('/proof/'+mode+'.json',JSON.stringify(row))
+}else{
+ if(mode==='payment-crash'){
+  const update=payload.update.bind(payload)
+  payload.update=(async(args:any)=>{
+   if(args.collection==='payment-webhook-events'&&String(args.id)===business.eventId&&args.data.processingState==='processed'){
+    const orders=await payload.find({collection:'orders',where:{checkoutSession:{equals:business.session}},depth:0,overrideAccess:true})
+    writeFileSync('/proof/payment-boundary.json',JSON.stringify({eventId:business.eventId,point:'after real payment/order/fulfillment effects; before inbox processed acknowledgement',orders:orders.docs.map((o:any)=>({id:o.id,state:o.state})),pid:process.pid}));await new Promise(()=>{})
+   }
+   return update(args)
+  }) as any
+ }
+ await (processPaymentEventTask.handler as any)({input:{webhookEventId:business.eventId},req:{payload}})
+ const orders=await payload.find({collection:'orders',where:{checkoutSession:{equals:business.session}},depth:0,overrideAccess:true})
+ const grants=await payload.find({collection:'digital-delivery-grants',where:{product:{equals:business.digitalId}},depth:0,overrideAccess:true})
+ const packages=orders.docs.length?await payload.find({collection:'manual-fulfillment-packages',where:{order:{equals:orders.docs[0].id}},depth:0,overrideAccess:true}):{docs:[]}
+ const row=await payload.findByID({collection:'payment-webhook-events',id:business.eventId,depth:0,overrideAccess:true})
+ const result={orders:orders.docs.map((o:any)=>({id:o.id,state:o.state})),grants:grants.docs.map((g:any)=>g.id),packages:packages.docs.map((p:any)=>({id:p.id,status:p.status})),eventState:row.processingState,attempts:row.attempts}
+ writeFileSync('/proof/'+mode+'.json',JSON.stringify(result))
+ if(orders.docs.length!==1||grants.docs.length!==1||packages.docs.length!==1||row.processingState!=='processed')throw Error('Recovered settlement effects must exist exactly once')
+}
+await payload.destroy();process.exit(0)

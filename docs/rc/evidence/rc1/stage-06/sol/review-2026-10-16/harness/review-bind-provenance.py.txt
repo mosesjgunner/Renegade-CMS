@@ -1,0 +1,18 @@
+from pathlib import Path
+import subprocess,json,hashlib
+sha=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
+name='sol-review-pending-20261016-renegade-web-1'
+container=json.loads(subprocess.check_output(['docker','inspect',name],text=True))[0]
+image=json.loads(subprocess.check_output(['docker','image','inspect',container['Image']],text=True))[0]
+files=subprocess.check_output(['git','ls-files','src','docker','package.json','package-lock.json','next.config.ts','tsconfig.json'],text=True).splitlines()
+js="const fs=require('node:fs'),c=require('node:crypto');let r={};for(const p of JSON.parse(fs.readFileSync(0,'utf8')))r[p]=c.createHash('sha256').update(fs.readFileSync('/app/'+p)).digest('hex');console.log(JSON.stringify({files:r,provenance:JSON.parse(fs.readFileSync('/app/build-provenance.json','utf8')),standalone:JSON.parse(fs.readFileSync('/app/standalone/build-provenance.json','utf8')),embeddedSha:process.env.BUILD_SHA,uid:process.getuid()}))"
+p=subprocess.run(['docker','exec','-i',name,'node','-e',js],input=json.dumps(files),stdout=subprocess.PIPE,text=True,check=True)
+actual=json.loads(p.stdout)
+expected={p:hashlib.sha256(Path(p).read_bytes()).hexdigest() for p in files}
+diff=[p for p in files if actual['files'].get(p)!=expected[p]]
+assert not diff and actual['uid']==1001
+assert actual['embeddedSha']==sha and actual['provenance']['sourceSha']==sha and actual['standalone']['sourceSha']==sha
+assert image['Config']['Labels']['org.opencontainers.image.revision']==sha
+result=dict(sourceSha=sha,imageId=container['Image'],configuredImage=container['Config']['Image'],ociRevision=sha,uid=actual['uid'],provenance=actual['provenance'],standaloneProvenance=actual['standalone'],filesCompared=len(files),mismatches=diff,fileSha256=expected)
+Path('scratch/review-provenance-runtime/image-binding.json').write_text(json.dumps(result,indent=2)+'\n')
+print('PASS:',len(files),'shipped source/config files equal; OCI, BUILD_SHA and both provenance files match',flush=True)

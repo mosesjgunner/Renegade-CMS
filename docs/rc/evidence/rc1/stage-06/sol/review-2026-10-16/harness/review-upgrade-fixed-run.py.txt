@@ -1,0 +1,76 @@
+from pathlib import Path
+import subprocess,json,time,secrets,os
+root=Path.cwd();out=root/'scratch/review-upgrade-fixed-checks';sha=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip();oldsha='01908f39a3ce40b5eae5d4dec64b981e103d5fb1'
+project='sol-review-authentic-upgrade2-20261016';compose='scratch/review.upgrade.restore.yaml';envFile=Path('scratch/sol-review-authentic-upgrade2.env');commands=[]
+def run(label,args,expected=0,env=None):
+    started=time.time()
+    with (out/(label+'.private.log')).open('wb') as log:r=subprocess.run(args,env=env,stdout=log,stderr=subprocess.STDOUT)
+    commands.append(dict(label=label,command=args,toolSourceSha=sha,exitCode=r.returncode,expectedExit=expected,durationSeconds=round(time.time()-started,2)))
+    (out/'commands.json').write_text(json.dumps(commands,indent=2)+'\n');print(label,'exit',r.returncode,flush=True)
+    assert r.returncode==expected,(label,r.returncode)
+def ledger(name):
+    return subprocess.check_output(['docker','exec',name+'-postgres-1','psql','-U','renegade','-d','renegade','-Atc','SELECT name FROM payload_migrations ORDER BY name'],text=True).strip().splitlines()
+def metadata(name):
+    m=json.loads(subprocess.check_output(['docker','inspect',name+'-renegade-web-1'],text=True))[0]
+    e=dict(v.split('=',1) for v in m['Config']['Env'] if '=' in v)
+    return dict(project=name,image=m['Config']['Image'],imageId=m['Image'],buildSha=e['BUILD_SHA'],uid=m['Config']['User'],testAuth=e.get('LOCAL_E2E_TEST_MODE'),health=m['State']['Health']['Status'])
+def browser(phase):
+    env=os.environ.copy();env.update(APP_URL='https://dispatch.rc02.test:3399',UPGRADE_PHASE=phase,REPORT_LABEL='review-predecessor-fixed-'+phase,UPGRADE_EVIDENCE_DIR='scratch/review-upgrade-fixed-checks')
+    run('ordinary-owner-'+phase,['npx.cmd','playwright','test','--config','scratch/playwright.config.ts','20-predecessor.spec.ts'],env=env)
+Path('scratch/active-upstream.txt').write_text('3347')
+log=(out/'proxy.private.log').open('wb');proxy=subprocess.Popen(['node','scratch/proxy-switch.mjs'],stdout=log,stderr=subprocess.STDOUT,creationflags=subprocess.CREATE_NO_WINDOW)
+try:
+    time.sleep(1);assert proxy.poll() is None
+    run('start-owned-predecessor',['docker','compose','--project-name',project,'--env-file',str(envFile),'-f',compose,'up','-d','--no-deps','--wait','renegade-web','renegade-worker'])
+    run('owned-ingress-gateway',['docker','compose','--project-name',project,'--env-file',str(envFile),'-f',compose,'up','-d','--no-deps','--wait','review-gateway'])
+    beforeMeta=metadata(project);assert beforeMeta['buildSha']==oldsha and beforeMeta['testAuth']=='false'
+    before=ledger(project);assert len(before)==112
+    browser('before')
+    run('pre-upgrade-backup',['node','--import','tsx','src/scripts/operational-backup.ts','--output','scratch/review-pre-upgrade-fixed-backup','--maintenance-window-confirmed','--compose-file',compose,'--env-file',str(envFile)])
+    archive=next(Path('scratch/review-pre-upgrade-fixed-backup').glob('renegade-backup-*'))
+    manifest=json.loads((archive/'manifest.json').read_text());assert manifest['renegade']['buildSha']==oldsha
+    tag='sol-review-'+sha[:8]
+    run('local-artifact-alias',['docker','tag','renegade-cms:'+tag,'renegade-rc08c:'+tag])
+    e=dict(line.split('=',1) for line in envFile.read_text().splitlines() if '=' in line);assert e['BUILD_SHA']==oldsha
+    envFile.write_text('\n'.join(k+'='+v for k,v in e.items())+'\n')
+    run('supported-upgrade',['node','--import','tsx','src/scripts/operational-upgrade.ts','--target-image-tag',tag,'--target-version','0.1.0','--backup-output','scratch/review-upgrade-automatic-backup-provenance','--maintenance-window-confirmed','--compose-file',compose,'--env-file',str(envFile)])
+    automatic=next(Path('scratch/review-upgrade-automatic-backup-provenance').glob('renegade-backup-*'))
+    automaticManifest=json.loads((automatic/'manifest.json').read_text());assert automaticManifest['renegade']['buildSha']==oldsha
+    e['RENEGADE_IMAGE_TAG']=tag;envFile.write_text('\n'.join(k+'='+v for k,v in e.items())+'\n')
+    after=ledger(project);assert len(after)==116 and set(before)<set(after)
+    afterMeta=metadata(project)
+    embedded=json.loads(subprocess.check_output(['docker','exec',project+'-renegade-web-1','node','-e',"console.log(require('node:fs').readFileSync('/app/build-provenance.json','utf8'))"],text=True))
+    (out/'after-native-upgrade-binding.json').write_text(json.dumps(dict(expectedSource=sha,runtime=afterMeta,embedded=embedded),indent=2)+'\n')
+    assert afterMeta['buildSha']==sha
+    e.update(BUILD_SHA=sha,APP_VERSION='0.1.0');envFile.write_text('\n'.join(k+'='+v for k,v in e.items())+'\n')
+    browser('after')
+    run('schema-changing-image-rollback-refused',['node','--import','tsx','src/scripts/operational-rollback.ts','--pre-upgrade-backup',str(archive),'--target-image-tag','01908f3','--target-version','0.1.0','--allow-image-rollback','--maintenance-window-confirmed','--compose-file',compose,'--env-file',str(envFile)],expected=1)
+    text=(out/'schema-changing-image-rollback-refused.private.log').read_text(errors='replace').lower();assert 'migration' in text and 'restore' in text
+    # A same-schema image rollback must also carry the selected image's source,
+    # rather than retaining the newer installation's BUILD_SHA.
+    run('same-schema-backup',['node','--import','tsx','src/scripts/operational-backup.ts','--output','scratch/review-same-schema-backup','--maintenance-window-confirmed','--compose-file',compose,'--env-file',str(envFile)])
+    sameArchive=next(Path('scratch/review-same-schema-backup').glob('renegade-backup-*'))
+    sameManifest=json.loads((sameArchive/'manifest.json').read_text());assert sameManifest['renegade']['buildSha']==sha and len(sameManifest['migrationState'])==116
+    previousSha='df8999449b6b2485c6e3339f3389c12ef5a618e0';previousTag='sol-review-'+previousSha[:8]
+    run('same-schema-image-rollback',['node','--import','tsx','src/scripts/operational-rollback.ts','--pre-upgrade-backup',str(sameArchive),'--target-image-tag',previousTag,'--target-version','0.1.0','--allow-image-rollback','--maintenance-window-confirmed','--compose-file',compose,'--env-file',str(envFile)])
+    sameRolled=metadata(project);assert sameRolled['buildSha']==previousSha and ledger(project)==after
+    browser('same-schema-rollback')
+    e.update(BUILD_SHA=previousSha,RENEGADE_IMAGE_TAG=previousTag);envFile.write_text('\n'.join(k+'='+v for k,v in e.items())+'\n')
+    run('same-schema-rollforward',['node','--import','tsx','src/scripts/operational-upgrade.ts','--target-image-tag',tag,'--target-version','0.1.0','--backup',str(sameArchive),'--maintenance-window-confirmed','--compose-file',compose,'--env-file',str(envFile)])
+    sameForward=metadata(project);assert sameForward['buildSha']==sha and ledger(project)==after
+    browser('same-schema-rollforward')
+    e.update(BUILD_SHA=sha,RENEGADE_IMAGE_TAG=tag);envFile.write_text('\n'.join(k+'='+v for k,v in e.items())+'\n')
+    rollback='sol-review-authentic-rollback2-20261016';assert rollback not in subprocess.check_output(['docker','ps','-a','--format','{{.Names}}'],text=True)
+    r=e.copy();r.update(RENEGADE_INSTANCE=rollback,RENEGADE_RESTORE_INSTANCE=rollback,RENEGADE_IMAGE_TAG='01908f3',BUILD_SHA=oldsha,RENEGADE_RESTORE_WEB_BIND='127.0.0.1:3348',PAYLOAD_SECRET=secrets.token_hex(48),POSTGRES_PASSWORD=secrets.token_hex(24),REVIEW_INTERNAL_SUBNET='10.203.66.0/24',REVIEW_GATEWAY_SUBNET='10.203.67.0/24')
+    rollbackEnv=Path('scratch/sol-review-authentic-rollback2.env');rollbackEnv.write_text('\n'.join(k+'='+v for k,v in r.items())+'\n')
+    run('complete-predecessor-rollback-restore',['node','--import','tsx','src/scripts/operational-restore.ts','--archive',str(archive),'--target-version','0.1.0','--isolated','--authorize-restore','--compose-file',compose,'--env-file',str(rollbackEnv)])
+    run('rollback-ingress-gateway',['docker','compose','--project-name',rollback,'--env-file',str(rollbackEnv),'-f',compose,'up','-d','--no-deps','--wait','review-gateway'])
+    Path('scratch/active-upstream.txt').write_text('3348');browser('rollback')
+    rolled=ledger(rollback);rolledMeta=metadata(rollback);assert rolled==before and rolledMeta['imageId']==beforeMeta['imageId']
+    report=dict(toolSourceSha=sha,predecessorSourceSha=oldsha,before=beforeMeta,after=afterMeta,rollback=rolledMeta,migrationCounts=dict(before=len(before),after=len(after),rollback=len(rolled)),newMigrations=sorted(set(after)-set(before)),ordinaryOwnerAuthenticationBeforeAfterRollback=True,automaticBackupPath=str(automatic.resolve()),automaticBackupVerified=True,sameSchemaRollback=dict(runtime=sameRolled,rollforward=sameForward,migrationsUnchanged=True,ordinaryBrowserBoth=True),imageOnlyRollbackRefused=True,fullRollbackArchive=str(archive.resolve()),scope='Actual historical local installation archive, preserved real WebAuthn hardware, native supported upgrade and empty-project rollback. Covers recorded predecessor data, not arbitrary customer archives or live providers.')
+    (out/'UPGRADE_ROLLBACK.json').write_text(json.dumps(report,indent=2)+'\n');print('PASS: authentic 112 -> 116 migration upgrade and complete 112-migration rollback; ordinary authentication and media preserved',flush=True)
+finally:
+    proxy.terminate()
+    try:proxy.wait(timeout=15)
+    except subprocess.TimeoutExpired:proxy.kill();proxy.wait()
+    log.close()

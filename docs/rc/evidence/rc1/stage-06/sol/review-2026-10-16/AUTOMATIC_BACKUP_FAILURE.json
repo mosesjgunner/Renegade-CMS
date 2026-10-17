@@ -1,0 +1,23 @@
+{
+  "command": [
+    "node",
+    "--import",
+    "tsx",
+    "src/scripts/operational-upgrade.ts",
+    "--target-image-tag",
+    "01908f3",
+    "--target-version",
+    "0.1.0",
+    "--backup-output",
+    "scratch/review-upgrade-automatic-backup",
+    "--maintenance-window-confirmed",
+    "--compose-file",
+    "scratch/review.upgrade.restore.yaml",
+    "--env-file",
+    "scratch/sol-review-authentic-upgrade.env"
+  ],
+  "exitCode": 1,
+  "sourceSha": "56786472039f11dd00e9b4e3ad96e21839c4344a",
+  "target": "sol-review-authentic-upgrade-20261016",
+  "scope": "Owned disposable predecessor, same immutable predecessor image; no existing installation"
+}

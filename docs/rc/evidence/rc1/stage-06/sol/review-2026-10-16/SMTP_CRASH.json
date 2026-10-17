@@ -1,0 +1,25 @@
+{
+  "sourceSha": "f6f5f803d79f795f70eb23307116ac2363f6b409",
+  "killedExit": 137,
+  "signal": "SIGKILL",
+  "boundary": {
+    "deliveryId": "044023b7-6527-4d0d-8af5-73eaf4fae17b",
+    "status": "sending",
+    "attempts": 1,
+    "point": "real SMTP accepted; acknowledgement persistence has not executed",
+    "pid": 1
+  },
+  "acceptedLocalMIMECount": 1,
+  "recovered": {
+    "deliveryId": "044023b7-6527-4d0d-8af5-73eaf4fae17b",
+    "status": "unknown",
+    "attempts": 1,
+    "outcome": {
+      "code": "interrupted_send",
+      "message": "Interrupted send; provider acceptance requires reconciliation.",
+      "retryable": false
+    }
+  },
+  "replayUnchanged": true,
+  "scope": "Local SMTP; uncertain provider acceptance is held for reconciliation without resend"
+}

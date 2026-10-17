@@ -1,0 +1,322 @@
+{
+  "verdict": "STAGE 06 SOL PASS; RC1 NOT READY",
+  "signedBy": "Sol",
+  "date": "2026-10-16 America/Chicago",
+  "executableSourceSha": "f6f5f803d79f795f70eb23307116ac2363f6b409",
+  "reviewedMainSha": "f9bdf6e13748ab75ec3362c98e11153c07fe5a98",
+  "geminiSourceSha": "9b1272151458227f98750d1094b307cd97267815",
+  "hostQuality": {
+    "sourceSha": "f6f5f803d79f795f70eb23307116ac2363f6b409",
+    "unitFiles": 199,
+    "unitPassed": 1320,
+    "failed": 0,
+    "skipped": 0,
+    "commands": [
+      {
+        "gate": "format",
+        "command": ["npm.cmd", "run", "format:check"],
+        "sourceSha": "f6f5f803d79f795f70eb23307116ac2363f6b409",
+        "exitCode": 0,
+        "durationSeconds": 40.98,
+        "clean": true
+      },
+      {
+        "gate": "lint",
+        "command": ["npm.cmd", "run", "lint"],
+        "sourceSha": "f6f5f803d79f795f70eb23307116ac2363f6b409",
+        "exitCode": 0,
+        "durationSeconds": 32.73,
+        "clean": true
+      },
+      {
+        "gate": "types",
+        "command": ["npm.cmd", "run", "typecheck"],
+        "sourceSha": "f6f5f803d79f795f70eb23307116ac2363f6b409",
+        "exitCode": 0,
+        "durationSeconds": 10.94,
+        "clean": true
+      },
+      {
+        "gate": "unit",
+        "command": ["npm.cmd", "test"],
+        "sourceSha": "f6f5f803d79f795f70eb23307116ac2363f6b409",
+        "exitCode": 0,
+        "durationSeconds": 34.0,
+        "clean": true
+      },
+      {
+        "gate": "build",
+        "command": ["npm.cmd", "run", "build"],
+        "sourceSha": "f6f5f803d79f795f70eb23307116ac2363f6b409",
+        "exitCode": 0,
+        "durationSeconds": 43.5,
+        "clean": true
+      },
+      {
+        "gate": "bundles",
+        "command": ["npm.cmd", "run", "verify:presentation-bundles"],
+        "sourceSha": "f6f5f803d79f795f70eb23307116ac2363f6b409",
+        "exitCode": 0,
+        "durationSeconds": 0.64,
+        "clean": true
+      }
+    ]
+  },
+  "retainedIntegration": {
+    "sourceSha": "56786472039f11dd00e9b4e3ad96e21839c4344a",
+    "files": 52,
+    "passed": 299,
+    "failed": 0,
+    "skipped": 0
+  },
+  "image": {
+    "sourceSha": "f6f5f803d79f795f70eb23307116ac2363f6b409",
+    "image": "renegade-cms:sol-review-f6f5f803",
+    "imageId": "sha256:73af72fb24f0298315b5e257e00c473ff4b04d2529bf8f2c6f55cd983bebb4a6",
+    "filesCompared": 869,
+    "mismatches": []
+  },
+  "currentImageBrowser": {
+    "startTime": "2026-10-17T00:14:33.957Z",
+    "duration": 62957.367999999995,
+    "expected": 3,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "smtp": {
+    "sourceSha": "f6f5f803d79f795f70eb23307116ac2363f6b409",
+    "killedExit": 137,
+    "signal": "SIGKILL",
+    "boundary": {
+      "deliveryId": "044023b7-6527-4d0d-8af5-73eaf4fae17b",
+      "status": "sending",
+      "attempts": 1,
+      "point": "real SMTP accepted; acknowledgement persistence has not executed",
+      "pid": 1
+    },
+    "acceptedLocalMIMECount": 1,
+    "recovered": {
+      "deliveryId": "044023b7-6527-4d0d-8af5-73eaf4fae17b",
+      "status": "unknown",
+      "attempts": 1,
+      "outcome": {
+        "code": "interrupted_send",
+        "message": "Interrupted send; provider acceptance requires reconciliation.",
+        "retryable": false
+      }
+    },
+    "replayUnchanged": true,
+    "scope": "Local SMTP; uncertain provider acceptance is held for reconciliation without resend"
+  },
+  "failedOnlyRetry": {
+    "sourceSha": "f6f5f803d79f795f70eb23307116ac2363f6b409",
+    "result": {
+      "deliveryId": "1b7ba2a8-9627-4e15-81c6-1f669ebae147",
+      "realSmtp451": true,
+      "operatorUIRetry": true,
+      "acceptedAttempts": 2,
+      "acceptedLocalMIMECount": 1,
+      "acceptedRetryDenied": 409,
+      "uncertainRetryDenied": 409,
+      "uncertainAttemptsUnchanged": true
+    }
+  },
+  "nativeUpgradeRollback": {
+    "toolSourceSha": "f6f5f803d79f795f70eb23307116ac2363f6b409",
+    "predecessorSourceSha": "01908f39a3ce40b5eae5d4dec64b981e103d5fb1",
+    "before": {
+      "project": "sol-review-authentic-upgrade2-20261016",
+      "image": "renegade-rc08c:01908f3",
+      "imageId": "sha256:1f0468728fd1738952d2c8c46394c92a77c9d582f48dbb090e4f16857554b985",
+      "buildSha": "01908f39a3ce40b5eae5d4dec64b981e103d5fb1",
+      "uid": "nextjs",
+      "testAuth": "false",
+      "health": "healthy"
+    },
+    "after": {
+      "project": "sol-review-authentic-upgrade2-20261016",
+      "image": "renegade-rc08c:sol-review-f6f5f803",
+      "imageId": "sha256:73af72fb24f0298315b5e257e00c473ff4b04d2529bf8f2c6f55cd983bebb4a6",
+      "buildSha": "f6f5f803d79f795f70eb23307116ac2363f6b409",
+      "uid": "nextjs",
+      "testAuth": "false",
+      "health": "healthy"
+    },
+    "rollback": {
+      "project": "sol-review-authentic-rollback2-20261016",
+      "image": "renegade-rc08c:01908f3",
+      "imageId": "sha256:1f0468728fd1738952d2c8c46394c92a77c9d582f48dbb090e4f16857554b985",
+      "buildSha": "01908f39a3ce40b5eae5d4dec64b981e103d5fb1",
+      "uid": "nextjs",
+      "testAuth": "false",
+      "health": "healthy"
+    },
+    "migrationCounts": {
+      "before": 112,
+      "after": 116,
+      "rollback": 112
+    },
+    "newMigrations": [
+      "20261013_160000_rc1_uuid_schema_repair",
+      "20261013_180000_rc1_editorial_calendar_audits",
+      "20261014_220000_rc1_cart_and_worker_schema",
+      "20261014_230000_rc1_machine_request_scope"
+    ],
+    "ordinaryOwnerAuthenticationBeforeAfterRollback": true,
+    "automaticBackupPath": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-automatic-backup-provenance\\renegade-backup-2026-10-17T00-16-36-302Z",
+    "automaticBackupVerified": true,
+    "sameSchemaRollback": {
+      "runtime": {
+        "project": "sol-review-authentic-upgrade2-20261016",
+        "image": "renegade-rc08c:sol-review-df899944",
+        "imageId": "sha256:240a6552a07624f08ae473d9c98b97c28ea44e6904e60b4182952f5fbd848530",
+        "buildSha": "df8999449b6b2485c6e3339f3389c12ef5a618e0",
+        "uid": "nextjs",
+        "testAuth": "false",
+        "health": "healthy"
+      },
+      "rollforward": {
+        "project": "sol-review-authentic-upgrade2-20261016",
+        "image": "renegade-rc08c:sol-review-f6f5f803",
+        "imageId": "sha256:73af72fb24f0298315b5e257e00c473ff4b04d2529bf8f2c6f55cd983bebb4a6",
+        "buildSha": "f6f5f803d79f795f70eb23307116ac2363f6b409",
+        "uid": "nextjs",
+        "testAuth": "false",
+        "health": "healthy"
+      },
+      "migrationsUnchanged": true,
+      "ordinaryBrowserBoth": true
+    },
+    "imageOnlyRollbackRefused": true,
+    "fullRollbackArchive": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-pre-upgrade-fixed-backup\\renegade-backup-2026-10-17T00-16-17-795Z",
+    "scope": "Actual historical local installation archive, preserved real WebAuthn hardware, native supported upgrade and empty-project rollback. Covers recorded predecessor data, not arbitrary customer archives or live providers.",
+    "allArchivedMediaVerification": [
+      {
+        "phase": "after-same-schema-rollforward",
+        "project": "sol-review-authentic-upgrade2-20261016",
+        "archivedMediaFiles": 21,
+        "matched": 21,
+        "mismatches": [],
+        "extraPaths": [".renegade/backup-status.json"],
+        "extraExplanation": "Supported backup health diagnostic is excluded from portable archives"
+      },
+      {
+        "phase": "full-predecessor-rollback",
+        "project": "sol-review-authentic-rollback2-20261016",
+        "archivedMediaFiles": 21,
+        "matched": 21,
+        "mismatches": [],
+        "extraPaths": [],
+        "extraExplanation": "Supported backup health diagnostic is excluded from portable archives"
+      }
+    ]
+  },
+  "containment": [
+    {
+      "sourceSha": "9b1272151458227f98750d1094b307cd97267815",
+      "candidateSha": "f6f5f803d79f795f70eb23307116ac2363f6b409",
+      "isAncestor": true
+    },
+    {
+      "sourceSha": "3f464a6903ff26e7489179df29749f065cb55299",
+      "candidateSha": "f6f5f803d79f795f70eb23307116ac2363f6b409",
+      "isAncestor": true
+    },
+    {
+      "sourceSha": "a5e93e27917aab3a7a2ef6053d424ebe07cd5573",
+      "candidateSha": "f6f5f803d79f795f70eb23307116ac2363f6b409",
+      "isAncestor": true
+    },
+    {
+      "sourceSha": "b51f8113eeefdd7ab1c9920d5b84dfe756f1ec31",
+      "candidateSha": "f6f5f803d79f795f70eb23307116ac2363f6b409",
+      "isAncestor": true
+    },
+    {
+      "sourceSha": "df8999449b6b2485c6e3339f3389c12ef5a618e0",
+      "candidateSha": "f6f5f803d79f795f70eb23307116ac2363f6b409",
+      "isAncestor": true
+    },
+    {
+      "sourceSha": "73333b03375075596f1600b853f99f1dc27fae9a",
+      "candidateSha": "f6f5f803d79f795f70eb23307116ac2363f6b409",
+      "isAncestor": false
+    }
+  ],
+  "changes": [
+    {
+      "sha": "871da425aa33bd80531ae4c51c1b6ded2a1bb693",
+      "subject": "fix: honor configured proxy host for local donation checkout",
+      "files": [
+        "src/app/(frontend)/api/commerce/donations/intent/route.ts",
+        "tests/unit/shop-07-donation-checkout-route.test.ts"
+      ]
+    },
+    {
+      "sha": "bd1c195d91a79de416cb9d012b3f6a0bb323243c",
+      "subject": "fix: reconcile interrupted email acceptance without resending",
+      "files": ["src/modules/audience/tasks.ts", "tests/unit/audience-interrupted-delivery.test.ts"]
+    },
+    {
+      "sha": "a5e93e27917aab3a7a2ef6053d424ebe07cd5573",
+      "subject": "fix(operations): await archive transfers and propagate IO failures",
+      "files": [
+        "src/scripts/operational-backup.ts",
+        "src/scripts/operational-process.ts",
+        "src/scripts/operational-restore.ts",
+        "tests/unit/operational-process.test.ts"
+      ]
+    },
+    {
+      "sha": "9a834f6560db30bb6e9ba1ab9199992e09f39c63",
+      "subject": "fix(operations): accept successful Windows archive reader EOF",
+      "files": ["src/scripts/operational-process.ts"]
+    },
+    {
+      "sha": "b51f8113eeefdd7ab1c9920d5b84dfe756f1ec31",
+      "subject": "fix(commerce): return not found for unmapped donation hosts",
+      "files": [
+        "src/app/(frontend)/api/commerce/donations/intent/route.ts",
+        "tests/unit/shop-07-donation-checkout-route.test.ts"
+      ]
+    },
+    {
+      "sha": "56786472039f11dd00e9b4e3ad96e21839c4344a",
+      "subject": "fix(audience): serialize email dispatch and retry; stop accepted replays",
+      "files": [
+        "src/app/(frontend)/api/admin/audience/retry/route.ts",
+        "src/modules/audience/tasks.ts",
+        "tests/integration/audience-dispatch-concurrency.integration.test.ts",
+        "tests/unit/audience-interrupted-delivery.test.ts"
+      ]
+    },
+    {
+      "sha": "df8999449b6b2485c6e3339f3389c12ef5a618e0",
+      "subject": "fix(operations): launch nested CLIs through Node on Windows",
+      "files": [
+        "src/scripts/operational-process.ts",
+        "src/scripts/operational-restore-rehearsal.ts",
+        "src/scripts/operational-upgrade.ts",
+        "tests/unit/operational-process.test.ts"
+      ]
+    },
+    {
+      "sha": "f6f5f803d79f795f70eb23307116ac2363f6b409",
+      "subject": "fix(operations): bind upgrade and rollback to target image provenance",
+      "files": [
+        "src/scripts/operational-compose.ts",
+        "src/scripts/operational-rollback.ts",
+        "src/scripts/operational-upgrade.ts",
+        "tests/unit/operational-image-provenance.test.ts"
+      ]
+    }
+  ],
+  "nextStage": "Stage 07 immutable acceptance; not executed by this Stage 06 sign-off",
+  "providerBoundary": "Real local SMTP/TCP and deterministic local payment/manual fulfillment; no live delivery/charge/provider claim",
+  "preexistingTag": {
+    "object": "ef13d2031bafca5f07ce09c2ace529fcd6f9be9a",
+    "peeled": "2aa4957ac044694714cb4dfc52fb76f7c4109262",
+    "modified": false
+  }
+}

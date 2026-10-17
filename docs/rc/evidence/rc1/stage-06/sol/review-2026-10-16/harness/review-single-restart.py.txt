@@ -1,0 +1,23 @@
+from pathlib import Path
+import subprocess,json,os,secrets,time
+name='sol-gemini-review-gates-20261016'
+meta=json.loads(subprocess.check_output(['docker','inspect',name],text=True))[0]
+assert meta['Config']['Labels']['purpose']=='disposable-sol-gemini-review'
+private=dict(v.split('=',1) for v in meta['Config']['Env'] if '=' in v)
+port=subprocess.check_output(['docker','port',name,'5432'],text=True).strip().split(':')[-1]
+database='review_restart_alone_release_acceptance'
+subprocess.run(['docker','exec',name,'createdb','-U','renegade',database],check=True)
+env=os.environ.copy();env.update(DATABASE_URL=f"postgresql://renegade:{private['POSTGRES_PASSWORD']}@127.0.0.1:{port}/{database}",PAYLOAD_SECRET=secrets.token_hex(48),APP_URL='http://localhost:3000',RENEGADE_MODULES='all',RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT='true',LOCAL_E2E_TEST_MODE='false')
+env['INTEGRATION_DATABASE_URL']=env['DATABASE_URL']
+receipts=[]
+for label,args in [('restart-alone-fresh',['npm.cmd','run','test:migrations:fresh']),('restart-alone',['npm.cmd','run','test:integration','--','tests/integration/rc03-restart-recovery.integration.test.ts'])]:
+    started=time.time()
+    file=Path('scratch/review-checks/'+label+'.log')
+    with file.open('wb') as log:p=subprocess.run(args,env=env,stdout=log,stderr=subprocess.STDOUT)
+    text=file.read_text(errors='replace')
+    for key in [private['POSTGRES_PASSWORD'],env['PAYLOAD_SECRET']]:text=text.replace(key,'[REDACTED]')
+    file.write_text(text,encoding='utf8')
+    receipts.append(dict(command=args,sourceSha=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip(),exitCode=p.returncode,database=database,durationSeconds=round(time.time()-started,2)))
+    Path('scratch/review-checks/restart-alone-gates.json').write_text(json.dumps(receipts,indent=2)+'\n')
+    print(label,'exit',p.returncode,flush=True)
+    if p.returncode:raise SystemExit(p.returncode)

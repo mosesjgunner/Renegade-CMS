@@ -1,0 +1,40 @@
+import {test,expect} from '@playwright/test'
+import {readFileSync,writeFileSync,readdirSync} from 'node:fs'
+import {operator,api} from './helpers'
+
+test('restored operator retries a proven SMTP failure and refuses accepted or uncertain deliveries',async({page,browser})=>{
+  await operator(page)
+  const email=`restore-retry-${Date.now()}@example.test`
+  const acceptedCount=(address:string)=>readdirSync('scratch/rc04-mail').filter(n=>n.endsWith('.json')).map(n=>JSON.parse(readFileSync(`scratch/rc04-mail/${n}`,'utf8'))).filter(m=>m.recipient.includes(address)).length
+  const context=await browser.newContext({baseURL:process.env.APP_URL,ignoreHTTPSErrors:true})
+  const publicPage=await context.newPage()
+  try{
+    writeFileSync('scratch/rc04-smtp-mode.txt','temporary')
+    await api(publicPage,'POST','/api/subscribers/subscribe',{email},202)
+    let delivery:any
+    await expect.poll(async()=>{
+      delivery=(await api(page,'GET',`/api/email-deliveries?where[recipientEmail][equals]=${encodeURIComponent(email)}&depth=0`)).docs[0]
+      return delivery?.outcome?.retryable
+    },{timeout:70000}).toBe(true)
+    expect(acceptedCount(email)).toBe(0)
+    expect(delivery.status).toBe('queued')
+    await page.goto('/admin/email-composer')
+    await page.getByLabel('Delivery ID').fill(delivery.id)
+    await page.getByRole('button',{name:'Retry delivery'}).click()
+    await expect(page.locator('main p[role="status"]')).toContainText('Retry queued')
+    writeFileSync('scratch/rc04-smtp-mode.txt','accept')
+    await expect.poll(async()=> (await api(page,'GET',`/api/email-deliveries/${delivery.id}?depth=0`)).status,{timeout:70000}).toBe('accepted')
+    const accepted=await api(page,'GET',`/api/email-deliveries/${delivery.id}?depth=0`)
+    expect(accepted.attempts).toBeGreaterThan(1)
+    await api(page,'POST','/api/admin/audience/retry',{deliveryId:delivery.id},409)
+    const uncertain=JSON.parse(readFileSync('scratch/review-provenance-email-proof/email-fixture.json','utf8'))
+    const before=await api(page,'GET',`/api/email-deliveries/${uncertain.deliveryId}?depth=0`)
+    expect(before.status).toBe('unknown')
+    await api(page,'POST','/api/admin/audience/retry',{deliveryId:uncertain.deliveryId},409)
+    await page.waitForTimeout(12000)
+    expect(acceptedCount(email)).toBe(1)
+    const after=await api(page,'GET',`/api/email-deliveries/${uncertain.deliveryId}?depth=0`)
+    expect(after.status).toBe('unknown');expect(after.attempts).toBe(before.attempts)
+    writeFileSync('scratch/review-pending-checks/failed-only-retry.json',JSON.stringify({deliveryId:delivery.id,realSmtp451:true,operatorUIRetry:true,acceptedAttempts:accepted.attempts,acceptedLocalMIMECount:1,acceptedRetryDenied:409,uncertainRetryDenied:409,uncertainAttemptsUnchanged:true},null,2))
+  }finally{writeFileSync('scratch/rc04-smtp-mode.txt','accept');await context.close()}
+})

@@ -1,0 +1,7 @@
+{
+  "checkedDockerNetworks": 32,
+  "checkedSpecificHostRoutes": 21,
+  "chosen": ["10.203.64.0/24", "10.203.65.0/24", "10.203.66.0/24", "10.203.67.0/24"],
+  "overlaps": false,
+  "existingNetworksRemoved": 0
+}

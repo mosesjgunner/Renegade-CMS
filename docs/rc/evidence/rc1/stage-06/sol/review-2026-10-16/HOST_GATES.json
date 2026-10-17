@@ -1,0 +1,50 @@
+[
+  {
+    "gate": "format",
+    "command": ["npm.cmd", "run", "format:check"],
+    "sourceSha": "f6f5f803d79f795f70eb23307116ac2363f6b409",
+    "exitCode": 0,
+    "durationSeconds": 40.98,
+    "clean": true
+  },
+  {
+    "gate": "lint",
+    "command": ["npm.cmd", "run", "lint"],
+    "sourceSha": "f6f5f803d79f795f70eb23307116ac2363f6b409",
+    "exitCode": 0,
+    "durationSeconds": 32.73,
+    "clean": true
+  },
+  {
+    "gate": "types",
+    "command": ["npm.cmd", "run", "typecheck"],
+    "sourceSha": "f6f5f803d79f795f70eb23307116ac2363f6b409",
+    "exitCode": 0,
+    "durationSeconds": 10.94,
+    "clean": true
+  },
+  {
+    "gate": "unit",
+    "command": ["npm.cmd", "test"],
+    "sourceSha": "f6f5f803d79f795f70eb23307116ac2363f6b409",
+    "exitCode": 0,
+    "durationSeconds": 34.0,
+    "clean": true
+  },
+  {
+    "gate": "build",
+    "command": ["npm.cmd", "run", "build"],
+    "sourceSha": "f6f5f803d79f795f70eb23307116ac2363f6b409",
+    "exitCode": 0,
+    "durationSeconds": 43.5,
+    "clean": true
+  },
+  {
+    "gate": "bundles",
+    "command": ["npm.cmd", "run", "verify:presentation-bundles"],
+    "sourceSha": "f6f5f803d79f795f70eb23307116ac2363f6b409",
+    "exitCode": 0,
+    "durationSeconds": 0.64,
+    "clean": true
+  }
+]

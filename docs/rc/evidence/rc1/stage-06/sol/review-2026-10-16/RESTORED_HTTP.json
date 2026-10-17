@@ -1,0 +1,159 @@
+{
+  "sourceSha": "f6f5f803d79f795f70eb23307116ac2363f6b409",
+  "actors": [
+    {
+      "role": "owner",
+      "method": "ordinary login using retained virtual hardware credential",
+      "forgedSessions": 0
+    },
+    {
+      "role": "staff",
+      "method": "ordinary login using retained virtual hardware credential",
+      "forgedSessions": 0
+    },
+    {
+      "role": "member",
+      "method": "new ordinary MIME magic link",
+      "memberId": "ddac2775-db7f-4981-9911-9bfd6c895bea",
+      "forgedSessions": 0
+    }
+  ],
+  "categories": {
+    "users": {
+      "totalDocs": 2,
+      "returned": 2
+    },
+    "members": {
+      "totalDocs": 15,
+      "returned": 15
+    },
+    "member-site-roles": {
+      "totalDocs": 3,
+      "returned": 3
+    },
+    "media-assets": {
+      "totalDocs": 11,
+      "returned": 11
+    },
+    "content": {
+      "totalDocs": 4,
+      "returned": 4
+    },
+    "article-family-content": {
+      "totalDocs": 3,
+      "returned": 3
+    },
+    "audience-lists": {
+      "totalDocs": 1,
+      "returned": 1
+    },
+    "subscribers": {
+      "totalDocs": 11,
+      "returned": 11
+    },
+    "audience-memberships": {
+      "totalDocs": 11,
+      "returned": 11
+    },
+    "consent-events": {
+      "totalDocs": 19,
+      "returned": 19
+    },
+    "email-messages": {
+      "totalDocs": 28,
+      "returned": 28
+    },
+    "contacts": {
+      "totalDocs": 1,
+      "returned": 1
+    },
+    "forum-sections": {
+      "totalDocs": 1,
+      "returned": 1
+    },
+    "forums": {
+      "totalDocs": 1,
+      "returned": 1
+    },
+    "discussions": {
+      "totalDocs": 1,
+      "returned": 1
+    },
+    "discussion-posts": {
+      "totalDocs": 3,
+      "returned": 3
+    },
+    "merchant-connections": {
+      "totalDocs": 10,
+      "returned": 10
+    },
+    "payment-method-capabilities": {
+      "totalDocs": 10,
+      "returned": 10
+    },
+    "products": {
+      "totalDocs": 22,
+      "returned": 22
+    },
+    "orders": {
+      "totalDocs": 10,
+      "returned": 10
+    },
+    "digital-delivery-grants": {
+      "totalDocs": 6,
+      "returned": 6
+    },
+    "commerce-refunds": {
+      "totalDocs": 6,
+      "returned": 6
+    },
+    "supporters": {
+      "totalDocs": 11,
+      "returned": 11
+    },
+    "subscriptions": {
+      "totalDocs": 1,
+      "returned": 1
+    },
+    "entitlements": {
+      "totalDocs": 7,
+      "returned": 7
+    },
+    "donation-campaigns": {
+      "totalDocs": 7,
+      "returned": 7
+    },
+    "donation-intents": {
+      "totalDocs": 4,
+      "returned": 4
+    },
+    "donations": {
+      "totalDocs": 4,
+      "returned": 4
+    },
+    "scheduled-publish-jobs": {
+      "totalDocs": 3,
+      "returned": 3
+    },
+    "outbound-network-deliveries": {
+      "totalDocs": 0,
+      "returned": 0
+    },
+    "email-deliveries": {
+      "totalDocs": 28,
+      "returned": 28
+    },
+    "manual-fulfillment-packages": {
+      "totalDocs": 6,
+      "returned": 6
+    },
+    "payment-webhook-events": {
+      "totalDocs": 12,
+      "returned": 12
+    },
+    "payment-attempts": {
+      "totalDocs": 12,
+      "returned": 12
+    }
+  }
+}

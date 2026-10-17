@@ -1,0 +1,29 @@
+{
+  "toolSourceSha": "b51f8113eeefdd7ab1c9920d5b84dfe756f1ec31",
+  "predecessorSha": "01908f39a3ce40b5eae5d4dec64b981e103d5fb1",
+  "imageId": "sha256:1f0468728fd1738952d2c8c46394c92a77c9d582f48dbb090e4f16857554b985",
+  "archive": "C:\\Projects\\RENEGADE CMS\\rc08c-candidate\\scratch\\rc08c\\backups\\renegade-backup-2026-10-06T16-55-11-354Z",
+  "manifestSha256": "a73636e4615c8498f85e0226202b7e188f615b8cbc90ffe5929b3f31bd628d8a",
+  "migrationCount": 112,
+  "hardwareSourcePrivate": "C:\\Projects\\RENEGADE CMS\\sol-stage06-independent-20261016\\scratch\\unblock-private\\predecessor-hardware.json",
+  "hardwareSha256": "df43692a5bbb8302db909d671ab925802bd4ca9e0368843beb826fc97494b693",
+  "command": [
+    "node",
+    "--import",
+    "tsx",
+    "src/scripts/operational-restore.ts",
+    "--archive",
+    "C:\\Projects\\RENEGADE CMS\\rc08c-candidate\\scratch\\rc08c\\backups\\renegade-backup-2026-10-06T16-55-11-354Z",
+    "--target-version",
+    "0.1.0",
+    "--isolated",
+    "--authorize-restore",
+    "--compose-file",
+    "scratch/review.upgrade.restore.yaml",
+    "--env-file",
+    "scratch/sol-review-authentic-upgrade.env"
+  ],
+  "exitCode": 0,
+  "durationSeconds": 56.27,
+  "transport": "Immutable local images; Compose pull_policy never. Not registry publication or arbitrary customer-upgrade proof."
+}

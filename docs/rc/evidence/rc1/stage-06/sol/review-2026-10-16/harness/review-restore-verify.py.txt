@@ -1,0 +1,27 @@
+from pathlib import Path
+import subprocess,json,hashlib,tarfile
+root=Path.cwd()
+sha=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
+project='sol-review-restore2-20261016';second='sol-review-roundtrip2-20261016'
+out=root/'scratch/review-repaired-checks'
+newArchive=next((root/'scratch/review-new-backup-parent2').glob('renegade-backup-*'))
+manifest=json.loads(next(Path('C:/Projects/RENEGADE CMS/sol-stage06-independent-20261016/scratch/unblock-final-populated-backup').glob('renegade-backup-*/manifest.json')).read_text())
+script="const fs=require('node:fs'),p=require('node:path'),c=require('node:crypto');let r={};function walk(d){for(const e of fs.readdirSync(d,{withFileTypes:true})){let f=p.join(d,e.name);if(e.isDirectory())walk(f);else if(e.isFile()){let b=fs.readFileSync(f);r['./'+p.relative('/app/media',f)]={bytes:b.length,sha256:c.createHash('sha256').update(b).digest('hex')}}}}walk('/app/media');console.log(JSON.stringify(r))"
+actual=json.loads(subprocess.check_output(['docker','exec',second+'-renegade-web-1','node','-e',script],text=True))
+with tarfile.open(newArchive/'media.tar.gz') as tar:
+    expected={m.name:dict(bytes=m.size,sha256=hashlib.sha256(tar.extractfile(m).read()).hexdigest()) for m in tar.getmembers() if m.isfile()}
+assert all(actual.get(k)==v for k,v in expected.items())
+meta=json.loads(subprocess.check_output(['docker','inspect',project+'-renegade-web-1',second+'-renegade-web-1'],text=True))
+runtimeEnvs=[dict(v.split('=',1) for v in x['Config']['Env'] if '=' in v) for x in meta]
+assert runtimeEnvs[0]['PAYLOAD_SECRET']!=runtimeEnvs[1]['PAYLOAD_SECRET']
+assert runtimeEnvs[0]['DATABASE_URL']!=runtimeEnvs[1]['DATABASE_URL']
+for e in runtimeEnvs:
+    assert e['BUILD_SHA']==sha and e['LOCAL_E2E_TEST_MODE']=='false' and e['ENABLE_TEST_ROUTES']=='false'
+volumes=[{m['Name'] for m in x['Mounts'] if m['Type']=='volume'} for x in meta]
+networks=[set(x['NetworkSettings']['Networks']) for x in meta]
+assert not volumes[0]&volumes[1] and not networks[0]&networks[1]
+report=dict(sourceSha=sha,archiveSource=manifest['renegade'],mediaFilesMatched=len(expected),volumesDisjoint=True,networksDisjoint=True,projects=[project,second],scope='Operational populated archive roundtrip and media verification; does not by itself prove browser identities or pending business recovery')
+(out/'restore-comparison.json').write_text(json.dumps(report,indent=2)+'\n')
+print('PASS: populated backup/restore roundtrip, media equality and disjoint projects',flush=True)
+
+

@@ -1,0 +1,26 @@
+from pathlib import Path
+import subprocess, os, json, time, sys
+out=Path('scratch/review-repaired-checks')
+from urllib.request import urlopen
+port=os.environ.get('REVIEW_UPSTREAM_PORT','3344');Path('scratch/active-upstream.txt').write_text(port)
+with urlopen('http://127.0.0.1:'+port+'/health/ready',timeout=10) as response:assert response.status==200
+children=[];logs=[]
+try:
+    for name in ['proxy-switch','smtp']:
+        log=(out/(name+'.private.log')).open('wb');logs.append(log)
+        children.append(subprocess.Popen(['node','scratch/'+name+'.mjs'],stdout=log,stderr=subprocess.STDOUT,creationflags=subprocess.CREATE_NO_WINDOW))
+    time.sleep(1)
+    assert all(p.poll() is None for p in children),'Harness failed to bind dedicated ports'
+    env=os.environ.copy();env.update(REPORT_LABEL=os.environ.get('REPORT_LABEL','review-final-browser'),APP_URL='https://dispatch.rc02.test:3399')
+    started=time.time()
+    with (out/(env['REPORT_LABEL']+'.private.log')).open('wb') as log:
+        result=subprocess.run(['npx.cmd','playwright','test','--config','scratch/playwright.config.ts']+(sys.argv[1:] or ['restored.spec.ts','donations.spec.mjs']),env=env,stdout=log,stderr=subprocess.STDOUT)
+    (out/(env['REPORT_LABEL']+'-gate.json')).write_text(json.dumps(dict(command=['npx.cmd','playwright','test','--config','scratch/playwright.config.ts','restored.spec.ts'],exitCode=result.returncode,durationSeconds=round(time.time()-started,2),sourceSha=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()),indent=2)+'\n')
+    print('restored-browser exit',result.returncode,flush=True)
+    raise SystemExit(result.returncode)
+finally:
+    for p in children:
+        p.terminate()
+        try:p.wait(timeout=15)
+        except subprocess.TimeoutExpired:p.kill();p.wait()
+    for log in logs:log.close()

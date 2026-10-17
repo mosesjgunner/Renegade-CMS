@@ -1,0 +1,12 @@
+{
+  "sourceSha": "b51f8113eeefdd7ab1c9920d5b84dfe756f1ec31",
+  "archive": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-pending-backup\\renegade-backup-2026-10-16T23-28-13-678Z",
+  "source": "sol-review-restore2-20261016",
+  "target": "sol-review-pending-20261016",
+  "tableCount": 309,
+  "tablesMatching": 309,
+  "tableDifferences": {},
+  "mediaFilesMatching": 21,
+  "pendingWorkerPause": "scale 0 preserves queued work until real process recovery probes; ordinary shipping worker is enabled after probes",
+  "manifestSha256": "1ac2481bb09d762d634b417b48155d01784c58ed186441a1dbdb42262e220627"
+}

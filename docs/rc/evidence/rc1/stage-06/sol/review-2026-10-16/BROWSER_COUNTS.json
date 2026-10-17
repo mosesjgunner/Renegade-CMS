@@ -1,0 +1,133 @@
+{
+  "notes": "Runs retain their original image/phase boundaries. Expected first failures and max-failure unexecuted cases are not acceptance passes. Current accepted ordinary runtime label: review-provenance-runtime-browser-fixed-routing (F6 image); five review-predecessor-fixed-* labels use the source images recorded in UPGRADE_ROLLBACK.",
+  "runs": {
+    "review-failed-only-retry-browser": {
+      "startTime": "2026-10-16T23:32:10.511Z",
+      "duration": 37450.274999999994,
+      "expected": 0,
+      "skipped": 0,
+      "unexpected": 1,
+      "flaky": 0
+    },
+    "review-final-browser": {
+      "startTime": "2026-10-16T23:26:10.786Z",
+      "duration": 34492.380999999994,
+      "expected": 2,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "review-launcher-runtime-browser": {
+      "startTime": "2026-10-16T23:58:11.197Z",
+      "duration": 65550.402,
+      "expected": 3,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "review-pending-browser": {
+      "startTime": "2026-10-16T23:26:59.391Z",
+      "duration": 16072.63,
+      "expected": 2,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "review-pending-restored-browser": {
+      "startTime": "2026-10-16T23:30:33.423Z",
+      "duration": 14110.185000000001,
+      "expected": 1,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "review-predecessor-before": {
+      "startTime": "2026-10-16T23:59:59.805Z",
+      "duration": 31478.821,
+      "expected": 0,
+      "skipped": 0,
+      "unexpected": 1,
+      "flaky": 0
+    },
+    "review-predecessor-fixed-after": {
+      "startTime": "2026-10-17T00:17:22.286Z",
+      "duration": 8970.812,
+      "expected": 1,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "review-predecessor-fixed-before": {
+      "startTime": "2026-10-17T00:16:13.392Z",
+      "duration": 4041.537,
+      "expected": 1,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "review-predecessor-fixed-rollback": {
+      "startTime": "2026-10-17T00:19:45.556Z",
+      "duration": 6007.775,
+      "expected": 1,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "review-predecessor-fixed-same-schema-rollback": {
+      "startTime": "2026-10-17T00:18:09.415Z",
+      "duration": 7527.5160000000005,
+      "expected": 1,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "review-predecessor-fixed-same-schema-rollforward": {
+      "startTime": "2026-10-17T00:18:43.558Z",
+      "duration": 6543.235000000001,
+      "expected": 1,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "review-predecessor-gateway-before": {
+      "startTime": "2026-10-17T00:02:09.824Z",
+      "duration": 6493.1320000000005,
+      "expected": 1,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "review-provenance-runtime-browser-fixed-routing": {
+      "startTime": "2026-10-17T00:14:33.957Z",
+      "duration": 62957.367999999995,
+      "expected": 3,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "review-provenance-runtime-browser": {
+      "startTime": "2026-10-17T00:13:01.017Z",
+      "duration": 34766.246,
+      "expected": 0,
+      "skipped": 2,
+      "unexpected": 1,
+      "flaky": 0
+    },
+    "review-rehost-browser": {
+      "startTime": "2026-10-16T23:20:46.153Z",
+      "duration": 21867.953,
+      "expected": 1,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "review-restored-browser": {
+      "startTime": "2026-10-16T22:57:12.214Z",
+      "duration": 7412.235,
+      "expected": 0,
+      "skipped": 1,
+      "unexpected": 1,
+      "flaky": 0
+    }
+  }
+}

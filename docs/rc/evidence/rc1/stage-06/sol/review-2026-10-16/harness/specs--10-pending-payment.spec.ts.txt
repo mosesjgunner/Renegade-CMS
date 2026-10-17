@@ -1,0 +1,77 @@
+import { test, expect } from '@playwright/test'
+import {operator} from './helpers'
+import { readFileSync, writeFileSync } from 'node:fs'
+import { createHmac,createHash } from 'node:crypto'
+
+test('ordinary checkout creates pending signed payment and fulfillment recovery work', async ({browser, page, context}) => {
+  await operator(page)
+  const call = async (p:any, method:string, url:string, data?:unknown, code=200) => {
+    const cookies=await p.context().cookies()
+    const response=await p.request.fetch(url,{method,data,headers:{cookie:cookies.map((c:any)=>`${c.name}=${c.value}`).join('; ')}})
+    const text=await response.text()
+    expect(response.status(),`${method} ${url}: ${text.slice(0,1500)}`).toBe(code)
+    return text ? JSON.parse(text):{}
+  }
+  const site=(await call(page,'GET','/api/sites?where[id][equals]=e569115f-2594-45ee-9a0f-0214f5f942b5&depth=0')).docs[0]
+  const settings=await call(page,'GET','/api/globals/site-settings?depth=0')
+  await call(page,'POST','/api/globals/site-settings',{adminExperience:{...settings.adminExperience,optionalCapabilities:{...settings.adminExperience?.optionalCapabilities,commerceCheckout:true}}})
+  for(const existing of (await call(page,'GET','/api/merchant-connections?where[providerKey][equals]=deterministic-test&limit=100&depth=0')).docs)
+    await call(page,'PATCH',`/api/merchant-connections/${existing.id}`,{status:'disabled'})
+  const merchant=(await call(page,'POST','/api/merchant-connections',{site:site.id,label:'Sol local test merchant',providerKey:'deterministic-test',merchantCountry:'US',status:'active'},201)).doc
+  const method=(await call(page,'POST','/api/payment-method-capabilities',{site:site.id,merchantConnection:merchant.id,providerKey:'deterministic-test',railKey:'sol-local-card',family:'card',flow:'hosted',merchantCountries:['US'],buyerCountries:['US'],presentmentCurrencies:['USD'],settlementCurrencies:['USD'],enabled:true,health:'healthy'},201)).doc
+  const slug=`sol-stock-${Date.now()}`,sku=slug+'-M'
+  const product=(await call(page,'POST','/api/products',{site:site.id,name:'Sol limited print',slug,canonicalPath:`/store/${slug}`,kind:'physical',state:'published',publishedAt:new Date().toISOString(),productCapabilities:['shippable'],optionDimensions:[{key:'finish',label:'Finish',values:['Matte']}],variants:[{sku,title:'Matte',status:'active',optionValues:{finish:'Matte'},inventoryPolicy:'tracked',inventoryQuantity:1,weightGrams:200,dimensionsMm:{length:250,width:200,height:10}}],prices:[{currency:'USD',amountMinor:'5000',variantSku:sku}],offers:[{id:'offer-'+slug,version:1,status:'active',variantSku:sku,amountMinor:'5000',currency:'USD',taxDisplay:'exclusive',segmentPolicy:{mode:'public'}}]},201)).doc
+  const digitalBytes=readFileSync('fixtures/renegadeparty-demo/assets/logo.png')
+  const uploaded=await page.request.post('/api/media/upload',{multipart:{siteId:site.id,title:'Sol private purchased download',altText:'Private delivery proof',file:{name:'sol-private-delivery.png',mimeType:'image/png',buffer:digitalBytes}}})
+  expect(uploaded.status(),await uploaded.text()).toBe(201)
+  const asset=(await uploaded.json()).asset
+  await call(page,'PATCH',`/api/media-assets/${asset.id}`,{publicPolicy:'private'})
+  const digital=(await call(page,'POST','/api/products',{site:site.id,name:'Sol private digital purchase',slug:slug+'-digital',canonicalPath:`/store/${slug}-digital`,kind:'digital',state:'published',publishedAt:new Date().toISOString(),productCapabilities:['digital-entitlement'],optionDimensions:[{key:'format',label:'Format',values:['PNG']}],variants:[{sku:sku+'D',title:'Digital image',status:'active',optionValues:{format:'PNG'},inventoryPolicy:'untracked',digitalAvailable:true}],digitalDelivery:{entitlement:'product.'+slug,downloadLimit:3,expiresAfterDays:30,assets:[{mediaId:asset.id,rightsStatus:'approved',malwareStatus:'clean',publicOriginal:false}]},prices:[{currency:'USD',amountMinor:'1500',variantSku:sku+'D'}],offers:[{id:'offer-'+slug+'D',version:1,status:'active',variantSku:sku+'D',amountMinor:'1500',currency:'USD',taxDisplay:'exclusive',segmentPolicy:{mode:'public'}}]},201)).doc
+  const guest=await browser.newContext({baseURL:process.env.APP_URL,ignoreHTTPSErrors:true})
+  const other=await browser.newContext({baseURL:process.env.APP_URL,ignoreHTTPSErrors:true})
+  const buyer=await guest.newPage(), rival=await other.newPage()
+  try {
+    await call(buyer,'POST','/api/commerce/cart',{productId:product.id,variantSku:sku,quantity:1,amountMinor:'1'})
+    await call(buyer,'POST','/api/commerce/cart',{productId:digital.id,variantSku:sku+'D',quantity:1})
+    await call(rival,'POST','/api/commerce/cart',{productId:product.id,variantSku:sku,quantity:1})
+    await call(buyer,'POST','/api/commerce/cart',{productId:product.id,variantSku:sku,quantity:-1},400)
+    await buyer.goto('/cart')
+    await expect(buyer.getByRole('heading',{name:'Matte',exact:true})).toBeVisible()
+    await expect(buyer.getByText(`SKU: ${sku}`,{exact:true})).toBeVisible()
+    await buyer.locator('#customer-email').fill('sol-buyer@example.test')
+    await buyer.locator('#customer-name').fill('Sol Buyer')
+    await buyer.locator('#addr-line1').fill('100 Main St')
+    await buyer.locator('#addr-city').fill('Austin')
+    await buyer.locator('#addr-state').fill('TX')
+    await buyer.locator('#addr-postal').fill('78701')
+    await buyer.getByRole('checkbox',{name:/I agree to the Terms/}).check()
+    const proposed=buyer.waitForResponse(r=>r.url().endsWith('/api/commerce/proposal')&&r.request().method()==='POST')
+    await buyer.getByRole('button',{name:'Create Checkout Proposal'}).click()
+    const response=await proposed
+    expect(response.status(),await response.text()).toBe(200)
+    const {proposal}=await response.json()
+    expect(proposal.pricingSnapshot.subtotalMinor).toBe('6500')
+    const initiation = buyer.waitForResponse(r=>r.url().includes('/api/commerce/checkout/initiate')&&r.request().method()==='POST')
+    await buyer.getByRole('button',{name:/Confirm & Pay/}).click()
+    const initiated = await initiation
+    expect(initiated.status(),await initiated.text()).toBe(200)
+    await buyer.getByRole('link',{name:/Complete/}).click()
+    await expect(buyer.getByRole('heading',{name:'Local test checkout'})).toBeVisible()
+    const reference=buyer.url().split('/').at(-1)
+    expect((await rival.request.get(`/checkout/test/${reference}`)).status()).toBe(404)
+    const confirmation = buyer.waitForResponse(r=>r.url().includes('/api/commerce/checkout/test/confirm')&&r.request().method()==='POST')
+    await buyer.getByRole('button',{name:'Confirm test payment'}).click()
+    const confirmed = await confirmation
+    expect(confirmed.status(),confirmed.status() === 303 ? 'payment confirmation redirect' : await confirmed.text()).toBe(303)
+    await buyer.waitForURL(/checkout\/return\?session=/,{timeout:30000})
+    const session=new URL(buyer.url()).searchParams.get('session')!
+    const attempt=(await call(page,'GET',`/api/payment-attempts?where[checkoutSession][equals]=${session}&depth=0`)).docs[0]
+    const event=(await call(page,'GET',`/api/payment-webhook-events?where[providerReference][equals]=${reference}&depth=0`)).docs.find((e:any)=>e.processingState==='received')
+    expect(event).toBeTruthy()
+    expect((await call(page,'GET',`/api/orders?where[checkoutSession][equals]=${session}&depth=0`)).docs).toHaveLength(0)
+    writeFileSync('scratch/unblock-business-pending.json',JSON.stringify({session,eventId:event.id,attemptId:attempt.id,productId:product.id,digitalId:digital.id,assetId:asset.id,siteId:site.id,reference}))
+    await guest.storageState({path:'scratch/unblock-private/pending-buyer.json'})
+  }finally{
+    await guest.close();await other.close()
+  }
+})

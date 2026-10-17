@@ -1,0 +1,13 @@
+{
+  "sourceSha": "f6f5f803d79f795f70eb23307116ac2363f6b409",
+  "result": {
+    "deliveryId": "1b7ba2a8-9627-4e15-81c6-1f669ebae147",
+    "realSmtp451": true,
+    "operatorUIRetry": true,
+    "acceptedAttempts": 2,
+    "acceptedLocalMIMECount": 1,
+    "acceptedRetryDenied": 409,
+    "uncertainRetryDenied": 409,
+    "uncertainAttemptsUnchanged": true
+  }
+}

@@ -1,0 +1,3077 @@
+[
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-checks\\archive-catalogue.txt",
+    "bytes": 312595,
+    "sha256": "6fe4a66a263a54c9adfdc77ccf7d9b9c0a3fde540665bc84acb7ffeb01d5db41"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-checks\\archive-reader-smoke.log",
+    "bytes": 1042,
+    "sha256": "cc81c32006007995526de37f2e960706d1557a498fa0e1c4fafd98882a4ab6e4"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-checks\\build.log",
+    "bytes": 12024,
+    "sha256": "569a92e957556ee6be5c671854b4f0ace7d0693f2c06a4e97e557945d0946e99"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-checks\\bundles.log",
+    "bytes": 185,
+    "sha256": "4e0432e443c74d592cf86678a5b882d2f30bd5f7cee6f162a2fd524f778d49af"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-checks\\commerce.log",
+    "bytes": 15370,
+    "sha256": "d3ff8df66df4274b89b0645c8c951906a30920e4354ed5e88b469efc447736e2"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-checks\\format-check.log",
+    "bytes": 260,
+    "sha256": "9a08dd99e0208071852194dcd94bcf32c3f8cf58ebab1e9680ddd5dc9b57a3d9"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-checks\\fresh.log",
+    "bytes": 21973,
+    "sha256": "785d1283c86b4dc174f46fb769b621b6e329ba9d4ebc76dfd33eb9640641b888"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-checks\\image.log",
+    "bytes": 23172,
+    "sha256": "a41367d8156f62ffe35b189c7b0f2aca5b1dbab4eba226e47ac20669cdb23345"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-checks\\integration.log",
+    "bytes": 40446,
+    "sha256": "dfdb96ee32dd36963d78f8871dd405fddcea12a75cb08f5cb31524d8d83644e2"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-checks\\invalid-catalogue.txt",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-checks\\invalid.dump",
+    "bytes": 15,
+    "sha256": "cb5ab9731945e9a1ea1c09019e382c1ac2688f7ee4706040f387b7bb9ad73fc4"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-checks\\io-repair-focused.log",
+    "bytes": 756,
+    "sha256": "28c56e4db2627093cfe7fd0999654158a641b88c8ef51da9b383bdb8177e6432"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-checks\\lint.log",
+    "bytes": 122,
+    "sha256": "60f0158f9051e2c449acc821f633fa2d5fd27553c41019acd05bdb787340393a"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-checks\\media-catalogue.txt",
+    "bytes": 5391,
+    "sha256": "0729e145ca5354f48b190412e434c4bcebc525bc5b1f511e5c48f660c2919d93"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-checks\\populated-backup.log",
+    "bytes": 318609,
+    "sha256": "0bb1f4a03633c6dc28ac1c611a1db7a4e20ff10217fb7628a81ebd2befa4c0e8"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-checks\\populated-restore.log",
+    "bytes": 326052,
+    "sha256": "9cfd9253556d2f874aa0ffc8f5fd7541064ea614f9b72f49b946ade0bc1be399"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-checks\\proxy-switch.private.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-checks\\restart-alone-fresh.log",
+    "bytes": 21987,
+    "sha256": "f7a24ed92ff347b9d963e36e7927e7ad9340f3f31cb0d9ee4454447085bffecc"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-checks\\restart-alone-gates.json",
+    "bytes": 627,
+    "sha256": "c3a85e21b47dcfa0afa6a034ad17724aa8c92bfafc112f27c57874e8a318503d"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-checks\\restart-alone.log",
+    "bytes": 1924,
+    "sha256": "203be741fd84dba16579d101d19e0d2a8c476c0fedbd3e28c459ad1317ad444f"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-checks\\restore-gates.json",
+    "bytes": 1354,
+    "sha256": "f02d0e0f640800c715ba3f40354f2c4c9a067b1b16085c400903d567ef22778a"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-checks\\runtime-gates.json",
+    "bytes": 2539,
+    "sha256": "508be8253f28c91d583a40a1a34a9fffb061ad78c2ec642ab5c07735cb844d3f"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-checks\\smtp.private.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-checks\\test.log",
+    "bytes": 37224,
+    "sha256": "8de5270d117112562ca6aca77a2cb0def79af144e0eebb6e0a72b0247fc8b592"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-checks\\typecheck.log",
+    "bytes": 106,
+    "sha256": "1b12d8ed7540406606106f644c188c703b3404c7d2b3e69bebe468bef4b09d1b"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-checks\\upgrade-fixture.log",
+    "bytes": 22028,
+    "sha256": "458a3f3e7aeaa46a0450ef85a7a713a17591e32b4f4730522b6aa26b366e97ba"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-repaired-checks\\browser-first-failure.private.log",
+    "bytes": 4467,
+    "sha256": "4b216105a9a7824969bab3578baba3b93df200f7dc5eda7f64d60aef7cc718f9"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-repaired-checks\\browser-gate.json",
+    "bytes": 258,
+    "sha256": "ca5ca3c1cc17f5b9d5352960ad211c52fcf27b6480fd078f4f5a25d0423e5aac"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-repaired-checks\\donation-unknown-host-after-fix.log",
+    "bytes": 658,
+    "sha256": "0c743c8ebd75f580f2836258b736dc4efa3006e3a50721ff7c075aaa7332f840"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-repaired-checks\\donation-unknown-host-before-fix.log",
+    "bytes": 4654,
+    "sha256": "f7ba947cf2ce532b111c578a5b9a4d56addec5e7c9f9b20db15dedbc2b6b13b5"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-repaired-checks\\email-crash-proof.json",
+    "bytes": 793,
+    "sha256": "db5da5b660ad42f0f1eb3a0db19a872c15475635b28eec9ebaa0f29cdb9eb936"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-repaired-checks\\email-crash.private.log",
+    "bytes": 243,
+    "sha256": "96392079263ce138ad94818fe89c2ef57d3d89f80f0923d1e6d32b552cf7907d"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-repaired-checks\\email-prepare.private.log",
+    "bytes": 246,
+    "sha256": "ee6e05e658808844af8ee112db042736e9e40b41324421bac2a48a7d34b1e45c"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-repaired-checks\\email-recover.private.log",
+    "bytes": 246,
+    "sha256": "afb8e1b081e1237bda370e06a4d7d2bbfc17abb345ce1f75cfd6208178a3e4e4"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-repaired-checks\\email-replay.private.log",
+    "bytes": 244,
+    "sha256": "1b6b3046d127fdf65a8ca5f486f882dcf8294c2a613890284a2095ac2fcf1dc7"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-repaired-checks\\email-worker-resume.private.log",
+    "bytes": 269,
+    "sha256": "7a788846a9cf2fde6449fbb7f22cdc44a27fc464640b31275151a4fe094f5f64"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-repaired-checks\\email-worker-stop.private.log",
+    "bytes": 135,
+    "sha256": "988bed0728e87fd784c2c68b8fdd7a90d993613b88182ecb00cf596f6ea61587"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-repaired-checks\\format-check.log",
+    "bytes": 260,
+    "sha256": "9a08dd99e0208071852194dcd94bcf32c3f8cf58ebab1e9680ddd5dc9b57a3d9"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-repaired-checks\\image-binding.json",
+    "bytes": 106006,
+    "sha256": "45e65404f2c0c598e0a905b2424842c0d9223e152fc0c68296cce22e77b4b03f"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-repaired-checks\\image.log",
+    "bytes": 40218,
+    "sha256": "2b691d8e5a43005343c923ed2eb70a0bd34abd91283470e84dee364e78400875"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-repaired-checks\\lint.log",
+    "bytes": 122,
+    "sha256": "60f0158f9051e2c449acc821f633fa2d5fd27553c41019acd05bdb787340393a"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-repaired-checks\\populated-backup.log",
+    "bytes": 324095,
+    "sha256": "284cb4d4d1d24102171471d155934cb52881ad2f9d398453faf995363bd795da"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-repaired-checks\\populated-restore.log",
+    "bytes": 326106,
+    "sha256": "3c404725ef5c9e796bca73c74a3e4a03043ffad3e4ca9868a211f7919dd5cc5d"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-repaired-checks\\proxy-switch.private.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-repaired-checks\\restore-comparison.json",
+    "bytes": 518,
+    "sha256": "e99caa4cd7b84dd71a6c2ab9d61195a930a10b28ee793af4cfdb33fa598d81e7"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-repaired-checks\\restore-gates.json",
+    "bytes": 2106,
+    "sha256": "aa163f6c48d48274d81ef72e2b0ae57a942078a3b366825e9db3649dc300979c"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-repaired-checks\\restored-browser.private.log",
+    "bytes": 4397,
+    "sha256": "5ea1a2c81ad377455d44d2d8220929086cb2d757f668a49eac2897413e4dd38b"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-repaired-checks\\review-failed-only-retry-browser-gate.json",
+    "bytes": 260,
+    "sha256": "fb4979322a8ad5f7de79b60327d0606b21d390e2ef569c6fb12dba4de37f111f"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-repaired-checks\\review-failed-only-retry-browser.private.log",
+    "bytes": 4063,
+    "sha256": "98cec9e168cfcbd0f407bf482de5890a9ab2fcb4f3848cef6d3c4e1661f0e226"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-repaired-checks\\review-pending-browser-gate.json",
+    "bytes": 259,
+    "sha256": "b223056ee6badb0edf80fc529d6cb2a8a73f2b333b9c574037e51ca36df061af"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-repaired-checks\\review-pending-browser.private.log",
+    "bytes": 498,
+    "sha256": "c4a79d44690aeaf37cdae86fac44b44417d8b2273e6d0721dad247ed37c2334e"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-repaired-checks\\review-provenance-runtime-browser-fixed-routing-gate.json",
+    "bytes": 260,
+    "sha256": "e47847f0d8c89a71d244d374985d5f6c996a31ed64e8bfbae37b7c8ab8dd3d81"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-repaired-checks\\review-provenance-runtime-browser-fixed-routing.private.log",
+    "bytes": 659,
+    "sha256": "d964d4d4039b87d6a6023a79edc3a11e78b39a26fca51b8e343474785951abe2"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-repaired-checks\\review-rehost-browser-gate.json",
+    "bytes": 260,
+    "sha256": "e35b450a67b301ef0d1b2e4b693c2339a6e970531be099c2d0b3eec5a2e0ab4c"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-repaired-checks\\review-rehost-browser.private.log",
+    "bytes": 353,
+    "sha256": "82f60904653c9823d5a370b6e00fc0d2d683bf02ccbfdacdf3e681435a4c259b"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-repaired-checks\\roundtrip-restore.log",
+    "bytes": 326203,
+    "sha256": "d1cc144728151282907995136d11a2da55d80a5d7bd37369dbbfcacfb7cfbcbe"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-repaired-checks\\smtp.private.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-repaired-checks\\test.log",
+    "bytes": 36750,
+    "sha256": "9327f642b9f5f62a5c3c345d10f0905486d554d3a40ed00c13d9c41bee941f8a"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-repaired-checks\\typecheck.log",
+    "bytes": 106,
+    "sha256": "1b12d8ed7540406606106f644c188c703b3404c7d2b3e69bebe468bef4b09d1b"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-final-checks\\activate-image.json",
+    "bytes": 541,
+    "sha256": "b9c5ffcb3b2d049e95847fb45ce000e475a5acbe2bc9fa328d864a03c999a14f"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-final-checks\\activate-image.log",
+    "bytes": 794,
+    "sha256": "abb5a9a1691ed95ced88aefe97fa053035b2f7a5cac3fd484357c3d8e687fe16"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-final-checks\\donation-integration.json",
+    "bytes": 336,
+    "sha256": "80dba0b096dd4ef9de379f0909b9bb7851a332fed53f6841e7fccbc4540a72ad"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-final-checks\\donation-integration.log",
+    "bytes": 814,
+    "sha256": "a3dec0677b50f596f8cafd86ae470b0cdfd539d0733c90cc82bad8dc9f52b6a4"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-final-checks\\email-crash-proof.json",
+    "bytes": 793,
+    "sha256": "d9a9f983eb1874e8f659983fd83e69b9e5940bacff9ea9988045464e008ece76"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-final-checks\\email-crash.private.log",
+    "bytes": 243,
+    "sha256": "d8693e202f17d30690b4fc1028a7bf2492ba3d2206cc63645c31fe21828e0617"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-final-checks\\email-prepare.private.log",
+    "bytes": 246,
+    "sha256": "a5c845e6f454eff16841963e4ee19822b8943b06a0bad17352989cb11f8897b5"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-final-checks\\email-recover.private.log",
+    "bytes": 246,
+    "sha256": "6a51ea8b2d65867d4e7a8e252d10198772d382403f8d3bc507ab7ab129008066"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-final-checks\\email-replay.private.log",
+    "bytes": 244,
+    "sha256": "a548e1f87fe974e39c69bfbb5deb357a3ac3ae52733d994d9048b208c90ac182"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-final-checks\\email-worker-resume.private.log",
+    "bytes": 269,
+    "sha256": "7a788846a9cf2fde6449fbb7f22cdc44a27fc464640b31275151a4fe094f5f64"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-final-checks\\email-worker-stop.private.log",
+    "bytes": 135,
+    "sha256": "988bed0728e87fd784c2c68b8fdd7a90d993613b88182ecb00cf596f6ea61587"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-final-checks\\format-check.log",
+    "bytes": 260,
+    "sha256": "9a08dd99e0208071852194dcd94bcf32c3f8cf58ebab1e9680ddd5dc9b57a3d9"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-final-checks\\image-binding.json",
+    "bytes": 106006,
+    "sha256": "b1d2200a73ef82cfb186422b1c51af6955f248ae20c07c6eaa0b7dfdfce9fd52"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-final-checks\\image.log",
+    "bytes": 41102,
+    "sha256": "72eeadb59d77a4e15e396cb2a1ac404771c8a86290c310278b3a18b1f07a6e17"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-final-checks\\lint.log",
+    "bytes": 122,
+    "sha256": "60f0158f9051e2c449acc821f633fa2d5fd27553c41019acd05bdb787340393a"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-final-checks\\proxy-switch.private.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-final-checks\\review-final-browser-gate.json",
+    "bytes": 260,
+    "sha256": "3f7f9b3b4db51b8536f1585e442337a33033bf1e0a5679ea17ad4bf6368f8969"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-final-checks\\review-final-browser.private.log",
+    "bytes": 502,
+    "sha256": "c57d02e4e709ca7be23cdb240b1fbcb3ae1a6a2b7bc50cc2986421b008cbe062"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-final-checks\\smtp.private.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-final-checks\\test.log",
+    "bytes": 36702,
+    "sha256": "92546f29c486ea7eb2561236d83d1c7ac7390d04aaca94134105c0e92d033531"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-final-checks\\typecheck-linux-harness-failure.log",
+    "bytes": 1392,
+    "sha256": "5aec08c69f1315706bc088f59d3f3824af67683f4f7c5596dc57b183cb641fe4"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-final-checks\\typecheck.log",
+    "bytes": 106,
+    "sha256": "1b12d8ed7540406606106f644c188c703b3404c7d2b3e69bebe468bef4b09d1b"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-concurrency-checks\\before-fix.log",
+    "bytes": 1712,
+    "sha256": "c47a39693d921aca81f76bda167eb09d4083e1b8b4d098d51a761a1581302a5a"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-concurrency-checks\\focus-after.log",
+    "bytes": 763,
+    "sha256": "07f208d55dd806a69c97552102e0930a2d2edf58c1269c5f9ee18567307ed2c3"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-concurrency-checks\\focus-commands.json",
+    "bytes": 373,
+    "sha256": "fa063952a4dc0f4026fa16917918d4d37544335f27dcaf92779942d7a34945ed"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-concurrency-checks\\format.log",
+    "bytes": 129,
+    "sha256": "4503a427d12444f81cee2db3eeb003376341ab1a0dc03c78b98a17039259d721"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-concurrency-checks\\full-commands.json",
+    "bytes": 1763,
+    "sha256": "980e40dbfac7165c411935605cf80d7b9e774201cefb6c5dbe6e3ca8c1f4cdff"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-concurrency-checks\\image.log",
+    "bytes": 6926,
+    "sha256": "2ab079c568d52defc80166c12a4bfa4ae174335fbd48e7fc376ceaa4a5caa1c8"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-concurrency-checks\\integration.log",
+    "bytes": 39799,
+    "sha256": "1fafaba097356ea1fbacdfea0c65ce4e5f1eeac9a146823f48213d1eb65ee0b3"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-concurrency-checks\\lint.log",
+    "bytes": 60,
+    "sha256": "21bc1be0c5bdf8aa3d17e5054ee50ac44f79d99f01c0cb3661e198642761671d"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-concurrency-checks\\lock-only-still-failed.log",
+    "bytes": 1783,
+    "sha256": "0b0a2cfae71aff390b6356bfdd5e9f4180c70c0d7107c208b93b787550b8eabf"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-concurrency-checks\\type-preflight.log",
+    "bytes": 106,
+    "sha256": "1b12d8ed7540406606106f644c188c703b3404c7d2b3e69bebe468bef4b09d1b"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-concurrency-checks\\types.log",
+    "bytes": 52,
+    "sha256": "03ca8766e5865fefe65140e820f55f478a62893538e30a202a3e8166bbc07293"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-concurrency-checks\\unit-focused.log",
+    "bytes": 648,
+    "sha256": "eb8ca30fad1fd195dd75a3abad572dd8b36ff463604b6ba8cea5ff2c887d3eec"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-concurrency-checks\\unit.log",
+    "bytes": 19225,
+    "sha256": "643057ca68aa37cc2a3cef221df374e93a0d9f2796f08bbaf3028a066a2a914f"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-launcher-checks\\build.log",
+    "bytes": 9750,
+    "sha256": "58e5eecd1fe8f9370da075af5632738c35d289ddcf6c53176d8aab292ae0b339"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-launcher-checks\\bundles.log",
+    "bytes": 180,
+    "sha256": "178940faf39c0d748fa514ad7186c46eddfa1a54ed3f1b97f74e3698c544ef61"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-launcher-checks\\commands.json",
+    "bytes": 1450,
+    "sha256": "93753399274bfda37ced17da0c603ebec42ca2ae2ac6cf108ff1fa9ff48c4e08"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-launcher-checks\\docker-availability.json",
+    "bytes": 93,
+    "sha256": "579c3ca9e11595788f698db1f376036759cfddc3dd83a0d72cb0b91e01354072"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-launcher-checks\\engine-recovery-attempts.json",
+    "bytes": 1166,
+    "sha256": "1191f346994565b54741081832d3c3dccf2a7edfd121761ab088ece307a6a5aa"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-launcher-checks\\format.log",
+    "bytes": 123,
+    "sha256": "4e7ad5a4bb82acb493af63ba70df93c21282e4e3b64245513c3579303ca60236"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-launcher-checks\\image-before-resource-pause.json",
+    "bytes": 345,
+    "sha256": "472a0f3db767669303e7d1d849d2da9e98b0731a6f024fca9fb5b13030eb5a62"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-launcher-checks\\image-before-resource-pause.log",
+    "bytes": 4392,
+    "sha256": "0b2d7a0178dac27c4c940d41d4aefc100b41ac82fe098071d80b9b4f5a159276"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-launcher-checks\\image.json",
+    "bytes": 336,
+    "sha256": "0b0e2a7ca230a47997bf7406832f7e4989b018d762877e8e7c07bdb72e9e6e62"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-launcher-checks\\image.log",
+    "bytes": 19019,
+    "sha256": "63bdd27d35e485c4985ff44fa2f716397d9667dd25db1d0e3f71b4f823f73322"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-launcher-checks\\lint.log",
+    "bytes": 56,
+    "sha256": "f011c50578458ac2327c25aef3f14adb7f4fe80201f783faeb93eb2cebd28d66"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-launcher-checks\\owned-runtime-availability.json",
+    "bytes": 259,
+    "sha256": "e1a8860f3b0a4209c6f45f87504fe9816411047f8f8da6982bb079d9eed6ae83"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-launcher-checks\\types.log",
+    "bytes": 48,
+    "sha256": "ed8b276999b794e52239dd39072af1b51bd2d208c6226d2d0c7cf8a2e835c11b"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-launcher-checks\\unit.log",
+    "bytes": 18276,
+    "sha256": "8f9f015ed43339a2c470898f38272713caa900273b350f15a02f67027b3c5cd5"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-provenance-checks\\build.log",
+    "bytes": 9750,
+    "sha256": "aac60510059a3138b91d7e3ef1ec7bb9745e7ea2e9678e4fc0d195ca60b56ae9"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-provenance-checks\\bundles.log",
+    "bytes": 180,
+    "sha256": "178940faf39c0d748fa514ad7186c46eddfa1a54ed3f1b97f74e3698c544ef61"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-provenance-checks\\commands.json",
+    "bytes": 1448,
+    "sha256": "519c938342a684c54bf8ee77199a4bb1ebd63beea205b5630aac11cff940c266"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-provenance-checks\\format.log",
+    "bytes": 123,
+    "sha256": "4e7ad5a4bb82acb493af63ba70df93c21282e4e3b64245513c3579303ca60236"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-provenance-checks\\image.json",
+    "bytes": 336,
+    "sha256": "6eefb490846ef0a857fcdcede50f7c24a078ca6b4149a584f00b0a63a69efaa4"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-provenance-checks\\image.log",
+    "bytes": 20758,
+    "sha256": "5724f2224dab72585e98d8eae8a7def3b119da6871c043f2bbb9bea128833a95"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-provenance-checks\\lint.log",
+    "bytes": 56,
+    "sha256": "f011c50578458ac2327c25aef3f14adb7f4fe80201f783faeb93eb2cebd28d66"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-provenance-checks\\types.log",
+    "bytes": 48,
+    "sha256": "ed8b276999b794e52239dd39072af1b51bd2d208c6226d2d0c7cf8a2e835c11b"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-provenance-checks\\unit.log",
+    "bytes": 18333,
+    "sha256": "68681759d28b78018922092d86aa602d529e76cd38acc04b4640b81f259bcde8"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-concurrency-runtime\\activate-image.json",
+    "bytes": 617,
+    "sha256": "202aa8857167c02ece2b5ce1966423ee6baa4e01333da5e070a15601a52698bf"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-concurrency-runtime\\activate-image.log",
+    "bytes": 782,
+    "sha256": "13e35c3b3c1703db2e8d28b1ac10eb8df11d72860a4c24441ccbdabff5c0671c"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-concurrency-runtime\\email-crash-proof.json",
+    "bytes": 793,
+    "sha256": "27abac36756372e91e62a8e31996bb7b6958a7c6b37ecb1c648c5783f91d00ec"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-concurrency-runtime\\email-crash.private.log",
+    "bytes": 267,
+    "sha256": "8989e3a55040b4697730929c7408c5faf57720048f3eaae85184f91c257c0bba"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-concurrency-runtime\\email-prepare.private.log",
+    "bytes": 270,
+    "sha256": "5749386ece291b349a09a83c66d3eb06ff9f9378e531f2ceab8299891eea6905"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-concurrency-runtime\\email-recover.private.log",
+    "bytes": 270,
+    "sha256": "b41a4bbede3f09ffaf2c7deb5690e896f7dd77ef2af48ff24b7789f36c21c10d"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-concurrency-runtime\\email-replay.private.log",
+    "bytes": 268,
+    "sha256": "febf6cc9176fc809b9fa4678e4e4641da6bc4dda54e40b546b80c34166f75002"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-concurrency-runtime\\email-worker-resume.private.log",
+    "bytes": 265,
+    "sha256": "32960f55410bce1b6698985110b90a5ff2ff555a0ff6fe5a0201d3d1c2bf9ca4"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-concurrency-runtime\\email-worker-stop.private.log",
+    "bytes": 133,
+    "sha256": "41a0d07da5c3e5cdf849bba2ecc66a40d68e7f50caeacc2e5d1ed37aa3bfd890"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-concurrency-runtime\\failed-only-retry.json",
+    "bytes": 263,
+    "sha256": "7f0eabaaf1b4af261d0cf5b77e1aa915e24956784e2198c60564d8d9a45077be"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-concurrency-runtime\\image-binding.json",
+    "bytes": 106006,
+    "sha256": "700b1942e3352f4eb4a2de9fbf8d7ff2e775cdd8faa5e8568b3b41e465f208d6"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-concurrency-runtime\\proxy-switch.private.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-concurrency-runtime\\review-launcher-runtime-browser-gate.json",
+    "bytes": 324,
+    "sha256": "d19928006d6a2966474d0baf90546b9ca3fd276679904b1a6cb09f2c2f7577e0"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-concurrency-runtime\\review-launcher-runtime-browser.private.log",
+    "bytes": 660,
+    "sha256": "3eb86c66bedd86b0500fd8be124c1ee9017a60f0c6252cdf273d52cd536a3c67"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-concurrency-runtime\\smtp.private.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-provenance-runtime\\activate-image.json",
+    "bytes": 617,
+    "sha256": "0a5e68ce7099c4f7554a6566d60a628ec128e1d0f131b71d90d4c6b51d9af2dd"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-provenance-runtime\\activate-image.log",
+    "bytes": 782,
+    "sha256": "05ba4f4a2d18e66e4c3c1b1ad0eb50e833b3b870fc8a9315c38ce1ab822d562a"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-provenance-runtime\\email-crash-proof.json",
+    "bytes": 793,
+    "sha256": "8b5c24cd172a8840f32bb45e60212cc3c308d4885004fa557c14f555dab3515a"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-provenance-runtime\\email-crash.private.log",
+    "bytes": 265,
+    "sha256": "ce680779c8417a6b8b51336b8cff80a819ee03083e387913de3b37385229cad1"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-provenance-runtime\\email-prepare.private.log",
+    "bytes": 268,
+    "sha256": "d1843cf4e5b23d7ae190319744333d35b7490fc89f3d3dd3485747d855c4270f"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-provenance-runtime\\email-recover.private.log",
+    "bytes": 268,
+    "sha256": "818c777105e6d5a26486c1964e81873e5a64aa43ee52fd59988423e417f5e616"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-provenance-runtime\\email-replay.private.log",
+    "bytes": 266,
+    "sha256": "0eef292bbdbe2fc971edf9f35a6233abbb45cc7922db6215cdc730d47d70b2d5"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-provenance-runtime\\email-worker-resume.private.log",
+    "bytes": 265,
+    "sha256": "32960f55410bce1b6698985110b90a5ff2ff555a0ff6fe5a0201d3d1c2bf9ca4"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-provenance-runtime\\email-worker-stop.private.log",
+    "bytes": 133,
+    "sha256": "41a0d07da5c3e5cdf849bba2ecc66a40d68e7f50caeacc2e5d1ed37aa3bfd890"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-provenance-runtime\\image-binding.json",
+    "bytes": 106006,
+    "sha256": "9b0711933bca45e48df4f8bef2d0a5770f3a8cf6145eb6e390466d239f5e4dad"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-provenance-runtime\\proxy-switch.private.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-provenance-runtime\\review-provenance-runtime-browser-gate.json",
+    "bytes": 324,
+    "sha256": "ccd1df11d1d7885146d1c20a99d7237292c7f968a238824a008e32f050e9b655"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-provenance-runtime\\review-provenance-runtime-browser.private.log",
+    "bytes": 3403,
+    "sha256": "583f31dbc1e1561828f2d390723f06fbbd22141d077463cf46e80e438c1210b3"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-provenance-runtime\\smtp.private.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-pending-checks\\BUSINESS_RECOVERY.json",
+    "bytes": 2476,
+    "sha256": "9a126986288d3c8c733d28d4645b38036f894c8ec2ecb7865f2a15016cf1a3d2"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-pending-checks\\commands.json",
+    "bytes": 2023,
+    "sha256": "4eb5a6a4915d2988d1dad920c98014668e453f120f6ec5be80cd0960fe98e6bd"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-pending-checks\\community-killed.json",
+    "bytes": 338,
+    "sha256": "2d6565bfd4e24dc20913786bdd8f277383413110286ed6da1c89c1c231d5e048"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-pending-checks\\community-process.private.log",
+    "bytes": 267,
+    "sha256": "ae14497637f9b05102cfb5a645d9b27a5d76569a8aa62cfb952fce26902f0871"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-pending-checks\\community-recover.private.log",
+    "bytes": 270,
+    "sha256": "d92ba45571471e474f2161e01649eb53b5fa707eb0c7358839278bb1b137687e"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-pending-checks\\community-replay.private.log",
+    "bytes": 268,
+    "sha256": "5123ee9f6fa3631031508d3eb2dc9769942226a0712f28c68ab51e9e3281137f"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-pending-checks\\community-sigkill.private.log",
+    "bytes": 35,
+    "sha256": "212ed40b54d3e9f11cd29cd179ed60cc9902be98b68435c769e8a8b52532caf3"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-pending-checks\\community-window.private.log",
+    "bytes": 254,
+    "sha256": "d1aa66bc22b1fde40ad71e133908879e6f58bf938350330f0171508fae2e3b27"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-pending-checks\\failed-only-retry.json",
+    "bytes": 263,
+    "sha256": "153c05dc00e4ffd0263e38a6fb5e886c4801530b617b9bc3bc50b2d7a75248a2"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-pending-checks\\pause-source-worker.log",
+    "bytes": 270,
+    "sha256": "1c53bdf5640f818136746143c0b187e1efd558d7b3bc4a459cd789f14bd3329c"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-pending-checks\\payment-killed.json",
+    "bytes": 427,
+    "sha256": "5ea085307969643ab951e6adad4ab6c133066f82fb735dfe8baea3ebd5680e84"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-pending-checks\\payment-process.private.log",
+    "bytes": 263,
+    "sha256": "8ffd38a3c6c4fabf907caefe8eb283079b20fe85d60856841beaf1d59f1101d1"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-pending-checks\\payment-recover.private.log",
+    "bytes": 266,
+    "sha256": "9bf34abf6f7bbe36222f7e55fdba15e985ef857a83d83c83bbdcd1d561f84c77"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-pending-checks\\payment-replay.private.log",
+    "bytes": 264,
+    "sha256": "ea26c0f58cc3bc391c00438261a3773b8a568a9f3b6f40de2b61b89001983e77"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-pending-checks\\payment-sigkill.private.log",
+    "bytes": 33,
+    "sha256": "26b835c2cf59d1ed51ca31c6e9ed586cd67bc5a8b2ecc6d931c6c678d8a21613"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-pending-checks\\pending-backup.private.log",
+    "bytes": 319970,
+    "sha256": "585e09e627f2f094b649c869fce1e5d276111e4310ea83828fffcf531946213f"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-pending-checks\\pending-restore-comparison.json",
+    "bytes": 636,
+    "sha256": "54bb82c674443ec2ba4a3b1ad8812a115d3b507b160fb170d34b6d4137a146b0"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-pending-checks\\pending-restore.private.log",
+    "bytes": 321635,
+    "sha256": "4c9113eb2821c63e270a0a085cd256091fbe83daf86d53c7e1503c1c3e5e9b20"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-pending-checks\\prepare-supported-publication.private.log",
+    "bytes": 393,
+    "sha256": "85b00bb039226ce8de497d94002c751a5fb0126d508120a63511b6d50367e5c0"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-pending-checks\\proxy-switch.private.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-pending-checks\\publication-killed.json",
+    "bytes": 348,
+    "sha256": "62b5de022cddc11793eddbfa53a5d14497a8461bf75894524b9558e0a24c6707"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-pending-checks\\publication-process.private.log",
+    "bytes": 271,
+    "sha256": "8e9b6310bf61e4bc4c4fc4175cfaf603170860ca09b7fe17c67d66d2d484c8c6"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-pending-checks\\publication-recovery-replay.private.log",
+    "bytes": 1179,
+    "sha256": "09ac6d3fe3bee4b2d953e30a2885bca5606639b2d90eb0c65de05e2d696d3674"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-pending-checks\\publication-sigkill.private.log",
+    "bytes": 37,
+    "sha256": "d8599a1ca91d00118cd363989d7f16fdf079c37fde7bcdeaa99beb59d829af1a"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-pending-checks\\recovery-commands.json",
+    "bytes": 7134,
+    "sha256": "3a285c146852cc8b0a0b792d08e8a3394ddbacffc0da2f65e7b0e20b58587561"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-pending-checks\\restored-before-recovery.json",
+    "bytes": 32259,
+    "sha256": "91466cb5052c0a24f9c2f2030c3cd5231ff45f9a68f966c3d98f435f29776ab7"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-pending-checks\\restored-browser.private.log",
+    "bytes": 355,
+    "sha256": "65d63fa2a0fc00d8ec4d3d903c4fb02ad07736981682fe9641c67f551721a7b1"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-pending-checks\\shipping-worker-resume.private.log",
+    "bytes": 398,
+    "sha256": "c0487fb292d0bef09d6c0289539081c65b08d114742ca414652851e9555e09cc"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-pending-checks\\smtp.private.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-pending-checks\\source-before-backup.json",
+    "bytes": 32259,
+    "sha256": "750c6eb6767cb3ca1db3982507b409d3b003159cedab0eb8ad093c80297786fe"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-checks\\after-native-upgrade-binding.json",
+    "bytes": 646,
+    "sha256": "707a43c3d6242077a244fe87b61033ccfcf29cfa5df96ab2889e4613ed30f3e9"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-checks\\authentic-predecessor-restore.private.log",
+    "bytes": 322540,
+    "sha256": "c58b7ad6c134b780bfa5af8913ee66d74567af715d6a9ab81832ea5084ba3681"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-checks\\automatic-backup-before-fix.json",
+    "bytes": 675,
+    "sha256": "094c8186a6d6ca5cd3da62373f7d60eccf1ba31ab6ef8e0ba21fb757c54f9b0d"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-checks\\automatic-backup-before-fix.private.log",
+    "bytes": 763,
+    "sha256": "847f5e8140d5a407fb9076165b04fc6959664556a96c5f46a4d47a820af5dbfa"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-checks\\commands.json",
+    "bytes": 3031,
+    "sha256": "944581d076dc390bfb40815621ba9ea75dc080f566f9a21368d2ad09455a7eb5"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-checks\\local-artifact-alias.private.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-checks\\ordinary-owner-before.private.log",
+    "bytes": 357,
+    "sha256": "e097c12ab274f54263df36b4962368a421382d0663471816f15daff2b3d2f21b"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-checks\\owned-ingress-gateway.private.log",
+    "bytes": 710,
+    "sha256": "0ca6914c388d5d216f26560dddc0bcc8fc3e2b15136cd176eae5c6616cd23d02"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-checks\\pre-upgrade-backup.private.log",
+    "bytes": 320387,
+    "sha256": "db93d51233b827ed67c2f6f6466ec482a75ff7e935d69f128c7665c200b3ccc2"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-checks\\predecessor-before.json",
+    "bytes": 938,
+    "sha256": "2b74dfe25bd1f3b6911acd365a2ffa029282eee80ca68f9e5f2a52edbc35de64"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-checks\\predecessor-binding.json",
+    "bytes": 1343,
+    "sha256": "eb895dcc0518e918b1a1e033afc1526db3d03e20e4850a3d33f22890cc9a1758"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-checks\\proxy.private.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-checks\\start-owned-predecessor.private.log",
+    "bytes": 670,
+    "sha256": "15c8dcfea71f22a88c16463125c59c601741b8be25641916ac60323f95f16b83"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-checks\\supported-upgrade.private.log",
+    "bytes": 328685,
+    "sha256": "c1dad2dc8a34242a407bdb563cb0632e55593b169c4c0a6fe79bb18da9be6ebd"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-checks\\port-harness-failure\\commands.json",
+    "bytes": 933,
+    "sha256": "ef4e7369d26b0a273a9e8a1e9c01a556e9f012c3b013215aae32f27a1e903b0b"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-checks\\port-harness-failure\\ordinary-owner-before.private.log",
+    "bytes": 3252,
+    "sha256": "c32e714162c6ba78efd318fc7c2cf234adc48c3fec25d1b509f9ab6c27529397"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-checks\\port-harness-failure\\proxy.private.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-checks\\port-harness-failure\\start-owned-predecessor.private.log",
+    "bytes": 598,
+    "sha256": "a00e470421a43e356e8bef0cea0a22634c8979195044a87dadfaea4494eb5fd7"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-checks\\provenance-first-attempt\\after-native-upgrade-binding.json",
+    "bytes": 646,
+    "sha256": "707a43c3d6242077a244fe87b61033ccfcf29cfa5df96ab2889e4613ed30f3e9"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-checks\\provenance-first-attempt\\authentic-predecessor-restore.private.log",
+    "bytes": 322540,
+    "sha256": "c58b7ad6c134b780bfa5af8913ee66d74567af715d6a9ab81832ea5084ba3681"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-checks\\provenance-first-attempt\\automatic-backup-before-fix.json",
+    "bytes": 675,
+    "sha256": "094c8186a6d6ca5cd3da62373f7d60eccf1ba31ab6ef8e0ba21fb757c54f9b0d"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-checks\\provenance-first-attempt\\automatic-backup-before-fix.private.log",
+    "bytes": 763,
+    "sha256": "847f5e8140d5a407fb9076165b04fc6959664556a96c5f46a4d47a820af5dbfa"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-checks\\provenance-first-attempt\\commands.json",
+    "bytes": 3031,
+    "sha256": "944581d076dc390bfb40815621ba9ea75dc080f566f9a21368d2ad09455a7eb5"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-checks\\provenance-first-attempt\\local-artifact-alias.private.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-checks\\provenance-first-attempt\\ordinary-owner-before.private.log",
+    "bytes": 357,
+    "sha256": "e097c12ab274f54263df36b4962368a421382d0663471816f15daff2b3d2f21b"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-checks\\provenance-first-attempt\\owned-ingress-gateway.private.log",
+    "bytes": 710,
+    "sha256": "0ca6914c388d5d216f26560dddc0bcc8fc3e2b15136cd176eae5c6616cd23d02"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-checks\\provenance-first-attempt\\pre-upgrade-backup.private.log",
+    "bytes": 320387,
+    "sha256": "db93d51233b827ed67c2f6f6466ec482a75ff7e935d69f128c7665c200b3ccc2"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-checks\\provenance-first-attempt\\predecessor-before.json",
+    "bytes": 938,
+    "sha256": "2b74dfe25bd1f3b6911acd365a2ffa029282eee80ca68f9e5f2a52edbc35de64"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-checks\\provenance-first-attempt\\predecessor-binding.json",
+    "bytes": 1343,
+    "sha256": "eb895dcc0518e918b1a1e033afc1526db3d03e20e4850a3d33f22890cc9a1758"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-checks\\provenance-first-attempt\\proxy.private.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-checks\\provenance-first-attempt\\start-owned-predecessor.private.log",
+    "bytes": 670,
+    "sha256": "15c8dcfea71f22a88c16463125c59c601741b8be25641916ac60323f95f16b83"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-checks\\provenance-first-attempt\\supported-upgrade.private.log",
+    "bytes": 328685,
+    "sha256": "c1dad2dc8a34242a407bdb563cb0632e55593b169c4c0a6fe79bb18da9be6ebd"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-fixed-checks\\after-native-upgrade-binding.json",
+    "bytes": 647,
+    "sha256": "af7152b16892f7a6227a6b34441e7a28b6d1d7e3d9f64a4c81f503b830f940b5"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-fixed-checks\\commands.json",
+    "bytes": 8508,
+    "sha256": "70b0148cab88501de6208d7dbee856103ff93c7da5b998cef778c64b438fa866"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-fixed-checks\\complete-predecessor-rollback-restore.private.log",
+    "bytes": 322646,
+    "sha256": "08e08781ed8eec81c513ebd9d1b1e23cccdfd1fdfc64e6376d2097361cd36035"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-fixed-checks\\fresh-predecessor-address-pool-failure.private.log",
+    "bytes": 319702,
+    "sha256": "b0fdecef0624b84d16ba7186af39bcb7aa2e1048a4c91cbf5da877c538481083"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-fixed-checks\\fresh-predecessor-restore.private.log",
+    "bytes": 322236,
+    "sha256": "6034d766a244a6313a31e19ec9aefd6469cb90b570b3864a4c283a2e0c79af80"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-fixed-checks\\host-routes.private.json",
+    "bytes": 2588,
+    "sha256": "adc508dee0c23d427c02ac078e5bc9bb4dd98aa430da86bbcac577ec857741d2"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-fixed-checks\\local-artifact-alias.private.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-fixed-checks\\network-plan.json",
+    "bytes": 240,
+    "sha256": "2f9b67f6f90b1523cb02b0065e4f5216ceabb9e7df929954c0ca97002deefe05"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-fixed-checks\\ordinary-owner-after.private.log",
+    "bytes": 358,
+    "sha256": "875cc3d7a7ea7cb68efaad8341bc684e50004ca19e8c6cd5833dc3b8de14bc26"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-fixed-checks\\ordinary-owner-before.private.log",
+    "bytes": 358,
+    "sha256": "0e321acef302b98875452472af772f68d42e02992e9f3ea95d98953828de1144"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-fixed-checks\\ordinary-owner-rollback.private.log",
+    "bytes": 358,
+    "sha256": "56762c4b0e5e456814215a77c1578070d69fece83cf62c099d3cf4887b62b873"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-fixed-checks\\ordinary-owner-same-schema-rollback.private.log",
+    "bytes": 356,
+    "sha256": "470f07017290931844721cf41010977333668d85a03e33a378b76c9b212b22dd"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-fixed-checks\\ordinary-owner-same-schema-rollforward.private.log",
+    "bytes": 358,
+    "sha256": "85d7547fec919c1c81951620a5c7bb606f9f951c16f074a92dbb762bf884b3ee"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-fixed-checks\\owned-ingress-gateway.private.log",
+    "bytes": 720,
+    "sha256": "6d85c2779b578caabadac5e60f3c9fe198b8816a834403fdc9ac575ef64a4dc2"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-fixed-checks\\pre-upgrade-backup.private.log",
+    "bytes": 320422,
+    "sha256": "4e408d79b2cb7695421a2c37e63abdd7a8440508b73e52d5bb8b07b894690731"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-fixed-checks\\predecessor-after.json",
+    "bytes": 937,
+    "sha256": "6606824fd7522fc28a36bd10d7c7cc9770d3ece9bfa9c757b450d953a54249bf"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-fixed-checks\\predecessor-before.json",
+    "bytes": 938,
+    "sha256": "2b74dfe25bd1f3b6911acd365a2ffa029282eee80ca68f9e5f2a52edbc35de64"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-fixed-checks\\predecessor-binding.json",
+    "bytes": 1071,
+    "sha256": "e0478c2c5dc8060ee9ba4166f7ac11ddee64be34af8a8323a587942536a32ef6"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-fixed-checks\\predecessor-rollback.json",
+    "bytes": 940,
+    "sha256": "d3c15300c33e6ac6758e31f9ceab0001a13779dfdc2dae60dc44abf8390c1683"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-fixed-checks\\predecessor-same-schema-rollback.json",
+    "bytes": 952,
+    "sha256": "30bcc0514708895752235792e7b66e8c4da55521579b2f3c30b1bb226b5e9377"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-fixed-checks\\predecessor-same-schema-rollforward.json",
+    "bytes": 955,
+    "sha256": "587a77de7cac643d2a1074db8ad8f761cef081f00a674f6541ff215a44e62616"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-fixed-checks\\proxy.private.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-fixed-checks\\rollback-ingress-gateway.private.log",
+    "bytes": 730,
+    "sha256": "60039ee7d2b6c6eb0737650fbfb9124d4d848a2fc8e4c6db30fc554aaff39e9d"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-fixed-checks\\same-schema-backup.private.log",
+    "bytes": 320554,
+    "sha256": "654d5ee892e559e6c675b5c7d16e3afb7d5427a31e027a31074a26f4db66003a"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-fixed-checks\\same-schema-image-rollback.private.log",
+    "bytes": 1611,
+    "sha256": "0aa25eaaf06d2c1adae849120a1bf490244f4c0f02ba9a93433e2b7f08fb5640"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-fixed-checks\\same-schema-rollforward.private.log",
+    "bytes": 7995,
+    "sha256": "e37e9a557007a191edfc9125d1c82ef1e2d7ff26c718134004b786a22e22cef6"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-fixed-checks\\schema-changing-image-rollback-refused.private.log",
+    "bytes": 621,
+    "sha256": "c1926dd4b766cc7ca47682a64d9e782ee1fe66062a40b773f5d15d87aeade416"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-fixed-checks\\start-owned-predecessor.private.log",
+    "bytes": 606,
+    "sha256": "1ad970e2ec41a2e74830eb79c75181fe4c3564b9a84e36b4dfc847aa5aaa3a9d"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-fixed-checks\\supported-upgrade.private.log",
+    "bytes": 328980,
+    "sha256": "9d79a61f1ea16471f5586b31ae46d17fe62679e6d0f02dc517daab098ca21300"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-fixed-checks\\UPGRADE_ROLLBACK.json",
+    "bytes": 3814,
+    "sha256": "723c08d1947aa30d0ca3b0b19f69bd94adfb60d3c2cb6751b23d604b6aa5a6ef"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-final-email-proof\\email-boundary.json",
+    "bytes": 168,
+    "sha256": "de496432658a1f078e0d21af4f029641c66ec787084323c125cdeff62f68ce63"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-final-email-proof\\email-fixture.json",
+    "bytes": 147,
+    "sha256": "64f8ba571110a7e6e015def5ffb4d2fd6bb66b5abb1a4a59a2c3126a4660c387"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-final-email-proof\\email-recover.json",
+    "bytes": 216,
+    "sha256": "0413c2487b3bec43d53b92476215ec99f91c0053432cf4691409f10d424893cb"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-final-email-proof\\email-replay.json",
+    "bytes": 216,
+    "sha256": "0413c2487b3bec43d53b92476215ec99f91c0053432cf4691409f10d424893cb"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-final-email-proof\\email-worker.ts.txt",
+    "bytes": 2514,
+    "sha256": "da0d8e8c3d7b1f101d595ffc03d953b7982dae0b173085f90a6e7985fbeda39d"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-final-email-proof\\source-business.json",
+    "bytes": 335,
+    "sha256": "1ca5fef7f253129a15190ca456651d67bad7ccf3e4ba18642fa77771d7e9cf6c"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-concurrency-email-proof\\email-boundary.json",
+    "bytes": 168,
+    "sha256": "ee44473c64aaea75eafc5fbaf1f93114d94f6f52567d37b1a2046f9cad1c5d86"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-concurrency-email-proof\\email-fixture.json",
+    "bytes": 147,
+    "sha256": "9ae3b40a39447fa4a09ad643d406d73883277bb99c69e07b07ab402d615d981c"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-concurrency-email-proof\\email-recover.json",
+    "bytes": 216,
+    "sha256": "c047fe3cb253b8e21b2270be63af74671e361504eb3a167732577bd51b99ec39"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-concurrency-email-proof\\email-replay.json",
+    "bytes": 216,
+    "sha256": "c047fe3cb253b8e21b2270be63af74671e361504eb3a167732577bd51b99ec39"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-concurrency-email-proof\\email-worker.ts.txt",
+    "bytes": 2514,
+    "sha256": "da0d8e8c3d7b1f101d595ffc03d953b7982dae0b173085f90a6e7985fbeda39d"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-concurrency-email-proof\\source-business.json",
+    "bytes": 335,
+    "sha256": "1ca5fef7f253129a15190ca456651d67bad7ccf3e4ba18642fa77771d7e9cf6c"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-provenance-email-proof\\email-boundary.json",
+    "bytes": 168,
+    "sha256": "894372ee1bc7e9a7d73069c17637ff547bc7951c9571bb26bdc9a7f777f9a74d"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-provenance-email-proof\\email-fixture.json",
+    "bytes": 147,
+    "sha256": "7c24234d5ce6946cfe13eda460f390fab22abe77a04ad8ce18b8bab18287972d"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-provenance-email-proof\\email-recover.json",
+    "bytes": 216,
+    "sha256": "529e4c3f463453e7df1c94d61cdff176267f382417d0d89d55f78ae902a3bb1c"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-provenance-email-proof\\email-replay.json",
+    "bytes": 216,
+    "sha256": "529e4c3f463453e7df1c94d61cdff176267f382417d0d89d55f78ae902a3bb1c"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-provenance-email-proof\\email-worker.ts.txt",
+    "bytes": 2514,
+    "sha256": "da0d8e8c3d7b1f101d595ffc03d953b7982dae0b173085f90a6e7985fbeda39d"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-provenance-email-proof\\source-business.json",
+    "bytes": 335,
+    "sha256": "1ca5fef7f253129a15190ca456651d67bad7ccf3e4ba18642fa77771d7e9cf6c"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-business-proof\\community-boundary.json",
+    "bytes": 154,
+    "sha256": "736a9c165fbd2273ac186c58c9b8ee60a55ae9bfda2d5abed4e06e07be71aab1"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-business-proof\\community-recover.json",
+    "bytes": 150,
+    "sha256": "579c824338c663384a82dc8bfb85e64a885092e227f3da1e27b0c3143dd7480e"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-business-proof\\community-replay.json",
+    "bytes": 150,
+    "sha256": "579c824338c663384a82dc8bfb85e64a885092e227f3da1e27b0c3143dd7480e"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-business-proof\\community-window.json",
+    "bytes": 183,
+    "sha256": "4f8286944a62811dfbfa154e48c9600de1586407d10eb067d42a6e3afef72467"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-business-proof\\community.json",
+    "bytes": 521,
+    "sha256": "13bb5d6853b1b2cf68fd03354eb1a699fcd38c5e2eecc9337781f0ac4c280eb3"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-business-proof\\payment-boundary.json",
+    "bytes": 225,
+    "sha256": "992b74a068f098818102feca67dfb17623ca246df78f8e83ae08d818883435ba"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-business-proof\\payment-recover.json",
+    "bytes": 255,
+    "sha256": "44677d5022f91e4a3e414074dbb55c403bf66508eaa85c52309981583f211445"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-business-proof\\payment-replay.json",
+    "bytes": 255,
+    "sha256": "44677d5022f91e4a3e414074dbb55c403bf66508eaa85c52309981583f211445"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-business-proof\\payment.json",
+    "bytes": 395,
+    "sha256": "e5f6923d375eb147047ea5430232e28c373a1e591e4b44b518dba0b56d40922f"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-business-proof\\worker.ts.txt",
+    "bytes": 4160,
+    "sha256": "1387218adbbb3ec1fe242aea41cf7fcddfd2a98f3992067626f8460d2d1c3ba7"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-publication-proof\\lease-boundary.json",
+    "bytes": 183,
+    "sha256": "e8c6b8a8341e104165c616bbffb8c4c9f63053b119c0f6b0e6aeebb37d2cf96f"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-publication-proof\\lease-fixture.json",
+    "bytes": 138,
+    "sha256": "3dcdb81d61741c9b75c89aa64c40f0a0217a25850efd5ba7a162016dcb7e65fe"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-publication-proof\\lease-recover.json",
+    "bytes": 177,
+    "sha256": "b3fb69fdc3cd4be1ed6fde9d5531aa97c218f9a555ca3bbe92508014221e619d"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-publication-proof\\publication-once.json",
+    "bytes": 91,
+    "sha256": "7496f4a7128e8c5291d9a078c76c2e845053e8108be3ec323d37539e3e2ec70d"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-publication-proof\\worker.ts.txt",
+    "bytes": 3816,
+    "sha256": "e364d15bb5b9969e5fcb0684fafa2135cb4ef2a3048aa4d811c058a9ecf60cff"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-business-results\\donations.json",
+    "bytes": 325,
+    "sha256": "cd28d89f6e1d910e60490cff43df97f5760fb10e5ef0f03599707f8fb5a20b41"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\records\\rehost-settings.json",
+    "bytes": 208,
+    "sha256": "4b46733b4080cb370af9b8b562e1a7774a6b68f235ae3001d585a77464de8178"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\records\\review-failed-only-retry-browser.json",
+    "bytes": 8434,
+    "sha256": "0b00dd04ded798a7e68897473c1ac12208de36a94c2a2d82be77edf3ad9f4027"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\records\\review-final-browser.json",
+    "bytes": 5243,
+    "sha256": "48bc1d0f5085c5b44af77bf12036af3eaa99e18f3f6f20f84bee76cd49ea5108"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\records\\review-launcher-runtime-browser.json",
+    "bytes": 6955,
+    "sha256": "c2c7fdcdac0d6e40bdb3a22df594d55903974634a882901475ee8d772f1fa272"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\records\\review-pending-browser.json",
+    "bytes": 5298,
+    "sha256": "814f99fa2f69b42bce0848cf5825a6ac5704d2f5930e6dc1655228e2584193bb"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\records\\review-pending-restored-browser.json",
+    "bytes": 3653,
+    "sha256": "5ce5835ad648a8c64d7fded2bfdbf433cf4adf410eaa36727e80329e5dfc71a6"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\records\\review-predecessor-before.json",
+    "bytes": 7424,
+    "sha256": "b77600ffa6810c8b222670f734c2eb866f0105acd17a7f83e009d621ea92e663"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\records\\review-predecessor-fixed-after.json",
+    "bytes": 3662,
+    "sha256": "c6475f627f700b26ba40351a02964dc4368c0952cd047d08323bcaeb32d2ef7e"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\records\\review-predecessor-fixed-before.json",
+    "bytes": 3665,
+    "sha256": "1c345707068caa05772bc18b8292d604d3343709e937f18975721c2e35bcaec6"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\records\\review-predecessor-fixed-rollback.json",
+    "bytes": 3671,
+    "sha256": "fb7efdaeb8df7306e73401add58caea15dda138ac041e669ae1f1d452c69dfcf"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\records\\review-predecessor-fixed-same-schema-rollback.json",
+    "bytes": 3717,
+    "sha256": "206091a7038b4217dc5c5c47de991d7ea69ec1ca2f5cbe4c88da6d6fa4df95d9"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\records\\review-predecessor-fixed-same-schema-rollforward.json",
+    "bytes": 3725,
+    "sha256": "e9a7f6edc03bed0e7849820db731ed1422689d5b436f9f6efdbcdc52727e8aba"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\records\\review-predecessor-gateway-before.json",
+    "bytes": 3681,
+    "sha256": "c3237f2cd5ba73737c0e5f35c3a8f90267f6861d4688c63819c2e58f78457da6"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\records\\review-provenance-runtime-browser-fixed-routing.json",
+    "bytes": 7043,
+    "sha256": "b38c352a0b6c3f4c909ce210497f7ec2dd4d0767f3827a4f53af952d868387b7"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\records\\review-provenance-runtime-browser.json",
+    "bytes": 9170,
+    "sha256": "7a74cf0abd4c9eb666df96add41b7c8163a3b0fb5ec34e5cbcab4eb0d6e922ec"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\records\\review-rehost-browser.json",
+    "bytes": 3615,
+    "sha256": "81128b1d1cf841ccdad7ef36ccecdf5ee7f9c866f7ff720b03d3b3ffadb7b08c"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\records\\review-restored-browser.json",
+    "bytes": 8957,
+    "sha256": "4e14caa51b370656071ad4d3f92e9f4dae2c61a39179f04089a24750b3d220ea"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\records\\source-business.json",
+    "bytes": 335,
+    "sha256": "1ca5fef7f253129a15190ca456651d67bad7ccf3e4ba18642fa77771d7e9cf6c"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\records\\source-member-identity.json",
+    "bytes": 111,
+    "sha256": "a17d8a7b24c84790711161e85759168a77e66742f75719bb55b1da3280a8bf2b"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\records\\unblock-populated-restored-http.json",
+    "bytes": 17075,
+    "sha256": "17677d656a79f553e8eee7d76b1033d082d3de5bb452b1fe4b01241d2c6af3f5"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.last-run.json",
+    "bytes": 96,
+    "sha256": "576ceb4378e5663a3bb7e1dd40f56f220f864aff5519c63b80cc13dd9cd033bf"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-final-browser\\.last-run.json",
+    "bytes": 45,
+    "sha256": "91d1c43004802cd49950d78eb11c8fa7d05da8ffffe219a8b13b2f561bc00903"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.last-run.json",
+    "bytes": 96,
+    "sha256": "cac0592c2c0488a22731eaa31d7c4e1ff29582e565a9373a23ddf96e0c8eb51e"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-launcher-runtime-browser\\.last-run.json",
+    "bytes": 45,
+    "sha256": "91d1c43004802cd49950d78eb11c8fa7d05da8ffffe219a8b13b2f561bc00903"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-pending-browser\\.last-run.json",
+    "bytes": 45,
+    "sha256": "91d1c43004802cd49950d78eb11c8fa7d05da8ffffe219a8b13b2f561bc00903"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-pending-restored-browser\\.last-run.json",
+    "bytes": 45,
+    "sha256": "91d1c43004802cd49950d78eb11c8fa7d05da8ffffe219a8b13b2f561bc00903"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-predecessor-before\\.last-run.json",
+    "bytes": 96,
+    "sha256": "96964a8ac195e5ef1944c6d2700dde24c45494ad93a425e6da17e7bdb163f33a"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-predecessor-fixed-after\\.last-run.json",
+    "bytes": 45,
+    "sha256": "91d1c43004802cd49950d78eb11c8fa7d05da8ffffe219a8b13b2f561bc00903"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-predecessor-fixed-before\\.last-run.json",
+    "bytes": 45,
+    "sha256": "91d1c43004802cd49950d78eb11c8fa7d05da8ffffe219a8b13b2f561bc00903"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-predecessor-fixed-rollback\\.last-run.json",
+    "bytes": 45,
+    "sha256": "91d1c43004802cd49950d78eb11c8fa7d05da8ffffe219a8b13b2f561bc00903"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-predecessor-fixed-same-schema-rollback\\.last-run.json",
+    "bytes": 45,
+    "sha256": "91d1c43004802cd49950d78eb11c8fa7d05da8ffffe219a8b13b2f561bc00903"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-predecessor-fixed-same-schema-rollforward\\.last-run.json",
+    "bytes": 45,
+    "sha256": "91d1c43004802cd49950d78eb11c8fa7d05da8ffffe219a8b13b2f561bc00903"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-predecessor-gateway-before\\.last-run.json",
+    "bytes": 45,
+    "sha256": "91d1c43004802cd49950d78eb11c8fa7d05da8ffffe219a8b13b2f561bc00903"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-provenance-runtime-browser\\.last-run.json",
+    "bytes": 96,
+    "sha256": "576ceb4378e5663a3bb7e1dd40f56f220f864aff5519c63b80cc13dd9cd033bf"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-provenance-runtime-browser-fixed-routing\\.last-run.json",
+    "bytes": 45,
+    "sha256": "91d1c43004802cd49950d78eb11c8fa7d05da8ffffe219a8b13b2f561bc00903"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-rehost-browser\\.last-run.json",
+    "bytes": 45,
+    "sha256": "91d1c43004802cd49950d78eb11c8fa7d05da8ffffe219a8b13b2f561bc00903"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.last-run.json",
+    "bytes": 96,
+    "sha256": "cac0592c2c0488a22731eaa31d7c4e1ff29582e565a9373a23ddf96e0c8eb51e"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\donations-real-anonymous-d-56af9-privacy-and-refund-reversal\\error-context.md",
+    "bytes": 24201,
+    "sha256": "1d3c8d4187926fb59100c4f7c94a8be9916f116fb858cbdf33ddcd7cd90b153f"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\donations-real-anonymous-d-56af9-privacy-and-refund-reversal\\test-failed-1.png",
+    "bytes": 37816,
+    "sha256": "1a644c467204da582eed2acbdab3b837eec7bffc6551e7d3f31d830a316a0c45"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\donations-real-anonymous-d-56af9-privacy-and-refund-reversal\\test-failed-2.png",
+    "bytes": 4254,
+    "sha256": "3878570f4a62a0d65f57cf1754e0269e56ec797f4e36e26b44c172eb6e800401"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\donations-real-anonymous-d-56af9-privacy-and-refund-reversal\\test-failed-3.png",
+    "bytes": 4254,
+    "sha256": "3878570f4a62a0d65f57cf1754e0269e56ec797f4e36e26b44c172eb6e800401"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\donations-real-anonymous-d-56af9-privacy-and-refund-reversal\\trace.zip",
+    "bytes": 1074958,
+    "sha256": "60c23ef31321a32bd26cc80d2374d8cc30c5331d2ad1df9e73bced98081c0505"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\df060904f4bfc6ebcaa2-4d583587888d82a326dc-pwnetcopy-1.network",
+    "bytes": 381826,
+    "sha256": "492c528b9d5a640b678ea2da4c9d3d1533500adf6dcb1937ba34cb852b45e78a"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\df060904f4bfc6ebcaa2-4d583587888d82a326dc-recording1-pwnetcopy-1.network",
+    "bytes": 4067,
+    "sha256": "1470134c4a449dab1822288f43a7c0e3d7e5f44e4e77d903af20c3d69e6b48d8"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\df060904f4bfc6ebcaa2-4d583587888d82a326dc-recording1.network",
+    "bytes": 4067,
+    "sha256": "1470134c4a449dab1822288f43a7c0e3d7e5f44e4e77d903af20c3d69e6b48d8"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\df060904f4bfc6ebcaa2-4d583587888d82a326dc-recording1.trace",
+    "bytes": 8495,
+    "sha256": "9db97aab8277087d63f46e68d91969e253f494bd62cd0c321c88cb6688c7d99c"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\df060904f4bfc6ebcaa2-4d583587888d82a326dc-recording2-pwnetcopy-1.network",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\df060904f4bfc6ebcaa2-4d583587888d82a326dc-recording2.network",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\df060904f4bfc6ebcaa2-4d583587888d82a326dc-recording2.trace",
+    "bytes": 1398,
+    "sha256": "488b7127a00509ed8f0f0ba865bf82265bc1e195075ac12de6820a40a4437e97"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\df060904f4bfc6ebcaa2-4d583587888d82a326dc.network",
+    "bytes": 381826,
+    "sha256": "492c528b9d5a640b678ea2da4c9d3d1533500adf6dcb1937ba34cb852b45e78a"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\df060904f4bfc6ebcaa2-4d583587888d82a326dc.trace",
+    "bytes": 53485,
+    "sha256": "a7c77d02c11432c35a70910d8a1c34137aa68274141be97b17e22749145c7f55"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\07656b9ef77fbf08284230b25bc10ae16dabd196.htc",
+    "bytes": 394,
+    "sha256": "4e552b96ad1e5a80353ec65e1b4d04fe2b1d76e10c82d4c34e0759d1648464b4"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\09b4378af65a01b1dfea7161ed93435ca3e0ce9f.json",
+    "bytes": 369,
+    "sha256": "a025e3c80a7d363b606492b7999650194fbbd4ea88b228e28742c683e62abb45"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\0ad5b417e3d53c65cf865d51fd5e5e94cbed7ea0.json",
+    "bytes": 35,
+    "sha256": "f2f3d9efc34e226d8837948f6aa202a7cc14657b368d699a1e3695641e38720e"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\0d95ddf7f6cd451b8468ed0142e20c9c69529ad4.woff2",
+    "bytes": 64500,
+    "sha256": "19a83cc7ce02aab990c0f5fb8bd8f12f2f8e4f56430d5a3459521cabd852a51c"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\0e618ed81d8dc80c1464ec0a17df6cc29ce6e0ab.htc",
+    "bytes": 400,
+    "sha256": "3cf500bc8934761a78a51fee8a16a223dac3ce08d9c46ba755a464f8cd2a6f85"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\127be194854acf07e382474b4219092796e68d43.css",
+    "bytes": 6407,
+    "sha256": "d6cd9e7faa68e199b7c562f8e19844b4c46c47b626b9647fe4d8b7a41a1d5661"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\1dc044f4824fd5af6bfed67fee48be70fa069f3f.woff2",
+    "bytes": 48432,
+    "sha256": "c940764593d0fe5d596be327ca7558855e018039fb78509aa21921fd3644c3e4"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\3200f3d079c01c3d1834d55c1c1354be357afafb.json",
+    "bytes": 502,
+    "sha256": "aa9fafec43685b4e69c6f1ba284e3ee7065420ba9f6f7e7650f84648e87a788c"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\33bc0249e0c5f076a60d80689b5671b80ec86aeb.jpg",
+    "bytes": 1079,
+    "sha256": "8f5cbefbc8471f12891d59199d120581251476c46ffcd8be2630b84513e556a3"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\39cb27655f1d394dbe3f6cd0540ca28f02f08164.html",
+    "bytes": 754566,
+    "sha256": "61c258ca19bdaea7a8b9c8ec60cb103eae62d6ab4a8f9c5ef3d81f32ae755519"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\3c1abd6177b5bf9bca112ead4f09ad504b0dc908.css",
+    "bytes": 20403,
+    "sha256": "1ad4f21bbffc49ceba6aaee2b8cfd824ab8bae6dc7e2c96a7512fee3dbd13c97"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\3c940d21751e029c9afd70c56d47dced0d2a8beb.woff2",
+    "bytes": 58152,
+    "sha256": "2a69ec1c0fb79a464de0e19957cdb3a65b5f626d85fffd164f9de557d3a64878"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\42b1a293046946a096f807a3885005abaa433030.json",
+    "bytes": 278,
+    "sha256": "47e0e66c870d67690f93c52f3f57a559401898be3947062f0d3db29c196ce12f"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\44840082f19c6e54ef978f9e7dc8c84659386d34.css",
+    "bytes": 292555,
+    "sha256": "5d88ae5bd93f7c1a630f24f6ce10a3824ec3fbfa5455d77862f9520547520c20"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\4eccade85a45c4f3801e128d022c37b230b38dbd.json",
+    "bytes": 22,
+    "sha256": "4c77c51b6ed4c567f629190327c6345b4627508f395f9fb9386fd9d895e05f96"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\51176a675675d46e49ab73601ed29582d140df18.json",
+    "bytes": 1287,
+    "sha256": "3b3008b19e274d57c8a56d0fa685456305211eb2b47be2dbdbc5d3e8e5e556ac"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\5ca25c3c9bf6e5a21704a1b0e899c6df3c951187.htc",
+    "bytes": 400,
+    "sha256": "f55b71e4dd0f6cb7e3181698c1e95e9f88069189d872bcc422513f6a3ec90e91"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\6a28da8fa33ee4cd1da6c56542cc52285608027c.htc",
+    "bytes": 841,
+    "sha256": "240ed9536384b3aacba3a8d8dc36f5847564f93464df730a966da9bca0863cf7"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\6ab4dd2ede71850badea64619c33ea63199fb743.htc",
+    "bytes": 958,
+    "sha256": "cc863f02a7833987a8a4373ad325633b5a05943570d56655be33f58985e7a149"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\70720f7f3005e95d7b0b3f5bac2c6ee108b5c878.htc",
+    "bytes": 3207,
+    "sha256": "1279e9017eb896017fb830bef13cb2a8596955adf0732c747f98f684816ef60e"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\7100bc03ab8a88af393aa094ad46389764246444.htc",
+    "bytes": 343,
+    "sha256": "ebc3da05b12c0e2bd1444c63de9718aa2d2d7fac559e3beadb042abbfb575ae3"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\729982b4c9e653e9c5eb5f1853814375a03ee911.htc",
+    "bytes": 346,
+    "sha256": "81cdf4d702cc7b25deac3d9eaf84ed6d2c17156bfedba898700bb9d28c7c0609"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\7bf0bdc2752074b4b8d93d346824d41e4bfb65e4.json",
+    "bytes": 769,
+    "sha256": "3afc86fca729e60932bf110a7782a6fc0122b1c50e94556b00ef64ecc958242a"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\7d22d7260e68f1a3ef09d54dfea81e542e308730.css",
+    "bytes": 9975,
+    "sha256": "3675c1fb3892e28cfd8f06bf15014f305bd1f7ac8dcdfae64b7a5a740424212d"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\7dcbd819f95fbc6e4a50a1b0ffa85ade0565e743.html",
+    "bytes": 16438,
+    "sha256": "191acc1634a208c1afbd17a647d4ee6ea0683c4bc9dd3943cc0bd4a4d79d6a8e"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\84482562b94f2c0ccc4926fa2a04ede1161ece91.css",
+    "bytes": 11759,
+    "sha256": "cbc889d67cd2f6545d0be8256b23bf987a570c64c7004ef43a4e84b45e23d3c5"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\8aa30cc4a4a62ead1a576a8c5fddb031a04b9bb7.htc",
+    "bytes": 839,
+    "sha256": "93bf63576a0b83ef49a2bfe7b05ab2a2cb75c4abf9d5e73a4d5054085c8b87e3"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\9c539dee36243e28b3e70bfcfdaeba6a0bc2b0f1.htc",
+    "bytes": 289,
+    "sha256": "693b99d461a175a0426d8578fd1bd58edd23e19791652499d6fba47357ac1369"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\adbe39d58cb030ce090279aaecdaccb994830091.json",
+    "bytes": 617,
+    "sha256": "c460dcb8212d79166aff6a3135f26c1ee669f40bfb383d3eacad526a1baa6e33"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\b2452a03c2eef41bdc5b6da725723109e5972d77.json",
+    "bytes": 151,
+    "sha256": "4286b9e25da3a51536e98c30097fc3dc0edbcec1f97e9c306761c8d3259e2aaf"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\b9f28993d1d76f4d4bb5583e15c03e62fb0d4c44.json",
+    "bytes": 239,
+    "sha256": "4e4c7471e96bc697e5135747e03794f994aa7698075164b30674e90061cd2e70"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\c18da6cb430f645ecca85d567c76364f73ca2013.woff2",
+    "bytes": 40480,
+    "sha256": "1e06740a02a443fb7f3eeda8fcaa685a0f6c620e3f01e6666e847295469ce3ad"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\ce2ae40e2e7cf01ff2d2f05f84a042d5dbddfc55.css",
+    "bytes": 98414,
+    "sha256": "773a55fb347b02e311ac3b3a33e38399b05b3031de3177508507ada8c39e8950"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\d5eec9ced0b36307ba4d1f4d4dd7614dbc5b7f17.json",
+    "bytes": 71,
+    "sha256": "a89ccb62ea763594d9aace36dc3b959cfeea61abea868f7696fc317962031105"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\da39a3ee5e6b4b0d3255bfef95601890afd80709.dat",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\e0bbbc54b8d280165e31e3e07d4686df3a96df65.json",
+    "bytes": 222,
+    "sha256": "a801fe1fd70d4d585180dcf4c169b0d495ba75612314d2d2e625e23c2badfc4f"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\e1013769ffbaeb49ef178891600eb0c5f2592603.css",
+    "bytes": 296034,
+    "sha256": "6e3c8926288112ef97c307c25bb1c66ff5d1f9ec2b4bc40501a7df8e42ae740f"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\e40c94dc8b0d116f5d687b39d0f51b591e48fb99.json",
+    "bytes": 221,
+    "sha256": "8dcacb5b288e07f64333192dc8e8cfdc3fdd3a9ee4424457bbc8ec24cc067f91"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\e53b72466f7f5e28c385eeb29814a00c70c5f5e9.css",
+    "bytes": 2601,
+    "sha256": "4d7db7271e822196a62397df1fe9d7ec34951bd54c95a619f94ced3ba721b38c"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\e6796f1736543ec04f036bae83d5dfd747faff98.htc",
+    "bytes": 3207,
+    "sha256": "0ad5ff0f3406ae1fba39ab0d4c9851e0677046b10db334632f2315bf4aed370d"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\ee0cc8303e6815b1a3316f6a347179c9466707eb.htc",
+    "bytes": 403,
+    "sha256": "ff69a80a3b2018c8af35c3739c82190896071e0003d7ec85acf66b46f70794c9"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\fee01e9626fbec02b1c3d9622d32b4abf738e66e.json",
+    "bytes": 1270,
+    "sha256": "b4a25b38c1eee67a2fa462b3487316e7acd9239f2333fe8c9d35806a6022e6e6"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\page@1ae6f780cd3818c3dede8fba404cbcfe-1792191439093.jpeg",
+    "bytes": 2459,
+    "sha256": "3a829f9747ec49e0f7fafe05977cf3faa6dc229918ee73b807ec6dbf9d83c73f"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\page@1b2875fa6353cf4ae2ef57d64c4619e4-1792191433896.jpeg",
+    "bytes": 2459,
+    "sha256": "3a829f9747ec49e0f7fafe05977cf3faa6dc229918ee73b807ec6dbf9d83c73f"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\page@1b2875fa6353cf4ae2ef57d64c4619e4-1792191434389.jpeg",
+    "bytes": 19419,
+    "sha256": "3387982d0071b92d68c293f828b40d9ea09e05a5141e1498da42d5d6a33e3265"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\page@1b2875fa6353cf4ae2ef57d64c4619e4-1792191434506.jpeg",
+    "bytes": 25393,
+    "sha256": "77a81d02bb0a24ca05f1a12566f607f1dba8878438bc91596b32c93fb6267397"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\page@1b2875fa6353cf4ae2ef57d64c4619e4-1792191434574.jpeg",
+    "bytes": 26184,
+    "sha256": "b0740a9cafb13483d95ff2d846f22e416682f2c4af61fde13ee3221234633f45"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\page@1b2875fa6353cf4ae2ef57d64c4619e4-1792191434727.jpeg",
+    "bytes": 26373,
+    "sha256": "a852ab59a21aefd56e8a9077a58b8d501098e2f92e017fe820321c267a16b967"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\page@1b2875fa6353cf4ae2ef57d64c4619e4-1792191434744.jpeg",
+    "bytes": 26670,
+    "sha256": "4c8271134eef8da990acbe4aa9b2afead45714ba81bea438d36c36e880a4ef9c"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\page@1b2875fa6353cf4ae2ef57d64c4619e4-1792191434761.jpeg",
+    "bytes": 28731,
+    "sha256": "0dac0510922ffe7062c153c98380b753ce40e8e7e4fd530b40f82d83f613ab81"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\page@1b2875fa6353cf4ae2ef57d64c4619e4-1792191434777.jpeg",
+    "bytes": 29386,
+    "sha256": "7f4753b7e38d22d6ecc0842a60fd129387df5d813421a414d8e8d77c5f6dc9ce"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\page@1b2875fa6353cf4ae2ef57d64c4619e4-1792191434793.jpeg",
+    "bytes": 29758,
+    "sha256": "f9f11ef3ea13bf044859cd2eaa696d6144f2122ad8d1c3000282f2019828faff"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\page@1b2875fa6353cf4ae2ef57d64c4619e4-1792191434810.jpeg",
+    "bytes": 31027,
+    "sha256": "8aadfe6a71ea12a7322832fa10095935246a6fbd4196a5ab004224bf4fe0f31b"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\page@1b2875fa6353cf4ae2ef57d64c4619e4-1792191434828.jpeg",
+    "bytes": 31062,
+    "sha256": "6e20a5bb669206c68700ae110fbd2656b02a2874a07d26c5ae313a413fc72bbc"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\page@1b2875fa6353cf4ae2ef57d64c4619e4-1792191434843.jpeg",
+    "bytes": 30766,
+    "sha256": "f3253bbf002b0a072cdaee44c209b974e2d14581f72ee1ec3a58b096e0e05318"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\page@1b2875fa6353cf4ae2ef57d64c4619e4-1792191434860.jpeg",
+    "bytes": 32645,
+    "sha256": "7f4ce1d48f45f6d393c872c635990a6249b512ab52963973df2e787237fbaa1b"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\page@1b2875fa6353cf4ae2ef57d64c4619e4-1792191434877.jpeg",
+    "bytes": 32343,
+    "sha256": "36868df4692aa8a22fb24b45a94ec2be7b4ba582622d715f09843bca6f84b85b"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\page@1b2875fa6353cf4ae2ef57d64c4619e4-1792191434895.jpeg",
+    "bytes": 32426,
+    "sha256": "8dc34cecb3fc1d545192171d86c4bdafa5264bf9530618288ebabc0dde1fa42b"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\page@1b2875fa6353cf4ae2ef57d64c4619e4-1792191434911.jpeg",
+    "bytes": 32161,
+    "sha256": "6c585d1e384dde58bb7958e7c8d76da84ab5ae7409334abf20381b28b8d9751f"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\page@1b2875fa6353cf4ae2ef57d64c4619e4-1792191434927.jpeg",
+    "bytes": 32161,
+    "sha256": "6c585d1e384dde58bb7958e7c8d76da84ab5ae7409334abf20381b28b8d9751f"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\page@1b2875fa6353cf4ae2ef57d64c4619e4-1792191434944.jpeg",
+    "bytes": 32161,
+    "sha256": "6c585d1e384dde58bb7958e7c8d76da84ab5ae7409334abf20381b28b8d9751f"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\page@1b2875fa6353cf4ae2ef57d64c4619e4-1792191434970.jpeg",
+    "bytes": 32161,
+    "sha256": "6c585d1e384dde58bb7958e7c8d76da84ab5ae7409334abf20381b28b8d9751f"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\page@1b2875fa6353cf4ae2ef57d64c4619e4-1792191434996.jpeg",
+    "bytes": 31445,
+    "sha256": "7de5ccf5f843589374c6373b336717942c84e64fe7616111f2f60a90e620d763"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\page@1b2875fa6353cf4ae2ef57d64c4619e4-1792191435089.jpeg",
+    "bytes": 31467,
+    "sha256": "1e5ffd2c34e595385679e95a943545bbe015663dc3a71b45606f006e1c990a03"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\page@1b2875fa6353cf4ae2ef57d64c4619e4-1792191438377.jpeg",
+    "bytes": 30788,
+    "sha256": "32385a2c66c17943db597927ec82f4a9d7379b95f8c2fbc7a3ebfe04ddba2432"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\page@1b2875fa6353cf4ae2ef57d64c4619e4-1792191438609.jpeg",
+    "bytes": 30918,
+    "sha256": "c223c0004dc4881280edecbb02602e1efa84cfda8e1ae16a9ce5c1e95185eee5"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\page@1b2875fa6353cf4ae2ef57d64c4619e4-1792191438692.jpeg",
+    "bytes": 30939,
+    "sha256": "97cc53df3920da988e02fdf28d13e38fb777448a099e47d005f4353179b248f4"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-restored-browser\\.playwright-artifacts-0\\traces\\resources\\page@eab8dc5763f94c72c324104a2cfe4035-1792191439042.jpeg",
+    "bytes": 2459,
+    "sha256": "3a829f9747ec49e0f7fafe05977cf3faa6dc229918ee73b807ec6dbf9d83c73f"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-rehost-browser\\00-rehost-owner-configures-37c77-nary-authenticated-settings\\trace.zip",
+    "bytes": 4112707,
+    "sha256": "e4a7e8eede79c05383a848495782429d6c089be53555899ce57458275ac029c0"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-provenance-runtime-browser-fixed-routing\\12-failed-only-retry-resto-75d25-ted-or-uncertain-deliveries\\trace.zip",
+    "bytes": 1298272,
+    "sha256": "8769aa9095c81915627800c55244307c9c49bbd349aeacc362dff933ce96d5cf"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-provenance-runtime-browser-fixed-routing\\donations-real-anonymous-d-56af9-privacy-and-refund-reversal\\trace.zip",
+    "bytes": 1249045,
+    "sha256": "4326b12e5b19941c83c1ba3f67f804ab5ff1d7190533f7dce948a1f23dbef50a"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-provenance-runtime-browser-fixed-routing\\restored-restored-ordinary-5333b-and-original-media-equality\\trace.zip",
+    "bytes": 2136893,
+    "sha256": "26f7995ebc61c08a0d7da4115ce67b7bf306de6e0cde60e3b0b0109061981b92"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-provenance-runtime-browser\\12-failed-only-retry-resto-75d25-ted-or-uncertain-deliveries\\error-context.md",
+    "bytes": 6183,
+    "sha256": "3e7c716bca40c0071b9958df883affa2cea943d27509e53e10521e0c027e40cf"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-provenance-runtime-browser\\12-failed-only-retry-resto-75d25-ted-or-uncertain-deliveries\\test-failed-1.png",
+    "bytes": 5089,
+    "sha256": "222638a08fcf70cac80e41476032d58a8230a8683b7a43658d1bd3d859388e2c"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-provenance-runtime-browser\\12-failed-only-retry-resto-75d25-ted-or-uncertain-deliveries\\trace.zip",
+    "bytes": 16452,
+    "sha256": "0c30c944ffcaa1a24772315db19da6b72cc8f2be2f2388f2b773913dbe8ca4b8"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-provenance-runtime-browser\\.playwright-artifacts-0\\traces\\f92d4bb56747d1d88ebd-fbfe4377a85443bd4cd0-pwnetcopy-1.network",
+    "bytes": 2158,
+    "sha256": "569c04c69a62686cb4955bdb96b0cee998f8a8cebcd38e601cd50501e75ad084"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-provenance-runtime-browser\\.playwright-artifacts-0\\traces\\f92d4bb56747d1d88ebd-fbfe4377a85443bd4cd0.network",
+    "bytes": 2158,
+    "sha256": "569c04c69a62686cb4955bdb96b0cee998f8a8cebcd38e601cd50501e75ad084"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-provenance-runtime-browser\\.playwright-artifacts-0\\traces\\f92d4bb56747d1d88ebd-fbfe4377a85443bd4cd0.trace",
+    "bytes": 5947,
+    "sha256": "45f8d7300e5c8273faed34b106fb87ad5e302d2879f945e4feac47ecbba22f21"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-provenance-runtime-browser\\.playwright-artifacts-0\\traces\\resources\\77545d1581d723fcc660ec54d46cb240a06e03b3.dat",
+    "bytes": 19,
+    "sha256": "7472ae1af3480530e29ab785f7aad4696f8ef6d18310b98c4386d43571bf3fda"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-provenance-runtime-browser\\.playwright-artifacts-0\\traces\\resources\\page@ae11d10e34b0b661100f869693b3e22c-1792195982544.jpeg",
+    "bytes": 2459,
+    "sha256": "3a829f9747ec49e0f7fafe05977cf3faa6dc229918ee73b807ec6dbf9d83c73f"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-provenance-runtime-browser\\.playwright-artifacts-0\\traces\\resources\\page@ae11d10e34b0b661100f869693b3e22c-1792195985510.jpeg",
+    "bytes": 3231,
+    "sha256": "8cb7e5c2be01fb6eedb571ebe17b7e540f39c3252b0bd0bf59e38f91185dc430"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-provenance-runtime-browser\\.playwright-artifacts-0\\traces\\resources\\page@ae11d10e34b0b661100f869693b3e22c-1792196015583.jpeg",
+    "bytes": 3231,
+    "sha256": "8cb7e5c2be01fb6eedb571ebe17b7e540f39c3252b0bd0bf59e38f91185dc430"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-predecessor-gateway-before\\20-predecessor-authentic-p-2799a-survive-the-lifecycle-phase\\trace.zip",
+    "bytes": 1030502,
+    "sha256": "f42244c4a392b091606dbebbd9414c472c459c2279535e44795280afdb26c30f"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-predecessor-fixed-same-schema-rollforward\\20-predecessor-authentic-p-2799a-survive-the-lifecycle-phase\\trace.zip",
+    "bytes": 1010886,
+    "sha256": "c5d5b9085cc6ce8c3a90b148d9275cabf0bec8f3d84a15aaa44571347d3a1934"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-predecessor-fixed-same-schema-rollback\\20-predecessor-authentic-p-2799a-survive-the-lifecycle-phase\\trace.zip",
+    "bytes": 982028,
+    "sha256": "a085bcdd0bf6dbb69b3e59ccc9a95f648bdf60c8bcb98fd409ca18466f5ac8bc"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-predecessor-fixed-rollback\\20-predecessor-authentic-p-2799a-survive-the-lifecycle-phase\\trace.zip",
+    "bytes": 1003856,
+    "sha256": "33e1473ec6d7fcf332b888d169a644b494ca8c37e9b1a8ce55eac5338ffa4d6e"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-predecessor-fixed-before\\20-predecessor-authentic-p-2799a-survive-the-lifecycle-phase\\trace.zip",
+    "bytes": 977942,
+    "sha256": "27ecc2cccba17de4e5e6b97f1f0127d7ce5c088eafbc1f2af2907cd607207512"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-predecessor-fixed-after\\20-predecessor-authentic-p-2799a-survive-the-lifecycle-phase\\trace.zip",
+    "bytes": 993264,
+    "sha256": "2fbede78f0a1888a3585f6438500ad36c38e0218a76223a5146436e077a54e53"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-predecessor-before\\20-predecessor-authentic-p-2799a-survive-the-lifecycle-phase\\error-context.md",
+    "bytes": 3673,
+    "sha256": "8d6267f4da2f0fd0f9cef77f7b5cd7ed69c28670422fcd27d8abc2202240864a"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-predecessor-before\\20-predecessor-authentic-p-2799a-survive-the-lifecycle-phase\\test-failed-1.png",
+    "bytes": 5089,
+    "sha256": "222638a08fcf70cac80e41476032d58a8230a8683b7a43658d1bd3d859388e2c"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-predecessor-before\\20-predecessor-authentic-p-2799a-survive-the-lifecycle-phase\\trace.zip",
+    "bytes": 13450,
+    "sha256": "9dcba82c5438a315c33e7d5e46c5f77affa8a293baf33eee12d5024012c96514"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-predecessor-before\\.playwright-artifacts-0\\traces\\51e0aeb6c6ceae0f9805-b0999731b5c1b0e707b8-pwnetcopy-1.network",
+    "bytes": 2147,
+    "sha256": "b9ddab38120082762a5a3c2f300c400338dbc577b3aa94a102dfbb2a45c00677"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-predecessor-before\\.playwright-artifacts-0\\traces\\51e0aeb6c6ceae0f9805-b0999731b5c1b0e707b8.network",
+    "bytes": 2147,
+    "sha256": "b9ddab38120082762a5a3c2f300c400338dbc577b3aa94a102dfbb2a45c00677"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-predecessor-before\\.playwright-artifacts-0\\traces\\51e0aeb6c6ceae0f9805-b0999731b5c1b0e707b8.trace",
+    "bytes": 6042,
+    "sha256": "6e6c2c6d98c1b9acd1518b44347b7c138b475ca82777a195ebeb73d4b0fba81e"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-predecessor-before\\.playwright-artifacts-0\\traces\\resources\\77545d1581d723fcc660ec54d46cb240a06e03b3.dat",
+    "bytes": 19,
+    "sha256": "7472ae1af3480530e29ab785f7aad4696f8ef6d18310b98c4386d43571bf3fda"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-predecessor-before\\.playwright-artifacts-0\\traces\\resources\\page@14373b46d34ae90eda1775b3e9e12a40-1792195200851.jpeg",
+    "bytes": 2459,
+    "sha256": "3a829f9747ec49e0f7fafe05977cf3faa6dc229918ee73b807ec6dbf9d83c73f"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-predecessor-before\\.playwright-artifacts-0\\traces\\resources\\page@14373b46d34ae90eda1775b3e9e12a40-1792195201059.jpeg",
+    "bytes": 3231,
+    "sha256": "8cb7e5c2be01fb6eedb571ebe17b7e540f39c3252b0bd0bf59e38f91185dc430"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-predecessor-before\\.playwright-artifacts-0\\traces\\resources\\page@14373b46d34ae90eda1775b3e9e12a40-1792195231104.jpeg",
+    "bytes": 3231,
+    "sha256": "8cb7e5c2be01fb6eedb571ebe17b7e540f39c3252b0bd0bf59e38f91185dc430"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-pending-restored-browser\\restored-restored-ordinary-5333b-and-original-media-equality\\trace.zip",
+    "bytes": 2124008,
+    "sha256": "b71542fcb025c075348c1339964d5438d9292a7743ecd18cba9bb612f17bfa6f"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-pending-browser\\10-pending-payment-ordinar-1304e-d-fulfillment-recovery-work\\trace.zip",
+    "bytes": 2342632,
+    "sha256": "f18a76bb181b7fa713b55c5329688eb111d3cbfe69645866df6b84eb32e05cab"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-pending-browser\\11-pending-community-real--4b500-local-community-outbox-work\\trace.zip",
+    "bytes": 1592386,
+    "sha256": "36517b6ae82805775263b725974ed40b49b6cfba7fb81e25c505d2aca89675bd"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-launcher-runtime-browser\\12-failed-only-retry-resto-75d25-ted-or-uncertain-deliveries\\trace.zip",
+    "bytes": 1274382,
+    "sha256": "3578cc0a9122cec61c14a83ffb60b03d240769d5ed99d733e3f28d42cd906f01"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-launcher-runtime-browser\\donations-real-anonymous-d-56af9-privacy-and-refund-reversal\\trace.zip",
+    "bytes": 1244249,
+    "sha256": "3b98011cf2f2c149c715eec6cfc95ddb35397bbd2c86590e5546730afd29ec19"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-launcher-runtime-browser\\restored-restored-ordinary-5333b-and-original-media-equality\\trace.zip",
+    "bytes": 2146422,
+    "sha256": "240b7f98b74266f0a794613c268c8e93082d65e9b10e454145db011e7b374fa3"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\donations-real-anonymous-d-56af9-privacy-and-refund-reversal\\error-context.md",
+    "bytes": 24339,
+    "sha256": "06dc4fca857a5e8052f66f28e8c226a979d1eb7eb3f575422aff59197dce8e9e"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\donations-real-anonymous-d-56af9-privacy-and-refund-reversal\\test-failed-1.png",
+    "bytes": 37816,
+    "sha256": "1a644c467204da582eed2acbdab3b837eec7bffc6551e7d3f31d830a316a0c45"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\donations-real-anonymous-d-56af9-privacy-and-refund-reversal\\test-failed-2.png",
+    "bytes": 4254,
+    "sha256": "3878570f4a62a0d65f57cf1754e0269e56ec797f4e36e26b44c172eb6e800401"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\donations-real-anonymous-d-56af9-privacy-and-refund-reversal\\test-failed-3.png",
+    "bytes": 4254,
+    "sha256": "3878570f4a62a0d65f57cf1754e0269e56ec797f4e36e26b44c172eb6e800401"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\donations-real-anonymous-d-56af9-privacy-and-refund-reversal\\trace.zip",
+    "bytes": 1097216,
+    "sha256": "f803bf9fd2833648d22f10e3958a1498efd538e14d070e82fd16a5d0fd84bd54"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\df060904f4bfc6ebcaa2-4d583587888d82a326dc-pwnetcopy-1.network",
+    "bytes": 381123,
+    "sha256": "776a2f6f011d80e13725cebfdeb2f3f211697675b511891a6a2250f2159de8bc"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\df060904f4bfc6ebcaa2-4d583587888d82a326dc-recording1-pwnetcopy-1.network",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\df060904f4bfc6ebcaa2-4d583587888d82a326dc-recording1.network",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\df060904f4bfc6ebcaa2-4d583587888d82a326dc-recording1.trace",
+    "bytes": 1402,
+    "sha256": "7b303e1150582b615ec22749900a935e2d87b17336773d971bea08cf48891446"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\df060904f4bfc6ebcaa2-4d583587888d82a326dc-recording2-pwnetcopy-1.network",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\df060904f4bfc6ebcaa2-4d583587888d82a326dc-recording2.network",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\df060904f4bfc6ebcaa2-4d583587888d82a326dc-recording2.trace",
+    "bytes": 1402,
+    "sha256": "8bf2758d70d9b77b520c33b2c0853cd01d68b3f47da22de064e5691fa3198336"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\df060904f4bfc6ebcaa2-4d583587888d82a326dc.network",
+    "bytes": 381123,
+    "sha256": "776a2f6f011d80e13725cebfdeb2f3f211697675b511891a6a2250f2159de8bc"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\df060904f4bfc6ebcaa2-4d583587888d82a326dc.trace",
+    "bytes": 54623,
+    "sha256": "9792901a385307491ac6d635251eab14210551fc54be4450188c0a36d93c7ff7"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\0ad5b417e3d53c65cf865d51fd5e5e94cbed7ea0.json",
+    "bytes": 35,
+    "sha256": "f2f3d9efc34e226d8837948f6aa202a7cc14657b368d699a1e3695641e38720e"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\0d95ddf7f6cd451b8468ed0142e20c9c69529ad4.woff2",
+    "bytes": 64500,
+    "sha256": "19a83cc7ce02aab990c0f5fb8bd8f12f2f8e4f56430d5a3459521cabd852a51c"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\127be194854acf07e382474b4219092796e68d43.css",
+    "bytes": 6407,
+    "sha256": "d6cd9e7faa68e199b7c562f8e19844b4c46c47b626b9647fe4d8b7a41a1d5661"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\1dc044f4824fd5af6bfed67fee48be70fa069f3f.woff2",
+    "bytes": 48432,
+    "sha256": "c940764593d0fe5d596be327ca7558855e018039fb78509aa21921fd3644c3e4"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\3200f3d079c01c3d1834d55c1c1354be357afafb.json",
+    "bytes": 502,
+    "sha256": "aa9fafec43685b4e69c6f1ba284e3ee7065420ba9f6f7e7650f84648e87a788c"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\33bc0249e0c5f076a60d80689b5671b80ec86aeb.jpg",
+    "bytes": 1079,
+    "sha256": "8f5cbefbc8471f12891d59199d120581251476c46ffcd8be2630b84513e556a3"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\3c1abd6177b5bf9bca112ead4f09ad504b0dc908.css",
+    "bytes": 20403,
+    "sha256": "1ad4f21bbffc49ceba6aaee2b8cfd824ab8bae6dc7e2c96a7512fee3dbd13c97"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\3c940d21751e029c9afd70c56d47dced0d2a8beb.woff2",
+    "bytes": 58152,
+    "sha256": "2a69ec1c0fb79a464de0e19957cdb3a65b5f626d85fffd164f9de557d3a64878"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\42b1a293046946a096f807a3885005abaa433030.json",
+    "bytes": 278,
+    "sha256": "47e0e66c870d67690f93c52f3f57a559401898be3947062f0d3db29c196ce12f"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\44840082f19c6e54ef978f9e7dc8c84659386d34.css",
+    "bytes": 292555,
+    "sha256": "5d88ae5bd93f7c1a630f24f6ce10a3824ec3fbfa5455d77862f9520547520c20"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\4e89f04f38b05ce59d26dd4a2b31e3f42d90bba1.html",
+    "bytes": 754566,
+    "sha256": "30ca568806ba170c74ed294828abe17a6c6463ce12d7b4c0ed7d56cc4e7e99c5"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\4eccade85a45c4f3801e128d022c37b230b38dbd.json",
+    "bytes": 22,
+    "sha256": "4c77c51b6ed4c567f629190327c6345b4627508f395f9fb9386fd9d895e05f96"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\55a490e280d48996e564d00492437eb17faadd28.json",
+    "bytes": 15,
+    "sha256": "a29ee2b15c494311c52521766e44af56a3ad2248e7a8ab465e5206463c13d288"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\598ce73c5102a40d609accf208acbbcf914b9bf5.htc",
+    "bytes": 945,
+    "sha256": "29ccf55752a16979888535924d702529daa6ff9113595f453cba5576158f71ff"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\65bc33600814388a45d8f4759ada35d8a4c25635.htc",
+    "bytes": 441,
+    "sha256": "1ee7e84c8df1e3542cd37622d0844a6d6d4628fcf7cc36574b249cff46adbea5"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\6a28da8fa33ee4cd1da6c56542cc52285608027c.htc",
+    "bytes": 841,
+    "sha256": "240ed9536384b3aacba3a8d8dc36f5847564f93464df730a966da9bca0863cf7"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\6db05ce91929f985b345e886b6771827b3dddb3f.json",
+    "bytes": 1270,
+    "sha256": "b2fc1521349f4fd9b134201650608931a2389a651ecf245cc80e3ebb029fa131"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\729982b4c9e653e9c5eb5f1853814375a03ee911.htc",
+    "bytes": 346,
+    "sha256": "81cdf4d702cc7b25deac3d9eaf84ed6d2c17156bfedba898700bb9d28c7c0609"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\7bf0bdc2752074b4b8d93d346824d41e4bfb65e4.json",
+    "bytes": 769,
+    "sha256": "3afc86fca729e60932bf110a7782a6fc0122b1c50e94556b00ef64ecc958242a"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\7d22d7260e68f1a3ef09d54dfea81e542e308730.css",
+    "bytes": 9975,
+    "sha256": "3675c1fb3892e28cfd8f06bf15014f305bd1f7ac8dcdfae64b7a5a740424212d"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\7dcbd819f95fbc6e4a50a1b0ffa85ade0565e743.html",
+    "bytes": 16438,
+    "sha256": "191acc1634a208c1afbd17a647d4ee6ea0683c4bc9dd3943cc0bd4a4d79d6a8e"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\843b08095925c0547645db1a883fba167db6a77c.json",
+    "bytes": 239,
+    "sha256": "0487c05254e8eb22db75dd4329111e1af2f59946ca1110a068305b82ecd0b076"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\84482562b94f2c0ccc4926fa2a04ede1161ece91.css",
+    "bytes": 11759,
+    "sha256": "cbc889d67cd2f6545d0be8256b23bf987a570c64c7004ef43a4e84b45e23d3c5"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\8aa30cc4a4a62ead1a576a8c5fddb031a04b9bb7.htc",
+    "bytes": 839,
+    "sha256": "93bf63576a0b83ef49a2bfe7b05ab2a2cb75c4abf9d5e73a4d5054085c8b87e3"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\9c539dee36243e28b3e70bfcfdaeba6a0bc2b0f1.htc",
+    "bytes": 289,
+    "sha256": "693b99d461a175a0426d8578fd1bd58edd23e19791652499d6fba47357ac1369"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\b2452a03c2eef41bdc5b6da725723109e5972d77.json",
+    "bytes": 151,
+    "sha256": "4286b9e25da3a51536e98c30097fc3dc0edbcec1f97e9c306761c8d3259e2aaf"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\c18da6cb430f645ecca85d567c76364f73ca2013.woff2",
+    "bytes": 40480,
+    "sha256": "1e06740a02a443fb7f3eeda8fcaa685a0f6c620e3f01e6666e847295469ce3ad"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\ccf0db2dfa86c9ed9eeccd22d9c5a942a689f276.json",
+    "bytes": 1287,
+    "sha256": "eb2494123101f261a3d63f8f3300ae1e51847ce1792d5545a535b2617943d6f4"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\ce2ae40e2e7cf01ff2d2f05f84a042d5dbddfc55.css",
+    "bytes": 98414,
+    "sha256": "773a55fb347b02e311ac3b3a33e38399b05b3031de3177508507ada8c39e8950"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\dcf76203c383661e2190c91aab9f10db92c76157.json",
+    "bytes": 617,
+    "sha256": "5954bad79ab46479214051f28744e2a11b84d26305586e00f5a0346b4db4c61f"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\debffd13274249178a181fd21f4c7249ce217008.htc",
+    "bytes": 951,
+    "sha256": "60bfd0483611769f374d0fef3749225b14d047c09431fa6774225c2f2289f9b7"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\e1013769ffbaeb49ef178891600eb0c5f2592603.css",
+    "bytes": 296034,
+    "sha256": "6e3c8926288112ef97c307c25bb1c66ff5d1f9ec2b4bc40501a7df8e42ae740f"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\e53b72466f7f5e28c385eeb29814a00c70c5f5e9.css",
+    "bytes": 2601,
+    "sha256": "4d7db7271e822196a62397df1fe9d7ec34951bd54c95a619f94ced3ba721b38c"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\e8558d4f3d576d7599ba33d9ae8a222f1dc42cb0.json",
+    "bytes": 369,
+    "sha256": "933fbf5335c89b97f74763c5b286fd51491f0a11936198f2bb540438a345de2b"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\ee0cc8303e6815b1a3316f6a347179c9466707eb.htc",
+    "bytes": 403,
+    "sha256": "ff69a80a3b2018c8af35c3739c82190896071e0003d7ec85acf66b46f70794c9"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\f4d78895d4eaf088f1f41d77e23afd741c037ca4.htc",
+    "bytes": 949,
+    "sha256": "34b76ef48f88641c47061b3efe0d22ccf4ef8516bdd417486211c3343455a38d"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\page@2f41d0b6df1920b8df8a509659061174-1792191355094.jpeg",
+    "bytes": 2459,
+    "sha256": "3a829f9747ec49e0f7fafe05977cf3faa6dc229918ee73b807ec6dbf9d83c73f"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\page@8b324eb71a3fba11604f38789c8f8ec7-1792191355008.jpeg",
+    "bytes": 2459,
+    "sha256": "3a829f9747ec49e0f7fafe05977cf3faa6dc229918ee73b807ec6dbf9d83c73f"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\page@c2d538c794b3a096e5baa92d6cf502f7-1792191345478.jpeg",
+    "bytes": 2459,
+    "sha256": "3a829f9747ec49e0f7fafe05977cf3faa6dc229918ee73b807ec6dbf9d83c73f"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\page@c2d538c794b3a096e5baa92d6cf502f7-1792191349076.jpeg",
+    "bytes": 19419,
+    "sha256": "3387982d0071b92d68c293f828b40d9ea09e05a5141e1498da42d5d6a33e3265"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\page@c2d538c794b3a096e5baa92d6cf502f7-1792191349275.jpeg",
+    "bytes": 25393,
+    "sha256": "77a81d02bb0a24ca05f1a12566f607f1dba8878438bc91596b32c93fb6267397"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\page@c2d538c794b3a096e5baa92d6cf502f7-1792191349322.jpeg",
+    "bytes": 26184,
+    "sha256": "b0740a9cafb13483d95ff2d846f22e416682f2c4af61fde13ee3221234633f45"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\page@c2d538c794b3a096e5baa92d6cf502f7-1792191349515.jpeg",
+    "bytes": 26373,
+    "sha256": "a852ab59a21aefd56e8a9077a58b8d501098e2f92e017fe820321c267a16b967"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\page@c2d538c794b3a096e5baa92d6cf502f7-1792191349531.jpeg",
+    "bytes": 26670,
+    "sha256": "4c8271134eef8da990acbe4aa9b2afead45714ba81bea438d36c36e880a4ef9c"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\page@c2d538c794b3a096e5baa92d6cf502f7-1792191349545.jpeg",
+    "bytes": 28731,
+    "sha256": "0dac0510922ffe7062c153c98380b753ce40e8e7e4fd530b40f82d83f613ab81"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\page@c2d538c794b3a096e5baa92d6cf502f7-1792191349565.jpeg",
+    "bytes": 29386,
+    "sha256": "7f4753b7e38d22d6ecc0842a60fd129387df5d813421a414d8e8d77c5f6dc9ce"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\page@c2d538c794b3a096e5baa92d6cf502f7-1792191349583.jpeg",
+    "bytes": 29758,
+    "sha256": "f9f11ef3ea13bf044859cd2eaa696d6144f2122ad8d1c3000282f2019828faff"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\page@c2d538c794b3a096e5baa92d6cf502f7-1792191349599.jpeg",
+    "bytes": 31027,
+    "sha256": "8aadfe6a71ea12a7322832fa10095935246a6fbd4196a5ab004224bf4fe0f31b"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\page@c2d538c794b3a096e5baa92d6cf502f7-1792191349614.jpeg",
+    "bytes": 31062,
+    "sha256": "6e20a5bb669206c68700ae110fbd2656b02a2874a07d26c5ae313a413fc72bbc"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\page@c2d538c794b3a096e5baa92d6cf502f7-1792191349632.jpeg",
+    "bytes": 30766,
+    "sha256": "f3253bbf002b0a072cdaee44c209b974e2d14581f72ee1ec3a58b096e0e05318"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\page@c2d538c794b3a096e5baa92d6cf502f7-1792191349649.jpeg",
+    "bytes": 32645,
+    "sha256": "7f4ce1d48f45f6d393c872c635990a6249b512ab52963973df2e787237fbaa1b"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\page@c2d538c794b3a096e5baa92d6cf502f7-1792191349667.jpeg",
+    "bytes": 32343,
+    "sha256": "36868df4692aa8a22fb24b45a94ec2be7b4ba582622d715f09843bca6f84b85b"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\page@c2d538c794b3a096e5baa92d6cf502f7-1792191349681.jpeg",
+    "bytes": 32426,
+    "sha256": "8dc34cecb3fc1d545192171d86c4bdafa5264bf9530618288ebabc0dde1fa42b"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\page@c2d538c794b3a096e5baa92d6cf502f7-1792191349699.jpeg",
+    "bytes": 32161,
+    "sha256": "6c585d1e384dde58bb7958e7c8d76da84ab5ae7409334abf20381b28b8d9751f"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\page@c2d538c794b3a096e5baa92d6cf502f7-1792191349713.jpeg",
+    "bytes": 32161,
+    "sha256": "6c585d1e384dde58bb7958e7c8d76da84ab5ae7409334abf20381b28b8d9751f"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\page@c2d538c794b3a096e5baa92d6cf502f7-1792191349733.jpeg",
+    "bytes": 32161,
+    "sha256": "6c585d1e384dde58bb7958e7c8d76da84ab5ae7409334abf20381b28b8d9751f"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\page@c2d538c794b3a096e5baa92d6cf502f7-1792191349805.jpeg",
+    "bytes": 32161,
+    "sha256": "6c585d1e384dde58bb7958e7c8d76da84ab5ae7409334abf20381b28b8d9751f"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\page@c2d538c794b3a096e5baa92d6cf502f7-1792191349839.jpeg",
+    "bytes": 31445,
+    "sha256": "7de5ccf5f843589374c6373b336717942c84e64fe7616111f2f60a90e620d763"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\page@c2d538c794b3a096e5baa92d6cf502f7-1792191349962.jpeg",
+    "bytes": 31467,
+    "sha256": "1e5ffd2c34e595385679e95a943545bbe015663dc3a71b45606f006e1c990a03"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\page@c2d538c794b3a096e5baa92d6cf502f7-1792191354194.jpeg",
+    "bytes": 30788,
+    "sha256": "32385a2c66c17943db597927ec82f4a9d7379b95f8c2fbc7a3ebfe04ddba2432"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\page@c2d538c794b3a096e5baa92d6cf502f7-1792191354413.jpeg",
+    "bytes": 30918,
+    "sha256": "c223c0004dc4881280edecbb02602e1efa84cfda8e1ae16a9ce5c1e95185eee5"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\page@c2d538c794b3a096e5baa92d6cf502f7-1792191354516.jpeg",
+    "bytes": 30939,
+    "sha256": "97cc53df3920da988e02fdf28d13e38fb777448a099e47d005f4353179b248f4"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-first-browser-failure\\.playwright-artifacts-0\\traces\\resources\\page@c2d538c794b3a096e5baa92d6cf502f7-1792191355125.jpeg",
+    "bytes": 30939,
+    "sha256": "97cc53df3920da988e02fdf28d13e38fb777448a099e47d005f4353179b248f4"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-final-browser\\donations-real-anonymous-d-56af9-privacy-and-refund-reversal\\trace.zip",
+    "bytes": 1257461,
+    "sha256": "a96ce943d3bede182807c2396b82fcdae9de9ce3f848454c9084db45932c4c7b"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-final-browser\\restored-restored-ordinary-5333b-and-original-media-equality\\trace.zip",
+    "bytes": 2123592,
+    "sha256": "6b98cf38d46cef814a34043cdc1f3af37b7bce74793c63b3edff187e2b1a7e06"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\12-failed-only-retry-resto-75d25-ted-or-uncertain-deliveries\\error-context.md",
+    "bytes": 5704,
+    "sha256": "fd0e32accf34679816f970d6b89e008beba07636d560f5cc1fb70c137b6af4ab"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\12-failed-only-retry-resto-75d25-ted-or-uncertain-deliveries\\test-failed-1.png",
+    "bytes": 32569,
+    "sha256": "df4d8ae8e15b824dc504abe111c6d202a04b630c23eef3351d92c5eb24e72477"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\12-failed-only-retry-resto-75d25-ted-or-uncertain-deliveries\\test-failed-2.png",
+    "bytes": 4254,
+    "sha256": "3878570f4a62a0d65f57cf1754e0269e56ec797f4e36e26b44c172eb6e800401"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\12-failed-only-retry-resto-75d25-ted-or-uncertain-deliveries\\trace.zip",
+    "bytes": 1338464,
+    "sha256": "dcc915e2a09373a83cbf9f95034128b00de6c419ae2b574adeee9b3ad0a4d2fe"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\f92d4bb56747d1d88ebd-fbfe4377a85443bd4cd0-pwnetcopy-1.network",
+    "bytes": 526739,
+    "sha256": "fc35fe8ba6962dd626a47cd1638305dce54788f4912b016a51900660c9d0562f"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\f92d4bb56747d1d88ebd-fbfe4377a85443bd4cd0-recording1-pwnetcopy-1.network",
+    "bytes": 1999,
+    "sha256": "a2b9a78b735ef76da077005f699585e6558bfd48407d944eaaa313f550750bc1"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\f92d4bb56747d1d88ebd-fbfe4377a85443bd4cd0-recording1.network",
+    "bytes": 1999,
+    "sha256": "a2b9a78b735ef76da077005f699585e6558bfd48407d944eaaa313f550750bc1"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\f92d4bb56747d1d88ebd-fbfe4377a85443bd4cd0-recording1.trace",
+    "bytes": 4915,
+    "sha256": "ad0d96b597861566812077b32e3daa368d00128848d0a5979c6003f6b620ad3d"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\f92d4bb56747d1d88ebd-fbfe4377a85443bd4cd0.network",
+    "bytes": 526739,
+    "sha256": "fc35fe8ba6962dd626a47cd1638305dce54788f4912b016a51900660c9d0562f"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\f92d4bb56747d1d88ebd-fbfe4377a85443bd4cd0.trace",
+    "bytes": 251117,
+    "sha256": "38461d881a480d68dc23537591323adca1df76564ded43c62fa83159a95cc9c7"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\09e3f99e946dc6de8d2c3575dd68dfc6ac8214e1.json",
+    "bytes": 239,
+    "sha256": "f96ae85f8314ca796f581f4dda19582f620310935a8f676df2892e3e2c5e1c13"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\0ad5b417e3d53c65cf865d51fd5e5e94cbed7ea0.json",
+    "bytes": 35,
+    "sha256": "f2f3d9efc34e226d8837948f6aa202a7cc14657b368d699a1e3695641e38720e"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\0d95ddf7f6cd451b8468ed0142e20c9c69529ad4.woff2",
+    "bytes": 64500,
+    "sha256": "19a83cc7ce02aab990c0f5fb8bd8f12f2f8e4f56430d5a3459521cabd852a51c"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\0ea6f016c0d6af2b4f1b9c84d744585c6ee36eec.json",
+    "bytes": 1062,
+    "sha256": "75b39a1e741760978ffcabbf3985b9624263f2e1e946e3c87ebdcee403a6766e"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\127be194854acf07e382474b4219092796e68d43.css",
+    "bytes": 6407,
+    "sha256": "d6cd9e7faa68e199b7c562f8e19844b4c46c47b626b9647fe4d8b7a41a1d5661"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\163f1a7b9ee07cd0510929dc571011cc23ea64c4.html",
+    "bytes": 752907,
+    "sha256": "cc67b13f99bd87463352fe1965f66fc069415c53874545c6612e553ead962c87"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\1dc044f4824fd5af6bfed67fee48be70fa069f3f.woff2",
+    "bytes": 48432,
+    "sha256": "c940764593d0fe5d596be327ca7558855e018039fb78509aa21921fd3644c3e4"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\1eba4c22fbfb384508ea9f634cf2b7e6e9e3b177.htc",
+    "bytes": 441,
+    "sha256": "c3fd592ba7332340f0fe50cf6ad771426b9c87d23c2f149a95ff91bc6366bd6c"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\21ab5a1379db4a7d6ee580e0f4babd4c118a5e50.htc",
+    "bytes": 343,
+    "sha256": "1f3daf2ed5f27741c9ce01f6d84b18cf87f2b5e99f9e50b07d6fecf6b29ae8c9"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\33bc0249e0c5f076a60d80689b5671b80ec86aeb.jpg",
+    "bytes": 1079,
+    "sha256": "8f5cbefbc8471f12891d59199d120581251476c46ffcd8be2630b84513e556a3"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\3459989b70442d53e777a9815f469a33e8b8c33e.htc",
+    "bytes": 3212,
+    "sha256": "38bf3cfbac93372aba4b457c93cf00eae18257838d1f8f9c1aac10321ce01eae"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\35145e083ff069b53416064f5e8844a6420dc74a.htc",
+    "bytes": 346,
+    "sha256": "6ed4586b7562b949052f090eefde9ad9e200d9b80c6dbfd8700f0d1f20e83f72"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\3b6fc753464c1870b40f6d1dccf70681eda0229e.html",
+    "bytes": 16438,
+    "sha256": "2a6453982d4a1c8e18f04c3017dfe70c2e42b3030c98cf39bca966f718f1b115"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\3c1abd6177b5bf9bca112ead4f09ad504b0dc908.css",
+    "bytes": 20403,
+    "sha256": "1ad4f21bbffc49ceba6aaee2b8cfd824ab8bae6dc7e2c96a7512fee3dbd13c97"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\3c940d21751e029c9afd70c56d47dced0d2a8beb.woff2",
+    "bytes": 58152,
+    "sha256": "2a69ec1c0fb79a464de0e19957cdb3a65b5f626d85fffd164f9de557d3a64878"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\3ca1b898632c25704ce17f5fc7a2caeb0c546fd8.htc",
+    "bytes": 3212,
+    "sha256": "a281204b9b145c347bb197f93827985d4352814c2b2ac82a29fd83c629407d58"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\405df241ed5812047cce7b45463bc1a7e728a05d.htc",
+    "bytes": 3216,
+    "sha256": "4b827002fd8262c668ecdebfe18b55cbb89c3350c55da8627f8f6c7a8e92f15a"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\42b1a293046946a096f807a3885005abaa433030.json",
+    "bytes": 278,
+    "sha256": "47e0e66c870d67690f93c52f3f57a559401898be3947062f0d3db29c196ce12f"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\44840082f19c6e54ef978f9e7dc8c84659386d34.css",
+    "bytes": 292555,
+    "sha256": "5d88ae5bd93f7c1a630f24f6ce10a3824ec3fbfa5455d77862f9520547520c20"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\472fc9528016042f15d6723324f56413feb9414d.json",
+    "bytes": 53,
+    "sha256": "d5821c3a20c653fa093da3d2560f1d10df82dc3d221a9750a5a23473ff693214"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\47a9412bc7e75216290974365af31d8477fa556c.htc",
+    "bytes": 841,
+    "sha256": "cd3edb8688b7e137d1b0f2c565baf5131d750c489ba25ff1dade318b3c50cf9b"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\59ae898d7a652dcde4273b81d9d172c843432637.json",
+    "bytes": 50,
+    "sha256": "07d3cfe9985643f8e4c3109806f37e3d1dfaa7484c591421cad6c0d636a99554"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\61d9d9648b2d1eb938387d48ab625a47dded498c.htc",
+    "bytes": 344,
+    "sha256": "b5fa6d746db4d41ddee0991fd76f6744cc32ffbb0c2b723bc6d3af479a65b574"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\66aa52bd20f141d8af877a90d9ebd02781f9bba2.htc",
+    "bytes": 3207,
+    "sha256": "40ba1e5d05e8767cb7148b31021c8918f6ad28766266faa981e00aafc5377668"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\6dba908e4a244d597d07fac39b774fa8ab13a851.htc",
+    "bytes": 3249,
+    "sha256": "47633a03eb0d6fc7977d4f5ce01eca2e8345f4ee2d44b745e21cecd2a050b3d3"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\740dbcf6e56c7e90fb0127b407ab0bb4742a5fe9.json",
+    "bytes": 52,
+    "sha256": "d38c64ad746b425afdc56a1fe49cdbdd02082663fc1be7dd86db652bd9fba0ef"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\741a3eba55e6806aeae4d4ff01950c8d4b2fffd4.htc",
+    "bytes": 403,
+    "sha256": "002d19f86b74ceb9f2d2c10438349abbe4c2d1103f18bef4b979f7457eaeba02"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\7bf0bdc2752074b4b8d93d346824d41e4bfb65e4.json",
+    "bytes": 769,
+    "sha256": "3afc86fca729e60932bf110a7782a6fc0122b1c50e94556b00ef64ecc958242a"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\7d22d7260e68f1a3ef09d54dfea81e542e308730.css",
+    "bytes": 9975,
+    "sha256": "3675c1fb3892e28cfd8f06bf15014f305bd1f7ac8dcdfae64b7a5a740424212d"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\7e32c6b400b418a76b3456376eec82584aa91b46.htc",
+    "bytes": 400,
+    "sha256": "0ba209e7a7b5f6a2e92d877eeefc41bf1d436861df28f69522af17ea8a9fc15a"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\81a6718afdeb073a82f86dbc348bc83457681cff.json",
+    "bytes": 1208,
+    "sha256": "0ebfc1c9cc6a56a0adbf272f68b240857421f602055de94b8c5b3c4c3fce2108"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\84482562b94f2c0ccc4926fa2a04ede1161ece91.css",
+    "bytes": 11759,
+    "sha256": "cbc889d67cd2f6545d0be8256b23bf987a570c64c7004ef43a4e84b45e23d3c5"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\8e08bd02254379a456b54dffef0365221f8f65a4.html",
+    "bytes": 672628,
+    "sha256": "0ff55f58addfac13f8ef45b487b244143b92d041d2801197a4ca745d63e32523"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\90330dae2d79ec47483fb557caf480eab3629777.json",
+    "bytes": 19,
+    "sha256": "17ab365136af46de09c8ebe2551731c671e794435203d81a7a1b2bd112ab170c"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\9a51166f0279ae3d4049cb8ff98ff269a6779133.json",
+    "bytes": 1023,
+    "sha256": "6f494cd88fe851e054f283650ac2b1a1b909a88479d73725c0c46d511b6d20eb"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\a9dbd7bc8253d47d058bffe659dfa369f465b047.json",
+    "bytes": 617,
+    "sha256": "f2078ddd1a5d4847f6b999b6ce3d3d92e5ec1112b279d0a103cc3780cb8d6c14"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\bfef7f37d940bfddd52a0c230b4109f746de60d3.htc",
+    "bytes": 3233,
+    "sha256": "f46455a65557f86d7e697c8c77de1c09061120b9610f3553d62e4148bf8e695f"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\c18da6cb430f645ecca85d567c76364f73ca2013.woff2",
+    "bytes": 40480,
+    "sha256": "1e06740a02a443fb7f3eeda8fcaa685a0f6c620e3f01e6666e847295469ce3ad"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\c914863fe0d9defd0dd8b6fb95898b5aeeb37c0f.json",
+    "bytes": 1058,
+    "sha256": "f16545c26873caf57e620631c445d422714df7358f2753ca3802045098476ef3"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\cb09b58c3acb422b0416c7abae725fe3aef21ff4.htc",
+    "bytes": 3213,
+    "sha256": "32a0cd98fa6393495194622e221522fecbc71148d5add7b26325f1ba1de897a3"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\ce2ae40e2e7cf01ff2d2f05f84a042d5dbddfc55.css",
+    "bytes": 98414,
+    "sha256": "773a55fb347b02e311ac3b3a33e38399b05b3031de3177508507ada8c39e8950"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\d35ea1559102d6777ea5920b0084f17197c44ae5.json",
+    "bytes": 20,
+    "sha256": "a839711b15b8e9862282ec0ed1034f134efb54b5d9969e66ea285babef923d4a"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\d99592f3c5b0ea7ed9b892a5fdc2de9d3733bb20.json",
+    "bytes": 1136,
+    "sha256": "39d30859d2c1058eb6c7144995784704dcc3ee7e8e2745a9c44d85afa59baac2"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\e1013769ffbaeb49ef178891600eb0c5f2592603.css",
+    "bytes": 296034,
+    "sha256": "6e3c8926288112ef97c307c25bb1c66ff5d1f9ec2b4bc40501a7df8e42ae740f"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\e53b72466f7f5e28c385eeb29814a00c70c5f5e9.css",
+    "bytes": 2601,
+    "sha256": "4d7db7271e822196a62397df1fe9d7ec34951bd54c95a619f94ced3ba721b38c"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\eb4b4eba0f0d773913bfc5db5ea7d2dc0bb67a3e.htc",
+    "bytes": 400,
+    "sha256": "13795649e1a883a4c37370aa5ae4a9d793cedd3a11618926746767dbe61b8b12"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\ecafd17083d69ba66e5af1df23746104878739b5.json",
+    "bytes": 53,
+    "sha256": "e315a40e1f8e958d79e722f247317aeb645b0ac205cdb014cce4e6a55ff1bb85"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\page@0abaf03e9341bcf11ba19b14b50218de-1792193531257.jpeg",
+    "bytes": 2459,
+    "sha256": "3a829f9747ec49e0f7fafe05977cf3faa6dc229918ee73b807ec6dbf9d83c73f"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\page@0abaf03e9341bcf11ba19b14b50218de-1792193531545.jpeg",
+    "bytes": 19419,
+    "sha256": "3387982d0071b92d68c293f828b40d9ea09e05a5141e1498da42d5d6a33e3265"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\page@0abaf03e9341bcf11ba19b14b50218de-1792193531617.jpeg",
+    "bytes": 25393,
+    "sha256": "77a81d02bb0a24ca05f1a12566f607f1dba8878438bc91596b32c93fb6267397"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\page@0abaf03e9341bcf11ba19b14b50218de-1792193531657.jpeg",
+    "bytes": 25797,
+    "sha256": "a321b63b6e3d04fc4182714671df1b0139294f6f3361c6ce581bb52c7af5d213"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\page@0abaf03e9341bcf11ba19b14b50218de-1792193531666.jpeg",
+    "bytes": 26184,
+    "sha256": "b0740a9cafb13483d95ff2d846f22e416682f2c4af61fde13ee3221234633f45"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\page@0abaf03e9341bcf11ba19b14b50218de-1792193531795.jpeg",
+    "bytes": 26373,
+    "sha256": "a852ab59a21aefd56e8a9077a58b8d501098e2f92e017fe820321c267a16b967"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\page@0abaf03e9341bcf11ba19b14b50218de-1792193531810.jpeg",
+    "bytes": 26670,
+    "sha256": "4c8271134eef8da990acbe4aa9b2afead45714ba81bea438d36c36e880a4ef9c"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\page@0abaf03e9341bcf11ba19b14b50218de-1792193531828.jpeg",
+    "bytes": 28731,
+    "sha256": "0dac0510922ffe7062c153c98380b753ce40e8e7e4fd530b40f82d83f613ab81"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\page@0abaf03e9341bcf11ba19b14b50218de-1792193531842.jpeg",
+    "bytes": 29386,
+    "sha256": "7f4753b7e38d22d6ecc0842a60fd129387df5d813421a414d8e8d77c5f6dc9ce"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\page@0abaf03e9341bcf11ba19b14b50218de-1792193531858.jpeg",
+    "bytes": 29758,
+    "sha256": "f9f11ef3ea13bf044859cd2eaa696d6144f2122ad8d1c3000282f2019828faff"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\page@0abaf03e9341bcf11ba19b14b50218de-1792193531876.jpeg",
+    "bytes": 31027,
+    "sha256": "8aadfe6a71ea12a7322832fa10095935246a6fbd4196a5ab004224bf4fe0f31b"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\page@0abaf03e9341bcf11ba19b14b50218de-1792193531891.jpeg",
+    "bytes": 31062,
+    "sha256": "6e20a5bb669206c68700ae110fbd2656b02a2874a07d26c5ae313a413fc72bbc"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\page@0abaf03e9341bcf11ba19b14b50218de-1792193531909.jpeg",
+    "bytes": 30766,
+    "sha256": "f3253bbf002b0a072cdaee44c209b974e2d14581f72ee1ec3a58b096e0e05318"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\page@0abaf03e9341bcf11ba19b14b50218de-1792193531926.jpeg",
+    "bytes": 32645,
+    "sha256": "7f4ce1d48f45f6d393c872c635990a6249b512ab52963973df2e787237fbaa1b"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\page@0abaf03e9341bcf11ba19b14b50218de-1792193531943.jpeg",
+    "bytes": 32343,
+    "sha256": "36868df4692aa8a22fb24b45a94ec2be7b4ba582622d715f09843bca6f84b85b"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\page@0abaf03e9341bcf11ba19b14b50218de-1792193531959.jpeg",
+    "bytes": 32426,
+    "sha256": "8dc34cecb3fc1d545192171d86c4bdafa5264bf9530618288ebabc0dde1fa42b"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\page@0abaf03e9341bcf11ba19b14b50218de-1792193531975.jpeg",
+    "bytes": 32161,
+    "sha256": "6c585d1e384dde58bb7958e7c8d76da84ab5ae7409334abf20381b28b8d9751f"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\page@0abaf03e9341bcf11ba19b14b50218de-1792193531992.jpeg",
+    "bytes": 32161,
+    "sha256": "6c585d1e384dde58bb7958e7c8d76da84ab5ae7409334abf20381b28b8d9751f"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\page@0abaf03e9341bcf11ba19b14b50218de-1792193532008.jpeg",
+    "bytes": 32161,
+    "sha256": "6c585d1e384dde58bb7958e7c8d76da84ab5ae7409334abf20381b28b8d9751f"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\page@0abaf03e9341bcf11ba19b14b50218de-1792193532055.jpeg",
+    "bytes": 32161,
+    "sha256": "6c585d1e384dde58bb7958e7c8d76da84ab5ae7409334abf20381b28b8d9751f"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\page@0abaf03e9341bcf11ba19b14b50218de-1792193532066.jpeg",
+    "bytes": 31445,
+    "sha256": "7de5ccf5f843589374c6373b336717942c84e64fe7616111f2f60a90e620d763"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\page@0abaf03e9341bcf11ba19b14b50218de-1792193532108.jpeg",
+    "bytes": 31467,
+    "sha256": "1e5ffd2c34e595385679e95a943545bbe015663dc3a71b45606f006e1c990a03"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\page@0abaf03e9341bcf11ba19b14b50218de-1792193535938.jpeg",
+    "bytes": 32659,
+    "sha256": "6e1338736cb10e0bb7aa052e163403062940d2e169817c773f6ba07d3d9831e5"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\page@0abaf03e9341bcf11ba19b14b50218de-1792193536236.jpeg",
+    "bytes": 32810,
+    "sha256": "c991ccf2bea9f57e792c1bcf3c524a270ef5de3ff3252ffbbdc9b7296bfcac7d"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\page@0abaf03e9341bcf11ba19b14b50218de-1792193545194.jpeg",
+    "bytes": 29912,
+    "sha256": "5aa83eafb56f64b142b657ea07397e45265f4954ca67b828194f06c013e3ee6a"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\page@0abaf03e9341bcf11ba19b14b50218de-1792193545342.jpeg",
+    "bytes": 30768,
+    "sha256": "912ea013dbafbd2dee3c792ad7952d9200fae252921a0bdf778211395c6e2bb9"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\page@0abaf03e9341bcf11ba19b14b50218de-1792193545392.jpeg",
+    "bytes": 30661,
+    "sha256": "9ba5c01fec006174d71b5f6e0e56f8142e5e069739a04913d9831d794d1be923"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\page@0abaf03e9341bcf11ba19b14b50218de-1792193545824.jpeg",
+    "bytes": 32986,
+    "sha256": "1bcd57159b3545d39172df82ca416b5a675e6ea3509446c32d66bfc1d22eb034"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\page@0abaf03e9341bcf11ba19b14b50218de-1792193545840.jpeg",
+    "bytes": 32230,
+    "sha256": "eaef1cd55279769a255e4724d6ea21a72b2d57023abacd1c40bf3b45a432e5ac"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\page@0abaf03e9341bcf11ba19b14b50218de-1792193567592.jpeg",
+    "bytes": 32230,
+    "sha256": "eaef1cd55279769a255e4724d6ea21a72b2d57023abacd1c40bf3b45a432e5ac"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\sol-browser-artifacts\\review-failed-only-retry-browser\\.playwright-artifacts-0\\traces\\resources\\page@48a89f8e4c7b74295a8e854746b3fa66-1792193536320.jpeg",
+    "bytes": 2459,
+    "sha256": "3a829f9747ec49e0f7fafe05977cf3faa6dc229918ee73b807ec6dbf9d83c73f"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-new-backup-parent2\\renegade-backup-2026-10-16T22-53-29-277Z\\manifest.json",
+    "bytes": 6880,
+    "sha256": "bfaed0c144f8810372061891529ffaad1fb32d149147ba0798211ea4b5ea7c59"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-pending-backup\\renegade-backup-2026-10-16T23-28-13-678Z\\manifest.json",
+    "bytes": 6880,
+    "sha256": "1ac2481bb09d762d634b417b48155d01784c58ed186441a1dbdb42262e220627"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-pre-upgrade-backup\\renegade-backup-2026-10-17T00-02-16-837Z\\manifest.json",
+    "bytes": 6670,
+    "sha256": "9d42cd0ed21fa9360362ccbb0371f18f068150aa538e6fe8a94cc8e70f0db7c5"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-pre-upgrade-fixed-backup\\renegade-backup-2026-10-17T00-16-17-795Z\\manifest.json",
+    "bytes": 6670,
+    "sha256": "d40882dc7e87430c46fb0acc52a4335d78a400cf077b68677ae87e5a055479f3"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-same-schema-backup\\renegade-backup-2026-10-17T00-17-32-240Z\\manifest.json",
+    "bytes": 6880,
+    "sha256": "c148326d726386dc9b782c65f1b14badf9c98a79c12f563d1e4e8d9727549cc1"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-automatic-backup-fixed\\renegade-backup-2026-10-17T00-02-38-880Z\\manifest.json",
+    "bytes": 6670,
+    "sha256": "7c9a1c004970488be2de617e4f4fe022be958678cafc29e848f2c7ac3beae6c5"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-automatic-backup-provenance\\renegade-backup-2026-10-17T00-16-36-302Z\\manifest.json",
+    "bytes": 6670,
+    "sha256": "469e13b240ab2352544382f8150bc381fab80ee23ace76cf17ce70c54165ef4a"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-new-backup-parent2\\renegade-backup-2026-10-16T22-53-29-277Z\\database.dump",
+    "bytes": 3173783,
+    "sha256": "889be5511fc9f4509e0906aeeda5db8feee783c7ceb9c4b18f02a91487a49d1b"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-pending-backup\\renegade-backup-2026-10-16T23-28-13-678Z\\database.dump",
+    "bytes": 3238789,
+    "sha256": "938122c0972d3b7b561699677b25045a933cc9daf5416e3b518521e74f38f616"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-pre-upgrade-backup\\renegade-backup-2026-10-17T00-02-16-837Z\\database.dump",
+    "bytes": 1743662,
+    "sha256": "c22dda77dc3eb3fb3789c876a31f773af1c3f82a1d9f4a81763b2f229f0812fc"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-pre-upgrade-fixed-backup\\renegade-backup-2026-10-17T00-16-17-795Z\\database.dump",
+    "bytes": 1745025,
+    "sha256": "a002bb6f9c9361122a3fc04440238ce293a76c5bdfd84d51713dae1e79750d5c"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-same-schema-backup\\renegade-backup-2026-10-17T00-17-32-240Z\\database.dump",
+    "bytes": 1746810,
+    "sha256": "816bbd9021b6939a39d740f9c016f1864540a6a9a9f1fadf3dc72f5c74d1e439"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-automatic-backup-fixed\\renegade-backup-2026-10-17T00-02-38-880Z\\database.dump",
+    "bytes": 1743662,
+    "sha256": "7ca7f11d96f70dd7adcc8b7d80ec8890b193c3f9ba9d7484ec2c4b42d01a0c90"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-automatic-backup-provenance\\renegade-backup-2026-10-17T00-16-36-302Z\\database.dump",
+    "bytes": 1745025,
+    "sha256": "816e2a330a343d14a901e05dfda846635966518dda6ca845412bf3f110ba6fe6"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-new-backup-parent2\\renegade-backup-2026-10-16T22-53-29-277Z\\media.tar.gz",
+    "bytes": 176108,
+    "sha256": "a643f90ee4c59038452edb7bcf3659f42296d1ac1a38d7870f0cae6e0438ab6c"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-pending-backup\\renegade-backup-2026-10-16T23-28-13-678Z\\media.tar.gz",
+    "bytes": 176105,
+    "sha256": "1ecdc5b6987676cd1bb64b0b03ef453ac5b97c8011c28d359b8ba0d6a680393b"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-pre-upgrade-backup\\renegade-backup-2026-10-17T00-02-16-837Z\\media.tar.gz",
+    "bytes": 176086,
+    "sha256": "b6ac488d278499dd646e55ac7fa5d288eb13ec8416119f253c6b932b4fea6bf7"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-pre-upgrade-fixed-backup\\renegade-backup-2026-10-17T00-16-17-795Z\\media.tar.gz",
+    "bytes": 176099,
+    "sha256": "45f955e62febe555d46b0cffa423e9d0c63dd1600b3fb0dcc1f50f6d2ba23b02"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-same-schema-backup\\renegade-backup-2026-10-17T00-17-32-240Z\\media.tar.gz",
+    "bytes": 176099,
+    "sha256": "67f41fbff7d3736a65de79a30352441c286610009f170deff13146c84af85c1e"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-automatic-backup-fixed\\renegade-backup-2026-10-17T00-02-38-880Z\\media.tar.gz",
+    "bytes": 176086,
+    "sha256": "b6ac488d278499dd646e55ac7fa5d288eb13ec8416119f253c6b932b4fea6bf7"
+  },
+  {
+    "path": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-automatic-backup-provenance\\renegade-backup-2026-10-17T00-16-36-302Z\\media.tar.gz",
+    "bytes": 176099,
+    "sha256": "67f41fbff7d3736a65de79a30352441c286610009f170deff13146c84af85c1e"
+  }
+]

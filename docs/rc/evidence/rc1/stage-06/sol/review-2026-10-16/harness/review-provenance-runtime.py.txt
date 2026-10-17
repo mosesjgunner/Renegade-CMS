@@ -1,0 +1,25 @@
+from pathlib import Path
+import subprocess, os, json, time, sys
+out=Path('scratch/review-provenance-runtime')
+children=[];logs=[]
+try:
+    for name in ['proxy-switch','smtp']:
+        log=(out/(name+'.private.log')).open('wb');logs.append(log)
+        children.append(subprocess.Popen(['node','scratch/'+name+'.mjs'],stdout=log,stderr=subprocess.STDOUT,creationflags=subprocess.CREATE_NO_WINDOW))
+    time.sleep(1)
+    assert all(p.poll() is None for p in children),'Harness failed to bind dedicated ports'
+    subprocess.run(['python','scratch/review-bind-provenance.py'],check=True)
+    subprocess.run(['python','scratch/review-email-provenance.py'],check=True)
+    env=os.environ.copy();env.update(REPORT_LABEL=os.environ.get('REPORT_LABEL','review-concurrency-browser'),APP_URL='https://dispatch.rc02.test:3399')
+    started=time.time()
+    with (out/(env['REPORT_LABEL']+'.private.log')).open('wb') as log:
+        result=subprocess.run(['npx.cmd','playwright','test','--config','scratch/playwright.config.ts']+(sys.argv[1:] or ['restored.spec.ts','donations.spec.mjs']),env=env,stdout=log,stderr=subprocess.STDOUT)
+    (out/(env['REPORT_LABEL']+'-gate.json')).write_text(json.dumps(dict(command=['npx.cmd','playwright','test','--config','scratch/playwright.config.ts']+(sys.argv[1:] or ['restored.spec.ts','donations.spec.mjs']),exitCode=result.returncode,durationSeconds=round(time.time()-started,2),sourceSha=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()),indent=2)+'\n')
+    print('restored-browser exit',result.returncode,flush=True)
+    raise SystemExit(result.returncode)
+finally:
+    for p in children:
+        p.terminate()
+        try:p.wait(timeout=15)
+        except subprocess.TimeoutExpired:p.kill();p.wait()
+    for log in logs:log.close()

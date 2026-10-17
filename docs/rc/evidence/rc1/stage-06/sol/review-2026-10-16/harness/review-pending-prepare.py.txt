@@ -1,0 +1,10 @@
+from pathlib import Path
+import subprocess,json
+root=Path.cwd();out=root/'scratch/review-pending-checks';out.mkdir(exist_ok=True)
+compose=Path('scratch/review.restore.yaml').read_text().replace('  renegade-worker:\n','  renegade-worker:\n    scale: 0\n')
+Path('scratch/review.pending.restore.yaml').write_text(compose)
+args=['docker','compose','--project-name','sol-review-restore2-20261016','--env-file','scratch/sol-review-restore2-20261016.env','-f','scratch/review.pending.restore.yaml','up','-d','--no-deps','renegade-worker']
+with (out/'pause-source-worker.log').open('wb') as log:subprocess.run(args,stdout=log,stderr=subprocess.STDOUT,check=True)
+running=subprocess.check_output(['docker','ps','--format','{{.Names}}'],text=True).splitlines()
+assert 'sol-review-restore2-20261016-renegade-worker-1' not in running
+print('Only the owned source worker is paused; ordinary public journeys can queue genuine work')

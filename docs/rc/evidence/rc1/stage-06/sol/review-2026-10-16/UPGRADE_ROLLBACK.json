@@ -1,0 +1,90 @@
+{
+  "toolSourceSha": "f6f5f803d79f795f70eb23307116ac2363f6b409",
+  "predecessorSourceSha": "01908f39a3ce40b5eae5d4dec64b981e103d5fb1",
+  "before": {
+    "project": "sol-review-authentic-upgrade2-20261016",
+    "image": "renegade-rc08c:01908f3",
+    "imageId": "sha256:1f0468728fd1738952d2c8c46394c92a77c9d582f48dbb090e4f16857554b985",
+    "buildSha": "01908f39a3ce40b5eae5d4dec64b981e103d5fb1",
+    "uid": "nextjs",
+    "testAuth": "false",
+    "health": "healthy"
+  },
+  "after": {
+    "project": "sol-review-authentic-upgrade2-20261016",
+    "image": "renegade-rc08c:sol-review-f6f5f803",
+    "imageId": "sha256:73af72fb24f0298315b5e257e00c473ff4b04d2529bf8f2c6f55cd983bebb4a6",
+    "buildSha": "f6f5f803d79f795f70eb23307116ac2363f6b409",
+    "uid": "nextjs",
+    "testAuth": "false",
+    "health": "healthy"
+  },
+  "rollback": {
+    "project": "sol-review-authentic-rollback2-20261016",
+    "image": "renegade-rc08c:01908f3",
+    "imageId": "sha256:1f0468728fd1738952d2c8c46394c92a77c9d582f48dbb090e4f16857554b985",
+    "buildSha": "01908f39a3ce40b5eae5d4dec64b981e103d5fb1",
+    "uid": "nextjs",
+    "testAuth": "false",
+    "health": "healthy"
+  },
+  "migrationCounts": {
+    "before": 112,
+    "after": 116,
+    "rollback": 112
+  },
+  "newMigrations": [
+    "20261013_160000_rc1_uuid_schema_repair",
+    "20261013_180000_rc1_editorial_calendar_audits",
+    "20261014_220000_rc1_cart_and_worker_schema",
+    "20261014_230000_rc1_machine_request_scope"
+  ],
+  "ordinaryOwnerAuthenticationBeforeAfterRollback": true,
+  "automaticBackupPath": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-upgrade-automatic-backup-provenance\\renegade-backup-2026-10-17T00-16-36-302Z",
+  "automaticBackupVerified": true,
+  "sameSchemaRollback": {
+    "runtime": {
+      "project": "sol-review-authentic-upgrade2-20261016",
+      "image": "renegade-rc08c:sol-review-df899944",
+      "imageId": "sha256:240a6552a07624f08ae473d9c98b97c28ea44e6904e60b4182952f5fbd848530",
+      "buildSha": "df8999449b6b2485c6e3339f3389c12ef5a618e0",
+      "uid": "nextjs",
+      "testAuth": "false",
+      "health": "healthy"
+    },
+    "rollforward": {
+      "project": "sol-review-authentic-upgrade2-20261016",
+      "image": "renegade-rc08c:sol-review-f6f5f803",
+      "imageId": "sha256:73af72fb24f0298315b5e257e00c473ff4b04d2529bf8f2c6f55cd983bebb4a6",
+      "buildSha": "f6f5f803d79f795f70eb23307116ac2363f6b409",
+      "uid": "nextjs",
+      "testAuth": "false",
+      "health": "healthy"
+    },
+    "migrationsUnchanged": true,
+    "ordinaryBrowserBoth": true
+  },
+  "imageOnlyRollbackRefused": true,
+  "fullRollbackArchive": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-pre-upgrade-fixed-backup\\renegade-backup-2026-10-17T00-16-17-795Z",
+  "scope": "Actual historical local installation archive, preserved real WebAuthn hardware, native supported upgrade and empty-project rollback. Covers recorded predecessor data, not arbitrary customer archives or live providers.",
+  "allArchivedMediaVerification": [
+    {
+      "phase": "after-same-schema-rollforward",
+      "project": "sol-review-authentic-upgrade2-20261016",
+      "archivedMediaFiles": 21,
+      "matched": 21,
+      "mismatches": [],
+      "extraPaths": [".renegade/backup-status.json"],
+      "extraExplanation": "Supported backup health diagnostic is excluded from portable archives"
+    },
+    {
+      "phase": "full-predecessor-rollback",
+      "project": "sol-review-authentic-rollback2-20261016",
+      "archivedMediaFiles": 21,
+      "matched": 21,
+      "mismatches": [],
+      "extraPaths": [],
+      "extraExplanation": "Supported backup health diagnostic is excluded from portable archives"
+    }
+  ]
+}

@@ -1,0 +1,73 @@
+[
+  {
+    "gate": "prepare-supported-publication",
+    "command": [
+      "docker",
+      "compose",
+      "--project-name",
+      "sol-review-restore2-20261016",
+      "--env-file",
+      "scratch/sol-review-restore2-20261016.env",
+      "-f",
+      "scratch/review.pending.restore.yaml",
+      "run",
+      "--rm",
+      "--no-deps",
+      "-v",
+      "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-publication-proof\\worker.ts.txt:/app/acceptance-lease.ts:ro",
+      "-v",
+      "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-publication-proof:/proof",
+      "--entrypoint",
+      "node",
+      "renegade-worker",
+      "--import",
+      "tsx",
+      "acceptance-lease.ts",
+      "prepare"
+    ],
+    "sourceSha": "b51f8113eeefdd7ab1c9920d5b84dfe756f1ec31",
+    "exitCode": 0,
+    "durationSeconds": 7.36
+  },
+  {
+    "gate": "pending-backup",
+    "command": [
+      "node",
+      "--import",
+      "tsx",
+      "src/scripts/operational-backup.ts",
+      "--output",
+      "scratch/review-pending-backup",
+      "--maintenance-window-confirmed",
+      "--compose-file",
+      "scratch/review.pending.restore.yaml",
+      "--env-file",
+      "scratch/sol-review-restore2-20261016.env"
+    ],
+    "sourceSha": "b51f8113eeefdd7ab1c9920d5b84dfe756f1ec31",
+    "exitCode": 0,
+    "durationSeconds": 13.2
+  },
+  {
+    "gate": "pending-restore",
+    "command": [
+      "node",
+      "--import",
+      "tsx",
+      "src/scripts/operational-restore.ts",
+      "--archive",
+      "scratch\\review-pending-backup\\renegade-backup-2026-10-16T23-28-13-678Z",
+      "--target-version",
+      "0.1.0",
+      "--isolated",
+      "--authorize-restore",
+      "--compose-file",
+      "scratch/review.pending.restore.yaml",
+      "--env-file",
+      "scratch/sol-review-pending-20261016.env"
+    ],
+    "sourceSha": "b51f8113eeefdd7ab1c9920d5b84dfe756f1ec31",
+    "exitCode": 0,
+    "durationSeconds": 36.28
+  }
+]

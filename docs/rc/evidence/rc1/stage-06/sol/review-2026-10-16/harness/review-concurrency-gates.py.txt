@@ -1,0 +1,24 @@
+from pathlib import Path
+import subprocess,os,json,secrets,time,sys
+out=Path('scratch/review-concurrency-checks');out.mkdir(exist_ok=True)
+name='sol-gemini-review-gates-20261016';meta=json.loads(subprocess.check_output(['docker','inspect',name],text=True))[0]
+assert meta['Config']['Labels']['purpose']=='disposable-sol-gemini-review'
+private=dict(v.split('=',1) for v in meta['Config']['Env'] if '=' in v)
+port=subprocess.check_output(['docker','port',name,'5432'],text=True).strip().split(':')[-1]
+env=os.environ.copy();env.update(DATABASE_URL=f"postgresql://renegade:{private['POSTGRES_PASSWORD']}@127.0.0.1:{port}/review_release_acceptance",PAYLOAD_SECRET=secrets.token_hex(48),APP_URL='http://localhost:3000',RENEGADE_MODULES='all',RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT='true',LOCAL_E2E_TEST_MODE='false')
+env['INTEGRATION_DATABASE_URL']=env['DATABASE_URL']
+sha=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
+mode=sys.argv[1] if len(sys.argv)>1 else 'focus'
+gates=[('focus-after',['npm.cmd','run','test:integration','--','tests/integration/audience-dispatch-concurrency.integration.test.ts'])]
+if mode=='full':gates=[('format',['npm.cmd','run','format:check']),('lint',['npm.cmd','run','lint']),('types',['npm.cmd','run','typecheck']),('unit',['npm.cmd','test']),('integration',['npm.cmd','run','test:integration']),('image',['docker','build','--target','runner','--build-arg','BUILD_SHA='+sha,'-t','renegade-cms:sol-review-'+sha[:8],'.'])]
+records=[]
+for label,args in gates:
+    start=time.time()
+    with (out/(label+'.log')).open('wb') as log:r=subprocess.run(args,env=env,stdout=log,stderr=subprocess.STDOUT)
+    text=(out/(label+'.log')).read_text(errors='replace')
+    for secret in [private['POSTGRES_PASSWORD'],env['PAYLOAD_SECRET']]:text=text.replace(secret,'[REDACTED]')
+    (out/(label+'.log')).write_text(text,encoding='utf8')
+    records.append(dict(label=label,command=args,sourceSha=sha,exitCode=r.returncode,durationSeconds=round(time.time()-start,2),mode=mode,dirty=bool(subprocess.check_output(['git','status','--porcelain'],text=True).strip())))
+    (out/(mode+'-commands.json')).write_text(json.dumps(records,indent=2)+'\n')
+    print(label,'exit',r.returncode,flush=True)
+    if r.returncode:raise SystemExit(r.returncode)

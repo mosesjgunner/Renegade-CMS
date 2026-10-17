@@ -1,0 +1,16 @@
+{
+  "command": [
+    "docker",
+    "build",
+    "--target",
+    "runner",
+    "--build-arg",
+    "BUILD_SHA=f6f5f803d79f795f70eb23307116ac2363f6b409",
+    "-t",
+    "renegade-cms:sol-review-f6f5f803",
+    "."
+  ],
+  "sourceSha": "f6f5f803d79f795f70eb23307116ac2363f6b409",
+  "exitCode": 0,
+  "durationSeconds": 170.86
+}

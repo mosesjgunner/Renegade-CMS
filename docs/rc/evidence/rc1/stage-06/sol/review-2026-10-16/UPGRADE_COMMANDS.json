@@ -1,0 +1,318 @@
+[
+  {
+    "label": "start-owned-predecessor",
+    "command": [
+      "docker",
+      "compose",
+      "--project-name",
+      "sol-review-authentic-upgrade2-20261016",
+      "--env-file",
+      "scratch\\sol-review-authentic-upgrade2.env",
+      "-f",
+      "scratch/review.upgrade.restore.yaml",
+      "up",
+      "-d",
+      "--no-deps",
+      "--wait",
+      "renegade-web",
+      "renegade-worker"
+    ],
+    "toolSourceSha": "f6f5f803d79f795f70eb23307116ac2363f6b409",
+    "exitCode": 0,
+    "expectedExit": 0,
+    "durationSeconds": 11.17
+  },
+  {
+    "label": "owned-ingress-gateway",
+    "command": [
+      "docker",
+      "compose",
+      "--project-name",
+      "sol-review-authentic-upgrade2-20261016",
+      "--env-file",
+      "scratch\\sol-review-authentic-upgrade2.env",
+      "-f",
+      "scratch/review.upgrade.restore.yaml",
+      "up",
+      "-d",
+      "--no-deps",
+      "--wait",
+      "review-gateway"
+    ],
+    "toolSourceSha": "f6f5f803d79f795f70eb23307116ac2363f6b409",
+    "exitCode": 0,
+    "expectedExit": 0,
+    "durationSeconds": 3.18
+  },
+  {
+    "label": "ordinary-owner-before",
+    "command": [
+      "npx.cmd",
+      "playwright",
+      "test",
+      "--config",
+      "scratch/playwright.config.ts",
+      "20-predecessor.spec.ts"
+    ],
+    "toolSourceSha": "f6f5f803d79f795f70eb23307116ac2363f6b409",
+    "exitCode": 0,
+    "expectedExit": 0,
+    "durationSeconds": 5.5
+  },
+  {
+    "label": "pre-upgrade-backup",
+    "command": [
+      "node",
+      "--import",
+      "tsx",
+      "src/scripts/operational-backup.ts",
+      "--output",
+      "scratch/review-pre-upgrade-fixed-backup",
+      "--maintenance-window-confirmed",
+      "--compose-file",
+      "scratch/review.upgrade.restore.yaml",
+      "--env-file",
+      "scratch\\sol-review-authentic-upgrade2.env"
+    ],
+    "toolSourceSha": "f6f5f803d79f795f70eb23307116ac2363f6b409",
+    "exitCode": 0,
+    "expectedExit": 0,
+    "durationSeconds": 17.42
+  },
+  {
+    "label": "local-artifact-alias",
+    "command": [
+      "docker",
+      "tag",
+      "renegade-cms:sol-review-f6f5f803",
+      "renegade-rc08c:sol-review-f6f5f803"
+    ],
+    "toolSourceSha": "f6f5f803d79f795f70eb23307116ac2363f6b409",
+    "exitCode": 0,
+    "expectedExit": 0,
+    "durationSeconds": 0.11
+  },
+  {
+    "label": "supported-upgrade",
+    "command": [
+      "node",
+      "--import",
+      "tsx",
+      "src/scripts/operational-upgrade.ts",
+      "--target-image-tag",
+      "sol-review-f6f5f803",
+      "--target-version",
+      "0.1.0",
+      "--backup-output",
+      "scratch/review-upgrade-automatic-backup-provenance",
+      "--maintenance-window-confirmed",
+      "--compose-file",
+      "scratch/review.upgrade.restore.yaml",
+      "--env-file",
+      "scratch\\sol-review-authentic-upgrade2.env"
+    ],
+    "toolSourceSha": "f6f5f803d79f795f70eb23307116ac2363f6b409",
+    "exitCode": 0,
+    "expectedExit": 0,
+    "durationSeconds": 46.08
+  },
+  {
+    "label": "ordinary-owner-after",
+    "command": [
+      "npx.cmd",
+      "playwright",
+      "test",
+      "--config",
+      "scratch/playwright.config.ts",
+      "20-predecessor.spec.ts"
+    ],
+    "toolSourceSha": "f6f5f803d79f795f70eb23307116ac2363f6b409",
+    "exitCode": 0,
+    "expectedExit": 0,
+    "durationSeconds": 9.9
+  },
+  {
+    "label": "schema-changing-image-rollback-refused",
+    "command": [
+      "node",
+      "--import",
+      "tsx",
+      "src/scripts/operational-rollback.ts",
+      "--pre-upgrade-backup",
+      "scratch\\review-pre-upgrade-fixed-backup\\renegade-backup-2026-10-17T00-16-17-795Z",
+      "--target-image-tag",
+      "01908f3",
+      "--target-version",
+      "0.1.0",
+      "--allow-image-rollback",
+      "--maintenance-window-confirmed",
+      "--compose-file",
+      "scratch/review.upgrade.restore.yaml",
+      "--env-file",
+      "scratch\\sol-review-authentic-upgrade2.env"
+    ],
+    "toolSourceSha": "f6f5f803d79f795f70eb23307116ac2363f6b409",
+    "exitCode": 1,
+    "expectedExit": 1,
+    "durationSeconds": 0.76
+  },
+  {
+    "label": "same-schema-backup",
+    "command": [
+      "node",
+      "--import",
+      "tsx",
+      "src/scripts/operational-backup.ts",
+      "--output",
+      "scratch/review-same-schema-backup",
+      "--maintenance-window-confirmed",
+      "--compose-file",
+      "scratch/review.upgrade.restore.yaml",
+      "--env-file",
+      "scratch\\sol-review-authentic-upgrade2.env"
+    ],
+    "toolSourceSha": "f6f5f803d79f795f70eb23307116ac2363f6b409",
+    "exitCode": 0,
+    "expectedExit": 0,
+    "durationSeconds": 19.09
+  },
+  {
+    "label": "same-schema-image-rollback",
+    "command": [
+      "node",
+      "--import",
+      "tsx",
+      "src/scripts/operational-rollback.ts",
+      "--pre-upgrade-backup",
+      "scratch\\review-same-schema-backup\\renegade-backup-2026-10-17T00-17-32-240Z",
+      "--target-image-tag",
+      "sol-review-df899944",
+      "--target-version",
+      "0.1.0",
+      "--allow-image-rollback",
+      "--maintenance-window-confirmed",
+      "--compose-file",
+      "scratch/review.upgrade.restore.yaml",
+      "--env-file",
+      "scratch\\sol-review-authentic-upgrade2.env"
+    ],
+    "toolSourceSha": "f6f5f803d79f795f70eb23307116ac2363f6b409",
+    "exitCode": 0,
+    "expectedExit": 0,
+    "durationSeconds": 16.83
+  },
+  {
+    "label": "ordinary-owner-same-schema-rollback",
+    "command": [
+      "npx.cmd",
+      "playwright",
+      "test",
+      "--config",
+      "scratch/playwright.config.ts",
+      "20-predecessor.spec.ts"
+    ],
+    "toolSourceSha": "f6f5f803d79f795f70eb23307116ac2363f6b409",
+    "exitCode": 0,
+    "expectedExit": 0,
+    "durationSeconds": 8.84
+  },
+  {
+    "label": "same-schema-rollforward",
+    "command": [
+      "node",
+      "--import",
+      "tsx",
+      "src/scripts/operational-upgrade.ts",
+      "--target-image-tag",
+      "sol-review-f6f5f803",
+      "--target-version",
+      "0.1.0",
+      "--backup",
+      "scratch\\review-same-schema-backup\\renegade-backup-2026-10-17T00-17-32-240Z",
+      "--maintenance-window-confirmed",
+      "--compose-file",
+      "scratch/review.upgrade.restore.yaml",
+      "--env-file",
+      "scratch\\sol-review-authentic-upgrade2.env"
+    ],
+    "toolSourceSha": "f6f5f803d79f795f70eb23307116ac2363f6b409",
+    "exitCode": 0,
+    "expectedExit": 0,
+    "durationSeconds": 25.5
+  },
+  {
+    "label": "ordinary-owner-same-schema-rollforward",
+    "command": [
+      "npx.cmd",
+      "playwright",
+      "test",
+      "--config",
+      "scratch/playwright.config.ts",
+      "20-predecessor.spec.ts"
+    ],
+    "toolSourceSha": "f6f5f803d79f795f70eb23307116ac2363f6b409",
+    "exitCode": 0,
+    "expectedExit": 0,
+    "durationSeconds": 7.47
+  },
+  {
+    "label": "complete-predecessor-rollback-restore",
+    "command": [
+      "node",
+      "--import",
+      "tsx",
+      "src/scripts/operational-restore.ts",
+      "--archive",
+      "scratch\\review-pre-upgrade-fixed-backup\\renegade-backup-2026-10-17T00-16-17-795Z",
+      "--target-version",
+      "0.1.0",
+      "--isolated",
+      "--authorize-restore",
+      "--compose-file",
+      "scratch/review.upgrade.restore.yaml",
+      "--env-file",
+      "scratch\\sol-review-authentic-rollback2.env"
+    ],
+    "toolSourceSha": "f6f5f803d79f795f70eb23307116ac2363f6b409",
+    "exitCode": 0,
+    "expectedExit": 0,
+    "durationSeconds": 50.76
+  },
+  {
+    "label": "rollback-ingress-gateway",
+    "command": [
+      "docker",
+      "compose",
+      "--project-name",
+      "sol-review-authentic-rollback2-20261016",
+      "--env-file",
+      "scratch\\sol-review-authentic-rollback2.env",
+      "-f",
+      "scratch/review.upgrade.restore.yaml",
+      "up",
+      "-d",
+      "--no-deps",
+      "--wait",
+      "review-gateway"
+    ],
+    "toolSourceSha": "f6f5f803d79f795f70eb23307116ac2363f6b409",
+    "exitCode": 0,
+    "expectedExit": 0,
+    "durationSeconds": 3.07
+  },
+  {
+    "label": "ordinary-owner-rollback",
+    "command": [
+      "npx.cmd",
+      "playwright",
+      "test",
+      "--config",
+      "scratch/playwright.config.ts",
+      "20-predecessor.spec.ts"
+    ],
+    "toolSourceSha": "f6f5f803d79f795f70eb23307116ac2363f6b409",
+    "exitCode": 0,
+    "expectedExit": 0,
+    "durationSeconds": 7.08
+  }
+]

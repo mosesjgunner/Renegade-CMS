@@ -1,0 +1,26 @@
+{
+  "command": [
+    "node",
+    "--import",
+    "tsx",
+    "src/scripts/operational-restore.ts",
+    "--archive",
+    "scratch\\review-pre-upgrade-backup\\renegade-backup-2026-10-17T00-02-16-837Z",
+    "--target-version",
+    "0.1.0",
+    "--isolated",
+    "--authorize-restore",
+    "--compose-file",
+    "scratch/review.upgrade.restore.yaml",
+    "--env-file",
+    "scratch/sol-review-authentic-upgrade2.env"
+  ],
+  "exitCode": 0,
+  "durationSeconds": 65.78,
+  "toolSourceSha": "f6f5f803d79f795f70eb23307116ac2363f6b409",
+  "sourceArchive": "C:\\Projects\\RENEGADE CMS\\sol-gemini-review-20261016\\scratch\\review-pre-upgrade-backup\\renegade-backup-2026-10-17T00-02-16-837Z",
+  "manifestSha256": "9d42cd0ed21fa9360362ccbb0371f18f068150aa538e6fe8a94cc8e70f0db7c5",
+  "predecessorSourceSha": "01908f39a3ce40b5eae5d4dec64b981e103d5fb1",
+  "migrations": 112,
+  "provenance": "Native pre-upgrade backup of the real archived predecessor restored in the first attempt; original 2026-10-06 archive and first failed upgraded installation retained"
+}

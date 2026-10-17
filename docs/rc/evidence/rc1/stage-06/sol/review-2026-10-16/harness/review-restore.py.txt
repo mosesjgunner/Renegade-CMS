@@ -1,0 +1,62 @@
+from pathlib import Path
+import subprocess,json,secrets,hashlib,tarfile,time
+root=Path.cwd(); out=root/'scratch/review-repaired-checks'
+sha=subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()
+origin=Path('C:/Projects/RENEGADE CMS/sol-stage06-independent-20261016/scratch/unblock-final-populated-backup')
+archives=list(origin.glob('renegade-backup-*'));assert len(archives)==1
+archive=archives[0]
+manifest=json.loads((archive/'manifest.json').read_text())
+for f in manifest['files']:
+    data=(archive/f['path']).read_bytes()
+    assert len(data)==f['bytes'] and 'sha256:'+hashlib.sha256(data).hexdigest()==f['sha256']
+receipts=[]; secretsUsed=[]
+def run(label,args,expected=0):
+    started=time.time()
+    with (out/(label+'.log')).open('wb') as log:
+        p=subprocess.run(args,stdout=log,stderr=subprocess.STDOUT)
+    text=(out/(label+'.log')).read_text(errors='replace')
+    for secret in secretsUsed: text=text.replace(secret,'[REDACTED]')
+    (out/(label+'.log')).write_text(text,encoding='utf-8')
+    receipts.append(dict(gate=label,command=args,sourceSha=sha,exitCode=p.returncode,expectedExit=expected,durationSeconds=round(time.time()-started,2)))
+    (out/'restore-gates.json').write_text(json.dumps(receipts,indent=2)+'\n')
+    print(label,'exit',p.returncode,flush=True)
+    if p.returncode!=expected: raise RuntimeError(label+' failed')
+def environment(project,port):
+    assert project not in subprocess.check_output(['docker','ps','-a','--format','{{.Names}}'],text=True)
+    password=secrets.token_hex(24); payload=secrets.token_hex(48); secretsUsed.extend([password,payload])
+    e=dict(RENEGADE_INSTANCE=project,RENEGADE_RESTORE_INSTANCE=project,RENEGADE_RESTORE_WEB_BIND=f'127.0.0.1:{port}',POSTGRES_PASSWORD=password,PAYLOAD_SECRET=payload,APP_URL='https://dispatch.rc02.test:3399',PROXY_MODE='trusted',TRUSTED_PROXY_HOPS='1',RENEGADE_IMAGE='renegade-cms',RENEGADE_IMAGE_TAG='sol-review-'+sha[:8],APP_VERSION='0.1.0',BUILD_SHA=sha,RENEGADE_MODULES='all',LOCAL_E2E_TEST_MODE='false')
+    prior=dict(line.split('=',1) for line in Path('C:/Projects/RENEGADE CMS/sol-stage06-independent-20261016/scratch/resume-local-commerce.env').read_text().splitlines() if '=' in line)
+    for key in ['COMMERCE_GUEST_ORDER_SECRET','COMMERCE_TEST_WEBHOOK_SECRET','COMMERCE_DELIVERY_SECRET']:
+        e[key]=prior[key];secretsUsed.append(prior[key])
+    file=root/('scratch/'+project+'.env');file.write_text('\n'.join(k+'='+v for k,v in e.items())+'\n');return str(file)
+def restore(label,archive,env):
+    run(label,['node','--import','tsx','src/scripts/operational-restore.ts','--archive',str(archive),'--target-version','0.1.0','--isolated','--authorize-restore','--compose-file','scratch/review.restore.yaml','--env-file',env])
+project='sol-review-restore2-20261016'; env=environment(project,3342)
+restore('populated-restore',archive,env)
+# Supported backup targets only the newly restored disposable project.
+run('populated-backup',['node','--import','tsx','src/scripts/operational-backup.ts','--output','scratch/review-new-backup-parent2','--maintenance-window-confirmed','--compose-file','scratch/review.restore.yaml','--env-file',env])
+newArchives=list((root/'scratch/review-new-backup-parent2').glob('renegade-backup-*'));assert len(newArchives)==1
+newArchive=newArchives[0]
+with tarfile.open(newArchive/'media.tar.gz') as tar:
+    assert './.renegade/backup-status.json' not in tar.getnames()
+second='sol-review-roundtrip2-20261016';secondEnv=environment(second,3343)
+restore('roundtrip-restore',newArchive,secondEnv)
+script="const fs=require('node:fs'),p=require('node:path'),c=require('node:crypto');let r={};function walk(d){for(const e of fs.readdirSync(d,{withFileTypes:true})){let f=p.join(d,e.name);if(e.isDirectory())walk(f);else if(e.isFile()){let b=fs.readFileSync(f);r['./'+p.relative('/app/media',f)]={bytes:b.length,sha256:c.createHash('sha256').update(b).digest('hex')}}}}walk('/app/media');console.log(JSON.stringify(r))"
+actual=json.loads(subprocess.check_output(['docker','exec',second+'-renegade-web-1','node','-e',script],text=True))
+with tarfile.open(newArchive/'media.tar.gz') as tar:
+    expected={m.name:dict(bytes=m.size,sha256=hashlib.sha256(tar.extractfile(m).read()).hexdigest()) for m in tar.getmembers() if m.isfile()}
+assert all(actual.get(k)==v for k,v in expected.items())
+meta=json.loads(subprocess.check_output(['docker','inspect',project+'-renegade-web-1',second+'-renegade-web-1'],text=True))
+runtimeEnvs=[dict(v.split('=',1) for v in x['Config']['Env'] if '=' in v) for x in meta]
+assert runtimeEnvs[0]['PAYLOAD_SECRET']!=runtimeEnvs[1]['PAYLOAD_SECRET']
+assert runtimeEnvs[0]['DATABASE_URL']!=runtimeEnvs[1]['DATABASE_URL']
+for e in runtimeEnvs:
+    assert e['BUILD_SHA']==sha and e['LOCAL_E2E_TEST_MODE']=='false' and e['ENABLE_TEST_ROUTES']=='false'
+volumes=[{m['Name'] for m in x['Mounts'] if m['Type']=='volume'} for x in meta]
+networks=[set(x['NetworkSettings']['Networks']) for x in meta]
+assert not volumes[0]&volumes[1] and not networks[0]&networks[1]
+report=dict(sourceSha=sha,archiveSource=manifest['renegade'],mediaFilesMatched=len(expected),volumesDisjoint=True,networksDisjoint=True,projects=[project,second],scope='Operational populated archive roundtrip and media verification; does not by itself prove browser identities or pending business recovery')
+(out/'restore-comparison.json').write_text(json.dumps(report,indent=2)+'\n')
+print('PASS: populated backup/restore roundtrip, media equality and disjoint projects',flush=True)
+
+

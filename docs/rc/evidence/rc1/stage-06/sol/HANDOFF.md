@@ -1,3 +1,5 @@
+> Current independent sign-off, 2026-10-16: **STAGE 06 SOL PASS; RC1 NOT READY**. Executable `f6f5f803d79f795f70eb23307116ac2363f6b409`, image `sha256:73af72fb24f0298315b5e257e00c473ff4b04d2529bf8f2c6f55cd983bebb4a6`. [Current signed handoff and complete source-bound receipts](review-2026-10-16/REVIEW.md). Docker and authentic predecessor prerequisites below are resolved by the new executions; the older signed failure is retained as history. Stage 07 remains the next acceptance gate.
+
 # Stage 06 Sol handoff
 
 **STAGE 06 BLOCKED. RC1 NOT READY.** Signed by Sol, 2026-10-16 (America/Chicago).

@@ -37,6 +37,8 @@ npm run restore:operational -- --archive D:\renegade-backups\renegade-backup-...
 
 Restore refuses any Compose filename not containing `restore`, requires both explicit acknowledgements, verifies every manifest checksum before touching the target, and refuses a database or media target that is not empty. It runs native `pg_restore`, restores media, runs forward Payload migrations, boots web and worker, waits for Compose health, then checks `/health/ready`.
 
+When restoring under a different public origin, the archive retains its saved site origins. Changing `APP_URL` does not rewrite them. An authorized owner must update the restored site's `canonicalOrigin` through the normal locked Site Settings save, and its entry in `canonicalOriginsBySite` through the authenticated Site Settings global API, preserving other sites' entries. Reload the settings and verify anonymous public routes and checkout on the intended origin. Use the enrolled passkey relying-party hostname or supported identity recovery to obtain that owner session; changing a port does not demonstrate passkey portability to another hostname.
+
 For a rehearsal, seed fixture data and one uploaded/generated file, run backup, remove the isolated volumes, restore, then confirm the fixture through the application and inspect the media file. Test corruption by altering either component or removing an entry from `manifest.json`: restore must fail before mutation.
 
 The repeatable rehearsal command performs that fresh-volume reset, restore, readiness check, and anonymous byte comparison. Supply one published path that exercises content, navigation, redirect, and metadata, plus one public media byte path:
@@ -64,6 +66,8 @@ npm run upgrade:operational -- --target-image-tag 0.1.1 --target-version 0.1.1 -
 ```
 
 Use an immutable release tag (or a tag controlled by your release process) and pass the matching SemVer release as `--target-version`. Renegade does not claim zero-downtime upgrades: the command intentionally stops web and worker while it protects data and applies migrations. A preflight validates Compose, captures the current ledger/service state, validates an existing backup when supplied, and prints the single migration-phase plan; it never pulls, stops, or migrates.
+
+Keep the environment file describing the current installation while taking its pre-upgrade backup. Upgrade and image rollback read the selected image's matching root and standalone provenance before stopping writers, then apply that image's full source SHA to the new runtime. Upgrade reports it as `targetSourceSha`. After a successful transition, persist the selected `RENEGADE_IMAGE_TAG`, `APP_VERSION` and matching `BUILD_SHA` in the operator environment file before subsequent Compose or backup commands; command overrides do not rewrite that file. For rollback, use the source SHA recorded for the selected immutable artifact. An image with missing or contradictory provenance is rejected before stopping the current application.
 
 The migration ledger is the rollback boundary. Image rollback is permitted only if the ledger still exactly matches the pre-upgrade backup; it never runs down migrations. If the upgrade added a migration, restore the pre-upgrade archive into the isolated recovery target instead of attempting an image rollback.
 
