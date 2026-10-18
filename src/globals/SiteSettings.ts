@@ -100,12 +100,56 @@ export const SiteSettings: GlobalConfig = {
         } else if (data.defaultDescription) {
           data.siteDescription = data.defaultDescription
         }
-        if (data.indexingMode === 'noindex') {
+        if (
+          typeof data.seoNoIndex === 'boolean' &&
+          data.seoNoIndex !== originalDoc?.seoNoIndex &&
+          data.indexingMode === originalDoc?.indexingMode
+        ) {
+          data.indexingMode = data.seoNoIndex ? 'noindex' : 'index'
+        } else if (data.indexingMode === 'noindex') {
           data.seoNoIndex = true
         } else if (data.indexingMode === 'index') {
           data.seoNoIndex = false
         } else if (typeof data.seoNoIndex === 'boolean') {
           data.indexingMode = data.seoNoIndex ? 'noindex' : 'index'
+        }
+        const rawHomeCanonical =
+          typeof data.seoCanonicalURL === 'string' && data.seoCanonicalURL.trim()
+            ? data.seoCanonicalURL.trim()
+            : typeof (data.discoveryOverrides as Record<string, unknown> | undefined)?.canonical ===
+                  'string' &&
+                String(
+                  (data.discoveryOverrides as Record<string, unknown>).canonical,
+                ).trim()
+              ? String((data.discoveryOverrides as Record<string, unknown>).canonical).trim()
+              : null
+        if (rawHomeCanonical) {
+          const originCandidate = String(
+            data.canonicalOrigin ?? originalDoc?.canonicalOrigin ?? process.env.APP_URL ?? 'http://localhost:3000',
+          )
+            .trim()
+            .replace(/\/$/, '')
+          try {
+            const baseParsed = new URL(originCandidate)
+            const parsed = new URL(rawHomeCanonical, `${originCandidate}/`)
+            if (!['http:', 'https:'].includes(parsed.protocol)) {
+              throw new Error('Homepage canonical URL must use HTTP or HTTPS protocol.')
+            }
+            if (parsed.origin !== baseParsed.origin) {
+              throw new Error(
+                `Homepage canonical URL "${rawHomeCanonical}" cannot point to a cross-origin host (${parsed.origin} !== ${baseParsed.origin}).`,
+              )
+            }
+            if (parsed.search || parsed.hash) {
+              throw new Error(
+                'Homepage canonical URL cannot contain query parameters or fragments.',
+              )
+            }
+          } catch (err) {
+            throw new Error(
+              err instanceof Error ? err.message : `Invalid homepage canonical URL: "${rawHomeCanonical}".`,
+            )
+          }
         }
         if (data.launchState === 'live' && originalDoc?.launchState !== 'live') {
           data.launchedAt = new Date().toISOString()

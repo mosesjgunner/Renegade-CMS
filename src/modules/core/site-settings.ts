@@ -43,6 +43,12 @@ export type ResolvedSiteSettings = {
     target?: string
     queryInput?: string
   }
+  seoTitle?: string | null
+  seoDescription?: string | null
+  seoCanonicalURL?: string | null
+  seoImageAlt?: string | null
+  seoNoIndex?: boolean
+  discoveryOverrides?: Record<string, unknown>
 }
 
 const idOf = (value: unknown): string | null => {
@@ -166,6 +172,27 @@ export async function resolveSiteSettings(
       searchAction:
         settings?.searchAction && typeof settings.searchAction === 'object'
           ? (settings.searchAction as { enabled?: boolean; target?: string; queryInput?: string })
+          : undefined,
+      seoTitle:
+        typeof settings?.seoTitle === 'string' && settings.seoTitle.trim()
+          ? settings.seoTitle.trim()
+          : null,
+      seoDescription:
+        typeof settings?.seoDescription === 'string' && settings.seoDescription.trim()
+          ? settings.seoDescription.trim()
+          : null,
+      seoCanonicalURL:
+        typeof settings?.seoCanonicalURL === 'string' && settings.seoCanonicalURL.trim()
+          ? settings.seoCanonicalURL.trim()
+          : null,
+      seoImageAlt:
+        typeof settings?.seoImageAlt === 'string' && settings.seoImageAlt.trim()
+          ? settings.seoImageAlt.trim()
+          : null,
+      seoNoIndex: settings?.seoNoIndex === true || indexingMode === 'noindex',
+      discoveryOverrides:
+        settings?.discoveryOverrides && typeof settings.discoveryOverrides === 'object'
+          ? (settings.discoveryOverrides as Record<string, unknown>)
           : undefined,
     }
   } catch {

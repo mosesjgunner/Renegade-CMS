@@ -703,5 +703,12 @@ export const migrations = [
     down: rc1ContentVisibility.down,
     name: '20261018_050000_rc1_content_visibility',
   },
+  {
+    up: rc1TaxonomyLayoutSeoFields.up,
+    down: rc1TaxonomyLayoutSeoFields.down,
+    name: '20261018_060000_rc1_taxonomy_layout_seo_fields',
+  },
 ]
 import * as rc1ContentVisibility from './20261018_050000_rc1_content_visibility'
+import * as rc1TaxonomyLayoutSeoFields from './20261018_060000_rc1_taxonomy_layout_seo_fields'
+
