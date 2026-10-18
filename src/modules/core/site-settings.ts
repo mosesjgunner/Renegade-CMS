@@ -129,7 +129,14 @@ export async function resolveSiteSettings(
 
     // Host resolution needs origins before it can choose a theme. Loading a theme
     // from that path would await requestTheme's own cached in-flight promise.
-    const themeConfiguration = options.includeTheme === false ? null : await requestTheme(payload)
+    let themeConfiguration: Configuration | null = null
+    if (options.includeTheme !== false) {
+      try {
+        themeConfiguration = await requestTheme(payload)
+      } catch {
+        themeConfiguration = null
+      }
+    }
     return {
       themeConfiguration,
       themeId:

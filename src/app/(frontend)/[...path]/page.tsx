@@ -370,12 +370,56 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
 
   const hierarchy = await loadPublicHierarchy(payload, siteId)
   const sectionNode = hierarchy.sections.find((item) => item.path === path)
-  if (sectionNode) return <HierarchyView graph={hierarchy} kind="section" node={sectionNode} />
+  if (sectionNode) {
+    const discovery = await resolveDiscoveryDocument(payload, {
+      collection: 'sections',
+      path,
+      siteId,
+    })
+    return (
+      <>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(discovery.schema.jsonLd) }}
+        />
+        <HierarchyView graph={hierarchy} kind="section" node={sectionNode} />
+      </>
+    )
+  }
   const categoryNode = hierarchy.categories.find((item) => item.path === path)
-  if (categoryNode) return <HierarchyView graph={hierarchy} kind="category" node={categoryNode} />
+  if (categoryNode) {
+    const discovery = await resolveDiscoveryDocument(payload, {
+      collection: 'categories',
+      path,
+      siteId,
+    })
+    return (
+      <>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(discovery.schema.jsonLd) }}
+        />
+        <HierarchyView graph={hierarchy} kind="category" node={categoryNode} />
+      </>
+    )
+  }
   const collectionNode = hierarchy.collections.find((item) => item.path === path && item.category)
-  if (collectionNode)
-    return <HierarchyView graph={hierarchy} kind="collection" node={collectionNode} />
+  if (collectionNode) {
+    const discovery = await resolveDiscoveryDocument(payload, {
+      collection: 'albums',
+      path,
+      siteId,
+    })
+    return (
+      <>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(discovery.schema.jsonLd) }}
+        />
+        <HierarchyView graph={hierarchy} kind="collection" node={collectionNode} />
+      </>
+    )
+  }
 
   for (const taxonomyCollection of ['topics'] as const) {
     const topicResult = await findIfRegistered(payload, {
@@ -414,7 +458,6 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
       })
       return (
         <main className="mx-auto max-w-4xl space-y-8 px-6 py-12">
-          <link rel="canonical" href={discovery.canonicalUrl} />
           <script
             type="application/ld+json"
             dangerouslySetInnerHTML={{ __html: serializeJsonLd(discovery.schema.jsonLd) }}
@@ -552,7 +595,6 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
     if (collection === 'products') {
       return (
         <main className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 space-y-8">
-          <link rel="canonical" href={discovery.canonicalUrl} />
           <script
             type="application/ld+json"
             dangerouslySetInnerHTML={{ __html: serializeJsonLd(discovery.schema.jsonLd) }}
@@ -563,7 +605,6 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
     }
     return (
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16 space-y-8">
-        <link rel="canonical" href={discovery.canonicalUrl} />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: serializeJsonLd(discovery.schema.jsonLd) }}

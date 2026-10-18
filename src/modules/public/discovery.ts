@@ -2243,6 +2243,15 @@ function buildLayoutDiscoveryDocument(input: {
   const { layout, settings, base, now } = input
   const canonicalPath = String(layout.path || '/')
   const publicUrl = new URL(canonicalPath, base).toString()
+  const overrides =
+    layout.discoveryOverrides && typeof layout.discoveryOverrides === 'object'
+      ? (layout.discoveryOverrides as Record<string, any>)
+      : {}
+  const canonicalUrl = safeCanonicalUrl(
+    layout.seoCanonicalURL || overrides.canonical,
+    publicUrl,
+    base,
+  )
   const isPublic = canRenderPublic(layout, now) && isPublicPageLayout(layout)
   const isIndexable =
     isPublic &&
@@ -2259,6 +2268,27 @@ function buildLayoutDiscoveryDocument(input: {
     ? 'explicit_override'
     : 'site_default'
 
+  const socialImageId = idOf(overrides.socialImage) || idOf(layout.socialImage) || null
+  const socialImg = socialImageId
+    ? `${base}/media/${socialImageId}`
+    : settings.defaultSocialImageUrl
+      ? `${base}${settings.defaultSocialImageUrl}`
+      : null
+  const socialVariantUrl = socialImageId
+    ? `${base}${mediaVariantUrl(socialImageId, 'og', 'jpeg')}`
+    : null
+  const socialAlt =
+    typeof layout.seoImageAlt === 'string' && layout.seoImageAlt.trim()
+      ? layout.seoImageAlt.trim()
+      : socialImageId
+        ? titleValue
+        : settings.siteName
+  const socialSource: DiscoverySourceProvenance | null = socialImageId
+    ? 'explicit_override'
+    : socialImg
+      ? 'site_default'
+      : null
+
   const siteIdentity = toSchemaSiteIdentity(settings, base)
   const breadcrumbs = [
     { name: 'Home', path: '/', url: `${base}/` },
@@ -2270,7 +2300,7 @@ function buildLayoutDiscoveryDocument(input: {
     validation,
     inspection,
   } = composeSchemaGraph({
-    canonicalUrl: publicUrl,
+    canonicalUrl,
     canonicalPath,
     base,
     contentType: canonicalPath === '/' ? 'home' : 'page',
@@ -2280,11 +2310,15 @@ function buildLayoutDiscoveryDocument(input: {
     breadcrumbs: breadcrumbs.map((b) => ({ name: b.name, url: b.url })),
     dates: { publishedAt: layout.createdAt || null, modifiedAt: layout.updatedAt || null },
     indexable: isIndexable,
+    image:
+      socialVariantUrl || socialImg
+        ? { url: (socialVariantUrl || socialImg)!, alt: socialAlt }
+        : null,
   })
 
   const doc: DiscoveryDocument = {
     publicUrl,
-    canonicalUrl: publicUrl,
+    canonicalUrl,
     canonicalPath,
     alternateLocales: {},
     indexability: {
@@ -2299,11 +2333,22 @@ function buildLayoutDiscoveryDocument(input: {
     title: { value: titleValue, source: titleSource },
     description: { value: descValue, source: descSource },
     socialImage: {
-      url: settings.defaultSocialImageUrl ? `${base}${settings.defaultSocialImageUrl}` : null,
-      alt: settings.siteName,
-      source: settings.defaultSocialImageUrl ? 'site_default' : null,
-      variantEligible: false,
-      variantUrl: null,
+      url: socialImg,
+      alt: socialAlt,
+      source: socialSource,
+      variantEligible: Boolean(socialImageId),
+      variantUrl: socialVariantUrl,
+    },
+    social: {
+      title:
+        typeof overrides.socialTitle === 'string' && overrides.socialTitle.trim()
+          ? overrides.socialTitle.trim()
+          : titleValue,
+      description:
+        typeof overrides.socialDescription === 'string' && overrides.socialDescription.trim()
+          ? overrides.socialDescription.trim()
+          : (descValue ?? undefined),
+      locale: settings.locale,
     },
     contentType: 'page',
     author: null,
@@ -2803,6 +2848,10 @@ function buildGenericRecordDiscoveryDocument(input: {
 }): DiscoveryDocument {
   const { record, collection, settings, base, now } = input
   const slug = typeof record.slug === 'string' ? record.slug : ''
+  const overrides =
+    record.discoveryOverrides && typeof record.discoveryOverrides === 'object'
+      ? (record.discoveryOverrides as Record<string, any>)
+      : {}
   const semanticKind =
     (
       {
@@ -2814,6 +2863,7 @@ function buildGenericRecordDiscoveryDocument(input: {
         discussions: 'discussion',
         topics: 'topic',
         categories: 'topic',
+        sections: 'topic',
       } as Record<string, SemanticKind>
     )[collection] ?? 'collection'
   let canonicalPath = '/'
@@ -2838,6 +2888,11 @@ function buildGenericRecordDiscoveryDocument(input: {
     canonicalPath = '/'
   }
   const publicUrl = new URL(canonicalPath, base).toString()
+  const canonicalUrl = safeCanonicalUrl(
+    record.seoCanonicalURL || overrides.canonical,
+    publicUrl,
+    base,
+  )
   const isPublic =
     canonicalPath !== '/' &&
     Boolean(slug || record.canonicalPath) &&
@@ -2879,9 +2934,31 @@ function buildGenericRecordDiscoveryDocument(input: {
             ? 'forum'
             : collection === 'products'
               ? 'product'
-              : collection === 'topics' || collection === 'categories'
+              : collection === 'topics' || collection === 'categories' || collection === 'sections'
                 ? 'topic'
                 : 'article'
+
+  const socialImageId =
+    idOf(overrides.socialImage) || idOf(record.socialImage) || idOf(record.heroMedia) || null
+  const socialImg = socialImageId
+    ? `${base}/media/${socialImageId}`
+    : settings.defaultSocialImageUrl
+      ? `${base}${settings.defaultSocialImageUrl}`
+      : null
+  const socialVariantUrl = socialImageId
+    ? `${base}${mediaVariantUrl(socialImageId, 'og', 'jpeg')}`
+    : null
+  const socialAlt =
+    typeof record.seoImageAlt === 'string' && record.seoImageAlt.trim()
+      ? record.seoImageAlt.trim()
+      : socialImageId
+        ? titleValue
+        : settings.siteName
+  const socialSource: DiscoverySourceProvenance | null = socialImageId
+    ? 'explicit_override'
+    : socialImg
+      ? 'site_default'
+      : null
 
   const siteIdentity = toSchemaSiteIdentity(settings, base)
   const breadcrumbs = [
@@ -2893,7 +2970,7 @@ function buildGenericRecordDiscoveryDocument(input: {
   const ext = globalSchemaRegistry.getExtension(collection)
   if (ext) {
     const extResult = globalSchemaRegistry.buildExtensionNodes(collection, {
-      canonicalUrl: record.seoCanonicalURL || publicUrl,
+      canonicalUrl,
       canonicalPath,
       base,
       record,
@@ -2908,7 +2985,7 @@ function buildGenericRecordDiscoveryDocument(input: {
     validation,
     inspection,
   } = composeSchemaGraph({
-    canonicalUrl: record.seoCanonicalURL || publicUrl,
+    canonicalUrl,
     canonicalPath,
     base,
     contentType:
@@ -2929,12 +3006,16 @@ function buildGenericRecordDiscoveryDocument(input: {
       modifiedAt: record.updatedAt || null,
     },
     indexable: isIndexable,
+    image:
+      socialVariantUrl || socialImg
+        ? { url: (socialVariantUrl || socialImg)!, alt: socialAlt }
+        : null,
     customNodes,
   })
 
   const doc: DiscoveryDocument = {
     publicUrl,
-    canonicalUrl: record.seoCanonicalURL || publicUrl,
+    canonicalUrl,
     canonicalPath,
     alternateLocales: {},
     indexability: {
@@ -2949,11 +3030,22 @@ function buildGenericRecordDiscoveryDocument(input: {
     title: { value: titleValue, source: titleSource },
     description: { value: descValue, source: descSource },
     socialImage: {
-      url: settings.defaultSocialImageUrl ? `${base}${settings.defaultSocialImageUrl}` : null,
-      alt: settings.siteName,
-      source: settings.defaultSocialImageUrl ? 'site_default' : null,
-      variantEligible: false,
-      variantUrl: null,
+      url: socialImg,
+      alt: socialAlt,
+      source: socialSource,
+      variantEligible: Boolean(socialImageId),
+      variantUrl: socialVariantUrl,
+    },
+    social: {
+      title:
+        typeof overrides.socialTitle === 'string' && overrides.socialTitle.trim()
+          ? overrides.socialTitle.trim()
+          : titleValue,
+      description:
+        typeof overrides.socialDescription === 'string' && overrides.socialDescription.trim()
+          ? overrides.socialDescription.trim()
+          : (descValue ?? undefined),
+      locale: settings.locale,
     },
     contentType: kind,
     author: record.author ? { name: String(record.author), url: null } : null,
@@ -3000,7 +3092,25 @@ function buildGenericRecordDiscoveryDocument(input: {
 // OUTPUT CONVERTERS & PROJECTIONS
 // -------------------------------------------------------------------------------------------------
 
+const NON_PUBLIC_METADATA_REASONS = new Set<DiscoveryIndexabilityReason>([
+  'draft',
+  'private',
+  'scheduled',
+  'tombstone',
+  'not_found',
+  'redirect',
+])
+
 export function discoveryToMetadata(doc: DiscoveryDocument): Metadata {
+  if (NON_PUBLIC_METADATA_REASONS.has(doc.indexability.reason)) {
+    return {
+      robots: {
+        index: false,
+        follow: false,
+      },
+    }
+  }
+
   const title = doc.title.value
   const description = doc.description.value ?? undefined
   const socialTitle = doc.social?.title || title
@@ -3275,6 +3385,7 @@ export async function getAllIndexableDiscoveryDocuments(
     'products',
     'topics',
     'categories',
+    'sections',
   ]
   const availableGenericCollections = registeredOnly(payload, genericCollections)
   const genericResults = await Promise.all(
@@ -3292,20 +3403,12 @@ export async function getAllIndexableDiscoveryDocuments(
       return Array.isArray(topics) ? topics.map((topic) => idOf(topic)) : []
     }),
   )
-  const usedCategoryIds = new Set(
-    content.docs.flatMap((doc, index) => {
-      if (!resolvedContentDocs[index]?.indexability.indexable) return []
-      const categories = (doc as Record<string, unknown>).categories
-      return Array.isArray(categories) ? categories.map((category) => idOf(category)) : []
-    }),
-  )
   for (const [collection, result] of genericResults) {
     for (const record of result.docs as Array<Record<string, any>>) {
       if (collection === 'topics' && !usedTopicIds.has(String(record.id))) continue
-      if (collection === 'categories' && !usedCategoryIds.has(String(record.id))) continue
       const document = buildGenericRecordDiscoveryDocument({
         record:
-          collection === 'topics' || collection === 'categories'
+          collection === 'topics' || collection === 'categories' || collection === 'sections'
             ? { ...record, status: 'published', visibility: 'public' }
             : record,
         collection,
@@ -3317,11 +3420,21 @@ export async function getAllIndexableDiscoveryDocuments(
     }
   }
 
+  const selfCanonicalDocs = documents.filter(
+    (document) => document.canonicalUrl === document.publicUrl,
+  )
   const pathCounts = new Map<string, number>()
-  for (const document of documents)
+  const urlCounts = new Map<string, number>()
+  for (const document of selfCanonicalDocs) {
     pathCounts.set(document.canonicalPath, (pathCounts.get(document.canonicalPath) ?? 0) + 1)
-  return documents
-    .filter((document) => pathCounts.get(document.canonicalPath) === 1)
+    urlCounts.set(document.canonicalUrl, (urlCounts.get(document.canonicalUrl) ?? 0) + 1)
+  }
+  return selfCanonicalDocs
+    .filter(
+      (document) =>
+        pathCounts.get(document.canonicalPath) === 1 &&
+        urlCounts.get(document.canonicalUrl) === 1,
+    )
     .sort((a, b) => a.canonicalUrl.localeCompare(b.canonicalUrl))
 }
 
