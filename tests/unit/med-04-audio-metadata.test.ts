@@ -173,18 +173,28 @@ describe('MED-04 audio metadata extraction and recipes', () => {
       payloadMock as unknown as import('payload').Payload,
       configMock,
       'audio-asset-1',
-      'podcast-standard-lufs16',
+      'measure-loudness',
       mockStorage,
     )
 
     expect(result.loudness).toBeDefined()
-    expect(result.loudness?.integratedLufs).toBe(-16) // Target LUFS for broadcast recipe
+    const measured = extractAudioMetadata(wavBytes)?.loudness?.integratedLufs
+    expect(result.loudness?.integratedLufs).toBe(measured)
     expect(
       (updatedData.audioMetadata as { loudness?: { integratedLufs?: number } })?.loudness
         ?.integratedLufs,
-    ).toBe(-16)
+    ).toBe(measured)
     // Original location unchanged
     expect((updatedData as Record<string, unknown>).storageLocation).toBeUndefined()
+    await expect(
+      processAudioRecipe(
+        payloadMock as unknown as import('payload').Payload,
+        configMock,
+        'audio-asset-1',
+        'podcast-standard-lufs16',
+        mockStorage,
+      ),
+    ).rejects.toThrow(/normalization requires/)
   })
 
   it('returns undefined for non-audio or invalid data', () => {

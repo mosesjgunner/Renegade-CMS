@@ -1,0 +1,22 @@
+{
+  "passed": 15,
+  "failed": 0,
+  "skipped": 0,
+  "trace": [
+    "theme state survives PostgreSQL/web restart",
+    "exact persisted content/e7d13651-07df-4a42-bacf-0bff46df3108 survives restart",
+    "exact persisted page-layouts/a93120a0-f2a9-498c-95db-c4c950b0bb26 survives restart",
+    "exact persisted page-layouts/12785fc2-7b1b-4674-8901-a37489f26f2a survives restart",
+    "exact persisted page-layouts/baf9f4a4-123c-40d4-9ebd-8791a7498b9e survives restart",
+    "exact persisted page-layouts/966ffd57-bf6e-4396-a5de-c37f8b8b847f survives restart",
+    "exact persisted page-layouts/29ef3489-fb31-4b20-903e-d24189f3a2f7 survives restart",
+    "exact persisted page-layouts/4238d714-b250-4708-b088-c4259e799ba9 survives restart",
+    "canonical URL and content still render after restart",
+    "global header survives restart",
+    "global footer survives restart",
+    "global announcement survives restart",
+    "global cta survives restart",
+    "media original bytes survive restart",
+    "published media reference survives restart"
+  ]
+}

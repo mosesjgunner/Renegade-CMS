@@ -1,0 +1,17 @@
+{
+  "positiveOperatorDragOverlay": "6562e635fdcf871bb61456578b2f64cdc68e339c22bb6129d0d98c03e73c6e11",
+  "finalOverlay": "2db0efbb2666e0296b42f77dac627be462f9136bf425bb17ded9fac325138f27",
+  "baseCommit": "bb3c0347d6c648e71f0bf7eac646df70fd1b5714",
+  "runtimeChanges": [],
+  "verificationChanges": [
+    "tests/rc1-04a/manifest.mjs",
+    "tests/rc1-04a/run-isolated.ps1",
+    "tests/rc1-04a/tsconfig.json",
+    "tests/rc1-04a/verify-editor.ts",
+    "tests/rc1-04a/verify-negatives.ts",
+    "tests/rc1-04a/verify-restart.ts"
+  ],
+  "removed": [],
+  "uiExecutedReceiptMatchesOriginalManifest": true,
+  "currentTreeDrift": []
+}

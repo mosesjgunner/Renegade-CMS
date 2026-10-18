@@ -1,0 +1,13 @@
+{
+  "boundary": "current isolated development route client-reference graphs; no production image claim",
+  "passed": 4,
+  "failed": 0,
+  "skipped": 0,
+  "publicSha256": "ebc22e76dbb2d4b816081e7867cdf17f5eb36f8e38e99ab6815777586b5e75ac",
+  "builderSha256": "a21c13951c5994048c0184cfd185829732da80ac9e5bba0f590452b190016f0d",
+  "markers": [
+    "@puckeditor",
+    "BuilderShell.tsx",
+    "VisualEditor.tsx"
+  ]
+}

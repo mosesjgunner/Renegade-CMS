@@ -364,6 +364,8 @@ export function parseWxr(xml: string): NormalizedWxr {
     const authorLogin = extractTag(ib, 'dc:creator') || authors[0]?.login || 'admin'
     const excerpt = extractTag(ib, 'excerpt:encoded') || ''
     const rawContent = extractTag(ib, 'content:encoded') || ''
+    const parentPostId = extractTag(ib, 'wp:post_parent')
+    const parentId = parentPostId && parentPostId !== '0' ? parentPostId : undefined
 
     // Post meta
     const meta = extractMeta(ib)
@@ -462,6 +464,7 @@ export function parseWxr(xml: string): NormalizedWxr {
       tags: itemTags,
       featuredMediaId: meta['_thumbnail_id'] || undefined,
       seo,
+      parentId,
       unsupported: [...unsupportedFromItem, ...contentUnsupported],
     })
   }

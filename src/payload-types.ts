@@ -1120,6 +1120,8 @@ export interface Tag {
   createdAt: string;
 }
 /**
+ * Collections group published content and media under a category.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "albums".
  */
@@ -1129,6 +1131,8 @@ export interface Album {
   publication?: (string | null) | Publication;
   space?: (string | null) | Space;
   owner?: (string | null) | Member;
+  category?: (string | null) | Category;
+  sortOrder?: number | null;
   kind: 'album' | 'portfolio';
   title: string;
   slug: string;
@@ -1160,6 +1164,42 @@ export interface Album {
    */
   removeFromDiscovery?: boolean | null;
   tombstoneLabel?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "categories".
+ */
+export interface Category {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  scope: 'site' | 'publication';
+  section?: (string | null) | Section;
+  parent?: (string | null) | Category;
+  name: string;
+  slug: string;
+  canonicalPath?: string | null;
+  description?: string | null;
+  sortOrder?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "sections".
+ */
+export interface Section {
+  id: string;
+  site: string | Site;
+  publication?: (string | null) | Publication;
+  scope: 'site' | 'publication';
+  name: string;
+  slug: string;
+  canonicalPath?: string | null;
+  description?: string | null;
+  sortOrder?: number | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1810,6 +1850,14 @@ export interface Content {
     | null;
   sections?: (string | Section)[] | null;
   categories?: (string | Category)[] | null;
+  /**
+   * Ordered membership in editorial or media collections.
+   */
+  collections?: (string | Album)[] | null;
+  /**
+   * Stable order within hierarchy listings; ties use the record ID.
+   */
+  sortOrder?: number | null;
   topics?: (string | Topic)[] | null;
   tags?: (string | Tag)[] | null;
   series?: (string | Series)[] | null;
@@ -1856,6 +1904,10 @@ export interface Content {
       }[]
     | null;
   heroMedia?: (string | null) | MediaAsset;
+  /**
+   * Only public content is served to anonymous visitors and discovery.
+   */
+  visibility: 'public' | 'unlisted' | 'members' | 'friends' | 'private';
   status: 'draft' | 'review' | 'approved' | 'scheduled' | 'published' | 'updated' | 'archived' | 'rejected';
   publishedAt?: string | null;
   updatedAtEditorial?: string | null;
@@ -1986,41 +2038,6 @@ export interface Content {
    */
   removeFromDiscovery?: boolean | null;
   tombstoneLabel?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "sections".
- */
-export interface Section {
-  id: string;
-  site: string | Site;
-  publication?: (string | null) | Publication;
-  scope: 'site' | 'publication';
-  name: string;
-  slug: string;
-  description?: string | null;
-  sortOrder?: number | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "categories".
- */
-export interface Category {
-  id: string;
-  site: string | Site;
-  publication?: (string | null) | Publication;
-  scope: 'site' | 'publication';
-  section?: (string | null) | Section;
-  parent?: (string | null) | Category;
-  name: string;
-  slug: string;
-  canonicalPath: string;
-  description?: string | null;
-  sortOrder?: number | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -2450,6 +2467,18 @@ export interface EditorialComment {
   discussion: string | EditorialDiscussion;
   author: string | Member;
   body: string;
+  /**
+   * Workflow review metadata, managed by the review service.
+   */
+  review?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   mentions?: (string | Member)[] | null;
   replyTo?: (string | null) | EditorialComment;
   updatedAt: string;
@@ -9732,6 +9761,10 @@ export interface PayloadLockedDocument {
         value: string | CalendarEntryAudit;
       } | null)
     | ({
+        relationTo: 'albums';
+        value: string | Album;
+      } | null)
+    | ({
         relationTo: 'media-usages';
         value: string | MediaUsage;
       } | null)
@@ -9754,14 +9787,6 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'telecom-delivery-events';
         value: string | TelecomDeliveryEvent;
-      } | null)
-    | ({
-        relationTo: 'automation-runs';
-        value: string | AutomationRun;
-      } | null)
-    | ({
-        relationTo: 'automation-failures';
-        value: string | AutomationFailure;
       } | null)
     | ({
         relationTo: 'recipient-snapshots';
@@ -10434,6 +10459,7 @@ export interface EditorialCommentsSelect<T extends boolean = true> {
   discussion?: T;
   author?: T;
   body?: T;
+  review?: T;
   mentions?: T;
   replyTo?: T;
   updatedAt?: T;
@@ -10706,6 +10732,7 @@ export interface SectionsSelect<T extends boolean = true> {
   scope?: T;
   name?: T;
   slug?: T;
+  canonicalPath?: T;
   description?: T;
   sortOrder?: T;
   updatedAt?: T;
@@ -10870,6 +10897,8 @@ export interface ContentSelect<T extends boolean = true> {
       };
   sections?: T;
   categories?: T;
+  collections?: T;
+  sortOrder?: T;
   topics?: T;
   tags?: T;
   series?: T;
@@ -10899,6 +10928,7 @@ export interface ContentSelect<T extends boolean = true> {
         id?: T;
       };
   heroMedia?: T;
+  visibility?: T;
   status?: T;
   publishedAt?: T;
   updatedAtEditorial?: T;
@@ -11974,6 +12004,8 @@ export interface AlbumsSelect<T extends boolean = true> {
   publication?: T;
   space?: T;
   owner?: T;
+  category?: T;
+  sortOrder?: T;
   kind?: T;
   title?: T;
   slug?: T;

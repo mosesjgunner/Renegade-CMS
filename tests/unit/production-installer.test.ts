@@ -31,6 +31,17 @@ describe('production installer decisions', () => {
         webBind: '0.0.0.0:3000',
       }),
     ).toThrow(ProductionInstallError)
+    for (const webBind of ['127.0.0.1:0', '127.0.0.1:65536']) {
+      expect(() => validateProductionInstallInput({ ...input, webBind })).toThrow(
+        /RENEGADE_WEB_BIND/,
+      )
+    }
+    expect(() =>
+      validateProductionInstallInput({
+        ...input,
+        appUrl: 'https://operator:private-value@cms.example.test',
+      }),
+    ).toThrow(/APP_URL/)
   })
   it('generates a complete managed configuration without substituting secrets', () => {
     const config = renderProductionConfig(input, secrets)

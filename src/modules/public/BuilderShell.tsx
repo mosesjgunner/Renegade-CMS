@@ -2,7 +2,7 @@
 
 import { resolveTheme } from './contracts'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 
 import { VisualEditor } from '../presentation/VisualEditor'
@@ -92,6 +92,10 @@ function toLayout(row: Record<string, unknown>): PageLayout {
 export function BuilderShell({ layoutId }: { layoutId: string }) {
   const [layout, setLayout] = useState<PageLayout | null>(null)
   const [message, setMessage] = useState('Loading draft canvas…')
+  const edits = useRef(0)
+  const saving = useRef(false)
+  const failedSave = useRef<PageLayout | null>(null)
+  const [editorEpoch, setEditorEpoch] = useState(0)
   const [busy, setBusy] = useState(false)
   const [dirty, setDirty] = useState(false)
   const [conflict, setConflict] = useState<PageLayout | null>(null)
@@ -138,8 +142,10 @@ export function BuilderShell({ layoutId }: { layoutId: string }) {
 
   const save = useCallback(
     async (next: PageLayout, publish = false) => {
+      if (saving.current) return
+      saving.current = true
+      const savedEdits = edits.current
       setBusy(true)
-      setLayout(next)
       try {
         const response = await fetch(`/api/layouts/${next.id}`, {
           method: 'PATCH',
@@ -150,6 +156,7 @@ export function BuilderShell({ layoutId }: { layoutId: string }) {
           layout?: Record<string, unknown>
           current?: Record<string, unknown>
           error?: string
+          details?: string[]
         }
         if (response.status === 409 && body.current) {
           window.sessionStorage.setItem(`renegade-layout-recovery:${next.id}`, JSON.stringify(next))
@@ -157,11 +164,15 @@ export function BuilderShell({ layoutId }: { layoutId: string }) {
           setMessage('A newer server draft exists. Your local work is preserved for recovery.')
           return
         }
+        if (!response.ok) failedSave.current = next
         if (response.ok && body.layout) {
+          failedSave.current = null
           const saved = toLayout(body.layout)
-          setLayout(saved)
+          if (edits.current === savedEdits) {
+            setLayout(saved)
+            setDirty(false)
+          }
           setServerRevision(saved.revision)
-          setDirty(false)
           if (saved.siteId) refreshOverview(saved.siteId)
         }
         setMessage(
@@ -169,11 +180,13 @@ export function BuilderShell({ layoutId }: { layoutId: string }) {
             ? publish
               ? '🎉 Published successfully! Live for all visitors.'
               : '💾 Draft saved locally to database.'
-            : 'Could not save this layout. Verify permissions.',
+            : [body.error ?? 'Could not save this layout.', ...(body.details ?? [])].join(' '),
         )
       } catch {
-        setMessage('Network error while saving layout.')
+        failedSave.current = next
+        setMessage('Network error while saving layout. Your changes are unsaved; retry Save Draft.')
       } finally {
+        saving.current = false
         setBusy(false)
       }
     },
@@ -181,10 +194,35 @@ export function BuilderShell({ layoutId }: { layoutId: string }) {
   )
 
   useEffect(() => {
-    if (!layout || !dirty || busy || conflict) return
+    if (!layout || !dirty || busy || conflict || failedSave.current === layout) return
     const timer = window.setTimeout(() => void save(layout, false), 1200)
     return () => window.clearTimeout(timer)
   }, [layout, dirty, busy, conflict, save])
+
+  useEffect(() => {
+    if (!dirty) return
+    const unload = (event: BeforeUnloadEvent) => {
+      event.preventDefault()
+      event.returnValue = ''
+    }
+    const navigate = (event: MouseEvent) => {
+      const anchor = (event.target as Element).closest('a')
+      if (
+        anchor &&
+        anchor.target !== '_blank' &&
+        !window.confirm('Leave with unsaved layout changes?')
+      ) {
+        event.preventDefault()
+        event.stopPropagation()
+      }
+    }
+    window.addEventListener('beforeunload', unload)
+    document.addEventListener('click', navigate, true)
+    return () => {
+      window.removeEventListener('beforeunload', unload)
+      document.removeEventListener('click', navigate, true)
+    }
+  }, [dirty])
 
   // Pattern saving
   const handleSavePattern = async () => {
@@ -256,11 +294,12 @@ export function BuilderShell({ layoutId }: { layoutId: string }) {
       const res = await fetch(`/api/layouts/${layout.id}/rollback`, {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
-        body: JSON.stringify({ targetRevision: rollbackRev }),
+        body: JSON.stringify({ targetRevision: rollbackRev, expectedRevision: serverRevision }),
       })
       const data = (await res.json()) as { layout?: Record<string, unknown>; error?: string }
       if (res.ok && data.layout) {
         const rolledBack = toLayout(data.layout)
+        setEditorEpoch((value) => value + 1)
         setLayout(rolledBack)
         setServerRevision(rolledBack.revision)
         setDirty(false)
@@ -495,17 +534,28 @@ export function BuilderShell({ layoutId }: { layoutId: string }) {
           <Link
             href={`/builder/${layout.id}/preview?viewport=${previewViewport}`}
             target="_blank"
+            aria-disabled={dirty || busy || !!conflict}
+            onClick={(event) => {
+              if (dirty || busy || conflict) {
+                event.preventDefault()
+                setMessage('Save your draft before opening its preview.')
+              }
+            }}
             className="btn btn-secondary text-xs px-3 py-1.5"
           >
             Exact Preview ({previewViewport})
           </Link>
 
-          <span className="text-xs text-stone-600 dark:text-stone-400 hidden sm:inline-block font-mono">
+          <span
+            role="status"
+            aria-live="polite"
+            className="text-xs text-stone-600 dark:text-stone-400 font-mono"
+          >
             {message}
           </span>
           <button
             type="button"
-            disabled={busy}
+            disabled={busy || !!conflict}
             onClick={() => void save(layout, false)}
             className="btn btn-secondary text-xs px-3.5 py-1.5"
           >
@@ -513,7 +563,7 @@ export function BuilderShell({ layoutId }: { layoutId: string }) {
           </button>
           <button
             type="button"
-            disabled={busy}
+            disabled={busy || !!conflict}
             onClick={() => void save(layout, true)}
             className="btn btn-primary text-xs px-4 py-1.5"
           >
@@ -535,6 +585,7 @@ export function BuilderShell({ layoutId }: { layoutId: string }) {
             type="button"
             className="underline font-medium"
             onClick={() => {
+              setEditorEpoch((value) => value + 1)
               setLayout(conflict)
               setServerRevision(conflict.revision)
               setConflict(null)
@@ -556,6 +607,38 @@ export function BuilderShell({ layoutId }: { layoutId: string }) {
           fallback.
         </div>
       ) : null}
+
+      <details className="px-6 py-3">
+        <summary>Revision history and rollback</summary>
+        {/* Rollback Current Layout Form */}
+        <div className="bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 p-6 space-y-4">
+          <h3 className="text-sm font-bold text-stone-900 dark:text-stone-100">
+            Rollback Current Document
+          </h3>
+          <p className="text-xs text-stone-500">
+            Restore this layout to a previous revision number from its audit trail.
+          </p>
+          <div className="flex items-center gap-3">
+            <input
+              type="number"
+              min={1}
+              max={layout.revision - 1}
+              placeholder="Target Revision Number"
+              value={rollbackRev}
+              onChange={(e) => setRollbackRev(e.target.value ? Number(e.target.value) : '')}
+              className="text-xs border border-stone-300 dark:border-stone-700 rounded-lg p-2 bg-transparent w-48"
+            />
+            <button
+              type="button"
+              disabled={busy || typeof rollbackRev !== 'number'}
+              onClick={() => void handleRollback()}
+              className="btn btn-secondary text-xs"
+            >
+              Rollback Revision
+            </button>
+          </div>
+        </div>{' '}
+      </details>
 
       {/* Pages Navigator Panel */}
       {activeTab === 'pages' ? (
@@ -812,35 +895,6 @@ export function BuilderShell({ layoutId }: { layoutId: string }) {
               </tbody>
             </table>
           </div>
-
-          {/* Rollback Current Layout Form */}
-          <div className="bg-white dark:bg-stone-900 rounded-2xl border border-stone-200 dark:border-stone-800 p-6 space-y-4">
-            <h3 className="text-sm font-bold text-stone-900 dark:text-stone-100">
-              Rollback Current Document
-            </h3>
-            <p className="text-xs text-stone-500">
-              Restore this layout to a previous revision number from its audit trail.
-            </p>
-            <div className="flex items-center gap-3">
-              <input
-                type="number"
-                min={1}
-                max={layout.revision - 1}
-                placeholder="Target Revision Number"
-                value={rollbackRev}
-                onChange={(e) => setRollbackRev(e.target.value ? Number(e.target.value) : '')}
-                className="text-xs border border-stone-300 dark:border-stone-700 rounded-lg p-2 bg-transparent w-48"
-              />
-              <button
-                type="button"
-                disabled={busy || typeof rollbackRev !== 'number'}
-                onClick={() => void handleRollback()}
-                className="btn btn-secondary text-xs"
-              >
-                Rollback Revision
-              </button>
-            </div>
-          </div>
         </div>
       ) : null}
 
@@ -935,8 +989,10 @@ export function BuilderShell({ layoutId }: { layoutId: string }) {
       {activeTab === 'canvas' ? (
         <div className="flex-1">
           <VisualEditor
+            key={editorEpoch}
             layout={layout}
             onChange={(next) => {
+              edits.current += 1
               setLayout(next)
               setDirty(true)
               setMessage('Unsaved changes — autosaving…')

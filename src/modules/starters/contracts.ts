@@ -12,7 +12,7 @@ export type StarterMediaDef = {
   altText: string
   description: string
   creatorCredit: string
-  licenseType: 'creative-commons' | 'owned' | 'public-domain'
+  licenseType: 'creative-commons' | 'owned' | 'public-domain' | 'licensed'
   governanceEnabled: boolean
   localAssetPath: string
   width: number

@@ -508,6 +508,8 @@ export async function processAssetVariants(
     : Object.keys(standardRecipes)
 
   const results: VariantGenerationResult[] = []
+  const failures: string[] = []
+  let preservedReadyVariant = false
   const runtimeSupport = checkRuntimeFormatSupport()
 
   for (const recipeKey of keysToProcess) {
@@ -561,19 +563,36 @@ export async function processAssetVariants(
               if ((error as { code?: string }).code !== 'EEXIST') throw error
             })
 
-          variantBlob = (await payload.create({
-            collection: 'media-blobs',
-            overrideAccess: true,
-            data: {
-              site: siteId,
-              checksum: generated.checksum,
-              storageKey: variantStorageKey,
-              storageProvider: storage.provider,
-              mimeType: generated.mimeType,
-              sizeBytes: generated.bytes.byteLength,
-              state: 'ready',
-            },
-          } as never)) as unknown as Record<string, unknown>
+          try {
+            variantBlob = (await payload.create({
+              collection: 'media-blobs',
+              overrideAccess: true,
+              data: {
+                site: siteId,
+                checksum: generated.checksum,
+                storageKey: variantStorageKey,
+                storageProvider: storage.provider,
+                mimeType: generated.mimeType,
+                sizeBytes: generated.bytes.byteLength,
+                state: 'ready',
+              },
+            } as never)) as unknown as Record<string, unknown>
+          } catch (error) {
+            // Another asset can share these exact derivative bytes. Reuse the
+            // committed winner of the site/checksum constraint instead of
+            // silently losing this asset's rendition on a deduplication race.
+            const winner = await payload.find({
+              collection: 'media-blobs',
+              where: {
+                and: [{ site: { equals: siteId } }, { checksum: { equals: generated.checksum } }],
+              },
+              limit: 1,
+              depth: 0,
+              overrideAccess: true,
+            } as never)
+            variantBlob = winner.docs[0] as unknown as Record<string, unknown> | undefined
+            if (!variantBlob) throw error
+          }
         } else {
           // Self-healing storage resilience: verify physical object exists
           const existingBytes = await storage.get(String(variantBlob.storageKey))
@@ -670,6 +689,7 @@ export async function processAssetVariants(
       } catch (error) {
         // Record failure on existing variant or create failed variant record
         const errorMessage = error instanceof Error ? error.message : 'Variant generation failed'
+        failures.push(`${recipeKey}/${format}: ${errorMessage}`)
 
         const existingVariant = await payload.find({
           collection: 'media-variants',
@@ -689,6 +709,7 @@ export async function processAssetVariants(
 
         if (variantDoc) {
           // Keep existing blob if ready (last-known-good preservation)
+          if (variantDoc.processingState === 'ready') preservedReadyVariant = true
           await payload.update({
             collection: 'media-variants',
             id: String(variantDoc.id),
@@ -727,13 +748,21 @@ export async function processAssetVariants(
         ...(!asset.copyrightOwner && meta.copyright
           ? { copyrightOwner: meta.copyright.slice(0, 500) }
           : {}),
-        processingState: 'ready',
+        // Keep valid originals/last-known-good outputs available during a retry.
+        // A partial generation must not be advertised as a completed asset.
+        processingState: failures.length
+          ? results.length || preservedReadyVariant
+            ? 'processing'
+            : 'failed'
+          : 'ready',
       },
     } as never)
   } catch {
     // Non-fatal if metadata update fails
   }
 
+  if (failures.length)
+    throw new MediaWorkflowError(`Media variant generation incomplete: ${failures.join('; ')}`, 500)
   return results
 }
 

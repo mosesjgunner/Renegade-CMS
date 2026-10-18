@@ -106,7 +106,9 @@ export function createUsersCollection(
                 overrideAccess: true,
                 req,
               })
-              const targetSites = explicitSiteId
+              const targetSites = req.context?.pendingStaffInvitation
+                ? []
+                : explicitSiteId
                 ? sites.docs.filter((s) => String(s.id) === String(explicitSiteId))
                 : req.context?.allSites
                   ? sites.docs

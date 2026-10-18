@@ -1,8 +1,8 @@
 'use client'
 
 import '@puckeditor/core/no-external.css'
-import { Puck, type Config, type Data, type Field } from '@puckeditor/core'
-import { useEffect, useMemo, useState } from 'react'
+import { Puck, createUsePuck, type Config, type Data, type Field } from '@puckeditor/core'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 
 import {
   type PageLayout,
@@ -50,25 +50,38 @@ function ReferenceChooser({
   kind: 'media' | 'link'
   layoutId: string
 }) {
+  const [error, setError] = useState('')
   const [options, setOptions] = useState<ReferenceValue[]>([])
-  useEffect(() => {
-    void fetch(`/api/layouts/${layoutId}/choices?kind=${kind}`)
-      .then((response) => (response.ok ? response.json() : { options: [] }))
+  const loadChoices = useCallback(() => {
+    setError('')
+    void fetch(`/api/layouts/${layoutId}/choices?kind=${kind}`, { cache: 'no-store' })
+      .then(async (response) => {
+        if (!response.ok) throw new Error('Choices unavailable.')
+        return response.json()
+      })
       .then((body) => setOptions(Array.isArray(body.options) ? body.options : []))
+      .catch(() => setError('Choices unavailable. Refresh to retry.'))
   }, [kind, layoutId])
+  useEffect(loadChoices, [loadChoices])
   return (
-    <select
-      aria-label={kind === 'media' ? 'Choose media from library' : 'Choose internal destination'}
-      value={value?.id ?? ''}
-      onChange={(event) => onChange(options.find((option) => option.id === event.target.value))}
-    >
-      <option value="">Choose…</option>
-      {options.map((option) => (
-        <option key={option.id} value={option.id}>
-          {option.label}
-        </option>
-      ))}
-    </select>
+    <>
+      {error ? <span role="alert">{error}</span> : null}
+      <select
+        aria-label={kind === 'media' ? 'Choose media from library' : 'Choose internal destination'}
+        value={value?.id ?? ''}
+        onChange={(event) => onChange(options.find((option) => option.id === event.target.value))}
+      >
+        <option value="">Choose…</option>
+        {options.map((option) => (
+          <option key={option.id} value={option.id}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+      <button type="button" onClick={loadChoices}>
+        Refresh {kind} choices
+      </button>
+    </>
   )
 }
 
@@ -153,6 +166,111 @@ function puckField(field: PresentationField, layoutId: string): Field {
   }
 }
 
+const useEditor = createUsePuck()
+
+function KeyboardBlockControls() {
+  const state = useEditor((store) => store.appState)
+  const dispatch = useEditor((store) => store.dispatch)
+  const config = useEditor((store) => store.config)
+  const [insertType, setInsertType] = useState('publisher.hero')
+  const index = state.ui.itemSelector?.index
+  const selected = typeof index === 'number' && state.data.content[index]
+  return (
+    <div aria-label="Keyboard block controls" style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+      <select
+        aria-label="Block to add"
+        value={insertType}
+        onChange={(event) => setInsertType(event.target.value)}
+      >
+        {Object.entries(config.components).map(([type, definition]) => (
+          <option key={type} value={type}>
+            {definition.label}
+          </option>
+        ))}
+      </select>
+      <button
+        type="button"
+        onClick={() =>
+          dispatch({
+            type: 'insert',
+            componentType: insertType,
+            destinationIndex: state.data.content.length,
+            destinationZone: 'root:default-zone',
+          })
+        }
+      >
+        Add block
+      </button>
+      <select
+        aria-label="Selected block"
+        value={selected ? String(index) : ''}
+        onChange={(event) =>
+          dispatch({
+            type: 'setUi',
+            ui: {
+              itemSelector:
+                event.target.value === ''
+                  ? null
+                  : { index: Number(event.target.value), zone: 'root:default-zone' },
+            },
+          })
+        }
+      >
+        <option value="">Select a block</option>
+        {state.data.content.map((item, i) => (
+          <option key={item.props.id} value={i}>
+            {i + 1}. {String(item.props.title ?? config.components[item.type]?.label ?? item.type)}
+          </option>
+        ))}
+      </select>
+      <button
+        type="button"
+        disabled={!selected || index === 0}
+        onClick={() =>
+          dispatch({
+            type: 'reorder',
+            sourceIndex: index!,
+            destinationIndex: index! - 1,
+            destinationZone: 'root:default-zone',
+          })
+        }
+      >
+        Move up
+      </button>
+      <button
+        type="button"
+        disabled={!selected || index === state.data.content.length - 1}
+        onClick={() =>
+          dispatch({
+            type: 'reorder',
+            sourceIndex: index!,
+            destinationIndex: index! + 1,
+            destinationZone: 'root:default-zone',
+          })
+        }
+      >
+        Move down
+      </button>
+      <button
+        type="button"
+        disabled={!selected}
+        onClick={() =>
+          dispatch({ type: 'duplicate', sourceIndex: index!, sourceZone: 'root:default-zone' })
+        }
+      >
+        Duplicate block
+      </button>
+      <button
+        type="button"
+        disabled={!selected}
+        onClick={() => dispatch({ type: 'remove', index: index!, zone: 'root:default-zone' })}
+      >
+        Delete block
+      </button>
+    </div>
+  )
+}
+
 export function VisualEditor({
   layout,
   onChange,
@@ -176,6 +294,7 @@ export function VisualEditor({
     const palette = paletteFor(document)
     const allowed = new Set(palette.flatMap((category) => category.components))
     return {
+      root: { fields: {} },
       categories: Object.fromEntries(
         palette.map((category) => [
           category.id,
@@ -203,7 +322,7 @@ export function VisualEditor({
                 title: definition.label,
                 alignment: 'left',
                 spacing: 'normal',
-                variant: 'default',
+                ...(definition.fields.variant ? { variant: 'default' } : {}),
               },
               render: (props: Record<string, unknown>) => definition.render(props),
             },
@@ -217,6 +336,12 @@ export function VisualEditor({
       key={`${layout.id}:${layout.themeId}:${layout.slot ?? 'main'}`}
       config={config}
       data={toEditorData(layout)}
+      viewports={[
+        { width: 375, label: 'Mobile', icon: 'Smartphone' },
+        { width: 768, label: 'Tablet', icon: 'Tablet' },
+        { width: 1280, label: 'Desktop', icon: 'Monitor' },
+      ]}
+      overrides={{ headerActions: KeyboardBlockControls }}
       permissions={{ drag: true, duplicate: true, delete: true, edit: true, insert: true }}
       onChange={(data) => onChange(fromEditorData(layout, data))}
       onPublish={(data) => onPublish(fromEditorData(layout, data))}

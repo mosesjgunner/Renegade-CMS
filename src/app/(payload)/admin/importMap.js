@@ -1,3 +1,4 @@
+import LayoutEditorLink from '../../../modules/admin/LayoutEditorLink'
 import { MediaEditActionField as MediaEditActionField_b8fb06bf180aabcfc9a9d6262740382d } from '@/modules/admin/MediaEditActionField'
 import { AiMediaActionField as AiMediaActionField_4db112374481e7b6e11792b2a6848818 } from '@/modules/admin/AiProposalActionField'
 import { ContentTypeEntry as ContentTypeEntry_af19509cc7e2972b7eebf0439ba9ff2b } from '@/modules/admin/ContentTypeEntry'
@@ -49,6 +50,7 @@ import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } f
 
 /** @type import('payload').ImportMap */
 export const importMap = {
+  "./modules/admin/LayoutEditorLink#default": LayoutEditorLink,
   "@/modules/admin/MediaEditActionField#MediaEditActionField": MediaEditActionField_b8fb06bf180aabcfc9a9d6262740382d,
   "@/modules/admin/AiProposalActionField#AiMediaActionField": AiMediaActionField_4db112374481e7b6e11792b2a6848818,
   "@/modules/admin/ContentTypeEntry#ContentTypeEntry": ContentTypeEntry_af19509cc7e2972b7eebf0439ba9ff2b,

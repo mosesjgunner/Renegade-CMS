@@ -1,0 +1,5 @@
+networks:
+  default:
+    ipam:
+      config:
+        - subnet: ${RENEGADE_NETWORK_SUBNET:?Set RENEGADE_NETWORK_SUBNET to a free private IPv4 CIDR}

@@ -3,6 +3,7 @@ import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
 
 import { resolveTheme } from '@/modules/presentation/registry'
+import { resolveRedirectSite } from '@/modules/operations/redirect-site'
 
 const staff = (user: { role?: string } | null | undefined) =>
   user?.role === 'owner' || user?.role === 'administrator' || user?.role === 'staff'
@@ -13,17 +14,17 @@ export async function GET(request: Request) {
   if (!staff(auth.user)) {
     return NextResponse.json({ error: 'Studio overview requires staff access.' }, { status: 403 })
   }
-  const url = new URL(request.url)
-  const siteId = url.searchParams.get('siteId')
+  const siteId = await resolveRedirectSite(payload, auth.user, request)
   if (!siteId) {
-    return NextResponse.json({ error: 'siteId query parameter is required.' }, { status: 400 })
+    return NextResponse.json({ error: 'Site access denied.' }, { status: 403 })
   }
 
   const result = await payload.find({
     collection: 'page-layouts',
     where: { site: { equals: siteId } },
     limit: 500,
-    overrideAccess: true,
+    overrideAccess: false,
+    user: auth.user,
   } as never)
 
   const rawDocs = result.docs as unknown as Array<Record<string, unknown>>

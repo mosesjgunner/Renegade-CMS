@@ -39,6 +39,7 @@ interface CommandCenterData {
   myWork: Record<string, WorkflowItem[]>
   teamQueues: Record<string, WorkflowItem[]>
   unresolvedComments: ReviewComment[]
+  reviewComments?: { available: boolean; message: string | null }
   dueOverdue: Array<{
     id: string
     contentType: string
@@ -740,6 +741,8 @@ export default function EditorialWorkflowCenter() {
                             </button>
                           )}
                           <button
+                            disabled={data?.reviewComments?.available === false}
+                            title={data?.reviewComments?.message ?? undefined}
                             onClick={() => {
                               handleSelectItem(item.id)
                               setIsCommentModalOpen(true)
@@ -803,7 +806,9 @@ export default function EditorialWorkflowCenter() {
               </div>
             </div>
 
-            {(data?.unresolvedComments || []).length === 0 ? (
+            {data?.reviewComments?.available === false ? (
+              <p role="status">{data.reviewComments.message}</p>
+            ) : (data?.unresolvedComments || []).length === 0 ? (
               <p className="text-sm text-stone-400 italic py-8 text-center">
                 No unresolved review comments. All clean!
               </p>

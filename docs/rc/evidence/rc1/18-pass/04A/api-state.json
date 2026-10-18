@@ -1,0 +1,15 @@
+{
+  "id": "83313393-cab8-428a-a2ca-22e36116aef1",
+  "path": "/operator-04a-1792321022014",
+  "revision": 6,
+  "blocks": [
+    {
+      "id": "operator-hero",
+      "props": {
+        "title": "Operator published 04A"
+      },
+      "component": "publisher.hero",
+      "componentVersion": 1
+    }
+  ]
+}

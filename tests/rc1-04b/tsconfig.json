@@ -1,0 +1,17 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": { "incremental": false },
+  "include": [
+    "../../next-env.d.ts",
+    "../../src/**/*.ts",
+    "../../src/**/*.tsx",
+    "./verify.ts",
+    "../unit/rc1-04b-theme-boundaries.test.ts",
+    "../unit/rc1-04b-template-scope.test.ts",
+    "../unit/theme-preview-identity.test.ts",
+    "../unit/pre-01-themes.test.ts",
+    "../unit/pre-04-reusable-composition.test.ts",
+    "../unit/host-theme-cycle.test.ts"
+  ],
+  "exclude": ["../../node_modules", "../../docs", "../../.payload-upstream"]
+}

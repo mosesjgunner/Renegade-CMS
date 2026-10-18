@@ -51,26 +51,33 @@ export function getResponsiveImageAttrs(
     !isString && mediaInput.width && mediaInput.height
       ? mediaInput.width / mediaInput.height
       : 16 / 9
-  const height =
+  let height =
     recipe.fit === 'inside' && recipe.height
       ? Math.min(recipe.height, Math.round(width / sourceAspect))
       : recipe.height || Math.round(width / sourceAspect)
   if (recipe.fit === 'inside' && recipe.height)
     width = Math.min(width, Math.round(height * sourceAspect))
-  const alt = options?.alt || (!isString && mediaInput.altText) || ''
+  const alt = options?.alt ?? (!isString ? mediaInput.altText : '') ?? ''
 
   const ready = isString
     ? []
     : (mediaInput.variants ?? []).filter(
         (variant) => variant.recipeKey === variantKey && variant.processingState === 'ready',
       )
+  const fallbackFormat = (['jpeg', 'png', 'webp', 'avif'] as const).find((format) =>
+    ready.some((variant) => variant.format === format),
+  )
+  const fallback = ready.find((variant) => variant.format === fallbackFormat)
+  if (fallback?.width && fallback?.height) {
+    width = fallback.width
+    height = fallback.height
+  }
   const variantUrl = (format: VariantFormat) => mediaVariantUrl(id, variantKey, format)
   const hasFormat = (format: VariantFormat) => ready.some((variant) => variant.format === format)
   const sources = (['avif', 'webp'] as const).filter(hasFormat).map((format) => ({
     type: `image/${format}`,
-    srcSet: `${variantUrl(format)} ${width}w`,
+    srcSet: `${variantUrl(format)} ${ready.find((variant) => variant.format === format)?.width || width}w`,
   }))
-  const fallbackFormat = (['jpeg', 'png', 'webp', 'avif'] as const).find(hasFormat)
   const fallbackSrc = fallbackFormat
     ? variantUrl(fallbackFormat)
     : `/media/${encodeURIComponent(id)}`

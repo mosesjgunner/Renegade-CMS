@@ -1,4 +1,10 @@
+import { transactionPayload } from '../modules/core/transaction-payload'
 import { guardTimelineWrite, timelineAccess } from '../modules/events/timeline'
+import {
+  guardHierarchyNode,
+  guardContentHierarchy,
+  protectHierarchyDelete,
+} from '../modules/editorial/hierarchy'
 import type {
   Access,
   CollectionBeforeChangeHook,
@@ -28,6 +34,7 @@ import {
 } from '../modules/public/semantic-url-service'
 import { resolvePublicUrl } from '../modules/public/semantic-url'
 import { projectSearchDocument, removeSearchDocument } from '../modules/public/search-projection'
+import { updateContentNavigation } from '../modules/public/content-navigation'
 
 import {
   canonicalSlug,
@@ -50,6 +57,7 @@ import {
   operatorSiteUpdateAccess,
   operatorRelatedSiteAccess,
   preserveRecordRelationshipsAccess,
+  resolveOperatorGrantContext,
 } from '../modules/operations/operator-grants'
 
 const staffOnly = ({ req }: { req: { user?: { role?: string } | null } }) =>
@@ -158,6 +166,8 @@ const publisherFieldGroups = (fields: Field[]): Field[] => {
         'authors',
         'sections',
         'categories',
+        'collections',
+        'sortOrder',
         'topics',
         'tags',
         'series',
@@ -187,6 +197,7 @@ const publisherFieldGroups = (fields: Field[]): Field[] => {
       label: 'Publish',
       names: [
         'status',
+        'visibility',
         'publishedAt',
         'updatedAtEditorial',
         'commentsPolicy',
@@ -407,7 +418,7 @@ export const MediaAssets: CollectionConfig = {
       type: 'select',
       required: true,
       defaultValue: 'ready',
-      options: ['pending', 'processing', 'ready', 'failed', 'quarantined'],
+      options: ['pending', 'processing', 'ready', 'failed', 'quarantined', 'archived'],
     },
     {
       name: 'publicPolicy',
@@ -626,7 +637,7 @@ export const MediaUploadSessions: CollectionConfig = {
       type: 'select',
       required: true,
       defaultValue: 'open',
-      options: ['open', 'finalizing', 'completed', 'cancelled', 'failed', 'expired'],
+      options: ['open', 'finalizing', 'completed', 'cancelled', 'aborted', 'failed', 'expired'],
     },
     { name: 'asset', type: 'relationship', relationTo: 'media-assets' },
     { name: 'expiresAt', type: 'date', required: true, index: true },
@@ -643,11 +654,16 @@ export const Sections: CollectionConfig = {
     read: () => true,
     update: operatorSiteUpdateAccess,
   },
-  hooks: { beforeChange: [enforceTaxonomyTenantBoundary] },
+  defaultSort: ['sortOrder', 'id'],
+  hooks: {
+    beforeChange: [guardHierarchyNode('sections'), enforceTaxonomyTenantBoundary],
+    beforeDelete: [protectHierarchyDelete('sections')],
+  },
   fields: [
     ...taxonomyScope,
     { name: 'name', type: 'text', required: true },
     { name: 'slug', type: 'text', required: true, validate: canonicalSlug },
+    { name: 'canonicalPath', type: 'text', admin: { readOnly: true } },
     { name: 'description', type: 'textarea' },
     { name: 'sortOrder', type: 'number', defaultValue: 0 },
   ],
@@ -663,31 +679,10 @@ export const Categories: CollectionConfig = {
     read: () => true,
     update: operatorSiteUpdateAccess,
   },
+  defaultSort: ['sortOrder', 'id'],
   hooks: {
-    beforeDelete: [refuseReferencedTaxonomyDeletion('categories')],
-    beforeChange: [
-      enforceTaxonomyTenantBoundary,
-      async ({ data, originalDoc, req }) => {
-        const parentId = typeof data?.parent === 'string' ? data.parent : data?.parent?.id
-        if (!parentId) return data
-        if (parentId === originalDoc?.id) throw new Error('A category cannot be its own parent.')
-
-        const visited = new Set<string>([String(originalDoc?.id ?? '')])
-        let currentId: string | undefined = parentId
-        while (currentId) {
-          if (visited.has(currentId))
-            throw new Error('A category cannot be moved below one of its descendants.')
-          visited.add(currentId)
-          const current = await req.payload.findByID({
-            collection: 'categories',
-            id: currentId,
-            depth: 0,
-          })
-          currentId = typeof current.parent === 'string' ? current.parent : current.parent?.id
-        }
-        return data
-      },
-    ],
+    beforeDelete: [protectHierarchyDelete('categories')],
+    beforeChange: [guardHierarchyNode('categories'), enforceTaxonomyTenantBoundary],
   },
   fields: [
     ...taxonomyScope,
@@ -695,7 +690,7 @@ export const Categories: CollectionConfig = {
     { name: 'parent', type: 'relationship', relationTo: 'categories', index: true },
     { name: 'name', type: 'text', required: true },
     { name: 'slug', type: 'text', required: true, validate: canonicalSlug },
-    { name: 'canonicalPath', type: 'text', required: true },
+    { name: 'canonicalPath', type: 'text', admin: { readOnly: true } },
     { name: 'description', type: 'textarea' },
     { name: 'sortOrder', type: 'number', defaultValue: 0 },
   ],
@@ -807,7 +802,7 @@ export const PublicRedirects: CollectionConfig = {
   access: {
     create: operatorSiteCreateAccess,
     delete: operatorSiteReadAccess,
-    read: () => true,
+    read: operatorSiteReadAccess,
     update: operatorSiteUpdateAccess,
   },
   hooks: {
@@ -900,13 +895,41 @@ export const Content: CollectionConfig = {
     create: tenantCreateAccess,
     delete: tenantReadAccess,
     read: tenantReadAccess,
-    update: tenantUpdateAccess,
+    update: preserveRecordRelationshipsAccess('content', ['site'], tenantUpdateAccess),
   },
   hooks: {
+    beforeChange: [guardContentHierarchy],
+    beforeDelete: [protectHierarchyDelete('content')],
     beforeValidate: [
       async ({ data, originalDoc, req }) => {
+        const incoming = (data ?? {}) as Record<string, unknown>
+        if (!incoming.site && originalDoc?.site) incoming.site = originalDoc.site
+        if (!incoming.site) {
+          const cookieHeader =
+            (
+              req as { headers?: { get?: (k: string) => string | null; cookie?: string } }
+            )?.headers?.get?.('cookie') ||
+            (req as { headers?: { cookie?: string } })?.headers?.cookie ||
+            ''
+          const cookieSite =
+            typeof cookieHeader === 'string'
+              ? cookieHeader
+                  .split(';')
+                  .map((p) => p.trim())
+                  .find((p) => p.startsWith('renegade-active-site='))
+                  ?.slice('renegade-active-site='.length)
+              : undefined
+          if (cookieSite) {
+            incoming.site = cookieSite
+          } else if (req?.payload && req?.user) {
+            const grant = await resolveOperatorGrantContext(req.payload, req.user)
+            if (grant.authorizedSiteIds.length === 1) {
+              incoming.site = grant.authorizedSiteIds[0]
+            }
+          }
+        }
         const resolved = await deriveEditorialPath({
-          data: (data ?? {}) as Record<string, unknown>,
+          data: incoming,
           originalDoc: originalDoc as Record<string, unknown> | null,
           semanticRouteChange: req.context?.semanticRouteChange === true,
           payload: req.payload as never,
@@ -922,6 +945,12 @@ export const Content: CollectionConfig = {
     afterChange: [
       async ({ doc, previousDoc, operation, req }) => {
         await ensureEditorialCompanion(req.payload, doc as Record<string, unknown>, req)
+        await updateContentNavigation(
+          req.payload,
+          doc as Record<string, unknown>,
+          previousDoc as Record<string, unknown> | undefined,
+          req,
+        )
         await revalidateDiscoveryOutputs([
           typeof previousDoc?.canonicalPath === 'string' ? previousDoc.canonicalPath : null,
           typeof doc?.canonicalPath === 'string' ? doc.canonicalPath : null,
@@ -937,7 +966,7 @@ export const Content: CollectionConfig = {
           origin,
         )
         for (const indexingChange of indexingChanges)
-          await safelyRecordIndexingChange(req.payload, indexingChange)
+          await safelyRecordIndexingChange(transactionPayload(req.payload, req), indexingChange)
         await projectSearchDocument(req.payload, {
           collection: 'content',
           record: doc as Record<string, unknown>,
@@ -1018,6 +1047,13 @@ export const Content: CollectionConfig = {
     afterDelete: [
       async ({ doc, req }) => {
         await removeSearchDocument(req.payload, 'content', doc as Record<string, unknown>)
+        await updateContentNavigation(
+          req.payload,
+          doc as Record<string, unknown>,
+          undefined,
+          req,
+          true,
+        )
         await revalidateDiscoveryOutputs()
         return doc
       },
@@ -1085,6 +1121,14 @@ export const Content: CollectionConfig = {
     },
     { name: 'summary', type: 'textarea' },
     {
+      name: 'visibility',
+      type: 'select',
+      required: true,
+      defaultValue: 'public',
+      options: visibilityOptions,
+      admin: { description: 'Only public content is served to anonymous visitors and discovery.' },
+    },
+    {
       name: 'status',
       type: 'select',
       required: true,
@@ -1115,6 +1159,19 @@ export const Content: CollectionConfig = {
     },
     { name: 'sections', type: 'relationship', relationTo: 'sections', hasMany: true },
     { name: 'categories', type: 'relationship', relationTo: 'categories', hasMany: true },
+    {
+      name: 'collections',
+      type: 'relationship',
+      relationTo: 'albums',
+      hasMany: true,
+      admin: { description: 'Ordered membership in editorial or media collections.' },
+    },
+    {
+      name: 'sortOrder',
+      type: 'number',
+      defaultValue: 0,
+      admin: { description: 'Stable order within hierarchy listings; ties use the record ID.' },
+    },
     { name: 'topics', type: 'relationship', relationTo: 'topics', hasMany: true },
     { name: 'tags', type: 'relationship', relationTo: 'tags', hasMany: true },
     { name: 'series', type: 'relationship', relationTo: 'series', hasMany: true },
@@ -1842,7 +1899,13 @@ export const Sources: CollectionConfig = {
 
 export const Albums: CollectionConfig = {
   slug: 'albums',
-  admin: { useAsTitle: 'title', group: 'Media' },
+  labels: { singular: 'Collection', plural: 'Collections' },
+  admin: {
+    useAsTitle: 'title',
+    group: 'Publishing',
+    description: 'Collections group published content and media under a category.',
+  },
+  defaultSort: ['sortOrder', 'id'],
   access: {
     create: operatorSiteCreateAccess,
     delete: operatorSiteReadAccess,
@@ -1850,6 +1913,8 @@ export const Albums: CollectionConfig = {
     update: operatorSiteUpdateAccess,
   },
   hooks: {
+    beforeChange: [guardHierarchyNode('albums'), enforceTaxonomyTenantBoundary],
+    beforeDelete: [protectHierarchyDelete('albums')],
     beforeValidate: [
       async ({ data, originalDoc, req, context }) => {
         data = (await assignRecordSemanticPath({
@@ -1883,6 +1948,8 @@ export const Albums: CollectionConfig = {
   },
   fields: [
     ...ownerFields(),
+    { name: 'category', type: 'relationship', relationTo: 'categories', index: true },
+    { name: 'sortOrder', type: 'number', defaultValue: 0 },
     { name: 'kind', type: 'select', required: true, options: ['album', 'portfolio'] },
     { name: 'title', type: 'text', required: true },
     { name: 'slug', type: 'text', required: true, validate: canonicalSlug },

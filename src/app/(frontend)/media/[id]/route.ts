@@ -6,11 +6,7 @@ import { mediaStorage } from '@/modules/media/storage'
 import { mediaStorageKey, publicMedia } from '@/modules/media/workflow'
 import { loadConfig } from '@/modules/core/config'
 import { checkOperatorSiteAccess } from '@/modules/operations/operator-grants'
-import {
-  formatMimeTypes,
-  standardRecipes,
-  type VariantFormat,
-} from '@/modules/media/variants'
+import { formatMimeTypes, standardRecipes, type VariantFormat } from '@/modules/media/variants'
 
 export const runtime = 'nodejs'
 
@@ -21,7 +17,7 @@ const byteRange = (header: string | null, length: number) => {
   const start = match[1] ? Number(match[1]) : undefined
   const end = match[2] ? Number(match[2]) : undefined
   const from = start ?? (end === undefined ? 0 : Math.max(0, length - end))
-  const to = Math.min(end ?? length - 1, length - 1)
+  const to = start === undefined ? length - 1 : Math.min(end ?? length - 1, length - 1)
   if (!Number.isInteger(from) || !Number.isInteger(to) || from < 0 || from > to || from >= length)
     return null
   return { from, to }
@@ -32,9 +28,11 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
   const payload = await getPayload({ config })
   const { id } = await params
   const url = new URL(request.url)
-  const variantKey = url.searchParams.get('variant') || url.searchParams.get('v')
+  const variantKey =
+    url.searchParams.get('variant') ||
+    (standardRecipes[url.searchParams.get('v') || ''] ? url.searchParams.get('v') : null)
   const formatParam = url.searchParams.get('format') || url.searchParams.get('fmt')
-  const recipeVersion = url.searchParams.get('v')
+  const recipeVersion = url.searchParams.has('variant') ? url.searchParams.get('v') : null
   const isDownload = url.searchParams.get('download') === 'true'
 
   let media = await publicMedia(payload, id)
@@ -48,12 +46,34 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     media = (await payload
       .findByID({ collection: 'media-assets', id, depth: 0, overrideAccess: true } as never)
       .catch(() => undefined)) as unknown as Record<string, unknown> | undefined
-    const siteId = typeof media?.site === 'object' && media.site !== null
-      ? String((media.site as { id?: unknown }).id ?? '') : String(media?.site ?? '')
-    if (!(await checkOperatorSiteAccess(payload, auth.user, siteId))) media = undefined
+    const siteId =
+      typeof media?.site === 'object' && media.site !== null
+        ? String((media.site as { id?: unknown }).id ?? '')
+        : String(media?.site ?? '')
+    const dam = (media?.dam ?? {}) as Record<string, unknown>
+    const isTombstonedOrQuarantined =
+      media?.retentionMode === 'tombstone' ||
+      dam.retentionMode === 'tombstone' ||
+      Boolean(media?.removeFromDiscovery) ||
+      Boolean(dam.removeFromDiscovery) ||
+      media?.processingState === 'quarantined'
+    if (isTombstonedOrQuarantined || !(await checkOperatorSiteAccess(payload, auth.user, siteId))) {
+      media = undefined
+    }
   }
 
-  if (!media) return new NextResponse('Not found', { status: 404 })
+  if (!media)
+    return new NextResponse('Not found', {
+      status: 404,
+      headers: { 'Cache-Control': 'private, no-store', Vary: 'Cookie, Authorization' },
+    })
+
+  // Editorial URLs are mutable: rights, private policy and replacement can change.
+  // Revalidate public bytes on every use; authenticated delivery must never be cached.
+  const cacheHeaders = {
+    'Cache-Control': isPublic ? 'public, max-age=0, must-revalidate' : 'private, no-store',
+    Vary: 'Cookie, Authorization',
+  }
 
   const storage = mediaStorage(appConfig)
 
@@ -72,7 +92,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
         collection: 'media-variants',
         where: {
           and: [
-            { asset: { equals: id } },
+            { asset: { equals: String(media.id) } },
             { recipeKey: { equals: variantKey } },
             { processingState: { equals: 'ready' } },
           ],
@@ -87,6 +107,11 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
     let chosenVariant: Record<string, unknown> | undefined
     if (formatParam) {
       chosenVariant = variantDocs.find((v) => v.format === formatParam)
+      if (!chosenVariant)
+        return new NextResponse('Requested format is unavailable', {
+          status: 503,
+          headers: { 'Retry-After': '5', 'Cache-Control': 'no-store' },
+        })
     }
     if (!chosenVariant) {
       chosenVariant =
@@ -100,8 +125,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
       const blob = chosenVariant.blob as Record<string, unknown> | string | undefined
       let blobKey = typeof blob === 'object' && blob !== null ? String(blob.storageKey || '') : ''
       let checksum = typeof blob === 'object' && blob !== null ? String(blob.checksum || '') : ''
-      let mimeType =
-        typeof blob === 'object' && blob !== null ? String(blob.mimeType || '') : ''
+      let mimeType = typeof blob === 'object' && blob !== null ? String(blob.mimeType || '') : ''
 
       if (!blobKey) {
         const blobId =
@@ -127,23 +151,23 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
         }
       }
 
-      mimeType =
-        mimeType ||
-        formatMimeTypes[chosenVariant.format as VariantFormat] ||
-        'image/webp'
+      mimeType = mimeType || formatMimeTypes[chosenVariant.format as VariantFormat] || 'image/webp'
 
       if (blobKey) {
         const bytes = await storage.get(blobKey)
         if (bytes) {
-        const ifNoneMatch = request.headers.get('if-none-match')
+          const ifNoneMatch = request.headers.get('if-none-match')
           if (ifNoneMatch && ifNoneMatch === checksum) {
-            return new NextResponse(null, { status: 304 })
+            return new NextResponse(null, {
+              status: 304,
+              headers: { ...cacheHeaders, ETag: checksum },
+            })
           }
 
           const headers: Record<string, string> = {
             'Content-Type': mimeType,
             'Content-Length': String(bytes.byteLength),
-            'Cache-Control': isPublic ? 'public, max-age=31536000, immutable' : 'private, no-store',
+            ...cacheHeaders,
             ETag: checksum,
             'Content-Location': `/media/${id}?variant=${encodeURIComponent(variantKey)}&format=${chosenVariant.format}&v=${chosenVariant.recipeVersion || standardRecipes[variantKey].version}`,
             'X-Content-Type-Options': 'nosniff',
@@ -191,14 +215,14 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
   const checksum = String(media.checksum || '')
   const ifNoneMatch = request.headers.get('if-none-match')
   if (ifNoneMatch && ifNoneMatch === checksum) {
-    return new NextResponse(null, { status: 304 })
+    return new NextResponse(null, { status: 304, headers: { ...cacheHeaders, ETag: checksum } })
   }
 
   const mimeType = String(media.mimeType || 'application/octet-stream')
   const headers: Record<string, string> = {
     'Content-Type': mimeType,
     'Content-Length': String(bytes.byteLength),
-    'Cache-Control': isPublic ? 'public, max-age=31536000, immutable' : 'private, no-store',
+    ...cacheHeaders,
     ETag: checksum,
     'X-Content-Type-Options': 'nosniff',
   }

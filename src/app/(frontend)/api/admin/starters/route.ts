@@ -4,6 +4,7 @@ import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
 import { revalidatePath } from 'next/cache'
 
+import { resolveOperatorGrantContext } from '@/modules/operations/operator-grants'
 import { starterDefinitions } from '@/modules/starters/definitions'
 import {
   getStarterStatus,
@@ -17,18 +18,20 @@ import { themePool, readThemeState, createThemePreview } from '@/modules/present
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 
-const staff = (role?: string | null) =>
-  role === 'owner' || role === 'administrator' || role === 'staff'
+const staff = (role?: string | null) => role === 'owner'
 
 export async function GET(request: Request) {
   const payload = await getPayload({ config })
   const { user } = await payload.auth({ headers: request.headers })
   if (!staff(user?.role)) {
-    return NextResponse.json({ error: 'Staff access is required.' }, { status: 403 })
+    return NextResponse.json({ error: 'Owner access is required.' }, { status: 403 })
   }
 
+  const grant = await resolveOperatorGrantContext(payload, user)
+  if (!grant.authorized) return NextResponse.json({ error: 'Site access denied.' }, { status: 403 })
   const sites = await (payload as any).find({
     collection: 'sites',
+    where: grant.isGlobalOwner ? undefined : { id: { in: grant.authorizedSiteIds } },
     limit: 100,
     depth: 0,
     overrideAccess: true,
@@ -36,6 +39,9 @@ export async function GET(request: Request) {
 
   const url = new URL(request.url)
   const site = url.searchParams.get('site') ?? sites.docs[0]?.id
+
+  if (site && !sites.docs.some((s: any) => s.id === site))
+    return NextResponse.json({ error: 'Site access denied.' }, { status: 403 })
 
   if (!site) {
     return NextResponse.json({ error: 'No sites available.' }, { status: 400 })
@@ -108,19 +114,30 @@ export async function POST(request: Request) {
   const payload = await getPayload({ config })
   const { user } = await payload.auth({ headers: request.headers })
   if (!staff(user?.role)) {
-    return NextResponse.json({ error: 'Staff access is required.' }, { status: 403 })
+    return NextResponse.json({ error: 'Owner access is required.' }, { status: 403 })
   }
 
+  const publicURL = new URL(request.url)
+  publicURL.host = request.headers.get('host') ?? publicURL.host
+  if (request.headers.get('origin') !== publicURL.origin)
+    return NextResponse.json({ error: 'Same-origin request required.' }, { status: 403 })
   try {
-    const body = await request.json()
+    const text = await request.text()
+    if (text.length > 65536) throw new Error('Starter request is too large.')
+    const body = JSON.parse(text)
     const { action, siteId, starterId } = body
 
     if (!siteId) {
       throw new Error('siteId is required.')
     }
 
+    const grant = await resolveOperatorGrantContext(payload, user)
+    if (!grant.authorized || !grant.authorizedSiteIds.includes(siteId))
+      return NextResponse.json({ error: 'Site access denied.' }, { status: 403 })
+    await payload.findByID({ collection: 'sites', id: siteId, overrideAccess: false, user })
+
     if (action === 'install') {
-      if (!starterId || !starterDefinitions[starterId as StarterId]) {
+      if (!starterId || !Object.hasOwn(starterDefinitions, starterId)) {
         throw new Error(`Valid starterId is required. Received: ${starterId}`)
       }
       const result = await installStarter(payload, {
@@ -139,7 +156,7 @@ export async function POST(request: Request) {
     }
 
     if (action === 'upgrade') {
-      if (!starterId || !starterDefinitions[starterId as StarterId]) {
+      if (!starterId || !Object.hasOwn(starterDefinitions, starterId)) {
         throw new Error(`Valid starterId is required. Received: ${starterId}`)
       }
       const result = await upgradeStarter(payload, {
@@ -179,7 +196,8 @@ export async function POST(request: Request) {
 
     if (action === 'preview') {
       const starter = starterDefinitions[starterId as StarterId]
-      if (!starter) throw new Error('Unknown starter for preview.')
+      if (!Object.hasOwn(starterDefinitions, starterId))
+        throw new Error('Unknown starter for preview.')
 
       const pool = themePool(payload)
       const current = await readThemeState(pool, siteId)

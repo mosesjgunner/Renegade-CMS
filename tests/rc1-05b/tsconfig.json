@@ -1,0 +1,13 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": { "incremental": false },
+  "include": [
+    "../../next-env.d.ts",
+    "../../src/**/*.ts",
+    "../../src/**/*.tsx",
+    "./verify.ts",
+    "./verify-studio.ts",
+    "../unit/rc1-05b-private-media.test.ts"
+  ],
+  "exclude": ["../../node_modules", "../../docs", "../../.payload-upstream"]
+}

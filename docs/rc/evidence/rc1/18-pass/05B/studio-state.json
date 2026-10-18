@@ -1,0 +1,53 @@
+{
+  "videoAsset": "bba2757d-3cf6-4dd6-8fc6-85e045d0472a",
+  "objects": [
+    {
+      "label": "baseline.mp4",
+      "key": "9bd807e5-9db6-46b1-ad2c-bb318f623ae4/video/bba2757d-3cf6-4dd6-8fc6-85e045d0472a/r2/baseline.mp4",
+      "hash": "a8342f51dd3911967b2361f579425badbf9189c1de784003697e752f8a52862e",
+      "url": "/video-media/bba2757d-3cf6-4dd6-8fc6-85e045d0472a/baseline.mp4"
+    },
+    {
+      "label": "hls.m3u8",
+      "key": "9bd807e5-9db6-46b1-ad2c-bb318f623ae4/video/bba2757d-3cf6-4dd6-8fc6-85e045d0472a/r2/hls.m3u8",
+      "hash": "26f1e6cbb27242e3bfaadb6fdb5b59085257735da30fdd94842ea71c4910c9f8",
+      "url": "/video-media/bba2757d-3cf6-4dd6-8fc6-85e045d0472a/hls.m3u8"
+    },
+    {
+      "label": "poster.jpg",
+      "key": "9bd807e5-9db6-46b1-ad2c-bb318f623ae4/video/bba2757d-3cf6-4dd6-8fc6-85e045d0472a/r2/poster.jpg",
+      "hash": "91d5efe569f40d0b834ead28e29e7f85577538f7ea30629c944c466f9363bad4",
+      "url": "/video-media/bba2757d-3cf6-4dd6-8fc6-85e045d0472a/poster.jpg"
+    },
+    {
+      "label": "contact-sheet.jpg",
+      "key": "9bd807e5-9db6-46b1-ad2c-bb318f623ae4/video/bba2757d-3cf6-4dd6-8fc6-85e045d0472a/r2/contact-sheet.jpg",
+      "hash": "76a2f2da3bc0ab8810fb0c392f3665e9ea2dde02f935328a390c6db2f891921f",
+      "url": "/video-media/bba2757d-3cf6-4dd6-8fc6-85e045d0472a/contact-sheet.jpg"
+    },
+    {
+      "label": "segment-000.ts",
+      "key": "9bd807e5-9db6-46b1-ad2c-bb318f623ae4/video/bba2757d-3cf6-4dd6-8fc6-85e045d0472a/r2/segment-000.ts",
+      "hash": "08a2d54276712116deb7569bc0240e23d149b90c4d5ec8f19aaec2e719a8aab1",
+      "url": "/video-media/bba2757d-3cf6-4dd6-8fc6-85e045d0472a/segment-000.ts"
+    },
+    {
+      "label": "video-original",
+      "key": "9bd807e5-9db6-46b1-ad2c-bb318f623ae4/d2f1b7a4-03a4-49a0-ac9f-65ac743aead4.mp4",
+      "hash": "130753ef6681351a9c23e2dedbf76d5c27c869b3d79d7d18d6a35d7347375dcc",
+      "url": "/media/9bc5d85b-2aff-41f3-9d35-920c867a7eb1"
+    },
+    {
+      "label": "captions",
+      "key": "9bd807e5-9db6-46b1-ad2c-bb318f623ae4/9ca07455-92c6-4247-86fe-e2a39d31c45d.vtt",
+      "hash": "6208ed5092a45f658ba4f972844958eba4494f5ec645b8dfc49d644e2de7322e",
+      "url": "/video-captions/27e38d3d-e277-4d5d-9e5a-a67ec9049b96"
+    },
+    {
+      "label": "podcast-original",
+      "key": "9bd807e5-9db6-46b1-ad2c-bb318f623ae4/7e01ef59-27d3-468d-8cbb-32bdae004cbd.wav",
+      "hash": "1497eb36f8ff72518be532fcb7163e6c759fb40d1307008b31ae8896d4de5d49",
+      "url": "/media/c6dbc7ae-0b9d-4f12-86bd-f83ad8a3a58b"
+    }
+  ]
+}

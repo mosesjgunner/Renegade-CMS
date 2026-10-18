@@ -1,0 +1,24 @@
+{
+  "passed": 18,
+  "failed": 0,
+  "trace": [
+    "supported native API creates a disposable layout",
+    "supported layout save returns 200",
+    "saved block persists in PostgreSQL",
+    "staff draft preview renders persisted output",
+    "null component rejected 422",
+    "non-array blocks rejected 422",
+    "unsafe block props rejected 422",
+    "anonymous edit denied 403",
+    "stale save rejected 409",
+    "denied/invalid/stale saves preserve full database row",
+    "concurrent saves serialize to one 200 and one 409",
+    "publication command succeeds",
+    "anonymous public route renders actual published output",
+    "later draft save succeeds",
+    "later draft is absent from public output",
+    "rollback command returns canonical persisted row",
+    "rollback restores exact blocks with a new revision",
+    "stale rollback denied 409"
+  ]
+}

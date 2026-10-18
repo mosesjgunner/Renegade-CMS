@@ -1,0 +1,96 @@
+{
+  "startOverlay": "094801e91870d9f0ebe0654b7068f71936e7bcb0403715052ce6f0ec9464890a",
+  "scoped": [
+    {
+      "path": "src/app/(frontend)/api/media/[id]/route.ts",
+      "before": "7fd64b4ff28273a1e3d5d745653d64ab53e9749e66a9f1f5b5ba7b15471b1765",
+      "after": "7fd64b4ff28273a1e3d5d745653d64ab53e9749e66a9f1f5b5ba7b15471b1765",
+      "matches": true
+    },
+    {
+      "path": "src/modules/media/image-editor/ImageEditorModal.tsx",
+      "before": "01716bdadfd8c4f20a3fa8579158a751c57b7e39e8e772767ce78f0d46a197ee",
+      "after": "01716bdadfd8c4f20a3fa8579158a751c57b7e39e8e772767ce78f0d46a197ee",
+      "matches": true
+    },
+    {
+      "path": "src/modules/media/image-editor/contracts.ts",
+      "before": "0c07f1e1c1f1227402ffe206fa8d07f225c8f834ea5b13a1f3b6cbe45ff16e1f",
+      "after": "0c07f1e1c1f1227402ffe206fa8d07f225c8f834ea5b13a1f3b6cbe45ff16e1f",
+      "matches": true
+    },
+    {
+      "path": "src/modules/media/workflow.ts",
+      "before": "84cf823e6c2e4cab9454fd833ca98aea1f1b86fb404405416cdd682d1c390039",
+      "after": "84cf823e6c2e4cab9454fd833ca98aea1f1b86fb404405416cdd682d1c390039",
+      "matches": true
+    },
+    {
+      "path": "src/modules/media/variants.ts",
+      "before": "79fbcc7a465928cb527c55d59cbe0bb70aa4cbb49d0155514fc8f9eba34e0b45",
+      "after": "79fbcc7a465928cb527c55d59cbe0bb70aa4cbb49d0155514fc8f9eba34e0b45",
+      "matches": true
+    },
+    {
+      "path": "tests/unit/med-ext-01-minipaint.test.tsx",
+      "before": "8c9ecf20249c5e0196b71a49e7bf2e3ef79b8cb66d2a9a8794c007b8db38f8ce",
+      "after": "8c9ecf20249c5e0196b71a49e7bf2e3ef79b8cb66d2a9a8794c007b8db38f8ce",
+      "matches": true
+    },
+    {
+      "path": "tests/unit/rc1-05c-editor.test.ts",
+      "before": "bcddf2789e01a8c59e008e345787a2d7185790f3754dfd7f3a4a51e48d85a8b7",
+      "after": "bcddf2789e01a8c59e008e345787a2d7185790f3754dfd7f3a4a51e48d85a8b7",
+      "matches": true
+    },
+    {
+      "path": "tests/unit/rc1-05c-variants.test.ts",
+      "before": "49a5eb6f13416059f8cbdc61246f568c9018e8759cb172066db4c9f40fcd28bb",
+      "after": "49a5eb6f13416059f8cbdc61246f568c9018e8759cb172066db4c9f40fcd28bb",
+      "matches": true
+    },
+    {
+      "path": "tests/unit/rc1-05c-public-versions.test.ts",
+      "before": "8efe865448be7f339cfa94f213875c97f28bd095ff38db95123278f7cb665392",
+      "after": "8efe865448be7f339cfa94f213875c97f28bd095ff38db95123278f7cb665392",
+      "matches": true
+    },
+    {
+      "path": "tests/rc1-05c/manifest.mjs",
+      "before": "ab09fdc8433121e23e73c2839e2ea38bb3f7e23dda6123f4a9efb6b19952dde9",
+      "after": "ab09fdc8433121e23e73c2839e2ea38bb3f7e23dda6123f4a9efb6b19952dde9",
+      "matches": true
+    },
+    {
+      "path": "tests/rc1-05c/run-isolated.ps1",
+      "before": "5234f7510fd618e8314db9d4e080716d0ddb0c5105a481fa7cb520d2e7ab698d",
+      "after": "5234f7510fd618e8314db9d4e080716d0ddb0c5105a481fa7cb520d2e7ab698d",
+      "matches": true
+    },
+    {
+      "path": "tests/rc1-05c/tsconfig.json",
+      "before": "7f5f0f1ecd9d638bc88f17a736423208031da71e1bc21272a8e43407b9306a78",
+      "after": "7f5f0f1ecd9d638bc88f17a736423208031da71e1bc21272a8e43407b9306a78",
+      "matches": true
+    },
+    {
+      "path": "tests/rc1-05c/verify.ts",
+      "before": "e05e9be704dac1ef242b33714852c43231e9069a3cb9857fc2399530ad507e6c",
+      "after": "e05e9be704dac1ef242b33714852c43231e9069a3cb9857fc2399530ad507e6c",
+      "matches": true
+    },
+    {
+      "path": "tests/rc1-05c/portability.ts",
+      "before": "8921b2069c1a68bf79b48ec1f1ae8a3025a163aa8026a40a449244e750bc5527",
+      "after": "8921b2069c1a68bf79b48ec1f1ae8a3025a163aa8026a40a449244e750bc5527",
+      "matches": true
+    },
+    {
+      "path": "tests/rc1-05c/verify-response.ts",
+      "before": "29180104ab534b64bb258d4d3082074f0df2564b99d19a8662dd7072935fe793",
+      "after": "29180104ab534b64bb258d4d3082074f0df2564b99d19a8662dd7072935fe793",
+      "matches": true
+    }
+  ],
+  "allMatch": true
+}

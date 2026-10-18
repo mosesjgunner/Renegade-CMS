@@ -11,6 +11,7 @@ import {
   validateRedirectRuleInput,
 } from '@/modules/public/redirect-manager'
 import type { PublicRedirect } from '@/payload-types'
+import { resolveRedirectSite } from '@/modules/operations/redirect-site'
 
 export const runtime = 'nodejs'
 
@@ -21,21 +22,11 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Staff access required.' }, { status: 403 })
   }
 
-  const url = new URL(request.url)
-  const siteId = url.searchParams.get('siteId') || undefined
-  const grant = await resolveOperatorGrantContext(payload, auth.user)
-  if (
-    !grant.authorized ||
-    (siteId && !grant.isGlobalOwner && !grant.authorizedSiteIds.includes(siteId))
-  )
-    return NextResponse.json({ error: 'Staff site access required.' }, { status: 403 })
-
   try {
-    const scopes = siteId ? [siteId] : grant.isGlobalOwner ? [undefined] : grant.authorizedSiteIds
-    const rules = (
-      await Promise.all(scopes.map((scope) => listRedirectRules(payload, scope)))
-    ).flat()
-    return NextResponse.json({ rules })
+    const siteId = await resolveRedirectSite(payload, auth.user, request)
+    if (!siteId) return NextResponse.json({ error: 'Staff site access required.' }, { status: 403 })
+    const rules = await listRedirectRules(payload, siteId)
+    return NextResponse.json({ rules, siteId })
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Failed to list redirect rules.' },
@@ -66,7 +57,7 @@ export async function POST(request: Request) {
     const grant = await resolveOperatorGrantContext(payload, auth.user)
     if (!grant.authorized)
       return NextResponse.json({ error: 'Staff site access required.' }, { status: 403 })
-    let siteId = body.siteId || grant.authorizedSiteIds[0]
+    let siteId = await resolveRedirectSite(payload, auth.user, request, body.siteId)
     if (body.id) {
       if (!(await checkOperatorRecordAccess(payload, auth.user, 'public-redirects', body.id)))
         return NextResponse.json({ error: 'Staff site access required.' }, { status: 403 })

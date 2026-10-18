@@ -1,6 +1,6 @@
 'use client'
 
-import { FormEvent, useState } from 'react'
+import { FormEvent, useEffect, useState } from 'react'
 
 type Entry = {
   id: string
@@ -12,6 +12,9 @@ type Entry = {
 }
 
 export function MemberDirectory({ siteId }: { siteId: string }) {
+  const [ready, setReady] = useState(false)
+  useEffect(() => setReady(true), [])
+  const [busy, setBusy] = useState(false)
   const [query, setQuery] = useState('')
   const [entries, setEntries] = useState<Entry[]>([])
   const [page, setPage] = useState(1)
@@ -20,16 +23,24 @@ export function MemberDirectory({ siteId }: { siteId: string }) {
   async function search(event?: FormEvent<HTMLFormElement>, nextPage = 1) {
     event?.preventDefault()
     const params = new URLSearchParams({ siteId, q: query.trim(), page: String(nextPage) })
-    const response = await fetch(`/api/community/directory?${params}`)
-    const data = await response.json().catch(() => ({}))
-    if (!response.ok) {
-      setMessage(data.error ?? 'Directory unavailable.')
-      return
+    setBusy(true)
+    setMessage('Searching members?')
+    try {
+      const response = await fetch(`/api/community/directory?${params}`)
+      const data = await response.json().catch(() => ({}))
+      if (!response.ok) {
+        setMessage(data.error ?? 'Directory unavailable.')
+        return
+      }
+      setEntries(data.profiles ?? [])
+      setPage(nextPage)
+      setHasNext(data.hasNextPage === true)
+      setMessage(data.profiles?.length ? '' : 'No listed members found.')
+    } catch {
+      setMessage('Directory unavailable. Please try again.')
+    } finally {
+      setBusy(false)
     }
-    setEntries(data.profiles ?? [])
-    setPage(nextPage)
-    setHasNext(data.hasNextPage === true)
-    setMessage(data.profiles?.length ? '' : 'No listed members found.')
   }
   return (
     <section className="mt-6">
@@ -38,14 +49,15 @@ export function MemberDirectory({ siteId }: { siteId: string }) {
           Search members
           <input
             className="form-input mt-1 w-full"
+            disabled={!ready || busy}
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             minLength={2}
             maxLength={60}
           />
         </label>
-        <button className="btn btn-primary self-end" type="submit">
-          Search
+        <button disabled={!ready || busy} className="btn btn-primary self-end" type="submit">
+          {!ready ? 'Loading directory?' : busy ? 'Searching?' : 'Search'}
         </button>
       </form>
       {message ? (

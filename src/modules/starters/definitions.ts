@@ -7,15 +7,15 @@ export const publicationCommunityStarter: StarterDefinition = {
   version: '1.0.0',
   themeId: 'neutral-starter',
   summary:
-    'Independent dispatches, investigative journalism, reader-supported community discussion, member directory, subscriptions, and editorial disclosures.',
+    'Independent dispatches, investigative journalism, reader-supported community discussion, member directory, free newsletter signup, and editorial disclosures.',
   description:
-    'A complete publication and community experience engineered for independent writers, journalist collectives, and civic publications. Includes full reading views, tag archives, searchable dispatches, membership tiers, member directory, and transparency disclosures.',
+    'A complete publication and community experience engineered for independent writers, journalist collectives, and civic publications. Includes full reading views, tag archives, searchable dispatches, confirmed newsletter signup, member directory, and transparency disclosures.',
   features: [
     'Accessible Home with Hero, Featured Inquiries, Community Hub, and Subscription CTA',
     'In-depth Investigative Dispatches with Byline, Reading Time, and Comments',
     'Archive & Live Accessible Search with Screen-Reader States',
-    'Subscription & Membership Tiers (/subscribe)',
-    'Community Member Directory & Verified Profiles (/members)',
+    'Free Newsletter Signup with Email Confirmation (/subscribe)',
+    'Community Member Directory (/members)',
     'Editorial Independence Charter & Financial Transparency (/disclosure)',
     'Zero-Tracker Privacy Policy & Code of Conduct (/privacy, /terms)',
     'Reusable Page Templates (Article & Community Hub)',
@@ -29,6 +29,7 @@ export const publicationCommunityStarter: StarterDefinition = {
       { label: 'Subscribe', href: '/subscribe' },
       { label: 'Search', href: '/search' },
       { label: 'About', href: '/about' },
+      { label: 'Contact', href: '/contact' },
     ],
     footer: [
       { label: 'Dispatches', href: '/articles' },
@@ -37,6 +38,7 @@ export const publicationCommunityStarter: StarterDefinition = {
       { label: 'Editorial Disclosure', href: '/disclosure' },
       { label: 'Privacy Policy', href: '/privacy' },
       { label: 'Terms of Service', href: '/terms' },
+      { label: 'Contact', href: '/contact' },
     ],
   },
   siteSettings: {
@@ -61,8 +63,8 @@ export const publicationCommunityStarter: StarterDefinition = {
       kind: 'cover',
       altText: 'The Vanguard Chronicle masthead and investigative reporting illustration',
       description: 'Official masthead banner depicting independent civic journalism.',
-      creatorCredit: 'Renegade Editorial Guild',
-      licenseType: 'creative-commons',
+      creatorCredit: 'Renegade CMS contributors',
+      licenseType: 'licensed',
       governanceEnabled: true,
       localAssetPath: '/starter-assets/publication-hero.svg',
       width: 1200,
@@ -77,8 +79,8 @@ export const publicationCommunityStarter: StarterDefinition = {
       kind: 'graphic',
       altText: 'Diagram illustrating sovereign digital commons and reader patronage',
       description: 'Editorial artwork explaining the structure of the civic digital commons.',
-      creatorCredit: 'Renegade Editorial Guild',
-      licenseType: 'creative-commons',
+      creatorCredit: 'Renegade CMS contributors',
+      licenseType: 'licensed',
       governanceEnabled: true,
       localAssetPath: '/starter-assets/publication-commons.svg',
       width: 800,
@@ -93,8 +95,8 @@ export const publicationCommunityStarter: StarterDefinition = {
       kind: 'image',
       altText: 'Portrait of Elena Rostova, Lead Investigative Editor',
       description: 'Profile photo for Lead Investigative Editor Elena Rostova.',
-      creatorCredit: 'Elena Rostova',
-      licenseType: 'owned',
+      creatorCredit: 'Renegade CMS contributors (fictional avatar)',
+      licenseType: 'licensed',
       governanceEnabled: true,
       localAssetPath: '/starter-assets/author-elena.svg',
       width: 240,
@@ -109,8 +111,8 @@ export const publicationCommunityStarter: StarterDefinition = {
       kind: 'image',
       altText: 'Portrait of Marcus Vance, Contributing Technology Analyst',
       description: 'Profile photo for Contributing Technology Analyst Marcus Vance.',
-      creatorCredit: 'Marcus Vance',
-      licenseType: 'owned',
+      creatorCredit: 'Renegade CMS contributors (fictional avatar)',
+      licenseType: 'licensed',
       governanceEnabled: true,
       localAssetPath: '/starter-assets/author-marcus.svg',
       width: 240,
@@ -120,14 +122,14 @@ export const publicationCommunityStarter: StarterDefinition = {
   ],
   members: [
     {
-      email: 'elena@vanguardchronicle.org',
+      email: 'elena@publication.example',
       displayName: 'Elena Rostova',
       handle: 'elena-rostova',
       bio: 'Investigative editor focused on algorithmic accountability, public digital utilities, and civic infrastructure.',
       roleTitle: 'Lead Investigative Editor',
     },
     {
-      email: 'marcus@vanguardchronicle.org',
+      email: 'marcus@publication.example',
       displayName: 'Marcus Vance',
       handle: 'marcus-vance',
       bio: 'Contributing researcher analyzing open-source ecosystems, decentralized networks, and digital commons stewardship.',
@@ -136,12 +138,20 @@ export const publicationCommunityStarter: StarterDefinition = {
   ],
   pages: [
     {
+      title: 'Community members',
+      slug: 'members',
+      canonicalPath: '/members',
+      summary: 'Meet readers who choose to share a public profile.',
+      body: 'Explore the member directory. Only members who opt into listing appear here.',
+      status: 'published',
+    },
+    {
       title: 'About The Vanguard Chronicle',
       slug: 'about',
       canonicalPath: '/about',
       summary:
         'The Vanguard Chronicle is a member-owned, reader-supported publication committed to investigative inquiry and digital commons advocacy.',
-      body: '# Our Editorial Mission\n\nThe Vanguard Chronicle was founded on a simple conviction: democratic society requires transparent, uncompromised investigative inquiry. We accept zero venture capital, zero corporate sponsored content, and zero behavioral tracking cookies.\n\n### Core Tenets\n\n1. **Reader Sovereignty**: We answer only to our subscribers and the public interest.\n2. **Verified Sources**: All documentation, raw data sets, and methodology are openly cited.\n3. **Public Commons**: Critical reporting on health, climate, and elections is never paywalled.\n\nOur editorial team operates across four regional hubs, collaborating with independent researchers and community leaders to illuminate issues that matter to everyday people.',
+      body: '## Our Editorial Mission\n\nThe Vanguard Chronicle was founded on a simple conviction: democratic society requires transparent, uncompromised investigative inquiry. We accept zero venture capital, zero corporate sponsored content, and zero behavioral tracking cookies.\n\n### Core Tenets\n\n1. **Reader Sovereignty**: We answer only to our subscribers and the public interest.\n2. **Verified Sources**: All documentation, raw data sets, and methodology are openly cited.\n3. **Public Commons**: Critical reporting on health, climate, and elections is never paywalled.\n\nOur editorial team operates across four regional hubs, collaborating with independent researchers and community leaders to illuminate issues that matter to everyday people.',
       status: 'published',
     },
     {
@@ -150,7 +160,7 @@ export const publicationCommunityStarter: StarterDefinition = {
       canonicalPath: '/disclosure',
       summary:
         'Complete transparency regarding our funding sources, editorial ethics, and conflict-of-interest protocols.',
-      body: '# Editorial Independence & Ethics Charter\n\n### 1. Funding Model\nThe Vanguard Chronicle is 100% financed through voluntary reader subscriptions, small-dollar community donations, and mission-aligned philanthropic research grants. We publish an annual public financial balance sheet.\n\n### 2. Conflict of Interest Policy\n- Our reporters and contributors hold no equity or financial positions in entities they cover.\n- Gifts, travel subsidies, and honoraria from covered institutions are strictly prohibited.\n- All potential conflicts are explicitly documented in editor bylines.\n\n### 3. Corrections & Accountability\nWhen errors occur, we correct the historical record transparently with clear timestamps and an explanation of the modification at the top of the article.',
+      body: '## Editorial Independence & Ethics Charter\n\n### 1. Funding Model\nThe Vanguard Chronicle is 100% financed through voluntary reader subscriptions, small-dollar community donations, and mission-aligned philanthropic research grants. We publish an annual public financial balance sheet.\n\n### 2. Conflict of Interest Policy\n- Our reporters and contributors hold no equity or financial positions in entities they cover.\n- Gifts, travel subsidies, and honoraria from covered institutions are strictly prohibited.\n- All potential conflicts are explicitly documented in editor bylines.\n\n### 3. Corrections & Accountability\nWhen errors occur, we correct the historical record transparently with clear timestamps and an explanation of the modification at the top of the article.',
       status: 'published',
     },
     {
@@ -159,7 +169,7 @@ export const publicationCommunityStarter: StarterDefinition = {
       canonicalPath: '/privacy',
       summary:
         'Our strict privacy commitment: zero behavioral advertising, no third-party tracking, and privacy by design.',
-      body: '# Privacy Policy\n\nWe believe reading is a private act. The Vanguard Chronicle does not install surveillance cookies, sell visitor data, or partner with commercial ad networks.\n\n- **Information We Collect**: Only what you provide voluntarily (your email address when subscribing or username when posting comments).\n- **Cookies**: We use only strictly necessary session cookies for authentication.\n- **Data Portability**: You may request an export or complete deletion of your account and comments at any time.\n\nQuestions? Contact privacy@vanguardchronicle.org.',
+      body: '## Privacy Policy\n\nWe believe reading is a private act. The Vanguard Chronicle does not install surveillance cookies, sell visitor data, or partner with commercial ad networks.\n\n- **Information We Collect**: Only what you provide voluntarily (your email address when subscribing or username when posting comments).\n- **Cookies**: We use only strictly necessary session cookies for authentication.\n- **Data Portability**: Members can request an export through their account. Contact the site owner about retention and removal requests.\n\nThis sample policy must be reviewed and completed by the site owner before launch.',
       status: 'published',
     },
     {
@@ -168,7 +178,7 @@ export const publicationCommunityStarter: StarterDefinition = {
       canonicalPath: '/terms',
       summary:
         'Rules of engagement for constructive, respectful dialogue in our public comments and community forums.',
-      body: '# Community Code of Conduct\n\nWe welcome lively debate, informed skepticism, and rigorous critique. To preserve our forums as welcoming public squares, the following standards are enforced:\n\n1. **Civility & Respect**: Harassment, bigotry, defamation, or bad-faith trolling will result in immediate moderation.\n2. **Evidence-Based Discussion**: Support claims with reputable references whenever possible.\n3. **No Commercial Solicitation**: Spam, affiliate links, and self-promotion are prohibited.',
+      body: '## Community Code of Conduct\n\nWe welcome lively debate, informed skepticism, and rigorous critique. To preserve our forums as welcoming public squares, the following standards are enforced:\n\n1. **Civility & Respect**: Harassment, bigotry, defamation, or bad-faith trolling will result in immediate moderation.\n2. **Evidence-Based Discussion**: Support claims with reputable references whenever possible.\n3. **No Commercial Solicitation**: Spam, affiliate links, and self-promotion are prohibited.',
       status: 'published',
     },
     {
@@ -177,7 +187,7 @@ export const publicationCommunityStarter: StarterDefinition = {
       canonicalPath: '/subscribe',
       summary:
         'Join thousands of sustaining readers who keep sovereign investigative journalism thriving.',
-      body: '# Choose Your Membership Tier\n\nSupport fearless reporting and join an engaged community of civic-minded readers.\n\n### Tier 1: Free Reader ($0/mo)\n- Access to all public dispatches\n- Weekly email digest\n- Commenting privileges in community threads\n\n### Tier 2: Sustaining Patron ($8/mo)\n- Everything in Free, plus:\n- Monthly private investigative briefings\n- Direct Q&A with contributing journalists\n- Archive access with raw data sets\n\n### Tier 3: Founding Member ($20/mo)\n- Full recognition in our published annual colophon\n- Invitation to annual editorial roundtable\n- Complimentary print anthology',
+      body: 'Join our free newsletter using the signup form. Confirm your email before receiving updates. Paid memberships are not offered by this sample site.',
       status: 'published',
     },
     {
@@ -185,7 +195,7 @@ export const publicationCommunityStarter: StarterDefinition = {
       slug: 'contact',
       canonicalPath: '/contact',
       summary: 'Secure whistleblowing tips, editorial feedback, and general inquiries.',
-      body: '# Get in Touch\n\n- **Newsroom Inquiries**: editorial@vanguardchronicle.org\n- **Confidential Whistleblower Tips**: tips@vanguardchronicle.org (PGP Key Available)\n- **Subscriber Support**: support@vanguardchronicle.org\n\nOur physical office is located in the Civic Media Center, Room 402, 100 Main Street.',
+      body: 'This is a sample newsroom. The site owner must add their verified contact details here before launch. For now, explore our articles and member directory; this starter does not send messages to a fictional newsroom.',
       status: 'published',
     },
   ],
@@ -297,7 +307,7 @@ export const publicationCommunityStarter: StarterDefinition = {
         },
         {
           id: 'tpl-comm-forum',
-          component: 'publisher.forum-activity',
+          component: 'publisher.cta',
           componentVersion: 1,
           props: {
             title: 'Active Community Inquiries',
@@ -308,7 +318,6 @@ export const publicationCommunityStarter: StarterDefinition = {
             background: 'surface',
             emphasis: 'normal',
             variant: 'default',
-            query: { collection: 'content', limit: 6, sort: 'newest' },
           },
         },
       ],
@@ -325,10 +334,11 @@ export const publicationCommunityStarter: StarterDefinition = {
       blocks: [
         {
           id: 'pat-pub-newsletter',
-          component: 'publisher.newsletter-cta',
+          component: 'publisher.cta',
           componentVersion: 1,
           props: {
             title: 'Join The Dispatch Newsletter',
+            link: { href: '/subscribe', label: 'Join the newsletter' },
             body: 'Receive our weekly investigative briefings directly in your inbox every Thursday morning. Zero ads, zero spam.',
             alignment: 'center',
             spacing: 'normal',
@@ -336,7 +346,6 @@ export const publicationCommunityStarter: StarterDefinition = {
             background: 'surface',
             emphasis: 'bold',
             variant: 'contained',
-            query: { collection: 'content', limit: 1, sort: 'newest' },
           },
         },
       ],
@@ -351,10 +360,11 @@ export const publicationCommunityStarter: StarterDefinition = {
       blocks: [
         {
           id: 'pat-pub-spotlight',
-          component: 'publisher.friend-and-buddy-list',
+          component: 'publisher.cta',
           componentVersion: 1,
           props: {
-            title: 'Verified Community Contributors',
+            title: 'Community Contributors',
+            link: { href: '/members', label: 'Explore the community' },
             body: 'Researchers, civic leaders, and patron subscribers actively shaping our reporting agenda.',
             alignment: 'left',
             spacing: 'compact',
@@ -362,7 +372,6 @@ export const publicationCommunityStarter: StarterDefinition = {
             background: 'canvas',
             emphasis: 'normal',
             variant: 'default',
-            query: { collection: 'content', limit: 4, sort: 'newest' },
           },
         },
       ],
@@ -406,8 +415,9 @@ export const publicationCommunityStarter: StarterDefinition = {
           component: 'publisher.cta',
           componentVersion: 1,
           props: {
-            title: 'Special Investigation',
-            body: 'The Sovereign Ledger: Investigating Municipal Water Rights is now published. Read the full public disclosure.',
+            title: 'Sample publication',
+            link: { href: '/about', label: 'About this newsroom' },
+            body: 'Explore a sample independent newsroom. Customize its identity, pages and policies before launch.',
             alignment: 'center',
             spacing: 'compact',
             width: 'full',
@@ -430,7 +440,7 @@ export const publicationCommunityStarter: StarterDefinition = {
           component: 'publisher.rich-content',
           componentVersion: 1,
           props: {
-            title: 'The Vanguard Chronicle',
+            title: 'Independent newsroom',
             body: 'Daily independent dispatches for the public interest.',
             alignment: 'center',
             spacing: 'compact',
@@ -455,6 +465,7 @@ export const publicationCommunityStarter: StarterDefinition = {
           componentVersion: 1,
           props: {
             title: 'Power Fearless Investigative Journalism',
+            link: { href: '/subscribe', label: 'Get the dispatch' },
             body: 'Our newsroom accepts no corporate underwriting. Your membership keeps these dispatches free and accessible for all citizens.',
             alignment: 'center',
             spacing: 'normal',
@@ -478,7 +489,7 @@ export const publicationCommunityStarter: StarterDefinition = {
           component: 'publisher.rich-content',
           componentVersion: 1,
           props: {
-            title: 'The Vanguard Chronicle Colophon',
+            title: 'About this publication',
             body: 'Published under Creative Commons BY-NC-SA 4.0. Sovereign, zero-tracking journalism.',
             alignment: 'center',
             spacing: 'compact',
@@ -506,6 +517,11 @@ export const publicationCommunityStarter: StarterDefinition = {
           props: {
             title: 'The Vanguard Chronicle',
             body: 'Independent dispatches, investigative inquiry, and open civic dialogue powered by reader patronage.',
+            media: {
+              href: '/starter-assets/publication-hero.svg',
+              label: 'Sample civic journalism illustration',
+            },
+            link: { href: '/articles', label: 'Explore Dispatches' },
             alignment: 'center',
             spacing: 'relaxed',
             width: 'wide',
@@ -531,10 +547,11 @@ export const publicationCommunityStarter: StarterDefinition = {
         },
         {
           id: 'home-forum',
-          component: 'publisher.forum-activity',
+          component: 'publisher.cta',
           componentVersion: 1,
           props: {
             title: 'Community Inquiries & Discussions',
+            link: { href: '/members', label: 'Explore the community' },
             body: 'Join the conversation on verified stories, propose investigative tips, and engage with contributors.',
             alignment: 'left',
             spacing: 'normal',
@@ -542,15 +559,15 @@ export const publicationCommunityStarter: StarterDefinition = {
             background: 'surface',
             emphasis: 'normal',
             variant: 'contained',
-            query: { collection: 'content', limit: 4, sort: 'newest' },
           },
         },
         {
           id: 'home-members',
-          component: 'publisher.friend-and-buddy-list',
+          component: 'publisher.cta',
           componentVersion: 1,
           props: {
             title: 'Community Contributors & Readers',
+            link: { href: '/members', label: 'Meet our readers' },
             body: 'Meet the sustaining members keeping sovereign journalism independent.',
             alignment: 'left',
             spacing: 'normal',
@@ -558,15 +575,15 @@ export const publicationCommunityStarter: StarterDefinition = {
             background: 'canvas',
             emphasis: 'normal',
             variant: 'default',
-            query: { collection: 'content', limit: 4, sort: 'newest' },
           },
         },
         {
           id: 'home-newsletter',
-          component: 'publisher.newsletter-cta',
+          component: 'publisher.cta',
           componentVersion: 1,
           props: {
             title: 'Subscribe to The Weekly Dispatch',
+            link: { href: '/subscribe', label: 'Join the newsletter' },
             body: 'Receive investigative briefings directly in your inbox. No ads, zero tracking, unsubscribe at any time.',
             alignment: 'center',
             spacing: 'relaxed',
@@ -574,7 +591,6 @@ export const publicationCommunityStarter: StarterDefinition = {
             background: 'surface',
             emphasis: 'bold',
             variant: 'contained',
-            query: { collection: 'content', limit: 1, sort: 'newest' },
           },
         },
       ],
@@ -854,7 +870,7 @@ export const campaignCommerceStarter: StarterDefinition = {
       canonicalPath: '/terms',
       summary:
         'Shipping times, union manufacturing standards, and refund policies for our campaign store.',
-      body: '# Campaign Store Terms & Fulfillment Policies\n\n### 1. Union Manufacturing Standard\nAll merchandise offered in our store is manufactured in union-represented facilities in the United States. We take immense pride in supporting fair labor.\n\n### 2. Shipping & Handling\nOrders ship within 3–5 business days via USPS Ground Advantage. Tracking numbers are sent via email upon dispatch.\n\n### 3. Exchanges & Returns\nIf an item arrives damaged or you need a size exchange, contact store@forwardforthepeople.org within 14 days of receipt.',
+      body: '## Campaign Store Terms & Fulfillment Policies\n\n### 1. Union Manufacturing Standard\nAll merchandise offered in our store is manufactured in union-represented facilities in the United States. We take immense pride in supporting fair labor.\n\n### 2. Shipping & Handling\nOrders ship within 3–5 business days via USPS Ground Advantage. Tracking numbers are sent via email upon dispatch.\n\n### 3. Exchanges & Returns\nIf an item arrives damaged or you need a size exchange, contact store@forwardforthepeople.org within 14 days of receipt.',
       status: 'published',
     },
     {
@@ -863,7 +879,7 @@ export const campaignCommerceStarter: StarterDefinition = {
       canonicalPath: '/subscribe',
       summary:
         'Sign up to canvass, host a neighborhood house meeting, or make voter education calls.',
-      body: '# Join the Grassroots Organizing Team\n\nWinning progressive change takes people power. Whether you have two hours on Saturday morning or want to coordinate your neighborhood precinct, your voice makes the difference.\n\n### Ways to Get Involved\n- **Door-to-Door Canvassing**: Friendly conversations with neighbors across your district.\n- **Phone & Text Banking**: Remind supporters about town halls and voter deadlines from home.\n- **Town Hall Host**: Host a 10-person living room discussion on clean energy with our campaign briefing kits.',
+      body: '## Join the Grassroots Organizing Team\n\nWinning progressive change takes people power. Whether you have two hours on Saturday morning or want to coordinate your neighborhood precinct, your voice makes the difference.\n\n### Ways to Get Involved\n- **Door-to-Door Canvassing**: Friendly conversations with neighbors across your district.\n- **Phone & Text Banking**: Remind supporters about town halls and voter deadlines from home.\n- **Town Hall Host**: Host a 10-person living room discussion on clean energy with our campaign briefing kits.',
       status: 'published',
     },
     {
@@ -871,7 +887,7 @@ export const campaignCommerceStarter: StarterDefinition = {
       slug: 'contact',
       canonicalPath: '/contact',
       summary: 'Campaign office address, phone numbers, and press inquiry contacts.',
-      body: '# Campaign Office & Media Contacts\n\n- **Field Headquarters**: 450 Liberty Way, Suite 200\n- **Campaign Phone**: (555) 019-2026\n- **Press Inquiries**: press@forwardforthepeople.org\n- **Store Support**: store@forwardforthepeople.org\n\nOffice hours are Monday through Saturday, 9:00 AM to 7:00 PM.',
+      body: '## Campaign Office & Media Contacts\n\n- **Field Headquarters**: 450 Liberty Way, Suite 200\n- **Campaign Phone**: (555) 019-2026\n- **Press Inquiries**: press@forwardforthepeople.org\n- **Store Support**: store@forwardforthepeople.org\n\nOffice hours are Monday through Saturday, 9:00 AM to 7:00 PM.',
       status: 'published',
     },
   ],
@@ -968,7 +984,7 @@ export const campaignCommerceStarter: StarterDefinition = {
         },
         {
           id: 'tpl-prod-grid',
-          component: 'publisher.feature-grid',
+          component: 'publisher.product-showcase',
           componentVersion: 1,
           props: {
             title: 'Movement Apparel & Field Supplies',
@@ -1202,7 +1218,7 @@ export const campaignCommerceStarter: StarterDefinition = {
         },
         {
           id: 'camp-merch-spotlight',
-          component: 'publisher.feature-grid',
+          component: 'publisher.product-showcase',
           componentVersion: 1,
           props: {
             title: 'Official Campaign Store',

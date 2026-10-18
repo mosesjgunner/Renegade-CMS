@@ -1,3 +1,4 @@
+import { checkOperatorRecordAccess } from '@/modules/operations/operator-grants'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
@@ -12,6 +13,8 @@ export async function GET(request: Request, { params }: Args) {
   const auth = await payload.auth({ headers: request.headers })
   if (!staff(auth.user?.role))
     return NextResponse.json({ error: 'Layout choices require staff access.' }, { status: 403 })
+  if (!(await checkOperatorRecordAccess(payload, auth.user, 'page-layouts', (await params).id)))
+    return NextResponse.json({ error: 'Layout access denied.' }, { status: 403 })
   const layout = await payload.findByID({
     collection: 'page-layouts',
     id: (await params).id,

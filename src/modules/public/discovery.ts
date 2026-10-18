@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any -- Payload documents and candidate collections are runtime-shaped. */
 import type { Metadata, MetadataRoute } from 'next'
 import type { Payload } from 'payload'
+import { publicContentHierarchyTrail } from './hierarchy'
 
 import { canDiscoverPublic, canRenderPublic, type PublicState } from './contracts'
 import { resolveSiteSettings, type ResolvedSiteSettings } from '../core/site-settings'
@@ -1890,6 +1891,20 @@ async function buildContentDiscoveryDocument(input: {
     breadcrumbs.push({ name: titleValue, path: canonicalPath, url: canonicalUrl })
   } else {
     breadcrumbs.push({ name: titleValue, path: canonicalPath, url: canonicalUrl })
+  }
+
+  if (Array.isArray(content.collections) && content.collections.length) {
+    const hierarchy = await publicContentHierarchyTrail(
+      payload,
+      String(idOf(content.site)),
+      String(content.id),
+    )
+    if (hierarchy.length > 2)
+      breadcrumbs.splice(
+        0,
+        breadcrumbs.length,
+        ...hierarchy.map((item) => ({ ...item, url: `${base}${item.path}` })),
+      )
   }
 
   // 8. Schema Graph

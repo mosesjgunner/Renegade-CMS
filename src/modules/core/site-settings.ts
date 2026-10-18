@@ -54,7 +54,10 @@ const idOf = (value: unknown): string | null => {
   return null
 }
 
-export async function resolveSiteSettings(payload: Payload): Promise<ResolvedSiteSettings> {
+export async function resolveSiteSettings(
+  payload: Payload,
+  options: { includeTheme?: boolean } = {},
+): Promise<ResolvedSiteSettings> {
   const fallbackOrigin = process.env.APP_URL ?? 'http://localhost:3000'
   try {
     const settings = (await payload.findGlobal({
@@ -118,7 +121,9 @@ export async function resolveSiteSettings(payload: Payload): Promise<ResolvedSit
     const homepagePageId = idOf(hp.page)
     const homepageLayoutId = idOf(hp.layout)
 
-    const themeConfiguration = await requestTheme(payload)
+    // Host resolution needs origins before it can choose a theme. Loading a theme
+    // from that path would await requestTheme's own cached in-flight promise.
+    const themeConfiguration = options.includeTheme === false ? null : await requestTheme(payload)
     return {
       themeConfiguration,
       themeId:

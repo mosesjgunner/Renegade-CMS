@@ -1,6 +1,7 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
+import { resolveRedirectSite } from '@/modules/operations/redirect-site'
 import {
   generateRedirectsCsv,
   generateRedirectsJson,
@@ -20,7 +21,9 @@ export async function GET(request: Request) {
   const format = (url.searchParams.get('format') || 'csv').toLowerCase()
 
   try {
-    const rules = await listRedirectRules(payload)
+    const siteId = await resolveRedirectSite(payload, auth.user, request)
+    if (!siteId) return NextResponse.json({ error: 'Staff site access required.' }, { status: 403 })
+    const rules = await listRedirectRules(payload, siteId)
 
     if (format === 'json') {
       const content = generateRedirectsJson(rules)

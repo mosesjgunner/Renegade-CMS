@@ -105,6 +105,8 @@ export async function processVideoAsset(payload: Payload, config: AppConfig, vid
       overrideAccess: true,
       data: {
         processingState: 'ready',
+        recipeKey: localVideoRecipe.key,
+        recipeVersion: localVideoRecipe.version,
         progress: 100,
         metadata: { ...result.metadata, processor: processor.provider },
         outputs: persisted,

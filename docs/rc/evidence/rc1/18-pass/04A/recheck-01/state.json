@@ -1,0 +1,82 @@
+{
+  "id": "2f1aea18-9c30-4240-b4b8-9c771917d26f",
+  "blocks": [
+    {
+      "id": "publisher_hero-6424946f-3996-4682-bc60-c69df608dde3",
+      "props": {
+        "body": "A complete page arranged visually.",
+        "title": "04A Retried after network failure",
+        "spacing": "relaxed",
+        "variant": "default",
+        "emphasis": "bold",
+        "alignment": "center",
+        "background": "surface"
+      },
+      "component": "publisher.hero",
+      "componentVersion": 1
+    },
+    {
+      "id": "publisher_rich-content-4f6bfa9f-0327-41d9-9612-d3fe1bc870d4",
+      "props": {
+        "body": "Text written in the visual editor.",
+        "title": "04A Story",
+        "spacing": "normal",
+        "variant": "default",
+        "alignment": "left"
+      },
+      "component": "publisher.rich-content",
+      "componentVersion": 1
+    },
+    {
+      "id": "publisher_image-6b18531e-dcde-4ca9-97b9-0d991b718573",
+      "props": {
+        "media": {
+          "id": "404e8add-cf9f-4b23-8229-379b7b975cb5",
+          "href": "/media/404e8add-cf9f-4b23-8229-379b7b975cb5",
+          "label": "04A red image",
+          "siteId": "7c0edc28-d31c-40a3-8b06-9c7f9dff40a3"
+        },
+        "title": "04A Photo",
+        "spacing": "normal",
+        "variant": "default",
+        "alignment": "left"
+      },
+      "component": "publisher.image",
+      "componentVersion": 1
+    },
+    {
+      "id": "publisher_cta-f399a947-38ad-4c30-bfcf-4236247a300b",
+      "props": {
+        "link": {
+          "id": "content:70f922ac-f625-4ede-91a4-b3dbcc062fe8",
+          "href": "/destination-1792320925254",
+          "label": "04A Destination",
+          "siteId": "7c0edc28-d31c-40a3-8b06-9c7f9dff40a3"
+        },
+        "title": "04A Join us",
+        "spacing": "normal",
+        "variant": "default",
+        "alignment": "left"
+      },
+      "component": "publisher.cta",
+      "componentVersion": 1
+    },
+    {
+      "id": "publisher_navigation-d16d92b0-30eb-4bf7-a6a6-673d4a13be5b",
+      "props": {
+        "link": {
+          "id": "content:70f922ac-f625-4ede-91a4-b3dbcc062fe8",
+          "href": "/destination-1792320925254",
+          "label": "04A Destination",
+          "siteId": "7c0edc28-d31c-40a3-8b06-9c7f9dff40a3"
+        },
+        "title": "04A Navigation",
+        "spacing": "normal",
+        "alignment": "left"
+      },
+      "component": "publisher.navigation",
+      "componentVersion": 1
+    }
+  ],
+  "revision": 30
+}

@@ -1,3 +1,4 @@
+import { publicSiteForHost } from '@/modules/public/site-scope'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import { createHash } from 'node:crypto'
@@ -54,13 +55,16 @@ export async function GET(
 
   const stableId = rawSlug.replace(/\.(xml|json)$/, '')
   const payload = await getPayload({ config })
+  const siteId = await publicSiteForHost(payload, request.headers.get('host'))
+  if (!siteId) return new Response('Not found', { status: 404 })
   const settings = await resolveSiteSettings(payload)
+  const origin = settings.canonicalOriginsBySite[siteId] || settings.canonicalOrigin
 
   if (settings.indexingMode === 'noindex') {
     return new Response('Not found', { status: 404 })
   }
 
-  const docs = (await getAllIndexableDiscoveryDocuments(payload))
+  const docs = (await getAllIndexableDiscoveryDocuments(payload, siteId))
     .filter((doc) => matches(doc, scope, stableId))
     .sort(
       (a, b) =>
@@ -71,14 +75,14 @@ export async function GET(
 
   if (!docs.length) return new Response('Not found', { status: 404 })
 
-  const selfXml = `${settings.canonicalOrigin}/feeds/${scope}/${stableId}`
+  const selfXml = `${origin}/feeds/${scope}/${stableId}`
 
   if (isJsonRequest) {
     const jsonBody = JSON.stringify({
       version: 'https://jsonfeed.org/version/1.1',
       title: `${settings.siteName} — ${scope} stream`,
-      home_page_url: settings.canonicalOrigin,
-      feed_url: `${settings.canonicalOrigin}/feeds/${scope}/${stableId}.json`,
+      home_page_url: origin,
+      feed_url: `${origin}/feeds/${scope}/${stableId}.json`,
       items: docs.map((doc) => ({
         id: `urn:renegade:content:${doc.revisions.entityId || doc.canonicalUrl}`,
         url: doc.canonicalUrl,
@@ -96,7 +100,7 @@ export async function GET(
     const headers = {
       'Content-Type': 'application/feed+json; charset=utf-8',
       ETag: etag,
-      'Cache-Control': 'public, max-age=60, s-maxage=300, stale-while-revalidate=3600',
+      'Cache-Control': 'public, no-cache, must-revalidate',
     }
     return request.headers.get('if-none-match') === etag
       ? new Response(null, { status: 304, headers })

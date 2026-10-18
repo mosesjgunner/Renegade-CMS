@@ -31,6 +31,7 @@ export default function RedirectManager() {
   // Import State
   const [importText, setImportText] = useState('')
   const [importStatus, setImportStatus] = useState<string | null>(null)
+  const [importErrors, setImportErrors] = useState<string[]>([])
   const [importing, setImporting] = useState(false)
 
   const loadRules = async () => {
@@ -143,6 +144,7 @@ export default function RedirectManager() {
     if (!importText.trim()) return
     setImporting(true)
     setImportStatus(null)
+    setImportErrors([])
 
     try {
       const res = await fetch('/api/admin/redirects/import', {
@@ -153,12 +155,14 @@ export default function RedirectManager() {
       const data = await res.json()
       if (res.ok) {
         setImportStatus(
-          `Import successful: ${data.created} created, ${data.updated} updated, ${data.skipped} skipped.`,
+          `${data.success ? 'Import complete' : data.partial ? 'Import partially completed' : 'Import failed'}: ${data.created} created, ${data.updated} updated, ${data.skipped} skipped.`,
         )
-        setImportText('')
+        setImportErrors(data.errors || [])
+        if (data.success) setImportText('')
         void loadRules()
       } else {
         setImportStatus(`Import failed: ${data.error || 'Check CSV/JSON formatting'}`)
+        setImportErrors(data.parseErrors || [])
       }
     } catch (err) {
       setImportStatus(err instanceof Error ? err.message : 'Import request failed.')
@@ -414,9 +418,18 @@ export default function RedirectManager() {
                 {importing ? 'Importing...' : 'Import Rules'}
               </button>
               {importStatus && (
-                <span style={{ fontSize: '13px', color: '#334155' }}>{importStatus}</span>
+                <span role="status" style={{ fontSize: '13px', color: '#334155' }}>
+                  {importStatus}
+                </span>
               )}
             </div>
+            {importErrors.length > 0 && (
+              <ul role="alert">
+                {importErrors.map((message, index) => (
+                  <li key={index}>{message}</li>
+                ))}
+              </ul>
+            )}
           </form>
 
           <div

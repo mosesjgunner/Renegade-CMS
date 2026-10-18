@@ -1,0 +1,15 @@
+{
+  "passed": 9,
+  "failed": 0,
+  "trace": [
+    "native Puck pointer drag inserts a block into the canvas",
+    "dragged and configured block persists in PostgreSQL",
+    "keyboard Enter duplicates the selected block",
+    "keyboard reorder persists the original block after its distinct duplicate",
+    "keyboard delete and save persist only the duplicate",
+    "reload restores the keyboard-edited layout",
+    "broken block shows usable repair notice",
+    "saving preserves unavailable block payload exactly",
+    "preview renders safe unavailable-section fallback"
+  ]
+}

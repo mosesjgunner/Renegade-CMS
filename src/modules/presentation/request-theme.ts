@@ -4,17 +4,30 @@ import type { Payload } from 'payload'
 import { resolveConfiguration, themePool } from './lifecycle'
 import { requireAdminUser } from '../operations/passkey-auth'
 import { loadConfig } from '../core/config'
+import { publicSiteForHost } from '../public/site-scope'
+
 /** Same publication precedence as existing public routes; never take site scope from preview input. */
-export const requestTheme = cache(async (payload: Payload) => {
-  const pubs = await payload.find({
-    collection: 'publications',
-    where: { and: [{ status: { equals: 'active' } }, { visibility: { equals: 'public' } }] },
-    limit: 1,
-    depth: 0,
-    overrideAccess: true,
-  })
-  const publication = pubs.docs[0]
-  const site = typeof publication?.site === 'string' ? publication.site : publication?.site?.id
+export const requestTheme = cache(async (payload: Payload, explicitSiteId?: string) => {
+  let site = explicitSiteId
+  if (!site) {
+    try {
+      const headerList = await headers()
+      site = await publicSiteForHost(payload, headerList.get('host'))
+      // A real request with an unknown host must not inherit another tenant's theme.
+      if (!site) return null
+    } catch {}
+  }
+  if (!site) {
+    const pubs = await payload.find({
+      collection: 'publications',
+      where: { and: [{ status: { equals: 'active' } }, { visibility: { equals: 'public' } }] },
+      limit: 1,
+      depth: 0,
+      overrideAccess: true,
+    })
+    const publication = pubs.docs[0]
+    site = typeof publication?.site === 'string' ? publication.site : publication?.site?.id
+  }
   if (!site) return null
   let preview: { actor: string; token: string } | undefined
   let token: string | undefined

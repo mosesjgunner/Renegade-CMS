@@ -57,7 +57,9 @@ describe('Starter Experiences Integration Tests', () => {
         expect(doc.altText).toBeTruthy()
         expect(doc.creatorCredit).toBeTruthy()
         expect(doc.licenseType).toBeTruthy()
-        expect(doc.storageLocation).toMatch(/^\/starter-assets\//)
+        expect(doc.storageLocation).toMatch(new RegExp(`^starters/${siteId}/[a-f0-9]{64}/`))
+        expect(doc.licenseType).toBe('licensed')
+        expect(doc.license).toContain('AGPL-3.0')
       }
     })
 

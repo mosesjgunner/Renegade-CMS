@@ -34,7 +34,7 @@ export type VideoRecipe = {
 
 export const localVideoRecipe: VideoRecipe = {
   key: 'web-video-v1',
-  version: 1,
+  version: 2,
   maxInputBytes: 250 * 1024 * 1024,
   maxDurationSeconds: 15 * 60,
   description: 'H.264/AAC fast-start MP4, single-rendition HLS, poster, and contact sheet.',
@@ -240,7 +240,7 @@ export class LocalFfmpegVideoProcessor implements VideoProcessor {
           '-i',
           input,
           '-vf',
-          'fps=1/10,scale=320:-2,tile=4x3',
+          `fps=${Math.max(0.1, 12 / metadata.durationSeconds)},scale=320:-2,tile=4x3`,
           '-frames:v',
           '1',
           sheet,

@@ -403,29 +403,72 @@ export async function executeLegacyMigration(
 
   // 3. Taxonomy: Categories & Tags
   const categoryIdMap = new Map<string, string>() // slug -> categoryId
-  for (const cat of normalized.categories) {
-    if (completedSet.has(`category:${cat.slug}`)) continue
-    try {
-      const existing = await store.findCategory(siteId, cat.slug)
-      if (existing) {
-        categoryIdMap.set(cat.slug, existing.id)
-      } else {
-        const created = await store.createCategory({
-          siteId,
-          name: cat.name,
-          slug: cat.slug,
-          description: cat.description,
-        })
-        categoryIdMap.set(cat.slug, created.id)
-        createdEntityIds.categoryIds.push(created.id)
+  const pendingCategories = [...normalized.categories]
+  let prevPendingCount = -1
+  while (pendingCategories.length > 0 && pendingCategories.length !== prevPendingCount) {
+    prevPendingCount = pendingCategories.length
+    for (let i = pendingCategories.length - 1; i >= 0; i--) {
+      const cat = pendingCategories[i]
+      if (!cat.parentSlug || categoryIdMap.has(cat.parentSlug)) {
+        if (!completedSet.has(`category:${cat.slug}`)) {
+          try {
+            const existing = await store.findCategory(siteId, cat.slug)
+            if (existing) {
+              categoryIdMap.set(cat.slug, existing.id)
+            } else {
+              const parentId = cat.parentSlug ? categoryIdMap.get(cat.parentSlug) : undefined
+              const created = await store.createCategory({
+                siteId,
+                name: cat.name,
+                slug: cat.slug,
+                description: cat.description,
+                parentId,
+              })
+              categoryIdMap.set(cat.slug, created.id)
+              createdEntityIds.categoryIds.push(created.id)
+            }
+            completedSet.add(`category:${cat.slug}`)
+          } catch (err) {
+            warnings.push({
+              code: 'CATEGORY_CREATION_FAILED',
+              sourceId: cat.id,
+              message: `Failed to create category ${cat.name}: ${err instanceof Error ? err.message : String(err)}`,
+            })
+          }
+        } else {
+          const existing = await store.findCategory(siteId, cat.slug)
+          if (existing) categoryIdMap.set(cat.slug, existing.id)
+        }
+        pendingCategories.splice(i, 1)
       }
-      completedSet.add(`category:${cat.slug}`)
-    } catch (err) {
-      warnings.push({
-        code: 'CATEGORY_CREATION_FAILED',
-        sourceId: cat.id,
-        message: `Failed to create category ${cat.name}: ${err instanceof Error ? err.message : String(err)}`,
-      })
+    }
+  }
+  for (const cat of pendingCategories) {
+    if (!completedSet.has(`category:${cat.slug}`)) {
+      try {
+        const existing = await store.findCategory(siteId, cat.slug)
+        if (existing) {
+          categoryIdMap.set(cat.slug, existing.id)
+        } else {
+          const parentId = cat.parentSlug ? categoryIdMap.get(cat.parentSlug) : undefined
+          const created = await store.createCategory({
+            siteId,
+            name: cat.name,
+            slug: cat.slug,
+            description: cat.description,
+            parentId,
+          })
+          categoryIdMap.set(cat.slug, created.id)
+          createdEntityIds.categoryIds.push(created.id)
+        }
+        completedSet.add(`category:${cat.slug}`)
+      } catch (err) {
+        warnings.push({
+          code: 'CATEGORY_CREATION_FAILED',
+          sourceId: cat.id,
+          message: `Failed to create category ${cat.name}: ${err instanceof Error ? err.message : String(err)}`,
+        })
+      }
     }
   }
 
@@ -473,9 +516,20 @@ export async function executeLegacyMigration(
 
   // 5. Content (Posts & Pages)
   const sideBySide: SideBySideItem[] = []
-  for (const item of normalized.items) {
-    if (item.postType !== 'post' && item.postType !== 'page') continue
+  const contentIdMap = new Map<string, string>() // sourceItemId -> contentId
+  let skippedCount = 0
 
+  // Sort content items so parent pages are created before child pages
+  const contentItems = normalized.items.filter((i) => i.postType === 'post' || i.postType === 'page')
+  contentItems.sort((a, b) => {
+    if (b.parentId === a.id) return -1
+    if (a.parentId === b.id) return 1
+    if (!a.parentId && b.parentId) return -1
+    if (a.parentId && !b.parentId) return 1
+    return 0
+  })
+
+  for (const item of contentItems) {
     const redirectItem = urlPlan.plan.find((p) => p.sourceUrl === item.originalUrl)
     const canonicalPath = redirectItem ? redirectItem.canonicalPath : item.slug
 
@@ -483,44 +537,65 @@ export async function executeLegacyMigration(
 
     if (!completedSet.has(`content:${item.id}`)) {
       try {
-        // Rewire media URLs in rawContent
-        const rewiredBody = rewireMediaUrls(item.rawContent, mediaResult.urlRewireMap)
+        const existingContent = await store.findContent(siteId, item.slug)
+        if (existingContent) {
+          if (options.rejectDuplicates) {
+            errors.push({
+              code: 'DUPLICATE_ITEM_REJECTED',
+              sourceId: item.id,
+              message: `Duplicate item rejected: content with slug '${item.slug}' already exists in site '${siteId}'.`,
+            })
+            continue
+          } else {
+            contentId = existingContent.id
+            contentIdMap.set(item.id, existingContent.id)
+            completedSet.add(`content:${item.id}`)
+            skippedCount++
+          }
+        } else {
+          // Rewire media URLs in rawContent
+          const rewiredBody = rewireMediaUrls(item.rawContent, mediaResult.urlRewireMap)
 
-        // Resolve author
-        const authorId = authorIdMap.get(item.authorLogin)
-        const authorIds = authorId ? [authorId] : []
+          // Resolve author
+          const authorId = authorIdMap.get(item.authorLogin)
+          const authorIds = authorId ? [authorId] : []
 
-        // Resolve categories & tags
-        const categoryIds = item.categories
-          .map((c) => categoryIdMap.get(c))
-          .filter(Boolean) as string[]
-        const tagIds = item.tags.map((t) => tagIdMap.get(t)).filter(Boolean) as string[]
+          // Resolve categories & tags
+          const categoryIds = item.categories
+            .map((c) => categoryIdMap.get(c))
+            .filter(Boolean) as string[]
+          const tagIds = item.tags.map((t) => tagIdMap.get(t)).filter(Boolean) as string[]
 
-        // Featured image
-        const featuredMediaId = item.featuredMediaId
-          ? mediaResult.idRewireMap.get(item.featuredMediaId)
-          : undefined
+          // Featured image
+          const featuredMediaId = item.featuredMediaId
+            ? mediaResult.idRewireMap.get(item.featuredMediaId)
+            : undefined
 
-        const created = await store.createContent({
-          siteId,
-          contentType: item.postType === 'post' ? 'article' : 'page',
-          title: item.title,
-          slug: item.slug,
-          canonicalPath,
-          excerpt: item.excerpt,
-          body: rewiredBody,
-          status: item.status === 'publish' ? 'published' : 'draft',
-          publishedAt: item.publishedAt,
-          authorIds,
-          categoryIds,
-          tagIds,
-          featuredMediaId,
-          seoTitle: item.seo.metaTitle,
-          seoDescription: item.seo.metaDescription,
-        })
-        contentId = created.id
-        createdEntityIds.contentIds.push(created.id)
-        completedSet.add(`content:${item.id}`)
+          const parentPageId = item.parentId ? contentIdMap.get(item.parentId) : undefined
+
+          const created = await store.createContent({
+            siteId,
+            contentType: item.postType === 'post' ? 'article' : 'page',
+            title: item.title,
+            slug: item.slug,
+            canonicalPath,
+            excerpt: item.excerpt,
+            body: rewiredBody,
+            status: item.status === 'publish' ? 'published' : 'draft',
+            publishedAt: item.publishedAt,
+            authorIds,
+            categoryIds,
+            tagIds,
+            featuredMediaId,
+            seoTitle: item.seo.metaTitle,
+            seoDescription: item.seo.metaDescription,
+            parentPageId,
+          })
+          contentId = created.id
+          contentIdMap.set(item.id, created.id)
+          createdEntityIds.contentIds.push(created.id)
+          completedSet.add(`content:${item.id}`)
+        }
       } catch (err) {
         console.error(`[CONTENT_CREATION_FAILED] ${item.title} (${item.slug}):`, err)
         errors.push({
@@ -528,6 +603,12 @@ export async function executeLegacyMigration(
           sourceId: item.id,
           message: `Failed to create content for ${item.title}: ${err instanceof Error ? err.message : String(err)}`,
         })
+      }
+    } else {
+      const existing = await store.findContent(siteId, item.slug)
+      if (existing) {
+        contentId = existing.id
+        contentIdMap.set(item.id, existing.id)
       }
     }
 
@@ -559,15 +640,21 @@ export async function executeLegacyMigration(
       const redirectKey = `redirect:${r.legacyPath}`
       if (completedSet.has(redirectKey)) continue
       try {
-        const created = await store.createRedirect({
-          siteId,
-          fromPath: r.legacyPath,
-          toPath: r.canonicalPath,
-          statusCode: String(r.statusCode),
-          enabled: true,
-        })
-        createdEntityIds.redirectIds.push(created.id)
-        completedSet.add(redirectKey)
+        const existingRedirect = await store.findRedirect(siteId, r.legacyPath)
+        if (existingRedirect) {
+          completedSet.add(redirectKey)
+          skippedCount++
+        } else {
+          const created = await store.createRedirect({
+            siteId,
+            fromPath: r.legacyPath,
+            toPath: r.canonicalPath,
+            statusCode: String(r.statusCode),
+            enabled: true,
+          })
+          createdEntityIds.redirectIds.push(created.id)
+          completedSet.add(redirectKey)
+        }
       } catch (err) {
         warnings.push({
           code: 'REDIRECT_CREATION_FAILED',
@@ -581,18 +668,24 @@ export async function executeLegacyMigration(
   // Reconstruct Header Global
   if (!completedSet.has('layout:header')) {
     try {
-      const createdHeader = await store.createLayout({
-        siteId,
-        path: '__global__/header',
-        name: presentation.header.name,
-        status: 'draft',
-        themeId: presentation.themeId,
-        surface: 'global',
-        slot: 'header',
-        blocks: presentation.header.blocks,
-      })
-      createdEntityIds.layoutIds.push(createdHeader.id)
-      completedSet.add('layout:header')
+      const existing = await store.findLayout(siteId, '__global__/header')
+      if (existing) {
+        completedSet.add('layout:header')
+        skippedCount++
+      } else {
+        const createdHeader = await store.createLayout({
+          siteId,
+          path: '__global__/header',
+          name: presentation.header.name,
+          status: 'draft',
+          themeId: presentation.themeId,
+          surface: 'global',
+          slot: 'header',
+          blocks: presentation.header.blocks,
+        })
+        createdEntityIds.layoutIds.push(createdHeader.id)
+        completedSet.add('layout:header')
+      }
     } catch (err) {
       warnings.push({
         code: 'HEADER_GLOBAL_FAILED',
@@ -604,18 +697,24 @@ export async function executeLegacyMigration(
   // Reconstruct Footer Global
   if (!completedSet.has('layout:footer')) {
     try {
-      const createdFooter = await store.createLayout({
-        siteId,
-        path: '__global__/footer',
-        name: presentation.footer.name,
-        status: 'draft',
-        themeId: presentation.themeId,
-        surface: 'global',
-        slot: 'footer',
-        blocks: presentation.footer.blocks,
-      })
-      createdEntityIds.layoutIds.push(createdFooter.id)
-      completedSet.add('layout:footer')
+      const existing = await store.findLayout(siteId, '__global__/footer')
+      if (existing) {
+        completedSet.add('layout:footer')
+        skippedCount++
+      } else {
+        const createdFooter = await store.createLayout({
+          siteId,
+          path: '__global__/footer',
+          name: presentation.footer.name,
+          status: 'draft',
+          themeId: presentation.themeId,
+          surface: 'global',
+          slot: 'footer',
+          blocks: presentation.footer.blocks,
+        })
+        createdEntityIds.layoutIds.push(createdFooter.id)
+        completedSet.add('layout:footer')
+      }
     } catch (err) {
       warnings.push({
         code: 'FOOTER_GLOBAL_FAILED',
@@ -630,19 +729,26 @@ export async function executeLegacyMigration(
     const tplKey = `template:${tpl.id}`
     if (completedSet.has(tplKey)) continue
     try {
-      const createdTpl = await store.createLayout({
-        siteId,
-        path: `__template__/${tpl.id}`,
-        name: tpl.name,
-        status: 'draft',
-        themeId: presentation.themeId,
-        surface: 'template',
-        slot: 'main',
-        blocks: tpl.blocks,
-      })
-      templateIdMap.set(tpl.id, createdTpl.id)
-      createdEntityIds.layoutIds.push(createdTpl.id)
-      completedSet.add(tplKey)
+      const existing = await store.findLayout(siteId, `__template__/${tpl.id}`)
+      if (existing) {
+        templateIdMap.set(tpl.id, existing.id)
+        completedSet.add(tplKey)
+        skippedCount++
+      } else {
+        const createdTpl = await store.createLayout({
+          siteId,
+          path: `__template__/${tpl.id}`,
+          name: tpl.name,
+          status: 'draft',
+          themeId: presentation.themeId,
+          surface: 'template',
+          slot: 'main',
+          blocks: tpl.blocks,
+        })
+        templateIdMap.set(tpl.id, createdTpl.id)
+        createdEntityIds.layoutIds.push(createdTpl.id)
+        completedSet.add(tplKey)
+      }
     } catch (err) {
       warnings.push({
         code: 'TEMPLATE_CREATION_FAILED',
@@ -656,18 +762,24 @@ export async function executeLegacyMigration(
     const patKey = `pattern:${pat.id}`
     if (completedSet.has(patKey)) continue
     try {
-      const createdPat = await store.createLayout({
-        siteId,
-        path: `__pattern__/${pat.id}`,
-        name: pat.name,
-        status: 'draft',
-        themeId: presentation.themeId,
-        surface: 'pattern',
-        slot: 'main',
-        blocks: pat.blocks,
-      })
-      createdEntityIds.layoutIds.push(createdPat.id)
-      completedSet.add(patKey)
+      const existing = await store.findLayout(siteId, `__pattern__/${pat.id}`)
+      if (existing) {
+        completedSet.add(patKey)
+        skippedCount++
+      } else {
+        const createdPat = await store.createLayout({
+          siteId,
+          path: `__pattern__/${pat.id}`,
+          name: pat.name,
+          status: 'draft',
+          themeId: presentation.themeId,
+          surface: 'pattern',
+          slot: 'main',
+          blocks: pat.blocks,
+        })
+        createdEntityIds.layoutIds.push(createdPat.id)
+        completedSet.add(patKey)
+      }
     } catch (err) {
       warnings.push({
         code: 'PATTERN_CREATION_FAILED',
@@ -682,20 +794,26 @@ export async function executeLegacyMigration(
     if (completedSet.has(pageKey)) continue
     try {
       const mappedTemplateId = page.templateId ? templateIdMap.get(page.templateId) : undefined
-      const createdPageLayout = await store.createLayout({
-        siteId,
-        path: page.path,
-        name: page.name,
-        status: 'draft',
-        themeId: presentation.themeId,
-        surface: 'page',
-        slot: 'main',
-        templateId: mappedTemplateId,
-        templateMode: page.templateMode,
-        blocks: page.blocks,
-      })
-      createdEntityIds.layoutIds.push(createdPageLayout.id)
-      completedSet.add(pageKey)
+      const existing = await store.findLayout(siteId, page.path)
+      if (existing) {
+        completedSet.add(pageKey)
+        skippedCount++
+      } else {
+        const createdPageLayout = await store.createLayout({
+          siteId,
+          path: page.path,
+          name: page.name,
+          status: 'draft',
+          themeId: presentation.themeId,
+          surface: 'page',
+          slot: 'main',
+          templateId: mappedTemplateId,
+          templateMode: page.templateMode,
+          blocks: page.blocks,
+        })
+        createdEntityIds.layoutIds.push(createdPageLayout.id)
+        completedSet.add(pageKey)
+      }
     } catch (err) {
       warnings.push({
         code: 'PAGE_LAYOUT_FAILED',
@@ -742,7 +860,7 @@ export async function executeLegacyMigration(
         patterns: presentation.patterns.length,
         globals: 2,
       },
-      skipped: 0,
+      skipped: skippedCount,
       failed: errors.length,
     },
     checksums: {

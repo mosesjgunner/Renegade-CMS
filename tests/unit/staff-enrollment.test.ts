@@ -13,6 +13,7 @@ import {
   resolveOperatorGrantContext,
   checkOperatorSiteAccess,
 } from '../../src/modules/operations/operator-grants'
+import { createUsersCollection } from '../../src/collections/Users'
 
 describe('RC08D-02: Staff Enrollment and Canonical Site Grants', () => {
   const secret = 'test-secret-key-12345678901234567890'
@@ -293,12 +294,11 @@ describe('RC08D-02: Staff Enrollment and Canonical Site Grants', () => {
       expect(staffMember).toBeDefined()
       expect(staffUser?.member).toBe(staffMember?.id)
 
-      // Verifies canonical site-team membership grant
+      // The invitation cannot grant access before passkey redemption.
       const roles = Object.values(memberSiteRoles).filter(
         (r) => r.member === staffMember?.id && r.site === 'site-alpha',
       )
-      expect(roles).toHaveLength(1)
-      expect(roles[0].role).toBe('contributor')
+      expect(roles).toHaveLength(0)
 
       // Verifies bounded token in identity-tokens
       const tokens = Object.values(identityTokens).filter(
@@ -329,6 +329,44 @@ describe('RC08D-02: Staff Enrollment and Canonical Site Grants', () => {
         }),
       ).rejects.toThrow('Role must be staff or administrator.')
     })
+
+    it('does not change a current role when a different invitation is still pending', async () => {
+      const { payload, memberSiteRoles } = createMockPayload()
+      const before = structuredClone(memberSiteRoles)
+
+      // 1. Initial staff invitation
+      await createStaffEnrollmentToken(payload, config, {
+        email: 'promo@renegadeparty.test',
+        role: 'staff',
+        siteId: 'site-alpha',
+        invitedByUserId: 'user-owner',
+      })
+      expect(memberSiteRoles).toEqual(before)
+
+      // 2. Promotion to administrator
+      await createStaffEnrollmentToken(payload, config, {
+        email: 'promo@renegadeparty.test',
+        role: 'administrator',
+        siteId: 'site-alpha',
+        invitedByUserId: 'user-owner',
+      })
+      expect(memberSiteRoles).toEqual(before)
+    })
+
+    it('does not auto-grant a pending invite on a single-site installation', async () => {
+      const { payload, sites, memberSiteRoles, users } = createMockPayload()
+      delete sites['site-beta']
+      const before = structuredClone(memberSiteRoles)
+      const hook = createUsersCollection({ payloadSecret: secret, secureCookies: false }).hooks
+        ?.afterChange?.[0]
+      expect(hook).toBeDefined()
+      await hook!({
+        doc: { id: 'pending-user', email: 'pending@test.com', role: 'staff', member: 'pending-member' },
+        req: { payload, context: { pendingStaffInvitation: true, skipEnrollmentToken: true }, user: users['user-owner'] },
+        operation: 'create',
+      } as never)
+      expect(memberSiteRoles).toEqual(before)
+    })
   })
 
   describe('2. Bounded Enrollment Authority & Security Negatives', () => {
@@ -357,7 +395,7 @@ describe('RC08D-02: Staff Enrollment and Canonical Site Grants', () => {
       const created = await createStaffEnrollmentToken(payload, config, {
         email: 'expired@renegadeparty.test',
         role: 'staff',
-        validHours: -1, // in the past
+        validHours: 1,
       })
 
       // Manually backdate in mock store

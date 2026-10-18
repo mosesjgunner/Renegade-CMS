@@ -1,5 +1,9 @@
 import type { Payload } from 'payload'
 
+import { canRenderPublic, type PublicState } from '../public/contracts'
+import { isPublicPageLayout } from '../public/layout-visibility'
+import { resolveTheme } from '../presentation/registry'
+import type { PublishedPresentation } from '../presentation/snapshots'
 import type { AppConfig } from '../core/config'
 import { assertTeamPermission, type TeamScope } from '../collaboration/service'
 import { checkOperatorSiteAccess } from '../operations/operator-grants'
@@ -42,6 +46,9 @@ export type DamMetadata = {
   rightsStatus?: string
   governanceEnabled?: boolean
   customMetadata?: Record<string, unknown>
+  retentionMode?: 'permanent' | 'scheduled-archive' | 'archive' | 'tombstone' | 'delete-candidate'
+  tombstoneLabel?: string | null
+  removeFromDiscovery?: boolean
 }
 
 const replacementMetadataFields = [
@@ -142,7 +149,15 @@ export async function uploadMedia(
   const caption = cleanText(input.caption, 'Caption', 2_000)
   if (input.bytes.byteLength > config.storage.maxUploadBytes)
     throw new MediaWorkflowError('Media exceeds the configured upload limit.', 413)
-  const inspection = inspectMedia(input.bytes)
+  let inspection
+  try {
+    inspection = inspectMedia(input.bytes)
+  } catch (error) {
+    throw new MediaWorkflowError(
+      error instanceof Error ? error.message : 'Unsupported or corrupt media file.',
+      415,
+    )
+  }
   if (inspection.mimeType === 'text/vtt') validateWebVtt(input.bytes)
   const audioMetadata = inspection.kind === 'audio' ? inspectAudioMetadata(input.bytes) : undefined
   if (
@@ -285,7 +300,13 @@ export async function uploadMedia(
 export async function attachMediaToContent(
   payload: Payload,
   user: Doc | null | undefined,
-  input: { scope: TeamScope; mediaId: string; contentId: string },
+  input: {
+    scope: TeamScope
+    mediaId: string
+    contentId: string
+    purpose?: 'hero' | 'inline'
+    field?: string
+  },
 ) {
   await assertMediaPermission(payload, user, input.scope, 'content.edit')
   const [media, content] = await Promise.all([
@@ -304,13 +325,51 @@ export async function attachMediaToContent(
   ])
   if (id(media.site) !== input.scope.siteId || id(content.site) !== input.scope.siteId)
     throw new MediaWorkflowError('Cross-site media attachment is not allowed.', 403)
-  const updated = await payload.update({
-    collection: 'content',
-    id: input.contentId,
-    overrideAccess: true,
-    data: { heroMedia: input.mediaId },
-  } as never)
-  const usageKey = `content:${input.contentId}:hero`
+  if (
+    media.retentionMode === 'tombstone' ||
+    media.processingState === 'quarantined' ||
+    media.processingState === 'failed'
+  ) {
+    throw new MediaWorkflowError(
+      'Tombstoned, quarantined, or failed media cannot be attached to content.',
+      409,
+    )
+  }
+  const purpose = input.purpose ?? 'hero'
+  const field = input.field ?? (purpose === 'hero' ? 'heroMedia' : 'inline')
+  let updated = content
+  if (purpose === 'hero') {
+    updated = (await payload.update({
+      collection: 'content',
+      id: input.contentId,
+      overrideAccess: true,
+      data: { heroMedia: input.mediaId },
+    } as never)) as unknown as Doc
+  } else if (content.body && typeof content.body === 'object' && !Array.isArray(content.body)) {
+    const existingBody = content.body as Doc
+    const existingAttachments = Array.isArray(existingBody.attachments)
+      ? existingBody.attachments.map(id).filter(Boolean)
+      : []
+    if (!existingAttachments.includes(input.mediaId)) {
+      updated = ((await payload
+        .update({
+          collection: 'content',
+          id: input.contentId,
+          overrideAccess: true,
+          data: {
+            body: {
+              ...existingBody,
+              attachments: [...existingAttachments, input.mediaId],
+            },
+          },
+        } as never)
+        .catch(() => content)) ?? content) as unknown as Doc
+    }
+  }
+  const usageKey =
+    purpose === 'hero'
+      ? `content:${input.contentId}:hero`
+      : `content:${input.contentId}:${field}:${input.mediaId}`
   const existing = await payload.find({
     collection: 'media-usages',
     where: { usageKey: { equals: usageKey } },
@@ -324,12 +383,12 @@ export async function attachMediaToContent(
     media: input.mediaId,
     usageKey,
     usedBy: { relationTo: 'content', value: input.contentId },
-    purpose: 'hero',
+    purpose,
     replaceGlobally: true,
     approvedForPublic: true,
     targetType: 'content',
     targetId: input.contentId,
-    field: 'heroMedia',
+    field,
     lifecycle: ['published', 'updated'].includes(String(content.status))
       ? 'public'
       : String(content.status) === 'scheduled'
@@ -395,6 +454,7 @@ async function replaceMediaUnlocked(
     reason?: string
   },
 ) {
+  await assertMediaPermission(payload, input.user, input.scope, 'content.edit')
   const original = (await payload.findByID({
     collection: 'media-assets',
     id: input.replacedMediaId,
@@ -403,25 +463,63 @@ async function replaceMediaUnlocked(
   } as never)) as unknown as Doc
   if (id(original.site) !== input.scope.siteId)
     throw new MediaWorkflowError('Cross-site replacement is not allowed.', 403)
-  if (input.mode === 'all-usages' && original.replaceGloballyWith)
+  if (original.retentionMode === 'tombstone')
+    throw new MediaWorkflowError('Tombstoned media cannot be replaced.', 409)
+  const mode = input.mode ?? 'new-asset'
+  if (mode === 'all-usages' && original.replaceGloballyWith)
     throw new MediaWorkflowError(
       'This asset already has a replacement version. Refresh Media before saving again.',
       409,
     )
-  const replacement = (await uploadMedia(payload, config, input)) as unknown as Doc
-  await payload.update({
-    collection: 'media-assets',
-    id: replacement.id,
-    overrideAccess: true,
-    data: inheritedReplacementMetadata(original),
-  } as never)
-  const mode = input.mode ?? 'new-asset'
+  let nextInspection
+  try {
+    nextInspection = inspectMedia(input.bytes)
+  } catch (error) {
+    throw new MediaWorkflowError(
+      error instanceof Error ? error.message : 'Unsupported or corrupt media file.',
+      415,
+    )
+  }
+  if (
+    (mode === 'all-usages' || mode === 'selected-usages') &&
+    original.kind &&
+    nextInspection.kind !== original.kind
+  ) {
+    throw new MediaWorkflowError(
+      `Unsafe replacement refused: cannot replace ${String(original.kind)} asset with ${nextInspection.kind} in ${mode} mode.`,
+      409,
+    )
+  }
   const impact = await previewReplacementImpact(
     payload,
     input.scope.siteId,
     input.replacedMediaId,
     input.usageIds,
   )
+  const matchedUsages =
+    mode === 'selected-usages'
+      ? impact.usages.filter((item) => input.usageIds?.includes(item.id))
+      : []
+  if (mode === 'selected-usages') {
+    if (!input.usageIds?.length)
+      throw new MediaWorkflowError('Choose at least one usage to rewire.', 400)
+    if (matchedUsages.length !== input.usageIds.length)
+      throw new MediaWorkflowError(
+        'One or more selected usages do not belong to this media asset.',
+        409,
+      )
+  }
+  const uploadedReplacement = (await uploadMedia(payload, config, input)) as unknown as Doc
+  const inherited = inheritedReplacementMetadata(original)
+  if (input.caption !== undefined) {
+    inherited.caption = cleanText(input.caption, 'Caption', 2_000) || null
+  }
+  const replacement = ((await payload.update({
+    collection: 'media-assets',
+    id: uploadedReplacement.id,
+    overrideAccess: true,
+    data: inherited,
+  } as never)) ?? uploadedReplacement) as unknown as Doc
   if (mode === 'all-usages')
     await payload.update({
       collection: 'media-assets',
@@ -430,15 +528,28 @@ async function replaceMediaUnlocked(
       data: { replaceGloballyWith: replacement.id },
     } as never)
   if (mode === 'selected-usages') {
-    if (!input.usageIds?.length)
-      throw new MediaWorkflowError('Choose at least one usage to rewire.', 400)
-    for (const usage of impact.usages.filter((item) => input.usageIds!.includes(item.id)))
+    for (const usage of matchedUsages) {
       await payload.update({
         collection: 'media-usages',
         id: usage.id,
         data: { media: replacement.id, lastReconciledAt: new Date().toISOString() },
         overrideAccess: true,
       } as never)
+      if (
+        usage.targetType === 'content' &&
+        (usage.field === 'heroMedia' || usage.field === 'hero') &&
+        usage.targetId
+      ) {
+        await payload
+          .update({
+            collection: 'content',
+            id: usage.targetId,
+            data: { heroMedia: replacement.id },
+            overrideAccess: true,
+          } as never)
+          .catch(() => undefined)
+      }
+    }
   }
   await payload.create({
     collection: 'media-asset-versions',
@@ -452,17 +563,17 @@ async function replaceMediaUnlocked(
       versionLabel: `replacement-${new Date().toISOString()}`,
       mode,
       replacedUsageIds: input.usageIds ?? [],
-      impactCount: mode === 'new-asset' ? 0 : impact.usages.length,
+      impactCount:
+        mode === 'new-asset'
+          ? 0
+          : mode === 'selected-usages'
+            ? matchedUsages.length
+            : impact.usages.length,
       reason: cleanText(input.reason, 'Replacement reason', 1000) || null,
     },
   } as never)
-  if (replacement && (replacement as unknown as Doc).kind === 'image') {
-    if (typeof payload.jobs?.queue === 'function')
-      await queueAssetVariantGeneration(payload, {
-        assetId: String((replacement as unknown as Doc).id),
-        force: true,
-      }).catch(() => undefined)
-  }
+  // uploadMedia already queued this immutable asset's variants. Enqueuing it
+  // again here races the same asset's rendition records in parallel workers.
   return replacement
 }
 
@@ -715,6 +826,7 @@ export async function reconcileMediaUsages(payload: Payload, siteId: string, now
   for (const record of content.docs) {
     const refs = referencedMedia({
       heroMedia: record.heroMedia,
+      body: record.body,
       richText: record.richText,
       seoImage: record.seoImage,
       seoOverride: record.seoOverride,
@@ -1100,6 +1212,7 @@ export async function reviewDuplicateMedia(
 export async function resolveMediaReplacement(
   payload: Payload,
   media: Doc,
+  publicDelivery = false,
 ): Promise<Doc | undefined> {
   const siteId = id(media.site)
   const seen = new Set<string>()
@@ -1107,6 +1220,7 @@ export async function resolveMediaReplacement(
   for (let hops = 0; hops < replacementLimit; hops++) {
     const currentId = id(current.id)
     if (!currentId || seen.has(currentId)) return undefined
+    if (publicDelivery && !publicMediaPolicyAllows(current)) return undefined
     seen.add(currentId)
     const nextId = id(current.replaceGloballyWith)
     if (!nextId) return current
@@ -1162,6 +1276,34 @@ export async function updateMediaMetadata(
   if (input.rightsStatus !== undefined) data.rightsStatus = input.rightsStatus
   if (input.governanceEnabled !== undefined) data.governanceEnabled = input.governanceEnabled
   if (input.customMetadata !== undefined) data.customMetadata = input.customMetadata
+  if (input.retentionMode !== undefined) {
+    const validModes = [
+      'permanent',
+      'scheduled-archive',
+      'archive',
+      'tombstone',
+      'delete-candidate',
+    ] as const
+    if (!validModes.includes(input.retentionMode)) {
+      throw new MediaWorkflowError('Invalid retention mode.', 400)
+    }
+    data.retentionMode = input.retentionMode
+    if (input.retentionMode === 'tombstone') {
+      data.removeFromDiscovery = true
+      data.tombstoneLabel =
+        cleanText(
+          input.tombstoneLabel ?? String(media.tombstoneLabel ?? ''),
+          'Tombstone label',
+          500,
+        ) || '[Media withdrawn]'
+    }
+  }
+  if (input.tombstoneLabel !== undefined && data.tombstoneLabel === undefined) {
+    data.tombstoneLabel = cleanText(input.tombstoneLabel ?? '', 'Tombstone label', 500) || null
+  }
+  if (input.removeFromDiscovery !== undefined && data.removeFromDiscovery === undefined) {
+    data.removeFromDiscovery = Boolean(input.removeFromDiscovery)
+  }
   if ((input as Record<string, unknown>).focalPoint !== undefined)
     data.focalPoint = (input as Record<string, unknown>).focalPoint
   if ((input as Record<string, unknown>).cropSettings !== undefined)
@@ -1171,6 +1313,42 @@ export async function updateMediaMetadata(
     id: input.mediaId,
     data,
     overrideAccess: true,
+  } as never)
+}
+
+export async function tombstoneMedia(
+  payload: Payload,
+  user: Doc | null | undefined,
+  input: { scope: TeamScope; mediaId: string; tombstoneLabel?: string; reason?: string },
+) {
+  await assertMediaPermission(payload, user, input.scope, 'content.edit')
+  const media = (await payload.findByID({
+    collection: 'media-assets',
+    id: input.mediaId,
+    depth: 0,
+    overrideAccess: true,
+  } as never)) as unknown as Doc
+  if (id(media.site) !== input.scope.siteId)
+    throw new MediaWorkflowError('Cross-site media operation is not allowed.', 403)
+  const label = cleanText(input.tombstoneLabel, 'Tombstone label', 500) || '[Media withdrawn]'
+  const reason = cleanText(input.reason, 'Tombstone reason', 1000) || null
+  return payload.update({
+    collection: 'media-assets',
+    id: input.mediaId,
+    overrideAccess: true,
+    data: {
+      retentionMode: 'tombstone',
+      removeFromDiscovery: true,
+      tombstoneLabel: label,
+      customMetadata: {
+        ...((media.customMetadata as Doc) ?? {}),
+        tombstoneAudit: {
+          at: new Date().toISOString(),
+          by: id(user?.id) || null,
+          reason,
+        },
+      },
+    },
   } as never)
 }
 
@@ -1189,7 +1367,9 @@ export async function deleteOrphanedMedia(
   } as never)) as unknown as Doc
   if (id(media.site) !== input.scope.siteId)
     throw new MediaWorkflowError('Cross-site deletion is not allowed.', 403)
-  const [uses, heroReferences, siteSettings] = await Promise.all([
+  if (media.retentionHold && media.retentionHold !== 'none')
+    throw new MediaWorkflowError('Media under retention hold cannot be deleted.', 409)
+  const [uses, heroReferences, replacementReferences, siteSettings] = await Promise.all([
     payload.find({
       collection: 'media-usages',
       where: { media: { equals: input.mediaId } },
@@ -1204,6 +1384,15 @@ export async function deleteOrphanedMedia(
       depth: 0,
       overrideAccess: true,
     } as never),
+    payload
+      .find({
+        collection: 'media-assets',
+        where: { replaceGloballyWith: { equals: input.mediaId } },
+        limit: 1,
+        depth: 0,
+        overrideAccess: true,
+      } as never)
+      .catch(() => ({ docs: [] })),
     typeof payload.findGlobal === 'function'
       ? (payload
           .findGlobal({
@@ -1219,7 +1408,12 @@ export async function deleteOrphanedMedia(
         Boolean,
       )
     : []
-  if (uses.docs.length || heroReferences.docs.length || siteSettingsMedia.includes(input.mediaId))
+  if (
+    uses.docs.length ||
+    heroReferences.docs.length ||
+    replacementReferences.docs.length ||
+    siteSettingsMedia.includes(input.mediaId)
+  )
     throw new MediaWorkflowError(
       'Referenced media cannot be deleted. Replace it or detach every use first.',
       409,
@@ -1328,19 +1522,29 @@ export async function deleteOrphanedMedia(
   }
 }
 
+export const publicMediaPolicyAllows = (media: Doc) =>
+  !media.removeFromDiscovery &&
+  media.retentionMode !== 'tombstone' &&
+  media.processingState !== 'quarantined' &&
+  media.processingState !== 'failed' &&
+  media.publicPolicy !== 'private' &&
+  !mediaRightsIssue(media as DamMetadata)
+
 export async function publicMedia(payload: Payload, mediaId: string): Promise<Doc | undefined> {
+  return publicMediaWithAncestors(payload, mediaId, new Set())
+}
+
+async function publicMediaWithAncestors(
+  payload: Payload,
+  mediaId: string,
+  visited: Set<string>,
+): Promise<Doc | undefined> {
+  if (visited.has(mediaId) || visited.size >= replacementLimit) return undefined
+  visited.add(mediaId)
   const media = (await payload
     .findByID({ collection: 'media-assets', id: mediaId, depth: 0, overrideAccess: true } as never)
     .catch(() => undefined)) as unknown as Doc | undefined
-  if (
-    !media ||
-    media.removeFromDiscovery ||
-    media.retentionMode === 'tombstone' ||
-    media.processingState === 'quarantined' ||
-    media.processingState === 'failed' ||
-    media.publicPolicy === 'private'
-  )
-    return undefined
+  if (!media || !publicMediaPolicyAllows(media)) return undefined
   // Safe public policy: a rights expiry withdraws delivery rather than extending
   // a licence by accident. The governance dashboard exposes it for remediation.
   if (mediaRightsIssue(media as DamMetadata)) return undefined
@@ -1362,7 +1566,7 @@ export async function publicMedia(payload: Payload, mediaId: string): Promise<Do
       mediaId,
     )
   ) {
-    return resolveMediaReplacement(payload, media)
+    return resolveMediaReplacement(payload, media, true)
   }
 
   const references = await Promise.all([
@@ -1373,6 +1577,13 @@ export async function publicMedia(payload: Payload, mediaId: string): Promise<Do
           { heroMedia: { equals: mediaId } },
           { status: { in: ['published', 'updated'] } },
           { site: { equals: id(media.site) } },
+          { visibility: { equals: 'public' } },
+          {
+            or: [
+              { publishedAt: { exists: false } },
+              { publishedAt: { less_than_equal: new Date().toISOString() } },
+            ],
+          },
         ],
       },
       limit: 1,
@@ -1388,7 +1599,8 @@ export async function publicMedia(payload: Payload, mediaId: string): Promise<Do
           { approvedForPublic: { equals: true } },
         ],
       },
-      limit: 1,
+      limit: 0,
+      pagination: false,
       depth: 0,
       overrideAccess: true,
     } as never),
@@ -1459,9 +1671,144 @@ export async function publicMedia(payload: Payload, mediaId: string): Promise<Do
       depth: 0,
       overrideAccess: true,
     } as never),
+    findIfRegistered(payload, {
+      collection: 'books',
+      where: {
+        and: [
+          { site: { equals: id(media.site) } },
+          { cover: { equals: mediaId } },
+          { status: { in: ['published', 'updated'] } },
+          { visibility: { equals: 'public' } },
+        ],
+      },
+      limit: 1,
+      depth: 0,
+      overrideAccess: true,
+    } as never),
   ])
-  if (!references.some((reference) => reference.docs.length)) return undefined
-  return resolveMediaReplacement(payload, media)
+  // The usage graph is a projection, not authority. Recheck live targets so a
+  // private/unpublished article or removed attachment cannot keep bytes public
+  // until the next reconciliation. Layouts use their immutable snapshot below.
+  const liveUsages: Doc[] = []
+  for (const usage of references[1]!.docs as Doc[]) {
+    const relation = usage.usedBy as { relationTo?: string; value?: unknown } | undefined
+    if (!relation) {
+      liveUsages.push(usage)
+      continue
+    }
+    if (!['content', 'social-network-variants'].includes(String(relation.relationTo)))
+      continue
+    const target = (await payload
+      .findByID({
+        collection: relation.relationTo,
+        id: id(relation.value),
+        depth: 0,
+        overrideAccess: true,
+      } as never)
+      .catch(() => null)) as Doc | null
+    if (!target || id(target.site) !== id(media.site) || !canRenderPublic(target as PublicState))
+      continue
+    if (referencedMedia(target).some((ref) => ref.id === mediaId)) liveUsages.push(usage)
+  }
+  references[1]!.docs = liveUsages as never
+  for (const reference of references) {
+    reference.docs = reference.docs.filter((record) => canRenderPublic(record as PublicState))
+  }
+  if (!references.some((reference) => reference.docs.length)) {
+    // Responsive markup names the resolved version, while the published article
+    // can retain its original media identity. Derive permission from a live,
+    // same-site public ancestor, rechecking every policy in the chain.
+    const ancestors = await findIfRegistered<Doc>(payload, {
+      collection: 'media-assets',
+      where: {
+        and: [
+          { site: { equals: id(media.site) } },
+          { replaceGloballyWith: { equals: mediaId } },
+        ],
+      },
+      limit: 100,
+      depth: 0,
+      overrideAccess: true,
+    })
+    const resolvedTarget = await resolveMediaReplacement(payload, media, true)
+    for (const ancestor of ancestors.docs) {
+      if (id(ancestor.site) !== id(media.site)) continue
+      const publicAncestor = await publicMediaWithAncestors(
+        payload,
+        id(ancestor.id),
+        new Set(visited),
+      )
+      if (publicAncestor && resolvedTarget && id(publicAncestor.id) === id(resolvedTarget.id))
+        return resolvedTarget
+    }
+    // A canvas publish commits its immutable snapshot immediately. Public bytes must not
+    // depend on a later usage-graph reconciliation, or on mutable draft blocks.
+    let page = 1
+    for (;;) {
+      const layouts = await findIfRegistered<Doc>(payload, {
+        collection: 'page-layouts',
+        where: {
+          and: [
+            { site: { equals: id(media.site) } },
+            { status: { equals: 'published' } },
+            { visibility: { equals: 'public' } },
+          ],
+        },
+        limit: 100,
+        page,
+        sort: 'id',
+        depth: 0,
+        overrideAccess: true,
+      })
+      const approved = layouts.docs.some((layout) => {
+        if (
+          id(layout.site) !== id(media.site) ||
+          !isPublicPageLayout(layout) ||
+          !canRenderPublic(layout as PublicState)
+        )
+          return false
+        const snapshot = layout.publishedPresentation as PublishedPresentation | null | undefined
+        if (
+          snapshot?.version !== 1 ||
+          snapshot.visibility !== 'public' ||
+          snapshot.document?.version !== 1 ||
+          snapshot.document.siteId !== id(media.site)
+        )
+          return false
+        const theme = resolveTheme(snapshot.document.theme?.id)
+        if (
+          theme.id !== snapshot.document.theme?.id ||
+          theme.version !== snapshot.document.theme?.version
+        )
+          return false
+        const blocks = snapshot.document.slots?.main
+        if (!Array.isArray(blocks)) return false
+        return blocks.some((block) => {
+          if (!block || typeof block !== 'object') return false
+          const definition = theme.componentRegistry[block.component]
+          if (
+            !definition ||
+            definition.version !== block.componentVersion ||
+            !theme.templateRegistry.layout.slots.main?.allowedComponents.includes(
+              block.component,
+            ) ||
+            block.hidden ||
+            (block.visible?.desktop === false &&
+              block.visible?.tablet === false &&
+              block.visible?.mobile === false)
+          )
+            return false
+          return Object.entries(definition.fields).some(
+            ([name, field]) => field.type === 'media' && id(block.props?.[name]) === mediaId,
+          )
+        })
+      })
+      if (approved) return resolveMediaReplacement(payload, media, true)
+      if (layouts.docs.length < 100) return undefined
+      page++
+    }
+  }
+  return resolveMediaReplacement(payload, media, true)
 }
 
 /** Resolves MED-00 blobs while retaining read-only compatibility for pre-MED records. */
@@ -1516,4 +1863,259 @@ export async function regenerateVariants(
     recipeKeys: input.recipeKeys,
     force: true,
   })
+}
+
+export async function listScopedMediaLibrary(
+  payload: Payload,
+  user: Doc | null | undefined,
+  input: {
+    siteId: string
+    q?: string
+    kind?: string
+    mimeType?: string
+    usage?: string
+    retentionMode?: string
+  },
+) {
+  await assertMediaPermission(payload, user, { kind: 'site', siteId: input.siteId }, 'content.read')
+  const [assetsResult, usagesResult, versionsResult, contentResult] = await Promise.all([
+    payload.find({
+      collection: 'media-assets',
+      where: { site: { equals: input.siteId } },
+      depth: 0,
+      limit: 200,
+      sort: '-updatedAt',
+      overrideAccess: true,
+    } as never),
+    findIfRegistered<Doc>(payload, {
+      collection: 'media-usages',
+      where: { site: { equals: input.siteId } },
+      depth: 0,
+      limit: 1000,
+      overrideAccess: true,
+    } as never),
+    findIfRegistered<Doc>(payload, {
+      collection: 'media-asset-versions',
+      where: { site: { equals: input.siteId } },
+      depth: 0,
+      limit: 1000,
+      sort: '-createdAt',
+      overrideAccess: true,
+    } as never),
+    findIfRegistered<Doc>(payload, {
+      collection: 'content',
+      where: { site: { equals: input.siteId } },
+      depth: 0,
+      limit: 500,
+      overrideAccess: true,
+    } as never),
+  ])
+
+  const usagesByAsset = new Map<
+    string,
+    Array<{
+      id: string
+      targetType: string
+      targetId: string
+      field: string
+      purpose: string
+      lifecycle: string
+    }>
+  >()
+  for (const rawUsage of usagesResult.docs) {
+    const mediaId = id(rawUsage.media)
+    if (!mediaId) continue
+    const list = usagesByAsset.get(mediaId) ?? []
+    list.push({
+      id: id(rawUsage.id),
+      targetType: String(rawUsage.targetType ?? 'content'),
+      targetId: String(rawUsage.targetId ?? id((rawUsage.usedBy as Doc | undefined)?.value)),
+      field: String(rawUsage.field ?? 'heroMedia'),
+      purpose: String(rawUsage.purpose ?? 'hero'),
+      lifecycle: String(rawUsage.lifecycle ?? 'draft'),
+    })
+    usagesByAsset.set(mediaId, list)
+  }
+
+  for (const rawContent of contentResult.docs) {
+    const heroId = id(rawContent.heroMedia)
+    const contentId = id(rawContent.id)
+    if (!heroId || !contentId) continue
+    const list = usagesByAsset.get(heroId) ?? []
+    if (!list.some((item) => item.targetId === contentId && item.field === 'heroMedia')) {
+      list.push({
+        id: `content:${contentId}:hero`,
+        targetType: 'content',
+        targetId: contentId,
+        field: 'heroMedia',
+        purpose: 'hero',
+        lifecycle: lifecycleFor(rawContent.status),
+      })
+      usagesByAsset.set(heroId, list)
+    }
+  }
+
+  const versionsByAsset = new Map<
+    string,
+    Array<{
+      id: string
+      assetId: string
+      replacesAssetId: string
+      versionLabel: string
+      mode: string
+      reason: string | null
+      impactCount: number
+      createdAt: string | null
+    }>
+  >()
+  for (const rawVersion of versionsResult.docs) {
+    const assetId = id(rawVersion.asset)
+    const replacesAssetId = id(rawVersion.replacesAsset)
+    const entry = {
+      id: id(rawVersion.id),
+      assetId,
+      replacesAssetId,
+      versionLabel: String(rawVersion.versionLabel ?? ''),
+      mode: String(rawVersion.mode ?? 'new-asset'),
+      reason: rawVersion.reason ? String(rawVersion.reason) : null,
+      impactCount: Number(rawVersion.impactCount ?? 0),
+      createdAt: rawVersion.createdAt ? String(rawVersion.createdAt) : null,
+    }
+    if (assetId) {
+      versionsByAsset.set(assetId, [...(versionsByAsset.get(assetId) ?? []), entry])
+    }
+    if (replacesAssetId && replacesAssetId !== assetId) {
+      versionsByAsset.set(replacesAssetId, [...(versionsByAsset.get(replacesAssetId) ?? []), entry])
+    }
+  }
+
+  const query = (input.q ?? '').trim().toLowerCase()
+  const kindFilter = (input.kind ?? '').trim().toLowerCase()
+  const mimeFilter = (input.mimeType ?? '').trim().toLowerCase()
+  const usageFilter = (input.usage ?? '').trim().toLowerCase()
+  const retentionFilter = (input.retentionMode ?? '').trim().toLowerCase()
+
+  const items = (assetsResult.docs as unknown as Doc[]).map((asset) => {
+    const assetId = id(asset.id)
+    const usages = usagesByAsset.get(assetId) ?? []
+    const versions = versionsByAsset.get(assetId) ?? []
+    const replaceGloballyWith = id(asset.replaceGloballyWith) || null
+    const retentionMode = String(asset.retentionMode ?? 'permanent')
+    return {
+      id: assetId,
+      title: String(asset.title ?? ''),
+      originalFilename: typeof asset.originalFilename === 'string' ? asset.originalFilename : '',
+      kind: String(asset.kind ?? 'document'),
+      altText: typeof asset.altText === 'string' ? asset.altText : '',
+      caption: typeof asset.caption === 'string' ? asset.caption : '',
+      mimeType: String(asset.mimeType ?? ''),
+      sizeBytes: Number(asset.sizeBytes ?? 0),
+      width: typeof asset.width === 'number' ? asset.width : null,
+      height: typeof asset.height === 'number' ? asset.height : null,
+      durationSeconds: typeof asset.durationSeconds === 'number' ? asset.durationSeconds : null,
+      processingState: String(asset.processingState ?? ''),
+      retentionMode,
+      tombstoneLabel: typeof asset.tombstoneLabel === 'string' ? asset.tombstoneLabel : null,
+      removeFromDiscovery: Boolean(asset.removeFromDiscovery),
+      replaceGloballyWith,
+      usageCount: usages.length,
+      referenced: usages.length > 0,
+      usages,
+      versionCount: versions.length,
+      versions,
+      url: `/media/${assetId}`,
+    }
+  })
+
+  return items.filter((item) => {
+    if (query) {
+      const haystack = [
+        item.title,
+        item.originalFilename,
+        item.caption,
+        item.altText,
+        item.mimeType,
+        item.kind,
+      ]
+        .join(' ')
+        .toLowerCase()
+      if (!haystack.includes(query)) return false
+    }
+    if (kindFilter && kindFilter !== 'all' && item.kind.toLowerCase() !== kindFilter) {
+      return false
+    }
+    if (mimeFilter && mimeFilter !== 'all') {
+      const m = item.mimeType.toLowerCase()
+      if (mimeFilter.endsWith('/') ? !m.startsWith(mimeFilter) : m !== mimeFilter) {
+        return false
+      }
+    }
+    if ((usageFilter === 'referenced' || usageFilter === 'used') && !item.referenced) return false
+    if ((usageFilter === 'orphan' || usageFilter === 'unused') && item.referenced) return false
+    if (!retentionFilter) {
+      if (item.removeFromDiscovery) return false
+    } else if (retentionFilter !== 'all') {
+      if (retentionFilter === 'active') {
+        if (
+          item.retentionMode === 'tombstone' ||
+          item.retentionMode === 'archive' ||
+          item.removeFromDiscovery
+        )
+          return false
+      } else if (item.retentionMode.toLowerCase() !== retentionFilter) {
+        return false
+      }
+    }
+    return true
+  })
+}
+
+export async function getScopedMediaAssetDetail(
+  payload: Payload,
+  user: Doc | null | undefined,
+  input: { siteId: string; mediaId: string },
+) {
+  await assertMediaPermission(payload, user, { kind: 'site', siteId: input.siteId }, 'content.read')
+  const asset = (await payload
+    .findByID({
+      collection: 'media-assets',
+      id: input.mediaId,
+      depth: 0,
+      overrideAccess: true,
+    } as never)
+    .catch(() => null)) as unknown as Doc | null
+  if (!asset) throw new MediaWorkflowError('Media asset not found.', 404)
+  if (id(asset.site) !== input.siteId)
+    throw new MediaWorkflowError('Cross-site media access is not allowed.', 403)
+  const library = await listScopedMediaLibrary(payload, user, { siteId: input.siteId })
+  const detail = library.find((item) => item.id === id(asset.id))
+  const resolved = await resolveMediaReplacement(payload, asset, false)
+  return {
+    ...(detail ?? {
+      id: id(asset.id),
+      title: String(asset.title ?? ''),
+      originalFilename: typeof asset.originalFilename === 'string' ? asset.originalFilename : '',
+      kind: String(asset.kind ?? 'document'),
+      altText: typeof asset.altText === 'string' ? asset.altText : '',
+      caption: typeof asset.caption === 'string' ? asset.caption : '',
+      mimeType: String(asset.mimeType ?? ''),
+      sizeBytes: Number(asset.sizeBytes ?? 0),
+      width: typeof asset.width === 'number' ? asset.width : null,
+      height: typeof asset.height === 'number' ? asset.height : null,
+      durationSeconds: typeof asset.durationSeconds === 'number' ? asset.durationSeconds : null,
+      processingState: String(asset.processingState ?? ''),
+      retentionMode: String(asset.retentionMode ?? 'permanent'),
+      tombstoneLabel: typeof asset.tombstoneLabel === 'string' ? asset.tombstoneLabel : null,
+      removeFromDiscovery: Boolean(asset.removeFromDiscovery),
+      replaceGloballyWith: id(asset.replaceGloballyWith) || null,
+      usageCount: 0,
+      referenced: false,
+      usages: [],
+      versionCount: 0,
+      versions: [],
+      url: `/media/${id(asset.id)}`,
+    }),
+    effectiveAssetId: resolved ? id(resolved.id) : null,
+    publiclyDeliverable: Boolean(await publicMedia(payload, id(asset.id))),
+  }
 }

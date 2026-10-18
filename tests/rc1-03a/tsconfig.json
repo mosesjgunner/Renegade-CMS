@@ -1,0 +1,15 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": { "incremental": false, "noEmit": true },
+  "include": [
+    "../../next-env.d.ts",
+    "../../src/**/*.ts",
+    "../../src/**/*.tsx",
+    "./*.ts",
+    "../unit/content-hierarchy.test.tsx",
+    "../unit/module-registry.test.ts",
+    "../unit/rc02-published-revision.test.ts",
+    "../unit/article-route-hierarchy.test.ts"
+  ],
+  "exclude": ["../../node_modules"]
+}

@@ -1,0 +1,278 @@
+[
+  {
+    "tag": "A",
+    "title": null,
+    "id": "main_menu_0_0",
+    "text": "File"
+  },
+  {
+    "tag": "A",
+    "title": null,
+    "id": "main_menu_0_1",
+    "text": "Edit"
+  },
+  {
+    "tag": "A",
+    "title": null,
+    "id": "main_menu_0_2",
+    "text": "View"
+  },
+  {
+    "tag": "A",
+    "title": null,
+    "id": "main_menu_0_3",
+    "text": "Image"
+  },
+  {
+    "tag": "A",
+    "title": null,
+    "id": "main_menu_0_4",
+    "text": "Layer"
+  },
+  {
+    "tag": "A",
+    "title": null,
+    "id": "main_menu_0_5",
+    "text": "Effects"
+  },
+  {
+    "tag": "A",
+    "title": null,
+    "id": "main_menu_0_6",
+    "text": "Tools"
+  },
+  {
+    "tag": "A",
+    "title": null,
+    "id": "main_menu_0_7",
+    "text": "Help"
+  },
+  {
+    "tag": "A",
+    "title": null,
+    "id": "",
+    "text": "miniPaint"
+  },
+  {
+    "tag": "INPUT",
+    "title": null,
+    "id": "",
+    "text": ""
+  },
+  {
+    "tag": "BUTTON",
+    "title": null,
+    "id": "",
+    "text": "Increase"
+  },
+  {
+    "tag": "BUTTON",
+    "title": null,
+    "id": "",
+    "text": "Decrease"
+  },
+  {
+    "tag": "BUTTON",
+    "title": null,
+    "id": "pressure",
+    "text": "Pressure"
+  },
+  {
+    "tag": "BUTTON",
+    "title": null,
+    "id": "undo_button",
+    "text": "\n\t\t\t\tUndo\n\t\t\t"
+  },
+  {
+    "tag": "BUTTON",
+    "title": "Zoom out",
+    "id": "zoom_less",
+    "text": "-"
+  },
+  {
+    "tag": "BUTTON",
+    "title": "Reset zoom level",
+    "id": "zoom_100",
+    "text": "55%"
+  },
+  {
+    "tag": "BUTTON",
+    "title": "Zoom in",
+    "id": "zoom_more",
+    "text": "+"
+  },
+  {
+    "tag": "BUTTON",
+    "title": "Fit window",
+    "id": "zoom_fit",
+    "text": "Fit"
+  },
+  {
+    "tag": "INPUT",
+    "title": null,
+    "id": "zoom_range",
+    "text": ""
+  },
+  {
+    "tag": "BUTTON",
+    "title": "Toggle Color Picker",
+    "id": "toggle_color_picker_section_button",
+    "text": "\n\t\t\t\tToggle Color Picker\n\t\t\t\t\n\t\t\t\t\t\n\t\t\t\t\t\n\t\t\t\t\t\n\t\t\t\t\t\n\t\t\t\t\t\n\t\t\t\t\t\n\t\t\t\t"
+  },
+  {
+    "tag": "BUTTON",
+    "title": "Toggle Color Channels",
+    "id": "toggle_color_channels_section_button",
+    "text": "\n\t\t\t\tToggle Color Channels\n\t\t\t\t\n\t\t\t\t\t\n\t\t\t\t\t\n\t\t\t\t\t\n\t\t\t\t\t\n\t\t\t\t\t\n\t\t\t\t\n\t\t\t"
+  },
+  {
+    "tag": "BUTTON",
+    "title": "Toggle Swatches",
+    "id": "toggle_color_swatches_section_button",
+    "text": "\n\t\t\t\tToggle Swatches\n\t\t\t\t\n\t\t\t\t\t\n\t\t\t\t\n\t\t\t"
+  },
+  {
+    "tag": "INPUT",
+    "title": null,
+    "id": "color_hex",
+    "text": ""
+  },
+  {
+    "tag": "INPUT",
+    "title": null,
+    "id": "detail_x",
+    "text": ""
+  },
+  {
+    "tag": "BUTTON",
+    "title": "Reset",
+    "id": "reset_x",
+    "text": "Reset"
+  },
+  {
+    "tag": "INPUT",
+    "title": null,
+    "id": "detail_y",
+    "text": ""
+  },
+  {
+    "tag": "BUTTON",
+    "title": "Reset",
+    "id": "reset_y",
+    "text": "Reset"
+  },
+  {
+    "tag": "INPUT",
+    "title": null,
+    "id": "detail_width",
+    "text": ""
+  },
+  {
+    "tag": "BUTTON",
+    "title": "Reset",
+    "id": "reset_size",
+    "text": "Reset"
+  },
+  {
+    "tag": "INPUT",
+    "title": null,
+    "id": "detail_height",
+    "text": ""
+  },
+  {
+    "tag": "INPUT",
+    "title": null,
+    "id": "detail_rotate",
+    "text": ""
+  },
+  {
+    "tag": "BUTTON",
+    "title": "Reset",
+    "id": "reset_rotate",
+    "text": "Reset"
+  },
+  {
+    "tag": "INPUT",
+    "title": null,
+    "id": "detail_opacity",
+    "text": ""
+  },
+  {
+    "tag": "BUTTON",
+    "title": "Reset",
+    "id": "reset_opacity",
+    "text": "Reset"
+  },
+  {
+    "tag": "INPUT",
+    "title": null,
+    "id": "",
+    "text": ""
+  },
+  {
+    "tag": "BUTTON",
+    "title": null,
+    "id": "detail_param_text",
+    "text": "Edit text..."
+  },
+  {
+    "tag": "BUTTON",
+    "title": "Insert new layer",
+    "id": "insert_layer",
+    "text": "+"
+  },
+  {
+    "tag": "BUTTON",
+    "title": "Duplicate layer",
+    "id": "layer_duplicate",
+    "text": "D"
+  },
+  {
+    "tag": "BUTTON",
+    "title": "Convert layer to raster",
+    "id": "layer_raster",
+    "text": "R"
+  },
+  {
+    "tag": "BUTTON",
+    "title": "Move layer down",
+    "id": "layer_down",
+    "text": "↓"
+  },
+  {
+    "tag": "BUTTON",
+    "title": "Move layer up",
+    "id": "layer_up",
+    "text": "↑"
+  },
+  {
+    "tag": "BUTTON",
+    "title": "Hide",
+    "id": "visibility",
+    "text": ""
+  },
+  {
+    "tag": "BUTTON",
+    "title": "Delete",
+    "id": "delete",
+    "text": ""
+  },
+  {
+    "tag": "BUTTON",
+    "title": null,
+    "id": "layer_name",
+    "text": "05C original 1792351198810"
+  },
+  {
+    "tag": "BUTTON",
+    "title": null,
+    "id": "left_mobile_menu_button",
+    "text": "\n\t\t\tToggle Menu\n\t\t"
+  },
+  {
+    "tag": "BUTTON",
+    "title": null,
+    "id": "mobile_menu_button",
+    "text": "\n\t\t\tToggle Menu\n\t\t"
+  }
+]

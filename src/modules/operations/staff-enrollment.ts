@@ -117,7 +117,7 @@ export async function createStaffEnrollmentToken(
         data: { email, role },
         overrideAccess: true,
         req,
-        context: { skipEnrollmentToken: true },
+        context: { skipEnrollmentToken: true, pendingStaffInvitation: true },
       })
       user = created as { id: string; email: string; role: string; member?: unknown }
     }
@@ -164,7 +164,7 @@ export async function createStaffEnrollmentToken(
     })
   }
 
-  // 3. Resolve target site and assign site role
+  // 3. Resolve the target site. A pending invitation must not grant access.
   let targetSiteId = input.siteId
   if (!targetSiteId) {
     const sites = await payload.find({
@@ -175,32 +175,6 @@ export async function createStaffEnrollmentToken(
       req,
     })
     targetSiteId = sites.docs[0]?.id
-  }
-
-  if (targetSiteId && memberId) {
-    const existingRole = await payload.find({
-      collection: 'member-site-roles',
-      where: {
-        and: [{ site: { equals: targetSiteId } }, { member: { equals: memberId } }],
-      },
-      limit: 1,
-      depth: 0,
-      overrideAccess: true,
-      req,
-    })
-    if (!existingRole.docs.length) {
-      await payload.create({
-        collection: 'member-site-roles',
-        data: {
-          site: targetSiteId,
-          member: memberId,
-          role: role === 'administrator' ? 'community-manager' : 'contributor',
-          grantedByUserId: input.invitedByUserId ?? null,
-        },
-        overrideAccess: true,
-        req,
-      })
-    }
   }
 
   // 4. Invalidate prior unconsumed tokens for this email to avoid ambiguous pending invitations
@@ -216,7 +190,10 @@ export async function createStaffEnrollmentToken(
   const enrollmentToken = randomBytes(32).toString('base64url')
   const tokenHash = hashValue(enrollmentToken, config.payloadSecret)
   const emailHash = hashValue(email, config.payloadSecret)
-  const validHours = input.validHours ?? 24
+  const validHours = input.validHours ?? 168
+  if (!Number.isFinite(validHours) || validHours <= 0 || validHours > 168) {
+    throw new StaffEnrollmentError('INVALID_TOKEN', 'Invitation lifetime must be between 1 hour and 7 days.')
+  }
   const expiresAt = new Date(Date.now() + validHours * 3600 * 1000).toISOString()
 
   await payload.create({
@@ -339,6 +316,12 @@ export async function getStaffEnrollmentDetails(
   if (!userDoc) {
     throw new StaffEnrollmentError('USER_NOT_FOUND', 'Staff account was not found.')
   }
+  if (userDoc.email.toLowerCase() !== record.metadata?.email?.toLowerCase()) {
+    throw new StaffEnrollmentError('WRONG_USER', 'Invitation identity no longer matches the account.')
+  }
+  if (!['staff', 'administrator'].includes(String(record.metadata?.role))) {
+    throw new StaffEnrollmentError('INVALID_ROLE', 'Invitation role is invalid.')
+  }
 
   const pool = getPool(payload)
   const existingPasskeys = await pool.query<{ id: string }>(
@@ -357,7 +340,7 @@ export async function getStaffEnrollmentDetails(
     tokenId: record.id,
     userId: userDoc.id,
     email: userDoc.email,
-    role: userDoc.role,
+    role: record.metadata?.role ?? userDoc.role,
     siteId: record.metadata?.siteId ?? null,
     expiresAt: record.expiresAt,
   }
@@ -529,7 +512,16 @@ export async function completeStaffPasskeyEnrollment(
     id: details.userId,
     depth: 0,
     overrideAccess: true,
-  })) as { id: string; email: string; member?: unknown }
+  })) as { id: string; email: string; role: string; member?: unknown }
+
+  if (userDoc.role !== details.role) {
+    await payload.update({
+      collection: 'users',
+      id: details.userId,
+      data: { role: details.role as 'staff' | 'administrator' },
+      overrideAccess: true,
+    })
+  }
 
   let memberId =
     typeof userDoc?.member === 'string'
@@ -576,13 +568,23 @@ export async function completeStaffPasskeyEnrollment(
       limit: 1,
       overrideAccess: true,
     })
+    const targetRole = details.role === 'administrator' ? 'community-manager' : 'contributor'
     if (!roleCheck.docs.length) {
       await payload.create({
         collection: 'member-site-roles',
         data: {
           site: details.siteId,
           member: memberId,
-          role: details.role === 'administrator' ? 'community-manager' : 'contributor',
+          role: targetRole,
+        },
+        overrideAccess: true,
+      })
+    } else if (roleCheck.docs[0].role !== targetRole) {
+      await payload.update({
+        collection: 'member-site-roles',
+        id: roleCheck.docs[0].id,
+        data: {
+          role: targetRole,
         },
         overrideAccess: true,
       })

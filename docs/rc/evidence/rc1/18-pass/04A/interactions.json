@@ -1,0 +1,11 @@
+{
+  "passed": 5,
+  "failed": 0,
+  "trace": [
+    "native Puck pointer drag inserts a block into the canvas",
+    "dragged and configured block persists in PostgreSQL",
+    "broken block shows usable repair notice",
+    "saving preserves unavailable block payload exactly",
+    "preview renders safe unavailable-section fallback"
+  ]
+}

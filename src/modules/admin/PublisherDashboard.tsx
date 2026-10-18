@@ -25,6 +25,7 @@ export default async function PublisherDashboard({ initPageResult }: AdminViewSe
       limit: 5,
       depth: 0,
       req: initPageResult.req,
+      overrideAccess: false,
     } as never),
     payload.find({
       collection: 'content',
@@ -33,6 +34,7 @@ export default async function PublisherDashboard({ initPageResult }: AdminViewSe
       limit: 5,
       depth: 0,
       req: initPageResult.req,
+      overrideAccess: false,
     } as never),
     payload.find({
       collection: 'content',
@@ -41,6 +43,7 @@ export default async function PublisherDashboard({ initPageResult }: AdminViewSe
       limit: 5,
       depth: 0,
       req: initPageResult.req,
+      overrideAccess: false,
     } as never),
     payload.find({
       collection: 'public-redirects',
@@ -48,6 +51,7 @@ export default async function PublisherDashboard({ initPageResult }: AdminViewSe
       limit: 1,
       depth: 0,
       req: initPageResult.req,
+      overrideAccess: false,
     } as never),
   ])
   const groups = [

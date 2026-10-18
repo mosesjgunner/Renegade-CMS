@@ -22,7 +22,14 @@ type Target = {
 }
 
 export default function NavigationCenter() {
+  const [sites, setSites] = useState<Array<{ id: string; name: string; slug: string }>>([])
+  const [selectedSiteId, setSelectedSiteId] = useState<string>('')
   const [navigation, setNavigation] = useState<NavigationData>({
+    primary: [],
+    secondary: [],
+    footer: [],
+  })
+  const [savedNavigation, setSavedNavigation] = useState<NavigationData>({
     primary: [],
     secondary: [],
     footer: [],
@@ -31,23 +38,69 @@ export default function NavigationCenter() {
   const [publicationId, setPublicationId] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
-  const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null)
+  const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' | 'info' } | null>(null)
+
+  const loadNavigation = async (siteId?: string) => {
+    setLoading(true)
+    setMessage(null)
+    try {
+      const url = siteId
+        ? `/api/admin/navigation?siteId=${encodeURIComponent(siteId)}`
+        : '/api/admin/navigation'
+      const res = await fetch(url)
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Could not load menus.')
+      if (data.navigation) {
+        setNavigation(data.navigation)
+        setSavedNavigation(JSON.parse(JSON.stringify(data.navigation)))
+      }
+      if (data.targets) setTargets(data.targets)
+      if (data.publicationId) setPublicationId(data.publicationId)
+      if (data.siteId && !siteId) setSelectedSiteId(data.siteId)
+    } catch (err) {
+      setMessage({ text: err instanceof Error ? err.message : 'Could not load menus.', type: 'error' })
+    } finally {
+      setLoading(false)
+    }
+  }
 
   useEffect(() => {
-    fetch('/api/admin/navigation')
-      .then(async (res) => {
-        const data = await res.json()
-        if (!res.ok) throw new Error(data.error || 'Could not load menus.')
-        return data
-      })
+    fetch('/api/admin/active-site')
+      .then(async (res) => (res.ok ? res.json() : null))
       .then((data) => {
-        if (data.navigation) setNavigation(data.navigation)
-        if (data.targets) setTargets(data.targets)
-        if (data.publicationId) setPublicationId(data.publicationId)
+        if (data?.sites?.length) {
+          setSites(data.sites)
+          const current = data.activeSiteId || data.sites[0].id
+          setSelectedSiteId(current)
+          void loadNavigation(current)
+        } else {
+          void loadNavigation()
+        }
       })
-      .catch((err) => setMessage({ text: err.message, type: 'error' }))
-      .finally(() => setLoading(false))
+      .catch(() => {
+        void loadNavigation()
+      })
   }, [])
+
+  const handleSiteChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newSiteId = e.target.value
+    setSelectedSiteId(newSiteId)
+    try {
+      await fetch('/api/admin/active-site', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ siteId: newSiteId }),
+      })
+    } catch {}
+    void loadNavigation(newSiteId)
+  }
+
+  const handleReset = () => {
+    setNavigation(JSON.parse(JSON.stringify(savedNavigation)))
+    setMessage({ text: 'Changes reset to last saved state.', type: 'info' })
+  }
+
+  const isDirty = JSON.stringify(navigation) !== JSON.stringify(savedNavigation)
 
   const handleSave = async () => {
     setSaving(true)
@@ -56,10 +109,11 @@ export default function NavigationCenter() {
       const res = await fetch('/api/admin/navigation', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ publicationId, navigation }),
+        body: JSON.stringify({ publicationId, siteId: selectedSiteId, navigation }),
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.error || 'Failed to save navigation.')
+      setSavedNavigation(JSON.parse(JSON.stringify(navigation)))
       setMessage({ text: 'Navigation saved and revalidated immediately.', type: 'success' })
     } catch (err) {
       setMessage({
@@ -185,7 +239,9 @@ export default function NavigationCenter() {
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          marginBottom: '2rem',
+          marginBottom: '1.5rem',
+          flexWrap: 'wrap',
+          gap: '1rem',
         }}
       >
         <div>
@@ -194,23 +250,88 @@ export default function NavigationCenter() {
             Manage site menus, ordering, internal/external targets, and nested links.
           </p>
         </div>
-        <button
-          type="button"
-          onClick={handleSave}
-          disabled={saving}
+        <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+          <button
+            type="button"
+            id="nav-reset-btn"
+            onClick={handleReset}
+            disabled={!isDirty || saving}
+            style={{
+              padding: '0.625rem 1.25rem',
+              backgroundColor: isDirty ? '#f3f4f6' : '#f9fafb',
+              color: isDirty ? '#111827' : '#9ca3af',
+              border: '1px solid #d1d5db',
+              borderRadius: '6px',
+              fontWeight: 600,
+              cursor: isDirty && !saving ? 'pointer' : 'not-allowed',
+            }}
+          >
+            Reset
+          </button>
+          <button
+            type="button"
+            id="nav-save-btn"
+            onClick={handleSave}
+            disabled={saving}
+            style={{
+              padding: '0.625rem 1.5rem',
+              backgroundColor: '#dc2626',
+              color: '#fff',
+              border: 'none',
+              borderRadius: '6px',
+              fontWeight: 600,
+              cursor: saving ? 'not-allowed' : 'pointer',
+            }}
+          >
+            {saving ? 'Saving…' : 'Save Changes'}
+          </button>
+        </div>
+      </div>
+
+      {sites.length > 1 && (
+        <div
           style={{
-            padding: '0.625rem 1.5rem',
-            backgroundColor: '#dc2626',
-            color: '#fff',
-            border: 'none',
+            marginBottom: '1.5rem',
+            padding: '0.75rem 1rem',
+            backgroundColor: '#f8fafc',
             borderRadius: '6px',
-            fontWeight: 600,
-            cursor: saving ? 'not-allowed' : 'pointer',
+            border: '1px solid #e2e8f0',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.75rem',
           }}
         >
-          {saving ? 'Saving…' : 'Save Changes'}
-        </button>
-      </div>
+          <label htmlFor="nav-site-select" style={{ fontWeight: 600, color: '#334155', fontSize: '0.9375rem' }}>
+            Target Site:
+          </label>
+          <select
+            id="nav-site-select"
+            aria-label="Select Site"
+            value={selectedSiteId}
+            onChange={handleSiteChange}
+            style={{
+              padding: '0.4rem 0.75rem',
+              borderRadius: '4px',
+              border: '1px solid #cbd5e1',
+              backgroundColor: '#ffffff',
+              color: '#0f172a',
+              fontWeight: 500,
+              cursor: 'pointer',
+            }}
+          >
+            {sites.map((s) => (
+              <option key={s.id} value={s.id}>
+                {s.name} ({s.slug})
+              </option>
+            ))}
+          </select>
+          {isDirty && (
+            <span style={{ color: '#d97706', fontSize: '0.8125rem', fontWeight: 500 }}>
+              • Unsaved changes on current site
+            </span>
+          )}
+        </div>
+      )}
 
       {message ? (
         <div

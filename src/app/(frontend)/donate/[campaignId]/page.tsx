@@ -17,9 +17,21 @@ export default async function CampaignDonationPage({
   const siteId = await catalogSiteForHost(payload, (await headers()).get('host')).catch(() => null)
   if (!siteId) notFound()
   const { campaignId } = await params
-  const campaign = await payload
+  let campaign = await payload
     .findByID({ collection: 'donation-campaigns', id: campaignId, depth: 0, overrideAccess: true })
     .catch(() => null)
+  if (!campaign) {
+    const byKey = await payload
+      .find({
+        collection: 'donation-campaigns',
+        where: { and: [{ site: { equals: siteId } }, { campaignKey: { equals: campaignId } }] },
+        limit: 1,
+        depth: 0,
+        overrideAccess: true,
+      })
+      .catch(() => null)
+    campaign = (byKey?.docs?.[0] as any) ?? null
+  }
   const now = Date.now()
   const campaignSite =
     typeof campaign?.site === 'object' ? String(campaign.site.id) : String(campaign?.site ?? '')

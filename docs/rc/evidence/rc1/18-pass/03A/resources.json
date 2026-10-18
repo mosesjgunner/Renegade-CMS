@@ -1,0 +1,32 @@
+{
+    "container":  "/rc103a-20261017",
+    "id":  "269ed0edf9555d2c69f508bde1f941ebe654ee4835b307edb0b034a8eacd2415",
+    "imageId":  "sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94",
+    "label":  "rc103a",
+    "ports":  {
+                  "5432/tcp":  [
+                                   {
+                                       "HostIp":  "127.0.0.1",
+                                       "HostPort":  "5435"
+                                   }
+                               ]
+              },
+    "mounts":  {
+                   "Type":  "volume",
+                   "Name":  "bcbee7faf7fc44708276ed08e2e1d0acc27960944695684f39535902ef2f3e97",
+                   "Source":  "/var/lib/docker/volumes/bcbee7faf7fc44708276ed08e2e1d0acc27960944695684f39535902ef2f3e97/_data",
+                   "Destination":  "/var/lib/postgresql/data",
+                   "Driver":  "local",
+                   "Mode":  "",
+                   "RW":  true,
+                   "Propagation":  ""
+               },
+    "restartedAt":  "2026-10-18T05:04:40.008190071Z",
+    "nodeVersion":  "v24.19.0",
+    "nextVersion":  "16.3.8",
+    "payloadVersion":  "3.90.2",
+    "authentication":  "Persisted operator fixture session for native REST; LOCAL_E2E_TEST_MODE=false; ENABLE_TEST_ROUTES=false; public browser unauthenticated",
+    "appImage":  "None: local Next.js webpack dev server",
+    "database":  "rc103a_release_acceptance on 127.0.0.1:5435",
+    "media":  "scratch/rc103a-20261017/media"
+}

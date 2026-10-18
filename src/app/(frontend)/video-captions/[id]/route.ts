@@ -4,6 +4,8 @@ import { NextResponse } from 'next/server'
 
 import { loadConfig } from '@/modules/core/config'
 import { mediaStorage } from '@/modules/media/storage'
+import { publicMediaPolicyAllows } from '@/modules/media/workflow'
+import { canRenderPublic } from '@/modules/public/contracts'
 
 const identifier = (value: unknown) => String((value as { id?: string } | null)?.id ?? value ?? '')
 
@@ -31,13 +33,22 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
     depth: 0,
     overrideAccess: true,
   } as never)
-  if (!videos.docs.length) return new NextResponse('Not found', { status: 404 })
+  if (!videos.docs.some((video) => canRenderPublic({ ...video, visibility: 'public' } as never)))
+    return new NextResponse('Not found', { status: 404, headers: { 'Cache-Control': 'no-store' } })
   const asset = (await payload.findByID({
     collection: 'media-assets',
     id: identifier(caption.asset),
     depth: 1,
     overrideAccess: true,
   } as never)) as unknown as Record<string, unknown>
+  if (
+    !publicMediaPolicyAllows(asset) ||
+    !videos.docs.some(
+      (video) =>
+        identifier((video as unknown as Record<string, unknown>).site) === identifier(asset.site),
+    )
+  )
+    return new NextResponse('Not found', { status: 404, headers: { 'Cache-Control': 'no-store' } })
   const blob = asset.originalBlob as Record<string, unknown>
   const bytes = await mediaStorage(loadConfig()).get(String(blob.storageKey))
   if (!bytes) return new NextResponse('Not found', { status: 404 })
@@ -45,7 +56,7 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
     headers: {
       'Content-Type': 'text/vtt; charset=utf-8',
       'Content-Length': String(bytes.byteLength),
-      'Cache-Control': 'public, max-age=3600',
+      'Cache-Control': 'public, max-age=0, must-revalidate',
       ETag: String(asset.checksum),
       'X-Content-Type-Options': 'nosniff',
     },

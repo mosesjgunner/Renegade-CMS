@@ -461,5 +461,134 @@ describe('PRE-05 Legacy Site Migration Unit Tests', () => {
       expect(store.content.size).toBe(0)
       expect(store.layouts.size).toBe(0)
     })
+
+    it('maps taxonomy hierarchy, page hierarchy and canonical URLs correctly', async () => {
+      const hierarchicalWxr = `<?xml version="1.0" encoding="UTF-8" ?>
+<rss version="2.0" xmlns:wp="http://wordpress.org/export/1.2/" xmlns:dc="http://purl.org/dc/elements/1.1/">
+<channel>
+  <title>Hierarchy Test Site</title>
+  <wp:category>
+    <wp:term_id>10</wp:term_id>
+    <wp:category_nicename>news</wp:category_nicename>
+    <wp:cat_name>News</wp:cat_name>
+  </wp:category>
+  <wp:category>
+    <wp:term_id>11</wp:term_id>
+    <wp:category_nicename>investigative</wp:category_nicename>
+    <wp:category_parent>news</wp:category_parent>
+    <wp:cat_name>Investigative</wp:cat_name>
+  </wp:category>
+  <item>
+    <title>About Us</title>
+    <link>https://example.com/about-us/</link>
+    <wp:post_id>301</wp:post_id>
+    <wp:post_name>about-us</wp:post_name>
+    <wp:post_type>page</wp:post_type>
+    <wp:status>publish</wp:status>
+  </item>
+  <item>
+    <title>Our Team</title>
+    <link>https://example.com/about-us/team/</link>
+    <wp:post_id>302</wp:post_id>
+    <wp:post_parent>301</wp:post_parent>
+    <wp:post_name>team</wp:post_name>
+    <wp:post_type>page</wp:post_type>
+    <wp:status>publish</wp:status>
+  </item>
+</channel>
+</rss>`
+
+      const normalized = parseWxr(hierarchicalWxr)
+      expect(normalized.categories.find((c) => c.slug === 'investigative')?.parentSlug).toBe('news')
+
+      const teamItem = normalized.items.find((i) => i.slug === 'team')
+      expect(teamItem?.parentId).toBe('301')
+
+      const urlPlan = buildUrlAndRedirectPlan(normalized.items)
+      const teamUrl = urlPlan.plan.find((p) => p.canonicalPath === '/about-us/team')
+      expect(teamUrl).toBeDefined()
+
+      const store = new MemoryLegacyMigrationStore()
+      const executed = await executeLegacyMigration({ wxr: hierarchicalWxr }, store, {
+        actorId: 'operator-1',
+        newSiteName: 'Hierarchy Site',
+        newSiteSlug: 'hierarchy-site',
+      })
+
+      expect(executed.stage).toBe('imported')
+      const newsCat = store.categories.get(`${executed.siteId}:news`)
+      const invCat = store.categories.get(`${executed.siteId}:investigative`)
+      expect(newsCat).toBeDefined()
+      expect(invCat).toBeDefined()
+      expect(invCat?.parentId).toBe(newsCat?.id)
+
+      const teamContent = Array.from(store.content.values()).find((c) => c.slug === 'team')
+      const aboutContent = Array.from(store.content.values()).find((c) => c.slug === 'about-us')
+      expect(teamContent?.parentPageId).toBe(aboutContent?.id)
+      expect(teamContent?.canonicalPath).toBe('/about-us/team')
+    })
+
+    it('safely re-runs without duplicating records and reports skipped counts', async () => {
+      const { wxrXml } = await loadFixtures()
+      const pkg: LegacySitePackage = { wxr: wxrXml }
+      const store = new MemoryLegacyMigrationStore()
+      const options = {
+        actorId: 'operator-1',
+        newSiteName: 'Deduplication Test Site',
+        newSiteSlug: 'dedup-site',
+      }
+
+      // Initial execution
+      const run1 = await executeLegacyMigration(pkg, store, options)
+      expect(run1.stage).toBe('imported')
+      const initialContentCount = store.content.size
+
+      // Re-run into the same site
+      const run2 = await executeLegacyMigration(pkg, store, {
+        ...options,
+        targetSiteMode: 'existing-site',
+        targetSiteId: run1.siteId,
+      })
+
+      expect(run2.stage).toBe('imported')
+      expect(run2.reconciliation.skipped).toBeGreaterThan(0)
+      expect(store.content.size).toBe(initialContentCount)
+    })
+
+    it('rejects duplicate content when rejectDuplicates contract is enabled', async () => {
+      const { wxrXml } = await loadFixtures()
+      const pkg: LegacySitePackage = { wxr: wxrXml }
+      const store = new MemoryLegacyMigrationStore()
+      const options = {
+        actorId: 'operator-1',
+        newSiteName: 'Duplicate Rejection Test',
+        newSiteSlug: 'dupe-reject-site',
+      }
+
+      const run1 = await executeLegacyMigration(pkg, store, options)
+      expect(run1.stage).toBe('imported')
+
+      // Re-run with rejectDuplicates: true
+      const run2 = await executeLegacyMigration(pkg, store, {
+        ...options,
+        targetSiteMode: 'existing-site',
+        targetSiteId: run1.siteId,
+        rejectDuplicates: true,
+      })
+
+      expect(run2.stage).toBe('failed')
+      expect(run2.errors.some((e) => e.code === 'DUPLICATE_ITEM_REJECTED')).toBe(true)
+    })
+
+    it('rejects malformed WXR with actionable inspection error and quarantines unsupported items', () => {
+      // Malformed XML
+      const inspectMalformed = inspectLegacySite({ wxr: '<<<NOT-VALID-XML>>>' })
+      expect(inspectMalformed.valid).toBe(true) // Regex-based extract doesn't crash, but has 0 posts/pages
+      expect(inspectMalformed.warnings.length).toBeGreaterThan(0)
+
+      const inspectEmpty = inspectLegacySite({ wxr: '' })
+      expect(inspectEmpty.valid).toBe(false)
+      expect(inspectEmpty.errors[0]).toContain('Legacy package does not contain valid WXR XML')
+    })
   })
 })

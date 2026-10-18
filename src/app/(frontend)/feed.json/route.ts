@@ -1,3 +1,4 @@
+import { publicSiteForHost } from '@/modules/public/site-scope'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import { createHash } from 'node:crypto'
@@ -16,8 +17,11 @@ const plain = (value: string | null | undefined) =>
 export async function GET(request: Request) {
   const payload = await getPayload({ config })
   const settings = await resolveSiteSettings(payload)
+  const siteId = await publicSiteForHost(payload, request.headers.get('host'))
+  if (!siteId) return new Response('Not found', { status: 404 })
+  const origin = settings.canonicalOriginsBySite[siteId] || settings.canonicalOrigin
   if (settings.indexingMode === 'noindex') return new Response('Not found', { status: 404 })
-  const docs = (await getAllIndexableDiscoveryDocuments(payload))
+  const docs = (await getAllIndexableDiscoveryDocuments(payload, siteId))
     .filter((doc) => doc.contentType === 'article')
     .sort(
       (a, b) =>
@@ -28,8 +32,8 @@ export async function GET(request: Request) {
   const body = JSON.stringify({
     version: 'https://jsonfeed.org/version/1.1',
     title: settings.siteName,
-    home_page_url: settings.canonicalOrigin,
-    feed_url: `${settings.canonicalOrigin}/feed.json`,
+    home_page_url: origin,
+    feed_url: `${origin}/feed.json`,
     items: docs.map((doc) => ({
       id: `urn:renegade:content:${doc.revisions.entityId || doc.canonicalUrl}`,
       url: doc.canonicalUrl,
@@ -47,7 +51,7 @@ export async function GET(request: Request) {
   const headers = {
     'Content-Type': 'application/feed+json; charset=utf-8',
     ETag: etag,
-    'Cache-Control': 'public, max-age=60, s-maxage=300, stale-while-revalidate=3600',
+    'Cache-Control': 'public, no-cache, must-revalidate',
   }
   return request.headers.get('if-none-match') === etag
     ? new Response(null, { status: 304, headers })

@@ -54,7 +54,9 @@ export const puckVisualEditor: VisualEditor<Data> = {
     const slot = resolveActiveSlot(document.slots)
     const ids = new Set<string>()
     document.slots[slot] = data.content.map((item) => {
-      const id = String(item.props.id)
+      // Puck prefixes generated ids with namespaced types (publisher.hero).
+      // Portable block ids use underscores; keep the mapping stable across edits.
+      const id = String(item.props.id).replaceAll('.', '_')
       if (!id || id === 'undefined' || ids.has(id))
         throw new Error('Editor block ids must be unique.')
       ids.add(id)

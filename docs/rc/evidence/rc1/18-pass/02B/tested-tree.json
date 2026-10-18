@@ -1,0 +1,307 @@
+{
+    "baseHead":  "bb3c0347d6c648e71f0bf7eac646df70fd1b5714",
+    "generatedAtUtc":  "2026-10-18T00:07:56.4074623Z",
+    "note":  "Dirty checkout snapshot excluding 02B evidence and cumulative ledger; executable dirty paths hashed",
+    "entries":  [
+                    {
+                        "status":  " M",
+                        "path":  "docs/PRODUCTION_DEPLOYMENT.md",
+                        "sha256":  "A74343776290EDBED88418B5AC105E1340A26A6757ED16DBFA6E322FCFE16E97"
+                    },
+                    {
+                        "status":  " M",
+                        "path":  "install.sh",
+                        "sha256":  "693EBE9DA5CA23B90002E6533E2B2715B79BB23AADB3CFB7C653A068B1061BF0"
+                    },
+                    {
+                        "status":  " M",
+                        "path":  "src/app/(frontend)/api/admin/navigation/route.ts",
+                        "sha256":  "6B9DD53AB449E194EECBD264104EB9AEE481EC70907264739D5995FF106C7E83"
+                    },
+                    {
+                        "status":  " M",
+                        "path":  "src/app/(frontend)/api/admin/redirects/route.ts",
+                        "sha256":  "EAC23131E64A019EB915DF1100A3FA896F30DD5C7C4B7B20008B648C1CE3BD94"
+                    },
+                    {
+                        "status":  " M",
+                        "path":  "src/app/(frontend)/api/admin/staff/invite/route.ts",
+                        "sha256":  "CC3521208935B05D963C3D07229EC30B87BC8D96E7A350114F70649A0703C02B"
+                    },
+                    {
+                        "status":  " M",
+                        "path":  "src/app/(frontend)/api/admin/themes/route.ts",
+                        "sha256":  "769A9822E31A33199C0F0673E7F935C50DB0E3380CA18B29C3308BAA4E52E07B"
+                    },
+                    {
+                        "status":  " M",
+                        "path":  "src/app/(frontend)/api/admin/workflow/audit/route.ts",
+                        "sha256":  "FB7B2CB251B14C732E61F9575A19D545CBF637974959B438EC687B4C2DEA344E"
+                    },
+                    {
+                        "status":  " M",
+                        "path":  "src/app/(frontend)/api/admin/workflow/comments/route.ts",
+                        "sha256":  "F622F04960F1861B892F573746CEDEF817197C2577C304422F8D02D4D3666BCE"
+                    },
+                    {
+                        "status":  " M",
+                        "path":  "src/app/(frontend)/api/admin/workflow/queues/route.ts",
+                        "sha256":  "8C315C8E8B92CDC49E90F0F1566C4C1128256CE5364DEC0C90BF350493A4D4BF"
+                    },
+                    {
+                        "status":  " M",
+                        "path":  "src/app/(frontend)/layout.tsx",
+                        "sha256":  "3B7ED81A35C776F363337E69BD7F325964125B3A38EFB81E4C1ECA74C3A646EC"
+                    },
+                    {
+                        "status":  " M",
+                        "path":  "src/app/(frontend)/page.tsx",
+                        "sha256":  "04F6F249E1E6AE08229164F714ADE9164EA8A6F90E105C8BD97640FCE75FABA3"
+                    },
+                    {
+                        "status":  " M",
+                        "path":  "src/collections/Audience.ts",
+                        "sha256":  "AF056DCA3CFFEB0BBFB96EA51C9BE986BEDABC91C3938E7E635BBFB8A6A4CC72"
+                    },
+                    {
+                        "status":  " M",
+                        "path":  "src/collections/Sites.ts",
+                        "sha256":  "4AE701DC01C04537DA30A369EC95155019566EADEF8FB30B02A283923E9EA4DF"
+                    },
+                    {
+                        "status":  " M",
+                        "path":  "src/collections/Users.ts",
+                        "sha256":  "123C67D09C58E610D754240D2A7B6B3D22896D64884D1B254FED510C19368412"
+                    },
+                    {
+                        "status":  " M",
+                        "path":  "src/globals/SiteSettings.ts",
+                        "sha256":  "E89BDAC286BECC371D8EFB5FAFA1DFF861E6C2D9A4DCFE8E787EC490F24CD61C"
+                    },
+                    {
+                        "status":  " M",
+                        "path":  "src/modules/admin/NavigationCenter.tsx",
+                        "sha256":  "0C515E794A7B13C1F7A4D123266CE9915E375CFBA82904336A47DD5B53BC9441"
+                    },
+                    {
+                        "status":  " M",
+                        "path":  "src/modules/admin/PublishingLinks.tsx",
+                        "sha256":  "4AC8B590B9C4214C5933A2FA42474923D7AFCB554C02CD656C740D4400E961EF"
+                    },
+                    {
+                        "status":  " M",
+                        "path":  "src/modules/admin/ThemeCenter.tsx",
+                        "sha256":  "6B2385467A45FADE232542B58CC17AE0CD25ABAF4680F7C176FF2643DC54D4A9"
+                    },
+                    {
+                        "status":  " M",
+                        "path":  "src/modules/core/config.ts",
+                        "sha256":  "A8568D3925F04AD4EB7EB690C2A8A5D69F2AD7313C4F1BD49DE2285F06CC063A"
+                    },
+                    {
+                        "status":  " M",
+                        "path":  "src/modules/module-registry.ts",
+                        "sha256":  "D4D0917EE69DE12293F58298A97D3223BAC24E298EDB1BCF434E89ACCB84A738"
+                    },
+                    {
+                        "status":  " M",
+                        "path":  "src/modules/operations/production-installer.ts",
+                        "sha256":  "535F2BF877A128A08BB18B46B26F80910518B11A309834A7631F503DB08B4173"
+                    },
+                    {
+                        "status":  " M",
+                        "path":  "src/modules/operations/staff-enrollment.ts",
+                        "sha256":  "9524E7A1D5EA61653F5A1DC50EE13F010A33A21F0BABFC8AE1186424E71E40B2"
+                    },
+                    {
+                        "status":  " M",
+                        "path":  "src/modules/presentation/request-theme.ts",
+                        "sha256":  "8F9F23EC9FA41F3AA44A6C33901173C9368F54EF9454712DF9C64ACB1274E433"
+                    },
+                    {
+                        "status":  " M",
+                        "path":  "src/modules/public/site-scope.ts",
+                        "sha256":  "8BB4B2A7DE8A55A248620672581C297EB355352A41883FF9C0FD57F241AB0849"
+                    },
+                    {
+                        "status":  " M",
+                        "path":  "tests/unit/config.test.ts",
+                        "sha256":  "B4318838F25CF04E8F369EE57749AC98DC9AC1C52D67E377E1CFA6C363F82974"
+                    },
+                    {
+                        "status":  " M",
+                        "path":  "tests/unit/module-registry.test.ts",
+                        "sha256":  "E884D24F3E44BB92018B4E34E4DD63C55BFB53FC5283DF4C90CC42A07A22A988"
+                    },
+                    {
+                        "status":  " M",
+                        "path":  "tests/unit/production-installer.test.ts",
+                        "sha256":  "B012D0A5622DDA76B0BCD886D0798B392F594BCE8933FAE44CBC40B288D385D0"
+                    },
+                    {
+                        "status":  " M",
+                        "path":  "tests/unit/staff-enrollment.test.ts",
+                        "sha256":  "0D1C2BFB4D5876C85643ACA83E1C0424E936243B7676D174238FEA1E55BAF800"
+                    },
+                    {
+                        "status":  "??",
+                        "path":  "compose.network.yaml",
+                        "sha256":  "BF77A549596B6C33C7BBD5D7656F2BEA8B97D28065BA1C12892DB49A3BE34FD7"
+                    },
+                    {
+                        "status":  "??",
+                        "path":  "docs/rc/evidence/rc1/18-pass/01A/NEXT.md",
+                        "sha256":  "684E64188F92F342F84C58333EB41179594BBB750974DEA20D32595495403438"
+                    },
+                    {
+                        "status":  "??",
+                        "path":  "docs/rc/evidence/rc1/18-pass/01A/RESULT.md",
+                        "sha256":  "7F592F9D91677005F9D5ED081DDD1FF3EFAFD61B291F87D146AEE54B76D17B6F"
+                    },
+                    {
+                        "status":  "??",
+                        "path":  "docs/rc/evidence/rc1/18-pass/01B/NEXT.md",
+                        "sha256":  "1913E1C5CCB921137D4CE2584483C395485D15F327F16E2C5AAF1A7C5C9A5F61"
+                    },
+                    {
+                        "status":  "??",
+                        "path":  "docs/rc/evidence/rc1/18-pass/01B/RESULT.md",
+                        "sha256":  "DA9EFCF4A81344DA45E7668BF9FF6D3A6FFFBF29AF38AC12FFC2FA6A7A681121"
+                    },
+                    {
+                        "status":  "??",
+                        "path":  "docs/rc/evidence/rc1/18-pass/01B/failed-trace.zip",
+                        "sha256":  "D83F80D9A8EF8CBA75152A96833A6DC827A7A9A4A88BCF3923FDFE8F4437EB26"
+                    },
+                    {
+                        "status":  "??",
+                        "path":  "docs/rc/evidence/rc1/18-pass/01B/login.png",
+                        "sha256":  "9A938CB2C2822405D9A23585FD182A66AC3DB3EEDC3FC102F926E5D350936BB9"
+                    },
+                    {
+                        "status":  "??",
+                        "path":  "docs/rc/evidence/rc1/18-pass/01B/proxy.mjs",
+                        "sha256":  "E820DD0DCFAE29027AF0DD39614A8ED4104195D41C11C0C777DB60EE49E30059"
+                    },
+                    {
+                        "status":  "??",
+                        "path":  "docs/rc/evidence/rc1/18-pass/01B/setup.png",
+                        "sha256":  "250CA44EEE1ECFF98D4E7F593F25DC17177AB81E5BBC47F040E2363332BAF891"
+                    },
+                    {
+                        "status":  "??",
+                        "path":  "docs/rc/evidence/rc1/18-pass/01B/trace.zip",
+                        "sha256":  "D83F80D9A8EF8CBA75152A96833A6DC827A7A9A4A88BCF3923FDFE8F4437EB26"
+                    },
+                    {
+                        "status":  "??",
+                        "path":  "docs/rc/evidence/rc1/18-pass/01C/NEXT.md",
+                        "sha256":  "2AC45C3BB291E70E591F7995E13C0320B1C8E6BA89D9317C3AE4E6EF7E70B10D"
+                    },
+                    {
+                        "status":  "??",
+                        "path":  "docs/rc/evidence/rc1/18-pass/01C/RESULT.md",
+                        "sha256":  "C5A7AFEB8084DBDD4CB33993D3B02B3A812B541AFF4D65612621721EF7FD6857"
+                    },
+                    {
+                        "status":  "??",
+                        "path":  "docs/rc/evidence/rc1/18-pass/01C/content-restart-trace.zip",
+                        "sha256":  "5C5A4AB4071659212014915A63F9BAEA540CBD641384AF9DE823D74582435A20"
+                    },
+                    {
+                        "status":  "??",
+                        "path":  "docs/rc/evidence/rc1/18-pass/01C/https-proxy.mjs",
+                        "sha256":  "890621FBBC00A745607E9C80A8FC5A2E0070F82E4AA02E039BB6317B88718A0B"
+                    },
+                    {
+                        "status":  "??",
+                        "path":  "docs/rc/evidence/rc1/18-pass/01C/rc101clean-setup.png",
+                        "sha256":  "69B7E904EB99C0324162977B6B915773AF7BBE42093F8B7AA23C94178E5E20B1"
+                    },
+                    {
+                        "status":  "??",
+                        "path":  "docs/rc/evidence/rc1/18-pass/01C/rc101cstd-setup.png",
+                        "sha256":  "A5B0DB984C8D1299F2EA5C36FB373CE4F373C5C86367BBEBC142B16C595A1873"
+                    },
+                    {
+                        "status":  "??",
+                        "path":  "docs/rc/evidence/rc1/18-pass/02A/NEXT.md",
+                        "sha256":  "8281BA3D15A893F76A711A63544BFD8CE4057FC1EEC3DDC69DCED96108CF9306"
+                    },
+                    {
+                        "status":  "??",
+                        "path":  "docs/rc/evidence/rc1/18-pass/02A/RESULT.md",
+                        "sha256":  "6DD1F15635099AEDBEFE41AF98B7426400FD09DE7B7C723F66D4E1350E1D65A6"
+                    },
+                    {
+                        "status":  "??",
+                        "path":  "docs/rc/evidence/rc1/18-pass/02C/NEXT.md",
+                        "sha256":  "425F4745069ED82EBFBBA8ADD43B771CBCE4EBF93A656CDA82E09D611C7DD88B"
+                    },
+                    {
+                        "status":  "??",
+                        "path":  "docs/rc/evidence/rc1/18-pass/02C/RESULT.md",
+                        "sha256":  "7DB8D2133CE0F3431043B4D57CED9AED7B8E7E57E9E26C564AFAF7CDE544E28B"
+                    },
+                    {
+                        "status":  "??",
+                        "path":  "playwright.01b.config.ts",
+                        "sha256":  "41765D638AE12000DAE202181CA38471D69449AE1D647E43C748592947C775D8"
+                    },
+                    {
+                        "status":  "??",
+                        "path":  "playwright.01c.config.ts",
+                        "sha256":  "EA0E382BD205603D9691A42F9ECFDE50CA0CD735715A63ACACE872A76609AC68"
+                    },
+                    {
+                        "status":  "??",
+                        "path":  "src/app/(frontend)/api/admin/active-site/route.ts",
+                        "sha256":  "8E6EEC54B2CE3CA5B71667D80ACDFDF8A8E2841DEAAC1D84B21F2E4C02CEDD2A"
+                    },
+                    {
+                        "status":  "??",
+                        "path":  "src/modules/admin/SiteSwitcher.tsx",
+                        "sha256":  "B124F8A521FBC1DE9B8662070C94604D64E1B4BDFA3A37122004A56C07170A22"
+                    },
+                    {
+                        "status":  "??",
+                        "path":  "tests/rc1-01b/owner.spec.ts",
+                        "sha256":  "28192F1FD0634A04AAD989E2D375C01FCF3812FB88218A0EE0C8A431CBACB2F5"
+                    },
+                    {
+                        "status":  "??",
+                        "path":  "tests/rc1-01c/instance-content.spec.ts",
+                        "sha256":  "C2483398AADAA3C90D0B3AEE7E75A1F11B6CDF88062E60A551FD763529C96592"
+                    },
+                    {
+                        "status":  "??",
+                        "path":  "tests/rc1-02a/verify-02a.ts",
+                        "sha256":  "8059F34BC937920BC21D95DFCDFEBF865F12B829A9796F0B9F3D6FD364FB647C"
+                    },
+                    {
+                        "status":  "??",
+                        "path":  "tests/rc1-02b/verify-02b.ts",
+                        "sha256":  "AFB0E2E693E97A1AB684F2829E14563961785E3939B70297F06AF95F4683B38C"
+                    },
+                    {
+                        "status":  "??",
+                        "path":  "tests/rc1-02c/verify-02c.ts",
+                        "sha256":  "36E24DB154B784EADFF7A7AF6DF5984678AE41F1E6BC7C10A808CF3CE6D7A259"
+                    },
+                    {
+                        "status":  "??",
+                        "path":  "tests/unit/active-site-route.test.ts",
+                        "sha256":  "7BE57312C52E7A333C5462EBBB362D784EFCDB4CD158634B80772D79AEEF4D36"
+                    },
+                    {
+                        "status":  "??",
+                        "path":  "tests/unit/site-settings-multisite.test.ts",
+                        "sha256":  "76F8BEF33FB41CB4C4A4F6A6E58B6EE90218040C05732F6344FF0DC1507840B9"
+                    },
+                    {
+                        "status":  "??",
+                        "path":  "tests/unit/staff-invite-route.test.ts",
+                        "sha256":  "25B012D6E74F969485945A0E9FF2FFB836EE300A182E0A017145CD160CEFA03C"
+                    }
+                ]
+}

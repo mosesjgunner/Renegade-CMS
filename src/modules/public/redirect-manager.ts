@@ -258,7 +258,8 @@ export async function listRedirectRules(
   const result = await payload.find({
     collection: 'public-redirects',
     where: whereClause,
-    limit: 500,
+    pagination: false,
+    limit: 0,
     depth: 0,
     overrideAccess: true,
   })
@@ -310,6 +311,9 @@ export async function importRedirectRules(
         })) as unknown as PublicRedirect
         updated++
         resultRules.push(updatedDoc)
+        existingByFrom.set(from, updatedDoc)
+        const index = existingInputs.findIndex((item) => item.id === updatedDoc.id)
+        if (index >= 0) existingInputs[index] = toRedirectInput(updatedDoc)
       } catch (err) {
         skipped++
         errors.push(
@@ -334,6 +338,8 @@ export async function importRedirectRules(
         })) as unknown as PublicRedirect
         created++
         resultRules.push(createdDoc)
+        existingByFrom.set(from, createdDoc)
+        existingInputs.push(toRedirectInput(createdDoc))
       } catch (err) {
         skipped++
         errors.push(

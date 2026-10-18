@@ -4,13 +4,17 @@ import { NextResponse } from 'next/server'
 
 import { loadConfig } from '@/modules/core/config'
 import { mediaStorage } from '@/modules/media/storage'
+import { publicMediaPolicyAllows } from '@/modules/media/workflow'
+import { canRenderPublic } from '@/modules/public/contracts'
+
+const identifier = (value: unknown) => String((value as { id?: string } | null)?.id ?? value ?? '')
 
 const range = (header: string | null, size: number) => {
   if (!header) return undefined
   const match = /^bytes=(\d*)-(\d*)$/.exec(header)
   if (!match) return null
   const from = match[1] ? Number(match[1]) : Math.max(0, size - Number(match[2] || 0))
-  const to = Math.min(match[2] ? Number(match[2]) : size - 1, size - 1)
+  const to = match[1] ? Math.min(match[2] ? Number(match[2]) : size - 1, size - 1) : size - 1
   return Number.isInteger(from) && Number.isInteger(to) && from >= 0 && from <= to && from < size
     ? { from, to }
     : null
@@ -36,7 +40,8 @@ export async function GET(
     depth: 0,
     overrideAccess: true,
   } as never)
-  if (!videos.docs.length) return new NextResponse('Not found', { status: 404 })
+  if (!videos.docs.some((video) => canRenderPublic({ ...video, visibility: 'public' } as never)))
+    return new NextResponse('Not found', { status: 404, headers: { 'Cache-Control': 'no-store' } })
   const asset = (await payload.findByID({
     collection: 'video-assets' as never,
     id,
@@ -44,9 +49,29 @@ export async function GET(
     overrideAccess: true,
   } as never)) as unknown as {
     processingState?: string
+    sourceAsset?: unknown
+    site?: unknown
     outputs?: Array<Record<string, unknown>>
     lastGoodOutputs?: Array<Record<string, unknown>>
   }
+  const source = (await payload
+    .findByID({
+      collection: 'media-assets',
+      id: identifier(asset.sourceAsset),
+      depth: 0,
+      overrideAccess: true,
+    } as never)
+    .catch(() => null)) as unknown as Record<string, unknown> | null
+  if (
+    !source ||
+    !publicMediaPolicyAllows(source) ||
+    identifier(source.site) !== identifier(asset.site) ||
+    !videos.docs.some(
+      (video) =>
+        identifier((video as unknown as Record<string, unknown>).site) === identifier(source.site),
+    )
+  )
+    return new NextResponse('Not found', { status: 404, headers: { 'Cache-Control': 'no-store' } })
   const outputs =
     asset.processingState === 'ready' && Array.isArray(asset.outputs)
       ? asset.outputs
@@ -59,7 +84,7 @@ export async function GET(
     'Content-Type': String(output.mimeType),
     'Content-Length': String(bytes.byteLength),
     'Accept-Ranges': 'bytes',
-    'Cache-Control': 'public, max-age=31536000, immutable',
+    'Cache-Control': 'public, max-age=0, must-revalidate',
     ETag: String(output.checksum),
     'X-Content-Type-Options': 'nosniff',
   }

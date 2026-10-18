@@ -1,0 +1,10 @@
+[
+    {
+        "path":  "tsconfig.json",
+        "sha256":  "a99e3c895c51c66d3acaa440684f24aa3c01c37853cc99715f15610090f94d0c"
+    },
+    {
+        "path":  "next-env.d.ts",
+        "sha256":  "f70bb6ff6e47931203cfd135c2e6916597a68540143c2e1d4bdafb38eea0ee49"
+    }
+]

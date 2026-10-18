@@ -1,3 +1,4 @@
+import { publicSiteForHost } from '@/modules/public/site-scope'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import { resolveSiteSettings } from '@/modules/core/site-settings'
@@ -9,7 +10,10 @@ export const dynamic = 'force-dynamic'
 
 export async function GET(request: Request) {
   const payload = await getPayload({ config })
+  const siteId = await publicSiteForHost(payload, request.headers.get('host'))
+  if (!siteId) return new Response('Not found', { status: 404 })
   const settings = await resolveSiteSettings(payload)
-  const entries = crawlerEntries(await getAllIndexableDiscoveryDocuments(payload))
-  return conditionalXml(request, renderSitemapIndex(settings.canonicalOrigin, entries))
+  const origin = settings.canonicalOriginsBySite[siteId] || settings.canonicalOrigin
+  const entries = crawlerEntries(await getAllIndexableDiscoveryDocuments(payload, siteId))
+  return conditionalXml(request, renderSitemapIndex(origin, entries))
 }

@@ -55,7 +55,7 @@ export function MediaUploader({ siteId, onComplete, accept }: Props) {
         const resumedBody = await resumed.json()
         if (
           resumed.ok &&
-          resumedBody.session.state === 'open' &&
+          (resumedBody.session.state === 'open' || resumedBody.session.state === 'failed') &&
           Number(resumedBody.session.expectedSize) === file.size
         ) {
           sessionId = remembered

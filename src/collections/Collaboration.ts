@@ -181,6 +181,15 @@ export const EditorialComments: CollectionConfig = {
     },
     { name: 'author', type: 'relationship', relationTo: 'members', required: true, index: true },
     { name: 'body', type: 'textarea', required: true },
+    {
+      name: 'review',
+      type: 'json',
+      admin: {
+        readOnly: true,
+        description: 'Workflow review metadata, managed by the review service.',
+      },
+      access: { create: () => false, update: () => false },
+    },
     { name: 'mentions', type: 'relationship', relationTo: 'members', hasMany: true },
     { name: 'replyTo', type: 'relationship', relationTo: 'editorial-comments' as never },
   ],

@@ -25,6 +25,63 @@ const chunkPath = (config: AppConfig, sessionId: string, index: number) => {
   return path.join(sessionRoot(config), sessionId, `${index}.part`)
 }
 
+async function resolveSessionOwnerMemberId(
+  payload: Payload,
+  user: Doc | null | undefined,
+  allowCreate = false,
+): Promise<string> {
+  let owner = id(user?.member)
+  if (!owner && user && typeof payload.find === 'function') {
+    if (user.email) {
+      const existing = await payload
+        .find({
+          collection: 'members',
+          where: { email: { equals: String(user.email) } },
+          limit: 1,
+          overrideAccess: true,
+        })
+        .catch(() => ({ docs: [] as Doc[] }))
+      if (existing.docs[0]) {
+        owner = String(existing.docs[0].id)
+      } else if (allowCreate && typeof payload.create === 'function') {
+        const createdMember = await payload.create({
+          collection: 'members',
+          data: {
+            displayName: String(user.email).split('@')[0],
+            email: String(user.email),
+            status: 'active',
+          },
+          overrideAccess: true,
+        })
+        owner = String(createdMember.id)
+        try {
+          await payload.update({
+            collection: 'users',
+            id: String(user.id),
+            data: { member: owner },
+            overrideAccess: true,
+          } as never)
+        } catch {
+          // ignore
+        }
+      }
+    }
+    if (!owner && allowCreate) {
+      const anyMember = await payload
+        .find({
+          collection: 'members',
+          limit: 1,
+          overrideAccess: true,
+        })
+        .catch(() => ({ docs: [] as Doc[] }))
+      if (anyMember.docs[0]) {
+        owner = String(anyMember.docs[0].id)
+      }
+    }
+  }
+  return owner
+}
+
 export async function createUploadSession(
   payload: Payload,
   config: AppConfig,
@@ -55,51 +112,28 @@ export async function createUploadSession(
     throw new MediaWorkflowError('Checksum must be a SHA-256 value.', 400)
   const filename = safeFilename(input.filename)
   if (!filename) throw new MediaWorkflowError('A filename is required.')
-  let owner = id(input.user?.member)
-  if (!owner && input.user) {
-    if (input.user.email) {
-      const existing = await payload.find({
-        collection: 'members',
-        where: { email: { equals: String(input.user.email) } },
-        limit: 1,
-        overrideAccess: true,
-      })
-      if (existing.docs[0]) {
-        owner = String(existing.docs[0].id)
-      } else {
-        const createdMember = await payload.create({
-          collection: 'members',
-          data: {
-            displayName: String(input.user.email).split('@')[0],
-            email: String(input.user.email),
-            status: 'active',
-          },
-          overrideAccess: true,
-        })
-        owner = String(createdMember.id)
-        try {
-          await payload.update({
-            collection: 'users',
-            id: String(input.user.id),
-            data: { member: owner },
-            overrideAccess: true,
-          } as never)
-        } catch {
-          // ignore
-        }
-      }
-    }
-    if (!owner) {
-      const anyMember = await payload.find({
-        collection: 'members',
-        limit: 1,
-        overrideAccess: true,
-      })
-      if (anyMember.docs[0]) {
-        owner = String(anyMember.docs[0].id)
-      }
-    }
+  const extMatch = /\.([a-z0-9]+)$/i.exec(filename)
+  if (
+    extMatch &&
+    !new Set([
+      'png',
+      'jpg',
+      'jpeg',
+      'gif',
+      'webp',
+      'svg',
+      'pdf',
+      'mp3',
+      'm4a',
+      'ogg',
+      'wav',
+      'mp4',
+      'vtt',
+    ]).has(extMatch[1]!.toLowerCase())
+  ) {
+    throw new MediaWorkflowError('Unsupported media file type.', 415)
   }
+  const owner = await resolveSessionOwnerMemberId(payload, input.user, true)
   if (!owner) throw new MediaWorkflowError('A staff member identity is required.', 403)
   const chunkSize = Math.min(chunkLimit, Math.max(256 * 1024, Math.ceil(input.size / 100)))
   return payload.create({
@@ -139,9 +173,13 @@ async function ownedSession(payload: Payload, user: Doc | null | undefined, sess
   // publisher's resumable bytes.  A site owner is not a bypass here: session
   // IDs can be retained by a browser across restarts, so this must remain an
   // owner-bound capability at every operation.
-  if (!user || !id(user.member) || id(user.member) !== id(session.owner))
+  const ownerMemberId = await resolveSessionOwnerMemberId(payload, user, false)
+  if (!user || !ownerMemberId || ownerMemberId !== id(session.owner))
     throw new MediaWorkflowError('Upload session access denied.', 403)
-  if (new Date(String(session.expiresAt)).getTime() < Date.now() && session.state === 'open')
+  if (
+    new Date(String(session.expiresAt)).getTime() < Date.now() &&
+    (session.state === 'open' || session.state === 'failed')
+  )
     throw new MediaWorkflowError('Upload session expired. Start a new upload.', 410)
   return session
 }
@@ -157,7 +195,7 @@ export async function writeUploadChunk(
   bytes: Uint8Array,
 ) {
   const session = await ownedSession(payload, user, sessionId)
-  if (session.state !== 'open')
+  if (session.state !== 'open' && session.state !== 'failed')
     throw new MediaWorkflowError('Upload session is not accepting chunks.', 409)
   if (
     total !== Number(session.expectedSize) ||
@@ -181,16 +219,21 @@ export async function writeUploadChunk(
   } else await writeFile(target, bytes, { flag: 'wx' })
   const chunks = Array.isArray(session.receivedChunks) ? session.receivedChunks.map(Number) : []
   const wasReceived = chunks.includes(index)
-  if (!wasReceived) {
-    chunks.push(index)
-    chunks.sort((a, b) => a - b)
+  if (!wasReceived || session.state === 'failed') {
+    if (!wasReceived) {
+      chunks.push(index)
+      chunks.sort((a, b) => a - b)
+    }
     await payload.update({
       collection: 'media-upload-sessions',
       id: sessionId,
       overrideAccess: true,
       data: {
+        state: 'open',
         receivedChunks: chunks,
-        receivedBytes: Number(session.receivedBytes) + bytes.byteLength,
+        receivedBytes: wasReceived
+          ? Number(session.receivedBytes)
+          : Number(session.receivedBytes) + bytes.byteLength,
       },
     } as never)
   }

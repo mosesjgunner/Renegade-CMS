@@ -67,7 +67,9 @@ export interface LegacyMigrationStore {
     featuredMediaId?: string
     seoTitle?: string
     seoDescription?: string
+    parentPageId?: string
   }): Promise<{ id: string }>
+  findContent(siteId: string, slug: string): Promise<{ id: string } | null>
 
   createRedirect(data: {
     siteId: string
@@ -76,6 +78,7 @@ export interface LegacyMigrationStore {
     statusCode?: string
     enabled?: boolean
   }): Promise<{ id: string }>
+  findRedirect(siteId: string, fromPath: string): Promise<{ id: string } | null>
 
   createLayout(data: {
     siteId: string
@@ -89,6 +92,7 @@ export interface LegacyMigrationStore {
     templateMode?: PageLayout['templateMode']
     blocks: LayoutBlock[]
   }): Promise<{ id: string }>
+  findLayout(siteId: string, path: string): Promise<{ id: string } | null>
 
   publishLayout(id: string): Promise<void>
   deleteEntity(collection: string, id: string): Promise<void>
@@ -220,16 +224,37 @@ export class MemoryLegacyMigrationStore implements LegacyMigrationStore {
     return { id }
   }
 
+  async findContent(siteId: string, slug: string): Promise<{ id: string } | null> {
+    for (const c of this.content.values()) {
+      if (c.siteId === siteId && c.slug === slug) return { id: String(c.id) }
+    }
+    return null
+  }
+
   async createRedirect(data: Record<string, unknown>): Promise<{ id: string }> {
     const id = `redir-${randomUUID().slice(0, 8)}`
     this.redirects.set(id, { id, ...data })
     return { id }
   }
 
+  async findRedirect(siteId: string, fromPath: string): Promise<{ id: string } | null> {
+    for (const r of this.redirects.values()) {
+      if (r.siteId === siteId && r.fromPath === fromPath) return { id: String(r.id) }
+    }
+    return null
+  }
+
   async createLayout(data: Record<string, unknown>): Promise<{ id: string }> {
     const id = `layout-${randomUUID().slice(0, 8)}`
     this.layouts.set(id, { id, ...data })
     return { id }
+  }
+
+  async findLayout(siteId: string, path: string): Promise<{ id: string } | null> {
+    for (const l of this.layouts.values()) {
+      if (l.siteId === siteId && l.path === path) return { id: String(l.id) }
+    }
+    return null
   }
 
   async publishLayout(id: string): Promise<void> {
@@ -556,6 +581,7 @@ export class PayloadLegacyMigrationStore implements LegacyMigrationStore {
     featuredMediaId?: string
     seoTitle?: string
     seoDescription?: string
+    parentPageId?: string
   }): Promise<{ id: string }> {
     const authors = (data.authorIds ?? []).map((authorId, index) => ({
       author: authorId,
@@ -599,6 +625,7 @@ export class PayloadLegacyMigrationStore implements LegacyMigrationStore {
         title: data.title,
         slug: data.slug,
         canonicalPath: data.canonicalPath,
+        parentPage: data.parentPageId ?? null,
         excerpt: data.excerpt,
         body: lexicalBody,
         status: data.status,
@@ -612,6 +639,18 @@ export class PayloadLegacyMigrationStore implements LegacyMigrationStore {
       },
     } as never)) as { id: string | number }
     return { id: String(created.id) }
+  }
+
+  async findContent(siteId: string, slug: string): Promise<{ id: string } | null> {
+    const res = await this.payload.find({
+      collection: 'content',
+      where: {
+        and: [{ site: { equals: siteId } }, { slug: { equals: slug } }],
+      },
+      limit: 1,
+      overrideAccess: true,
+    })
+    return res.docs[0] ? { id: String(res.docs[0].id) } : null
   }
 
   async createRedirect(data: {
@@ -635,6 +674,18 @@ export class PayloadLegacyMigrationStore implements LegacyMigrationStore {
       },
     } as never)) as { id: string | number }
     return { id: String(created.id) }
+  }
+
+  async findRedirect(siteId: string, fromPath: string): Promise<{ id: string } | null> {
+    const res = await this.payload.find({
+      collection: 'public-redirects',
+      where: {
+        and: [{ site: { equals: siteId } }, { fromPath: { equals: fromPath } }],
+      },
+      limit: 1,
+      overrideAccess: true,
+    })
+    return res.docs[0] ? { id: String(res.docs[0].id) } : null
   }
 
   async createLayout(data: {
@@ -670,6 +721,18 @@ export class PayloadLegacyMigrationStore implements LegacyMigrationStore {
       },
     } as never)) as { id: string | number }
     return { id: String(created.id) }
+  }
+
+  async findLayout(siteId: string, path: string): Promise<{ id: string } | null> {
+    const res = await this.payload.find({
+      collection: 'page-layouts',
+      where: {
+        and: [{ site: { equals: siteId } }, { path: { equals: path } }],
+      },
+      limit: 1,
+      overrideAccess: true,
+    })
+    return res.docs[0] ? { id: String(res.docs[0].id) } : null
   }
 
   async publishLayout(id: string): Promise<void> {

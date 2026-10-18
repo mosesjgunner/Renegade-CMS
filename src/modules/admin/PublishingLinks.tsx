@@ -1,14 +1,19 @@
 import Link from 'next/link'
 import type { Payload } from 'payload'
+import SiteSwitcher from './SiteSwitcher'
 
 /** Task-oriented entry points backed by filtered views of the one content collection. */
 export default function PublishingLinks({ payload }: { payload: Payload }) {
   const registered = (slug: keyof Payload['collections']) => Boolean(payload.collections[slug])
   return (
     <>
+      <SiteSwitcher />
       <Link href="/admin">Dashboard</Link>
       <Link href="/admin/posts">Posts</Link>
       <Link href="/admin/pages">Pages</Link>
+      <Link href="/admin/collections/sections">Sections</Link>
+      <Link href="/admin/collections/categories">Categories</Link>
+      <Link href="/admin/collections/albums">Collections</Link>
       <Link href="/admin/collections/page-layouts">Layouts</Link>
       <Link href="/admin/media-library">Media</Link>
       {registered('podcast-shows') && <Link href="/admin/collections/podcast-shows">Podcasts</Link>}

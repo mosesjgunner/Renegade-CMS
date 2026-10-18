@@ -12,6 +12,8 @@ import {
   syncPageWithTemplate,
 } from '@/modules/presentation/composition'
 import type { LayoutBlock, TemplateInheritanceMode } from '@/modules/public/page-builder'
+import { resolveRedirectSite } from '@/modules/operations/redirect-site'
+import { samePublicOrigin } from '@/modules/public/site-scope'
 
 const staff = (user: { role?: string } | null | undefined) =>
   user?.role === 'owner' || user?.role === 'administrator' || user?.role === 'staff'
@@ -26,15 +28,24 @@ export async function GET(request: Request) {
     )
   }
   const url = new URL(request.url)
-  const siteId = url.searchParams.get('siteId')
+  const siteId = await resolveRedirectSite(payload, auth.user, request)
   const templateId = url.searchParams.get('templateId')
 
   if (!siteId) {
-    return NextResponse.json({ error: 'siteId query parameter is required.' }, { status: 400 })
+    return NextResponse.json({ error: 'Site access denied.' }, { status: 403 })
   }
 
   if (templateId) {
     try {
+      const row = await payload.findByID({
+        collection: 'page-layouts',
+        id: templateId,
+        depth: 0,
+        overrideAccess: false,
+        user: auth.user,
+      })
+      if (row.site !== siteId || row.surface !== 'template')
+        return NextResponse.json({ error: 'Template scope mismatch.' }, { status: 403 })
       const details = await getPagesUsingTemplate(payload, templateId, siteId)
       return NextResponse.json(details)
     } catch (error) {
@@ -46,7 +57,8 @@ export async function GET(request: Request) {
     collection: 'page-layouts',
     where: { and: [{ site: { equals: siteId } }, { surface: { equals: 'template' } }] },
     limit: 100,
-    overrideAccess: true,
+    overrideAccess: false,
+    user: auth.user,
   } as never)
 
   return NextResponse.json({ templates: result.docs })
@@ -54,6 +66,8 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   const payload = await getPayload({ config })
+  if (!(await samePublicOrigin(payload, request, true)))
+    return NextResponse.json({ error: 'Same-origin request required.' }, { status: 403 })
   const auth = await payload.auth({ headers: request.headers })
   if (!staff(auth.user)) {
     return NextResponse.json(
@@ -76,6 +90,20 @@ export async function POST(request: Request) {
   }
 
   try {
+    const siteId = await resolveRedirectSite(payload, auth.user, request, body.siteId)
+    if (!siteId || !body.siteId)
+      return NextResponse.json({ error: 'Site access denied.' }, { status: 403 })
+    for (const id of [body.templateId, body.pageId].filter(Boolean)) {
+      const row = await payload.findByID({
+        collection: 'page-layouts',
+        id: id!,
+        depth: 0,
+        overrideAccess: false,
+        user: auth.user,
+      })
+      if (row.site !== siteId || (id === body.templateId && row.surface !== 'template'))
+        return NextResponse.json({ error: 'Template scope mismatch.' }, { status: 403 })
+    }
     switch (body.action) {
       case 'create': {
         if (!body.siteId || !body.name || !body.themeId || !Array.isArray(body.blocks)) {

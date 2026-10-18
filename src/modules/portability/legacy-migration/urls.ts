@@ -56,11 +56,25 @@ export function buildUrlAndRedirectPlan(
     if (item.postType === 'post') {
       canonicalPath = `${postsBase}/${item.slug}`.replace(/\/+/g, '/')
     } else {
-      // Page: check if homepage
+      // Page: check if homepage or hierarchical
       if (item.slug === 'home' || item.slug === 'index' || legacyPath === '/') {
         canonicalPath = '/'
       } else {
-        canonicalPath = `${pagesBase}/${item.slug}`.replace(/\/+/g, '/')
+        const segments: string[] = [item.slug]
+        const visited = new Set<string>([item.id])
+        let currentParentId = item.parentId
+        while (currentParentId) {
+          if (visited.has(currentParentId)) break
+          visited.add(currentParentId)
+          const parent = items.find((i) => i.id === currentParentId && i.postType === 'page')
+          if (!parent) break
+          if (parent.slug !== 'home' && parent.slug !== 'index') {
+            segments.unshift(parent.slug)
+          }
+          currentParentId = parent.parentId
+        }
+        const prefix = pagesBase ? `/${pagesBase}` : ''
+        canonicalPath = `${prefix}/${segments.join('/')}`.replace(/\/+/g, '/')
       }
     }
     canonicalPath = normalizePath(canonicalPath)

@@ -1,0 +1,24 @@
+{
+  "passed": 17,
+  "failed": 0,
+  "skipped": 0,
+  "checks": [
+    "restart studio disk hash baseline.mp4",
+    "restart studio HTTP hash baseline.mp4",
+    "restart studio disk hash hls.m3u8",
+    "restart studio HTTP hash hls.m3u8",
+    "restart studio disk hash poster.jpg",
+    "restart studio HTTP hash poster.jpg",
+    "restart studio disk hash contact-sheet.jpg",
+    "restart studio HTTP hash contact-sheet.jpg",
+    "restart studio disk hash segment-000.ts",
+    "restart studio HTTP hash segment-000.ts",
+    "restart studio disk hash video-original",
+    "restart studio HTTP hash video-original",
+    "restart studio disk hash captions",
+    "restart studio HTTP hash captions",
+    "restart studio disk hash podcast-original",
+    "restart studio HTTP hash podcast-original",
+    "actual video processing state and probe survive restart"
+  ]
+}

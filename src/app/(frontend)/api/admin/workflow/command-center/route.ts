@@ -4,7 +4,10 @@ import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
 import { categorizeWorkflowQueues, type WorkflowItem } from '@/modules/editorial/cmos-workflow'
 import { getWorkflowQueuesForUser } from '@/modules/editorial/cmos-persistence'
-import { getUnresolvedComments } from '@/modules/editorial/comments'
+import {
+  listPersistedReviewComments,
+  reviewCommentsAvailable,
+} from '@/modules/editorial/persisted-review-comments'
 import { getLocalizationEngine } from '@/modules/editorial/localization/service'
 import { sanitizeErrorLog } from '@/modules/editorial/scheduler'
 import { resolveOperatorGrantContext } from '@/modules/operations/operator-grants'
@@ -94,10 +97,10 @@ export async function GET(request: Request) {
       ])
       for (const doc of [...content.docs, ...articles.docs]) permittedDocuments.add(String(doc.id))
     }
-    // Process-local stores need the same persisted site boundary as database records.
-    const comments = getUnresolvedComments().filter(
-      (comment) => !siteIds || permittedDocuments.has(comment.articleId),
-    )
+    const commentsAvailable = reviewCommentsAvailable(payload)
+    const comments = commentsAvailable
+      ? await listPersistedReviewComments(payload, auth.user, { siteIds: siteIds ?? undefined })
+      : []
 
     // 3. Due / Overdue items
     const allItems = [
@@ -355,6 +358,12 @@ export async function GET(request: Request) {
       myWork: queues.personal,
       teamQueues: queues.team,
       unresolvedComments: comments,
+      reviewComments: {
+        available: commentsAvailable,
+        message: commentsAvailable
+          ? null
+          : 'Review comments require the collaboration module. Enable it to save and resolve editorial feedback.',
+      },
       dueOverdue,
       calendar: calendarEntries,
       scheduledJobs: {

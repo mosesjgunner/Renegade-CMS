@@ -1,10 +1,11 @@
+import { notFound } from 'next/navigation'
 import { PresentationSurface } from '@/modules/presentation/Surface'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import Link from 'next/link'
 import type { Metadata } from 'next'
 
-import { canRenderPublic, type PublicState } from '@/modules/public/contracts'
+import { canDiscoverPublic, canRenderPublic, type PublicState } from '@/modules/public/contracts'
 import { PublicLayout } from '@/modules/public/PublicLayout'
 import { hydratePublicLayoutRecord } from '@/modules/presentation/public-queries'
 import { resolveSiteSettings } from '@/modules/core/site-settings'
@@ -18,19 +19,37 @@ import {
 } from '@/modules/public/discovery'
 import { PublicExperiment } from '@/modules/experiences/PublicExperiment'
 import { resolvePublicUrl } from '@/modules/public/semantic-url'
+import { headers } from 'next/headers'
+import { publicSiteForHost } from '@/modules/public/site-scope'
 
 export const dynamic = 'force-dynamic'
 
 export async function generateMetadata(): Promise<Metadata> {
   const payload = await getPayload({ config })
-  const doc = await resolveDiscoveryDocument(payload, { path: '/' })
+  let host: string | null = null
+  try {
+    host = (await headers()).get('host')
+  } catch {}
+  const siteId = await publicSiteForHost(payload, host)
+  const doc = await resolveDiscoveryDocument(payload, { path: '/', siteId: siteId || undefined })
   return discoveryToMetadata(doc)
 }
 
 export default async function HomePage() {
   const payload = await getPayload({ config })
   const settings = await resolveSiteSettings(payload)
-  const discoveryDoc = await resolveDiscoveryDocument(payload, { path: '/' })
+
+  let host: string | null = null
+  try {
+    host = (await headers()).get('host')
+  } catch {}
+  const resolvedSiteId = await publicSiteForHost(payload, host)
+  if (!resolvedSiteId) notFound()
+
+  const discoveryDoc = await resolveDiscoveryDocument(payload, {
+    path: '/',
+    siteId: resolvedSiteId || undefined,
+  })
   const schema = (
     <script
       type="application/ld+json"
@@ -38,9 +57,19 @@ export default async function HomePage() {
     />
   )
 
+  const pubWhere = resolvedSiteId
+    ? {
+        and: [
+          { site: { equals: resolvedSiteId } },
+          { status: { equals: 'active' } },
+          { visibility: { equals: 'public' } },
+        ],
+      }
+    : { and: [{ status: { equals: 'active' } }, { visibility: { equals: 'public' } }] }
+
   const publications = await payload.find({
     collection: 'publications',
-    where: { and: [{ status: { equals: 'active' } }, { visibility: { equals: 'public' } }] },
+    where: pubWhere as never,
     sort: '-createdAt',
     limit: 1,
     depth: 0,
@@ -50,7 +79,7 @@ export default async function HomePage() {
   const siteId =
     typeof publication?.site === 'string'
       ? publication.site
-      : (publication?.site as { id?: string } | undefined)?.id
+      : ((publication?.site as { id?: string } | undefined)?.id ?? resolvedSiteId)
 
   // 1. Check configured homepageSelection mode
   const { mode, pageId, layoutId } = settings.homepageSelection
@@ -92,7 +121,13 @@ export default async function HomePage() {
         depth: 0,
         overrideAccess: true,
       })) as unknown as (PublicState & Record<string, unknown>) | undefined
-      if (layoutDoc && canRenderPublic(layoutDoc)) {
+      if (
+        layoutDoc &&
+        (typeof layoutDoc.site === 'string'
+          ? layoutDoc.site
+          : (layoutDoc.site as { id?: string } | undefined)?.id) === siteId &&
+        canRenderPublic(layoutDoc)
+      ) {
         layoutToRender = layoutDoc
       }
     } catch {
@@ -154,6 +189,8 @@ export default async function HomePage() {
         ...(siteId ? [{ site: { equals: siteId } }] : []),
         { contentType: { equals: 'article' } },
         { status: { in: ['published', 'updated'] } },
+        { visibility: { equals: 'public' } },
+        { removeFromDiscovery: { not_equals: true } },
       ],
     } as never,
     limit: 6,
@@ -216,64 +253,71 @@ export default async function HomePage() {
               </div>
             ) : (
               <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-                {recentArticles.docs.map((articleDoc) => {
-                  const article = articleDoc as unknown as Record<string, unknown>
-                  const publishedDate =
-                    typeof article.publishedAt === 'string' ? article.publishedAt : null
-                  const slug = String(article.slug ?? '')
-                  const articlePath = String(
-                    article.canonicalPath || resolvePublicUrl({ kind: 'article', slug }),
+                {recentArticles.docs
+                  .filter((record) =>
+                    canDiscoverPublic({
+                      ...record,
+                      removeFromDiscovery: record.removeFromDiscovery === true,
+                    }),
                   )
-                  const title = String(article.title ?? '')
-                  const summary =
-                    typeof article.summary === 'string'
-                      ? article.summary
-                      : typeof article.excerpt === 'string'
-                        ? article.excerpt
-                        : null
-                  return (
-                    <article
-                      key={String(article.id)}
-                      className="flex flex-col justify-between rounded-lg border border-stone-200 bg-white p-6 shadow-sm transition hover:shadow-md dark:border-stone-800 dark:bg-stone-900"
-                    >
-                      <div>
-                        {publishedDate ? (
-                          <time
-                            dateTime={publishedDate}
-                            className="text-xs text-stone-500 dark:text-stone-400"
-                          >
-                            {new Date(publishedDate).toLocaleDateString(undefined, {
-                              year: 'numeric',
-                              month: 'short',
-                              day: 'numeric',
-                            })}
-                          </time>
-                        ) : null}
-                        <h3 className="mt-2 text-xl font-bold tracking-tight text-stone-900 dark:text-white line-clamp-2">
+                  .map((articleDoc) => {
+                    const article = articleDoc as unknown as Record<string, unknown>
+                    const publishedDate =
+                      typeof article.publishedAt === 'string' ? article.publishedAt : null
+                    const slug = String(article.slug ?? '')
+                    const articlePath = String(
+                      article.canonicalPath || resolvePublicUrl({ kind: 'article', slug }),
+                    )
+                    const title = String(article.title ?? '')
+                    const summary =
+                      typeof article.summary === 'string'
+                        ? article.summary
+                        : typeof article.excerpt === 'string'
+                          ? article.excerpt
+                          : null
+                    return (
+                      <article
+                        key={String(article.id)}
+                        className="flex flex-col justify-between rounded-lg border border-stone-200 bg-white p-6 shadow-sm transition hover:shadow-md dark:border-stone-800 dark:bg-stone-900"
+                      >
+                        <div>
+                          {publishedDate ? (
+                            <time
+                              dateTime={publishedDate}
+                              className="text-xs text-stone-500 dark:text-stone-400"
+                            >
+                              {new Date(publishedDate).toLocaleDateString(undefined, {
+                                year: 'numeric',
+                                month: 'short',
+                                day: 'numeric',
+                              })}
+                            </time>
+                          ) : null}
+                          <h3 className="mt-2 text-xl font-bold tracking-tight text-stone-900 dark:text-white line-clamp-2">
+                            <Link
+                              href={articlePath}
+                              className="hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                            >
+                              {title}
+                            </Link>
+                          </h3>
+                          {summary ? (
+                            <p className="mt-3 text-sm text-stone-600 dark:text-stone-400 line-clamp-3">
+                              {summary}
+                            </p>
+                          ) : null}
+                        </div>
+                        <div className="mt-6 pt-4 border-t border-stone-100 dark:border-stone-800">
                           <Link
                             href={articlePath}
-                            className="hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                            className="text-xs font-semibold text-red-600 hover:underline dark:text-red-400"
                           >
-                            {title}
+                            Read story →
                           </Link>
-                        </h3>
-                        {summary ? (
-                          <p className="mt-3 text-sm text-stone-600 dark:text-stone-400 line-clamp-3">
-                            {summary}
-                          </p>
-                        ) : null}
-                      </div>
-                      <div className="mt-6 pt-4 border-t border-stone-100 dark:border-stone-800">
-                        <Link
-                          href={articlePath}
-                          className="text-xs font-semibold text-red-600 hover:underline dark:text-red-400"
-                        >
-                          Read story →
-                        </Link>
-                      </div>
-                    </article>
-                  )
-                })}
+                        </div>
+                      </article>
+                    )
+                  })}
               </div>
             )}
           </section>

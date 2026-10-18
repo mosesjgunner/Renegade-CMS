@@ -40,7 +40,12 @@ export async function POST(request: Request) {
     })
     return NextResponse.json({ asset, url: `/media/${asset.id}` }, { status: 201 })
   } catch (error) {
-    const status = error instanceof MediaWorkflowError ? error.status : 400
+    const status =
+      error instanceof MediaWorkflowError
+        ? error.status
+        : typeof (error as { status?: unknown })?.status === 'number'
+          ? Number((error as { status: number }).status)
+          : 400
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Upload failed.' },
       { status },

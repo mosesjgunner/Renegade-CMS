@@ -1,3 +1,7 @@
+import { headers } from 'next/headers'
+import { notFound } from 'next/navigation'
+import { publicSiteForHost } from '@/modules/public/site-scope'
+import { canDiscoverPublic } from '@/modules/public/contracts'
 import { PresentationSurface } from '@/modules/presentation/Surface'
 import config from '@payload-config'
 import { getPayload } from 'payload'
@@ -21,7 +25,9 @@ import {
 
 export async function generateMetadata(): Promise<Metadata> {
   const payload = await getPayload({ config })
-  const doc = await resolveDiscoveryDocument(payload, { path: '/articles' })
+  const hostSiteId = await publicSiteForHost(payload, (await headers()).get('host'))
+  if (!hostSiteId) notFound()
+  const doc = await resolveDiscoveryDocument(payload, { path: '/articles', siteId: hostSiteId })
   return discoveryToMetadata(doc)
 }
 
@@ -33,19 +39,8 @@ export default async function ArticlesArchivePage({ searchParams }: Args) {
   const payload = await getPayload({ config })
   const settings = await resolveSiteSettings(payload)
 
-  const publications = await payload.find({
-    collection: 'publications',
-    where: { and: [{ status: { equals: 'active' } }, { visibility: { equals: 'public' } }] },
-    sort: '-createdAt',
-    limit: 1,
-    depth: 0,
-    overrideAccess: true,
-  })
-  const publication = publications.docs[0] as unknown as Record<string, unknown> | undefined
-  const siteId =
-    typeof publication?.site === 'string'
-      ? publication.site
-      : (publication?.site as { id?: string } | undefined)?.id
+  const siteId = await publicSiteForHost(payload, (await headers()).get('host'))
+  if (!siteId) notFound()
 
   const results = await payload.find({
     collection: 'content',
@@ -54,6 +49,8 @@ export default async function ArticlesArchivePage({ searchParams }: Args) {
         ...(siteId ? [{ site: { equals: siteId } }] : []),
         { contentType: { equals: 'article' } },
         { status: { in: ['published', 'updated'] } },
+        { visibility: { equals: 'public' } },
+        { removeFromDiscovery: { not_equals: true } },
       ],
     } as never,
     page: currentPage,
@@ -63,7 +60,9 @@ export default async function ArticlesArchivePage({ searchParams }: Args) {
     overrideAccess: true,
   })
 
-  const doc = await resolveDiscoveryDocument(payload, { path: '/articles' })
+  const hostSiteId = await publicSiteForHost(payload, (await headers()).get('host'))
+  if (!hostSiteId) notFound()
+  const doc = await resolveDiscoveryDocument(payload, { path: '/articles', siteId: hostSiteId })
 
   return (
     <PresentationSurface themeId={settings.themeId} surface="archive">
@@ -100,63 +99,70 @@ export default async function ArticlesArchivePage({ searchParams }: Args) {
           </div>
         ) : (
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-            {results.docs.map((articleDoc) => {
-              const article = articleDoc as unknown as Record<string, unknown>
-              const publishedDate =
-                typeof article.publishedAt === 'string' ? article.publishedAt : null
-              const slug = String(article.slug ?? '')
-              const articlePath = String(
-                article.canonicalPath || resolvePublicUrl({ kind: 'article', slug }),
+            {results.docs
+              .filter((record) =>
+                canDiscoverPublic({
+                  ...record,
+                  removeFromDiscovery: record.removeFromDiscovery === true,
+                }),
               )
-              const title = String(article.title ?? '')
-              const summary =
-                typeof article.summary === 'string'
-                  ? article.summary
-                  : typeof article.excerpt === 'string'
-                    ? article.excerpt
-                    : null
-              return (
-                <article
-                  key={String(article.id)}
-                  className="flex flex-col justify-between rounded-lg border border-stone-200 bg-white p-6 shadow-sm transition hover:shadow-md dark:border-stone-800 dark:bg-stone-900"
-                >
-                  <div>
-                    <div className="flex items-center gap-2 text-xs text-stone-500 dark:text-stone-400 mb-2">
-                      {publishedDate ? (
-                        <time dateTime={publishedDate}>
-                          {new Date(publishedDate).toLocaleDateString(undefined, {
-                            year: 'numeric',
-                            month: 'short',
-                            day: 'numeric',
-                          })}
-                        </time>
+              .map((articleDoc) => {
+                const article = articleDoc as unknown as Record<string, unknown>
+                const publishedDate =
+                  typeof article.publishedAt === 'string' ? article.publishedAt : null
+                const slug = String(article.slug ?? '')
+                const articlePath = String(
+                  article.canonicalPath || resolvePublicUrl({ kind: 'article', slug }),
+                )
+                const title = String(article.title ?? '')
+                const summary =
+                  typeof article.summary === 'string'
+                    ? article.summary
+                    : typeof article.excerpt === 'string'
+                      ? article.excerpt
+                      : null
+                return (
+                  <article
+                    key={String(article.id)}
+                    className="flex flex-col justify-between rounded-lg border border-stone-200 bg-white p-6 shadow-sm transition hover:shadow-md dark:border-stone-800 dark:bg-stone-900"
+                  >
+                    <div>
+                      <div className="flex items-center gap-2 text-xs text-stone-500 dark:text-stone-400 mb-2">
+                        {publishedDate ? (
+                          <time dateTime={publishedDate}>
+                            {new Date(publishedDate).toLocaleDateString(undefined, {
+                              year: 'numeric',
+                              month: 'short',
+                              day: 'numeric',
+                            })}
+                          </time>
+                        ) : null}
+                      </div>
+                      <h2 className="text-xl font-bold tracking-tight text-stone-900 dark:text-white line-clamp-2">
+                        <Link
+                          href={articlePath}
+                          className="hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                        >
+                          {title}
+                        </Link>
+                      </h2>
+                      {summary ? (
+                        <p className="mt-3 text-sm text-stone-600 dark:text-stone-400 line-clamp-3">
+                          {summary}
+                        </p>
                       ) : null}
                     </div>
-                    <h2 className="text-xl font-bold tracking-tight text-stone-900 dark:text-white line-clamp-2">
+                    <div className="mt-6 pt-4 border-t border-stone-100 dark:border-stone-800 flex items-center justify-between">
                       <Link
                         href={articlePath}
-                        className="hover:text-red-600 dark:hover:text-red-400 transition-colors"
+                        className="text-xs font-semibold text-red-600 hover:underline dark:text-red-400"
                       >
-                        {title}
+                        Read full article →
                       </Link>
-                    </h2>
-                    {summary ? (
-                      <p className="mt-3 text-sm text-stone-600 dark:text-stone-400 line-clamp-3">
-                        {summary}
-                      </p>
-                    ) : null}
-                  </div>
-                  <div className="mt-6 pt-4 border-t border-stone-100 dark:border-stone-800 flex items-center justify-between">
-                    <Link
-                      href={articlePath}
-                      className="text-xs font-semibold text-red-600 hover:underline dark:text-red-400"
-                    >
-                      Read full article →
-                    </Link>
-                  </div>
-                </article>
-              )
-            })}
+                    </div>
+                  </article>
+                )
+              })}
           </div>
         )}
 

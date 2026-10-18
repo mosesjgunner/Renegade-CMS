@@ -1,0 +1,22 @@
+{
+  "passed": 15,
+  "failed": 0,
+  "skipped": 0,
+  "checks": [
+    "exact persisted publications/143f7fd6-7faa-4996-bea5-79bdf9709da1 survives restart",
+    "exact persisted products/adf98958-acb6-47c2-98f5-b6d3ca37f715 survives restart",
+    "exact persisted donation-campaigns/01a14f49-227d-7bd6-8820-a5384539087f survives restart",
+    "exact persisted page-layouts/97149f47-7e27-4beb-a034-8f62f05ed7b5 survives restart",
+    "custom theme palette survives restart",
+    "public route survives restart /",
+    "public route survives restart /articles",
+    "public route survives restart /store",
+    "public route survives restart /store/solidarity-heavyweight-tee",
+    "public route survives restart /cart",
+    "public route survives restart /checkout",
+    "public route survives restart /donate",
+    "public route survives restart /donate/clean-transit-fund",
+    "public route survives restart /disclosure",
+    "public route survives restart /contact"
+  ]
+}

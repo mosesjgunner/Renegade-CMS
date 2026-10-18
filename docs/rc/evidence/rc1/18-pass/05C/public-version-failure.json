@@ -1,0 +1,26 @@
+{
+  "passed": 19,
+  "failed": 1,
+  "checks": [
+    "uploaded original has exact checksum and dimensions",
+    "miniPaint opens uploaded dimensions",
+    "editor version changes actual bytes",
+    "source original bytes preserved",
+    "version inherits rights and consent",
+    "permission failure keeps editor open for retry",
+    "save-as copy preserves governance without changing source link",
+    "save-as copy has canonical provenance",
+    "cancel leaves persisted copy unchanged",
+    "bad source bytes cannot save a blank editor canvas",
+    "anonymous refused",
+    "foreign role refused",
+    "forged site refused",
+    "bad format refused",
+    "stale editor refused",
+    "denied saves create no assets",
+    "concurrent replacement has one winner and one conflict",
+    "each saved editor asset queues exactly one canonical variant job",
+    "edited asset has ready responsive variants"
+  ],
+  "error": "Error: Input buffer contains unsupported image format"
+}

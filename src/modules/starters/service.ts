@@ -1,37 +1,40 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { Payload } from 'payload'
+import { createLocalReq, type Payload } from 'payload'
+import { readFile } from 'node:fs/promises'
+import path from 'node:path'
+import { createHash } from 'node:crypto'
+import { mediaStorage } from '../media/storage'
+import { loadConfig } from '../core/config'
+import { transactionPayload } from '../core/transaction-payload'
 
 import { starterDefinitions } from './definitions'
 import type { StarterId, StarterInstallStatus } from './contracts'
 import { snapshotLayout } from '../presentation/snapshots'
-import { ensureEditorialCompanion } from '../editorial/persistence'
+import { importMarkdownToRichText } from '../editorial/markdown'
+import { withExecutionLock } from '../operations/execution-lock'
 
-function toLexicalDocument(text: string) {
-  return {
-    root: {
-      type: 'root',
-      format: '',
-      indent: 0,
-      version: 1,
-      direction: 'ltr',
-      children: [
-        {
-          type: 'paragraph',
-          format: '',
-          indent: 0,
-          version: 1,
-          children: [
-            {
-              type: 'text',
-              text: text || '',
-              format: 0,
-              version: 1,
-            },
-          ],
-        },
-      ],
-    },
+const toLexicalDocument = (text: string) => {
+  const convert = (node: any): any => {
+    const type =
+      node.type === 'markdown-heading'
+        ? 'heading'
+        : node.type === 'blockquote'
+          ? 'quote'
+          : node.type
+    const result: any = { type, version: 1, format: node.format ?? '', indent: 0, direction: 'ltr' }
+    if (node.children) result.children = node.children.map(convert)
+    if (type === 'heading') result.tag = `h${node.level}`
+    if (type === 'list') {
+      result.tag = node.listType === 'ordered' ? 'ol' : 'ul'
+      result.listType = node.listType === 'ordered' ? 'number' : 'bullet'
+      result.start = 1
+    }
+    if (type === 'listitem') result.value = 1
+    if (type === 'text')
+      Object.assign(result, { text: node.text, format: 0, detail: 0, mode: 'normal', style: '' })
+    return result
   }
+  return { root: convert(importMarkdownToRichText(text).document.document.root) }
 }
 
 async function upsertRecord(
@@ -50,6 +53,8 @@ async function upsertRecord(
   })
 
   if (existing.docs.length > 0) {
+    // Starters may reference an existing identity, never rewrite its profile.
+    if (collection === 'members' || collection === 'profiles') return existing.docs[0]
     const docId = existing.docs[0].id
     const updated = await (payload as any).update({
       collection,
@@ -80,12 +85,62 @@ export async function installStarter(
         ownerEmail?: string
       },
 ): Promise<{ success: boolean; starterId: StarterId; siteId: string; summary: string }> {
+  const writtenKeys: string[] = []
+  const storage = mediaStorage(loadConfig())
+  const key = typeof input === 'string' ? input : (input.siteId ?? input.starterId)
+  return withExecutionLock(payload, `starter-install:${key}`, async () => {
+    const transactionID = await payload.db.beginTransaction()
+    if (!transactionID) throw new Error('Starter installation requires transactional storage.')
+    const req = await createLocalReq({}, payload)
+    req.transactionID = transactionID
+    try {
+      const result = await provisionStarter(transactionPayload(payload, req), input, writtenKeys)
+      await payload.db.commitTransaction(transactionID)
+      return result
+    } catch (error) {
+      await payload.db.rollbackTransaction(transactionID)
+      for (const key of writtenKeys) await storage.remove(key)
+      throw error
+    }
+  })
+}
+
+async function provisionStarter(
+  payload: Payload,
+  input: Parameters<typeof installStarter>[1],
+  writtenKeys: string[],
+): ReturnType<typeof installStarter> {
   const args = typeof input === 'string' ? { starterId: input } : input
   const starter = starterDefinitions[args.starterId]
-  if (!starter) throw new Error(`Unknown starter experience: ${args.starterId}`)
+  if (!Object.hasOwn(starterDefinitions, args.starterId))
+    throw new Error(`Unknown starter experience: ${args.starterId}`)
 
   const ownerEmail = args.ownerEmail || 'admin@renegade.local'
   let siteId = args.siteId
+
+  if (!siteId) {
+    const existing = await payload.find({
+      collection: 'sites',
+      where: { slug: { equals: starter.id } },
+      limit: 1,
+      overrideAccess: true,
+    })
+    if (existing.docs[0]) siteId = String(existing.docs[0].id)
+  }
+  if (siteId) {
+    await payload.findByID({ collection: 'sites', id: siteId, overrideAccess: true })
+    for (const collection of ['content', 'page-layouts'] as const) {
+      const existing = await payload.count({
+        collection,
+        where: { site: { equals: siteId } },
+        overrideAccess: true,
+      })
+      if (existing.totalDocs)
+        throw new Error(
+          'Install a starter on an empty site. Existing content and layouts are preserved; use upgrade for installed templates.',
+        )
+    }
+  }
 
   // 1. Ensure site exists
   if (siteId) {
@@ -164,11 +219,21 @@ export async function installStarter(
     },
   )
 
+  // Reuse the canonical publication created with the site.
+  const existingPublications = await payload.find({
+    collection: 'publications',
+    where: { site: { equals: siteId } },
+    limit: 1,
+    depth: 0,
+    overrideAccess: true,
+  })
   // 3. Ensure publication exists
   await upsertRecord(
     payload,
     'publications',
-    { site: { equals: siteId }, slug: { equals: 'main' } },
+    existingPublications.docs[0]
+      ? { id: { equals: existingPublications.docs[0].id } }
+      : { site: { equals: siteId }, slug: { equals: 'main' } },
     {
       site: siteId,
       owner: ownerMember.id,
@@ -178,13 +243,25 @@ export async function installStarter(
       status: 'active',
       visibility: 'public',
       themePreset: starter.themeId,
-      navigation: starter.navigation.primary,
+      navigation: {
+        primary: starter.navigation.primary,
+        secondary: [],
+        footer: starter.navigation.footer,
+      },
     },
   )
 
+  const mediaReferences = new Map<string, any>()
   // 4. Provision Media Assets
   for (const m of starter.media) {
-    await upsertRecord(
+    const bytes = await readFile(path.join(process.cwd(), 'public', m.localAssetPath))
+    const storage = mediaStorage(loadConfig())
+    const storageKey = `starters/${siteId}/${createHash('sha256').update(bytes).digest('hex')}/${m.originalFilename}`
+    if (!(await storage.get(storageKey))) {
+      writtenKeys.push(storageKey)
+      await storage.put(storageKey, bytes, m.mimeType)
+    }
+    const asset = await upsertRecord(
       payload,
       'media-assets',
       {
@@ -200,16 +277,30 @@ export async function installStarter(
         description: m.description,
         creatorCredit: m.creatorCredit,
         source: 'Renegade CMS Starter Kit',
-        copyrightOwner: starter.name,
-        licenseType: m.licenseType,
+        copyrightOwner: 'Renegade CMS contributors',
+        licenseType: starter.id === 'publication-community' ? 'licensed' : m.licenseType,
+        license:
+          starter.id === 'publication-community'
+            ? 'AGPL-3.0-or-later (repository sample vector artwork)'
+            : undefined,
+        licenseUrl:
+          starter.id === 'publication-community'
+            ? 'https://www.gnu.org/licenses/agpl-3.0.html'
+            : undefined,
         governanceEnabled: m.governanceEnabled,
-        storageProvider: 'local',
-        storageLocation: m.localAssetPath,
+        storageProvider: storage.provider,
+        storageLocation: storageKey,
         width: m.width,
         height: m.height,
         aspectRatio: m.aspectRatio,
       },
     )
+    mediaReferences.set(m.localAssetPath, {
+      id: asset.id,
+      siteId,
+      label: m.altText,
+      href: `/media/${asset.id}`,
+    })
   }
 
   // 5. Provision Additional Member Profiles
@@ -217,8 +308,12 @@ export async function installStarter(
     const mem = await upsertRecord(
       payload,
       'members',
-      { email: { equals: memberDef.email } },
-      { displayName: memberDef.displayName, email: memberDef.email, status: 'active' },
+      { email: { equals: `${siteId}-${memberDef.email}` } },
+      {
+        displayName: memberDef.displayName,
+        email: `${siteId}-${memberDef.email}`,
+        status: 'active',
+      },
     )
     await upsertRecord(
       payload,
@@ -227,7 +322,7 @@ export async function installStarter(
       {
         member: mem.id,
         displayName: memberDef.displayName,
-        handle: memberDef.handle,
+        handle: `${memberDef.handle}-${siteId.slice(0, 8)}`,
         bio: `${memberDef.roleTitle} — ${memberDef.bio}`,
         visibility: 'public',
         fieldAudience: { email: 'private', bio: 'public' },
@@ -235,9 +330,29 @@ export async function installStarter(
     )
   }
 
+  const linkReferences = new Map<string, any>()
+  for (const [routePath, routeLabel] of [
+    ['/', 'Home'],
+    ['/articles', 'Articles'],
+    ['/store', 'Store'],
+    ['/donate', 'Donate'],
+    ['/search', 'Search'],
+    ['/members', 'Community'],
+    ['/subscribe', 'Subscribe'],
+    ['/cart', 'Cart'],
+    ['/checkout', 'Checkout'],
+  ] as const) {
+    linkReferences.set(routePath, {
+      id: `route:${routePath.slice(1) || 'home'}`,
+      siteId,
+      label: routeLabel,
+      href: routePath,
+    })
+  }
+
   // 6. Provision Canonical Pages
   for (const page of starter.pages) {
-    await upsertRecord(
+    const record = await upsertRecord(
       payload,
       'content',
       { and: [{ site: { equals: siteId } }, { canonicalPath: { equals: page.canonicalPath } }] },
@@ -249,7 +364,8 @@ export async function installStarter(
         slug: page.slug,
         canonicalPath: page.canonicalPath,
         summary: page.summary,
-        body: toLexicalDocument(page.summary || page.title),
+        body: toLexicalDocument(page.body || page.summary || page.title),
+        publishedAt: new Date().toISOString(),
         status: page.status,
         commentsPolicy: 'closed',
         importSourceSystem: `starter:${starter.id}`,
@@ -257,11 +373,33 @@ export async function installStarter(
         exportFormatVersion: 1,
       },
     )
+    linkReferences.set(page.canonicalPath, {
+      id: `content:${record.id}`,
+      siteId,
+      label: page.title,
+      href: page.canonicalPath,
+    })
   }
+
+  const bindBlocks = (blocks: any[]) =>
+    blocks.map((block) => {
+      const next = structuredClone(block)
+      for (const field of ['link', 'media']) {
+        const reference = next.props[field]
+        if (reference) {
+          const canonical = (field === 'link' ? linkReferences : mediaReferences).get(
+            reference.href,
+          )
+          if (!canonical) throw new Error(`Starter ${field} target missing: ${reference.href}`)
+          next.props[field] = { ...canonical, label: reference.label || canonical.label }
+        }
+      }
+      return next
+    })
 
   // 7. Provision Canonical Articles
   for (const article of starter.articles) {
-    const artDoc = await upsertRecord(
+    const record = await upsertRecord(
       payload,
       'content',
       { and: [{ site: { equals: siteId } }, { canonicalPath: { equals: article.canonicalPath } }] },
@@ -282,10 +420,12 @@ export async function installStarter(
         exportFormatVersion: 1,
       },
     )
-
-    if (payload.collections['article-family-content']) {
-      await ensureEditorialCompanion(payload, artDoc)
-    }
+    linkReferences.set(article.canonicalPath, {
+      id: `content:${record.id}`,
+      siteId,
+      label: article.title,
+      href: article.canonicalPath,
+    })
   }
 
   // 8. Provision Products (if commerce starter and collection registered)
@@ -340,12 +480,24 @@ export async function installStarter(
         },
         { catalogWorkflow: true },
       )
+      linkReferences.set(prod.canonicalPath, {
+        id: `product:${prod.slug}`,
+        siteId,
+        label: prod.name,
+        href: prod.canonicalPath,
+      })
     }
   }
 
   // 9. Provision Donation Campaign (if applicable and collection registered)
   if (starter.donationCampaign && Boolean(payload.collections['donation-campaigns'])) {
     const dc = starter.donationCampaign
+    linkReferences.set(`/donate/${dc.slug}`, {
+      id: `donation-campaign:${dc.slug}`,
+      siteId,
+      label: dc.title,
+      href: `/donate/${dc.slug}`,
+    })
     const existing = await payload.find({
       collection: 'donation-campaigns',
       where: { and: [{ site: { equals: siteId } }, { campaignKey: { equals: dc.slug } }] },
@@ -375,6 +527,7 @@ export async function installStarter(
           goalAmountMinor: dc.goalMinor,
           currency: dc.currency,
           allowedAmounts: dc.suggestedTiersMinor,
+          recurrence: ['one-time'],
           disclosures: [dc.complianceDisclosure],
           taxDisclaimer: dc.complianceDisclosure,
           startsAt: new Date(Date.now() - 86400000).toISOString(),
@@ -404,7 +557,7 @@ export async function installStarter(
       layoutVersion: 1,
       status: 'published',
       visibility: 'public',
-      blocks: tpl.blocks,
+      blocks: bindBlocks(tpl.blocks),
       unknownBlocks: [],
       revision: 1,
       publishedRevision: 1,
@@ -420,7 +573,7 @@ export async function installStarter(
         revisionHistory: [
           {
             revision: 1,
-            blocks: tpl.blocks,
+            blocks: bindBlocks(tpl.blocks),
             action: 'starter-install',
             savedAt: new Date().toISOString(),
           },
@@ -443,7 +596,7 @@ export async function installStarter(
       layoutVersion: 1,
       status: 'published',
       visibility: 'public',
-      blocks: pat.blocks,
+      blocks: bindBlocks(pat.blocks),
       unknownBlocks: [],
       revision: 1,
       publishedRevision: 1,
@@ -459,7 +612,7 @@ export async function installStarter(
         revisionHistory: [
           {
             revision: 1,
-            blocks: pat.blocks,
+            blocks: bindBlocks(pat.blocks),
             action: 'starter-install',
             savedAt: new Date().toISOString(),
           },
@@ -481,7 +634,7 @@ export async function installStarter(
       layoutVersion: 1,
       status: 'published',
       visibility: 'public',
-      blocks: glob.blocks,
+      blocks: bindBlocks(glob.blocks),
       unknownBlocks: [],
       revision: 1,
       publishedRevision: 1,
@@ -497,7 +650,7 @@ export async function installStarter(
         revisionHistory: [
           {
             revision: 1,
-            blocks: glob.blocks,
+            blocks: bindBlocks(glob.blocks),
             action: 'starter-install',
             savedAt: new Date().toISOString(),
           },
@@ -520,7 +673,7 @@ export async function installStarter(
       layoutVersion: 1,
       status: 'published',
       visibility: 'public',
-      blocks: layout.blocks,
+      blocks: bindBlocks(layout.blocks),
       unknownBlocks: [],
       revision: 1,
       publishedRevision: 1,
@@ -536,7 +689,7 @@ export async function installStarter(
         revisionHistory: [
           {
             revision: 1,
-            blocks: layout.blocks,
+            blocks: bindBlocks(layout.blocks),
             action: 'starter-install',
             savedAt: new Date().toISOString(),
           },
@@ -548,26 +701,29 @@ export async function installStarter(
   }
 
   // 14. Update Site Settings
-  await (payload as any).updateGlobal({
-    slug: 'site-settings',
-    overrideAccess: true,
-    data: {
-      siteName: starter.siteSettings.siteName,
-      siteDescription: starter.siteSettings.siteDescription,
-      footerText: starter.siteSettings.footerText,
-      themeId: starter.themeId,
-      themeTokens: starter.siteSettings.themeTokens,
-      homepageSelection: {
-        mode: homeLayoutId ? 'layout' : 'default',
-        layoutId: homeLayoutId || undefined,
+  // Global defaults are shared across sites; never replace another site's identity.
+  const siteCount = await payload.count({ collection: 'sites', overrideAccess: true })
+  if (siteCount.totalDocs === 1)
+    await (payload as any).updateGlobal({
+      slug: 'site-settings',
+      overrideAccess: true,
+      data: {
+        siteName: starter.siteSettings.siteName,
+        siteDescription: starter.siteSettings.siteDescription,
+        footerText: starter.siteSettings.footerText,
+        themeId: starter.themeId,
+        themeTokens: starter.siteSettings.themeTokens,
+        homepageSelection: {
+          mode: homeLayoutId ? 'layout' : 'default',
+          layout: homeLayoutId || undefined,
+        },
+        onboarding: {
+          starterType: starter.id,
+          featureProfile: 'Standard',
+          starterContent: true,
+        },
       },
-      onboarding: {
-        starterType: starter.id,
-        featureProfile: 'Standard',
-        starterContent: true,
-      },
-    },
-  })
+    })
 
   return {
     success: true,
@@ -584,47 +740,40 @@ export async function getStarterStatus(
   const hasProducts = Boolean(payload.collections['products'])
   const hasDonations = Boolean(payload.collections['donation-campaigns'])
 
-  const [layoutsResult, contentResult, productsResult, donationsResult, siteSettings] =
-    await Promise.all([
-      (payload as any).find({
-        collection: 'page-layouts',
-        where: { site: { equals: siteId } },
-        limit: 500,
-        overrideAccess: true,
-      }),
-      (payload as any).find({
-        collection: 'content',
-        where: { site: { equals: siteId } },
-        limit: 500,
-        overrideAccess: true,
-      }),
-      hasProducts
-        ? (payload as any)
-            .find({
-              collection: 'products',
-              where: { site: { equals: siteId } },
-              limit: 100,
-              overrideAccess: true,
-            })
-            .catch(() => ({ docs: [] }))
-        : Promise.resolve({ docs: [] }),
-      hasDonations
-        ? (payload as any)
-            .find({
-              collection: 'donation-campaigns',
-              where: { site: { equals: siteId } },
-              limit: 50,
-              overrideAccess: true,
-            })
-            .catch(() => ({ docs: [] }))
-        : Promise.resolve({ docs: [] }),
-      (payload as any)
-        .findGlobal({
-          slug: 'site-settings',
-          overrideAccess: true,
-        })
-        .catch(() => null),
-    ])
+  const [layoutsResult, contentResult, productsResult, donationsResult] = await Promise.all([
+    (payload as any).find({
+      collection: 'page-layouts',
+      where: { site: { equals: siteId } },
+      limit: 500,
+      overrideAccess: true,
+    }),
+    (payload as any).find({
+      collection: 'content',
+      where: { site: { equals: siteId } },
+      limit: 500,
+      overrideAccess: true,
+    }),
+    hasProducts
+      ? (payload as any)
+          .find({
+            collection: 'products',
+            where: { site: { equals: siteId } },
+            limit: 100,
+            overrideAccess: true,
+          })
+          .catch(() => ({ docs: [] }))
+      : Promise.resolve({ docs: [] }),
+    hasDonations
+      ? (payload as any)
+          .find({
+            collection: 'donation-campaigns',
+            where: { site: { equals: siteId } },
+            limit: 50,
+            overrideAccess: true,
+          })
+          .catch(() => ({ docs: [] }))
+      : Promise.resolve({ docs: [] }),
+  ])
 
   const layouts = layoutsResult.docs as any[]
   const content = contentResult.docs as any[]
@@ -637,18 +786,13 @@ export async function getStarterStatus(
   const productsCount = productsResult.docs.length
   const donationsCount = donationsResult.docs.length
 
-  // Determine active starter
-  const themeId = siteSettings?.themeId
-  const onboardingType = siteSettings?.onboarding?.starterType
-
-  let activeStarterId: StarterId | undefined
-  if (onboardingType === 'publication-community' || onboardingType === 'campaign-commerce') {
-    activeStarterId = onboardingType
-  } else if (productsCount > 0 || themeId === 'renegade-party') {
-    activeStarterId = 'campaign-commerce'
-  } else if (templatesCount > 0 || themeId === 'neutral-starter') {
-    activeStarterId = 'publication-community'
-  }
+  // A shared global theme/onboarding selection does not identify this site's starter.
+  const source = content.find((record) =>
+    ['starter:publication-community', 'starter:campaign-commerce'].includes(
+      record.importSourceSystem,
+    ),
+  )?.importSourceSystem
+  const activeStarterId = source?.slice('starter:'.length) as StarterId | undefined
 
   const installed = Boolean(layouts.length > 0 && activeStarterId)
 
@@ -682,6 +826,41 @@ export async function upgradeStarter(
   const starter = starterDefinitions[starterId]
   if (!starter) throw new Error(`Unknown starter: ${starterId}`)
 
+  const bindBlocks = async (blocks: any[]) => {
+    const next = structuredClone(blocks)
+    for (const block of next)
+      for (const field of ['link', 'media']) {
+        const value = block.props[field]
+        if (!value) continue
+        const media = field === 'media'
+        const result = await (payload as any).find({
+          collection: media ? 'media-assets' : 'content',
+          where: {
+            and: [
+              { site: { equals: siteId } },
+              media
+                ? { originalFilename: { equals: String(value.href).split('/').pop() } }
+                : { canonicalPath: { equals: value.href } },
+            ],
+          },
+          limit: 1,
+          depth: 0,
+          overrideAccess: true,
+        })
+        const record = result.docs[0]
+        if (!record)
+          throw new Error(
+            `Starter ${field} target unavailable. Preserve the current template and repair the target before upgrading.`,
+          )
+        block.props[field] = {
+          id: media ? record.id : `content:${record.id}`,
+          siteId,
+          label: value.label,
+          href: media ? `/media/${record.id}` : record.canonicalPath,
+        }
+      }
+    return next
+  }
   let updatedCount = 0
 
   // 1. Refresh templates and patterns with latest defaults if not customized
@@ -697,7 +876,7 @@ export async function upgradeStarter(
       const nextRev = (Number(doc.revision) || 1) + 1
       const snapshot = snapshotLayout({
         ...doc,
-        blocks: tpl.blocks,
+        blocks: await bindBlocks(tpl.blocks),
         revision: nextRev,
         publishedRevision: nextRev,
       })
@@ -705,7 +884,7 @@ export async function upgradeStarter(
         collection: 'page-layouts',
         id: doc.id,
         data: {
-          blocks: tpl.blocks,
+          blocks: await bindBlocks(tpl.blocks),
           revision: nextRev,
           publishedRevision: nextRev,
           publishedPresentation: snapshot,
@@ -713,7 +892,7 @@ export async function upgradeStarter(
             ...(Array.isArray(doc.revisionHistory) ? doc.revisionHistory : []),
             {
               revision: nextRev,
-              blocks: tpl.blocks,
+              blocks: await bindBlocks(tpl.blocks),
               action: 'starter-upgrade',
               savedAt: new Date().toISOString(),
             },
@@ -739,7 +918,7 @@ export async function upgradeStarter(
       const nextRev = (Number(doc.revision) || 1) + 1
       const snapshot = snapshotLayout({
         ...doc,
-        blocks: pat.blocks,
+        blocks: await bindBlocks(pat.blocks),
         revision: nextRev,
         publishedRevision: nextRev,
       })
@@ -747,7 +926,7 @@ export async function upgradeStarter(
         collection: 'page-layouts',
         id: doc.id,
         data: {
-          blocks: pat.blocks,
+          blocks: await bindBlocks(pat.blocks),
           revision: nextRev,
           publishedRevision: nextRev,
           publishedPresentation: snapshot,
@@ -755,7 +934,7 @@ export async function upgradeStarter(
             ...(Array.isArray(doc.revisionHistory) ? doc.revisionHistory : []),
             {
               revision: nextRev,
-              blocks: pat.blocks,
+              blocks: await bindBlocks(pat.blocks),
               action: 'starter-upgrade',
               savedAt: new Date().toISOString(),
             },

@@ -1,4 +1,7 @@
+import { loadContentArchive, ContentArchiveLinks } from '@/modules/public/content-archives'
 import { publicTimelineEntries } from '@/modules/events/timeline'
+import { loadPublicHierarchy, publicContentHierarchyTrail } from '@/modules/public/hierarchy'
+import { HierarchyView, HierarchyBreadcrumbs } from '@/modules/public/HierarchyView'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import Link from 'next/link'
@@ -73,6 +76,24 @@ export async function generateMetadata({ params }: Args): Promise<Metadata> {
   try {
     const payload = await getPayload({ config })
     const siteId = await catalogSiteForHost(payload, (await requestHeaders()).get('host'))
+    if (siteId && /^\/(authors|tags)\//.test(path)) {
+      const archive = await loadContentArchive(payload, siteId, path)
+      if (!archive) return { robots: { index: false, follow: false } }
+      const settings = await resolveSiteSettings(payload)
+      return {
+        title: archive.title,
+        alternates: {
+          canonical: new URL(
+            path,
+            settings.canonicalOriginsBySite[siteId] || settings.canonicalOrigin,
+          ).toString(),
+        },
+        robots: {
+          index: settings.indexingMode !== 'noindex' && settings.launchState === 'live',
+          follow: true,
+        },
+      }
+    }
     const discovery = await resolveDiscoveryDocument(payload, { path, siteId })
     return discoveryToMetadata(discovery)
   } catch {
@@ -228,7 +249,7 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
   const layoutRecord = layoutResult.docs[0] as unknown as PublicRecord | undefined
   if (layoutRecord) {
     if (!canRenderPublic(layoutRecord) || !isPublicPageLayout(layoutRecord)) notFound()
-    const discovery = await resolveDiscoveryDocument(payload, { path })
+    const discovery = await resolveDiscoveryDocument(payload, { path, siteId })
     return (
       <>
         <script
@@ -272,7 +293,7 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
         notFound()
     }
     const settings = await resolveSiteSettings(payload)
-    const discovery = await resolveDiscoveryDocument(payload, { path })
+    const discovery = await resolveDiscoveryDocument(payload, { path, siteId })
     return (
       <>
         <script
@@ -281,9 +302,13 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
             __html: serializeJsonLd(discovery.schema.jsonLd),
           }}
         />
+        <HierarchyBreadcrumbs
+          trail={await publicContentHierarchyTrail(payload, siteId, editorialArticle.contentId)}
+        />
         <EditorialArticleView themeId={settings.themeId} article={editorialArticle} />
+        <ContentArchiveLinks payload={payload} contentId={editorialArticle.contentId} />
         {editorialArticle.contentType === 'article' ? (
-          <main className="mx-auto max-w-4xl px-6 pb-16">
+          <section aria-label="Article discussion" className="mx-auto max-w-4xl px-6 pb-16">
             <CommentSection
               attachedToId={editorialArticle.contentId}
               attachedToCollection="content"
@@ -298,11 +323,29 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
                 isIndexable: Boolean(discovery.indexability.indexable),
               })}
             />
-          </main>
+          </section>
         ) : null}
       </>
     )
   }
+
+  const archive = await loadContentArchive(payload, siteId, path)
+  if (archive)
+    return (
+      <main className="mx-auto max-w-4xl px-6 py-12 space-y-6">
+        <nav aria-label="Breadcrumb">
+          <Link href="/">Home</Link> / <Link href="/articles">Articles</Link>
+        </nav>
+        <h1 className="text-4xl font-bold">{archive.title}</h1>
+        <ul className="space-y-4">
+          {archive.articles.map((article) => (
+            <li key={article.id}>
+              <Link href={String(article.canonicalPath)}>{article.title}</Link>
+            </li>
+          ))}
+        </ul>
+      </main>
+    )
 
   const bookResult = await findIfRegistered(payload, {
     collection: 'books',
@@ -325,7 +368,16 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
     return <BookReader book={book} chapters={chapters} />
   }
 
-  for (const taxonomyCollection of ['topics', 'categories'] as const) {
+  const hierarchy = await loadPublicHierarchy(payload, siteId)
+  const sectionNode = hierarchy.sections.find((item) => item.path === path)
+  if (sectionNode) return <HierarchyView graph={hierarchy} kind="section" node={sectionNode} />
+  const categoryNode = hierarchy.categories.find((item) => item.path === path)
+  if (categoryNode) return <HierarchyView graph={hierarchy} kind="category" node={categoryNode} />
+  const collectionNode = hierarchy.collections.find((item) => item.path === path && item.category)
+  if (collectionNode)
+    return <HierarchyView graph={hierarchy} kind="collection" node={collectionNode} />
+
+  for (const taxonomyCollection of ['topics'] as const) {
     const topicResult = await findIfRegistered(payload, {
       collection: taxonomyCollection,
       where: { and: [{ canonicalPath: { equals: path } }, { site: { equals: siteId } }] },
@@ -368,9 +420,7 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
             dangerouslySetInnerHTML={{ __html: serializeJsonLd(discovery.schema.jsonLd) }}
           />
           <header className="space-y-3">
-            <p className="text-sm text-stone-500">
-              {taxonomyCollection === 'categories' ? 'Category' : 'Topic'}
-            </p>
+            <p className="text-sm text-stone-500">Topic</p>
             <h1 className="text-4xl font-bold">{String(topic.name)}</h1>
             {typeof topic.description === 'string' ? <p>{topic.description}</p> : null}
           </header>

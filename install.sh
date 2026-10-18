@@ -14,6 +14,8 @@ web_bind="${RENEGADE_WEB_BIND:-127.0.0.1:3000}"
 owner_email="${OWNER_EMAIL:-}"
 instance="${RENEGADE_INSTANCE:-}"
 instance_supplied=false
+network_subnet="${RENEGADE_NETWORK_SUBNET:-}"
+network_subnet_supplied=false
 existing_config=false
 
 usage() {
@@ -24,6 +26,7 @@ Usage: ./install.sh [--non-interactive] --instance <slug> --app-url https://cms.
   --trusted-proxy-hops 1|2|3     Default: 1
   --profile Lean|Standard         Default: selected from RAM
   --web-bind 127.0.0.1:3000      Loopback listener only
+  --network-subnet 10.204.1.0/24  Optional private Compose subnet when Docker's pool is exhausted
   --owner-email owner@example.com Optional setup owner lock
 EOF
 }
@@ -46,6 +49,7 @@ while (($#)); do
     --web-bind) web_bind="${2:?missing value}"; shift ;;
     --owner-email) owner_email="${2:?missing value}"; shift ;;
     --instance) instance="${2:?missing value}"; instance_supplied=true; shift ;;
+    --network-subnet) network_subnet="${2:?missing value}"; network_subnet_supplied=true; shift ;;
     --help|-h) usage; exit 0 ;;
     *) fail "unknown argument: $1" ;;
   esac
@@ -80,6 +84,7 @@ if [[ -f "$config_file" ]]; then
   web_bind="$(read_config RENEGADE_WEB_BIND)"
   owner_email="$(read_config OWNER_EMAIL)"
   configured_instance="$(read_config RENEGADE_INSTANCE)"
+  configured_network_subnet="$(read_config RENEGADE_NETWORK_SUBNET)"
   # Older installer-managed environments used the fixed renegade-cms project.
   # Keep that identity so their existing named volumes remain attached.
   configured_instance="${configured_instance:-renegade-cms}"
@@ -87,13 +92,32 @@ if [[ -f "$config_file" ]]; then
     fail "--instance '$instance' does not match this installation's persisted instance '$configured_instance'."
   fi
   instance="$configured_instance"
+  if [[ -n "$configured_network_subnet" ]]; then
+    if $network_subnet_supplied && [[ "$network_subnet" != "$configured_network_subnet" ]]; then
+      fail '--network-subnet does not match the persisted installation subnet.'
+    fi
+    network_subnet="$configured_network_subnet"
+  fi
 fi
 
 if ! $existing_config && [[ -z "$instance" ]]; then
   fail '--instance is required for a new installation.'
 fi
 [[ "$instance" =~ ^[a-z0-9][a-z0-9_-]{0,62}$ ]] || fail 'instance must be 1-63 lowercase letters, digits, hyphens, or underscores and start with a letter or digit.'
+# Fresh installs use a project-specific image name, so building one installation
+# cannot replace the tag another installation will use on its next restart.
+if ! $existing_config; then export RENEGADE_IMAGE="renegade-cms-$instance"; fi
 compose=(docker compose --project-name "$instance" --env-file "$config_file" -f compose.production.yaml)
+if [[ -n "$network_subnet" ]]; then
+  [[ "$network_subnet" =~ ^([0-9]{1,3}\.){3}[0-9]{1,3}/([0-9]{1,2})$ ]] || fail 'RENEGADE_NETWORK_SUBNET must be an IPv4 CIDR.'
+  IFS=./ read -r octet1 octet2 octet3 octet4 prefix <<< "$network_subnet"
+  for octet in "$octet1" "$octet2" "$octet3" "$octet4"; do
+    (( 10#$octet <= 255 )) || fail 'RENEGADE_NETWORK_SUBNET has an invalid IPv4 octet.'
+  done
+  (( 10#$prefix >= 16 && 10#$prefix <= 30 )) || fail 'RENEGADE_NETWORK_SUBNET prefix must be between 16 and 30.'
+  export RENEGADE_NETWORK_SUBNET="$network_subnet"
+  compose+=(-f compose.network.yaml)
+fi
 
 if ! $non_interactive && ! $existing_config; then
   app_url="$(ask 'Public HTTPS URL' "${app_url:-https://cms.example.com}")"
@@ -103,12 +127,14 @@ fi
 [[ "$profile" == Lean || "$profile" == Standard ]] || fail 'profile must be Lean or Standard.'
 [[ -n "$app_url" ]] || fail '--app-url is required in non-interactive mode.'
 [[ "$app_url" =~ ^https://[^/?#]+/?$ && "$app_url" != *localhost* && "$app_url" != *127.0.0.1* ]] || fail 'APP_URL must be a non-loopback HTTPS origin with no path.'
+[[ "$app_url" != *@* ]] || fail 'APP_URL must not contain credentials.'
 [[ "$proxy_mode" == trusted || "$proxy_mode" == direct ]] || fail 'PROXY_MODE must be trusted or direct.'
 [[ "$proxy_hops" =~ ^[1-3]$ ]] || fail 'TRUSTED_PROXY_HOPS must be 1, 2, or 3.'
 [[ "$web_bind" =~ ^127\.0\.0\.1:[0-9]{1,5}$ || "$web_bind" =~ ^\[::1\]:[0-9]{1,5}$ ]] || fail 'RENEGADE_WEB_BIND must be a loopback host and port.'
 [[ -z "$owner_email" || "$owner_email" =~ ^[^[:space:]@]+@[^[:space:]@]+\.[^[:space:]@]+$ ]] || fail 'OWNER_EMAIL is malformed.'
 
 port="${web_bind##*:}"
+(( 10#$port >= 1 && 10#$port <= 65535 )) || fail 'RENEGADE_WEB_BIND port must be between 1 and 65535.'
 if command -v ss >/dev/null && ss -ltn "sport = :$port" | grep -q LISTEN; then fail "port $port is already in use."; fi
 probe="$root/.renegade-install-write-probe-$$"
 touch "$probe" && rm -f "$probe" || fail 'installation directory is not writable.'
@@ -141,6 +167,8 @@ else
     echo "TRUSTED_PROXY_HOPS=$proxy_hops"
     echo "RENEGADE_WEB_BIND=$web_bind"
     echo "RENEGADE_INSTANCE=$instance"
+    echo "RENEGADE_IMAGE=$RENEGADE_IMAGE"
+    [[ -z "$network_subnet" ]] || echo "RENEGADE_NETWORK_SUBNET=$network_subnet"
     echo "DEPLOYMENT_PROFILE=$profile"
     echo "BUILD_SHA=$BUILD_SHA"
     echo 'STORAGE_DRIVER=local'; echo 'MEDIA_DIR=/app/media'; echo 'EMAIL_MODE=disabled'
@@ -150,6 +178,12 @@ else
   mv "$tmp_config" "$config_file"
   unset postgres_password payload_secret
   echo 'Generated .env.production with new secrets (values are not printed).'
+fi
+
+if $existing_config && $network_subnet_supplied && [[ -z "$configured_network_subnet" ]]; then
+  # This is installer-owned configuration. Persist the explicit network choice
+  # so subsequent restarts use the same network without changing data volumes.
+  printf 'RENEGADE_NETWORK_SUBNET=%s\n' "$network_subnet" >> "$config_file"
 fi
 
 "${compose[@]}" config --quiet || fail 'production compose configuration is invalid.'

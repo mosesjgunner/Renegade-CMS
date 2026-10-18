@@ -1,0 +1,18 @@
+{
+    "profile":  "isolated development HTTP runtime; all modules enabled",
+    "app":  "http://localhost:38960",
+    "databaseContainer":  "rc105b-20261018",
+    "databaseImage":  "sha256:00bc86618629af00d2937fdc5a5d63db3ff8450acf52f0636ec813c7f4902929",
+    "database":  "rc105b_release_acceptance",
+    "mediaDir":  "C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\scratch\\rc105b-20261018\\media",
+    "testAuth":  false,
+    "testRoutes":  false,
+    "videoProcessor":  "local-ffmpeg",
+    "ffmpegVersion":  "ffmpeg version N-92722-gf22fcd4483 Copyright (c) 2000-2018 the FFmpeg developers",
+    "ffmpegSha256":  "C8ABC49E7BE62DDE8E12972AF373959E0076A7B8DC8040EB45978E0608F8781E",
+    "ffprobeVersion":  "ffprobe version 2023-02-13-git-2296078397-essentials_build-www.gyan.dev Copyright (c) 2007-2023 the FFmpeg developers",
+    "ffprobeSha256":  "F28C4751E7367205267025AAF0FCFC921E34D9B7EDAA46BD9C8ABAF367FC9051",
+    "fixtureMp4Sha256":  "130753EF6681351A9C23E2DEDBF76D5C27C869B3D79D7D18D6A35D7347375DCC",
+    "productionAppImage":  "unexecuted - development runtime only",
+    "auth":  "canonical persisted operator fixture sessions; no WebAuthn ceremony claimed"
+}

@@ -701,6 +701,7 @@ export const EmailDeliveries: CollectionConfig = {
     update: () => false,
     delete: () => false,
     read: async ({ req }) => {
+      if (!req.payload.collections['email-messages']) return false
       const grant = await resolveOperatorGrantContext(req.payload, req.user)
       if (!grant.authorized) return false
       if (grant.isGlobalOwner) return true
@@ -764,6 +765,12 @@ export const EmailDeliveryEvents: CollectionConfig = {
     update: () => false,
     delete: () => false,
     read: async ({ req }) => {
+      if (
+        !req.payload.collections['email-messages'] ||
+        !req.payload.collections['email-deliveries']
+      ) {
+        return false
+      }
       const grant = await resolveOperatorGrantContext(req.payload, req.user)
       if (!grant.authorized) return false
       if (grant.isGlobalOwner) return true
@@ -938,6 +945,7 @@ export const AutomationRuns: CollectionConfig = {
       const grant = await resolveOperatorGrantContext(req.payload, req.user)
       if (!grant.authorized) return false
       if (grant.isGlobalOwner) return true
+      if (!req.payload.collections['automation-definitions']) return false
       const defs = await req.payload.find({
         collection: 'automation-definitions',
         where: { site: { in: grant.authorizedSiteIds } },
@@ -971,6 +979,12 @@ export const AutomationFailures: CollectionConfig = {
       const grant = await resolveOperatorGrantContext(req.payload, req.user)
       if (!grant.authorized) return false
       if (grant.isGlobalOwner) return true
+      if (
+        !req.payload.collections['automation-definitions'] ||
+        !req.payload.collections['automation-runs']
+      ) {
+        return false
+      }
       const defs = await req.payload.find({
         collection: 'automation-definitions',
         where: { site: { in: grant.authorizedSiteIds } },

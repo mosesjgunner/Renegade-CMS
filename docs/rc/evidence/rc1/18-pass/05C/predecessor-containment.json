@@ -1,0 +1,150 @@
+{
+  "accepted05BOverlay": "1ca1b92a3d390959c8928102f5113a59e2ca30a799d1577ee0b83ebb71fb0882",
+  "paths": [
+    {
+      "path": "src/app/(frontend)/api/media/[id]/variants/route.ts",
+      "accepted05B": "f5791fdd8e8ada8377bb34e68fabeaecdbe3ffc3933f23daa700ed587dff7a14",
+      "current": "f5791fdd8e8ada8377bb34e68fabeaecdbe3ffc3933f23daa700ed587dff7a14",
+      "matches": true
+    },
+    {
+      "path": "src/app/(frontend)/media/[id]/route.ts",
+      "accepted05B": "465856b3d49a078ee7c6630df60409eb1233fe023245d1576f56a53e8b28f0f9",
+      "current": "465856b3d49a078ee7c6630df60409eb1233fe023245d1576f56a53e8b28f0f9",
+      "matches": true
+    },
+    {
+      "path": "src/app/(frontend)/video-media/[id]/[filename]/route.ts",
+      "accepted05B": "cd2160e765264f4591c506b829ad6a98ac44c619e89b210432247eea547643a2",
+      "current": "cd2160e765264f4591c506b829ad6a98ac44c619e89b210432247eea547643a2",
+      "matches": true
+    },
+    {
+      "path": "src/app/(frontend)/video-captions/[id]/route.ts",
+      "accepted05B": "aac68e9f94dcb868a1d781269a11e9b43ce62f3f2a139f5fd54069d789825c59",
+      "current": "aac68e9f94dcb868a1d781269a11e9b43ce62f3f2a139f5fd54069d789825c59",
+      "matches": true
+    },
+    {
+      "path": "src/app/(frontend)/graphics-studio/page.tsx",
+      "accepted05B": "69e08537da00f670a21f5a69cc24dd6fde435a0fe0313c0eb8cdef331768f05c",
+      "current": "69e08537da00f670a21f5a69cc24dd6fde435a0fe0313c0eb8cdef331768f05c",
+      "matches": true
+    },
+    {
+      "path": "src/collections/MediaPublishing.ts",
+      "accepted05B": "ff4ecb9a916f3677d0397adee2cc32418a252debd95111c79bc760e54c6458fa",
+      "current": "ff4ecb9a916f3677d0397adee2cc32418a252debd95111c79bc760e54c6458fa",
+      "matches": true
+    },
+    {
+      "path": "src/modules/editorial/persistence.ts",
+      "accepted05B": "ddea5e1602ff21780ac9f725e00ac0166028a246ef35cc9d732bfe51dac9c2c5",
+      "current": "ddea5e1602ff21780ac9f725e00ac0166028a246ef35cc9d732bfe51dac9c2c5",
+      "matches": true
+    },
+    {
+      "path": "src/modules/graphics/contracts.ts",
+      "accepted05B": "938d960176645a43d0a6201393d10ffd8a42e407b18c11eed3a6c169788ea9f2",
+      "current": "938d960176645a43d0a6201393d10ffd8a42e407b18c11eed3a6c169788ea9f2",
+      "matches": true
+    },
+    {
+      "path": "src/modules/graphics/service.ts",
+      "accepted05B": "ea2105fde95ec99c1c1044e7fba48643fabf5cc9e7c70603e7b76cabbb32aa20",
+      "current": "ea2105fde95ec99c1c1044e7fba48643fabf5cc9e7c70603e7b76cabbb32aa20",
+      "matches": true
+    },
+    {
+      "path": "src/modules/media/audio.ts",
+      "accepted05B": "c37ac1d03182cd0aa6fd729fc2f8a1cf40ddc5857c23684afae55866d1d241f2",
+      "current": "c37ac1d03182cd0aa6fd729fc2f8a1cf40ddc5857c23684afae55866d1d241f2",
+      "matches": true
+    },
+    {
+      "path": "src/modules/media/command-center.ts",
+      "accepted05B": "748d86d828d6e520f4514a8c30e1cfb4824c4451a7a1934424e28a626dfd4b66",
+      "current": "748d86d828d6e520f4514a8c30e1cfb4824c4451a7a1934424e28a626dfd4b66",
+      "matches": true
+    },
+    {
+      "path": "src/modules/media/responsive.tsx",
+      "accepted05B": "a0efc615015d4d7c961d9e471e23476ac31dfdfe66ad59ff4fa0ce437a71f798",
+      "current": "a0efc615015d4d7c961d9e471e23476ac31dfdfe66ad59ff4fa0ce437a71f798",
+      "matches": true
+    },
+    {
+      "path": "src/modules/media/video.ts",
+      "accepted05B": "18bdbbd6f7c0310fe6e67379a192e82ed0ffcb6dadd5c7e7a78c79b1923ab0cf",
+      "current": "18bdbbd6f7c0310fe6e67379a192e82ed0ffcb6dadd5c7e7a78c79b1923ab0cf",
+      "matches": true
+    },
+    {
+      "path": "src/modules/media/video-workflow.ts",
+      "accepted05B": "7e792fb3b6a15eccb16f4d004d2b97259464f323c0abdee0920a2356828d7e33",
+      "current": "7e792fb3b6a15eccb16f4d004d2b97259464f323c0abdee0920a2356828d7e33",
+      "matches": true
+    },
+    {
+      "path": "src/modules/media/workflow.ts",
+      "accepted05B": "29edfe0ca3f461d1a786a8f59cc1270967d271d16fc808af4b5e2da4150fd775",
+      "current": "358eee3c6a35eb630ab5c69425697313e3fa3027bb4091c7dccad01390e6a641",
+      "matches": false
+    },
+    {
+      "path": "tsconfig.json",
+      "accepted05B": "cba9a0f3d33421c4bdfc8aa85083d7242d0b38789e039e141fe7af3cdb65a517",
+      "current": "caf2edc1e8f9830318939c167df5657b2efd2172c3f1e3a2837135a63523780c",
+      "matches": false
+    },
+    {
+      "path": "next-env.d.ts",
+      "accepted05B": "ec5cb5c551c366ade07155f98fe96fad6a1fad96fa293d8be036e5407a9b29e9",
+      "current": "9d4a440ccaa46965c70fee064efa346de500d0deaeba63564cadde0076bf47b3",
+      "matches": false
+    },
+    {
+      "path": "tests/unit/rc1-05b-private-media.test.ts",
+      "accepted05B": "a83206da0afe76c72f122a126f5f795cf8e7d9d0e2aec042bbccb029cfc72db5",
+      "current": "a83206da0afe76c72f122a126f5f795cf8e7d9d0e2aec042bbccb029cfc72db5",
+      "matches": true
+    },
+    {
+      "path": "tests/unit/med-04-audio-metadata.test.ts",
+      "accepted05B": "637ef032d74a6cd31367e57f5e2d9bf02331bc265cfa25f536bc5c3f00e07803",
+      "current": "637ef032d74a6cd31367e57f5e2d9bf02331bc265cfa25f536bc5c3f00e07803",
+      "matches": true
+    },
+    {
+      "path": "tests/rc1-05b/verify.ts",
+      "accepted05B": "7d64d7eb1a2f67af3461f5f1dd934539643874bd139738b9d39f4e8418b07103",
+      "current": "7d64d7eb1a2f67af3461f5f1dd934539643874bd139738b9d39f4e8418b07103",
+      "matches": true
+    },
+    {
+      "path": "tests/rc1-05b/verify-studio.ts",
+      "accepted05B": "f2a64e5a6deda87f71d6c8d5c7ed6f22db5130f344219e7c3585a28df08f47c8",
+      "current": "f2a64e5a6deda87f71d6c8d5c7ed6f22db5130f344219e7c3585a28df08f47c8",
+      "matches": true
+    },
+    {
+      "path": "tests/rc1-05b/run-isolated.ps1",
+      "accepted05B": "a89b12373e176fe19ae80adfb2bc95de529d8082cfd0eb8880867e1f029cd39e",
+      "current": "a89b12373e176fe19ae80adfb2bc95de529d8082cfd0eb8880867e1f029cd39e",
+      "matches": true
+    },
+    {
+      "path": "tests/rc1-05b/manifest.mjs",
+      "accepted05B": "6bc7d20b08ae85cf5f26cacfb4555fe3d086f387635dc802dcbdfa65e430fdab",
+      "current": "6bc7d20b08ae85cf5f26cacfb4555fe3d086f387635dc802dcbdfa65e430fdab",
+      "matches": true
+    },
+    {
+      "path": "tests/rc1-05b/tsconfig.json",
+      "accepted05B": "7ab8e8f0ee0f7abc26ce36f072401c8d82922c3dbb39a5fbff4c7c7c648765e9",
+      "current": "7ab8e8f0ee0f7abc26ce36f072401c8d82922c3dbb39a5fbff4c7c7c648765e9",
+      "matches": true
+    }
+  ],
+  "note": "Unchanged hashes are source containment only. 05B is not reaccepted by 05C; shared workflow and variant dependencies changed."
+}

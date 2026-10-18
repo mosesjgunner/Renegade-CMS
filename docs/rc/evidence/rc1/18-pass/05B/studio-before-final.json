@@ -1,0 +1,26 @@
+{
+  "passed": 19,
+  "failed": 0,
+  "skipped": 0,
+  "checks": [
+    "real FFmpeg worker produces MP4/HLS/poster/contact sheet",
+    "public real video output baseline.mp4",
+    "public real video output hls.m3u8",
+    "public real video output poster.jpg",
+    "public real video output contact-sheet.jpg",
+    "public real video output segment-000.ts",
+    "private video source denies output baseline.mp4",
+    "private video source denies output hls.m3u8",
+    "private video source denies output poster.jpg",
+    "private video source denies output contact-sheet.jpg",
+    "private video source denies output segment-000.ts",
+    "private video source denies output video-original",
+    "public video captions serve exact original",
+    "private caption policy denies its alternate URL",
+    "podcast episode persists exact enclosure facts",
+    "actual podcast RSS advertises real persisted enclosure",
+    "PCM measurement retains source checksum and actual sample-derived loudness",
+    "unsupported audio normalization reports unavailable without fabricated target measurement",
+    "graphics preview loads with honest unavailable generation status"
+  ]
+}

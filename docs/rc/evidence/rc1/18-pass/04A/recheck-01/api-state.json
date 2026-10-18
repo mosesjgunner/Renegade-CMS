@@ -1,0 +1,15 @@
+{
+  "id": "fa63aa8b-a9fe-4231-84c5-0681f1643aab",
+  "path": "/operator-04a-1792323278591",
+  "revision": 6,
+  "blocks": [
+    {
+      "id": "operator-hero",
+      "props": {
+        "title": "Operator published 04A"
+      },
+      "component": "publisher.hero",
+      "componentVersion": 1
+    }
+  ]
+}

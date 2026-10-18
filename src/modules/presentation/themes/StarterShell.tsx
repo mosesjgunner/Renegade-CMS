@@ -34,12 +34,20 @@ export function StarterShell({
 }: ShellProps) {
   return (
     <>
+      <a
+        href="#publication-main"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[10000] focus:bg-white focus:text-black focus:p-3"
+      >
+        Skip to content
+      </a>
       <PublicNavigationBar siteName={siteName} logoUrl={logoUrl} navigation={navigation} />
       {globalHeader}
       {globalAnnouncement}
 
       {/* Main Content Viewport */}
-      <div className="flex-1">{children}</div>
+      <div id="publication-main" tabIndex={-1} className="flex-1">
+        {children}
+      </div>
       {globalCta}
       {consent}
       {globalFooter}

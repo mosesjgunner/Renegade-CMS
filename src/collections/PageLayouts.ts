@@ -1,3 +1,9 @@
+import {
+  operatorSiteCreateAccess,
+  operatorSiteReadAccess,
+  operatorSiteUpdateAccess,
+  preserveRecordRelationshipsAccess,
+} from '../modules/operations/operator-grants'
 import { snapshotLayout } from '../modules/presentation/snapshots'
 import { themes } from '../modules/presentation/registry'
 import { validateLayout, type PageLayout } from '../modules/public/page-builder'
@@ -12,12 +18,16 @@ const staffOnly = ({ req }: { req: { user?: { role?: string } | null } }) =>
 /** Materialized, portable public PageLayout IR. Anonymous reads can never expose drafts. */
 export const PageLayouts: CollectionConfig = {
   slug: 'page-layouts',
-  admin: { useAsTitle: 'path', group: 'Publishing' },
+  admin: {
+    useAsTitle: 'path',
+    group: 'Publishing',
+    components: { edit: { beforeDocumentControls: ['./modules/admin/LayoutEditorLink'] } },
+  },
   access: {
-    create: staffOnly,
-    delete: staffOnly,
+    create: operatorSiteCreateAccess,
+    delete: operatorSiteReadAccess,
     read: ({ req }) => {
-      if (staffOnly({ req })) return true
+      if (staffOnly({ req })) return operatorSiteReadAccess({ req })
       const where: Where = {
         and: [
           { status: { equals: 'published' } },
@@ -27,7 +37,7 @@ export const PageLayouts: CollectionConfig = {
       }
       return where
     },
-    update: staffOnly,
+    update: preserveRecordRelationshipsAccess('page-layouts', ['site'], operatorSiteUpdateAccess),
   },
   hooks: {
     beforeChange: [

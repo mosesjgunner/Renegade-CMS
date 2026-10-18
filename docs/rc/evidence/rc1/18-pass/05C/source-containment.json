@@ -1,0 +1,23 @@
+{
+  "startOverlay": "ebb461435fad2f011ea66c4d3bed8724b54d0181fb4df5f357b78cdf8e658412",
+  "endOverlay": "8fd6ac2d2a3fe5749e112e3e9440333c0adbaccc3f9384e774b06e0f3503592a",
+  "changed": [
+    {
+      "path": "src/app/(frontend)/api/media/[id]/route.ts",
+      "sha256": "8d2b5d15dd4de9d618c062fc47abc8e6657a50df788dd71a51c92821ff824698"
+    },
+    {
+      "path": "src/app/(frontend)/api/media/upload/route.ts",
+      "sha256": "fadc2c6a96b70753f5109a9925f295408208d32ea25278f07b040e967a06a473"
+    },
+    {
+      "path": "tests/rc1-05a/verify.ts",
+      "sha256": "972696da7a5086a511a4a40e4d887bd7e868ee5725171d91b36de66d8cdd13be"
+    },
+    {
+      "path": "tsconfig.json",
+      "sha256": "4851de4d55c36012e484a744e64c023200feb998a660ab3bb25d81091526a108"
+    }
+  ],
+  "exactMatch": false
+}

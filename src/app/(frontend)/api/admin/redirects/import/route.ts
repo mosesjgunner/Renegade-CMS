@@ -1,7 +1,7 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
-import { resolveOperatorGrantContext } from '@/modules/operations/operator-grants'
+import { resolveRedirectSite } from '@/modules/operations/redirect-site'
 import {
   importRedirectRules,
   parseRedirectsCsv,
@@ -25,14 +25,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Import payload content is empty.' }, { status: 400 })
     }
 
-    const grant = await resolveOperatorGrantContext(payload, auth.user)
-    const siteId = new URL(request.url).searchParams.get('siteId') || grant.authorizedSiteIds[0]
-    if (
-      !grant.authorized ||
-      !siteId ||
-      (!grant.isGlobalOwner && !grant.authorizedSiteIds.includes(siteId))
-    )
-      return NextResponse.json({ error: 'Staff site access required.' }, { status: 403 })
+    const siteId = await resolveRedirectSite(payload, auth.user, request)
+    if (!siteId) return NextResponse.json({ error: 'Staff site access required.' }, { status: 403 })
 
     let parsedRules: RedirectRuleInput[] = []
     let parseErrors: string[] = []
@@ -63,12 +57,14 @@ export async function POST(request: Request) {
 
     const importResult = await importRedirectRules(payload, siteId, parsedRules)
 
+    const errors = [...parseErrors, ...importResult.errors]
     return NextResponse.json({
-      success: true,
+      success: errors.length === 0,
+      partial: errors.length > 0 && importResult.created + importResult.updated > 0,
       created: importResult.created,
       updated: importResult.updated,
-      skipped: importResult.skipped,
-      errors: [...parseErrors, ...importResult.errors],
+      skipped: importResult.skipped + parseErrors.length,
+      errors,
       rulesCount: importResult.rules.length,
     })
   } catch (error) {

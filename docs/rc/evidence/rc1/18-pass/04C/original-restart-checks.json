@@ -1,0 +1,19 @@
+{
+  "passed": 12,
+  "failed": 0,
+  "skipped": 0,
+  "checks": [
+    "exact persisted publications/777529c9-cb4d-4b22-ab3b-e059014d9ebc survives restart",
+    "exact persisted content/44371646-ad7d-424d-b486-27905e9b7293 survives restart",
+    "exact persisted page-layouts/bab9a298-645c-4243-a537-275eef8a9d72 survives restart",
+    "exact persisted subscribers/297253b8-fb5e-4c8f-ab49-580394d60bac survives restart",
+    "exact persisted audience-memberships/4e476192-e3bc-45ff-a67e-bd6be81262d9 survives restart",
+    "exact site identity and homepage selection survive restart",
+    "starter original bytes survive restart",
+    "palette survives restart",
+    "public output after restart /",
+    "public output after restart /articles/04c-neighbors-1792331241556",
+    "public output after restart /privacy",
+    "public output after restart /contact"
+  ]
+}

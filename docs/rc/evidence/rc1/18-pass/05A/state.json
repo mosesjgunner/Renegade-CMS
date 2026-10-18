@@ -1,0 +1,34 @@
+{
+  "ownerId": "d7330879-daab-4203-ad64-85b8f0481cd2",
+  "siteAlphaId": "620a9702-c2e2-437e-a87f-d83d6ab5e668",
+  "siteBetaId": "9904bea6-9e4f-4093-96ad-d4b8b41b1e1b",
+  "heroOriginalId": "3af1f391-f990-4ab6-9e5d-ada9cff335b8",
+  "heroReplacementId": "0434cb0c-e55b-4f75-8b3f-61cd1f669fce",
+  "heroReplacementSha256": "ac754d09a8331547ffb05d753130b9f45bfcb5412bbd6259415d51d696ae08c2",
+  "tombstonedId": "1d99a7d8-5ec6-4788-8fd4-8a86de4dfd78",
+  "deletedOrphanId": "8508150c-398d-43a2-bcf3-ab8c9a2a0f2f",
+  "articleId": "106b6b60-cba1-4949-b6ad-af84dfbbea6c",
+  "articlePath": "/articles/media-lifecycle-05a-1792354068149",
+  "diskObjects": [
+    {
+      "label": "hero-original",
+      "storageKey": "620a9702-c2e2-437e-a87f-d83d6ab5e668/d81324bd-e0c5-4c28-ba29-6ea39c681fa4.png",
+      "sha256": "4b51ca27543309d65cf78c8f1830e3c80c04eeb10dbdc0789816e3828b23f2dd"
+    },
+    {
+      "label": "hero-replacement",
+      "storageKey": "620a9702-c2e2-437e-a87f-d83d6ab5e668/df87381b-210c-408c-9f93-3208ee7c4c2a.png",
+      "sha256": "ac754d09a8331547ffb05d753130b9f45bfcb5412bbd6259415d51d696ae08c2"
+    },
+    {
+      "label": "audio-wav",
+      "storageKey": "620a9702-c2e2-437e-a87f-d83d6ab5e668/479deccd-8b97-4722-85e1-c22740a32d9c.wav",
+      "sha256": "8cb25b416fde7f9a310e4613e8ebef51ad69ffccd0bec592971a739f894fafdd"
+    },
+    {
+      "label": "video-mp4",
+      "storageKey": "620a9702-c2e2-437e-a87f-d83d6ab5e668/5b29b7e0-ec44-4481-b74c-32982cdd507f.mp4",
+      "sha256": "b41345a58e552399685e221490d543baeb849cfa463b871ac3935da86d03218b"
+    }
+  ]
+}

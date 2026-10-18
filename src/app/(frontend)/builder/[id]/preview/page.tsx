@@ -1,3 +1,4 @@
+import { checkOperatorRecordAccess } from '@/modules/operations/operator-grants'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import { headers } from 'next/headers'
@@ -21,6 +22,7 @@ export default async function DraftLayoutPreview({
   const auth = await payload.auth({ headers: await headers() })
   if (!['owner', 'administrator', 'staff'].includes(String(auth.user?.role))) notFound()
   const { id } = await params
+  if (!(await checkOperatorRecordAccess(payload, auth.user, 'page-layouts', id))) notFound()
   const { viewport = 'desktop' } = (await searchParams) ?? {}
   const targetViewport = (viewport === 'mobile' || viewport === 'tablet' ? viewport : 'desktop') as
     | 'desktop'

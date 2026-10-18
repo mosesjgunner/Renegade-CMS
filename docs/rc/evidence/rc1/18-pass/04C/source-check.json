@@ -1,0 +1,25 @@
+{
+  "baseCommit": "bb3c0347d6c648e71f0bf7eac646df70fd1b5714",
+  "testedOverlay": "4b70cfc9074c9b0c33c48f113c4f3651db177c7474238c11d8a6f79eae282443",
+  "observedOverlay": "8458fface3956c65675b5344cc7b8e7b32f3d98d0fcb9feb4ed66479fd0b2f5b",
+  "testedPaths": 206,
+  "observedPaths": 207,
+  "verifierPrefixMatches": true,
+  "changed": [
+    {
+      "path": "src/app/(frontend)/[...path]/page.tsx",
+      "sha256": "67b09a17ffed218669314ad06afa5d24758194c4fb72649302e9abdc4ee00dbb"
+    },
+    {
+      "path": "tests/rc1-04c/verify-article.mjs",
+      "sha256": "f0a272abb69df80024137811b8e29b19d5bfa278c622a202fc765aa5cbf83771"
+    },
+    {
+      "path": "tests/rc1-04c/verify.ts",
+      "sha256": "5fe48d80fe10175722205edbe64deaf9414b731dd52ec70d71a942ffe9534aac"
+    }
+  ],
+  "unexpectedChanges": [],
+  "finalObservedPathsChecked": 207,
+  "finalObservedMismatches": []
+}

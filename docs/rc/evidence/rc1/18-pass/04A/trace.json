@@ -1,0 +1,69 @@
+{
+  "checks": 16,
+  "trace": [
+    {
+      "name": "genuine Chromium CTAP2 enrollment and UI passkey login",
+      "passed": true
+    },
+    {
+      "name": "native layout record exposes visual editor entry point",
+      "passed": true
+    },
+    {
+      "name": "draft-only media is unavailable to anonymous readers",
+      "passed": true
+    },
+    {
+      "name": "canonical media upload and visual chooser work",
+      "passed": true
+    },
+    {
+      "name": "duplicate creates a sixth block",
+      "passed": true
+    },
+    {
+      "name": "UI insertion configuration reorder duplicate delete persist",
+      "passed": true
+    },
+    {
+      "name": "text and canonical media persist",
+      "passed": true
+    },
+    {
+      "name": "reload restores all five blocks in order",
+      "passed": true
+    },
+    {
+      "name": "mobile canvas width is 375",
+      "passed": true
+    },
+    {
+      "name": "visual configuration changes rendered alignment and spacing",
+      "passed": true
+    },
+    {
+      "name": "draft preview renders saved text navigation and media",
+      "passed": true
+    },
+    {
+      "name": "anonymous public output is actual published visual page",
+      "passed": true
+    },
+    {
+      "name": "published image serves actual original bytes to anonymous browser",
+      "passed": true
+    },
+    {
+      "name": "later draft does not change published snapshot",
+      "passed": true
+    },
+    {
+      "name": "anonymous native API excludes private draft blocks and history",
+      "passed": true
+    },
+    {
+      "name": "rollback restores persisted blocks and live canvas",
+      "passed": true
+    }
+  ]
+}

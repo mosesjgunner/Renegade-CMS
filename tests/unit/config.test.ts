@@ -66,6 +66,30 @@ describe('loadConfig', () => {
     }
   })
 
+  it('rejects malformed database URLs before opening a connection without exposing credentials', () => {
+    for (const databaseUrl of [
+      'postgresql://operator:private-value@/renegade',
+      'postgresql://operator:private-value@localhost:70000/renegade',
+      'https://operator:private-value@localhost/renegade',
+      'postgresql://localhost/renegade',
+    ]) {
+      expect(() => loadConfig({ ...valid, DATABASE_URL: databaseUrl })).toThrow(
+        'Invalid configuration: DATABASE_URL',
+      )
+      try {
+        loadConfig({ ...valid, DATABASE_URL: databaseUrl })
+      } catch (error) {
+        expect(String(error)).not.toContain('private-value')
+      }
+    }
+  })
+
+  it('rejects credentials embedded in the public origin', () => {
+    expect(() =>
+      loadConfig({ ...production, APP_URL: 'https://operator:private-value@cms.example.test' }),
+    ).toThrow('Invalid configuration: APP_URL')
+  })
+
   it('requires a separate token when smoke routes are enabled', () => {
     expect(() => loadConfig({ ...valid, ENABLE_TEST_ROUTES: 'true' })).toThrow(/SMOKE_TEST_TOKEN/)
   })

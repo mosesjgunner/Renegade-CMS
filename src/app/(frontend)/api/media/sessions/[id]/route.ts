@@ -35,7 +35,9 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   const auth = await payload.auth({ headers: request.headers })
   try {
     const range = request.headers.get('content-range')?.match(/^bytes (\d+)-(\d+)\/(\d+)$/)
-    const index = Number(request.headers.get('x-upload-chunk-index'))
+    const index = Number(
+      request.headers.get('x-upload-chunk-index') ?? request.headers.get('x-chunk-index'),
+    )
     if (!range)
       throw new MediaWorkflowError('Content-Range is required for a resumable upload chunk.')
     const bytes = new Uint8Array(await request.arrayBuffer())
@@ -56,6 +58,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     return respond(error)
   }
 }
+export const PUT = PATCH
 export async function POST(request: Request, { params }: { params: Promise<{ id: string }> }) {
   const payload = await getPayload({ config })
   const auth = await payload.auth({ headers: request.headers })

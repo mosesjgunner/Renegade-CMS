@@ -159,14 +159,27 @@ export function loadConfig(env: Record<string, string | undefined> = process.env
     invalid.push('NETWORK_ALLOW_PRIVATE_DEVELOPMENT')
   if (networkingEnabled && production && !appUrl.startsWith('https://')) invalid.push('APP_URL')
 
-  if (databaseUrl && !/^postgres(ql)?:\/\//.test(databaseUrl)) invalid.push('DATABASE_URL')
-  if (production) {
+  if (databaseUrl) {
     try {
       const database = new URL(databaseUrl)
-      if (isPlaceholder(database.password) || /renegade_dev_only/i.test(databaseUrl))
+      if (
+        !['postgres:', 'postgresql:'].includes(database.protocol) ||
+        !database.hostname ||
+        !database.username ||
+        !database.pathname ||
+        database.pathname === '/' ||
+        (database.port &&
+          (!/^\d+$/.test(database.port) ||
+            Number(database.port) < 1 ||
+            Number(database.port) > 65535)) ||
+        (production &&
+          (!database.password ||
+            isPlaceholder(database.password) ||
+            /renegade_dev_only/i.test(databaseUrl)))
+      )
         invalid.push('DATABASE_URL')
     } catch {
-      // The protocol validation above reports DATABASE_URL for malformed URLs.
+      invalid.push('DATABASE_URL')
     }
   }
   if (
@@ -183,6 +196,8 @@ export function loadConfig(env: Record<string, string | undefined> = process.env
       if (
         !['http:', 'https:'].includes(url.protocol) ||
         url.pathname !== '/' ||
+        url.username ||
+        url.password ||
         url.search ||
         url.hash
       ) {

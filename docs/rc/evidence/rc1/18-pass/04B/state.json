@@ -1,0 +1,883 @@
+{
+  "site": "d4859048-6e93-4119-8e1c-43bc78cfe6d6",
+  "path": "/canonical-04b-1792328347990",
+  "theme": {
+    "revision": 8,
+    "active": {
+      "id": "neutral-starter",
+      "digest": "4fa1f5b8e862384aaa242048b9087e3f5e5e515df80d8fa2acd9364448fc18e3",
+      "tokens": {
+        "spacing.normal": "2rem"
+      },
+      "version": "1.0.0",
+      "renderer": "neutral-starter"
+    },
+    "draft": null,
+    "previous": {
+      "id": "neutral-starter",
+      "digest": "43f5f25fd5d93c22c1e2cc105be740c26dd4432cc4176cb13dc69eda7a08bef9",
+      "tokens": {
+        "radii.normal": "0.75rem",
+        "spacing.normal": "2rem"
+      },
+      "version": "1.1.0",
+      "renderer": "neutral-starter"
+    }
+  },
+  "records": [
+    {
+      "collection": "content",
+      "doc": {
+        "id": "e7d13651-07df-4a42-bacf-0bff46df3108",
+        "site": "d4859048-6e93-4119-8e1c-43bc78cfe6d6",
+        "publication": "e2654135-af8c-4f5d-968b-e272febf495a",
+        "space": null,
+        "owner": null,
+        "contentType": "page",
+        "title": "Canonical 04B",
+        "body": {
+          "root": {
+            "type": "root",
+            "format": "",
+            "indent": 0,
+            "version": 1,
+            "children": [
+              {
+                "type": "paragraph",
+                "format": "",
+                "indent": 0,
+                "version": 1,
+                "children": [
+                  {
+                    "mode": "normal",
+                    "text": "Content preserved across theme switching 04B",
+                    "type": "text",
+                    "style": "",
+                    "detail": 0,
+                    "format": 0,
+                    "version": 1
+                  }
+                ],
+                "direction": "ltr"
+              }
+            ],
+            "direction": "ltr"
+          }
+        },
+        "summary": null,
+        "subtitle": null,
+        "excerpt": null,
+        "authors": [],
+        "sections": [],
+        "categories": [],
+        "collections": [],
+        "sortOrder": 0,
+        "topics": [],
+        "tags": [],
+        "series": [],
+        "slug": "canonical-04b-1792328347990",
+        "pathOverride": false,
+        "canonicalPath": "/canonical-04b-1792328347990",
+        "parentPage": null,
+        "pageTemplate": "standard",
+        "featured": false,
+        "pinned": false,
+        "readingTimeMinutes": null,
+        "tableOfContents": null,
+        "relatedContent": [],
+        "correctionNotices": [],
+        "changeNotes": [],
+        "heroMedia": null,
+        "visibility": "public",
+        "status": "published",
+        "publishedAt": null,
+        "updatedAtEditorial": null,
+        "commentsPolicy": "open",
+        "publicChangeHistoryPolicy": "summary",
+        "seoTitle": null,
+        "seoDescription": null,
+        "seoCanonicalURL": null,
+        "seoImageAlt": null,
+        "seoFocusKeyphrase": null,
+        "seoNoIndex": false,
+        "seoKeywords": null,
+        "discoveryOverrides": null,
+        "relationships": [],
+        "seoOverride": null,
+        "socialOverride": null,
+        "structuredDataMode": "none",
+        "structuredDataPrimaryType": null,
+        "structuredDataSourceCollection": null,
+        "structuredDataSourceIdentifier": null,
+        "structuredDataManual": null,
+        "structuredDataVersion": 1,
+        "knowledgeGraphProjectionStatus": "disabled",
+        "knowledgeGraphNodeKey": null,
+        "knowledgeGraphProjectionBoundary": null,
+        "importSourceSystem": null,
+        "importSourceIdentifier": null,
+        "importSourceChecksum": null,
+        "exportFormatVersion": 1,
+        "exportOwnership": null,
+        "revisionCompatibility": null,
+        "auditMetadata": null,
+        "retentionMode": "permanent",
+        "retentionExpiresAt": null,
+        "retentionHold": "none",
+        "removeFromDiscovery": false,
+        "tombstoneLabel": null,
+        "updatedAt": "2026-10-18T12:59:09.319Z",
+        "createdAt": "2026-10-18T12:59:08.970Z"
+      }
+    },
+    {
+      "collection": "page-layouts",
+      "doc": {
+        "id": "a93120a0-f2a9-498c-95db-c4c950b0bb26",
+        "publishedPresentation": {
+          "path": "/media-04b-1792328347990",
+          "version": 1,
+          "document": {
+            "slots": {
+              "main": [
+                {
+                  "id": "media-04b",
+                  "props": {
+                    "media": {
+                      "id": "e3cac1a1-4ae2-4abc-badd-7b4b0c052eb4",
+                      "href": "/media/e3cac1a1-4ae2-4abc-badd-7b4b0c052eb4",
+                      "label": "04B red image",
+                      "siteId": "d4859048-6e93-4119-8e1c-43bc78cfe6d6"
+                    },
+                    "title": "04B media reference"
+                  },
+                  "component": "publisher.hero",
+                  "componentVersion": 1
+                }
+              ]
+            },
+            "theme": {
+              "id": "neutral-starter",
+              "version": "1.0.0"
+            },
+            "siteId": "d4859048-6e93-4119-8e1c-43bc78cfe6d6",
+            "surface": "layout",
+            "version": 1,
+            "template": {
+              "id": "layout",
+              "version": "1.0.0"
+            }
+          },
+          "revision": 2,
+          "visibility": "public"
+        },
+        "site": "d4859048-6e93-4119-8e1c-43bc78cfe6d6",
+        "publication": null,
+        "space": null,
+        "name": null,
+        "path": "/media-04b-1792328347990",
+        "themeId": "neutral-starter",
+        "surface": "page",
+        "slot": "main",
+        "templateId": null,
+        "templateVersion": null,
+        "templateMode": null,
+        "isRetired": false,
+        "category": null,
+        "layoutVersion": 1,
+        "status": "published",
+        "visibility": "public",
+        "blocks": [
+          {
+            "id": "media-04b",
+            "props": {
+              "media": {
+                "id": "e3cac1a1-4ae2-4abc-badd-7b4b0c052eb4",
+                "href": "/media/e3cac1a1-4ae2-4abc-badd-7b4b0c052eb4",
+                "label": "04B red image",
+                "siteId": "d4859048-6e93-4119-8e1c-43bc78cfe6d6"
+              },
+              "title": "04B media reference"
+            },
+            "component": "publisher.hero",
+            "componentVersion": 1
+          }
+        ],
+        "unknownBlocks": [],
+        "revision": 2,
+        "publishedRevision": 2,
+        "revisionHistory": [
+          {
+            "blocks": [
+              {
+                "id": "media-04b",
+                "props": {
+                  "media": {
+                    "id": "e3cac1a1-4ae2-4abc-badd-7b4b0c052eb4",
+                    "href": "/media/e3cac1a1-4ae2-4abc-badd-7b4b0c052eb4",
+                    "label": "04B red image",
+                    "siteId": "d4859048-6e93-4119-8e1c-43bc78cfe6d6"
+                  },
+                  "title": "04B media reference"
+                },
+                "component": "publisher.hero",
+                "componentVersion": 1
+              }
+            ],
+            "savedAt": "2026-10-18T12:59:17.934Z",
+            "revision": 2
+          }
+        ],
+        "retentionMode": "permanent",
+        "retentionExpiresAt": null,
+        "retentionHold": "none",
+        "removeFromDiscovery": false,
+        "tombstoneLabel": null,
+        "updatedAt": "2026-10-18T12:59:17.981Z",
+        "createdAt": "2026-10-18T12:59:12.287Z"
+      }
+    },
+    {
+      "collection": "page-layouts",
+      "doc": {
+        "id": "12785fc2-7b1b-4674-8901-a37489f26f2a",
+        "publishedPresentation": {
+          "path": "__global__/header-1792328347990",
+          "version": 1,
+          "document": {
+            "slots": {
+              "main": [],
+              "header": [
+                {
+                  "id": "cta-04b",
+                  "props": {
+                    "body": "Preserved global region",
+                    "link": {
+                      "id": "content:e7d13651-07df-4a42-bacf-0bff46df3108",
+                      "href": "/canonical-04b-1792328347990",
+                      "label": "Read",
+                      "siteId": "d4859048-6e93-4119-8e1c-43bc78cfe6d6"
+                    },
+                    "title": "04B header edited"
+                  },
+                  "component": "publisher.cta",
+                  "componentVersion": 1
+                }
+              ]
+            },
+            "theme": {
+              "id": "neutral-starter",
+              "version": "1.0.0"
+            },
+            "siteId": "d4859048-6e93-4119-8e1c-43bc78cfe6d6",
+            "surface": "layout",
+            "version": 1,
+            "template": {
+              "id": "layout",
+              "version": "1.0.0"
+            }
+          },
+          "revision": 3,
+          "visibility": "public"
+        },
+        "site": "d4859048-6e93-4119-8e1c-43bc78cfe6d6",
+        "publication": null,
+        "space": null,
+        "name": "04B header",
+        "path": "__global__/header-1792328347990",
+        "themeId": "neutral-starter",
+        "surface": "global",
+        "slot": "header",
+        "templateId": null,
+        "templateVersion": null,
+        "templateMode": null,
+        "isRetired": false,
+        "category": null,
+        "layoutVersion": 1,
+        "status": "published",
+        "visibility": "public",
+        "blocks": [
+          {
+            "id": "cta-04b",
+            "props": {
+              "body": "Preserved global region",
+              "link": {
+                "id": "content:e7d13651-07df-4a42-bacf-0bff46df3108",
+                "href": "/canonical-04b-1792328347990",
+                "label": "Read",
+                "siteId": "d4859048-6e93-4119-8e1c-43bc78cfe6d6"
+              },
+              "title": "04B header edited"
+            },
+            "component": "publisher.cta",
+            "componentVersion": 1
+          }
+        ],
+        "unknownBlocks": [],
+        "revision": 3,
+        "publishedRevision": 3,
+        "revisionHistory": [
+          {
+            "blocks": [
+              {
+                "id": "cta-04b",
+                "props": {
+                  "body": "Preserved global region",
+                  "link": {
+                    "id": "content:e7d13651-07df-4a42-bacf-0bff46df3108",
+                    "href": "/canonical-04b-1792328347990",
+                    "label": "Read",
+                    "siteId": "d4859048-6e93-4119-8e1c-43bc78cfe6d6"
+                  },
+                  "title": "04B header original"
+                },
+                "component": "publisher.cta",
+                "componentVersion": 1
+              }
+            ],
+            "savedAt": "2026-10-18T12:59:19.988Z",
+            "revision": 2
+          },
+          {
+            "blocks": [
+              {
+                "id": "cta-04b",
+                "props": {
+                  "body": "Preserved global region",
+                  "link": {
+                    "id": "content:e7d13651-07df-4a42-bacf-0bff46df3108",
+                    "href": "/canonical-04b-1792328347990",
+                    "label": "Read",
+                    "siteId": "d4859048-6e93-4119-8e1c-43bc78cfe6d6"
+                  },
+                  "title": "04B header edited"
+                },
+                "component": "publisher.cta",
+                "componentVersion": 1
+              }
+            ],
+            "savedAt": "2026-10-18T12:59:23.627Z",
+            "revision": 3
+          }
+        ],
+        "retentionMode": "permanent",
+        "retentionExpiresAt": null,
+        "retentionHold": "none",
+        "removeFromDiscovery": false,
+        "tombstoneLabel": null,
+        "updatedAt": "2026-10-18T12:59:23.643Z",
+        "createdAt": "2026-10-18T12:59:18.088Z"
+      }
+    },
+    {
+      "collection": "page-layouts",
+      "doc": {
+        "id": "baf9f4a4-123c-40d4-9ebd-8791a7498b9e",
+        "publishedPresentation": {
+          "path": "__global__/footer-1792328347990",
+          "version": 1,
+          "document": {
+            "slots": {
+              "main": [],
+              "footer": [
+                {
+                  "id": "cta-04b",
+                  "props": {
+                    "body": "Preserved global region",
+                    "link": {
+                      "id": "content:e7d13651-07df-4a42-bacf-0bff46df3108",
+                      "href": "/canonical-04b-1792328347990",
+                      "label": "Read",
+                      "siteId": "d4859048-6e93-4119-8e1c-43bc78cfe6d6"
+                    },
+                    "title": "04B footer edited"
+                  },
+                  "component": "publisher.cta",
+                  "componentVersion": 1
+                }
+              ]
+            },
+            "theme": {
+              "id": "neutral-starter",
+              "version": "1.0.0"
+            },
+            "siteId": "d4859048-6e93-4119-8e1c-43bc78cfe6d6",
+            "surface": "layout",
+            "version": 1,
+            "template": {
+              "id": "layout",
+              "version": "1.0.0"
+            }
+          },
+          "revision": 3,
+          "visibility": "public"
+        },
+        "site": "d4859048-6e93-4119-8e1c-43bc78cfe6d6",
+        "publication": null,
+        "space": null,
+        "name": "04B footer",
+        "path": "__global__/footer-1792328347990",
+        "themeId": "neutral-starter",
+        "surface": "global",
+        "slot": "footer",
+        "templateId": null,
+        "templateVersion": null,
+        "templateMode": null,
+        "isRetired": false,
+        "category": null,
+        "layoutVersion": 1,
+        "status": "published",
+        "visibility": "public",
+        "blocks": [
+          {
+            "id": "cta-04b",
+            "props": {
+              "body": "Preserved global region",
+              "link": {
+                "id": "content:e7d13651-07df-4a42-bacf-0bff46df3108",
+                "href": "/canonical-04b-1792328347990",
+                "label": "Read",
+                "siteId": "d4859048-6e93-4119-8e1c-43bc78cfe6d6"
+              },
+              "title": "04B footer edited"
+            },
+            "component": "publisher.cta",
+            "componentVersion": 1
+          }
+        ],
+        "unknownBlocks": [],
+        "revision": 3,
+        "publishedRevision": 3,
+        "revisionHistory": [
+          {
+            "blocks": [
+              {
+                "id": "cta-04b",
+                "props": {
+                  "body": "Preserved global region",
+                  "link": {
+                    "id": "content:e7d13651-07df-4a42-bacf-0bff46df3108",
+                    "href": "/canonical-04b-1792328347990",
+                    "label": "Read",
+                    "siteId": "d4859048-6e93-4119-8e1c-43bc78cfe6d6"
+                  },
+                  "title": "04B footer original"
+                },
+                "component": "publisher.cta",
+                "componentVersion": 1
+              }
+            ],
+            "savedAt": "2026-10-18T12:59:25.643Z",
+            "revision": 2
+          },
+          {
+            "blocks": [
+              {
+                "id": "cta-04b",
+                "props": {
+                  "body": "Preserved global region",
+                  "link": {
+                    "id": "content:e7d13651-07df-4a42-bacf-0bff46df3108",
+                    "href": "/canonical-04b-1792328347990",
+                    "label": "Read",
+                    "siteId": "d4859048-6e93-4119-8e1c-43bc78cfe6d6"
+                  },
+                  "title": "04B footer edited"
+                },
+                "component": "publisher.cta",
+                "componentVersion": 1
+              }
+            ],
+            "savedAt": "2026-10-18T12:59:27.760Z",
+            "revision": 3
+          }
+        ],
+        "retentionMode": "permanent",
+        "retentionExpiresAt": null,
+        "retentionHold": "none",
+        "removeFromDiscovery": false,
+        "tombstoneLabel": null,
+        "updatedAt": "2026-10-18T12:59:27.777Z",
+        "createdAt": "2026-10-18T12:59:23.733Z"
+      }
+    },
+    {
+      "collection": "page-layouts",
+      "doc": {
+        "id": "966ffd57-bf6e-4396-a5de-c37f8b8b847f",
+        "publishedPresentation": {
+          "path": "__global__/announcement-1792328347990",
+          "version": 1,
+          "document": {
+            "slots": {
+              "main": [],
+              "announcement": [
+                {
+                  "id": "cta-04b",
+                  "props": {
+                    "body": "Preserved global region",
+                    "link": {
+                      "id": "content:e7d13651-07df-4a42-bacf-0bff46df3108",
+                      "href": "/canonical-04b-1792328347990",
+                      "label": "Read",
+                      "siteId": "d4859048-6e93-4119-8e1c-43bc78cfe6d6"
+                    },
+                    "title": "04B announcement edited"
+                  },
+                  "component": "publisher.cta",
+                  "componentVersion": 1
+                }
+              ]
+            },
+            "theme": {
+              "id": "neutral-starter",
+              "version": "1.0.0"
+            },
+            "siteId": "d4859048-6e93-4119-8e1c-43bc78cfe6d6",
+            "surface": "layout",
+            "version": 1,
+            "template": {
+              "id": "layout",
+              "version": "1.0.0"
+            }
+          },
+          "revision": 3,
+          "visibility": "public"
+        },
+        "site": "d4859048-6e93-4119-8e1c-43bc78cfe6d6",
+        "publication": null,
+        "space": null,
+        "name": "04B announcement",
+        "path": "__global__/announcement-1792328347990",
+        "themeId": "neutral-starter",
+        "surface": "global",
+        "slot": "announcement",
+        "templateId": null,
+        "templateVersion": null,
+        "templateMode": null,
+        "isRetired": false,
+        "category": null,
+        "layoutVersion": 1,
+        "status": "published",
+        "visibility": "public",
+        "blocks": [
+          {
+            "id": "cta-04b",
+            "props": {
+              "body": "Preserved global region",
+              "link": {
+                "id": "content:e7d13651-07df-4a42-bacf-0bff46df3108",
+                "href": "/canonical-04b-1792328347990",
+                "label": "Read",
+                "siteId": "d4859048-6e93-4119-8e1c-43bc78cfe6d6"
+              },
+              "title": "04B announcement edited"
+            },
+            "component": "publisher.cta",
+            "componentVersion": 1
+          }
+        ],
+        "unknownBlocks": [],
+        "revision": 3,
+        "publishedRevision": 3,
+        "revisionHistory": [
+          {
+            "blocks": [
+              {
+                "id": "cta-04b",
+                "props": {
+                  "body": "Preserved global region",
+                  "link": {
+                    "id": "content:e7d13651-07df-4a42-bacf-0bff46df3108",
+                    "href": "/canonical-04b-1792328347990",
+                    "label": "Read",
+                    "siteId": "d4859048-6e93-4119-8e1c-43bc78cfe6d6"
+                  },
+                  "title": "04B announcement original"
+                },
+                "component": "publisher.cta",
+                "componentVersion": 1
+              }
+            ],
+            "savedAt": "2026-10-18T12:59:30.678Z",
+            "revision": 2
+          },
+          {
+            "blocks": [
+              {
+                "id": "cta-04b",
+                "props": {
+                  "body": "Preserved global region",
+                  "link": {
+                    "id": "content:e7d13651-07df-4a42-bacf-0bff46df3108",
+                    "href": "/canonical-04b-1792328347990",
+                    "label": "Read",
+                    "siteId": "d4859048-6e93-4119-8e1c-43bc78cfe6d6"
+                  },
+                  "title": "04B announcement edited"
+                },
+                "component": "publisher.cta",
+                "componentVersion": 1
+              }
+            ],
+            "savedAt": "2026-10-18T12:59:32.446Z",
+            "revision": 3
+          }
+        ],
+        "retentionMode": "permanent",
+        "retentionExpiresAt": null,
+        "retentionHold": "none",
+        "removeFromDiscovery": false,
+        "tombstoneLabel": null,
+        "updatedAt": "2026-10-18T12:59:32.469Z",
+        "createdAt": "2026-10-18T12:59:27.870Z"
+      }
+    },
+    {
+      "collection": "page-layouts",
+      "doc": {
+        "id": "29ef3489-fb31-4b20-903e-d24189f3a2f7",
+        "publishedPresentation": {
+          "path": "__global__/cta-1792328347990",
+          "version": 1,
+          "document": {
+            "slots": {
+              "cta": [
+                {
+                  "id": "cta-04b",
+                  "props": {
+                    "body": "Preserved global region",
+                    "link": {
+                      "id": "content:e7d13651-07df-4a42-bacf-0bff46df3108",
+                      "href": "/canonical-04b-1792328347990",
+                      "label": "Read",
+                      "siteId": "d4859048-6e93-4119-8e1c-43bc78cfe6d6"
+                    },
+                    "title": "04B cta edited"
+                  },
+                  "component": "publisher.cta",
+                  "componentVersion": 1
+                }
+              ],
+              "main": []
+            },
+            "theme": {
+              "id": "neutral-starter",
+              "version": "1.0.0"
+            },
+            "siteId": "d4859048-6e93-4119-8e1c-43bc78cfe6d6",
+            "surface": "layout",
+            "version": 1,
+            "template": {
+              "id": "layout",
+              "version": "1.0.0"
+            }
+          },
+          "revision": 3,
+          "visibility": "public"
+        },
+        "site": "d4859048-6e93-4119-8e1c-43bc78cfe6d6",
+        "publication": null,
+        "space": null,
+        "name": "04B cta",
+        "path": "__global__/cta-1792328347990",
+        "themeId": "neutral-starter",
+        "surface": "global",
+        "slot": "cta",
+        "templateId": null,
+        "templateVersion": null,
+        "templateMode": null,
+        "isRetired": false,
+        "category": null,
+        "layoutVersion": 1,
+        "status": "published",
+        "visibility": "public",
+        "blocks": [
+          {
+            "id": "cta-04b",
+            "props": {
+              "body": "Preserved global region",
+              "link": {
+                "id": "content:e7d13651-07df-4a42-bacf-0bff46df3108",
+                "href": "/canonical-04b-1792328347990",
+                "label": "Read",
+                "siteId": "d4859048-6e93-4119-8e1c-43bc78cfe6d6"
+              },
+              "title": "04B cta edited"
+            },
+            "component": "publisher.cta",
+            "componentVersion": 1
+          }
+        ],
+        "unknownBlocks": [],
+        "revision": 3,
+        "publishedRevision": 3,
+        "revisionHistory": [
+          {
+            "blocks": [
+              {
+                "id": "cta-04b",
+                "props": {
+                  "body": "Preserved global region",
+                  "link": {
+                    "id": "content:e7d13651-07df-4a42-bacf-0bff46df3108",
+                    "href": "/canonical-04b-1792328347990",
+                    "label": "Read",
+                    "siteId": "d4859048-6e93-4119-8e1c-43bc78cfe6d6"
+                  },
+                  "title": "04B cta original"
+                },
+                "component": "publisher.cta",
+                "componentVersion": 1
+              }
+            ],
+            "savedAt": "2026-10-18T12:59:35.496Z",
+            "revision": 2
+          },
+          {
+            "blocks": [
+              {
+                "id": "cta-04b",
+                "props": {
+                  "body": "Preserved global region",
+                  "link": {
+                    "id": "content:e7d13651-07df-4a42-bacf-0bff46df3108",
+                    "href": "/canonical-04b-1792328347990",
+                    "label": "Read",
+                    "siteId": "d4859048-6e93-4119-8e1c-43bc78cfe6d6"
+                  },
+                  "title": "04B cta edited"
+                },
+                "component": "publisher.cta",
+                "componentVersion": 1
+              }
+            ],
+            "savedAt": "2026-10-18T12:59:37.209Z",
+            "revision": 3
+          }
+        ],
+        "retentionMode": "permanent",
+        "retentionExpiresAt": null,
+        "retentionHold": "none",
+        "removeFromDiscovery": false,
+        "tombstoneLabel": null,
+        "updatedAt": "2026-10-18T12:59:37.222Z",
+        "createdAt": "2026-10-18T12:59:32.552Z"
+      }
+    },
+    {
+      "collection": "page-layouts",
+      "doc": {
+        "id": "4238d714-b250-4708-b088-c4259e799ba9",
+        "publishedPresentation": {
+          "path": "__pattern__/04b-reusable-f1e53a40",
+          "version": 1,
+          "document": {
+            "slots": {
+              "main": [
+                {
+                  "id": "cta-04b",
+                  "props": {
+                    "body": "Preserved global region",
+                    "link": {
+                      "id": "content:e7d13651-07df-4a42-bacf-0bff46df3108",
+                      "href": "/canonical-04b-1792328347990",
+                      "label": "Read",
+                      "siteId": "d4859048-6e93-4119-8e1c-43bc78cfe6d6"
+                    },
+                    "title": "04B reusable"
+                  },
+                  "component": "publisher.cta",
+                  "componentVersion": 1
+                }
+              ]
+            },
+            "theme": {
+              "id": "neutral-starter",
+              "version": "1.0.0"
+            },
+            "siteId": "d4859048-6e93-4119-8e1c-43bc78cfe6d6",
+            "surface": "layout",
+            "version": 1,
+            "template": {
+              "id": "layout",
+              "version": "1.0.0"
+            }
+          },
+          "revision": 1,
+          "visibility": "public"
+        },
+        "site": "d4859048-6e93-4119-8e1c-43bc78cfe6d6",
+        "publication": null,
+        "space": null,
+        "name": "04B reusable",
+        "path": "__pattern__/04b-reusable-f1e53a40",
+        "themeId": "neutral-starter",
+        "surface": "pattern",
+        "slot": "main",
+        "templateId": null,
+        "templateVersion": null,
+        "templateMode": null,
+        "isRetired": false,
+        "category": "Sections",
+        "layoutVersion": 1,
+        "status": "published",
+        "visibility": "public",
+        "blocks": [
+          {
+            "id": "cta-04b",
+            "props": {
+              "body": "Preserved global region",
+              "link": {
+                "id": "content:e7d13651-07df-4a42-bacf-0bff46df3108",
+                "href": "/canonical-04b-1792328347990",
+                "label": "Read",
+                "siteId": "d4859048-6e93-4119-8e1c-43bc78cfe6d6"
+              },
+              "title": "04B reusable"
+            },
+            "component": "publisher.cta",
+            "componentVersion": 1
+          }
+        ],
+        "unknownBlocks": [],
+        "revision": 1,
+        "publishedRevision": 1,
+        "revisionHistory": [
+          {
+            "action": "created",
+            "blocks": [
+              {
+                "id": "cta-04b",
+                "props": {
+                  "body": "Preserved global region",
+                  "link": {
+                    "id": "content:e7d13651-07df-4a42-bacf-0bff46df3108",
+                    "href": "/canonical-04b-1792328347990",
+                    "label": "Read",
+                    "siteId": "d4859048-6e93-4119-8e1c-43bc78cfe6d6"
+                  },
+                  "title": "04B reusable"
+                },
+                "component": "publisher.cta",
+                "componentVersion": 1
+              }
+            ],
+            "savedAt": "2026-10-18T12:59:38.838Z",
+            "revision": 1
+          }
+        ],
+        "retentionMode": "permanent",
+        "retentionExpiresAt": null,
+        "retentionHold": "none",
+        "removeFromDiscovery": false,
+        "tombstoneLabel": null,
+        "updatedAt": "2026-10-18T12:59:38.846Z",
+        "createdAt": "2026-10-18T12:59:38.845Z"
+      }
+    }
+  ],
+  "asset": "e3cac1a1-4ae2-4abc-badd-7b4b0c052eb4",
+  "assetHash": "2d8f8db19199ff9ad4399a1504f2acc62f012a1f7181e693f4aed5eee098eba9",
+  "mediaPath": "/media-04b-1792328347990"
+}

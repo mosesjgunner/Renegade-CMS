@@ -1,0 +1,6 @@
+{
+  "passed": 0,
+  "failed": 1,
+  "checks": [],
+  "error": "AssertionError [ERR_ASSERTION]: real FFmpeg worker produces MP4/HLS/poster/contact sheet"
+}

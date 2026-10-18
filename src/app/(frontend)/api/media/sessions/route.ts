@@ -3,8 +3,11 @@ import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
 
 import { loadConfig } from '@/modules/core/config'
-import { createUploadSession } from '@/modules/media/upload-sessions'
-import { MediaWorkflowError } from '@/modules/media/workflow'
+import {
+  cleanupExpiredUploadSessions,
+  createUploadSession,
+} from '@/modules/media/upload-sessions'
+import { assertMediaPermission, MediaWorkflowError } from '@/modules/media/workflow'
 
 export const runtime = 'nodejs'
 
@@ -43,6 +46,28 @@ export async function POST(request: Request) {
     const status = error instanceof MediaWorkflowError ? error.status : 400
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Unable to start upload.' },
+      { status },
+    )
+  }
+}
+
+export async function DELETE(request: Request) {
+  const payload = await getPayload({ config })
+  const auth = await payload.auth({ headers: request.headers })
+  try {
+    const siteId = new URL(request.url).searchParams.get('siteId') ?? ''
+    await assertMediaPermission(
+      payload,
+      auth.user as never,
+      { kind: 'site', siteId },
+      'content.edit',
+    )
+    const cleaned = await cleanupExpiredUploadSessions(payload, loadConfig())
+    return NextResponse.json({ cleaned })
+  } catch (error) {
+    const status = error instanceof MediaWorkflowError ? error.status : 400
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : 'Session cleanup failed.' },
       { status },
     )
   }

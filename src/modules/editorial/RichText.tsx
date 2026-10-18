@@ -72,6 +72,82 @@ export function SafeRichText({ document }: { document: Record<string, unknown> }
           )
         }
         if (node.type === 'horizontalrule') return <hr key={key} />
+        if (node.type === 'upload') {
+          const val = (node.value && typeof node.value === 'object' ? node.value : {}) as Node
+          const valId = text(val.id ?? node.value)
+          const url = safeHref(val.url) || (valId ? `/media/${valId}` : '')
+          const alt = text(val.altText ?? val.alt ?? val.title ?? '')
+          const fields = (node.fields ?? {}) as Node
+          const caption = text(fields.caption)
+          return (
+            <figure key={key} className="my-6">
+              {url ? (
+                <img
+                  src={url}
+                  alt={alt}
+                  className="rounded-xl border border-stone-200 dark:border-stone-800 object-cover max-w-full h-auto"
+                />
+              ) : null}
+              {caption ? (
+                <figcaption className="text-center text-xs text-stone-500 dark:text-stone-400 mt-2">
+                  {caption}
+                </figcaption>
+              ) : null}
+            </figure>
+          )
+        }
+        if (node.type === 'block') {
+          const fields = (node.fields ?? {}) as Node
+          const blockType = text(fields.blockType) || 'block'
+          const blockText = text(fields.text ?? fields.message ?? fields.content ?? '')
+          const title = text(fields.title ?? '')
+          const caption = text(fields.caption ?? '')
+          const url = safeHref(fields.url ?? fields.src ?? '')
+          return (
+            <div
+              key={key}
+              className={`my-6 p-4 rounded-xl border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900/50 block-${blockType}`}
+              data-block-type={blockType}
+            >
+              {title ? <h4 className="font-bold text-sm mb-1">{title}</h4> : null}
+              {url ? (
+                <figure className="my-2">
+                  <img src={url} alt={title || caption || ''} className="rounded-lg max-w-full h-auto" />
+                  {caption ? <figcaption className="text-xs text-stone-500 mt-1">{caption}</figcaption> : null}
+                </figure>
+              ) : null}
+              {blockText ? <p className="text-sm">{blockText}</p> : null}
+              {children.length ? <div>{children}</div> : null}
+            </div>
+          )
+        }
+        if (node.type === 'relationship') {
+          const val = (node.value && typeof node.value === 'object' ? node.value : {}) as Node
+          const valId = text(val.id ?? node.value)
+          const rel = text(node.relationTo)
+          if (rel === 'media-assets') {
+            const url = safeHref(val.url) || (valId ? `/media/${valId}` : '')
+            const alt = text(val.altText ?? val.title ?? '')
+            return (
+              <figure key={key} className="my-6">
+                {url ? (
+                  <img
+                    src={url}
+                    alt={alt}
+                    className="rounded-xl border border-stone-200 dark:border-stone-800 object-cover max-w-full h-auto"
+                  />
+                ) : null}
+              </figure>
+            )
+          }
+          const title = text(val.title ?? val.name ?? valId)
+          return (
+            <div key={key} className="my-4 p-3 rounded-lg border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 inline-block">
+              <span className="text-xs font-semibold text-stone-500 uppercase tracking-wider">{rel}:</span>{' '}
+              <span className="font-medium">{title}</span>
+            </div>
+          )
+        }
         return children.length ? <p key={key}>{children}</p> : null
       })}
     </div>

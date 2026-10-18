@@ -1,5 +1,7 @@
 import type { CollectionConfig } from 'payload'
+import { protectSiteHierarchyDelete } from '../modules/editorial/hierarchy'
 import { resolveOperatorGrantContext } from '../modules/operations/operator-grants'
+import { revalidateDiscoveryOutputs } from '../modules/public/revalidation'
 
 export const Sites: CollectionConfig = {
   slug: 'sites',
@@ -16,9 +18,28 @@ export const Sites: CollectionConfig = {
     },
   },
   hooks: {
+    beforeDelete: [protectSiteHierarchyDelete],
     beforeValidate: [
       ({ data, originalDoc }) => {
         if (!data) return data
+        if (data.name !== undefined) {
+          data.name = String(data.name || '').trim()
+          if (!data.name) throw new Error('Site name is required.')
+        }
+        if (data.slug !== undefined) {
+          const rawSlug = String(data.slug || '').trim()
+          if (!rawSlug && !data.name) throw new Error('Site slug is required.')
+          data.slug = (rawSlug || String(data.name || ''))
+            .toLowerCase()
+            .replace(/[^a-z0-9_-]+/g, '-')
+            .replace(/^-+|-+$/g, '')
+          if (!data.slug) throw new Error('Site slug must contain valid alphanumeric characters.')
+        } else if (data.name) {
+          data.slug = String(data.name)
+            .toLowerCase()
+            .replace(/[^a-z0-9_-]+/g, '-')
+            .replace(/^-+|-+$/g, '')
+        }
         if (
           !data.commentReactionCodes ||
           !Array.isArray(data.commentReactionCodes) ||
@@ -71,7 +92,45 @@ export const Sites: CollectionConfig = {
             })
           }
         }
+        if (operation === 'create') {
+          const existingPubs = await req.payload.find({
+            collection: 'publications',
+            where: { site: { equals: doc.id } },
+            depth: 0,
+            limit: 1,
+            overrideAccess: true,
+            req,
+          })
+          if (!existingPubs.docs.length) {
+            await req.payload.create({
+              collection: 'publications',
+              data: {
+                site: doc.id,
+                name: doc.name,
+                slug: doc.slug,
+                status: 'active',
+                visibility: 'public',
+                navigation: {
+                  primary: [
+                    { label: 'Home', href: '/' },
+                    { label: 'Articles', href: '/articles' },
+                  ],
+                  secondary: [],
+                  footer: [],
+                },
+              },
+              overrideAccess: true,
+              req,
+            } as never)
+          }
+        }
+        await revalidateDiscoveryOutputs()
         return doc
+      },
+    ],
+    afterDelete: [
+      async () => {
+        await revalidateDiscoveryOutputs()
       },
     ],
   },

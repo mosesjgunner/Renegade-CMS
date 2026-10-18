@@ -1,0 +1,24 @@
+{
+  "assets": [
+    {
+      "path": "public/starter-assets/publication-hero.svg",
+      "sha256": "edf027293848ba8f76c81de7eee8f2294b42c060f9539633952ff281c8184b06",
+      "sourceLicense": "AGPL-3.0-or-later; repository LICENSE; local SVG sample artwork"
+    },
+    {
+      "path": "public/starter-assets/publication-commons.svg",
+      "sha256": "2eefaf8d360163ae45c85a166c72cab14862fd41c6377da30393dab2fb0ba840",
+      "sourceLicense": "AGPL-3.0-or-later; repository LICENSE; local SVG sample artwork"
+    },
+    {
+      "path": "public/starter-assets/author-elena.svg",
+      "sha256": "3d88930b68a666b0b4904fcb5037088e1fa05773736b8d81b16dc880483c0ee8",
+      "sourceLicense": "AGPL-3.0-or-later; repository LICENSE; local SVG sample artwork"
+    },
+    {
+      "path": "public/starter-assets/author-marcus.svg",
+      "sha256": "106d8ba5aca0d1d0305257e3be94837703a4f3f8e901878336c7337abbcd8588",
+      "sourceLicense": "AGPL-3.0-or-later; repository LICENSE; local SVG sample artwork"
+    }
+  ]
+}

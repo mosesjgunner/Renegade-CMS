@@ -44,6 +44,7 @@ function ImageEditorView({
   const workspaceRef = useRef<HTMLDivElement>(null)
   const adapterRef = useRef<MiniPaintAdapter | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [isReady, setIsReady] = useState(false)
   const [isSaving, setIsSaving] = useState(false)
   const [isRunningExtension, setIsRunningExtension] = useState(false)
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
@@ -85,6 +86,7 @@ function ImageEditorView({
         if (active) {
           setDimensions(size)
           setStatusMessage('Ready')
+          setIsReady(true)
           setIsLoading(false)
         }
       } catch (err) {
@@ -190,7 +192,7 @@ function ImageEditorView({
 
   const save = async () => {
     const adapter = adapterRef.current
-    if (!adapter) return
+    if (!adapter || !isReady) return
     setIsSaving(true)
     setErrorMessage(null)
     setStatusMessage('Exporting image…')
@@ -206,14 +208,11 @@ function ImageEditorView({
       body.append('title', title)
       body.append('altText', asset.altText || '')
       body.append('caption', asset.caption || '')
-      let response: Response
-      if (saveMode === 'all-usages') {
-        body.append('mode', 'all-usages')
-        body.append('reason', `Edited in miniPaint: ${reason}`)
-        response = await fetch(`/api/media/${asset.id}`, { method: 'PUT', body })
-      } else {
-        response = await fetch('/api/media/upload', { method: 'POST', body })
-      }
+      // Both modes derive from the source so copies retain its rights, privacy,
+      // consent and version provenance through the canonical replacement service.
+      body.append('mode', saveMode)
+      body.append('reason', `Edited in miniPaint: ${reason}`)
+      const response = await fetch(`/api/media/${asset.id}`, { method: 'PUT', body })
       const data = (await response.json().catch(() => ({}))) as {
         asset?: { id?: string }
         error?: string
@@ -364,7 +363,7 @@ function ImageEditorView({
             className={styles.primaryButton}
             type="button"
             onClick={() => void save()}
-            disabled={isLoading || isSaving || isRunningExtension}
+            disabled={!isReady || isSaving || isRunningExtension}
           >
             {isSaving ? 'Saving…' : 'Save'}
           </button>
@@ -450,7 +449,7 @@ function ImageEditorView({
           className={styles.primaryButton}
           type="button"
           onClick={() => void save()}
-          disabled={isLoading || isSaving || isRunningExtension}
+          disabled={!isReady || isSaving || isRunningExtension}
         >
           {saveMode === 'new-asset' ? 'Save As' : 'Save version'}
         </button>

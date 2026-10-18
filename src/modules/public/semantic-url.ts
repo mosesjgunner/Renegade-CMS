@@ -95,6 +95,8 @@ const configurableKinds = new Set<SemanticKind>([
   'album',
 ])
 const reserved = new Set([
+  'authors',
+  'tags',
   'admin',
   'api',
   'ap',
@@ -125,6 +127,7 @@ const reservedPatterns = new Set([
   '/robots.txt',
 ])
 const reservedStaticPaths = new Set([
+  '/browse',
   '/articles',
   '/events',
   '/videos',

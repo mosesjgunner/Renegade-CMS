@@ -16,6 +16,9 @@ import { ConsentManager } from '@/modules/analytics/ConsentManager'
 
 import { resolveSiteSettings } from '@/modules/core/site-settings'
 import { canRenderPublic } from '@/modules/public/contracts'
+import { headers } from 'next/headers'
+import { publicSiteForHost } from '@/modules/public/site-scope'
+import { requestTheme } from '@/modules/presentation/request-theme'
 
 // Public navigation and branding are PostgreSQL-backed. They must be read at
 // request time so an image build never tries to contact a deployment database.
@@ -61,9 +64,26 @@ export default async function FrontendLayout({ children }: { children: ReactNode
     logoUrl = settings.logoUrl
     footerText = settings.footerText
 
+    let host: string | null = null
+    try {
+      const headerList = await headers()
+      host = headerList.get('host')
+    } catch {}
+    const resolvedSiteId = await publicSiteForHost(payload, host)
+
+    const pubWhere = resolvedSiteId
+      ? {
+          and: [
+            { site: { equals: resolvedSiteId } },
+            { status: { equals: 'active' } },
+            { visibility: { equals: 'public' } },
+          ],
+        }
+      : { id: { exists: false } }
+
     const publications = await payload.find({
       collection: 'publications',
-      where: { and: [{ status: { equals: 'active' } }, { visibility: { equals: 'public' } }] },
+      where: pubWhere as never,
       depth: 1,
       sort: '-createdAt',
       limit: 1,
@@ -72,13 +92,31 @@ export default async function FrontendLayout({ children }: { children: ReactNode
     const publication = publications.docs[0] as unknown as Record<string, unknown> | undefined
     if (publication) {
       if (typeof publication.name === 'string' && publication.name.trim()) {
-        // publication name supplements siteName if set specifically
+        siteName = publication.name.trim()
       }
       navigation = normalizeNavigation(publication.navigation)
       siteId =
         typeof publication.site === 'string'
           ? publication.site
           : (publication.site as { id?: string } | undefined)?.id
+    } else if (resolvedSiteId) {
+      siteId = resolvedSiteId
+      try {
+        const siteDoc = await payload.findByID({
+          collection: 'sites',
+          id: resolvedSiteId,
+          depth: 0,
+        })
+        if (siteDoc?.name) siteName = siteDoc.name
+      } catch {}
+    }
+
+    if (siteId) {
+      const perSiteTheme = await requestTheme(payload, siteId)
+      if (perSiteTheme) {
+        themeConfiguration = perSiteTheme
+        if (perSiteTheme.renderer) themeId = perSiteTheme.renderer
+      }
     }
 
     if (siteId) {

@@ -1,0 +1,14 @@
+[
+  {
+    "method": "GET",
+    "route": "/articles/05c-edited-1792351198810",
+    "status": 200,
+    "type": "text/html; charset=utf-8"
+  },
+  {
+    "method": "GET",
+    "route": "/media/1f6d6a75-3c94-4d40-a3c5-7e2976cd84e4",
+    "status": 200,
+    "type": "image/png"
+  }
+]

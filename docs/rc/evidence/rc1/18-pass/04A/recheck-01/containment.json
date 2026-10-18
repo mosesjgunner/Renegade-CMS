@@ -1,0 +1,11 @@
+{
+  "priorOverlay": "2db0efbb2666e0296b42f77dac627be462f9136bf425bb17ded9fac325138f27",
+  "currentOverlay": "b27a1e84c8d60c0d7e383b840580e3c00515804553818775b6db28b26741ccee",
+  "changed": [
+    "tests/rc1-04a/verify-api.ts",
+    "tests/rc1-04a/verify-interactions.ts",
+    "tests/rc1-04a/verify-restart.ts"
+  ],
+  "removed": [],
+  "applicationChanges": []
+}

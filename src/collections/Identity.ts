@@ -133,6 +133,57 @@ export const MemberSiteRoles: CollectionConfig = {
     read: operatorSiteReadAccess,
     update: ({ req }) => req.user?.role === 'owner',
   },
+  hooks: {
+    afterChange: [
+      async ({ doc, previousDoc, operation, req }) => {
+        const id = (value: unknown) =>
+          typeof value === 'object' && value !== null && 'id' in value
+            ? String(value.id)
+            : String(value ?? '')
+        const before =
+          operation === 'update' && previousDoc
+            ? { site: id(previousDoc.site), member: id(previousDoc.member), role: previousDoc.role }
+            : null
+        const after = { site: id(doc.site), member: id(doc.member), role: doc.role }
+        if (JSON.stringify(before) === JSON.stringify(after)) return doc
+        await req.payload.create({
+          collection: 'identity-audit-events',
+          data: {
+            member: after.member,
+            event: operation === 'create' ? 'site-role.granted' : 'site-role.changed',
+            details: { roleRecordId: doc.id, actorUserId: req.user?.id ?? null, before, after },
+          },
+          overrideAccess: true,
+          req,
+        })
+        return doc
+      },
+    ],
+    afterDelete: [
+      async ({ doc, req }) => {
+        const id = (value: unknown) =>
+          typeof value === 'object' && value !== null && 'id' in value
+            ? String(value.id)
+            : String(value ?? '')
+        await req.payload.create({
+          collection: 'identity-audit-events',
+          data: {
+            member: id(doc.member),
+            event: 'site-role.revoked',
+            details: {
+              roleRecordId: doc.id,
+              actorUserId: req.user?.id ?? null,
+              before: { site: id(doc.site), member: id(doc.member), role: doc.role },
+              after: null,
+            },
+          },
+          overrideAccess: true,
+          req,
+        })
+        return doc
+      },
+    ],
+  },
   fields: [
     { name: 'site', type: 'relationship', relationTo: 'sites', required: true, index: true },
     { name: 'member', type: 'relationship', relationTo: 'members', required: true, index: true },

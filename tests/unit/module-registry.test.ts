@@ -148,6 +148,13 @@ describe('progressive module registry', () => {
 
   it('prunes relationship fields that point at gated-off collections, and restores them when the owning module is enabled', () => {
     const full = fullRegistrations()
+    full.collections
+      .find((entry) => entry.slug === 'media-assets')!
+      .fields.push({
+        name: 'optionalProduct',
+        type: 'relationship',
+        relationTo: 'products',
+      })
 
     // Recursively locate a top-level relationship field by name on a collection.
     const findField = (
@@ -163,14 +170,18 @@ describe('progressive module registry', () => {
     }
 
     const floor = gatePayloadRegistrations(full, { enabled: new Set() })
-    // media-assets stays on the floor, but its `collections` field points at the
-    // gated `albums` (media-studio) collection — it must be pruned so Payload's
-    // config builder does not reject a dangling relationship.
+    // Collections are core hierarchy, while relationships into optional modules
+    // still need pruning to prevent dangling Payload configuration.
     expect(floor.collections.map((c) => c.slug)).toContain('media-assets')
-    expect(floor.collections.map((c) => c.slug)).not.toContain('albums')
-    expect(findField(floor, 'media-assets', 'collections')).toBeUndefined()
+    expect(floor.collections.map((c) => c.slug)).toContain('albums')
+    expect(findField(floor, 'media-assets', 'collections')?.relationTo).toBe('albums')
+    expect(findField(floor, 'media-assets', 'optionalProduct')).toBeUndefined()
+    const withCommerce = gatePayloadRegistrations(full, {
+      enabled: parseEnabledModules('commerce'),
+    })
+    expect(findField(withCommerce, 'media-assets', 'optionalProduct')?.relationTo).toBe('products')
 
-    // Enabling media-studio brings `albums` back, so the field is preserved.
+    // Media studio must reuse the same collection and relationship.
     const withMedia = gatePayloadRegistrations(full, {
       enabled: parseEnabledModules('media-studio'),
     })
@@ -193,5 +204,19 @@ describe('progressive module registry', () => {
     )
     expect(parseEnabledModules('all').size).toBe(OPTIONAL_MODULES.length)
     expect(() => parseEnabledModules('commerce,bogus')).toThrow(/Unknown RENEGADE_MODULES/i)
+  })
+
+  it('registers identical floor collections in both Lean and Standard deployment profiles', () => {
+    const leanConfig = loadConfig({ ...testEnv, DEPLOYMENT_PROFILE: 'Lean' })
+    const stdConfig = loadConfig({ ...testEnv, DEPLOYMENT_PROFILE: 'Standard' })
+    const leanRegs = gatePayloadRegistrations(registeredPayloadDomains(leanConfig), {
+      enabled: new Set(),
+    })
+    const stdRegs = gatePayloadRegistrations(registeredPayloadDomains(stdConfig), {
+      enabled: new Set(),
+    })
+    expect(leanRegs.collections.map((c) => c.slug)).toEqual(stdRegs.collections.map((c) => c.slug))
+    expect(leanRegs.globals.map((g) => g.slug)).toEqual(stdRegs.globals.map((g) => g.slug))
+    expect(leanRegs.tasks.map((t) => t.slug)).toEqual(stdRegs.tasks.map((t) => t.slug))
   })
 })

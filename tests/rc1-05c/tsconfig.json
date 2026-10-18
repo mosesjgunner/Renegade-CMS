@@ -1,0 +1,16 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": { "incremental": false },
+  "include": [
+    "../../next-env.d.ts",
+    "../../src/**/*.ts",
+    "../../src/**/*.tsx",
+    "./verify.ts",
+    "./portability.ts",
+    "./verify-response.ts",
+    "../unit/rc1-05c-editor.test.ts",
+    "../unit/rc1-05c-variants.test.ts",
+    "../unit/rc1-05c-public-versions.test.ts"
+  ],
+  "exclude": ["../../node_modules", "../../docs", "../../.payload-upstream"]
+}

@@ -60,6 +60,10 @@ export async function hydratePublicQueries(payload: Payload, document: Presentat
         where: {
           and: [
             { site: { equals: document.siteId } },
+            ...(collection === 'content' &&
+            ['publisher.article-list', 'publisher.article-grid'].includes(block.component)
+              ? [{ contentType: { equals: 'article' } }]
+              : []),
             ...(statuses ? [{ status: { in: statuses } }] : []),
           ],
         },

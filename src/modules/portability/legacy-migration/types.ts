@@ -51,6 +51,7 @@ export type LegacyMigrationOptions = {
   themeId?: string
   dryRun?: boolean
   autoActivate?: boolean
+  rejectDuplicates?: boolean
 }
 
 /** Complete input package for legacy migration */
@@ -173,6 +174,7 @@ export type NormalizedItem = {
   tags: string[]
   featuredMediaId?: string
   seo: ExtractedSeo
+  parentId?: string
   unsupported: UnsupportedArtifact[]
 }
 

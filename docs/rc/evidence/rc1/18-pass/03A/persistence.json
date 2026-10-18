@@ -1,0 +1,91 @@
+{
+  "site": "89d27de4-8042-458d-97cc-84cafe9099f1",
+  "section": {
+    "id": "e6cbbcb7-53b8-49f7-9cb2-1d64f5020b0c",
+    "site": "89d27de4-8042-458d-97cc-84cafe9099f1",
+    "publication": null,
+    "scope": "site",
+    "name": "Knowledge",
+    "slug": "knowledge",
+    "canonicalPath": "/sections/knowledge",
+    "description": null,
+    "sortOrder": 2,
+    "updatedAt": "2026-10-18T05:00:58.125Z",
+    "createdAt": "2026-10-18T05:00:58.125Z"
+  },
+  "category": {
+    "id": "8042bbfc-829d-4863-939b-e7b36c94bff9",
+    "site": "89d27de4-8042-458d-97cc-84cafe9099f1",
+    "publication": null,
+    "scope": "site",
+    "section": "e6cbbcb7-53b8-49f7-9cb2-1d64f5020b0c",
+    "parent": null,
+    "name": "Engineering",
+    "slug": "engineering",
+    "canonicalPath": "/categories/engineering",
+    "description": null,
+    "sortOrder": 0,
+    "updatedAt": "2026-10-18T05:00:58.524Z",
+    "createdAt": "2026-10-18T05:00:58.524Z"
+  },
+  "subcategory": {
+    "id": "038885b0-c51e-45ca-b25d-e3d8143fce38",
+    "site": "89d27de4-8042-458d-97cc-84cafe9099f1",
+    "publication": null,
+    "scope": "site",
+    "section": "e6cbbcb7-53b8-49f7-9cb2-1d64f5020b0c",
+    "parent": "8042bbfc-829d-4863-939b-e7b36c94bff9",
+    "name": "Database Practice",
+    "slug": "databases",
+    "canonicalPath": "/categories/databases",
+    "description": null,
+    "sortOrder": 0,
+    "updatedAt": "2026-10-18T05:01:02.434Z",
+    "createdAt": "2026-10-18T05:00:58.922Z"
+  },
+  "collection": {
+    "id": "f8810964-31e6-4b51-bf67-747548a78554",
+    "site": "89d27de4-8042-458d-97cc-84cafe9099f1",
+    "publication": null,
+    "space": null,
+    "owner": null,
+    "category": "038885b0-c51e-45ca-b25d-e3d8143fce38",
+    "sortOrder": 0,
+    "kind": "album",
+    "title": "Field Guides",
+    "slug": "field-guides",
+    "canonicalPath": "/albums/field-guides",
+    "description": null,
+    "cover": null,
+    "visibility": "public",
+    "items": [],
+    "originalDownloadPolicy": "allowed",
+    "exifPolicy": "strip",
+    "commentsPolicy": "open",
+    "moderationState": "clear",
+    "exportRequestedAt": null,
+    "retentionMode": "permanent",
+    "retentionExpiresAt": null,
+    "retentionHold": "none",
+    "removeFromDiscovery": false,
+    "tombstoneLabel": null,
+    "updatedAt": "2026-10-18T05:01:02.734Z",
+    "createdAt": "2026-10-18T05:00:59.273Z"
+  },
+  "content": {
+    "id": "0ec0989f-0d44-41af-ae55-162b12e61190",
+    "title": "PostgreSQL Field Guide Revised",
+    "canonicalPath": "/articles/postgresql-field-guide",
+    "collections": [
+      "f8810964-31e6-4b51-bf67-747548a78554"
+    ]
+  },
+  "sql": [
+    {
+      "title": "PostgreSQL Field Guide Revised",
+      "status": "published",
+      "sort_order": "4",
+      "albums_id": "f8810964-31e6-4b51-bf67-747548a78554"
+    }
+  ]
+}

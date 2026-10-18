@@ -3,6 +3,7 @@ import type { AdminViewServerProps } from 'payload'
 
 import styles from './PublishingCenter.module.css'
 import ScheduleContentAction from './ScheduleContentAction'
+import TrashContentAction from './TrashContentAction'
 
 type Row = {
   id: string
@@ -10,6 +11,7 @@ type Row = {
   status?: string | null
   canonicalPath?: string | null
   updatedAt?: string | null
+  retentionMode?: string | null
 }
 
 export default async function PublishingCenter({ initPageResult, params }: AdminViewServerProps) {
@@ -55,6 +57,7 @@ export default async function PublishingCenter({ initPageResult, params }: Admin
     page,
     sort: '-updatedAt',
     req: initPageResult.req,
+    overrideAccess: false,
   } as never)
   const canSchedule = ['owner', 'administrator'].includes(String(initPageResult.req.user?.role))
   const approvedIds = canSchedule
@@ -67,6 +70,7 @@ export default async function PublishingCenter({ initPageResult, params }: Admin
         depth: 0,
         limit: 20,
         req: initPageResult.req,
+        overrideAccess: false,
       } as never)
     : { docs: [] }
   const companionByContent = new Map(
@@ -151,6 +155,7 @@ export default async function PublishingCenter({ initPageResult, params }: Admin
                   </p>
                 </div>
                 <div className={styles.rowActions}>
+                  {doc.retentionMode !== 'tombstone' && <TrashContentAction contentId={doc.id} />}
                   {doc.canonicalPath && ['published', 'updated'].includes(doc.status ?? '') ? (
                     <Link href={doc.canonicalPath} target="_blank" rel="noreferrer">
                       View public {noun.toLowerCase()}

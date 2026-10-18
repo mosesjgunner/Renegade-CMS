@@ -1,0 +1,10 @@
+{
+  "passed": 4,
+  "failed": 0,
+  "trace": [
+    "exact five-block UI layout survives PostgreSQL and web restart",
+    "UI revision survives PostgreSQL and web restart",
+    "published public output survives restart",
+    "public original media bytes survive restart with exact checksum"
+  ]
+}

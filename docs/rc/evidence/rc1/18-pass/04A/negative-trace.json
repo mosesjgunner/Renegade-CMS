@@ -1,0 +1,26 @@
+{
+  "passed": 20,
+  "failed": 0,
+  "trace": [
+    "invalid block schema returns 422",
+    "malformed block shape returns 422",
+    "new unknown blocks return 422",
+    "stale revision returns 409",
+    "negative saves preserve exact database row",
+    "anonymous editing denied 403",
+    "anonymous draft preview denied",
+    "scoped staff session can read its allowed site choices",
+    "foreign-site save denied",
+    "foreign-site rollback denied",
+    "foreign-site chooser denied",
+    "foreign-site draft preview denied",
+    "foreign record remains byte-for-byte unchanged",
+    "second editor saves a newer revision",
+    "conflict preserves local work for recovery",
+    "conflict reload replaces Puck canvas with server version",
+    "simultaneous writers produce one success and one 409",
+    "unsaved-change guard cancels navigation after network failure",
+    "network failure preserves database state",
+    "explicit retry persists the retained local work"
+  ]
+}

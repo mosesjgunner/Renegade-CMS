@@ -1,0 +1,70 @@
+{
+  "workingDirectory": "C:\\Projects\\RENEGADE CMS\\Renegade-CMS",
+  "commands": [
+    {
+      "executable": "npx.cmd",
+      "args": [
+        "eslint",
+        "src/modules/presentation/VisualEditor.tsx",
+        "src/modules/presentation/puck-adapter.ts",
+        "src/modules/presentation/layout-write-lock.ts",
+        "src/modules/presentation/composition.ts",
+        "src/modules/presentation/themes/components.tsx",
+        "src/modules/public/BuilderShell.tsx",
+        "src/modules/public/page-builder.tsx",
+        "src/modules/media/workflow.ts",
+        "src/collections/PageLayouts.ts",
+        "src/modules/admin/LayoutEditorLink.tsx",
+        "src/app/(frontend)/api/layouts/[id]/route.ts",
+        "src/app/(frontend)/api/layouts/[id]/choices/route.ts",
+        "src/app/(frontend)/api/layouts/[id]/rollback/route.ts",
+        "src/app/(frontend)/builder/[id]/preview/page.tsx",
+        "tests/rc1-04a",
+        "tests/unit/rc1-04a-layout-media.test.ts",
+        "tests/unit/rc1-04a-visual-editor.test.ts",
+        "--max-warnings=0"
+      ],
+      "exit": 0,
+      "log": "lint.log"
+    },
+    {
+      "executable": "npx.cmd",
+      "args": [
+        "vitest",
+        "run",
+        "tests/unit/rc1-04a-layout-media.test.ts",
+        "tests/unit/rc1-04a-visual-editor.test.ts",
+        "tests/unit/pre-03-visual-editor.test.ts",
+        "tests/unit/pre-04-reusable-composition.test.ts",
+        "tests/unit/phase-a-media.test.ts",
+        "tests/unit/med-00-media-contract.test.ts"
+      ],
+      "exit": 0,
+      "passed": 45,
+      "failed": 0,
+      "skipped": 0,
+      "log": "units.log"
+    },
+    {
+      "executable": "npx.cmd",
+      "args": [
+        "tsc",
+        "--noEmit",
+        "-p",
+        "tests/rc1-04a/tsconfig.json"
+      ],
+      "exit": 0,
+      "log": "types-harness.log"
+    },
+    {
+      "executable": "npm.cmd",
+      "args": [
+        "run",
+        "typecheck"
+      ],
+      "exit": 2,
+      "diagnostics": 7,
+      "log": "types-global.log"
+    }
+  ]
+}

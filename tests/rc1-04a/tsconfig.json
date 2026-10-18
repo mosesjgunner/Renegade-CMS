@@ -1,0 +1,22 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": { "incremental": false },
+  "include": [
+    "../../next-env.d.ts",
+    "../../src/**/*.ts",
+    "../../src/**/*.tsx",
+    "../../.next-rc104a/dev/types/**/*.ts",
+    "./auth.ts",
+    "./fixture.ts",
+    "./verify-editor.ts",
+    "./verify-interactions.ts",
+    "./verify-api.ts",
+    "./verify-restart.ts",
+    "./verify-negatives.ts",
+    "../unit/pre-03-visual-editor.test.ts",
+    "../unit/pre-04-reusable-composition.test.ts",
+    "../unit/rc1-04a-visual-editor.test.ts",
+    "../unit/rc1-04a-layout-media.test.ts"
+  ],
+  "exclude": ["../../node_modules", "../../docs", "../../.payload-upstream"]
+}

@@ -83,7 +83,7 @@ export function validatePackage(value: unknown): LocalTheme {
   return p
 }
 export async function discoverThemes(
-  root = path.join(process.cwd(), 'theme-packages'),
+  root = process.env.RENEGADE_THEME_PACKAGES_DIR || path.join(process.cwd(), 'theme-packages'),
 ): Promise<InstalledTheme[]> {
   const result: InstalledTheme[] = []
   let boundary: string

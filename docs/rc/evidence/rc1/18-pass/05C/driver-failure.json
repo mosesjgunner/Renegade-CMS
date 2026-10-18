@@ -1,0 +1,9 @@
+{
+  "passed": 2,
+  "failed": 1,
+  "checks": [
+    "uploaded original has exact checksum and dimensions",
+    "miniPaint opens uploaded dimensions"
+  ],
+  "error": "TimeoutError: locator.click: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-key=\"pencil\"]')\u001b[22m\n"
+}

@@ -79,12 +79,19 @@ export function StarterArticleView({ article }: { article: EditorialPresentation
           </div>
         ) : null}
         {article.heroMedia ? (
-          <ResponsiveMedia
-            media={article.heroMedia}
-            variant="hero"
-            priority
-            className="w-full rounded-xl border border-stone-200 object-cover dark:border-stone-800"
-          />
+          <figure className="space-y-2">
+            <ResponsiveMedia
+              media={article.heroMedia}
+              variant="hero"
+              priority
+              className="w-full rounded-xl border border-stone-200 object-cover dark:border-stone-800"
+            />
+            {article.heroMedia.caption ? (
+              <figcaption className="text-xs text-stone-500 dark:text-stone-400">
+                {article.heroMedia.caption}
+              </figcaption>
+            ) : null}
+          </figure>
         ) : null}
       </header>
 

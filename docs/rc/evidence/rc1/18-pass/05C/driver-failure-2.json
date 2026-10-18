@@ -1,0 +1,12 @@
+{
+  "passed": 5,
+  "failed": 1,
+  "checks": [
+    "uploaded original has exact checksum and dimensions",
+    "miniPaint opens uploaded dimensions",
+    "editor version changes actual bytes",
+    "source original bytes preserved",
+    "version inherits rights and consent"
+  ],
+  "error": "TimeoutError: locator.selectOption: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for getByLabel('Save as', { exact: true })\u001b[22m\n"
+}

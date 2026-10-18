@@ -15,6 +15,7 @@ import {
   structuredDataSourceFields,
 } from './canonical-shared'
 import { searchProjectionHooks } from '../modules/public/search-projection'
+import { transactionPayload } from '../modules/core/transaction-payload'
 import {
   assignRecordSemanticPath,
   assertRecordSemanticPath,
@@ -699,21 +700,23 @@ export const VideoAssets: CollectionConfig = {
           (!doc.processingState || doc.processingState === 'uploaded')
         ) {
           const { queueVideoProcessing } = await import('../modules/media/video-workflow')
-          await queueVideoProcessing(req.payload, String(doc.id)).catch(async (error) => {
-            await req.payload.update({
-              collection: 'video-assets' as never,
-              id: doc.id,
-              overrideAccess: true,
-              req,
-              data: {
-                processingState: 'failed',
-                failure: {
-                  message: error instanceof Error ? error.message : 'Unable to queue video.',
-                  retryable: true,
-                },
-              } as never,
-            } as never)
-          })
+          await queueVideoProcessing(transactionPayload(req.payload, req), String(doc.id)).catch(
+            async (error) => {
+              await req.payload.update({
+                collection: 'video-assets' as never,
+                id: doc.id,
+                overrideAccess: true,
+                req,
+                data: {
+                  processingState: 'failed',
+                  failure: {
+                    message: error instanceof Error ? error.message : 'Unable to queue video.',
+                    retryable: true,
+                  },
+                } as never,
+              } as never)
+            },
+          )
         }
         return doc
       },

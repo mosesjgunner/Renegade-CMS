@@ -114,6 +114,14 @@ export function registerDeveloperComponent(
 
 export function validateLayout(input: PageLayout): { layout: PageLayout; errors: string[] } {
   const errors: string[] = []
+  if (
+    !Array.isArray(input.blocks) ||
+    (input.unknownBlocks !== undefined && !Array.isArray(input.unknownBlocks))
+  )
+    return {
+      layout: { ...input, blocks: [], unknownBlocks: [] },
+      errors: ['Blocks must be arrays.'],
+    }
   if (JSON.stringify(input).length > 256_000) errors.push('Layout exceeds the 256 KB limit.')
   if (!Number.isInteger(input.revision) || input.revision < 1) errors.push('Invalid revision.')
   if (input.blocks.length > 100) errors.push('Layouts may contain at most 100 components.')
@@ -143,6 +151,20 @@ export function validateLayout(input: PageLayout): { layout: PageLayout; errors:
   const unknownBlocks: LayoutBlock[] = [...(input.unknownBlocks ?? [])]
   const ids = new Set<string>()
   const blocks = input.blocks.flatMap((block) => {
+    if (
+      !block ||
+      typeof block !== 'object' ||
+      Array.isArray(block) ||
+      typeof block.id !== 'string' ||
+      typeof block.component !== 'string' ||
+      !Number.isInteger(block.componentVersion) ||
+      !block.props ||
+      typeof block.props !== 'object' ||
+      Array.isArray(block.props)
+    ) {
+      errors.push('Invalid component schema.')
+      return []
+    }
     if (!/^[a-zA-Z0-9][a-zA-Z0-9_-]{0,79}$/.test(block.id) || ids.has(block.id)) {
       errors.push(`Invalid or duplicate component id: ${block.id}`)
       return []

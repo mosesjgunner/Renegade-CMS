@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto'
-import type { Payload } from 'payload'
+import type { Payload, PayloadRequest } from 'payload'
 
 import { resolveTheme } from './registry'
 import {
@@ -208,6 +208,8 @@ export async function getPagesUsingTemplate(
     overrideAccess: true,
   })
   const template = docToLayout(templateDoc as unknown as Record<string, unknown>)
+  if (template.siteId !== siteId || template.surface !== 'template')
+    throw new Error('Template scope mismatch.')
   const pagesResult = await payload.find({
     collection: 'page-layouts',
     where: {
@@ -253,6 +255,8 @@ export async function createPageFromTemplate(
     overrideAccess: true,
   })
   const template = docToLayout(templateDoc as unknown as Record<string, unknown>)
+  if (template.siteId !== args.siteId || template.surface !== 'template')
+    throw new Error('Template scope mismatch.')
   if (template.isRetired) {
     throw new Error('Retired templates cannot be used to create new pages.')
   }
@@ -324,6 +328,8 @@ export async function syncPageWithTemplate(
     overrideAccess: true,
   })
   const template = docToLayout(templateDoc as unknown as Record<string, unknown>)
+  if (template.siteId !== page.siteId || template.surface !== 'template')
+    throw new Error('Template scope mismatch.')
 
   // Clone template blocks with unique IDs for the page draft
   const updatedBlocks = template.blocks.map((block) => ({
@@ -461,12 +467,14 @@ export async function rollbackLayout(
     layoutId: string
     targetRevision: number
     publish?: boolean
+    req?: PayloadRequest
   },
 ): Promise<PageLayout> {
   const existing = await payload.findByID({
     collection: 'page-layouts',
     id: args.layoutId,
-    overrideAccess: true,
+    overrideAccess: args.req ? false : true,
+    req: args.req,
   })
   const layout = docToLayout(existing as unknown as Record<string, unknown>)
   const history =
@@ -484,7 +492,8 @@ export async function rollbackLayout(
   const updated = await payload.update({
     collection: 'page-layouts',
     id: args.layoutId,
-    overrideAccess: true,
+    overrideAccess: args.req ? false : true,
+    req: args.req,
     context: { publishPresentation: args.publish === true },
     data: {
       blocks: entry.blocks,

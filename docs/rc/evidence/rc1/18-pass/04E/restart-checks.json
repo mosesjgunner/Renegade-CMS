@@ -1,0 +1,14 @@
+{
+  "passed": 7,
+  "failed": 0,
+  "skipped": 0,
+  "checks": [
+    "exact persisted sites/1aa25362-56b6-4756-8b04-1949bdfd27fc survives restart",
+    "exact persisted sites/1909e87e-9dd0-4b4d-a78f-76cd1a846df4 survives restart",
+    "exact persisted page-layouts/c822e4a0-edf0-4fd7-b961-8967c3cc6e5a survives restart",
+    "exact persisted page-layouts/891e86e8-a8e6-467a-a786-30639686ebaf survives restart",
+    "custom Site Alpha theme palette survives restart",
+    "custom Site Beta theme palette survives restart",
+    "public root responds after restart"
+  ]
+}

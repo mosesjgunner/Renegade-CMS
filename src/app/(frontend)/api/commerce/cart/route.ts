@@ -4,6 +4,7 @@ import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
 import { catalogSiteForHost } from '@/modules/commerce/site-scope'
 import { currentMember, readMemberSession } from '@/modules/identity/member-identity'
+import { isRegisteredCollection } from '@/modules/public/registered-collections'
 import {
   createEmptyCart,
   reResolveCart,
@@ -18,6 +19,9 @@ import { randomUUID } from 'node:crypto'
 import { configuredCheckoutMerchant } from '@/modules/commerce/merchant-selection'
 
 async function resolveCartContext(request: Request, payload: any) {
+  if (!isRegisteredCollection(payload, 'carts')) {
+    throw new Error('Commerce cart service is unavailable.')
+  }
   const host = request.headers.get('host')
   const siteId = await catalogSiteForHost(payload, host)
   const memberId = await currentMember(payload as never, readMemberSession(request.headers))
@@ -122,6 +126,9 @@ async function loadSiteCatalogAndPromos(payload: any, siteId: string) {
 
 export async function GET(request: Request) {
   const payload = await getPayload({ config })
+  if (!isRegisteredCollection(payload, 'carts')) {
+    return NextResponse.json({ error: 'Commerce cart service is unavailable.' }, { status: 503 })
+  }
   try {
     const { siteId, cartDoc } = await resolveCartContext(request, payload)
     if (!cartDoc) {
@@ -183,6 +190,9 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   const payload = await getPayload({ config })
+  if (!isRegisteredCollection(payload, 'carts')) {
+    return NextResponse.json({ error: 'Commerce cart service is unavailable.' }, { status: 503 })
+  }
   try {
     const body = await request.json()
     const { productId, variantSku, quantity = 1, donationAmountMinor, customOptions } = body
@@ -458,6 +468,9 @@ export async function PATCH(request: Request) {
 
 export async function DELETE(request: Request) {
   const payload = await getPayload({ config })
+  if (!isRegisteredCollection(payload, 'carts')) {
+    return NextResponse.json({ error: 'Commerce cart service is unavailable.' }, { status: 503 })
+  }
   try {
     const { cartDoc } = await resolveCartContext(request, payload)
     if (!cartDoc) {

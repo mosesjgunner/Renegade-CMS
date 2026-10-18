@@ -1,0 +1,1026 @@
+{
+  "site": "98c4f7fb-519d-41a5-9a4c-433b5aa5172c",
+  "path": "/articles/04c-neighbors-1792331241556",
+  "hero": {
+    "id": "1add003e-99f8-447b-9cdb-4eb146cdcda7",
+    "sha256": "edf027293848ba8f76c81de7eee8f2294b42c060f9539633952ff281c8184b06"
+  },
+  "settings": {
+    "id": "7bc0f21d-81c8-436a-8dc8-5f58ec2b5f81",
+    "themeId": "neutral-starter",
+    "siteName": "04C Civic Journal",
+    "siteDescription": "Local reporting, public knowledge",
+    "canonicalOrigin": "https://localhost:38921",
+    "canonicalOriginsBySite": {
+      "86a0d420-6f36-436a-baef-b11bd5b85fe4": "http://beta.rc104c.test:38920",
+      "98c4f7fb-519d-41a5-9a4c-433b5aa5172c": "https://localhost:38921"
+    },
+    "semanticRouteTemplates": null,
+    "semanticRouteTemplatesBySite": null,
+    "locale": "en",
+    "timezone": "UTC",
+    "footerText": "04C independent sample publication",
+    "indexingMode": "index",
+    "homepageSelection": {
+      "mode": "layout",
+      "page": null,
+      "layout": "f1dcfa6e-03bc-4abd-97b7-d93cfd4c3a30"
+    },
+    "onboarding": {
+      "primaryUrl": null,
+      "locale": null,
+      "timezone": null,
+      "featureProfile": "Standard",
+      "starterType": "publication-community",
+      "starterContent": true
+    },
+    "adminExperience": {
+      "optionalCapabilities": {
+        "mediaProcessing": false,
+        "socialDistribution": false,
+        "transactionalEmail": false,
+        "commerceCheckout": false,
+        "analyticsReporting": false,
+        "experiments": false,
+        "qualityScanning": false
+      }
+    },
+    "privacy": {
+      "analyticsEnabled": false,
+      "consentVersion": "2026-08-31",
+      "respectGlobalPrivacyControl": true,
+      "respectDoNotTrack": true,
+      "rawEventRetentionDays": 90,
+      "rollupRetentionDays": 730
+    },
+    "ownerKind": "organization",
+    "organizationName": null,
+    "personName": null,
+    "legalName": null,
+    "defaultTitle": "04C Civic Journal",
+    "defaultDescription": "Local reporting, public knowledge",
+    "logo": "10b047f5-e5da-475a-8556-809805fd0961",
+    "favicon": null,
+    "defaultSocialImage": null,
+    "discoveryDefaults": null,
+    "launchState": "live",
+    "launchedAt": null,
+    "sameAs": null,
+    "contactDefaults": null,
+    "socialHandles": null,
+    "siteVerification": null,
+    "robotsDefaults": null,
+    "searchAction": {
+      "enabled": false,
+      "targetTemplate": "/search?q={search_term_string}"
+    },
+    "organizationDefaults": null,
+    "personDefaults": null,
+    "inheritancePolicy": "site-publication-brand",
+    "seoTitle": null,
+    "seoDescription": null,
+    "seoCanonicalURL": null,
+    "seoImageAlt": null,
+    "seoKeywords": null,
+    "seoFocusKeyphrase": null,
+    "seoNoIndex": false,
+    "discoveryOverrides": null,
+    "structuredDataMode": "none",
+    "structuredDataPrimaryType": null,
+    "structuredDataSourceCollection": null,
+    "structuredDataSourceIdentifier": null,
+    "structuredDataManual": null,
+    "structuredDataVersion": 1,
+    "rawStructuredDataOverride": null,
+    "updatedAt": "2026-10-18T13:48:09.275Z",
+    "createdAt": "2026-10-18T13:43:44.522Z",
+    "globalType": "site-settings"
+  },
+  "theme": {
+    "revision": 2,
+    "active": {
+      "id": "neutral-starter",
+      "digest": "4fa1f5b8e862384aaa242048b9087e3f5e5e515df80d8fa2acd9364448fc18e3",
+      "tokens": {
+        "color.accent": "#165c4c"
+      },
+      "version": "1.0.0",
+      "renderer": "neutral-starter"
+    },
+    "draft": null,
+    "previous": {
+      "id": "neutral-starter",
+      "digest": "4fa1f5b8e862384aaa242048b9087e3f5e5e515df80d8fa2acd9364448fc18e3",
+      "tokens": {},
+      "version": "1.0.0",
+      "renderer": "neutral-starter"
+    }
+  },
+  "records": [
+    {
+      "collection": "publications",
+      "doc": {
+        "id": "777529c9-cb4d-4b22-ab3b-e059014d9ebc",
+        "site": "98c4f7fb-519d-41a5-9a4c-433b5aa5172c",
+        "owner": "264caaaf-21b1-4e4a-8867-04720114cbc5",
+        "space": null,
+        "name": "04C Civic Journal",
+        "slug": "main",
+        "canonicalBasePath": "/",
+        "status": "active",
+        "visibility": "public",
+        "brand": null,
+        "profile": null,
+        "brandOverrides": null,
+        "themePreset": "neutral-starter",
+        "moderationPolicy": null,
+        "featurePolicy": null,
+        "capabilities": [],
+        "quotaPolicy": null,
+        "navigation": {
+          "footer": [
+            {
+              "href": "/contact",
+              "label": "Contact"
+            },
+            {
+              "href": "/privacy",
+              "label": "Privacy"
+            },
+            {
+              "href": "/terms",
+              "label": "Terms"
+            }
+          ],
+          "primary": [
+            {
+              "href": "/articles",
+              "label": "Reports"
+            },
+            {
+              "href": "/members",
+              "label": "Community"
+            },
+            {
+              "href": "/subscribe",
+              "label": "Newsletter"
+            },
+            {
+              "href": "/search",
+              "label": "Search"
+            }
+          ]
+        },
+        "feeds": null,
+        "seoDefaults": null,
+        "suspendedAt": null,
+        "archivedAt": null,
+        "archiveMessage": null,
+        "updatedAt": "2026-10-18T13:47:32.355Z",
+        "createdAt": "2026-10-18T13:47:21.746Z"
+      }
+    },
+    {
+      "collection": "content",
+      "doc": {
+        "id": "44371646-ad7d-424d-b486-27905e9b7293",
+        "site": "98c4f7fb-519d-41a5-9a4c-433b5aa5172c",
+        "publication": "777529c9-cb4d-4b22-ab3b-e059014d9ebc",
+        "space": null,
+        "owner": null,
+        "contentType": "article",
+        "title": "04C Neighbors restore the commons",
+        "body": {
+          "root": {
+            "type": "root",
+            "format": "",
+            "indent": 0,
+            "version": 1,
+            "children": [
+              {
+                "type": "paragraph",
+                "format": "",
+                "indent": 0,
+                "version": 1,
+                "children": [
+                  {
+                    "mode": "normal",
+                    "text": "04C report persisted body",
+                    "type": "text",
+                    "style": "",
+                    "detail": 0,
+                    "format": 0,
+                    "version": 1
+                  }
+                ],
+                "direction": "ltr"
+              }
+            ],
+            "direction": "ltr"
+          }
+        },
+        "summary": "A local report from our new publication",
+        "subtitle": null,
+        "excerpt": null,
+        "authors": [],
+        "sections": [],
+        "categories": [],
+        "collections": [],
+        "sortOrder": 0,
+        "topics": [],
+        "tags": [],
+        "series": [],
+        "slug": "04c-neighbors-1792331241556",
+        "pathOverride": false,
+        "canonicalPath": "/articles/04c-neighbors-1792331241556",
+        "parentPage": null,
+        "pageTemplate": "standard",
+        "featured": false,
+        "pinned": false,
+        "readingTimeMinutes": null,
+        "tableOfContents": null,
+        "relatedContent": [],
+        "correctionNotices": [],
+        "changeNotes": [],
+        "heroMedia": null,
+        "visibility": "public",
+        "status": "published",
+        "publishedAt": null,
+        "updatedAtEditorial": null,
+        "commentsPolicy": "open",
+        "publicChangeHistoryPolicy": "summary",
+        "seoTitle": null,
+        "seoDescription": null,
+        "seoCanonicalURL": null,
+        "seoImageAlt": null,
+        "seoFocusKeyphrase": null,
+        "seoNoIndex": false,
+        "seoKeywords": null,
+        "discoveryOverrides": null,
+        "relationships": [],
+        "seoOverride": null,
+        "socialOverride": null,
+        "structuredDataMode": "none",
+        "structuredDataPrimaryType": null,
+        "structuredDataSourceCollection": null,
+        "structuredDataSourceIdentifier": null,
+        "structuredDataManual": null,
+        "structuredDataVersion": 1,
+        "knowledgeGraphProjectionStatus": "disabled",
+        "knowledgeGraphNodeKey": null,
+        "knowledgeGraphProjectionBoundary": null,
+        "importSourceSystem": null,
+        "importSourceIdentifier": null,
+        "importSourceChecksum": null,
+        "exportFormatVersion": 1,
+        "exportOwnership": null,
+        "revisionCompatibility": null,
+        "auditMetadata": null,
+        "retentionMode": "permanent",
+        "retentionExpiresAt": null,
+        "retentionHold": "none",
+        "removeFromDiscovery": false,
+        "tombstoneLabel": null,
+        "updatedAt": "2026-10-18T13:47:47.406Z",
+        "createdAt": "2026-10-18T13:47:45.675Z"
+      }
+    },
+    {
+      "collection": "page-layouts",
+      "doc": {
+        "id": "bab9a298-645c-4243-a537-275eef8a9d72",
+        "publishedPresentation": {
+          "path": "/",
+          "version": 1,
+          "document": {
+            "slots": {
+              "main": [
+                {
+                  "id": "home-hero",
+                  "props": {
+                    "body": "Independent reporting from your neighborhood.",
+                    "media": {
+                      "id": "1add003e-99f8-447b-9cdb-4eb146cdcda7",
+                      "href": "/media/1add003e-99f8-447b-9cdb-4eb146cdcda7",
+                      "label": "Sample civic journalism illustration",
+                      "siteId": "98c4f7fb-519d-41a5-9a4c-433b5aa5172c"
+                    },
+                    "title": "04C Civic Journal",
+                    "width": "wide",
+                    "spacing": "relaxed",
+                    "variant": "default",
+                    "emphasis": "bold",
+                    "alignment": "center",
+                    "background": "canvas"
+                  },
+                  "component": "publisher.hero",
+                  "componentVersion": 1
+                },
+                {
+                  "id": "home-articles",
+                  "props": {
+                    "query": {
+                      "sort": "newest",
+                      "limit": 6,
+                      "collection": "content"
+                    },
+                    "title": "Recent Dispatches",
+                    "width": "wide",
+                    "spacing": "normal",
+                    "variant": "default",
+                    "emphasis": "normal",
+                    "alignment": "left",
+                    "background": "canvas"
+                  },
+                  "component": "publisher.article-list",
+                  "componentVersion": 1
+                },
+                {
+                  "id": "home-forum",
+                  "props": {
+                    "body": "Join the conversation on verified stories, propose investigative tips, and engage with contributors.",
+                    "link": {
+                      "id": "content:b2d44242-a969-4ecf-94af-555f844c4f2a",
+                      "href": "/members",
+                      "label": "Explore the community",
+                      "siteId": "98c4f7fb-519d-41a5-9a4c-433b5aa5172c"
+                    },
+                    "title": "Community Inquiries & Discussions",
+                    "width": "wide",
+                    "spacing": "normal",
+                    "variant": "contained",
+                    "emphasis": "normal",
+                    "alignment": "left",
+                    "background": "surface"
+                  },
+                  "component": "publisher.cta",
+                  "componentVersion": 1
+                },
+                {
+                  "id": "home-members",
+                  "props": {
+                    "body": "Meet the sustaining members keeping sovereign journalism independent.",
+                    "link": {
+                      "id": "content:b2d44242-a969-4ecf-94af-555f844c4f2a",
+                      "href": "/members",
+                      "label": "Meet our readers",
+                      "siteId": "98c4f7fb-519d-41a5-9a4c-433b5aa5172c"
+                    },
+                    "title": "Community Contributors & Readers",
+                    "width": "standard",
+                    "spacing": "normal",
+                    "variant": "default",
+                    "emphasis": "normal",
+                    "alignment": "left",
+                    "background": "canvas"
+                  },
+                  "component": "publisher.cta",
+                  "componentVersion": 1
+                },
+                {
+                  "id": "home-newsletter",
+                  "props": {
+                    "body": "Receive investigative briefings directly in your inbox. No ads, zero tracking, unsubscribe at any time.",
+                    "link": {
+                      "id": "content:624df3ce-7f10-465f-b068-88ca1818a581",
+                      "href": "/subscribe",
+                      "label": "Join the newsletter",
+                      "siteId": "98c4f7fb-519d-41a5-9a4c-433b5aa5172c"
+                    },
+                    "title": "Subscribe to The Weekly Dispatch",
+                    "width": "standard",
+                    "spacing": "relaxed",
+                    "variant": "contained",
+                    "emphasis": "bold",
+                    "alignment": "center",
+                    "background": "surface"
+                  },
+                  "component": "publisher.cta",
+                  "componentVersion": 1
+                }
+              ]
+            },
+            "theme": {
+              "id": "neutral-starter",
+              "version": "1.0.0"
+            },
+            "siteId": "98c4f7fb-519d-41a5-9a4c-433b5aa5172c",
+            "surface": "layout",
+            "version": 1,
+            "template": {
+              "id": "layout",
+              "version": "1.0.0"
+            }
+          },
+          "revision": 4,
+          "visibility": "public"
+        },
+        "site": "98c4f7fb-519d-41a5-9a4c-433b5aa5172c",
+        "publication": null,
+        "space": null,
+        "name": "Publication Homepage",
+        "path": "/",
+        "themeId": "neutral-starter",
+        "surface": "page",
+        "slot": "main",
+        "templateId": null,
+        "templateVersion": null,
+        "templateMode": null,
+        "isRetired": false,
+        "category": null,
+        "layoutVersion": 1,
+        "status": "published",
+        "visibility": "public",
+        "blocks": [
+          {
+            "id": "home-hero",
+            "props": {
+              "body": "Independent reporting from your neighborhood.",
+              "media": {
+                "id": "1add003e-99f8-447b-9cdb-4eb146cdcda7",
+                "href": "/media/1add003e-99f8-447b-9cdb-4eb146cdcda7",
+                "label": "Sample civic journalism illustration",
+                "siteId": "98c4f7fb-519d-41a5-9a4c-433b5aa5172c"
+              },
+              "title": "04C Civic Journal",
+              "width": "wide",
+              "spacing": "relaxed",
+              "variant": "default",
+              "emphasis": "bold",
+              "alignment": "center",
+              "background": "canvas"
+            },
+            "component": "publisher.hero",
+            "componentVersion": 1
+          },
+          {
+            "id": "home-articles",
+            "props": {
+              "query": {
+                "sort": "newest",
+                "limit": 6,
+                "collection": "content"
+              },
+              "title": "Recent Dispatches",
+              "width": "wide",
+              "spacing": "normal",
+              "variant": "default",
+              "emphasis": "normal",
+              "alignment": "left",
+              "background": "canvas"
+            },
+            "component": "publisher.article-list",
+            "componentVersion": 1
+          },
+          {
+            "id": "home-forum",
+            "props": {
+              "body": "Join the conversation on verified stories, propose investigative tips, and engage with contributors.",
+              "link": {
+                "id": "content:b2d44242-a969-4ecf-94af-555f844c4f2a",
+                "href": "/members",
+                "label": "Explore the community",
+                "siteId": "98c4f7fb-519d-41a5-9a4c-433b5aa5172c"
+              },
+              "title": "Community Inquiries & Discussions",
+              "width": "wide",
+              "spacing": "normal",
+              "variant": "contained",
+              "emphasis": "normal",
+              "alignment": "left",
+              "background": "surface"
+            },
+            "component": "publisher.cta",
+            "componentVersion": 1
+          },
+          {
+            "id": "home-members",
+            "props": {
+              "body": "Meet the sustaining members keeping sovereign journalism independent.",
+              "link": {
+                "id": "content:b2d44242-a969-4ecf-94af-555f844c4f2a",
+                "href": "/members",
+                "label": "Meet our readers",
+                "siteId": "98c4f7fb-519d-41a5-9a4c-433b5aa5172c"
+              },
+              "title": "Community Contributors & Readers",
+              "width": "standard",
+              "spacing": "normal",
+              "variant": "default",
+              "emphasis": "normal",
+              "alignment": "left",
+              "background": "canvas"
+            },
+            "component": "publisher.cta",
+            "componentVersion": 1
+          },
+          {
+            "id": "home-newsletter",
+            "props": {
+              "body": "Receive investigative briefings directly in your inbox. No ads, zero tracking, unsubscribe at any time.",
+              "link": {
+                "id": "content:624df3ce-7f10-465f-b068-88ca1818a581",
+                "href": "/subscribe",
+                "label": "Join the newsletter",
+                "siteId": "98c4f7fb-519d-41a5-9a4c-433b5aa5172c"
+              },
+              "title": "Subscribe to The Weekly Dispatch",
+              "width": "standard",
+              "spacing": "relaxed",
+              "variant": "contained",
+              "emphasis": "bold",
+              "alignment": "center",
+              "background": "surface"
+            },
+            "component": "publisher.cta",
+            "componentVersion": 1
+          }
+        ],
+        "unknownBlocks": [],
+        "revision": 4,
+        "publishedRevision": 4,
+        "revisionHistory": [
+          {
+            "action": "starter-install",
+            "blocks": [
+              {
+                "id": "home-hero",
+                "props": {
+                  "body": "Independent dispatches, investigative inquiry, and open civic dialogue powered by reader patronage.",
+                  "media": {
+                    "id": "1add003e-99f8-447b-9cdb-4eb146cdcda7",
+                    "href": "/media/1add003e-99f8-447b-9cdb-4eb146cdcda7",
+                    "label": "Sample civic journalism illustration",
+                    "siteId": "98c4f7fb-519d-41a5-9a4c-433b5aa5172c"
+                  },
+                  "title": "The Vanguard Chronicle",
+                  "width": "wide",
+                  "spacing": "relaxed",
+                  "variant": "default",
+                  "emphasis": "bold",
+                  "alignment": "center",
+                  "background": "canvas"
+                },
+                "component": "publisher.hero",
+                "componentVersion": 1
+              },
+              {
+                "id": "home-articles",
+                "props": {
+                  "query": {
+                    "sort": "newest",
+                    "limit": 6,
+                    "collection": "content"
+                  },
+                  "title": "Recent Dispatches",
+                  "width": "wide",
+                  "spacing": "normal",
+                  "variant": "default",
+                  "emphasis": "normal",
+                  "alignment": "left",
+                  "background": "canvas"
+                },
+                "component": "publisher.article-list",
+                "componentVersion": 1
+              },
+              {
+                "id": "home-forum",
+                "props": {
+                  "body": "Join the conversation on verified stories, propose investigative tips, and engage with contributors.",
+                  "link": {
+                    "id": "content:b2d44242-a969-4ecf-94af-555f844c4f2a",
+                    "href": "/members",
+                    "label": "Explore the community",
+                    "siteId": "98c4f7fb-519d-41a5-9a4c-433b5aa5172c"
+                  },
+                  "title": "Community Inquiries & Discussions",
+                  "width": "wide",
+                  "spacing": "normal",
+                  "variant": "contained",
+                  "emphasis": "normal",
+                  "alignment": "left",
+                  "background": "surface"
+                },
+                "component": "publisher.cta",
+                "componentVersion": 1
+              },
+              {
+                "id": "home-members",
+                "props": {
+                  "body": "Meet the sustaining members keeping sovereign journalism independent.",
+                  "link": {
+                    "id": "content:b2d44242-a969-4ecf-94af-555f844c4f2a",
+                    "href": "/members",
+                    "label": "Meet our readers",
+                    "siteId": "98c4f7fb-519d-41a5-9a4c-433b5aa5172c"
+                  },
+                  "title": "Community Contributors & Readers",
+                  "width": "standard",
+                  "spacing": "normal",
+                  "variant": "default",
+                  "emphasis": "normal",
+                  "alignment": "left",
+                  "background": "canvas"
+                },
+                "component": "publisher.cta",
+                "componentVersion": 1
+              },
+              {
+                "id": "home-newsletter",
+                "props": {
+                  "body": "Receive investigative briefings directly in your inbox. No ads, zero tracking, unsubscribe at any time.",
+                  "link": {
+                    "id": "content:624df3ce-7f10-465f-b068-88ca1818a581",
+                    "href": "/subscribe",
+                    "label": "Join the newsletter",
+                    "siteId": "98c4f7fb-519d-41a5-9a4c-433b5aa5172c"
+                  },
+                  "title": "Subscribe to The Weekly Dispatch",
+                  "width": "standard",
+                  "spacing": "relaxed",
+                  "variant": "contained",
+                  "emphasis": "bold",
+                  "alignment": "center",
+                  "background": "surface"
+                },
+                "component": "publisher.cta",
+                "componentVersion": 1
+              }
+            ],
+            "savedAt": "2026-10-18T13:47:30.130Z",
+            "revision": 1
+          },
+          {
+            "blocks": [
+              {
+                "id": "home-hero",
+                "props": {
+                  "body": "Independent reporting from your neighborhood.",
+                  "media": {
+                    "id": "1add003e-99f8-447b-9cdb-4eb146cdcda7",
+                    "href": "/media/1add003e-99f8-447b-9cdb-4eb146cdcda7",
+                    "label": "Sample civic journalism illustration",
+                    "siteId": "98c4f7fb-519d-41a5-9a4c-433b5aa5172c"
+                  },
+                  "title": "04C Civic Journal",
+                  "width": "wide",
+                  "spacing": "relaxed",
+                  "variant": "default",
+                  "emphasis": "bold",
+                  "alignment": "center",
+                  "background": "canvas"
+                },
+                "component": "publisher.hero",
+                "componentVersion": 1
+              },
+              {
+                "id": "home-articles",
+                "props": {
+                  "query": {
+                    "sort": "newest",
+                    "limit": 6,
+                    "collection": "content"
+                  },
+                  "title": "Recent Dispatches",
+                  "width": "wide",
+                  "spacing": "normal",
+                  "variant": "default",
+                  "emphasis": "normal",
+                  "alignment": "left",
+                  "background": "canvas"
+                },
+                "component": "publisher.article-list",
+                "componentVersion": 1
+              },
+              {
+                "id": "home-forum",
+                "props": {
+                  "body": "Join the conversation on verified stories, propose investigative tips, and engage with contributors.",
+                  "link": {
+                    "id": "content:b2d44242-a969-4ecf-94af-555f844c4f2a",
+                    "href": "/members",
+                    "label": "Explore the community",
+                    "siteId": "98c4f7fb-519d-41a5-9a4c-433b5aa5172c"
+                  },
+                  "title": "Community Inquiries & Discussions",
+                  "width": "wide",
+                  "spacing": "normal",
+                  "variant": "contained",
+                  "emphasis": "normal",
+                  "alignment": "left",
+                  "background": "surface"
+                },
+                "component": "publisher.cta",
+                "componentVersion": 1
+              },
+              {
+                "id": "home-members",
+                "props": {
+                  "body": "Meet the sustaining members keeping sovereign journalism independent.",
+                  "link": {
+                    "id": "content:b2d44242-a969-4ecf-94af-555f844c4f2a",
+                    "href": "/members",
+                    "label": "Meet our readers",
+                    "siteId": "98c4f7fb-519d-41a5-9a4c-433b5aa5172c"
+                  },
+                  "title": "Community Contributors & Readers",
+                  "width": "standard",
+                  "spacing": "normal",
+                  "variant": "default",
+                  "emphasis": "normal",
+                  "alignment": "left",
+                  "background": "canvas"
+                },
+                "component": "publisher.cta",
+                "componentVersion": 1
+              },
+              {
+                "id": "home-newsletter",
+                "props": {
+                  "body": "Receive investigative briefings directly in your inbox. No ads, zero tracking, unsubscribe at any time.",
+                  "link": {
+                    "id": "content:624df3ce-7f10-465f-b068-88ca1818a581",
+                    "href": "/subscribe",
+                    "label": "Join the newsletter",
+                    "siteId": "98c4f7fb-519d-41a5-9a4c-433b5aa5172c"
+                  },
+                  "title": "Subscribe to The Weekly Dispatch",
+                  "width": "standard",
+                  "spacing": "relaxed",
+                  "variant": "contained",
+                  "emphasis": "bold",
+                  "alignment": "center",
+                  "background": "surface"
+                },
+                "component": "publisher.cta",
+                "componentVersion": 1
+              }
+            ],
+            "savedAt": "2026-10-18T13:47:45.468Z",
+            "revision": 2
+          },
+          {
+            "action": "starter-rollback",
+            "blocks": [
+              {
+                "id": "home-hero",
+                "props": {
+                  "body": "Independent dispatches, investigative inquiry, and open civic dialogue powered by reader patronage.",
+                  "media": {
+                    "id": "1add003e-99f8-447b-9cdb-4eb146cdcda7",
+                    "href": "/media/1add003e-99f8-447b-9cdb-4eb146cdcda7",
+                    "label": "Sample civic journalism illustration",
+                    "siteId": "98c4f7fb-519d-41a5-9a4c-433b5aa5172c"
+                  },
+                  "title": "The Vanguard Chronicle",
+                  "width": "wide",
+                  "spacing": "relaxed",
+                  "variant": "default",
+                  "emphasis": "bold",
+                  "alignment": "center",
+                  "background": "canvas"
+                },
+                "component": "publisher.hero",
+                "componentVersion": 1
+              },
+              {
+                "id": "home-articles",
+                "props": {
+                  "query": {
+                    "sort": "newest",
+                    "limit": 6,
+                    "collection": "content"
+                  },
+                  "title": "Recent Dispatches",
+                  "width": "wide",
+                  "spacing": "normal",
+                  "variant": "default",
+                  "emphasis": "normal",
+                  "alignment": "left",
+                  "background": "canvas"
+                },
+                "component": "publisher.article-list",
+                "componentVersion": 1
+              },
+              {
+                "id": "home-forum",
+                "props": {
+                  "body": "Join the conversation on verified stories, propose investigative tips, and engage with contributors.",
+                  "link": {
+                    "id": "content:b2d44242-a969-4ecf-94af-555f844c4f2a",
+                    "href": "/members",
+                    "label": "Explore the community",
+                    "siteId": "98c4f7fb-519d-41a5-9a4c-433b5aa5172c"
+                  },
+                  "title": "Community Inquiries & Discussions",
+                  "width": "wide",
+                  "spacing": "normal",
+                  "variant": "contained",
+                  "emphasis": "normal",
+                  "alignment": "left",
+                  "background": "surface"
+                },
+                "component": "publisher.cta",
+                "componentVersion": 1
+              },
+              {
+                "id": "home-members",
+                "props": {
+                  "body": "Meet the sustaining members keeping sovereign journalism independent.",
+                  "link": {
+                    "id": "content:b2d44242-a969-4ecf-94af-555f844c4f2a",
+                    "href": "/members",
+                    "label": "Meet our readers",
+                    "siteId": "98c4f7fb-519d-41a5-9a4c-433b5aa5172c"
+                  },
+                  "title": "Community Contributors & Readers",
+                  "width": "standard",
+                  "spacing": "normal",
+                  "variant": "default",
+                  "emphasis": "normal",
+                  "alignment": "left",
+                  "background": "canvas"
+                },
+                "component": "publisher.cta",
+                "componentVersion": 1
+              },
+              {
+                "id": "home-newsletter",
+                "props": {
+                  "body": "Receive investigative briefings directly in your inbox. No ads, zero tracking, unsubscribe at any time.",
+                  "link": {
+                    "id": "content:624df3ce-7f10-465f-b068-88ca1818a581",
+                    "href": "/subscribe",
+                    "label": "Join the newsletter",
+                    "siteId": "98c4f7fb-519d-41a5-9a4c-433b5aa5172c"
+                  },
+                  "title": "Subscribe to The Weekly Dispatch",
+                  "width": "standard",
+                  "spacing": "relaxed",
+                  "variant": "contained",
+                  "emphasis": "bold",
+                  "alignment": "center",
+                  "background": "surface"
+                },
+                "component": "publisher.cta",
+                "componentVersion": 1
+              }
+            ],
+            "savedAt": "2026-10-18T13:49:30.844Z",
+            "revision": 3,
+            "rollbackTo": 1
+          },
+          {
+            "blocks": [
+              {
+                "id": "home-hero",
+                "props": {
+                  "body": "Independent reporting from your neighborhood.",
+                  "media": {
+                    "id": "1add003e-99f8-447b-9cdb-4eb146cdcda7",
+                    "href": "/media/1add003e-99f8-447b-9cdb-4eb146cdcda7",
+                    "label": "Sample civic journalism illustration",
+                    "siteId": "98c4f7fb-519d-41a5-9a4c-433b5aa5172c"
+                  },
+                  "title": "04C Civic Journal",
+                  "width": "wide",
+                  "spacing": "relaxed",
+                  "variant": "default",
+                  "emphasis": "bold",
+                  "alignment": "center",
+                  "background": "canvas"
+                },
+                "component": "publisher.hero",
+                "componentVersion": 1
+              },
+              {
+                "id": "home-articles",
+                "props": {
+                  "query": {
+                    "sort": "newest",
+                    "limit": 6,
+                    "collection": "content"
+                  },
+                  "title": "Recent Dispatches",
+                  "width": "wide",
+                  "spacing": "normal",
+                  "variant": "default",
+                  "emphasis": "normal",
+                  "alignment": "left",
+                  "background": "canvas"
+                },
+                "component": "publisher.article-list",
+                "componentVersion": 1
+              },
+              {
+                "id": "home-forum",
+                "props": {
+                  "body": "Join the conversation on verified stories, propose investigative tips, and engage with contributors.",
+                  "link": {
+                    "id": "content:b2d44242-a969-4ecf-94af-555f844c4f2a",
+                    "href": "/members",
+                    "label": "Explore the community",
+                    "siteId": "98c4f7fb-519d-41a5-9a4c-433b5aa5172c"
+                  },
+                  "title": "Community Inquiries & Discussions",
+                  "width": "wide",
+                  "spacing": "normal",
+                  "variant": "contained",
+                  "emphasis": "normal",
+                  "alignment": "left",
+                  "background": "surface"
+                },
+                "component": "publisher.cta",
+                "componentVersion": 1
+              },
+              {
+                "id": "home-members",
+                "props": {
+                  "body": "Meet the sustaining members keeping sovereign journalism independent.",
+                  "link": {
+                    "id": "content:b2d44242-a969-4ecf-94af-555f844c4f2a",
+                    "href": "/members",
+                    "label": "Meet our readers",
+                    "siteId": "98c4f7fb-519d-41a5-9a4c-433b5aa5172c"
+                  },
+                  "title": "Community Contributors & Readers",
+                  "width": "standard",
+                  "spacing": "normal",
+                  "variant": "default",
+                  "emphasis": "normal",
+                  "alignment": "left",
+                  "background": "canvas"
+                },
+                "component": "publisher.cta",
+                "componentVersion": 1
+              },
+              {
+                "id": "home-newsletter",
+                "props": {
+                  "body": "Receive investigative briefings directly in your inbox. No ads, zero tracking, unsubscribe at any time.",
+                  "link": {
+                    "id": "content:624df3ce-7f10-465f-b068-88ca1818a581",
+                    "href": "/subscribe",
+                    "label": "Join the newsletter",
+                    "siteId": "98c4f7fb-519d-41a5-9a4c-433b5aa5172c"
+                  },
+                  "title": "Subscribe to The Weekly Dispatch",
+                  "width": "standard",
+                  "spacing": "relaxed",
+                  "variant": "contained",
+                  "emphasis": "bold",
+                  "alignment": "center",
+                  "background": "surface"
+                },
+                "component": "publisher.cta",
+                "componentVersion": 1
+              }
+            ],
+            "savedAt": "2026-10-18T13:49:32.071Z",
+            "revision": 4
+          }
+        ],
+        "retentionMode": "permanent",
+        "retentionExpiresAt": null,
+        "retentionHold": "none",
+        "removeFromDiscovery": false,
+        "tombstoneLabel": null,
+        "updatedAt": "2026-10-18T13:49:32.090Z",
+        "createdAt": "2026-10-18T13:47:30.136Z"
+      }
+    },
+    {
+      "collection": "subscribers",
+      "doc": {
+        "id": "297253b8-fb5e-4c8f-ab49-580394d60bac",
+        "site": "98c4f7fb-519d-41a5-9a4c-433b5aa5172c",
+        "publication": null,
+        "space": null,
+        "owner": null,
+        "email": "reader-1792331241556@rc104c.test",
+        "emailHash": "dzrTziA_Q1Tp4cVclSmbMawkkq2_ltXOTc3YHuPtwcM",
+        "member": null,
+        "contact": null,
+        "status": "active",
+        "verifiedAt": "2026-10-18T13:48:32.545Z",
+        "globalUnsubscribedAt": null,
+        "erasedAt": null,
+        "updatedAt": "2026-10-18T13:48:32.572Z",
+        "createdAt": "2026-10-18T13:48:30.143Z"
+      }
+    },
+    {
+      "collection": "audience-memberships",
+      "doc": {
+        "id": "4e476192-e3bc-45ff-a67e-bd6be81262d9",
+        "subscriber": "297253b8-fb5e-4c8f-ab49-580394d60bac",
+        "audienceList": "f9360358-5a3b-47b1-94e4-88f644aa019a",
+        "status": "active",
+        "confirmedAt": "2026-10-18T13:48:32.545Z",
+        "source": "public-subscribe",
+        "updatedAt": "2026-10-18T13:48:32.607Z",
+        "createdAt": "2026-10-18T13:48:30.169Z"
+      }
+    }
+  ]
+}

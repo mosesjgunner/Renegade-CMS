@@ -2,7 +2,7 @@ import config from '@payload-config'
 import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
 
-import { assertMediaPermission, MediaWorkflowError } from '@/modules/media/workflow'
+import { listScopedMediaLibrary, MediaWorkflowError } from '@/modules/media/workflow'
 
 export const runtime = 'nodejs'
 
@@ -11,35 +11,22 @@ export async function GET(request: Request) {
   const payload = await getPayload({ config })
   const auth = await payload.auth({ headers: request.headers })
   try {
-    const siteId = new URL(request.url).searchParams.get('siteId') ?? ''
-    await assertMediaPermission(
-      payload,
-      auth.user as never,
-      { kind: 'site', siteId },
-      'content.read',
-    )
-    const result = await payload.find({
-      collection: 'media-assets',
-      where: { site: { equals: siteId } },
-      depth: 0,
-      limit: 100,
-      sort: '-updatedAt',
-      overrideAccess: true,
-    } as never)
-    const media = result.docs.map((rawAsset) => {
-      const asset = rawAsset as unknown as Record<string, unknown>
-      return {
-        id: String(asset.id),
-        title: String(asset.title ?? ''),
-        altText: typeof asset.altText === 'string' ? asset.altText : '',
-        caption: typeof asset.caption === 'string' ? asset.caption : '',
-        mimeType: String(asset.mimeType ?? ''),
-        sizeBytes: Number(asset.sizeBytes ?? 0),
-        processingState: String(asset.processingState ?? ''),
-        url: `/media/${asset.id}`,
-      }
+    const params = new URL(request.url).searchParams
+    const siteId = params.get('siteId') ?? ''
+    const q = params.get('q') ?? params.get('search') ?? undefined
+    const kind = params.get('kind') ?? undefined
+    const mimeType = params.get('mimeType') ?? undefined
+    const usage = params.get('usage') ?? undefined
+    const retentionMode = params.get('retentionMode') ?? undefined
+    const media = await listScopedMediaLibrary(payload, auth.user as never, {
+      siteId,
+      q,
+      kind,
+      mimeType,
+      usage,
+      retentionMode,
     })
-    return NextResponse.json({ media })
+    return NextResponse.json({ media, docs: media })
   } catch (error) {
     const status = error instanceof MediaWorkflowError ? error.status : 400
     return NextResponse.json(

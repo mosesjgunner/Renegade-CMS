@@ -1,0 +1,759 @@
+{
+  "site": "33579c19-5d66-4041-9457-7a9f5eb43ede",
+  "theme": {
+    "revision": 2,
+    "active": {
+      "id": "renegade-party",
+      "digest": "a469188d8a636c5ad7197c0a7e03e93a53df5465173cb6cbe0be6d1ed843956f",
+      "tokens": {
+        "color.accent": "#7f1d1d"
+      },
+      "version": "1.0.0",
+      "renderer": "renegade-party"
+    },
+    "draft": null,
+    "previous": {
+      "id": "renegade-party",
+      "digest": "a469188d8a636c5ad7197c0a7e03e93a53df5465173cb6cbe0be6d1ed843956f",
+      "tokens": {},
+      "version": "1.0.0",
+      "renderer": "renegade-party"
+    }
+  },
+  "records": [
+    {
+      "collection": "publications",
+      "doc": {
+        "id": "143f7fd6-7faa-4996-bea5-79bdf9709da1",
+        "site": "33579c19-5d66-4041-9457-7a9f5eb43ede",
+        "owner": "785d8809-5d85-43d7-b3d7-19ea4632fee1",
+        "space": null,
+        "name": "04D Forward Transit Campaign",
+        "slug": "main",
+        "canonicalBasePath": "/",
+        "status": "active",
+        "visibility": "public",
+        "brand": null,
+        "profile": null,
+        "brandOverrides": null,
+        "themePreset": "renegade-party",
+        "moderationPolicy": null,
+        "featurePolicy": null,
+        "capabilities": [],
+        "quotaPolicy": null,
+        "navigation": {
+          "footer": [
+            {
+              "href": "/disclosure",
+              "label": "Disclosure"
+            },
+            {
+              "href": "/contact",
+              "label": "Contact"
+            },
+            {
+              "href": "/privacy",
+              "label": "Privacy"
+            },
+            {
+              "href": "/terms",
+              "label": "Terms"
+            }
+          ],
+          "primary": [
+            {
+              "href": "/store",
+              "label": "Store"
+            },
+            {
+              "href": "/donate",
+              "label": "Donate"
+            },
+            {
+              "href": "/articles",
+              "label": "News"
+            },
+            {
+              "href": "/contact",
+              "label": "Contact"
+            }
+          ]
+        },
+        "feeds": null,
+        "seoDefaults": null,
+        "suspendedAt": null,
+        "archivedAt": null,
+        "archiveMessage": null,
+        "updatedAt": "2026-10-18T13:52:36.902Z",
+        "createdAt": "2026-10-18T13:52:28.997Z"
+      }
+    },
+    {
+      "collection": "products",
+      "doc": {
+        "id": "adf98958-acb6-47c2-98f5-b6d3ca37f715",
+        "site": "33579c19-5d66-4041-9457-7a9f5eb43ede",
+        "publication": null,
+        "space": null,
+        "owner": null,
+        "merchantConnection": null,
+        "catalogContractVersion": 1,
+        "name": "Solidarity Heavyweight Union-Printed Tee",
+        "summary": "100% organic cotton, heavyweight crewneck tee. Union-made and screenprinted locally in the USA.",
+        "slug": "solidarity-heavyweight-tee",
+        "canonicalPath": "/store/solidarity-heavyweight-tee",
+        "kind": "physical",
+        "state": "published",
+        "publishedAt": "2026-10-18T13:52:35.197Z",
+        "archivedAt": null,
+        "redirectTo": null,
+        "description": "Wear your values on the campaign trail. This heavyweight 6.5 oz crewneck tee is spun from organic ring-spun cotton and printed by union workers affiliated with the Allied Printing Trades Council. All proceeds directly support grassroots volunteer field kits.\n\n- 100% Combed Organic Cotton\n- Preshrunk heavyweight fabric\n- Double-stitched neckline and sleeves\n- Tear-away union label",
+        "localized": {},
+        "categories": null,
+        "topics": [],
+        "tags": [],
+        "collections": [],
+        "media": [],
+        "relationships": [],
+        "productCapabilities": [
+          "shippable"
+        ],
+        "optionDimensions": [],
+        "variants": [
+          {
+            "id": "6ad4cf231d90de38e83737fb",
+            "sku": "FFP-TEE-001",
+            "title": "Default Variant",
+            "attributes": {},
+            "optionValues": {},
+            "status": "active",
+            "weightGrams": 280,
+            "dimensionsMm": {
+              "width": 200,
+              "height": 30,
+              "length": 250
+            },
+            "inventoryPolicy": "tracked",
+            "inventoryQuantity": 500,
+            "inventoryReference": null,
+            "podReference": null,
+            "digitalFiles": []
+          }
+        ],
+        "prices": [],
+        "offers": [
+          {
+            "id": "offer-ffp-tee-001",
+            "status": "active",
+            "version": 1,
+            "currency": "USD",
+            "taxDisplay": "inclusive",
+            "variantSku": "FFP-TEE-001",
+            "amountMinor": "3200"
+          }
+        ],
+        "digitalDelivery": null,
+        "affiliatePolicy": null,
+        "podMappings": null,
+        "disclosures": [],
+        "workflowAudit": [],
+        "revisionSnapshots": [],
+        "publishedPresentation": null,
+        "entitlement": null,
+        "releaseRevision": null,
+        "seoTitle": null,
+        "seoDescription": null,
+        "seoCanonicalURL": null,
+        "seoImageAlt": null,
+        "seoKeywords": null,
+        "seoFocusKeyphrase": null,
+        "seoNoIndex": false,
+        "discoveryOverrides": null,
+        "retentionMode": "permanent",
+        "retentionExpiresAt": null,
+        "retentionHold": "none",
+        "removeFromDiscovery": false,
+        "tombstoneLabel": null,
+        "updatedAt": "2026-10-18T13:52:35.233Z",
+        "createdAt": "2026-10-18T13:52:35.233Z"
+      }
+    },
+    {
+      "collection": "donation-campaigns",
+      "doc": {
+        "id": "01a14f49-227d-7bd6-8820-a5384539087f",
+        "site": "33579c19-5d66-4041-9457-7a9f5eb43ede",
+        "publication": null,
+        "space": null,
+        "owner": null,
+        "organization": null,
+        "campaignKey": "clean-transit-fund",
+        "version": 1,
+        "title": "The People's Transit & Clean Energy Fund",
+        "story": null,
+        "media": [],
+        "purpose": "Funding direct door-to-door community organizing, voter education town halls, and ballot measure advertising across all 8 districts.",
+        "designations": [],
+        "startsAt": "2026-10-17T13:52:35.449Z",
+        "endsAt": null,
+        "goalAmountMinor": "25000000",
+        "goalRules": {},
+        "allowedAmounts": [
+          "1000",
+          "2500",
+          "5000",
+          "10000",
+          "25000"
+        ],
+        "currency": "USD",
+        "receiptEntityName": null,
+        "verifiedNonprofitStatus": false,
+        "verified501c3Status": false,
+        "verifiedTaxDeductibility": false,
+        "taxDisclaimer": "Contributions to Forward for the People are not tax deductible as charitable contributions for federal income tax purposes. Governed in accordance with the Federal Election Campaign Act (FECA). By donating, you confirm you are a U.S. citizen or lawfully admitted permanent resident, contributing from your own personal funds, and are at least 18 years of age.",
+        "donorWallMinimumMinor": "0",
+        "supporterEntitlement": null,
+        "supporterEntitlementTermDays": null,
+        "recurrence": [
+          "one-time"
+        ],
+        "feeCover": null,
+        "privacyDefault": "private",
+        "disclosures": [
+          "Contributions to Forward for the People are not tax deductible as charitable contributions for federal income tax purposes. Governed in accordance with the Federal Election Campaign Act (FECA). By donating, you confirm you are a U.S. citizen or lawfully admitted permanent resident, contributing from your own personal funds, and are at least 18 years of age."
+        ],
+        "lifecycle": "active",
+        "updatedAt": "2026-10-18T13:52:35.462Z",
+        "createdAt": "2026-10-18T13:52:35.451Z"
+      }
+    },
+    {
+      "collection": "page-layouts",
+      "doc": {
+        "id": "97149f47-7e27-4beb-a034-8f62f05ed7b5",
+        "publishedPresentation": {
+          "path": "/",
+          "version": 1,
+          "document": {
+            "slots": {
+              "main": [
+                {
+                  "id": "camp-hero",
+                  "props": {
+                    "body": "Join our movement to bring zero-emission rapid transit to our neighborhoods.",
+                    "title": "04D Forward Transit Campaign",
+                    "width": "wide",
+                    "spacing": "relaxed",
+                    "variant": "default",
+                    "emphasis": "bold",
+                    "alignment": "center",
+                    "background": "canvas"
+                  },
+                  "component": "publisher.hero",
+                  "componentVersion": 1
+                },
+                {
+                  "id": "camp-tracker",
+                  "props": {
+                    "body": "12,450+ citizen co-sponsors • 100% small-dollar funded • Zero corporate PAC money accepted.",
+                    "query": {
+                      "sort": "newest",
+                      "limit": 1,
+                      "collection": "content"
+                    },
+                    "title": "Grassroots Progress: $185,420 of $250,000 Goal",
+                    "width": "wide",
+                    "spacing": "normal",
+                    "variant": "contained",
+                    "emphasis": "bold",
+                    "alignment": "center",
+                    "background": "surface"
+                  },
+                  "component": "publisher.chart-and-stat",
+                  "componentVersion": 1
+                },
+                {
+                  "id": "camp-merch-spotlight",
+                  "props": {
+                    "body": "100% union-printed tees, tote bags, collector enamel pins, and canvasser field notebooks.",
+                    "query": {
+                      "sort": "newest",
+                      "limit": 4,
+                      "collection": "content"
+                    },
+                    "title": "Official Campaign Store",
+                    "width": "wide",
+                    "spacing": "normal",
+                    "variant": "default",
+                    "emphasis": "normal",
+                    "alignment": "left",
+                    "background": "canvas"
+                  },
+                  "component": "publisher.product-showcase",
+                  "componentVersion": 1
+                },
+                {
+                  "id": "camp-donation-cta",
+                  "props": {
+                    "body": "Select $10, $25, $50, $100, or a custom contribution to fund neighborhood voter kits.",
+                    "query": {
+                      "sort": "newest",
+                      "limit": 1,
+                      "collection": "content"
+                    },
+                    "title": "Fuel the Campaign with a Grassroots Gift",
+                    "width": "standard",
+                    "spacing": "relaxed",
+                    "variant": "contained",
+                    "emphasis": "bold",
+                    "alignment": "center",
+                    "background": "brand"
+                  },
+                  "component": "publisher.donation",
+                  "componentVersion": 1
+                },
+                {
+                  "id": "camp-updates",
+                  "props": {
+                    "query": {
+                      "sort": "newest",
+                      "limit": 3,
+                      "collection": "content"
+                    },
+                    "title": "Dispatches from the Campaign Trail",
+                    "width": "wide",
+                    "spacing": "normal",
+                    "variant": "default",
+                    "emphasis": "normal",
+                    "alignment": "left",
+                    "background": "canvas"
+                  },
+                  "component": "publisher.article-list",
+                  "componentVersion": 1
+                },
+                {
+                  "id": "camp-volunteer-cta",
+                  "props": {
+                    "body": "Join thousands of neighbors organizing canvasses, community town halls, and digital phone banks.",
+                    "query": {
+                      "sort": "newest",
+                      "limit": 1,
+                      "collection": "content"
+                    },
+                    "title": "Mobilize with the Field Team",
+                    "width": "standard",
+                    "spacing": "relaxed",
+                    "variant": "contained",
+                    "emphasis": "bold",
+                    "alignment": "center",
+                    "background": "surface"
+                  },
+                  "component": "publisher.newsletter-cta",
+                  "componentVersion": 1
+                }
+              ]
+            },
+            "theme": {
+              "id": "renegade-party",
+              "version": "1.0.0"
+            },
+            "siteId": "33579c19-5d66-4041-9457-7a9f5eb43ede",
+            "surface": "layout",
+            "version": 1,
+            "template": {
+              "id": "layout",
+              "version": "1.0.0"
+            }
+          },
+          "revision": 2,
+          "visibility": "public"
+        },
+        "site": "33579c19-5d66-4041-9457-7a9f5eb43ede",
+        "publication": null,
+        "space": null,
+        "name": "Campaign Homepage",
+        "path": "/",
+        "themeId": "renegade-party",
+        "surface": "page",
+        "slot": "main",
+        "templateId": null,
+        "templateVersion": null,
+        "templateMode": null,
+        "isRetired": false,
+        "category": null,
+        "layoutVersion": 1,
+        "status": "published",
+        "visibility": "public",
+        "blocks": [
+          {
+            "id": "camp-hero",
+            "props": {
+              "body": "Join our movement to bring zero-emission rapid transit to our neighborhoods.",
+              "title": "04D Forward Transit Campaign",
+              "width": "wide",
+              "spacing": "relaxed",
+              "variant": "default",
+              "emphasis": "bold",
+              "alignment": "center",
+              "background": "canvas"
+            },
+            "component": "publisher.hero",
+            "componentVersion": 1
+          },
+          {
+            "id": "camp-tracker",
+            "props": {
+              "body": "12,450+ citizen co-sponsors • 100% small-dollar funded • Zero corporate PAC money accepted.",
+              "query": {
+                "sort": "newest",
+                "limit": 1,
+                "collection": "content"
+              },
+              "title": "Grassroots Progress: $185,420 of $250,000 Goal",
+              "width": "wide",
+              "spacing": "normal",
+              "variant": "contained",
+              "emphasis": "bold",
+              "alignment": "center",
+              "background": "surface"
+            },
+            "component": "publisher.chart-and-stat",
+            "componentVersion": 1
+          },
+          {
+            "id": "camp-merch-spotlight",
+            "props": {
+              "body": "100% union-printed tees, tote bags, collector enamel pins, and canvasser field notebooks.",
+              "query": {
+                "sort": "newest",
+                "limit": 4,
+                "collection": "content"
+              },
+              "title": "Official Campaign Store",
+              "width": "wide",
+              "spacing": "normal",
+              "variant": "default",
+              "emphasis": "normal",
+              "alignment": "left",
+              "background": "canvas"
+            },
+            "component": "publisher.product-showcase",
+            "componentVersion": 1
+          },
+          {
+            "id": "camp-donation-cta",
+            "props": {
+              "body": "Select $10, $25, $50, $100, or a custom contribution to fund neighborhood voter kits.",
+              "query": {
+                "sort": "newest",
+                "limit": 1,
+                "collection": "content"
+              },
+              "title": "Fuel the Campaign with a Grassroots Gift",
+              "width": "standard",
+              "spacing": "relaxed",
+              "variant": "contained",
+              "emphasis": "bold",
+              "alignment": "center",
+              "background": "brand"
+            },
+            "component": "publisher.donation",
+            "componentVersion": 1
+          },
+          {
+            "id": "camp-updates",
+            "props": {
+              "query": {
+                "sort": "newest",
+                "limit": 3,
+                "collection": "content"
+              },
+              "title": "Dispatches from the Campaign Trail",
+              "width": "wide",
+              "spacing": "normal",
+              "variant": "default",
+              "emphasis": "normal",
+              "alignment": "left",
+              "background": "canvas"
+            },
+            "component": "publisher.article-list",
+            "componentVersion": 1
+          },
+          {
+            "id": "camp-volunteer-cta",
+            "props": {
+              "body": "Join thousands of neighbors organizing canvasses, community town halls, and digital phone banks.",
+              "query": {
+                "sort": "newest",
+                "limit": 1,
+                "collection": "content"
+              },
+              "title": "Mobilize with the Field Team",
+              "width": "standard",
+              "spacing": "relaxed",
+              "variant": "contained",
+              "emphasis": "bold",
+              "alignment": "center",
+              "background": "surface"
+            },
+            "component": "publisher.newsletter-cta",
+            "componentVersion": 1
+          }
+        ],
+        "unknownBlocks": [],
+        "revision": 2,
+        "publishedRevision": 2,
+        "revisionHistory": [
+          {
+            "action": "starter-install",
+            "blocks": [
+              {
+                "id": "camp-hero",
+                "props": {
+                  "body": "A people-powered campaign for zero-emission transit, municipal clean power, and fair union wages.",
+                  "title": "Forward for the People",
+                  "width": "wide",
+                  "spacing": "relaxed",
+                  "variant": "default",
+                  "emphasis": "bold",
+                  "alignment": "center",
+                  "background": "canvas"
+                },
+                "component": "publisher.hero",
+                "componentVersion": 1
+              },
+              {
+                "id": "camp-tracker",
+                "props": {
+                  "body": "12,450+ citizen co-sponsors • 100% small-dollar funded • Zero corporate PAC money accepted.",
+                  "query": {
+                    "sort": "newest",
+                    "limit": 1,
+                    "collection": "content"
+                  },
+                  "title": "Grassroots Progress: $185,420 of $250,000 Goal",
+                  "width": "wide",
+                  "spacing": "normal",
+                  "variant": "contained",
+                  "emphasis": "bold",
+                  "alignment": "center",
+                  "background": "surface"
+                },
+                "component": "publisher.chart-and-stat",
+                "componentVersion": 1
+              },
+              {
+                "id": "camp-merch-spotlight",
+                "props": {
+                  "body": "100% union-printed tees, tote bags, collector enamel pins, and canvasser field notebooks.",
+                  "query": {
+                    "sort": "newest",
+                    "limit": 4,
+                    "collection": "content"
+                  },
+                  "title": "Official Campaign Store",
+                  "width": "wide",
+                  "spacing": "normal",
+                  "variant": "default",
+                  "emphasis": "normal",
+                  "alignment": "left",
+                  "background": "canvas"
+                },
+                "component": "publisher.product-showcase",
+                "componentVersion": 1
+              },
+              {
+                "id": "camp-donation-cta",
+                "props": {
+                  "body": "Select $10, $25, $50, $100, or a custom contribution to fund neighborhood voter kits.",
+                  "query": {
+                    "sort": "newest",
+                    "limit": 1,
+                    "collection": "content"
+                  },
+                  "title": "Fuel the Campaign with a Grassroots Gift",
+                  "width": "standard",
+                  "spacing": "relaxed",
+                  "variant": "contained",
+                  "emphasis": "bold",
+                  "alignment": "center",
+                  "background": "brand"
+                },
+                "component": "publisher.donation",
+                "componentVersion": 1
+              },
+              {
+                "id": "camp-updates",
+                "props": {
+                  "query": {
+                    "sort": "newest",
+                    "limit": 3,
+                    "collection": "content"
+                  },
+                  "title": "Dispatches from the Campaign Trail",
+                  "width": "wide",
+                  "spacing": "normal",
+                  "variant": "default",
+                  "emphasis": "normal",
+                  "alignment": "left",
+                  "background": "canvas"
+                },
+                "component": "publisher.article-list",
+                "componentVersion": 1
+              },
+              {
+                "id": "camp-volunteer-cta",
+                "props": {
+                  "body": "Join thousands of neighbors organizing canvasses, community town halls, and digital phone banks.",
+                  "query": {
+                    "sort": "newest",
+                    "limit": 1,
+                    "collection": "content"
+                  },
+                  "title": "Mobilize with the Field Team",
+                  "width": "standard",
+                  "spacing": "relaxed",
+                  "variant": "contained",
+                  "emphasis": "bold",
+                  "alignment": "center",
+                  "background": "surface"
+                },
+                "component": "publisher.newsletter-cta",
+                "componentVersion": 1
+              }
+            ],
+            "savedAt": "2026-10-18T13:52:35.698Z",
+            "revision": 1
+          },
+          {
+            "blocks": [
+              {
+                "id": "camp-hero",
+                "props": {
+                  "body": "Join our movement to bring zero-emission rapid transit to our neighborhoods.",
+                  "title": "04D Forward Transit Campaign",
+                  "width": "wide",
+                  "spacing": "relaxed",
+                  "variant": "default",
+                  "emphasis": "bold",
+                  "alignment": "center",
+                  "background": "canvas"
+                },
+                "component": "publisher.hero",
+                "componentVersion": 1
+              },
+              {
+                "id": "camp-tracker",
+                "props": {
+                  "body": "12,450+ citizen co-sponsors • 100% small-dollar funded • Zero corporate PAC money accepted.",
+                  "query": {
+                    "sort": "newest",
+                    "limit": 1,
+                    "collection": "content"
+                  },
+                  "title": "Grassroots Progress: $185,420 of $250,000 Goal",
+                  "width": "wide",
+                  "spacing": "normal",
+                  "variant": "contained",
+                  "emphasis": "bold",
+                  "alignment": "center",
+                  "background": "surface"
+                },
+                "component": "publisher.chart-and-stat",
+                "componentVersion": 1
+              },
+              {
+                "id": "camp-merch-spotlight",
+                "props": {
+                  "body": "100% union-printed tees, tote bags, collector enamel pins, and canvasser field notebooks.",
+                  "query": {
+                    "sort": "newest",
+                    "limit": 4,
+                    "collection": "content"
+                  },
+                  "title": "Official Campaign Store",
+                  "width": "wide",
+                  "spacing": "normal",
+                  "variant": "default",
+                  "emphasis": "normal",
+                  "alignment": "left",
+                  "background": "canvas"
+                },
+                "component": "publisher.product-showcase",
+                "componentVersion": 1
+              },
+              {
+                "id": "camp-donation-cta",
+                "props": {
+                  "body": "Select $10, $25, $50, $100, or a custom contribution to fund neighborhood voter kits.",
+                  "query": {
+                    "sort": "newest",
+                    "limit": 1,
+                    "collection": "content"
+                  },
+                  "title": "Fuel the Campaign with a Grassroots Gift",
+                  "width": "standard",
+                  "spacing": "relaxed",
+                  "variant": "contained",
+                  "emphasis": "bold",
+                  "alignment": "center",
+                  "background": "brand"
+                },
+                "component": "publisher.donation",
+                "componentVersion": 1
+              },
+              {
+                "id": "camp-updates",
+                "props": {
+                  "query": {
+                    "sort": "newest",
+                    "limit": 3,
+                    "collection": "content"
+                  },
+                  "title": "Dispatches from the Campaign Trail",
+                  "width": "wide",
+                  "spacing": "normal",
+                  "variant": "default",
+                  "emphasis": "normal",
+                  "alignment": "left",
+                  "background": "canvas"
+                },
+                "component": "publisher.article-list",
+                "componentVersion": 1
+              },
+              {
+                "id": "camp-volunteer-cta",
+                "props": {
+                  "body": "Join thousands of neighbors organizing canvasses, community town halls, and digital phone banks.",
+                  "query": {
+                    "sort": "newest",
+                    "limit": 1,
+                    "collection": "content"
+                  },
+                  "title": "Mobilize with the Field Team",
+                  "width": "standard",
+                  "spacing": "relaxed",
+                  "variant": "contained",
+                  "emphasis": "bold",
+                  "alignment": "center",
+                  "background": "surface"
+                },
+                "component": "publisher.newsletter-cta",
+                "componentVersion": 1
+              }
+            ],
+            "savedAt": "2026-10-18T13:52:45.342Z",
+            "revision": 2
+          }
+        ],
+        "retentionMode": "permanent",
+        "retentionExpiresAt": null,
+        "retentionHold": "none",
+        "removeFromDiscovery": false,
+        "tombstoneLabel": null,
+        "updatedAt": "2026-10-18T13:52:45.358Z",
+        "createdAt": "2026-10-18T13:52:35.702Z"
+      }
+    }
+  ]
+}

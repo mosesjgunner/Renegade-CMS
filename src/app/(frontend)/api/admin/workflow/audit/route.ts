@@ -2,6 +2,7 @@ import config from '@payload-config'
 import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
 import { getWorkflowAuditHistory } from '@/modules/editorial/cmos-persistence'
+import { checkOperatorRecordAccess } from '@/modules/operations/operator-grants'
 
 export const runtime = 'nodejs'
 
@@ -17,6 +18,10 @@ export async function GET(request: Request) {
 
   if (!articleId) {
     return NextResponse.json({ error: 'articleId query parameter is required.' }, { status: 400 })
+  }
+
+  if (!(await checkOperatorRecordAccess(payload, auth.user, 'content', articleId))) {
+    return NextResponse.json({ error: 'Staff site access required.' }, { status: 403 })
   }
 
   try {

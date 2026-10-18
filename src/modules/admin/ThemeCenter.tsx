@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import styles from './ThemeCenter.module.css'
 import { gt } from 'semver'
@@ -56,8 +56,10 @@ export default function ThemeCenter() {
   const [message, setMessage] = useState('')
   const [messageType, setMessageType] = useState<'info' | 'success' | 'error'>('info')
   const [busy, setBusy] = useState(false)
+  const refreshSequence = useRef(0)
 
   const refresh = useCallback(async (site?: string) => {
+    const sequence = ++refreshSequence.current
     try {
       const siteQuery = site ? '?site=' + encodeURIComponent(site) : ''
       const [themesRes, startersRes] = await Promise.all([
@@ -66,14 +68,19 @@ export default function ThemeCenter() {
       ])
 
       const themesData = await themesRes.json()
+      if (sequence !== refreshSequence.current) return
       if (themesRes.ok) {
         setModel(themesData)
+        const configuration = themesData.state.draft ?? themesData.state.active
+        setSelectedTheme(configuration ? `${configuration.id}@${configuration.version}` : '')
+        setTokens(JSON.stringify(configuration?.tokens ?? {}, null, 2))
       } else {
         setMessage(themesData.error || 'Failed to load theme state.')
         setMessageType('error')
       }
 
       const startersData = await startersRes.json()
+      if (sequence !== refreshSequence.current) return
       if (startersRes.ok) {
         setStarters(startersData.starters || [])
         setStarterStatus(startersData.status || null)
@@ -83,6 +90,7 @@ export default function ThemeCenter() {
         }
       }
     } catch {
+      if (sequence !== refreshSequence.current) return
       setMessage('Failed to load discovery data. Check network and database status.')
       setMessageType('error')
     }
@@ -274,8 +282,14 @@ export default function ThemeCenter() {
             value={model.site}
             style={{ display: 'inline-block', width: 'auto', padding: '6px 12px' }}
             onChange={(e) => {
+              const nextSite = e.target.value
               setSelectedTheme('')
-              void refresh(e.target.value)
+              void fetch('/api/admin/active-site', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ siteId: nextSite }),
+              }).catch(() => {})
+              void refresh(nextSite)
             }}
           >
             {model.sites.map((s) => (
@@ -329,11 +343,17 @@ export default function ThemeCenter() {
       {activeTab === 'starters' && (
         <div id="panel-starters" role="tabpanel" aria-labelledby="tab-starters">
           <p style={{ fontSize: '0.9375rem' }}>
-            Install either complete starter experience directly into the active site without editing
-            code. All templates, reusable patterns, global regions, and sample content install with
-            verified public presentation snapshots.
+            Install a starter into an empty site. Existing content is preserved. Customize without
+            editing code. All templates, reusable patterns, global regions, and sample content
+            install with verified public presentation snapshots.
           </p>
 
+          <p>
+            Customize <Link href="/admin/globals/site-settings">site identity</Link>,{' '}
+            <Link href="/admin/navigation">navigation</Link>, and{' '}
+            <Link href="/admin/collections/page-layouts">homepage and global regions</Link>. Select
+            Themes above to change your palette. Review sample contact and legal copy before launch.
+          </p>
           <div className={styles.startersGrid}>
             {starters.map((starter) => {
               const isActive = starterStatus?.starterId === starter.id

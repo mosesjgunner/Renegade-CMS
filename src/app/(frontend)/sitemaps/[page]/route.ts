@@ -1,3 +1,4 @@
+import { publicSiteForHost } from '@/modules/public/site-scope'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import { getAllIndexableDiscoveryDocuments } from '@/modules/public/discovery'
@@ -17,7 +18,9 @@ export async function GET(request: Request, context: { params: Promise<{ page: s
   const page = Number(raw) - 1
   if (!Number.isInteger(page) || page < 0) return new Response('Not found', { status: 404 })
   const payload = await getPayload({ config })
-  const entries = crawlerEntries(await getAllIndexableDiscoveryDocuments(payload))
+  const siteId = await publicSiteForHost(payload, request.headers.get('host'))
+  if (!siteId) return new Response('Not found', { status: 404 })
+  const entries = crawlerEntries(await getAllIndexableDiscoveryDocuments(payload, siteId))
   if (!entries.length || page >= sitemapPageCount(entries.length))
     return new Response('Not found', { status: 404 })
   return conditionalXml(request, renderSitemap(sitemapPage(entries, page)))

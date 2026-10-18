@@ -2,6 +2,7 @@ import config from '@payload-config'
 import { getPayload } from 'payload'
 import { verifyCsrf } from '@/modules/identity/member-identity'
 
+import { isRegisteredCollection } from '@/modules/public/registered-collections'
 import {
   addComment,
   editComment,
@@ -25,6 +26,9 @@ export async function GET(request: Request) {
   }
 
   const payload = await getPayload({ config })
+  if (!isRegisteredCollection(payload, 'discussions') || !isRegisteredCollection(payload, 'discussion-posts')) {
+    return Response.json({ error: 'Community discussions service is unavailable.' }, { status: 503 })
+  }
   const actor = await resolveCommunityActor(payload, request.headers, siteId)
 
   try {
@@ -66,6 +70,9 @@ export async function POST(request: Request) {
     return Response.json({ error: 'Invalid CSRF token' }, { status: 403 })
   }
   const payload = await getPayload({ config })
+  if (!isRegisteredCollection(payload, 'discussions') || !isRegisteredCollection(payload, 'discussion-posts')) {
+    return Response.json({ error: 'Community discussions service is unavailable.' }, { status: 503 })
+  }
   const body = (await request.json().catch(() => ({}))) as Record<string, unknown>
   const siteId = String(body.siteId ?? '')
 
@@ -136,6 +143,9 @@ export async function PATCH(request: Request) {
     return Response.json({ error: 'Invalid CSRF token' }, { status: 403 })
   }
   const payload = await getPayload({ config })
+  if (!isRegisteredCollection(payload, 'discussions') || !isRegisteredCollection(payload, 'discussion-posts')) {
+    return Response.json({ error: 'Community discussions service is unavailable.' }, { status: 503 })
+  }
   const body = (await request.json().catch(() => ({}))) as Record<string, unknown>
   const siteId = String(body.siteId ?? '')
   const commentId = String(body.commentId ?? '')
@@ -175,6 +185,9 @@ export async function DELETE(request: Request) {
     return Response.json({ error: 'Invalid CSRF token' }, { status: 403 })
   }
   const payload = await getPayload({ config })
+  if (!isRegisteredCollection(payload, 'discussions') || !isRegisteredCollection(payload, 'discussion-posts')) {
+    return Response.json({ error: 'Community discussions service is unavailable.' }, { status: 503 })
+  }
   const body = (await request.json().catch(() => ({}))) as Record<string, unknown>
   const siteId = String(body.siteId ?? '')
   const commentId = String(body.commentId ?? '')

@@ -37,6 +37,59 @@ export const SiteSettings: GlobalConfig = {
             | undefined,
         )
         if (siteRouteTemplateError) throw new Error(siteRouteTemplateError)
+        if (data.canonicalOrigin && typeof data.canonicalOrigin === 'string') {
+          const trimmed = data.canonicalOrigin.trim()
+          try {
+            const parsed = new URL(trimmed)
+            if (!['http:', 'https:'].includes(parsed.protocol)) {
+              throw new Error('Canonical origin must use HTTP or HTTPS protocol.')
+            }
+          } catch (err) {
+            throw new Error(
+              err instanceof Error && err.message.includes('protocol')
+                ? err.message
+                : `Invalid canonical origin URL: "${data.canonicalOrigin}".`,
+            )
+          }
+        }
+        if (
+          data.canonicalOriginsBySite &&
+          typeof data.canonicalOriginsBySite === 'object' &&
+          !Array.isArray(data.canonicalOriginsBySite)
+        ) {
+          const hostToSite = new Map<string, string>()
+          for (const [siteKey, rawOrigin] of Object.entries(data.canonicalOriginsBySite)) {
+            if (typeof rawOrigin === 'string' && rawOrigin.trim()) {
+              try {
+                const parsed = new URL(rawOrigin.trim())
+                if (!['http:', 'https:'].includes(parsed.protocol)) {
+                  throw new Error(
+                    `Canonical origin for site ${siteKey} must use HTTP or HTTPS protocol.`,
+                  )
+                }
+                const hostKey = parsed.host.toLowerCase()
+                const hostnameKey = parsed.hostname.toLowerCase()
+                if (
+                  (hostToSite.has(hostKey) && hostToSite.get(hostKey) !== siteKey) ||
+                  (hostToSite.has(hostnameKey) && hostToSite.get(hostnameKey) !== siteKey)
+                ) {
+                  const conflictingSite = hostToSite.get(hostKey) || hostToSite.get(hostnameKey)
+                  throw new Error(
+                    `Canonical origin host "${hostnameKey}" conflicts between site "${siteKey}" and site "${conflictingSite}".`,
+                  )
+                }
+                hostToSite.set(hostKey, siteKey)
+                hostToSite.set(hostnameKey, siteKey)
+              } catch (err) {
+                throw new Error(
+                  err instanceof Error
+                    ? err.message
+                    : `Invalid canonical origin URL for site ${siteKey}: "${rawOrigin}".`,
+                )
+              }
+            }
+          }
+        }
         if (data.siteName) {
           data.defaultTitle = data.siteName
         } else if (data.defaultTitle) {

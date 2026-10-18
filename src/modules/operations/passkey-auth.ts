@@ -9,10 +9,11 @@ export function createPasskeyAuthStrategy(secret: string): AuthStrategy {
   return {
     name: 'passkey',
     authenticate: async ({ headers, payload }) => {
-      const token = readCookie(headers, cookieName)
+      const token = readCookie(headers as any, cookieName)
       if (!token) return { user: null }
       try {
-        const verified = await jwtVerify(token, new TextEncoder().encode(secret))
+        const effectiveSecret = process.env.PAYLOAD_SECRET || secret || payload?.secret || ''
+        const verified = await jwtVerify(token, new TextEncoder().encode(effectiveSecret))
         const id = typeof verified.payload.id === 'string' ? verified.payload.id : undefined
         const sessionId =
           typeof verified.payload.sid === 'string' ? verified.payload.sid : undefined
@@ -31,7 +32,8 @@ export function createPasskeyAuthStrategy(secret: string): AuthStrategy {
         const user = await payload.findByID({ collection: 'users', id, depth: 0 })
         if (!user) return { user: null }
         return { user: { ...user, collection: 'users', _strategy: 'passkey' } }
-      } catch {
+      } catch (error) {
+        console.error('Passkey authentication strategy error:', error)
         return { user: null }
       }
     },
@@ -127,11 +129,20 @@ export function passkeySessionCookie(
   return `${cookieName}=${token}; Max-Age=${expirationSeconds}; Path=/; HttpOnly; SameSite=Lax${secure ? '; Secure' : ''}`
 }
 
-function readCookie(headers: Headers, name: string): string | undefined {
-  const cookie = headers.get('cookie')
+function readCookie(headers: Headers | Record<string, unknown>, name: string): string | undefined {
+  if (!headers) return undefined
+  const cookie =
+    typeof (headers as Headers).get === 'function'
+      ? (headers as Headers).get('cookie')
+      : typeof (headers as Record<string, unknown>).cookie === 'string'
+        ? ((headers as Record<string, unknown>).cookie as string)
+        : undefined
   if (!cookie) return undefined
-  return cookie
-    .split(';')
-    .map((part) => part.trim().split('='))
-    .find(([key]) => key === name)?.[1]
+  for (const part of cookie.split(';')) {
+    const trimmed = part.trim()
+    if (trimmed.startsWith(`${name}=`)) {
+      return trimmed.slice(`${name}=`.length)
+    }
+  }
+  return undefined
 }

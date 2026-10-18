@@ -2,6 +2,7 @@ import config from '@payload-config'
 import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
 import { getWorkflowQueuesForUser } from '@/modules/editorial/cmos-persistence'
+import { resolveOperatorGrantContext } from '@/modules/operations/operator-grants'
 
 export const runtime = 'nodejs'
 
@@ -16,6 +17,16 @@ export async function GET(request: Request) {
   const siteId = url.searchParams.get('siteId') || undefined
   const now = url.searchParams.get('now') || undefined
 
+  const grant = await resolveOperatorGrantContext(payload, auth.user)
+  if (
+    !grant.authorized ||
+    (siteId && !grant.isGlobalOwner && !grant.authorizedSiteIds.includes(siteId))
+  ) {
+    return NextResponse.json({ error: 'Staff site access required.' }, { status: 403 })
+  }
+
+  const effectiveSiteId = siteId || (grant.isGlobalOwner ? undefined : grant.authorizedSiteIds[0])
+
   const userId = String(auth.user.id)
   const userRole =
     String(auth.user.role) === 'owner' || String(auth.user.role) === 'administrator'
@@ -26,7 +37,7 @@ export async function GET(request: Request) {
     const queues = await getWorkflowQueuesForUser(payload, {
       userId,
       role: userRole,
-      siteId,
+      siteId: effectiveSiteId,
       now,
     })
 

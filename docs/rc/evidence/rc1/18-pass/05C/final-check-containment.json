@@ -1,0 +1,11 @@
+{
+  "startOverlay": "094801e91870d9f0ebe0654b7068f71936e7bcb0403715052ce6f0ec9464890a",
+  "endOverlay": "d111a6cdf603341c7d288a4de69e6b49ae076cfffc7e9f48018a3caaee3a5989",
+  "changed": [
+    {
+      "path": "src/modules/media/upload-sessions.ts",
+      "sha256": "feb10ebea0f19599f17983d772580725303745a862b222d5891740754a0f8aee"
+    }
+  ],
+  "exactMatch": false
+}

@@ -1,0 +1,1353 @@
+{
+  "siteAlpha": "1aa25362-56b6-4756-8b04-1949bdfd27fc",
+  "siteBeta": "1909e87e-9dd0-4b4d-a78f-76cd1a846df4",
+  "themeAlpha": {
+    "revision": 2,
+    "active": {
+      "id": "neutral-starter",
+      "digest": "4fa1f5b8e862384aaa242048b9087e3f5e5e515df80d8fa2acd9364448fc18e3",
+      "tokens": {
+        "color.accent": "#165c4c"
+      },
+      "version": "1.0.0",
+      "renderer": "neutral-starter"
+    },
+    "draft": null,
+    "previous": {
+      "id": "neutral-starter",
+      "digest": "4fa1f5b8e862384aaa242048b9087e3f5e5e515df80d8fa2acd9364448fc18e3",
+      "tokens": {},
+      "version": "1.0.0",
+      "renderer": "neutral-starter"
+    }
+  },
+  "themeBeta": {
+    "revision": 2,
+    "active": {
+      "id": "renegade-party",
+      "digest": "a469188d8a636c5ad7197c0a7e03e93a53df5465173cb6cbe0be6d1ed843956f",
+      "tokens": {
+        "color.accent": "#7f1d1d"
+      },
+      "version": "1.0.0",
+      "renderer": "renegade-party"
+    },
+    "draft": null,
+    "previous": {
+      "id": "neutral-starter",
+      "digest": "4fa1f5b8e862384aaa242048b9087e3f5e5e515df80d8fa2acd9364448fc18e3",
+      "tokens": {},
+      "version": "1.0.0",
+      "renderer": "neutral-starter"
+    }
+  },
+  "records": [
+    {
+      "collection": "sites",
+      "doc": {
+        "id": "1aa25362-56b6-4756-8b04-1949bdfd27fc",
+        "name": "The Vanguard Chronicle",
+        "slug": "site-alpha-1792336987024",
+        "description": "Independent dispatches, investigative journalism, reader-supported community discussion, member directory, free newsletter signup, and editorial disclosures.",
+        "lifecycle": "active",
+        "communityRegistrationPolicy": "open",
+        "commentReactionCodes": [
+          "thumbs_up",
+          "heart",
+          "insightful",
+          "applause"
+        ],
+        "updatedAt": "2026-10-18T15:23:07.522Z",
+        "createdAt": "2026-10-18T15:23:07.294Z"
+      }
+    },
+    {
+      "collection": "sites",
+      "doc": {
+        "id": "1909e87e-9dd0-4b4d-a78f-76cd1a846df4",
+        "name": "Forward for the People",
+        "slug": "site-beta-1792336987024",
+        "description": "Grassroots civic campaign, action alerts, movement merchandise store, supporter donations, volunteer organizing, and transparency disclosures.",
+        "lifecycle": "active",
+        "communityRegistrationPolicy": "open",
+        "commentReactionCodes": [
+          "thumbs_up",
+          "heart",
+          "insightful",
+          "applause"
+        ],
+        "updatedAt": "2026-10-18T15:23:09.564Z",
+        "createdAt": "2026-10-18T15:23:07.461Z"
+      }
+    },
+    {
+      "collection": "page-layouts",
+      "doc": {
+        "id": "c822e4a0-edf0-4fd7-b961-8967c3cc6e5a",
+        "publishedPresentation": {
+          "path": "/",
+          "version": 1,
+          "document": {
+            "slots": {
+              "main": [
+                {
+                  "id": "home-hero",
+                  "props": {
+                    "body": "Independent dispatches and fearless investigative journalism updated for 04E.",
+                    "link": {
+                      "id": "route:articles",
+                      "href": "/articles",
+                      "label": "Explore Dispatches",
+                      "siteId": "1aa25362-56b6-4756-8b04-1949bdfd27fc"
+                    },
+                    "media": {
+                      "id": "17c2c3a6-c545-44ee-9667-350c6583ff00",
+                      "href": "/media/17c2c3a6-c545-44ee-9667-350c6583ff00",
+                      "label": "Sample civic journalism illustration",
+                      "siteId": "1aa25362-56b6-4756-8b04-1949bdfd27fc"
+                    },
+                    "title": "The Vanguard Chronicle — 04E Edition",
+                    "width": "wide",
+                    "spacing": "relaxed",
+                    "variant": "default",
+                    "emphasis": "bold",
+                    "alignment": "center",
+                    "background": "canvas"
+                  },
+                  "component": "publisher.hero",
+                  "componentVersion": 1
+                },
+                {
+                  "id": "home-articles",
+                  "props": {
+                    "query": {
+                      "sort": "newest",
+                      "limit": 6,
+                      "collection": "content"
+                    },
+                    "title": "Recent Dispatches",
+                    "width": "wide",
+                    "spacing": "normal",
+                    "variant": "default",
+                    "emphasis": "normal",
+                    "alignment": "left",
+                    "background": "canvas"
+                  },
+                  "component": "publisher.article-list",
+                  "componentVersion": 1
+                },
+                {
+                  "id": "home-forum",
+                  "props": {
+                    "body": "Join the conversation on verified stories, propose investigative tips, and engage with contributors.",
+                    "link": {
+                      "id": "content:548d89ab-91c8-4f6d-9da4-80cde5eed3f5",
+                      "href": "/members",
+                      "label": "Explore the community",
+                      "siteId": "1aa25362-56b6-4756-8b04-1949bdfd27fc"
+                    },
+                    "title": "Community Inquiries & Discussions",
+                    "width": "wide",
+                    "spacing": "normal",
+                    "variant": "contained",
+                    "emphasis": "normal",
+                    "alignment": "left",
+                    "background": "surface"
+                  },
+                  "component": "publisher.cta",
+                  "componentVersion": 1
+                },
+                {
+                  "id": "home-members",
+                  "props": {
+                    "body": "Meet the sustaining members keeping sovereign journalism independent.",
+                    "link": {
+                      "id": "content:548d89ab-91c8-4f6d-9da4-80cde5eed3f5",
+                      "href": "/members",
+                      "label": "Meet our readers",
+                      "siteId": "1aa25362-56b6-4756-8b04-1949bdfd27fc"
+                    },
+                    "title": "Community Contributors & Readers",
+                    "width": "standard",
+                    "spacing": "normal",
+                    "variant": "default",
+                    "emphasis": "normal",
+                    "alignment": "left",
+                    "background": "canvas"
+                  },
+                  "component": "publisher.cta",
+                  "componentVersion": 1
+                },
+                {
+                  "id": "home-newsletter",
+                  "props": {
+                    "body": "Receive investigative briefings directly in your inbox. No ads, zero tracking, unsubscribe at any time.",
+                    "link": {
+                      "id": "content:79ef2e44-1730-4107-82d0-be6a4b27feab",
+                      "href": "/subscribe",
+                      "label": "Join the newsletter",
+                      "siteId": "1aa25362-56b6-4756-8b04-1949bdfd27fc"
+                    },
+                    "title": "Subscribe to The Weekly Dispatch",
+                    "width": "standard",
+                    "spacing": "relaxed",
+                    "variant": "contained",
+                    "emphasis": "bold",
+                    "alignment": "center",
+                    "background": "surface"
+                  },
+                  "component": "publisher.cta",
+                  "componentVersion": 1
+                }
+              ]
+            },
+            "theme": {
+              "id": "neutral-starter",
+              "version": "1.0.0"
+            },
+            "siteId": "1aa25362-56b6-4756-8b04-1949bdfd27fc",
+            "surface": "layout",
+            "version": 1,
+            "template": {
+              "id": "layout",
+              "version": "1.0.0"
+            }
+          },
+          "revision": 4,
+          "visibility": "public"
+        },
+        "site": "1aa25362-56b6-4756-8b04-1949bdfd27fc",
+        "publication": null,
+        "space": null,
+        "name": "Publication Homepage",
+        "path": "/",
+        "themeId": "neutral-starter",
+        "surface": "page",
+        "slot": "main",
+        "templateId": null,
+        "templateVersion": null,
+        "templateMode": null,
+        "isRetired": false,
+        "category": null,
+        "layoutVersion": 1,
+        "status": "published",
+        "visibility": "public",
+        "blocks": [
+          {
+            "id": "home-hero",
+            "props": {
+              "body": "Independent dispatches and fearless investigative journalism updated for 04E.",
+              "link": {
+                "id": "route:articles",
+                "href": "/articles",
+                "label": "Explore Dispatches",
+                "siteId": "1aa25362-56b6-4756-8b04-1949bdfd27fc"
+              },
+              "media": {
+                "id": "17c2c3a6-c545-44ee-9667-350c6583ff00",
+                "href": "/media/17c2c3a6-c545-44ee-9667-350c6583ff00",
+                "label": "Sample civic journalism illustration",
+                "siteId": "1aa25362-56b6-4756-8b04-1949bdfd27fc"
+              },
+              "title": "The Vanguard Chronicle — 04E Edition",
+              "width": "wide",
+              "spacing": "relaxed",
+              "variant": "default",
+              "emphasis": "bold",
+              "alignment": "center",
+              "background": "canvas"
+            },
+            "component": "publisher.hero",
+            "componentVersion": 1
+          },
+          {
+            "id": "home-articles",
+            "props": {
+              "query": {
+                "sort": "newest",
+                "limit": 6,
+                "collection": "content"
+              },
+              "title": "Recent Dispatches",
+              "width": "wide",
+              "spacing": "normal",
+              "variant": "default",
+              "emphasis": "normal",
+              "alignment": "left",
+              "background": "canvas"
+            },
+            "component": "publisher.article-list",
+            "componentVersion": 1
+          },
+          {
+            "id": "home-forum",
+            "props": {
+              "body": "Join the conversation on verified stories, propose investigative tips, and engage with contributors.",
+              "link": {
+                "id": "content:548d89ab-91c8-4f6d-9da4-80cde5eed3f5",
+                "href": "/members",
+                "label": "Explore the community",
+                "siteId": "1aa25362-56b6-4756-8b04-1949bdfd27fc"
+              },
+              "title": "Community Inquiries & Discussions",
+              "width": "wide",
+              "spacing": "normal",
+              "variant": "contained",
+              "emphasis": "normal",
+              "alignment": "left",
+              "background": "surface"
+            },
+            "component": "publisher.cta",
+            "componentVersion": 1
+          },
+          {
+            "id": "home-members",
+            "props": {
+              "body": "Meet the sustaining members keeping sovereign journalism independent.",
+              "link": {
+                "id": "content:548d89ab-91c8-4f6d-9da4-80cde5eed3f5",
+                "href": "/members",
+                "label": "Meet our readers",
+                "siteId": "1aa25362-56b6-4756-8b04-1949bdfd27fc"
+              },
+              "title": "Community Contributors & Readers",
+              "width": "standard",
+              "spacing": "normal",
+              "variant": "default",
+              "emphasis": "normal",
+              "alignment": "left",
+              "background": "canvas"
+            },
+            "component": "publisher.cta",
+            "componentVersion": 1
+          },
+          {
+            "id": "home-newsletter",
+            "props": {
+              "body": "Receive investigative briefings directly in your inbox. No ads, zero tracking, unsubscribe at any time.",
+              "link": {
+                "id": "content:79ef2e44-1730-4107-82d0-be6a4b27feab",
+                "href": "/subscribe",
+                "label": "Join the newsletter",
+                "siteId": "1aa25362-56b6-4756-8b04-1949bdfd27fc"
+              },
+              "title": "Subscribe to The Weekly Dispatch",
+              "width": "standard",
+              "spacing": "relaxed",
+              "variant": "contained",
+              "emphasis": "bold",
+              "alignment": "center",
+              "background": "surface"
+            },
+            "component": "publisher.cta",
+            "componentVersion": 1
+          }
+        ],
+        "unknownBlocks": [],
+        "revision": 4,
+        "publishedRevision": 4,
+        "revisionHistory": [
+          {
+            "action": "starter-install",
+            "blocks": [
+              {
+                "id": "home-hero",
+                "props": {
+                  "body": "Independent dispatches, investigative inquiry, and open civic dialogue powered by reader patronage.",
+                  "link": {
+                    "id": "route:articles",
+                    "href": "/articles",
+                    "label": "Explore Dispatches",
+                    "siteId": "1aa25362-56b6-4756-8b04-1949bdfd27fc"
+                  },
+                  "media": {
+                    "id": "17c2c3a6-c545-44ee-9667-350c6583ff00",
+                    "href": "/media/17c2c3a6-c545-44ee-9667-350c6583ff00",
+                    "label": "Sample civic journalism illustration",
+                    "siteId": "1aa25362-56b6-4756-8b04-1949bdfd27fc"
+                  },
+                  "title": "The Vanguard Chronicle",
+                  "width": "wide",
+                  "spacing": "relaxed",
+                  "variant": "default",
+                  "emphasis": "bold",
+                  "alignment": "center",
+                  "background": "canvas"
+                },
+                "component": "publisher.hero",
+                "componentVersion": 1
+              },
+              {
+                "id": "home-articles",
+                "props": {
+                  "query": {
+                    "sort": "newest",
+                    "limit": 6,
+                    "collection": "content"
+                  },
+                  "title": "Recent Dispatches",
+                  "width": "wide",
+                  "spacing": "normal",
+                  "variant": "default",
+                  "emphasis": "normal",
+                  "alignment": "left",
+                  "background": "canvas"
+                },
+                "component": "publisher.article-list",
+                "componentVersion": 1
+              },
+              {
+                "id": "home-forum",
+                "props": {
+                  "body": "Join the conversation on verified stories, propose investigative tips, and engage with contributors.",
+                  "link": {
+                    "id": "content:548d89ab-91c8-4f6d-9da4-80cde5eed3f5",
+                    "href": "/members",
+                    "label": "Explore the community",
+                    "siteId": "1aa25362-56b6-4756-8b04-1949bdfd27fc"
+                  },
+                  "title": "Community Inquiries & Discussions",
+                  "width": "wide",
+                  "spacing": "normal",
+                  "variant": "contained",
+                  "emphasis": "normal",
+                  "alignment": "left",
+                  "background": "surface"
+                },
+                "component": "publisher.cta",
+                "componentVersion": 1
+              },
+              {
+                "id": "home-members",
+                "props": {
+                  "body": "Meet the sustaining members keeping sovereign journalism independent.",
+                  "link": {
+                    "id": "content:548d89ab-91c8-4f6d-9da4-80cde5eed3f5",
+                    "href": "/members",
+                    "label": "Meet our readers",
+                    "siteId": "1aa25362-56b6-4756-8b04-1949bdfd27fc"
+                  },
+                  "title": "Community Contributors & Readers",
+                  "width": "standard",
+                  "spacing": "normal",
+                  "variant": "default",
+                  "emphasis": "normal",
+                  "alignment": "left",
+                  "background": "canvas"
+                },
+                "component": "publisher.cta",
+                "componentVersion": 1
+              },
+              {
+                "id": "home-newsletter",
+                "props": {
+                  "body": "Receive investigative briefings directly in your inbox. No ads, zero tracking, unsubscribe at any time.",
+                  "link": {
+                    "id": "content:79ef2e44-1730-4107-82d0-be6a4b27feab",
+                    "href": "/subscribe",
+                    "label": "Join the newsletter",
+                    "siteId": "1aa25362-56b6-4756-8b04-1949bdfd27fc"
+                  },
+                  "title": "Subscribe to The Weekly Dispatch",
+                  "width": "standard",
+                  "spacing": "relaxed",
+                  "variant": "contained",
+                  "emphasis": "bold",
+                  "alignment": "center",
+                  "background": "surface"
+                },
+                "component": "publisher.cta",
+                "componentVersion": 1
+              }
+            ],
+            "savedAt": "2026-10-18T15:23:09.498Z",
+            "revision": 1
+          },
+          {
+            "blocks": [
+              {
+                "id": "home-hero",
+                "props": {
+                  "body": "Independent dispatches and fearless investigative journalism updated for 04E.",
+                  "link": {
+                    "id": "route:articles",
+                    "href": "/articles",
+                    "label": "Explore Dispatches",
+                    "siteId": "1aa25362-56b6-4756-8b04-1949bdfd27fc"
+                  },
+                  "media": {
+                    "id": "17c2c3a6-c545-44ee-9667-350c6583ff00",
+                    "href": "/media/17c2c3a6-c545-44ee-9667-350c6583ff00",
+                    "label": "Sample civic journalism illustration",
+                    "siteId": "1aa25362-56b6-4756-8b04-1949bdfd27fc"
+                  },
+                  "title": "The Vanguard Chronicle — 04E Edition",
+                  "width": "wide",
+                  "spacing": "relaxed",
+                  "variant": "default",
+                  "emphasis": "bold",
+                  "alignment": "center",
+                  "background": "canvas"
+                },
+                "component": "publisher.hero",
+                "componentVersion": 1
+              },
+              {
+                "id": "home-articles",
+                "props": {
+                  "query": {
+                    "sort": "newest",
+                    "limit": 6,
+                    "collection": "content"
+                  },
+                  "title": "Recent Dispatches",
+                  "width": "wide",
+                  "spacing": "normal",
+                  "variant": "default",
+                  "emphasis": "normal",
+                  "alignment": "left",
+                  "background": "canvas"
+                },
+                "component": "publisher.article-list",
+                "componentVersion": 1
+              },
+              {
+                "id": "home-forum",
+                "props": {
+                  "body": "Join the conversation on verified stories, propose investigative tips, and engage with contributors.",
+                  "link": {
+                    "id": "content:548d89ab-91c8-4f6d-9da4-80cde5eed3f5",
+                    "href": "/members",
+                    "label": "Explore the community",
+                    "siteId": "1aa25362-56b6-4756-8b04-1949bdfd27fc"
+                  },
+                  "title": "Community Inquiries & Discussions",
+                  "width": "wide",
+                  "spacing": "normal",
+                  "variant": "contained",
+                  "emphasis": "normal",
+                  "alignment": "left",
+                  "background": "surface"
+                },
+                "component": "publisher.cta",
+                "componentVersion": 1
+              },
+              {
+                "id": "home-members",
+                "props": {
+                  "body": "Meet the sustaining members keeping sovereign journalism independent.",
+                  "link": {
+                    "id": "content:548d89ab-91c8-4f6d-9da4-80cde5eed3f5",
+                    "href": "/members",
+                    "label": "Meet our readers",
+                    "siteId": "1aa25362-56b6-4756-8b04-1949bdfd27fc"
+                  },
+                  "title": "Community Contributors & Readers",
+                  "width": "standard",
+                  "spacing": "normal",
+                  "variant": "default",
+                  "emphasis": "normal",
+                  "alignment": "left",
+                  "background": "canvas"
+                },
+                "component": "publisher.cta",
+                "componentVersion": 1
+              },
+              {
+                "id": "home-newsletter",
+                "props": {
+                  "body": "Receive investigative briefings directly in your inbox. No ads, zero tracking, unsubscribe at any time.",
+                  "link": {
+                    "id": "content:79ef2e44-1730-4107-82d0-be6a4b27feab",
+                    "href": "/subscribe",
+                    "label": "Join the newsletter",
+                    "siteId": "1aa25362-56b6-4756-8b04-1949bdfd27fc"
+                  },
+                  "title": "Subscribe to The Weekly Dispatch",
+                  "width": "standard",
+                  "spacing": "relaxed",
+                  "variant": "contained",
+                  "emphasis": "bold",
+                  "alignment": "center",
+                  "background": "surface"
+                },
+                "component": "publisher.cta",
+                "componentVersion": 1
+              }
+            ],
+            "savedAt": "2026-10-18T15:23:33.813Z",
+            "revision": 2
+          },
+          {
+            "action": "rollback",
+            "blocks": [
+              {
+                "id": "home-hero",
+                "props": {
+                  "body": "Independent dispatches, investigative inquiry, and open civic dialogue powered by reader patronage.",
+                  "link": {
+                    "id": "route:articles",
+                    "href": "/articles",
+                    "label": "Explore Dispatches",
+                    "siteId": "1aa25362-56b6-4756-8b04-1949bdfd27fc"
+                  },
+                  "media": {
+                    "id": "17c2c3a6-c545-44ee-9667-350c6583ff00",
+                    "href": "/media/17c2c3a6-c545-44ee-9667-350c6583ff00",
+                    "label": "Sample civic journalism illustration",
+                    "siteId": "1aa25362-56b6-4756-8b04-1949bdfd27fc"
+                  },
+                  "title": "The Vanguard Chronicle",
+                  "width": "wide",
+                  "spacing": "relaxed",
+                  "variant": "default",
+                  "emphasis": "bold",
+                  "alignment": "center",
+                  "background": "canvas"
+                },
+                "component": "publisher.hero",
+                "componentVersion": 1
+              },
+              {
+                "id": "home-articles",
+                "props": {
+                  "query": {
+                    "sort": "newest",
+                    "limit": 6,
+                    "collection": "content"
+                  },
+                  "title": "Recent Dispatches",
+                  "width": "wide",
+                  "spacing": "normal",
+                  "variant": "default",
+                  "emphasis": "normal",
+                  "alignment": "left",
+                  "background": "canvas"
+                },
+                "component": "publisher.article-list",
+                "componentVersion": 1
+              },
+              {
+                "id": "home-forum",
+                "props": {
+                  "body": "Join the conversation on verified stories, propose investigative tips, and engage with contributors.",
+                  "link": {
+                    "id": "content:548d89ab-91c8-4f6d-9da4-80cde5eed3f5",
+                    "href": "/members",
+                    "label": "Explore the community",
+                    "siteId": "1aa25362-56b6-4756-8b04-1949bdfd27fc"
+                  },
+                  "title": "Community Inquiries & Discussions",
+                  "width": "wide",
+                  "spacing": "normal",
+                  "variant": "contained",
+                  "emphasis": "normal",
+                  "alignment": "left",
+                  "background": "surface"
+                },
+                "component": "publisher.cta",
+                "componentVersion": 1
+              },
+              {
+                "id": "home-members",
+                "props": {
+                  "body": "Meet the sustaining members keeping sovereign journalism independent.",
+                  "link": {
+                    "id": "content:548d89ab-91c8-4f6d-9da4-80cde5eed3f5",
+                    "href": "/members",
+                    "label": "Meet our readers",
+                    "siteId": "1aa25362-56b6-4756-8b04-1949bdfd27fc"
+                  },
+                  "title": "Community Contributors & Readers",
+                  "width": "standard",
+                  "spacing": "normal",
+                  "variant": "default",
+                  "emphasis": "normal",
+                  "alignment": "left",
+                  "background": "canvas"
+                },
+                "component": "publisher.cta",
+                "componentVersion": 1
+              },
+              {
+                "id": "home-newsletter",
+                "props": {
+                  "body": "Receive investigative briefings directly in your inbox. No ads, zero tracking, unsubscribe at any time.",
+                  "link": {
+                    "id": "content:79ef2e44-1730-4107-82d0-be6a4b27feab",
+                    "href": "/subscribe",
+                    "label": "Join the newsletter",
+                    "siteId": "1aa25362-56b6-4756-8b04-1949bdfd27fc"
+                  },
+                  "title": "Subscribe to The Weekly Dispatch",
+                  "width": "standard",
+                  "spacing": "relaxed",
+                  "variant": "contained",
+                  "emphasis": "bold",
+                  "alignment": "center",
+                  "background": "surface"
+                },
+                "component": "publisher.cta",
+                "componentVersion": 1
+              }
+            ],
+            "savedAt": "2026-10-18T15:23:35.498Z",
+            "revision": 3,
+            "rollbackTo": 1,
+            "rollbackFrom": 2
+          },
+          {
+            "blocks": [
+              {
+                "id": "home-hero",
+                "props": {
+                  "body": "Independent dispatches and fearless investigative journalism updated for 04E.",
+                  "link": {
+                    "id": "route:articles",
+                    "href": "/articles",
+                    "label": "Explore Dispatches",
+                    "siteId": "1aa25362-56b6-4756-8b04-1949bdfd27fc"
+                  },
+                  "media": {
+                    "id": "17c2c3a6-c545-44ee-9667-350c6583ff00",
+                    "href": "/media/17c2c3a6-c545-44ee-9667-350c6583ff00",
+                    "label": "Sample civic journalism illustration",
+                    "siteId": "1aa25362-56b6-4756-8b04-1949bdfd27fc"
+                  },
+                  "title": "The Vanguard Chronicle — 04E Edition",
+                  "width": "wide",
+                  "spacing": "relaxed",
+                  "variant": "default",
+                  "emphasis": "bold",
+                  "alignment": "center",
+                  "background": "canvas"
+                },
+                "component": "publisher.hero",
+                "componentVersion": 1
+              },
+              {
+                "id": "home-articles",
+                "props": {
+                  "query": {
+                    "sort": "newest",
+                    "limit": 6,
+                    "collection": "content"
+                  },
+                  "title": "Recent Dispatches",
+                  "width": "wide",
+                  "spacing": "normal",
+                  "variant": "default",
+                  "emphasis": "normal",
+                  "alignment": "left",
+                  "background": "canvas"
+                },
+                "component": "publisher.article-list",
+                "componentVersion": 1
+              },
+              {
+                "id": "home-forum",
+                "props": {
+                  "body": "Join the conversation on verified stories, propose investigative tips, and engage with contributors.",
+                  "link": {
+                    "id": "content:548d89ab-91c8-4f6d-9da4-80cde5eed3f5",
+                    "href": "/members",
+                    "label": "Explore the community",
+                    "siteId": "1aa25362-56b6-4756-8b04-1949bdfd27fc"
+                  },
+                  "title": "Community Inquiries & Discussions",
+                  "width": "wide",
+                  "spacing": "normal",
+                  "variant": "contained",
+                  "emphasis": "normal",
+                  "alignment": "left",
+                  "background": "surface"
+                },
+                "component": "publisher.cta",
+                "componentVersion": 1
+              },
+              {
+                "id": "home-members",
+                "props": {
+                  "body": "Meet the sustaining members keeping sovereign journalism independent.",
+                  "link": {
+                    "id": "content:548d89ab-91c8-4f6d-9da4-80cde5eed3f5",
+                    "href": "/members",
+                    "label": "Meet our readers",
+                    "siteId": "1aa25362-56b6-4756-8b04-1949bdfd27fc"
+                  },
+                  "title": "Community Contributors & Readers",
+                  "width": "standard",
+                  "spacing": "normal",
+                  "variant": "default",
+                  "emphasis": "normal",
+                  "alignment": "left",
+                  "background": "canvas"
+                },
+                "component": "publisher.cta",
+                "componentVersion": 1
+              },
+              {
+                "id": "home-newsletter",
+                "props": {
+                  "body": "Receive investigative briefings directly in your inbox. No ads, zero tracking, unsubscribe at any time.",
+                  "link": {
+                    "id": "content:79ef2e44-1730-4107-82d0-be6a4b27feab",
+                    "href": "/subscribe",
+                    "label": "Join the newsletter",
+                    "siteId": "1aa25362-56b6-4756-8b04-1949bdfd27fc"
+                  },
+                  "title": "Subscribe to The Weekly Dispatch",
+                  "width": "standard",
+                  "spacing": "relaxed",
+                  "variant": "contained",
+                  "emphasis": "bold",
+                  "alignment": "center",
+                  "background": "surface"
+                },
+                "component": "publisher.cta",
+                "componentVersion": 1
+              }
+            ],
+            "savedAt": "2026-10-18T15:23:37.159Z",
+            "revision": 4
+          }
+        ],
+        "retentionMode": "permanent",
+        "retentionExpiresAt": null,
+        "retentionHold": "none",
+        "removeFromDiscovery": false,
+        "tombstoneLabel": null,
+        "updatedAt": "2026-10-18T15:23:37.178Z",
+        "createdAt": "2026-10-18T15:23:09.503Z"
+      }
+    },
+    {
+      "collection": "page-layouts",
+      "doc": {
+        "id": "891e86e8-a8e6-467a-a786-30639686ebaf",
+        "publishedPresentation": {
+          "path": "/",
+          "version": 1,
+          "document": {
+            "slots": {
+              "main": [
+                {
+                  "id": "camp-hero",
+                  "props": {
+                    "body": "Join our grassroots movement for public transit and clean neighborhoods.",
+                    "title": "Forward for the People 2026 — 04E Campaign",
+                    "width": "wide",
+                    "spacing": "relaxed",
+                    "variant": "default",
+                    "emphasis": "bold",
+                    "alignment": "center",
+                    "background": "canvas"
+                  },
+                  "component": "publisher.hero",
+                  "componentVersion": 1
+                },
+                {
+                  "id": "camp-tracker",
+                  "props": {
+                    "body": "12,450+ citizen co-sponsors • 100% small-dollar funded • Zero corporate PAC money accepted.",
+                    "query": {
+                      "sort": "newest",
+                      "limit": 1,
+                      "collection": "content"
+                    },
+                    "title": "Grassroots Progress: $185,420 of $250,000 Goal",
+                    "width": "wide",
+                    "spacing": "normal",
+                    "variant": "contained",
+                    "emphasis": "bold",
+                    "alignment": "center",
+                    "background": "surface"
+                  },
+                  "component": "publisher.chart-and-stat",
+                  "componentVersion": 1
+                },
+                {
+                  "id": "camp-merch-spotlight",
+                  "props": {
+                    "body": "100% union-printed tees, tote bags, collector enamel pins, and canvasser field notebooks.",
+                    "query": {
+                      "sort": "newest",
+                      "limit": 4,
+                      "collection": "content"
+                    },
+                    "title": "Official Campaign Store",
+                    "width": "wide",
+                    "spacing": "normal",
+                    "variant": "default",
+                    "emphasis": "normal",
+                    "alignment": "left",
+                    "background": "canvas"
+                  },
+                  "component": "publisher.product-showcase",
+                  "componentVersion": 1
+                },
+                {
+                  "id": "camp-donation-cta",
+                  "props": {
+                    "body": "Select $10, $25, $50, $100, or a custom contribution to fund neighborhood voter kits.",
+                    "query": {
+                      "sort": "newest",
+                      "limit": 1,
+                      "collection": "content"
+                    },
+                    "title": "Fuel the Campaign with a Grassroots Gift",
+                    "width": "standard",
+                    "spacing": "relaxed",
+                    "variant": "contained",
+                    "emphasis": "bold",
+                    "alignment": "center",
+                    "background": "brand"
+                  },
+                  "component": "publisher.donation",
+                  "componentVersion": 1
+                },
+                {
+                  "id": "camp-updates",
+                  "props": {
+                    "query": {
+                      "sort": "newest",
+                      "limit": 3,
+                      "collection": "content"
+                    },
+                    "title": "Dispatches from the Campaign Trail",
+                    "width": "wide",
+                    "spacing": "normal",
+                    "variant": "default",
+                    "emphasis": "normal",
+                    "alignment": "left",
+                    "background": "canvas"
+                  },
+                  "component": "publisher.article-list",
+                  "componentVersion": 1
+                },
+                {
+                  "id": "camp-volunteer-cta",
+                  "props": {
+                    "body": "Join thousands of neighbors organizing canvasses, community town halls, and digital phone banks.",
+                    "query": {
+                      "sort": "newest",
+                      "limit": 1,
+                      "collection": "content"
+                    },
+                    "title": "Mobilize with the Field Team",
+                    "width": "standard",
+                    "spacing": "relaxed",
+                    "variant": "contained",
+                    "emphasis": "bold",
+                    "alignment": "center",
+                    "background": "surface"
+                  },
+                  "component": "publisher.newsletter-cta",
+                  "componentVersion": 1
+                }
+              ]
+            },
+            "theme": {
+              "id": "renegade-party",
+              "version": "1.0.0"
+            },
+            "siteId": "1909e87e-9dd0-4b4d-a78f-76cd1a846df4",
+            "surface": "layout",
+            "version": 1,
+            "template": {
+              "id": "layout",
+              "version": "1.0.0"
+            }
+          },
+          "revision": 2,
+          "visibility": "public"
+        },
+        "site": "1909e87e-9dd0-4b4d-a78f-76cd1a846df4",
+        "publication": null,
+        "space": null,
+        "name": "Campaign Homepage",
+        "path": "/",
+        "themeId": "renegade-party",
+        "surface": "page",
+        "slot": "main",
+        "templateId": null,
+        "templateVersion": null,
+        "templateMode": null,
+        "isRetired": false,
+        "category": null,
+        "layoutVersion": 1,
+        "status": "published",
+        "visibility": "public",
+        "blocks": [
+          {
+            "id": "camp-hero",
+            "props": {
+              "body": "Join our grassroots movement for public transit and clean neighborhoods.",
+              "title": "Forward for the People 2026 — 04E Campaign",
+              "width": "wide",
+              "spacing": "relaxed",
+              "variant": "default",
+              "emphasis": "bold",
+              "alignment": "center",
+              "background": "canvas"
+            },
+            "component": "publisher.hero",
+            "componentVersion": 1
+          },
+          {
+            "id": "camp-tracker",
+            "props": {
+              "body": "12,450+ citizen co-sponsors • 100% small-dollar funded • Zero corporate PAC money accepted.",
+              "query": {
+                "sort": "newest",
+                "limit": 1,
+                "collection": "content"
+              },
+              "title": "Grassroots Progress: $185,420 of $250,000 Goal",
+              "width": "wide",
+              "spacing": "normal",
+              "variant": "contained",
+              "emphasis": "bold",
+              "alignment": "center",
+              "background": "surface"
+            },
+            "component": "publisher.chart-and-stat",
+            "componentVersion": 1
+          },
+          {
+            "id": "camp-merch-spotlight",
+            "props": {
+              "body": "100% union-printed tees, tote bags, collector enamel pins, and canvasser field notebooks.",
+              "query": {
+                "sort": "newest",
+                "limit": 4,
+                "collection": "content"
+              },
+              "title": "Official Campaign Store",
+              "width": "wide",
+              "spacing": "normal",
+              "variant": "default",
+              "emphasis": "normal",
+              "alignment": "left",
+              "background": "canvas"
+            },
+            "component": "publisher.product-showcase",
+            "componentVersion": 1
+          },
+          {
+            "id": "camp-donation-cta",
+            "props": {
+              "body": "Select $10, $25, $50, $100, or a custom contribution to fund neighborhood voter kits.",
+              "query": {
+                "sort": "newest",
+                "limit": 1,
+                "collection": "content"
+              },
+              "title": "Fuel the Campaign with a Grassroots Gift",
+              "width": "standard",
+              "spacing": "relaxed",
+              "variant": "contained",
+              "emphasis": "bold",
+              "alignment": "center",
+              "background": "brand"
+            },
+            "component": "publisher.donation",
+            "componentVersion": 1
+          },
+          {
+            "id": "camp-updates",
+            "props": {
+              "query": {
+                "sort": "newest",
+                "limit": 3,
+                "collection": "content"
+              },
+              "title": "Dispatches from the Campaign Trail",
+              "width": "wide",
+              "spacing": "normal",
+              "variant": "default",
+              "emphasis": "normal",
+              "alignment": "left",
+              "background": "canvas"
+            },
+            "component": "publisher.article-list",
+            "componentVersion": 1
+          },
+          {
+            "id": "camp-volunteer-cta",
+            "props": {
+              "body": "Join thousands of neighbors organizing canvasses, community town halls, and digital phone banks.",
+              "query": {
+                "sort": "newest",
+                "limit": 1,
+                "collection": "content"
+              },
+              "title": "Mobilize with the Field Team",
+              "width": "standard",
+              "spacing": "relaxed",
+              "variant": "contained",
+              "emphasis": "bold",
+              "alignment": "center",
+              "background": "surface"
+            },
+            "component": "publisher.newsletter-cta",
+            "componentVersion": 1
+          }
+        ],
+        "unknownBlocks": [],
+        "revision": 2,
+        "publishedRevision": 2,
+        "revisionHistory": [
+          {
+            "action": "starter-install",
+            "blocks": [
+              {
+                "id": "camp-hero",
+                "props": {
+                  "body": "A people-powered campaign for zero-emission transit, municipal clean power, and fair union wages.",
+                  "title": "Forward for the People",
+                  "width": "wide",
+                  "spacing": "relaxed",
+                  "variant": "default",
+                  "emphasis": "bold",
+                  "alignment": "center",
+                  "background": "canvas"
+                },
+                "component": "publisher.hero",
+                "componentVersion": 1
+              },
+              {
+                "id": "camp-tracker",
+                "props": {
+                  "body": "12,450+ citizen co-sponsors • 100% small-dollar funded • Zero corporate PAC money accepted.",
+                  "query": {
+                    "sort": "newest",
+                    "limit": 1,
+                    "collection": "content"
+                  },
+                  "title": "Grassroots Progress: $185,420 of $250,000 Goal",
+                  "width": "wide",
+                  "spacing": "normal",
+                  "variant": "contained",
+                  "emphasis": "bold",
+                  "alignment": "center",
+                  "background": "surface"
+                },
+                "component": "publisher.chart-and-stat",
+                "componentVersion": 1
+              },
+              {
+                "id": "camp-merch-spotlight",
+                "props": {
+                  "body": "100% union-printed tees, tote bags, collector enamel pins, and canvasser field notebooks.",
+                  "query": {
+                    "sort": "newest",
+                    "limit": 4,
+                    "collection": "content"
+                  },
+                  "title": "Official Campaign Store",
+                  "width": "wide",
+                  "spacing": "normal",
+                  "variant": "default",
+                  "emphasis": "normal",
+                  "alignment": "left",
+                  "background": "canvas"
+                },
+                "component": "publisher.product-showcase",
+                "componentVersion": 1
+              },
+              {
+                "id": "camp-donation-cta",
+                "props": {
+                  "body": "Select $10, $25, $50, $100, or a custom contribution to fund neighborhood voter kits.",
+                  "query": {
+                    "sort": "newest",
+                    "limit": 1,
+                    "collection": "content"
+                  },
+                  "title": "Fuel the Campaign with a Grassroots Gift",
+                  "width": "standard",
+                  "spacing": "relaxed",
+                  "variant": "contained",
+                  "emphasis": "bold",
+                  "alignment": "center",
+                  "background": "brand"
+                },
+                "component": "publisher.donation",
+                "componentVersion": 1
+              },
+              {
+                "id": "camp-updates",
+                "props": {
+                  "query": {
+                    "sort": "newest",
+                    "limit": 3,
+                    "collection": "content"
+                  },
+                  "title": "Dispatches from the Campaign Trail",
+                  "width": "wide",
+                  "spacing": "normal",
+                  "variant": "default",
+                  "emphasis": "normal",
+                  "alignment": "left",
+                  "background": "canvas"
+                },
+                "component": "publisher.article-list",
+                "componentVersion": 1
+              },
+              {
+                "id": "camp-volunteer-cta",
+                "props": {
+                  "body": "Join thousands of neighbors organizing canvasses, community town halls, and digital phone banks.",
+                  "query": {
+                    "sort": "newest",
+                    "limit": 1,
+                    "collection": "content"
+                  },
+                  "title": "Mobilize with the Field Team",
+                  "width": "standard",
+                  "spacing": "relaxed",
+                  "variant": "contained",
+                  "emphasis": "bold",
+                  "alignment": "center",
+                  "background": "surface"
+                },
+                "component": "publisher.newsletter-cta",
+                "componentVersion": 1
+              }
+            ],
+            "savedAt": "2026-10-18T15:23:11.282Z",
+            "revision": 1
+          },
+          {
+            "blocks": [
+              {
+                "id": "camp-hero",
+                "props": {
+                  "body": "Join our grassroots movement for public transit and clean neighborhoods.",
+                  "title": "Forward for the People 2026 — 04E Campaign",
+                  "width": "wide",
+                  "spacing": "relaxed",
+                  "variant": "default",
+                  "emphasis": "bold",
+                  "alignment": "center",
+                  "background": "canvas"
+                },
+                "component": "publisher.hero",
+                "componentVersion": 1
+              },
+              {
+                "id": "camp-tracker",
+                "props": {
+                  "body": "12,450+ citizen co-sponsors • 100% small-dollar funded • Zero corporate PAC money accepted.",
+                  "query": {
+                    "sort": "newest",
+                    "limit": 1,
+                    "collection": "content"
+                  },
+                  "title": "Grassroots Progress: $185,420 of $250,000 Goal",
+                  "width": "wide",
+                  "spacing": "normal",
+                  "variant": "contained",
+                  "emphasis": "bold",
+                  "alignment": "center",
+                  "background": "surface"
+                },
+                "component": "publisher.chart-and-stat",
+                "componentVersion": 1
+              },
+              {
+                "id": "camp-merch-spotlight",
+                "props": {
+                  "body": "100% union-printed tees, tote bags, collector enamel pins, and canvasser field notebooks.",
+                  "query": {
+                    "sort": "newest",
+                    "limit": 4,
+                    "collection": "content"
+                  },
+                  "title": "Official Campaign Store",
+                  "width": "wide",
+                  "spacing": "normal",
+                  "variant": "default",
+                  "emphasis": "normal",
+                  "alignment": "left",
+                  "background": "canvas"
+                },
+                "component": "publisher.product-showcase",
+                "componentVersion": 1
+              },
+              {
+                "id": "camp-donation-cta",
+                "props": {
+                  "body": "Select $10, $25, $50, $100, or a custom contribution to fund neighborhood voter kits.",
+                  "query": {
+                    "sort": "newest",
+                    "limit": 1,
+                    "collection": "content"
+                  },
+                  "title": "Fuel the Campaign with a Grassroots Gift",
+                  "width": "standard",
+                  "spacing": "relaxed",
+                  "variant": "contained",
+                  "emphasis": "bold",
+                  "alignment": "center",
+                  "background": "brand"
+                },
+                "component": "publisher.donation",
+                "componentVersion": 1
+              },
+              {
+                "id": "camp-updates",
+                "props": {
+                  "query": {
+                    "sort": "newest",
+                    "limit": 3,
+                    "collection": "content"
+                  },
+                  "title": "Dispatches from the Campaign Trail",
+                  "width": "wide",
+                  "spacing": "normal",
+                  "variant": "default",
+                  "emphasis": "normal",
+                  "alignment": "left",
+                  "background": "canvas"
+                },
+                "component": "publisher.article-list",
+                "componentVersion": 1
+              },
+              {
+                "id": "camp-volunteer-cta",
+                "props": {
+                  "body": "Join thousands of neighbors organizing canvasses, community town halls, and digital phone banks.",
+                  "query": {
+                    "sort": "newest",
+                    "limit": 1,
+                    "collection": "content"
+                  },
+                  "title": "Mobilize with the Field Team",
+                  "width": "standard",
+                  "spacing": "relaxed",
+                  "variant": "contained",
+                  "emphasis": "bold",
+                  "alignment": "center",
+                  "background": "surface"
+                },
+                "component": "publisher.newsletter-cta",
+                "componentVersion": 1
+              }
+            ],
+            "savedAt": "2026-10-18T15:23:38.724Z",
+            "revision": 2
+          }
+        ],
+        "retentionMode": "permanent",
+        "retentionExpiresAt": null,
+        "retentionHold": "none",
+        "removeFromDiscovery": false,
+        "tombstoneLabel": null,
+        "updatedAt": "2026-10-18T15:23:38.741Z",
+        "createdAt": "2026-10-18T15:23:11.285Z"
+      }
+    }
+  ]
+}

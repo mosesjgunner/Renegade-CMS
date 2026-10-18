@@ -4,6 +4,7 @@ import { getPayload } from 'payload'
 import { loadConfig } from '@/modules/core/config'
 import {
   createStaffEnrollmentToken,
+  hashValue,
   revokeStaffInvitation,
   StaffEnrollmentError,
 } from '@/modules/operations/staff-enrollment'
@@ -76,6 +77,18 @@ export async function POST(request: Request) {
       )
     }
 
+    const site = await payload
+      .findByID({
+        collection: 'sites',
+        id: body.siteId,
+        depth: 0,
+        overrideAccess: true,
+      })
+      .catch(() => null)
+    if (!site) {
+      return Response.json({ error: 'Target site does not exist.' }, { status: 404 })
+    }
+
     const result = await createStaffEnrollmentToken(payload, runtimeConfig, {
       email: body.email,
       role: body.role,
@@ -106,10 +119,48 @@ export async function DELETE(request: Request) {
       )
     }
 
+    const grant = await resolveOperatorGrantContext(payload, auth.user)
+    if (!grant.authorized) {
+      return Response.json({ error: 'Owner authority required.' }, { status: 403 })
+    }
+
     const body = (await request.json()) as {
       token?: string
       email?: string
       userId?: string
+    }
+
+    if (!body.token && !body.email && !body.userId) {
+      return Response.json(
+        { error: 'An invitation or user identifier is required.' },
+        { status: 400 },
+      )
+    }
+    // Broad user/email revocation also invalidates sessions. Only the global
+    // owner can perform it; a scoped owner may revoke a token for their site.
+    if ((body.email || body.userId) && !grant.isGlobalOwner) {
+      return Response.json({ error: 'Global owner authority required.' }, { status: 403 })
+    }
+    if (body.token && !grant.isGlobalOwner) {
+      const matching = await payload.find({
+        collection: 'identity-tokens',
+        where: {
+          and: [
+            { purpose: { equals: 'passkey-registration' } },
+            { tokenHash: { equals: hashValue(body.token.trim(), runtimeConfig.payloadSecret) } },
+          ],
+        },
+        limit: 1,
+        depth: 0,
+        overrideAccess: true,
+      })
+      const tokenSite = (matching.docs[0]?.metadata as { siteId?: string } | undefined)?.siteId
+      if (!tokenSite || !grant.authorizedSiteIds.includes(tokenSite)) {
+        return Response.json(
+          { error: 'Invitation is outside your site authority.' },
+          { status: 403 },
+        )
+      }
     }
 
     const result = await revokeStaffInvitation(payload, runtimeConfig, {

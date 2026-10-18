@@ -3,11 +3,15 @@ import type { Payload } from 'payload'
 const state = vi.hoisted(() => ({
   user: null as null | { id: string; role: string },
   token: 'preview-token',
+  site: 'site-a',
 }))
 vi.mock('react', () => ({ cache: (fn: unknown) => fn }))
 vi.mock('next/headers.js', () => ({
   cookies: async () => ({ get: () => ({ value: state.token }) }),
-  headers: async () => new Headers(),
+  headers: async () => new Headers({ host: 'alpha.test' }),
+}))
+vi.mock('../../src/modules/public/site-scope', () => ({
+  publicSiteForHost: async () => state.site,
 }))
 vi.mock('../../src/modules/core/config', () => ({
   loadConfig: () => ({ payloadSecret: 'test-secret' }),
@@ -32,9 +36,16 @@ const payload = {
 } as unknown as Payload
 beforeEach(() => {
   state.user = null
+  state.site = 'site-a'
   fullAuth.mockClear()
 })
 describe('theme preview identity verification', () => {
+  it('does not resolve another tenant theme for an unknown host', async () => {
+    state.user = { id: 'owner-a', role: 'owner' }
+    state.site = ''
+    expect(await requestTheme(payload)).toBeNull()
+    expect(fullAuth).not.toHaveBeenCalled()
+  })
   it('verifies an owner session without recursive collection permission calculation', async () => {
     state.user = { id: 'owner-a', role: 'owner' }
     expect(await requestTheme(payload)).toEqual({ actor: 'owner-a', token: 'preview-token' })

@@ -1,3 +1,6 @@
+import { headers } from 'next/headers'
+import { notFound } from 'next/navigation'
+import { publicSiteForHost } from '@/modules/public/site-scope'
 import { PresentationSurface } from '@/modules/presentation/Surface'
 import Link from 'next/link'
 import config from '@payload-config'
@@ -16,7 +19,9 @@ export const dynamic = 'force-dynamic'
 
 export async function generateMetadata(): Promise<Metadata> {
   const payload = await getPayload({ config })
-  const doc = await resolveDiscoveryDocument(payload, { path: '/search' })
+  const siteId = await publicSiteForHost(payload, (await headers()).get('host'))
+  if (!siteId) notFound()
+  const doc = await resolveDiscoveryDocument(payload, { path: '/search', siteId })
   return discoveryToMetadata(doc)
 }
 
@@ -38,20 +43,8 @@ export default async function SearchPage({
   const payload = await getPayload({ config })
   const settings = await resolveSiteSettings(payload)
 
-  const publications = await payload.find({
-    collection: 'publications',
-    where: { and: [{ status: { equals: 'active' } }, { visibility: { equals: 'public' } }] },
-    depth: 0,
-    limit: 1,
-    sort: '-createdAt',
-    overrideAccess: true,
-  })
-  const publication = publications.docs[0] as unknown as
-    | { site?: string | { id?: string } }
-    | undefined
-  const siteId =
-    site ??
-    (typeof publication?.site === 'string' ? publication.site : String(publication?.site?.id ?? ''))
+  const siteId = await publicSiteForHost(payload, (await headers()).get('host'))
+  if (!siteId || (site && site !== siteId)) notFound()
 
   const doc = await resolveDiscoveryDocument(payload, { path: '/search', siteId })
   const currentPage = Math.max(1, Number(page) || 1)
@@ -98,7 +91,7 @@ export default async function SearchPage({
             Search published articles, pages, and dispatches across the site.
           </p>
 
-          <form method="GET" action="/search" className="mt-6 flex gap-2">
+          <form method="GET" action="/search" className="mt-6 flex flex-wrap gap-2">
             <input type="hidden" name="site" value={siteId} />
             <label htmlFor="q" className="sr-only">
               Search {settings.siteName}
@@ -110,7 +103,7 @@ export default async function SearchPage({
               defaultValue={q}
               placeholder="Search keywords, topics, or phrases…"
               aria-label="Search keywords, topics, or phrases"
-              className="flex-1 rounded-md border border-stone-300 bg-white px-4 py-2.5 text-stone-900 shadow-sm focus:border-red-600 focus:outline-none focus:ring-1 focus:ring-red-600 dark:border-stone-700 dark:bg-stone-900 dark:text-white"
+              className="min-w-0 flex-1 rounded-md border border-stone-300 bg-white px-4 py-2.5 text-stone-900 shadow-sm focus:border-red-600 focus:outline-none focus:ring-1 focus:ring-red-600 dark:border-stone-700 dark:bg-stone-900 dark:text-white"
             />
             <button
               type="submit"
@@ -118,43 +111,43 @@ export default async function SearchPage({
             >
               Search
             </button>
-            <details className="mt-3 text-sm text-stone-600 dark:text-stone-300">
+            <details className="mt-3 w-full text-sm text-stone-600 dark:text-stone-300">
               <summary>Filter results</summary>
-              <div className="mt-2 grid grid-cols-2 gap-2">
+              <div className="mt-2 grid grid-cols-1 gap-2 sm:grid-cols-2">
                 <input
                   name="type"
                   defaultValue={type}
                   placeholder="Content type"
                   aria-label="Content type filter"
-                  className="rounded border p-2"
+                  className="min-w-0 w-full rounded border p-2"
                 />
                 <input
                   name="author"
                   defaultValue={author}
                   placeholder="Author"
                   aria-label="Author filter"
-                  className="rounded border p-2"
+                  className="min-w-0 w-full rounded border p-2"
                 />
                 <input
                   name="topic"
                   defaultValue={topic}
                   placeholder="Topic"
                   aria-label="Topic filter"
-                  className="rounded border p-2"
+                  className="min-w-0 w-full rounded border p-2"
                 />
                 <input
                   name="from"
                   defaultValue={from}
                   type="date"
                   aria-label="Published after"
-                  className="rounded border p-2"
+                  className="min-w-0 w-full rounded border p-2"
                 />
                 <input
                   name="to"
                   defaultValue={to}
                   type="date"
                   aria-label="Published before"
-                  className="rounded border p-2"
+                  className="min-w-0 w-full rounded border p-2"
                 />
               </div>
             </details>

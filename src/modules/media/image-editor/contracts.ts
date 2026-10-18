@@ -24,10 +24,7 @@ export function isEditableImageMimeType(mimeType: string): boolean {
   const normalized = mimeType.toLowerCase().trim()
   // SVG vector graphics cannot be safely raster-edited in canvas
   if (normalized === 'image/svg+xml') return false
-  return (
-    SUPPORTED_IMAGE_EDITOR_MIME_TYPES.includes(normalized as SupportedImageEditorMimeType) ||
-    normalized.startsWith('image/')
-  )
+  return SUPPORTED_IMAGE_EDITOR_MIME_TYPES.includes(normalized as SupportedImageEditorMimeType)
 }
 
 export type ImageEditorSaveMode = 'all-usages' | 'new-asset'

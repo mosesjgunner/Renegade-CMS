@@ -1,3 +1,6 @@
+import * as rc1ReviewComments from './20261017_210000_rc1_review_comments'
+import * as rc1ContentHierarchy from './20261017_230000_rc1_content_hierarchy'
+import * as rc1ReviewCommentIds from './20261017_211000_rc1_review_comment_ids'
 import * as rc1MachineRequestScope from './20261014_230000_rc1_machine_request_scope'
 import * as rc1CartWorkerSchema from './20261014_220000_rc1_cart_and_worker_schema'
 import * as migration_20261006_013000_rc08b_federation_ids from './20261006_013000_rc08b_federation_ids'
@@ -680,4 +683,25 @@ export const migrations = [
     down: rc1MachineRequestScope.down,
     name: '20261014_230000_rc1_machine_request_scope',
   },
+  {
+    up: rc1ReviewComments.up,
+    down: rc1ReviewComments.down,
+    name: '20261017_210000_rc1_review_comments',
+  },
+  {
+    up: rc1ReviewCommentIds.up,
+    down: rc1ReviewCommentIds.down,
+    name: '20261017_211000_rc1_review_comment_ids',
+  },
+  {
+    up: rc1ContentHierarchy.up,
+    down: rc1ContentHierarchy.down,
+    name: '20261017_230000_rc1_content_hierarchy',
+  },
+  {
+    up: rc1ContentVisibility.up,
+    down: rc1ContentVisibility.down,
+    name: '20261018_050000_rc1_content_visibility',
+  },
 ]
+import * as rc1ContentVisibility from './20261018_050000_rc1_content_visibility'

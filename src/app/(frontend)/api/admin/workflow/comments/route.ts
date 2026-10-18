@@ -1,15 +1,13 @@
 import config from '@payload-config'
 import { createLocalReq, getPayload } from 'payload'
 import { NextResponse } from 'next/server'
+import { compareEditorialRevisions, type CommentTarget } from '@/modules/editorial/comments'
 import {
-  createReviewComment,
-  resolveReviewComment,
-  markCommentAddressed,
-  getCommentsForArticle,
-  getUnresolvedComments,
-  compareEditorialRevisions,
-  type CommentTarget,
-} from '@/modules/editorial/comments'
+  createPersistedReviewComment,
+  listPersistedReviewComments,
+  transitionPersistedReviewComment,
+  ReviewCommentError,
+} from '@/modules/editorial/persisted-review-comments'
 
 export const runtime = 'nodejs'
 
@@ -25,13 +23,19 @@ export async function GET(request: Request) {
   const target = (url.searchParams.get('target') as CommentTarget) || undefined
   const all = url.searchParams.get('all') === 'true'
 
-  if (articleId && all) {
-    const comments = getCommentsForArticle(articleId)
+  try {
+    const comments = await listPersistedReviewComments(payload, auth.user, {
+      articleId,
+      target,
+      all,
+    })
     return NextResponse.json({ comments })
+  } catch (error) {
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : 'Could not load review comments.' },
+      { status: error instanceof ReviewCommentError ? error.status : 500 },
+    )
   }
-
-  const comments = getUnresolvedComments({ articleId, target })
-  return NextResponse.json({ comments })
 }
 
 export async function POST(request: Request) {
@@ -46,31 +50,14 @@ export async function POST(request: Request) {
     const { action } = body
 
     if (action === 'create') {
-      const comment = createReviewComment({
-        articleId: body.articleId,
-        articleTitle: body.articleTitle,
-        revisionSequence: body.revisionSequence || 1,
-        target: body.target,
-        targetAnchor: body.targetAnchor,
-        authorId: String(auth.user.id),
-        authorName: auth.user.email || 'Staff Reviewer',
-        authorRole: String(auth.user.role),
-        content: body.content,
+      const comment = await createPersistedReviewComment(payload, auth.user, body)
+      return NextResponse.json({ success: true, comment }, { status: 201 })
+    }
+    if (action === 'resolve' || action === 'addressed') {
+      const comment = await transitionPersistedReviewComment(payload, auth.user, {
+        ...body,
+        action,
       })
-      return NextResponse.json({ success: true, comment })
-    }
-
-    if (action === 'resolve') {
-      const comment = resolveReviewComment(
-        body.commentId,
-        { id: String(auth.user.id), name: auth.user.email, role: String(auth.user.role) },
-        body.resolutionNote,
-      )
-      return NextResponse.json({ success: true, comment })
-    }
-
-    if (action === 'addressed') {
-      const comment = markCommentAddressed(body.commentId)
       return NextResponse.json({ success: true, comment })
     }
 
@@ -130,7 +117,7 @@ export async function POST(request: Request) {
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Comment operation failed.' },
-      { status: 400 },
+      { status: error instanceof ReviewCommentError ? error.status : 400 },
     )
   }
 }

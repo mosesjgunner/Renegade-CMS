@@ -20,7 +20,14 @@ export function validateProductionInstallInput(input: ProductionInstallInput): v
   if (!/^[a-z0-9][a-z0-9_-]{0,62}$/.test(input.instance)) invalid.push('RENEGADE_INSTANCE')
   try {
     const url = new URL(input.appUrl)
-    if (url.protocol !== 'https:' || url.pathname !== '/' || url.search || url.hash)
+    if (
+      url.protocol !== 'https:' ||
+      url.pathname !== '/' ||
+      url.search ||
+      url.hash ||
+      url.username ||
+      url.password
+    )
       invalid.push('APP_URL')
     if (['localhost', '127.0.0.1', '[::1]'].includes(url.hostname)) invalid.push('APP_URL')
   } catch {
@@ -29,7 +36,11 @@ export function validateProductionInstallInput(input: ProductionInstallInput): v
   if (!['direct', 'trusted'].includes(input.proxyMode)) invalid.push('PROXY_MODE')
   if (!['1', '2', '3'].includes(input.trustedProxyHops)) invalid.push('TRUSTED_PROXY_HOPS')
   if (!['Lean', 'Standard'].includes(input.profile)) invalid.push('DEPLOYMENT_PROFILE')
-  if (!/^(127\.0\.0\.1:\d{1,5}|\[::1\]:\d{1,5})$/.test(input.webBind))
+  if (
+    !/^(127\.0\.0\.1:\d{1,5}|\[::1\]:\d{1,5})$/.test(input.webBind) ||
+    Number(input.webBind.slice(input.webBind.lastIndexOf(':') + 1)) < 1 ||
+    Number(input.webBind.slice(input.webBind.lastIndexOf(':') + 1)) > 65535
+  )
     invalid.push('RENEGADE_WEB_BIND')
   if (input.ownerEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(input.ownerEmail))
     invalid.push('OWNER_EMAIL')

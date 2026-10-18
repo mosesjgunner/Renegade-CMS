@@ -1,0 +1,8 @@
+{
+  "passed": 2,
+  "failed": 0,
+  "trace": [
+    "operator layout and revision survive database/web restart",
+    "public snapshot survives database/web restart"
+  ]
+}

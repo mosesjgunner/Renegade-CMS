@@ -11,22 +11,44 @@ import {
 } from '@/modules/presentation/lifecycle'
 import { themes } from '@/modules/presentation/registry'
 import { tokenDefaults } from '@/modules/presentation/tokens'
+import { publicSiteForHost } from '@/modules/public/site-scope'
+import { resolveOperatorGrantContext } from '@/modules/operations/operator-grants'
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
+function readCookie(headers: Headers, name: string): string | undefined {
+  const cookieHeader = headers.get('cookie')
+  if (!cookieHeader) return undefined
+  const match = cookieHeader
+    .split(';')
+    .map((c) => c.trim().split('='))
+    .find(([k]) => k === name)
+  return match?.[1] ? decodeURIComponent(match[1]) : undefined
+}
+
 export async function GET(request: Request) {
   const payload = await getPayload({ config })
   const { user } = await payload.auth({ headers: request.headers })
   if (user?.role !== 'owner')
     return NextResponse.json({ error: 'Owner access is required.' }, { status: 403 })
+  const grant = await resolveOperatorGrantContext(payload, user)
+  if (!grant.authorized) return NextResponse.json({ error: 'Site access denied.' }, { status: 403 })
   const sites = await payload.find({
     collection: 'sites',
+    where: grant.isGlobalOwner ? undefined : { id: { in: grant.authorizedSiteIds } },
     limit: 100,
     depth: 0,
     overrideAccess: false,
     user,
   })
-  const site = new URL(request.url).searchParams.get('site') ?? sites.docs[0]?.id
-  if (!sites.docs.some((s) => s.id === site))
+  const cookieSite = readCookie(request.headers, 'renegade-active-site')
+  const requestedSite = new URL(request.url).searchParams.get('site')
+  if (requestedSite && !sites.docs.some((s) => s.id === requestedSite))
+    return NextResponse.json({ error: 'Site access denied.' }, { status: 403 })
+  const site =
+    (requestedSite && sites.docs.some((s) => s.id === requestedSite) ? requestedSite : undefined) ??
+    (cookieSite && sites.docs.some((s) => s.id === cookieSite) ? cookieSite : undefined) ??
+    sites.docs[0]?.id
+  if (!site || !sites.docs.some((s) => s.id === site))
     return NextResponse.json({ error: 'Select an available site.' }, { status: 400 })
   const installed = await discoverThemes()
   return NextResponse.json(
@@ -63,6 +85,9 @@ export async function POST(request: Request) {
       !Number.isSafeInteger(body.revision)
     )
       throw new Error('Select a site and refresh its current revision.')
+    const grant = await resolveOperatorGrantContext(payload, user)
+    if (!grant.authorized || !grant.authorizedSiteIds.includes(body.site))
+      return NextResponse.json({ error: 'Site access denied.' }, { status: 403 })
     await payload.findByID({ collection: 'sites', id: body.site, overrideAccess: false, user })
     const pool = themePool(payload)
     if (body.action === 'activate' || body.action === 'rollback') {
@@ -70,17 +95,12 @@ export async function POST(request: Request) {
       const candidate = body.action === 'activate' ? current.draft : current.previous
       if (!candidate || current.revision !== body.revision)
         throw new Error('Theme candidate changed or is missing. Refresh before retrying.')
-      const publications = await payload.find({
-        collection: 'publications',
-        where: { and: [{ status: { equals: 'active' } }, { visibility: { equals: 'public' } }] },
-        limit: 1,
-        depth: 0,
-        overrideAccess: true,
-      })
-      const publication = publications.docs[0]
-      const publicSite =
-        typeof publication?.site === 'string' ? publication.site : publication?.site?.id
-      if (publicSite === body.site) {
+      const publicSite = await publicSiteForHost(payload, request.headers.get('host'))
+      if (publicSite !== body.site)
+        throw new Error(
+          'Open Theme Studio on the selected site public host before activating or rolling back. Render preflight requires that site.',
+        )
+      {
         const probe = await createThemePreview(
           pool,
           body.site,

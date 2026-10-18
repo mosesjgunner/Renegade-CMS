@@ -1,0 +1,17 @@
+{
+  "passed": 10,
+  "failed": 0,
+  "skipped": 0,
+  "checks": [
+    "restart disk blob intact for hero-original",
+    "restart disk blob intact for hero-replacement",
+    "restart disk blob intact for audio-wav",
+    "restart disk blob intact for video-mp4",
+    "restart public delivery of replaced hero asset retains replacement bytes under original ID",
+    "restart public article renders replaced hero media URL and updated caption",
+    "restart tombstoned asset remains withdrawn from public delivery with 404",
+    "restart default library discovery excludes tombstoned and deleted assets",
+    "restart tombstone filter returns tombstoned asset with tombstoneLabel intact",
+    "restart detail refetch preserves versionCount=1, replaceGloballyWith, and usages"
+  ]
+}

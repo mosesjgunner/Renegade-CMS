@@ -1,0 +1,15 @@
+{
+  "passed": 8,
+  "failed": 0,
+  "skipped": 0,
+  "checks": [
+    "1440px article has one main landmark",
+    "1440px persisted article body still renders",
+    "1440px anonymous sign-in loading resolves",
+    "1440px article has no horizontal overflow",
+    "390px article has one main landmark",
+    "390px persisted article body still renders",
+    "390px anonymous sign-in loading resolves",
+    "390px article has no horizontal overflow"
+  ]
+}

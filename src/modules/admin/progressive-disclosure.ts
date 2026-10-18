@@ -18,6 +18,7 @@ export const CORE_COLLECTIONS = new Set([
   'media-assets',
   'sections',
   'categories',
+  'albums',
   'topics',
   'tags',
   'discussions',

@@ -1,6 +1,7 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
 
+import { isRegisteredCollection } from '@/modules/public/registered-collections'
 import {
   createForumThread,
   resolveCommunityActor,
@@ -10,6 +11,9 @@ import { evaluateCommunityPolicy } from '@/modules/community/policy'
 
 export async function POST(request: Request) {
   const payload = await getPayload({ config })
+  if (!isRegisteredCollection(payload, 'discussions') || !isRegisteredCollection(payload, 'forums')) {
+    return Response.json({ error: 'Community discussions service is unavailable.' }, { status: 503 })
+  }
   const body = (await request.json().catch(() => ({}))) as Record<string, unknown>
   const siteId = String(body.siteId ?? '')
   const forumId = String(body.forumId ?? '')
@@ -54,6 +58,9 @@ export async function POST(request: Request) {
 
 export async function GET(request: Request) {
   const payload = await getPayload({ config })
+  if (!isRegisteredCollection(payload, 'discussions')) {
+    return Response.json({ error: 'Community discussions service is unavailable.' }, { status: 503 })
+  }
   const url = new URL(request.url)
   const siteId = url.searchParams.get('siteId') ?? request.headers.get('x-site-id') ?? ''
   if (!siteId) return Response.json({ error: 'siteId is required' }, { status: 400 })

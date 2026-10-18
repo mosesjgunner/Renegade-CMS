@@ -1,7 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { useState } from 'react'
-import { graphicTemplatePresets, type GraphicTemplate } from '@/modules/graphics/service'
+import { graphicTemplatePresets, type GraphicTemplate } from '@/modules/graphics/contracts'
 
 const templates = Object.keys(graphicTemplatePresets) as GraphicTemplate[]
 export default function GraphicsStudioPage() {

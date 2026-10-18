@@ -1,8 +1,10 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 export default function SubscribePage() {
+  const [ready, setReady] = useState(false)
+  useEffect(() => setReady(true), [])
   const [message, setMessage] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -40,7 +42,14 @@ export default function SubscribePage() {
           ever.
         </p>
 
-        <form action={submit} className="mt-6 grid gap-4">
+        <form
+          onSubmit={(event) => {
+            event.preventDefault()
+            void submit(new FormData(event.currentTarget))
+          }}
+          aria-busy={isSubmitting}
+          className="mt-6 grid gap-4"
+        >
           <input name="locale" value="en" type="hidden" />
           <input name="source" value="public-subscribe" type="hidden" />
           <input
@@ -77,10 +86,10 @@ export default function SubscribePage() {
 
           <button
             type="submit"
-            disabled={isSubmitting}
+            disabled={!ready || isSubmitting}
             className="rounded-lg bg-stone-900 dark:bg-stone-100 text-white dark:text-stone-900 font-semibold p-3 text-sm hover:opacity-90 transition disabled:opacity-50"
           >
-            {isSubmitting ? 'Subscribing...' : 'Subscribe'}
+            {!ready ? 'Loading signup...' : isSubmitting ? 'Subscribing...' : 'Subscribe'}
           </button>
         </form>
 

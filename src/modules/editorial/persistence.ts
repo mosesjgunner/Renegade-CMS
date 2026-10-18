@@ -24,6 +24,7 @@ import {
   assertMediaIdsPublishable,
   assertUsageTargetsPublishable,
   reconcileMediaUsages,
+  resolveMediaReplacement,
 } from '../media/workflow'
 
 type Doc = Record<string, any>
@@ -104,9 +105,16 @@ export type EditorialPresentation = {
     id: string
     url: string
     altText: string
+    caption?: string
     width?: number
     height?: number
-    variants: Array<{ recipeKey: string; format: string; processingState: string }>
+    variants: Array<{
+      recipeKey: string
+      format: string
+      processingState: string
+      width?: number | null
+      height?: number | null
+    }>
   } | null
   relatedContent: Array<{ id: string; title: string; href: string }>
 }
@@ -126,7 +134,7 @@ const idOf = (value: unknown): string => {
 
 const asArray = (value: unknown): Doc[] => (Array.isArray(value) ? (value as Doc[]) : [])
 
-const hashPreviewToken = (token: string): string =>
+export const hashPreviewToken = (token: string): string =>
   `sha256:${createHash('sha256').update(token, 'utf8').digest('hex')}`
 
 const ensureDocument = (
@@ -1226,7 +1234,7 @@ export async function buildArticlePresentation(
   const document = toRichTextDocument(revision.document)
   const sources = await sourceLookup(payload, bundle.article)
   const heroMediaId = idOf(bundle.content.heroMedia)
-  const heroMedia = heroMediaId
+  const rawHeroMedia = heroMediaId
     ? ((await payload
         .findByID({
           collection: 'media-assets',
@@ -1236,13 +1244,16 @@ export async function buildArticlePresentation(
         } as never)
         .catch(() => undefined)) as Doc | undefined)
     : undefined
+  const heroMedia = rawHeroMedia
+    ? await resolveMediaReplacement(payload, rawHeroMedia, !input.preview)
+    : undefined
   const heroVariants = heroMedia
     ? ((
         await payload.find({
           collection: 'media-variants',
           where: {
             and: [
-              { asset: { equals: heroMediaId } },
+              { asset: { equals: String(heroMedia.id) } },
               { site: { equals: idOf(bundle.content.site) } },
               { recipeKey: { equals: 'hero' } },
               { processingState: { equals: 'ready' } },
@@ -1256,6 +1267,8 @@ export async function buildArticlePresentation(
         recipeKey?: string | null
         format?: string | null
         processingState?: string | null
+        width?: number | null
+        height?: number | null
       }>)
     : []
 
@@ -1317,17 +1330,23 @@ export async function buildArticlePresentation(
     preview: Boolean(input.preview),
     relatedContent: publicRelatedContent(bundle.content.relatedContent, bundle.content.site),
     heroMedia:
-      heroMedia && heroMedia.kind === 'image'
+      heroMedia && rawHeroMedia && heroMedia.kind === 'image'
         ? {
-            id: String(heroMedia.id),
-            url: `/media/${heroMedia.id}`,
+            id: String(rawHeroMedia.id),
+            url: `/media/${rawHeroMedia.id}`,
             altText: String(heroMedia.altText || heroMedia.title || ''),
+            caption:
+              typeof heroMedia.caption === 'string' && heroMedia.caption
+                ? heroMedia.caption
+                : undefined,
             width: typeof heroMedia.width === 'number' ? heroMedia.width : undefined,
             height: typeof heroMedia.height === 'number' ? heroMedia.height : undefined,
             variants: heroVariants.map((variant) => ({
               recipeKey: String(variant.recipeKey),
               format: String(variant.format),
               processingState: String(variant.processingState),
+              width: variant.width,
+              height: variant.height,
             })),
           }
         : null,

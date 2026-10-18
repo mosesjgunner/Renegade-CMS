@@ -1,3 +1,5 @@
+import { withLayoutWriteLock } from '@/modules/presentation/layout-write-lock'
+import { checkOperatorRecordAccess } from '@/modules/operations/operator-grants'
 import config from '@payload-config'
 import { createLocalReq, getPayload } from 'payload'
 import { NextResponse } from 'next/server'
@@ -31,170 +33,187 @@ export async function PATCH(request: Request, { params }: Args) {
     expectedRevision?: number
   }
   if (!body.layout) return NextResponse.json({ error: 'A layout is required.' }, { status: 400 })
+  if (!Array.isArray(body.layout.blocks))
+    return NextResponse.json({ error: 'Blocks must be an array.' }, { status: 422 })
+  const input = body.layout
   const req = await createLocalReq({ user: auth.user ?? undefined }, payload)
   const id = (await params).id
-  const existing = await payload.findByID({
-    collection: 'page-layouts',
-    id,
-    depth: 0,
-    req,
-  })
-  const stored = existing as unknown as Record<string, unknown>
-  const existingSite =
-    typeof existing.site === 'string'
-      ? existing.site
-      : String((existing.site as { id?: unknown } | undefined)?.id ?? '')
-  const candidateSite =
-    body.layout.siteId ??
-    (typeof (body.layout as { site?: unknown }).site === 'string'
-      ? (body.layout as { site?: unknown }).site
-      : String(
-          ((body.layout as { site?: unknown }).site as { id?: unknown } | undefined)?.id ?? '',
-        ))
-  if (body.layout.id !== id || (candidateSite && candidateSite !== existingSite))
-    return NextResponse.json(
-      { error: 'Layout scope does not match the stored document.' },
-      { status: 400 },
+  if (!(await checkOperatorRecordAccess(payload, auth.user, 'page-layouts', id)))
+    return NextResponse.json({ error: 'Layout access denied.' }, { status: 403 })
+  return withLayoutWriteLock(payload, id, async () => {
+    const existing = await payload.findByID({
+      collection: 'page-layouts',
+      id,
+      depth: 0,
+      req,
+      overrideAccess: false,
+    })
+    const stored = existing as unknown as Record<string, unknown>
+    const existingSite =
+      typeof existing.site === 'string'
+        ? existing.site
+        : String((existing.site as { id?: unknown } | undefined)?.id ?? '')
+    const candidateSite =
+      input.siteId ??
+      (typeof (input as { site?: unknown }).site === 'string'
+        ? (input as { site?: unknown }).site
+        : String(((input as { site?: unknown }).site as { id?: unknown } | undefined)?.id ?? ''))
+    if (input.id !== id || (candidateSite && candidateSite !== existingSite))
+      return NextResponse.json(
+        { error: 'Layout scope does not match the stored document.' },
+        { status: 400 },
+      )
+    if (!Number.isInteger(body.expectedRevision))
+      return NextResponse.json({ error: 'An expectedRevision is required.' }, { status: 400 })
+    if (body.expectedRevision !== Number(existing.revision))
+      return NextResponse.json(
+        { error: 'Draft revision conflict.', current: existing },
+        { status: 409 },
+      )
+    const existingUnknown = Array.isArray(existing.unknownBlocks) ? existing.unknownBlocks : []
+    if (
+      input.unknownBlocks &&
+      JSON.stringify(input.unknownBlocks ?? []) !== JSON.stringify(existingUnknown)
     )
-  if (body.expectedRevision !== undefined && body.expectedRevision !== Number(existing.revision))
-    return NextResponse.json(
-      { error: 'Draft revision conflict.', current: existing },
-      { status: 409 },
-    )
-  const existingUnknown = Array.isArray(existing.unknownBlocks) ? existing.unknownBlocks : []
-  if (
-    body.layout.unknownBlocks &&
-    JSON.stringify(body.layout.unknownBlocks ?? []) !== JSON.stringify(existingUnknown)
-  )
-    return NextResponse.json(
-      { error: 'Unavailable component data is server-controlled.' },
-      { status: 400 },
-    )
-  const candidate: PageLayout = {
-    ...body.layout,
-    id,
-    siteId: existingSite,
-    version: Number(
-      body.layout.version ??
-        (body.layout as { layoutVersion?: unknown }).layoutVersion ??
-        stored.layoutVersion ??
-        stored.version ??
-        1,
-    ) as 1,
-    themeId: String(body.layout.themeId ?? stored.themeId ?? 'neutral-starter'),
-    name: body.layout.name ?? (typeof stored.name === 'string' ? stored.name : undefined),
-    path: String(existing.path),
-    status: existing.status === 'published' ? 'published' : 'draft',
-    surface: (stored.surface as PageLayout['surface']) ?? 'page',
-    slot: (stored.slot as PageLayout['slot']) ?? 'main',
-    templateId:
-      body.layout.templateId ??
-      (typeof stored.templateId === 'string' ? stored.templateId : undefined),
-    templateVersion:
-      typeof body.layout.templateVersion === 'number'
-        ? body.layout.templateVersion
-        : typeof stored.templateVersion === 'number'
-          ? stored.templateVersion
-          : undefined,
-    templateMode: body.layout.templateMode ?? (stored.templateMode as PageLayout['templateMode']),
-    isRetired: body.layout.isRetired ?? stored.isRetired === true,
-    category:
-      body.layout.category ?? (typeof stored.category === 'string' ? stored.category : undefined),
-    blocks: Array.isArray(body.layout.blocks)
-      ? body.layout.blocks
-      : Array.isArray(existing.blocks)
-        ? (existing.blocks as LayoutBlock[])
-        : [],
-    revision: Number(existing.revision) + 1,
-    publishedRevision:
-      typeof existing.publishedRevision === 'number' ? existing.publishedRevision : undefined,
-    unknownBlocks: existingUnknown as PageLayout['unknownBlocks'],
-  }
-  const checked = validateLayout(candidate)
-  const fatal = checked.errors.filter(
-    (error) => !error.startsWith('Unavailable component preserved:'),
-  )
-  if (fatal.length)
-    return NextResponse.json(
-      { error: 'Layout validation failed.', details: fatal },
-      { status: 422 },
-    )
-  const priorUnknownIds = new Set(
-    [...(Array.isArray(existing.blocks) ? existing.blocks : []), ...existingUnknown].map((block) =>
-      String((block as { id?: unknown }).id),
-    ),
-  )
-  if ((checked.layout.unknownBlocks ?? []).some((block) => !priorUnknownIds.has(block.id)))
-    return NextResponse.json({ error: 'Unknown components cannot be added.' }, { status: 422 })
-  const theme = resolveTheme(checked.layout.themeId)
-  for (const block of checked.layout.blocks) {
-    const definition = theme.componentRegistry[block.component]
-    for (const [name, field] of Object.entries(definition.fields)) {
-      const value = block.props[name] as { id?: string; href?: string } | undefined
-      if (!value?.id || (field.type !== 'media' && field.type !== 'link')) continue
-      const collection = field.type === 'media' ? 'media-assets' : value.id.split(':', 1)[0]
-      const reference = field.type === 'media' ? value.id : value.id.slice(collection.length + 1)
-      if (collection !== 'media-assets' && collection !== 'content')
-        return NextResponse.json(
-          { error: `${name} uses an unsupported reference.` },
-          { status: 422 },
-        )
-      const target = await payload
-        .findByID({
-          collection: collection as never,
-          id: reference,
-          depth: 0,
-          overrideAccess: true,
-        } as never)
-        .catch(() => null)
-      if (!target || relationId((target as { site?: unknown }).site) !== existingSite)
-        return NextResponse.json({ error: `${name} must reference this site.` }, { status: 422 })
-      const canonical = target as unknown as Record<string, unknown>
-      const expectedHref =
-        field.type === 'media' ? `/media/${canonical.id}` : canonical.canonicalPath
-      if (typeof expectedHref !== 'string' || value.href !== expectedHref)
-        return NextResponse.json(
-          { error: `${name} does not match its canonical record.` },
-          { status: 422 },
-        )
+      return NextResponse.json(
+        { error: 'Unavailable component data is server-controlled.' },
+        { status: 400 },
+      )
+    const candidate: PageLayout = {
+      ...input,
+      id,
+      siteId: existingSite,
+      version: Number(
+        input.version ??
+          (input as { layoutVersion?: unknown }).layoutVersion ??
+          stored.layoutVersion ??
+          stored.version ??
+          1,
+      ) as 1,
+      themeId: String(input.themeId ?? stored.themeId ?? 'neutral-starter'),
+      name: input.name ?? (typeof stored.name === 'string' ? stored.name : undefined),
+      path: String(existing.path),
+      status: existing.status === 'published' ? 'published' : 'draft',
+      surface: (stored.surface as PageLayout['surface']) ?? 'page',
+      slot: (stored.slot as PageLayout['slot']) ?? 'main',
+      templateId:
+        input.templateId ?? (typeof stored.templateId === 'string' ? stored.templateId : undefined),
+      templateVersion:
+        typeof input.templateVersion === 'number'
+          ? input.templateVersion
+          : typeof stored.templateVersion === 'number'
+            ? stored.templateVersion
+            : undefined,
+      templateMode: input.templateMode ?? (stored.templateMode as PageLayout['templateMode']),
+      isRetired: input.isRetired ?? stored.isRetired === true,
+      category:
+        input.category ?? (typeof stored.category === 'string' ? stored.category : undefined),
+      blocks: Array.isArray(input.blocks)
+        ? input.blocks
+        : Array.isArray(existing.blocks)
+          ? (existing.blocks as LayoutBlock[])
+          : [],
+      revision: Number(existing.revision) + 1,
+      publishedRevision:
+        typeof existing.publishedRevision === 'number' ? existing.publishedRevision : undefined,
+      unknownBlocks: existingUnknown as PageLayout['unknownBlocks'],
     }
-  }
-  const layout = body.publish
-    ? publishLayout(checked.layout, ['layout:edit', 'layout:publish'])
-    : checked.layout
-  const history = Array.isArray(
-    (existing as unknown as { revisionHistory?: unknown[] }).revisionHistory,
-  )
-    ? (existing as unknown as { revisionHistory: unknown[] }).revisionHistory
-    : []
-  const updated = await payload.update({
-    collection: 'page-layouts',
-    id,
-    req,
-    context: { publishPresentation: body.publish === true },
-    data: {
-      name: layout.name,
-      themeId: layout.themeId,
-      surface: layout.surface ?? 'page',
-      slot: layout.slot ?? 'main',
-      templateId: layout.templateId,
-      templateVersion: layout.templateVersion,
-      templateMode: layout.templateMode,
-      isRetired: layout.isRetired === true,
-      category: layout.category,
-      layoutVersion: layout.version,
-      status: body.publish ? 'published' : existing.status,
-      blocks: layout.blocks,
-      unknownBlocks: layout.unknownBlocks ?? [],
-      revision: layout.revision,
-      publishedRevision: layout.publishedRevision,
-      revisionHistory: [
-        ...history,
-        { revision: layout.revision, blocks: layout.blocks, savedAt: new Date().toISOString() },
-      ],
-    },
-  } as never)
-  return NextResponse.json({ layout: updated, warnings: checked.errors })
+    const checked = validateLayout(candidate)
+    const fatal = checked.errors.filter(
+      (error) => !error.startsWith('Unavailable component preserved:'),
+    )
+    if (fatal.length)
+      return NextResponse.json(
+        { error: 'Layout validation failed.', details: fatal },
+        { status: 422 },
+      )
+    const priorUnknownIds = new Set(
+      [...(Array.isArray(existing.blocks) ? existing.blocks : []), ...existingUnknown].map(
+        (block) => String((block as { id?: unknown }).id),
+      ),
+    )
+    if ((checked.layout.unknownBlocks ?? []).some((block) => !priorUnknownIds.has(block.id)))
+      return NextResponse.json({ error: 'Unknown components cannot be added.' }, { status: 422 })
+    const theme = resolveTheme(checked.layout.themeId)
+    for (const block of checked.layout.blocks) {
+      const definition = theme.componentRegistry[block.component]
+      for (const [name, field] of Object.entries(definition.fields)) {
+        const value = block.props[name] as { id?: string; href?: string } | undefined
+        if (!value?.id || (field.type !== 'media' && field.type !== 'link')) continue
+        const collection = field.type === 'media' ? 'media-assets' : value.id.split(':', 1)[0]
+        const reference = field.type === 'media' ? value.id : value.id.slice(collection.length + 1)
+        if (field.type === 'link' && collection === 'route') {
+          const expectedHref = reference === 'home' ? '/' : `/${reference}`
+          if (value.href !== expectedHref)
+            return NextResponse.json(
+              { error: `${name} does not match its canonical record.` },
+              { status: 422 },
+            )
+          continue
+        }
+        if (collection !== 'media-assets' && collection !== 'content')
+          return NextResponse.json(
+            { error: `${name} uses an unsupported reference.` },
+            { status: 422 },
+          )
+        const target = await payload
+          .findByID({
+            collection: collection as never,
+            id: reference,
+            depth: 0,
+            overrideAccess: true,
+          } as never)
+          .catch(() => null)
+        if (!target || relationId((target as { site?: unknown }).site) !== existingSite)
+          return NextResponse.json({ error: `${name} must reference this site.` }, { status: 422 })
+        const canonical = target as unknown as Record<string, unknown>
+        const expectedHref =
+          field.type === 'media' ? `/media/${canonical.id}` : canonical.canonicalPath
+        if (typeof expectedHref !== 'string' || value.href !== expectedHref)
+          return NextResponse.json(
+            { error: `${name} does not match its canonical record.` },
+            { status: 422 },
+          )
+      }
+    }
+    const layout = body.publish
+      ? publishLayout(checked.layout, ['layout:edit', 'layout:publish'])
+      : checked.layout
+    const history = Array.isArray(
+      (existing as unknown as { revisionHistory?: unknown[] }).revisionHistory,
+    )
+      ? (existing as unknown as { revisionHistory: unknown[] }).revisionHistory
+      : []
+    const updated = await payload.update({
+      collection: 'page-layouts',
+      id,
+      req,
+      overrideAccess: false,
+      context: { publishPresentation: body.publish === true },
+      data: {
+        name: layout.name,
+        themeId: layout.themeId,
+        surface: layout.surface ?? 'page',
+        slot: layout.slot ?? 'main',
+        templateId: layout.templateId,
+        templateVersion: layout.templateVersion,
+        templateMode: layout.templateMode,
+        isRetired: layout.isRetired === true,
+        category: layout.category,
+        layoutVersion: layout.version,
+        status: body.publish ? 'published' : existing.status,
+        blocks: layout.blocks,
+        unknownBlocks: layout.unknownBlocks ?? [],
+        revision: layout.revision,
+        publishedRevision: layout.publishedRevision,
+        revisionHistory: [
+          ...history,
+          { revision: layout.revision, blocks: layout.blocks, savedAt: new Date().toISOString() },
+        ],
+      },
+    } as never)
+    return NextResponse.json({ layout: updated, warnings: checked.errors })
+  })
 }
 
 export async function DELETE(request: Request, { params }: Args) {
@@ -203,6 +222,8 @@ export async function DELETE(request: Request, { params }: Args) {
   if (!staff(auth.user))
     return NextResponse.json({ error: 'Layout deletion requires staff access.' }, { status: 403 })
   const id = (await params).id
+  if (!(await checkOperatorRecordAccess(payload, auth.user, 'page-layouts', id)))
+    return NextResponse.json({ error: 'Layout access denied.' }, { status: 403 })
   const safeguard = await checkLayoutDeletionSafeguards(payload, id)
   if (!safeguard.safe) {
     return NextResponse.json(
@@ -215,6 +236,7 @@ export async function DELETE(request: Request, { params }: Args) {
     collection: 'page-layouts',
     id,
     req,
+    overrideAccess: false,
   })
   return NextResponse.json({ success: true, id })
 }

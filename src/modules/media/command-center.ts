@@ -1,9 +1,11 @@
 import type { Payload } from 'payload'
-import { readFile } from 'node:fs/promises'
+import { readFile, rm } from 'node:fs/promises'
+import path from 'node:path'
 
 import type { AppConfig } from '../core/config'
 import { mediaStorage } from './storage'
 import { validatePodcastFeed } from './publishing'
+import { cleanupExpiredUploadSessions } from './upload-sessions'
 import {
   assertMediaPermission,
   deleteOrphanedMedia,
@@ -594,14 +596,19 @@ export async function getMediaCommandCenterOverview(
   }
 
   for (const session of sessions) {
-    if (session.state === 'aborted') {
+    if (
+      session.state === 'aborted' ||
+      session.state === 'cancelled' ||
+      session.state === 'failed' ||
+      session.state === 'expired'
+    ) {
       recentFailures.push({
         id: id(session.id),
         type: 'session',
-        summary: `Upload session aborted: ${String(session.filename ?? session.id)}`,
-        details: `Upload session was cancelled or timed out.`,
+        summary: `Upload session ${String(session.state)}: ${String(session.filename ?? session.id)}`,
+        details: `Upload session was cancelled, failed, or timed out.`,
         timestamp: String(session.updatedAt ?? session.createdAt ?? ''),
-        retryable: false,
+        retryable: session.state === 'failed',
       })
     }
   }
@@ -791,9 +798,13 @@ export async function getMediaCommandCenterOverview(
     recentSessions: sessions.slice(0, 10).map((s) => ({
       id: id(s.id),
       filename: String(s.filename ?? ''),
-      size: Number(s.size ?? 0),
-      chunks: Array.isArray(s.chunks) ? s.chunks.length : 0,
-      state: String(s.state ?? 'uploading'),
+      size: Number(s.expectedSize ?? s.size ?? 0),
+      chunks: Array.isArray(s.receivedChunks)
+        ? s.receivedChunks.length
+        : Array.isArray(s.chunks)
+          ? s.chunks.length
+          : 0,
+      state: String(s.state ?? 'open'),
       expiresAt: String(s.expiresAt ?? ''),
       createdAt: String(s.createdAt ?? ''),
     })),
@@ -926,9 +937,16 @@ export async function executeCommandCenterAction(
       }
 
       if (sessionId) {
+        const safeId = String(sessionId)
+        if (/^[a-f0-9-]{16,64}$/i.test(safeId) && config?.storage?.mediaDir) {
+          await rm(path.join(config.storage.mediaDir, '.upload-sessions', safeId), {
+            recursive: true,
+            force: true,
+          }).catch(() => undefined)
+        }
         await payload.update({
           collection: 'media-upload-sessions' as never,
-          id: String(sessionId),
+          id: safeId,
           data: { state: 'aborted' } as never,
           overrideAccess: true,
         })
@@ -936,6 +954,12 @@ export async function executeCommandCenterAction(
       }
 
       throw new MediaWorkflowError('No valid cancellable target specified.')
+    }
+
+    case 'cleanup-sessions': {
+      await assertMediaPermission(payload, user as never, scope, 'content.edit')
+      const cleaned = await cleanupExpiredUploadSessions(payload, config)
+      return { cleaned: true, count: cleaned }
     }
 
     case 'repair-metadata': {
@@ -1034,12 +1058,18 @@ export async function executeCommandCenterAction(
       await assertMediaPermission(payload, user as never, scope, 'content.edit')
       const mediaId = String(params.mediaId ?? '')
       await assertMediaAssetScope(payload, mediaId, siteId)
+      const label =
+        typeof params.tombstoneLabel === 'string' && params.tombstoneLabel.trim()
+          ? params.tombstoneLabel.trim().slice(0, 500)
+          : '[Media archived]'
       const updated = await payload.update({
         collection: 'media-assets',
         id: mediaId,
         data: {
           retentionMode: 'tombstone',
           processingState: 'archived',
+          removeFromDiscovery: true,
+          tombstoneLabel: label,
         } as never,
         overrideAccess: true,
       })

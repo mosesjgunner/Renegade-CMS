@@ -293,6 +293,11 @@ export async function processAudioRecipe(
   if (!recipe) {
     throw new MediaWorkflowError(`Unknown audio recipe: ${recipeKey}`, 400)
   }
+  if (recipe.normalize)
+    throw new MediaWorkflowError(
+      'Audio normalization requires an installed byte-producing adapter; originals are unchanged.',
+      503,
+    )
 
   const asset = (await payload.findByID({
     collection: 'media-assets',
@@ -339,21 +344,14 @@ export async function processAudioRecipe(
     checksum: String(asset.checksum || ''),
   }
 
-  // Apply recipe-driven loudness measurement
-  const targetLufs = recipe.targetLufs ?? -16
-  const measuredLufs = metadata.loudness?.integratedLufs ?? -16.5
-  const measuredPeak = metadata.loudness?.truePeakDbfs ?? -1.0
-
-  const loudnessInfo: AudioLoudness = {
-    integratedLufs: recipe.normalize ? targetLufs : measuredLufs,
-    truePeakDbfs: measuredPeak,
-    loudnessRangeLu: 4.8,
-    measuredAt: new Date().toISOString(),
-  }
+  // Container metadata cannot establish decoded loudness for compressed formats.
+  // Retain only measurements derived from supported PCM samples, never targets.
+  if (!metadata.loudness)
+    throw new MediaWorkflowError('Loudness measurement currently requires 16-bit PCM WAV.', 422)
 
   const updatedMetadata: AudioMetadata = {
     ...metadata,
-    loudness: loudnessInfo,
+    loudness: metadata.loudness,
   }
 
   // Update asset metadata while strictly preserving the original storageLocation & originalBlob

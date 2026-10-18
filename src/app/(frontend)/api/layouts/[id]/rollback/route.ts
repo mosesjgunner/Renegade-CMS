@@ -1,5 +1,7 @@
+import { withLayoutWriteLock } from '@/modules/presentation/layout-write-lock'
+import { checkOperatorRecordAccess } from '@/modules/operations/operator-grants'
 import config from '@payload-config'
-import { getPayload } from 'payload'
+import { createLocalReq, getPayload } from 'payload'
 import { NextResponse } from 'next/server'
 
 import { rollbackLayout } from '@/modules/presentation/composition'
@@ -15,21 +17,47 @@ export async function POST(request: Request, { params }: Args) {
     return NextResponse.json({ error: 'Rollback requires staff access.' }, { status: 403 })
   }
   const id = (await params).id
-  const body = (await request.json()) as { targetRevision?: number; publish?: boolean }
+  if (!(await checkOperatorRecordAccess(payload, auth.user, 'page-layouts', id)))
+    return NextResponse.json({ error: 'Layout access denied.' }, { status: 403 })
+  const body = (await request.json()) as {
+    targetRevision?: number
+    publish?: boolean
+    expectedRevision?: number
+  }
   if (typeof body.targetRevision !== 'number') {
     return NextResponse.json(
       { error: 'A valid targetRevision number is required.' },
       { status: 400 },
     )
   }
-  try {
-    const rolledBack = await rollbackLayout(payload, {
-      layoutId: id,
-      targetRevision: body.targetRevision,
-      publish: body.publish,
+  const targetRevision = body.targetRevision
+  return withLayoutWriteLock(payload, id, async () => {
+    const current = await payload.findByID({
+      collection: 'page-layouts',
+      id,
+      depth: 0,
+      overrideAccess: false,
+      user: auth.user,
     })
-    return NextResponse.json({ layout: rolledBack })
-  } catch (error) {
-    return NextResponse.json({ error: (error as Error).message }, { status: 400 })
-  }
+    if (body.expectedRevision !== current.revision)
+      return NextResponse.json({ error: 'Draft revision conflict.', current }, { status: 409 })
+    try {
+      const rolledBack = await rollbackLayout(payload, {
+        layoutId: id,
+        targetRevision,
+        publish: body.publish,
+        req: await createLocalReq({ user: auth.user ?? undefined }, payload),
+      })
+      const row = await payload.findByID({
+        collection: 'page-layouts',
+        id: rolledBack.id,
+        depth: 0,
+        overrideAccess: false,
+        user: auth.user,
+      })
+      return NextResponse.json({ layout: row })
+    } catch (error) {
+      return NextResponse.json({ error: (error as Error).message }, { status: 400 })
+    }
+  })
 }

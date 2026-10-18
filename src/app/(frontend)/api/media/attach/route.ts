@@ -8,9 +8,13 @@ export async function POST(request: Request) {
   const auth = await payload.auth({ headers: request.headers })
   try {
     const body = (await request.json()) as Record<string, string>
+    const purpose =
+      body.purpose === 'inline' || body.purpose === 'hero' ? body.purpose : undefined
     const content = await attachMediaToContent(payload, auth.user as never, {
       mediaId: body.mediaId,
       contentId: body.contentId,
+      purpose,
+      field: typeof body.field === 'string' && body.field ? body.field : undefined,
       scope: { kind: 'site', siteId: body.siteId },
     })
     return NextResponse.json({ content })

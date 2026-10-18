@@ -201,6 +201,8 @@ describe('MED-EXT: miniPaint Native CMoS Image Editor & AI Extension Boundary', 
       expect(isEditableImageMimeType('image/svg+xml')).toBe(false)
       expect(isEditableImageMimeType('video/mp4')).toBe(false)
       expect(isEditableImageMimeType('application/pdf')).toBe(false)
+      expect(isEditableImageMimeType('image/tiff')).toBe(false)
+      expect(isEditableImageMimeType('image/unknown')).toBe(false)
     })
 
     it('rejects SVG assets specifically with clear safe messaging in ImageEditorModal', () => {

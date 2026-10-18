@@ -105,7 +105,6 @@ export const OPTIONAL_MODULES: readonly ModuleManifestEntry[] = [
     title: 'Media studio',
     summary: 'Books, podcasts, video, graphics, photo albums, and the media processing pipeline.',
     collections: [
-      'albums',
       'books',
       'book-parts',
       'book-chapters',
@@ -247,6 +246,8 @@ export const OPTIONAL_MODULES: readonly ModuleManifestEntry[] = [
       'digest-definitions',
       'digest-runs',
       'automation-definitions',
+      'automation-runs',
+      'automation-failures',
     ],
   },
   {

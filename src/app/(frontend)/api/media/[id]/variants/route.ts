@@ -32,9 +32,9 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 
     if (!asset) throw new MediaWorkflowError('Media asset not found.', 404)
 
-    const effectiveSiteId = String(
-      siteId || (asset.site as { id?: string })?.id || asset.site || '',
-    )
+    const effectiveSiteId = String((asset.site as { id?: string })?.id || asset.site || '')
+    if (siteId && siteId !== effectiveSiteId)
+      throw new MediaWorkflowError('Asset does not belong to this site.', 403)
     await assertMediaPermission(
       payload,
       auth.user as never,
@@ -152,9 +152,9 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
 
     if (!asset) throw new MediaWorkflowError('Media asset not found.', 404)
 
-    const effectiveSiteId = String(
-      body.siteId || (asset.site as { id?: string })?.id || asset.site || '',
-    )
+    const effectiveSiteId = String((asset.site as { id?: string })?.id || asset.site || '')
+    if (body.siteId && body.siteId !== effectiveSiteId)
+      throw new MediaWorkflowError('Asset does not belong to this site.', 403)
     await assertMediaPermission(
       payload,
       auth.user as never,
@@ -165,6 +165,8 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     const updateData: Record<string, unknown> = {}
     if (body.focalPoint) {
       if (
+        !Number.isFinite(body.focalPoint.x) ||
+        !Number.isFinite(body.focalPoint.y) ||
         body.focalPoint.x < 0 ||
         body.focalPoint.x > 1 ||
         body.focalPoint.y < 0 ||

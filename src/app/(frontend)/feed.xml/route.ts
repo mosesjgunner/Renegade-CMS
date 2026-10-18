@@ -1,3 +1,4 @@
+import { publicSiteForHost } from '@/modules/public/site-scope'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import { createHash } from 'node:crypto'
@@ -30,13 +31,16 @@ export async function GET(request: Request) {
   try {
     const payload = await getPayload({ config })
     const settings = await resolveSiteSettings(payload)
-    const base = settings.canonicalOrigin
+    const siteId = await publicSiteForHost(payload, request.headers.get('host'))
+    if (!siteId) return new Response('Not found', { status: 404 })
+    const origin = settings.canonicalOriginsBySite[siteId] || settings.canonicalOrigin
+    const base = origin
 
     if (settings.indexingMode === 'noindex') {
       return new Response('Feed unavailable when site indexing is disabled.', { status: 404 })
     }
 
-    const docs = await getAllIndexableDiscoveryDocuments(payload)
+    const docs = await getAllIndexableDiscoveryDocuments(payload, siteId)
     const articleDocs = docs
       .filter((d) => d.contentType === 'article' && d.indexability.indexable)
       .sort((a, b) => {
@@ -97,7 +101,7 @@ ${itemsXml}
         status: 304,
         headers: {
           ETag: etag,
-          'Cache-Control': 'public, max-age=300, s-maxage=3600, stale-while-revalidate=86400',
+          'Cache-Control': 'public, no-cache, must-revalidate',
         },
       })
     }
@@ -107,7 +111,7 @@ ${itemsXml}
       headers: {
         'Content-Type': 'application/rss+xml; charset=utf-8',
         ETag: etag,
-        'Cache-Control': 'public, max-age=300, s-maxage=3600, stale-while-revalidate=86400',
+        'Cache-Control': 'public, no-cache, must-revalidate',
       },
     })
   } catch (error) {

@@ -68,12 +68,24 @@ export function MediaLibraryClient({ siteId }: { siteId: string }) {
 
   const refresh = () => setRefreshKey((value) => value + 1)
 
-  // Load variant inspection whenever selected media changes
+  const selectedId = selected?.id
+
+  // Load variant inspection and detail whenever selected media changes
   useEffect(() => {
-    if (!selected) return
+    if (!selectedId) return
 
     let active = true
-    fetch(`/api/media/${selected.id}/variants?siteId=${encodeURIComponent(siteId)}`)
+    fetch(`/api/media/${selectedId}?siteId=${encodeURIComponent(siteId)}`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data: { asset?: PickableMedia; media?: PickableMedia } | null) => {
+        const detail = data?.asset ?? data?.media
+        if (active && detail) {
+          setSelected((prev) => (prev && prev.id === detail.id ? detail : prev))
+        }
+      })
+      .catch(() => undefined)
+
+    fetch(`/api/media/${selectedId}/variants?siteId=${encodeURIComponent(siteId)}`)
       .then((res) => (res.ok ? res.json() : null))
       .then((data: VariantsInspection | null) => {
         if (active && data) {
@@ -88,7 +100,7 @@ export function MediaLibraryClient({ siteId }: { siteId: string }) {
     return () => {
       active = false
     }
-  }, [selected, siteId, refreshKey])
+  }, [selectedId, siteId, refreshKey])
 
   const update = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -111,7 +123,50 @@ export function MediaLibraryClient({ siteId }: { siteId: string }) {
     const body = await response.json()
     setMessage(response.ok ? 'Metadata saved.' : body.error || 'Metadata update failed.')
     if (response.ok) {
-      setSelected(body.media)
+      setSelected((prev) => (prev ? { ...prev, ...body.media } : body.media))
+      refresh()
+    }
+  }
+
+  const attach = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    if (!selected) return
+    const form = new FormData(event.currentTarget)
+    const contentId = String(form.get('contentId') ?? '').trim()
+    const purpose = String(form.get('purpose') ?? 'hero')
+    const response = await fetch('/api/media/attach', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        siteId,
+        mediaId: selected.id,
+        contentId,
+        purpose,
+      }),
+    })
+    const body = await response.json()
+    setMessage(
+      response.ok ? `Attached to content ${contentId}.` : body.error || 'Attachment failed.',
+    )
+    if (response.ok) {
+      refresh()
+    }
+  }
+
+  const tombstone = async () => {
+    if (!selected) return
+    const response = await fetch(
+      `/api/media/${selected.id}?siteId=${encodeURIComponent(siteId)}&mode=tombstone&tombstoneLabel=${encodeURIComponent('[Withdrawn by editor]')}`,
+      { method: 'DELETE' },
+    )
+    const body = await response.json()
+    setMessage(
+      response.ok
+        ? 'Media tombstoned and withdrawn from public delivery.'
+        : body.error || 'Tombstone failed.',
+    )
+    if (response.ok) {
+      setSelected((prev) => (prev ? { ...prev, ...body.media } : body.media))
       refresh()
     }
   }
@@ -261,9 +316,69 @@ export function MediaLibraryClient({ siteId }: { siteId: string }) {
         selectedId={selected?.id}
       />
       {selected && (
-        <section aria-label="Selected media management">
+        <section aria-label="Selected media management" key={selected.id}>
           <h2>{selected.title}</h2>
           <p>{selected.url}</p>
+          <dl data-testid="selected-media-summary" style={{ fontSize: '0.9rem' }}>
+            <div>
+              <dt style={{ display: 'inline', fontWeight: 600 }}>Filename: </dt>
+              <dd style={{ display: 'inline', margin: 0 }}>
+                {selected.originalFilename || '—'}
+              </dd>
+            </div>
+            <div>
+              <dt style={{ display: 'inline', fontWeight: 600 }}>Kind / MIME: </dt>
+              <dd style={{ display: 'inline', margin: 0 }}>
+                {selected.kind || 'document'} ({selected.mimeType || 'unknown'})
+              </dd>
+            </div>
+            <div>
+              <dt style={{ display: 'inline', fontWeight: 600 }}>Retention: </dt>
+              <dd style={{ display: 'inline', margin: 0 }}>
+                {selected.retentionMode || 'permanent'}
+                {selected.tombstoneLabel ? ` — ${selected.tombstoneLabel}` : ''}
+              </dd>
+            </div>
+            {selected.replaceGloballyWith && (
+              <div>
+                <dt style={{ display: 'inline', fontWeight: 600 }}>Replaced globally with: </dt>
+                <dd style={{ display: 'inline', margin: 0 }}>{selected.replaceGloballyWith}</dd>
+              </div>
+            )}
+            <div>
+              <dt style={{ display: 'inline', fontWeight: 600 }}>Content references: </dt>
+              <dd style={{ display: 'inline', margin: 0 }}>
+                {selected.usageCount ?? selected.usages?.length ?? 0} active reference(s)
+              </dd>
+            </div>
+            <div>
+              <dt style={{ display: 'inline', fontWeight: 600 }}>Version history: </dt>
+              <dd style={{ display: 'inline', margin: 0 }}>
+                {selected.versionCount ?? selected.versions?.length ?? 0} replacement version(s)
+              </dd>
+            </div>
+          </dl>
+
+          {selected.usages && selected.usages.length > 0 && (
+            <ul aria-label="Active content references" data-testid="selected-media-usages">
+              {selected.usages.map((u) => (
+                <li key={u.id}>
+                  {u.targetType}:{u.targetId} ({u.field} / {u.purpose} / {u.lifecycle})
+                </li>
+              ))}
+            </ul>
+          )}
+
+          {selected.versions && selected.versions.length > 0 && (
+            <ul aria-label="Asset version history" data-testid="selected-media-versions">
+              {selected.versions.map((v) => (
+                <li key={v.id}>
+                  {v.versionLabel} — mode: {v.mode} ({v.replacesAssetId} → {v.assetId})
+                  {v.reason ? ` — ${v.reason}` : ''}
+                </li>
+              ))}
+            </ul>
+          )}
 
           {/* Metadata form */}
           <form onSubmit={update}>
@@ -626,7 +741,27 @@ export function MediaLibraryClient({ siteId }: { siteId: string }) {
             </div>
           )}
 
-          <div style={{ marginTop: '1rem' }}>
+          <details style={{ marginTop: '1rem' }}>
+            <summary>Attach to article or content</summary>
+            <form onSubmit={attach} data-testid="attach-media-form">
+              <label>
+                Content ID <input name="contentId" required placeholder="Content ID" />
+              </label>
+              <label>
+                Attachment purpose{' '}
+                <select name="purpose" defaultValue="hero">
+                  <option value="hero">Hero media</option>
+                  <option value="inline">Inline / attachment</option>
+                </select>
+              </label>
+              <button type="submit">Attach media</button>
+            </form>
+          </details>
+
+          <div style={{ marginTop: '1rem', display: 'flex', gap: '0.5rem' }}>
+            <button type="button" onClick={tombstone} data-testid="tombstone-media-button">
+              Tombstone / withdraw media
+            </button>
             <button type="button" onClick={remove}>
               Delete orphaned media
             </button>

@@ -1,0 +1,281 @@
+{
+  "owner": "de0d55e5-0188-4121-a181-0d666a938a89",
+  "asset": "6cbe5a30-df95-448e-943f-66f885c85d84",
+  "privateAsset": "eb9c67fd-903d-4fdc-9b62-b1353268cac6",
+  "articlePath": "/articles/photograph-1792348934344",
+  "objects": [
+    {
+      "label": "original",
+      "key": "9bd807e5-9db6-46b1-ad2c-bb318f623ae4/a933d77e-e432-4948-a53b-2df86fd10f46.png",
+      "hash": "12b8dce8e2af64c94488fb24606cebcd2649d169f7bd5153e06c38867b738bc1",
+      "url": "/media/6cbe5a30-df95-448e-943f-66f885c85d84"
+    },
+    {
+      "label": "wide-jpeg",
+      "key": "9bd807e5-9db6-46b1-ad2c-bb318f623ae4/variants/ec7e367b97b126f340d0b090403724f1d8912bc0c144d73cbcf31c9eeef65bfd/wide-v1-a203b19b4f8242f3.jpeg",
+      "hash": "ec7e367b97b126f340d0b090403724f1d8912bc0c144d73cbcf31c9eeef65bfd",
+      "url": "/media/6cbe5a30-df95-448e-943f-66f885c85d84?variant=wide&format=jpeg&v=1"
+    },
+    {
+      "label": "wide-avif",
+      "key": "9bd807e5-9db6-46b1-ad2c-bb318f623ae4/variants/96bc591a61e6d17d563d685a4b5f003920e0df68b69584dee38ae9d24875e1c4/wide-v1-a203b19b4f8242f3.avif",
+      "hash": "96bc591a61e6d17d563d685a4b5f003920e0df68b69584dee38ae9d24875e1c4",
+      "url": "/media/6cbe5a30-df95-448e-943f-66f885c85d84?variant=wide&format=avif&v=1"
+    },
+    {
+      "label": "wide-webp",
+      "key": "9bd807e5-9db6-46b1-ad2c-bb318f623ae4/variants/5f0715da4ad036e1ad89aa508dd620e6bc5729d689849d17b12bac3687e0d7b3/wide-v1-a203b19b4f8242f3.webp",
+      "hash": "5f0715da4ad036e1ad89aa508dd620e6bc5729d689849d17b12bac3687e0d7b3",
+      "url": "/media/6cbe5a30-df95-448e-943f-66f885c85d84?variant=wide&format=webp&v=1"
+    },
+    {
+      "label": "thumbnail-jpeg",
+      "key": "9bd807e5-9db6-46b1-ad2c-bb318f623ae4/variants/f7d11115930a78021101bfc9de4ec5963cd906df13988ab5fdb674f067e6dbe6/thumbnail-v1-88e1156fd4dd8bd3.jpeg",
+      "hash": "f7d11115930a78021101bfc9de4ec5963cd906df13988ab5fdb674f067e6dbe6",
+      "url": "/media/6cbe5a30-df95-448e-943f-66f885c85d84?variant=thumbnail&format=jpeg&v=1"
+    },
+    {
+      "label": "thumbnail-avif",
+      "key": "9bd807e5-9db6-46b1-ad2c-bb318f623ae4/variants/f788abef36081f73723f017e0acf08775633223718f95edc170fe83ff1576c24/thumbnail-v1-88e1156fd4dd8bd3.avif",
+      "hash": "f788abef36081f73723f017e0acf08775633223718f95edc170fe83ff1576c24",
+      "url": "/media/6cbe5a30-df95-448e-943f-66f885c85d84?variant=thumbnail&format=avif&v=1"
+    },
+    {
+      "label": "thumbnail-webp",
+      "key": "9bd807e5-9db6-46b1-ad2c-bb318f623ae4/variants/efae758829c93817707e9be7c0d2a63f20df70f9a53abf2b1d159fb7050c583b/thumbnail-v1-88e1156fd4dd8bd3.webp",
+      "hash": "efae758829c93817707e9be7c0d2a63f20df70f9a53abf2b1d159fb7050c583b",
+      "url": "/media/6cbe5a30-df95-448e-943f-66f885c85d84?variant=thumbnail&format=webp&v=1"
+    },
+    {
+      "label": "square-jpeg",
+      "key": "9bd807e5-9db6-46b1-ad2c-bb318f623ae4/variants/1edf900536bddc5bfce0a020070fdfc4ddf312cd2cf617e6cedbd1c8ee682547/square-v1-b4764f4fde8f02c9.jpeg",
+      "hash": "1edf900536bddc5bfce0a020070fdfc4ddf312cd2cf617e6cedbd1c8ee682547",
+      "url": "/media/6cbe5a30-df95-448e-943f-66f885c85d84?variant=square&format=jpeg&v=1"
+    },
+    {
+      "label": "square-avif",
+      "key": "9bd807e5-9db6-46b1-ad2c-bb318f623ae4/variants/4921c3ddd331558144f93814dfef5ba91b7db4a6b7b004922045ea124076a998/square-v1-b4764f4fde8f02c9.avif",
+      "hash": "4921c3ddd331558144f93814dfef5ba91b7db4a6b7b004922045ea124076a998",
+      "url": "/media/6cbe5a30-df95-448e-943f-66f885c85d84?variant=square&format=avif&v=1"
+    },
+    {
+      "label": "square-webp",
+      "key": "9bd807e5-9db6-46b1-ad2c-bb318f623ae4/variants/9e92b5ac60ec43d98074ced6135330fc5046cbe9251dcbd50849aabc23fc3cc9/square-v1-b4764f4fde8f02c9.webp",
+      "hash": "9e92b5ac60ec43d98074ced6135330fc5046cbe9251dcbd50849aabc23fc3cc9",
+      "url": "/media/6cbe5a30-df95-448e-943f-66f885c85d84?variant=square&format=webp&v=1"
+    },
+    {
+      "label": "portrait-jpeg",
+      "key": "9bd807e5-9db6-46b1-ad2c-bb318f623ae4/variants/7299c8b91cb04d042b9e78ce63cb323e76e54b9a7ed103def6bb6e4325bcc7d7/portrait-v1-0ff53cb1076a623d.jpeg",
+      "hash": "7299c8b91cb04d042b9e78ce63cb323e76e54b9a7ed103def6bb6e4325bcc7d7",
+      "url": "/media/6cbe5a30-df95-448e-943f-66f885c85d84?variant=portrait&format=jpeg&v=1"
+    },
+    {
+      "label": "portrait-avif",
+      "key": "9bd807e5-9db6-46b1-ad2c-bb318f623ae4/variants/4600b99d6323d2793cfbc817c03656e14811c49348f7366829fbfaecf545b255/portrait-v1-0ff53cb1076a623d.avif",
+      "hash": "4600b99d6323d2793cfbc817c03656e14811c49348f7366829fbfaecf545b255",
+      "url": "/media/6cbe5a30-df95-448e-943f-66f885c85d84?variant=portrait&format=avif&v=1"
+    },
+    {
+      "label": "portrait-webp",
+      "key": "9bd807e5-9db6-46b1-ad2c-bb318f623ae4/variants/f692acb3ee1ae649f4ee0ecb679090a990a2a3bf872a4a1ad45ce4b35a114968/portrait-v1-0ff53cb1076a623d.webp",
+      "hash": "f692acb3ee1ae649f4ee0ecb679090a990a2a3bf872a4a1ad45ce4b35a114968",
+      "url": "/media/6cbe5a30-df95-448e-943f-66f885c85d84?variant=portrait&format=webp&v=1"
+    },
+    {
+      "label": "og-webp",
+      "key": "9bd807e5-9db6-46b1-ad2c-bb318f623ae4/variants/16c6719be24760b15b5a519bb0f4e66d6e23d83cf6a02f1b6b5334b1cc2f1473/og-v1-7baf242fbb98e4c2.webp",
+      "hash": "16c6719be24760b15b5a519bb0f4e66d6e23d83cf6a02f1b6b5334b1cc2f1473",
+      "url": "/media/6cbe5a30-df95-448e-943f-66f885c85d84?variant=og&format=webp&v=1"
+    },
+    {
+      "label": "og-jpeg",
+      "key": "9bd807e5-9db6-46b1-ad2c-bb318f623ae4/variants/17a64c0d7b8cbe8cb156bb52c1883c1e27454e29d603f4f3485daa12697d85c5/og-v1-7baf242fbb98e4c2.jpeg",
+      "hash": "17a64c0d7b8cbe8cb156bb52c1883c1e27454e29d603f4f3485daa12697d85c5",
+      "url": "/media/6cbe5a30-df95-448e-943f-66f885c85d84?variant=og&format=jpeg&v=1"
+    },
+    {
+      "label": "inline-jpeg",
+      "key": "9bd807e5-9db6-46b1-ad2c-bb318f623ae4/variants/b1476366c49ecd0b728e87072d3954f108e37711039c644c8441f43a08892251/inline-v1-251f37a19b43f64c.jpeg",
+      "hash": "b1476366c49ecd0b728e87072d3954f108e37711039c644c8441f43a08892251",
+      "url": "/media/6cbe5a30-df95-448e-943f-66f885c85d84?variant=inline&format=jpeg&v=1"
+    },
+    {
+      "label": "inline-avif",
+      "key": "9bd807e5-9db6-46b1-ad2c-bb318f623ae4/variants/201b2e4e66bc055f52d0e4bd1d587cdc6f6c26c472e2065984974b610ac8243c/inline-v1-251f37a19b43f64c.avif",
+      "hash": "201b2e4e66bc055f52d0e4bd1d587cdc6f6c26c472e2065984974b610ac8243c",
+      "url": "/media/6cbe5a30-df95-448e-943f-66f885c85d84?variant=inline&format=avif&v=1"
+    },
+    {
+      "label": "inline-webp",
+      "key": "9bd807e5-9db6-46b1-ad2c-bb318f623ae4/variants/0fbe06b6f5431b3430b3cff4923a9ac019f896381f73f8e55550742f5a04eedd/inline-v1-251f37a19b43f64c.webp",
+      "hash": "0fbe06b6f5431b3430b3cff4923a9ac019f896381f73f8e55550742f5a04eedd",
+      "url": "/media/6cbe5a30-df95-448e-943f-66f885c85d84?variant=inline&format=webp&v=1"
+    },
+    {
+      "label": "hero-jpeg",
+      "key": "9bd807e5-9db6-46b1-ad2c-bb318f623ae4/variants/290da4256b16442084a5a18191cb91811996c73d93f22cc98f88b82893dbd239/hero-v1-777a44dc0162c93b.jpeg",
+      "hash": "290da4256b16442084a5a18191cb91811996c73d93f22cc98f88b82893dbd239",
+      "url": "/media/6cbe5a30-df95-448e-943f-66f885c85d84?variant=hero&format=jpeg&v=1"
+    },
+    {
+      "label": "hero-avif",
+      "key": "9bd807e5-9db6-46b1-ad2c-bb318f623ae4/variants/113f4ec73d3ce84bd3f8f242622801356eba93de351617de8d84047726a35a9c/hero-v1-777a44dc0162c93b.avif",
+      "hash": "113f4ec73d3ce84bd3f8f242622801356eba93de351617de8d84047726a35a9c",
+      "url": "/media/6cbe5a30-df95-448e-943f-66f885c85d84?variant=hero&format=avif&v=1"
+    },
+    {
+      "label": "hero-webp",
+      "key": "9bd807e5-9db6-46b1-ad2c-bb318f623ae4/variants/99b20c4f9f11a122a58ac82d184637f59dee9171c15cfe89558dee03c4832867/hero-v1-777a44dc0162c93b.webp",
+      "hash": "99b20c4f9f11a122a58ac82d184637f59dee9171c15cfe89558dee03c4832867",
+      "url": "/media/6cbe5a30-df95-448e-943f-66f885c85d84?variant=hero&format=webp&v=1"
+    },
+    {
+      "label": "private-original",
+      "key": "9bd807e5-9db6-46b1-ad2c-bb318f623ae4/bab970c2-d6be-47ba-8619-12c2481889bf.png",
+      "hash": "a12e0ad3be0a7ac0ae06ef454fc539139fc57f694b8872b373894017f31ab47d",
+      "url": "/media/eb9c67fd-903d-4fdc-9b62-b1353268cac6",
+      "private": true
+    },
+    {
+      "label": "private-wide-jpeg",
+      "key": "9bd807e5-9db6-46b1-ad2c-bb318f623ae4/variants/2d29907ed69d90ed3ab7e35753a585f5ce3bbeb3059b9b6fdbae9136830ac5ab/wide-v1-a203b19b4f8242f3.jpeg",
+      "hash": "2d29907ed69d90ed3ab7e35753a585f5ce3bbeb3059b9b6fdbae9136830ac5ab",
+      "url": "/media/eb9c67fd-903d-4fdc-9b62-b1353268cac6?variant=wide&format=jpeg&v=1",
+      "private": true
+    },
+    {
+      "label": "private-wide-avif",
+      "key": "9bd807e5-9db6-46b1-ad2c-bb318f623ae4/variants/6c971e55d85b17eb4f14b447d64dd69381cf59f786726819a0a19e84befbfe4a/wide-v1-a203b19b4f8242f3.avif",
+      "hash": "6c971e55d85b17eb4f14b447d64dd69381cf59f786726819a0a19e84befbfe4a",
+      "url": "/media/eb9c67fd-903d-4fdc-9b62-b1353268cac6?variant=wide&format=avif&v=1",
+      "private": true
+    },
+    {
+      "label": "private-wide-webp",
+      "key": "9bd807e5-9db6-46b1-ad2c-bb318f623ae4/variants/bc0cd065683099255b0eca15b2ce74aaa934d7afba2d09fb7a40c99729bd5904/wide-v1-a203b19b4f8242f3.webp",
+      "hash": "bc0cd065683099255b0eca15b2ce74aaa934d7afba2d09fb7a40c99729bd5904",
+      "url": "/media/eb9c67fd-903d-4fdc-9b62-b1353268cac6?variant=wide&format=webp&v=1",
+      "private": true
+    },
+    {
+      "label": "private-thumbnail-jpeg",
+      "key": "9bd807e5-9db6-46b1-ad2c-bb318f623ae4/variants/d1db42ec2796360f3d9cd93198b57f17d64af9e47cbac2d5ef548a11c6f99bf9/thumbnail-v1-88e1156fd4dd8bd3.jpeg",
+      "hash": "d1db42ec2796360f3d9cd93198b57f17d64af9e47cbac2d5ef548a11c6f99bf9",
+      "url": "/media/eb9c67fd-903d-4fdc-9b62-b1353268cac6?variant=thumbnail&format=jpeg&v=1",
+      "private": true
+    },
+    {
+      "label": "private-thumbnail-avif",
+      "key": "9bd807e5-9db6-46b1-ad2c-bb318f623ae4/variants/41350282b40a7a10056a0af4b4263da013f49a0fa15d22b7ab125276a47eae71/thumbnail-v1-88e1156fd4dd8bd3.avif",
+      "hash": "41350282b40a7a10056a0af4b4263da013f49a0fa15d22b7ab125276a47eae71",
+      "url": "/media/eb9c67fd-903d-4fdc-9b62-b1353268cac6?variant=thumbnail&format=avif&v=1",
+      "private": true
+    },
+    {
+      "label": "private-thumbnail-webp",
+      "key": "9bd807e5-9db6-46b1-ad2c-bb318f623ae4/variants/349b92ff3c080d8906cbaeb4cdfc9c58021b4bdd08f261a55c950b71c4972212/thumbnail-v1-88e1156fd4dd8bd3.webp",
+      "hash": "349b92ff3c080d8906cbaeb4cdfc9c58021b4bdd08f261a55c950b71c4972212",
+      "url": "/media/eb9c67fd-903d-4fdc-9b62-b1353268cac6?variant=thumbnail&format=webp&v=1",
+      "private": true
+    },
+    {
+      "label": "private-square-jpeg",
+      "key": "9bd807e5-9db6-46b1-ad2c-bb318f623ae4/variants/70b02f565d64d9d28df01f45ed9d6ced23cd298b83ff46079007032bfef3e73f/square-v1-b4764f4fde8f02c9.jpeg",
+      "hash": "70b02f565d64d9d28df01f45ed9d6ced23cd298b83ff46079007032bfef3e73f",
+      "url": "/media/eb9c67fd-903d-4fdc-9b62-b1353268cac6?variant=square&format=jpeg&v=1",
+      "private": true
+    },
+    {
+      "label": "private-square-avif",
+      "key": "9bd807e5-9db6-46b1-ad2c-bb318f623ae4/variants/dac5b4204f8cebf5214a456b7cb017c6b75eaa58bf6fb558b711158564942d60/square-v1-b4764f4fde8f02c9.avif",
+      "hash": "dac5b4204f8cebf5214a456b7cb017c6b75eaa58bf6fb558b711158564942d60",
+      "url": "/media/eb9c67fd-903d-4fdc-9b62-b1353268cac6?variant=square&format=avif&v=1",
+      "private": true
+    },
+    {
+      "label": "private-square-webp",
+      "key": "9bd807e5-9db6-46b1-ad2c-bb318f623ae4/variants/d5b05a6866675d500497f1b7f6979c6390ce95ec3257abeb89599f8e604b4778/square-v1-b4764f4fde8f02c9.webp",
+      "hash": "d5b05a6866675d500497f1b7f6979c6390ce95ec3257abeb89599f8e604b4778",
+      "url": "/media/eb9c67fd-903d-4fdc-9b62-b1353268cac6?variant=square&format=webp&v=1",
+      "private": true
+    },
+    {
+      "label": "private-portrait-jpeg",
+      "key": "9bd807e5-9db6-46b1-ad2c-bb318f623ae4/variants/91b545eb88e6b75a49531f198dddc8b81c2690b85b134112cd1cb73f7476f1f4/portrait-v1-0ff53cb1076a623d.jpeg",
+      "hash": "91b545eb88e6b75a49531f198dddc8b81c2690b85b134112cd1cb73f7476f1f4",
+      "url": "/media/eb9c67fd-903d-4fdc-9b62-b1353268cac6?variant=portrait&format=jpeg&v=1",
+      "private": true
+    },
+    {
+      "label": "private-portrait-avif",
+      "key": "9bd807e5-9db6-46b1-ad2c-bb318f623ae4/variants/047d0424e55920e86cea237e8734aa2b879f6181f6a58b68655f7dd332a541c8/portrait-v1-0ff53cb1076a623d.avif",
+      "hash": "047d0424e55920e86cea237e8734aa2b879f6181f6a58b68655f7dd332a541c8",
+      "url": "/media/eb9c67fd-903d-4fdc-9b62-b1353268cac6?variant=portrait&format=avif&v=1",
+      "private": true
+    },
+    {
+      "label": "private-portrait-webp",
+      "key": "9bd807e5-9db6-46b1-ad2c-bb318f623ae4/variants/e649b96b6e0ced6b1003196953fe72dce2d15fe214c301997ccc80188cf4a9ea/portrait-v1-0ff53cb1076a623d.webp",
+      "hash": "e649b96b6e0ced6b1003196953fe72dce2d15fe214c301997ccc80188cf4a9ea",
+      "url": "/media/eb9c67fd-903d-4fdc-9b62-b1353268cac6?variant=portrait&format=webp&v=1",
+      "private": true
+    },
+    {
+      "label": "private-og-webp",
+      "key": "9bd807e5-9db6-46b1-ad2c-bb318f623ae4/variants/18c7871d4e09eeb1804516a3b65a29770f3307b21fe9db99a0f2658206825703/og-v1-7baf242fbb98e4c2.webp",
+      "hash": "18c7871d4e09eeb1804516a3b65a29770f3307b21fe9db99a0f2658206825703",
+      "url": "/media/eb9c67fd-903d-4fdc-9b62-b1353268cac6?variant=og&format=webp&v=1",
+      "private": true
+    },
+    {
+      "label": "private-og-jpeg",
+      "key": "9bd807e5-9db6-46b1-ad2c-bb318f623ae4/variants/e5a4283688de4d2faf7d6b86c4b038f68f6e81e3df03ca1b0e10880e0c28b60c/og-v1-7baf242fbb98e4c2.jpeg",
+      "hash": "e5a4283688de4d2faf7d6b86c4b038f68f6e81e3df03ca1b0e10880e0c28b60c",
+      "url": "/media/eb9c67fd-903d-4fdc-9b62-b1353268cac6?variant=og&format=jpeg&v=1",
+      "private": true
+    },
+    {
+      "label": "private-inline-jpeg",
+      "key": "9bd807e5-9db6-46b1-ad2c-bb318f623ae4/variants/ecd9978942c1ff993bcd583738adc94f8c8c946b3170344f1358c92f9bae81f3/inline-v1-251f37a19b43f64c.jpeg",
+      "hash": "ecd9978942c1ff993bcd583738adc94f8c8c946b3170344f1358c92f9bae81f3",
+      "url": "/media/eb9c67fd-903d-4fdc-9b62-b1353268cac6?variant=inline&format=jpeg&v=1",
+      "private": true
+    },
+    {
+      "label": "private-inline-avif",
+      "key": "9bd807e5-9db6-46b1-ad2c-bb318f623ae4/variants/623484f40ab697883e7c6fc4af8f625fe7df1e018ac348083f4eacb816ded693/inline-v1-251f37a19b43f64c.avif",
+      "hash": "623484f40ab697883e7c6fc4af8f625fe7df1e018ac348083f4eacb816ded693",
+      "url": "/media/eb9c67fd-903d-4fdc-9b62-b1353268cac6?variant=inline&format=avif&v=1",
+      "private": true
+    },
+    {
+      "label": "private-inline-webp",
+      "key": "9bd807e5-9db6-46b1-ad2c-bb318f623ae4/variants/57be945d347d6fd7524a1d6fef0b64f0c643a10ce9514c36a531a07321c3d55e/inline-v1-251f37a19b43f64c.webp",
+      "hash": "57be945d347d6fd7524a1d6fef0b64f0c643a10ce9514c36a531a07321c3d55e",
+      "url": "/media/eb9c67fd-903d-4fdc-9b62-b1353268cac6?variant=inline&format=webp&v=1",
+      "private": true
+    },
+    {
+      "label": "private-hero-jpeg",
+      "key": "9bd807e5-9db6-46b1-ad2c-bb318f623ae4/variants/7ac3e868189e6be587903a49da9e46ad6af0f8cfe51b49a3604b223635c86989/hero-v1-777a44dc0162c93b.jpeg",
+      "hash": "7ac3e868189e6be587903a49da9e46ad6af0f8cfe51b49a3604b223635c86989",
+      "url": "/media/eb9c67fd-903d-4fdc-9b62-b1353268cac6?variant=hero&format=jpeg&v=1",
+      "private": true
+    },
+    {
+      "label": "private-hero-avif",
+      "key": "9bd807e5-9db6-46b1-ad2c-bb318f623ae4/variants/41139d24256473d79647aae804552795811ac8184891172469e561f4cabc65f2/hero-v1-777a44dc0162c93b.avif",
+      "hash": "41139d24256473d79647aae804552795811ac8184891172469e561f4cabc65f2",
+      "url": "/media/eb9c67fd-903d-4fdc-9b62-b1353268cac6?variant=hero&format=avif&v=1",
+      "private": true
+    },
+    {
+      "label": "private-hero-webp",
+      "key": "9bd807e5-9db6-46b1-ad2c-bb318f623ae4/variants/5cd528810255c23c26c36720360be1eecf52e210185788af967d1a4bcafa1be0/hero-v1-777a44dc0162c93b.webp",
+      "hash": "5cd528810255c23c26c36720360be1eecf52e210185788af967d1a4bcafa1be0",
+      "url": "/media/eb9c67fd-903d-4fdc-9b62-b1353268cac6?variant=hero&format=webp&v=1",
+      "private": true
+    }
+  ]
+}

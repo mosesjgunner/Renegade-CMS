@@ -2,7 +2,16 @@ import type { Payload, PayloadRequest } from 'payload'
 
 /** Bind Local API reads, writes and queued jobs to one actual database transaction. */
 export function transactionPayload(payload: Payload, req: PayloadRequest): Payload {
-  const operations = new Set(['find', 'findByID', 'count', 'create', 'update', 'delete'])
+  const operations = new Set([
+    'find',
+    'findByID',
+    'count',
+    'create',
+    'update',
+    'delete',
+    'findGlobal',
+    'updateGlobal',
+  ])
   const jobs = new Proxy(payload.jobs, {
     get(target, property) {
       const value = Reflect.get(target, property)
