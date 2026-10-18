@@ -4,12 +4,13 @@ import {
   operatorSiteUpdateAccess,
   preserveRecordRelationshipsAccess,
 } from '../modules/operations/operator-grants'
+import { assertSeoCanonicalConflictFree } from '../modules/editorial/publishing-pass'
 import { snapshotLayout } from '../modules/presentation/snapshots'
 import { themes } from '../modules/presentation/registry'
 import { validateLayout, type PageLayout } from '../modules/public/page-builder'
 import type { CollectionConfig, Where } from 'payload'
 
-import { retentionFields, siteScopeFields, visibilityOptions } from './canonical-shared'
+import { retentionFields, seoFields, siteScopeFields, visibilityOptions } from './canonical-shared'
 import { searchProjectionHooks } from '../modules/public/search-projection'
 
 const staffOnly = ({ req }: { req: { user?: { role?: string } | null } }) =>
@@ -41,7 +42,7 @@ export const PageLayouts: CollectionConfig = {
   },
   hooks: {
     beforeChange: [
-      ({ data, originalDoc, context }) => {
+      async ({ data, originalDoc, context, req }) => {
         const merged = { ...originalDoc, ...data }
         const site =
           typeof merged.site === 'string'
@@ -73,6 +74,14 @@ export const PageLayouts: CollectionConfig = {
           (error) => !error.startsWith('Unavailable component preserved:'),
         )
         if (fatal.length) throw new Error(`Invalid presentation document: ${fatal.join(' ')}`)
+        if (req?.payload) {
+          await assertSeoCanonicalConflictFree({
+            collection: 'page-layouts',
+            data: data as Record<string, unknown>,
+            originalDoc: originalDoc as Record<string, unknown> | null,
+            payload: req.payload as never,
+          })
+        }
         data.blocks = checked.layout.blocks
         data.unknownBlocks = checked.layout.unknownBlocks
         const publish =
@@ -204,6 +213,7 @@ export const PageLayouts: CollectionConfig = {
       required: true,
       defaultValue: [],
     },
+    ...seoFields(),
     ...retentionFields(),
   ],
   indexes: [{ fields: ['site', 'path'], unique: true }],

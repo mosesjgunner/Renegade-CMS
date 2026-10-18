@@ -948,20 +948,89 @@ export async function resolveDiscoveryDocument(
   // 3. Resolve by Surface/Content Type
   // CASE A: Home Page ('/')
   if (normalizedPath === '/' && !input.id && input.collection !== 'content') {
-    const isSiteIndexable = settings.indexingMode !== 'noindex' && settings.launchState === 'live'
-    const docTitle = settings.siteName
-    const docDesc = settings.siteDescription || null
-    const socialImg = settings.defaultSocialImageUrl
+    const isSiteIndexable =
+      settings.indexingMode !== 'noindex' &&
+      settings.seoNoIndex !== true &&
+      settings.launchState === 'live'
+    const homeOverrides = (settings.discoveryOverrides ?? {}) as Record<string, any>
+    const docTitle = settings.seoTitle || settings.siteName
+    const titleSource: DiscoverySourceProvenance = settings.seoTitle
+      ? 'explicit_override'
+      : 'site_default'
+    const docDesc = settings.seoDescription || settings.siteDescription || null
+    const descSource: DiscoverySourceProvenance = settings.seoDescription
+      ? 'explicit_override'
+      : 'site_default'
+    const publicUrl = `${base}/`
+    const canonicalCandidate = settings.seoCanonicalURL || homeOverrides.canonical
+    const canonicalUrl = safeCanonicalUrl(canonicalCandidate, publicUrl, base)
+
+    const homeImageId = idOf(homeOverrides.socialImage) || settings.defaultSocialImageId || null
+    let socialImg: string | null = settings.defaultSocialImageUrl
       ? `${base}${settings.defaultSocialImageUrl}`
       : null
+    let socialVariantUrl: string | null = null
+    let variantEligible = false
+    let socialAlt: string | null = settings.seoImageAlt || settings.siteName
+    let socialSource: DiscoverySourceProvenance | null = socialImg ? 'site_default' : null
+
+    if (homeImageId) {
+      let image: Record<string, any> | null = null
+      try {
+        image = (await payload.findByID({
+          collection: 'media-assets',
+          id: homeImageId,
+          depth: 0,
+          overrideAccess: true,
+        } as never)) as Record<string, any>
+      } catch {
+        image = null
+      }
+      const expired = Boolean(
+        image?.rightsExpiresAt &&
+          new Date(String(image.rightsExpiresAt)).getTime() <= now.getTime(),
+      )
+      const publicReady =
+        Boolean(image) &&
+        !expired &&
+        !['failed', 'quarantined', 'archived'].includes(String(image!.processingState ?? ''))
+      if (publicReady) {
+        socialImg = `${base}/media/${homeImageId}`
+        socialVariantUrl = `${base}${mediaVariantUrl(homeImageId, 'og', 'jpeg')}`
+        variantEligible = true
+        socialAlt =
+          settings.seoImageAlt ||
+          (typeof image?.altText === 'string' && image.altText.trim()
+            ? image.altText.trim()
+            : docTitle)
+        socialSource =
+          settings.seoImageAlt || idOf(homeOverrides.socialImage)
+            ? 'explicit_override'
+            : 'site_default'
+      } else if (image) {
+        socialImg = null
+        socialVariantUrl = null
+        variantEligible = false
+      }
+    }
+
+    const socialTitle =
+      typeof homeOverrides.socialTitle === 'string' && homeOverrides.socialTitle.trim()
+        ? homeOverrides.socialTitle.trim()
+        : docTitle
+    const socialDescription =
+      typeof homeOverrides.socialDescription === 'string' && homeOverrides.socialDescription.trim()
+        ? homeOverrides.socialDescription.trim()
+        : docDesc
 
     const siteIdentity = toSchemaSiteIdentity(settings, base)
+    const schemaImgUrl = socialVariantUrl || socialImg
     const {
       graph: homeSchema,
       validation,
       inspection,
     } = composeSchemaGraph({
-      canonicalUrl: `${base}/`,
+      canonicalUrl,
       canonicalPath: '/',
       base,
       contentType: 'home',
@@ -970,12 +1039,12 @@ export async function resolveDiscoveryDocument(
       site: siteIdentity,
       breadcrumbs: [{ name: 'Home', url: `${base}/` }],
       indexable: isSiteIndexable,
-      image: socialImg ? { url: socialImg, alt: settings.siteName } : null,
+      image: schemaImgUrl ? { url: schemaImgUrl, alt: socialAlt || settings.siteName } : null,
     })
 
     const homeDoc: DiscoveryDocument = {
-      publicUrl: `${base}/`,
-      canonicalUrl: `${base}/`,
+      publicUrl,
+      canonicalUrl,
       canonicalPath: '/',
       alternateLocales: {},
       indexability: {
@@ -986,14 +1055,19 @@ export async function resolveDiscoveryDocument(
           follow: isSiteIndexable,
         },
       },
-      title: { value: docTitle, source: 'site_default' },
-      description: { value: docDesc, source: 'site_default' },
+      title: { value: docTitle, source: titleSource },
+      description: { value: docDesc, source: descSource },
       socialImage: {
         url: socialImg,
-        alt: settings.siteName,
-        source: socialImg ? 'site_default' : null,
-        variantEligible: false,
-        variantUrl: null,
+        alt: socialAlt,
+        source: socialSource,
+        variantEligible,
+        variantUrl: socialVariantUrl,
+      },
+      social: {
+        title: socialTitle,
+        description: socialDescription ?? undefined,
+        locale: settings.locale,
       },
       contentType: 'home',
       author: null,
@@ -1014,7 +1088,7 @@ export async function resolveDiscoveryDocument(
       },
       search: {
         eligible: isSiteIndexable,
-        bodyProjection: `${settings.siteName} ${settings.siteDescription}`,
+        bodyProjection: `${docTitle} ${docDesc ?? ''}`,
         visibility: 'public',
       },
       redirect: { isRedirect: false, targetUrl: null, statusCode: null, isTombstone: false },
@@ -1317,9 +1391,13 @@ export async function resolveDiscoveryDocument(
     })
   }
 
-  // Topics reuse the existing editorial taxonomy. A taxonomy record becomes a
-  // public archive only while it has at least one published public article.
-  for (const taxonomyCollection of registeredOnly(payload, ['topics', 'categories'] as const)) {
+  // Topics reuse the existing editorial taxonomy. A topic record becomes a
+  // public archive while it has at least one published public article;
+  // categories and sections are public hierarchy views whenever present on the site.
+  for (const taxonomyCollection of registeredOnly(
+    payload,
+    ['topics', 'categories', 'sections'] as const,
+  )) {
     if (!input.collection || input.collection === taxonomyCollection) {
       const topicFound = await payload.find({
         collection: taxonomyCollection,
@@ -1340,6 +1418,15 @@ export async function resolveDiscoveryDocument(
         topic &&
         (input.collection === taxonomyCollection || topic.canonicalPath === normalizedPath)
       ) {
+        if (taxonomyCollection === 'categories' || taxonomyCollection === 'sections') {
+          return buildGenericRecordDiscoveryDocument({
+            record: { ...topic, status: 'published', visibility: 'public' },
+            collection: taxonomyCollection,
+            settings,
+            base,
+            now,
+          })
+        }
         const related = await payload.find({
           collection: 'content',
           where: {
@@ -1604,6 +1691,16 @@ async function buildContentDiscoveryDocument(input: {
   // 1. Determine Indexability Reason
   let indexable = true
   let reason: DiscoveryIndexabilityReason = 'canonical'
+  const requiredEntitlement = content.requiredEntitlement as
+    | { resource?: unknown; capability?: unknown }
+    | undefined
+  const isEntitlementRestricted = Boolean(
+    requiredEntitlement &&
+      typeof requiredEntitlement.resource === 'string' &&
+      requiredEntitlement.resource.trim() &&
+      typeof requiredEntitlement.capability === 'string' &&
+      requiredEntitlement.capability.trim(),
+  )
 
   if (content.retentionMode === 'tombstone') {
     indexable = false
@@ -1614,6 +1711,9 @@ async function buildContentDiscoveryDocument(input: {
   } else if (content.publishedAt && new Date(content.publishedAt).getTime() > now.getTime()) {
     indexable = false
     reason = 'scheduled'
+  } else if (isEntitlementRestricted) {
+    indexable = false
+    reason = 'private'
   } else if (content.visibility && content.visibility === 'unlisted') {
     indexable = false
     reason = 'unlisted'

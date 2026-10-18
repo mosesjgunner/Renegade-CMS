@@ -15,6 +15,7 @@ import type {
 import { assertEvent } from '../modules/events/contracts'
 import {
   assertEditorialPathAvailable,
+  assertSeoCanonicalConflictFree,
   deriveEditorialPath,
 } from '../modules/editorial/publishing-pass'
 import { ensureEditorialCompanion } from '../modules/editorial/persistence'
@@ -656,7 +657,30 @@ export const Sections: CollectionConfig = {
   },
   defaultSort: ['sortOrder', 'id'],
   hooks: {
-    beforeChange: [guardHierarchyNode('sections'), enforceTaxonomyTenantBoundary],
+    beforeChange: [
+      guardHierarchyNode('sections'),
+      enforceTaxonomyTenantBoundary,
+      async ({ data, originalDoc, req }) => {
+        if (data && req?.payload) {
+          await assertSeoCanonicalConflictFree({
+            collection: 'sections',
+            data: data as Record<string, unknown>,
+            originalDoc: originalDoc as Record<string, unknown> | null,
+            payload: req.payload as never,
+          })
+        }
+        return data
+      },
+    ],
+    afterChange: [
+      async ({ doc, previousDoc }) => {
+        await revalidateDiscoveryOutputs([
+          String(previousDoc?.canonicalPath ?? ''),
+          String(doc.canonicalPath ?? ''),
+        ])
+        return doc
+      },
+    ],
     beforeDelete: [protectHierarchyDelete('sections')],
   },
   fields: [
@@ -666,6 +690,7 @@ export const Sections: CollectionConfig = {
     { name: 'canonicalPath', type: 'text', admin: { readOnly: true } },
     { name: 'description', type: 'textarea' },
     { name: 'sortOrder', type: 'number', defaultValue: 0 },
+    ...seoFields(),
   ],
   indexes: [{ fields: ['site', 'publication', 'slug'], unique: true }],
 }
@@ -682,7 +707,30 @@ export const Categories: CollectionConfig = {
   defaultSort: ['sortOrder', 'id'],
   hooks: {
     beforeDelete: [protectHierarchyDelete('categories')],
-    beforeChange: [guardHierarchyNode('categories'), enforceTaxonomyTenantBoundary],
+    beforeChange: [
+      guardHierarchyNode('categories'),
+      enforceTaxonomyTenantBoundary,
+      async ({ data, originalDoc, req }) => {
+        if (data && req?.payload) {
+          await assertSeoCanonicalConflictFree({
+            collection: 'categories',
+            data: data as Record<string, unknown>,
+            originalDoc: originalDoc as Record<string, unknown> | null,
+            payload: req.payload as never,
+          })
+        }
+        return data
+      },
+    ],
+    afterChange: [
+      async ({ doc, previousDoc }) => {
+        await revalidateDiscoveryOutputs([
+          String(previousDoc?.canonicalPath ?? ''),
+          String(doc.canonicalPath ?? ''),
+        ])
+        return doc
+      },
+    ],
   },
   fields: [
     ...taxonomyScope,
@@ -693,6 +741,7 @@ export const Categories: CollectionConfig = {
     { name: 'canonicalPath', type: 'text', admin: { readOnly: true } },
     { name: 'description', type: 'textarea' },
     { name: 'sortOrder', type: 'number', defaultValue: 0 },
+    ...seoFields(),
   ],
   indexes: [{ fields: ['site', 'publication', 'parent', 'slug'], unique: true }],
 }
@@ -725,6 +774,14 @@ const simpleTaxonomy = (slug: string, label: string, semanticUrl = false): Colle
                 data: data as Record<string, unknown> | null | undefined,
                 originalDoc: originalDoc as Record<string, unknown> | null | undefined,
               })
+              if (data && req?.payload) {
+                await assertSeoCanonicalConflictFree({
+                  collection: slug,
+                  data: data as Record<string, unknown>,
+                  originalDoc: originalDoc as Record<string, unknown> | null,
+                  payload: req.payload as never,
+                })
+              }
               return data
             }) as CollectionBeforeChangeHook,
           ]
@@ -766,6 +823,7 @@ const simpleTaxonomy = (slug: string, label: string, semanticUrl = false): Colle
       defaultValue: 0,
       admin: { description: `${label} ordering.` },
     },
+    ...seoFields(),
   ],
   indexes: [
     { fields: ['site', 'publication', 'slug'], unique: true },
@@ -935,6 +993,12 @@ export const Content: CollectionConfig = {
           payload: req.payload as never,
         })
         await assertEditorialPathAvailable({
+          data: resolved,
+          originalDoc: originalDoc as Record<string, unknown> | null,
+          payload: req.payload as never,
+        })
+        await assertSeoCanonicalConflictFree({
+          collection: 'content',
           data: resolved,
           originalDoc: originalDoc as Record<string, unknown> | null,
           payload: req.payload as never,
