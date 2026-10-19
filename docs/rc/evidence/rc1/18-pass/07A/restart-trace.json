@@ -1,0 +1,74 @@
+{
+  "checks": 7,
+  "succeeded": true,
+  "trace": [
+    {
+      "name": "restart: approved canonical status retained",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/workflow/audit?articleId=fd4f0d7f-4d85-42c5-80ad-5eb756927ee0",
+      "method": "GET",
+      "status": 200,
+      "bytes": 3154,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "restart: all decisions and comments retained",
+      "passed": true
+    },
+    {
+      "name": "restart: revision bodies and sequence retained",
+      "passed": true
+    },
+    {
+      "name": "restart: document lock row retained",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/workflow/actions",
+      "method": "POST",
+      "status": 422,
+      "bytes": 127,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "restart: foreign editor still conflicts with retained lock",
+      "passed": true
+    },
+    {
+      "route": "/api/payload-locked-documents/32b82f07-50c0-44ca-bcd0-3177e888bd54",
+      "method": "DELETE",
+      "status": 200,
+      "bytes": 541,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "restart: original lock owner can release",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/workflow/comments?articleId=fd4f0d7f-4d85-42c5-80ad-5eb756927ee0&all=true",
+      "method": "GET",
+      "status": 200,
+      "bytes": 717,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "restart: resolved review thread persisted",
+      "passed": true
+    }
+  ]
+}

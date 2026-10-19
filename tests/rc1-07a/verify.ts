@@ -626,6 +626,8 @@ try {
     )
   }
   succeeded = true
+} catch (error) {
+  console.error(error)
 } finally {
   if (!succeeded)
     await page.screenshot({ path: `${out}/failure.png`, fullPage: true }).catch(() => {})
@@ -634,5 +636,6 @@ try {
     JSON.stringify({ checks, succeeded, trace }, null, 2),
   )
   await browser.close()
-  await payload.db.destroy()
+  await payload.destroy()
+  process.exit(succeeded ? 0 : 1)
 }

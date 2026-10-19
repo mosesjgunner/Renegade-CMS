@@ -1,0 +1,143 @@
+{
+  "baseCommit": "eba7408e45f242ed4e45ce98fb16738c0540233d",
+  "files": [
+    {
+      "path": "tests/rc1-07a/verify.ts",
+      "sha256": "194a41a17c97f405b0af2b5088c1121fc6e55d2715b54fe4470fd1d3142997c4"
+    }
+  ],
+  "overlaySha256": "8781ce4e5bd4b25a23a947fe02e1b09495b74fb3e4a0f6a11d9fbf0199ff0126",
+  "scopedFiles": [
+    {
+      "path": "src/app/(frontend)/api/admin/workflow/actions/route.ts",
+      "sha256": "4730b325cb3d9d15d48f371ea7da1c49aa91e487787cc92679572e7a51b546d7"
+    },
+    {
+      "path": "src/app/(frontend)/api/admin/workflow/bulk/route.ts",
+      "sha256": "fc059de1e4c198f8b43218f7fdb36db47757e4669e9880cc2b751ce1aef211ff"
+    },
+    {
+      "path": "src/collections/Publishing.ts",
+      "sha256": "006c09505c48c9d4df2f8441b9623e71bfbee693e01b830326d474dc0178b06e"
+    },
+    {
+      "path": "src/modules/admin/EditorialWorkflowCenter.tsx",
+      "sha256": "eac0b0c772b9f37ff044746af6d6547bd39b7266dbd84e53b0f25d0476adc573"
+    },
+    {
+      "path": "src/modules/editorial/cmos-persistence.ts",
+      "sha256": "551b07f2fa30af081f5cd5e41524aa4df2f7fdf2e92520c3a41919a989cd8e76"
+    },
+    {
+      "path": "src/modules/editorial/cmos-workflow.ts",
+      "sha256": "ec3ca460a0551c288b9728b1f39674260bb5c688432a0c84f562cf584b3325dc"
+    },
+    {
+      "path": "src/modules/editorial/document-locks.ts",
+      "sha256": "ead10e6ec34b70474a235968144e812bf5e18e2ff10385c0bcb3361d3a43b4ea"
+    },
+    {
+      "path": "src/modules/editorial/persistence.ts",
+      "sha256": "cb6de006c8204598128432cd0a7cbfa563f665190c2fa513cb7a77f1263946c9"
+    },
+    {
+      "path": "src/modules/editorial/review-write-guard.ts",
+      "sha256": "91b775ea4bdb976a27add535aa1f258dda71ba6ac8bf2a5c218c272ec8e52d81"
+    },
+    {
+      "path": "src/modules/quality/contracts.ts",
+      "sha256": "72b2702f672d457300ba483c6b365ed07e3869d3650f442799968fcd10a63377"
+    },
+    {
+      "path": "src/modules/quality/service.ts",
+      "sha256": "d28b07b42b1534d407f9150ee5d34a2e5e542044e3bd8873304a1c7bdb1f0724"
+    },
+    {
+      "path": "src/payload.config.ts",
+      "sha256": "85fc2930015595a4b2637fb6a29b68af7a6448135f2d975c86496c3021398376"
+    },
+    {
+      "path": "tests/rc1-07a/run-isolated.ps1",
+      "sha256": "1e97849e8a099a827611bc90a2ec4e08ceb186eac28a293e53a68db0ce04688d"
+    },
+    {
+      "path": "tests/rc1-07a/tsconfig.json",
+      "sha256": "364a42133e6fe8e4d477999699affd284bdcb218a146d909cf49f58b6c35cfa4"
+    },
+    {
+      "path": "tests/rc1-07a/verify.ts",
+      "sha256": "194a41a17c97f405b0af2b5088c1121fc6e55d2715b54fe4470fd1d3142997c4"
+    },
+    {
+      "path": "tests/unit/rc1-07a-review.test.ts",
+      "sha256": "0ecb8752242f4df9a277540efe39f8a3abaa0ef3e25d4ba03bc5c12415fabc93"
+    }
+  ],
+  "preResumeManifest": {
+    "path": "tested-tree.json",
+    "baseCommit": "bbc181a193ff1dccaecfd57c4c754d73fb3e6790",
+    "overlaySha256": "827344b41add7ceb2ed9564bc41601dace6c3e29a46949381978cb809c5dbb4a",
+    "matchedFiles": 53,
+    "changedFiles": [
+      "tests/rc1-07a/verify.ts"
+    ],
+    "explanation": "Only verifier shutdown changed after the user commit; implementation bytes match all pre-resume scoped hashes."
+  },
+  "artifacts": [
+    {
+      "path": "journey-trace.json",
+      "sha256": "43d14195a3de52f6bca7efd3f5e343383ccc953b38fe9bc1ee9480240b65c3e1"
+    },
+    {
+      "path": "restart-trace.json",
+      "sha256": "5b3178c340f9a949be3a9d3c44078e3a73fc6f634ce345b5e6a42febb5f94c4d"
+    },
+    {
+      "path": "state.json",
+      "sha256": "5df9dde0ac6481926b2b8c5013de519310c508f93ff63721734bc543feb1bcc6"
+    },
+    {
+      "path": "review-queue.png",
+      "sha256": "5f8c6df081d9ae71d72a66366e441bc68db08d836a2104719cfbf33a5605881a"
+    },
+    {
+      "path": "owner-approval.png",
+      "sha256": "ff02bb3826f5a2ad685063d579d2cdd93f12c4700fffa56508b48cd2b4d7cda7"
+    },
+    {
+      "path": "journey.txt",
+      "sha256": "807bb088a10738bb28f313fcd6dbbeb5611afc0324b58396d8395346b63eb8f9"
+    },
+    {
+      "path": "restart.txt",
+      "sha256": "f919ba400e58285491faffa409beda12c00d521e478c4ed6eb6ff455f2bf5d57"
+    },
+    {
+      "path": "focused-tests.txt",
+      "sha256": "f6921c5e5276f7e0874192b852e94bccf41e5dac1e03c6271d5b8618cebd9d1e"
+    },
+    {
+      "path": "migrations.txt",
+      "sha256": "e5e7aaa930a1c3e2c0632a2bdab8ca46b391e72f3e640ce7908b44eb7096e3a6"
+    },
+    {
+      "path": "full-types.txt",
+      "sha256": "a7f7bab1cd6d1c1e3f4cabbb1838eddc628b605afc0e2ff9156ffa58b4eac098"
+    },
+    {
+      "path": "quality.txt",
+      "sha256": "514e4af6d0310e5127662376e47c3406d72c706bb67f7d346fb01c3a2005dd88"
+    }
+  ],
+  "runtime": {
+    "application": "Next.js development source; no application OCI image built",
+    "postgresImageId": "sha256:00bc86618629af00d2937fdc5a5d63db3ff8450acf52f0636ec813c7f4902929",
+    "container": "rc107a-20261018",
+    "database": "rc107a_release_acceptance",
+    "databasePort": 5449,
+    "webPort": 38983,
+    "testAuthentication": false,
+    "providerCalls": "none",
+    "resources": "web and PostgreSQL stopped; DB and media retained"
+  }
+}

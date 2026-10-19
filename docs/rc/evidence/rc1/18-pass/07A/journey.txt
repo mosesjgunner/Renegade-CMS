@@ -1,0 +1,33 @@
+Executing 07A editorial review and lock acceptance...
+[04:02:32] WARN: No email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.
+PASS 1: staff A creates a persisted draft through native HTTP
+PASS 2: approval denied before submission
+PASS 3: native form cannot bypass approval or publisher permission
+PASS 4: ungranted staff, foreign-site staff and anonymous transitions denied
+PASS 5: foreign-site lock acquisition denied
+PASS 6: staff A acquires native persistent lock
+PASS 7: second editor cannot acquire, force-save, release, or transition another editor lock
+PASS 8: lock owner releases via supported native HTTP
+PASS 9: second editor can retry acquire and release after owner release
+PASS 10: staff A submits to review
+PASS 11: self approval denied despite forged role and reviewer hints
+PASS 12: staff B returns for edits
+PASS 13: review comment persisted
+PASS 14: normal edit creates immutable revision #2
+PASS 15: saved revision attributes real authenticated staff editor
+PASS 16: staff B rejects review
+PASS 17: author reopens rejected work
+PASS 18: competing approvals serialize without lost decision
+PASS 19: canonical approval and review audit are persisted
+PASS 20: owner resolves review comment
+PASS 21: approved item visible in team queue
+PASS 22: foreign-site audit denied
+PASS 23: cross-origin workflow mutation denied
+PASS 24: ordinary queue UI renders status, review selection and persisted decision feedback
+PASS 25: refresh reloads persisted queue and history
+PASS 26: submission runs canonical QA and visibly blocks unavailable internal links
+PASS 27: single and bulk approval both enforce persisted QA
+PASS 28: staff override and missing owner justification denied
+PASS 29: owner UI approval succeeds after real QA repair
+PASS 30: post-approval body edit invalidates approval and retains decision history
+PASS 31: direct audit deletion denied without changing decisions

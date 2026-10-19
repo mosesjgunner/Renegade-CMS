@@ -1,0 +1,11 @@
+Restarting container rc107a-20261018...
+rc107a-20261018
+Verifying state persistence after restart...
+[04:05:07] WARN: No email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.
+PASS 1: restart: approved canonical status retained
+PASS 2: restart: all decisions and comments retained
+PASS 3: restart: revision bodies and sequence retained
+PASS 4: restart: document lock row retained
+PASS 5: restart: foreign editor still conflicts with retained lock
+PASS 6: restart: original lock owner can release
+PASS 7: restart: resolved review thread persisted

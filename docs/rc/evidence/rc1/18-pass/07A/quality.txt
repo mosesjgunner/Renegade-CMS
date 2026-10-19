@@ -1,0 +1,5 @@
+Focused TypeScript: exit 0; all src plus 07A verifier/unit source.
+Focused ESLint: exit 0; zero warnings.
+Focused Prettier: exit 0; all matched files use Prettier code style.
+git diff --check: exit 0.
+Full npm.cmd run typecheck: exit 2; seven existing tests/rc1-03d/verify-import-and-build.ts diagnostics.

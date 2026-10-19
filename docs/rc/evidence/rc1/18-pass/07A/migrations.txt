@@ -1,0 +1,253 @@
+Running fresh migrations on postgresql://postgres:postgres@127.0.0.1:5449/rc107a_release_acceptance...
+
+> renegade-cms@0.1.0 test:migrations:fresh
+> tsx src/scripts/verify-fresh-migration.ts
+
+[04:02:20] WARN: No email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.
+[04:02:20] INFO: Migrating: 20260812_010209_initial_foundation
+[04:02:20] INFO: Migrated:  20260812_010209_initial_foundation (127ms)
+[04:02:20] INFO: Migrating: 20260812_034055_m02_operations_jobs
+[04:02:20] INFO: Migrated:  20260812_034055_m02_operations_jobs (16ms)
+[04:02:20] INFO: Migrating: 20260812_080000_m02_first_run_installation
+[04:02:20] INFO: Migrated:  20260812_080000_m02_first_run_installation (23ms)
+[04:02:20] INFO: Migrating: 20260812_081000_m02_single_use_setup_token
+[04:02:20] INFO: Migrated:  20260812_081000_m02_single_use_setup_token (3ms)
+[04:02:20] INFO: Migrating: 20260813_054441_canonical_information_architecture
+[04:02:21] INFO: Migrated:  20260813_054441_canonical_information_architecture (340ms)
+[04:02:21] INFO: Migrating: 20260814_120000_m03_5_event_timeline_reconciliation
+[04:02:21] INFO: Migrated:  20260814_120000_m03_5_event_timeline_reconciliation (49ms)
+[04:02:21] INFO: Migrating: 20260818_000000_site_settings
+[04:02:21] INFO: Migrated:  20260818_000000_site_settings (4ms)
+[04:02:21] INFO: Migrating: 20260818_010000_reconcile_seo_canonical_columns
+[04:02:21] INFO: Migrated:  20260818_010000_reconcile_seo_canonical_columns (49ms)
+[04:02:21] INFO: Migrating: 20260818_062327_m04_c_editorial_workflow
+[04:02:21] INFO: Migrated:  20260818_062327_m04_c_editorial_workflow (66ms)
+[04:02:21] INFO: Migrating: 20260822_010232_page_layouts
+[04:02:21] INFO: Migrated:  20260822_010232_page_layouts (12ms)
+[04:02:21] INFO: Migrating: 20260822_012313_m07_a_passwordless_identity
+[04:02:21] INFO: Migrated:  20260822_012313_m07_a_passwordless_identity (31ms)
+[04:02:21] INFO: Migrating: 20260825_171336
+[04:02:21] INFO: Migrated:  20260825_171336 (147ms)
+[04:02:21] INFO: Migrating: 20260825_171738
+[04:02:21] INFO: Migrated:  20260825_171738 (5ms)
+[04:02:21] INFO: Migrating: 20260825_173116_social_distribution
+[04:02:22] INFO: Migrated:  20260825_173116_social_distribution (120ms)
+[04:02:22] INFO: Migrating: 20260825_180000_calendar_graphics
+[04:02:22] INFO: Migrated:  20260825_180000_calendar_graphics (10ms)
+[04:02:22] INFO: Migrating: 20260826_053416_second_pass_schema
+[04:02:23] INFO: Migrated:  20260826_053416_second_pass_schema (1196ms)
+[04:02:23] INFO: Migrating: 20260829_110000_content_release_execution
+[04:02:23] INFO: Migrated:  20260829_110000_content_release_execution (11ms)
+[04:02:23] INFO: Migrating: 20260829_120000_quality_runtime
+[04:02:23] INFO: Migrated:  20260829_120000_quality_runtime (8ms)
+[04:02:23] INFO: Migrating: 20260829_130000_progressive_disclosure_admin
+[04:02:23] INFO: Migrated:  20260829_130000_progressive_disclosure_admin (5ms)
+[04:02:23] INFO: Migrating: 20260829_140000_onboarding_settings
+[04:02:23] INFO: Migrated:  20260829_140000_onboarding_settings (4ms)
+[04:02:23] INFO: Migrating: 20260829_150000_integrations
+[04:02:23] INFO: Migrated:  20260829_150000_integrations (82ms)
+[04:02:23] INFO: Migrating: 20260829_160000_activitypub_delivery
+[04:02:23] INFO: Migrated:  20260829_160000_activitypub_delivery (4ms)
+[04:02:23] INFO: Migrating: 20260829_170000_network_experience
+[04:02:23] INFO: Migrated:  20260829_170000_network_experience (6ms)
+[04:02:23] INFO: Migrating: 20260829_180000_collaboration
+[04:02:23] INFO: Migrated:  20260829_180000_collaboration (46ms)
+[04:02:23] INFO: Migrating: 20260830_090000_realtime_collaboration
+[04:02:23] INFO: Migrated:  20260830_090000_realtime_collaboration (27ms)
+[04:02:23] INFO: Migrating: 20260830_100000_media_storage_workflow
+[04:02:23] INFO: Migrated:  20260830_100000_media_storage_workflow (4ms)
+[04:02:23] INFO: Migrating: 20260830_110000_discoverability
+[04:02:23] INFO: Migrated:  20260830_110000_discoverability (7ms)
+[04:02:23] INFO: Migrating: 20260830_120000_discoverability_lock_relation
+[04:02:23] INFO: Migrated:  20260830_120000_discoverability_lock_relation (9ms)
+[04:02:23] INFO: Migrating: 20260830_130000_admin_auth_hardening
+[04:02:23] INFO: Migrated:  20260830_130000_admin_auth_hardening (11ms)
+[04:02:23] INFO: Migrating: 20260831_090000_phase_b_execution_foundation
+[04:02:23] INFO: Migrated:  20260831_090000_phase_b_execution_foundation (15ms)
+[04:02:23] INFO: Migrating: 20260831_100000_analytics_privacy_runtime
+[04:02:23] INFO: Migrated:  20260831_100000_analytics_privacy_runtime (13ms)
+[04:02:23] INFO: Migrating: 20260831_110000_events_workflow
+[04:02:23] INFO: Migrated:  20260831_110000_events_workflow (9ms)
+[04:02:23] INFO: Migrating: 20260831_120000_media_publishing_workflows
+[04:02:23] INFO: Migrated:  20260831_120000_media_publishing_workflows (11ms)
+[04:02:23] INFO: Migrating: 20260831_130000_books_quality_center
+[04:02:23] INFO: Migrated:  20260831_130000_books_quality_center (9ms)
+[04:02:23] INFO: Migrating: 20260831_140000_public_api_webhooks
+[04:02:23] INFO: Migrated:  20260831_140000_public_api_webhooks (10ms)
+[04:02:23] INFO: Migrating: 20260831_150000_phase_b_locked_document_relations
+[04:02:23] INFO: Migrated:  20260831_150000_phase_b_locked_document_relations (5ms)
+[04:02:23] INFO: Migrating: 20260831_160000_phase_b_book_lifecycle_reconciliation
+[04:02:23] INFO: Migrated:  20260831_160000_phase_b_book_lifecycle_reconciliation (4ms)
+[04:02:23] INFO: Migrating: 20260831_170000_phase_b_scoped_media_reconciliation
+[04:02:23] INFO: Migrated:  20260831_170000_phase_b_scoped_media_reconciliation (4ms)
+[04:02:23] INFO: Migrating: 20260831_180000_phase_b_video_captions_relation
+[04:02:23] INFO: Migrated:  20260831_180000_phase_b_video_captions_relation (5ms)
+[04:02:23] INFO: Migrating: 20260831_190000_phase_b_integrations_id_defaults
+[04:02:23] INFO: Migrated:  20260831_190000_phase_b_integrations_id_defaults (6ms)
+[04:02:23] INFO: Migrating: 20260831_200000_member_identity_foundation
+[04:02:23] INFO: Migrated:  20260831_200000_member_identity_foundation (8ms)
+[04:02:23] INFO: Migrating: 20260902_000000_pub_02_content_publishing_pass
+[04:02:23] INFO: Migrated:  20260902_000000_pub_02_content_publishing_pass (8ms)
+[04:02:23] INFO: Migrating: 20260902_010000_pub_01_canonical_tenant_isolation
+[04:02:23] INFO: Migrated:  20260902_010000_pub_01_canonical_tenant_isolation (21ms)
+[04:02:23] INFO: Migrating: 20260902_020000_pub_04_publishing_floor
+[04:02:23] INFO: Migrated:  20260902_020000_pub_04_publishing_floor (10ms)
+[04:02:23] INFO: Migrating: 20260912_000000_pre_00_theme_selection
+[04:02:23] INFO: Migrated:  20260912_000000_pre_00_theme_selection (6ms)
+[04:02:23] INFO: Migrating: 20260912_010000_pre_01_theme_lifecycle
+[04:02:23] INFO: Migrated:  20260912_010000_pre_01_theme_lifecycle (23ms)
+[04:02:23] INFO: Migrating: 20260912_020000_pre_01_presentation_snapshots
+[04:02:23] INFO: Migrated:  20260912_020000_pre_01_presentation_snapshots (4ms)
+[04:02:23] INFO: Migrating: 20260912_030000_pre_03_visual_editor
+[04:02:23] INFO: Migrated:  20260912_030000_pre_03_visual_editor (4ms)
+[04:02:23] INFO: Migrating: 20260912_040000_pre_04_reusable_composition
+[04:02:23] INFO: Migrated:  20260912_040000_pre_04_reusable_composition (3ms)
+[04:02:23] INFO: Migrating: 20260912_050000_pre_05_legacy_site_migration
+[04:02:23] INFO: Migrated:  20260912_050000_pre_05_legacy_site_migration (8ms)
+[04:02:23] INFO: Migrating: 20260912_060000_med_00_media_contract
+[04:02:23] INFO: Migrated:  20260912_060000_med_00_media_contract (31ms)
+[04:02:23] INFO: Migrating: 20260912_070000_med_01_upload_sessions
+[04:02:23] INFO: Migrated:  20260912_070000_med_01_upload_sessions (10ms)
+[04:02:23] INFO: Migrating: 20260913_080000_med_02_dam_governance
+[04:02:24] INFO: Migrated:  20260913_080000_med_02_dam_governance (18ms)
+[04:02:24] INFO: Migrating: 20260913_090000_med_03_image_variants
+[04:02:24] INFO: Migrated:  20260913_090000_med_03_image_variants (6ms)
+[04:02:24] INFO: Migrating: 20260913_100000_med_04_podcast_workflow
+[04:02:24] INFO: Migrated:  20260913_100000_med_04_podcast_workflow (4ms)
+[04:02:24] INFO: Migrating: 20260914_110000_med_05_video_workflow
+[04:02:24] INFO: Migrated:  20260914_110000_med_05_video_workflow (18ms)
+[04:02:24] INFO: Migrating: 20260914_120000_disc_01_discovery_workflow
+[04:02:24] INFO: Migrated:  20260914_120000_disc_01_discovery_workflow (4ms)
+[04:02:24] INFO: Migrating: 20260914_121000_disc_01_shared_seo_fields
+[04:02:24] INFO: Migrated:  20260914_121000_disc_01_shared_seo_fields (3ms)
+[04:02:24] INFO: Migrating: 20260915_130000_disc_04_search_projection
+[04:02:24] INFO: Migrated:  20260915_130000_disc_04_search_projection (29ms)
+[04:02:24] INFO: Migrating: 20260916_070000_editorial_quality_gate_snapshot
+[04:02:24] INFO: Migrated:  20260916_070000_editorial_quality_gate_snapshot (3ms)
+[04:02:24] INFO: Migrating: 20260920_000000_aud_00_delivery_snapshots
+[04:02:24] INFO: Migrated:  20260920_000000_aud_00_delivery_snapshots (3ms)
+[04:02:24] INFO: Migrating: 20260920_010000_aud_01_audience_evidence
+[04:02:24] INFO: Migrated:  20260920_010000_aud_01_audience_evidence (4ms)
+[04:02:24] INFO: Migrating: 20260920_020000_aud_02_forms
+[04:02:24] INFO: Migrated:  20260920_020000_aud_02_forms (4ms)
+[04:02:24] INFO: Migrating: 20260920_030000_aud_03_email_composer
+[04:02:24] INFO: Migrated:  20260920_030000_aud_03_email_composer (8ms)
+[04:02:24] INFO: Migrating: 20260920_050000_aud_05_email_delivery
+[04:02:24] INFO: Migrated:  20260920_050000_aud_05_email_delivery (6ms)
+[04:02:24] INFO: Migrating: 20260920_060000_aud_06_telecom
+[04:02:24] INFO: Migrated:  20260920_060000_aud_06_telecom (17ms)
+[04:02:24] INFO: Migrating: 20260920_070000_aud_07_audience_command
+[04:02:24] INFO: Migrated:  20260920_070000_aud_07_audience_command (17ms)
+[04:02:24] INFO: Migrating: 20260920_080000_aud_08_audience_pass_gate
+[04:02:24] INFO: Migrated:  20260920_080000_aud_08_audience_pass_gate (40ms)
+[04:02:24] INFO: Migrating: 20260920_090000_comm_00_community_domain
+[04:02:24] INFO: Migrated:  20260920_090000_comm_00_community_domain (22ms)
+[04:02:24] INFO: Migrating: 20260920_100000_comm_01_member_auth_lifecycle
+[04:02:24] INFO: Migrated:  20260920_100000_comm_01_member_auth_lifecycle (13ms)
+[04:02:24] INFO: Migrating: 20260921_000000_comm_02_profile_projection
+[04:02:24] INFO: Migrated:  20260921_000000_comm_02_profile_projection (4ms)
+[04:02:24] INFO: Migrating: 20260921_010000_comm_02_profile_media_usage_relation
+[04:02:24] INFO: Migrated:  20260921_010000_comm_02_profile_media_usage_relation (5ms)
+[04:02:24] INFO: Migrating: 20260921_020000_comm_03a_comment_identity
+[04:02:24] INFO: Migrated:  20260921_020000_comm_03a_comment_identity (26ms)
+[04:02:24] INFO: Migrating: 20260921_030000_comm_03c_comment_reactions
+[04:02:24] INFO: Migrated:  20260921_030000_comm_03c_comment_reactions (8ms)
+[04:02:24] INFO: Migrating: 20260921_040000_comm_03d_thread_lifecycle_and_outbox
+[04:02:24] INFO: Migrated:  20260921_040000_comm_03d_thread_lifecycle_and_outbox (11ms)
+[04:02:24] INFO: Migrating: 20260921_050000_comm_04a_forum_spaces
+[04:02:24] INFO: Migrated:  20260921_050000_comm_04a_forum_spaces (11ms)
+[04:02:24] INFO: Migrating: 20260922_000000_comm_04b_forum_topics_posts
+[04:02:24] INFO: Migrated:  20260922_000000_comm_04b_forum_topics_posts (20ms)
+[04:02:24] INFO: Migrating: 20260922_010000_comm_04c_forum_browsing_read_state
+[04:02:24] INFO: Migrated:  20260922_010000_comm_04c_forum_browsing_read_state (14ms)
+[04:02:24] INFO: Migrating: 20260922_020000_comm_04d_forum_topic_operations
+[04:02:24] INFO: Migrated:  20260922_020000_comm_04d_forum_topic_operations (12ms)
+[04:02:24] INFO: Migrating: 20260922_030000_comm_05a_moderation_registry_reports
+[04:02:24] INFO: Migrated:  20260922_030000_comm_05a_moderation_registry_reports (14ms)
+[04:02:24] INFO: Migrating: 20260922_040000_comm_05b_moderation_actions_sanctions
+[04:02:24] INFO: Migrated:  20260922_040000_comm_05b_moderation_actions_sanctions (9ms)
+[04:02:24] INFO: Migrating: 20260922_050000_comm_05c_moderation_appeals_audit
+[04:02:24] INFO: Migrated:  20260922_050000_comm_05c_moderation_appeals_audit (13ms)
+[04:02:24] INFO: Migrating: 20260922_060000_comm_05d_abuse_triage_console
+[04:02:24] INFO: Migrated:  20260922_060000_comm_05d_abuse_triage_console (14ms)
+[04:02:24] INFO: Migrating: 20260922_070000_comm_07a_conversations
+[04:02:24] INFO: Migrated:  20260922_070000_comm_07a_conversations (15ms)
+[04:02:24] INFO: Migrating: 20260922_080000_comm_07b_message_requests
+[04:02:24] INFO: Migrated:  20260922_080000_comm_07b_message_requests (5ms)
+[04:02:24] INFO: Migrating: 20260922_090000_comm_07c_message_attachments
+[04:02:24] INFO: Migrated:  20260922_090000_comm_07c_message_attachments (8ms)
+[04:02:24] INFO: Migrating: 20260922_100000_comm_07d_group_administration
+[04:02:24] INFO: Migrated:  20260922_100000_comm_07d_group_administration (5ms)
+[04:02:24] INFO: Migrating: 20260922_110000_comm_06b_inbox_projections
+[04:02:24] INFO: Migrated:  20260922_110000_comm_06b_inbox_projections (7ms)
+[04:02:24] INFO: Migrating: 20260922_120000_comm_06c_notification_preferences_and_outbox
+[04:02:24] INFO: Migrated:  20260922_120000_comm_06c_notification_preferences_and_outbox (12ms)
+[04:02:24] INFO: Migrating: 20260922_130000_commerce_canonical_contract
+[04:02:24] INFO: Migrated:  20260922_130000_commerce_canonical_contract (9ms)
+[04:02:24] INFO: Migrating: 20260923_010000_shop_01_catalog_workflows
+[04:02:24] INFO: Migrated:  20260923_010000_shop_01_catalog_workflows (27ms)
+[04:02:24] INFO: Migrating: 20260923_020000_shop_02_carts_and_checkout_proposals
+[04:02:24] INFO: Migrated:  20260923_020000_shop_02_carts_and_checkout_proposals (15ms)
+[04:02:24] INFO: Migrating: 20260923_030000_shop_04_payment_operations
+[04:02:24] INFO: Migrated:  20260923_030000_shop_04_payment_operations (18ms)
+[04:02:24] INFO: Migrating: 20260923_040000_shop_05_subscriptions
+[04:02:24] INFO: Migrated:  20260923_040000_shop_05_subscriptions (13ms)
+[04:02:24] INFO: Migrating: 20260923_050000_shop_06_affiliate_and_referrals
+[04:02:24] INFO: Migrated:  20260923_050000_shop_06_affiliate_and_referrals (24ms)
+[04:02:24] INFO: Migrating: 20260923_060000_shop_07_donations
+[04:02:24] INFO: Migrated:  20260923_060000_shop_07_donations (23ms)
+[04:02:24] INFO: Migrating: 20260923_070000_shop_07_donation_lifecycle
+[04:02:24] INFO: Migrated:  20260923_070000_shop_07_donation_lifecycle (4ms)
+[04:02:24] INFO: Migrating: 20260923_080000_shop_03_pod_and_fulfillment
+[04:02:24] INFO: Migrated:  20260923_080000_shop_03_pod_and_fulfillment (20ms)
+[04:02:24] INFO: Migrating: 20260923_090000_events_required_entitlement
+[04:02:24] INFO: Migrated:  20260923_090000_events_required_entitlement (3ms)
+[04:02:24] INFO: Migrating: 20260923_100000_flow_03_scheduler_runtime
+[04:02:24] INFO: Migrated:  20260923_100000_flow_03_scheduler_runtime (3ms)
+[04:02:24] INFO: Migrating: 20260923_110000_content_release_runtime
+[04:02:24] INFO: Migrated:  20260923_110000_content_release_runtime (5ms)
+[04:02:24] INFO: Migrating: 20260924_000000_collection_scope_columns
+[04:02:24] INFO: Migrated:  20260924_000000_collection_scope_columns (20ms)
+[04:02:24] INFO: Migrating: 20260924_010000_donation_checkout_idempotency
+[04:02:24] INFO: Migrated:  20260924_010000_donation_checkout_idempotency (3ms)
+[04:02:24] INFO: Migrating: 20260924_020000_commerce_job_enum
+[04:02:24] INFO: Migrated:  20260924_020000_commerce_job_enum (3ms)
+[04:02:24] INFO: Migrating: 20260924_030000_ai_proposals
+[04:02:24] INFO: Migrated:  20260924_030000_ai_proposals (18ms)
+[04:02:24] INFO: Migrating: 20260924_040000_ai_locked_documents_rels
+[04:02:24] INFO: Migrated:  20260924_040000_ai_locked_documents_rels (5ms)
+[04:02:24] INFO: Migrating: 20260924_050000_ai_budget_reservation
+[04:02:24] INFO: Migrated:  20260924_050000_ai_budget_reservation (2ms)
+[04:02:24] INFO: Migrating: 20260924_060000_semantic_route_templates
+[04:02:24] INFO: Migrated:  20260924_060000_semantic_route_templates (7ms)
+[04:02:24] INFO: Migrating: 20261004_160000_rc03_network_outbox_ids
+[04:02:24] INFO: Migrated:  20261004_160000_rc03_network_outbox_ids (2ms)
+[04:02:24] INFO: Migrating: 20261004_180000_rc04_canonical_moderation
+[04:02:24] INFO: Migrated:  20261004_180000_rc04_canonical_moderation (2ms)
+[04:02:24] INFO: Migrating: 20261006_010000_rc08b_form_intake
+[04:02:24] INFO: Migrated:  20261006_010000_rc08b_form_intake (3ms)
+[04:02:24] INFO: Migrating: 20261006_013000_rc08b_federation_ids
+[04:02:24] INFO: Migrated:  20261006_013000_rc08b_federation_ids (2ms)
+[04:02:24] INFO: Migrating: 20261013_160000_rc1_uuid_schema_repair
+[04:02:25] INFO: Migrated:  20261013_160000_rc1_uuid_schema_repair (65ms)
+[04:02:25] INFO: Migrating: 20261013_180000_rc1_editorial_calendar_audits
+[04:02:25] INFO: Migrated:  20261013_180000_rc1_editorial_calendar_audits (3ms)
+[04:02:25] INFO: Migrating: 20261014_220000_rc1_cart_and_worker_schema
+[04:02:25] INFO: Migrated:  20261014_220000_rc1_cart_and_worker_schema (3ms)
+[04:02:25] INFO: Migrating: 20261014_230000_rc1_machine_request_scope
+[04:02:25] INFO: Migrated:  20261014_230000_rc1_machine_request_scope (2ms)
+[04:02:25] INFO: Migrating: 20261017_210000_rc1_review_comments
+[04:02:25] INFO: Migrated:  20261017_210000_rc1_review_comments (3ms)
+[04:02:25] INFO: Migrating: 20261017_211000_rc1_review_comment_ids
+[04:02:25] INFO: Migrated:  20261017_211000_rc1_review_comment_ids (4ms)
+[04:02:25] INFO: Migrating: 20261017_230000_rc1_content_hierarchy
+[04:02:25] INFO: Migrated:  20261017_230000_rc1_content_hierarchy (5ms)
+[04:02:25] INFO: Migrating: 20261018_050000_rc1_content_visibility
+[04:02:25] INFO: Migrated:  20261018_050000_rc1_content_visibility (3ms)
+[04:02:25] INFO: Migrating: 20261018_060000_rc1_taxonomy_layout_seo_fields
+[04:02:25] INFO: Migrated:  20261018_060000_rc1_taxonomy_layout_seo_fields (5ms)
+[04:02:25] INFO: Migrating: 20261018_061000_rc1_content_entitlement
+[04:02:25] INFO: Migrated:  20261018_061000_rc1_content_entitlement (2ms)
+[04:02:25] INFO: Migrating: 20261018_062000_rc1_public_modified
+[04:02:25] INFO: Migrated:  20261018_062000_rc1_public_modified (2ms)
+Fresh migration acceptance passed.
