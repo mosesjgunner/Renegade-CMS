@@ -1,6 +1,6 @@
 param(
   [Parameter(Mandatory = $true)]
-  [ValidateSet('start-db', 'migrate', 'verify', 'restart-check', 'serve', 'types', 'lint', 'unit')]
+  [ValidateSet('start-db', 'migrate', 'verify', 'restart-check', 'serve', 'types', 'lint', 'unit', 'generate-types')]
   [string]$Action
 )
 
@@ -28,6 +28,9 @@ $env:DISABLE_PAYLOAD_HMR = 'true'
 $env:RC1_06A_DISPOSABLE = 'yes'
 
 switch ($Action) {
+  'generate-types' {
+    npm.cmd run generate:types
+  }
   'start-db' {
     $existing = docker ps -a --filter "name=^${containerName}$" --format '{{.Names}}'
     if ($existing -eq $containerName) {

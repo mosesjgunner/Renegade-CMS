@@ -1,6 +1,6 @@
 import { DEFAULT_SITE_NAME } from '../modules/presentation/themes/identity'
 import { themes } from '../modules/presentation/registry'
-import type { GlobalConfig } from 'payload'
+import { APIError, type GlobalConfig } from 'payload'
 import { operatorAllSitesAccess } from '../modules/operations/operator-grants'
 
 import { seoFields, structuredDataSourceFields } from '../collections/canonical-shared'
@@ -118,14 +118,15 @@ export const SiteSettings: GlobalConfig = {
             ? data.seoCanonicalURL.trim()
             : typeof (data.discoveryOverrides as Record<string, unknown> | undefined)?.canonical ===
                   'string' &&
-                String(
-                  (data.discoveryOverrides as Record<string, unknown>).canonical,
-                ).trim()
+                String((data.discoveryOverrides as Record<string, unknown>).canonical).trim()
               ? String((data.discoveryOverrides as Record<string, unknown>).canonical).trim()
               : null
         if (rawHomeCanonical) {
           const originCandidate = String(
-            data.canonicalOrigin ?? originalDoc?.canonicalOrigin ?? process.env.APP_URL ?? 'http://localhost:3000',
+            data.canonicalOrigin ??
+              originalDoc?.canonicalOrigin ??
+              process.env.APP_URL ??
+              'http://localhost:3000',
           )
             .trim()
             .replace(/\/$/, '')
@@ -145,9 +146,17 @@ export const SiteSettings: GlobalConfig = {
                 'Homepage canonical URL cannot contain query parameters or fragments.',
               )
             }
+            if (parsed.pathname !== '/') {
+              throw new Error('Homepage canonical URL must point to the site root.')
+            }
           } catch (err) {
-            throw new Error(
-              err instanceof Error ? err.message : `Invalid homepage canonical URL: "${rawHomeCanonical}".`,
+            throw new APIError(
+              err instanceof Error
+                ? err.message
+                : `Invalid homepage canonical URL: "${rawHomeCanonical}".`,
+              400,
+              undefined,
+              true,
             )
           }
         }

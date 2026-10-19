@@ -695,6 +695,45 @@ export interface PageLayout {
     | number
     | boolean
     | null;
+  /**
+   * Leave blank to use the resolved title from this content.
+   */
+  seoTitle?: string | null;
+  /**
+   * Leave blank to use the resolved summary or Site Settings description.
+   */
+  seoDescription?: string | null;
+  /**
+   * Leave blank to use this content’s resolved canonical path.
+   */
+  seoCanonicalURL?: string | null;
+  /**
+   * Leave blank to use the selected media’s resolved alt text.
+   */
+  seoImageAlt?: string | null;
+  seoKeywords?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  seoFocusKeyphrase?: string | null;
+  seoNoIndex?: boolean | null;
+  /**
+   * Optional advanced discovery overrides: socialTitle, socialDescription, socialImage, locale, alternates, follow. Ordinary titles, summaries and hero media are inherited automatically.
+   */
+  discoveryOverrides?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   retentionMode: 'permanent' | 'expire-at' | 'manual-burn' | 'archive' | 'tombstone';
   retentionExpiresAt?: string | null;
   retentionHold: 'none' | 'legal' | 'moderation';
@@ -1053,7 +1092,7 @@ export interface MediaAsset {
     | number
     | boolean
     | null;
-  processingState: 'pending' | 'processing' | 'ready' | 'failed' | 'quarantined';
+  processingState: 'pending' | 'processing' | 'ready' | 'failed' | 'quarantined' | 'archived';
   /**
    * Public delivery is derived from this policy and an approved published use.
    */
@@ -1116,6 +1155,45 @@ export interface Tag {
    * Tag ordering.
    */
   sortOrder?: number | null;
+  /**
+   * Leave blank to use the resolved title from this content.
+   */
+  seoTitle?: string | null;
+  /**
+   * Leave blank to use the resolved summary or Site Settings description.
+   */
+  seoDescription?: string | null;
+  /**
+   * Leave blank to use this content’s resolved canonical path.
+   */
+  seoCanonicalURL?: string | null;
+  /**
+   * Leave blank to use the selected media’s resolved alt text.
+   */
+  seoImageAlt?: string | null;
+  seoKeywords?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  seoFocusKeyphrase?: string | null;
+  seoNoIndex?: boolean | null;
+  /**
+   * Optional advanced discovery overrides: socialTitle, socialDescription, socialImage, locale, alternates, follow. Ordinary titles, summaries and hero media are inherited automatically.
+   */
+  discoveryOverrides?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1183,6 +1261,45 @@ export interface Category {
   canonicalPath?: string | null;
   description?: string | null;
   sortOrder?: number | null;
+  /**
+   * Leave blank to use the resolved title from this content.
+   */
+  seoTitle?: string | null;
+  /**
+   * Leave blank to use the resolved summary or Site Settings description.
+   */
+  seoDescription?: string | null;
+  /**
+   * Leave blank to use this content’s resolved canonical path.
+   */
+  seoCanonicalURL?: string | null;
+  /**
+   * Leave blank to use the selected media’s resolved alt text.
+   */
+  seoImageAlt?: string | null;
+  seoKeywords?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  seoFocusKeyphrase?: string | null;
+  seoNoIndex?: boolean | null;
+  /**
+   * Optional advanced discovery overrides: socialTitle, socialDescription, socialImage, locale, alternates, follow. Ordinary titles, summaries and hero media are inherited automatically.
+   */
+  discoveryOverrides?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1200,6 +1317,45 @@ export interface Section {
   canonicalPath?: string | null;
   description?: string | null;
   sortOrder?: number | null;
+  /**
+   * Leave blank to use the resolved title from this content.
+   */
+  seoTitle?: string | null;
+  /**
+   * Leave blank to use the resolved summary or Site Settings description.
+   */
+  seoDescription?: string | null;
+  /**
+   * Leave blank to use this content’s resolved canonical path.
+   */
+  seoCanonicalURL?: string | null;
+  /**
+   * Leave blank to use the selected media’s resolved alt text.
+   */
+  seoImageAlt?: string | null;
+  seoKeywords?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  seoFocusKeyphrase?: string | null;
+  seoNoIndex?: boolean | null;
+  /**
+   * Optional advanced discovery overrides: socialTitle, socialDescription, socialImage, locale, alternates, follow. Ordinary titles, summaries and hero media are inherited automatically.
+   */
+  discoveryOverrides?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1905,6 +2061,18 @@ export interface Content {
     | null;
   heroMedia?: (string | null) | MediaAsset;
   /**
+   * Optional site-scoped resource and capability required to read this published page. Restricted pages are excluded from public SEO output.
+   */
+  requiredEntitlement?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
    * Only public content is served to anonymous visitors and discovery.
    */
   visibility: 'public' | 'unlisted' | 'members' | 'friends' | 'private';
@@ -1929,8 +2097,6 @@ export interface Content {
    * Leave blank to use the selected media’s resolved alt text.
    */
   seoImageAlt?: string | null;
-  seoFocusKeyphrase?: string | null;
-  seoNoIndex?: boolean | null;
   seoKeywords?:
     | {
         [k: string]: unknown;
@@ -1940,6 +2106,8 @@ export interface Content {
     | number
     | boolean
     | null;
+  seoFocusKeyphrase?: string | null;
+  seoNoIndex?: boolean | null;
   /**
    * Optional advanced discovery overrides: socialTitle, socialDescription, socialImage, locale, alternates, follow. Ordinary titles, summaries and hero media are inherited automatically.
    */
@@ -2058,6 +2226,45 @@ export interface Topic {
    * Topic ordering.
    */
   sortOrder?: number | null;
+  /**
+   * Leave blank to use the resolved title from this content.
+   */
+  seoTitle?: string | null;
+  /**
+   * Leave blank to use the resolved summary or Site Settings description.
+   */
+  seoDescription?: string | null;
+  /**
+   * Leave blank to use this content’s resolved canonical path.
+   */
+  seoCanonicalURL?: string | null;
+  /**
+   * Leave blank to use the selected media’s resolved alt text.
+   */
+  seoImageAlt?: string | null;
+  seoKeywords?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  seoFocusKeyphrase?: string | null;
+  seoNoIndex?: boolean | null;
+  /**
+   * Optional advanced discovery overrides: socialTitle, socialDescription, socialImage, locale, alternates, follow. Ordinary titles, summaries and hero media are inherited automatically.
+   */
+  discoveryOverrides?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -2077,6 +2284,45 @@ export interface Series {
    * Series ordering.
    */
   sortOrder?: number | null;
+  /**
+   * Leave blank to use the resolved title from this content.
+   */
+  seoTitle?: string | null;
+  /**
+   * Leave blank to use the resolved summary or Site Settings description.
+   */
+  seoDescription?: string | null;
+  /**
+   * Leave blank to use this content’s resolved canonical path.
+   */
+  seoCanonicalURL?: string | null;
+  /**
+   * Leave blank to use the selected media’s resolved alt text.
+   */
+  seoImageAlt?: string | null;
+  seoKeywords?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  seoFocusKeyphrase?: string | null;
+  seoNoIndex?: boolean | null;
+  /**
+   * Optional advanced discovery overrides: socialTitle, socialDescription, socialImage, locale, alternates, follow. Ordinary titles, summaries and hero media are inherited automatically.
+   */
+  discoveryOverrides?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -2704,7 +2950,7 @@ export interface MediaUploadSession {
     | number
     | boolean
     | null;
-  state: 'open' | 'finalizing' | 'completed' | 'cancelled' | 'failed' | 'expired';
+  state: 'open' | 'finalizing' | 'completed' | 'cancelled' | 'aborted' | 'failed' | 'expired';
   asset?: (string | null) | MediaAsset;
   expiresAt: string;
   failureReason?: string | null;
@@ -9894,6 +10140,14 @@ export interface PageLayoutsSelect<T extends boolean = true> {
   revision?: T;
   publishedRevision?: T;
   revisionHistory?: T;
+  seoTitle?: T;
+  seoDescription?: T;
+  seoCanonicalURL?: T;
+  seoImageAlt?: T;
+  seoKeywords?: T;
+  seoFocusKeyphrase?: T;
+  seoNoIndex?: T;
+  discoveryOverrides?: T;
   retentionMode?: T;
   retentionExpiresAt?: T;
   retentionHold?: T;
@@ -10735,6 +10989,14 @@ export interface SectionsSelect<T extends boolean = true> {
   canonicalPath?: T;
   description?: T;
   sortOrder?: T;
+  seoTitle?: T;
+  seoDescription?: T;
+  seoCanonicalURL?: T;
+  seoImageAlt?: T;
+  seoKeywords?: T;
+  seoFocusKeyphrase?: T;
+  seoNoIndex?: T;
+  discoveryOverrides?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -10753,6 +11015,14 @@ export interface CategoriesSelect<T extends boolean = true> {
   canonicalPath?: T;
   description?: T;
   sortOrder?: T;
+  seoTitle?: T;
+  seoDescription?: T;
+  seoCanonicalURL?: T;
+  seoImageAlt?: T;
+  seoKeywords?: T;
+  seoFocusKeyphrase?: T;
+  seoNoIndex?: T;
+  discoveryOverrides?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -10769,6 +11039,14 @@ export interface TopicsSelect<T extends boolean = true> {
   description?: T;
   canonicalPath?: T;
   sortOrder?: T;
+  seoTitle?: T;
+  seoDescription?: T;
+  seoCanonicalURL?: T;
+  seoImageAlt?: T;
+  seoKeywords?: T;
+  seoFocusKeyphrase?: T;
+  seoNoIndex?: T;
+  discoveryOverrides?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -10784,6 +11062,14 @@ export interface TagsSelect<T extends boolean = true> {
   slug?: T;
   description?: T;
   sortOrder?: T;
+  seoTitle?: T;
+  seoDescription?: T;
+  seoCanonicalURL?: T;
+  seoImageAlt?: T;
+  seoKeywords?: T;
+  seoFocusKeyphrase?: T;
+  seoNoIndex?: T;
+  discoveryOverrides?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -10799,6 +11085,14 @@ export interface SeriesSelect<T extends boolean = true> {
   slug?: T;
   description?: T;
   sortOrder?: T;
+  seoTitle?: T;
+  seoDescription?: T;
+  seoCanonicalURL?: T;
+  seoImageAlt?: T;
+  seoKeywords?: T;
+  seoFocusKeyphrase?: T;
+  seoNoIndex?: T;
+  discoveryOverrides?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -10928,6 +11222,7 @@ export interface ContentSelect<T extends boolean = true> {
         id?: T;
       };
   heroMedia?: T;
+  requiredEntitlement?: T;
   visibility?: T;
   status?: T;
   publishedAt?: T;
@@ -10938,9 +11233,9 @@ export interface ContentSelect<T extends boolean = true> {
   seoDescription?: T;
   seoCanonicalURL?: T;
   seoImageAlt?: T;
+  seoKeywords?: T;
   seoFocusKeyphrase?: T;
   seoNoIndex?: T;
-  seoKeywords?: T;
   discoveryOverrides?: T;
   relationships?: T;
   seoOverride?: T;

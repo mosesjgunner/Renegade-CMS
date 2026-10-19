@@ -1,3 +1,4 @@
+import { APIError } from 'payload'
 /**
  * PUB-02's single editorial URL contract. `content` owns the public identity
  * and editorial body; article-family-content is the workflow/revision index.
@@ -201,6 +202,8 @@ export async function assertEditorialPathAvailable(input: {
   if (formCollision) throw new Error(`The path ${path} is already used by a public form.`)
 }
 
+const canonicalValidationError = (message: string) => new APIError(message, 400, undefined, true)
+
 export async function assertSeoCanonicalConflictFree(input: {
   collection: string
   data: Record<string, unknown>
@@ -222,14 +225,15 @@ export async function assertSeoCanonicalConflictFree(input: {
   const overrides = (data.discoveryOverrides ?? original?.discoveryOverrides) as
     | Record<string, unknown>
     | undefined
+  const directCanonical =
+    'seoCanonicalURL' in data ? data.seoCanonicalURL : original?.seoCanonicalURL
+  // Match discovery's effective value, including its fallback when the ordinary field is cleared.
   const rawCanonical =
-    typeof data.seoCanonicalURL === 'string'
-      ? data.seoCanonicalURL.trim()
+    typeof directCanonical === 'string' && directCanonical.trim()
+      ? directCanonical.trim()
       : typeof overrides?.canonical === 'string'
         ? overrides.canonical.trim()
-        : !('seoCanonicalURL' in data) && typeof original?.seoCanonicalURL === 'string'
-          ? original.seoCanonicalURL.trim()
-          : ''
+        : ''
 
   let siteOrigin = (process.env.APP_URL ?? 'http://localhost:3000').replace(/\/$/, '')
   if (input.payload.findGlobal) {
@@ -265,18 +269,20 @@ export async function assertSeoCanonicalConflictFree(input: {
       baseParsed = new URL(siteOrigin)
       parsed = new URL(rawCanonical, `${siteOrigin}/`)
     } catch {
-      throw new Error(`Invalid canonical URL: "${rawCanonical}".`)
+      throw canonicalValidationError(`Invalid canonical URL: "${rawCanonical}".`)
     }
     if (!['http:', 'https:'].includes(parsed.protocol)) {
-      throw new Error(`Canonical URL "${rawCanonical}" must use HTTP or HTTPS protocol.`)
+      throw canonicalValidationError(
+        `Canonical URL "${rawCanonical}" must use HTTP or HTTPS protocol.`,
+      )
     }
     if (parsed.origin !== baseParsed.origin) {
-      throw new Error(
+      throw canonicalValidationError(
         `Canonical URL "${rawCanonical}" cannot cross the site origin boundary (${parsed.origin} !== ${baseParsed.origin}).`,
       )
     }
     if (parsed.search || parsed.hash) {
-      throw new Error(
+      throw canonicalValidationError(
         `Canonical URL "${rawCanonical}" cannot contain query parameters or fragments.`,
       )
     }
@@ -303,7 +309,7 @@ export async function assertSeoCanonicalConflictFree(input: {
         })
         .catch(() => ({ docs: [] }))
       if (redirectResult.docs.length) {
-        throw new Error(
+        throw canonicalValidationError(
           `Conflicting canonical URL: "${targetPath}" is an active redirect source on this site.`,
         )
       }
@@ -339,7 +345,7 @@ export async function assertSeoCanonicalConflictFree(input: {
       }
 
       if (!targetDoc) {
-        throw new Error(
+        throw canonicalValidationError(
           `Conflicting canonical URL: canonical target "${targetPath}" does not exist on this site.`,
         )
       }
@@ -370,7 +376,7 @@ export async function assertSeoCanonicalConflictFree(input: {
         !['published', 'updated'].includes(targetStatus) ||
         targetVisibility !== 'public'
       ) {
-        throw new Error(
+        throw canonicalValidationError(
           `Conflicting canonical URL: target "${targetPath}" is not an indexable public document (draft, private, scheduled, or noindex).`,
         )
       }
@@ -390,7 +396,7 @@ export async function assertSeoCanonicalConflictFree(input: {
               ? '/'
               : targetCanonicalParsed.pathname.replace(/\/+$/, '')
           if (targetOfTargetPath !== targetPath) {
-            throw new Error(
+            throw canonicalValidationError(
               `Conflicting canonical URL: target "${targetPath}" already points its canonical URL to "${targetOfTargetPath}" (canonical chains and loops are forbidden).`,
             )
           }
@@ -472,7 +478,7 @@ export async function assertSeoCanonicalConflictFree(input: {
       if (referenced) break
     }
     if (referenced) {
-      throw new Error(
+      throw canonicalValidationError(
         `Conflicting canonical URL: "${currentPath}" is currently referenced as the canonical URL by another record on this site and cannot become non-canonical or non-indexable.`,
       )
     }

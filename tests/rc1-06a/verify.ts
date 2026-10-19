@@ -818,6 +818,18 @@ async function main() {
     // Step 7: Negative Validation (Canonical Conflicts & Origin Boundary Protection)
     console.log('--- NEGATIVE CANONICAL VALIDATION CHECKS ---')
 
+    await assert.rejects(() =>
+      operator.update({
+        collection: 'content',
+        id: articlePublished.id,
+        data: {
+          seoCanonicalURL: '',
+          discoveryOverrides: { canonical: 'https://foreign.example/article' },
+        },
+      }),
+    )
+    check('Cleared ordinary canonical cannot bypass JSON override validation over HTTP', true)
+
     // 7a: Reject cross-origin canonical URL
     await assert.rejects(
       async () => {
@@ -830,7 +842,7 @@ async function main() {
         })
       },
       (err: any) => {
-        assert.match(String(err?.message || ''), /expected 200, got (400|500)/)
+        assert.match(String(err?.message || ''), /expected 200, got 400/)
         return true
       },
       'Should reject cross-origin canonical URL',
@@ -850,7 +862,7 @@ async function main() {
         })
       },
       (err: any) => {
-        assert.match(String(err?.message || ''), /expected 200, got (400|500)/)
+        assert.match(String(err?.message || ''), /expected 200, got 400/)
         return true
       },
       'Should reject canonical with query params',
@@ -869,7 +881,7 @@ async function main() {
         })
       },
       (err: any) => {
-        assert.match(String(err?.message || ''), /expected 200, got (400|500)/)
+        assert.match(String(err?.message || ''), /expected 200, got 400/)
         return true
       },
       'Should reject canonical URL targeting draft content',
@@ -1083,6 +1095,34 @@ async function main() {
       'Persisted alias and entitlement fixtures match operator request',
       (await record('content', alias.id)).seoCanonicalURL === articlePublished.seoCanonicalURL &&
         (await record('content', gated.id)).requiredEntitlement?.resource === 'vault',
+    )
+
+    await assert.rejects(
+      () =>
+        operator.updateGlobal({
+          slug: 'site-settings',
+          data: { seoCanonicalURL: articleDraft.seoCanonicalURL },
+        }),
+      /expected 200, got 400/,
+    )
+    check('Homepage canonical cannot target a draft or another content path', true)
+    await operator.updateGlobal({ slug: 'site-settings', data: { seoNoIndex: true } })
+    const noindexHome = await (await api('/')).text()
+    const noindexSettings = await payload.findGlobal({ slug: 'site-settings', depth: 0 })
+    check(
+      'Homepage noindex field persists and synchronizes indexing mode',
+      noindexSettings.seoNoIndex === true && noindexSettings.indexingMode === 'noindex',
+    )
+    check(
+      'Homepage noindex field affects rendered robots',
+      noindexHome.includes('<meta name="robots" content="noindex, nofollow"/>'),
+    )
+    await operator.updateGlobal({ slug: 'site-settings', data: { seoNoIndex: false } })
+    const reindexedHome = await (await api('/')).text()
+    check(
+      'Homepage indexing restored through the same admin field',
+      reindexedHome.includes('<meta name="robots" content="index, follow"/>') &&
+        reindexedHome.includes(`<title>${homeSettings.seoTitle}</title>`),
     )
 
     // Step 9: Playwright UI Screenshot Proof of Admin Controls & Public Render

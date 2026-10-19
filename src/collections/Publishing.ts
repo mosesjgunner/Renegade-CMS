@@ -199,6 +199,7 @@ const publisherFieldGroups = (fields: Field[]): Field[] => {
       names: [
         'status',
         'visibility',
+        'requiredEntitlement',
         'publishedAt',
         'updatedAtEditorial',
         'commentsPolicy',
@@ -215,6 +216,8 @@ const publisherFieldGroups = (fields: Field[]): Field[] => {
         'seoImageAlt',
         'seoFocusKeyphrase',
         'seoNoIndex',
+        'seoKeywords',
+        'discoveryOverrides',
         'discoveryPanel',
       ],
       fields: [],
@@ -1125,6 +1128,27 @@ export const Content: CollectionConfig = {
   },
   fields: publisherFieldGroups([
     ...ownerFields(),
+    {
+      name: 'requiredEntitlement',
+      type: 'json',
+      admin: {
+        description:
+          'Optional site-scoped resource and capability required to read this published page. Restricted pages are excluded from public SEO output.',
+      },
+      validate: (value: unknown) => {
+        if (value == null) return true
+        if (typeof value !== 'object' || Array.isArray(value))
+          return 'Use a resource and capability object.'
+        const policy = value as Record<string, unknown>
+        return (
+          (typeof policy.resource === 'string' &&
+            Boolean(policy.resource.trim()) &&
+            typeof policy.capability === 'string' &&
+            Boolean(policy.capability.trim())) ||
+          'Provide a nonempty resource and capability.'
+        )
+      },
+    },
     {
       name: 'contentType',
       type: 'select',

@@ -108,6 +108,35 @@ function createMockPayload(
 }
 
 describe('RC1 06A — Metadata, Schema and Indexing Controls', () => {
+  it('rejects homepage canonicals that conflict with content paths', () => {
+    const hook = SiteSettings.hooks!.beforeValidate![0]!
+    expect(() =>
+      hook({
+        data: {
+          canonicalOrigin: 'https://dispatch.example.org',
+          seoCanonicalURL: 'https://dispatch.example.org/articles/draft',
+        },
+        originalDoc: {},
+        req: {},
+      } as any),
+    ).toThrow(/must point to the site root/)
+  })
+
+  it('validates the effective JSON canonical when the ordinary canonical field is cleared', async () => {
+    await expect(
+      assertSeoCanonicalConflictFree({
+        collection: 'content',
+        payload: createMockPayload(),
+        data: {
+          site: 'site-1',
+          canonicalPath: '/articles/example',
+          seoCanonicalURL: '',
+          discoveryOverrides: { canonical: 'https://foreign.example/article' },
+        },
+      }),
+    ).rejects.toThrow(/cannot cross the site origin boundary/)
+  })
+
   it('rejects entitlement-gated canonical targets and gating a referenced canonical target', async () => {
     const target = {
       id: 'primary',

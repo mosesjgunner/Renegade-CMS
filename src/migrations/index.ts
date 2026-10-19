@@ -1,3 +1,4 @@
+import * as rc1ContentEntitlement from './20261018_061000_rc1_content_entitlement'
 import * as rc1ReviewComments from './20261017_210000_rc1_review_comments'
 import * as rc1ContentHierarchy from './20261017_230000_rc1_content_hierarchy'
 import * as rc1ReviewCommentIds from './20261017_211000_rc1_review_comment_ids'
@@ -708,7 +709,11 @@ export const migrations = [
     down: rc1TaxonomyLayoutSeoFields.down,
     name: '20261018_060000_rc1_taxonomy_layout_seo_fields',
   },
+  {
+    up: rc1ContentEntitlement.up,
+    down: rc1ContentEntitlement.down,
+    name: '20261018_061000_rc1_content_entitlement',
+  },
 ]
 import * as rc1ContentVisibility from './20261018_050000_rc1_content_visibility'
 import * as rc1TaxonomyLayoutSeoFields from './20261018_060000_rc1_taxonomy_layout_seo_fields'
-

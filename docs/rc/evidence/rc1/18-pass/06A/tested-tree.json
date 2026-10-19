@@ -1,0 +1,44 @@
+{
+  "baseCommit": "cca9f870e9ec5355950f9b4a2b4bb12fd44885c2",
+  "baseTree": "e5290df2abc48950b8852a78fa87552c26f6e139",
+  "overlaySha256": "5db6e26c55dce6673da56aaa9f2c5875258e02a4703659a4bc2dc90daf335fe9",
+  "definition": "Base HEAD plus all modified/untracked non-docs paths. Null denotes deletion. Ignored secrets, runtime and evidence excluded.",
+  "files": [
+    {
+      "path": "src/collections/Publishing.ts",
+      "sha256": "981e70c7652bae186f7e1c7f8f8d558007c26bc17fad0671b17695e7d4e0e3f3"
+    },
+    {
+      "path": "src/globals/SiteSettings.ts",
+      "sha256": "90c2442b6693da57fe6dfbddb25867e12efad5c27b4c3c0121b830da8ddd0e52"
+    },
+    {
+      "path": "src/migrations/20261018_061000_rc1_content_entitlement.ts",
+      "sha256": "5454f40165156da7c46234b3cacfe0a184cf40067609beb5ba6a89b9224d0812"
+    },
+    {
+      "path": "src/migrations/index.ts",
+      "sha256": "baf4d6415c7d05394b7387611fa3114e82612350717fa178b9fdd721f91ea60f"
+    },
+    {
+      "path": "src/modules/editorial/publishing-pass.ts",
+      "sha256": "c52d1073a2c2d7275b95e1bdc4a77acf1c91b3a13cca96b7b5d7c98183dd3208"
+    },
+    {
+      "path": "src/payload-types.ts",
+      "sha256": "6a90ac0a4ae35d37d39d17762a0b3222ffb76ff3c966896582a1acb27da3fc7e"
+    },
+    {
+      "path": "tests/rc1-06a/run-isolated.ps1",
+      "sha256": "f3b4360bd8e3395b97833b286b251e30cf0b3dea1ffa15a50b3400baa32f0452"
+    },
+    {
+      "path": "tests/rc1-06a/verify.ts",
+      "sha256": "b7ee5b9eab4e75251490ffe80e141d26deab6cae6ca1090ad2e3413f6ba8ca89"
+    },
+    {
+      "path": "tests/unit/rc1-06a-metadata-schema-indexing.test.ts",
+      "sha256": "04d179ee10c78eac293a53fe60562ef71a95f92695a07bdc11fa92596291575b"
+    }
+  ]
+}

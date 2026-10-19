@@ -1,0 +1,18 @@
+{
+  "runtime": "Next.js development server from source; no production application image built or accepted",
+  "origin": "http://localhost:38980",
+  "distDir": ".next-rc106a",
+  "database": "postgresql://127.0.0.1:5446/rc106a_release_acceptance",
+  "container": "/rc106a-20261018",
+  "containerId": "54d1eb5cc9e19f09a9316946998d641307ec14b4229c1306812af2208461fb11",
+  "postgresImage": "postgres:17.6",
+  "postgresImageId": "sha256:00bc86618629af00d2937fdc5a5d63db3ff8450acf52f0636ec813c7f4902929",
+  "containerState": "exited",
+  "mediaDir": "scratch/rc106a-20261018/media",
+  "modules": "all",
+  "LOCAL_E2E_TEST_MODE": false,
+  "ENABLE_TEST_ROUTES": false,
+  "authenticationBoundary": "Fixture users and signed persisted production-strategy operator sessions. HTTP authorization is exercised; ordinary WebAuthn enrollment/login is not claimed.",
+  "providers": "Email development mode; no external provider actions",
+  "resources": "Own web and container stopped; database and media retained. Sibling resources untouched."
+}
