@@ -1,0 +1,53 @@
+{
+  "timestamp": "2026-10-19T00:18:33.040Z",
+  "siteAlpha": {
+    "id": "48ffb20f-3b4b-4fee-a3f0-b889ac4c7486",
+    "theme": "neutral-starter"
+  },
+  "siteBeta": {
+    "id": "98b50e8b-40b5-4899-a96b-3916c0d8aef0"
+  },
+  "homeSettingsSeo": {
+    "seoTitle": "Renegade Flagship — Independent Journalism",
+    "seoDescription": "Frontline investigations and dispatch coverage from Renegade.",
+    "seoCanonicalURL": "http://localhost:38980/",
+    "seoImageAlt": "Renegade investigations banner",
+    "seoNoIndex": false,
+    "indexingMode": "index",
+    "discoveryOverrides": {
+      "socialImage": "ced52848-78fc-49d7-b32b-177b9c064935",
+      "socialTitle": "Renegade Flagship — Frontline Journalism",
+      "socialDescription": "Unfiltered frontline reports and investigative files."
+    }
+  },
+  "catRecordSeo": {
+    "id": "c68adfde-460e-4527-8bfe-357c41ee43b4",
+    "seoTitle": "Investigations Archive | Deep Dives",
+    "seoDescription": "All investigative reports and financial forensic files.",
+    "seoCanonicalURL": "http://localhost:38980/categories/investigations"
+  },
+  "articlePublishedSeo": {
+    "id": "7fe10ff0-aea9-4d39-a03e-3a70f1688aff",
+    "title": "The Waterfront Deal",
+    "seoTitle": "The Waterfront Deal: In-Depth Investigation | Renegade",
+    "seoDescription": "A 6-month investigative probe into docklands rezoning.",
+    "seoCanonicalURL": "http://localhost:38980/articles/investigation-the-waterfront-deal",
+    "discoveryOverrides": {
+      "socialImage": "ced52848-78fc-49d7-b32b-177b9c064935",
+      "socialTitle": "Social Card: Docklands Rezoning Exposed",
+      "socialDescription": "How millions shifted hands in harbor redevelopment."
+    }
+  },
+  "articleDraft": {
+    "id": "5a8b6199-b82a-4933-ac57-8c128cf346df",
+    "status": "draft"
+  },
+  "articlePrivate": {
+    "id": "c2c8ad09-b558-4aa8-872b-5d471b2e9744"
+  },
+  "articleNoIndex": {
+    "id": "86a5854e-bd54-48a0-bc32-401ef1979f88",
+    "seoNoIndex": true
+  },
+  "totalChecksPassed": 84
+}

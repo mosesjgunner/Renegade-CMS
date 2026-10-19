@@ -1066,7 +1066,7 @@ export async function resolveDiscoveryDocument(
       },
       social: {
         title: socialTitle,
-        description: socialDescription ?? undefined,
+        description: socialDescription ?? null,
         locale: settings.locale,
       },
       contentType: 'home',

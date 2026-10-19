@@ -1,0 +1,10 @@
+{
+  "timestamp": "2026-10-18T21:09:42.623Z",
+  "restartChecks": [
+    "Homepage persisted custom SEO and schema across restart",
+    "Article persisted custom SEO and schema across restart",
+    "Category persisted custom SEO across restart",
+    "Restricted route persisted noindex nofollow headers and robots tag"
+  ],
+  "ok": true
+}

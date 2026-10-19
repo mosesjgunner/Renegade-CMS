@@ -1,0 +1,22 @@
+[
+  {
+    "path": "next-env.d.ts",
+    "sha256": "de8c776ea9ea02d60b379d45c7e84bcc3fac99db2d204dc5ee3bdf52941d5edb"
+  },
+  {
+    "path": "src/migrations/20261018_060000_rc1_taxonomy_layout_seo_fields.ts",
+    "sha256": "21d95a3859a29c5091adbf6b7fe40746c8f8970529911959a509274c9035cc42"
+  },
+  {
+    "path": "src/modules/public/discovery.ts",
+    "sha256": "c77848165f84b4ecbd9e5825a82fb698b680a53c1cdfe3a45ae08f38571159b0"
+  },
+  {
+    "path": "tsconfig.json",
+    "sha256": "5bf384d750cc2704672bc1cbdc02c2c278f6ce187ab3dcc87e51ccfd86a05ddb"
+  },
+  {
+    "path": "tests/rc1-06a/verify.ts",
+    "sha256": "81ea1128a9a90911c98b5ddeb2783ee36004bf032e06c0e609b75bee4001e708"
+  }
+]

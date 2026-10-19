@@ -1,0 +1,53 @@
+{
+  "timestamp": "2026-10-18T21:09:21.845Z",
+  "siteAlpha": {
+    "id": "83fbe228-244c-4975-8210-9fea06b4242e",
+    "theme": "neutral-starter"
+  },
+  "siteBeta": {
+    "id": "233a5c22-73bb-4aca-bafd-bee5ea64699d"
+  },
+  "homeSettingsSeo": {
+    "seoTitle": "Renegade Flagship — Independent Journalism",
+    "seoDescription": "Frontline investigations and dispatch coverage from Renegade.",
+    "seoCanonicalURL": "http://localhost:38980/",
+    "seoImageAlt": "Renegade investigations banner",
+    "seoNoIndex": false,
+    "indexingMode": "index",
+    "discoveryOverrides": {
+      "socialImage": "43874d9d-080b-4448-a876-3fcb42157c37",
+      "socialTitle": "Renegade Flagship — Frontline Journalism",
+      "socialDescription": "Unfiltered frontline reports and investigative files."
+    }
+  },
+  "catRecordSeo": {
+    "id": "9d73b519-4188-4ccd-92c6-05d7f1834b79",
+    "seoTitle": "Investigations Archive | Deep Dives",
+    "seoDescription": "All investigative reports and financial forensic files.",
+    "seoCanonicalURL": "http://localhost:38980/categories/investigations"
+  },
+  "articlePublishedSeo": {
+    "id": "4d7d2192-a507-48c9-8b98-b11804a95777",
+    "title": "The Waterfront Deal",
+    "seoTitle": "The Waterfront Deal: In-Depth Investigation | Renegade",
+    "seoDescription": "A 6-month investigative probe into docklands rezoning.",
+    "seoCanonicalURL": "http://localhost:38980/articles/investigation-the-waterfront-deal",
+    "discoveryOverrides": {
+      "socialImage": "43874d9d-080b-4448-a876-3fcb42157c37",
+      "socialTitle": "Social Card: Docklands Rezoning Exposed",
+      "socialDescription": "How millions shifted hands in harbor redevelopment."
+    }
+  },
+  "articleDraft": {
+    "id": "8360ec93-c53c-4f67-bd28-ab4e63a0626b",
+    "status": "draft"
+  },
+  "articlePrivate": {
+    "id": "f06a5a4c-3c6e-43cb-895a-3a8abb9c1fab"
+  },
+  "articleNoIndex": {
+    "id": "8f725e72-dfa1-44ef-a3c9-8725fa08b7d4",
+    "seoNoIndex": true
+  },
+  "totalChecksPassed": 71
+}

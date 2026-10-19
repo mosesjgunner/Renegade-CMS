@@ -1,0 +1,22 @@
+[
+  {
+    "path": "src/modules/media/storage.ts",
+    "sha256": "2f9a2c41e740a7c0841e85c18bf1a8ce7f47c6c8d836bda6b191a042338cf631"
+  },
+  {
+    "path": "src/app/(frontend)/api/media/upload/route.ts",
+    "sha256": "fadc2c6a96b70753f5109a9925f295408208d32ea25278f07b040e967a06a473"
+  },
+  {
+    "path": "src/app/(frontend)/api/media/route.ts",
+    "sha256": "189c68f29e31058456401e6b2076e810bbcadc90edd88f68135c94e881fbf0b3"
+  },
+  {
+    "path": "tests/rc1-05a/verify.ts",
+    "sha256": "e884ced89a6bdd287a363f8aa2251c28b231c8daa8fa7baeef29bd889f1a86b8"
+  },
+  {
+    "path": "tests/unit/rc1-05a-media-lifecycle.test.ts",
+    "sha256": "229566568f8d0dc73a3a68c71efde0e07162c483645315e8495f3fe479c7aa85"
+  }
+]

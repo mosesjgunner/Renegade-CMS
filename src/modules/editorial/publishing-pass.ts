@@ -350,7 +350,16 @@ export async function assertSeoCanonicalConflictFree(input: {
         targetCollection === 'topics'
       const targetStatus = isTaxonomy ? 'published' : String(targetDoc.status ?? 'draft')
       const targetVisibility = isTaxonomy ? 'public' : String(targetDoc.visibility ?? 'public')
-      const targetNoIndex = targetDoc.seoNoIndex === true || targetDoc.removeFromDiscovery === true
+      const entitlement = targetDoc.requiredEntitlement as Record<string, unknown> | undefined
+      const targetNoIndex =
+        targetDoc.seoNoIndex === true ||
+        targetDoc.removeFromDiscovery === true ||
+        Boolean(
+          typeof entitlement?.resource === 'string' &&
+            entitlement.resource.trim() &&
+            typeof entitlement?.capability === 'string' &&
+            entitlement.capability.trim(),
+        )
       const targetScheduledFuture =
         Boolean(targetDoc.publishedAt) &&
         new Date(String(targetDoc.publishedAt)).getTime() > Date.now()
@@ -407,36 +416,62 @@ export async function assertSeoCanonicalConflictFree(input: {
   const nextVisibility = isTaxonomySelf
     ? 'public'
     : String(data.visibility ?? original?.visibility ?? 'public')
+  const nextEntitlement = (
+    'requiredEntitlement' in data ? data.requiredEntitlement : original?.requiredEntitlement
+  ) as Record<string, unknown> | undefined
+  const nextRestricted = Boolean(
+    typeof nextEntitlement?.resource === 'string' &&
+      nextEntitlement.resource.trim() &&
+      typeof nextEntitlement?.capability === 'string' &&
+      nextEntitlement.capability.trim(),
+  )
   const becomesNonCanonicalTarget =
     (rawCanonical && targetPath !== currentPath) ||
     nextNoIndex ||
+    nextRestricted ||
+    (data.removeFromDiscovery ?? original?.removeFromDiscovery) === true ||
+    (data.retentionMode ?? original?.retentionMode) === 'tombstone' ||
+    new Date(String(data.publishedAt ?? original?.publishedAt ?? '')).getTime() > Date.now() ||
     !['published', 'updated'].includes(nextStatus) ||
     nextVisibility !== 'public'
 
   if (currentPath && becomesNonCanonicalTarget && original?.id) {
     const currentId = String(original.id)
     const fullCurrentUrl = new URL(currentPath, `${siteOrigin}/`).toString()
-    const inbound = await input.payload
-      .find({
-        collection: 'content',
-        where: {
-          and: [
-            { site: { equals: site } },
-            { id: { not_equals: currentId } },
-            {
-              or: [
-                { seoCanonicalURL: { equals: fullCurrentUrl } },
-                { seoCanonicalURL: { equals: currentPath } },
-              ],
-            },
-          ],
-        },
+    const inboundCollections = [
+      'content',
+      'categories',
+      'sections',
+      'topics',
+      'page-layouts',
+    ].filter((col) => !input.payload.collections || col in input.payload.collections)
+    let referenced = false
+    for (const collection of inboundCollections) {
+      // JSON overrides are also editable canonicals. Inspect both representations;
+      // a query only on seoCanonicalURL would miss those inbound references.
+      const inbound = await input.payload.find({
+        collection,
+        where: { site: { equals: site } },
+        select: { seoCanonicalURL: true, discoveryOverrides: true },
         depth: 0,
-        limit: 1,
+        pagination: false,
+        limit: 0,
         overrideAccess: true,
       })
-      .catch(() => ({ docs: [] }))
-    if (inbound.docs.length) {
+      referenced = inbound.docs.some((doc) => {
+        if (collection === input.collection && String(doc.id) === currentId) return false
+        const overrides = doc.discoveryOverrides as Record<string, unknown> | undefined
+        const canonical = doc.seoCanonicalURL || overrides?.canonical
+        if (typeof canonical !== 'string' || !canonical.trim()) return false
+        try {
+          return new URL(canonical, `${siteOrigin}/`).toString() === fullCurrentUrl
+        } catch {
+          return false
+        }
+      })
+      if (referenced) break
+    }
+    if (referenced) {
       throw new Error(
         `Conflicting canonical URL: "${currentPath}" is currently referenced as the canonical URL by another record on this site and cannot become non-canonical or non-indexable.`,
       )
@@ -454,4 +489,3 @@ export const PUBLISHING_PASS_OWNERSHIP = {
   articleFamilyContent: 'workflow and immutable revision index; never an editor entry point',
   pageLayouts: 'optional visual presentation projection; never canonical prose',
 } as const
-

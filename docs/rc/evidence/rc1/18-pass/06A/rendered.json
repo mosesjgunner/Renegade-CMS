@@ -1,0 +1,509 @@
+{
+  "/": {
+    "status": 200,
+    "robotsHeader": null,
+    "tags": [
+      "<meta charSet=\"utf-8\"/>",
+      "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/>",
+      "<meta name=\"next-size-adjust\" content=\"\"/>",
+      "<title>Renegade Flagship — Independent Journalism</title>",
+      "<meta name=\"description\" content=\"Frontline investigations and dispatch coverage from Renegade.\"/>",
+      "<meta name=\"robots\" content=\"index, follow\"/>",
+      "<link rel=\"canonical\" href=\"http://localhost:38980/\"/>",
+      "<meta property=\"og:title\" content=\"Renegade Flagship — Frontline Journalism\"/>",
+      "<meta property=\"og:description\" content=\"Unfiltered frontline reports and investigative files.\"/>",
+      "<meta property=\"og:url\" content=\"http://localhost:38980/\"/>",
+      "<meta property=\"og:site_name\" content=\"Renegade Flagship\"/>",
+      "<meta property=\"og:locale\" content=\"en\"/>",
+      "<meta property=\"og:image\" content=\"http://localhost:38980/media/ced52848-78fc-49d7-b32b-177b9c064935?variant=og&amp;format=jpeg&amp;v=1\"/>",
+      "<meta property=\"og:image:width\" content=\"1200\"/>",
+      "<meta property=\"og:image:height\" content=\"630\"/>",
+      "<meta property=\"og:image:alt\" content=\"Renegade investigations banner\"/>",
+      "<meta name=\"twitter:card\" content=\"summary_large_image\"/>",
+      "<meta name=\"twitter:title\" content=\"Renegade Flagship — Frontline Journalism\"/>",
+      "<meta name=\"twitter:description\" content=\"Unfiltered frontline reports and investigative files.\"/>",
+      "<meta name=\"twitter:image\" content=\"http://localhost:38980/media/ced52848-78fc-49d7-b32b-177b9c064935?variant=og&amp;format=jpeg&amp;v=1\"/>"
+    ],
+    "schemas": [
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Renegade Flagship",
+        "description": "Frontline investigations and dispatch coverage from Renegade.",
+        "url": "http://localhost:38980/",
+        "@graph": [
+          {
+            "@type": "WebSite",
+            "@id": "http://localhost:38980/#website",
+            "url": "http://localhost:38980/",
+            "name": "Renegade Flagship",
+            "publisher": {
+              "@id": "http://localhost:38980/#identity"
+            },
+            "description": "Frontline investigations and dispatch coverage from Renegade.",
+            "inLanguage": "en"
+          },
+          {
+            "@type": "Organization",
+            "@id": "http://localhost:38980/#identity",
+            "name": "Renegade Flagship",
+            "url": "http://localhost:38980/"
+          },
+          {
+            "@type": "WebPage",
+            "@id": "http://localhost:38980#webpage",
+            "url": "http://localhost:38980/",
+            "name": "Renegade Flagship",
+            "isPartOf": {
+              "@id": "http://localhost:38980/#website"
+            },
+            "breadcrumb": {
+              "@id": "http://localhost:38980#breadcrumb"
+            },
+            "description": "Frontline investigations and dispatch coverage from Renegade.",
+            "inLanguage": "en",
+            "primaryImageOfPage": {
+              "@id": "http://localhost:38980#primaryimage"
+            }
+          },
+          {
+            "@type": "BreadcrumbList",
+            "@id": "http://localhost:38980#breadcrumb",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "http://localhost:38980/"
+              }
+            ]
+          },
+          {
+            "@type": "ImageObject",
+            "@id": "http://localhost:38980#primaryimage",
+            "url": "http://localhost:38980/media/ced52848-78fc-49d7-b32b-177b9c064935?variant=og&format=jpeg&v=1",
+            "contentUrl": "http://localhost:38980/media/ced52848-78fc-49d7-b32b-177b9c064935?variant=og&format=jpeg&v=1",
+            "caption": "Renegade investigations banner"
+          }
+        ]
+      }
+    ]
+  },
+  "/articles/investigation-the-waterfront-deal": {
+    "status": 200,
+    "robotsHeader": null,
+    "tags": [
+      "<meta charSet=\"utf-8\"/>",
+      "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/>",
+      "<meta name=\"next-size-adjust\" content=\"\"/>",
+      "<title>The Waterfront Deal: In-Depth Investigation | Renegade</title>",
+      "<meta name=\"description\" content=\"A 6-month investigative probe into docklands rezoning.\"/>",
+      "<meta name=\"robots\" content=\"index, follow\"/>",
+      "<link rel=\"canonical\" href=\"http://localhost:38980/articles/investigation-the-waterfront-deal\"/>",
+      "<meta property=\"og:title\" content=\"Social Card: Docklands Rezoning Exposed\"/>",
+      "<meta property=\"og:description\" content=\"How millions shifted hands in harbor redevelopment.\"/>",
+      "<meta property=\"og:url\" content=\"http://localhost:38980/articles/investigation-the-waterfront-deal\"/>",
+      "<meta property=\"og:site_name\" content=\"Renegade Flagship\"/>",
+      "<meta property=\"og:locale\" content=\"en\"/>",
+      "<meta property=\"og:image\" content=\"http://localhost:38980/media/ced52848-78fc-49d7-b32b-177b9c064935?variant=og&amp;format=jpeg&amp;v=1\"/>",
+      "<meta property=\"og:image:width\" content=\"1200\"/>",
+      "<meta property=\"og:image:height\" content=\"630\"/>",
+      "<meta property=\"og:image:alt\" content=\"The Waterfront Deal: In-Depth Investigation | Renegade\"/>",
+      "<meta name=\"twitter:card\" content=\"summary_large_image\"/>",
+      "<meta name=\"twitter:title\" content=\"Social Card: Docklands Rezoning Exposed\"/>",
+      "<meta name=\"twitter:description\" content=\"How millions shifted hands in harbor redevelopment.\"/>",
+      "<meta name=\"twitter:image\" content=\"http://localhost:38980/media/ced52848-78fc-49d7-b32b-177b9c064935?variant=og&amp;format=jpeg&amp;v=1\"/>"
+    ],
+    "schemas": [
+      {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "name": "The Waterfront Deal: In-Depth Investigation | Renegade",
+        "@graph": [
+          {
+            "@type": "Article",
+            "@id": "http://localhost:38980/articles/investigation-the-waterfront-deal#article",
+            "headline": "The Waterfront Deal: In-Depth Investigation | Renegade",
+            "url": "http://localhost:38980/articles/investigation-the-waterfront-deal",
+            "mainEntityOfPage": {
+              "@id": "http://localhost:38980/articles/investigation-the-waterfront-deal#webpage"
+            },
+            "publisher": {
+              "@id": "http://localhost:38980/#identity"
+            },
+            "description": "A 6-month investigative probe into docklands rezoning.",
+            "datePublished": "2026-10-18T23:16:49.269Z",
+            "dateModified": "2026-10-19T00:18:10.721Z",
+            "image": {
+              "@id": "http://localhost:38980/articles/investigation-the-waterfront-deal#primaryimage"
+            },
+            "inLanguage": "en",
+            "articleSection": "Investigations"
+          },
+          {
+            "@type": "WebPage",
+            "@id": "http://localhost:38980/articles/investigation-the-waterfront-deal#webpage",
+            "url": "http://localhost:38980/articles/investigation-the-waterfront-deal",
+            "name": "The Waterfront Deal: In-Depth Investigation | Renegade",
+            "isPartOf": {
+              "@id": "http://localhost:38980/#website"
+            },
+            "breadcrumb": {
+              "@id": "http://localhost:38980/articles/investigation-the-waterfront-deal#breadcrumb"
+            },
+            "description": "A 6-month investigative probe into docklands rezoning.",
+            "inLanguage": "en",
+            "datePublished": "2026-10-18T23:16:49.269Z",
+            "dateModified": "2026-10-19T00:18:10.721Z",
+            "primaryImageOfPage": {
+              "@id": "http://localhost:38980/articles/investigation-the-waterfront-deal#primaryimage"
+            },
+            "mainEntity": {
+              "@id": "http://localhost:38980/articles/investigation-the-waterfront-deal#article"
+            }
+          },
+          {
+            "@type": "BreadcrumbList",
+            "@id": "http://localhost:38980/articles/investigation-the-waterfront-deal#breadcrumb",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "http://localhost:38980/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Articles",
+                "item": "http://localhost:38980/articles"
+              },
+              {
+                "@type": "ListItem",
+                "position": 3,
+                "name": "The Waterfront Deal: In-Depth Investigation | Renegade",
+                "item": "http://localhost:38980/articles/investigation-the-waterfront-deal"
+              }
+            ]
+          },
+          {
+            "@type": "WebSite",
+            "@id": "http://localhost:38980/#website",
+            "url": "http://localhost:38980/",
+            "name": "Renegade Flagship",
+            "publisher": {
+              "@id": "http://localhost:38980/#identity"
+            },
+            "description": "Frontline investigations and dispatch coverage from Renegade.",
+            "inLanguage": "en"
+          },
+          {
+            "@type": "Organization",
+            "@id": "http://localhost:38980/#identity",
+            "name": "Renegade Flagship",
+            "url": "http://localhost:38980/"
+          },
+          {
+            "@type": "ImageObject",
+            "@id": "http://localhost:38980/articles/investigation-the-waterfront-deal#primaryimage",
+            "url": "http://localhost:38980/media/ced52848-78fc-49d7-b32b-177b9c064935",
+            "contentUrl": "http://localhost:38980/media/ced52848-78fc-49d7-b32b-177b9c064935",
+            "caption": "The Waterfront Deal: In-Depth Investigation | Renegade"
+          }
+        ]
+      }
+    ]
+  },
+  "/categories/investigations": {
+    "status": 200,
+    "robotsHeader": null,
+    "tags": [
+      "<meta charSet=\"utf-8\"/>",
+      "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/>",
+      "<meta name=\"next-size-adjust\" content=\"\"/>",
+      "<title>Investigations Archive | Deep Dives</title>",
+      "<meta name=\"description\" content=\"All investigative reports and financial forensic files.\"/>",
+      "<meta name=\"robots\" content=\"index, follow\"/>",
+      "<link rel=\"canonical\" href=\"http://localhost:38980/categories/investigations\"/>",
+      "<meta property=\"og:title\" content=\"Renegade Investigations Archive\"/>",
+      "<meta property=\"og:description\" content=\"Deep investigative reporting archive.\"/>",
+      "<meta property=\"og:url\" content=\"http://localhost:38980/categories/investigations\"/>",
+      "<meta property=\"og:site_name\" content=\"Renegade Flagship\"/>",
+      "<meta property=\"og:locale\" content=\"en\"/>",
+      "<meta property=\"og:image\" content=\"http://localhost:38980/media/ced52848-78fc-49d7-b32b-177b9c064935?variant=og&amp;format=jpeg&amp;v=1\"/>",
+      "<meta property=\"og:image:width\" content=\"1200\"/>",
+      "<meta property=\"og:image:height\" content=\"630\"/>",
+      "<meta property=\"og:image:alt\" content=\"Investigations Archive | Deep Dives\"/>",
+      "<meta name=\"twitter:card\" content=\"summary_large_image\"/>",
+      "<meta name=\"twitter:title\" content=\"Renegade Investigations Archive\"/>",
+      "<meta name=\"twitter:description\" content=\"Deep investigative reporting archive.\"/>",
+      "<meta name=\"twitter:image\" content=\"http://localhost:38980/media/ced52848-78fc-49d7-b32b-177b9c064935?variant=og&amp;format=jpeg&amp;v=1\"/>"
+    ],
+    "schemas": [
+      {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "name": "Investigations Archive | Deep Dives",
+        "@graph": [
+          {
+            "@type": "CollectionPage",
+            "@id": "http://localhost:38980/categories/investigations#webpage",
+            "url": "http://localhost:38980/categories/investigations",
+            "name": "Investigations Archive | Deep Dives",
+            "isPartOf": {
+              "@id": "http://localhost:38980/#website"
+            },
+            "breadcrumb": {
+              "@id": "http://localhost:38980/categories/investigations#breadcrumb"
+            },
+            "description": "All investigative reports and financial forensic files.",
+            "inLanguage": "en"
+          },
+          {
+            "@type": "BreadcrumbList",
+            "@id": "http://localhost:38980/categories/investigations#breadcrumb",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "http://localhost:38980/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Investigations",
+                "item": "http://localhost:38980/categories/investigations"
+              }
+            ]
+          },
+          {
+            "@type": "WebSite",
+            "@id": "http://localhost:38980/#website",
+            "url": "http://localhost:38980/",
+            "name": "Renegade Flagship",
+            "publisher": {
+              "@id": "http://localhost:38980/#identity"
+            },
+            "description": "Frontline investigations and dispatch coverage from Renegade.",
+            "inLanguage": "en"
+          },
+          {
+            "@type": "Organization",
+            "@id": "http://localhost:38980/#identity",
+            "name": "Renegade Flagship",
+            "url": "http://localhost:38980/"
+          }
+        ]
+      }
+    ]
+  },
+  "/login": {
+    "status": 200,
+    "robotsHeader": "noindex, nofollow",
+    "tags": [
+      "<meta charSet=\"utf-8\"/>",
+      "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/>",
+      "<title>Sign In</title>",
+      "<meta name=\"robots\" content=\"noindex, nofollow\"/>",
+      "<meta name=\"next-size-adjust\" content=\"\"/>"
+    ],
+    "schemas": []
+  },
+  "/members/settings": {
+    "status": 200,
+    "robotsHeader": "noindex, nofollow",
+    "tags": [
+      "<meta charSet=\"utf-8\"/>",
+      "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/>",
+      "<title>Member Settings</title>",
+      "<meta name=\"robots\" content=\"noindex, nofollow\"/>",
+      "<meta name=\"next-size-adjust\" content=\"\"/>"
+    ],
+    "schemas": []
+  },
+  "/articles/secret-draft-unreleased": {
+    "status": 404,
+    "robotsHeader": null,
+    "tags": [
+      "<meta charSet=\"utf-8\"/>",
+      "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/>",
+      "<meta name=\"robots\" content=\"noindex\"/>",
+      "<meta name=\"next-error\" content=\"not-found\"/>",
+      "<meta name=\"robots\" content=\"noindex, nofollow\"/>"
+    ],
+    "schemas": []
+  },
+  "/articles/exclusive-vault-document": {
+    "status": 404,
+    "robotsHeader": null,
+    "tags": [
+      "<meta charSet=\"utf-8\"/>",
+      "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/>",
+      "<meta name=\"robots\" content=\"noindex\"/>",
+      "<meta name=\"next-error\" content=\"not-found\"/>",
+      "<meta name=\"robots\" content=\"noindex, nofollow\"/>"
+    ],
+    "schemas": []
+  },
+  "/articles/internal-notice-board": {
+    "status": 200,
+    "robotsHeader": null,
+    "tags": [
+      "<meta charSet=\"utf-8\"/>",
+      "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/>",
+      "<meta name=\"next-size-adjust\" content=\"\"/>",
+      "<title>Internal Notice Board</title>",
+      "<meta name=\"description\" content=\"Frontline investigations and dispatch coverage from Renegade.\"/>",
+      "<meta name=\"robots\" content=\"noindex, follow\"/>",
+      "<link rel=\"canonical\" href=\"http://localhost:38980/articles/internal-notice-board\"/>",
+      "<meta property=\"og:title\" content=\"Internal Notice Board\"/>",
+      "<meta property=\"og:description\" content=\"Frontline investigations and dispatch coverage from Renegade.\"/>",
+      "<meta property=\"og:url\" content=\"http://localhost:38980/articles/internal-notice-board\"/>",
+      "<meta property=\"og:site_name\" content=\"Renegade Flagship\"/>",
+      "<meta property=\"og:locale\" content=\"en\"/>",
+      "<meta property=\"og:image\" content=\"http://localhost:38980/media/ced52848-78fc-49d7-b32b-177b9c064935\"/>",
+      "<meta property=\"og:image:width\" content=\"1200\"/>",
+      "<meta property=\"og:image:height\" content=\"630\"/>",
+      "<meta property=\"og:image:alt\" content=\"Renegade Flagship\"/>",
+      "<meta name=\"twitter:card\" content=\"summary_large_image\"/>",
+      "<meta name=\"twitter:title\" content=\"Internal Notice Board\"/>",
+      "<meta name=\"twitter:description\" content=\"Frontline investigations and dispatch coverage from Renegade.\"/>",
+      "<meta name=\"twitter:image\" content=\"http://localhost:38980/media/ced52848-78fc-49d7-b32b-177b9c064935\"/>"
+    ],
+    "schemas": [
+      {
+        "@context": "https://schema.org",
+        "@type": "Article",
+        "name": "Internal Notice Board",
+        "@graph": [
+          {
+            "@type": "Article",
+            "@id": "http://localhost:38980/articles/internal-notice-board#article",
+            "headline": "Internal Notice Board",
+            "url": "http://localhost:38980/articles/internal-notice-board",
+            "mainEntityOfPage": {
+              "@id": "http://localhost:38980/articles/internal-notice-board#webpage"
+            },
+            "publisher": {
+              "@id": "http://localhost:38980/#identity"
+            },
+            "description": "Frontline investigations and dispatch coverage from Renegade.",
+            "datePublished": "2026-10-19T00:06:50.290Z",
+            "dateModified": "2026-10-19T00:16:50.387Z",
+            "image": {
+              "@id": "http://localhost:38980/articles/internal-notice-board#primaryimage"
+            },
+            "inLanguage": "en"
+          },
+          {
+            "@type": "WebPage",
+            "@id": "http://localhost:38980/articles/internal-notice-board#webpage",
+            "url": "http://localhost:38980/articles/internal-notice-board",
+            "name": "Internal Notice Board",
+            "isPartOf": {
+              "@id": "http://localhost:38980/#website"
+            },
+            "breadcrumb": {
+              "@id": "http://localhost:38980/articles/internal-notice-board#breadcrumb"
+            },
+            "description": "Frontline investigations and dispatch coverage from Renegade.",
+            "inLanguage": "en",
+            "datePublished": "2026-10-19T00:06:50.290Z",
+            "dateModified": "2026-10-19T00:16:50.387Z",
+            "primaryImageOfPage": {
+              "@id": "http://localhost:38980/articles/internal-notice-board#primaryimage"
+            },
+            "mainEntity": {
+              "@id": "http://localhost:38980/articles/internal-notice-board#article"
+            }
+          },
+          {
+            "@type": "BreadcrumbList",
+            "@id": "http://localhost:38980/articles/internal-notice-board#breadcrumb",
+            "itemListElement": [
+              {
+                "@type": "ListItem",
+                "position": 1,
+                "name": "Home",
+                "item": "http://localhost:38980/"
+              },
+              {
+                "@type": "ListItem",
+                "position": 2,
+                "name": "Articles",
+                "item": "http://localhost:38980/articles"
+              },
+              {
+                "@type": "ListItem",
+                "position": 3,
+                "name": "Internal Notice Board",
+                "item": "http://localhost:38980/articles/internal-notice-board"
+              }
+            ]
+          },
+          {
+            "@type": "WebSite",
+            "@id": "http://localhost:38980/#website",
+            "url": "http://localhost:38980/",
+            "name": "Renegade Flagship",
+            "publisher": {
+              "@id": "http://localhost:38980/#identity"
+            },
+            "description": "Frontline investigations and dispatch coverage from Renegade.",
+            "inLanguage": "en"
+          },
+          {
+            "@type": "Organization",
+            "@id": "http://localhost:38980/#identity",
+            "name": "Renegade Flagship",
+            "url": "http://localhost:38980/"
+          },
+          {
+            "@type": "ImageObject",
+            "@id": "http://localhost:38980/articles/internal-notice-board#primaryimage",
+            "url": "http://localhost:38980/media/ced52848-78fc-49d7-b32b-177b9c064935",
+            "contentUrl": "http://localhost:38980/media/ced52848-78fc-49d7-b32b-177b9c064935",
+            "caption": "Renegade Flagship"
+          }
+        ]
+      }
+    ]
+  },
+  "/sitemap.xml": {
+    "status": 200,
+    "robotsHeader": null,
+    "tags": null,
+    "schemas": []
+  },
+  "/sitemaps/1.xml": {
+    "status": 200,
+    "robotsHeader": null,
+    "tags": null,
+    "schemas": []
+  },
+  "preview-authenticated": {
+    "status": 404,
+    "robotsHeader": "noindex, nofollow",
+    "tags": [
+      "<meta charSet=\"utf-8\"/>",
+      "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/>",
+      "<meta name=\"robots\" content=\"noindex\"/>",
+      "<meta name=\"next-error\" content=\"not-found\"/>",
+      "<meta name=\"robots\" content=\"noindex, nofollow\"/>"
+    ],
+    "schemas": []
+  },
+  "preview-anonymous": {
+    "status": 404,
+    "robotsHeader": "noindex, nofollow",
+    "tags": [
+      "<meta charSet=\"utf-8\"/>",
+      "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"/>",
+      "<meta name=\"robots\" content=\"noindex\"/>",
+      "<meta name=\"next-error\" content=\"not-found\"/>",
+      "<meta name=\"robots\" content=\"noindex, nofollow\"/>"
+    ],
+    "schemas": []
+  }
+}

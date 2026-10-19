@@ -11,18 +11,20 @@ import { Categories, Content, Sections, Topics } from '../../src/collections/Pub
 import { PageLayouts } from '../../src/collections/PageLayouts'
 import { SiteSettings } from '../../src/globals/SiteSettings'
 
-function createMockPayload(overrides: {
-  siteSettings?: Record<string, any>
-  contentDocs?: Array<Record<string, any>>
-  categoryDocs?: Array<Record<string, any>>
-  sectionDocs?: Array<Record<string, any>>
-  topicDocs?: Array<Record<string, any>>
-  layoutDocs?: Array<Record<string, any>>
-  redirectDocs?: Array<Record<string, any>>
-  mediaDocs?: Record<string, Record<string, any>>
-  articleFamilyDocs?: Array<Record<string, any>>
-  revisionDocs?: Record<string, Record<string, any>>
-} = {}) {
+function createMockPayload(
+  overrides: {
+    siteSettings?: Record<string, any>
+    contentDocs?: Array<Record<string, any>>
+    categoryDocs?: Array<Record<string, any>>
+    sectionDocs?: Array<Record<string, any>>
+    topicDocs?: Array<Record<string, any>>
+    layoutDocs?: Array<Record<string, any>>
+    redirectDocs?: Array<Record<string, any>>
+    mediaDocs?: Record<string, Record<string, any>>
+    articleFamilyDocs?: Array<Record<string, any>>
+    revisionDocs?: Record<string, Record<string, any>>
+  } = {},
+) {
   const siteSettings = {
     themeId: 'neutral-starter',
     siteName: 'Renegade Dispatch',
@@ -83,8 +85,7 @@ function createMockPayload(overrides: {
         return Object.entries(cond).every(([field, expr]: [string, any]) => {
           if (!expr || typeof expr !== 'object') return true
           const rawVal = doc[field]
-          const val =
-            rawVal && typeof rawVal === 'object' && 'id' in rawVal ? rawVal.id : rawVal
+          const val = rawVal && typeof rawVal === 'object' && 'id' in rawVal ? rawVal.id : rawVal
           if ('equals' in expr) return val === expr.equals
           if ('not_equals' in expr) return val !== expr.not_equals
           if ('in' in expr && Array.isArray(expr.in)) return expr.in.includes(val)
@@ -107,6 +108,83 @@ function createMockPayload(overrides: {
 }
 
 describe('RC1 06A — Metadata, Schema and Indexing Controls', () => {
+  it('rejects entitlement-gated canonical targets and gating a referenced canonical target', async () => {
+    const target = {
+      id: 'primary',
+      site: 'site-1',
+      canonicalPath: '/articles/primary',
+      status: 'published',
+      visibility: 'public',
+      requiredEntitlement: { resource: 'vault', capability: 'read' },
+    }
+    const payload = createMockPayload({ contentDocs: [target] })
+    await expect(
+      assertSeoCanonicalConflictFree({
+        collection: 'content',
+        payload,
+        data: {
+          site: 'site-1',
+          canonicalPath: '/articles/copy',
+          seoCanonicalURL: '/articles/primary',
+        },
+      }),
+    ).rejects.toThrow(/not an indexable public document/)
+
+    const referenced = createMockPayload({
+      contentDocs: [
+        {
+          id: 'copy',
+          site: 'site-1',
+          canonicalPath: '/articles/copy',
+          seoCanonicalURL: 'https://dispatch.example.org/articles/primary',
+        },
+      ],
+    })
+    await expect(
+      assertSeoCanonicalConflictFree({
+        collection: 'content',
+        payload: referenced,
+        originalDoc: { ...target, requiredEntitlement: null },
+        data: { requiredEntitlement: target.requiredEntitlement },
+      }),
+    ).rejects.toThrow(/currently referenced as the canonical URL/)
+  })
+
+  it.each([
+    { seoNoIndex: true },
+    { removeFromDiscovery: true },
+    { retentionMode: 'tombstone' },
+    { publishedAt: '2099-01-01T00:00:00Z' },
+  ])(
+    'preserves incoming taxonomy JSON canonical references when target changes: %j',
+    async (data) => {
+      const payload = createMockPayload({
+        categoryDocs: [
+          {
+            id: 'alias',
+            site: 'site-1',
+            canonicalPath: '/categories/copy',
+            discoveryOverrides: { canonical: '/articles/primary' },
+          },
+        ],
+      })
+      await expect(
+        assertSeoCanonicalConflictFree({
+          collection: 'content',
+          payload,
+          data,
+          originalDoc: {
+            id: 'primary',
+            site: 'site-1',
+            canonicalPath: '/articles/primary',
+            status: 'published',
+            visibility: 'public',
+          },
+        }),
+      ).rejects.toThrow(/currently referenced as the canonical URL/)
+    },
+  )
+
   it('exposes shared editable SEO fields across Content, Categories, Sections, Topics, PageLayouts, and SiteSettings', () => {
     const extractFieldNames = (fields: any[]): string[] =>
       fields.flatMap((f) => {
