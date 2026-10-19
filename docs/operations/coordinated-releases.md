@@ -2,7 +2,9 @@
 
 ## Overview
 
-Renegade CMoS Coordinated Releases (`FLOW-04`) provide a robust, transactional release orchestration engine replacing loose grouping tags with an immutable, auditable release lifecycle. A release binds together multiple content items (Pages, Posts, Products), global presentation snapshots (templates, layout blocks, theme variables), media asset versions with rights verifications, redirect definitions, and distribution drafts into an atomically scheduled or manually executed bundle.
+Coordinated releases group approved artifacts and persist per-action results. Scheduling saves the release and worker job in one PostgreSQL transaction. Newsletter dispatch saves recipient outbox rows and their jobs in one transaction. Publication services retain their own transaction boundaries; the entire release is a saga and may partially succeed. Social delivery uses the canonical durable outbox and stable provider keys.
+
+Successful actions are retained on retry. Interrupted execution can be resumed from the release workspace after the previous process exits; PostgreSQL session locks serialize runners. Persisted fingerprints reject changed artifacts and require a new approved release. Newsletter success means queued recipients, with delivery status recorded separately. Use development email or explicitly configured isolated SMTP/social harnesses for acceptance; remote delivery requires its own evidence.
 
 ---
 
@@ -110,19 +112,15 @@ Authorized users (`owner`, `admin`, or `staff` with override permissions) may wa
 
 ## 4. Saga Outbox Execution & Boundaries
 
-### Ordered Transactional Execution
+### Persisted action boundaries
 
-1. **Worker Lease Acquisition**: Worker acquires a lock via `leaseOwner` and `leaseExpiresAt` (default 5 minutes), preventing concurrent execution or race conditions across distributed instances.
-2. **Step 1 — Content Revisions**: Published content revisions are updated atomically within the database transaction.
-3. **Step 2 — Presentation Snapshot**: Pinned layout blocks, global variables, and theme tokens are applied.
-4. **Step 3 — Media Assets**: Attached media assets are verified and linked to published content.
-5. **Step 4 — Redirects**: Redirect rules are inserted or updated in the routing table.
-6. **Step 5 — Cache Invalidation (Outbox)**: External edge/CDN and ISR caches are evicted.
-7. **Step 6 — Distribution Webhooks (Outbox)**: Outbox event dispatched for downstream RSS, syndication, and distribution channels.
+PostgreSQL session advisory locks serialize release runners and release mutations across processes. Informational lease fields identify the runner; process exit releases the actual lock. Actions execute in pinned order and checkpoint independently. Article/product publication uses canonical services; page/presentation execution rejects stale revisions and publishes the persisted layout. Media execution validates current governance. Redirects use site-scoped upsert. Newsletters queue reviewed recipient snapshots and worker jobs transactionally. Approved social drafts use the canonical provider outbox.
+
+The release is not globally atomic. Each action is classified as `idempotent_db` or `saga_outbox`; a crash after a side effect but before its checkpoint is reconciled by the canonical action's identity. Cache invalidation is best effort in the local worker; no external CDN or generic webhook delivery is claimed.
 
 ### Partial Failure Isolation & Safe Retry
 
-- If Step 5 (Cache Invalidation) or Step 6 (Distribution) fails, the release transitions to `partially-failed`.
+- If any action fails after another succeeds, the release transitions to `partially-failed`.
 - The operator can inspect the exact failing step in the Release Center UI.
 - Calling `retryRelease(id)` skips already succeeded idempotent steps (Content, Presentation, Redirects) and retries only the uncompleted/failed steps.
 

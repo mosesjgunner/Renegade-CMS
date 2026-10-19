@@ -1,0 +1,258 @@
+{
+  "checks": 28,
+  "succeeded": false,
+  "trace": [
+    {
+      "name": "DST engine: Fall Back earlier is ambiguous",
+      "passed": true
+    },
+    {
+      "name": "DST engine: Fall Back earlier is CDT (06:30 UTC)",
+      "passed": true
+    },
+    {
+      "name": "DST engine: Fall Back later is CST (07:30 UTC)",
+      "passed": true
+    },
+    {
+      "name": "DST engine: Spring Forward advance wasNonexistent",
+      "passed": true
+    },
+    {
+      "name": "DST engine: Spring Forward reject throws DSTNonexistentTimeError",
+      "passed": true
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 3405,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "Editorial companion created for article 1",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/workflow/actions",
+      "method": "POST",
+      "status": 200,
+      "bytes": 1845,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/workflow/actions",
+      "method": "POST",
+      "status": 200,
+      "bytes": 2517,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "Article 1 approved",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/calendar/schedule",
+      "method": "POST",
+      "status": 200,
+      "bytes": 197,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "Article 1 scheduled via API successfully",
+      "passed": true
+    },
+    {
+      "name": "Article 1 scheduledForUtc matches Fall Back earlier instant",
+      "passed": true
+    },
+    {
+      "name": "Scheduled job 1 row created in database",
+      "passed": true
+    },
+    {
+      "name": "Job 1 status is queued",
+      "passed": true
+    },
+    {
+      "name": "Job 1 revision pinned to Rev 1",
+      "passed": true
+    },
+    {
+      "route": "/api/content/7a3507d6-27df-4bac-a4e6-e7547d6ddf83",
+      "method": "PATCH",
+      "status": 200,
+      "bytes": 5915,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "Article 1 currentRevisionSequence is now 2",
+      "passed": true
+    },
+    {
+      "name": "Job 1 pinned revision still strictly matches Rev 1 (NOT Rev 2)",
+      "passed": true
+    },
+    {
+      "name": "Worker B rejected while lease is held by Worker A",
+      "passed": true
+    },
+    {
+      "name": "Worker B error indicates leased by worker-node-alpha",
+      "passed": true
+    },
+    {
+      "name": "Reconciliation reclaimed stale lease",
+      "passed": true
+    },
+    {
+      "name": "Job 1 succeeded on stale lease recovery",
+      "passed": true
+    },
+    {
+      "name": "Article 1 lifecycle transitioned to published",
+      "passed": true
+    },
+    {
+      "name": "Article 1 latestPublishedRevision is Rev 1 (NOT Rev 2)",
+      "passed": true
+    },
+    {
+      "name": "Job 1 status transitioned to completed",
+      "passed": true
+    },
+    {
+      "name": "Job 1 leaseOwner cleared",
+      "passed": true
+    },
+    {
+      "name": "Idempotent retry on completed job returns success without duplicates",
+      "passed": true
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 3397,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/workflow/actions",
+      "method": "POST",
+      "status": 200,
+      "bytes": 1845,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/workflow/actions",
+      "method": "POST",
+      "status": 200,
+      "bytes": 2517,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/calendar/schedule",
+      "method": "POST",
+      "status": 200,
+      "bytes": 197,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "Article 2 scheduled successfully across Spring Forward gap",
+      "passed": true
+    },
+    {
+      "name": "Spring Forward advance flag true",
+      "passed": true
+    },
+    {
+      "name": "Reconciliation executed Job 2",
+      "passed": true
+    },
+    {
+      "name": "Article 2 published",
+      "passed": true
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 3389,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/workflow/actions",
+      "method": "POST",
+      "status": 200,
+      "bytes": 1845,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/workflow/actions",
+      "method": "POST",
+      "status": 200,
+      "bytes": 2517,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/calendar/schedule",
+      "method": "POST",
+      "status": 200,
+      "bytes": 199,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "Job 3 queued",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/calendar/schedule",
+      "method": "POST",
+      "status": 500,
+      "bytes": 5165,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    }
+  ]
+}

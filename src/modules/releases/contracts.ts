@@ -43,6 +43,7 @@ export type ReleaseArtifactItem = {
   pinnedRevisionSequence?: number
   pinnedSnapshot?: Record<string, unknown>
   pinnedHash: string
+  pinnedStateHash?: string
   mediaRightsStatus?: string
   mediaRightsExpiresAt?: string
   redirectRule?: {
@@ -122,7 +123,7 @@ export type ReleaseApproval = {
 
 export type ReleaseExecutionStep = {
   stepId: string
-  boundary: 'transactional_db' | 'saga_outbox'
+  boundary: 'transactional_db' | 'idempotent_db' | 'saga_outbox'
   artifactId: string
   targetType: ReleaseTargetType
   status: ReleaseItemStatus

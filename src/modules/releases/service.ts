@@ -18,6 +18,9 @@ import type {
 } from './contracts'
 import { evaluateReleaseGates, isGateSnapshotValid } from './gates'
 import { executeReleaseSaga, rollbackReleaseSaga } from './saga'
+import { assertReleaseArtifactScope } from './artifact-scope'
+import { releaseTransaction } from './transaction'
+import { withExecutionLock } from '../operations/execution-lock'
 
 type Doc = Record<string, any>
 
@@ -112,7 +115,7 @@ export async function createRelease(
  * media versions/rights state, redirects, and later distribution draft IDs.
  * Once approved/scheduled, changes require a visible release revision increment or reapproval.
  */
-export async function pinArtifact(
+async function pinArtifactUnlocked(
   payload: Payload,
   releaseId: string,
   input: PinArtifactInput,
@@ -124,6 +127,10 @@ export async function pinArtifact(
     depth: 0,
     overrideAccess: true,
   } as never)) as Doc
+
+  if (!['draft', 'in-review', 'approved', 'scheduled'].includes(release.status))
+    throw new Error('Executed releases cannot be edited. Create a new release.')
+  const pinnedStateHash = await assertReleaseArtifactScope(payload, release, input)
 
   const artifacts: ReleaseArtifactItem[] = [...(release.artifacts || release.executionItems || [])]
 
@@ -140,6 +147,7 @@ export async function pinArtifact(
     pinnedRevisionSequence: input.pinnedRevisionSequence,
     pinnedSnapshot: input.pinnedSnapshot,
     pinnedHash: input.pinnedHash,
+    pinnedStateHash,
     mediaRightsStatus: input.mediaRightsStatus,
     mediaRightsExpiresAt: input.mediaRightsExpiresAt,
     redirectRule: input.redirectRule,
@@ -178,6 +186,7 @@ export async function pinArtifact(
       releaseRevision: nextRevision,
       status: nextStatus,
       gateSnapshot: null, // automatically invalidated
+      approvals: [],
       executionAudit: appendAudit(release, {
         action: 'release.artifact.pinned',
         actorId,
@@ -199,7 +208,7 @@ export async function pinArtifact(
 /**
  * Unpins an artifact from a release.
  */
-export async function unpinArtifact(
+async function unpinArtifactUnlocked(
   payload: Payload,
   releaseId: string,
   artifactId: string,
@@ -211,6 +220,9 @@ export async function unpinArtifact(
     depth: 0,
     overrideAccess: true,
   } as never)) as Doc
+
+  if (!['draft', 'in-review', 'approved', 'scheduled'].includes(release.status))
+    throw new Error('Executed releases cannot be edited. Create a new release.')
 
   const artifacts: ReleaseArtifactItem[] = (
     release.artifacts ||
@@ -371,7 +383,7 @@ export async function waiveGateRule(
 /**
  * Submits release for editorial review.
  */
-export async function submitReleaseForReview(
+async function submitReleaseForReviewUnlocked(
   payload: Payload,
   releaseId: string,
   actorId: string,
@@ -383,6 +395,8 @@ export async function submitReleaseForReview(
     overrideAccess: true,
   } as never)) as Doc
 
+  if (!['draft', 'in-review'].includes(release.status))
+    throw new Error('Only draft releases can be submitted for review.')
   const artifacts = release.artifacts || release.executionItems || []
   if (artifacts.length === 0) {
     throw new Error('Cannot submit an empty release for review.')
@@ -408,7 +422,7 @@ export async function submitReleaseForReview(
 /**
  * Approves a release. Enforces gate snapshot validity.
  */
-export async function approveRelease(
+async function approveReleaseUnlocked(
   payload: Payload,
   releaseId: string,
   actor: { id: string; role: string },
@@ -420,6 +434,9 @@ export async function approveRelease(
     depth: 0,
     overrideAccess: true,
   } as never)) as unknown as CoordinatedRelease
+
+  if (!['draft', 'in-review', 'approved'].includes(release.status))
+    throw new Error('Executed releases cannot be approved again.')
 
   // Evaluate gates if no snapshot
   let snapshot = release.gateSnapshot
@@ -471,7 +488,7 @@ export async function approveRelease(
  * 5. Schedule a coordinated release.
  * Enforces gate validity, verifies approvals, and schedules Payload worker job.
  */
-export async function scheduleRelease(
+async function scheduleReleaseUnlocked(
   payload: Payload,
   input: {
     releaseId: string
@@ -496,6 +513,9 @@ export async function scheduleRelease(
   if (release.lastScheduleMutationId === input.idempotencyKey && release.executionJob) {
     return release as unknown as CoordinatedRelease
   }
+
+  if (!['approved', 'scheduled'].includes(release.status) && (release.artifacts?.length || 0) > 0)
+    throw new Error('Only an approved release can be scheduled.')
 
   // Preflight validation
   let snapshot = release.gateSnapshot as ReleaseGateSnapshot | null
@@ -625,6 +645,7 @@ export async function executeRelease(
     releaseId: input.releaseId,
     actorId: input.actorId,
     workerId: input.workerId,
+    scheduleMutationId: input.scheduleMutationId,
   })
 }
 
@@ -651,7 +672,7 @@ export async function retryRelease(
 /**
  * Cancels a scheduled release prior to completion.
  */
-export async function cancelRelease(
+async function cancelReleaseUnlocked(
   payload: Payload,
   releaseId: string,
   actorId: string,
@@ -668,6 +689,34 @@ export async function cancelRelease(
     throw new Error(`Cannot cancel a release that is '${release.status}'. Use rollback instead.`)
   }
 
+  for (const item of list(release.artifacts || release.executionItems)) {
+    if (item.status === 'succeeded' || item.targetType !== 'distribution') continue
+    const queues = await payload.find({
+      collection: 'social-queue-items' as never,
+      where: { idempotencyKey: { contains: `release:${releaseId}:${item.id}:` } },
+      depth: 0,
+      pagination: false,
+      limit: 0,
+      overrideAccess: true,
+    })
+    for (const queue of queues.docs as Doc[]) {
+      await withExecutionLock(payload, `social:${queue.id}`, async () => {
+        const current = (await payload.findByID({
+          collection: 'social-queue-items' as never,
+          id: queue.id,
+          depth: 0,
+          overrideAccess: true,
+        })) as Doc
+        if (current.status === 'published') return
+        await payload.update({
+          collection: 'social-queue-items' as never,
+          id: queue.id,
+          data: { status: 'cancelled', cancelledAt: new Date().toISOString() },
+          overrideAccess: true,
+        } as never)
+      })
+    }
+  }
   const updated = (await payload.update({
     collection: 'content-releases' as never,
     id: releaseId,
@@ -869,4 +918,69 @@ export async function retryContentRelease(
     },
     overrideAccess: true,
   } as never)
+}
+
+export async function pinArtifact(
+  payload: Payload,
+  releaseId: string,
+  input: PinArtifactInput,
+  actorId: string,
+) {
+  return withExecutionLock(payload, `release:${releaseId}`, () =>
+    pinArtifactUnlocked(payload, releaseId, input, actorId),
+  )
+}
+
+export async function unpinArtifact(
+  payload: Payload,
+  releaseId: string,
+  artifactId: string,
+  actorId: string,
+) {
+  return withExecutionLock(payload, `release:${releaseId}`, () =>
+    unpinArtifactUnlocked(payload, releaseId, artifactId, actorId),
+  )
+}
+
+export async function cancelRelease(
+  payload: Payload,
+  releaseId: string,
+  actorId: string,
+  reason?: string,
+) {
+  return withExecutionLock(payload, `release:${releaseId}`, () =>
+    releaseTransaction(payload, (tx) => cancelReleaseUnlocked(tx, releaseId, actorId, reason)),
+  )
+}
+
+export async function scheduleRelease(
+  payload: Payload,
+  input: {
+    releaseId: string
+    scheduledFor: string
+    timeZone: string
+    actorId: string
+    idempotencyKey: string
+  },
+) {
+  return withExecutionLock(payload, `release:${input.releaseId}`, () =>
+    releaseTransaction(payload, (tx) => scheduleReleaseUnlocked(tx, input)),
+  )
+}
+
+export async function approveRelease(
+  payload: Payload,
+  releaseId: string,
+  actor: { id: string; role: string },
+  comment?: string,
+) {
+  return withExecutionLock(payload, `release:${releaseId}`, () =>
+    approveReleaseUnlocked(payload, releaseId, actor, comment),
+  )
+}
+
+export async function submitReleaseForReview(payload: Payload, releaseId: string, actorId: string) {
+  return withExecutionLock(payload, `release:${releaseId}`, () =>
+    submitReleaseForReviewUnlocked(payload, releaseId, actorId),
+  )
 }

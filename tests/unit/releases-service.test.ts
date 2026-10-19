@@ -1,5 +1,7 @@
+/* eslint-disable @typescript-eslint/no-explicit-any -- polymorphic legacy fixture */
 import { describe, expect, it } from 'vitest'
 
+import { computeReleaseFingerprint } from '../../src/modules/releases/gates'
 import { executeContentRelease } from '../../src/modules/releases/service'
 
 type MockExecutionItem = {
@@ -13,6 +15,7 @@ type MockExecutionItem = {
 
 type MockRelease = {
   id: string
+  site: string
   lastScheduleMutationId: string
   status: string
   executionAudit: unknown[]
@@ -30,6 +33,7 @@ describe('content release execution saga', () => {
   it('retains successful items and retries only the failed item', async () => {
     const release: MockRelease = {
       id: 'release-1',
+      site: 'site-1',
       lastScheduleMutationId: 'schedule-1',
       status: 'scheduled',
       executionAudit: [],
@@ -53,8 +57,8 @@ describe('content release execution saga', () => {
       ],
     }
     const products: Record<string, MockProduct> = {
-      good: { id: 'good', state: 'approved', media: [] },
-      bad: { id: 'bad', state: 'approved', media: [] },
+      good: { id: 'good', site: 'site-1', state: 'approved', media: [] },
+      bad: { id: 'bad', site: 'site-1', state: 'approved', media: [] },
     }
     let productWrites = 0
     const payload = {
@@ -87,6 +91,16 @@ describe('content release execution saga', () => {
       'succeeded',
       'failed',
     ])
+    const modern = release as MockRelease & Record<string, any>
+    const fingerprint = computeReleaseFingerprint(modern as never)
+    modern.gateSnapshot = { isValid: true, evaluatedFingerprint: fingerprint }
+    modern.approvals = [
+      {
+        decision: 'approved',
+        releaseRevision: modern.releaseRevision,
+        gateSnapshotFingerprint: fingerprint,
+      },
+    ]
     await executeContentRelease(payload as never, {
       releaseId: 'release-1',
       scheduleMutationId: 'schedule-1',

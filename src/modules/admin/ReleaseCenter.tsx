@@ -779,7 +779,7 @@ export default function ReleaseCenter() {
                   </button>
                 )}
 
-                {['partially-failed', 'failed'].includes(activeRelease.status) && (
+                {['partially-failed', 'failed', 'executing'].includes(activeRelease.status) && (
                   <button
                     onClick={() => handleAction('retry')}
                     style={{
@@ -793,7 +793,9 @@ export default function ReleaseCenter() {
                       cursor: 'pointer',
                     }}
                   >
-                    ↻ Retry Failed Steps
+                    {activeRelease.status === 'executing'
+                      ? 'Resume Interrupted Release'
+                      : 'Retry Failed Steps'}
                   </button>
                 )}
 

@@ -50,10 +50,10 @@ export function sanitizeErrorLog(errorStr: string | null | undefined): string | 
   if (!errorStr) return null
   return errorStr
     .replace(
-      /(?:postgres|mysql|mongodb|redis|http|https):\/\/[^\s@]+@/gi,
+      /(?:postgresql|postgres|mysql|mongodb|redis|http|https):\/\/[^\s@]+@/gi,
       'scheme://***REDACTED***@',
     )
-    .replace(/(?:bearer|token|secret|password|key|auth)=["']?[^"'\s]+["']?/gi, '$1=***REDACTED***')
+    .replace(/(bearer|token|secret|password|key|auth)=["']?[^"'\s&]+["']?/gi, '$1=***REDACTED***')
     .replace(
       /["']?(?:secret|password|privateKey|accessToken|apiKey)["']?\s*:\s*["']?[^"'\s,]+["']?/gi,
       '"secret":"***REDACTED***"',
@@ -216,6 +216,54 @@ async function executeScheduledPublishJobUnlocked(
 }
 
 /**
+ * Returns the effective schedule details for a job, including timezone/DST flags,
+ * status, target revision sequence, lease state, and sanitized logs.
+ */
+export async function getEffectiveSchedule(
+  payload: Payload,
+  jobId: string,
+): Promise<{
+  jobId: string
+  articleId: string
+  targetRevisionId: string
+  scheduledFor: string
+  timeZone: string
+  status: string
+  leaseOwner: string | null
+  leaseExpiresAt: string | null
+  retryCount: number
+  maxRetries: number
+  lastErrorSanitized: string | null
+  createdAt: string
+  updatedAt: string
+}> {
+  const job = (await payload.findByID({
+    collection: 'scheduled-publish-jobs',
+    id: jobId,
+    depth: 1,
+    overrideAccess: true,
+  })) as Doc
+
+  if (!job) throw new Error(`Scheduled publish job "${jobId}" not found.`)
+
+  return {
+    jobId: String(job.id),
+    articleId: idOf(job.article),
+    targetRevisionId: idOf(job.revision),
+    scheduledFor: String(job.scheduledFor),
+    timeZone: String(job.timeZone),
+    status: String(job.status),
+    leaseOwner: job.leaseOwner ? String(job.leaseOwner) : null,
+    leaseExpiresAt: job.leaseExpiresAt ? String(job.leaseExpiresAt) : null,
+    retryCount: Number(job.retryCount ?? 0),
+    maxRetries: Number(job.maxRetries ?? 3),
+    lastErrorSanitized: sanitizeErrorLog(job.lastError ? String(job.lastError) : null),
+    createdAt: String(job.createdAt),
+    updatedAt: String(job.updatedAt),
+  }
+}
+
+/**
  * Reconciles and executes due scheduled publication jobs.
  */
 export async function reconcileScheduleWorkerJobs(
@@ -225,6 +273,7 @@ export async function reconcileScheduleWorkerJobs(
   processedCount: number
   successCount: number
   failedCount: number
+  reclaimedStaleLeases: number
   jobs: Array<{ jobId: string; success: boolean; published: boolean; error?: string }>
 }> {
   const nowMs = options.now ? new Date(options.now).getTime() : Date.now()
@@ -244,11 +293,21 @@ export async function reconcileScheduleWorkerJobs(
     } as never)) as { docs: Doc[] }
   ).docs
 
+  let reclaimedStaleLeases = 0
   const results: Array<{ jobId: string; success: boolean; published: boolean; error?: string }> = []
   let successCount = 0
   let failedCount = 0
 
   for (const job of pendingJobs) {
+    // If a job is marked processing but its lease has expired, note it
+    if (
+      job.status === 'processing' &&
+      job.leaseExpiresAt &&
+      new Date(job.leaseExpiresAt).getTime() <= nowMs
+    ) {
+      reclaimedStaleLeases++
+    }
+
     const res = await executeScheduledPublishJob(payload, String(job.id), options)
     results.push({
       jobId: String(job.id),
@@ -264,6 +323,7 @@ export async function reconcileScheduleWorkerJobs(
     processedCount: results.length,
     successCount,
     failedCount,
+    reclaimedStaleLeases,
     jobs: results,
   }
 }

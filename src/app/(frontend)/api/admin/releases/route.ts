@@ -2,6 +2,7 @@ import configPromise from '@payload-config'
 import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
 
+import { resolveRedirectSite } from '@/modules/operations/redirect-site'
 import { createRelease } from '@/modules/releases/service'
 
 import { resolveOperatorGrantContext } from '@/modules/operations/operator-grants'
@@ -74,7 +75,14 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json()
-    const targetSiteId = body.siteId || body.site || grant.authorizedSiteIds[0] || 'site-primary'
+    const targetSiteId = await resolveRedirectSite(
+      payload,
+      auth.user,
+      request,
+      body.siteId || body.site,
+    )
+    if (!targetSiteId)
+      return NextResponse.json({ error: 'Select an authorized active site.' }, { status: 403 })
     if (!grant.isGlobalOwner && !grant.authorizedSiteIds.includes(targetSiteId)) {
       return NextResponse.json(
         { error: 'Forbidden. You do not have operator access to this site.' },

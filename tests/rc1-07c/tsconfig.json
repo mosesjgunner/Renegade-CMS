@@ -1,0 +1,12 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": { "incremental": false },
+  "include": [
+    "../../next-env.d.ts",
+    "../../src/**/*.ts",
+    "../../src/**/*.tsx",
+    "./verify.ts",
+    "../unit/rc1-07c-releases.test.ts"
+  ],
+  "exclude": ["../../node_modules", "../../docs", "../../.payload-upstream"]
+}

@@ -1,0 +1,458 @@
+{
+  "checks": 8,
+  "succeeded": true,
+  "trace": [
+    {
+      "route": "/api/globals/site-settings",
+      "method": "POST",
+      "status": 200,
+      "bytes": 2142,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 3403,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/workflow/actions",
+      "method": "POST",
+      "status": 200,
+      "bytes": 1845,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/workflow/actions",
+      "method": "POST",
+      "status": 200,
+      "bytes": 2517,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/page-layouts",
+      "method": "POST",
+      "status": 201,
+      "bytes": 1338,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/audience-lists",
+      "method": "POST",
+      "status": 201,
+      "bytes": 672,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/email-messages",
+      "method": "POST",
+      "status": 201,
+      "bytes": 1197,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/email-messages/d548b9af-f37b-4ef8-b52d-f4f662dfd0a0",
+      "method": "PATCH",
+      "status": 200,
+      "bytes": 1184,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/social-accounts",
+      "method": "POST",
+      "status": 201,
+      "bytes": 859,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/social-drafts",
+      "method": "POST",
+      "status": 201,
+      "bytes": 6323,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/social-network-variants",
+      "method": "POST",
+      "status": 201,
+      "bytes": 6578,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/social-network-variants",
+      "method": "POST",
+      "status": 201,
+      "bytes": 6588,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "admin UI creates a release persisted in the selected site",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/releases/afb9ca5f-f21f-4c44-82cc-ba4e4b7d490b",
+      "method": "POST",
+      "status": 400,
+      "bytes": 54,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "draft execution rejected",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/releases/afb9ca5f-f21f-4c44-82cc-ba4e4b7d490b",
+      "method": "POST",
+      "status": 200,
+      "bytes": 2741,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/releases/afb9ca5f-f21f-4c44-82cc-ba4e4b7d490b",
+      "method": "POST",
+      "status": 200,
+      "bytes": 3904,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/releases/afb9ca5f-f21f-4c44-82cc-ba4e4b7d490b",
+      "method": "POST",
+      "status": 200,
+      "bytes": 5025,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/releases/afb9ca5f-f21f-4c44-82cc-ba4e4b7d490b",
+      "method": "POST",
+      "status": 200,
+      "bytes": 6202,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/releases/afb9ca5f-f21f-4c44-82cc-ba4e4b7d490b",
+      "method": "POST",
+      "status": 200,
+      "bytes": 7301,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/releases/afb9ca5f-f21f-4c44-82cc-ba4e4b7d490b",
+      "method": "POST",
+      "status": 200,
+      "bytes": 8416,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/releases/afb9ca5f-f21f-4c44-82cc-ba4e4b7d490b",
+      "method": "POST",
+      "status": 403,
+      "bytes": 25,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/releases/afb9ca5f-f21f-4c44-82cc-ba4e4b7d490b",
+      "method": "GET",
+      "status": 403,
+      "bytes": 25,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/releases/afb9ca5f-f21f-4c44-82cc-ba4e4b7d490b",
+      "method": "POST",
+      "status": 403,
+      "bytes": 54,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/releases/afb9ca5f-f21f-4c44-82cc-ba4e4b7d490b",
+      "method": "GET",
+      "status": 403,
+      "bytes": 54,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/releases/afb9ca5f-f21f-4c44-82cc-ba4e4b7d490b",
+      "method": "POST",
+      "status": 403,
+      "bytes": 25,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/releases/afb9ca5f-f21f-4c44-82cc-ba4e4b7d490b",
+      "method": "GET",
+      "status": 403,
+      "bytes": 25,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "anonymous, foreign-site staff and ungranted staff denied with release unchanged",
+      "passed": true
+    },
+    {
+      "route": "/api/email-messages",
+      "method": "POST",
+      "status": 201,
+      "bytes": 1114,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/releases/afb9ca5f-f21f-4c44-82cc-ba4e4b7d490b",
+      "method": "POST",
+      "status": 400,
+      "bytes": 73,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/content-releases/afb9ca5f-f21f-4c44-82cc-ba4e4b7d490b",
+      "method": "PATCH",
+      "status": 403,
+      "bytes": 85,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/releases/afb9ca5f-f21f-4c44-82cc-ba4e4b7d490b",
+      "method": "POST",
+      "status": 200,
+      "bytes": 8539,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/releases/afb9ca5f-f21f-4c44-82cc-ba4e4b7d490b",
+      "method": "POST",
+      "status": 200,
+      "bytes": 11772,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "admin execution records partial failure, five successes and adapter failure",
+      "passed": true
+    },
+    {
+      "name": "canonical article and page are published",
+      "passed": true
+    },
+    {
+      "route": "/articles/story-07c-1792402137460",
+      "method": "GET",
+      "status": 200,
+      "bytes": 39333,
+      "etag": null,
+      "location": null,
+      "contentType": "text/html; charset=utf-8",
+      "robots": null
+    },
+    {
+      "name": "anonymous observed article output contains approved text",
+      "passed": true
+    },
+    {
+      "name": "newsletter queues actual durable delivery, with no external delivery claim",
+      "passed": true
+    },
+    {
+      "name": "two social outboxes persist successful and failed destinations",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/releases",
+      "method": "POST",
+      "status": 200,
+      "bytes": 1337,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/releases/890c968e-99c9-44ac-9701-452c48330657",
+      "method": "POST",
+      "status": 200,
+      "bytes": 2490,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/releases/890c968e-99c9-44ac-9701-452c48330657",
+      "method": "POST",
+      "status": 200,
+      "bytes": 2613,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/releases/890c968e-99c9-44ac-9701-452c48330657",
+      "method": "POST",
+      "status": 200,
+      "bytes": 5846,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/releases/890c968e-99c9-44ac-9701-452c48330657",
+      "method": "POST",
+      "status": 200,
+      "bytes": 6892,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/releases",
+      "method": "POST",
+      "status": 200,
+      "bytes": 1316,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/releases/d360108d-1989-4cc1-9873-9683d6fc4992",
+      "method": "POST",
+      "status": 200,
+      "bytes": 2385,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/releases/d360108d-1989-4cc1-9873-9683d6fc4992",
+      "method": "POST",
+      "status": 200,
+      "bytes": 2508,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/releases/d360108d-1989-4cc1-9873-9683d6fc4992",
+      "method": "POST",
+      "status": 200,
+      "bytes": 5741,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/releases/d360108d-1989-4cc1-9873-9683d6fc4992",
+      "method": "POST",
+      "status": 200,
+      "bytes": 6773,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/releases/d360108d-1989-4cc1-9873-9683d6fc4992",
+      "method": "POST",
+      "status": 200,
+      "bytes": 6898,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    }
+  ]
+}

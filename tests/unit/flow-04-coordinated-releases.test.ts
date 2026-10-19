@@ -49,7 +49,10 @@ vi.mock('../../src/modules/editorial/persistence', () => ({
 
 type MockDoc = Record<string, any>
 
-function createMockPayload(initialDocs: Record<string, Record<string, MockDoc>> = {}) {
+function createMockPayload(
+  initialDocs: Record<string, Record<string, MockDoc>> = {},
+  site = 'site-1',
+) {
   const store: Record<string, Record<string, MockDoc>> = {
     'content-releases': {},
     'article-family-content': {},
@@ -60,6 +63,17 @@ function createMockPayload(initialDocs: Record<string, Record<string, MockDoc>> 
     'payload-jobs': {},
     ...initialDocs,
   }
+
+  const fixtures: Record<string, string[]> = {
+    'article-family-content': ['art-101', 'art-201', 'art-301', 'art-blocked'],
+    'page-layouts': ['layout-landing-page', 'layout-global-header', 'page-302'],
+    'media-assets': ['media-hero-banner', 'media-expired-rights'],
+  }
+  for (const [collection, ids] of Object.entries(fixtures)) {
+    store[collection] ??= {}
+    for (const id of ids) store[collection][id] ??= { id, site }
+  }
+  for (const docs of Object.values(store)) for (const doc of Object.values(docs)) doc.site ??= site
 
   const jobsQueue: any[] = []
 
@@ -496,35 +510,38 @@ describe('FLOW-04 Coordinated Releases Comprehensive Unit Suite', () => {
 
   describe('5. Scheduling & Idempotent Execution Saga', () => {
     it('schedules release into Operations Queue and executes all heterogeneous artifacts', async () => {
-      const payload = createMockPayload({
-        'article-family-content': {
-          'art-401': {
-            id: 'art-401',
-            slug: 'major-features',
-            lifecycle: 'approved',
-            latestPublishedRevision: null,
+      const payload = createMockPayload(
+        {
+          'article-family-content': {
+            'art-401': {
+              id: 'art-401',
+              slug: 'major-features',
+              lifecycle: 'approved',
+              latestPublishedRevision: null,
+            },
+          },
+          'page-layouts': {
+            'page-layout-1': {
+              id: 'page-layout-1',
+              path: '/features',
+              revision: 2,
+              publishedRevision: 1,
+              status: 'draft',
+              blocks: [{ blockType: 'feature-grid' }],
+            },
+            'global-header-1': {
+              id: 'global-header-1',
+              path: '__global__/header',
+              surface: 'global',
+              slot: 'header',
+              revision: 2,
+              status: 'published',
+              blocks: [{ blockType: 'nav-header' }],
+            },
           },
         },
-        'page-layouts': {
-          'page-layout-1': {
-            id: 'page-layout-1',
-            path: '/features',
-            revision: 2,
-            publishedRevision: 1,
-            status: 'draft',
-            blocks: [{ blockType: 'feature-grid' }],
-          },
-          'global-header-1': {
-            id: 'global-header-1',
-            path: '__global__/header',
-            surface: 'global',
-            slot: 'header',
-            revision: 1,
-            status: 'published',
-            blocks: [{ blockType: 'nav-header' }],
-          },
-        },
-      })
+        'site-alpha',
+      )
 
       const release = await createRelease(payload, {
         name: 'Coordinated Launch Execution',
@@ -661,6 +678,7 @@ describe('FLOW-04 Coordinated Releases Comprehensive Unit Suite', () => {
           'prod-fail-first': {
             id: 'prod-fail-first',
             state: 'approved',
+            releaseRevision: 'revision-prod-1',
             slug: 'flaky-digital-product',
           },
         },
@@ -713,10 +731,13 @@ describe('FLOW-04 Coordinated Releases Comprehensive Unit Suite', () => {
           targetType: 'product',
           targetId: 'prod-fail-first',
           title: 'Flaky Digital Product',
+          pinnedRevisionId: 'revision-prod-1',
           pinnedHash: 'h-prod',
         },
         'user-pub',
       )
+
+      await approveRelease(payload, release.id, { id: 'user-pub', role: 'publisher' })
 
       // First run: 1 step succeeds, 1 step fails
       const firstRun = await executeReleaseSaga(payload, {
@@ -841,6 +862,8 @@ describe('FLOW-04 Coordinated Releases Comprehensive Unit Suite', () => {
         },
         'user-pub',
       )
+
+      await approveRelease(payload, release.id, { id: 'user-pub', role: 'publisher' })
 
       // Execute release to completion
       const exec = await executeReleaseSaga(payload, {

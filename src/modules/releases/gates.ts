@@ -22,12 +22,16 @@ const idOf = (value: unknown): string =>
 export function computeReleaseFingerprint(release: Partial<CoordinatedRelease>): string {
   const artifacts = (release.artifacts ?? release.executionItems ?? []).map(
     (a: ReleaseArtifactItem) => ({
-      id: a.id,
+      id: a.id || (a as unknown as { key: string }).key || `${a.targetType}:${a.targetId}`,
       targetType: a.targetType,
       targetId: a.targetId,
       pinnedRevisionId: a.pinnedRevisionId,
       pinnedRevisionSequence: a.pinnedRevisionSequence,
       pinnedHash: a.pinnedHash,
+      pinnedStateHash: a.pinnedStateHash,
+      pinnedSnapshot: a.pinnedSnapshot,
+      distributionDraftId: a.distributionDraftId,
+      mediaRightsExpiresAt: a.mediaRightsExpiresAt,
       redirectRule: a.redirectRule,
       mediaRightsStatus: a.mediaRightsStatus,
       locale: a.locale,

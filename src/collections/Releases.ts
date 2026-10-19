@@ -2,8 +2,9 @@ import {
   operatorSiteCreateAccess,
   operatorSiteReadAccess,
   operatorSiteUpdateAccess,
+  preserveRecordRelationshipsAccess,
 } from '../modules/operations/operator-grants'
-import type { CollectionConfig } from 'payload'
+import { APIError, type CollectionConfig } from 'payload'
 import { ownerFields } from './canonical-shared'
 export const ContentReleases: CollectionConfig = {
   slug: 'content-releases',
@@ -12,7 +13,42 @@ export const ContentReleases: CollectionConfig = {
     create: operatorSiteCreateAccess,
     delete: operatorSiteReadAccess,
     read: operatorSiteReadAccess,
-    update: operatorSiteUpdateAccess,
+    update: preserveRecordRelationshipsAccess(
+      'content-releases',
+      ['site'],
+      operatorSiteUpdateAccess,
+    ),
+  },
+  hooks: {
+    beforeChange: [
+      ({ data, originalDoc, req }) => {
+        if (!req.user) return data
+        const managed = [
+          'artifacts',
+          'executionItems',
+          'executionAudit',
+          'executionJob',
+          'scheduleAudit',
+          'approvals',
+          'gateSnapshot',
+          'sagaSteps',
+          'resultingUrls',
+          'lastScheduleMutationId',
+          'releaseRevision',
+          'leaseOwner',
+          'leaseExpiresAt',
+        ]
+        if (
+          managed.some(
+            (key) =>
+              key in data && JSON.stringify(data[key]) !== JSON.stringify(originalDoc?.[key]),
+          ) ||
+          ('status' in data && data.status !== (originalDoc?.status ?? 'draft'))
+        )
+          throw new APIError('Use the release workspace actions to change release state.', 403)
+        return data
+      },
+    ],
   },
   fields: [
     ...ownerFields(),

@@ -55,9 +55,18 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Staff site access required.' }, { status: 403 })
 
     const actorUserId = String(auth.user.id)
+    const canPublish = ['owner', 'administrator'].includes(String(auth.user.role))
+    const requestedRole = (body as { role?: string }).role
+    const role: 'publisher' | 'editor' = canPublish
+      ? requestedRole === 'editor'
+        ? 'editor'
+        : 'publisher'
+      : requestedRole === 'publisher'
+        ? 'publisher'
+        : 'editor'
     const actor: EditorialActor = {
       id: actorUserId,
-      role: ['owner', 'administrator'].includes(String(auth.user.role)) ? 'publisher' : 'editor',
+      role,
     }
 
     if (action === 'cancel') {

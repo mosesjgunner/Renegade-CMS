@@ -1,0 +1,10 @@
+{
+  "bdd21f31ed72748656709a36fbd6081e": {
+    "uri": "at://did:plc:rc107c/app.bsky.feed.post/bdd21f31ed72748656709a36fbd6081e",
+    "value": {
+      "$type": "app.bsky.feed.post",
+      "text": "07C good destination",
+      "createdAt": "2026-10-19T09:30:33.946Z"
+    }
+  }
+}

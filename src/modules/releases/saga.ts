@@ -1,3 +1,7 @@
+import { releaseTransaction } from './transaction'
+import { assertReleaseArtifactScope } from './artifact-scope'
+import { isGateSnapshotValid } from './gates'
+import { reviewAndScheduleNewsletter, queueNewsletterDeliveries } from '../audience/service'
 import type { Payload } from 'payload'
 
 import type {
@@ -17,7 +21,9 @@ import { publishProductRelease } from '../commerce/service'
 
 type Doc = Record<string, unknown>
 const idOf = (value: unknown): string =>
-  typeof value === 'string' ? value : String((value as Doc)?.id ?? (value as Doc)?.value ?? '')
+  typeof value === 'string' || typeof value === 'number'
+    ? String(value)
+    : String((value as Doc)?.id ?? (value as Doc)?.value ?? '')
 
 /**
  * Executes one persisted artifact step. The release execution lock serializes runners;
@@ -66,6 +72,9 @@ export async function executeDatabaseStep(
         overrideAccess: true,
       } as never)) as unknown as Doc
 
+      if (Number(pageLayout.revision || 1) !== Number(item.pinnedRevisionSequence))
+        throw new Error('Pinned layout revision is stale; create a new approved release.')
+
       const lastKnownGoodState = {
         previousRevision: Number(pageLayout?.revision || 1),
         previousPublishedRevision: pageLayout?.publishedRevision ?? null,
@@ -108,7 +117,9 @@ export async function executeDatabaseStep(
         previousPublishedRevision: layout?.publishedRevision ?? null,
       }
 
-      const nextBlocks = item.pinnedSnapshot?.blocks || layout?.blocks
+      if (Number(layout.revision || 1) !== Number(item.pinnedRevisionSequence))
+        throw new Error('Pinned presentation revision is stale; create a new approved release.')
+      const nextBlocks = layout?.blocks
       await payload.update({
         collection: 'page-layouts' as never,
         id: item.targetId,
@@ -116,7 +127,7 @@ export async function executeDatabaseStep(
         data: {
           blocks: nextBlocks,
           status: 'published',
-          publishedRevision: Number(layout?.revision || 1) + 1,
+          publishedRevision: Number(layout?.revision || 1),
         },
         overrideAccess: true,
       } as never)
@@ -252,46 +263,32 @@ export async function executeDatabaseStep(
   }
 
   if (targetType === 'newsletter') {
-    // 8. Newsletter / Email Message Artifact
-    if (payload.findByID) {
-      const email = (await payload
-        .findByID({
-          collection: 'email-messages' as never,
-          id: item.targetId,
-          depth: 0,
-          overrideAccess: true,
-        } as never)
-        .catch(() => null)) as unknown as Doc
-
-      const lastKnownGoodState = {
-        previousStatus: String(email?.status || 'draft'),
-      }
-
-      await payload.update({
-        collection: 'email-messages' as never,
+    return releaseTransaction(payload, async (payload) => {
+      const email = await payload.findByID({
+        collection: 'email-messages',
         id: item.targetId,
-        data: {
-          status: 'scheduled',
-          scheduledAt: release.plannedInstant || release.scheduledFor || new Date().toISOString(),
-        },
+        depth: 0,
         overrideAccess: true,
-      } as never)
-
-      return {
-        output: { scheduled: true, emailId: item.targetId },
-        lastKnownGoodState,
+      })
+      if (email.status === 'review') {
+        const scheduledFor = new Date().toISOString()
+        await reviewAndScheduleNewsletter(payload, {
+          messageId: item.targetId,
+          scheduledFor,
+          cancelCutoffAt: scheduledFor,
+          blocks: email.blocks as never,
+        })
+      } else if (!['scheduled', 'queued'].includes(String(email.status))) {
+        throw new Error('Release newsletter must be reviewed before dispatch.')
       }
-    }
-    return {
-      output: { scheduled: true, emailId: item.targetId },
-      lastKnownGoodState: { previousStatus: 'draft' },
-    }
+      await queueNewsletterDeliveries(payload, item.targetId)
+      return {
+        output: { queued: true, emailId: item.targetId, delivery: 'not-observed' },
+        lastKnownGoodState: { previousStatus: email.status },
+      }
+    })
   }
-
-  return {
-    output: { executed: true, targetId: item.targetId },
-    lastKnownGoodState: {},
-  }
+  throw new Error(`Unsupported release artifact type: ${targetType}`)
 }
 
 /**
@@ -440,7 +437,13 @@ async function compensateStep(
  */
 export async function executeReleaseSaga(
   payload: Payload,
-  input: { releaseId: string; actorId: string; workerId?: string; isRetry?: boolean },
+  input: {
+    releaseId: string
+    actorId: string
+    workerId?: string
+    isRetry?: boolean
+    scheduleMutationId?: string
+  },
 ): Promise<ReleaseExecutionResult> {
   return withExecutionLock(payload, `release:${input.releaseId}`, () =>
     executeReleaseSagaUnlocked(payload, input),
@@ -453,6 +456,7 @@ async function executeReleaseSagaUnlocked(
     releaseId: string
     actorId: string
     workerId?: string
+    scheduleMutationId?: string
     isRetry?: boolean
   },
 ): Promise<ReleaseExecutionResult> {
@@ -463,8 +467,66 @@ async function executeReleaseSagaUnlocked(
     overrideAccess: true,
   } as never)) as unknown as CoordinatedRelease
 
+  if (
+    input.scheduleMutationId &&
+    input.scheduleMutationId !==
+      (release as unknown as Record<string, unknown>).lastScheduleMutationId
+  )
+    return {
+      releaseId: String(release.id),
+      status: release.status,
+      succeeded: 0,
+      unresolved: 0,
+      failedSteps: [],
+      resultingUrls: [],
+    }
   if (['cancelled', 'rolled-back'].includes(release.status)) {
     throw new Error(`Cannot execute release in '${release.status}' state.`)
+  }
+
+  if (['completed', 'released'].includes(release.status)) {
+    const done = release.artifacts ?? release.executionItems ?? []
+    return {
+      releaseId: String(release.id),
+      status: release.status,
+      succeeded: done.filter((i) => i.status === 'succeeded').length,
+      unresolved: 0,
+      failedSteps: [],
+      resultingUrls: release.resultingUrls ?? [],
+    }
+  }
+  if (
+    input.isRetry &&
+    !['failed', 'partially-failed', 'partial-failure', 'blocked', 'executing'].includes(
+      release.status,
+    )
+  )
+    throw new Error('Only failed or interrupted releases can be retried.')
+  if (
+    ![
+      'approved',
+      'scheduled',
+      'executing',
+      'failed',
+      'partially-failed',
+      'partial-failure',
+      'blocked',
+    ].includes(release.status)
+  )
+    throw new Error('Release must be approved before execution.')
+  // Legacy schedules have no explicit artifacts; modern releases require a matching approval.
+  if ((release.artifacts?.length ?? 0) > 0) {
+    const validity = isGateSnapshotValid(release, release.gateSnapshot)
+    if (
+      !validity.valid ||
+      !release.approvals?.some(
+        (a) =>
+          a.decision === 'approved' &&
+          a.releaseRevision === release.releaseRevision &&
+          a.gateSnapshotFingerprint === release.gateSnapshot?.evaluatedFingerprint,
+      )
+    )
+      throw new Error('Release approval is missing or stale.')
   }
 
   const items = [...(release.artifacts ?? release.executionItems ?? [])] as ReleaseArtifactItem[]
@@ -504,6 +566,12 @@ async function executeReleaseSagaUnlocked(
     let publicUrl: string | undefined
 
     try {
+      const currentStateHash = await assertReleaseArtifactScope(payload, release, {
+        ...item,
+        targetType: targetType,
+      })
+      if (item.pinnedStateHash && currentStateHash !== item.pinnedStateHash)
+        throw new Error('Pinned artifact has changed; create a new approved release.')
       const dbRes = await executeDatabaseStep(payload, release, item, input.actorId)
       stepOutput = dbRes.output
       lastKnownGoodState = dbRes.lastKnownGoodState
@@ -535,7 +603,10 @@ async function executeReleaseSagaUnlocked(
 
       sagaSteps.push({
         stepId,
-        boundary: 'transactional_db',
+        boundary:
+          targetType === 'distribution' || targetType === 'newsletter'
+            ? 'saga_outbox'
+            : 'idempotent_db',
         artifactId: itemId,
         targetType: targetType,
         status: 'succeeded',
@@ -557,7 +628,10 @@ async function executeReleaseSagaUnlocked(
 
       sagaSteps.push({
         stepId,
-        boundary: 'transactional_db',
+        boundary:
+          targetType === 'distribution' || targetType === 'newsletter'
+            ? 'saga_outbox'
+            : 'idempotent_db',
         artifactId: itemId,
         targetType: targetType,
         status: 'failed',
