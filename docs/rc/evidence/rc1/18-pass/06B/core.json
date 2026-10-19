@@ -1,0 +1,179 @@
+{
+  "sitemap": {
+    "root": "urlset",
+    "urls": [
+      "http://localhost:38981/",
+      "http://localhost:38981/articles",
+      "http://localhost:38981/articles/report-02",
+      "http://localhost:38981/articles/report-03",
+      "http://localhost:38981/articles/report-04",
+      "http://localhost:38981/articles/report-05",
+      "http://localhost:38981/articles/report-06",
+      "http://localhost:38981/articles/report-07",
+      "http://localhost:38981/articles/report-08",
+      "http://localhost:38981/articles/report-09",
+      "http://localhost:38981/articles/report-10",
+      "http://localhost:38981/articles/report-11",
+      "http://localhost:38981/articles/report-12",
+      "http://localhost:38981/categories/category-06b"
+    ],
+    "items": []
+  },
+  "rss": {
+    "root": "rss",
+    "urls": [],
+    "items": [
+      {
+        "title": "report-12",
+        "link": "http://localhost:38981/articles/report-12"
+      },
+      {
+        "title": "report-11",
+        "link": "http://localhost:38981/articles/report-11"
+      },
+      {
+        "title": "report-10",
+        "link": "http://localhost:38981/articles/report-10"
+      },
+      {
+        "title": "report-09",
+        "link": "http://localhost:38981/articles/report-09"
+      },
+      {
+        "title": "report-08",
+        "link": "http://localhost:38981/articles/report-08"
+      },
+      {
+        "title": "report-07",
+        "link": "http://localhost:38981/articles/report-07"
+      },
+      {
+        "title": "report-06",
+        "link": "http://localhost:38981/articles/report-06"
+      },
+      {
+        "title": "report-05",
+        "link": "http://localhost:38981/articles/report-05"
+      },
+      {
+        "title": "report-04",
+        "link": "http://localhost:38981/articles/report-04"
+      },
+      {
+        "title": "report-03",
+        "link": "http://localhost:38981/articles/report-03"
+      },
+      {
+        "title": "Report <&> 06B",
+        "link": "http://localhost:38981/articles/report-02"
+      }
+    ]
+  },
+  "feed": {
+    "version": "https://jsonfeed.org/version/1.1",
+    "title": "Discovery 06B",
+    "home_page_url": "http://localhost:38981",
+    "feed_url": "http://localhost:38981/feed.json",
+    "items": [
+      {
+        "id": "urn:renegade:content:8fa85a47-10e4-4337-8f81-60d0648392ae",
+        "url": "http://localhost:38981/articles/report-12",
+        "title": "report-12",
+        "summary": "Public reporting",
+        "content_text": "BODY-06B published original",
+        "date_published": "2026-10-18T23:50:49.430Z",
+        "date_modified": "2026-10-19T00:50:49.487Z"
+      },
+      {
+        "id": "urn:renegade:content:0b832a20-6aa3-44b9-ab3d-0cca85ac0c36",
+        "url": "http://localhost:38981/articles/report-11",
+        "title": "report-11",
+        "summary": "Public reporting",
+        "content_text": "BODY-06B published original",
+        "date_published": "2026-10-18T23:50:49.219Z",
+        "date_modified": "2026-10-19T00:50:49.281Z"
+      },
+      {
+        "id": "urn:renegade:content:aa9e7fdf-33a1-4e9e-9b6e-b3eb5163916e",
+        "url": "http://localhost:38981/articles/report-10",
+        "title": "report-10",
+        "summary": "Public reporting",
+        "content_text": "BODY-06B published original",
+        "date_published": "2026-10-18T23:50:48.960Z",
+        "date_modified": "2026-10-19T00:50:49.036Z"
+      },
+      {
+        "id": "urn:renegade:content:c3adaf3e-5e67-4259-bbf1-923788f1647c",
+        "url": "http://localhost:38981/articles/report-09",
+        "title": "report-09",
+        "summary": "Public reporting",
+        "content_text": "BODY-06B published original",
+        "date_published": "2026-10-18T23:50:48.699Z",
+        "date_modified": "2026-10-19T00:50:48.781Z"
+      },
+      {
+        "id": "urn:renegade:content:29cbd2e6-f6e8-4322-befc-809ec70846f1",
+        "url": "http://localhost:38981/articles/report-08",
+        "title": "report-08",
+        "summary": "Public reporting",
+        "content_text": "BODY-06B published original",
+        "date_published": "2026-10-18T23:50:48.407Z",
+        "date_modified": "2026-10-19T00:50:48.483Z"
+      },
+      {
+        "id": "urn:renegade:content:1f195b39-fdba-4d10-9e21-30cee395f896",
+        "url": "http://localhost:38981/articles/report-07",
+        "title": "report-07",
+        "summary": "Public reporting",
+        "content_text": "BODY-06B published original",
+        "date_published": "2026-10-18T23:50:48.141Z",
+        "date_modified": "2026-10-19T00:50:48.203Z"
+      },
+      {
+        "id": "urn:renegade:content:2631bfc0-fcae-4a6a-b385-95592488997f",
+        "url": "http://localhost:38981/articles/report-06",
+        "title": "report-06",
+        "summary": "Public reporting",
+        "content_text": "BODY-06B published original",
+        "date_published": "2026-10-18T23:50:47.906Z",
+        "date_modified": "2026-10-19T00:50:47.970Z"
+      },
+      {
+        "id": "urn:renegade:content:e29b154c-f766-493f-aa02-42f74eec3733",
+        "url": "http://localhost:38981/articles/report-05",
+        "title": "report-05",
+        "summary": "Public reporting",
+        "content_text": "BODY-06B published original",
+        "date_published": "2026-10-18T23:50:47.652Z",
+        "date_modified": "2026-10-19T00:50:47.732Z"
+      },
+      {
+        "id": "urn:renegade:content:743058bd-0ac2-4ed8-b43e-50a9984084f6",
+        "url": "http://localhost:38981/articles/report-04",
+        "title": "report-04",
+        "summary": "Public reporting",
+        "content_text": "BODY-06B published original",
+        "date_published": "2026-10-18T23:50:47.441Z",
+        "date_modified": "2026-10-19T00:50:47.503Z"
+      },
+      {
+        "id": "urn:renegade:content:1d9ffdd7-3d2f-4f1f-9801-85a16e421577",
+        "url": "http://localhost:38981/articles/report-03",
+        "title": "report-03",
+        "summary": "Public reporting",
+        "content_text": "BODY-06B published original",
+        "date_published": "2026-10-18T23:50:47.200Z",
+        "date_modified": "2026-10-19T00:50:47.269Z"
+      },
+      {
+        "id": "urn:renegade:content:2b792419-6db6-4f4f-be3f-382da35c2e39",
+        "url": "http://localhost:38981/articles/report-02",
+        "title": "Report <&> 06B",
+        "summary": "Public reporting",
+        "content_text": "BODY-06B published original",
+        "date_published": "2026-10-18T23:50:46.857Z",
+        "date_modified": "2026-10-19T00:50:46.958Z"
+      }
+    ]
+  }
+}

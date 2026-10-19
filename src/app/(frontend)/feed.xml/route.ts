@@ -50,7 +50,11 @@ export async function GET(request: Request) {
       })
 
     const feedUrl = `${base}/feed.xml`
-    const latestDate = articleDocs[0]?.dates.publishedAt || articleDocs[0]?.dates.modifiedAt
+    const latestDate = articleDocs
+      .flatMap((doc) => [doc.dates.modifiedAt, doc.dates.publishedAt])
+      .filter((value): value is string => Boolean(value) && Number.isFinite(Date.parse(value!)))
+      .sort()
+      .at(-1)
     const lastBuildDate = latestDate
       ? new Date(latestDate).toUTCString()
       : 'Thu, 01 Jan 1970 00:00:00 GMT'

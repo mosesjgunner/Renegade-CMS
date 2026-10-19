@@ -15,8 +15,9 @@ export const dynamic = 'force-dynamic'
 
 export async function GET(request: Request, context: { params: Promise<{ page: string }> }) {
   const raw = (await context.params).page.replace(/\.xml$/, '')
+  if (!/^[1-9]\d*$/.test(raw)) return new Response('Not found', { status: 404 })
   const page = Number(raw) - 1
-  if (!Number.isInteger(page) || page < 0) return new Response('Not found', { status: 404 })
+  if (!Number.isSafeInteger(page) || page < 0) return new Response('Not found', { status: 404 })
   const payload = await getPayload({ config })
   const siteId = await publicSiteForHost(payload, request.headers.get('host'))
   if (!siteId) return new Response('Not found', { status: 404 })

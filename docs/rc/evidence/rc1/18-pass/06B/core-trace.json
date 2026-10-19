@@ -1,0 +1,153 @@
+{
+  "checks": 23,
+  "trace": [
+    {
+      "name": "unpublication persisted",
+      "passed": true
+    },
+    {
+      "name": "trash tombstone persisted",
+      "passed": true
+    },
+    {
+      "route": "/sitemap.xml",
+      "method": "GET",
+      "status": 200,
+      "bytes": 229,
+      "etag": "\"8b1c13574d1d039edb1708030a7c0b0fa82aade1e773e815fd82668ca57a4529\""
+    },
+    {
+      "name": "/sitemap.xml parses as XML",
+      "passed": true
+    },
+    {
+      "name": "core: sitemap index",
+      "passed": true
+    },
+    {
+      "route": "/sitemaps/1.xml",
+      "method": "GET",
+      "status": 200,
+      "bytes": 1482,
+      "etag": "\"2bea3f96afb2b4b945cf3ccb6bdccd80a56e48b9f32132805c8e6f89ea460f8e\""
+    },
+    {
+      "name": "/sitemaps/1.xml parses as XML",
+      "passed": true
+    },
+    {
+      "route": "/feed.xml",
+      "method": "GET",
+      "status": 200,
+      "bytes": 4194,
+      "etag": "\"c37d330cc51e7de4dac883c920c3826526945178125de315cda2da4d5fd653df\""
+    },
+    {
+      "name": "/feed.xml parses as XML",
+      "passed": true
+    },
+    {
+      "route": "/feed.json",
+      "method": "GET",
+      "status": 200,
+      "bytes": 3450,
+      "etag": "\"d3da4d5c7eb956ab3a4a0afcb8bb39a2fc3ea03ca76590437fa9523aaa7fad97\""
+    },
+    {
+      "route": "/articles",
+      "method": "GET",
+      "status": 200,
+      "bytes": 62119,
+      "etag": null
+    },
+    {
+      "name": "core: JSON Feed content fields",
+      "passed": true
+    },
+    {
+      "name": "core: RSS 2.0",
+      "passed": true
+    },
+    {
+      "name": "core: report-02 in sitemap and both feeds",
+      "passed": true
+    },
+    {
+      "route": "/articles/report-02",
+      "method": "GET",
+      "status": 200,
+      "bytes": 41517,
+      "etag": null
+    },
+    {
+      "name": "core: report-02 public body",
+      "passed": true
+    },
+    {
+      "name": "core: renamed excluded from all discovery",
+      "passed": true
+    },
+    {
+      "name": "core: report-00 excluded from all discovery",
+      "passed": true
+    },
+    {
+      "name": "core: secret-draft excluded from all discovery",
+      "passed": true
+    },
+    {
+      "name": "core: secret-members excluded from all discovery",
+      "passed": true
+    },
+    {
+      "name": "core: secret-private excluded from all discovery",
+      "passed": true
+    },
+    {
+      "name": "core: secret-unlisted excluded from all discovery",
+      "passed": true
+    },
+    {
+      "name": "core: secret-foreign excluded from all discovery",
+      "passed": true
+    },
+    {
+      "name": "core: secret-noindex excluded from all discovery",
+      "passed": true
+    },
+    {
+      "name": "core: secret-entitled excluded from all discovery",
+      "passed": true
+    },
+    {
+      "name": "core: report-01 excluded from all discovery",
+      "passed": true
+    },
+    {
+      "name": "published lastmod survives restart",
+      "passed": true
+    },
+    {
+      "route": "/robots.txt",
+      "method": "GET",
+      "status": 200,
+      "bytes": 218,
+      "etag": null
+    },
+    {
+      "name": "robots sitemap correct after restart",
+      "passed": true
+    },
+    {
+      "route": "/events/feed.ics",
+      "method": "GET",
+      "status": 404,
+      "bytes": 9,
+      "etag": null
+    },
+    {
+      "name": "Events ICS unavailable when Events disabled; core feeds remain working",
+      "passed": true
+    }
+  ]
+}

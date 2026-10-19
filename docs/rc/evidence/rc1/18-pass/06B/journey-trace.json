@@ -1,0 +1,867 @@
+{
+  "checks": 79,
+  "trace": [
+    {
+      "route": "/api/globals/site-settings",
+      "method": "POST",
+      "status": 200,
+      "bytes": 2171,
+      "etag": null
+    },
+    {
+      "route": "/api/tags",
+      "method": "POST",
+      "status": 201,
+      "bytes": 1695,
+      "etag": null
+    },
+    {
+      "route": "/api/categories",
+      "method": "POST",
+      "status": 201,
+      "bytes": 1780,
+      "etag": null
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 6173,
+      "etag": null
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 6173,
+      "etag": null
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 6178,
+      "etag": null
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 6173,
+      "etag": null
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 6173,
+      "etag": null
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 6173,
+      "etag": null
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 6173,
+      "etag": null
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 6173,
+      "etag": null
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 6173,
+      "etag": null
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 6173,
+      "etag": null
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 6173,
+      "etag": null
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 6173,
+      "etag": null
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 6173,
+      "etag": null
+    },
+    {
+      "name": "HTTP creation persisted publication, canonical path and public timestamp",
+      "passed": true
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 6156,
+      "etag": null
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 6167,
+      "etag": null
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 6167,
+      "etag": null
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 6171,
+      "etag": null
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 6165,
+      "etag": null
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 6208,
+      "etag": null
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 3342,
+      "etag": null
+    },
+    {
+      "route": "/sitemap.xml",
+      "method": "GET",
+      "status": 200,
+      "bytes": 229,
+      "etag": "\"8b1c13574d1d039edb1708030a7c0b0fa82aade1e773e815fd82668ca57a4529\""
+    },
+    {
+      "name": "/sitemap.xml parses as XML",
+      "passed": true
+    },
+    {
+      "name": "initial: sitemap index",
+      "passed": true
+    },
+    {
+      "route": "/sitemaps/1.xml",
+      "method": "GET",
+      "status": 200,
+      "bytes": 1694,
+      "etag": "\"106c2c8e252e0463af235409bb543499b87288baf3356f747100a8810e8f43c9\""
+    },
+    {
+      "name": "/sitemaps/1.xml parses as XML",
+      "passed": true
+    },
+    {
+      "route": "/feed.xml",
+      "method": "GET",
+      "status": 200,
+      "bytes": 4866,
+      "etag": "\"10abf88e225edecad813d257412a53ca7ebfe467b7cee17035666cc9b5358938\""
+    },
+    {
+      "name": "/feed.xml parses as XML",
+      "passed": true
+    },
+    {
+      "route": "/feed.json",
+      "method": "GET",
+      "status": 200,
+      "bytes": 4046,
+      "etag": "\"607ae22464e3a7a7e21d85721773e8d6d4b03228fd374c7c5cf615cf2dc30230\""
+    },
+    {
+      "route": "/articles",
+      "method": "GET",
+      "status": 200,
+      "bytes": 65917,
+      "etag": null
+    },
+    {
+      "name": "initial: JSON Feed content fields",
+      "passed": true
+    },
+    {
+      "name": "initial: RSS 2.0",
+      "passed": true
+    },
+    {
+      "name": "initial: report-00 in sitemap and both feeds",
+      "passed": true
+    },
+    {
+      "route": "/articles/report-00",
+      "method": "GET",
+      "status": 200,
+      "bytes": 41246,
+      "etag": null
+    },
+    {
+      "name": "initial: report-00 public body",
+      "passed": true
+    },
+    {
+      "name": "initial: secret-draft excluded from all discovery",
+      "passed": true
+    },
+    {
+      "name": "initial: secret-members excluded from all discovery",
+      "passed": true
+    },
+    {
+      "name": "initial: secret-private excluded from all discovery",
+      "passed": true
+    },
+    {
+      "name": "initial: secret-unlisted excluded from all discovery",
+      "passed": true
+    },
+    {
+      "name": "initial: secret-noindex excluded from all discovery",
+      "passed": true
+    },
+    {
+      "name": "initial: secret-entitled excluded from all discovery",
+      "passed": true
+    },
+    {
+      "name": "initial: secret-foreign excluded from all discovery",
+      "passed": true
+    },
+    {
+      "name": "archive first page has exactly 12 published cards",
+      "passed": true
+    },
+    {
+      "name": "archive next link reaches page two",
+      "passed": true
+    },
+    {
+      "name": "tag archive has accessible page two",
+      "passed": true
+    },
+    {
+      "name": "category archive filters restricted content before accessible pagination",
+      "passed": true
+    },
+    {
+      "name": "RSS and JSON subscription links visible",
+      "passed": true
+    },
+    {
+      "route": "/events/feed.ics",
+      "method": "GET",
+      "status": 200,
+      "bytes": 106,
+      "etag": null
+    },
+    {
+      "name": "enabled Events exposes ICS",
+      "passed": true
+    },
+    {
+      "route": "/articles?page=0",
+      "method": "GET",
+      "status": 404,
+      "bytes": 25523,
+      "etag": null
+    },
+    {
+      "route": "/articles?page=-1",
+      "method": "GET",
+      "status": 404,
+      "bytes": 25498,
+      "etag": null
+    },
+    {
+      "route": "/articles?page=1.5",
+      "method": "GET",
+      "status": 404,
+      "bytes": 25529,
+      "etag": null
+    },
+    {
+      "route": "/articles?page=NaN",
+      "method": "GET",
+      "status": 404,
+      "bytes": 25529,
+      "etag": null
+    },
+    {
+      "route": "/articles?page=999",
+      "method": "GET",
+      "status": 404,
+      "bytes": 27503,
+      "etag": null
+    },
+    {
+      "name": "invalid and beyond-end pages return 404",
+      "passed": true
+    },
+    {
+      "route": "/sitemaps/999.xml",
+      "method": "GET",
+      "status": 404,
+      "bytes": 9,
+      "etag": null
+    },
+    {
+      "route": "/feed.json",
+      "method": "GET",
+      "status": 404,
+      "bytes": 9,
+      "etag": null
+    },
+    {
+      "name": "unknown host denied feed discovery",
+      "passed": true
+    },
+    {
+      "route": "/feed.json",
+      "method": "GET",
+      "status": 200,
+      "bytes": 496,
+      "etag": "\"d24f1211c2e4c1b966c6e619c15f29aba2a0eea41a6f16740b7bf9dd73b02dde\""
+    },
+    {
+      "name": "second site feed is isolated",
+      "passed": true
+    },
+    {
+      "route": "/robots.txt",
+      "method": "GET",
+      "status": 200,
+      "bytes": 225,
+      "etag": null
+    },
+    {
+      "name": "robots uses host-specific canonical origin",
+      "passed": true
+    },
+    {
+      "route": "/robots.txt",
+      "method": "GET",
+      "status": 200,
+      "bytes": 27,
+      "etag": null
+    },
+    {
+      "name": "unknown robots fails closed",
+      "passed": true
+    },
+    {
+      "route": "/api/content/ef300586-7b4d-434b-b54c-104b032bd4aa",
+      "method": "PATCH",
+      "status": 403,
+      "bytes": 70,
+      "etag": null
+    },
+    {
+      "route": "/api/content/ef300586-7b4d-434b-b54c-104b032bd4aa",
+      "method": "PATCH",
+      "status": 403,
+      "bytes": 70,
+      "etag": null
+    },
+    {
+      "name": "denied anonymous and foreign-site mutation leaves persisted title unchanged",
+      "passed": true
+    },
+    {
+      "route": "/api/content/ef300586-7b4d-434b-b54c-104b032bd4aa",
+      "method": "PATCH",
+      "status": 200,
+      "bytes": 6162,
+      "etag": null
+    },
+    {
+      "route": "/feed.json",
+      "method": "GET",
+      "status": 200,
+      "bytes": 4046,
+      "etag": "\"607ae22464e3a7a7e21d85721773e8d6d4b03228fd374c7c5cf615cf2dc30230\""
+    },
+    {
+      "name": "draft body and editor timestamp do not leak into feed",
+      "passed": true
+    },
+    {
+      "route": "/api/content/ef300586-7b4d-434b-b54c-104b032bd4aa",
+      "method": "PATCH",
+      "status": 200,
+      "bytes": 6164,
+      "etag": null
+    },
+    {
+      "route": "/feed.json",
+      "method": "GET",
+      "status": 200,
+      "bytes": 4050,
+      "etag": "\"79c5999acd08e5bf1ca69c6724bd1b6597704fdc4d88beaa4257df6a11a6658f\""
+    },
+    {
+      "name": "republish updates body and modified time",
+      "passed": true
+    },
+    {
+      "route": "/feed.xml",
+      "method": "GET",
+      "status": 200,
+      "bytes": 4866,
+      "etag": "\"2d757e177e333c5068a0048c3f583db2a3726242d95b6c21addc26238fb896b1\""
+    },
+    {
+      "name": "/feed.xml parses as XML",
+      "passed": true
+    },
+    {
+      "name": "RSS build date includes updated older article",
+      "passed": true
+    },
+    {
+      "route": "/api/content/ef300586-7b4d-434b-b54c-104b032bd4aa",
+      "method": "PATCH",
+      "status": 200,
+      "bytes": 6197,
+      "etag": null
+    },
+    {
+      "name": "live metadata changes advance persisted public modification time",
+      "passed": true
+    },
+    {
+      "route": "/api/content/ef300586-7b4d-434b-b54c-104b032bd4aa",
+      "method": "PATCH",
+      "status": 200,
+      "bytes": 6193,
+      "etag": null
+    },
+    {
+      "name": "slug mutation persists canonical path and advances public modification time",
+      "passed": true
+    },
+    {
+      "route": "/sitemap.xml",
+      "method": "GET",
+      "status": 200,
+      "bytes": 229,
+      "etag": "\"aea6e1d96c1338d00f712e5b655e9a9134d231cd230a45716b6e1d2ef7f1395e\""
+    },
+    {
+      "name": "/sitemap.xml parses as XML",
+      "passed": true
+    },
+    {
+      "name": "renamed: sitemap index",
+      "passed": true
+    },
+    {
+      "route": "/sitemaps/1.xml",
+      "method": "GET",
+      "status": 200,
+      "bytes": 1692,
+      "etag": "\"2ee54de01e7b0b8677331a07fcc4520b932de21a5b39cffd43e1aff1a017037c\""
+    },
+    {
+      "name": "/sitemaps/1.xml parses as XML",
+      "passed": true
+    },
+    {
+      "route": "/feed.xml",
+      "method": "GET",
+      "status": 200,
+      "bytes": 4873,
+      "etag": "\"ba35f72f80f068c8abe4e599f32a2ae2ea66e35f753d786a4ac2b72adffc3a3f\""
+    },
+    {
+      "name": "/feed.xml parses as XML",
+      "passed": true
+    },
+    {
+      "route": "/feed.json",
+      "method": "GET",
+      "status": 200,
+      "bytes": 4057,
+      "etag": "\"74dffdcd14da0d6c029ba6bc375e93a16fd1be1403e0732fa6bf33e750e54036\""
+    },
+    {
+      "route": "/articles",
+      "method": "GET",
+      "status": 200,
+      "bytes": 65944,
+      "etag": null
+    },
+    {
+      "name": "renamed: JSON Feed content fields",
+      "passed": true
+    },
+    {
+      "name": "renamed: RSS 2.0",
+      "passed": true
+    },
+    {
+      "name": "renamed: renamed in sitemap and both feeds",
+      "passed": true
+    },
+    {
+      "route": "/articles/renamed",
+      "method": "GET",
+      "status": 200,
+      "bytes": 41574,
+      "etag": null
+    },
+    {
+      "name": "renamed: renamed public body",
+      "passed": true
+    },
+    {
+      "name": "renamed: secret-draft excluded from all discovery",
+      "passed": true
+    },
+    {
+      "name": "renamed: secret-members excluded from all discovery",
+      "passed": true
+    },
+    {
+      "name": "renamed: secret-private excluded from all discovery",
+      "passed": true
+    },
+    {
+      "name": "renamed: secret-unlisted excluded from all discovery",
+      "passed": true
+    },
+    {
+      "name": "renamed: secret-noindex excluded from all discovery",
+      "passed": true
+    },
+    {
+      "name": "renamed: secret-entitled excluded from all discovery",
+      "passed": true
+    },
+    {
+      "name": "renamed: secret-foreign excluded from all discovery",
+      "passed": true
+    },
+    {
+      "name": "renamed: report-00 excluded from all discovery",
+      "passed": true
+    },
+    {
+      "route": "/articles/report-00",
+      "method": "GET",
+      "status": 308,
+      "bytes": 25977,
+      "etag": null
+    },
+    {
+      "name": "slug change retains canonical redirect",
+      "passed": true
+    },
+    {
+      "route": "/feed.json",
+      "method": "GET",
+      "status": 200,
+      "bytes": 4057,
+      "etag": "\"74dffdcd14da0d6c029ba6bc375e93a16fd1be1403e0732fa6bf33e750e54036\""
+    },
+    {
+      "route": "/feed.json",
+      "method": "GET",
+      "status": 304,
+      "bytes": 0,
+      "etag": "\"74dffdcd14da0d6c029ba6bc375e93a16fd1be1403e0732fa6bf33e750e54036\""
+    },
+    {
+      "name": "unchanged feed validator returns 304",
+      "passed": true
+    },
+    {
+      "route": "/api/content/ef300586-7b4d-434b-b54c-104b032bd4aa",
+      "method": "PATCH",
+      "status": 200,
+      "bytes": 6189,
+      "etag": null
+    },
+    {
+      "route": "/api/content/b0ffdab0-207d-49b4-af1b-c3a2cb6872cf",
+      "method": "DELETE",
+      "status": 400,
+      "bytes": 171,
+      "etag": null
+    },
+    {
+      "name": "history-backed hard delete denied",
+      "passed": true
+    },
+    {
+      "route": "/api/content/b0ffdab0-207d-49b4-af1b-c3a2cb6872cf",
+      "method": "PATCH",
+      "status": 200,
+      "bytes": 6158,
+      "etag": null
+    },
+    {
+      "name": "HTTP unpublication persists draft status",
+      "passed": true
+    },
+    {
+      "route": "/articles/renamed",
+      "method": "GET",
+      "status": 404,
+      "bytes": 25547,
+      "etag": null
+    },
+    {
+      "route": "/articles/report-01",
+      "method": "GET",
+      "status": 404,
+      "bytes": 25702,
+      "etag": null
+    },
+    {
+      "route": "/sitemap.xml",
+      "method": "GET",
+      "status": 200,
+      "bytes": 229,
+      "etag": "\"8b1c13574d1d039edb1708030a7c0b0fa82aade1e773e815fd82668ca57a4529\""
+    },
+    {
+      "name": "/sitemap.xml parses as XML",
+      "passed": true
+    },
+    {
+      "name": "final: sitemap index",
+      "passed": true
+    },
+    {
+      "route": "/sitemaps/1.xml",
+      "method": "GET",
+      "status": 200,
+      "bytes": 1482,
+      "etag": "\"2bea3f96afb2b4b945cf3ccb6bdccd80a56e48b9f32132805c8e6f89ea460f8e\""
+    },
+    {
+      "name": "/sitemaps/1.xml parses as XML",
+      "passed": true
+    },
+    {
+      "route": "/feed.xml",
+      "method": "GET",
+      "status": 200,
+      "bytes": 4194,
+      "etag": "\"c37d330cc51e7de4dac883c920c3826526945178125de315cda2da4d5fd653df\""
+    },
+    {
+      "name": "/feed.xml parses as XML",
+      "passed": true
+    },
+    {
+      "route": "/feed.json",
+      "method": "GET",
+      "status": 200,
+      "bytes": 3450,
+      "etag": "\"d3da4d5c7eb956ab3a4a0afcb8bb39a2fc3ea03ca76590437fa9523aaa7fad97\""
+    },
+    {
+      "route": "/articles",
+      "method": "GET",
+      "status": 200,
+      "bytes": 62245,
+      "etag": null
+    },
+    {
+      "name": "final: JSON Feed content fields",
+      "passed": true
+    },
+    {
+      "name": "final: RSS 2.0",
+      "passed": true
+    },
+    {
+      "name": "final: report-02 in sitemap and both feeds",
+      "passed": true
+    },
+    {
+      "route": "/articles/report-02",
+      "method": "GET",
+      "status": 200,
+      "bytes": 41587,
+      "etag": null
+    },
+    {
+      "name": "final: report-02 public body",
+      "passed": true
+    },
+    {
+      "name": "final: secret-draft excluded from all discovery",
+      "passed": true
+    },
+    {
+      "name": "final: secret-members excluded from all discovery",
+      "passed": true
+    },
+    {
+      "name": "final: secret-private excluded from all discovery",
+      "passed": true
+    },
+    {
+      "name": "final: secret-unlisted excluded from all discovery",
+      "passed": true
+    },
+    {
+      "name": "final: secret-noindex excluded from all discovery",
+      "passed": true
+    },
+    {
+      "name": "final: secret-entitled excluded from all discovery",
+      "passed": true
+    },
+    {
+      "name": "final: secret-foreign excluded from all discovery",
+      "passed": true
+    },
+    {
+      "name": "final: report-00 excluded from all discovery",
+      "passed": true
+    },
+    {
+      "name": "final: renamed excluded from all discovery",
+      "passed": true
+    },
+    {
+      "name": "final: report-01 excluded from all discovery",
+      "passed": true
+    },
+    {
+      "route": "/sitemaps/1.xml",
+      "method": "GET",
+      "status": 200,
+      "bytes": 1482,
+      "etag": "\"2bea3f96afb2b4b945cf3ccb6bdccd80a56e48b9f32132805c8e6f89ea460f8e\""
+    },
+    {
+      "name": "unpublication invalidates prior sitemap validator",
+      "passed": true
+    },
+    {
+      "route": "/feeds/content/2b792419-6db6-4f4f-be3f-382da35c2e39.json",
+      "method": "GET",
+      "status": 200,
+      "bytes": 533,
+      "etag": "\"d7e860e35174a8407c30e570c94cacfe428f95304610d32cbba1364e7c87a191\""
+    },
+    {
+      "name": "scoped JSON feed includes required content and stable ID",
+      "passed": true
+    },
+    {
+      "route": "/feeds/taxonomy/49b8e98e-a92d-4f8e-aa20-dcb54b780c55.xml",
+      "method": "GET",
+      "status": 200,
+      "bytes": 3482,
+      "etag": "\"479e6d761cb7cda6a910edecec1af5eda35263e9eb5f07ee17cceb9519d46656\""
+    },
+    {
+      "name": "/feeds/taxonomy/49b8e98e-a92d-4f8e-aa20-dcb54b780c55.xml parses as XML",
+      "passed": true
+    },
+    {
+      "route": "/feeds/content/ef300586-7b4d-434b-b54c-104b032bd4aa.json",
+      "method": "GET",
+      "status": 404,
+      "bytes": 9,
+      "etag": null
+    },
+    {
+      "name": "worker completed cycle during journey",
+      "passed": true
+    },
+    {
+      "route": "/api/globals/site-settings",
+      "method": "POST",
+      "status": 200,
+      "bytes": 2172,
+      "etag": null
+    },
+    {
+      "route": "/feed.json",
+      "method": "GET",
+      "status": 404,
+      "bytes": 9,
+      "etag": null
+    },
+    {
+      "route": "/robots.txt",
+      "method": "GET",
+      "status": 200,
+      "bytes": 27,
+      "etag": null
+    },
+    {
+      "name": "noindex robots fails closed",
+      "passed": true
+    },
+    {
+      "route": "/sitemap.xml",
+      "method": "GET",
+      "status": 200,
+      "bytes": 119,
+      "etag": "\"d055a171622c7500a7dbc2d6aa34d8cb2fdc277c386205b17a741a5a849e78cb\""
+    },
+    {
+      "name": "/sitemap.xml parses as XML",
+      "passed": true
+    },
+    {
+      "name": "noindex sitemap contains no partitions",
+      "passed": true
+    },
+    {
+      "route": "/api/globals/site-settings",
+      "method": "POST",
+      "status": 200,
+      "bytes": 2171,
+      "etag": null
+    }
+  ]
+}

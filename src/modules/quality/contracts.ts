@@ -169,3 +169,27 @@ export function qualityDashboard(
     byRemediation: group((issue) => JSON.stringify(issue.remediation ?? 'unspecified')),
   }
 }
+
+/** Walk structured Lexical data without depending on JSON escape formatting. */
+export function documentInternalLinks(value: unknown): string[] {
+  const links = new Set<string>()
+  const visit = (node: unknown): void => {
+    if (!node || typeof node !== 'object') return
+    if (Array.isArray(node)) {
+      node.forEach(visit)
+      return
+    }
+    for (const [key, child] of Object.entries(node)) {
+      if (
+        (key === 'url' || key === 'href') &&
+        typeof child === 'string' &&
+        child.startsWith('/') &&
+        !child.startsWith('//')
+      )
+        links.add(child)
+      else visit(child)
+    }
+  }
+  visit(value)
+  return [...links]
+}

@@ -88,8 +88,9 @@ export async function GET(
         url: doc.canonicalUrl,
         title: doc.title.value,
         summary: plain(doc.description.value),
-        date_published: doc.dates.publishedAt,
-        date_modified: doc.dates.modifiedAt,
+        content_text: doc.search.bodyProjection || plain(doc.description.value) || doc.title.value,
+        date_published: doc.dates.publishedAt || undefined,
+        date_modified: doc.dates.modifiedAt || undefined,
         authors: doc.author ? [{ name: doc.author.name, url: doc.author.url }] : undefined,
         image:
           doc.media.heroImage?.url ||
@@ -110,15 +111,14 @@ export async function GET(
   const items = docs
     .map((doc) => {
       const pubDate = new Date(doc.dates.publishedAt || doc.dates.modifiedAt!).toUTCString()
-      const enclosure = doc.media.heroImage?.url
-        ? `<enclosure url="${xml(doc.media.heroImage.url)}" type="image/jpeg" length="0"/>`
-        : ''
       const author = doc.author?.name ? `<dc:creator>${xml(doc.author.name)}</dc:creator>` : ''
-      return `<item><title>${xml(doc.title.value)}</title><link>${xml(doc.canonicalUrl)}</link><guid isPermaLink="false">urn:renegade:content:${xml(doc.revisions.entityId || doc.canonicalUrl)}</guid><pubDate>${pubDate}</pubDate>${author}<description>${xml(plain(doc.description.value))}</description>${enclosure}</item>`
+      return `<item><title>${xml(doc.title.value)}</title><link>${xml(doc.canonicalUrl)}</link><guid isPermaLink="false">urn:renegade:content:${xml(doc.revisions.entityId || doc.canonicalUrl)}</guid><pubDate>${pubDate}</pubDate>${author}<description>${xml(plain(doc.description.value))}</description></item>`
     })
     .join('')
 
-  const xmlBody = `<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/"><channel><title>${xml(settings.siteName)} — ${xml(scope)} stream</title><link>${xml(selfXml)}</link><atom:link href="${xml(selfXml)}" rel="self" type="application/rss+xml"/>${items}</channel></rss>`
+  const xmlBody = `<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/"><channel><description>${xml(settings.siteDescription || settings.siteName)}</description><title>${xml(settings.siteName)} — ${xml(scope)} stream</title><link>${xml(selfXml)}</link><atom:link href="${xml(selfXml)}" rel="self" type="application/rss+xml"/>${items}</channel></rss>`
 
-  return conditionalXml(request, xmlBody)
+  const response = conditionalXml(request, xmlBody)
+  response.headers.set('Content-Type', 'application/rss+xml; charset=utf-8')
+  return response
 }

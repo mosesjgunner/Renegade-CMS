@@ -33,24 +33,24 @@ const ALLOWED_MATCHES = new Set(['exact', 'prefix', 'regex'])
 export function normalizePath(path: string): string {
   const trimmed = path.trim()
   if (!trimmed) return '/'
-  return trimmed.startsWith('/') ? trimmed : `/${trimmed}`
+  return trimmed.startsWith('/') || trimmed.startsWith('^/') ? trimmed : `/${trimmed}`
 }
 
-const safeSameSitePath = (path: string) => {
+const safeSameSitePath = (path: string, pattern = false) => {
+  if (pattern && path.startsWith('^/')) path = path.slice(1)
   if (
     !path.startsWith('/') ||
     path.startsWith('//') ||
     path.slice(1).includes('//') ||
     /^https?:\/\//i.test(path) ||
-    /[\\?#\u0000-\u001f\u007f]/.test(path)
+    /[\\#\u0000-\u001f\u007f]/.test(path) ||
+    (!pattern && path.includes('?'))
   )
     return false
   try {
     return path.split('/').every((part) => {
       const decoded = decodeURIComponent(part)
-      return (
-        decoded !== '.' && decoded !== '..' && !decoded.includes('/') && !decoded.includes('\\')
-      )
+      return decoded !== '.' && decoded !== '..' && !/[\\/\u0000-\u001f\u007f]/.test(decoded)
     })
   } catch {
     return false
@@ -72,7 +72,7 @@ export function validateRedirectRuleInput(
   }
   if (/^https?:\/\//i.test(rule.fromPath) || /^https?:\/\//i.test(rule.toPath))
     return { valid: false, error: 'Redirects must remain on this site.' }
-  if (!safeSameSitePath(from) || !safeSameSitePath(to))
+  if (!safeSameSitePath(from, rule.match === 'regex') || !safeSameSitePath(to))
     return {
       valid: false,
       error:
@@ -98,18 +98,41 @@ export function validateRedirectRuleInput(
     }
   }
 
-  // Detect direct circular loop with existing rules (e.g. A -> B and B -> A)
-  for (const existing of existingRules) {
-    if (existing.id && rule.id && existing.id === rule.id) continue
-    const exFrom = normalizePath(existing.fromPath)
-    const exTo = normalizePath(existing.toPath)
-
-    if (exFrom === to && exTo === from) {
-      return {
-        valid: false,
-        error: `Circular redirect detected: '${from}' targets '${to}', which redirects back to '${from}'.`,
+  if (rule.enabled === false) return { valid: true }
+  const matches = (candidate: RedirectRuleInput, path: string) => {
+    const source = normalizePath(candidate.fromPath)
+    if (candidate.match === 'prefix') return path === source || path.startsWith(`${source}/`)
+    if (candidate.match === 'regex') {
+      try {
+        return new RegExp(source).test(path)
+      } catch {
+        return false
       }
     }
+    return source === path
+  }
+  if (match === 'regex') {
+    try {
+      new RegExp(from)
+    } catch {
+      return { valid: false, error: 'Redirect regex is invalid.' }
+    }
+  }
+  const active = existingRules.filter(
+    (existing) =>
+      existing.enabled !== false && !(existing.id && rule.id && existing.id === rule.id),
+  )
+  // Both directions matter: adding B -> C must not turn A -> B into a chain.
+  if (matches(rule, to)) return { valid: false, error: 'Circular redirect detected.' }
+  for (const existing of active) {
+    if (matches(existing, to) && matches(rule, normalizePath(existing.toPath)))
+      return { valid: false, error: 'Circular redirect detected.' }
+    if (matches(existing, to) || matches(rule, normalizePath(existing.toPath)))
+      return {
+        valid: false,
+        error:
+          'Redirect chains are not allowed. Point each source directly at its final destination.',
+      }
   }
 
   return { valid: true }

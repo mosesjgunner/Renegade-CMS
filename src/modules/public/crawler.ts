@@ -121,7 +121,7 @@ export function renderSitemapIndex(
 export function conditionalXml(
   request: Request,
   body: string,
-  cache = 'public, max-age=60, s-maxage=300, stale-while-revalidate=3600',
+  cache = 'public, no-cache, must-revalidate',
 ) {
   const etag = `"${createHash('sha256').update(body).digest('hex')}"`
   const headers = {

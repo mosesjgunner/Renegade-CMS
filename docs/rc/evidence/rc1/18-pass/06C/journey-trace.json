@@ -1,0 +1,933 @@
+{
+  "checks": 42,
+  "trace": [
+    {
+      "route": "/api/globals/site-settings",
+      "method": "POST",
+      "status": 200,
+      "bytes": 2137,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 3352,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 3335,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 3349,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 3323,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/content/7ccd91dd-de89-4ac6-9f38-112ed47b99e9",
+      "method": "PATCH",
+      "status": 200,
+      "bytes": 3336,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 3316,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 3329,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 3349,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 3347,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 3390,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 3364,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 3305,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/search?q=quartzprobe",
+      "method": "GET",
+      "status": 200,
+      "bytes": 42565,
+      "etag": null,
+      "location": null,
+      "contentType": "text/html; charset=utf-8",
+      "robots": null
+    },
+    {
+      "name": "HTTP search matches canonical public links",
+      "passed": true
+    },
+    {
+      "name": "draft/private/noindex/entitled/foreign absent",
+      "passed": true
+    },
+    {
+      "route": "/search?q=bodyprobe",
+      "method": "GET",
+      "status": 200,
+      "bytes": 41285,
+      "etag": null,
+      "location": null,
+      "contentType": "text/html; charset=utf-8",
+      "robots": null
+    },
+    {
+      "name": "body search matches published revision",
+      "passed": true
+    },
+    {
+      "route": "/search?q=quartzprobe&to=2026-10-19",
+      "method": "GET",
+      "status": 200,
+      "bytes": 42679,
+      "etag": null,
+      "location": null,
+      "contentType": "text/html; charset=utf-8",
+      "robots": null
+    },
+    {
+      "name": "date filter includes entire last day",
+      "passed": true
+    },
+    {
+      "route": "/search?q=quartzprobe&author=absent&topic=absent",
+      "method": "GET",
+      "status": 200,
+      "bytes": 37876,
+      "etag": null,
+      "location": null,
+      "contentType": "text/html; charset=utf-8",
+      "robots": null
+    },
+    {
+      "name": "author/topic filters reach PostgreSQL",
+      "passed": true
+    },
+    {
+      "route": "/search?q=quartzprobe&type=page",
+      "method": "GET",
+      "status": 200,
+      "bytes": 37798,
+      "etag": null,
+      "location": null,
+      "contentType": "text/html; charset=utf-8",
+      "robots": null
+    },
+    {
+      "name": "type filter suppresses articles",
+      "passed": true
+    },
+    {
+      "route": "/search?q=quartzprobe&page=0",
+      "method": "GET",
+      "status": 404,
+      "bytes": 27209,
+      "etag": null,
+      "location": null,
+      "contentType": "text/html; charset=utf-8",
+      "robots": null
+    },
+    {
+      "route": "/search?q=quartzprobe&page=1.5",
+      "method": "GET",
+      "status": 404,
+      "bytes": 27215,
+      "etag": null,
+      "location": null,
+      "contentType": "text/html; charset=utf-8",
+      "robots": null
+    },
+    {
+      "route": "/search?q=quartzprobe&page=999",
+      "method": "GET",
+      "status": 404,
+      "bytes": 27873,
+      "etag": null,
+      "location": null,
+      "contentType": "text/html; charset=utf-8",
+      "robots": null
+    },
+    {
+      "route": "/search?q=quartzprobe&q=a&q=b",
+      "method": "GET",
+      "status": 404,
+      "bytes": 25652,
+      "etag": null,
+      "location": null,
+      "contentType": "text/html; charset=utf-8",
+      "robots": null
+    },
+    {
+      "route": "/search?q=quartzprobe&from=2026-02-30",
+      "method": "GET",
+      "status": 404,
+      "bytes": 27209,
+      "etag": null,
+      "location": null,
+      "contentType": "text/html; charset=utf-8",
+      "robots": null
+    },
+    {
+      "route": "/search?q=quartzprobe&from=bad",
+      "method": "GET",
+      "status": 404,
+      "bytes": 27215,
+      "etag": null,
+      "location": null,
+      "contentType": "text/html; charset=utf-8",
+      "robots": null
+    },
+    {
+      "route": "/search?q=quartzprobe&from=2026-10-19&to=2026-10-18",
+      "method": "GET",
+      "status": 404,
+      "bytes": 27290,
+      "etag": null,
+      "location": null,
+      "contentType": "text/html; charset=utf-8",
+      "robots": null
+    },
+    {
+      "name": "invalid filters and page boundaries fail safely",
+      "passed": true
+    },
+    {
+      "route": "/articles/secret-draft",
+      "method": "GET",
+      "status": 404,
+      "bytes": 26014,
+      "etag": null,
+      "location": null,
+      "contentType": "text/html; charset=utf-8",
+      "robots": null
+    },
+    {
+      "name": "secret-draft: safe raw 404 without protected body",
+      "passed": true
+    },
+    {
+      "route": "/articles/secret-private",
+      "method": "GET",
+      "status": 404,
+      "bytes": 25654,
+      "etag": null,
+      "location": null,
+      "contentType": "text/html; charset=utf-8",
+      "robots": null
+    },
+    {
+      "name": "secret-private: safe raw 404 without protected body",
+      "passed": true
+    },
+    {
+      "route": "/articles/secret-members",
+      "method": "GET",
+      "status": 404,
+      "bytes": 25598,
+      "etag": null,
+      "location": null,
+      "contentType": "text/html; charset=utf-8",
+      "robots": null
+    },
+    {
+      "name": "secret-members: safe raw 404 without protected body",
+      "passed": true
+    },
+    {
+      "route": "/articles/secret-entitled",
+      "method": "GET",
+      "status": 404,
+      "bytes": 25866,
+      "etag": null,
+      "location": null,
+      "contentType": "text/html; charset=utf-8",
+      "robots": null
+    },
+    {
+      "name": "secret-entitled: safe raw 404 without protected body",
+      "passed": true
+    },
+    {
+      "route": "/articles/missing-06c",
+      "method": "GET",
+      "status": 404,
+      "bytes": 27580,
+      "etag": null,
+      "location": null,
+      "contentType": "text/html; charset=utf-8",
+      "robots": null
+    },
+    {
+      "name": "missing-06c: safe raw 404 without protected body",
+      "passed": true
+    },
+    {
+      "route": "/secret-page",
+      "method": "GET",
+      "status": 404,
+      "bytes": 27102,
+      "etag": null,
+      "location": null,
+      "contentType": "text/html; charset=utf-8",
+      "robots": null
+    },
+    {
+      "name": "access-controlled page raw 404 has no private body",
+      "passed": true
+    },
+    {
+      "name": "anonymous browser protected page displays safe 404",
+      "passed": true
+    },
+    {
+      "route": "/search?q=quartzprobe",
+      "method": "GET",
+      "status": 404,
+      "bytes": 20466,
+      "etag": null,
+      "location": null,
+      "contentType": "text/html; charset=utf-8",
+      "robots": null
+    },
+    {
+      "route": "/search?q=quartzprobe&site=279b40ce-eb80-44b9-bb0d-498ab2c9c693",
+      "method": "GET",
+      "status": 404,
+      "bytes": 27188,
+      "etag": null,
+      "location": null,
+      "contentType": "text/html; charset=utf-8",
+      "robots": null
+    },
+    {
+      "route": "/search?q=quartzprobe",
+      "method": "GET",
+      "status": 200,
+      "bytes": 38943,
+      "etag": null,
+      "location": null,
+      "contentType": "text/html; charset=utf-8",
+      "robots": null
+    },
+    {
+      "name": "second tenant isolated",
+      "passed": true
+    },
+    {
+      "name": "anonymous search form produces real results",
+      "passed": true
+    },
+    {
+      "name": "weighted title matches precede body-only hit",
+      "passed": true
+    },
+    {
+      "name": "anonymous result link renders published body",
+      "passed": true
+    },
+    {
+      "name": "anonymous filter UI submits and suppresses articles",
+      "passed": true
+    },
+    {
+      "route": "/api/content/baebc931-6d3e-4dd7-90fb-a16d7c56d522",
+      "method": "PATCH",
+      "status": 200,
+      "bytes": 3328,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/search?q=draftonlyprobe",
+      "method": "GET",
+      "status": 200,
+      "bytes": 37687,
+      "etag": null,
+      "location": null,
+      "contentType": "text/html; charset=utf-8",
+      "robots": null
+    },
+    {
+      "name": "draft-only edit not searchable before republish",
+      "passed": true
+    },
+    {
+      "route": "/api/content/baebc931-6d3e-4dd7-90fb-a16d7c56d522",
+      "method": "PATCH",
+      "status": 200,
+      "bytes": 3330,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/search?q=draftonlyprobe",
+      "method": "GET",
+      "status": 200,
+      "bytes": 38697,
+      "etag": null,
+      "location": null,
+      "contentType": "text/html; charset=utf-8",
+      "robots": null
+    },
+    {
+      "name": "republish updates projection and public match",
+      "passed": true
+    },
+    {
+      "route": "/api/content/baebc931-6d3e-4dd7-90fb-a16d7c56d522",
+      "method": "PATCH",
+      "status": 200,
+      "bytes": 3338,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/search?q=draftonlyprobe",
+      "method": "GET",
+      "status": 200,
+      "bytes": 38712,
+      "etag": null,
+      "location": null,
+      "contentType": "text/html; charset=utf-8",
+      "robots": null
+    },
+    {
+      "name": "slug update repairs search link",
+      "passed": true
+    },
+    {
+      "route": "/api/content/baebc931-6d3e-4dd7-90fb-a16d7c56d522",
+      "method": "PATCH",
+      "status": 200,
+      "bytes": 3342,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/articles/revised",
+      "method": "GET",
+      "status": 308,
+      "bytes": 23,
+      "etag": null,
+      "location": "/articles/revised-final",
+      "contentType": null,
+      "robots": null
+    },
+    {
+      "name": "repeat rename keeps earlier alias direct",
+      "passed": true
+    },
+    {
+      "route": "/api/content/baebc931-6d3e-4dd7-90fb-a16d7c56d522",
+      "method": "PATCH",
+      "status": 200,
+      "bytes": 3338,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/content/7ccd91dd-de89-4ac6-9f38-112ed47b99e9",
+      "method": "DELETE",
+      "status": 400,
+      "bytes": 171,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/content/7ccd91dd-de89-4ac6-9f38-112ed47b99e9",
+      "method": "PATCH",
+      "status": 200,
+      "bytes": 3334,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/search?q=quartzprobe",
+      "method": "GET",
+      "status": 200,
+      "bytes": 39994,
+      "etag": null,
+      "location": null,
+      "contentType": "text/html; charset=utf-8",
+      "robots": null
+    },
+    {
+      "route": "/search?q=draftonlyprobe",
+      "method": "GET",
+      "status": 200,
+      "bytes": 37672,
+      "etag": null,
+      "location": null,
+      "contentType": "text/html; charset=utf-8",
+      "robots": null
+    },
+    {
+      "name": "unpublish and supported trash suppress search",
+      "passed": true
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 3338,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/content/70ea0034-b017-46aa-8316-50bba08f0afa",
+      "method": "DELETE",
+      "status": 400,
+      "bytes": 171,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "history-backed draft hard deletion refused and projection absent",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/indexing/search/reconcile",
+      "method": "GET",
+      "status": 405,
+      "bytes": 0,
+      "etag": null,
+      "location": null,
+      "contentType": null,
+      "robots": null
+    },
+    {
+      "route": "/api/admin/indexing/search/reconcile",
+      "method": "POST",
+      "status": 403,
+      "bytes": 34,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/indexing/search/reconcile?site=09d02e98-dba1-425f-9b07-497aca682d14",
+      "method": "POST",
+      "status": 403,
+      "bytes": 39,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/indexing/search/reconcile",
+      "method": "POST",
+      "status": 200,
+      "bytes": 240,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "authorized reindex persists only eligible site projections",
+      "passed": true
+    },
+    {
+      "route": "/search?q=quartzprobe",
+      "method": "GET",
+      "status": 200,
+      "bytes": 39994,
+      "etag": null,
+      "location": null,
+      "contentType": "text/html; charset=utf-8",
+      "robots": null
+    },
+    {
+      "name": "reindex preserves search matches and suppression",
+      "passed": true
+    },
+    {
+      "route": "/api/globals/site-settings",
+      "method": "POST",
+      "status": 200,
+      "bytes": 2138,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/search?q=quartzprobe",
+      "method": "GET",
+      "status": 200,
+      "bytes": 37637,
+      "etag": null,
+      "location": null,
+      "contentType": "text/html; charset=utf-8",
+      "robots": null
+    },
+    {
+      "name": "site noindex immediately suppresses stale projections",
+      "passed": true
+    },
+    {
+      "route": "/api/globals/site-settings",
+      "method": "POST",
+      "status": 200,
+      "bytes": 2137,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "real admin form creates 308 rule",
+      "passed": true
+    },
+    {
+      "name": "form redirect persisted in PostgreSQL",
+      "passed": true
+    },
+    {
+      "name": "admin refuses loop with visible error",
+      "passed": true
+    },
+    {
+      "route": "/old-06c",
+      "method": "GET",
+      "status": 404,
+      "bytes": 28072,
+      "etag": null,
+      "location": null,
+      "contentType": "text/html; charset=utf-8",
+      "robots": null
+    },
+    {
+      "name": "redirect source does not cross tenant boundary",
+      "passed": true
+    },
+    {
+      "route": "/old-06c?ref=raw",
+      "method": "GET",
+      "status": 308,
+      "bytes": 26,
+      "etag": null,
+      "location": "/articles/retained?ref=raw",
+      "contentType": null,
+      "robots": null
+    },
+    {
+      "name": "raw HTTP 308 preserves query and destination",
+      "passed": true
+    },
+    {
+      "name": "anonymous browser follows persisted redirect",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/redirects",
+      "method": "POST",
+      "status": 201,
+      "bytes": 617,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/code-301?discard=yes",
+      "method": "GET",
+      "status": 301,
+      "bytes": 18,
+      "etag": null,
+      "location": "/articles/retained",
+      "contentType": null,
+      "robots": null
+    },
+    {
+      "name": "exact 301 and query removal",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/redirects",
+      "method": "POST",
+      "status": 201,
+      "bytes": 617,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/code-302?discard=yes",
+      "method": "GET",
+      "status": 302,
+      "bytes": 18,
+      "etag": null,
+      "location": "/articles/retained",
+      "contentType": null,
+      "robots": null
+    },
+    {
+      "name": "exact 302 and query removal",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/redirects",
+      "method": "POST",
+      "status": 201,
+      "bytes": 617,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/code-307?discard=yes",
+      "method": "GET",
+      "status": 307,
+      "bytes": 18,
+      "etag": null,
+      "location": "/articles/retained",
+      "contentType": null,
+      "robots": null
+    },
+    {
+      "name": "exact 307 and query removal",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/redirects",
+      "method": "POST",
+      "status": 201,
+      "bytes": 617,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/code-308?discard=yes",
+      "method": "GET",
+      "status": 308,
+      "bytes": 18,
+      "etag": null,
+      "location": "/articles/retained",
+      "contentType": null,
+      "robots": null
+    },
+    {
+      "name": "exact 308 and query removal",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/redirects",
+      "method": "POST",
+      "status": 400,
+      "bytes": 97,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/redirects",
+      "method": "POST",
+      "status": 400,
+      "bytes": 97,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/redirects",
+      "method": "POST",
+      "status": 400,
+      "bytes": 100,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/redirects",
+      "method": "POST",
+      "status": 400,
+      "bytes": 100,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "chains both directions and unsafe paths rejected",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/redirects",
+      "method": "POST",
+      "status": 403,
+      "bytes": 34,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/redirects",
+      "method": "POST",
+      "status": 403,
+      "bytes": 39,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/public-redirects",
+      "method": "POST",
+      "status": 400,
+      "bytes": 112,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "anonymous/foreign mutation and native chain denied without persistence",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/redirects",
+      "method": "POST",
+      "status": 201,
+      "bytes": 603,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/redirects",
+      "method": "POST",
+      "status": 400,
+      "bytes": 39,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "concurrent reverse redirect writes cannot persist a loop",
+      "passed": true
+    },
+    {
+      "name": "rollback preserves canonical publication and search projection together",
+      "passed": true
+    }
+  ]
+}

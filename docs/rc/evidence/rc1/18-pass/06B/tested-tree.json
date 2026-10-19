@@ -1,0 +1,115 @@
+{
+  "baseCommit": "bbc181a193ff1dccaecfd57c4c754d73fb3e6790",
+  "files": [
+    {
+      "path": "src/app/(frontend)/[...path]/page.tsx",
+      "sha256": "d412931cea46a4707ea772991614e0900b2027a4784a98bb5ffe42bd1c8c1190"
+    },
+    {
+      "path": "src/app/(frontend)/articles/page.tsx",
+      "sha256": "9c9275bd4e275a8f03d8a896731d22c6d8bc6e98532e126f1d5d89ff21641b9a"
+    },
+    {
+      "path": "src/app/(frontend)/browse/page.tsx",
+      "sha256": "ec9d2cc630cbcf71404aeed428462589842e47d36b18316ebb9bd38f19bdac80"
+    },
+    {
+      "path": "src/app/(frontend)/events/feed.ics/route.ts",
+      "sha256": "c1128b6e38cf9478730ed3f2134608669fa53d59b1c005e81ac9dd2a709ec7d8"
+    },
+    {
+      "path": "src/app/(frontend)/feed.json/route.ts",
+      "sha256": "c98750f06ca1ea9fd696f9ee134e32aa2177b078d7a83ad586095c76f1f80e70"
+    },
+    {
+      "path": "src/app/(frontend)/feed.xml/route.ts",
+      "sha256": "6ab814faccde71cebd6aed0d852923401ec8644a4540906861f39bacbe314057"
+    },
+    {
+      "path": "src/app/(frontend)/feeds/[scope]/[slug]/route.ts",
+      "sha256": "7edd148d43314575bbd3cee980fed1dddd783c67aeb059ededcb9c0e79cd005b"
+    },
+    {
+      "path": "src/app/(frontend)/sitemaps/[page]/route.ts",
+      "sha256": "dfbbafdabf026e1834ca8f5cbd78c3f3f28053ca544b038ba730cc93abfe6b98"
+    },
+    {
+      "path": "src/app/robots.ts",
+      "sha256": "9b9d2ae3ba563ae65f32b9410a3ca13ba85d3641190cc84386247559d370953b"
+    },
+    {
+      "path": "src/collections/Publishing.ts",
+      "sha256": "b327a2e27c178d576c2bf8cdbc7c216c074f0b102efeef4a425877ca4884572d"
+    },
+    {
+      "path": "src/migrations/20261018_062000_rc1_public_modified.ts",
+      "sha256": "993a755d1d47cddb94e92d12a58d73bcd870e0ac1b1fb6ee208c7e4f4e8d8cbc"
+    },
+    {
+      "path": "src/migrations/index.ts",
+      "sha256": "edc050d718c0c98c26aeba2cbe559bd8fc4e7a81d364bccb4dd8b883e4299f47"
+    },
+    {
+      "path": "src/modules/public/HierarchyView.tsx",
+      "sha256": "8c55a186f0a6f18490f998fe55eaa5f13a1ac2f5b8111ec24beb536b2851f4ec"
+    },
+    {
+      "path": "src/modules/public/archive-pagination.tsx",
+      "sha256": "7cee20474b8a82702df27558219c7a78c9ceb26c94750cd343965118fbd307dc"
+    },
+    {
+      "path": "src/modules/public/content-archives.tsx",
+      "sha256": "247f56baf710d566eb882d4f4f29a5b983d3e8b15745b616a84b595a4d2ffdac"
+    },
+    {
+      "path": "src/modules/public/crawler.ts",
+      "sha256": "8f07ad7ed732c286008f52081358ca7b0089ba8ee24b33dff7613f0a8f76de48"
+    },
+    {
+      "path": "src/modules/public/discovery.ts",
+      "sha256": "5413b4868ade4eec9c54d66c5e62da3b7b284cc977ee6bfe1e80bda8453e6d0d"
+    },
+    {
+      "path": "src/modules/public/hierarchy.ts",
+      "sha256": "8d6f9917cf31f175fa8fc540f45f980b2ab4bac0c055c0defc0fabec600a1422"
+    },
+    {
+      "path": "src/modules/public/public-modified.ts",
+      "sha256": "7a6a35d5d8f8123c2975746b671ddc3c8402630534367ab44cb78fae5446436a"
+    },
+    {
+      "path": "src/payload-types.ts",
+      "sha256": "504c5965ff9bb5ac6dddc5c6843496bc8fafa9a97c5be9b5e55c0d7b7c700c11"
+    },
+    {
+      "path": "tests/rc1-06b/manifest.mjs",
+      "sha256": "ffdfbbaccc92bbf664f559ae1c62f5834181d6d1505dc708fcc35e00345771dd"
+    },
+    {
+      "path": "tests/rc1-06b/run-isolated.ps1",
+      "sha256": "c8ceb65ef4be81b6e18c8ff0c19f0fcf869b9b95681983f96adf08726af429c4"
+    },
+    {
+      "path": "tests/rc1-06b/tsconfig.json",
+      "sha256": "d2a5cf6b9f42f78114d72ecf5a358188cf87e4c0e9549805aaf7e61269d6c313"
+    },
+    {
+      "path": "tests/rc1-06b/verify.ts",
+      "sha256": "e5f5f116558578454daf7ca3c0ca37d77c17c3c47f7d862dcd2d68e0ff089d04"
+    },
+    {
+      "path": "tests/unit/content-archives.test.tsx",
+      "sha256": "8be67a38d10975e3090f06f2bf1341a2920deac9ef7294bac721e698af039f50"
+    },
+    {
+      "path": "tests/unit/rc1-06b-discovery.test.tsx",
+      "sha256": "f7a405ed1031cebfa1523e34bd3cdbb631743e59ecfb5aca6c9f57f14497df2f"
+    }
+  ],
+  "overlaySha256": "7ed535853d515357784682dfdc7585f2292f8b55f5e7fc3a09e774502ed1f316",
+  "excludedGeneratedFiles": [
+    "next-env.d.ts",
+    "tsconfig.json"
+  ],
+  "runtime": "Next development source; no OCI image claim"
+}

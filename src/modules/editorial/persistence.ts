@@ -462,6 +462,7 @@ export async function ensureEditorialCompanion(payload: Payload, content: Doc, r
       documentHash: document.canonicalHash,
       integrityHash,
       reason: existing ? 'edited' : 'created',
+      createdBy: req?.user?.id ?? null,
       immutable: true,
     },
     overrideAccess: true,

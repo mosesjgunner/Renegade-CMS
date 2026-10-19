@@ -1,0 +1,19 @@
+{
+    "baseCommit":  "bbc181a193ff1dccaecfd57c4c754d73fb3e6790",
+    "webListening":  false,
+    "acceptedSkipped":  0,
+    "unexpectedOverlayPaths":  0,
+    "corePassed":  23,
+    "journeyPassed":  79,
+    "diagnosticLiveDatabaseOutageFailed":  1,
+    "fullTypecheckExistingDiagnostics":  7,
+    "ownedWorkerRunning":  false,
+    "restartPassed":  24,
+    "fullTypecheckExit":  2,
+    "unitPassed":  79,
+    "containedPaths":  26,
+    "generatedConfigRestored":  true,
+    "databaseState":  "exited",
+    "overlaySha256":  "7ed535853d515357784682dfdc7585f2292f8b55f5e7fc3a09e774502ed1f316",
+    "acceptedFailed":  0
+}

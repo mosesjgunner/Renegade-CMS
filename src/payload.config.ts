@@ -1,3 +1,4 @@
+import { configureEditorialLocks } from './modules/editorial/document-locks'
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { lexicalEditor, RelationshipFeature } from '@payloadcms/richtext-lexical'
 import path from 'node:path'
@@ -107,6 +108,7 @@ export default buildConfig({
     tasks: domainRegistrations.tasks,
   },
   onInit: async (payload) => {
+    configureEditorialLocks(payload)
     if (process.env.SEED_ON_INIT === 'true') await seed(payload)
   },
   secret: config.payloadSecret,

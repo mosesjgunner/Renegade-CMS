@@ -1,0 +1,10 @@
+{
+  "priorBase": "bbc181a193ff1dccaecfd57c4c754d73fb3e6790",
+  "priorOverlay": "7ed535853d515357784682dfdc7585f2292f8b55f5e7fc3a09e774502ed1f316",
+  "checkedPaths": 26,
+  "changedPaths": [
+    "src/collections/Publishing.ts",
+    "src/modules/public/discovery.ts"
+  ],
+  "policy": "06B receipts preserved at original source. No whole 06B runtime reacceptance claimed."
+}

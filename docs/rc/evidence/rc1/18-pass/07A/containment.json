@@ -1,0 +1,26 @@
+{
+  "overlaySha256": "827344b41add7ceb2ed9564bc41601dace6c3e29a46949381978cb809c5dbb4a",
+  "prior": [
+    {
+      "subpass": "06B",
+      "originalBaseCommit": "bbc181a193ff1dccaecfd57c4c754d73fb3e6790",
+      "originalOverlaySha256": "7ed535853d515357784682dfdc7585f2292f8b55f5e7fc3a09e774502ed1f316",
+      "matches": 24,
+      "mismatches": [
+        "src/collections/Publishing.ts",
+        "src/modules/public/discovery.ts"
+      ],
+      "disposition": "Historical evidence preserved at its original manifest; no previous PASS is relabeled as current."
+    },
+    {
+      "subpass": "06C",
+      "originalBaseCommit": "bbc181a193ff1dccaecfd57c4c754d73fb3e6790",
+      "originalOverlaySha256": "53bb6305555870869bab1b72167595aec7aa4792b7dad90fbee048eb873741c7",
+      "matches": 38,
+      "mismatches": [
+        "src/collections/Publishing.ts"
+      ],
+      "disposition": "Historical evidence preserved at its original manifest; no previous PASS is relabeled as current."
+    }
+  ]
+}

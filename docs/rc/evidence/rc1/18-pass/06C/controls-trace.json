@@ -1,0 +1,21 @@
+{
+  "checks": 4,
+  "trace": [
+    {
+      "name": "anonymous protected-page UI visibly renders safe 404",
+      "passed": true
+    },
+    {
+      "name": "Indexing Center real button invokes scoped POST and reports completion",
+      "passed": true
+    },
+    {
+      "name": "Indexing Center search health excludes foreign tenant",
+      "passed": true
+    },
+    {
+      "name": "UI reindex retains persisted public match",
+      "passed": true
+    }
+  ]
+}

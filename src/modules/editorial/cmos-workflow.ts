@@ -412,10 +412,35 @@ export class CMoSWorkflowEngine {
       createdAt: now,
     }
 
+    const submittedAt =
+      this.item.auditTrail.find((a) => a.action === 'workflow.submitted_for_review')?.at ?? ''
+    if (
+      decision === 'approved' &&
+      this.item.reviewDecisions.some(
+        (d) =>
+          d.decision === 'approved' &&
+          d.reviewerId === actor.id &&
+          d.targetRevisionHash === this.item.currentRevisionHash &&
+          d.createdAt >= submittedAt,
+      )
+    ) {
+      throw new WorkflowStateError('This reviewer already approved the current revision.')
+    }
     this.item.reviewDecisions = [...this.item.reviewDecisions, decisionRecord]
 
     if (decision === 'approved') {
-      this.item.status = 'approved'
+      const approvals = new Set(
+        this.item.reviewDecisions
+          .filter(
+            (d) =>
+              d.decision === 'approved' &&
+              d.targetRevisionHash === this.item.currentRevisionHash &&
+              d.createdAt >= submittedAt,
+          )
+          .map((d) => d.reviewerId),
+      )
+      this.item.status =
+        approvals.size >= this.template.requiredApprovalCount ? 'approved' : 'review'
       this.item.staleApproval = false
       this.item.staleReason = null
     } else if (decision === 'changes-requested') {

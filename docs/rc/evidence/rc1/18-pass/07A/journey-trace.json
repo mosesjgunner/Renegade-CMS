@@ -1,0 +1,570 @@
+{
+  "checks": 31,
+  "succeeded": true,
+  "trace": [
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 3770,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "staff A creates a persisted draft through native HTTP",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/workflow/actions",
+      "method": "POST",
+      "status": 422,
+      "bytes": 118,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "approval denied before submission",
+      "passed": true
+    },
+    {
+      "route": "/api/content/0df59852-3d2d-445b-829a-9823681ac8b3",
+      "method": "PATCH",
+      "status": 403,
+      "bytes": 87,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/content/0df59852-3d2d-445b-829a-9823681ac8b3",
+      "method": "PATCH",
+      "status": 403,
+      "bytes": 60,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "native form cannot bypass approval or publisher permission",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/workflow/actions",
+      "method": "POST",
+      "status": 403,
+      "bytes": 39,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/workflow/actions",
+      "method": "POST",
+      "status": 403,
+      "bytes": 39,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/workflow/actions",
+      "method": "POST",
+      "status": 403,
+      "bytes": 34,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "ungranted staff, foreign-site staff and anonymous transitions denied",
+      "passed": true
+    },
+    {
+      "route": "/api/payload-locked-documents",
+      "method": "POST",
+      "status": 403,
+      "bytes": 70,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "foreign-site lock acquisition denied",
+      "passed": true
+    },
+    {
+      "route": "/api/payload-locked-documents",
+      "method": "POST",
+      "status": 201,
+      "bytes": 565,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "staff A acquires native persistent lock",
+      "passed": true
+    },
+    {
+      "route": "/api/payload-locked-documents",
+      "method": "POST",
+      "status": 409,
+      "bytes": 67,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/content/0df59852-3d2d-445b-829a-9823681ac8b3?overrideLock=true",
+      "method": "PATCH",
+      "status": 423,
+      "bytes": 139,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/payload-locked-documents/171f84fd-2cc0-4b73-9ed7-4034d90f5a3d",
+      "method": "DELETE",
+      "status": 403,
+      "bytes": 70,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/workflow/actions",
+      "method": "POST",
+      "status": 422,
+      "bytes": 127,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "second editor cannot acquire, force-save, release, or transition another editor lock",
+      "passed": true
+    },
+    {
+      "route": "/api/payload-locked-documents/171f84fd-2cc0-4b73-9ed7-4034d90f5a3d",
+      "method": "DELETE",
+      "status": 200,
+      "bytes": 541,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "lock owner releases via supported native HTTP",
+      "passed": true
+    },
+    {
+      "route": "/api/payload-locked-documents",
+      "method": "POST",
+      "status": 201,
+      "bytes": 567,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/payload-locked-documents/87d29a0f-7108-49eb-a6fe-b4ac0ad24cc6",
+      "method": "DELETE",
+      "status": 200,
+      "bytes": 543,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "second editor can retry acquire and release after owner release",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/workflow/actions",
+      "method": "POST",
+      "status": 200,
+      "bytes": 1845,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "staff A submits to review",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/workflow/actions",
+      "method": "POST",
+      "status": 403,
+      "bytes": 218,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "self approval denied despite forged role and reviewer hints",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/workflow/actions",
+      "method": "POST",
+      "status": 200,
+      "bytes": 2604,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "staff B returns for edits",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/workflow/comments",
+      "method": "POST",
+      "status": 201,
+      "bytes": 670,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "review comment persisted",
+      "passed": true
+    },
+    {
+      "route": "/api/content/0df59852-3d2d-445b-829a-9823681ac8b3",
+      "method": "PATCH",
+      "status": 200,
+      "bytes": 6363,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "normal edit creates immutable revision #2",
+      "passed": true
+    },
+    {
+      "name": "saved revision attributes real authenticated staff editor",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/workflow/actions",
+      "method": "POST",
+      "status": 200,
+      "bytes": 3083,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/workflow/actions",
+      "method": "POST",
+      "status": 200,
+      "bytes": 3794,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "staff B rejects review",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/workflow/actions",
+      "method": "POST",
+      "status": 200,
+      "bytes": 4014,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "author reopens rejected work",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/workflow/actions",
+      "method": "POST",
+      "status": 200,
+      "bytes": 4514,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/workflow/actions",
+      "method": "POST",
+      "status": 200,
+      "bytes": 5225,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/workflow/actions",
+      "method": "POST",
+      "status": 422,
+      "bytes": 121,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "competing approvals serialize without lost decision",
+      "passed": true
+    },
+    {
+      "name": "canonical approval and review audit are persisted",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/workflow/comments",
+      "method": "POST",
+      "status": 200,
+      "bytes": 729,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "owner resolves review comment",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/workflow/queues?siteId=33518041-1edd-4948-a4e0-024ad8b7558a",
+      "method": "GET",
+      "status": 200,
+      "bytes": 5476,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "approved item visible in team queue",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/workflow/audit?articleId=0df59852-3d2d-445b-829a-9823681ac8b3",
+      "method": "GET",
+      "status": 403,
+      "bytes": 39,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "foreign-site audit denied",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/workflow/actions",
+      "method": "POST",
+      "status": 403,
+      "bytes": 61,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "cross-origin workflow mutation denied",
+      "passed": true
+    },
+    {
+      "name": "ordinary queue UI renders status, review selection and persisted decision feedback",
+      "passed": true
+    },
+    {
+      "name": "refresh reloads persisted queue and history",
+      "passed": true
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 3433,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/workflow/actions",
+      "method": "POST",
+      "status": 200,
+      "bytes": 1976,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "submission runs canonical QA and visibly blocks unavailable internal links",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/workflow/actions",
+      "method": "POST",
+      "status": 422,
+      "bytes": 144,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/workflow/bulk",
+      "method": "POST",
+      "status": 200,
+      "bytes": 251,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "single and bulk approval both enforce persisted QA",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/workflow/actions",
+      "method": "POST",
+      "status": 403,
+      "bytes": 107,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/workflow/actions",
+      "method": "POST",
+      "status": 422,
+      "bytes": 109,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/workflow/actions",
+      "method": "POST",
+      "status": 422,
+      "bytes": 109,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "staff override and missing owner justification denied",
+      "passed": true
+    },
+    {
+      "route": "/api/content/1a6f9365-ba60-4ec9-808c-3573c823b7ba",
+      "method": "PATCH",
+      "status": 200,
+      "bytes": 5265,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/workflow/actions",
+      "method": "POST",
+      "status": 200,
+      "bytes": 2335,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "owner UI approval succeeds after real QA repair",
+      "passed": true
+    },
+    {
+      "route": "/api/content/1a6f9365-ba60-4ec9-808c-3573c823b7ba",
+      "method": "PATCH",
+      "status": 200,
+      "bytes": 6360,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/workflow/queues?siteId=33518041-1edd-4948-a4e0-024ad8b7558a",
+      "method": "GET",
+      "status": 200,
+      "bytes": 8583,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "post-approval body edit invalidates approval and retains decision history",
+      "passed": true
+    },
+    {
+      "route": "/api/content/0df59852-3d2d-445b-829a-9823681ac8b3",
+      "method": "PATCH",
+      "status": 403,
+      "bytes": 76,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "direct audit deletion denied without changing decisions",
+      "passed": true
+    },
+    {
+      "route": "/api/payload-locked-documents",
+      "method": "POST",
+      "status": 201,
+      "bytes": 565,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    }
+  ]
+}

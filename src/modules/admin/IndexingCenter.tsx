@@ -1,3 +1,5 @@
+import { resolveRedirectSite } from '../operations/redirect-site'
+import SearchReconcile from './SearchReconcile'
 import type { AdminViewServerProps } from 'payload'
 import Link from 'next/link'
 import { getAllIndexableDiscoveryDocuments } from '../public/discovery'
@@ -20,11 +22,25 @@ export default async function IndexingCenter({ initPageResult }: AdminViewServer
         <p>Staff access is required.</p>
       </main>
     )
-  const docs = await getAllIndexableDiscoveryDocuments(req.payload)
+  const siteId = await resolveRedirectSite(
+    req.payload,
+    req.user,
+    new Request(process.env.APP_URL || 'http://localhost', { headers: req.headers }),
+  )
+  if (!siteId)
+    return (
+      <main>
+        <h1>Indexing Center</h1>
+        <p>Staff site access is required.</p>
+      </main>
+    )
+  const docs = await getAllIndexableDiscoveryDocuments(req.payload, siteId)
   const entries = crawlerEntries(docs)
   const recent = await req.payload.find({
     collection: 'execution-events',
-    where: { eventType: { equals: 'discovery.indexing.changed' } },
+    where: {
+      and: [{ eventType: { equals: 'discovery.indexing.changed' } }, { site: { equals: siteId } }],
+    },
     sort: '-createdAt',
     limit: 50,
     depth: 0,
@@ -38,7 +54,9 @@ export default async function IndexingCenter({ initPageResult }: AdminViewServer
     return all
   }, {})
   const scale = crawlerScale(entries.length)
-  const health = await searchHealth(req.payload).catch(() => [])
+  const health = (await searchHealth(req.payload).catch(() => [])).filter(
+    (row) => row.site_id === siteId,
+  )
   return (
     <main className="gutter--left gutter--right">
       <h1>Indexing Center</h1>
@@ -99,11 +117,7 @@ export default async function IndexingCenter({ initPageResult }: AdminViewServer
           ))}
         </tbody>
       </table>
-      <p>
-        <Link href="/api/admin/indexing/search/reconcile">
-          Reconcile search projection (staff only)
-        </Link>
-      </p>
+      <SearchReconcile />
       <h2>Provider configuration</h2>
       <p>
         {providerHealth.configured ? 'Healthy' : 'Not configured'}: {providerHealth.detail}

@@ -238,6 +238,7 @@ export default function RedirectManager() {
             </label>
             <input
               type="text"
+              disabled={loading || saving}
               placeholder="/old-path"
               value={fromPath}
               onChange={(e) => setFromPath(e.target.value)}
@@ -264,6 +265,7 @@ export default function RedirectManager() {
             </label>
             <input
               type="text"
+              disabled={loading || saving}
               placeholder="/new-path"
               value={toPath}
               onChange={(e) => setToPath(e.target.value)}
@@ -289,6 +291,7 @@ export default function RedirectManager() {
               HTTP Status
             </label>
             <select
+              disabled={loading || saving}
               value={statusCode}
               onChange={(e) => setStatusCode(e.target.value)}
               style={{
@@ -317,6 +320,7 @@ export default function RedirectManager() {
               Match Type
             </label>
             <select
+              disabled={loading || saving}
               value={match}
               onChange={(e) => setMatch(e.target.value)}
               style={{
@@ -334,7 +338,7 @@ export default function RedirectManager() {
           <div>
             <button
               type="submit"
-              disabled={saving}
+              disabled={saving || loading}
               style={{
                 padding: '8px 16px',
                 background: '#2563eb',

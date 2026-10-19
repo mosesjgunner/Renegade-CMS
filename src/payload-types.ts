@@ -2120,6 +2120,7 @@ export interface Content {
     | number
     | boolean
     | null;
+  publicModifiedAt?: string | null;
   relationships?: (string | Relationship)[] | null;
   seoOverride?:
     | {
@@ -11237,6 +11238,7 @@ export interface ContentSelect<T extends boolean = true> {
   seoFocusKeyphrase?: T;
   seoNoIndex?: T;
   discoveryOverrides?: T;
+  publicModifiedAt?: T;
   relationships?: T;
   seoOverride?: T;
   socialOverride?: T;

@@ -1,3 +1,4 @@
+import { archivePageNumber } from '@/modules/public/archive-pagination'
 import { headers } from 'next/headers'
 import { notFound } from 'next/navigation'
 import { publicSiteForHost } from '@/modules/public/site-scope'
@@ -39,7 +40,10 @@ export default async function SearchPage({
     to?: string
   }>
 }) {
-  const { q = '', page, site, type, author, topic, from, to } = await searchParams
+  const params = await searchParams
+  if (Object.values(params).some((value) => value !== undefined && typeof value !== 'string'))
+    notFound()
+  const { q = '', page, site, type, author, topic, from, to } = params
   const payload = await getPayload({ config })
   const settings = await resolveSiteSettings(payload)
 
@@ -47,7 +51,19 @@ export default async function SearchPage({
   if (!siteId || (site && site !== siteId)) notFound()
 
   const doc = await resolveDiscoveryDocument(payload, { path: '/search', siteId })
-  const currentPage = Math.max(1, Number(page) || 1)
+  const currentPage = archivePageNumber(page)
+  if (
+    !currentPage ||
+    [from, to].some(
+      (date) =>
+        date &&
+        (!/^\d{4}-\d{2}-\d{2}$/.test(date) ||
+          !Number.isFinite(Date.parse(date)) ||
+          new Date(date).toISOString().slice(0, 10) !== date),
+    ) ||
+    (from && to && from > to)
+  )
+    notFound()
   const pageSize = 10
   const search = await querySearchProjection(payload, {
     siteId,
@@ -60,6 +76,7 @@ export default async function SearchPage({
     from,
     to,
   })
+  if (currentPage > Math.max(1, search.pageCount)) notFound()
   const queryHref = (next: Record<string, string | number | undefined>) => {
     const params = new URLSearchParams()
     for (const [key, value] of Object.entries({

@@ -2,6 +2,19 @@
 import type { Payload } from 'payload'
 import { loadContentArchive } from '@/modules/public/content-archives'
 
+vi.mock('@/modules/public/discovery', () => ({
+  resolveDiscoveryDocument: vi.fn(
+    async (_payload, { record }: { record: Record<string, string> }) => ({
+      indexability: { indexable: true },
+      canonicalUrl: record.canonicalPath,
+      publicUrl: record.canonicalPath,
+      canonicalPath: record.canonicalPath,
+      title: { value: record.title },
+      revisions: { entityId: record.id },
+    }),
+  ),
+}))
+
 describe('public author and tag archives', () => {
   const published = {
     id: 'public',

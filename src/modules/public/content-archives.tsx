@@ -1,6 +1,7 @@
 import type { Payload } from 'payload'
 import Link from 'next/link'
 import { canDiscoverPublic } from './contracts'
+import { resolveDiscoveryDocument } from './discovery'
 
 /** Global author identities are exposed only through this site's discoverable content. */
 export async function loadContentArchive(payload: Payload, site: string, path: string) {
@@ -35,9 +36,26 @@ export async function loadContentArchive(payload: Payload, site: string, path: s
     depth: 0,
     overrideAccess: true,
   })
-  const articles = content.docs.filter((record) =>
+  const visible = content.docs.filter((record) =>
     canDiscoverPublic({ ...record, removeFromDiscovery: record.removeFromDiscovery === true }),
   )
+  const documents = await Promise.all(
+    visible.map((record) =>
+      resolveDiscoveryDocument(payload, {
+        collection: 'content',
+        record: record as unknown as Record<string, unknown>,
+        siteId: site,
+        path: String(record.canonicalPath),
+      }),
+    ),
+  )
+  const articles = documents
+    .filter((doc) => doc.indexability.indexable && doc.canonicalUrl === doc.publicUrl)
+    .map((doc) => ({
+      id: doc.revisions.entityId || doc.canonicalPath,
+      title: doc.title.value,
+      canonicalPath: doc.canonicalPath,
+    }))
   if (!articles.length) return null
   return { title: 'displayName' in record ? record.displayName : record.name, articles }
 }

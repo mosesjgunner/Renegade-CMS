@@ -1,3 +1,15 @@
+import {
+  guardEditorialReviewWrite,
+  lockEditorialOperation,
+} from '../modules/editorial/review-write-guard'
+import { APIError } from 'payload'
+import { sql } from '@payloadcms/db-postgres'
+import {
+  validateRedirectRuleInput,
+  toRedirectInput,
+  normalizePath,
+} from '../modules/public/redirect-manager'
+import { trackPublicModification } from '../modules/public/public-modified'
 import { transactionPayload } from '../modules/core/transaction-payload'
 import { guardTimelineWrite, timelineAccess } from '../modules/events/timeline'
 import {
@@ -868,45 +880,37 @@ export const PublicRedirects: CollectionConfig = {
   },
   hooks: {
     beforeValidate: [
-      ({ data }) => {
-        const from = String(data?.fromPath ?? '')
-        const to = String(data?.toPath ?? '')
-        const safePath = (path: string, pattern = false) => {
-          if (
-            !path.startsWith('/') ||
-            path.startsWith('//') ||
-            path.includes('\\') ||
-            path.includes('#') ||
-            (!pattern && path.includes('?')) ||
-            /[\u0000-\u001f\u007f]/.test(path)
-          )
-            return false
-          try {
-            return path.split('/').every((part) => {
-              const decoded = decodeURIComponent(part)
-              return (
-                decoded !== '.' &&
-                decoded !== '..' &&
-                !decoded.includes('/') &&
-                !decoded.includes('\\')
-              )
-            })
-          } catch {
-            return false
+      async ({ data, originalDoc, req }) => {
+        const merged = { ...originalDoc, ...data }
+        const site = typeof merged.site === 'object' ? merged.site?.id : merged.site
+        const transactionID = await req.transactionID
+        if (transactionID) {
+          const db = req.payload.db as unknown as {
+            sessions: Record<string, { db: { execute: (query: unknown) => Promise<unknown> } }>
           }
+          await db.sessions[transactionID].db.execute(
+            sql`SELECT id FROM sites WHERE id = ${site}::uuid FOR NO KEY UPDATE`,
+          )
         }
-        if (!safePath(from, data?.match === 'regex') || !safePath(to))
-          throw new Error(
-            'Redirect paths must be safe same-site paths without traversal, query, or fragment parts.',
-          )
-        if (from === to) throw new Error('A redirect cannot target itself.')
-        if (data?.match === 'regex')
-          try {
-            new RegExp(from)
-          } catch {
-            throw new Error('Redirect regex is invalid.')
-          }
-        return data
+        const existing = await req.payload.find({
+          collection: 'public-redirects',
+          where: { site: { equals: site } },
+          pagination: false,
+          limit: 0,
+          depth: 0,
+          overrideAccess: true,
+          req,
+        })
+        const validation = validateRedirectRuleInput(
+          { ...merged, id: originalDoc?.id },
+          existing.docs.map(toRedirectInput),
+        )
+        if (!validation.valid) throw new APIError(validation.error || 'Invalid redirect.', 400)
+        return {
+          ...data,
+          fromPath: normalizePath(merged.fromPath),
+          toPath: normalizePath(merged.toPath),
+        }
       },
     ],
   },
@@ -959,7 +963,8 @@ export const Content: CollectionConfig = {
     update: preserveRecordRelationshipsAccess('content', ['site'], tenantUpdateAccess),
   },
   hooks: {
-    beforeChange: [guardContentHierarchy],
+    beforeOperation: [lockEditorialOperation],
+    beforeChange: [guardEditorialReviewWrite, guardContentHierarchy, trackPublicModification],
     beforeDelete: [protectHierarchyDelete('content')],
     beforeValidate: [
       async ({ data, originalDoc, req }) => {
@@ -1059,30 +1064,8 @@ export const Content: CollectionConfig = {
           limit: 1,
           depth: 0,
           overrideAccess: true,
+          req,
         } as never)
-        if (!existing.docs.length)
-          await req.payload.create({
-            collection: 'public-redirects',
-            data: {
-              site,
-              fromPath,
-              toPath,
-              match: 'exact',
-              statusCode: '308',
-              preserveQuery: true,
-              enabled: true,
-            },
-            overrideAccess: true,
-          } as never)
-        else {
-          const currentTarget = String(
-            (existing.docs[0] as unknown as Record<string, unknown>).toPath ?? '',
-          )
-          if (currentTarget !== toPath)
-            throw new Error(
-              `Cannot change ${fromPath}: an unrelated redirect already owns that path.`,
-            )
-        }
         // Keep older exact paths direct to the current destination where possible.
         const redirectChain = await req.payload.find({
           collection: 'public-redirects',
@@ -1097,6 +1080,7 @@ export const Content: CollectionConfig = {
           limit: 500,
           depth: 0,
           overrideAccess: true,
+          req,
         } as never)
         await Promise.all(
           (redirectChain.docs as unknown as Array<Record<string, unknown>>).map((rule) =>
@@ -1105,15 +1089,40 @@ export const Content: CollectionConfig = {
               id: String(rule.id),
               data: { toPath },
               overrideAccess: true,
+              req,
             } as never),
           ),
         )
+        if (!existing.docs.length)
+          await req.payload.create({
+            collection: 'public-redirects',
+            data: {
+              site,
+              fromPath,
+              toPath,
+              match: 'exact',
+              statusCode: '308',
+              preserveQuery: true,
+              enabled: true,
+            },
+            overrideAccess: true,
+            req,
+          } as never)
+        else {
+          const currentTarget = String(
+            (existing.docs[0] as unknown as Record<string, unknown>).toPath ?? '',
+          )
+          if (currentTarget !== toPath)
+            throw new Error(
+              `Cannot change ${fromPath}: an unrelated redirect already owns that path.`,
+            )
+        }
         return doc
       },
     ],
     afterDelete: [
       async ({ doc, req }) => {
-        await removeSearchDocument(req.payload, 'content', doc as Record<string, unknown>)
+        await removeSearchDocument(req.payload, 'content', doc as Record<string, unknown>, req)
         await updateContentNavigation(
           req.payload,
           doc as Record<string, unknown>,
@@ -1234,6 +1243,7 @@ export const Content: CollectionConfig = {
     },
     { name: 'publishedAt', type: 'date' },
     { name: 'updatedAtEditorial', type: 'date' },
+    { name: 'publicModifiedAt', type: 'date', admin: { readOnly: true, hidden: true } },
     { name: 'subtitle', type: 'text' },
     { name: 'excerpt', type: 'textarea' },
     {

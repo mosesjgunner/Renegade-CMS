@@ -1,0 +1,23 @@
+[
+  {
+    "collection": "content",
+    "canonical_id": "d2ed3ed9-768c-449c-b4c1-0edd8540c373",
+    "path": "/articles/retained",
+    "title": "Quartzprobe retained",
+    "body": "bodyprobe Quartzprobe public original"
+  },
+  {
+    "collection": "content",
+    "canonical_id": "864eb310-81ee-45c9-b135-0261345042c6",
+    "path": "/articles/secondary",
+    "title": "Secondary note",
+    "body": "quartzprobe in body only"
+  },
+  {
+    "collection": "content",
+    "canonical_id": "185927ff-801f-453e-ba35-f9d43a48171d",
+    "path": "/articles/secret-foreign",
+    "title": "Quartzprobe secret-foreign",
+    "body": "bodyprobe Quartzprobe public original"
+  }
+]

@@ -62,8 +62,7 @@ export async function POST(request: Request) {
           : ['submit', 'withdraw', 'save-draft'].includes(body.action)
             ? 'editor'
             : 'publisher'
-    const actorId =
-      auth.user.role === 'owner' && body.reviewerId ? body.reviewerId : String(auth.user.id)
+    const actorId = String(auth.user.id)
 
     const item = await executeWorkflowAction(payload, {
       articleId: body.articleId,
@@ -74,7 +73,6 @@ export async function POST(request: Request) {
       targetStatus: body.targetStatus,
       reason: body.reason,
       update: body.update,
-      now: body.now,
     })
 
     return NextResponse.json({ item })

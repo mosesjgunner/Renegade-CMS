@@ -1,0 +1,326 @@
+{
+  "checks": 19,
+  "trace": [
+    {
+      "route": "/api/globals/site-settings",
+      "method": "POST",
+      "status": 200,
+      "bytes": 2171,
+      "etag": null
+    },
+    {
+      "route": "/api/tags",
+      "method": "POST",
+      "status": 201,
+      "bytes": 1695,
+      "etag": null
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 4667,
+      "etag": null
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 4667,
+      "etag": null
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 4667,
+      "etag": null
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 4667,
+      "etag": null
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 4667,
+      "etag": null
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 4667,
+      "etag": null
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 4667,
+      "etag": null
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 4667,
+      "etag": null
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 4667,
+      "etag": null
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 4667,
+      "etag": null
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 4667,
+      "etag": null
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 4667,
+      "etag": null
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 4667,
+      "etag": null
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 4672,
+      "etag": null
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 4683,
+      "etag": null
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 4683,
+      "etag": null
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 4687,
+      "etag": null
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 4681,
+      "etag": null
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 4724,
+      "etag": null
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 3296,
+      "etag": null
+    },
+    {
+      "route": "/sitemap.xml",
+      "method": "GET",
+      "status": 200,
+      "bytes": 229,
+      "etag": "\"8069fa0bba980f14064cf88a23caa50e544957ed3cceabd56064ada327435f02\""
+    },
+    {
+      "name": "/sitemap.xml parses as XML",
+      "passed": true
+    },
+    {
+      "name": "initial: sitemap index",
+      "passed": true
+    },
+    {
+      "route": "/sitemaps/1.xml",
+      "method": "GET",
+      "status": 200,
+      "bytes": 1583,
+      "etag": "\"d992a38790242df3d6bb8d2027c1ee45723946306535649d7f43fe692994d7c3\""
+    },
+    {
+      "name": "/sitemaps/1.xml parses as XML",
+      "passed": true
+    },
+    {
+      "route": "/feed.xml",
+      "method": "GET",
+      "status": 200,
+      "bytes": 4851,
+      "etag": "\"b9c58d1c0dd036f6fc9954766705b1334906afffd6da6b36dd198b1fdd2a47de\""
+    },
+    {
+      "name": "/feed.xml parses as XML",
+      "passed": true
+    },
+    {
+      "route": "/feed.json",
+      "method": "GET",
+      "status": 200,
+      "bytes": 4041,
+      "etag": "\"22f928ee3200b26a7698f2b38fbd9d8b59fd8234ba8c34b229fa8c6469df704c\""
+    },
+    {
+      "route": "/articles",
+      "method": "GET",
+      "status": 200,
+      "bytes": 65178,
+      "etag": null
+    },
+    {
+      "name": "initial: JSON Feed content fields",
+      "passed": true
+    },
+    {
+      "name": "initial: RSS 2.0",
+      "passed": true
+    },
+    {
+      "name": "initial: report-00 in sitemap and both feeds",
+      "passed": true
+    },
+    {
+      "route": "/articles/report-00",
+      "method": "GET",
+      "status": 200,
+      "bytes": 40711,
+      "etag": null
+    },
+    {
+      "name": "initial: report-00 public body",
+      "passed": true
+    },
+    {
+      "name": "initial: secret-draft excluded from all discovery",
+      "passed": true
+    },
+    {
+      "name": "initial: secret-members excluded from all discovery",
+      "passed": true
+    },
+    {
+      "name": "initial: secret-private excluded from all discovery",
+      "passed": true
+    },
+    {
+      "name": "initial: secret-unlisted excluded from all discovery",
+      "passed": true
+    },
+    {
+      "name": "initial: secret-noindex excluded from all discovery",
+      "passed": true
+    },
+    {
+      "name": "initial: secret-entitled excluded from all discovery",
+      "passed": true
+    },
+    {
+      "name": "initial: secret-foreign excluded from all discovery",
+      "passed": true
+    },
+    {
+      "name": "archive first page has exactly 12 published cards",
+      "passed": true
+    },
+    {
+      "name": "archive next link reaches page two",
+      "passed": true
+    },
+    {
+      "name": "tag archive has accessible page two",
+      "passed": true
+    },
+    {
+      "route": "/articles?page=0",
+      "method": "GET",
+      "status": 404,
+      "bytes": 25523,
+      "etag": null
+    },
+    {
+      "route": "/articles?page=-1",
+      "method": "GET",
+      "status": 404,
+      "bytes": 25498,
+      "etag": null
+    },
+    {
+      "route": "/articles?page=1.5",
+      "method": "GET",
+      "status": 404,
+      "bytes": 25501,
+      "etag": null
+    },
+    {
+      "route": "/articles?page=NaN",
+      "method": "GET",
+      "status": 404,
+      "bytes": 25529,
+      "etag": null
+    },
+    {
+      "route": "/articles?page=999",
+      "method": "GET",
+      "status": 404,
+      "bytes": 27503,
+      "etag": null
+    },
+    {
+      "name": "invalid and beyond-end pages return 404",
+      "passed": true
+    },
+    {
+      "route": "/sitemaps/999.xml",
+      "method": "GET",
+      "status": 404,
+      "bytes": 9,
+      "etag": null
+    },
+    {
+      "route": "/feed.json",
+      "method": "GET",
+      "status": 200,
+      "bytes": 4041,
+      "etag": "\"22f928ee3200b26a7698f2b38fbd9d8b59fd8234ba8c34b229fa8c6469df704c\""
+    }
+  ]
+}

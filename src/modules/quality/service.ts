@@ -3,7 +3,14 @@ import type { Payload } from 'payload'
 import { buildTableOfContents } from '../editorial/presentation'
 import { OPERATIONS_QUEUE } from '../operations/tasks'
 import { resolveDiscoveryDocument } from '../public/discovery'
-import { canIgnore, canWaive, qualityDedupeKey, scanLocal, type QualityFinding } from './contracts'
+import {
+  canIgnore,
+  canWaive,
+  qualityDedupeKey,
+  scanLocal,
+  documentInternalLinks,
+  type QualityFinding,
+} from './contracts'
 
 type Doc = Record<string, unknown>
 type QualityScanSummary = {
@@ -109,13 +116,6 @@ async function targetSiteId(payload: Payload, targetType: ScanTargetType, target
   return ''
 }
 
-const linksFrom = (value: unknown) => {
-  const serialized = JSON.stringify(value ?? {})
-  return [...serialized.matchAll(/(?:href|url)\\?"\\s*:\\s*\\?"([^"\\]+)\\?"/g)]
-    .map((match) => match[1])
-    .filter((href) => href.startsWith('/'))
-}
-
 /** Local-only producer. External URL checks stay disabled until a guarded fetch boundary exists. */
 export async function produceLocalFindings(
   payload: Payload,
@@ -207,10 +207,12 @@ export async function produceLocalFindings(
       ? (article.document as Record<string, unknown>)
       : {}
   const internalLinks = await Promise.all(
-    linksFrom(docObj).map(async (href) => {
+    documentInternalLinks(docObj).map(async (href) => {
       const result = await payload.find({
         collection: 'content' as never,
-        where: { canonicalPath: { equals: href } },
+        where: {
+          and: [{ canonicalPath: { equals: href } }, { site: { equals: idOf(content?.site) } }],
+        },
         limit: 1,
         depth: 0,
         overrideAccess: true,

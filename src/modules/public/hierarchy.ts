@@ -60,7 +60,11 @@ export async function loadPublicHierarchy(payload: Payload, site: string): Promi
     sections: sections.map(project),
     categories: categories.map(project),
     collections: albums.filter((record) => canDiscoverPublic(record)).map(project),
-    content: content.filter((record) => canDiscoverPublic(record)).map(project),
+    content: content
+      .filter(
+        (record) => canDiscoverPublic(record) && !record.requiredEntitlement && !record.seoNoIndex,
+      )
+      .map(project),
   }
 }
 

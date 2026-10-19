@@ -1,0 +1,83 @@
+{
+  "checks": 7,
+  "trace": [
+    {
+      "route": "/search?q=quartzprobe",
+      "method": "GET",
+      "status": 200,
+      "bytes": 39138,
+      "etag": null,
+      "location": null,
+      "contentType": "text/html; charset=utf-8",
+      "robots": null
+    },
+    {
+      "name": "restart: retained public match",
+      "passed": true
+    },
+    {
+      "name": "restart: deleted and nonpublic links suppressed",
+      "passed": true
+    },
+    {
+      "route": "/search?q=draftonlyprobe",
+      "method": "GET",
+      "status": 200,
+      "bytes": 37840,
+      "etag": null,
+      "location": null,
+      "contentType": "text/html; charset=utf-8",
+      "robots": null
+    },
+    {
+      "name": "restart: republished body removed by later unpublication",
+      "passed": true
+    },
+    {
+      "route": "/articles/removed",
+      "method": "GET",
+      "status": 404,
+      "bytes": 25881,
+      "etag": null,
+      "location": null,
+      "contentType": "text/html; charset=utf-8",
+      "robots": null
+    },
+    {
+      "route": "/secret-page",
+      "method": "GET",
+      "status": 404,
+      "bytes": 27088,
+      "etag": null,
+      "location": null,
+      "contentType": "text/html; charset=utf-8",
+      "robots": null
+    },
+    {
+      "name": "restart: deleted projection absent",
+      "passed": true
+    },
+    {
+      "name": "restart: publication/access persisted",
+      "passed": true
+    },
+    {
+      "route": "/old-06c?ref=restart",
+      "method": "GET",
+      "status": 308,
+      "bytes": 30,
+      "etag": null,
+      "location": "/articles/retained?ref=restart",
+      "contentType": null,
+      "robots": null
+    },
+    {
+      "name": "restart: redirect destination retained",
+      "passed": true
+    },
+    {
+      "name": "restart: anonymous browser match",
+      "passed": true
+    }
+  ]
+}

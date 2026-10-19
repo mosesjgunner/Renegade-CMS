@@ -39,8 +39,9 @@ export async function GET(request: Request) {
       url: doc.canonicalUrl,
       title: doc.title.value,
       summary: plain(doc.description.value),
-      date_published: doc.dates.publishedAt,
-      date_modified: doc.dates.modifiedAt,
+      content_text: doc.search.bodyProjection || plain(doc.description.value) || doc.title.value,
+      date_published: doc.dates.publishedAt || undefined,
+      date_modified: doc.dates.modifiedAt || undefined,
       authors: doc.author ? [{ name: doc.author.name, url: doc.author.url }] : undefined,
       image:
         doc.media.heroImage?.url ||

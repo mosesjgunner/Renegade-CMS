@@ -592,7 +592,7 @@ export function resolveRedirect(
         : rule.match === 'regex'
           ? path.replace(new RegExp(rule.fromPath), rule.toPath)
           : rule.toPath
-    if (!path) return { error: 'missing-target' }
+    if (!normalPath(path)) return { error: 'missing-target' }
     if (
       !rules.some(
         (candidate) =>
@@ -1394,10 +1394,11 @@ export async function resolveDiscoveryDocument(
   // Topics reuse the existing editorial taxonomy. A topic record becomes a
   // public archive while it has at least one published public article;
   // categories and sections are public hierarchy views whenever present on the site.
-  for (const taxonomyCollection of registeredOnly(
-    payload,
-    ['topics', 'categories', 'sections'] as const,
-  )) {
+  for (const taxonomyCollection of registeredOnly(payload, [
+    'topics',
+    'categories',
+    'sections',
+  ] as const)) {
     if (!input.collection || input.collection === taxonomyCollection) {
       const topicFound = await payload.find({
         collection: taxonomyCollection,
@@ -1941,7 +1942,12 @@ async function buildContentDiscoveryDocument(input: {
     : null
 
   const publishedAt = content.publishedAt || publishedRevision?.createdAt || null
-  const modifiedAt = content.updatedAtEditorial || content.updatedAt || null
+  const modifiedAt =
+    content.publicModifiedAt ||
+    publishedRevision?.createdAt ||
+    content.updatedAtEditorial ||
+    content.updatedAt ||
+    null
 
   const categories: string[] = Array.isArray(content.categories)
     ? content.categories.map((c: any) => String(c?.name || c?.title || c)).filter(Boolean)
@@ -3432,8 +3438,7 @@ export async function getAllIndexableDiscoveryDocuments(
   return selfCanonicalDocs
     .filter(
       (document) =>
-        pathCounts.get(document.canonicalPath) === 1 &&
-        urlCounts.get(document.canonicalUrl) === 1,
+        pathCounts.get(document.canonicalPath) === 1 && urlCounts.get(document.canonicalUrl) === 1,
     )
     .sort((a, b) => a.canonicalUrl.localeCompare(b.canonicalUrl))
 }

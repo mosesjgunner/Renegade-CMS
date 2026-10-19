@@ -1,4 +1,6 @@
 import Link from 'next/link'
+import { notFound } from 'next/navigation'
+import { archivePageNumber, paginateArchive, ArchivePagination } from './archive-pagination'
 import type { HierarchyGraph, HierarchyNode } from './hierarchy'
 import { hierarchyTrail } from './hierarchy'
 
@@ -27,8 +29,10 @@ export function HierarchyView({
   graph,
   kind,
   node,
+  page: rawPage,
 }: {
   graph: HierarchyGraph
+  page?: string | null
   kind?: 'section' | 'category' | 'collection'
   node?: HierarchyNode
 }) {
@@ -50,7 +54,11 @@ export function HierarchyView({
           ? item.sections.includes(node!.id)
           : false,
   )
-  const items = [...children, ...collections, ...content]
+  const page = archivePageNumber(rawPage)
+  if (page === null) notFound()
+  const result = paginateArchive([...children, ...collections, ...content], page)
+  if (!result.valid) notFound()
+  const items = result.docs
   return (
     <main className="mx-auto max-w-4xl px-6 py-12 space-y-6">
       <HierarchyBreadcrumbs
@@ -82,6 +90,11 @@ export function HierarchyView({
       ) : (
         <p>No {kind === 'collection' ? 'published content' : 'hierarchy entries'} yet.</p>
       )}
+      <ArchivePagination
+        path={node?.path || '/browse'}
+        page={page}
+        totalPages={result.totalPages}
+      />
     </main>
   )
 }

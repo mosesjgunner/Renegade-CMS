@@ -1,3 +1,8 @@
+import {
+  archivePageNumber,
+  paginateArchive,
+  ArchivePagination,
+} from '@/modules/public/archive-pagination'
 import { loadContentArchive, ContentArchiveLinks } from '@/modules/public/content-archives'
 import { publicTimelineEntries } from '@/modules/events/timeline'
 import { loadPublicHierarchy, publicContentHierarchyTrail } from '@/modules/public/hierarchy'
@@ -330,7 +335,11 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
   }
 
   const archive = await loadContentArchive(payload, siteId, path)
-  if (archive)
+  if (archive) {
+    const page = archivePageNumber(new URLSearchParams(query).get('page'))
+    if (page === null) notFound()
+    const result = paginateArchive(archive.articles, page)
+    if (!result.valid) notFound()
     return (
       <main className="mx-auto max-w-4xl px-6 py-12 space-y-6">
         <nav aria-label="Breadcrumb">
@@ -338,14 +347,16 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
         </nav>
         <h1 className="text-4xl font-bold">{archive.title}</h1>
         <ul className="space-y-4">
-          {archive.articles.map((article) => (
+          {result.docs.map((article) => (
             <li key={article.id}>
               <Link href={String(article.canonicalPath)}>{article.title}</Link>
             </li>
           ))}
         </ul>
+        <ArchivePagination path={path} page={page} totalPages={result.totalPages} />
       </main>
     )
+  }
 
   const bookResult = await findIfRegistered(payload, {
     collection: 'books',
@@ -382,7 +393,12 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: serializeJsonLd(discovery.schema.jsonLd) }}
         />
-        <HierarchyView graph={hierarchy} kind="section" node={sectionNode} />
+        <HierarchyView
+          page={new URLSearchParams(query).get('page')}
+          graph={hierarchy}
+          kind="section"
+          node={sectionNode}
+        />
       </>
     )
   }
@@ -399,7 +415,12 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: serializeJsonLd(discovery.schema.jsonLd) }}
         />
-        <HierarchyView graph={hierarchy} kind="category" node={categoryNode} />
+        <HierarchyView
+          page={new URLSearchParams(query).get('page')}
+          graph={hierarchy}
+          kind="category"
+          node={categoryNode}
+        />
       </>
     )
   }
@@ -416,7 +437,12 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: serializeJsonLd(discovery.schema.jsonLd) }}
         />
-        <HierarchyView graph={hierarchy} kind="collection" node={collectionNode} />
+        <HierarchyView
+          page={new URLSearchParams(query).get('page')}
+          graph={hierarchy}
+          kind="collection"
+          node={collectionNode}
+        />
       </>
     )
   }
@@ -442,14 +468,20 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
           ],
         } as never,
         sort: '-publishedAt',
-        limit: 50,
+        pagination: false,
+        limit: 0,
         depth: 0,
         overrideAccess: true,
       } as never)
-      const publicArticles = (articles.docs as unknown as PublicRecord[]).filter((article) =>
-        canDiscoverPublic(article),
+      const publicArticles = (articles.docs as unknown as PublicRecord[]).filter(
+        (article) =>
+          canDiscoverPublic(article) && !article.requiredEntitlement && !article.seoNoIndex,
       )
       if (!publicArticles.length) notFound()
+      const page = archivePageNumber(new URLSearchParams(query).get('page'))
+      if (page === null) notFound()
+      const result = paginateArchive(publicArticles, page)
+      if (!result.valid) notFound()
       const discovery = await resolveDiscoveryDocument(payload, {
         collection: taxonomyCollection,
         record: { ...topic, status: 'published', visibility: 'public' },
@@ -468,7 +500,7 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
             {typeof topic.description === 'string' ? <p>{topic.description}</p> : null}
           </header>
           <ul className="space-y-5">
-            {publicArticles.map((article) => (
+            {result.docs.map((article) => (
               <li key={String(article.id)} className="surface-card p-5">
                 <h2 className="text-xl font-semibold">
                   <Link href={String(article.canonicalPath)}>{label(article)}</Link>
@@ -477,6 +509,7 @@ export default async function CanonicalPublicPage({ params, searchParams }: Args
               </li>
             ))}
           </ul>
+          <ArchivePagination path={path} page={page} totalPages={result.totalPages} />
         </main>
       )
     }

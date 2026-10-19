@@ -232,6 +232,7 @@ export default function EditorialWorkflowCenter() {
       | 'emergency-override'
       | 'reassign'
       | 'save-draft',
+    reason?: string,
   ) => {
     if (!selectedItemId) return
     setError(null)
@@ -240,7 +241,7 @@ export default function EditorialWorkflowCenter() {
         articleId: selectedItemId,
         action,
         comment: actionComment,
-        reason: emergencyReason,
+        reason: reason ?? emergencyReason,
         update: action === 'reassign' ? { editorId: 'unassigned', priority: 'normal' } : undefined,
       }
 
@@ -279,7 +280,16 @@ export default function EditorialWorkflowCenter() {
           comment: actionComment,
         }),
       })
-      if (!res.ok) throw new Error('Bulk operation failed.')
+      const response = await res.json()
+      if (!res.ok) throw new Error(response.error || 'Bulk operation failed.')
+      if (response.result?.failedCount) {
+        throw new Error(
+          response.result.results
+            .filter((r: { success: boolean }) => !r.success)
+            .map((r: { error: string }) => r.error)
+            .join('; '),
+        )
+      }
       setSelectedItemIds([])
       setActionComment('')
       await fetchCommandCenterData()
@@ -750,6 +760,12 @@ export default function EditorialWorkflowCenter() {
                             className="text-blue-600 hover:text-blue-800 font-semibold"
                           >
                             + Comment
+                          </button>
+                          <button
+                            onClick={() => handleSelectItem(item.id)}
+                            className="text-indigo-600 font-semibold"
+                          >
+                            Review
                           </button>
                           <Link
                             href={`/admin/collections/content/${item.id}?revision=${item.currentRevisionSequence}`}
@@ -1308,10 +1324,11 @@ export default function EditorialWorkflowCenter() {
               <span className="text-[10px] font-bold uppercase text-stone-500">
                 Item Audit History ({auditHistory.length})
               </span>
-              {auditHistory.slice(0, 3).map((a) => (
+              {auditHistory.map((a) => (
                 <div key={a.id} className="text-[11px] text-stone-600 dark:text-stone-300">
                   <span className="font-mono font-bold text-indigo-600">{a.action}</span> by actor #
-                  {a.actorId} ({new Date(a.at).toLocaleTimeString()})
+                  {a.actorId} ({new Date(a.at).toLocaleString()}){' '}
+                  {a.reason && <span> - {a.reason}</span>}
                 </div>
               ))}
             </div>
@@ -1341,6 +1358,20 @@ export default function EditorialWorkflowCenter() {
             )}
             {permissions.canReview && (
               <button
+                onClick={() => handleExecuteAction('reject')}
+                className="px-3 py-1.5 bg-red-700 text-white rounded-lg text-xs font-bold"
+              >
+                Reject
+              </button>
+            )}
+            <button
+              onClick={() => handleExecuteAction('reopen')}
+              className="px-3 py-1.5 border rounded-lg text-xs font-bold"
+            >
+              Reopen for edits
+            </button>
+            {permissions.canReview && (
+              <button
                 onClick={() => handleExecuteAction('request-changes')}
                 className="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-lg text-xs font-bold transition"
               >
@@ -1359,7 +1390,7 @@ export default function EditorialWorkflowCenter() {
                   const reason = prompt('Enter justification for emergency override:')
                   if (reason) {
                     setEmergencyReason(reason)
-                    handleExecuteAction('emergency-override')
+                    handleExecuteAction('emergency-override', reason)
                   }
                 }}
                 className="px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-lg text-xs font-bold transition"

@@ -1,7 +1,12 @@
+import config from '@payload-config'
+import { getPayload } from 'payload'
+import { isRegisteredCollection } from '@/modules/public/registered-collections'
 import { findPublicEvents } from '@/modules/events/public'
 import { eventsIcs } from '@/modules/events/contracts'
 export const dynamic = 'force-dynamic'
 export async function GET(request: Request) {
+  const payload = await getPayload({ config })
+  if (!isRegisteredCollection(payload, 'events')) return new Response('Not found', { status: 404 })
   const now = new Date()
   const { occurrences } = await findPublicEvents({
     from: now,

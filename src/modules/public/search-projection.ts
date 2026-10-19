@@ -1,3 +1,4 @@
+import { sql } from '@payloadcms/db-postgres'
 import type { Payload, PayloadRequest } from 'payload'
 import { resolveSiteSettings } from '../core/site-settings'
 
@@ -20,6 +21,27 @@ type Pool = {
   query: (text: string, values?: unknown[]) => Promise<{ rows: Record<string, unknown>[] }>
 }
 const poolFor = (payload: Payload) => (payload.db as unknown as { pool: Pool }).pool
+// Lifecycle projection writes commit or roll back with the canonical mutation.
+async function projectionQuery(
+  payload: Payload,
+  req: Partial<PayloadRequest> | undefined,
+  text: string,
+  values: unknown[],
+) {
+  const transactionID = await req?.transactionID
+  if (!transactionID) return poolFor(payload).query(text, values)
+  const db = payload.db as unknown as {
+    sessions: Record<string, { db: { execute: (query: unknown) => Promise<unknown> } }>
+  }
+  const transaction = db.sessions[transactionID]?.db
+  if (!transaction) throw new Error('Search projection transaction unavailable.')
+  const pieces = text
+    .split(/(\$\d+)/)
+    .map((part) =>
+      /^\$\d+$/.test(part) ? sql`${values[Number(part.slice(1)) - 1]}` : sql.raw(part),
+    )
+  return transaction.execute(sql.join(pieces, sql.raw('')))
+}
 const idOf = (value: unknown) =>
   typeof value === 'string' ? value : String((value as { id?: unknown } | null)?.id || '')
 
@@ -83,13 +105,17 @@ export async function projectSearchDocument(
   })
   const projection = searchProjectionFromDiscovery(doc, input.collection)
   if (!projection) {
-    await poolFor(payload).query(
+    await projectionQuery(
+      payload,
+      input.req,
       'DELETE FROM search_documents WHERE collection = $1 AND canonical_id = $2',
       [input.collection, canonicalId],
     )
     return 'removed'
   }
-  await poolFor(payload).query(
+  await projectionQuery(
+    payload,
+    input.req,
     `INSERT INTO search_documents (site_id, collection, canonical_id, canonical_revision_id, canonical_url, path, content_type, title, excerpt, body, author, taxonomy, published_at, modified_at, language, media_hints, visibility, index_version, indexed_at)
      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16,'public',$17,now())
      ON CONFLICT (collection, canonical_id) DO UPDATE SET
@@ -121,8 +147,11 @@ export async function removeSearchDocument(
   payload: Payload,
   collection: string,
   record: Record<string, unknown>,
+  req?: Partial<PayloadRequest>,
 ) {
-  await poolFor(payload).query(
+  await projectionQuery(
+    payload,
+    req,
     'DELETE FROM search_documents WHERE collection = $1 AND canonical_id = $2',
     [collection, String(record.id)],
   )
@@ -137,7 +166,7 @@ export const searchProjectionHooks = (collection: string) => ({
   ],
   afterDelete: [
     async ({ doc, req }: { doc: Record<string, unknown>; req: { payload: Payload } }) => {
-      await removeSearchDocument(req.payload, collection, doc)
+      await removeSearchDocument(req.payload, collection, doc, req)
       return doc
     },
   ],
@@ -149,27 +178,40 @@ export async function rebuildSearchProjection(payload: Payload, siteId?: string)
     'podcast-shows',
     'podcast-episodes',
     'videos',
+    'books',
     'page-layouts',
     'products',
-  ]
-  if (!siteId) await poolFor(payload).query('TRUNCATE search_documents')
-  else await poolFor(payload).query('DELETE FROM search_documents WHERE site_id = $1', [siteId])
+  ].filter((collection) => collection in payload.collections)
   let processed = 0
+  const retained: string[] = []
+  // Do not clear a working index before reads succeed. Sweep stale rows only after a complete rebuild.
   for (const collection of collections) {
-    const result = await payload
-      .find({
+    let page = 1
+    let more = true
+    while (more) {
+      const result = await payload.find({
         collection: collection as never,
         where: siteId ? { site: { equals: siteId } } : {},
         depth: 2,
-        limit: 1000,
+        limit: 200,
+        page,
+        sort: 'id',
         overrideAccess: true,
-      } as never)
-      .catch(() => ({ docs: [] }))
-    for (const record of result.docs as unknown as Record<string, unknown>[]) {
-      await projectSearchDocument(payload, { collection, record })
-      processed++
+      })
+      for (const record of result.docs as unknown as Record<string, unknown>[]) {
+        await projectSearchDocument(payload, { collection, record })
+        retained.push(`${collection}:${record.id}`)
+        processed++
+      }
+      more = result.hasNextPage
+      page++
     }
   }
+  await poolFor(payload).query(
+    "DELETE FROM search_documents WHERE NOT ((collection || ':' || canonical_id) = ANY($1::text[]))" +
+      (siteId ? ' AND site_id = $2' : ''),
+    siteId ? [retained, siteId] : [retained],
+  )
   return { processed, version: SEARCH_INDEX_VERSION }
 }
 
@@ -209,13 +251,8 @@ export async function querySearchProjection(
   const pageSize = Math.max(1, Math.min(50, input.pageSize || 10))
   if (!query) return { hits: [] as ProjectedSearchDocument[], total: 0, page, pageCount: 0 }
   const settings = await resolveSiteSettings(payload).catch(() => null)
-  const siteOrigin = settings?.canonicalOriginsBySite?.[input.siteId] || settings?.canonicalOrigin
   const values: unknown[] = [input.siteId, query]
-  let sitePredicate = 'site_id = $1'
-  if (siteOrigin) {
-    values.push(siteOrigin)
-    sitePredicate = `(site_id = $1 OR site_id = $${values.length})`
-  }
+  const sitePredicate = 'site_id = $1'
   const predicates = [
     sitePredicate,
     "visibility = 'public'",
@@ -234,19 +271,48 @@ export async function querySearchProjection(
     predicates.push(`taxonomy ILIKE '%' || $${values.length} || '%'`)
   }
   add('published_at', input.from, '>=')
-  add('published_at', input.to, '<=')
-  values.push(pageSize, (page - 1) * pageSize)
+  if (input.to) {
+    values.push(input.to)
+    predicates.push(`published_at < $${values.length}::date + interval '1 day'`)
+  }
   const where = predicates.join(' AND ')
   const result = await poolFor(payload).query(
     `SELECT canonical_id AS id, site_id AS "siteId", path, title, excerpt, body, taxonomy, modified_at AS "updatedAt", collection, canonical_revision_id AS "canonicalRevisionId", canonical_url AS "canonicalUrl", content_type AS "contentType", author, language, published_at AS "publishedAt", media_hints AS "mediaHints", index_version AS "indexVersion", count(*) OVER()::int AS total
      FROM search_documents WHERE ${where}
-     ORDER BY ts_rank_cd(search_vector, websearch_to_tsquery('simple', $2)) DESC, published_at DESC NULLS LAST, canonical_id ASC
-     LIMIT $${values.length - 1} OFFSET $${values.length}`,
+     ORDER BY ts_rank_cd(search_vector, websearch_to_tsquery('simple', $2)) DESC, published_at DESC NULLS LAST, canonical_id ASC`,
     values,
   )
-  const total = Number(result.rows[0]?.total || 0)
+  // Projections rank candidates; current canonical policy authorizes every public result.
+  // This also suppresses stale rows after settings/access changes without requiring a reindex.
+  const hits: ProjectedSearchDocument[] = []
+  if (
+    settings?.launchState === 'live' &&
+    settings.indexingMode === 'index' &&
+    !settings.seoNoIndex
+  ) {
+    for (const row of result.rows) {
+      const record = await payload
+        .findByID({
+          collection: row.collection as never,
+          id: String(row.id),
+          depth: 2,
+          overrideAccess: true,
+        })
+        .catch(() => null)
+      if (!record || idOf((record as unknown as Record<string, unknown>).site) !== input.siteId)
+        continue
+      const doc = await resolveDiscoveryDocument(payload, {
+        collection: String(row.collection),
+        record: record as unknown as Record<string, unknown>,
+        siteId: input.siteId,
+      })
+      const current = searchProjectionFromDiscovery(doc, String(row.collection))
+      if (current) hits.push(current)
+    }
+  }
+  const total = hits.length
   return {
-    hits: result.rows as unknown as ProjectedSearchDocument[],
+    hits: hits.slice((page - 1) * pageSize, page * pageSize),
     total,
     page,
     pageCount: Math.ceil(total / pageSize),

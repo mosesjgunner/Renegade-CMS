@@ -2,6 +2,8 @@
 
 **05C: NOT READY. RC1: NOT READY.** 2026-10-18, America/Chicago.
 
+Handoff refresh: another concurrent run has advanced checkout HEAD to `bbc181a193ff1dccaecfd57c4c754d73fb3e6790` (`feat(discovery): execute RC1 subpass 06A metadata, schema and indexing controls`) and committed shared files while this receipt was being finalized. That newer checkout is not accepted by this 05C evidence. This run made no commits and executed no later subpass; all tested source identities below retain their historical base/window.
+
 The editor, copy, variant generation and public-version delivery received actual implementation repairs and runtime proof. The mandatory export/restore chain remains blocked: the supported exporter throws `QueryError: The following path cannot be queried: site` at `src/scripts/portability.ts:72`. It applies the same site filter to portable collections including global `members`/`profiles`, which do not have that field. No archive was produced. Import and restored-reference checks were not executed. Do not remove identity collections or export all global identities to conceal this tenant-boundary defect.
 
 ## Source and containment

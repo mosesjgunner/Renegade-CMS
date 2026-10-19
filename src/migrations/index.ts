@@ -1,3 +1,4 @@
+import * as rc1PublicModified from './20261018_062000_rc1_public_modified'
 import * as rc1ContentEntitlement from './20261018_061000_rc1_content_entitlement'
 import * as rc1ReviewComments from './20261017_210000_rc1_review_comments'
 import * as rc1ContentHierarchy from './20261017_230000_rc1_content_hierarchy'
@@ -713,6 +714,11 @@ export const migrations = [
     up: rc1ContentEntitlement.up,
     down: rc1ContentEntitlement.down,
     name: '20261018_061000_rc1_content_entitlement',
+  },
+  {
+    up: rc1PublicModified.up,
+    down: rc1PublicModified.down,
+    name: '20261018_062000_rc1_public_modified',
   },
 ]
 import * as rc1ContentVisibility from './20261018_050000_rc1_content_visibility'

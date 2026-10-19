@@ -1,0 +1,6 @@
+{
+    "ProcessId":  10152,
+    "ParentProcessId":  28552,
+    "CreationDate":  "\/Date(1792372796782)\/",
+    "CommandLine":  "\"C:\\Program Files\\nodejs\\node.exe\" ./node_modules/next/dist/bin/next dev --hostname 127.0.0.1 --port 38982"
+}

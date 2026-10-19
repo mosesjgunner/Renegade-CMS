@@ -54,7 +54,6 @@ export async function POST(request: Request) {
       actor: { id: String(auth.user.id), role: actorRole },
       comment: body.comment,
       update: body.update,
-      now: body.now,
     })
 
     return NextResponse.json({ result })
