@@ -25,6 +25,9 @@ export function DraftAutosave() {
   const [message, setMessage] = useState('')
   const [error, setError] = useState(false)
   const saving = useRef(false)
+  const failedSignature = useRef<string | null>(null)
+  const currentSignature = useRef(signature)
+  currentSignature.current = signature
   const enabled = Boolean(id) && (status === 'draft' || status === 'updated')
   const save = useCallback(async () => {
     if (saving.current) return
@@ -37,8 +40,10 @@ export function DraftAutosave() {
         throw new Error(
           'Draft was not saved. Resolve validation or document-lock conflicts, then retry.',
         )
+      failedSignature.current = null
       setMessage('Draft saved automatically.')
     } catch (cause) {
+      failedSignature.current = currentSignature.current
       setError(true)
       setMessage(
         cause instanceof Error
@@ -50,7 +55,7 @@ export function DraftAutosave() {
     }
   }, [submit])
   useEffect(() => {
-    if (!enabled || !modified || processing || initializing) return
+    if (!enabled || !modified || processing || initializing || saving.current || failedSignature.current === signature) return
     setError(false)
     setMessage('Unsaved draft changes...')
     const timer = setTimeout(() => {

@@ -175,6 +175,7 @@ const publisherFieldGroups = (fields: Field[]): Field[] => {
         'title',
         'subtitle',
         'body',
+        'draftAutosave',
         'summary',
         'excerpt',
         'authors',

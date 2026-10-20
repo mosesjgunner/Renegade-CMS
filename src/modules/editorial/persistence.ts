@@ -624,6 +624,8 @@ export const persistWorkflow = async (
 
 const authorLabels = (content: Doc): string[] =>
   asArray(content.authors)
+    .slice()
+    .sort((a, b) => Number(a.displayOrder ?? 0) - Number(b.displayOrder ?? 0))
     .map((entry) => {
       const author = entry.author
       if (author && typeof author === 'object' && 'displayName' in author)
