@@ -1,0 +1,22 @@
+[
+  {
+    "path": "current-tree.json",
+    "sha256": "9100ef74fd927f2ca7ccdba59897e6e25e330139c22833d0fc11e4b86b0a931d"
+  },
+  {
+    "path": "NEXT.md",
+    "sha256": "9682e0cfdfca4161fa43a0dd09cdf771d8bb8f6eaa56486bbea42e6824c2abc0"
+  },
+  {
+    "path": "RESULT.md",
+    "sha256": "4b5916386f448b5f7b3affc75c66090f9022b47d8aa9c4a210b6090e8e5cb6c7"
+  },
+  {
+    "path": "state-summary.json",
+    "sha256": "5bc4f04aa224cf5015429e90ce66b2878250ca896a4d8f03c26d8e4e9b59e4de"
+  },
+  {
+    "path": "tested-tree.json",
+    "sha256": "b359a3152b7a751823973f164e14184c679e834654bdaeee94f1e4a341f2ab87"
+  }
+]

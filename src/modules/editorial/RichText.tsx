@@ -9,6 +9,7 @@ const text = (value: unknown): string => (typeof value === 'string' ? value : ''
 const safeHref = (value: unknown): string | null => {
   const href = text(value).trim()
   if (!href || href.startsWith('javascript:') || href.startsWith('data:')) return null
+  if (href.startsWith('//') || href.includes('\\')) return null
   if (href.startsWith('/') || href.startsWith('#')) return href
   try {
     return ['http:', 'https:', 'mailto:', 'tel:'].includes(new URL(href).protocol) ? href : null
@@ -17,12 +18,13 @@ const safeHref = (value: unknown): string | null => {
   }
 }
 function Inline({ node }: { node: Node }): ReactNode {
-  const content = nodes(node.children).length
+  let content: ReactNode = nodes(node.children).length
     ? nodes(node.children).map((child, index) => <Inline key={index} node={child} />)
     : text(node.text)
   if (node.type === 'linebreak') return <br />
   if (node.type === 'link' || node.type === 'autolink') {
-    const href = safeHref(node.url ?? node.href)
+    const fields = (node.fields ?? {}) as Node
+    const href = safeHref(fields.url ?? node.url ?? node.href)
     return href ? (
       <a href={href} rel={href.startsWith('http') ? 'noreferrer' : undefined}>
         {content}
@@ -32,9 +34,13 @@ function Inline({ node }: { node: Node }): ReactNode {
     )
   }
   const format = Number(node.format ?? 0)
-  if (format & 1) return <strong>{content}</strong>
-  if (format & 2) return <em>{content}</em>
-  if (format & 16) return <code>{content}</code>
+  if (format & 16) content = <code>{content}</code>
+  if (format & 8) content = <u>{content}</u>
+  if (format & 4) content = <s>{content}</s>
+  if (format & 2) content = <em>{content}</em>
+  if (format & 1) content = <strong>{content}</strong>
+  if (format & 32) content = <sub>{content}</sub>
+  if (format & 64) content = <sup>{content}</sup>
   return <>{content}</>
 }
 /** Only safe, structured Lexical nodes are rendered; custom nodes cannot execute code or HTML. */
@@ -112,8 +118,14 @@ export function SafeRichText({ document }: { document: Record<string, unknown> }
               {title ? <h4 className="font-bold text-sm mb-1">{title}</h4> : null}
               {url ? (
                 <figure className="my-2">
-                  <img src={url} alt={title || caption || ''} className="rounded-lg max-w-full h-auto" />
-                  {caption ? <figcaption className="text-xs text-stone-500 mt-1">{caption}</figcaption> : null}
+                  <img
+                    src={url}
+                    alt={title || caption || ''}
+                    className="rounded-lg max-w-full h-auto"
+                  />
+                  {caption ? (
+                    <figcaption className="text-xs text-stone-500 mt-1">{caption}</figcaption>
+                  ) : null}
                 </figure>
               ) : null}
               {blockText ? <p className="text-sm">{blockText}</p> : null}
@@ -142,8 +154,13 @@ export function SafeRichText({ document }: { document: Record<string, unknown> }
           }
           const title = text(val.title ?? val.name ?? valId)
           return (
-            <div key={key} className="my-4 p-3 rounded-lg border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 inline-block">
-              <span className="text-xs font-semibold text-stone-500 uppercase tracking-wider">{rel}:</span>{' '}
+            <div
+              key={key}
+              className="my-4 p-3 rounded-lg border border-stone-200 dark:border-stone-800 bg-stone-50 dark:bg-stone-900 inline-block"
+            >
+              <span className="text-xs font-semibold text-stone-500 uppercase tracking-wider">
+                {rel}:
+              </span>{' '}
               <span className="font-medium">{title}</span>
             </div>
           )

@@ -31,7 +31,11 @@ export function extractPlainText(value: unknown): string {
   const rootText = record.root ? extractPlainText(record.root) : ''
   const directText = typeof record.text === 'string' ? record.text : ''
   const childText = extractPlainText(record.children)
-  return [rootText, directText, childText].filter(Boolean).join(' ').trim()
+  const fields = record.type === 'block' ? asRecord(record.fields) : {}
+  const blockText = [fields.title, fields.text, fields.caption]
+    .filter((v) => typeof v === 'string')
+    .join(' ')
+  return [rootText, directText, childText, blockText].filter(Boolean).join(' ').trim()
 }
 
 export function estimateReadingTimeMinutes(plainText: string): number {

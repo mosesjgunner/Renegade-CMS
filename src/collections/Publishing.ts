@@ -1,3 +1,4 @@
+import { lexicalEditor, RelationshipFeature, BlocksFeature } from '@payloadcms/richtext-lexical'
 import {
   guardEditorialReviewWrite,
   lockEditorialOperation,
@@ -1211,10 +1212,33 @@ export const Content: CollectionConfig = {
     {
       name: 'body',
       type: 'richText',
+      editor: lexicalEditor({
+        features: ({ defaultFeatures }) => [
+          ...defaultFeatures,
+          RelationshipFeature({ enabledCollections: ['media-assets', 'content'] }),
+          BlocksFeature({
+            blocks: [
+              {
+                slug: 'editorialCallout',
+                labels: { singular: 'Editorial callout', plural: 'Editorial callouts' },
+                fields: [
+                  { name: 'title', type: 'text' },
+                  { name: 'text', type: 'textarea', required: true },
+                ],
+              },
+            ],
+          }),
+        ],
+      }),
       admin: {
         description:
           'Structured, accessible prose. Use the editor controls for headings, links, lists, quotes, and safe inline references—not raw HTML or JSON.',
       },
+    },
+    {
+      name: 'draftAutosave',
+      type: 'ui',
+      admin: { components: { Field: '@/modules/admin/DraftAutosave#DraftAutosave' } },
     },
     { name: 'summary', type: 'textarea' },
     {

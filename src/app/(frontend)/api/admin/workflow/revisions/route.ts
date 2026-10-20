@@ -112,7 +112,11 @@ export async function POST(request: Request) {
   } catch (error) {
     return NextResponse.json(
       { error: error instanceof Error ? error.message : 'Revision restore failed.' },
-      { status: 400 },
+      {
+        status: [409, 423].includes(Number((error as { status?: number }).status))
+          ? Number((error as { status: number }).status)
+          : 400,
+      },
     )
   }
 }

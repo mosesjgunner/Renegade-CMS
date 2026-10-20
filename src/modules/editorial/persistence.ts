@@ -2,7 +2,10 @@ import { withExecutionLock } from '../operations/execution-lock'
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createHash, randomBytes } from 'node:crypto'
 
-import type { Payload } from 'payload'
+import { createLocalReq, type Payload } from 'payload'
+import { sql } from '@payloadcms/db-postgres'
+import { transactionPayload } from '../core/transaction-payload'
+import { checkOperatorRecordAccess } from '../operations/operator-grants'
 
 import {
   createMarkdownImportReport,
@@ -895,7 +898,7 @@ export async function decideEditorialReview(
   })
 }
 
-export async function restoreEditorialRevision(
+async function restoreEditorialRevisionUnlocked(
   payload: Payload,
   input: {
     articleId: string
@@ -912,6 +915,45 @@ export async function restoreEditorialRevision(
     reason: 'restored',
     actorUserId: input.actorUserId,
   })
+}
+
+/** Restore uses the same canonical row lock, document lock and transaction as native saves. */
+export async function restoreEditorialRevision(
+  payload: Payload,
+  input: Parameters<typeof restoreEditorialRevisionUnlocked>[1],
+) {
+  if (!payload.db?.beginTransaction) return restoreEditorialRevisionUnlocked(payload, input)
+  const user = await payload.findByID({
+    collection: 'users',
+    id: input.actorUserId || input.actor.id,
+    depth: 0,
+    overrideAccess: true,
+  })
+  const bundle = await loadBundleByArticleId(payload, input.articleId)
+  if (!(await checkOperatorRecordAccess(payload, user, 'content', String(bundle.content.id))))
+    throw new Error('Staff site access required.')
+  const transactionID = await payload.db.beginTransaction()
+  if (!transactionID) throw new Error('Revision restore requires transactional storage.')
+  const req = await createLocalReq({ user, context: { editorialWorkflowAction: true } }, payload)
+  req.transactionID = transactionID
+  try {
+    const session = payload.db.sessions?.[String(transactionID)]?.db as {
+      execute: (query: unknown) => Promise<unknown>
+    }
+    await session.execute(
+      sql`SELECT id FROM content WHERE id = ${bundle.content.id}::uuid FOR UPDATE`,
+    )
+    const result = await restoreEditorialRevisionUnlocked(transactionPayload(payload, req), {
+      ...input,
+      actorUserId: String(user.id),
+      actor: { id: String(user.id), role: user.role === 'staff' ? 'editor' : 'publisher' },
+    })
+    await payload.db.commitTransaction(transactionID)
+    return result
+  } catch (error) {
+    await payload.db.rollbackTransaction(transactionID)
+    throw error
+  }
 }
 
 export async function scheduleEditorialPublication(
@@ -1407,6 +1449,19 @@ export async function resolveEditorialPreviewToken(
     throw new Error('Preview token has expired.')
   if (!viewerId || idOf(preview.createdBy) !== viewerId)
     throw new Error('Preview requires the authenticated creator session.')
+
+  // Revoked site grants must take effect even while the creator's login session remains valid.
+  if (payload.collections?.users) {
+    const user = await payload
+      .findByID({ collection: 'users', id: viewerId, depth: 0, overrideAccess: true })
+      .catch(() => null)
+    const bundle = await loadBundleByArticleId(payload, idOf(preview.article))
+    if (
+      !user ||
+      !(await checkOperatorRecordAccess(payload, user, 'content', String(bundle.content.id)))
+    )
+      throw new Error('Preview creator no longer has site access.')
+  }
 
   return buildArticlePresentation(payload, {
     articleId: idOf(preview.article),

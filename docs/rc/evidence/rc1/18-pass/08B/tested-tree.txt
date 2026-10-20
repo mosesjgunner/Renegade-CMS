@@ -1,0 +1,17 @@
+﻿ M docs/rc/RC1-70-SUBPASS-LEDGER.md
+ M src/app/(frontend)/api/admin/workflow/revisions/route.ts
+ M src/app/(payload)/admin/importMap.js
+ M src/collections/Publishing.ts
+ M src/modules/editorial/RichText.tsx
+ M src/modules/editorial/persistence.ts
+ M src/modules/editorial/presentation.ts
+ M tests/rc1-08b/verify.ts
+?? docs/rc/evidence/rc1/18-pass/03B/current/
+?? docs/rc/evidence/rc1/18-pass/03B/prior-20261018/
+?? docs/rc/evidence/rc1/18-pass/08B/NEXT.md
+?? docs/rc/evidence/rc1/18-pass/08B/RESULT.md
+?? docs/rc/evidence/rc1/18-pass/08B/persistence-final.json
+?? docs/rc/evidence/rc1/18-pass/08B/tested-tree.txt
+?? src/modules/admin/DraftAutosave.tsx
+?? tests/rc1-03b/run-current.ps1
+?? tests/rc1-03b/tsconfig.current.json

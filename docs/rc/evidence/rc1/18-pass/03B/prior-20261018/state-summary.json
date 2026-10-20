@@ -1,0 +1,40 @@
+{
+  "siteA": {
+    "id": "c9cf1b59-fb2b-4189-a782-c9cc9d4371a5",
+    "name": "Site Alpha"
+  },
+  "siteB": {
+    "id": "b6a4c218-62c0-42d4-b05d-0dfb2c9048a7",
+    "name": "Site Beta"
+  },
+  "authors": [
+    {
+      "id": "83dac7dd-c9bb-4116-a4e7-b21e990a694f",
+      "displayName": "Jane Author"
+    },
+    {
+      "id": "34d6c5c3-ccbe-44fa-bbe1-2bd7ed96d160",
+      "displayName": "Mark Columnist"
+    }
+  ],
+  "article1": {
+    "id": "2ba4db75-e227-4a62-a871-6644ba18ca52",
+    "title": "Alpha Field Report - Staff Approved Note",
+    "status": "draft"
+  },
+  "article2": {
+    "id": "38c56faa-ff7c-4ced-9de6-d0449dd0abc7",
+    "title": "Alpha Economic Outlook",
+    "status": "draft"
+  },
+  "page1": {
+    "id": "f3419a64-0081-479c-a522-5f940ca85815",
+    "title": "About Alpha Investigation Team",
+    "status": "draft"
+  },
+  "family1": {
+    "id": "c265a6ab-339c-44b6-a701-cc41b68cf691",
+    "currentRevisionSequence": 3
+  },
+  "totalRevisionsArticle1": 3
+}

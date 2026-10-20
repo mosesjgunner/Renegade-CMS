@@ -553,7 +553,9 @@ try {
   await browser.close()
   if (!succeeded) {
     console.error(`Acceptance failed after ${checks} checks.`)
+    process.exit(1)
   } else {
     console.log(`ACCEPTANCE SUCCESS: ${checks} checks passed.`)
+    process.exit(0)
   }
 }
