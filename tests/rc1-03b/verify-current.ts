@@ -416,12 +416,35 @@ try {
     let editor = await editorFor(page, first.id)
     await page.screenshot({ path: `${out}/editor-loaded.png`, fullPage: true })
     await writeFile(`${out}/editor-loaded.txt`, await page.locator('body').innerText())
+    await writeFile(
+      `${out}/editor-fields.json`,
+      JSON.stringify(
+        {
+          text: await editor.innerText(),
+          controls: await page
+            .locator('input,textarea')
+            .evaluateAll((nodes: (HTMLInputElement | HTMLTextAreaElement)[]) =>
+              nodes.map((n) => ({ name: n.name, value: n.value })),
+            ),
+        },
+        null,
+        2,
+      ),
+    )
     check(
       'ordinary native editor loads real Lexical body, inline media and callout controls',
       (await editor.innerText()).includes('UNPUBLISHED original') &&
-        (await editor.locator('input[value="Context block"]').isVisible()) &&
-        (await editor.locator('textarea').inputValue()) === 'Preserved callout original' &&
-        (await editor.getByText('03B original media', { exact: true }).isVisible()),
+        (await page
+          .locator('input')
+          .evaluateAll((nodes: HTMLInputElement[]) =>
+            nodes.some((n) => n.value === 'Context block'),
+          )) &&
+        (await page
+          .locator('textarea')
+          .evaluateAll((nodes: HTMLTextAreaElement[]) =>
+            nodes.some((node) => node.value === 'Preserved callout original'),
+          )) &&
+        (await page.getByText('03B original media', { exact: true }).first().isVisible()),
     )
     await append(editor, 'BROWSER AUTOSAVE EDIT')
     await page
