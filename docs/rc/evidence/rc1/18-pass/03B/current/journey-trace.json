@@ -75,7 +75,7 @@
       "passed": true
     },
     {
-      "route": "/api/admin/workflow/revisions?contentId=cfd423d5-2d39-4f0b-9b92-734a706ca048",
+      "route": "/api/admin/workflow/revisions?contentId=5c8ec48b-fa4b-4a21-a399-bc086a45d582",
       "method": "GET",
       "status": 200,
       "bytes": 348,
