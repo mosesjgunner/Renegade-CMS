@@ -521,7 +521,7 @@ try {
       .waitFor({ state: 'visible' })
     check('second real browser session receives visible document-lock feedback', true)
     await api(
-      `/api/content/${first.id}`,
+      `/api/content/${first.id}?overrideLock=true`,
       'PATCH',
       { title: 'Forbidden concurrent replacement', overrideLock: true },
       staff,
