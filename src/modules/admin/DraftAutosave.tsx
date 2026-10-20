@@ -27,7 +27,9 @@ export function DraftAutosave() {
   const saving = useRef(false)
   const failedSignature = useRef<string | null>(null)
   const currentSignature = useRef(signature)
-  currentSignature.current = signature
+  useEffect(() => {
+    currentSignature.current = signature
+  }, [signature])
   const enabled = Boolean(id) && (status === 'draft' || status === 'updated')
   const save = useCallback(async () => {
     if (saving.current) return
@@ -55,7 +57,15 @@ export function DraftAutosave() {
     }
   }, [submit])
   useEffect(() => {
-    if (!enabled || !modified || processing || initializing || saving.current || failedSignature.current === signature) return
+    if (
+      !enabled ||
+      !modified ||
+      processing ||
+      initializing ||
+      saving.current ||
+      failedSignature.current === signature
+    )
+      return
     setError(false)
     setMessage('Unsaved draft changes...')
     const timer = setTimeout(() => {

@@ -34,7 +34,10 @@ export default async function ArticlePreviewPage({ params, searchParams }: Args)
     String(auth.user?.id ?? ''),
   ).catch(() => notFound())
   const host = requestHeaders.get('host')
-  if (host !== new URL(loadConfig().appUrl).host &&
-    await publicSiteForHost(payload, host) !== article.siteId) notFound()
+  if (
+    host !== new URL(loadConfig().appUrl).host &&
+    (await publicSiteForHost(payload, host)) !== article.siteId
+  )
+    notFound()
   return <EditorialArticleView article={article} />
 }

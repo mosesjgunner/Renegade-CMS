@@ -1,0 +1,88 @@
+{
+  "checks": 3,
+  "succeeded": false,
+  "trace": [
+    {
+      "route": "/api/globals/site-settings",
+      "method": "POST",
+      "status": 200,
+      "bytes": 2145,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/authors",
+      "method": "POST",
+      "status": 201,
+      "bytes": 299,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/authors",
+      "method": "POST",
+      "status": 201,
+      "bytes": 301,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 10297,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 10298,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 10282,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "native API creates and reloads article with rich blocks/media/authors",
+      "passed": true
+    },
+    {
+      "name": "native API creates and reloads article with rich blocks/media/authors",
+      "passed": true
+    },
+    {
+      "name": "native API creates and reloads page with rich blocks/media/authors",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/workflow/revisions?contentId=cfd423d5-2d39-4f0b-9b92-734a706ca048",
+      "method": "GET",
+      "status": 200,
+      "bytes": 348,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    }
+  ]
+}
