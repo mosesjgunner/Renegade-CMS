@@ -592,6 +592,33 @@ try {
         restoredHistory.revisions.length === beforeFault.history.revisions.length + 1,
     )
     await page.screenshot({ path: `${out}/revision-restore.png`, fullPage: true })
+    for (const doc of records.slice(1)) {
+      const before = await read('content', doc.id)
+      const revisions = await history(doc.id, own)
+      const changed = structuredClone(before.body)
+      changed.root.children.push(body('OPERATOR EDIT BEFORE RESTORE').root.children[0])
+      await api(`/api/content/${doc.id}`, 'PATCH', { body: changed }, own)
+      check(
+        `supported API edit persists ${doc.contentType} without losing media/blocks`,
+        JSON.stringify((await read('content', doc.id)).body).includes(
+          'OPERATOR EDIT BEFORE RESTORE',
+        ) &&
+          JSON.stringify((await read('content', doc.id)).body).includes(
+            'Preserved callout original',
+          ),
+      )
+      await api(
+        '/api/admin/workflow/revisions',
+        'POST',
+        { contentId: doc.id, revisionId: revisions.currentRevision },
+        own,
+      )
+      check(
+        `supported API restore recovers exact original ${doc.contentType} and appends history`,
+        JSON.stringify((await read('content', doc.id)).body) === JSON.stringify(before.body) &&
+          (await history(doc.id, own)).revisions.length === revisions.revisions.length + 2,
+      )
+    }
     const previews: string[] = []
     for (const doc of records) {
       const result = (await api('/api/admin/content/preview', 'POST', { id: doc.id }, own)).json()
