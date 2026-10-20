@@ -1,12 +1,12 @@
 {
-  "checks": 8,
+  "checks": 10,
   "succeeded": true,
   "trace": [
     {
       "route": "/api/globals/site-settings",
       "method": "POST",
       "status": 200,
-      "bytes": 2142,
+      "bytes": 2345,
       "etag": null,
       "location": null,
       "contentType": "application/json",
@@ -26,7 +26,7 @@
       "route": "/api/admin/workflow/actions",
       "method": "POST",
       "status": 200,
-      "bytes": 1845,
+      "bytes": 1736,
       "etag": null,
       "location": null,
       "contentType": "application/json",
@@ -36,7 +36,7 @@
       "route": "/api/admin/workflow/actions",
       "method": "POST",
       "status": 200,
-      "bytes": 2517,
+      "bytes": 2408,
       "etag": null,
       "location": null,
       "contentType": "application/json",
@@ -73,7 +73,7 @@
       "robots": null
     },
     {
-      "route": "/api/email-messages/d548b9af-f37b-4ef8-b52d-f4f662dfd0a0",
+      "route": "/api/email-messages/4b7ba1f3-d877-4ff5-9846-44a901449df5",
       "method": "PATCH",
       "status": 200,
       "bytes": 1184,
@@ -81,6 +81,10 @@
       "location": null,
       "contentType": "application/json",
       "robots": null
+    },
+    {
+      "name": "newsletter queue failure rolls back scheduling, recipient rows and jobs atomically",
+      "passed": true
     },
     {
       "route": "/api/social-accounts",
@@ -96,7 +100,7 @@
       "route": "/api/social-drafts",
       "method": "POST",
       "status": 201,
-      "bytes": 6323,
+      "bytes": 6214,
       "etag": null,
       "location": null,
       "contentType": "application/json",
@@ -106,7 +110,7 @@
       "route": "/api/social-network-variants",
       "method": "POST",
       "status": 201,
-      "bytes": 6578,
+      "bytes": 6469,
       "etag": null,
       "location": null,
       "contentType": "application/json",
@@ -116,7 +120,7 @@
       "route": "/api/social-network-variants",
       "method": "POST",
       "status": 201,
-      "bytes": 6588,
+      "bytes": 6479,
       "etag": null,
       "location": null,
       "contentType": "application/json",
@@ -127,7 +131,7 @@
       "passed": true
     },
     {
-      "route": "/api/admin/releases/afb9ca5f-f21f-4c44-82cc-ba4e4b7d490b",
+      "route": "/api/admin/releases/5030728e-dbd0-48ff-89c3-86dfb3be9fed",
       "method": "POST",
       "status": 400,
       "bytes": 54,
@@ -141,7 +145,7 @@
       "passed": true
     },
     {
-      "route": "/api/admin/releases/afb9ca5f-f21f-4c44-82cc-ba4e4b7d490b",
+      "route": "/api/admin/releases/5030728e-dbd0-48ff-89c3-86dfb3be9fed",
       "method": "POST",
       "status": 200,
       "bytes": 2741,
@@ -151,7 +155,7 @@
       "robots": null
     },
     {
-      "route": "/api/admin/releases/afb9ca5f-f21f-4c44-82cc-ba4e4b7d490b",
+      "route": "/api/admin/releases/5030728e-dbd0-48ff-89c3-86dfb3be9fed",
       "method": "POST",
       "status": 200,
       "bytes": 3904,
@@ -161,7 +165,7 @@
       "robots": null
     },
     {
-      "route": "/api/admin/releases/afb9ca5f-f21f-4c44-82cc-ba4e4b7d490b",
+      "route": "/api/admin/releases/5030728e-dbd0-48ff-89c3-86dfb3be9fed",
       "method": "POST",
       "status": 200,
       "bytes": 5025,
@@ -171,7 +175,7 @@
       "robots": null
     },
     {
-      "route": "/api/admin/releases/afb9ca5f-f21f-4c44-82cc-ba4e4b7d490b",
+      "route": "/api/admin/releases/5030728e-dbd0-48ff-89c3-86dfb3be9fed",
       "method": "POST",
       "status": 200,
       "bytes": 6202,
@@ -181,7 +185,7 @@
       "robots": null
     },
     {
-      "route": "/api/admin/releases/afb9ca5f-f21f-4c44-82cc-ba4e4b7d490b",
+      "route": "/api/admin/releases/5030728e-dbd0-48ff-89c3-86dfb3be9fed",
       "method": "POST",
       "status": 200,
       "bytes": 7301,
@@ -191,7 +195,7 @@
       "robots": null
     },
     {
-      "route": "/api/admin/releases/afb9ca5f-f21f-4c44-82cc-ba4e4b7d490b",
+      "route": "/api/admin/releases/5030728e-dbd0-48ff-89c3-86dfb3be9fed",
       "method": "POST",
       "status": 200,
       "bytes": 8416,
@@ -201,7 +205,7 @@
       "robots": null
     },
     {
-      "route": "/api/admin/releases/afb9ca5f-f21f-4c44-82cc-ba4e4b7d490b",
+      "route": "/api/admin/releases/5030728e-dbd0-48ff-89c3-86dfb3be9fed",
       "method": "POST",
       "status": 403,
       "bytes": 25,
@@ -211,7 +215,7 @@
       "robots": null
     },
     {
-      "route": "/api/admin/releases/afb9ca5f-f21f-4c44-82cc-ba4e4b7d490b",
+      "route": "/api/admin/releases/5030728e-dbd0-48ff-89c3-86dfb3be9fed",
       "method": "GET",
       "status": 403,
       "bytes": 25,
@@ -221,7 +225,7 @@
       "robots": null
     },
     {
-      "route": "/api/admin/releases/afb9ca5f-f21f-4c44-82cc-ba4e4b7d490b",
+      "route": "/api/admin/releases/5030728e-dbd0-48ff-89c3-86dfb3be9fed",
       "method": "POST",
       "status": 403,
       "bytes": 54,
@@ -231,7 +235,7 @@
       "robots": null
     },
     {
-      "route": "/api/admin/releases/afb9ca5f-f21f-4c44-82cc-ba4e4b7d490b",
+      "route": "/api/admin/releases/5030728e-dbd0-48ff-89c3-86dfb3be9fed",
       "method": "GET",
       "status": 403,
       "bytes": 54,
@@ -241,7 +245,7 @@
       "robots": null
     },
     {
-      "route": "/api/admin/releases/afb9ca5f-f21f-4c44-82cc-ba4e4b7d490b",
+      "route": "/api/admin/releases/5030728e-dbd0-48ff-89c3-86dfb3be9fed",
       "method": "POST",
       "status": 403,
       "bytes": 25,
@@ -251,7 +255,7 @@
       "robots": null
     },
     {
-      "route": "/api/admin/releases/afb9ca5f-f21f-4c44-82cc-ba4e4b7d490b",
+      "route": "/api/admin/releases/5030728e-dbd0-48ff-89c3-86dfb3be9fed",
       "method": "GET",
       "status": 403,
       "bytes": 25,
@@ -275,7 +279,7 @@
       "robots": null
     },
     {
-      "route": "/api/admin/releases/afb9ca5f-f21f-4c44-82cc-ba4e4b7d490b",
+      "route": "/api/admin/releases/5030728e-dbd0-48ff-89c3-86dfb3be9fed",
       "method": "POST",
       "status": 400,
       "bytes": 73,
@@ -285,7 +289,7 @@
       "robots": null
     },
     {
-      "route": "/api/content-releases/afb9ca5f-f21f-4c44-82cc-ba4e4b7d490b",
+      "route": "/api/content-releases/5030728e-dbd0-48ff-89c3-86dfb3be9fed",
       "method": "PATCH",
       "status": 403,
       "bytes": 85,
@@ -295,7 +299,7 @@
       "robots": null
     },
     {
-      "route": "/api/admin/releases/afb9ca5f-f21f-4c44-82cc-ba4e4b7d490b",
+      "route": "/api/admin/releases/5030728e-dbd0-48ff-89c3-86dfb3be9fed",
       "method": "POST",
       "status": 200,
       "bytes": 8539,
@@ -305,7 +309,7 @@
       "robots": null
     },
     {
-      "route": "/api/admin/releases/afb9ca5f-f21f-4c44-82cc-ba4e4b7d490b",
+      "route": "/api/admin/releases/5030728e-dbd0-48ff-89c3-86dfb3be9fed",
       "method": "POST",
       "status": 200,
       "bytes": 11772,
@@ -323,10 +327,10 @@
       "passed": true
     },
     {
-      "route": "/articles/story-07c-1792402137460",
+      "route": "/articles/story-07c-1792402637210",
       "method": "GET",
       "status": 200,
-      "bytes": 39333,
+      "bytes": 40800,
       "etag": null,
       "location": null,
       "contentType": "text/html; charset=utf-8",
@@ -355,7 +359,7 @@
       "robots": null
     },
     {
-      "route": "/api/admin/releases/890c968e-99c9-44ac-9701-452c48330657",
+      "route": "/api/admin/releases/fff96ffb-bdd0-49cf-89eb-92ba63ae0966",
       "method": "POST",
       "status": 200,
       "bytes": 2490,
@@ -365,7 +369,7 @@
       "robots": null
     },
     {
-      "route": "/api/admin/releases/890c968e-99c9-44ac-9701-452c48330657",
+      "route": "/api/admin/releases/fff96ffb-bdd0-49cf-89eb-92ba63ae0966",
       "method": "POST",
       "status": 200,
       "bytes": 2613,
@@ -375,7 +379,7 @@
       "robots": null
     },
     {
-      "route": "/api/admin/releases/890c968e-99c9-44ac-9701-452c48330657",
+      "route": "/api/admin/releases/fff96ffb-bdd0-49cf-89eb-92ba63ae0966",
       "method": "POST",
       "status": 200,
       "bytes": 5846,
@@ -385,7 +389,11 @@
       "robots": null
     },
     {
-      "route": "/api/admin/releases/890c968e-99c9-44ac-9701-452c48330657",
+      "name": "schedule persistence failure rolls back the real queued job",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/releases/fff96ffb-bdd0-49cf-89eb-92ba63ae0966",
       "method": "POST",
       "status": 200,
       "bytes": 6892,
@@ -405,7 +413,7 @@
       "robots": null
     },
     {
-      "route": "/api/admin/releases/d360108d-1989-4cc1-9873-9683d6fc4992",
+      "route": "/api/admin/releases/339bd5c2-01a7-4912-9a0c-7151951264b4",
       "method": "POST",
       "status": 200,
       "bytes": 2385,
@@ -415,7 +423,7 @@
       "robots": null
     },
     {
-      "route": "/api/admin/releases/d360108d-1989-4cc1-9873-9683d6fc4992",
+      "route": "/api/admin/releases/339bd5c2-01a7-4912-9a0c-7151951264b4",
       "method": "POST",
       "status": 200,
       "bytes": 2508,
@@ -425,7 +433,7 @@
       "robots": null
     },
     {
-      "route": "/api/admin/releases/d360108d-1989-4cc1-9873-9683d6fc4992",
+      "route": "/api/admin/releases/339bd5c2-01a7-4912-9a0c-7151951264b4",
       "method": "POST",
       "status": 200,
       "bytes": 5741,
@@ -435,7 +443,7 @@
       "robots": null
     },
     {
-      "route": "/api/admin/releases/d360108d-1989-4cc1-9873-9683d6fc4992",
+      "route": "/api/admin/releases/339bd5c2-01a7-4912-9a0c-7151951264b4",
       "method": "POST",
       "status": 200,
       "bytes": 6773,
@@ -445,10 +453,10 @@
       "robots": null
     },
     {
-      "route": "/api/admin/releases/d360108d-1989-4cc1-9873-9683d6fc4992",
+      "route": "/api/admin/releases/339bd5c2-01a7-4912-9a0c-7151951264b4",
       "method": "POST",
       "status": 200,
-      "bytes": 6898,
+      "bytes": 6902,
       "etag": null,
       "location": null,
       "contentType": "application/json",

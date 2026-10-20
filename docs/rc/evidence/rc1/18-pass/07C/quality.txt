@@ -1,0 +1,33 @@
+Scoped ESLint: exit 0. Final evidence-script ESLint: exit 0. Scoped TypeScript (all src and modified tests): exit 0. Final scoped Prettier check: exit 0. git diff --check: exit 0.
+
+UNIT RUN
+
+ RUN  v3.2.7 C:/Projects/RENEGADE CMS/Renegade-CMS
+
+ ✓ tests/unit/rc1-07c-releases.test.ts (13 tests) 34ms
+ ✓ tests/unit/releases-service.test.ts (2 tests) 107ms
+ ✓ tests/unit/flow-04-coordinated-releases.test.ts (9 tests) 154ms
+
+ Test Files  3 passed (3)
+      Tests  24 passed (24)
+   Start at  04:43:07
+   Duration  4.53s (transform 1.79s, setup 0ms, collect 9.16s, tests 296ms, environment 1ms, prepare 645ms)
+
+
+INTEGRATION RUN
+
+ RUN  v3.2.7 C:/Projects/RENEGADE CMS/Renegade-CMS
+
+[04:44:24] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+ ✓ tests/integration/content-release-acceptance.integration.test.ts (1 test) 1236ms
+   ✓ coordinated content release acceptance > durably schedules and releases an approved product once  734ms
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  04:44:14
+   Duration  10.45s (transform 2.49s, setup 0ms, collect 8.30s, tests 1.24s, environment 0ms, prepare 219ms)
+
+
+FINAL FORMAT RUN
+Checking formatting...
+All matched files use Prettier code style!

@@ -1,0 +1,22 @@
+Restarting container rc107c-20261019...
+rc107c-20261019
+Verifying state persistence after restart...
+[04:42:55] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+PASS 1: restart retains partial failure and five completed actions
+PASS 2: restart retains article publication and exact revision
+PASS 3: lost provider response remains unresolved rather than fabricated success
+PASS 4: lost response has persisted retryable outbox and two attempts
+PASS 5: failed-only retry completes all six persisted release actions
+PASS 6: five successful actions are byte-identical after retries
+PASS 7: distribution alone increments release action attempts
+PASS 8: two outbox rows, two external-post records, no duplicates
+PASS 9: successful destination never resent; failed destination reconciled on third attempt
+PASS 10: adapter harness persists exactly two records and creates only the missing record on retry
+PASS 11: no duplicate published content or revisions
+PASS 12: newsletter has exactly one durable recipient outbox row
+PASS 13: actual email worker accepts one message into local sink and replay is inert
+PASS 14: completed execution and retry replays are inert
+PASS 15: completed release cannot be cancelled or edited
+PASS 16: scheduled worker job created before restart executes from persisted state
+PASS 17: cancelled scheduled job never creates its redirect
+07C restart: 17 passed

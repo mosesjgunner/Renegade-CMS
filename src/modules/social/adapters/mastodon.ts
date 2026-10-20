@@ -174,7 +174,7 @@ export class MastodonAdapter implements SocialProviderAdapter {
     }
 
     const endpoint = `${instanceUrl}/api/v2/media`
-    const ssrfCheck = validateOutboundUrl(endpoint)
+    const ssrfCheck = validateOutboundUrl(endpoint, { allowHttpInDev: true })
     if (!ssrfCheck.isValid) {
       throw new Error(`SSRF Blocked: ${ssrfCheck.reason}`)
     }
@@ -239,7 +239,7 @@ export class MastodonAdapter implements SocialProviderAdapter {
 
     // SSRF validation
     const targetEndpoint = `${instanceUrl}/api/v1/statuses`
-    const ssrf = validateOutboundUrl(targetEndpoint)
+    const ssrf = validateOutboundUrl(targetEndpoint, { allowHttpInDev: true })
     if (!ssrf.isValid) {
       return {
         status: 'failed',

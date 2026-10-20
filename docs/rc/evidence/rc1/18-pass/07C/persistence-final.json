@@ -1,0 +1,770 @@
+{
+  "release": {
+    "id": "5030728e-dbd0-48ff-89c3-86dfb3be9fed",
+    "site": "5f825037-7228-4843-8248-e4add8196c61",
+    "publication": null,
+    "space": null,
+    "owner": null,
+    "title": "07C multi-action 1792402700364",
+    "name": "07C multi-action 1792402700364",
+    "purpose": "Publish approved artifacts and recover partial failure",
+    "ownerTeam": "Marketing & Editorial Ops",
+    "content": null,
+    "article": null,
+    "product": null,
+    "productRevision": null,
+    "plannedInstant": "2026-10-20T14:38:00.000Z",
+    "scheduledFor": "2026-10-20T14:38:00.000Z",
+    "timeZone": "America/Chicago",
+    "labels": [
+      "campaign",
+      "launch"
+    ],
+    "campaign": "",
+    "dependencies": [],
+    "releaseRevision": 7,
+    "status": "completed",
+    "lastScheduleMutationId": null,
+    "artifacts": [
+      {
+        "id": "article:0945ab74-cfa2-46f1-ac6e-84b6e2f82557",
+        "title": "article",
+        "status": "succeeded",
+        "attempts": 1,
+        "targetId": "0945ab74-cfa2-46f1-ac6e-84b6e2f82557",
+        "updatedAt": "2026-10-19T09:40:25.638Z",
+        "executedAt": "2026-10-19T09:40:25.638Z",
+        "pinnedHash": "d1c9128f2269ef41db8e4d150d71e10610d403468a0d57cca204791664b85fc5",
+        "stepOutput": {
+          "published": true,
+          "revisionId": "74d9723c-3580-4ba8-bc7b-14b4ae6ad164",
+          "alreadyPublished": false
+        },
+        "targetType": "article",
+        "canonicalUrl": "/articles/story-07c-1792402637210",
+        "pinnedStateHash": "25f59676f0a88fab4468b4cbbbeb0eeb8b67a4a52579bc06989eca3dbacf7574",
+        "pinnedRevisionId": "74d9723c-3580-4ba8-bc7b-14b4ae6ad164",
+        "lastKnownGoodState": {
+          "previousStatus": "approved",
+          "previousPublishedRevision": ""
+        }
+      },
+      {
+        "id": "page:6c42e036-f118-4a4e-91f9-ae064c6296df",
+        "title": "page",
+        "status": "succeeded",
+        "attempts": 1,
+        "targetId": "6c42e036-f118-4a4e-91f9-ae064c6296df",
+        "updatedAt": "2026-10-19T09:40:26.932Z",
+        "executedAt": "2026-10-19T09:40:26.932Z",
+        "pinnedHash": "52463a6429cbc3e353ec2204a3756a0b87a9432c62ba0d59737b4763b2a7d542",
+        "stepOutput": {
+          "revision": 1,
+          "published": true
+        },
+        "targetType": "page",
+        "canonicalUrl": "/07c-launch",
+        "pinnedStateHash": "d8ca01d5662c3f3658e408b0f97c92ca0165421bb081aa8677f7cd64ed6b5016",
+        "lastKnownGoodState": {
+          "previousBlocks": [],
+          "previousStatus": "draft",
+          "previousRevision": 1,
+          "previousPublishedRevision": null
+        },
+        "pinnedRevisionSequence": 1
+      },
+      {
+        "id": "media:224a7ccc-1f45-4df0-a0a9-61c833fb5631",
+        "title": "media",
+        "status": "succeeded",
+        "attempts": 1,
+        "targetId": "224a7ccc-1f45-4df0-a0a9-61c833fb5631",
+        "updatedAt": "2026-10-19T09:40:27.118Z",
+        "executedAt": "2026-10-19T09:40:27.118Z",
+        "pinnedHash": "ea42291c6027996902478508c926dc076d6818989950eaf492dcc969847df555",
+        "stepOutput": {
+          "active": true,
+          "mediaId": "224a7ccc-1f45-4df0-a0a9-61c833fb5631"
+        },
+        "targetType": "media",
+        "pinnedStateHash": "ad6f9f6c85784fa3e16356a44d6f908a8b2481f41b2167b4b671a32a83a8ba87",
+        "mediaRightsStatus": "approved",
+        "lastKnownGoodState": {
+          "mediaId": "224a7ccc-1f45-4df0-a0a9-61c833fb5631"
+        }
+      },
+      {
+        "id": "redirect:07c-launch",
+        "title": "redirect",
+        "status": "succeeded",
+        "attempts": 1,
+        "targetId": "07c-launch",
+        "updatedAt": "2026-10-19T09:40:27.175Z",
+        "executedAt": "2026-10-19T09:40:27.175Z",
+        "pinnedHash": "73ec9ec47117e71bc470c13feb7eb5aedd801f64a89e7b3f3b6e780bf0127c0e",
+        "stepOutput": {
+          "toPath": "/07c-launch",
+          "fromPath": "/07c-old",
+          "redirectId": "21a88f72-fde6-4340-8ae6-d00ccb56c20e"
+        },
+        "targetType": "redirect",
+        "redirectRule": {
+          "match": "exact",
+          "toPath": "/07c-launch",
+          "enabled": true,
+          "fromPath": "/07c-old",
+          "statusCode": "308"
+        },
+        "pinnedStateHash": "0bdb6c35799767369067810ffae74da249315376c0fb0cf44f20fad2dbb03ae8",
+        "lastKnownGoodState": {
+          "created": true,
+          "previousId": "21a88f72-fde6-4340-8ae6-d00ccb56c20e"
+        }
+      },
+      {
+        "id": "newsletter:4b7ba1f3-d877-4ff5-9846-44a901449df5",
+        "title": "newsletter",
+        "status": "succeeded",
+        "attempts": 1,
+        "targetId": "4b7ba1f3-d877-4ff5-9846-44a901449df5",
+        "updatedAt": "2026-10-19T09:40:27.240Z",
+        "executedAt": "2026-10-19T09:40:27.240Z",
+        "pinnedHash": "34323d59957bfe550ace13e7ff0cd850812ddc4b76b39466dc9537de3b6ebc34",
+        "stepOutput": {
+          "queued": true,
+          "emailId": "4b7ba1f3-d877-4ff5-9846-44a901449df5",
+          "delivery": "not-observed"
+        },
+        "targetType": "newsletter",
+        "pinnedStateHash": "a3b09102041a3a28a245e3ea150855d2f662b188508c6cbfb6254014cc289e6f",
+        "lastKnownGoodState": {
+          "previousStatus": "review"
+        }
+      },
+      {
+        "id": "distribution:f46b0fb5-34a1-475f-88e7-d605556c04b8",
+        "title": "distribution",
+        "status": "succeeded",
+        "attempts": 3,
+        "targetId": "f46b0fb5-34a1-475f-88e7-d605556c04b8",
+        "updatedAt": "2026-10-19T09:44:01.772Z",
+        "executedAt": "2026-10-19T09:44:01.772Z",
+        "pinnedHash": "37482323f6495f93386150e37287b60bba29cf3a2382f5ca5d94ea9b160c4245",
+        "stepOutput": {
+          "succeeded": 2,
+          "distributed": true,
+          "distributionDraftId": "f46b0fb5-34a1-475f-88e7-d605556c04b8"
+        },
+        "targetType": "distribution",
+        "pinnedStateHash": "ad96c52085b1583be7a5412a755aafdc3e2242087bc6ae0f8267262fd8687bc5",
+        "lastKnownGoodState": {
+          "distributionDraftId": "f46b0fb5-34a1-475f-88e7-d605556c04b8"
+        }
+      }
+    ],
+    "gateSnapshot": {
+      "rules": [
+        {
+          "name": "Staff Release Authorization",
+          "ruleId": "rule-permissions",
+          "status": "passed",
+          "message": "Actor role 'owner' is authorized for release operations.",
+          "evidence": {
+            "actorId": "6899fb07-def8-4709-a2e8-8b8cd64f2706",
+            "actorRole": "owner"
+          },
+          "severity": "blocker",
+          "ruleVersion": "v1.0"
+        },
+        {
+          "name": "Editorial Approvals Verification",
+          "ruleId": "rule-approvals",
+          "status": "passed",
+          "message": "All included content, pages, and products have verified approved revisions.",
+          "evidence": {
+            "artifactCount": 6
+          },
+          "severity": "blocker",
+          "ruleVersion": "v1.0"
+        },
+        {
+          "name": "Unresolved Review Comments Check",
+          "ruleId": "rule-unresolved-comments",
+          "status": "passed",
+          "message": "No unresolved blocking review comments found on included artifacts.",
+          "severity": "blocker",
+          "ruleVersion": "v1.0"
+        },
+        {
+          "name": "URL & Canonical Route Conflict Detection",
+          "ruleId": "rule-url-canonical-conflicts",
+          "status": "passed",
+          "message": "All published paths and canonical URLs are mutually exclusive.",
+          "severity": "blocker",
+          "ruleVersion": "v1.0"
+        },
+        {
+          "name": "Redirect Integrity & Circular Loop Check",
+          "ruleId": "rule-redirects",
+          "status": "passed",
+          "message": "All declared redirects pass syntax, status, and loop checks.",
+          "severity": "blocker",
+          "ruleVersion": "v1.0"
+        },
+        {
+          "name": "Quality Center Severity Threshold Gate",
+          "ruleId": "rule-quality-center",
+          "status": "passed",
+          "message": "Zero publication-blocking quality issues detected on release targets.",
+          "severity": "blocker",
+          "ruleVersion": "v1.0"
+        },
+        {
+          "name": "Media Rights & Asset Readiness",
+          "ruleId": "rule-media-readiness",
+          "status": "passed",
+          "message": "All pinned media assets have verified rights clearance and readiness.",
+          "severity": "blocker",
+          "ruleVersion": "v1.0"
+        },
+        {
+          "name": "Scheduled Release Dependency Gate",
+          "ruleId": "rule-scheduled-dependencies",
+          "status": "passed",
+          "message": "All prerequisite release dependencies are completed or co-scheduled.",
+          "severity": "blocker",
+          "ruleVersion": "v1.0"
+        },
+        {
+          "name": "Operations Queue & Worker Health",
+          "ruleId": "rule-worker-health",
+          "status": "passed",
+          "message": "Operations queue worker is active and healthy.",
+          "severity": "warning",
+          "ruleVersion": "v1.0"
+        },
+        {
+          "name": "Migration & Schema Config Policy",
+          "ruleId": "rule-migration-policy",
+          "status": "passed",
+          "message": "No prohibited schema migrations or policy violations present.",
+          "severity": "blocker",
+          "ruleVersion": "v1.0"
+        },
+        {
+          "name": "Localization Quality & Translation Integrity",
+          "ruleId": "rule-localization-quality",
+          "status": "passed",
+          "message": "All localized content items have verified completeness, active source alignment, and human approvals.",
+          "severity": "blocker",
+          "ruleVersion": "v1.0"
+        }
+      ],
+      "isValid": true,
+      "snapshotId": "gate-snap-1792402791587",
+      "evaluatedAt": "2026-10-19T09:39:51.566Z",
+      "blockerCount": 0,
+      "warningCount": 0,
+      "overallStatus": "passed",
+      "evaluatedFingerprint": "deafd14447284a9731a4f35e713774a7f379268965498b248d8cd5d90ac9fd2d"
+    },
+    "approvals": [
+      {
+        "id": "b2c2d659-c1c9-49ca-9071-765af047461e",
+        "actorId": "6899fb07-def8-4709-a2e8-8b8cd64f2706",
+        "decision": "approved",
+        "actorRole": "owner",
+        "decidedAt": "2026-10-19T09:39:51.587Z",
+        "releaseRevision": 7,
+        "gateSnapshotFingerprint": "deafd14447284a9731a4f35e713774a7f379268965498b248d8cd5d90ac9fd2d"
+      }
+    ],
+    "sagaSteps": [
+      {
+        "output": {
+          "published": true,
+          "revisionId": "74d9723c-3580-4ba8-bc7b-14b4ae6ad164",
+          "alreadyPublished": false
+        },
+        "status": "succeeded",
+        "stepId": "step-article:0945ab74-cfa2-46f1-ac6e-84b6e2f82557-1",
+        "attempts": 1,
+        "boundary": "idempotent_db",
+        "artifactId": "article:0945ab74-cfa2-46f1-ac6e-84b6e2f82557",
+        "targetType": "article",
+        "completedAt": "2026-10-19T09:40:25.638Z"
+      },
+      {
+        "output": {
+          "revision": 1,
+          "published": true
+        },
+        "status": "succeeded",
+        "stepId": "step-page:6c42e036-f118-4a4e-91f9-ae064c6296df-1",
+        "attempts": 1,
+        "boundary": "idempotent_db",
+        "artifactId": "page:6c42e036-f118-4a4e-91f9-ae064c6296df",
+        "targetType": "page",
+        "completedAt": "2026-10-19T09:40:26.932Z"
+      },
+      {
+        "output": {
+          "active": true,
+          "mediaId": "224a7ccc-1f45-4df0-a0a9-61c833fb5631"
+        },
+        "status": "succeeded",
+        "stepId": "step-media:224a7ccc-1f45-4df0-a0a9-61c833fb5631-1",
+        "attempts": 1,
+        "boundary": "idempotent_db",
+        "artifactId": "media:224a7ccc-1f45-4df0-a0a9-61c833fb5631",
+        "targetType": "media",
+        "completedAt": "2026-10-19T09:40:27.118Z"
+      },
+      {
+        "output": {
+          "toPath": "/07c-launch",
+          "fromPath": "/07c-old",
+          "redirectId": "21a88f72-fde6-4340-8ae6-d00ccb56c20e"
+        },
+        "status": "succeeded",
+        "stepId": "step-redirect:07c-launch-1",
+        "attempts": 1,
+        "boundary": "idempotent_db",
+        "artifactId": "redirect:07c-launch",
+        "targetType": "redirect",
+        "completedAt": "2026-10-19T09:40:27.175Z"
+      },
+      {
+        "output": {
+          "queued": true,
+          "emailId": "4b7ba1f3-d877-4ff5-9846-44a901449df5",
+          "delivery": "not-observed"
+        },
+        "status": "succeeded",
+        "stepId": "step-newsletter:4b7ba1f3-d877-4ff5-9846-44a901449df5-1",
+        "attempts": 1,
+        "boundary": "saga_outbox",
+        "artifactId": "newsletter:4b7ba1f3-d877-4ff5-9846-44a901449df5",
+        "targetType": "newsletter",
+        "completedAt": "2026-10-19T09:40:27.240Z"
+      },
+      {
+        "error": "07C fail once destination: 07C isolated adapter failure",
+        "status": "failed",
+        "stepId": "step-distribution:f46b0fb5-34a1-475f-88e7-d605556c04b8-1",
+        "attempts": 1,
+        "boundary": "saga_outbox",
+        "artifactId": "distribution:f46b0fb5-34a1-475f-88e7-d605556c04b8",
+        "targetType": "distribution",
+        "completedAt": "2026-10-19T09:40:27.578Z"
+      },
+      {
+        "error": "07C fail once destination: Delivery pending or retryable; inspect publish attempts.",
+        "status": "failed",
+        "stepId": "step-distribution:f46b0fb5-34a1-475f-88e7-d605556c04b8-2",
+        "attempts": 2,
+        "boundary": "saga_outbox",
+        "artifactId": "distribution:f46b0fb5-34a1-475f-88e7-d605556c04b8",
+        "targetType": "distribution",
+        "completedAt": "2026-10-19T09:43:56.365Z"
+      },
+      {
+        "output": {
+          "succeeded": 2,
+          "distributed": true,
+          "distributionDraftId": "f46b0fb5-34a1-475f-88e7-d605556c04b8"
+        },
+        "status": "succeeded",
+        "stepId": "step-distribution:f46b0fb5-34a1-475f-88e7-d605556c04b8-3",
+        "attempts": 3,
+        "boundary": "saga_outbox",
+        "artifactId": "distribution:f46b0fb5-34a1-475f-88e7-d605556c04b8",
+        "targetType": "distribution",
+        "completedAt": "2026-10-19T09:44:01.772Z"
+      }
+    ],
+    "resultingUrls": [
+      "/articles/story-07c-1792402637210",
+      "/07c-launch",
+      "/07c-old"
+    ],
+    "leaseOwner": null,
+    "leaseExpiresAt": null,
+    "scheduleAudit": [],
+    "executionJob": null,
+    "executionItems": [
+      {
+        "id": "article:0945ab74-cfa2-46f1-ac6e-84b6e2f82557",
+        "title": "article",
+        "status": "succeeded",
+        "attempts": 1,
+        "targetId": "0945ab74-cfa2-46f1-ac6e-84b6e2f82557",
+        "updatedAt": "2026-10-19T09:40:25.638Z",
+        "executedAt": "2026-10-19T09:40:25.638Z",
+        "pinnedHash": "d1c9128f2269ef41db8e4d150d71e10610d403468a0d57cca204791664b85fc5",
+        "stepOutput": {
+          "published": true,
+          "revisionId": "74d9723c-3580-4ba8-bc7b-14b4ae6ad164",
+          "alreadyPublished": false
+        },
+        "targetType": "article",
+        "canonicalUrl": "/articles/story-07c-1792402637210",
+        "pinnedStateHash": "25f59676f0a88fab4468b4cbbbeb0eeb8b67a4a52579bc06989eca3dbacf7574",
+        "pinnedRevisionId": "74d9723c-3580-4ba8-bc7b-14b4ae6ad164",
+        "lastKnownGoodState": {
+          "previousStatus": "approved",
+          "previousPublishedRevision": ""
+        }
+      },
+      {
+        "id": "page:6c42e036-f118-4a4e-91f9-ae064c6296df",
+        "title": "page",
+        "status": "succeeded",
+        "attempts": 1,
+        "targetId": "6c42e036-f118-4a4e-91f9-ae064c6296df",
+        "updatedAt": "2026-10-19T09:40:26.932Z",
+        "executedAt": "2026-10-19T09:40:26.932Z",
+        "pinnedHash": "52463a6429cbc3e353ec2204a3756a0b87a9432c62ba0d59737b4763b2a7d542",
+        "stepOutput": {
+          "revision": 1,
+          "published": true
+        },
+        "targetType": "page",
+        "canonicalUrl": "/07c-launch",
+        "pinnedStateHash": "d8ca01d5662c3f3658e408b0f97c92ca0165421bb081aa8677f7cd64ed6b5016",
+        "lastKnownGoodState": {
+          "previousBlocks": [],
+          "previousStatus": "draft",
+          "previousRevision": 1,
+          "previousPublishedRevision": null
+        },
+        "pinnedRevisionSequence": 1
+      },
+      {
+        "id": "media:224a7ccc-1f45-4df0-a0a9-61c833fb5631",
+        "title": "media",
+        "status": "succeeded",
+        "attempts": 1,
+        "targetId": "224a7ccc-1f45-4df0-a0a9-61c833fb5631",
+        "updatedAt": "2026-10-19T09:40:27.118Z",
+        "executedAt": "2026-10-19T09:40:27.118Z",
+        "pinnedHash": "ea42291c6027996902478508c926dc076d6818989950eaf492dcc969847df555",
+        "stepOutput": {
+          "active": true,
+          "mediaId": "224a7ccc-1f45-4df0-a0a9-61c833fb5631"
+        },
+        "targetType": "media",
+        "pinnedStateHash": "ad6f9f6c85784fa3e16356a44d6f908a8b2481f41b2167b4b671a32a83a8ba87",
+        "mediaRightsStatus": "approved",
+        "lastKnownGoodState": {
+          "mediaId": "224a7ccc-1f45-4df0-a0a9-61c833fb5631"
+        }
+      },
+      {
+        "id": "redirect:07c-launch",
+        "title": "redirect",
+        "status": "succeeded",
+        "attempts": 1,
+        "targetId": "07c-launch",
+        "updatedAt": "2026-10-19T09:40:27.175Z",
+        "executedAt": "2026-10-19T09:40:27.175Z",
+        "pinnedHash": "73ec9ec47117e71bc470c13feb7eb5aedd801f64a89e7b3f3b6e780bf0127c0e",
+        "stepOutput": {
+          "toPath": "/07c-launch",
+          "fromPath": "/07c-old",
+          "redirectId": "21a88f72-fde6-4340-8ae6-d00ccb56c20e"
+        },
+        "targetType": "redirect",
+        "redirectRule": {
+          "match": "exact",
+          "toPath": "/07c-launch",
+          "enabled": true,
+          "fromPath": "/07c-old",
+          "statusCode": "308"
+        },
+        "pinnedStateHash": "0bdb6c35799767369067810ffae74da249315376c0fb0cf44f20fad2dbb03ae8",
+        "lastKnownGoodState": {
+          "created": true,
+          "previousId": "21a88f72-fde6-4340-8ae6-d00ccb56c20e"
+        }
+      },
+      {
+        "id": "newsletter:4b7ba1f3-d877-4ff5-9846-44a901449df5",
+        "title": "newsletter",
+        "status": "succeeded",
+        "attempts": 1,
+        "targetId": "4b7ba1f3-d877-4ff5-9846-44a901449df5",
+        "updatedAt": "2026-10-19T09:40:27.240Z",
+        "executedAt": "2026-10-19T09:40:27.240Z",
+        "pinnedHash": "34323d59957bfe550ace13e7ff0cd850812ddc4b76b39466dc9537de3b6ebc34",
+        "stepOutput": {
+          "queued": true,
+          "emailId": "4b7ba1f3-d877-4ff5-9846-44a901449df5",
+          "delivery": "not-observed"
+        },
+        "targetType": "newsletter",
+        "pinnedStateHash": "a3b09102041a3a28a245e3ea150855d2f662b188508c6cbfb6254014cc289e6f",
+        "lastKnownGoodState": {
+          "previousStatus": "review"
+        }
+      },
+      {
+        "id": "distribution:f46b0fb5-34a1-475f-88e7-d605556c04b8",
+        "title": "distribution",
+        "status": "succeeded",
+        "attempts": 3,
+        "targetId": "f46b0fb5-34a1-475f-88e7-d605556c04b8",
+        "updatedAt": "2026-10-19T09:44:01.772Z",
+        "executedAt": "2026-10-19T09:44:01.772Z",
+        "pinnedHash": "37482323f6495f93386150e37287b60bba29cf3a2382f5ca5d94ea9b160c4245",
+        "stepOutput": {
+          "succeeded": 2,
+          "distributed": true,
+          "distributionDraftId": "f46b0fb5-34a1-475f-88e7-d605556c04b8"
+        },
+        "targetType": "distribution",
+        "pinnedStateHash": "ad96c52085b1583be7a5412a755aafdc3e2242087bc6ae0f8267262fd8687bc5",
+        "lastKnownGoodState": {
+          "distributionDraftId": "f46b0fb5-34a1-475f-88e7-d605556c04b8"
+        }
+      }
+    ],
+    "executionAudit": [
+      {
+        "at": "2026-10-19T09:38:57.916Z",
+        "action": "release.created",
+        "actorId": "6899fb07-def8-4709-a2e8-8b8cd64f2706",
+        "details": {
+          "name": "07C multi-action 1792402700364",
+          "purpose": "Publish approved artifacts and recover partial failure"
+        }
+      },
+      {
+        "at": "2026-10-19T09:39:12.992Z",
+        "action": "release.artifact.pinned",
+        "actorId": "6899fb07-def8-4709-a2e8-8b8cd64f2706",
+        "details": {
+          "artifactId": "article:0945ab74-cfa2-46f1-ac6e-84b6e2f82557",
+          "pinnedHash": "d1c9128f2269ef41db8e4d150d71e10610d403468a0d57cca204791664b85fc5",
+          "targetType": "article",
+          "releaseRevision": 2
+        }
+      },
+      {
+        "at": "2026-10-19T09:39:15.948Z",
+        "action": "release.artifact.pinned",
+        "actorId": "6899fb07-def8-4709-a2e8-8b8cd64f2706",
+        "details": {
+          "artifactId": "page:6c42e036-f118-4a4e-91f9-ae064c6296df",
+          "pinnedHash": "52463a6429cbc3e353ec2204a3756a0b87a9432c62ba0d59737b4763b2a7d542",
+          "targetType": "page",
+          "releaseRevision": 3
+        }
+      },
+      {
+        "at": "2026-10-19T09:39:23.484Z",
+        "action": "release.artifact.pinned",
+        "actorId": "6899fb07-def8-4709-a2e8-8b8cd64f2706",
+        "details": {
+          "artifactId": "media:224a7ccc-1f45-4df0-a0a9-61c833fb5631",
+          "pinnedHash": "ea42291c6027996902478508c926dc076d6818989950eaf492dcc969847df555",
+          "targetType": "media",
+          "releaseRevision": 4
+        }
+      },
+      {
+        "at": "2026-10-19T09:39:30.635Z",
+        "action": "release.artifact.pinned",
+        "actorId": "6899fb07-def8-4709-a2e8-8b8cd64f2706",
+        "details": {
+          "artifactId": "redirect:07c-launch",
+          "pinnedHash": "73ec9ec47117e71bc470c13feb7eb5aedd801f64a89e7b3f3b6e780bf0127c0e",
+          "targetType": "redirect",
+          "releaseRevision": 5
+        }
+      },
+      {
+        "at": "2026-10-19T09:39:33.388Z",
+        "action": "release.artifact.pinned",
+        "actorId": "6899fb07-def8-4709-a2e8-8b8cd64f2706",
+        "details": {
+          "artifactId": "newsletter:4b7ba1f3-d877-4ff5-9846-44a901449df5",
+          "pinnedHash": "34323d59957bfe550ace13e7ff0cd850812ddc4b76b39466dc9537de3b6ebc34",
+          "targetType": "newsletter",
+          "releaseRevision": 6
+        }
+      },
+      {
+        "at": "2026-10-19T09:39:36.174Z",
+        "action": "release.artifact.pinned",
+        "actorId": "6899fb07-def8-4709-a2e8-8b8cd64f2706",
+        "details": {
+          "artifactId": "distribution:f46b0fb5-34a1-475f-88e7-d605556c04b8",
+          "pinnedHash": "37482323f6495f93386150e37287b60bba29cf3a2382f5ca5d94ea9b160c4245",
+          "targetType": "distribution",
+          "releaseRevision": 7
+        }
+      },
+      {
+        "at": "2026-10-19T09:39:49.120Z",
+        "action": "release.review.requested",
+        "actorId": "6899fb07-def8-4709-a2e8-8b8cd64f2706"
+      },
+      {
+        "at": "2026-10-19T09:39:51.587Z",
+        "action": "release.approved",
+        "actorId": "6899fb07-def8-4709-a2e8-8b8cd64f2706",
+        "details": {
+          "approvalId": "b2c2d659-c1c9-49ca-9071-765af047461e"
+        }
+      },
+      {
+        "at": "2026-10-19T09:40:28.394Z",
+        "action": "release.execution.completed",
+        "status": "partially-failed",
+        "actorId": "6899fb07-def8-4709-a2e8-8b8cd64f2706",
+        "details": {
+          "failedSteps": [
+            {
+              "error": "07C fail once destination: 07C isolated adapter failure",
+              "artifactId": "distribution:f46b0fb5-34a1-475f-88e7-d605556c04b8"
+            }
+          ],
+          "succeededCount": 5,
+          "unresolvedCount": 1
+        }
+      },
+      {
+        "at": "2026-10-19T09:43:56.805Z",
+        "action": "release.execution.retried",
+        "status": "partially-failed",
+        "actorId": "6899fb07-def8-4709-a2e8-8b8cd64f2706",
+        "details": {
+          "failedSteps": [
+            {
+              "error": "07C fail once destination: Delivery pending or retryable; inspect publish attempts.",
+              "artifactId": "distribution:f46b0fb5-34a1-475f-88e7-d605556c04b8"
+            }
+          ],
+          "succeededCount": 5,
+          "unresolvedCount": 1
+        }
+      },
+      {
+        "at": "2026-10-19T09:44:05.992Z",
+        "action": "release.execution.retried",
+        "status": "completed",
+        "actorId": "6899fb07-def8-4709-a2e8-8b8cd64f2706",
+        "details": {
+          "failedSteps": [],
+          "succeededCount": 6,
+          "unresolvedCount": 0
+        }
+      }
+    ],
+    "updatedAt": "2026-10-19T09:44:06.001Z",
+    "createdAt": "2026-10-19T09:38:57.941Z"
+  },
+  "queues": [
+    {
+      "id": "cba7f6ad-d7cc-4a3e-b5bf-5eb35808446c",
+      "variant": "8fcf7d56-e561-481c-a6c4-b363f0c7485d",
+      "account": "a3f6c7dc-6e62-4e6a-a957-3cffd2f6326d",
+      "scheduledFor": "2026-10-20T14:38:00.000Z",
+      "timeZone": "America/Chicago",
+      "status": "published",
+      "idempotencyKey": "release:5030728e-dbd0-48ff-89c3-86dfb3be9fed:distribution:f46b0fb5-34a1-475f-88e7-d605556c04b8:8fcf7d56-e561-481c-a6c4-b363f0c7485d",
+      "leaseUntil": null,
+      "leaseOwner": "6899fb07-def8-4709-a2e8-8b8cd64f2706",
+      "attemptCount": 1,
+      "nextAttemptAt": null,
+      "deadLetterReason": null,
+      "cancelledAt": null,
+      "updatedAt": "2026-10-19T09:40:28.288Z",
+      "createdAt": "2026-10-19T09:40:27.992Z"
+    },
+    {
+      "id": "6411c63e-6b82-4395-a3a4-9bf8bd5d8d74",
+      "variant": "a2350a51-2ca7-483f-85f2-f5eaa0c95740",
+      "account": "a3f6c7dc-6e62-4e6a-a957-3cffd2f6326d",
+      "scheduledFor": "2026-10-20T14:38:00.000Z",
+      "timeZone": "America/Chicago",
+      "status": "published",
+      "idempotencyKey": "release:5030728e-dbd0-48ff-89c3-86dfb3be9fed:distribution:f46b0fb5-34a1-475f-88e7-d605556c04b8:a2350a51-2ca7-483f-85f2-f5eaa0c95740",
+      "leaseUntil": null,
+      "leaseOwner": "6899fb07-def8-4709-a2e8-8b8cd64f2706",
+      "attemptCount": 3,
+      "nextAttemptAt": null,
+      "deadLetterReason": null,
+      "cancelledAt": null,
+      "updatedAt": "2026-10-19T09:44:05.857Z",
+      "createdAt": "2026-10-19T09:40:27.678Z"
+    }
+  ],
+  "posts": [
+    {
+      "id": "a33cdcf2-057c-4bad-a686-f124787fefab",
+      "variant": "a2350a51-2ca7-483f-85f2-f5eaa0c95740",
+      "account": "a3f6c7dc-6e62-4e6a-a957-3cffd2f6326d",
+      "remoteId": "at://did:plc:rc107c/app.bsky.feed.post/d10afeb8dffc475daa53c87efc02d204",
+      "remoteUrl": "https://bsky.app/profile/did:plc:rc107c/post/d10afeb8dffc475daa53c87efc02d204",
+      "remoteState": "published",
+      "publishedAt": "2026-10-19T09:44:05.716Z",
+      "deleteRequestedAt": null,
+      "updatedAt": "2026-10-19T09:44:05.799Z",
+      "createdAt": "2026-10-19T09:44:05.799Z"
+    },
+    {
+      "id": "a4527724-adf1-4f55-94dc-210a094ad2dc",
+      "variant": "8fcf7d56-e561-481c-a6c4-b363f0c7485d",
+      "account": "a3f6c7dc-6e62-4e6a-a957-3cffd2f6326d",
+      "remoteId": "at://did:plc:rc107c/app.bsky.feed.post/faf15b54b1dc46dcd7cc03b99060f717",
+      "remoteUrl": "https://bsky.app/profile/did:plc:rc107c/post/faf15b54b1dc46dcd7cc03b99060f717",
+      "remoteState": "published",
+      "publishedAt": "2026-10-19T09:40:28.044Z",
+      "deleteRequestedAt": null,
+      "updatedAt": "2026-10-19T09:40:28.198Z",
+      "createdAt": "2026-10-19T09:40:28.198Z"
+    }
+  ],
+  "delivery": {
+    "id": "f8a29366-c6f1-427e-8e1b-16744397ba15",
+    "message": "4b7ba1f3-d877-4ff5-9846-44a901449df5",
+    "subscriber": "8b75ad27-b207-4246-8092-0206670e8b07",
+    "recipientEmail": "local-recipient@rc107c.test",
+    "idempotencyKey": "email:4b7ba1f3-d877-4ff5-9846-44a901449df5:8b75ad27-b207-4246-8092-0206670e8b07",
+    "status": "accepted",
+    "provider": "development-capture",
+    "providerMessageId": "local:ZW1haWw6NGI3YmExZjMtZDg3Ny00ZmY1LTk4NDYtNDRhOTAxNDQ5ZGY1OjhiNzVhZDI3LWIyMDctNDI0Ni04MDkyLTAyMDY2NzBlOGIwNw",
+    "attempts": 1,
+    "acceptedAt": "2026-10-19T09:44:06.270Z",
+    "nextAttemptAt": null,
+    "leaseUntil": null,
+    "renderHash": "dUULaB7FNB-ML41oyaYKl3YHMkRKkb8vwTioskTuUGg",
+    "rfcMessageId": "<fde6f06925d6807a92a8ee42c512b4d7@renegade.local>",
+    "unsubscribeToken": "eyJ2IjoxLCJzaXRlSWQiOiI1ZjgyNTAzNy03MjI4LTQ4NDMtODI0OC1lNGFkZDgxOTZjNjEiLCJzdWJzY3JpYmVySWQiOiI4Yjc1YWQyNy1iMjA3LTQyNDYtODA5Mi0wMjA2NjcwZThiMDciLCJwdXJwb3NlIjoidW5zdWJzY3JpYmUiLCJleHAiOjE3OTMwMDc4NDYsIm5vbmNlIjoiMEl5QlpjOWdrNkV5ZU1DZ1RaNG1neTUzWlM2Q2lZZmVURHEzVFhmV1BybyJ9.zbxnlo-sYxy3etLjzXO8kd_d9N3qgCKEBHx65R-vAXo",
+    "messageSnapshot": {
+      "kind": "bulk",
+      "blocks": [
+        {
+          "text": "Approved release copy",
+          "type": "text"
+        }
+      ],
+      "purpose": "newsletter",
+      "subject": "07C reviewed release mail",
+      "reviewedAt": "2026-10-19T09:40:27.266Z",
+      "messageDesign": null,
+      "senderIdentity": null
+    },
+    "outcome": {
+      "delivery": "not-observed",
+      "acceptedAt": "2026-10-19T09:44:06.270Z"
+    },
+    "recipientSnapshotHash": null,
+    "updatedAt": "2026-10-19T09:44:06.279Z",
+    "createdAt": "2026-10-19T09:40:27.407Z"
+  },
+  "providerRecordCount": 2,
+  "revisionCount": 1
+}

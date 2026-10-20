@@ -1,19 +1,19 @@
 {
-  "owner": "4cba6dbb-414d-45c1-9429-607b3c6c4abb",
-  "site": "65c59961-1d70-44b9-96e6-37456f966e9b",
-  "release": "afb9ca5f-f21f-4c44-82cc-ba4e4b7d490b",
-  "name": "07C multi-action 1792402169673",
-  "article": "327c83e7-4144-48ac-9b6f-28d93c8dc82d",
-  "content": "e5713593-8e4d-4c26-b052-e50b131c6c5e",
-  "slug": "story-07c-1792402137460",
-  "revision": "8bf2af73-f2f0-4bd9-b545-cbcd8ec31dc6",
-  "media": "b068d2e6-fd15-430e-944d-ba547979131c",
-  "email": "d548b9af-f37b-4ef8-b52d-f4f662dfd0a0",
+  "owner": "6899fb07-def8-4709-a2e8-8b8cd64f2706",
+  "site": "5f825037-7228-4843-8248-e4add8196c61",
+  "release": "5030728e-dbd0-48ff-89c3-86dfb3be9fed",
+  "name": "07C multi-action 1792402700364",
+  "article": "0945ab74-cfa2-46f1-ac6e-84b6e2f82557",
+  "content": "7c06029d-ce8c-454e-8290-10b6a30b5b70",
+  "slug": "story-07c-1792402637210",
+  "revision": "74d9723c-3580-4ba8-bc7b-14b4ae6ad164",
+  "media": "224a7ccc-1f45-4df0-a0a9-61c833fb5631",
+  "email": "4b7ba1f3-d877-4ff5-9846-44a901449df5",
   "variants": [
-    "4feb25a5-2fd4-4045-8c53-0de8d181ffdf",
-    "5b525d02-3226-4505-b96d-d87952d48ba8"
+    "8fcf7d56-e561-481c-a6c4-b363f0c7485d",
+    "a2350a51-2ca7-483f-85f2-f5eaa0c95740"
   ],
-  "pending": "890c968e-99c9-44ac-9701-452c48330657",
-  "cancelled": "d360108d-1989-4cc1-9873-9683d6fc4992",
+  "pending": "fff96ffb-bdd0-49cf-89eb-92ba63ae0966",
+  "cancelled": "339bd5c2-01a7-4912-9a0c-7151951264b4",
   "revisionCount": 1
 }

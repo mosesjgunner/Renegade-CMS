@@ -1,0 +1,98 @@
+{
+  "passed": 8,
+  "succeeded": true,
+  "trace": [
+    {
+      "path": "/api/admin/releases/5030728e-dbd0-48ff-89c3-86dfb3be9fed",
+      "method": "POST",
+      "status": 400
+    },
+    {
+      "name": "completed channel sends cannot claim automatic rollback; release unchanged",
+      "passed": true
+    },
+    {
+      "path": "/api/admin/releases/5030728e-dbd0-48ff-89c3-86dfb3be9fed",
+      "method": "POST",
+      "status": 403
+    },
+    {
+      "name": "cross-origin release mutation denied with full release unchanged",
+      "passed": true
+    },
+    {
+      "path": "/api/admin/releases/5030728e-dbd0-48ff-89c3-86dfb3be9fed",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "path": "/api/admin/releases/5030728e-dbd0-48ff-89c3-86dfb3be9fed",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "name": "concurrent completed release replays leave all checkpoints unchanged",
+      "passed": true
+    },
+    {
+      "name": "released media original output matches persisted checksum",
+      "passed": true
+    },
+    {
+      "name": "release redirect serves exact 308 and intended destination",
+      "passed": true
+    },
+    {
+      "path": "/api/page-layouts/6c42e036-f118-4a4e-91f9-ae064c6296df",
+      "method": "PATCH",
+      "status": 200
+    },
+    {
+      "path": "/api/page-layouts/e56714b8-44d8-4c29-8bbd-9ade63478c99",
+      "method": "PATCH",
+      "status": 200
+    },
+    {
+      "path": "/api/admin/releases",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "path": "/api/admin/releases/ad89cd81-74df-46dc-9e82-b019d2be11a7",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "path": "/api/admin/releases/ad89cd81-74df-46dc-9e82-b019d2be11a7",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "path": "/api/admin/releases/ad89cd81-74df-46dc-9e82-b019d2be11a7",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "path": "/api/admin/releases/ad89cd81-74df-46dc-9e82-b019d2be11a7",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "path": "/api/admin/releases/ad89cd81-74df-46dc-9e82-b019d2be11a7",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "name": "presentation release publishes exact persisted global snapshot through operator API",
+      "passed": true
+    },
+    {
+      "name": "supported page and global header render exact published content without unavailable fallback",
+      "passed": true
+    },
+    {
+      "name": "new layout revisions retain the original completed release and single public page",
+      "passed": true
+    }
+  ]
+}

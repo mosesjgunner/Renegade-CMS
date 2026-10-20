@@ -1,0 +1,10 @@
+[04:51:03] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+PASS 1: completed channel sends cannot claim automatic rollback; release unchanged
+PASS 2: cross-origin release mutation denied with full release unchanged
+PASS 3: concurrent completed release replays leave all checkpoints unchanged
+PASS 4: released media original output matches persisted checksum
+PASS 5: release redirect serves exact 308 and intended destination
+PASS 6: presentation release publishes exact persisted global snapshot through operator API
+PASS 7: supported page and global header render exact published content without unavailable fallback
+PASS 8: new layout revisions retain the original completed release and single public page
+07C controls: 8 passed

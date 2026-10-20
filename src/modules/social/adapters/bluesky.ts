@@ -202,7 +202,7 @@ export class BlueskyAdapter implements SocialProviderAdapter {
     }
 
     const endpoint = `${serviceUrl}/xrpc/com.atproto.repo.uploadBlob`
-    const ssrf = validateOutboundUrl(endpoint)
+    const ssrf = validateOutboundUrl(endpoint, { allowHttpInDev: true })
     if (!ssrf.isValid) throw new Error(`SSRF Blocked: ${ssrf.reason}`)
 
     const res = await fetch(endpoint, {
@@ -233,7 +233,7 @@ export class BlueskyAdapter implements SocialProviderAdapter {
     password: string,
   ): Promise<{ accessJwt: string; refreshJwt: string; did: string; handle: string }> {
     const endpoint = `${serviceUrl}/xrpc/com.atproto.server.createSession`
-    const ssrf = validateOutboundUrl(endpoint)
+    const ssrf = validateOutboundUrl(endpoint, { allowHttpInDev: true })
     if (!ssrf.isValid) throw new Error(`SSRF Blocked: ${ssrf.reason}`)
 
     const res = await fetch(endpoint, {
@@ -324,7 +324,7 @@ export class BlueskyAdapter implements SocialProviderAdapter {
       if (embed) recordPayload.embed = embed
 
       const createEndpoint = `${serviceUrl}/xrpc/com.atproto.repo.createRecord`
-      const ssrf = validateOutboundUrl(createEndpoint)
+      const ssrf = validateOutboundUrl(createEndpoint, { allowHttpInDev: true })
       if (!ssrf.isValid) throw new Error(`SSRF Blocked: ${ssrf.reason}`)
 
       const postRes = await fetch(createEndpoint, {
@@ -407,6 +407,8 @@ export class BlueskyAdapter implements SocialProviderAdapter {
     const rkey = remotePostId.split('/').pop() || ''
 
     const endpoint = `${serviceUrl}/xrpc/com.atproto.repo.deleteRecord`
+    const ssrf = validateOutboundUrl(endpoint, { allowHttpInDev: true })
+    if (!ssrf.isValid) throw new Error(`SSRF Blocked: ${ssrf.reason}`)
     const res = await fetch(endpoint, {
       method: 'POST',
       headers: {
@@ -431,6 +433,8 @@ export class BlueskyAdapter implements SocialProviderAdapter {
       '',
     )
     const endpoint = `${serviceUrl}/xrpc/app.bsky.feed.getPostThread?uri=${encodeURIComponent(remotePostId)}&depth=0`
+    const ssrf = validateOutboundUrl(endpoint, { allowHttpInDev: true })
+    if (!ssrf.isValid) throw new Error(`SSRF Blocked: ${ssrf.reason}`)
 
     const res = await fetch(endpoint)
     if (!res.ok) throw new Error(`Failed to fetch Bluesky thread: HTTP ${res.status}`)
@@ -465,6 +469,8 @@ export class BlueskyAdapter implements SocialProviderAdapter {
       '',
     )
     const endpoint = `${serviceUrl}/xrpc/app.bsky.feed.getPostThread?uri=${encodeURIComponent(remotePostId)}&depth=0`
+    const ssrf = validateOutboundUrl(endpoint, { allowHttpInDev: true })
+    if (!ssrf.isValid) throw new Error(`SSRF Blocked: ${ssrf.reason}`)
 
     const res = await fetch(endpoint)
     if (!res.ok) throw new Error(`Failed to fetch Bluesky stats: HTTP ${res.status}`)

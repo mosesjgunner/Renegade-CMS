@@ -723,6 +723,15 @@ export async function rollbackReleaseSaga(
   } as never)) as unknown as CoordinatedRelease
 
   const items = [...(release.artifacts ?? release.executionItems ?? [])] as ReleaseArtifactItem[]
+  if (
+    items.some(
+      (item) =>
+        item.status === 'succeeded' && ['distribution', 'newsletter'].includes(item.targetType),
+    )
+  )
+    throw new Error(
+      'Completed distribution or email actions require channel reconciliation; automatic rollback is unavailable.',
+    )
   const compensationEvents: Array<{ artifactId: string; details?: Record<string, unknown> }> = []
 
   // Reverse order compensation

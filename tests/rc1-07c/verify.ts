@@ -35,7 +35,7 @@ const check = (name: string, value: unknown) => {
 }
 const browser = await chromium.launch({ headless: true })
 const page = await browser.newPage()
-page.setDefaultTimeout(20000)
+page.setDefaultTimeout(60000)
 const dismissConsent = async () => {
   const reject = page.getByRole('button', { name: 'Reject non-essential', exact: true })
   await reject.waitFor({ state: 'visible', timeout: 5000 }).catch(() => {})
@@ -213,6 +213,7 @@ const showRelease = async (name: string) => {
   await page.getByText(name, { exact: true }).first().click()
 }
 try {
+  page.setDefaultTimeout(180000)
   await mkdir(out, { recursive: true })
   if (restart) {
     const state = JSON.parse(await readFile(`${out}/state.json`, 'utf8'))

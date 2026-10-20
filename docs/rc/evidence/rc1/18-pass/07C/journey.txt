@@ -1,0 +1,13 @@
+Executing 07C coordinated release and recovery acceptance...
+[04:37:14] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+PASS 1: newsletter queue failure rolls back scheduling, recipient rows and jobs atomically
+PASS 2: admin UI creates a release persisted in the selected site
+PASS 3: draft execution rejected
+PASS 4: anonymous, foreign-site staff and ungranted staff denied with release unchanged
+PASS 5: admin execution records partial failure, five successes and adapter failure
+PASS 6: canonical article and page are published
+PASS 7: anonymous observed article output contains approved text
+PASS 8: newsletter queues actual durable delivery, with no external delivery claim
+PASS 9: two social outboxes persist successful and failed destinations
+PASS 10: schedule persistence failure rolls back the real queued job
+07C journey: 10 passed

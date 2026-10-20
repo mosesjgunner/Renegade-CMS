@@ -1,6 +1,6 @@
 param(
   [Parameter(Mandatory = $true)]
-  [ValidateSet('start-db', 'migrate', 'verify', 'restart-check', 'serve', 'types')]
+  [ValidateSet('start-db', 'migrate', 'verify', 'restart-check', 'serve', 'types', 'integration', 'controls', 'capture')]
   [string]$Action
 )
 
@@ -85,6 +85,19 @@ switch ($Action) {
 
   'serve' {
     node ./node_modules/next/dist/bin/next dev --hostname 127.0.0.1 --port 38985
+  }
+
+  'capture' {
+    node ./node_modules/tsx/dist/cli.mjs tests/rc1-07c/capture.ts
+  }
+
+  'controls' {
+    node ./node_modules/tsx/dist/cli.mjs tests/rc1-07c/controls.ts
+  }
+
+  'integration' {
+    $env:ALLOW_FIXTURE_SEED = 'true'
+    npx.cmd vitest run tests/integration/content-release-acceptance.integration.test.ts --no-file-parallelism --hookTimeout 60000 --testTimeout 60000
   }
 
   'types' {

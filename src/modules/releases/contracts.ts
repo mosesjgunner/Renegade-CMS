@@ -32,6 +32,7 @@ export type ReleaseItemStatus =
   | 'blocked'
   | 'skipped'
   | 'compensated'
+  | 'cancelled'
 
 export type ReleaseArtifactItem = {
   id: string // e.g. "article:123", "page:456", "presentation:header", "redirect:r1"

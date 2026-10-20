@@ -1,6 +1,6 @@
 {
-  "checks": 28,
-  "succeeded": false,
+  "checks": 39,
+  "succeeded": true,
   "trace": [
     {
       "name": "DST engine: Fall Back earlier is ambiguous",
@@ -31,10 +31,6 @@
       "location": null,
       "contentType": "application/json",
       "robots": null
-    },
-    {
-      "name": "Editorial companion created for article 1",
-      "passed": true
     },
     {
       "route": "/api/admin/workflow/actions",
@@ -91,7 +87,7 @@
       "passed": true
     },
     {
-      "route": "/api/content/7a3507d6-27df-4bac-a4e6-e7547d6ddf83",
+      "route": "/api/content/7c8c75d3-0009-4ede-8be0-a8dd9d99f9a0",
       "method": "PATCH",
       "status": 200,
       "bytes": 5915,
@@ -247,12 +243,90 @@
     {
       "route": "/api/admin/calendar/schedule",
       "method": "POST",
-      "status": 500,
-      "bytes": 5165,
+      "status": 200,
+      "bytes": 84,
       "etag": null,
       "location": null,
       "contentType": "application/json",
       "robots": null
+    },
+    {
+      "name": "Job 3 cancelled via API",
+      "passed": true
+    },
+    {
+      "name": "Job 3 status transitioned to cancelled",
+      "passed": true
+    },
+    {
+      "name": "Executing cancelled job returns error and does not publish",
+      "passed": true
+    },
+    {
+      "name": "Effective schedule exposed jobId",
+      "passed": true
+    },
+    {
+      "name": "Effective schedule status completed",
+      "passed": true
+    },
+    {
+      "name": "Effective schedule timezone preserved",
+      "passed": true
+    },
+    {
+      "name": "Sanitized error redacts URI credentials",
+      "passed": true
+    },
+    {
+      "name": "Sanitized error redacts passwords and tokens",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/calendar/schedule",
+      "method": "POST",
+      "status": 403,
+      "bytes": 34,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "Unauthenticated request to schedule rejected (403)",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/calendar/schedule",
+      "method": "POST",
+      "status": 403,
+      "bytes": 39,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "Foreign site operator denied scheduling (403)",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/schedule-health?limit=50",
+      "method": "GET",
+      "status": 200,
+      "bytes": 1761,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "Schedule health returns completed job count >= 2",
+      "passed": true
+    },
+    {
+      "name": "Schedule health returns worker health object",
+      "passed": true
     }
   ]
 }

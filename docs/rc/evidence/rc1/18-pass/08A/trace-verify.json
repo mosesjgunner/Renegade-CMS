@@ -1,0 +1,172 @@
+{
+  "checks": 28,
+  "trace": [
+    {
+      "route": "/api/admin/social/accounts",
+      "method": "GET",
+      "status": 403,
+      "bytes": 25
+    },
+    {
+      "name": "unauthenticated GET /api/admin/social/accounts rejected (403)",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/social/accounts",
+      "method": "POST",
+      "status": 403,
+      "bytes": 25
+    },
+    {
+      "name": "unauthenticated POST /api/admin/social/accounts rejected (403)",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/social/accounts",
+      "method": "POST",
+      "status": 403,
+      "bytes": 68
+    },
+    {
+      "name": "foreign operator denied access to connect account on target site (403)",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/social/accounts",
+      "method": "POST",
+      "status": 200,
+      "bytes": 2830
+    },
+    {
+      "name": "connect local harness Bluesky returns 200 with success true",
+      "passed": true
+    },
+    {
+      "name": "credentialHealth is healthy",
+      "passed": true
+    },
+    {
+      "name": "mode is reported truthfully as local-harness",
+      "passed": true
+    },
+    {
+      "name": "capabilities declare textLimit 300 and images",
+      "passed": true
+    },
+    {
+      "name": "harness received createSession call",
+      "passed": true
+    },
+    {
+      "name": "plaintext password never stored in database",
+      "passed": true
+    },
+    {
+      "name": "connectionReference is encrypted envelope",
+      "passed": true
+    },
+    {
+      "name": "decrypted secret resolves correctly",
+      "passed": true
+    },
+    {
+      "name": "API output does not return credentials or secrets",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/social/accounts",
+      "method": "POST",
+      "status": 200,
+      "bytes": 2852
+    },
+    {
+      "name": "connect with invalid credentials fails truthfully without fake success",
+      "passed": true
+    },
+    {
+      "name": "credentialHealth set to revoked or failed",
+      "passed": true
+    },
+    {
+      "name": "diagnostics record sanitized error",
+      "passed": true
+    },
+    {
+      "name": "harness received bad auth call",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/social/accounts",
+      "method": "POST",
+      "status": 200,
+      "bytes": 2734
+    },
+    {
+      "name": "absent keys reports not-configured",
+      "passed": true
+    },
+    {
+      "name": "capabilityState reports manual-handoff for manual provider",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/social/accounts",
+      "method": "POST",
+      "status": 200,
+      "bytes": 2759
+    },
+    {
+      "name": "test ping on healthy account returns success true",
+      "passed": true
+    },
+    {
+      "name": "test ping updates lastVerifiedAt",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/social/accounts",
+      "method": "POST",
+      "status": 200,
+      "bytes": 1385
+    },
+    {
+      "name": "disconnect action succeeds",
+      "passed": true
+    },
+    {
+      "name": "credentialHealth updated to revoked",
+      "passed": true
+    },
+    {
+      "name": "connectionReference set to null on disconnect",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/integrations?siteId=4938cd46-595a-412c-9d0c-20df75d17e10",
+      "method": "GET",
+      "status": 200,
+      "bytes": 3342
+    },
+    {
+      "name": "integrations dashboard includes social account",
+      "passed": true
+    },
+    {
+      "name": "integrations reflects status active and healthState healthy",
+      "passed": true
+    },
+    {
+      "name": "integrations reflects true scopes from capabilities",
+      "passed": true
+    },
+    {
+      "name": "Social Command Center displays connected account",
+      "passed": true
+    },
+    {
+      "name": "captured social command center screenshot",
+      "passed": true
+    }
+  ],
+  "verifiedAt": "2026-10-19T10:25:39.943Z"
+}

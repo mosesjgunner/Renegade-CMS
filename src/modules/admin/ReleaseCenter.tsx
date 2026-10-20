@@ -283,7 +283,7 @@ export default function ReleaseCenter() {
           </div>
           <p style={{ margin: '4px 0 0', color: '#64748b', fontSize: '14px' }}>
             Coordinate multi-page, post, presentation, media, and redirect releases with immutable
-            revision pinning, preflight gates, saga execution, and full rollback safety.
+            revision pinning, preflight gates, persisted action results, and failed-only retry.
           </p>
         </div>
         <div style={{ display: 'flex', gap: '12px' }}>
@@ -799,25 +799,37 @@ export default function ReleaseCenter() {
                   </button>
                 )}
 
-                {['completed', 'partially-failed'].includes(activeRelease.status) && (
-                  <button
-                    onClick={() => setShowRollbackModal(true)}
-                    style={{
-                      padding: '7px 12px',
-                      background: '#ea580c',
-                      color: '#ffffff',
-                      border: 'none',
-                      borderRadius: '6px',
-                      fontSize: '13px',
-                      fontWeight: '600',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    ↩ Rollback Release
-                  </button>
-                )}
+                {['completed', 'partially-failed'].includes(activeRelease.status) &&
+                  !activeRelease.artifacts?.some(
+                    (item) =>
+                      item.status === 'succeeded' &&
+                      ['distribution', 'newsletter'].includes(item.targetType),
+                  ) && (
+                    <button
+                      onClick={() => setShowRollbackModal(true)}
+                      style={{
+                        padding: '7px 12px',
+                        background: '#ea580c',
+                        color: '#ffffff',
+                        border: 'none',
+                        borderRadius: '6px',
+                        fontSize: '13px',
+                        fontWeight: '600',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      ↩ Rollback Release
+                    </button>
+                  )}
 
-                {['draft', 'in-review', 'approved', 'scheduled'].includes(activeRelease.status) && (
+                {[
+                  'draft',
+                  'in-review',
+                  'approved',
+                  'scheduled',
+                  'failed',
+                  'partially-failed',
+                ].includes(activeRelease.status) && (
                   <button
                     onClick={() => handleAction('cancel', { reason: 'Cancelled by operator' })}
                     style={{

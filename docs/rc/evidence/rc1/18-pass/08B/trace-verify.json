@@ -1,0 +1,230 @@
+[
+  {
+    "name": "created Bluesky social account",
+    "passed": true
+  },
+  {
+    "name": "created ActivityPub/Mastodon social account",
+    "passed": true
+  },
+  {
+    "route": "/api/admin/social/drafts",
+    "method": "GET",
+    "status": 403,
+    "bytes": 25
+  },
+  {
+    "name": "unauthenticated GET /api/admin/social/drafts rejected (403)",
+    "passed": true
+  },
+  {
+    "route": "/api/admin/social/drafts",
+    "method": "GET",
+    "status": 403,
+    "bytes": 25
+  },
+  {
+    "name": "unauthorized session GET /api/admin/social/drafts rejected (403)",
+    "passed": true
+  },
+  {
+    "route": "/api/admin/social/drafts?siteId=abf083e0-49f9-44fa-ab46-f4e623824bff",
+    "method": "GET",
+    "status": 403,
+    "bytes": 68
+  },
+  {
+    "name": "foreign staff GET /api/admin/social/drafts on Site Alpha rejected (403)",
+    "passed": true
+  },
+  {
+    "route": "/api/admin/social/drafts",
+    "method": "POST",
+    "status": 400,
+    "bytes": 199
+  },
+  {
+    "name": "negative validation: text > 300 on Bluesky rejected with 400",
+    "passed": true
+  },
+  {
+    "name": "browser: draft-workflow-panel loaded in DOM",
+    "passed": true
+  },
+  {
+    "name": "browser: connected Bluesky & ActivityPub account cards visible",
+    "passed": true
+  },
+  {
+    "name": "browser: pre-flight validation gates passed",
+    "passed": true
+  },
+  {
+    "name": "browser: draft saved successfully via UI",
+    "passed": true
+  },
+  {
+    "name": "browser: draft 1 ID resolved: ee471974-aff5-45b9-afc2-5e013110b8d4",
+    "passed": true
+  },
+  {
+    "name": "db: draft 1 persisted with status=draft",
+    "passed": true
+  },
+  {
+    "name": "db: draft 1 canonicalUrl matches",
+    "passed": true
+  },
+  {
+    "name": "db: 2 variants created for draft 1",
+    "passed": true
+  },
+  {
+    "name": "db: Bluesky tailored copy persisted",
+    "passed": true
+  },
+  {
+    "name": "db: Mastodon tailored copy persisted",
+    "passed": true
+  },
+  {
+    "name": "browser: draft 1 status badge updated to REVIEW",
+    "passed": true
+  },
+  {
+    "name": "db: draft 1 status updated to review",
+    "passed": true
+  },
+  {
+    "route": "/api/admin/social/drafts",
+    "method": "POST",
+    "status": 403,
+    "bytes": 79
+  },
+  {
+    "name": "forbidden: staff role cannot approve social drafts (403)",
+    "passed": true
+  },
+  {
+    "name": "browser: draft 1 status badge updated to APPROVED",
+    "passed": true
+  },
+  {
+    "name": "db: draft 1 status is approved",
+    "passed": true
+  },
+  {
+    "name": "db: variant bluesky has valid approvalHash",
+    "passed": true
+  },
+  {
+    "name": "db: variant bluesky approvedBy set",
+    "passed": true
+  },
+  {
+    "name": "db: variant activitypub has valid approvalHash",
+    "passed": true
+  },
+  {
+    "name": "db: variant activitypub approvedBy set",
+    "passed": true
+  },
+  {
+    "route": "/api/admin/social/drafts",
+    "method": "POST",
+    "status": 403,
+    "bytes": 86
+  },
+  {
+    "name": "forbidden: staff role cannot schedule release distribution (403)",
+    "passed": true
+  },
+  {
+    "name": "browser: draft 1 status badge updated to SCHEDULED",
+    "passed": true
+  },
+  {
+    "name": "browser: persisted queue items count in UI: 2",
+    "passed": true
+  },
+  {
+    "name": "db: exactly 2 social-queue-items created for draft 1",
+    "passed": true
+  },
+  {
+    "name": "db: queue item 5d1cfebe-6997-436a-99dd-53f11b30a37b status is scheduled",
+    "passed": true
+  },
+  {
+    "name": "db: queue item 5d1cfebe-6997-436a-99dd-53f11b30a37b has deterministic idempotencyKey",
+    "passed": true
+  },
+  {
+    "name": "db: queue item ef2479c8-81a3-4b1b-ada3-64f0fc95c1ce status is scheduled",
+    "passed": true
+  },
+  {
+    "name": "db: queue item ef2479c8-81a3-4b1b-ada3-64f0fc95c1ce has deterministic idempotencyKey",
+    "passed": true
+  },
+  {
+    "name": "browser: screenshot saved to composer-scheduled.png",
+    "passed": true
+  },
+  {
+    "route": "/api/admin/social/drafts",
+    "method": "POST",
+    "status": 201,
+    "bytes": 6199
+  },
+  {
+    "name": "created Draft 2: 800ab115-ec08-498b-bbcf-52287f01e75e",
+    "passed": true
+  },
+  {
+    "route": "/api/admin/social/drafts",
+    "method": "POST",
+    "status": 200,
+    "bytes": 34
+  },
+  {
+    "route": "/api/admin/social/drafts",
+    "method": "POST",
+    "status": 200,
+    "bytes": 100
+  },
+  {
+    "name": "draft 2 declined successfully",
+    "passed": true
+  },
+  {
+    "name": "db: draft 2 status is cancelled",
+    "passed": true
+  },
+  {
+    "name": "db: draft 2 variant activitypub status is cancelled",
+    "passed": true
+  },
+  {
+    "name": "db: draft 2 variant bluesky status is cancelled",
+    "passed": true
+  },
+  {
+    "name": "db: declined draft 2 has 0 queue items (remains unsent)",
+    "passed": true
+  },
+  {
+    "route": "/api/admin/social/drafts",
+    "method": "POST",
+    "status": 400,
+    "bytes": 74
+  },
+  {
+    "name": "scheduling cancelled draft rejected with 400",
+    "passed": true
+  },
+  {
+    "name": "state.json saved for container restart test",
+    "passed": true
+  }
+]

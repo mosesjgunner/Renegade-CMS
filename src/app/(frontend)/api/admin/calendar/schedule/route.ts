@@ -207,6 +207,7 @@ export async function POST(req: NextRequest) {
       { status: 400 },
     )
   } catch (error) {
+    console.error('API /api/admin/calendar/schedule error:', error)
     return NextResponse.json(
       { error: error instanceof Error ? error.message : String(error) },
       { status: 500 },

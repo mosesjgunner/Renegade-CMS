@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect, useCallback } from 'react'
 import { type SocialNetwork } from '../social/contracts'
 import {
   createCanonicalSocialPost,
@@ -13,7 +13,6 @@ import {
   updateCanonicalCopy,
   type CanonicalSocialPost,
 } from '../social/models'
-import { PLATFORM_MEDIA_RULES } from '../social/media-pipeline'
 
 interface ConnectedAccountUI {
   id: string
@@ -22,6 +21,11 @@ interface ConnectedAccountUI {
   avatarUrl?: string
   status: 'active' | 'reconnect_required' | 'expired'
   tokenExpiresInDays?: number
+  mode?: string
+  capabilities?: {
+    textLimit?: number | null
+    postTypes?: readonly string[]
+  }
 }
 
 const FALLBACK_PREVIEW_ACCOUNT: ConnectedAccountUI = {
@@ -73,6 +77,36 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
   const [isProcessingQueue, setIsProcessingQueue] = useState<boolean>(false)
   const [workerResult, setWorkerResult] = useState<string | null>(null)
 
+  // Draft Persistence & Review Workflow State
+  const [savedDrafts, setSavedDrafts] = useState<any[]>([])
+  const [selectedDraftId, setSelectedDraftId] = useState<string>('')
+  const [draftTitle, setDraftTitle] = useState<string>('')
+  const [draftStatus, setDraftStatus] = useState<string | null>(null)
+  const [scheduledDateTime, setScheduledDateTime] = useState<string>(() => {
+    const d = new Date(Date.now() + 3600000)
+    return d.toISOString().slice(0, 16)
+  })
+  const [persistedQueueItems, setPersistedQueueItems] = useState<any[]>([])
+  const [workflowMessage, setWorkflowMessage] = useState<{
+    type: 'success' | 'error' | 'info'
+    text: string
+  } | null>(null)
+  const [isSubmittingWorkflow, setIsSubmittingWorkflow] = useState<boolean>(false)
+
+  const refreshDrafts = useCallback(async () => {
+    try {
+      const res = await fetch('/api/admin/social/drafts')
+      if (res.ok) {
+        const data = await res.json()
+        if (Array.isArray(data.drafts)) {
+          setSavedDrafts(data.drafts)
+        }
+      }
+    } catch {
+      // ignore
+    }
+  }, [])
+
   useEffect(() => {
     let cancelled = false
     void fetch('/api/admin/social/accounts')
@@ -86,10 +120,34 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
             network: doc.network,
             handle: doc.displayName || doc.externalAccountId || String(doc.id),
             status: doc.credentialHealth === 'healthy' ? 'active' : 'reconnect_required',
+            mode: doc.diagnostics?.mode,
+            capabilities: doc.capabilities,
           }))
           setAccounts(liveAccounts)
           setSelectedAccountIds(liveAccounts.map((a) => a.id))
           setActiveTabAccountId(liveAccounts[0].id)
+
+          // Ensure canonicalPost.variants has an entry for each live account
+          setCanonicalPost((prev) => {
+            const existingVariantAccountIds = new Set(prev.variants.map((v) => v.accountId))
+            const newVariants = [...prev.variants]
+            for (const acc of liveAccounts) {
+              if (!existingVariantAccountIds.has(acc.id)) {
+                newVariants.push({
+                  id: `var-${prev.id}-${acc.id}`,
+                  canonicalPostId: prev.id,
+                  accountId: acc.id,
+                  network: acc.network,
+                  copy: null,
+                  isOverridden: false,
+                  attachments: [],
+                  idempotencyKey: `init-${prev.id}-${acc.id}`,
+                  status: 'pending',
+                })
+              }
+            }
+            return { ...prev, variants: newVariants }
+          })
         } else {
           setAccounts([])
           setSelectedAccountIds([])
@@ -99,10 +157,309 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
         setAccounts([])
         setSelectedAccountIds([])
       })
+
+    void refreshDrafts()
+
     return () => {
       cancelled = true
     }
-  }, [])
+  }, [refreshDrafts])
+
+  const loadDraft = async (id: string) => {
+    if (!id) {
+      setSelectedDraftId('')
+      setDraftTitle('')
+      setDraftStatus(null)
+      setPersistedQueueItems([])
+      setWorkflowMessage(null)
+      return
+    }
+    setIsSubmittingWorkflow(true)
+    try {
+      const res = await fetch(`/api/admin/social/drafts?draftId=${encodeURIComponent(id)}`)
+      if (res.ok) {
+        const data = await res.json()
+        const draft = data.draft
+        setSelectedDraftId(draft.id)
+        setDraftTitle(draft.title || '')
+        setDraftStatus(draft.status || 'draft')
+        setPersistedQueueItems(data.queueItems || [])
+        setWorkflowMessage({
+          type: 'info',
+          text: `Loaded draft "${draft.title}" (Status: ${draft.status})`,
+        })
+
+        if (draft.canonicalUrl) {
+          setCanonicalPost((prev) => ({ ...prev, canonicalUrl: draft.canonicalUrl }))
+        }
+
+        if (Array.isArray(data.variants) && data.variants.length > 0) {
+          setCanonicalPost((prev) => {
+            const updatedVariants = [...prev.variants]
+            for (const v of data.variants) {
+              const accId =
+                typeof v.account === 'object' && v.account !== null
+                  ? String(v.account.id)
+                  : String(v.account)
+              const existingIdx = updatedVariants.findIndex((uv) => uv.accountId === accId)
+              if (existingIdx >= 0) {
+                updatedVariants[existingIdx] = {
+                  ...updatedVariants[existingIdx],
+                  id: v.id,
+                  copy: v.text,
+                  isOverridden: true,
+                }
+              } else {
+                updatedVariants.push({
+                  id: v.id,
+                  canonicalPostId: prev.id,
+                  accountId: accId,
+                  network: v.network,
+                  copy: v.text,
+                  isOverridden: true,
+                  attachments: [],
+                  idempotencyKey: v.idempotencyKey || `var-${v.id}`,
+                  status: 'pending',
+                })
+              }
+            }
+            return {
+              ...prev,
+              baseCopy: prev.baseCopy || data.variants[0]?.text || '',
+              variants: updatedVariants,
+            }
+          })
+        }
+      } else {
+        const err = await res.json()
+        setWorkflowMessage({ type: 'error', text: err.error || 'Failed to load draft.' })
+      }
+    } catch (err: unknown) {
+      setWorkflowMessage({
+        type: 'error',
+        text: err instanceof Error ? err.message : String(err),
+      })
+    } finally {
+      setIsSubmittingWorkflow(false)
+    }
+  }
+
+  const handleSaveDraft = async () => {
+    if (!draftTitle.trim()) {
+      setWorkflowMessage({ type: 'error', text: 'Please enter a Draft Title before saving.' })
+      return
+    }
+    if (selectedAccountIds.length === 0) {
+      setWorkflowMessage({
+        type: 'error',
+        text: 'Please select at least one distribution network.',
+      })
+      return
+    }
+
+    setIsSubmittingWorkflow(true)
+    setWorkflowMessage(null)
+
+    try {
+      const variantPayload = selectedAccountIds.map((accId) => {
+        const acc = accounts.find((a) => a.id === accId)
+        const v = canonicalPost.variants.find((variant) => variant.accountId === accId)
+        const text = v ? resolveEffectiveCopy(canonicalPost, v) : canonicalPost.baseCopy
+        return {
+          id: v?.id && !v.id.startsWith('var-') ? v.id : undefined,
+          accountId: accId,
+          network: acc?.network || 'bluesky',
+          text,
+          linkUrl: canonicalPost.canonicalUrl || undefined,
+          attachments: imageUrl ? [imageUrl] : [],
+        }
+      })
+
+      const res = await fetch('/api/admin/social/drafts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: selectedDraftId ? 'update-draft' : 'create-draft',
+          draftId: selectedDraftId || undefined,
+          title: draftTitle.trim(),
+          canonicalUrl: canonicalPost.canonicalUrl || undefined,
+          variants: variantPayload,
+        }),
+      })
+
+      const data = await res.json()
+      if (res.ok) {
+        const draft = data.draft
+        setSelectedDraftId(draft.id)
+        setDraftStatus(draft.status || 'draft')
+        setWorkflowMessage({
+          type: 'success',
+          text: `Draft successfully saved (ID: ${draft.id}, Status: ${draft.status || 'draft'})`,
+        })
+        await refreshDrafts()
+      } else {
+        setWorkflowMessage({
+          type: 'error',
+          text:
+            data.error ||
+            (data.validationErrors
+              ? data.validationErrors.join('; ')
+              : 'Failed to save draft.'),
+        })
+      }
+    } catch (err: unknown) {
+      setWorkflowMessage({
+        type: 'error',
+        text: err instanceof Error ? err.message : String(err),
+      })
+    } finally {
+      setIsSubmittingWorkflow(false)
+    }
+  }
+
+  const handleSubmitReview = async () => {
+    if (!selectedDraftId) return
+    setIsSubmittingWorkflow(true)
+    setWorkflowMessage(null)
+    try {
+      const res = await fetch('/api/admin/social/drafts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'submit-review',
+          draftId: selectedDraftId,
+        }),
+      })
+      const data = await res.json()
+      if (res.ok) {
+        setDraftStatus('review')
+        setWorkflowMessage({
+          type: 'success',
+          text: 'Draft successfully submitted for editorial review.',
+        })
+        await refreshDrafts()
+      } else {
+        setWorkflowMessage({ type: 'error', text: data.error || 'Failed to submit review.' })
+      }
+    } catch (err: unknown) {
+      setWorkflowMessage({
+        type: 'error',
+        text: err instanceof Error ? err.message : String(err),
+      })
+    } finally {
+      setIsSubmittingWorkflow(false)
+    }
+  }
+
+  const handleApprove = async () => {
+    if (!selectedDraftId) return
+    setIsSubmittingWorkflow(true)
+    setWorkflowMessage(null)
+    try {
+      const res = await fetch('/api/admin/social/drafts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'approve',
+          draftId: selectedDraftId,
+        }),
+      })
+      const data = await res.json()
+      if (res.ok) {
+        setDraftStatus('approved')
+        setWorkflowMessage({
+          type: 'success',
+          text: 'Draft approved! Platform variants hashed with operator attribution.',
+        })
+        await refreshDrafts()
+      } else {
+        setWorkflowMessage({
+          type: 'error',
+          text: data.error || 'Approval rejected by authorization policy.',
+        })
+      }
+    } catch (err: unknown) {
+      setWorkflowMessage({
+        type: 'error',
+        text: err instanceof Error ? err.message : String(err),
+      })
+    } finally {
+      setIsSubmittingWorkflow(false)
+    }
+  }
+
+  const handleDecline = async () => {
+    if (!selectedDraftId) return
+    setIsSubmittingWorkflow(true)
+    setWorkflowMessage(null)
+    try {
+      const res = await fetch('/api/admin/social/drafts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'decline',
+          draftId: selectedDraftId,
+          reason: 'Declined during editorial review',
+        }),
+      })
+      const data = await res.json()
+      if (res.ok) {
+        setDraftStatus('cancelled')
+        setWorkflowMessage({
+          type: 'info',
+          text: 'Draft declined and cancelled. It will not be sent.',
+        })
+        await refreshDrafts()
+      } else {
+        setWorkflowMessage({ type: 'error', text: data.error || 'Decline failed.' })
+      }
+    } catch (err: unknown) {
+      setWorkflowMessage({
+        type: 'error',
+        text: err instanceof Error ? err.message : String(err),
+      })
+    } finally {
+      setIsSubmittingWorkflow(false)
+    }
+  }
+
+  const handleSchedule = async () => {
+    if (!selectedDraftId) return
+    setIsSubmittingWorkflow(true)
+    setWorkflowMessage(null)
+    try {
+      const targetIso = new Date(scheduledDateTime).toISOString()
+      const res = await fetch('/api/admin/social/drafts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'schedule',
+          draftId: selectedDraftId,
+          scheduledFor: targetIso,
+          timeZone: 'UTC',
+        }),
+      })
+      const data = await res.json()
+      if (res.ok) {
+        setDraftStatus('scheduled')
+        setPersistedQueueItems(data.queueItems || [])
+        setWorkflowMessage({
+          type: 'success',
+          text: `Draft scheduled successfully! Created ${data.queueCount || 0} queue items.`,
+        })
+        await refreshDrafts()
+      } else {
+        setWorkflowMessage({ type: 'error', text: data.error || 'Failed to schedule draft.' })
+      }
+    } catch (err: unknown) {
+      setWorkflowMessage({
+        type: 'error',
+        text: err instanceof Error ? err.message : String(err),
+      })
+    } finally {
+      setIsSubmittingWorkflow(false)
+    }
+  }
 
   // Current active account & variant
   const activeAccount =
@@ -120,6 +477,7 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
       : activeAccount.network === 'bluesky'
         ? 300
         : activeAccount.network === 'mastodon' ||
+            activeAccount.network === 'activitypub' ||
             activeAccount.network === 'threads' ||
             activeAccount.network === 'pinterest'
           ? 500
@@ -205,7 +563,10 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
           ? 280
           : acc.network === 'bluesky'
             ? 300
-            : acc.network === 'mastodon' || acc.network === 'threads' || acc.network === 'pinterest'
+            : acc.network === 'mastodon' ||
+              acc.network === 'activitypub' ||
+              acc.network === 'threads' ||
+              acc.network === 'pinterest'
               ? 500
               : acc.network === 'discord'
                 ? 2000
@@ -306,6 +667,7 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
               borderRadius: '6px',
               fontWeight: 600,
               cursor: 'pointer',
+              fontSize: '13px',
             }}
             onClick={() => router.push('/admin/collections/social-drafts')}
           >
@@ -351,6 +713,7 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
               return (
                 <div
                   key={acc.id}
+                  data-testid={`account-card-${acc.network}`}
                   onClick={() => {
                     if (isSelected) {
                       setSelectedAccountIds(selectedAccountIds.filter((id) => id !== acc.id))
@@ -391,6 +754,26 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
                   <span style={{ fontSize: '13px', fontWeight: 500, color: '#111827' }}>
                     {acc.handle}
                   </span>
+                  {acc.mode && (
+                    <span
+                      style={{
+                        padding: '1px 5px',
+                        borderRadius: '3px',
+                        backgroundColor:
+                          acc.mode === 'local-harness' || acc.mode === 'fixture'
+                            ? '#e0e7ff'
+                            : '#f1f5f9',
+                        color:
+                          acc.mode === 'local-harness' || acc.mode === 'fixture'
+                            ? '#3730a3'
+                            : '#475569',
+                        fontSize: '10px',
+                        fontWeight: 600,
+                      }}
+                    >
+                      {acc.mode}
+                    </span>
+                  )}
                   <span
                     style={{
                       width: '8px',
@@ -406,11 +789,13 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
         )}
       </div>
 
-      <p>
+      <p style={{ fontSize: '13px', color: '#64748b', marginBottom: '16px' }}>
         <Link href="/admin/collections/social-queue-items">Delivery queue and recovery state</Link>{' '}
-        ? <Link href="/admin/collections/social-publish-attempts">Provider attempt failures</Link> ?{' '}
+        •{' '}
+        <Link href="/admin/collections/social-publish-attempts">Provider attempt failures</Link> •{' '}
         <Link href="/admin/collections/social-accounts">Provider configuration</Link>
       </p>
+
       {/* Provider Capabilities Truth Matrix */}
       <div
         style={{
@@ -451,6 +836,18 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
               padding: '8px 12px',
               backgroundColor: '#ffffff',
               borderRadius: '6px',
+              border: '1px solid #dcfce7',
+            }}
+          >
+            <span style={{ fontWeight: 600, color: '#15803d' }}>Mastodon:</span>{' '}
+            <strong>Native adapter</strong> (Local instance outbox/media proved; remote
+            interoperability unverified)
+          </div>
+          <div
+            style={{
+              padding: '8px 12px',
+              backgroundColor: '#ffffff',
+              borderRadius: '6px',
               border: '1px solid #f1f5f9',
             }}
           >
@@ -471,6 +868,406 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
             <strong>Remote interoperability deferred</strong> (Local signing/outbox/failure only)
           </div>
         </div>
+      </div>
+
+      {/* PERSISTED DRAFT & SCHEDULING WORKFLOW CARD */}
+      <div
+        data-testid="draft-workflow-panel"
+        style={{
+          backgroundColor: '#ffffff',
+          borderRadius: '12px',
+          border: '1px solid #cbd5e1',
+          padding: '20px',
+          marginBottom: '24px',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.05)',
+        }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: '16px',
+            flexWrap: 'wrap',
+            gap: '12px',
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flex: '1 1 auto' }}>
+            <div>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: '11px',
+                  fontWeight: 600,
+                  color: '#64748b',
+                  textTransform: 'uppercase',
+                  marginBottom: '4px',
+                }}
+              >
+                Saved Drafts
+              </label>
+              <select
+                data-testid="draft-select"
+                value={selectedDraftId}
+                onChange={(e) => void loadDraft(e.target.value)}
+                style={{
+                  padding: '6px 12px',
+                  borderRadius: '6px',
+                  border: '1px solid #cbd5e1',
+                  fontSize: '13px',
+                  backgroundColor: '#f8fafc',
+                }}
+              >
+                <option value="">+ New Draft...</option>
+                {savedDrafts.map((d) => (
+                  <option key={d.id} value={d.id}>
+                    {d.title || d.id} ({d.status || 'draft'})
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div style={{ flex: '1 1 300px' }}>
+              <label
+                style={{
+                  display: 'block',
+                  fontSize: '11px',
+                  fontWeight: 600,
+                  color: '#64748b',
+                  textTransform: 'uppercase',
+                  marginBottom: '4px',
+                }}
+              >
+                Draft Title
+              </label>
+              <input
+                data-testid="draft-title-input"
+                type="text"
+                value={draftTitle}
+                onChange={(e) => setDraftTitle(e.target.value)}
+                placeholder="e.g. Release 1.0 General Announcement"
+                style={{
+                  width: '100%',
+                  padding: '6px 10px',
+                  borderRadius: '6px',
+                  border: '1px solid #cbd5e1',
+                  fontSize: '13px',
+                  boxSizing: 'border-box',
+                }}
+              />
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+            {selectedDraftId && (
+              <span
+                data-testid="current-draft-id"
+                style={{ fontSize: '12px', color: '#64748b', fontFamily: 'monospace' }}
+              >
+                ID: {selectedDraftId}
+              </span>
+            )}
+            <span
+              data-testid="draft-status-badge"
+              style={{
+                padding: '4px 10px',
+                borderRadius: '12px',
+                fontSize: '12px',
+                fontWeight: 700,
+                textTransform: 'uppercase',
+                backgroundColor:
+                  draftStatus === 'approved'
+                    ? '#dcfce7'
+                    : draftStatus === 'review'
+                      ? '#dbeafe'
+                      : draftStatus === 'scheduled'
+                        ? '#f3e8ff'
+                        : draftStatus === 'cancelled'
+                          ? '#fee2e2'
+                          : '#fef3c7',
+                color:
+                  draftStatus === 'approved'
+                    ? '#166534'
+                    : draftStatus === 'review'
+                      ? '#1e40af'
+                      : draftStatus === 'scheduled'
+                        ? '#6b21a8'
+                        : draftStatus === 'cancelled'
+                          ? '#991b1b'
+                          : '#92400e',
+              }}
+            >
+              {draftStatus || 'UNSAVED DRAFT'}
+            </span>
+          </div>
+        </div>
+
+        {/* Workflow Action Buttons */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+            flexWrap: 'wrap',
+            paddingTop: '12px',
+            borderTop: '1px solid #f1f5f9',
+          }}
+        >
+          <button
+            data-testid="save-draft-btn"
+            disabled={isSubmittingWorkflow}
+            onClick={() => void handleSaveDraft()}
+            style={{
+              padding: '8px 14px',
+              backgroundColor: '#2563eb',
+              color: '#ffffff',
+              border: 'none',
+              borderRadius: '6px',
+              fontWeight: 600,
+              fontSize: '13px',
+              cursor: isSubmittingWorkflow ? 'wait' : 'pointer',
+              opacity: isSubmittingWorkflow ? 0.7 : 1,
+            }}
+          >
+            {selectedDraftId ? '💾 Update Draft' : '💾 Save New Draft'}
+          </button>
+
+          {selectedDraftId && draftStatus === 'draft' && (
+            <button
+              data-testid="submit-review-btn"
+              disabled={isSubmittingWorkflow}
+              onClick={() => void handleSubmitReview()}
+              style={{
+                padding: '8px 14px',
+                backgroundColor: '#0284c7',
+                color: '#ffffff',
+                border: 'none',
+                borderRadius: '6px',
+                fontWeight: 600,
+                fontSize: '13px',
+                cursor: isSubmittingWorkflow ? 'wait' : 'pointer',
+                opacity: isSubmittingWorkflow ? 0.7 : 1,
+              }}
+            >
+              📨 Submit for Editorial Review
+            </button>
+          )}
+
+          {selectedDraftId && draftStatus === 'review' && (
+            <>
+              <button
+                data-testid="approve-draft-btn"
+                disabled={isSubmittingWorkflow}
+                onClick={() => void handleApprove()}
+                style={{
+                  padding: '8px 14px',
+                  backgroundColor: '#16a34a',
+                  color: '#ffffff',
+                  border: 'none',
+                  borderRadius: '6px',
+                  fontWeight: 600,
+                  fontSize: '13px',
+                  cursor: isSubmittingWorkflow ? 'wait' : 'pointer',
+                  opacity: isSubmittingWorkflow ? 0.7 : 1,
+                }}
+              >
+                ✅ Approve Draft (Owner/Admin)
+              </button>
+              <button
+                data-testid="decline-draft-btn"
+                disabled={isSubmittingWorkflow}
+                onClick={() => void handleDecline()}
+                style={{
+                  padding: '8px 14px',
+                  backgroundColor: '#dc2626',
+                  color: '#ffffff',
+                  border: 'none',
+                  borderRadius: '6px',
+                  fontWeight: 600,
+                  fontSize: '13px',
+                  cursor: isSubmittingWorkflow ? 'wait' : 'pointer',
+                  opacity: isSubmittingWorkflow ? 0.7 : 1,
+                }}
+              >
+                ❌ Decline Draft
+              </button>
+            </>
+          )}
+
+          {selectedDraftId && draftStatus === 'approved' && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              <input
+                data-testid="schedule-time-input"
+                type="datetime-local"
+                value={scheduledDateTime}
+                onChange={(e) => setScheduledDateTime(e.target.value)}
+                style={{
+                  padding: '6px 10px',
+                  borderRadius: '6px',
+                  border: '1px solid #cbd5e1',
+                  fontSize: '13px',
+                }}
+              />
+              <button
+                data-testid="schedule-draft-btn"
+                disabled={isSubmittingWorkflow}
+                onClick={() => void handleSchedule()}
+                style={{
+                  padding: '8px 14px',
+                  backgroundColor: '#7c3aed',
+                  color: '#ffffff',
+                  border: 'none',
+                  borderRadius: '6px',
+                  fontWeight: 600,
+                  fontSize: '13px',
+                  cursor: isSubmittingWorkflow ? 'wait' : 'pointer',
+                  opacity: isSubmittingWorkflow ? 0.7 : 1,
+                }}
+              >
+                📅 Schedule Queue Items
+              </button>
+            </div>
+          )}
+
+          {draftStatus === 'scheduled' && (
+            <span
+              style={{
+                fontSize: '13px',
+                color: '#6b21a8',
+                fontWeight: 600,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+              }}
+            >
+              ✓ Release distribution scheduled in background queue.
+            </span>
+          )}
+
+          {draftStatus === 'cancelled' && (
+            <span
+              style={{
+                fontSize: '13px',
+                color: '#991b1b',
+                fontWeight: 600,
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+              }}
+            >
+              ✕ Draft was declined during review. Execution denied.
+            </span>
+          )}
+        </div>
+
+        {/* Workflow Message Banner */}
+        {workflowMessage && (
+          <div
+            data-testid="workflow-message"
+            style={{
+              marginTop: '12px',
+              padding: '10px 14px',
+              borderRadius: '6px',
+              fontSize: '13px',
+              fontWeight: 500,
+              backgroundColor:
+                workflowMessage.type === 'success'
+                  ? '#ecfdf5'
+                  : workflowMessage.type === 'error'
+                    ? '#fef2f2'
+                    : '#eff6ff',
+              color:
+                workflowMessage.type === 'success'
+                  ? '#065f46'
+                  : workflowMessage.type === 'error'
+                    ? '#b91c1c'
+                    : '#1e40af',
+              border: `1px solid ${
+                workflowMessage.type === 'success'
+                  ? '#a7f3d0'
+                  : workflowMessage.type === 'error'
+                    ? '#fecaca'
+                    : '#bfdbfe'
+              }`,
+            }}
+          >
+            {workflowMessage.text}
+          </div>
+        )}
+
+        {/* Persisted Queue Items Table */}
+        {persistedQueueItems.length > 0 && (
+          <div style={{ marginTop: '16px', borderTop: '1px solid #f1f5f9', paddingTop: '12px' }}>
+            <div
+              style={{
+                fontSize: '12px',
+                fontWeight: 600,
+                color: '#334155',
+                textTransform: 'uppercase',
+                marginBottom: '8px',
+              }}
+            >
+              Persisted Queue Items (
+              <span data-testid="persisted-queue-count">{persistedQueueItems.length}</span>)
+            </div>
+            <table
+              data-testid="queue-items-table"
+              style={{
+                width: '100%',
+                borderCollapse: 'collapse',
+                fontSize: '12px',
+                textAlign: 'left',
+              }}
+            >
+              <thead>
+                <tr style={{ backgroundColor: '#f8fafc', color: '#64748b' }}>
+                  <th style={{ padding: '6px 10px', borderBottom: '1px solid #e2e8f0' }}>ID</th>
+                  <th style={{ padding: '6px 10px', borderBottom: '1px solid #e2e8f0' }}>Status</th>
+                  <th style={{ padding: '6px 10px', borderBottom: '1px solid #e2e8f0' }}>
+                    Scheduled For
+                  </th>
+                  <th style={{ padding: '6px 10px', borderBottom: '1px solid #e2e8f0' }}>
+                    Idempotency Key
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {persistedQueueItems.map((item) => (
+                  <tr key={item.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                    <td style={{ padding: '6px 10px', fontFamily: 'monospace' }}>{item.id}</td>
+                    <td style={{ padding: '6px 10px' }}>
+                      <span
+                        style={{
+                          padding: '2px 6px',
+                          borderRadius: '4px',
+                          backgroundColor: '#f3e8ff',
+                          color: '#6b21a8',
+                          fontWeight: 600,
+                        }}
+                      >
+                        {item.status}
+                      </span>
+                    </td>
+                    <td style={{ padding: '6px 10px' }}>{item.scheduledFor}</td>
+                    <td
+                      style={{
+                        padding: '6px 10px',
+                        fontFamily: 'monospace',
+                        color: '#64748b',
+                        maxWidth: '300px',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      {item.idempotencyKey}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
 
       {/* Main Grid: Composer (Left) & Fidelity Preview / Checklist (Right) */}
@@ -495,9 +1292,10 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
                 color: '#374151',
               }}
             >
-              Canonical Base Copy (Unsaved Local Preview)
+              Canonical Base Copy (Source Truth)
             </label>
             <textarea
+              data-testid="canonical-copy-textarea"
               rows={4}
               value={canonicalPost.baseCopy}
               onChange={(e) => handleBaseCopyChange(e.target.value)}
@@ -537,6 +1335,7 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
                 Canonical Link URL
               </label>
               <input
+                data-testid="canonical-url-input"
                 type="text"
                 value={canonicalPost.canonicalUrl || ''}
                 onChange={(e) =>
@@ -566,6 +1365,7 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
                 Attached Media URL
               </label>
               <input
+                data-testid="image-url-input"
                 type="text"
                 value={imageUrl}
                 onChange={(e) => setImageUrl(e.target.value)}
@@ -598,6 +1398,7 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
                   .map((a) => (
                     <button
                       key={a.id}
+                      data-testid={`network-tab-${a.network}`}
                       onClick={() => setActiveTabAccountId(a.id)}
                       style={{
                         padding: '6px 12px',
@@ -630,6 +1431,7 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
                   }}
                 >
                   <input
+                    data-testid="variant-override-checkbox"
                     type="checkbox"
                     checked={activeVariant.isOverridden}
                     onChange={(e) => handleToggleOverride(e.target.checked)}
@@ -643,6 +1445,7 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
             {activeVariant && (
               <div>
                 <textarea
+                  data-testid="variant-copy-textarea"
                   rows={4}
                   value={effectiveCopy}
                   disabled={!activeVariant.isOverridden}
@@ -669,7 +1472,10 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
                     fontSize: '12px',
                   }}
                 >
-                  <span style={{ color: isOverLimit ? '#ef4444' : '#6b7280', fontWeight: 500 }}>
+                  <span
+                    data-testid="character-count-display"
+                    style={{ color: isOverLimit ? '#ef4444' : '#6b7280', fontWeight: 500 }}
+                  >
                     {charCount} / {charLimit} characters
                   </span>
                   <span
@@ -708,7 +1514,8 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
                 </div>
 
                 {/* Network Specific Controls */}
-                {activeAccount.network === 'mastodon' && (
+                {(activeAccount.network === 'mastodon' ||
+                  activeAccount.network === 'activitypub') && (
                   <div style={{ marginTop: '12px' }}>
                     <label
                       style={{
@@ -722,6 +1529,7 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
                       Content Warning / Spoiler Banner
                     </label>
                     <input
+                      data-testid="mastodon-cw-input"
                       type="text"
                       value={contentWarning}
                       onChange={(e) => setContentWarning(e.target.value)}
@@ -836,6 +1644,7 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
         <div>
           {/* Preflight Validation Banner */}
           <div
+            data-testid="validation-gate-banner"
             style={{
               backgroundColor: '#ffffff',
               borderRadius: '12px',
@@ -851,6 +1660,7 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
             </h3>
             {validationFindings.blockers.length === 0 ? (
               <div
+                data-testid="validation-gate-passed"
                 style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -860,14 +1670,17 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
                   fontWeight: 500,
                 }}
               >
-                <span>✓</span> Local preview checks passed. Save and review a Social Draft before
-                dispatch.
+                <span>✓</span> Local preview checks passed. Ready for draft review.
               </div>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              <div
+                data-testid="validation-gate-blocked"
+                style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}
+              >
                 {validationFindings.blockers.map((blocker, idx) => (
                   <div
                     key={idx}
+                    data-testid={`validation-blocker-${idx}`}
                     style={{
                       display: 'flex',
                       alignItems: 'center',
@@ -959,8 +1772,10 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
                 </div>
               </div>
 
-              {/* Spoiler Banner for Mastodon */}
-              {activeAccount.network === 'mastodon' && contentWarning && (
+              {/* Spoiler Banner for Mastodon / ActivityPub */}
+              {(activeAccount.network === 'mastodon' ||
+                activeAccount.network === 'activitypub') &&
+                contentWarning && (
                 <div
                   style={{
                     padding: '6px 8px',
@@ -977,7 +1792,10 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
               )}
 
               {/* Post Body */}
-              <div style={{ whiteSpace: 'pre-wrap', marginBottom: '10px', fontSize: '13px' }}>
+              <div
+                data-testid="preview-post-body"
+                style={{ whiteSpace: 'pre-wrap', marginBottom: '10px', fontSize: '13px' }}
+              >
                 {effectiveCopy}
               </div>
 

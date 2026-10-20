@@ -1,0 +1,10 @@
+{
+  "passed": 2,
+  "failed": 0,
+  "skipped": 0,
+  "releaseId": "5030728e-dbd0-48ff-89c3-86dfb3be9fed",
+  "checks": [
+    "Completed release is visible after detail hydration",
+    "All six action rows visibly succeeded"
+  ]
+}

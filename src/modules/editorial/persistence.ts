@@ -155,7 +155,10 @@ const ensureDocument = (
 const authorLinks = (authorIds: string[]) =>
   authorIds.map((authorId, displayOrder) => ({ author: authorId, displayOrder }))
 
-const mapLifecycleToContentStatus = (status: string): string => status
+const mapLifecycleToContentStatus = (status: string): string => {
+  if (status === 'cancelled') return 'approved'
+  return status
+}
 
 const toStoredCitations = (citations: readonly EditorialCitation[]) =>
   citations.map((citation) => ({
@@ -432,25 +435,53 @@ export async function ensureEditorialCompanion(payload: Payload, content: Doc, r
   const integrityHash = `sha256:${createHash('sha256')
     .update(`${content.id}:${sequence}:${document.canonicalHash}`)
     .digest('hex')}`
-  const article = existing
-    ? existing
-    : ((await payload.create({
-        collection: 'article-family-content',
-        data: {
-          content: content.id,
-          articleKey: `content:${content.id}`,
-          lifecycle: content.status ?? 'draft',
-          document,
-          documentHash: document.canonicalHash,
-          plainTextProjection: document.plainTextProjection,
-          currentRevisionSequence: 0,
-          previewModes: ['desktop', 'mobile'],
-          workflowAudit: [],
-          acceptedMutationKeys: [],
-        },
-        overrideAccess: true,
-        req,
-      } as never)) as Doc)
+  let article = existing
+  if (!article) {
+    const freshCheck = await findOne(
+      payload,
+      'article-family-content',
+      {
+        content: { equals: content.id },
+      },
+      0,
+      req,
+    )
+    if (freshCheck) {
+      article = freshCheck
+    } else {
+      try {
+        article = (await payload.create({
+          collection: 'article-family-content',
+          data: {
+            content: content.id,
+            articleKey: `content:${content.id}`,
+            lifecycle: content.status ?? 'draft',
+            document,
+            documentHash: document.canonicalHash,
+            plainTextProjection: document.plainTextProjection,
+            currentRevisionSequence: 0,
+            previewModes: ['desktop', 'mobile'],
+            workflowAudit: [],
+            acceptedMutationKeys: [],
+          },
+          overrideAccess: true,
+          req,
+        } as never)) as Doc
+      } catch (createErr) {
+        // Handle concurrent creation
+        article = (await findOne(
+          payload,
+          'article-family-content',
+          {
+            content: { equals: content.id },
+          },
+          0,
+          req,
+        )) as Doc
+        if (!article) throw createErr
+      }
+    }
+  }
   const revision = (await payload.create({
     collection: 'revision-records',
     data: {
@@ -525,7 +556,7 @@ export const persistWorkflow = async (
     collection: 'article-family-content',
     id: bundle.article.id,
     data: {
-      lifecycle: workflow.article.status,
+      lifecycle: mapLifecycleToContentStatus(workflow.article.status),
       document: currentRevision.document,
       documentHash: currentRevision.document.canonicalHash,
       plainTextProjection: currentRevision.document.plainTextProjection,
@@ -1062,9 +1093,17 @@ export async function cancelScheduledPublication(
   },
 ) {
   const bundle = await loadBundleByArticleId(payload, input.articleId)
-  const scheduledJob = await findOne(payload, 'scheduled-publish-jobs', {
+  let scheduledJob = await findOne(payload, 'scheduled-publish-jobs', {
     idempotencyKey: { equals: input.idempotencyKey },
   })
+  if (!scheduledJob) {
+    scheduledJob = await findOne(payload, 'scheduled-publish-jobs', {
+      and: [
+        { article: { equals: bundle.article.id } },
+        { status: { in: ['queued', 'processing', 'pending-contract'] } },
+      ],
+    })
+  }
   if (scheduledJob) {
     await payload.update({
       collection: 'scheduled-publish-jobs',

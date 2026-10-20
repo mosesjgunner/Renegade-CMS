@@ -184,6 +184,9 @@ export const blueskyAdapter: SocialProviderAdapter = {
   },
 }
 
+import { ADAPTER_REGISTRY, getSocialAdapter } from './worker'
+import { decryptSecret } from './security'
+
 export const socialProviderAdapters: readonly SocialProviderAdapter[] = [
   blueskyAdapter,
   manual('activitypub', 'unavailable'),
@@ -197,12 +200,54 @@ export const socialProviderAdapters: readonly SocialProviderAdapter[] = [
   manual('manual'),
 ]
 
-export const socialProviderFor = (network: SocialProviderAdapter['network']) =>
-  socialProviderAdapters.find((adapter) => adapter.network === network) ??
-  manual(network, 'unavailable')
+export const socialProviderFor = (network: SocialProviderAdapter['network']) => {
+  const registered = ADAPTER_REGISTRY[network]
+  if (registered && (registered as any).publish) {
+    return registered
+  }
+  return (
+    socialProviderAdapters.find((adapter) => adapter.network === network) ??
+    manual(network, 'unavailable')
+  )
+}
+
+export function getProviderCapabilityTruth(
+  network: SocialProviderAdapter['network'],
+  modeOverride?: 'fixture' | 'local-harness' | 'remote-sandbox' | 'live' | 'manual-handoff' | 'unavailable',
+): {
+  network: string
+  mode: 'fixture' | 'local-harness' | 'remote-sandbox' | 'live' | 'manual-handoff' | 'unavailable'
+  capabilities: SocialProviderCapabilities
+  detailedCapabilities?: Record<string, unknown>
+  verifiedAt: string
+} {
+  const adapter = getSocialAdapter(network)
+  const effectiveMode =
+    modeOverride || (network === 'bluesky' && process.env.NODE_ENV !== 'production' ? 'local-harness' : adapter.mode)
+
+  return {
+    network,
+    mode: effectiveMode as any,
+    capabilities: adapter.capabilities,
+    detailedCapabilities: adapter.getCapabilities ? (adapter.getCapabilities() as any) : undefined,
+    verifiedAt: new Date().toISOString(),
+  }
+}
 
 export const credentialsForSocialAccount = (connectionReference?: string | null) => {
   if (!connectionReference) return null
+
+  // Support direct encrypted secret envelope
+  if (connectionReference.startsWith('enc:')) {
+    try {
+      const decrypted = decryptSecret(connectionReference.slice(4))
+      return JSON.parse(decrypted)
+    } catch {
+      return null
+    }
+  }
+
+  // Fallback to environment variable lookup
   const key = connectionReference.toUpperCase().replace(/[^A-Z0-9]/g, '_')
   const identifier = process.env['SOCIAL_BLUESKY_' + key + '_IDENTIFIER']
   const appPassword = process.env['SOCIAL_BLUESKY_' + key + '_APP_PASSWORD']

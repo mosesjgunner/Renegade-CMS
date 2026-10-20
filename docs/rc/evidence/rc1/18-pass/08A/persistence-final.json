@@ -1,0 +1,112 @@
+{
+  "accountId": "cdf27454-1a1b-4f5e-9fc5-507aa42c6298",
+  "persistedAccount": {
+    "id": "cdf27454-1a1b-4f5e-9fc5-507aa42c6298",
+    "site": "4938cd46-595a-412c-9d0c-20df75d17e10",
+    "publication": null,
+    "space": null,
+    "owner": null,
+    "displayName": "Renegade Official Bluesky",
+    "network": "bluesky",
+    "actorType": "site",
+    "externalAccountId": "renegade.bsky.test",
+    "capabilityState": "available",
+    "capabilities": {
+      "edit": false,
+      "media": {
+        "audio": false,
+        "video": false,
+        "images": true,
+        "maxAttachments": 4
+      },
+      "delete": true,
+      "threads": true,
+      "linkCards": "native",
+      "postTypes": [
+        "text",
+        "link",
+        "image",
+        "thread"
+      ],
+      "rateLimit": {
+        "retryAfterHeader": "retry-after",
+        "requestsPerMinute": 600
+      },
+      "textLimit": 300,
+      "authentication": {
+        "modes": [
+          "app-password",
+          "atproto-oauth"
+        ],
+        "required": true
+      },
+      "nativeScheduling": false
+    },
+    "credentialHealth": "healthy",
+    "credentialExpiresAt": null,
+    "connectionReference": "enc:KxEMSDhWl5IFnzBI:ef6L_BN3p9px8xQWZZlkMw:lnPXF3mNzEyqX1v0Ap16K_U_feK5cAeP2GFEW_GBpqnX2kByi-C8omUQuUusxBUoRF_AhS7uFsTKh9O5HFufbQpwwsUWXC0bP1U_ryxqJn7D5hPQPcQfABdueLswQkiWEwFu5O_rao_i8A",
+    "lastVerifiedAt": "2026-10-19T10:25:11.844Z",
+    "diagnostics": {
+      "mode": "local-harness",
+      "status": "healthy",
+      "testedAt": "2026-10-19T10:25:11.844Z",
+      "lastError": null
+    },
+    "updatedAt": "2026-10-19T10:25:11.849Z",
+    "createdAt": "2026-10-19T10:25:07.994Z"
+  },
+  "disconnectedAccount": {
+    "id": "2159dcdf-ea07-4224-8aa9-f99e4b357c2e",
+    "site": "4938cd46-595a-412c-9d0c-20df75d17e10",
+    "publication": null,
+    "space": null,
+    "owner": null,
+    "displayName": "Invalid Bluesky",
+    "network": "bluesky",
+    "actorType": "site",
+    "externalAccountId": "bad.credentials.handle",
+    "capabilityState": "unavailable",
+    "capabilities": {
+      "edit": false,
+      "media": {
+        "audio": false,
+        "video": false,
+        "images": true,
+        "maxAttachments": 4
+      },
+      "delete": true,
+      "threads": true,
+      "linkCards": "native",
+      "postTypes": [
+        "text",
+        "link",
+        "image",
+        "thread"
+      ],
+      "rateLimit": {
+        "retryAfterHeader": "retry-after",
+        "requestsPerMinute": 600
+      },
+      "textLimit": 300,
+      "authentication": {
+        "modes": [
+          "app-password",
+          "atproto-oauth"
+        ],
+        "required": true
+      },
+      "nativeScheduling": false
+    },
+    "credentialHealth": "revoked",
+    "credentialExpiresAt": null,
+    "connectionReference": null,
+    "lastVerifiedAt": "2026-10-19T10:25:09.207Z",
+    "diagnostics": {
+      "reason": "Operator requested safe disconnection.",
+      "disconnectedAt": "2026-10-19T10:25:13.113Z",
+      "disconnectedBy": "owner-1792405505054@rc108a.test"
+    },
+    "updatedAt": "2026-10-19T10:25:13.117Z",
+    "createdAt": "2026-10-19T10:25:09.210Z"
+  }
+}

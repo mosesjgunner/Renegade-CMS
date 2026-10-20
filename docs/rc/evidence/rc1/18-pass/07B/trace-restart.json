@@ -1,0 +1,44 @@
+{
+  "checks": 7,
+  "succeeded": true,
+  "trace": [
+    {
+      "name": "restart: completed job 1 state retained",
+      "passed": true
+    },
+    {
+      "name": "restart: completed job 2 state retained",
+      "passed": true
+    },
+    {
+      "name": "restart: cancelled job state retained",
+      "passed": true
+    },
+    {
+      "name": "restart: article 1 lifecycle remains published",
+      "passed": true
+    },
+    {
+      "name": "restart: article 1 latestPublishedRevision matches pinned rev1",
+      "passed": true
+    },
+    {
+      "name": "restart: cancelled article lifecycle remains approved",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/schedule-health?limit=20",
+      "method": "GET",
+      "status": 200,
+      "bytes": 1761,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "restart: schedule-health API succeeds after restart",
+      "passed": true
+    }
+  ]
+}

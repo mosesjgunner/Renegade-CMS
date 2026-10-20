@@ -1,0 +1,462 @@
+{
+  "release": {
+    "id": "ad89cd81-74df-46dc-9e82-b019d2be11a7",
+    "site": "5f825037-7228-4843-8248-e4add8196c61",
+    "publication": null,
+    "space": null,
+    "owner": null,
+    "title": "07C presentation operator proof",
+    "name": "07C presentation operator proof",
+    "purpose": "Coordinated campaign release",
+    "ownerTeam": "Editorial Operations",
+    "content": null,
+    "article": null,
+    "product": null,
+    "productRevision": null,
+    "plannedInstant": "2026-10-19T09:51:17.157Z",
+    "scheduledFor": "2026-10-19T09:51:17.157Z",
+    "timeZone": "UTC",
+    "labels": [],
+    "campaign": null,
+    "dependencies": [],
+    "releaseRevision": 3,
+    "status": "completed",
+    "lastScheduleMutationId": null,
+    "artifacts": [
+      {
+        "id": "page:6c42e036-f118-4a4e-91f9-ae064c6296df",
+        "title": "07C launch page",
+        "status": "succeeded",
+        "attempts": 1,
+        "targetId": "6c42e036-f118-4a4e-91f9-ae064c6296df",
+        "updatedAt": "2026-10-19T09:51:27.941Z",
+        "executedAt": "2026-10-19T09:51:27.941Z",
+        "pinnedHash": "operator-label",
+        "stepOutput": {
+          "revision": 2,
+          "published": true
+        },
+        "targetType": "page",
+        "pinnedStateHash": "1b862e8a9c3c6be70f4ef043ead194b17dc0e2ec94628ed05ba6dc7d88ea963c",
+        "lastKnownGoodState": {
+          "previousBlocks": [
+            {
+              "id": "supported-6c42e036-f118-4a4e-91f9-ae064c6296df",
+              "props": {
+                "body": "Approved coordinated presentation copy",
+                "title": "07C launch page",
+                "headingLevel": "h1"
+              },
+              "component": "publisher.cta",
+              "componentVersion": 1
+            }
+          ],
+          "previousStatus": "published",
+          "previousRevision": 2,
+          "previousPublishedRevision": 1
+        },
+        "pinnedRevisionSequence": 2
+      },
+      {
+        "id": "presentation:e56714b8-44d8-4c29-8bbd-9ade63478c99",
+        "title": "07C release presentation",
+        "status": "succeeded",
+        "attempts": 1,
+        "targetId": "e56714b8-44d8-4c29-8bbd-9ade63478c99",
+        "updatedAt": "2026-10-19T09:51:28.075Z",
+        "executedAt": "2026-10-19T09:51:28.075Z",
+        "pinnedHash": "operator-label",
+        "stepOutput": {
+          "slot": "header",
+          "surface": "global",
+          "published": true
+        },
+        "targetType": "presentation",
+        "pinnedStateHash": "38d2fcd63bc5de10de14af7a67158fc202c9589d0331c5496703e46add3e05c3",
+        "lastKnownGoodState": {
+          "previousBlocks": [
+            {
+              "id": "supported-e56714b8-44d8-4c29-8bbd-9ade63478c99",
+              "props": {
+                "body": "Approved coordinated presentation copy",
+                "title": "07C coordinated header",
+                "headingLevel": "h2"
+              },
+              "component": "publisher.cta",
+              "componentVersion": 1
+            }
+          ],
+          "previousRevision": 2,
+          "previousPublishedRevision": 1
+        },
+        "pinnedRevisionSequence": 2
+      }
+    ],
+    "gateSnapshot": {
+      "rules": [
+        {
+          "name": "Staff Release Authorization",
+          "ruleId": "rule-permissions",
+          "status": "passed",
+          "message": "Actor role 'owner' is authorized for release operations.",
+          "evidence": {
+            "actorId": "6899fb07-def8-4709-a2e8-8b8cd64f2706",
+            "actorRole": "owner"
+          },
+          "severity": "blocker",
+          "ruleVersion": "v1.0"
+        },
+        {
+          "name": "Editorial Approvals Verification",
+          "ruleId": "rule-approvals",
+          "status": "passed",
+          "message": "All included content, pages, and products have verified approved revisions.",
+          "evidence": {
+            "artifactCount": 2
+          },
+          "severity": "blocker",
+          "ruleVersion": "v1.0"
+        },
+        {
+          "name": "Unresolved Review Comments Check",
+          "ruleId": "rule-unresolved-comments",
+          "status": "passed",
+          "message": "No unresolved blocking review comments found on included artifacts.",
+          "severity": "blocker",
+          "ruleVersion": "v1.0"
+        },
+        {
+          "name": "URL & Canonical Route Conflict Detection",
+          "ruleId": "rule-url-canonical-conflicts",
+          "status": "passed",
+          "message": "All published paths and canonical URLs are mutually exclusive.",
+          "severity": "blocker",
+          "ruleVersion": "v1.0"
+        },
+        {
+          "name": "Redirect Integrity & Circular Loop Check",
+          "ruleId": "rule-redirects",
+          "status": "passed",
+          "message": "All declared redirects pass syntax, status, and loop checks.",
+          "severity": "blocker",
+          "ruleVersion": "v1.0"
+        },
+        {
+          "name": "Quality Center Severity Threshold Gate",
+          "ruleId": "rule-quality-center",
+          "status": "passed",
+          "message": "Zero publication-blocking quality issues detected on release targets.",
+          "severity": "blocker",
+          "ruleVersion": "v1.0"
+        },
+        {
+          "name": "Media Rights & Asset Readiness",
+          "ruleId": "rule-media-readiness",
+          "status": "passed",
+          "message": "All pinned media assets have verified rights clearance and readiness.",
+          "severity": "blocker",
+          "ruleVersion": "v1.0"
+        },
+        {
+          "name": "Scheduled Release Dependency Gate",
+          "ruleId": "rule-scheduled-dependencies",
+          "status": "passed",
+          "message": "All prerequisite release dependencies are completed or co-scheduled.",
+          "severity": "blocker",
+          "ruleVersion": "v1.0"
+        },
+        {
+          "name": "Operations Queue & Worker Health",
+          "ruleId": "rule-worker-health",
+          "status": "passed",
+          "message": "Operations queue worker is active and healthy.",
+          "severity": "warning",
+          "ruleVersion": "v1.0"
+        },
+        {
+          "name": "Migration & Schema Config Policy",
+          "ruleId": "rule-migration-policy",
+          "status": "passed",
+          "message": "No prohibited schema migrations or policy violations present.",
+          "severity": "blocker",
+          "ruleVersion": "v1.0"
+        },
+        {
+          "name": "Localization Quality & Translation Integrity",
+          "ruleId": "rule-localization-quality",
+          "status": "passed",
+          "message": "All localized content items have verified completeness, active source alignment, and human approvals.",
+          "severity": "blocker",
+          "ruleVersion": "v1.0"
+        }
+      ],
+      "isValid": true,
+      "snapshotId": "gate-snap-1792403485853",
+      "evaluatedAt": "2026-10-19T09:51:25.847Z",
+      "blockerCount": 0,
+      "warningCount": 0,
+      "overallStatus": "passed",
+      "evaluatedFingerprint": "576daf40f003da49242ba7b7032cd72edecb34f0b54a9a2e2dc2e911a2ebb97a"
+    },
+    "approvals": [
+      {
+        "id": "56da9b1e-a58f-436a-afb9-873419a93b24",
+        "actorId": "6899fb07-def8-4709-a2e8-8b8cd64f2706",
+        "decision": "approved",
+        "actorRole": "owner",
+        "decidedAt": "2026-10-19T09:51:25.853Z",
+        "releaseRevision": 3,
+        "gateSnapshotFingerprint": "576daf40f003da49242ba7b7032cd72edecb34f0b54a9a2e2dc2e911a2ebb97a"
+      }
+    ],
+    "sagaSteps": [
+      {
+        "output": {
+          "revision": 2,
+          "published": true
+        },
+        "status": "succeeded",
+        "stepId": "step-page:6c42e036-f118-4a4e-91f9-ae064c6296df-1",
+        "attempts": 1,
+        "boundary": "idempotent_db",
+        "artifactId": "page:6c42e036-f118-4a4e-91f9-ae064c6296df",
+        "targetType": "page",
+        "completedAt": "2026-10-19T09:51:27.941Z"
+      },
+      {
+        "output": {
+          "slot": "header",
+          "surface": "global",
+          "published": true
+        },
+        "status": "succeeded",
+        "stepId": "step-presentation:e56714b8-44d8-4c29-8bbd-9ade63478c99-1",
+        "attempts": 1,
+        "boundary": "idempotent_db",
+        "artifactId": "presentation:e56714b8-44d8-4c29-8bbd-9ade63478c99",
+        "targetType": "presentation",
+        "completedAt": "2026-10-19T09:51:28.075Z"
+      }
+    ],
+    "resultingUrls": [
+      "/07c-launch"
+    ],
+    "leaseOwner": null,
+    "leaseExpiresAt": null,
+    "scheduleAudit": [],
+    "executionJob": null,
+    "executionItems": [
+      {
+        "id": "page:6c42e036-f118-4a4e-91f9-ae064c6296df",
+        "title": "07C launch page",
+        "status": "succeeded",
+        "attempts": 1,
+        "targetId": "6c42e036-f118-4a4e-91f9-ae064c6296df",
+        "updatedAt": "2026-10-19T09:51:27.941Z",
+        "executedAt": "2026-10-19T09:51:27.941Z",
+        "pinnedHash": "operator-label",
+        "stepOutput": {
+          "revision": 2,
+          "published": true
+        },
+        "targetType": "page",
+        "pinnedStateHash": "1b862e8a9c3c6be70f4ef043ead194b17dc0e2ec94628ed05ba6dc7d88ea963c",
+        "lastKnownGoodState": {
+          "previousBlocks": [
+            {
+              "id": "supported-6c42e036-f118-4a4e-91f9-ae064c6296df",
+              "props": {
+                "body": "Approved coordinated presentation copy",
+                "title": "07C launch page",
+                "headingLevel": "h1"
+              },
+              "component": "publisher.cta",
+              "componentVersion": 1
+            }
+          ],
+          "previousStatus": "published",
+          "previousRevision": 2,
+          "previousPublishedRevision": 1
+        },
+        "pinnedRevisionSequence": 2
+      },
+      {
+        "id": "presentation:e56714b8-44d8-4c29-8bbd-9ade63478c99",
+        "title": "07C release presentation",
+        "status": "succeeded",
+        "attempts": 1,
+        "targetId": "e56714b8-44d8-4c29-8bbd-9ade63478c99",
+        "updatedAt": "2026-10-19T09:51:28.075Z",
+        "executedAt": "2026-10-19T09:51:28.075Z",
+        "pinnedHash": "operator-label",
+        "stepOutput": {
+          "slot": "header",
+          "surface": "global",
+          "published": true
+        },
+        "targetType": "presentation",
+        "pinnedStateHash": "38d2fcd63bc5de10de14af7a67158fc202c9589d0331c5496703e46add3e05c3",
+        "lastKnownGoodState": {
+          "previousBlocks": [
+            {
+              "id": "supported-e56714b8-44d8-4c29-8bbd-9ade63478c99",
+              "props": {
+                "body": "Approved coordinated presentation copy",
+                "title": "07C coordinated header",
+                "headingLevel": "h2"
+              },
+              "component": "publisher.cta",
+              "componentVersion": 1
+            }
+          ],
+          "previousRevision": 2,
+          "previousPublishedRevision": 1
+        },
+        "pinnedRevisionSequence": 2
+      }
+    ],
+    "executionAudit": [
+      {
+        "at": "2026-10-19T09:51:17.160Z",
+        "action": "release.created",
+        "actorId": "6899fb07-def8-4709-a2e8-8b8cd64f2706",
+        "details": {
+          "name": "07C presentation operator proof",
+          "purpose": "Coordinated campaign release"
+        }
+      },
+      {
+        "at": "2026-10-19T09:51:19.586Z",
+        "action": "release.artifact.pinned",
+        "actorId": "6899fb07-def8-4709-a2e8-8b8cd64f2706",
+        "details": {
+          "artifactId": "page:6c42e036-f118-4a4e-91f9-ae064c6296df",
+          "pinnedHash": "operator-label",
+          "targetType": "page",
+          "releaseRevision": 2
+        }
+      },
+      {
+        "at": "2026-10-19T09:51:21.877Z",
+        "action": "release.artifact.pinned",
+        "actorId": "6899fb07-def8-4709-a2e8-8b8cd64f2706",
+        "details": {
+          "artifactId": "presentation:e56714b8-44d8-4c29-8bbd-9ade63478c99",
+          "pinnedHash": "operator-label",
+          "targetType": "presentation",
+          "releaseRevision": 3
+        }
+      },
+      {
+        "at": "2026-10-19T09:51:24.117Z",
+        "action": "release.review.requested",
+        "actorId": "6899fb07-def8-4709-a2e8-8b8cd64f2706"
+      },
+      {
+        "at": "2026-10-19T09:51:25.853Z",
+        "action": "release.approved",
+        "actorId": "6899fb07-def8-4709-a2e8-8b8cd64f2706",
+        "details": {
+          "approvalId": "56da9b1e-a58f-436a-afb9-873419a93b24"
+        }
+      },
+      {
+        "at": "2026-10-19T09:51:28.171Z",
+        "action": "release.execution.completed",
+        "status": "completed",
+        "actorId": "6899fb07-def8-4709-a2e8-8b8cd64f2706",
+        "details": {
+          "failedSteps": [],
+          "succeededCount": 2,
+          "unresolvedCount": 0
+        }
+      }
+    ],
+    "updatedAt": "2026-10-19T09:51:28.182Z",
+    "createdAt": "2026-10-19T09:51:17.165Z"
+  },
+  "layout": {
+    "id": "e56714b8-44d8-4c29-8bbd-9ade63478c99",
+    "publishedPresentation": {
+      "path": "__global__/recovery-1792403161665",
+      "version": 1,
+      "document": {
+        "slots": {
+          "main": [],
+          "header": [
+            {
+              "id": "supported-e56714b8-44d8-4c29-8bbd-9ade63478c99",
+              "props": {
+                "body": "Approved coordinated presentation copy",
+                "title": "07C coordinated header",
+                "headingLevel": "h2"
+              },
+              "component": "publisher.cta",
+              "componentVersion": 1
+            }
+          ]
+        },
+        "theme": {
+          "id": "neutral-starter",
+          "version": "1.0.0"
+        },
+        "siteId": "5f825037-7228-4843-8248-e4add8196c61",
+        "surface": "layout",
+        "version": 1,
+        "template": {
+          "id": "layout",
+          "version": "1.0.0"
+        }
+      },
+      "revision": 2,
+      "visibility": "public"
+    },
+    "site": "5f825037-7228-4843-8248-e4add8196c61",
+    "publication": null,
+    "space": null,
+    "name": "07C release presentation",
+    "path": "__global__/recovery-1792403161665",
+    "themeId": "neutral-starter",
+    "surface": "global",
+    "slot": "header",
+    "templateId": null,
+    "templateVersion": null,
+    "templateMode": null,
+    "isRetired": false,
+    "category": null,
+    "layoutVersion": 1,
+    "status": "published",
+    "visibility": "public",
+    "blocks": [
+      {
+        "id": "supported-e56714b8-44d8-4c29-8bbd-9ade63478c99",
+        "props": {
+          "body": "Approved coordinated presentation copy",
+          "title": "07C coordinated header",
+          "headingLevel": "h2"
+        },
+        "component": "publisher.cta",
+        "componentVersion": 1
+      }
+    ],
+    "unknownBlocks": [],
+    "revision": 2,
+    "publishedRevision": 2,
+    "revisionHistory": [],
+    "seoTitle": null,
+    "seoDescription": null,
+    "seoCanonicalURL": null,
+    "seoImageAlt": null,
+    "seoKeywords": null,
+    "seoFocusKeyphrase": null,
+    "seoNoIndex": false,
+    "discoveryOverrides": null,
+    "retentionMode": "permanent",
+    "retentionExpiresAt": null,
+    "retentionHold": "none",
+    "removeFromDiscovery": false,
+    "tombstoneLabel": null,
+    "updatedAt": "2026-10-19T09:51:28.103Z",
+    "createdAt": "2026-10-19T09:46:05.746Z"
+  }
+}

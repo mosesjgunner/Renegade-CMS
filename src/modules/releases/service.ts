@@ -514,8 +514,41 @@ async function scheduleReleaseUnlocked(
     return release as unknown as CoordinatedRelease
   }
 
-  if (!['approved', 'scheduled'].includes(release.status) && (release.artifacts?.length || 0) > 0)
+  const legacySelection = !(release.artifacts?.length || release.executionItems?.length)
+  if (!legacySelection && !['approved', 'scheduled'].includes(release.status))
     throw new Error('Only an approved release can be scheduled.')
+  if (legacySelection) {
+    if (!['draft', 'approved', 'scheduled'].includes(release.status))
+      throw new Error('Terminal releases cannot be scheduled.')
+    // The legacy single-selection operator schedule action approves its already-approved source.
+    const items = await releaseTargets(payload, release)
+    if (!items.length) throw new Error('Cannot schedule an empty release.')
+    for (const item of items) {
+      item.pinnedStateHash = await assertReleaseArtifactScope(payload, release, item)
+      const target = (await payload.findByID({
+        collection: (item.targetType === 'article'
+          ? 'article-family-content'
+          : 'products') as never,
+        id: item.targetId,
+        depth: 0,
+        overrideAccess: true,
+      })) as Doc
+      if (
+        !['approved', 'scheduled', 'published'].includes(String(target.lifecycle ?? target.state))
+      )
+        throw new Error('Legacy release selection must already be approved.')
+    }
+    release.artifacts = items
+    release.executionItems = items
+    release.plannedInstant = input.scheduledFor
+    release.scheduledFor = input.scheduledFor
+    release.timeZone = input.timeZone
+  } else if (
+    new Date(release.plannedInstant || release.scheduledFor).getTime() !==
+    new Date(input.scheduledFor).getTime()
+  ) {
+    throw new Error('Schedule time changed. Update and reapprove the release before scheduling.')
+  }
 
   // Preflight validation
   let snapshot = release.gateSnapshot as ReleaseGateSnapshot | null
@@ -532,12 +565,20 @@ async function scheduleReleaseUnlocked(
     )
   }
 
-  const artifacts = release.artifacts || release.executionItems || []
-  if (artifacts.length === 0) {
-    // If empty, try legacy releaseTargets
-    const legacyItems = await releaseTargets(payload, release)
-    release.artifacts = legacyItems
-    release.executionItems = legacyItems
+  if (legacySelection) {
+    release.approvals = [
+      ...(release.approvals || []),
+      {
+        id: randomUUID(),
+        actorId: input.actorId,
+        actorRole: 'publisher',
+        decision: 'approved',
+        releaseRevision: release.releaseRevision,
+        gateSnapshotFingerprint: snapshot.evaluatedFingerprint,
+        decidedAt: new Date().toISOString(),
+        comment: 'Legacy operator schedule approved the pinned approved selection.',
+      },
+    ]
   }
 
   const queued = (await payload.jobs.queue({
@@ -566,6 +607,7 @@ async function scheduleReleaseUnlocked(
       artifacts: release.artifacts,
       executionItems: release.artifacts,
       gateSnapshot: snapshot,
+      approvals: release.approvals,
       scheduleAudit: [
         ...(Array.isArray(release.scheduleAudit) ? release.scheduleAudit : []),
         {
@@ -722,6 +764,16 @@ async function cancelReleaseUnlocked(
     id: releaseId,
     data: {
       status: 'cancelled',
+      artifacts: list(release.artifacts || release.executionItems).map((item) =>
+        ['succeeded', 'skipped'].includes(item.status)
+          ? item
+          : { ...item, status: 'cancelled', updatedAt: new Date().toISOString() },
+      ),
+      executionItems: list(release.artifacts || release.executionItems).map((item) =>
+        ['succeeded', 'skipped'].includes(item.status)
+          ? item
+          : { ...item, status: 'cancelled', updatedAt: new Date().toISOString() },
+      ),
       executionAudit: appendAudit(release, {
         action: 'release.cancelled',
         actorId,

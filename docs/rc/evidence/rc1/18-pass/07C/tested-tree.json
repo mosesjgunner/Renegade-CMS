@@ -1,0 +1,169 @@
+{
+  "testedSHA": null,
+  "initialSHA": "b5c8453f088dac0aa7266cff182d5ffdeb6600ed",
+  "note": "Exact source is baseSHA plus this dirty source overlay. Commit ba65c8c7 was created externally during execution. Concurrent 07B source and earlier evidence are preserved; no 07B acceptance claimed.",
+  "files": [
+    {
+      "path": "docs/operations/coordinated-releases.md",
+      "sha256": "e8d2e1160cf5516c2979e783fcdf25cb773a70c9fc4f34ce4c291ccb232d49f5"
+    },
+    {
+      "path": "src/app/(frontend)/api/admin/releases/[id]/route.ts",
+      "sha256": "70e2a565722887e2ed7e5f96c0475017f8e881ec878d406c4081f181a6b1ad77"
+    },
+    {
+      "path": "src/app/(frontend)/api/admin/releases/route.ts",
+      "sha256": "2f9186cc833cee1883627bcfae8d2159f23ef17253f313db90ce66041a3ff81e"
+    },
+    {
+      "path": "src/collections/Releases.ts",
+      "sha256": "118ecae08012ecab7ac05a818c9f27aeb5c94e2bb490c14884898f717d4d2f5e"
+    },
+    {
+      "path": "src/modules/admin/ReleaseCenter.tsx",
+      "sha256": "e44073d2772d4c82bf53f4b027e71c2087af943c41c1820da7efc9f24d109a1f"
+    },
+    {
+      "path": "src/modules/editorial/persistence.ts",
+      "sha256": "dee71e4763cbfe368467a67a33bedc9669bbb3b258ea584fe272b0e97b1cfcfb"
+    },
+    {
+      "path": "src/modules/editorial/scheduler.ts",
+      "sha256": "f2da98c0e91abcd88acf4f773a54aa5e034bda441a2aad0460412bbc62c58178"
+    },
+    {
+      "path": "src/modules/releases/artifact-scope.ts",
+      "sha256": "45b93bb65c701f8ecf397b12f102065a77528c39d7bb6e5cf14452a01e8bc9c1"
+    },
+    {
+      "path": "src/modules/releases/contracts.ts",
+      "sha256": "1e989a0ef318d951e83377aebab692f20f3db1bd2fe07476ad50e96c5d2a152e"
+    },
+    {
+      "path": "src/modules/releases/gates.ts",
+      "sha256": "a811adabd0804037f8336f7adcf80e77920ee53151cbd1a7815a5b5790f86c4f"
+    },
+    {
+      "path": "src/modules/releases/payload-domain.ts",
+      "sha256": "1f7213f0bf318b77c95a7cfd5e458f753d825ae2d584cca424d7498650385934"
+    },
+    {
+      "path": "src/modules/releases/saga.ts",
+      "sha256": "5d5e1cf84d5e85218ce5752593b54ab0c8e47d2020d5fc138a5a3838b81883f0"
+    },
+    {
+      "path": "src/modules/releases/service.ts",
+      "sha256": "29c0c6e551a0a0b99e1ad70b03813827c3707057484de68dfc5d468e64aa0718"
+    },
+    {
+      "path": "src/modules/releases/tasks.ts",
+      "sha256": "b44ad66f9d2ec85237a783b7563d240e037b739c68bcf0009dabd57e81ee4b31"
+    },
+    {
+      "path": "src/modules/releases/transaction.ts",
+      "sha256": "6ef189a959e3ed040312d419e3513c92d1b8017a08a862fbf321b539f03a432f"
+    },
+    {
+      "path": "tests/integration/content-release-acceptance.integration.test.ts",
+      "sha256": "94f6c966ee9204f894fc4c5343ed1444bef1d9c2571d67fbb83630e388db6a8b"
+    },
+    {
+      "path": "tests/rc1-07c/capture.ts",
+      "sha256": "c81c456c613c354a56c638216b624ec6c8e870b493ad2a4ebbc0813683573a05"
+    },
+    {
+      "path": "tests/rc1-07c/controls.ts",
+      "sha256": "7d2f7116511f6ebc53c43d6fcde5f0146858174ef82c1016af8e60db79f29bfe"
+    },
+    {
+      "path": "tests/rc1-07c/run-isolated.ps1",
+      "sha256": "84e1cf9c33e468674cb27d82a1adc8a43f9573bcb6c6e44a94183139876f28db"
+    },
+    {
+      "path": "tests/rc1-07c/tsconfig.json",
+      "sha256": "cddcd36afe408e4d9d6820b30a777db8e9e76c6ba06f2c59798a4db8629297fc"
+    },
+    {
+      "path": "tests/rc1-07c/verify.ts",
+      "sha256": "86a26106512308ac662dff0a78f79735d579d9a65fc8a99ed4e94a283cdd3679"
+    },
+    {
+      "path": "tests/unit/flow-04-coordinated-releases.test.ts",
+      "sha256": "c8ada66d40fce0d67bafe6d5749fa07cca87336bcf7cb7cd7df01ab5d81db0fb"
+    },
+    {
+      "path": "tests/unit/rc1-07c-releases.test.ts",
+      "sha256": "2b49a8cf17f776ddf9b40e934b83552b5514062e96168e09f6e9adef1a694dcf"
+    },
+    {
+      "path": "tests/unit/releases-service.test.ts",
+      "sha256": "e8bab0a9310a87338ede3289d7f9d47f9a9cd19586423e102b6690e9c97196ad"
+    }
+  ],
+  "scopedSHA256": "678b87f342116d701300529f891dd9d3e67cc667352392b5e2453ddfd801883a",
+  "baseSHA": "ba65c8c7e40ff6b703ca9780d4da1ced44974934",
+  "dirtySourceOverlay": [
+    {
+      "path": "src/app/(frontend)/api/admin/calendar/schedule/route.ts",
+      "sha256": "f56e19ad32f1e2b5db09d8e809dc42be422cc800463ecfbcd87d9fc0d0dad7ad"
+    },
+    {
+      "path": "src/modules/admin/ReleaseCenter.tsx",
+      "sha256": "e44073d2772d4c82bf53f4b027e71c2087af943c41c1820da7efc9f24d109a1f"
+    },
+    {
+      "path": "src/modules/editorial/persistence.ts",
+      "sha256": "dee71e4763cbfe368467a67a33bedc9669bbb3b258ea584fe272b0e97b1cfcfb"
+    },
+    {
+      "path": "src/modules/releases/artifact-scope.ts",
+      "sha256": "45b93bb65c701f8ecf397b12f102065a77528c39d7bb6e5cf14452a01e8bc9c1"
+    },
+    {
+      "path": "src/modules/releases/contracts.ts",
+      "sha256": "1e989a0ef318d951e83377aebab692f20f3db1bd2fe07476ad50e96c5d2a152e"
+    },
+    {
+      "path": "src/modules/releases/saga.ts",
+      "sha256": "5d5e1cf84d5e85218ce5752593b54ab0c8e47d2020d5fc138a5a3838b81883f0"
+    },
+    {
+      "path": "src/modules/releases/service.ts",
+      "sha256": "29c0c6e551a0a0b99e1ad70b03813827c3707057484de68dfc5d468e64aa0718"
+    },
+    {
+      "path": "tests/integration/content-release-acceptance.integration.test.ts",
+      "sha256": "94f6c966ee9204f894fc4c5343ed1444bef1d9c2571d67fbb83630e388db6a8b"
+    },
+    {
+      "path": "tests/rc1-07b/verify.ts",
+      "sha256": "93c2895859a2aa5da25a71498e7d1458bbe332d1f345233518a30b241b5b7f98"
+    },
+    {
+      "path": "tests/rc1-07c/capture.ts",
+      "sha256": "c81c456c613c354a56c638216b624ec6c8e870b493ad2a4ebbc0813683573a05"
+    },
+    {
+      "path": "tests/rc1-07c/controls.ts",
+      "sha256": "7d2f7116511f6ebc53c43d6fcde5f0146858174ef82c1016af8e60db79f29bfe"
+    },
+    {
+      "path": "tests/rc1-07c/run-isolated.ps1",
+      "sha256": "84e1cf9c33e468674cb27d82a1adc8a43f9573bcb6c6e44a94183139876f28db"
+    },
+    {
+      "path": "tests/rc1-07c/tsconfig.json",
+      "sha256": "cddcd36afe408e4d9d6820b30a777db8e9e76c6ba06f2c59798a4db8629297fc"
+    },
+    {
+      "path": "tests/rc1-07c/verify.ts",
+      "sha256": "86a26106512308ac662dff0a78f79735d579d9a65fc8a99ed4e94a283cdd3679"
+    },
+    {
+      "path": "tests/unit/rc1-07c-releases.test.ts",
+      "sha256": "2b49a8cf17f776ddf9b40e934b83552b5514062e96168e09f6e9adef1a694dcf"
+    }
+  ],
+  "sourceOverlaySHA256": "f1e7e44a2c888bd73d2595c91eae15b8ce204533ac0a10778c833f528937181f",
+  "executionBoundary": "Final main journey, PostgreSQL integration, fresh-process web/DB restart, controls and hydrated browser capture. Later rollback guard and cancellation UI are proved in restart/controls and focused tests. No aggregate candidate or production image claim."
+}

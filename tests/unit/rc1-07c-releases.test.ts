@@ -2,7 +2,7 @@
 import { describe, expect, it } from 'vitest'
 import { assertReleaseArtifactScope } from '../../src/modules/releases/artifact-scope'
 import { computeReleaseFingerprint } from '../../src/modules/releases/gates'
-import { executeReleaseSaga } from '../../src/modules/releases/saga'
+import { executeReleaseSaga, rollbackReleaseSaga } from '../../src/modules/releases/saga'
 import { pinArtifact, unpinArtifact, cancelRelease } from '../../src/modules/releases/service'
 
 function fixture() {
@@ -176,6 +176,16 @@ describe('07C release authority and recovery', () => {
     expect(f.docs['social-queue-items'].pending.status).toBe('cancelled')
     expect(f.docs['social-queue-items'].published.status).toBe('published')
     expect(f.release.status).toBe('cancelled')
+    expect(f.release.artifacts[0].status).toBe('cancelled')
+  })
+  it('rejects automatic rollback of queued email or completed external sends before writes', async () => {
+    const f = fixture()
+    f.release.status = 'completed'
+    f.release.artifacts = [{ id: 'newsletter:mail', targetType: 'newsletter', status: 'succeeded' }]
+    await expect(
+      rollbackReleaseSaga(f.payload, { releaseId: 'r', actorId: 'owner', reason: 'Undo' }),
+    ).rejects.toThrow('channel reconciliation')
+    expect(f.writes()).toBe(0)
   })
   it('cancelled scheduled work is terminal and cannot resume side effects', async () => {
     const f = fixture()

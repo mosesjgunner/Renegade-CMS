@@ -1,0 +1,114 @@
+{
+  "checks": 17,
+  "succeeded": true,
+  "trace": [
+    {
+      "name": "restart retains partial failure and five completed actions",
+      "passed": true
+    },
+    {
+      "name": "restart retains article publication and exact revision",
+      "passed": true
+    },
+    {
+      "name": "lost provider response remains unresolved rather than fabricated success",
+      "passed": true
+    },
+    {
+      "name": "lost response has persisted retryable outbox and two attempts",
+      "passed": true
+    },
+    {
+      "name": "failed-only retry completes all six persisted release actions",
+      "passed": true
+    },
+    {
+      "name": "five successful actions are byte-identical after retries",
+      "passed": true
+    },
+    {
+      "name": "distribution alone increments release action attempts",
+      "passed": true
+    },
+    {
+      "name": "two outbox rows, two external-post records, no duplicates",
+      "passed": true
+    },
+    {
+      "name": "successful destination never resent; failed destination reconciled on third attempt",
+      "passed": true
+    },
+    {
+      "name": "adapter harness persists exactly two records and creates only the missing record on retry",
+      "passed": true
+    },
+    {
+      "name": "no duplicate published content or revisions",
+      "passed": true
+    },
+    {
+      "name": "newsletter has exactly one durable recipient outbox row",
+      "passed": true
+    },
+    {
+      "name": "actual email worker accepts one message into local sink and replay is inert",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/releases/5030728e-dbd0-48ff-89c3-86dfb3be9fed",
+      "method": "POST",
+      "status": 200,
+      "bytes": 209,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/releases/5030728e-dbd0-48ff-89c3-86dfb3be9fed",
+      "method": "POST",
+      "status": 200,
+      "bytes": 209,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "completed execution and retry replays are inert",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/releases/5030728e-dbd0-48ff-89c3-86dfb3be9fed",
+      "method": "POST",
+      "status": 400,
+      "bytes": 78,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/releases/5030728e-dbd0-48ff-89c3-86dfb3be9fed",
+      "method": "POST",
+      "status": 400,
+      "bytes": 69,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "completed release cannot be cancelled or edited",
+      "passed": true
+    },
+    {
+      "name": "scheduled worker job created before restart executes from persisted state",
+      "passed": true
+    },
+    {
+      "name": "cancelled scheduled job never creates its redirect",
+      "passed": true
+    }
+  ]
+}

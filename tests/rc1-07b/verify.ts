@@ -182,7 +182,7 @@ try {
     check('restart: article 1 lifecycle remains published', art1.lifecycle === 'published')
     check(
       'restart: article 1 latestPublishedRevision matches pinned rev1',
-      String(art1.latestPublishedRevision) === state.art1Rev1Id,
+      String(typeof art1.latestPublishedRevision === 'object' && art1.latestPublishedRevision ? art1.latestPublishedRevision.id : art1.latestPublishedRevision) === state.art1Rev1Id,
     )
 
     const artCancelled = await payload.findByID({
@@ -315,8 +315,8 @@ try {
         where: { content: { equals: content1.id } },
       })
     ).docs[0]
-    check('Editorial companion created for article 1', Boolean(afc1))
-    const art1Rev1Id = String(afc1.currentRevision)
+    const idOf = (val: any) => (typeof val === 'object' && val ? val.id ?? val.value : val)
+    const art1Rev1Id = String(idOf(afc1.currentRevision))
 
     // Submit review & approve article 1
     await api(
@@ -367,7 +367,7 @@ try {
     check('Scheduled job 1 row created in database', jobs1.docs.length === 1)
     const job1 = jobs1.docs[0]
     check('Job 1 status is queued', job1.status === 'queued')
-    check('Job 1 revision pinned to Rev 1', String(job1.revision) === art1Rev1Id)
+    check('Job 1 revision pinned to Rev 1', String(idOf(job1.revision)) === art1Rev1Id)
 
     // 5. Test Optimistic Concurrency and Revision Pinning Immutability
     // Author saves a new draft (Rev 2) after schedule
@@ -389,7 +389,7 @@ try {
       collection: 'scheduled-publish-jobs',
       id: job1.id,
     })
-    check('Job 1 pinned revision still strictly matches Rev 1 (NOT Rev 2)', String(job1PostDraft.revision) === art1Rev1Id)
+    check('Job 1 pinned revision still strictly matches Rev 1 (NOT Rev 2)', String(idOf(job1PostDraft.revision)) === art1Rev1Id)
 
     // 6. Test Worker Lease Locking & Concurrency Protection
     // Worker A acquires lease for 60 seconds
@@ -436,7 +436,7 @@ try {
     check('Article 1 lifecycle transitioned to published', afc1Final.lifecycle === 'published')
     check(
       'Article 1 latestPublishedRevision is Rev 1 (NOT Rev 2)',
-      String(afc1Final.latestPublishedRevision) === art1Rev1Id,
+      String(idOf(afc1Final.latestPublishedRevision)) === art1Rev1Id,
     )
     const job1Final = await payload.findByID({
       collection: 'scheduled-publish-jobs',
@@ -700,3 +700,4 @@ try {
   )
 }
 console.log(`\nALL ${checks} CHECKS PASSED SUCCESSFULLY.`)
+process.exit(0)

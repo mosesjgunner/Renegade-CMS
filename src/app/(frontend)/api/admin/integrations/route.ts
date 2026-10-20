@@ -297,7 +297,11 @@ export async function GET(request: Request) {
         externalAccountId: String(doc.externalAccountId || doc.id),
         status,
         healthState: status === 'active' ? 'healthy' : 'warning',
-        scopes: ['social.publish.text'],
+        scopes: Array.isArray(doc.capabilities?.postTypes)
+          ? doc.capabilities.postTypes.map((pt: string) => `social.publish.${pt}`)
+          : ['social.publish.text'],
+        capabilityState: doc.capabilityState || 'manual-handoff',
+        capabilities: doc.capabilities || {},
         expiresAt: doc.credentialExpiresAt ? String(doc.credentialExpiresAt) : null,
         lastSuccessAt: doc.lastVerifiedAt ? String(doc.lastVerifiedAt) : null,
         lastHealthCheckAt: doc.lastVerifiedAt ? String(doc.lastVerifiedAt) : null,

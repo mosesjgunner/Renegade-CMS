@@ -100,7 +100,7 @@ export async function assertReleaseArtifactScope(
     article: ['currentRevision'],
     page: ['revision', 'blocks', 'themeId', 'path'],
     presentation: ['revision', 'blocks', 'themeId', 'surface', 'slot'],
-    media: ['storageLocation', 'fileHash', 'versionCount', 'replaceGloballyWith'],
+    media: ['storageLocation', 'checksum', 'originalBlob', 'versionCount', 'replaceGloballyWith'],
     product: ['releaseRevision'],
     newsletter: ['subject', 'blocks', 'messageDesign', 'audience', 'senderIdentity', 'kind'],
     distribution: ['sourceContent', 'sourceRevision'],

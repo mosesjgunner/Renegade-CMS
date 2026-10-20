@@ -6,7 +6,6 @@ import { getPayload, type Payload } from 'payload'
 
 import config from '../../src/payload.config'
 import { scheduleContentRelease } from '../../src/modules/releases/service'
-import { seed } from '../../src/scripts/seed'
 
 let payload: Payload
 
@@ -15,21 +14,32 @@ const idOf = (value: unknown) =>
     ? String(value)
     : String((value as { id?: unknown } | null)?.id ?? '')
 
-const findOne = async (collection: string, slug: string) => {
-  const result = await payload.find({
-    collection: collection as never,
-    where: { slug: { equals: slug } },
-    limit: 1,
-    depth: 0,
-    overrideAccess: true,
-  } as never)
-  expect(result.docs[0]).toBeTruthy()
-  return result.docs[0] as any
-}
+let acceptanceSite: any
+let acceptancePublication: any
 
 beforeAll(async () => {
   payload = await getPayload({ config })
-  await seed(payload)
+  acceptanceSite = await payload.create({
+    collection: 'sites',
+    data: {
+      name: 'Release integration',
+      slug: `release-integration-${randomUUID().slice(0, 8)}`,
+      lifecycle: 'active',
+      communityRegistrationPolicy: 'open',
+      commentReactionCodes: ['thumbs_up', 'heart', 'insightful', 'applause'],
+    },
+    overrideAccess: true,
+  })
+  acceptancePublication = (
+    await payload.find({
+      collection: 'publications',
+      where: { site: { equals: acceptanceSite.id } },
+      limit: 1,
+      depth: 0,
+      overrideAccess: true,
+    })
+  ).docs[0]
+  expect(acceptancePublication).toBeTruthy()
 })
 
 afterAll(async () => {
@@ -38,8 +48,8 @@ afterAll(async () => {
 
 describe('coordinated content release acceptance', () => {
   it('durably schedules and releases an approved product once', async () => {
-    const site = await findOne('sites', 'demo-publication')
-    const publication = await findOne('publications', 'main')
+    const site = acceptanceSite
+    const publication = acceptancePublication
     const suffix = randomUUID().slice(0, 8)
     const merchant = (await payload.create({
       collection: 'merchant-connections' as never,

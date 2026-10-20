@@ -1,10 +1,18 @@
 {
-  "bdd21f31ed72748656709a36fbd6081e": {
-    "uri": "at://did:plc:rc107c/app.bsky.feed.post/bdd21f31ed72748656709a36fbd6081e",
+  "faf15b54b1dc46dcd7cc03b99060f717": {
+    "uri": "at://did:plc:rc107c/app.bsky.feed.post/faf15b54b1dc46dcd7cc03b99060f717",
     "value": {
       "$type": "app.bsky.feed.post",
       "text": "07C good destination",
-      "createdAt": "2026-10-19T09:30:33.946Z"
+      "createdAt": "2026-10-19T09:40:28.101Z"
+    }
+  },
+  "d10afeb8dffc475daa53c87efc02d204": {
+    "uri": "at://did:plc:rc107c/app.bsky.feed.post/d10afeb8dffc475daa53c87efc02d204",
+    "value": {
+      "$type": "app.bsky.feed.post",
+      "text": "07C fail once destination",
+      "createdAt": "2026-10-19T09:43:56.563Z"
     }
   }
 }
