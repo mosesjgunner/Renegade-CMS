@@ -1,4 +1,5 @@
-import { createHash } from 'node:crypto'
+import { sha256 } from '@noble/hashes/sha2'
+import { bytesToHex } from '@noble/hashes/utils'
 import { type SocialAttachment, type SocialNetwork } from './contracts'
 
 export type CanonicalPostStatus =
@@ -89,7 +90,7 @@ export function generateVariantIdempotencyKey(
   accountId: string,
 ): string {
   const seed = `${variantId}:${scheduledAt || 'immediate'}:${accountId}`
-  const hash = createHash('sha256').update(seed).digest('hex').substring(0, 16)
+  const hash = bytesToHex(sha256(new TextEncoder().encode(seed))).substring(0, 16)
   return `social:dispatch:${hash}`
 }
 

@@ -1,0 +1,42 @@
+[
+  {
+    "name": "Restart: site retained",
+    "passed": true
+  },
+  {
+    "name": "Restart: campaign email message retained",
+    "passed": true
+  },
+  {
+    "name": "Restart: campaign status retained as scheduled",
+    "passed": true
+  },
+  {
+    "name": "Restart: scheduledFor date preserved",
+    "passed": true
+  },
+  {
+    "name": "Restart: approvedRender snapshot preserved",
+    "passed": true
+  },
+  {
+    "name": "Restart: approvedRender HTML preserved",
+    "passed": true
+  },
+  {
+    "name": "Restart: recipient-snapshots record retained",
+    "passed": true
+  },
+  {
+    "name": "Restart: recipient snapshot hash preserved",
+    "passed": true
+  },
+  {
+    "name": "Restart: recipient snapshot frozen count preserved",
+    "passed": true
+  },
+  {
+    "name": "Restart: recipient snapshot exclusion counts preserved",
+    "passed": true
+  }
+]

@@ -213,7 +213,13 @@ export const socialProviderFor = (network: SocialProviderAdapter['network']) => 
 
 export function getProviderCapabilityTruth(
   network: SocialProviderAdapter['network'],
-  modeOverride?: 'fixture' | 'local-harness' | 'remote-sandbox' | 'live' | 'manual-handoff' | 'unavailable',
+  modeOverride?:
+    | 'fixture'
+    | 'local-harness'
+    | 'remote-sandbox'
+    | 'live'
+    | 'manual-handoff'
+    | 'unavailable',
 ): {
   network: string
   mode: 'fixture' | 'local-harness' | 'remote-sandbox' | 'live' | 'manual-handoff' | 'unavailable'
@@ -222,8 +228,7 @@ export function getProviderCapabilityTruth(
   verifiedAt: string
 } {
   const adapter = getSocialAdapter(network)
-  const effectiveMode =
-    modeOverride || (network === 'bluesky' && process.env.NODE_ENV !== 'production' ? 'local-harness' : adapter.mode)
+  const effectiveMode = modeOverride || adapter.mode
 
   return {
     network,

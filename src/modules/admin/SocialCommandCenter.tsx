@@ -308,9 +308,7 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
           type: 'error',
           text:
             data.error ||
-            (data.validationErrors
-              ? data.validationErrors.join('; ')
-              : 'Failed to save draft.'),
+            (data.validationErrors ? data.validationErrors.join('; ') : 'Failed to save draft.'),
         })
       }
     } catch (err: unknown) {
@@ -515,7 +513,7 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
       const data = await res.json()
       if (res.ok) {
         setWorkerResult(
-          `Worker processed ${data.summary?.processedCount ?? 0} jobs (${data.summary?.succeededCount ?? 0} succeeded, ${data.summary?.failedCount ?? 0} failed)`,
+          `Worker processed ${data.summary?.processedCount ?? 0} jobs (${data.summary?.succeededCount ?? 0} succeeded, ${data.summary?.failedCount ?? 0} failed, ${data.summary?.unknownCount ?? 0} awaiting reconciliation)`,
         )
         if (selectedDraftId) {
           await loadDraft(selectedDraftId)
@@ -542,7 +540,7 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
       const res = await fetch('/api/admin/social/worker', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'retry-failed' }),
+        body: JSON.stringify({ action: 'retry-failed', draftId: selectedDraftId || undefined }),
       })
       const data = await res.json()
       if (res.ok) {
@@ -563,14 +561,14 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
     }
   }
 
-  const handleDispatchItem = async (itemId: string) => {
+  const handleDispatchItem = async (itemId: string, action = 'dispatch-item') => {
     setIsProcessingQueue(true)
     setWorkerResult(null)
     try {
       const res = await fetch('/api/admin/social/worker', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'dispatch-item', queueItemId: itemId }),
+        body: JSON.stringify({ action, queueItemId: itemId }),
       })
       const data = await res.json()
       if (res.ok) {
@@ -632,9 +630,9 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
           : acc.network === 'bluesky'
             ? 300
             : acc.network === 'mastodon' ||
-              acc.network === 'activitypub' ||
-              acc.network === 'threads' ||
-              acc.network === 'pinterest'
+                acc.network === 'activitypub' ||
+                acc.network === 'threads' ||
+                acc.network === 'pinterest'
               ? 500
               : acc.network === 'discord'
                 ? 2000
@@ -859,8 +857,7 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
 
       <p style={{ fontSize: '13px', color: '#64748b', marginBottom: '16px' }}>
         <Link href="/admin/collections/social-queue-items">Delivery queue and recovery state</Link>{' '}
-        •{' '}
-        <Link href="/admin/collections/social-publish-attempts">Provider attempt failures</Link> •{' '}
+        • <Link href="/admin/collections/social-publish-attempts">Provider attempt failures</Link> •{' '}
         <Link href="/admin/collections/social-accounts">Provider configuration</Link>
       </p>
 
@@ -1370,9 +1367,15 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
                 <tr style={{ backgroundColor: '#f8fafc', color: '#64748b' }}>
                   <th style={{ padding: '6px 10px', borderBottom: '1px solid #e2e8f0' }}>Target</th>
                   <th style={{ padding: '6px 10px', borderBottom: '1px solid #e2e8f0' }}>Status</th>
-                  <th style={{ padding: '6px 10px', borderBottom: '1px solid #e2e8f0' }}>Attempts</th>
-                  <th style={{ padding: '6px 10px', borderBottom: '1px solid #e2e8f0' }}>Scheduled For</th>
-                  <th style={{ padding: '6px 10px', borderBottom: '1px solid #e2e8f0' }}>Delivery Receipt / Outcome</th>
+                  <th style={{ padding: '6px 10px', borderBottom: '1px solid #e2e8f0' }}>
+                    Attempts
+                  </th>
+                  <th style={{ padding: '6px 10px', borderBottom: '1px solid #e2e8f0' }}>
+                    Scheduled For
+                  </th>
+                  <th style={{ padding: '6px 10px', borderBottom: '1px solid #e2e8f0' }}>
+                    Delivery Receipt / Outcome
+                  </th>
                   <th style={{ padding: '6px 10px', borderBottom: '1px solid #e2e8f0' }}>Action</th>
                 </tr>
               </thead>
@@ -1400,6 +1403,20 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
                   const isPublished = item.status === 'published'
                   const isFailed = item.status === 'failed'
                   const isPublishing = item.status === 'publishing'
+                  const isUnknown = item.status === 'unknown'
+                  const latestAttempt = publishAttempts.find(
+                    (attempt) =>
+                      String(attempt.queueItem?.id || attempt.queueItem) === String(item.id),
+                  )
+                  const providerMode =
+                    latestAttempt?.response?.providerMode ||
+                    latestAttempt?.response?.receipt?.rawResponse?.providerMode ||
+                    'unverified'
+                  const retryAllowed =
+                    isFailed &&
+                    Number(item.attemptCount || 0) < 3 &&
+                    ['transient', 'rate-limit'].includes(item.deadLetterReason?.kind) &&
+                    (!item.nextAttemptAt || Date.parse(item.nextAttemptAt) <= Date.now())
 
                   return (
                     <tr key={item.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
@@ -1443,7 +1460,7 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
                             fontSize: '11px',
                           }}
                         >
-                          {item.status}
+                          {isUnknown ? 'Unknown - reconciliation required' : item.status}
                         </span>
                       </td>
                       <td style={{ padding: '6px 10px' }}>
@@ -1455,7 +1472,9 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
                         </span>
                       </td>
                       <td style={{ padding: '6px 10px', color: '#64748b' }}>
-                        {item.scheduledFor ? new Date(item.scheduledFor).toLocaleString() : 'Immediate'}
+                        {item.scheduledFor
+                          ? new Date(item.scheduledFor).toLocaleString()
+                          : 'Immediate'}
                       </td>
                       <td style={{ padding: '6px 10px' }}>
                         {isPublished && (
@@ -1465,7 +1484,11 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
                               href={extPost?.remoteUrl || extPost?.externalUrl || '#'}
                               target="_blank"
                               rel="noreferrer"
-                              style={{ color: '#2563eb', textDecoration: 'underline', fontWeight: 500 }}
+                              style={{
+                                color: '#2563eb',
+                                textDecoration: 'underline',
+                                fontWeight: 500,
+                              }}
                             >
                               {extPost?.remoteId || 'Receipt Record'}
                             </a>
@@ -1480,11 +1503,11 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
                                 fontWeight: 600,
                               }}
                             >
-                              local-harness
+                              {providerMode}
                             </span>
                           </div>
                         )}
-                        {isFailed && (
+                        {(isFailed || isUnknown) && (
                           <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
                             <span
                               data-testid={`item-error-${item.id}`}
@@ -1500,18 +1523,35 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
                             </span>
                           </div>
                         )}
-                        {!isPublished && !isFailed && (
+                        {isFailed && item.nextAttemptAt && (
+                          <div>Retry after {new Date(item.nextAttemptAt).toLocaleString()}</div>
+                        )}
+                        {!isPublished && !isFailed && !isUnknown && (
                           <span style={{ color: '#94a3b8', fontStyle: 'italic' }}>
                             Awaiting delivery dispatch
                           </span>
                         )}
                       </td>
                       <td style={{ padding: '6px 10px' }}>
+                        {isUnknown && (
+                          <button
+                            data-testid={`reconcile-item-btn-${item.id}`}
+                            disabled={isProcessingQueue}
+                            onClick={() => void handleDispatchItem(item.id, 'reconcile')}
+                          >
+                            Reconcile without sending
+                          </button>
+                        )}
                         {(item.status === 'scheduled' || item.status === 'failed') && (
                           <button
                             data-testid={`dispatch-item-btn-${item.id}`}
-                            disabled={isProcessingQueue}
-                            onClick={() => void handleDispatchItem(item.id)}
+                            disabled={isProcessingQueue || (isFailed && !retryAllowed)}
+                            onClick={() =>
+                              void handleDispatchItem(
+                                item.id,
+                                isFailed ? 'retry-failed' : 'dispatch-item',
+                              )
+                            }
                             style={{
                               padding: '4px 8px',
                               backgroundColor: '#ffffff',
@@ -2039,23 +2079,22 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
               </div>
 
               {/* Spoiler Banner for Mastodon / ActivityPub */}
-              {(activeAccount.network === 'mastodon' ||
-                activeAccount.network === 'activitypub') &&
+              {(activeAccount.network === 'mastodon' || activeAccount.network === 'activitypub') &&
                 contentWarning && (
-                <div
-                  style={{
-                    padding: '6px 8px',
-                    backgroundColor: '#f1f5f9',
-                    borderRadius: '4px',
-                    marginBottom: '8px',
-                    fontSize: '12px',
-                    fontWeight: 600,
-                    color: '#334155',
-                  }}
-                >
-                  CW: {contentWarning}
-                </div>
-              )}
+                  <div
+                    style={{
+                      padding: '6px 8px',
+                      backgroundColor: '#f1f5f9',
+                      borderRadius: '4px',
+                      marginBottom: '8px',
+                      fontSize: '12px',
+                      fontWeight: 600,
+                      color: '#334155',
+                    }}
+                  >
+                    CW: {contentWarning}
+                  </div>
+                )}
 
               {/* Post Body */}
               <div

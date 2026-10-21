@@ -1,0 +1,27 @@
+[
+  {
+    "path": "src/modules/admin/EmailComposer.tsx",
+    "mainSha256": "dd32e2f532290998e27fc2227c142e7eeb709bf8457657bd98d462ac20ef4e75",
+    "frozenSha256": "64ddebc901464ea80f3edb2e5865da9b9370c10a89953f672ab609db3d5c6f30"
+  },
+  {
+    "path": "src/modules/audience/service.ts",
+    "mainSha256": "c4beb93ed5b6ecbd2eff34ba3cac1f88107ea302ada50bc3f49b8d86eca560ff",
+    "frozenSha256": "019556fa1364f05a73f5896905159973d5b18e7d3fe969fa1ec86de72888b230"
+  },
+  {
+    "path": "src/modules/social/tasks.ts",
+    "mainSha256": "ccbadccd017694b41eef90dbc763fb7718b55632d7d567ad59e87525ee47292b",
+    "frozenSha256": "2f5cdad964feec2e8863c4840f6c9dcb1ff09694e144502778c0c654efedcdae"
+  },
+  {
+    "path": "tests/rc1-08c/run-isolated.ps1",
+    "mainSha256": "7e3b44f2fab906cd3a24059a701fcc920f38c053226f5575a8dc9ab1a9637056",
+    "frozenSha256": "68a26580c98b524bbb5ae171ddd97c0d40c722f75a1dc5b42790f66f62950171"
+  },
+  {
+    "path": "tests/rc1-08c/verify.ts",
+    "mainSha256": "e5df239e9b85551f8879f31f5baee9e802a38fac392a8b116b4f3031e833daee",
+    "frozenSha256": "a1744156eeabb942bbe58dfd8b8c8a7d6c73a4f6a81cc2a7aac121d0cb246279"
+  }
+]

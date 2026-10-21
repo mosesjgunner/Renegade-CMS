@@ -44,7 +44,7 @@ describe('social distribution contracts', () => {
       ).audit.action,
     ).toBe('calendar.rescheduled')
   })
-  it('declares live, unavailable, and manual boundaries and rejects unsupported media', () => {
+  it('declares live and manual boundaries and rejects unsupported media', async () => {
     const bluesky = socialProviderFor('bluesky')
     expect(bluesky.mode).toBe('live')
     expect(
@@ -53,8 +53,14 @@ describe('social distribution contracts', () => {
         bluesky.capabilities,
       ),
     ).toContain('This provider does not support video attachments.')
-    expect(socialProviderFor('x').mode).toBe('manual-handoff')
-    expect(socialProviderFor('activitypub').mode).toBe('unavailable')
+    expect(socialProviderFor('manual').mode).toBe('manual-handoff')
+    expect(socialProviderFor('activitypub').mode).toBe('live')
+    expect(
+      await socialProviderFor('activitypub').publish?.(
+        { ...variant, network: 'activitypub' },
+        { accountId: 'a1', credentials: null },
+      ),
+    ).toMatchObject({ status: 'failed', error: { kind: 'authentication' } })
   })
   it('reports expired credentials and provider outages deterministically', async () => {
     const adapter = socialProviderFor('bluesky')

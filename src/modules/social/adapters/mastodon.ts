@@ -1,4 +1,11 @@
 import {
+  socialFetch,
+  socialProviderMode,
+  assertSocialEndpoint,
+  SocialBoundaryError,
+  socialRetryAfter,
+} from '../dispatch-boundary'
+import {
   normalizeProviderError,
   type AccountConstraints,
   type AdapterResult,
@@ -254,9 +261,13 @@ export class MastodonAdapter implements SocialProviderAdapter {
       }
     }
 
+    let sent = false
     try {
+      assertSocialEndpoint(targetEndpoint)
       // 1. Upload media if present
       const mediaIds: string[] = []
+      if (variant.attachments.length && !mediaResolver)
+        throw new Error('Media resolver is required; no text-only fallback was sent.')
       if (variant.attachments.length > 0 && mediaResolver) {
         for (const att of variant.attachments) {
           const mediaId = await this.uploadMediaAttachment(
@@ -305,7 +316,8 @@ export class MastodonAdapter implements SocialProviderAdapter {
       }
 
       // 3. Dispatch POST to /api/v1/statuses
-      const response = await fetch(targetEndpoint, {
+      sent = true
+      const response = await socialFetch(targetEndpoint, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -322,9 +334,7 @@ export class MastodonAdapter implements SocialProviderAdapter {
           error: normalizeProviderError({
             kind: 'rate-limit',
             message: 'Mastodon instance rate limit reached.',
-            retryAfter: retryAfter
-              ? new Date(Date.now() + Number(retryAfter) * 1000).toISOString()
-              : undefined,
+            retryAfter: socialRetryAfter(retryAfter),
           }),
         }
       }
@@ -351,10 +361,17 @@ export class MastodonAdapter implements SocialProviderAdapter {
       }
 
       const postData = (await response.json()) as { id: string; url: string; created_at: string }
-      const providerMode =
-        instanceUrl.includes('127.0.0.1') || instanceUrl.includes('localhost')
-          ? 'local-harness'
-          : 'live'
+      if (!postData?.id || !postData?.url)
+        return {
+          status: 'unknown',
+          error: normalizeProviderError({
+            kind: 'remote-unknown',
+            remoteOutcome: 'unknown',
+            message:
+              'Mastodon response did not confirm a post ID and URL; reconcile before retrying.',
+          }),
+        }
+      const providerMode = socialProviderMode(instanceUrl)
 
       return {
         status: 'published',
@@ -374,9 +391,14 @@ export class MastodonAdapter implements SocialProviderAdapter {
           err.message.includes('timeout') ||
           err.message.includes('timed out'))
       return {
-        status: 'failed',
+        status: sent ? 'unknown' : 'failed',
         error: normalizeProviderError({
-          kind: 'transient',
+          kind: sent
+            ? 'remote-unknown'
+            : err instanceof SocialBoundaryError
+              ? 'validation'
+              : 'transient',
+          remoteOutcome: sent ? 'unknown' : 'known-failed',
           message: isTimeout
             ? 'Mastodon request timed out.'
             : err instanceof Error

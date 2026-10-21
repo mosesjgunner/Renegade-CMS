@@ -1,0 +1,186 @@
+{
+  "checksPassed": 16,
+  "failed": 1,
+  "skipped": 0,
+  "phase": "rate-limit-and-bounded-retry",
+  "trace": [
+    {
+      "name": "isolated actor, site, account and session fixtures configured; no passkey acceptance claimed",
+      "passed": true
+    },
+    {
+      "name": "Social Command Center loads in Chromium with fixture operator session",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/social/drafts",
+      "method": "POST",
+      "status": 201
+    },
+    {
+      "route": "/api/admin/social/drafts",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/admin/social/drafts",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/admin/social/drafts",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/admin/social/drafts",
+      "method": "POST",
+      "status": 201
+    },
+    {
+      "route": "/api/admin/social/drafts",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/admin/social/drafts",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/admin/social/drafts",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "name": "UI dispatch persists one actual adapter success and one deliberate failure",
+      "passed": true
+    },
+    {
+      "name": "parent draft persists partial destination failure truthfully",
+      "passed": true
+    },
+    {
+      "name": "browser presents persisted success, failure and local receipt mode",
+      "passed": true
+    },
+    {
+      "name": "observed provider sink output contains the exact dispatched text",
+      "passed": true
+    },
+    {
+      "name": "future scheduling guard prevented provider send",
+      "passed": true
+    },
+    {
+      "name": "failed-only UI retry publishes the failure without resending success",
+      "passed": true
+    },
+    {
+      "name": "partial draft reaches published after only its failed destination recovers",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/social/worker",
+      "method": "POST",
+      "status": 403
+    },
+    {
+      "name": "foreign scoped actor denied dispatch-item",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/social/worker",
+      "method": "POST",
+      "status": 403
+    },
+    {
+      "name": "foreign scoped actor denied retry-failed",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/social/worker",
+      "method": "POST",
+      "status": 403
+    },
+    {
+      "name": "foreign scoped actor denied reconcile",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/social/worker",
+      "method": "POST",
+      "status": 403
+    },
+    {
+      "route": "/api/admin/social/worker",
+      "method": "POST",
+      "status": 403
+    },
+    {
+      "name": "anonymous and authenticated cross-origin dispatch denied",
+      "passed": true
+    },
+    {
+      "route": "/api/social-queue-items/92511694-ac99-4403-acf3-84d0c609081a",
+      "method": "PATCH",
+      "status": 403
+    },
+    {
+      "route": "/api/external-posts",
+      "method": "POST",
+      "status": 403
+    },
+    {
+      "name": "native API cannot forge queue completion or provider receipts",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/social/worker",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "name": "single-item dispatch also enforces future due time",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/social/drafts",
+      "method": "POST",
+      "status": 201
+    },
+    {
+      "route": "/api/admin/social/drafts",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/admin/social/drafts",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/admin/social/drafts",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/admin/social/worker",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "name": "real 429 response persists a future provider retry time",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/social/worker",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "phase": "rate-limit-and-bounded-retry",
+      "failure": "manual retry cannot bypass provider rate limit"
+    }
+  ]
+}

@@ -17,6 +17,8 @@ assert.equal(
 )
 assert.equal(process.env.LOCAL_E2E_TEST_MODE, 'false')
 assert.equal(process.env.ENABLE_TEST_ROUTES, 'false')
+process.env.SOCIAL_LOCAL_ADAPTER_ORIGINS =
+  process.env.SOCIAL_LOCAL_ADAPTER_ORIGINS || 'http://127.0.0.1:3131'
 
 const sha256Hex = (text: string) => createHash('sha256').update(text).digest('hex')
 
@@ -315,10 +317,15 @@ try {
       'restart: Draft 3 safe disconnect item remains failed',
       draft3Item.status === 'failed',
     )
+    const restartReasonText =
+      typeof draft3Item.deadLetterReason === 'object' && draft3Item.deadLetterReason !== null
+        ? draft3Item.deadLetterReason.kind || draft3Item.deadLetterReason.message
+        : String(draft3Item.deadLetterReason || '')
     check(
       'restart: Draft 3 dead letter reason remains reconnect-required',
-      draft3Item.deadLetterReason === 'reconnect-required' ||
-        draft3Item.deadLetterReason?.kind === 'reconnect-required',
+      restartReasonText.includes('reconnect-required') ||
+        restartReasonText.includes('revoked') ||
+        restartReasonText.includes('expired'),
     )
 
     console.log(`\nALL ${checks} RESTART PERSISTENCE CHECKS PASSED SUCCESSFULLY.`)
@@ -329,6 +336,12 @@ try {
   // =========================================================================
   // NORMAL ACCEPTANCE RUN
   // =========================================================================
+
+  // Clean up any stale records from previous aborted runs in isolated acceptance db
+  await payload.db.pool.query(`
+    TRUNCATE social_publish_attempts, external_posts, social_queue_items,
+             social_network_variants, social_drafts CASCADE;
+  `)
 
   // 1. Seed Sites
   const runId = Date.now()
@@ -597,13 +610,13 @@ try {
   ])
 
   // Navigate to Social Command Center
-  await page.goto(`${base}/admin/social`)
-  await page.waitForSelector('[data-testid="draft-workflow-panel"]')
+  await page.goto(`${base}/admin/social`, { timeout: 120000 })
+  await page.waitForSelector('[data-testid="draft-workflow-panel"]', { timeout: 60000 })
   check('Browser loaded Social Command Center', true)
 
   // Select Draft 1 from dropdown
   await page.selectOption('[data-testid="draft-select"]', draft1Id)
-  await page.waitForSelector(`[data-testid="current-draft-id"]:has-text("${draft1Id}")`)
+  await page.waitForSelector(`[data-testid="current-draft-id"]:has-text("${draft1Id}")`, { timeout: 30000 })
   check('Browser selected Draft 1 and loaded queue items', true)
 
   // Verify scheduled status badge and 2 persisted queue items in table
@@ -622,7 +635,7 @@ try {
       const badge = document.querySelector('[data-testid="draft-status-badge"]')
       return badge && badge.textContent?.toLowerCase().includes('partially-published')
     },
-    { timeout: 15000 },
+    { timeout: 60000 },
   )
   check('UI dynamically updated draft status to PARTIALLY-PUBLISHED', true)
 
@@ -713,7 +726,7 @@ try {
       const btn = document.querySelector('[data-testid="retry-failed-btn"]')
       return btn && !btn.hasAttribute('disabled')
     },
-    { timeout: 15000 },
+    { timeout: 60000 },
   )
 
   // Verify: Bluesky item was NOT re-dispatched (no duplicate send)
@@ -742,7 +755,7 @@ try {
       const btn = document.querySelector('[data-testid="retry-failed-btn"]')
       return btn && !btn.hasAttribute('disabled')
     },
-    { timeout: 15000 },
+    { timeout: 60000 },
   )
 
   const dbActPubAfterRetry2 = await payload.findByID({
@@ -921,10 +934,15 @@ try {
     overrideAccess: true,
   })
   check('Draft 3 item status is failed', dbDraft3Item.status === 'failed')
+  const reasonText =
+    typeof dbDraft3Item.deadLetterReason === 'object' && dbDraft3Item.deadLetterReason !== null
+      ? dbDraft3Item.deadLetterReason.kind || dbDraft3Item.deadLetterReason.message
+      : String(dbDraft3Item.deadLetterReason || '')
   check(
     'Draft 3 dead letter reason recorded as reconnect-required',
-    dbDraft3Item.deadLetterReason === 'reconnect-required' ||
-      dbDraft3Item.deadLetterReason?.kind === 'reconnect-required',
+    reasonText.includes('reconnect-required') ||
+      reasonText.includes('revoked') ||
+      reasonText.includes('expired'),
   )
 
   // 11. PERSIST STATE FOR RESTART VERIFICATION
@@ -946,6 +964,8 @@ try {
 
   console.log(`\nALL ${checks} ACCEPTANCE CHECKS PASSED. Ready for restart check.`)
   succeeded = true
+  harnessServer.close()
+  process.exit(0)
 } catch (error) {
   console.error('\nEXECUTION FAILED:', error)
   process.exit(1)

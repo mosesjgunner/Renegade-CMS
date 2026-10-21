@@ -1,0 +1,72 @@
+▲ Next.js 16.3.8 (webpack)
+- Local:         http://127.0.0.1:39036
+- Network:       http://127.0.0.1:39036
+✓ Ready in 861ms
+✓ Running next.config.ts took 233ms
+
+  We detected TypeScript in your project and reconfigured your tsconfig.json file for you.
+  The following suggested values were added to your tsconfig.json. These values can be changed to fit your project's needs:
+
+  	- include was updated to add '.next-rc108c-current-20261020/types/**/*.ts'
+  	- include was updated to add '.next-rc108c-current-20261020/dev/types/**/*.ts'
+
+- Experiments (use with caution):
+  ✓ webpackMemoryOptimizations
+
+○ Compiling proxy ...
+[20:26:33] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+○ Compiling /health/ready ...
+ GET /health/ready 200 in 16.1s (next.js: 9.3s, proxy.ts: 5.8s, application-code: 960ms)
+○ Compiling /admin/social ...
+ GET /admin/social 200 in 19.0s (next.js: 11.0s, proxy.ts: 134ms, application-code: 7.8s)
+ GET /admin/social 200 in 6.5s (next.js: 5ms, proxy.ts: 79ms, application-code: 6.4s)
+ GET /api/analytics/consent 200 in 3.9s (next.js: 2.8s, proxy.ts: 18ms, application-code: 1027ms)
+ GET /api/analytics/consent 200 in 1624ms (next.js: 215ms, proxy.ts: 427ms, application-code: 982ms)
+ GET /api/admin/social/drafts 200 in 14.1s (next.js: 2.8s, proxy.ts: 18ms, application-code: 11.3s)
+ GET /api/admin/social/accounts 200 in 14.2s (next.js: 2.8s, proxy.ts: 18ms, application-code: 11.3s)
+ POST /api/analytics/consent 200 in 9.8s (next.js: 45ms, proxy.ts: 228ms, application-code: 9.6s)
+ POST /api/admin/social/drafts 201 in 11.9s (next.js: 22ms, proxy.ts: 139ms, application-code: 11.8s)
+ GET /api/admin/social/accounts 200 in 3.7s (next.js: 17ms, proxy.ts: 33ms, application-code: 3.6s)
+ GET /api/admin/social/drafts 200 in 3.7s (next.js: 10ms, proxy.ts: 48ms, application-code: 3.6s)
+ GET /admin/social 200 in 14.1s (next.js: 190ms, proxy.ts: 403ms, application-code: 13.5s)
+ POST /api/admin/social/drafts 200 in 1715ms (next.js: 15ms, proxy.ts: 23ms, application-code: 1677ms)
+ POST /api/admin/social/drafts 200 in 2.9s (next.js: 4ms, proxy.ts: 10ms, application-code: 2.8s)
+ POST /api/admin/social/drafts 200 in 1348ms (next.js: 4ms, proxy.ts: 8ms, application-code: 1337ms)
+ POST /api/admin/social/drafts 201 in 1074ms (next.js: 5ms, proxy.ts: 10ms, application-code: 1060ms)
+ POST /api/admin/social/drafts 200 in 1019ms (next.js: 1.8ms, proxy.ts: 5ms, application-code: 1013ms)
+ POST /api/admin/social/drafts 200 in 1004ms (next.js: 4ms, proxy.ts: 10ms, application-code: 990ms)
+ POST /api/admin/social/drafts 200 in 1153ms (next.js: 3ms, proxy.ts: 9ms, application-code: 1140ms)
+ GET /admin/social 200 in 7.0s (next.js: 6ms, proxy.ts: 7ms, application-code: 7.0s)
+ GET /api/analytics/consent 200 in 290ms (next.js: 38ms, proxy.ts: 12ms, application-code: 239ms)
+ GET /api/analytics/consent 200 in 1041ms (next.js: 19ms, proxy.ts: 35ms, application-code: 986ms)
+ GET /api/admin/social/accounts 200 in 2.5s (next.js: 31ms, proxy.ts: 15ms, application-code: 2.4s)
+ GET /api/admin/social/drafts 200 in 2.5s (next.js: 8ms, proxy.ts: 15ms, application-code: 2.4s)
+ GET /api/admin/social/accounts 200 in 2.9s (next.js: 5ms, proxy.ts: 11ms, application-code: 2.9s)
+ GET /api/admin/social/drafts 200 in 2.9s (next.js: 146ms, proxy.ts: 17ms, application-code: 2.8s)
+ GET /api/admin/social/drafts?draftId=fd56904f-8730-44c5-94ba-d4133b4822af 200 in 2.7s (next.js: 14ms, proxy.ts: 29ms, application-code: 2.6s)
+ GET /admin/social 200 in 11.1s (next.js: 1212ms, proxy.ts: 220ms, application-code: 9.7s)
+[executeSocialQueueItem-result-status] {
+  resultStatus: 'failed',
+  queueId: '8da44c3b-fce3-4f4e-b604-87ad8f339452',
+  network: 'bluesky',
+  error: {
+    kind: 'transient',
+    message: 'Authentication failed with HTTP 404',
+    providerCode: undefined,
+    retryAfter: undefined,
+    remoteOutcome: 'known-failed'
+  }
+}
+[executeSocialQueueItem-result-status] {
+  resultStatus: 'failed',
+  queueId: '7f81f464-8237-44c4-8fb1-e151630d56c8',
+  network: 'activitypub',
+  error: {
+    kind: 'transient',
+    message: 'Local deliberately failed delivery',
+    providerCode: undefined,
+    retryAfter: undefined,
+    remoteOutcome: 'known-failed'
+  }
+}
+ POST /api/admin/social/worker 200 in 14.0s (next.js: 1805ms, proxy.ts: 8ms, application-code: 12.2s)

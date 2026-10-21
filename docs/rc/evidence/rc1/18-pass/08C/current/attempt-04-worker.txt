@@ -1,0 +1,31 @@
+[21:08:05] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+[21:08:05] [32mINFO[39m: [36mRunning 6 jobs.[39m
+    [35mnew[39m: 6
+    [35mretrying[39m: 0
+[21:08:06] [32mINFO[39m: [36mRunning 6 jobs.[39m
+    [35mnew[39m: 6
+    [35mretrying[39m: 0
+[21:08:07] [32mINFO[39m: [36mRunning 1 jobs.[39m
+    [35mnew[39m: 1
+    [35mretrying[39m: 0
+[21:08:10] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[21:08:20] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[21:08:31] [32mINFO[39m: [36mRunning 6 jobs.[39m
+    [35mnew[39m: 6
+    [35mretrying[39m: 0
+[21:08:41] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[21:08:51] [32mINFO[39m: [36mRunning 2 jobs.[39m
+    [35mnew[39m: 2
+    [35mretrying[39m: 0
+[executeSocialQueueItem-result-status] {
+  resultStatus: 'published',
+  queueId: 'ccc69e9d-53bc-431c-85c7-c06102954b37',
+  network: 'bluesky',
+  error: undefined
+}

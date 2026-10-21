@@ -1,263 +1,209 @@
-import configPromise from '@payload-config'
-import { getPayload } from 'payload'
-import { NextResponse } from 'next/server'
-import { executeSocialQueueItem } from '@/modules/social/tasks'
-import { resolveOperatorGrantContext } from '@/modules/operations/operator-grants'
+import config from '@payload-config'
+import { getPayload, type Where } from 'payload'
+import {
+  executeSocialQueueItem,
+  MAX_PROVIDER_ATTEMPTS,
+  type SocialDispatchInput,
+} from '@/modules/social/tasks'
+import {
+  checkOperatorRecordAccess,
+  resolveOperatorGrantContext,
+} from '@/modules/operations/operator-grants'
 
-const staffOnly = (user: { role?: string } | null | undefined) =>
-  ['owner', 'administrator', 'publisher', 'staff'].includes(String(user?.role))
+async function context(request: Request) {
+  const payload = await getPayload({ config })
+  const auth = await payload.auth({ headers: request.headers })
+  const configured = process.env.SOCIAL_WORKER_SECRET
+  const service = Boolean(configured && request.headers.get('x-worker-secret') === configured)
+  const grant = await resolveOperatorGrantContext(payload, auth.user)
+  return { payload, auth, grant, service, authorized: service || grant.authorized }
+}
 
 export async function GET(request: Request) {
-  try {
-    const payload = await getPayload({ config: configPromise })
-    const auth = await payload.auth({ headers: request.headers })
-
-    const workerSecretHeader = request.headers.get('x-worker-secret')
-    const configuredSecret = process.env.SOCIAL_WORKER_SECRET
-    const isAuthorizedSecret =
-      configuredSecret && workerSecretHeader && configuredSecret === workerSecretHeader
-
-    const grant = await resolveOperatorGrantContext(payload, auth.user)
-    if (!isAuthorizedSecret && (!staffOnly(auth.user) || !grant.authorized)) {
-      return NextResponse.json({ error: 'Unauthorized.' }, { status: 403 })
-    }
-
-    const baseWhere =
-      !isAuthorizedSecret && !grant.isGlobalOwner
-        ? [{ 'account.site': { in: grant.authorizedSiteIds } }]
-        : []
-
-    const [scheduledRes, publishingRes, publishedRes, failedRes, dueRes] = await Promise.all([
-      payload.count({
-        collection: 'social-queue-items',
-        where: { and: [{ status: { equals: 'scheduled' } }, ...baseWhere] },
-        overrideAccess: true,
-      }),
-      payload.count({
-        collection: 'social-queue-items',
-        where: { and: [{ status: { equals: 'publishing' } }, ...baseWhere] },
-        overrideAccess: true,
-      }),
-      payload.count({
-        collection: 'social-queue-items',
-        where: { and: [{ status: { equals: 'published' } }, ...baseWhere] },
-        overrideAccess: true,
-      }),
-      payload.count({
-        collection: 'social-queue-items',
-        where: { and: [{ status: { equals: 'failed' } }, ...baseWhere] },
-        overrideAccess: true,
-      }),
-      payload.count({
-        collection: 'social-queue-items',
-        where: {
-          and: [
-            { status: { equals: 'scheduled' } },
-            { scheduledFor: { less_than_equal: new Date().toISOString() } },
-            ...baseWhere,
-          ],
-        },
-        overrideAccess: true,
-      }),
-    ])
-
-    return NextResponse.json({
-      success: true,
-      stats: {
-        scheduled: scheduledRes.totalDocs,
-        publishing: publishingRes.totalDocs,
-        published: publishedRes.totalDocs,
-        failed: failedRes.totalDocs,
-        dueCount: dueRes.totalDocs,
-      },
-    })
-  } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : String(err)
-    return NextResponse.json(
-      { error: `Queue worker stats failed: ${message}` },
-      { status: 500 },
-    )
-  }
+  const { payload, grant, service, authorized } = await context(request)
+  if (!authorized) return Response.json({ error: 'Unauthorized.' }, { status: 403 })
+  const scope: Where[] =
+    service || grant.isGlobalOwner
+      ? []
+      : [
+          { 'account.site': { in: grant.authorizedSiteIds } },
+          { 'variant.draft.site': { in: grant.authorizedSiteIds } },
+        ]
+  const entries = await Promise.all(
+    ['scheduled', 'publishing', 'published', 'failed', 'unknown'].map(async (status) => [
+      status,
+      (
+        await payload.count({
+          collection: 'social-queue-items',
+          where: { and: [{ status: { equals: status } }, ...scope] },
+          overrideAccess: true,
+        })
+      ).totalDocs,
+    ]),
+  )
+  const dueCount = await payload.count({
+    collection: 'social-queue-items',
+    where: {
+      and: [
+        { status: { equals: 'scheduled' } },
+        { scheduledFor: { less_than_equal: new Date().toISOString() } },
+        ...scope,
+      ],
+    },
+    overrideAccess: true,
+  })
+  return Response.json({
+    success: true,
+    stats: { ...Object.fromEntries(entries), dueCount: dueCount.totalDocs },
+  })
 }
 
 export async function POST(request: Request) {
-  try {
-    const payload = await getPayload({ config: configPromise })
-    const auth = await payload.auth({ headers: request.headers })
-
-    const workerSecretHeader = request.headers.get('x-worker-secret')
-    const configuredSecret = process.env.SOCIAL_WORKER_SECRET
-
-    const isAuthorizedSecret =
-      configuredSecret && workerSecretHeader && configuredSecret === workerSecretHeader
-
-    const grant = await resolveOperatorGrantContext(payload, auth.user)
-    if (!isAuthorizedSecret && (!staffOnly(auth.user) || !grant.authorized)) {
-      return NextResponse.json({ error: 'Unauthorized.' }, { status: 403 })
-    }
-
-    let body: {
-      action?: 'dispatch' | 'retry-failed' | 'dispatch-item' | 'reconcile'
-      queueItemId?: string
-      draftId?: string
-    } = {}
-    try {
-      body = (await request.json()) as typeof body
-    } catch {
-      // Body may be empty on plain POST
-    }
-
-    const action = body.action || 'dispatch'
-
-    // ==========================================
-    // ACTION: DISPATCH SINGLE QUEUE ITEM
-    // ==========================================
-    if (action === 'dispatch-item') {
-      if (!body.queueItemId) {
-        return NextResponse.json({ error: 'queueItemId is required for dispatch-item' }, { status: 400 })
-      }
-      const item = await payload.findByID({
-        collection: 'social-queue-items',
-        id: body.queueItemId,
-        depth: 0,
-        overrideAccess: true,
-      })
-      if (!item) {
-        return NextResponse.json({ error: 'Queue item not found' }, { status: 404 })
-      }
-
-      await executeSocialQueueItem(payload, {
-        queueItemId: body.queueItemId,
-        workerId: 'admin-manual',
-      }).catch(() => undefined)
-
-      const updated = await payload.findByID({
-        collection: 'social-queue-items',
-        id: body.queueItemId,
-        depth: 1,
-        overrideAccess: true,
-      })
-
-      return NextResponse.json({
-        success: true,
-        action: 'dispatch-item',
-        item: updated,
-      })
-    }
-
-    // ==========================================
-    // ACTION: RETRY FAILED (BOUNDED RETRIES)
-    // ==========================================
-    if (action === 'retry-failed') {
-      const failedItems = await payload.find({
-        collection: 'social-queue-items',
-        where: {
+  const { payload, auth, grant, service, authorized } = await context(request)
+  if (!authorized) return Response.json({ error: 'Unauthorized.' }, { status: 403 })
+  const body = (await request.json().catch(() => ({}))) as {
+    action?: string
+    queueItemId?: string
+    draftId?: string
+  }
+  const action = body.action ?? 'dispatch'
+  if (!['dispatch', 'dispatch-item', 'retry-failed', 'reconcile'].includes(action))
+    return Response.json({ error: 'Unsupported social worker action.' }, { status: 400 })
+  if (action === 'dispatch-item' && !body.queueItemId)
+    return Response.json({ error: 'queueItemId is required.' }, { status: 400 })
+  const mode: SocialDispatchInput['mode'] =
+    action === 'retry-failed' ? 'retry' : action === 'reconcile' ? 'reconcile' : 'dispatch'
+  if (
+    body.draftId &&
+    !service &&
+    !(await checkOperatorRecordAccess(payload, auth.user, 'social-drafts', body.draftId))
+  )
+    return Response.json({ error: 'Draft site access denied.' }, { status: 403 })
+  if (
+    body.queueItemId &&
+    !service &&
+    (!(await checkOperatorRecordAccess(
+      payload,
+      auth.user,
+      'social-queue-items',
+      body.queueItemId,
+      'account.site',
+    )) ||
+      !(await checkOperatorRecordAccess(
+        payload,
+        auth.user,
+        'social-queue-items',
+        body.queueItemId,
+        'variant.draft.site',
+      )))
+  )
+    return Response.json({ error: 'Queue item site access denied.' }, { status: 403 })
+  const now = new Date().toISOString()
+  const expired: Where = {
+    and: [
+      { status: { equals: 'publishing' } },
+      { or: [{ leaseUntil: { less_than_equal: now } }, { leaseUntil: { exists: false } }] },
+    ],
+  }
+  const eligibility: Where =
+    mode === 'retry'
+      ? {
           and: [
             { status: { equals: 'failed' } },
-            { attemptCount: { less_than: 3 } },
-            ...(!isAuthorizedSecret && !grant.isGlobalOwner
-              ? [{ 'account.site': { in: grant.authorizedSiteIds } }]
-              : []),
+            {
+              or: [
+                { attemptCount: { less_than: MAX_PROVIDER_ATTEMPTS } },
+                { attemptCount: { exists: false } },
+              ],
+            },
+            { nextAttemptAt: { less_than_equal: now } },
           ],
-        },
-        limit: 20,
-        depth: 0,
-        overrideAccess: true,
-      })
-
-      let retriedCount = 0
-      let succeededCount = 0
-      let failedAgainCount = 0
-
-      for (const queue of failedItems.docs) {
-        retriedCount++
-        // Reset item to scheduled for immediate processing
-        await payload.update({
-          collection: 'social-queue-items',
-          id: queue.id,
-          data: {
-            status: 'scheduled',
-            scheduledFor: new Date().toISOString(),
-            leaseUntil: null,
-            leaseOwner: null,
-          } as never,
-          overrideAccess: true,
-        })
-
-        await executeSocialQueueItem(payload, {
-          queueItemId: String(queue.id),
-          workerId: 'admin-retry',
-        }).catch(() => undefined)
-
-        const updated = await payload.findByID({
-          collection: 'social-queue-items',
-          id: queue.id,
-          depth: 0,
-          overrideAccess: true,
-        })
-
-        if (updated.status === 'published') {
-          succeededCount++
-        } else if (updated.status === 'failed') {
-          failedAgainCount++
         }
-      }
+      : mode === 'reconcile'
+        ? { or: [{ status: { equals: 'unknown' } }, expired] }
+        : {
+            or: [
+              {
+                and: [
+                  { status: { equals: 'scheduled' } },
+                  { scheduledFor: { less_than_equal: now } },
+                ],
+              },
+              expired,
+            ],
+          }
 
-      return NextResponse.json({
-        success: true,
-        action: 'retry-failed',
-        summary: { retriedCount, succeededCount, failedAgainCount },
-      })
-    }
-
-    // ==========================================
-    // ACTION: DISPATCH DUE QUEUE
-    // ==========================================
-    const queues = await payload.find({
-      collection: 'social-queue-items',
-      where: {
-        and: [
-          { status: { equals: 'scheduled' } },
-          { scheduledFor: { less_than_equal: new Date().toISOString() } },
-          ...(!isAuthorizedSecret && !grant.isGlobalOwner
-            ? [{ 'account.site': { in: grant.authorizedSiteIds } }]
-            : []),
-        ],
-      },
-      limit: 20,
-      depth: 0,
-      overrideAccess: true,
-    })
-
-    let succeededCount = 0
-    let failedCount = 0
-    for (const queue of queues.docs) {
-      if (queue.nextAttemptAt && Date.parse(queue.nextAttemptAt) > Date.now()) continue
-      await executeSocialQueueItem(payload, {
+  try {
+    const queues = body.queueItemId
+      ? [
+          await payload.findByID({
+            collection: 'social-queue-items',
+            id: body.queueItemId,
+            depth: 0,
+            overrideAccess: true,
+          }),
+        ]
+      : (
+          await payload.find({
+            collection: 'social-queue-items',
+            depth: 0,
+            limit: 20,
+            overrideAccess: true,
+            where: {
+              and: [
+                eligibility,
+                ...(body.draftId ? [{ 'variant.draft': { equals: body.draftId } }] : []),
+                ...(service || grant.isGlobalOwner
+                  ? []
+                  : [
+                      { 'account.site': { in: grant.authorizedSiteIds } },
+                      { 'variant.draft.site': { in: grant.authorizedSiteIds } },
+                    ]),
+              ],
+            },
+          })
+        ).docs
+    const results = []
+    for (const queue of queues) {
+      const result = await executeSocialQueueItem(payload, {
         queueItemId: String(queue.id),
-        workerId: 'admin-recovery',
-      }).catch(() => undefined)
-      const updated = await payload.findByID({
-        collection: 'social-queue-items',
-        id: queue.id,
-        depth: 0,
-        overrideAccess: true,
+        workerId: 'operator-social',
+        mode,
       })
-      if (updated.status === 'published') {
-        succeededCount++
-      } else if (updated.status === 'failed') {
-        failedCount++
-      }
+      results.push({ queueItemId: queue.id, ...result.output })
     }
-    return NextResponse.json({
+    const processed = results.filter((result) => !('skipped' in result && result.skipped))
+    const succeededCount = processed.filter((result) => result.status === 'published').length
+    const failedCount = processed.filter((result) => result.status === 'failed').length
+    const unknownCount = processed.filter((result) => result.status === 'unknown').length
+    const item = body.queueItemId
+      ? await payload.findByID({
+          collection: 'social-queue-items',
+          id: body.queueItemId,
+          depth: 1,
+          overrideAccess: true,
+        })
+      : undefined
+    return Response.json({
       success: true,
-      summary: { processedCount: queues.docs.length, succeededCount, failedCount },
+      action,
+      item,
+      results,
+      summary: {
+        processedCount: processed.length,
+        skippedCount: results.length - processed.length,
+        succeededCount,
+        failedCount,
+        unknownCount,
+        retriedCount: mode === 'retry' ? processed.length : 0,
+        failedAgainCount: mode === 'retry' ? failedCount : 0,
+      },
     })
-  } catch (err: unknown) {
-    const message = err instanceof Error ? err.message : String(err)
-    return NextResponse.json(
-      { error: `Queue worker execution failed: ${message}` },
-      { status: 500 },
+  } catch (error) {
+    console.error('[worker-route-error]', error)
+    return Response.json(
+      { error: error instanceof Error ? error.message : 'Social worker failed.' },
+      { status: 422 },
     )
   }
 }

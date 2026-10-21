@@ -1,3 +1,9 @@
+import {
+  socialFetch,
+  socialProviderMode,
+  SocialBoundaryError,
+  socialRetryAfter,
+} from '../dispatch-boundary'
 import { createHash } from 'node:crypto'
 import {
   normalizeProviderError,
@@ -206,7 +212,7 @@ export class BlueskyAdapter implements SocialProviderAdapter {
     const ssrf = validateOutboundUrl(endpoint, { allowHttpInDev: true })
     if (!ssrf.isValid) throw new Error(`SSRF Blocked: ${ssrf.reason}`)
 
-    const res = await fetch(endpoint, {
+    const res = await socialFetch(endpoint, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${accessJwt}`,
@@ -237,7 +243,7 @@ export class BlueskyAdapter implements SocialProviderAdapter {
     const ssrf = validateOutboundUrl(endpoint, { allowHttpInDev: true })
     if (!ssrf.isValid) throw new Error(`SSRF Blocked: ${ssrf.reason}`)
 
-    const res = await fetch(endpoint, {
+    const res = await socialFetch(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ identifier, password }),
@@ -247,7 +253,8 @@ export class BlueskyAdapter implements SocialProviderAdapter {
       const err = await res.json().catch(() => null)
       const error = new Error(err?.message || `Authentication failed with HTTP ${res.status}`)
       ;(error as any).status = res.status
-      ;(error as any).retryAfter = res.headers.get('retry-after') || res.headers.get('ratelimit-reset')
+      ;(error as any).retryAfter =
+        res.headers.get('retry-after') || res.headers.get('ratelimit-reset')
       throw error
     }
 
@@ -259,6 +266,97 @@ export class BlueskyAdapter implements SocialProviderAdapter {
     }>
   }
 
+  private async readRecord(variant: SocialVariant, context: AuthContext) {
+    const service = (context.credentials?.service || 'https://bsky.social').replace(/\/+$/, '')
+    const identifier = context.credentials?.identifier || context.accountHandle
+    const password = context.credentials?.appPassword || context.credentials?.password
+    if (!identifier || !password)
+      throw Object.assign(new Error('Reconnect Bluesky with an identifier and app password.'), {
+        status: 401,
+      })
+    const session = await this.createSession(service, identifier, password)
+    const rkey = createHash('sha256')
+      .update(variant.idempotencyKey || variant.id)
+      .digest('hex')
+      .slice(0, 32)
+    const url = new URL(`${service}/xrpc/com.atproto.repo.getRecord`)
+    url.searchParams.set('repo', session.did)
+    url.searchParams.set('collection', 'app.bsky.feed.post')
+    url.searchParams.set('rkey', rkey)
+    const response = await socialFetch(url.toString(), {
+      headers: { Authorization: `Bearer ${session.accessJwt}` },
+    })
+    const data = await response.json().catch(() => null)
+    const missing =
+      response.status === 404 || (response.status === 400 && data?.error === 'RecordNotFound')
+    if (!missing && !response.ok) {
+      const error = new Error(`Bluesky record lookup failed: HTTP ${response.status}`)
+      Object.assign(error, {
+        status: response.status,
+        retryAfter: response.headers.get('retry-after'),
+      })
+      throw error
+    }
+    const expectedUri = `at://${session.did}/app.bsky.feed.post/${rkey}`
+    if (!missing && (data?.uri !== expectedUri || data?.value?.text !== variant.text))
+      throw Object.assign(new Error('Provider idempotency key is occupied by different content.'), {
+        status: 400,
+      })
+    const providerMode = socialProviderMode(service)
+    const remoteUrl =
+      providerMode === 'local-harness'
+        ? `${service}/posts/${rkey}`
+        : `https://bsky.app/profile/${session.handle}/post/${rkey}`
+    return {
+      service,
+      session,
+      rkey,
+      data: missing ? null : data,
+      providerMode,
+      remoteUrl,
+      expectedUri,
+    }
+  }
+
+  async reconcile(variant: SocialVariant, context?: AuthContext): Promise<AdapterResult> {
+    try {
+      const record = await this.readRecord(
+        variant,
+        context ?? { accountId: '', accountHandle: '', network: 'bluesky', credentials: {} },
+      )
+      if (record.data)
+        return {
+          status: 'published',
+          remoteId: record.data.uri,
+          remoteUrl: record.remoteUrl,
+          receipt: {
+            remotePostId: record.data.uri,
+            remoteUrl: record.remoteUrl,
+            publishedAt: new Date(),
+            rawResponse: { ...record.data, reconciled: true, providerMode: record.providerMode },
+          },
+        }
+      return {
+        status: 'unknown',
+        error: normalizeProviderError({
+          kind: 'remote-unknown',
+          remoteOutcome: 'unknown',
+          message:
+            'No matching provider record is visible. Keep this delivery quarantined; no new post was submitted.',
+        }),
+      }
+    } catch (error) {
+      return {
+        status: 'unknown',
+        error: normalizeProviderError({
+          kind: 'remote-unknown',
+          remoteOutcome: 'unknown',
+          message: `Read-only reconciliation could not confirm delivery: ${error instanceof Error ? error.message : String(error)}`,
+        }),
+      }
+    }
+  }
+
   async publish(
     variant: SocialVariant,
     context?:
@@ -266,235 +364,146 @@ export class BlueskyAdapter implements SocialProviderAdapter {
       | Readonly<{ accountId: string; credentials: Record<string, string> | null }>,
     mediaResolver?: MediaResolver,
   ): Promise<AdapterResult> {
-    const auth = context as AuthContext | undefined
-    const identifier = auth?.credentials?.identifier || auth?.accountHandle
-    const password = auth?.credentials?.appPassword || auth?.credentials?.password
-    const serviceUrl = (auth?.credentials?.service || 'https://bsky.social').replace(/\/+$/, '')
-
-    if (!identifier || !password) {
-      return {
-        status: 'failed',
-        error: normalizeProviderError({
-          kind: 'reconnect-required',
-          message:
-            'Bluesky requires an account identifier and app password. Reconnect this account.',
-        }),
-      }
-    }
-
-    const providerMode =
-      serviceUrl.includes('127.0.0.1') || serviceUrl.includes('localhost')
-        ? 'local-harness'
-        : 'live'
-
+    let sent = false
     try {
-      // 1. Establish or refresh session
-      const session = await this.createSession(serviceUrl, identifier, password)
-
-      // 2. Deterministic record key derived from idempotencyKey for lost-response / restart reconciliation
-      const rkey = createHash('sha256')
-        .update(variant.idempotencyKey || variant.id)
-        .digest('hex')
-        .slice(0, 32)
-
-      // 3. Pre-flight check: was this post already published at provider? (prevents duplicate send on worker restart)
-      const recordUrl = new URL(`${serviceUrl}/xrpc/com.atproto.repo.getRecord`)
-      recordUrl.searchParams.set('repo', session.did)
-      recordUrl.searchParams.set('collection', 'app.bsky.feed.post')
-      recordUrl.searchParams.set('rkey', rkey)
-
-      const ssrfGet = validateOutboundUrl(recordUrl.toString(), { allowHttpInDev: true })
-      if (ssrfGet.isValid) {
-        try {
-          const existingRes = await fetch(recordUrl.toString(), {
-            method: 'GET',
-            headers: { Authorization: `Bearer ${session.accessJwt}` },
-            signal: AbortSignal.timeout(10_000),
-          })
-          if (existingRes.ok) {
-            const existingData = (await existingRes.json()) as { uri?: string; value?: { text?: string } }
-            if (existingData?.uri) {
-              const publicUrl = `https://bsky.app/profile/${session.handle}/post/${rkey}`
-              return {
-                status: 'published',
-                remoteId: existingData.uri,
-                remoteUrl: publicUrl,
-                receipt: {
-                  remotePostId: existingData.uri,
-                  remoteUrl: publicUrl,
-                  publishedAt: new Date(),
-                  rawResponse: { reconciled: true, providerMode, ...existingData },
-                },
-              }
-            }
-          }
-        } catch {
-          // Fall through to post creation
-        }
-      }
-
-      // 4. Parse UTF-8 rich text facets
-      const facets = parseRichTextFacets(variant.text)
-
-      // 5. Upload images if attached
-      let embed: Record<string, unknown> | undefined
-      if (variant.attachments.length > 0 && mediaResolver) {
-        const images: Array<{ image: unknown; alt: string }> = []
-        for (const att of variant.attachments) {
-          const { buffer, mimeType } = await mediaResolver.resolveBuffer(att.mediaAssetId)
-          const blob = await this.uploadBlob(serviceUrl, session.accessJwt, buffer, mimeType)
-          images.push({
-            image: blob,
-            alt: att.altText || '',
-          })
-        }
-        embed = {
-          $type: 'app.bsky.embed.images',
-          images,
-        }
-      } else if (variant.linkUrl) {
-        // Link card embed
-        embed = {
-          $type: 'app.bsky.embed.external',
-          external: {
-            uri: variant.linkUrl,
-            title: variant.linkUrl,
-            description: '',
+      const record = await this.readRecord(
+        variant,
+        (context ?? {
+          accountId: '',
+          accountHandle: '',
+          network: 'bluesky',
+          credentials: {},
+        }) as AuthContext,
+      )
+      if (record.data)
+        return {
+          status: 'published',
+          remoteId: record.data.uri,
+          remoteUrl: record.remoteUrl,
+          receipt: {
+            remotePostId: record.data.uri,
+            remoteUrl: record.remoteUrl,
+            publishedAt: new Date(),
+            rawResponse: { ...record.data, reconciled: true, providerMode: record.providerMode },
           },
         }
-      }
-
-      // 6. Create Post Record with deterministic rkey
-      const recordPayload: Record<string, unknown> = {
-        $type: 'app.bsky.feed.post',
-        text: variant.text,
-        createdAt: new Date().toISOString(),
-      }
-
-      if (facets.length > 0) recordPayload.facets = facets
-      if (embed) recordPayload.embed = embed
-
-      const createEndpoint = `${serviceUrl}/xrpc/com.atproto.repo.createRecord`
-      const ssrf = validateOutboundUrl(createEndpoint, { allowHttpInDev: true })
-      if (!ssrf.isValid) throw new Error(`SSRF Blocked: ${ssrf.reason}`)
-
-      const postRes = await fetch(createEndpoint, {
+      let embed: Record<string, unknown> | undefined
+      if (variant.attachments.length) {
+        if (!mediaResolver)
+          return {
+            status: 'failed',
+            error: normalizeProviderError({
+              kind: 'validation',
+              message: 'Media resolver is required; no text-only fallback was sent.',
+            }),
+          }
+        const images = []
+        for (const attachment of variant.attachments) {
+          const { buffer, mimeType } = await mediaResolver.resolveBuffer(attachment.mediaAssetId)
+          images.push({
+            image: await this.uploadBlob(
+              record.service,
+              record.session.accessJwt,
+              buffer,
+              mimeType,
+            ),
+            alt: attachment.altText || '',
+          })
+        }
+        embed = { $type: 'app.bsky.embed.images', images }
+      } else if (variant.linkUrl)
+        embed = {
+          $type: 'app.bsky.embed.external',
+          external: { uri: variant.linkUrl, title: variant.linkUrl, description: '' },
+        }
+      const facets = parseRichTextFacets(variant.text)
+      sent = true
+      const response = await socialFetch(`${record.service}/xrpc/com.atproto.repo.createRecord`, {
         method: 'POST',
         headers: {
-          Authorization: `Bearer ${session.accessJwt}`,
+          Authorization: `Bearer ${record.session.accessJwt}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          repo: session.did,
+          repo: record.session.did,
           collection: 'app.bsky.feed.post',
-          rkey,
-          record: recordPayload,
+          rkey: record.rkey,
+          record: {
+            $type: 'app.bsky.feed.post',
+            text: variant.text,
+            createdAt: new Date().toISOString(),
+            ...(facets.length ? { facets } : {}),
+            ...(embed ? { embed } : {}),
+          },
         }),
       })
-
-      if (postRes.status === 429) {
-        const retryAfter = postRes.headers.get('retry-after')
+      const data = await response.json().catch(() => null)
+      if (!response.ok) {
+        if (data?.error === 'RecordAlreadyExists')
+          return this.reconcile(variant, context as AuthContext)
         return {
           status: 'failed',
           error: normalizeProviderError({
-            kind: 'rate-limit',
-            message: 'Bluesky PDS rate limit reached.',
-            retryAfter: retryAfter
-              ? new Date(Date.now() + Number(retryAfter) * 1000).toISOString()
-              : undefined,
+            kind:
+              response.status === 429
+                ? 'rate-limit'
+                : [401, 403].includes(response.status)
+                  ? 'reconnect-required'
+                  : response.status >= 500
+                    ? 'transient'
+                    : 'validation',
+            message: data?.message || data?.error || `Bluesky returned HTTP ${response.status}`,
+            retryAfter: socialRetryAfter(
+              response.headers.get('retry-after') || response.headers.get('ratelimit-reset'),
+            ),
           }),
         }
       }
-
-      if (postRes.status === 401 || postRes.status === 403) {
+      if (data?.uri !== record.expectedUri)
         return {
-          status: 'failed',
+          status: 'unknown',
           error: normalizeProviderError({
-            kind: 'reconnect-required',
-            message: 'Bluesky credentials were rejected; reconnect this account.',
+            kind: 'remote-unknown',
+            remoteOutcome: 'unknown',
+            message:
+              'Provider response did not confirm the expected record URI; reconcile before retrying.',
           }),
         }
-      }
-
-      if (!postRes.ok) {
-        const errBody = (await postRes.json().catch(() => null)) as { message?: string; error?: string } | null
-        if (errBody?.error === 'RecordAlreadyExists' || errBody?.message?.includes('already exists')) {
-          const publicUrl = `https://bsky.app/profile/${session.handle}/post/${rkey}`
-          const uri = `at://${session.did}/app.bsky.feed.post/${rkey}`
-          return {
-            status: 'published',
-            remoteId: uri,
-            remoteUrl: publicUrl,
-            receipt: {
-              remotePostId: uri,
-              remoteUrl: publicUrl,
-              publishedAt: new Date(),
-              rawResponse: { reconciled: true, providerMode, rkey },
-            },
-          }
-        }
-        return {
-          status: 'failed',
-          error: normalizeProviderError({
-            kind: postRes.status >= 500 ? 'transient' : 'validation',
-            message: errBody?.message || errBody?.error || `Bluesky returned HTTP ${postRes.status}`,
-          }),
-        }
-      }
-
-      const result = (await postRes.json()) as { uri: string; cid: string }
-      // URI format: at://did:plc:.../app.bsky.feed.post/rkey
-      const resolvedRkey = result.uri.split('/').pop() || rkey
-      const publicUrl = `https://bsky.app/profile/${session.handle}/post/${resolvedRkey}`
-
       return {
         status: 'published',
-        remoteId: result.uri,
-        remoteUrl: publicUrl,
+        remoteId: data.uri,
+        remoteUrl: record.remoteUrl,
         receipt: {
-          remotePostId: result.uri,
-          remoteUrl: publicUrl,
+          remotePostId: data.uri,
+          remoteUrl: record.remoteUrl,
           publishedAt: new Date(),
-          rawResponse: { ...result, providerMode },
+          rawResponse: { ...data, providerMode: record.providerMode },
         },
       }
-    } catch (err: unknown) {
-      if ((err as any)?.status === 429) {
-        return {
-          status: 'failed',
-          error: normalizeProviderError({
-            kind: 'rate-limit',
-            message: `Bluesky rate limit exceeded: ${(err as Error).message}`,
-            retryAfter: (err as any).retryAfter
-              ? new Date(Date.now() + (Number((err as any).retryAfter) || 60) * 1000).toISOString()
-              : undefined,
-          }),
-        }
-      }
-      if ((err as any)?.status === 401 || (err as any)?.status === 403) {
-        return {
-          status: 'failed',
-          error: normalizeProviderError({
-            kind: 'reconnect-required',
-            message: `Bluesky reconnection required: ${(err as Error).message}`,
-          }),
-        }
-      }
-      const isTimeout =
-        err instanceof Error &&
-        (err.name === 'TimeoutError' ||
-          err.name === 'AbortError' ||
-          err.message.includes('timeout') ||
-          err.message.includes('timed out'))
+    } catch (error) {
+      const status = (error as { status?: number })?.status
+      const rawRetry = (error as { retryAfter?: string })?.retryAfter
+      const retryAt = socialRetryAfter(rawRetry)
       return {
-        status: 'failed',
+        status: sent ? 'unknown' : 'failed',
         error: normalizeProviderError({
-          kind: 'transient',
-          message: isTimeout
-            ? 'Bluesky request timed out.'
-            : err instanceof Error
-              ? err.message
-              : String(err),
+          kind: sent
+            ? 'remote-unknown'
+            : status === 429
+              ? 'rate-limit'
+              : [401, 403].includes(status ?? 0)
+                ? 'reconnect-required'
+                : status === 400 || error instanceof SocialBoundaryError
+                  ? 'validation'
+                  : 'transient',
+          remoteOutcome: sent ? 'unknown' : 'known-failed',
+          message:
+            (status === 429
+              ? 'Bluesky rate limit exceeded: '
+              : [401, 403].includes(status ?? 0)
+                ? 'Bluesky reconnection required: '
+                : '') + (error instanceof Error ? error.message : String(error)),
+          retryAfter: retryAt,
         }),
       }
     }

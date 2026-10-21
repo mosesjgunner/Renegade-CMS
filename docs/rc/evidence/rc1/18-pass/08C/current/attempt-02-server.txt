@@ -1,0 +1,104 @@
+▲ Next.js 16.3.8 (webpack)
+- Local:         http://127.0.0.1:39036
+- Network:       http://127.0.0.1:39036
+✓ Ready in 572ms
+✓ Running next.config.ts took 177ms
+- Experiments (use with caution):
+  ✓ webpackMemoryOptimizations
+
+[20:30:56] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+○ Compiling /health/ready ...
+ GET /health/ready 200 in 9.6s (next.js: 4.7s, proxy.ts: 4.3s, application-code: 686ms)
+○ Compiling /admin/social ...
+ GET /admin/social 200 in 13.4s (next.js: 6.2s, proxy.ts: 64ms, application-code: 7.2s)
+ GET /admin/social 200 in 9.4s (next.js: 11ms, proxy.ts: 157ms, application-code: 9.2s)
+○ Compiling /api/analytics/consent ...
+ GET /api/analytics/consent 200 in 7.1s (next.js: 6.5s, proxy.ts: 111ms, application-code: 541ms)
+ GET /api/analytics/consent 200 in 1604ms (next.js: 202ms, proxy.ts: 98ms, application-code: 1304ms)
+ GET /api/admin/social/drafts 200 in 19.6s (next.js: 6.5s, proxy.ts: 111ms, application-code: 13.0s)
+ GET /api/admin/social/accounts 200 in 19.6s (next.js: 6.5s, proxy.ts: 111ms, application-code: 13.0s)
+ POST /api/admin/social/drafts 201 in 15.6s (next.js: 421ms, proxy.ts: 853ms, application-code: 14.4s)
+ GET /api/admin/social/accounts 200 in 4.4s (next.js: 7ms, proxy.ts: 24ms, application-code: 4.4s)
+ GET /api/admin/social/drafts 200 in 4.5s (next.js: 10ms, proxy.ts: 49ms, application-code: 4.4s)
+ GET /admin/social 200 in 17.2s (next.js: 157ms, proxy.ts: 426ms, application-code: 16.6s)
+ POST /api/admin/social/drafts 200 in 2.5s (next.js: 14ms, proxy.ts: 25ms, application-code: 2.5s)
+ POST /api/admin/social/drafts 200 in 1902ms (next.js: 3ms, proxy.ts: 13ms, application-code: 1886ms)
+ POST /api/admin/social/drafts 200 in 2.6s (next.js: 3ms, proxy.ts: 7ms, application-code: 2.6s)
+ POST /api/admin/social/drafts 201 in 1474ms (next.js: 4ms, proxy.ts: 8ms, application-code: 1461ms)
+ POST /api/admin/social/drafts 200 in 1792ms (next.js: 5ms, proxy.ts: 12ms, application-code: 1774ms)
+ POST /api/admin/social/drafts 200 in 1459ms (next.js: 4ms, proxy.ts: 9ms, application-code: 1446ms)
+ POST /api/admin/social/drafts 200 in 1604ms (next.js: 4ms, proxy.ts: 12ms, application-code: 1588ms)
+ GET /admin/social 200 in 9.2s (next.js: 7ms, proxy.ts: 10ms, application-code: 9.2s)
+ GET /api/analytics/consent 200 in 74ms (next.js: 34ms, proxy.ts: 24ms, application-code: 16ms)
+ GET /api/analytics/consent 200 in 1308ms (next.js: 20ms, proxy.ts: 57ms, application-code: 1231ms)
+ GET /api/admin/social/accounts 200 in 2.6s (next.js: 9ms, proxy.ts: 25ms, application-code: 2.6s)
+ GET /api/admin/social/drafts 200 in 2.6s (next.js: 24ms, proxy.ts: 25ms, application-code: 2.6s)
+ GET /api/admin/social/accounts 200 in 3.6s (next.js: 5ms, proxy.ts: 11ms, application-code: 3.6s)
+ GET /api/admin/social/drafts 200 in 3.7s (next.js: 222ms, proxy.ts: 17ms, application-code: 3.4s)
+ GET /api/admin/social/drafts?draftId=da3deef6-505d-4250-aeec-5e2c721245f5 200 in 3.5s (next.js: 26ms, proxy.ts: 80ms, application-code: 3.4s)
+ GET /admin/social 200 in 8.5s (next.js: 287ms, proxy.ts: 465ms, application-code: 7.7s)
+[executeSocialQueueItem-result-status] {
+  resultStatus: 'published',
+  queueId: 'cff49d0d-d56c-4213-93a7-cb30f2a68780',
+  network: 'bluesky',
+  error: undefined
+}
+[executeSocialQueueItem-result-status] {
+  resultStatus: 'failed',
+  queueId: 'd45ef5f7-62f8-4c4f-8655-618a0aeb4e99',
+  network: 'activitypub',
+  error: {
+    kind: 'transient',
+    message: 'Local deliberately failed delivery',
+    providerCode: undefined,
+    retryAfter: undefined,
+    remoteOutcome: 'known-failed'
+  }
+}
+ POST /api/admin/social/worker 200 in 11.9s (next.js: 2.3s, proxy.ts: 8ms, application-code: 9.6s)
+ GET /api/admin/social/drafts?draftId=da3deef6-505d-4250-aeec-5e2c721245f5 200 in 1525ms (next.js: 117ms, proxy.ts: 17ms, application-code: 1391ms)
+ GET /api/admin/social/drafts 200 in 1906ms (next.js: 5ms, proxy.ts: 11ms, application-code: 1890ms)
+[executeSocialQueueItem-result-status] {
+  resultStatus: 'published',
+  queueId: 'd45ef5f7-62f8-4c4f-8655-618a0aeb4e99',
+  network: 'activitypub',
+  error: undefined
+}
+ POST /api/admin/social/worker 200 in 2.2s (next.js: 3ms, proxy.ts: 8ms, application-code: 2.2s)
+ POST /api/admin/social/worker 403 in 3.4s (next.js: 22ms, proxy.ts: 253ms, application-code: 3.1s)
+ GET /api/admin/social/drafts?draftId=da3deef6-505d-4250-aeec-5e2c721245f5 200 in 4.9s (next.js: 6ms, proxy.ts: 14ms, application-code: 4.9s)
+ POST /api/admin/social/worker 403 in 2.9s (next.js: 5ms, proxy.ts: 16ms, application-code: 2.9s)
+ GET /api/admin/social/drafts 200 in 3.0s (next.js: 6ms, proxy.ts: 23ms, application-code: 2.9s)
+ POST /api/admin/social/worker 403 in 1612ms (next.js: 4ms, proxy.ts: 27ms, application-code: 1581ms)
+ POST /api/admin/social/worker 403 in 61ms (next.js: 4ms, proxy.ts: 7ms, application-code: 49ms)
+○ Compiling /api/[...slug] ...
+[20:33:16] [32mINFO[39m: [36mYou are not allowed to perform this action.[39m
+ PATCH /api/social-queue-items/92511694-ac99-4403-acf3-84d0c609081a 403 in 29.9s (next.js: 25.5s, proxy.ts: 9ms, application-code: 4.5s)
+[20:33:16] [32mINFO[39m: [36mYou are not allowed to perform this action.[39m
+ POST /api/external-posts 403 in 90ms (next.js: 32ms, proxy.ts: 32ms, application-code: 27ms)
+ GET /admin/social 200 in 16.1s (next.js: 169ms, proxy.ts: 30ms, application-code: 15.9s)
+ POST /api/admin/social/worker 200 in 4.1s (next.js: 196ms, proxy.ts: 17ms, application-code: 3.9s)
+ POST /api/admin/social/drafts 201 in 2.7s (next.js: 166ms, proxy.ts: 14ms, application-code: 2.5s)
+ POST /api/admin/social/drafts 200 in 1734ms (next.js: 4ms, proxy.ts: 8ms, application-code: 1722ms)
+ POST /api/admin/social/drafts 200 in 1948ms (next.js: 5ms, proxy.ts: 9ms, application-code: 1934ms)
+ POST /api/admin/social/drafts 200 in 1817ms (next.js: 5ms, proxy.ts: 14ms, application-code: 1798ms)
+[executeSocialQueueItem-result-status] {
+  resultStatus: 'failed',
+  queueId: 'a52d137e-3133-4219-b24e-185f9c6c33c6',
+  network: 'bluesky',
+  error: {
+    kind: 'rate-limit',
+    message: 'Bluesky rate limit exceeded: Local rate limit',
+    providerCode: undefined,
+    retryAfter: '2026-10-21T01:33:33.778Z',
+    remoteOutcome: 'known-failed'
+  }
+}
+ POST /api/admin/social/worker 200 in 2.8s (next.js: 5ms, proxy.ts: 8ms, application-code: 2.8s)
+[executeSocialQueueItem-result-status] {
+  resultStatus: 'published',
+  queueId: 'a52d137e-3133-4219-b24e-185f9c6c33c6',
+  network: 'bluesky',
+  error: undefined
+}
+ POST /api/admin/social/worker 200 in 4.6s (next.js: 8ms, proxy.ts: 19ms, application-code: 4.5s)

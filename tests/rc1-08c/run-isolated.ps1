@@ -27,6 +27,7 @@ $env:SEED_ON_INIT = 'false'
 $env:DISABLE_PAYLOAD_HMR = 'true'
 $env:RC1_08C_DISPOSABLE = 'yes'
 $env:RENEGADE_ENCRYPTION_KEY = '0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef'
+$env:SOCIAL_LOCAL_ADAPTER_ORIGINS = 'http://127.0.0.1:3131'
 
 switch ($Action) {
   'start-db' {

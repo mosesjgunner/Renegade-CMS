@@ -26,6 +26,7 @@ export type SocialState =
   | 'queued'
   | 'scheduled'
   | 'publishing'
+  | 'unknown'
   | 'published'
   | 'partially-published'
   | 'failed'
@@ -268,6 +269,9 @@ export interface SocialProviderAdapter {
     mediaService?: MediaResolver,
   ): Promise<AdapterResult>
 
+  /** Read-only reconciliation; must never submit a new publication. */
+  reconcile?(variant: SocialVariant, context?: AuthContext): Promise<AdapterResult>
+
   // Post-publication operations
   fetchPost?(remotePostId: string, authContext: AuthContext): Promise<NormalizedRemotePost>
   deletePost?(remotePostId: string, authContext: AuthContext): Promise<void>
@@ -370,7 +374,8 @@ export const canTransitionSocial = (from: SocialState, to: SocialState) => {
     approved: ['queued', 'scheduled', 'publishing', 'cancelled'],
     queued: ['scheduled', 'publishing', 'cancelled'],
     scheduled: ['queued', 'publishing', 'cancelled'],
-    publishing: ['published', 'failed', 'partially-published'],
+    publishing: ['published', 'failed', 'partially-published', 'unknown'],
+    unknown: ['published', 'cancelled'],
     published: ['deletion-requested'],
     'partially-published': ['queued', 'published', 'failed'],
     failed: ['queued', 'cancelled'],
@@ -386,6 +391,8 @@ export const assertSocialTransition = (from: SocialState, to: SocialState) => {
 }
 
 export const campaignState = (states: readonly SocialState[]): SocialState => {
+  if (states.length && states.every((state) => state === 'cancelled')) return 'cancelled'
+  if (states.includes('unknown')) return 'unknown'
   if (states.includes('failed') && states.includes('published')) return 'partially-published'
   if (states.length && states.every((state) => state === 'published')) return 'published'
   if (states.length && states.every((state) => state === 'failed')) return 'failed'

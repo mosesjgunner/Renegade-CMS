@@ -46,7 +46,7 @@
     "passed": true
   },
   {
-    "route": "/api/admin/social/drafts?siteId=36174bb9-57f2-48cd-86f3-6f97d6ecd3db",
+    "route": "/api/admin/social/drafts?siteId=a4e532f0-7bff-4624-a40a-28a5e01ac125",
     "method": "GET",
     "status": 403,
     "bytes": 68
@@ -59,7 +59,7 @@
     "route": "/api/admin/social/worker",
     "method": "GET",
     "status": 200,
-    "bytes": 93
+    "bytes": 105
   },
   {
     "name": "worker GET stats returns success",
@@ -213,7 +213,7 @@
     "route": "/api/admin/social/worker",
     "method": "POST",
     "status": 200,
-    "bytes": 109
+    "bytes": 191
   },
   {
     "name": "Bounded policy: 0 items retried when attemptCount >= 3",
@@ -247,7 +247,7 @@
     "route": "/api/admin/social/worker",
     "method": "POST",
     "status": 200,
-    "bytes": 2080
+    "bytes": 2427
   },
   {
     "name": "Draft 2 dispatch-item succeeded",
@@ -305,7 +305,7 @@
     "route": "/api/admin/social/worker",
     "method": "POST",
     "status": 200,
-    "bytes": 2146
+    "bytes": 2545
   },
   {
     "name": "Draft 3 item status is failed",

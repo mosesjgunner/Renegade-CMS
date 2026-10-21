@@ -1,0 +1,114 @@
+{
+  "records": [
+    {
+      "key": "bsky:905736f1034a504fd799d778cdc3b67e",
+      "id": "local-cid-0",
+      "remoteId": "at://did:plc:rc108c/app.bsky.feed.post/905736f1034a504fd799d778cdc3b67e",
+      "text": "PARTIAL successful local Bluesky",
+      "remoteUrl": "http://127.0.0.1:3132/posts/905736f1034a504fd799d778cdc3b67e",
+      "receivedAt": "2026-10-21T02:05:23.957Z"
+    },
+    {
+      "key": "masto:scheduled:draft:0fa73efd-793b-44d6-86b6-b0d7fa8d77e1:75bf3b00-db96-4d00-bcea-c05aa73e1be9:sha256:74c7bfd812bb58ea0573b55d79024a4d59399c42702c682ba8ff3a6e7fb3d4f0",
+      "id": "local-masto-1",
+      "remoteId": "local-masto-1",
+      "text": "PARTIAL deliberately failing local Mastodon",
+      "remoteUrl": "http://127.0.0.1:3132/masto/1",
+      "receivedAt": "2026-10-21T02:05:33.872Z"
+    },
+    {
+      "key": "bsky:412546a64050da3c3373958ca5a28fc7",
+      "id": "local-cid-2",
+      "remoteId": "at://did:plc:rc108c/app.bsky.feed.post/412546a64050da3c3373958ca5a28fc7",
+      "text": "RATE real local rate limit",
+      "remoteUrl": "http://127.0.0.1:3132/posts/412546a64050da3c3373958ca5a28fc7",
+      "receivedAt": "2026-10-21T02:06:25.673Z"
+    },
+    {
+      "key": "bsky:d79359f9b0157b27e68238b705a22848",
+      "id": "local-cid-3",
+      "remoteId": "at://did:plc:rc108c/app.bsky.feed.post/d79359f9b0157b27e68238b705a22848",
+      "text": "LOST provider accepted then socket closed",
+      "remoteUrl": "http://127.0.0.1:3132/posts/d79359f9b0157b27e68238b705a22848",
+      "receivedAt": "2026-10-21T02:06:44.540Z"
+    },
+    {
+      "key": "masto:scheduled:draft:1ad6cf34-4a98-4544-8fa7-d926cab0c056:18af2089-8352-4961-b072-a6e8e9853370:sha256:63497dd9eaa3e3328f4e245105deddfc2411fa19905b972de2fe1afc88c7e6ad",
+      "id": "local-masto-4",
+      "remoteId": "local-masto-4",
+      "text": "TIMEOUT accepted but response never returned",
+      "remoteUrl": "http://127.0.0.1:3132/masto/4",
+      "receivedAt": "2026-10-21T02:07:14.523Z"
+    },
+    {
+      "key": "bsky:44d10d8be719e7663f0680cc5200f035",
+      "id": "local-cid-5",
+      "remoteId": "at://did:plc:rc108c/app.bsky.feed.post/44d10d8be719e7663f0680cc5200f035",
+      "text": "CRASH accepted before worker termination",
+      "remoteUrl": "http://127.0.0.1:3132/posts/44d10d8be719e7663f0680cc5200f035",
+      "receivedAt": "2026-10-21T02:07:51.653Z"
+    }
+  ],
+  "requests": [
+    {
+      "network": "bluesky",
+      "key": "bsky:905736f1034a504fd799d778cdc3b67e",
+      "text": "PARTIAL successful local Bluesky",
+      "receivedAt": "2026-10-21T02:05:23.956Z"
+    },
+    {
+      "network": "mastodon",
+      "key": "masto:scheduled:draft:0fa73efd-793b-44d6-86b6-b0d7fa8d77e1:75bf3b00-db96-4d00-bcea-c05aa73e1be9:sha256:74c7bfd812bb58ea0573b55d79024a4d59399c42702c682ba8ff3a6e7fb3d4f0",
+      "text": "PARTIAL deliberately failing local Mastodon",
+      "receivedAt": "2026-10-21T02:05:24.211Z"
+    },
+    {
+      "network": "mastodon",
+      "key": "masto:scheduled:draft:0fa73efd-793b-44d6-86b6-b0d7fa8d77e1:75bf3b00-db96-4d00-bcea-c05aa73e1be9:sha256:74c7bfd812bb58ea0573b55d79024a4d59399c42702c682ba8ff3a6e7fb3d4f0",
+      "text": "PARTIAL deliberately failing local Mastodon",
+      "receivedAt": "2026-10-21T02:05:33.872Z"
+    },
+    {
+      "network": "bluesky",
+      "key": "bsky:412546a64050da3c3373958ca5a28fc7",
+      "text": "RATE real local rate limit",
+      "receivedAt": "2026-10-21T02:06:25.673Z"
+    },
+    {
+      "network": "mastodon",
+      "key": "masto:scheduled:draft:04d1e911-eb15-4fc6-bb2c-aeaee8d56086:fa8c1ac3-044c-4e61-85e2-7191fa845bf2:sha256:9788a701881d3deeea769b001592ed84b37867f6d84a76df9a3f20dd480aec48",
+      "text": "HARD always failed delivery",
+      "receivedAt": "2026-10-21T02:06:31.364Z"
+    },
+    {
+      "network": "mastodon",
+      "key": "masto:scheduled:draft:04d1e911-eb15-4fc6-bb2c-aeaee8d56086:fa8c1ac3-044c-4e61-85e2-7191fa845bf2:sha256:9788a701881d3deeea769b001592ed84b37867f6d84a76df9a3f20dd480aec48",
+      "text": "HARD always failed delivery",
+      "receivedAt": "2026-10-21T02:06:33.563Z"
+    },
+    {
+      "network": "mastodon",
+      "key": "masto:scheduled:draft:04d1e911-eb15-4fc6-bb2c-aeaee8d56086:fa8c1ac3-044c-4e61-85e2-7191fa845bf2:sha256:9788a701881d3deeea769b001592ed84b37867f6d84a76df9a3f20dd480aec48",
+      "text": "HARD always failed delivery",
+      "receivedAt": "2026-10-21T02:06:36.670Z"
+    },
+    {
+      "network": "bluesky",
+      "key": "bsky:d79359f9b0157b27e68238b705a22848",
+      "text": "LOST provider accepted then socket closed",
+      "receivedAt": "2026-10-21T02:06:44.540Z"
+    },
+    {
+      "network": "mastodon",
+      "key": "masto:scheduled:draft:1ad6cf34-4a98-4544-8fa7-d926cab0c056:18af2089-8352-4961-b072-a6e8e9853370:sha256:63497dd9eaa3e3328f4e245105deddfc2411fa19905b972de2fe1afc88c7e6ad",
+      "text": "TIMEOUT accepted but response never returned",
+      "receivedAt": "2026-10-21T02:07:14.523Z"
+    },
+    {
+      "network": "bluesky",
+      "key": "bsky:44d10d8be719e7663f0680cc5200f035",
+      "text": "CRASH accepted before worker termination",
+      "receivedAt": "2026-10-21T02:07:51.653Z"
+    }
+  ]
+}

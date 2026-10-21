@@ -1,0 +1,137 @@
+{
+  "baseSha": "8775209d84d7a3071d0ba49919c71021be82ea39",
+  "files": [
+    {
+      "path": "next-env.d.ts",
+      "sha256": "eddf973a240d97247ca1a0b699a9890eaf0a5b4e36ddf060f9e32fe89713cc4c",
+      "bytes": 344
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "f6d1622312f9555d735972fafe837a1415ea2d1f2a3bbc8e1b317116dfb83623",
+      "bytes": 444778
+    },
+    {
+      "path": "package.json",
+      "sha256": "1e38b5f8b5fc52d53d2f84ce716bdbc23ff2c63bed9673545936c2d44183542d",
+      "bytes": 4715
+    },
+    {
+      "path": "src/app/(frontend)/api/admin/social/drafts/route.ts",
+      "sha256": "133bf0ff6aadcf13fef20946fe6c897d35d5a623b95025778861b603ccb70ddb",
+      "bytes": 24620
+    },
+    {
+      "path": "src/app/(frontend)/api/admin/social/worker/route.ts",
+      "sha256": "86e3411d819fb80d7e9d34a9b62131ed6eabb692b967334512a4543c06626902",
+      "bytes": 6548
+    },
+    {
+      "path": "src/collections/Social.ts",
+      "sha256": "7a933bec3ec4b9740ce27c4900544167caa276193bcd0f385453c7952ab815d7",
+      "bytes": 12142
+    },
+    {
+      "path": "src/migrations/20261020_080000_rc1_social_dispatch_recovery.ts",
+      "sha256": "f8cde59791c1e25c79019e8b8e336003ae07a5ca241b4771a39aa8df83717ddd",
+      "bytes": 723
+    },
+    {
+      "path": "src/migrations/index.ts",
+      "sha256": "e699ee260496b1e4e6e29a2c52c2b64e4a952b5f8b2bc970e67c26c62ebecba9",
+      "bytes": 31665
+    },
+    {
+      "path": "src/modules/admin/SocialCommandCenter.tsx",
+      "sha256": "5035a45ce59d4fc0f3cc46efb8f80c59339bd4c64a9548dbb61159f4121d3949",
+      "bytes": 79471
+    },
+    {
+      "path": "src/modules/social/adapters/bluesky.ts",
+      "sha256": "ebe1da8a49c26cc4080af4fd60e6668900615ac0e064f6d62f45cbfd2019ca8d",
+      "bytes": 22069
+    },
+    {
+      "path": "src/modules/social/adapters/mastodon.ts",
+      "sha256": "a22db9488ec562fe3e05fff16b506916c03747ff631e836426053855b6fe0143",
+      "bytes": 17175
+    },
+    {
+      "path": "src/modules/social/contracts.ts",
+      "sha256": "5356ead6deff73b2da493a1ef29c812222b5c05f41f44c55f3d537458472f8d9",
+      "bytes": 15460
+    },
+    {
+      "path": "src/modules/social/dispatch-boundary.ts",
+      "sha256": "e5a88f7d7baf71e5e6763b9134900ab5580bab438edc8ffc38265d637bb2af9e",
+      "bytes": 1726
+    },
+    {
+      "path": "src/modules/social/models.ts",
+      "sha256": "3ab4b4c56c8535ab34c007c9a64676bec3b21afcedd0341ec15eb2f6d86184f6",
+      "bytes": 8412
+    },
+    {
+      "path": "src/modules/social/provider-runtime.ts",
+      "sha256": "848ea35efecfdab93545e37fa0824fd725eb5bff7e7611cc4a446701eb70805d",
+      "bytes": 9185
+    },
+    {
+      "path": "src/modules/social/tasks.ts",
+      "sha256": "2f5cdad964feec2e8863c4840f6c9dcb1ff09694e144502778c0c654efedcdae",
+      "bytes": 18110
+    },
+    {
+      "path": "src/payload-types.ts",
+      "sha256": "56b35df8f9d0ae31b0921196983d6a54342d7fa7eb72c75cb6c78565900fd25c",
+      "bytes": 375469
+    },
+    {
+      "path": "src/scripts/run-jobs-worker.ts",
+      "sha256": "64ce4fb306e0bdd383e9c6770eb9925f66200cca98ce0a2282d5dc2766003d34",
+      "bytes": 2981
+    },
+    {
+      "path": "tests/rc1-08c/run-current.ps1",
+      "sha256": "90dbc5f5e91ffd99ac8b61a2106af87be5aad9cda979138d2a7a002e68d031b5",
+      "bytes": 4211
+    },
+    {
+      "path": "tests/rc1-08c/tsconfig.current.json",
+      "sha256": "f677cd1e699fbcea31db6badbb43aecb271e292dc490937106c9c37312d0f932",
+      "bytes": 312
+    },
+    {
+      "path": "tests/rc1-08c/verify-current.ts",
+      "sha256": "80334e0d29f0f2b2d75cd547d1ae2971a67de1c9f43ae1f456e3343615f5d306",
+      "bytes": 32486
+    },
+    {
+      "path": "tests/rc1-08c/verify.ts",
+      "sha256": "a1744156eeabb942bbe58dfd8b8c8a7d6c73a4f6a81cc2a7aac121d0cb246279",
+      "bytes": 33744
+    },
+    {
+      "path": "tests/unit/rc1-08c-current.test.ts",
+      "sha256": "2bfa1a8b23d9539762258fd9aa0b90410886f8d411e0183d6168b025ae5f2f83",
+      "bytes": 14658
+    },
+    {
+      "path": "tests/unit/rc1-08c-social-dispatch.test.ts",
+      "sha256": "ebce343792a3fd7032904c2f349b3c24d0bd1195b5c13bf3acc8d67e1d9c00f7",
+      "bytes": 12502
+    },
+    {
+      "path": "tests/unit/social-contracts.test.ts",
+      "sha256": "3b30e27cff909221bf1321be9521d6c0b94906bb0d77b53c960bed18f4611f45",
+      "bytes": 3182
+    },
+    {
+      "path": "tsconfig.json",
+      "sha256": "b18f093432b611fcd01a435d1c3363aced9df582a75e82dbbebc02ecaf55f4e2",
+      "bytes": 2220
+    }
+  ],
+  "overlaySha256": "49abfff31d20bd1383b3defb7f0b65f1053395fd83644038cfae7cdd99987474",
+  "runtimeKind": "isolated Next.js development runtime with actual PostgreSQL and local protocol adapters; no application production image claim"
+}

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, afterEach } from 'vitest'
+import { describe, it, expect, vi, afterEach, beforeEach } from 'vitest'
 import { createHash } from 'node:crypto'
 import { BlueskyAdapter } from '@/modules/social/adapters/bluesky'
 import { MastodonAdapter } from '@/modules/social/adapters/mastodon'
@@ -8,10 +8,12 @@ const sha256Hex = (text: string) => createHash('sha256').update(text).digest('he
 
 describe('RC1 08C - Social Queue Dispatch, Idempotency, and Failure Recovery', () => {
   const originalFetch = globalThis.fetch
+  beforeEach(() => vi.stubEnv('SOCIAL_LOCAL_ADAPTER_ORIGINS', 'http://127.0.0.1:3131'))
 
   afterEach(() => {
     globalThis.fetch = originalFetch
     vi.restoreAllMocks()
+    vi.unstubAllEnvs()
   })
 
   describe('BlueskyAdapter - Dispatch & Idempotency', () => {
@@ -51,7 +53,7 @@ describe('RC1 08C - Social Queue Dispatch, Idempotency, and Failure Recovery', (
             JSON.stringify({
               uri: `at://did:plc:testuser123/app.bsky.feed.post/${rkey}`,
               cid: 'bafyrei-recovered-cid-456',
-              value: { text: 'Recovered message', createdAt: new Date().toISOString() },
+              value: { text: 'Hello Bluesky!', createdAt: new Date().toISOString() },
             }),
             { status: 200, headers: { 'Content-Type': 'application/json' } },
           )

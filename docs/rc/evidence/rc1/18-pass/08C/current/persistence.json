@@ -1,0 +1,628 @@
+{
+  "queues": [
+    {
+      "id": "0c24a597-6114-4509-a2aa-021159b2e4b3",
+      "variant": "80e4ce36-c8ba-4385-b3de-bd2b86369227",
+      "account": "f9fdca74-2d07-4e8b-a8b6-21c7821d4fbf",
+      "scheduledFor": "2026-10-21T02:15:54.197Z",
+      "timeZone": "UTC",
+      "status": "published",
+      "idempotencyKey": "scheduled:draft:c25bf1b6-cc9c-4590-8b11-aa0feda4011b:80e4ce36-c8ba-4385-b3de-bd2b86369227:sha256:680b884c399b8eeed1b8f01363f875c3b65a12fc423c5e7fc0e79625d577898d",
+      "leaseUntil": null,
+      "leaseOwner": null,
+      "attemptCount": 1,
+      "nextAttemptAt": null,
+      "deadLetterReason": null,
+      "cancelledAt": null,
+      "updatedAt": "2026-10-21T02:16:58.863Z",
+      "createdAt": "2026-10-21T02:15:56.450Z"
+    },
+    {
+      "id": "04b44f3d-5569-4bda-bff1-7f299848edf2",
+      "variant": "36c888b7-389d-417c-be0a-3e07ddae2336",
+      "account": "d6dc231e-3254-4473-97c0-791ff90df525",
+      "scheduledFor": "2026-10-21T02:15:47.082Z",
+      "timeZone": "UTC",
+      "status": "failed",
+      "idempotencyKey": "scheduled:draft:8e2ce3df-5368-43ce-bd0c-67684b6e5974:36c888b7-389d-417c-be0a-3e07ddae2336:sha256:82fd8f497faee863b882e07be504170f6098ab7196df952dd77070139571bd32",
+      "leaseUntil": null,
+      "leaseOwner": null,
+      "attemptCount": 1,
+      "nextAttemptAt": null,
+      "deadLetterReason": {
+        "kind": "validation",
+        "message": "Local social adapters require an explicitly configured SOCIAL_LOCAL_ADAPTER_ORIGINS origin.",
+        "remoteOutcome": "known-failed"
+      },
+      "cancelledAt": null,
+      "updatedAt": "2026-10-21T02:15:50.816Z",
+      "createdAt": "2026-10-21T02:15:49.356Z"
+    },
+    {
+      "id": "6b1feae2-534a-41f4-a82f-c9ead464261a",
+      "variant": "90a56828-fa39-4ce3-b7d2-39413a4f89c5",
+      "account": "da2df182-c057-45ff-948f-f30ee1ac0d2c",
+      "scheduledFor": "2026-10-21T02:15:36.333Z",
+      "timeZone": "UTC",
+      "status": "failed",
+      "idempotencyKey": "scheduled:draft:d33b7a9c-88a2-482b-a0df-1be971788ed6:90a56828-fa39-4ce3-b7d2-39413a4f89c5:sha256:5f9fbde2daed50df68861d67324a4877364eb8a4b8b445ad458a3320268f0f7e",
+      "leaseUntil": null,
+      "leaseOwner": null,
+      "attemptCount": 1,
+      "nextAttemptAt": null,
+      "deadLetterReason": {
+        "kind": "reconnect-required",
+        "message": "Account is disconnected or credentials are not healthy; reconnect before publishing.",
+        "remoteOutcome": "known-failed"
+      },
+      "cancelledAt": null,
+      "updatedAt": "2026-10-21T02:15:41.695Z",
+      "createdAt": "2026-10-21T02:15:39.245Z"
+    },
+    {
+      "id": "ed6d6ae7-6e5a-4252-b01a-bfe99000d360",
+      "variant": "bbb6d7e5-a51e-43ff-be74-dceef081c0c5",
+      "account": "8b314832-cdb6-46a2-85a7-3ae3eca74746",
+      "scheduledFor": "2026-10-21T02:15:17.475Z",
+      "timeZone": "UTC",
+      "status": "unknown",
+      "idempotencyKey": "scheduled:draft:8c363404-2751-4ee7-b2e4-f3b4347608c3:bbb6d7e5-a51e-43ff-be74-dceef081c0c5:sha256:63497dd9eaa3e3328f4e245105deddfc2411fa19905b972de2fe1afc88c7e6ad",
+      "leaseUntil": null,
+      "leaseOwner": null,
+      "attemptCount": 1,
+      "nextAttemptAt": null,
+      "deadLetterReason": {
+        "kind": "remote-unknown",
+        "message": "This adapter cannot verify an uncertain post automatically. Inspect the provider; automatic resend is disabled.",
+        "remoteOutcome": "unknown"
+      },
+      "cancelledAt": null,
+      "updatedAt": "2026-10-21T02:15:31.562Z",
+      "createdAt": "2026-10-21T02:15:21.434Z"
+    },
+    {
+      "id": "1900d151-b222-4a68-a468-de0eb8eeda1c",
+      "variant": "c2e9141c-ef67-42c7-9475-e0bd00aa6feb",
+      "account": "f9fdca74-2d07-4e8b-a8b6-21c7821d4fbf",
+      "scheduledFor": "2026-10-21T02:14:47.102Z",
+      "timeZone": "UTC",
+      "status": "published",
+      "idempotencyKey": "scheduled:draft:7da1b34f-4201-4b24-9323-16424da497d0:c2e9141c-ef67-42c7-9475-e0bd00aa6feb:sha256:f7e70b9530edd7054eeae1a8ffa1fe8f1fcbfb7cf070abc0f5c589f56bd2132e",
+      "leaseUntil": null,
+      "leaseOwner": null,
+      "attemptCount": 1,
+      "nextAttemptAt": null,
+      "deadLetterReason": null,
+      "cancelledAt": null,
+      "updatedAt": "2026-10-21T02:15:11.491Z",
+      "createdAt": "2026-10-21T02:14:49.133Z"
+    },
+    {
+      "id": "cb17a9fb-ec73-4a72-a485-10329a6dd51e",
+      "variant": "2c8006a1-c031-4b51-8ebb-3a4bde8316b0",
+      "account": "f1d32bda-263f-4539-9d38-97a717155b46",
+      "scheduledFor": "2026-10-21T02:14:34.333Z",
+      "timeZone": "UTC",
+      "status": "failed",
+      "idempotencyKey": "scheduled:draft:2e360a2e-9b22-4c62-9de7-e1d74dc5cb99:2c8006a1-c031-4b51-8ebb-3a4bde8316b0:sha256:9788a701881d3deeea769b001592ed84b37867f6d84a76df9a3f20dd480aec48",
+      "leaseUntil": null,
+      "leaseOwner": null,
+      "attemptCount": 3,
+      "nextAttemptAt": null,
+      "deadLetterReason": {
+        "kind": "transient",
+        "message": "Local deliberately failed delivery",
+        "remoteOutcome": "known-failed"
+      },
+      "cancelledAt": null,
+      "updatedAt": "2026-10-21T02:14:43.523Z",
+      "createdAt": "2026-10-21T02:14:36.702Z"
+    },
+    {
+      "id": "f50ac5b9-57c5-42b2-bc2a-0f228dd56096",
+      "variant": "b87fc122-9224-4766-95f3-63a5133b8dcd",
+      "account": "2f5f9a6b-9609-4666-bfa2-c32921060d50",
+      "scheduledFor": "2026-10-21T02:14:10.900Z",
+      "timeZone": "UTC",
+      "status": "published",
+      "idempotencyKey": "scheduled:draft:28f7b375-724f-4b45-8b06-c5b06840ed45:b87fc122-9224-4766-95f3-63a5133b8dcd:sha256:359e30fe08dc66f5d0f75f7ecb6e1e5e6c1326f6a8c82b68df04c73f0898a022",
+      "leaseUntil": null,
+      "leaseOwner": null,
+      "attemptCount": 2,
+      "nextAttemptAt": null,
+      "deadLetterReason": null,
+      "cancelledAt": null,
+      "updatedAt": "2026-10-21T02:14:31.452Z",
+      "createdAt": "2026-10-21T02:14:13.079Z"
+    },
+    {
+      "id": "e7a4a5b8-85bf-4d2d-b568-c6e02e48d448",
+      "variant": "668e18c2-dac7-40e2-983b-234258404ccd",
+      "account": "f9fdca74-2d07-4e8b-a8b6-21c7821d4fbf",
+      "scheduledFor": "2026-10-21T03:13:03.033Z",
+      "timeZone": "UTC",
+      "status": "scheduled",
+      "idempotencyKey": "scheduled:draft:f67b971d-e380-4441-8d67-1f5c5f34a007:668e18c2-dac7-40e2-983b-234258404ccd:sha256:2b7a74066497142c2b144264a9dc8489122da204dc3904f6edea1872aa4a7535",
+      "leaseUntil": null,
+      "leaseOwner": null,
+      "attemptCount": 0,
+      "nextAttemptAt": null,
+      "deadLetterReason": null,
+      "cancelledAt": null,
+      "updatedAt": "2026-10-21T02:13:04.159Z",
+      "createdAt": "2026-10-21T02:13:04.159Z"
+    },
+    {
+      "id": "eed2e3b2-484d-4a8c-9633-df2a0cf35d54",
+      "variant": "5ebb6b0b-c9ad-497f-bd16-494cd09f7724",
+      "account": "f9fdca74-2d07-4e8b-a8b6-21c7821d4fbf",
+      "scheduledFor": "2026-10-21T02:12:56.823Z",
+      "timeZone": "UTC",
+      "status": "published",
+      "idempotencyKey": "scheduled:draft:8ded376e-9c71-43c4-a3cc-690d9d64b4a6:5ebb6b0b-c9ad-497f-bd16-494cd09f7724:sha256:7519ed45350abdd46edfa327b2119254a021647ed616841336b2f5f24886a81e",
+      "leaseUntil": null,
+      "leaseOwner": null,
+      "attemptCount": 1,
+      "nextAttemptAt": null,
+      "deadLetterReason": null,
+      "cancelledAt": null,
+      "updatedAt": "2026-10-21T02:13:29.442Z",
+      "createdAt": "2026-10-21T02:12:58.997Z"
+    },
+    {
+      "id": "44ca9920-17ce-45d0-9248-98466a7ad816",
+      "variant": "fbb5cdd7-8767-4c46-ae5c-3c8567f0fb8a",
+      "account": "adb4859e-5479-476c-9cc8-46d784080227",
+      "scheduledFor": "2026-10-21T02:12:56.823Z",
+      "timeZone": "UTC",
+      "status": "published",
+      "idempotencyKey": "scheduled:draft:8ded376e-9c71-43c4-a3cc-690d9d64b4a6:fbb5cdd7-8767-4c46-ae5c-3c8567f0fb8a:sha256:74c7bfd812bb58ea0573b55d79024a4d59399c42702c682ba8ff3a6e7fb3d4f0",
+      "leaseUntil": null,
+      "leaseOwner": null,
+      "attemptCount": 2,
+      "nextAttemptAt": null,
+      "deadLetterReason": null,
+      "cancelledAt": null,
+      "updatedAt": "2026-10-21T02:13:33.777Z",
+      "createdAt": "2026-10-21T02:12:58.920Z"
+    }
+  ],
+  "attempts": [
+    {
+      "id": "b1d42cae-deea-44d6-b540-0dff3464de92",
+      "queueItem": "0c24a597-6114-4509-a2aa-021159b2e4b3",
+      "variant": "80e4ce36-c8ba-4385-b3de-bd2b86369227",
+      "idempotencyKey": "scheduled:draft:c25bf1b6-cc9c-4590-8b11-aa0feda4011b:80e4ce36-c8ba-4385-b3de-bd2b86369227:sha256:680b884c399b8eeed1b8f01363f875c3b65a12fc423c5e7fc0e79625d577898d",
+      "attemptNumber": 1,
+      "status": "published",
+      "request": {
+        "text": "CRASH accepted before worker termination",
+        "network": "bluesky",
+        "attachments": [],
+        "approvalHash": "sha256:680b884c399b8eeed1b8f01363f875c3b65a12fc423c5e7fc0e79625d577898d"
+      },
+      "response": {
+        "receipt": {
+          "remoteUrl": "http://127.0.0.1:3132/posts/19d8310a98292111eb14bbfe739c2973",
+          "publishedAt": "2026-10-21T02:16:58.819Z",
+          "rawResponse": {
+            "cid": "local-cid-5",
+            "uri": "at://did:plc:rc108c/app.bsky.feed.post/19d8310a98292111eb14bbfe739c2973",
+            "value": {
+              "text": "CRASH accepted before worker termination",
+              "createdAt": "2026-10-21T02:15:58.174Z"
+            },
+            "reconciled": true,
+            "providerMode": "local-harness"
+          },
+          "remotePostId": "at://did:plc:rc108c/app.bsky.feed.post/19d8310a98292111eb14bbfe739c2973"
+        },
+        "remoteId": "at://did:plc:rc108c/app.bsky.feed.post/19d8310a98292111eb14bbfe739c2973",
+        "remoteUrl": "http://127.0.0.1:3132/posts/19d8310a98292111eb14bbfe739c2973",
+        "providerMode": "local-harness"
+      },
+      "error": null,
+      "startedAt": "2026-10-21T02:15:58.053Z",
+      "finishedAt": "2026-10-21T02:16:58.821Z",
+      "updatedAt": "2026-10-21T02:16:58.826Z",
+      "createdAt": "2026-10-21T02:15:58.115Z"
+    },
+    {
+      "id": "9cf57b44-3432-4799-b2c2-92433049a0c5",
+      "queueItem": "04b44f3d-5569-4bda-bff1-7f299848edf2",
+      "variant": "36c888b7-389d-417c-be0a-3e07ddae2336",
+      "idempotencyKey": "scheduled:draft:8e2ce3df-5368-43ce-bd0c-67684b6e5974:36c888b7-389d-417c-be0a-3e07ddae2336:sha256:82fd8f497faee863b882e07be504170f6098ab7196df952dd77070139571bd32",
+      "attemptNumber": 1,
+      "status": "failed",
+      "request": {
+        "text": "BLOCKED unapproved local origin",
+        "network": "activitypub",
+        "attachments": [],
+        "approvalHash": "sha256:82fd8f497faee863b882e07be504170f6098ab7196df952dd77070139571bd32"
+      },
+      "response": null,
+      "error": {
+        "kind": "validation",
+        "message": "Local social adapters require an explicitly configured SOCIAL_LOCAL_ADAPTER_ORIGINS origin.",
+        "remoteOutcome": "known-failed"
+      },
+      "startedAt": "2026-10-21T02:15:50.680Z",
+      "finishedAt": "2026-10-21T02:15:50.774Z",
+      "updatedAt": "2026-10-21T02:15:50.784Z",
+      "createdAt": "2026-10-21T02:15:50.738Z"
+    },
+    {
+      "id": "968d083e-a661-4396-83a4-321807363915",
+      "queueItem": "6b1feae2-534a-41f4-a82f-c9ead464261a",
+      "variant": "90a56828-fa39-4ce3-b7d2-39413a4f89c5",
+      "idempotencyKey": "scheduled:draft:d33b7a9c-88a2-482b-a0df-1be971788ed6:90a56828-fa39-4ce3-b7d2-39413a4f89c5:sha256:5f9fbde2daed50df68861d67324a4877364eb8a4b8b445ad458a3320268f0f7e",
+      "attemptNumber": 1,
+      "status": "failed",
+      "request": {
+        "text": "REVOKED must remain unsent",
+        "network": "bluesky",
+        "attachments": [],
+        "approvalHash": "sha256:5f9fbde2daed50df68861d67324a4877364eb8a4b8b445ad458a3320268f0f7e"
+      },
+      "response": null,
+      "error": {
+        "kind": "reconnect-required",
+        "message": "Account is disconnected or credentials are not healthy; reconnect before publishing.",
+        "remoteOutcome": "known-failed"
+      },
+      "startedAt": "2026-10-21T02:15:41.540Z",
+      "finishedAt": "2026-10-21T02:15:41.652Z",
+      "updatedAt": "2026-10-21T02:15:41.662Z",
+      "createdAt": "2026-10-21T02:15:41.614Z"
+    },
+    {
+      "id": "3aeed430-cf65-4e34-87ac-05f32a2a1a4a",
+      "queueItem": "ed6d6ae7-6e5a-4252-b01a-bfe99000d360",
+      "variant": "bbb6d7e5-a51e-43ff-be74-dceef081c0c5",
+      "idempotencyKey": "scheduled:draft:8c363404-2751-4ee7-b2e4-f3b4347608c3:bbb6d7e5-a51e-43ff-be74-dceef081c0c5:sha256:63497dd9eaa3e3328f4e245105deddfc2411fa19905b972de2fe1afc88c7e6ad",
+      "attemptNumber": 1,
+      "status": "unknown",
+      "request": {
+        "text": "TIMEOUT accepted but response never returned",
+        "network": "activitypub",
+        "attachments": [],
+        "approvalHash": "sha256:63497dd9eaa3e3328f4e245105deddfc2411fa19905b972de2fe1afc88c7e6ad"
+      },
+      "response": null,
+      "error": {
+        "kind": "remote-unknown",
+        "message": "This adapter cannot verify an uncertain post automatically. Inspect the provider; automatic resend is disabled.",
+        "remoteOutcome": "unknown"
+      },
+      "startedAt": "2026-10-21T02:15:23.724Z",
+      "finishedAt": "2026-10-21T02:15:31.522Z",
+      "updatedAt": "2026-10-21T02:15:31.527Z",
+      "createdAt": "2026-10-21T02:15:23.770Z"
+    },
+    {
+      "id": "6a311430-fb6f-4232-b4b3-82cc62df8f2a",
+      "queueItem": "1900d151-b222-4a68-a468-de0eb8eeda1c",
+      "variant": "c2e9141c-ef67-42c7-9475-e0bd00aa6feb",
+      "idempotencyKey": "scheduled:draft:7da1b34f-4201-4b24-9323-16424da497d0:c2e9141c-ef67-42c7-9475-e0bd00aa6feb:sha256:f7e70b9530edd7054eeae1a8ffa1fe8f1fcbfb7cf070abc0f5c589f56bd2132e",
+      "attemptNumber": 1,
+      "status": "published",
+      "request": {
+        "text": "LOST provider accepted then socket closed",
+        "network": "bluesky",
+        "attachments": [],
+        "approvalHash": "sha256:f7e70b9530edd7054eeae1a8ffa1fe8f1fcbfb7cf070abc0f5c589f56bd2132e"
+      },
+      "response": {
+        "receipt": {
+          "remoteUrl": "http://127.0.0.1:3132/posts/cbf0dee859b6ec21831f69ca81bcc8db",
+          "publishedAt": "2026-10-21T02:15:11.449Z",
+          "rawResponse": {
+            "cid": "local-cid-3",
+            "uri": "at://did:plc:rc108c/app.bsky.feed.post/cbf0dee859b6ec21831f69ca81bcc8db",
+            "value": {
+              "text": "LOST provider accepted then socket closed",
+              "createdAt": "2026-10-21T02:14:50.659Z"
+            },
+            "reconciled": true,
+            "providerMode": "local-harness"
+          },
+          "remotePostId": "at://did:plc:rc108c/app.bsky.feed.post/cbf0dee859b6ec21831f69ca81bcc8db"
+        },
+        "remoteId": "at://did:plc:rc108c/app.bsky.feed.post/cbf0dee859b6ec21831f69ca81bcc8db",
+        "remoteUrl": "http://127.0.0.1:3132/posts/cbf0dee859b6ec21831f69ca81bcc8db",
+        "providerMode": "local-harness"
+      },
+      "error": null,
+      "startedAt": "2026-10-21T02:14:50.562Z",
+      "finishedAt": "2026-10-21T02:15:11.452Z",
+      "updatedAt": "2026-10-21T02:15:11.460Z",
+      "createdAt": "2026-10-21T02:14:50.611Z"
+    },
+    {
+      "id": "015b0d69-7925-4ea6-a988-497e1ddc8c16",
+      "queueItem": "cb17a9fb-ec73-4a72-a485-10329a6dd51e",
+      "variant": "2c8006a1-c031-4b51-8ebb-3a4bde8316b0",
+      "idempotencyKey": "scheduled:draft:2e360a2e-9b22-4c62-9de7-e1d74dc5cb99:2c8006a1-c031-4b51-8ebb-3a4bde8316b0:sha256:9788a701881d3deeea769b001592ed84b37867f6d84a76df9a3f20dd480aec48",
+      "attemptNumber": 3,
+      "status": "failed",
+      "request": {
+        "text": "HARD always failed delivery",
+        "network": "activitypub",
+        "attachments": [],
+        "approvalHash": "sha256:9788a701881d3deeea769b001592ed84b37867f6d84a76df9a3f20dd480aec48"
+      },
+      "response": null,
+      "error": {
+        "kind": "transient",
+        "message": "Local deliberately failed delivery",
+        "remoteOutcome": "known-failed"
+      },
+      "startedAt": "2026-10-21T02:14:43.421Z",
+      "finishedAt": "2026-10-21T02:14:43.495Z",
+      "updatedAt": "2026-10-21T02:14:43.503Z",
+      "createdAt": "2026-10-21T02:14:43.458Z"
+    },
+    {
+      "id": "025a581d-a7f2-4c55-ad65-e820f8a29b14",
+      "queueItem": "cb17a9fb-ec73-4a72-a485-10329a6dd51e",
+      "variant": "2c8006a1-c031-4b51-8ebb-3a4bde8316b0",
+      "idempotencyKey": "scheduled:draft:2e360a2e-9b22-4c62-9de7-e1d74dc5cb99:2c8006a1-c031-4b51-8ebb-3a4bde8316b0:sha256:9788a701881d3deeea769b001592ed84b37867f6d84a76df9a3f20dd480aec48",
+      "attemptNumber": 2,
+      "status": "failed",
+      "request": {
+        "text": "HARD always failed delivery",
+        "network": "activitypub",
+        "attachments": [],
+        "approvalHash": "sha256:9788a701881d3deeea769b001592ed84b37867f6d84a76df9a3f20dd480aec48"
+      },
+      "response": null,
+      "error": {
+        "kind": "transient",
+        "message": "Local deliberately failed delivery",
+        "remoteOutcome": "known-failed"
+      },
+      "startedAt": "2026-10-21T02:14:40.422Z",
+      "finishedAt": "2026-10-21T02:14:40.498Z",
+      "updatedAt": "2026-10-21T02:14:40.505Z",
+      "createdAt": "2026-10-21T02:14:40.459Z"
+    },
+    {
+      "id": "6ba14dce-4aba-4030-aea9-8eb3d2d87db3",
+      "queueItem": "cb17a9fb-ec73-4a72-a485-10329a6dd51e",
+      "variant": "2c8006a1-c031-4b51-8ebb-3a4bde8316b0",
+      "idempotencyKey": "scheduled:draft:2e360a2e-9b22-4c62-9de7-e1d74dc5cb99:2c8006a1-c031-4b51-8ebb-3a4bde8316b0:sha256:9788a701881d3deeea769b001592ed84b37867f6d84a76df9a3f20dd480aec48",
+      "attemptNumber": 1,
+      "status": "failed",
+      "request": {
+        "text": "HARD always failed delivery",
+        "network": "activitypub",
+        "attachments": [],
+        "approvalHash": "sha256:9788a701881d3deeea769b001592ed84b37867f6d84a76df9a3f20dd480aec48"
+      },
+      "response": null,
+      "error": {
+        "kind": "transient",
+        "message": "Local deliberately failed delivery",
+        "remoteOutcome": "known-failed"
+      },
+      "startedAt": "2026-10-21T02:14:37.857Z",
+      "finishedAt": "2026-10-21T02:14:37.929Z",
+      "updatedAt": "2026-10-21T02:14:37.937Z",
+      "createdAt": "2026-10-21T02:14:37.897Z"
+    },
+    {
+      "id": "f73e9669-d470-4917-94c3-7a3a8e820516",
+      "queueItem": "f50ac5b9-57c5-42b2-bc2a-0f228dd56096",
+      "variant": "b87fc122-9224-4766-95f3-63a5133b8dcd",
+      "idempotencyKey": "scheduled:draft:28f7b375-724f-4b45-8b06-c5b06840ed45:b87fc122-9224-4766-95f3-63a5133b8dcd:sha256:359e30fe08dc66f5d0f75f7ecb6e1e5e6c1326f6a8c82b68df04c73f0898a022",
+      "attemptNumber": 2,
+      "status": "published",
+      "request": {
+        "text": "RATE real local rate limit",
+        "network": "bluesky",
+        "attachments": [],
+        "approvalHash": "sha256:359e30fe08dc66f5d0f75f7ecb6e1e5e6c1326f6a8c82b68df04c73f0898a022"
+      },
+      "response": {
+        "receipt": {
+          "remoteUrl": "http://127.0.0.1:3132/posts/f14faaed2920e3c1c1a18b287645a621",
+          "publishedAt": "2026-10-21T02:14:31.413Z",
+          "rawResponse": {
+            "cid": "local-cid-2",
+            "uri": "at://did:plc:rc108c/app.bsky.feed.post/f14faaed2920e3c1c1a18b287645a621",
+            "providerMode": "local-harness"
+          },
+          "remotePostId": "at://did:plc:rc108c/app.bsky.feed.post/f14faaed2920e3c1c1a18b287645a621"
+        },
+        "remoteId": "at://did:plc:rc108c/app.bsky.feed.post/f14faaed2920e3c1c1a18b287645a621",
+        "remoteUrl": "http://127.0.0.1:3132/posts/f14faaed2920e3c1c1a18b287645a621",
+        "providerMode": "local-harness"
+      },
+      "error": null,
+      "startedAt": "2026-10-21T02:14:31.330Z",
+      "finishedAt": "2026-10-21T02:14:31.415Z",
+      "updatedAt": "2026-10-21T02:14:31.422Z",
+      "createdAt": "2026-10-21T02:14:31.372Z"
+    },
+    {
+      "id": "e6ddc866-aa65-4d48-b90a-d581efe2ac08",
+      "queueItem": "f50ac5b9-57c5-42b2-bc2a-0f228dd56096",
+      "variant": "b87fc122-9224-4766-95f3-63a5133b8dcd",
+      "idempotencyKey": "scheduled:draft:28f7b375-724f-4b45-8b06-c5b06840ed45:b87fc122-9224-4766-95f3-63a5133b8dcd:sha256:359e30fe08dc66f5d0f75f7ecb6e1e5e6c1326f6a8c82b68df04c73f0898a022",
+      "attemptNumber": 1,
+      "status": "failed",
+      "request": {
+        "text": "RATE real local rate limit",
+        "network": "bluesky",
+        "attachments": [],
+        "approvalHash": "sha256:359e30fe08dc66f5d0f75f7ecb6e1e5e6c1326f6a8c82b68df04c73f0898a022"
+      },
+      "response": null,
+      "error": {
+        "kind": "rate-limit",
+        "message": "Bluesky rate limit exceeded: Local rate limit",
+        "retryAfter": "2026-10-21T02:14:29.577Z",
+        "remoteOutcome": "known-failed"
+      },
+      "startedAt": "2026-10-21T02:14:14.499Z",
+      "finishedAt": "2026-10-21T02:14:14.580Z",
+      "updatedAt": "2026-10-21T02:14:14.588Z",
+      "createdAt": "2026-10-21T02:14:14.540Z"
+    },
+    {
+      "id": "a215cae8-d1e5-4ec9-abd4-140f01e818c9",
+      "queueItem": "44ca9920-17ce-45d0-9248-98466a7ad816",
+      "variant": "fbb5cdd7-8767-4c46-ae5c-3c8567f0fb8a",
+      "idempotencyKey": "scheduled:draft:8ded376e-9c71-43c4-a3cc-690d9d64b4a6:fbb5cdd7-8767-4c46-ae5c-3c8567f0fb8a:sha256:74c7bfd812bb58ea0573b55d79024a4d59399c42702c682ba8ff3a6e7fb3d4f0",
+      "attemptNumber": 2,
+      "status": "published",
+      "request": {
+        "text": "PARTIAL deliberately failing local Mastodon",
+        "network": "activitypub",
+        "attachments": [],
+        "approvalHash": "sha256:74c7bfd812bb58ea0573b55d79024a4d59399c42702c682ba8ff3a6e7fb3d4f0"
+      },
+      "response": {
+        "receipt": {
+          "remoteUrl": "http://127.0.0.1:3132/masto/1",
+          "publishedAt": "2026-10-21T02:13:33.733Z",
+          "rawResponse": {
+            "id": "local-masto-1",
+            "url": "http://127.0.0.1:3132/masto/1",
+            "created_at": "2026-10-21T02:13:33.733Z",
+            "providerMode": "local-harness"
+          },
+          "remotePostId": "local-masto-1"
+        },
+        "remoteId": "local-masto-1",
+        "remoteUrl": "http://127.0.0.1:3132/masto/1",
+        "providerMode": "local-harness"
+      },
+      "error": null,
+      "startedAt": "2026-10-21T02:13:33.673Z",
+      "finishedAt": "2026-10-21T02:13:33.737Z",
+      "updatedAt": "2026-10-21T02:13:33.746Z",
+      "createdAt": "2026-10-21T02:13:33.705Z"
+    },
+    {
+      "id": "53192af4-524b-4747-a23d-52d1bdcd5606",
+      "queueItem": "44ca9920-17ce-45d0-9248-98466a7ad816",
+      "variant": "fbb5cdd7-8767-4c46-ae5c-3c8567f0fb8a",
+      "idempotencyKey": "scheduled:draft:8ded376e-9c71-43c4-a3cc-690d9d64b4a6:fbb5cdd7-8767-4c46-ae5c-3c8567f0fb8a:sha256:74c7bfd812bb58ea0573b55d79024a4d59399c42702c682ba8ff3a6e7fb3d4f0",
+      "attemptNumber": 1,
+      "status": "failed",
+      "request": {
+        "text": "PARTIAL deliberately failing local Mastodon",
+        "network": "activitypub",
+        "attachments": [],
+        "approvalHash": "sha256:74c7bfd812bb58ea0573b55d79024a4d59399c42702c682ba8ff3a6e7fb3d4f0"
+      },
+      "response": null,
+      "error": {
+        "kind": "transient",
+        "message": "Local deliberately failed delivery",
+        "remoteOutcome": "known-failed"
+      },
+      "startedAt": "2026-10-21T02:13:29.490Z",
+      "finishedAt": "2026-10-21T02:13:29.573Z",
+      "updatedAt": "2026-10-21T02:13:29.582Z",
+      "createdAt": "2026-10-21T02:13:29.530Z"
+    },
+    {
+      "id": "fc1ac7d1-ded7-4ceb-b1f9-2ebfb5deb35f",
+      "queueItem": "eed2e3b2-484d-4a8c-9633-df2a0cf35d54",
+      "variant": "5ebb6b0b-c9ad-497f-bd16-494cd09f7724",
+      "idempotencyKey": "scheduled:draft:8ded376e-9c71-43c4-a3cc-690d9d64b4a6:5ebb6b0b-c9ad-497f-bd16-494cd09f7724:sha256:7519ed45350abdd46edfa327b2119254a021647ed616841336b2f5f24886a81e",
+      "attemptNumber": 1,
+      "status": "published",
+      "request": {
+        "text": "PARTIAL successful local Bluesky",
+        "network": "bluesky",
+        "attachments": [],
+        "approvalHash": "sha256:7519ed45350abdd46edfa327b2119254a021647ed616841336b2f5f24886a81e"
+      },
+      "response": {
+        "receipt": {
+          "remoteUrl": "http://127.0.0.1:3132/posts/b8ff1bd82445384971e54b5b466cf084",
+          "publishedAt": "2026-10-21T02:13:29.387Z",
+          "rawResponse": {
+            "cid": "local-cid-0",
+            "uri": "at://did:plc:rc108c/app.bsky.feed.post/b8ff1bd82445384971e54b5b466cf084",
+            "providerMode": "local-harness"
+          },
+          "remotePostId": "at://did:plc:rc108c/app.bsky.feed.post/b8ff1bd82445384971e54b5b466cf084"
+        },
+        "remoteId": "at://did:plc:rc108c/app.bsky.feed.post/b8ff1bd82445384971e54b5b466cf084",
+        "remoteUrl": "http://127.0.0.1:3132/posts/b8ff1bd82445384971e54b5b466cf084",
+        "providerMode": "local-harness"
+      },
+      "error": null,
+      "startedAt": "2026-10-21T02:13:29.198Z",
+      "finishedAt": "2026-10-21T02:13:29.390Z",
+      "updatedAt": "2026-10-21T02:13:29.400Z",
+      "createdAt": "2026-10-21T02:13:29.281Z"
+    }
+  ],
+  "external": [
+    {
+      "id": "a63b9d6c-88d8-4bee-be21-b197ce0114fd",
+      "variant": "80e4ce36-c8ba-4385-b3de-bd2b86369227",
+      "account": "f9fdca74-2d07-4e8b-a8b6-21c7821d4fbf",
+      "remoteId": "at://did:plc:rc108c/app.bsky.feed.post/19d8310a98292111eb14bbfe739c2973",
+      "remoteUrl": "http://127.0.0.1:3132/posts/19d8310a98292111eb14bbfe739c2973",
+      "remoteState": "published",
+      "publishedAt": "2026-10-21T02:16:58.849Z",
+      "deleteRequestedAt": null,
+      "updatedAt": "2026-10-21T02:16:58.851Z",
+      "createdAt": "2026-10-21T02:16:58.851Z"
+    },
+    {
+      "id": "ef0bf4a2-2254-4bf1-af80-2d8de20b2ae2",
+      "variant": "c2e9141c-ef67-42c7-9475-e0bd00aa6feb",
+      "account": "f9fdca74-2d07-4e8b-a8b6-21c7821d4fbf",
+      "remoteId": "at://did:plc:rc108c/app.bsky.feed.post/cbf0dee859b6ec21831f69ca81bcc8db",
+      "remoteUrl": "http://127.0.0.1:3132/posts/cbf0dee859b6ec21831f69ca81bcc8db",
+      "remoteState": "published",
+      "publishedAt": "2026-10-21T02:15:11.480Z",
+      "deleteRequestedAt": null,
+      "updatedAt": "2026-10-21T02:15:11.481Z",
+      "createdAt": "2026-10-21T02:15:11.481Z"
+    },
+    {
+      "id": "14a0994e-afc2-4b2d-a5b8-0f9b0a1e1e81",
+      "variant": "b87fc122-9224-4766-95f3-63a5133b8dcd",
+      "account": "2f5f9a6b-9609-4666-bfa2-c32921060d50",
+      "remoteId": "at://did:plc:rc108c/app.bsky.feed.post/f14faaed2920e3c1c1a18b287645a621",
+      "remoteUrl": "http://127.0.0.1:3132/posts/f14faaed2920e3c1c1a18b287645a621",
+      "remoteState": "published",
+      "publishedAt": "2026-10-21T02:14:31.441Z",
+      "deleteRequestedAt": null,
+      "updatedAt": "2026-10-21T02:14:31.442Z",
+      "createdAt": "2026-10-21T02:14:31.442Z"
+    },
+    {
+      "id": "6032a5fa-1904-4e74-a468-d521d86c0bd1",
+      "variant": "fbb5cdd7-8767-4c46-ae5c-3c8567f0fb8a",
+      "account": "adb4859e-5479-476c-9cc8-46d784080227",
+      "remoteId": "local-masto-1",
+      "remoteUrl": "http://127.0.0.1:3132/masto/1",
+      "remoteState": "published",
+      "publishedAt": "2026-10-21T02:13:33.766Z",
+      "deleteRequestedAt": null,
+      "updatedAt": "2026-10-21T02:13:33.767Z",
+      "createdAt": "2026-10-21T02:13:33.767Z"
+    },
+    {
+      "id": "fb2b8d31-6daf-427d-aac0-5201db010a59",
+      "variant": "5ebb6b0b-c9ad-497f-bd16-494cd09f7724",
+      "account": "f9fdca74-2d07-4e8b-a8b6-21c7821d4fbf",
+      "remoteId": "at://did:plc:rc108c/app.bsky.feed.post/b8ff1bd82445384971e54b5b466cf084",
+      "remoteUrl": "http://127.0.0.1:3132/posts/b8ff1bd82445384971e54b5b466cf084",
+      "remoteState": "published",
+      "publishedAt": "2026-10-21T02:13:29.423Z",
+      "deleteRequestedAt": null,
+      "updatedAt": "2026-10-21T02:13:29.424Z",
+      "createdAt": "2026-10-21T02:13:29.424Z"
+    }
+  ]
+}

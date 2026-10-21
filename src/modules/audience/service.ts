@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto'
 import { withExecutionLock } from '../operations/execution-lock'
 import { executeIntakeActions } from './form-runtime'
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -20,6 +21,7 @@ import {
   type FormSchemaSnapshot,
 } from './contracts'
 import { approvedRenderSnapshot, validateEmailDesign } from './email-composer'
+import { explainSegment, type AudienceProjection } from './engine'
 
 type Doc = Record<string, any>
 type Store = any
@@ -497,6 +499,162 @@ export async function reviewAndScheduleNewsletter(
   })
 }
 
+export async function evaluateSegmentRecipients(
+  payload: Store,
+  input: { siteId: string; segmentId: string },
+) {
+  const segment = (await payload.findByID({
+    collection: 'audience-segments',
+    id: input.segmentId,
+    depth: 0,
+    overrideAccess: true,
+  })) as Doc
+  if (!segment) throw new Error('Audience segment not found.')
+  if (relationId(segment.site) !== input.siteId) {
+    throw new Error('Segment site mismatch: access denied to segment outside owning site.')
+  }
+
+  const subscribersRes = await payload.find({
+    collection: 'subscribers',
+    where: { site: { equals: input.siteId } },
+    limit: 2000,
+    depth: 1,
+    overrideAccess: true,
+  })
+
+  const totalSubscribers = subscribersRes.docs.length
+  let matchedSubscribers = 0
+  let unconsentedOrPending = 0
+  let suppressed = 0
+  let duplicates = 0
+  const eligibleRecipients: Array<{ subscriberId: string; email: string }> = []
+  const seenEmails = new Set<string>()
+
+  // Fetch active memberships
+  const membershipsRes = await payload.find({
+    collection: 'audience-memberships',
+    where: { status: { equals: 'active' } },
+    limit: 5000,
+    depth: 0,
+    overrideAccess: true,
+  })
+  const membershipsBySubscriber = new Map<string, string[]>()
+  for (const m of membershipsRes.docs as Doc[]) {
+    const subId = relationId(m.subscriber)
+    const listId = relationId(m.audienceList)
+    if (subId && listId) {
+      const existing = membershipsBySubscriber.get(subId) ?? []
+      existing.push(listId)
+      membershipsBySubscriber.set(subId, existing)
+    }
+  }
+
+  for (const sub of subscribersRes.docs as Doc[]) {
+    let email = ''
+    try {
+      email = normalizeEmailAddress(String(sub.email ?? ''))
+    } catch {
+      continue
+    }
+
+    const subId = String(sub.id)
+    const isSuppressed = await isSubscriberSuppressed(payload, input.siteId, String(sub.emailHash))
+    const isActive = sub.status === 'active' && !sub.globalUnsubscribedAt && !sub.erasedAt
+    const lists = membershipsBySubscriber.get(subId) ?? []
+
+    const projection: AudienceProjection = {
+      subscriberId: subId,
+      siteId: input.siteId,
+      email,
+      channelEligible: isActive && !isSuppressed,
+      consentPurposes: isActive ? ['newsletter'] : [],
+      lists,
+      tags: [],
+      formIds: [],
+      sourceCampaigns: [],
+      roles: [],
+      commerceFacts: [],
+      communityFacts: [],
+    }
+
+    const explanation = explainSegment(segment.definition, projection)
+    if (explanation.selected) {
+      matchedSubscribers++
+      if (!isActive) {
+        unconsentedOrPending++
+      } else if (isSuppressed) {
+        suppressed++
+      } else {
+        if (seenEmails.has(email)) {
+          duplicates++
+        } else {
+          seenEmails.add(email)
+          eligibleRecipients.push({ subscriberId: subId, email })
+        }
+      }
+    }
+  }
+
+  const eligibleConsented = eligibleRecipients.length
+  return {
+    segment,
+    counts: {
+      totalSubscribers,
+      matchedSubscribers,
+      eligibleConsented,
+      unconsentedOrPending,
+      suppressed,
+      duplicates,
+      isEmpty: eligibleConsented === 0,
+    },
+    eligibleRecipients,
+  }
+}
+
+export async function createRecipientSnapshot(
+  payload: Store,
+  input: { siteId: string; messageId: string; segmentId: string; actorUserId: string },
+) {
+  const evaluation = await evaluateSegmentRecipients(payload, {
+    siteId: input.siteId,
+    segmentId: input.segmentId,
+  })
+
+  const hashInput = {
+    siteId: input.siteId,
+    messageId: input.messageId,
+    segmentId: input.segmentId,
+    segmentVersion: String(evaluation.segment.version),
+    recipients: evaluation.eligibleRecipients.map((r) => r.subscriberId).sort(),
+  }
+  const hash = createHash('sha256').update(JSON.stringify(hashInput)).digest('hex')
+
+  return payload.create({
+    collection: 'recipient-snapshots',
+    data: {
+      site: input.siteId,
+      message: input.messageId,
+      segment: input.segmentId,
+      segmentVersion: String(evaluation.segment.version),
+      evaluatedAt: new Date().toISOString(),
+      recipients: evaluation.eligibleRecipients,
+      exclusionCounts: {
+        unconsentedOrPending: evaluation.counts.unconsentedOrPending,
+        suppressed: evaluation.counts.suppressed,
+        duplicates: evaluation.counts.duplicates,
+        notEligible: evaluation.counts.unconsentedOrPending + evaluation.counts.suppressed,
+      },
+      hash,
+      approvalAudit: {
+        scheduledBy: input.actorUserId,
+        evaluatedAt: new Date().toISOString(),
+        totalEligible: evaluation.eligibleRecipients.length,
+      },
+    },
+    overrideAccess: true,
+  })
+}
+
 export async function queueNewsletterDeliveries(payload: Store, messageId: string) {
   const message = (await payload.findByID({
     collection: 'email-messages',
@@ -509,8 +667,86 @@ export async function queueNewsletterDeliveries(payload: Store, messageId: strin
     new Date(message.scheduledFor) > new Date()
   )
     return 0
-  const lists = Array.isArray(message.audience?.lists) ? message.audience.lists : []
+
   let queued = 0
+  const siteId = relationId(message.site) ?? ''
+
+  // If message has an immutable recipient snapshot, queue deliveries for all snapshot recipients
+  if (message.recipientSnapshot) {
+    const snapshotId = relationId(message.recipientSnapshot) ?? String(message.recipientSnapshot)
+    const snapshot = (await payload.findByID({
+      collection: 'recipient-snapshots',
+      id: snapshotId,
+      depth: 0,
+      overrideAccess: true,
+    })) as Doc
+    const snapshotRecipients = Array.isArray(snapshot?.recipients) ? snapshot.recipients : []
+    const seenEmails = new Set<string>()
+
+    for (const item of snapshotRecipients) {
+      const subscriberId = item.subscriberId
+      const subscriber = subscriberId
+        ? ((await payload.findByID({
+            collection: 'subscribers',
+            id: subscriberId,
+            depth: 0,
+            overrideAccess: true,
+          })) as Doc)
+        : null
+      if (!subscriber?.email || subscriber.status !== 'active') continue
+      if (relationId(subscriber.site) !== siteId) continue
+      let normalizedEmail = ''
+      try {
+        normalizedEmail = normalizeEmailAddress(subscriber.email)
+      } catch {
+        continue
+      }
+      if (seenEmails.has(normalizedEmail)) continue
+      seenEmails.add(normalizedEmail)
+      if (await isSubscriberSuppressed(payload, siteId, subscriber.emailHash)) continue
+
+      const key = deliveryIdempotencyKey(messageId, subscriber.id)
+      const exists = await payload.find({
+        collection: 'email-deliveries',
+        where: { idempotencyKey: { equals: key } },
+        limit: 1,
+        overrideAccess: true,
+      })
+      const delivery =
+        exists.docs[0] ||
+        (await payload.create({
+          collection: 'email-deliveries',
+          data: {
+            message: messageId,
+            subscriber: subscriber.id,
+            recipientEmail: subscriber.email,
+            idempotencyKey: key,
+            status: 'queued',
+            messageSnapshot: {
+              subject: message.subject,
+              blocks: message.blocks,
+              kind: message.kind,
+              reviewedAt: message.reviewedAt,
+              messageDesign: message.messageDesign,
+              purpose: message.purpose,
+              senderIdentity: message.senderIdentity,
+            },
+          },
+          overrideAccess: true,
+        }))
+      if (!exists.docs.length) {
+        await payload.jobs.queue({
+          task: 'audience-email-delivery',
+          input: { deliveryId: delivery.id },
+          queue: 'operations',
+        })
+        queued++
+      }
+    }
+  }
+
+  // Also support audience lists if configured
+  const lists = Array.isArray(message.audience?.lists) ? message.audience.lists : []
   for (const listId of lists) {
     // This pages in bounded batches. The unique delivery key is the database-backed
     // snapshot and deduplicates a subscriber that belongs to several selected lists.
@@ -526,11 +762,11 @@ export async function queueNewsletterDeliveries(payload: Store, messageId: strin
       for (const membership of memberships.docs as Doc[]) {
         const subscriber = membership.subscriber as Doc
         if (!subscriber?.email || subscriber.status !== 'active') continue
-        if (relationId(subscriber.site) !== relationId(message.site)) continue
+        if (relationId(subscriber.site) !== siteId) continue
         if (
           await isSubscriberSuppressed(
             payload,
-            relationId(message.site) ?? '',
+            siteId,
             subscriber.emailHash,
           )
         )

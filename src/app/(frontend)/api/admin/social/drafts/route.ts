@@ -33,7 +33,11 @@ export async function GET(request: Request) {
     const match = cookieHeader.match(/renegade-active-site=([^;]+)/)
     const effectiveSiteId = siteId || (match ? match[1].trim() : undefined)
 
-    if (effectiveSiteId && !grant.isGlobalOwner && !grant.authorizedSiteIds.includes(effectiveSiteId)) {
+    if (
+      effectiveSiteId &&
+      !grant.isGlobalOwner &&
+      !grant.authorizedSiteIds.includes(effectiveSiteId)
+    ) {
       return NextResponse.json(
         { error: 'Forbidden. You do not have operator access to this site.' },
         { status: 403 },
@@ -182,7 +186,8 @@ export async function POST(request: Request) {
     if (action === 'create-draft') {
       const cookieHeader = request.headers.get('cookie') || ''
       const match = cookieHeader.match(/renegade-active-site=([^;]+)/)
-      const siteId = body.siteId || (match ? match[1].trim() : undefined) || grant.authorizedSiteIds[0]
+      const siteId =
+        body.siteId || (match ? match[1].trim() : undefined) || grant.authorizedSiteIds[0]
       if (!siteId) {
         return NextResponse.json({ error: 'siteId is required.' }, { status: 400 })
       }
@@ -460,7 +465,9 @@ export async function POST(request: Request) {
     if (action === 'submit-review') {
       if (draft.status !== 'draft') {
         return NextResponse.json(
-          { error: `Only drafts in draft status can be submitted for review. Current: ${draft.status}` },
+          {
+            error: `Only drafts in draft status can be submitted for review. Current: ${draft.status}`,
+          },
           { status: 400 },
         )
       }
@@ -527,10 +534,7 @@ export async function POST(request: Request) {
       })
 
       if (!variants.docs.length) {
-        return NextResponse.json(
-          { error: 'Draft has no variants to approve.' },
-          { status: 400 },
-        )
+        return NextResponse.json({ error: 'Draft has no variants to approve.' }, { status: 400 })
       }
 
       const now = new Date().toISOString()
@@ -594,7 +598,11 @@ export async function POST(request: Request) {
         id: draft.id,
         data: {
           status: 'cancelled',
-          provenance: { ...(draft.provenance || {}), declineReason: reason, declinedAt: new Date().toISOString() },
+          provenance: {
+            ...(draft.provenance || {}),
+            declineReason: reason,
+            declinedAt: new Date().toISOString(),
+          },
         } as never,
         overrideAccess: true,
       })
@@ -697,6 +705,12 @@ export async function POST(request: Request) {
           overrideAccess: true,
         })
 
+        await payload.jobs.queue({
+          task: 'social-publish',
+          queue: 'operations',
+          input: { queueItemId: String(qDoc.id), workerId: 'social-scheduled', mode: 'dispatch' },
+          waitUntil: new Date(scheduledFor),
+        })
         queueDocs.push(qDoc)
       }
 

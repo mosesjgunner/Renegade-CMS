@@ -1,0 +1,174 @@
+[
+  {
+    "name": "Site Alpha created",
+    "passed": true
+  },
+  {
+    "name": "Site Beta (Foreign) created",
+    "passed": true
+  },
+  {
+    "name": "Owner user created",
+    "passed": true
+  },
+  {
+    "name": "Article created and published",
+    "passed": true
+  },
+  {
+    "name": "Audience list created",
+    "passed": true
+  },
+  {
+    "name": "Active supporters segment created",
+    "passed": true
+  },
+  {
+    "name": "Empty audience segment created",
+    "passed": true
+  },
+  {
+    "name": "Foreign site segment created",
+    "passed": true
+  },
+  {
+    "name": "Subscribers seeded (2 active, 1 dup, 1 pending, 1 suppressed)",
+    "passed": true
+  },
+  {
+    "name": "UI loads with composer heading",
+    "passed": true
+  },
+  {
+    "name": "Subject line derived from article title",
+    "passed": true
+  },
+  {
+    "name": "Pinned content card visible with article details",
+    "passed": true
+  },
+  {
+    "name": "Approximation warning is visible",
+    "passed": true
+  },
+  {
+    "name": "Rendered MIME HTML has responsive container",
+    "passed": true
+  },
+  {
+    "name": "Rendered MIME HTML has derived article title",
+    "passed": true
+  },
+  {
+    "name": "Rendered MIME HTML has mandatory legal/unsubscribe link",
+    "passed": true
+  },
+  {
+    "name": "Plain text companion renders",
+    "passed": true
+  },
+  {
+    "name": "Plain text companion contains unsubscribe",
+    "passed": true
+  },
+  {
+    "name": "Live analysis matches all 5 list subscribers",
+    "passed": true
+  },
+  {
+    "name": "Live analysis counts exactly 2 eligible consented recipients",
+    "passed": true
+  },
+  {
+    "name": "Live analysis reports 1 duplicate email deduplicated",
+    "passed": true
+  },
+  {
+    "name": "Live analysis reports 1 pending/unconsented subscriber",
+    "passed": true
+  },
+  {
+    "name": "Live analysis reports 1 suppressed subscriber",
+    "passed": true
+  },
+  {
+    "name": "Empty audience state warning is displayed",
+    "passed": true
+  },
+  {
+    "name": "Schedule button is disabled on empty audience state",
+    "passed": true
+  },
+  {
+    "name": "Campaign scheduled success banner displayed",
+    "passed": true
+  },
+  {
+    "name": "Campaign status transitioned to SCHEDULED",
+    "passed": true
+  },
+  {
+    "name": "Immutable recipient snapshot SHA-256 hash displayed",
+    "passed": true
+  },
+  {
+    "name": "Frozen recipients count displayed as 2",
+    "passed": true
+  },
+  {
+    "name": "Test send status indicates success",
+    "passed": true
+  },
+  {
+    "name": "Scheduled email message persisted in database",
+    "passed": true
+  },
+  {
+    "name": "Persisted message has scheduledFor timestamp",
+    "passed": true
+  },
+  {
+    "name": "Persisted message has approvedRender snapshot",
+    "passed": true
+  },
+  {
+    "name": "Persisted message has pinned recipientSnapshot reference",
+    "passed": true
+  },
+  {
+    "name": "Recipient snapshot record exists in DB",
+    "passed": true
+  },
+  {
+    "name": "Recipient snapshot has SHA-256 hash",
+    "passed": true
+  },
+  {
+    "name": "Recipient snapshot contains exactly 2 recipients",
+    "passed": true
+  },
+  {
+    "name": "Recipient snapshot records accurate exclusion counts",
+    "passed": true
+  },
+  {
+    "name": "Foreign site segment evaluation rejected with 403 Forbidden",
+    "passed": true
+  },
+  {
+    "name": "Forbidden response explains site scoping violation",
+    "passed": true
+  },
+  {
+    "name": "Anonymous GET rejected with 403 Forbidden",
+    "passed": true
+  },
+  {
+    "name": "Unconsented subscriber has zero deliveries",
+    "passed": true
+  },
+  {
+    "name": "Suppressed subscriber has zero deliveries",
+    "passed": true
+  }
+]

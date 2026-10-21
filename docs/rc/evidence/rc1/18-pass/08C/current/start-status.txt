@@ -1,0 +1,14 @@
+ M docs/rc/evidence/rc1/18-pass/08C/01-draft-scheduled.png
+ M docs/rc/evidence/rc1/18-pass/08C/02-after-dispatch.png
+ M src/app/(frontend)/api/admin/social/drafts/route.ts
+ M src/app/(frontend)/api/admin/social/worker/route.ts
+ M src/collections/Social.ts
+ M src/migrations/index.ts
+ M src/modules/admin/SocialCommandCenter.tsx
+ M src/modules/social/adapters/bluesky.ts
+ M src/modules/social/adapters/mastodon.ts
+ M src/modules/social/contracts.ts
+ M src/modules/social/tasks.ts
+ M tests/rc1-08c/verify.ts
+?? src/migrations/20261020_080000_rc1_social_dispatch_recovery.ts
+?? src/modules/social/dispatch-boundary.ts

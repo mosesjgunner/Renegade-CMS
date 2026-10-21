@@ -1,0 +1,416 @@
+{
+  "checksPassed": 31,
+  "failed": 1,
+  "skipped": 0,
+  "phase": "real-worker-interruption-and-natural-lease-recovery",
+  "trace": [
+    {
+      "name": "isolated actor, site, account and session fixtures configured; no passkey acceptance claimed",
+      "passed": true
+    },
+    {
+      "name": "Social Command Center loads in Chromium with fixture operator session",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/social/drafts",
+      "method": "POST",
+      "status": 201
+    },
+    {
+      "route": "/api/admin/social/drafts",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/admin/social/drafts",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/admin/social/drafts",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/admin/social/drafts",
+      "method": "POST",
+      "status": 201
+    },
+    {
+      "route": "/api/admin/social/drafts",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/admin/social/drafts",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/admin/social/drafts",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "name": "UI dispatch persists one actual adapter success and one deliberate failure",
+      "passed": true
+    },
+    {
+      "name": "parent draft persists partial destination failure truthfully",
+      "passed": true
+    },
+    {
+      "name": "browser presents persisted success, failure and local receipt mode",
+      "passed": true
+    },
+    {
+      "name": "observed provider sink output contains the exact dispatched text",
+      "passed": true
+    },
+    {
+      "name": "future scheduling guard prevented provider send",
+      "passed": true
+    },
+    {
+      "name": "failed-only UI retry publishes the failure without resending success",
+      "passed": true
+    },
+    {
+      "name": "partial draft reaches published after only its failed destination recovers",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/social/worker",
+      "method": "POST",
+      "status": 403
+    },
+    {
+      "name": "foreign scoped actor denied dispatch-item",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/social/worker",
+      "method": "POST",
+      "status": 403
+    },
+    {
+      "name": "foreign scoped actor denied retry-failed",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/social/worker",
+      "method": "POST",
+      "status": 403
+    },
+    {
+      "name": "foreign scoped actor denied reconcile",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/social/worker",
+      "method": "POST",
+      "status": 403
+    },
+    {
+      "route": "/api/admin/social/worker",
+      "method": "POST",
+      "status": 403
+    },
+    {
+      "name": "anonymous and authenticated cross-origin dispatch denied",
+      "passed": true
+    },
+    {
+      "route": "/api/social-queue-items/e9ec6a96-82f6-4ecb-a0b8-92bf1363c7f6",
+      "method": "PATCH",
+      "status": 403
+    },
+    {
+      "route": "/api/external-posts",
+      "method": "POST",
+      "status": 403
+    },
+    {
+      "name": "native API cannot forge queue completion or provider receipts",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/social/worker",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "name": "single-item dispatch also enforces future due time",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/social/worker",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "name": "site-scoped staff has real read authority before denied approval test",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/social/drafts",
+      "method": "POST",
+      "status": 403
+    },
+    {
+      "name": "authorized staff role cannot approve delivery",
+      "passed": true
+    },
+    {
+      "name": "denied state writes preserve scheduled future work and zero attempts",
+      "passed": true
+    },
+    {
+      "name": "denied native receipt creation persists no forged output",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/social/drafts",
+      "method": "POST",
+      "status": 201
+    },
+    {
+      "route": "/api/admin/social/drafts",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/admin/social/drafts",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/admin/social/drafts",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/admin/social/worker",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "name": "real 429 response persists a future provider retry time",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/social/worker",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "name": "manual retry cannot bypass provider rate limit",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/social/worker",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "name": "eligible retry succeeds once after rate limit expires",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/social/drafts",
+      "method": "POST",
+      "status": 201
+    },
+    {
+      "route": "/api/admin/social/drafts",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/admin/social/drafts",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/admin/social/drafts",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/admin/social/worker",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/admin/social/worker",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/admin/social/worker",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/admin/social/worker",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "name": "failed delivery is bounded at exactly three sends and attempts",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/social/drafts",
+      "method": "POST",
+      "status": 201
+    },
+    {
+      "route": "/api/admin/social/drafts",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/admin/social/drafts",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/admin/social/drafts",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/admin/social/worker",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "name": "lost provider response persists unknown, not known failure or success",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/social/worker",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "name": "failed-only retry excludes uncertain delivery",
+      "passed": true
+    },
+    {
+      "name": "read-only UI reconciliation finds accepted post without resending",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/social/drafts",
+      "method": "POST",
+      "status": 201
+    },
+    {
+      "route": "/api/admin/social/drafts",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/admin/social/drafts",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/admin/social/drafts",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/admin/social/worker",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "name": "actual socket timeout remains unknown and quarantined",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/social/worker",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/admin/social/worker",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "name": "unsupported reconciliation does not replay uncertain Mastodon publication",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/social/drafts",
+      "method": "POST",
+      "status": 201
+    },
+    {
+      "route": "/api/admin/social/drafts",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/admin/social/drafts",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/admin/social/drafts",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/social-accounts/f2295e20-9db2-4d81-a253-1f0cd56707bd",
+      "method": "PATCH",
+      "status": 200
+    },
+    {
+      "route": "/api/admin/social/worker",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "name": "ordinary disconnect prevents provider calls and persists reconnect-required",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/social/drafts",
+      "method": "POST",
+      "status": 201
+    },
+    {
+      "route": "/api/admin/social/drafts",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/admin/social/drafts",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/admin/social/drafts",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "name": "killed worker leaves real persisted publishing lease and started attempt",
+      "passed": true
+    },
+    {
+      "name": "actual jobs worker recovers expired publication without duplicate provider send",
+      "passed": true
+    },
+    {
+      "phase": "real-worker-interruption-and-natural-lease-recovery",
+      "failure": "page.reload: net::ERR_ABORTED; maybe frame was detached?\nCall log:\n\u001b[2m  - waiting for navigation until \"domcontentloaded\"\u001b[22m\n"
+    }
+  ]
+}

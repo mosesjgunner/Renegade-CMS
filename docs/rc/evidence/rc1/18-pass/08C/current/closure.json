@@ -1,0 +1,32 @@
+{
+  "verifiedAtUtc": "2026-10-21T02:23:28.309366+00:00",
+  "testedBaseSha": "8775209d84d7a3071d0ba49919c71021be82ea39",
+  "testedOverlaySha256": "2052765e0921067a3c9e12e7e1e51ec3494ea5f7832acd623ac04e9a24b5ddb6",
+  "scopedMainContainment": "passed",
+  "priorEvidenceHashes": "passed",
+  "unique08CLedgerRow": "passed",
+  "gitDiffCheckExit": 0,
+  "behavioralCounts": {
+    "unit": 51,
+    "primary": 41,
+    "restart": 14,
+    "totalPassed": 106,
+    "failed": 0,
+    "skipped": 0,
+    "mandatoryLocalUnexecuted": 0
+  },
+  "ownedContainerStatus": "exited",
+  "ownedListenersClosed": [
+    39036,
+    3132,
+    3133,
+    5466
+  ],
+  "unexecutedAcceptanceCategories": [
+    "ordinary WebAuthn ceremony",
+    "remote sandbox delivery",
+    "real provider delivery",
+    "production application image/build"
+  ],
+  "nextSubpassExecutedByThisRun": false
+}

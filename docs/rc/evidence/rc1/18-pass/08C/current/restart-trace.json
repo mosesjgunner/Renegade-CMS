@@ -1,0 +1,69 @@
+{
+  "checksPassed": 14,
+  "failed": 0,
+  "skipped": 0,
+  "phase": "database-restart",
+  "trace": [
+    {
+      "name": "database restart retains 0c24a597-6114-4509-a2aa-021159b2e4b3 status and attempts",
+      "passed": true
+    },
+    {
+      "name": "database restart retains 04b44f3d-5569-4bda-bff1-7f299848edf2 status and attempts",
+      "passed": true
+    },
+    {
+      "name": "database restart retains 6b1feae2-534a-41f4-a82f-c9ead464261a status and attempts",
+      "passed": true
+    },
+    {
+      "name": "database restart retains ed6d6ae7-6e5a-4252-b01a-bfe99000d360 status and attempts",
+      "passed": true
+    },
+    {
+      "name": "database restart retains 1900d151-b222-4a68-a468-de0eb8eeda1c status and attempts",
+      "passed": true
+    },
+    {
+      "name": "database restart retains cb17a9fb-ec73-4a72-a485-10329a6dd51e status and attempts",
+      "passed": true
+    },
+    {
+      "name": "database restart retains f50ac5b9-57c5-42b2-bc2a-0f228dd56096 status and attempts",
+      "passed": true
+    },
+    {
+      "name": "database restart retains e7a4a5b8-85bf-4d2d-b568-c6e02e48d448 status and attempts",
+      "passed": true
+    },
+    {
+      "name": "database restart retains eed2e3b2-484d-4a8c-9633-df2a0cf35d54 status and attempts",
+      "passed": true
+    },
+    {
+      "name": "database restart retains 44ca9920-17ce-45d0-9248-98466a7ad816 status and attempts",
+      "passed": true
+    },
+    {
+      "name": "database restart retains exact external post count",
+      "passed": true
+    },
+    {
+      "name": "database restart retains exact attempt count",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/social/worker",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "name": "restart dispatch does not replay published or unknown work",
+      "passed": true
+    },
+    {
+      "name": "restart dispatch leaves exact attempt count unchanged",
+      "passed": true
+    }
+  ]
+}

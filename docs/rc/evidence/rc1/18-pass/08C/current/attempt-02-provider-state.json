@@ -1,0 +1,54 @@
+{
+  "records": [
+    {
+      "key": "bsky:53130d558cb554faf980ca2aad15079b",
+      "id": "local-cid-0",
+      "remoteId": "at://did:plc:rc108c/app.bsky.feed.post/53130d558cb554faf980ca2aad15079b",
+      "text": "PARTIAL successful local Bluesky",
+      "remoteUrl": "http://127.0.0.1:3132/posts/53130d558cb554faf980ca2aad15079b",
+      "receivedAt": "2026-10-21T01:32:32.322Z"
+    },
+    {
+      "key": "masto:scheduled:draft:da3deef6-505d-4250-aeec-5e2c721245f5:87d8350d-d4bf-430a-970f-0f0a53b6ff7e:sha256:74c7bfd812bb58ea0573b55d79024a4d59399c42702c682ba8ff3a6e7fb3d4f0",
+      "id": "local-masto-1",
+      "remoteId": "local-masto-1",
+      "text": "PARTIAL deliberately failing local Mastodon",
+      "remoteUrl": "http://127.0.0.1:3132/masto/1",
+      "receivedAt": "2026-10-21T01:32:38.560Z"
+    },
+    {
+      "key": "bsky:c2391189c29d5d26c6ab40a4bf402e3d",
+      "id": "local-cid-2",
+      "remoteId": "at://did:plc:rc108c/app.bsky.feed.post/c2391189c29d5d26c6ab40a4bf402e3d",
+      "text": "RATE real local rate limit",
+      "remoteUrl": "http://127.0.0.1:3132/posts/c2391189c29d5d26c6ab40a4bf402e3d",
+      "receivedAt": "2026-10-21T01:33:36.588Z"
+    }
+  ],
+  "requests": [
+    {
+      "network": "bluesky",
+      "key": "bsky:53130d558cb554faf980ca2aad15079b",
+      "text": "PARTIAL successful local Bluesky",
+      "receivedAt": "2026-10-21T01:32:32.322Z"
+    },
+    {
+      "network": "mastodon",
+      "key": "masto:scheduled:draft:da3deef6-505d-4250-aeec-5e2c721245f5:87d8350d-d4bf-430a-970f-0f0a53b6ff7e:sha256:74c7bfd812bb58ea0573b55d79024a4d59399c42702c682ba8ff3a6e7fb3d4f0",
+      "text": "PARTIAL deliberately failing local Mastodon",
+      "receivedAt": "2026-10-21T01:32:32.553Z"
+    },
+    {
+      "network": "mastodon",
+      "key": "masto:scheduled:draft:da3deef6-505d-4250-aeec-5e2c721245f5:87d8350d-d4bf-430a-970f-0f0a53b6ff7e:sha256:74c7bfd812bb58ea0573b55d79024a4d59399c42702c682ba8ff3a6e7fb3d4f0",
+      "text": "PARTIAL deliberately failing local Mastodon",
+      "receivedAt": "2026-10-21T01:32:38.560Z"
+    },
+    {
+      "network": "bluesky",
+      "key": "bsky:c2391189c29d5d26c6ab40a4bf402e3d",
+      "text": "RATE real local rate limit",
+      "receivedAt": "2026-10-21T01:33:36.588Z"
+    }
+  ]
+}

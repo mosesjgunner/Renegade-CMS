@@ -1,0 +1,150 @@
+▲ Next.js 16.3.8 (webpack)
+- Local:         http://127.0.0.1:39036
+- Network:       http://127.0.0.1:39036
+✓ Ready in 530ms
+✓ Running next.config.ts took 185ms
+- Experiments (use with caution):
+  ✓ webpackMemoryOptimizations
+
+[21:12:03] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+○ Compiling /health/ready ...
+ GET /health/ready 200 in 10.6s (next.js: 5.3s, proxy.ts: 3.9s, application-code: 1392ms)
+○ Compiling /admin/social ...
+ GET /admin/social 200 in 12.7s (next.js: 5.1s, proxy.ts: 109ms, application-code: 7.5s)
+ GET /admin/social 200 in 8.0s (next.js: 7ms, proxy.ts: 114ms, application-code: 7.8s)
+○ Compiling /api/analytics/consent ...
+ GET /api/analytics/consent 200 in 5.6s (next.js: 4.2s, proxy.ts: 18ms, application-code: 1344ms)
+ GET /api/analytics/consent 200 in 1155ms (next.js: 26ms, proxy.ts: 229ms, application-code: 900ms)
+ GET /api/admin/social/accounts 200 in 17.2s (next.js: 4.2s, proxy.ts: 18ms, application-code: 13.0s)
+ GET /api/admin/social/drafts 200 in 17.2s (next.js: 4.2s, proxy.ts: 18ms, application-code: 13.0s)
+ POST /api/admin/social/drafts 201 in 13.2s (next.js: 141ms, proxy.ts: 653ms, application-code: 12.4s)
+ GET /api/admin/social/accounts 200 in 3.7s (next.js: 20ms, proxy.ts: 34ms, application-code: 3.7s)
+ GET /api/admin/social/drafts 200 in 3.7s (next.js: 196ms, proxy.ts: 38ms, application-code: 3.5s)
+ GET /admin/social 200 in 15.5s (next.js: 173ms, proxy.ts: 651ms, application-code: 14.6s)
+ POST /api/admin/social/drafts 200 in 2.3s (next.js: 23ms, proxy.ts: 43ms, application-code: 2.2s)
+ POST /api/admin/social/drafts 200 in 1149ms (next.js: 3ms, proxy.ts: 10ms, application-code: 1137ms)
+ POST /api/admin/social/drafts 200 in 1243ms (next.js: 4ms, proxy.ts: 7ms, application-code: 1232ms)
+ POST /api/admin/social/drafts 201 in 1336ms (next.js: 3ms, proxy.ts: 8ms, application-code: 1325ms)
+ POST /api/admin/social/drafts 200 in 1396ms (next.js: 3ms, proxy.ts: 8ms, application-code: 1385ms)
+ POST /api/admin/social/drafts 200 in 1219ms (next.js: 5ms, proxy.ts: 12ms, application-code: 1202ms)
+ POST /api/admin/social/drafts 200 in 1217ms (next.js: 4ms, proxy.ts: 8ms, application-code: 1205ms)
+ GET /admin/social 200 in 6.3s (next.js: 6ms, proxy.ts: 9ms, application-code: 6.3s)
+ GET /api/analytics/consent 200 in 40ms (next.js: 19ms, proxy.ts: 13ms, application-code: 8ms)
+ GET /api/analytics/consent 200 in 1111ms (next.js: 19ms, proxy.ts: 43ms, application-code: 1049ms)
+ GET /api/admin/social/accounts 200 in 2.3s (next.js: 5ms, proxy.ts: 13ms, application-code: 2.3s)
+ GET /api/admin/social/drafts 200 in 2.3s (next.js: 12ms, proxy.ts: 13ms, application-code: 2.3s)
+ GET /api/admin/social/accounts 200 in 4.1s (next.js: 11ms, proxy.ts: 13ms, application-code: 4.1s)
+ GET /api/admin/social/drafts 200 in 4.1s (next.js: 182ms, proxy.ts: 24ms, application-code: 3.9s)
+ GET /api/admin/social/drafts?draftId=8ded376e-9c71-43c4-a3cc-690d9d64b4a6 200 in 3.6s (next.js: 30ms, proxy.ts: 78ms, application-code: 3.5s)
+ GET /admin/social 200 in 8.7s (next.js: 149ms, proxy.ts: 231ms, application-code: 8.3s)
+ POST /api/admin/social/worker 200 in 11.1s (next.js: 1397ms, proxy.ts: 7ms, application-code: 9.7s)
+ GET /api/admin/social/drafts?draftId=8ded376e-9c71-43c4-a3cc-690d9d64b4a6 200 in 1128ms (next.js: 84ms, proxy.ts: 6ms, application-code: 1037ms)
+ GET /api/admin/social/drafts 200 in 1266ms (next.js: 11ms, proxy.ts: 15ms, application-code: 1240ms)
+ POST /api/admin/social/worker 200 in 1591ms (next.js: 4ms, proxy.ts: 8ms, application-code: 1578ms)
+ POST /api/admin/social/worker 403 in 3.6s (next.js: 31ms, proxy.ts: 60ms, application-code: 3.5s)
+ GET /api/admin/social/drafts?draftId=8ded376e-9c71-43c4-a3cc-690d9d64b4a6 200 in 6.6s (next.js: 4ms, proxy.ts: 8ms, application-code: 6.6s)
+ POST /api/admin/social/worker 403 in 4.0s (next.js: 6ms, proxy.ts: 15ms, application-code: 4.0s)
+ GET /api/admin/social/drafts 200 in 1405ms (next.js: 23ms, proxy.ts: 33ms, application-code: 1349ms)
+ POST /api/admin/social/worker 403 in 1283ms (next.js: 4ms, proxy.ts: 14ms, application-code: 1265ms)
+ POST /api/admin/social/worker 403 in 54ms (next.js: 4ms, proxy.ts: 7ms, application-code: 43ms)
+○ Compiling /api/[...slug] ...
+[21:14:00] [32mINFO[39m: [36mYou are not allowed to perform this action.[39m
+ PATCH /api/social-queue-items/e7a4a5b8-85bf-4d2d-b568-c6e02e48d448 403 in 17.8s (next.js: 14.3s, proxy.ts: 7ms, application-code: 3.5s)
+[21:14:00] [32mINFO[39m: [36mYou are not allowed to perform this action.[39m
+ POST /api/external-posts 403 in 69ms (next.js: 28ms, proxy.ts: 19ms, application-code: 23ms)
+ GET /admin/social 200 in 11.3s (next.js: 329ms, proxy.ts: 637ms, application-code: 10.3s)
+ POST /api/admin/social/worker 200 in 1497ms (next.js: 94ms, proxy.ts: 33ms, application-code: 1369ms)
+ GET /api/admin/social/worker 200 in 2.3s (next.js: 5ms, proxy.ts: 8ms, application-code: 2.3s)
+ POST /api/admin/social/drafts 403 in 2.2s (next.js: 83ms, proxy.ts: 17ms, application-code: 2.1s)
+ PATCH /api/social-network-variants/668e18c2-dac7-40e2-983b-234258404ccd 200 in 123ms (next.js: 17ms, proxy.ts: 7ms, application-code: 99ms)
+ PATCH /api/social-drafts/f67b971d-e380-4441-8d67-1f5c5f34a007 200 in 62ms (next.js: 11ms, proxy.ts: 8ms, application-code: 43ms)
+ POST /api/admin/social/drafts 201 in 1759ms (next.js: 2ms, proxy.ts: 7ms, application-code: 1750ms)
+ POST /api/admin/social/drafts 200 in 1422ms (next.js: 5ms, proxy.ts: 12ms, application-code: 1404ms)
+ POST /api/admin/social/drafts 200 in 1497ms (next.js: 3ms, proxy.ts: 9ms, application-code: 1484ms)
+ POST /api/admin/social/drafts 200 in 1284ms (next.js: 5ms, proxy.ts: 9ms, application-code: 1270ms)
+ POST /api/admin/social/worker 200 in 1475ms (next.js: 3ms, proxy.ts: 9ms, application-code: 1463ms)
+ POST /api/admin/social/worker 200 in 1441ms (next.js: 3ms, proxy.ts: 8ms, application-code: 1430ms)
+ POST /api/admin/social/worker 200 in 1859ms (next.js: 3ms, proxy.ts: 10ms, application-code: 1846ms)
+ POST /api/admin/social/drafts 201 in 1153ms (next.js: 3ms, proxy.ts: 7ms, application-code: 1143ms)
+ POST /api/admin/social/drafts 200 in 1330ms (next.js: 3ms, proxy.ts: 7ms, application-code: 1320ms)
+ POST /api/admin/social/drafts 200 in 1335ms (next.js: 3ms, proxy.ts: 7ms, application-code: 1325ms)
+ POST /api/admin/social/drafts 200 in 1437ms (next.js: 5ms, proxy.ts: 8ms, application-code: 1424ms)
+ POST /api/admin/social/worker 200 in 1242ms (next.js: 3ms, proxy.ts: 7ms, application-code: 1231ms)
+ POST /api/admin/social/worker 200 in 1606ms (next.js: 3ms, proxy.ts: 8ms, application-code: 1596ms)
+ POST /api/admin/social/worker 200 in 1025ms (next.js: 3ms, proxy.ts: 6ms, application-code: 1016ms)
+ POST /api/admin/social/worker 200 in 1050ms (next.js: 3ms, proxy.ts: 6ms, application-code: 1041ms)
+ POST /api/admin/social/drafts 201 in 1221ms (next.js: 4ms, proxy.ts: 6ms, application-code: 1211ms)
+ POST /api/admin/social/drafts 200 in 1194ms (next.js: 3ms, proxy.ts: 8ms, application-code: 1184ms)
+ POST /api/admin/social/drafts 200 in 1055ms (next.js: 3ms, proxy.ts: 8ms, application-code: 1045ms)
+ POST /api/admin/social/drafts 200 in 1095ms (next.js: 4ms, proxy.ts: 7ms, application-code: 1084ms)
+ POST /api/admin/social/worker 200 in 1579ms (next.js: 3ms, proxy.ts: 7ms, application-code: 1568ms)
+ POST /api/admin/social/worker 200 in 2.1s (next.js: 3ms, proxy.ts: 5ms, application-code: 2.1s)
+ GET /admin/social 200 in 7.0s (next.js: 6ms, proxy.ts: 6ms, application-code: 6.9s)
+ GET /api/analytics/consent 200 in 297ms (next.js: 260ms, proxy.ts: 14ms, application-code: 24ms)
+ GET /api/analytics/consent 200 in 2.2s (next.js: 136ms, proxy.ts: 61ms, application-code: 1990ms)
+ GET /api/admin/social/accounts 200 in 4.4s (next.js: 113ms, proxy.ts: 14ms, application-code: 4.3s)
+ GET /api/admin/social/drafts 200 in 4.4s (next.js: 129ms, proxy.ts: 14ms, application-code: 4.3s)
+ GET /api/admin/social/accounts 200 in 3.9s (next.js: 8ms, proxy.ts: 13ms, application-code: 3.9s)
+ GET /api/admin/social/drafts 200 in 3.9s (next.js: 186ms, proxy.ts: 19ms, application-code: 3.7s)
+ GET /api/admin/social/drafts?draftId=7da1b34f-4201-4b24-9323-16424da497d0 200 in 3.6s (next.js: 22ms, proxy.ts: 40ms, application-code: 3.5s)
+ POST /api/admin/social/worker 200 in 1336ms (next.js: 7ms, proxy.ts: 9ms, application-code: 1320ms)
+ POST /api/admin/social/drafts 201 in 2.3s (next.js: 16ms, proxy.ts: 38ms, application-code: 2.3s)
+ GET /api/admin/social/drafts?draftId=7da1b34f-4201-4b24-9323-16424da497d0 200 in 2.5s (next.js: 4ms, proxy.ts: 9ms, application-code: 2.5s)
+ GET /api/admin/social/drafts 200 in 2.9s (next.js: 5ms, proxy.ts: 9ms, application-code: 2.9s)
+ POST /api/admin/social/drafts 200 in 3.0s (next.js: 9ms, proxy.ts: 9ms, application-code: 2.9s)
+ POST /api/admin/social/drafts 200 in 1422ms (next.js: 3ms, proxy.ts: 8ms, application-code: 1410ms)
+ POST /api/admin/social/drafts 200 in 3.1s (next.js: 4ms, proxy.ts: 8ms, application-code: 3.1s)
+ POST /api/admin/social/worker 200 in 6.4s (next.js: 4ms, proxy.ts: 12ms, application-code: 6.4s)
+ POST /api/admin/social/worker 200 in 1551ms (next.js: 5ms, proxy.ts: 8ms, application-code: 1538ms)
+ POST /api/admin/social/worker 200 in 2.1s (next.js: 3ms, proxy.ts: 7ms, application-code: 2.1s)
+ POST /api/admin/social/drafts 201 in 2.5s (next.js: 5ms, proxy.ts: 13ms, application-code: 2.5s)
+ POST /api/admin/social/drafts 200 in 1352ms (next.js: 9ms, proxy.ts: 14ms, application-code: 1330ms)
+ POST /api/admin/social/drafts 200 in 1788ms (next.js: 5ms, proxy.ts: 11ms, application-code: 1773ms)
+ POST /api/admin/social/drafts 200 in 2.0s (next.js: 3ms, proxy.ts: 8ms, application-code: 1993ms)
+ PATCH /api/social-accounts/da2df182-c057-45ff-948f-f30ee1ac0d2c 200 in 182ms (next.js: 95ms, proxy.ts: 9ms, application-code: 78ms)
+ POST /api/admin/social/worker 200 in 2.2s (next.js: 4ms, proxy.ts: 8ms, application-code: 2.2s)
+ POST /api/admin/social/drafts 201 in 1771ms (next.js: 6ms, proxy.ts: 12ms, application-code: 1753ms)
+ POST /api/admin/social/drafts 200 in 1931ms (next.js: 4ms, proxy.ts: 11ms, application-code: 1916ms)
+ POST /api/admin/social/drafts 200 in 2.5s (next.js: 4ms, proxy.ts: 11ms, application-code: 2.5s)
+ POST /api/admin/social/drafts 200 in 1358ms (next.js: 5ms, proxy.ts: 8ms, application-code: 1345ms)
+ POST /api/admin/social/worker 200 in 1424ms (next.js: 3ms, proxy.ts: 7ms, application-code: 1413ms)
+ POST /api/admin/social/drafts 201 in 1578ms (next.js: 4ms, proxy.ts: 8ms, application-code: 1566ms)
+ POST /api/admin/social/drafts 200 in 1291ms (next.js: 6ms, proxy.ts: 11ms, application-code: 1275ms)
+ POST /api/admin/social/drafts 200 in 1435ms (next.js: 4ms, proxy.ts: 8ms, application-code: 1422ms)
+ POST /api/admin/social/drafts 200 in 1347ms (next.js: 5ms, proxy.ts: 8ms, application-code: 1334ms)
+▲ Next.js 16.3.8 (webpack)
+- Local:         http://127.0.0.1:39036
+- Network:       http://127.0.0.1:39036
+✓ Ready in 537ms
+✓ Running next.config.ts took 50ms
+- Experiments (use with caution):
+  ✓ webpackMemoryOptimizations
+
+[21:17:11] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+○ Compiling /health/ready ...
+ GET /health/ready 200 in 23.2s (next.js: 12.0s, proxy.ts: 6.1s, application-code: 5.1s)
+ GET /admin/social 200 in 23.4s (next.js: 13.9s, proxy.ts: 4.2s, application-code: 5.3s)
+ GET /admin/social 200 in 11.7s (next.js: 461ms, proxy.ts: 996ms, application-code: 10.2s)
+ GET /admin/social 200 in 8.8s (next.js: 13ms, proxy.ts: 27ms, application-code: 8.8s)
+○ Compiling /api/analytics/consent ...
+ GET /api/analytics/consent 200 in 9.7s (next.js: 8.0s, proxy.ts: 112ms, application-code: 1551ms)
+ GET /api/analytics/consent 200 in 2.4s (next.js: 243ms, proxy.ts: 422ms, application-code: 1691ms)
+ GET /api/admin/social/accounts 200 in 23.8s (next.js: 8.1s, proxy.ts: 83ms, application-code: 15.6s)
+ GET /api/admin/social/drafts 200 in 23.9s (next.js: 8.1s, proxy.ts: 89ms, application-code: 15.7s)
+ GET /api/admin/social/accounts 200 in 3.5s (next.js: 123ms, proxy.ts: 41ms, application-code: 3.4s)
+ GET /api/admin/social/drafts 200 in 3.5s (next.js: 131ms, proxy.ts: 41ms, application-code: 3.4s)
+ GET /admin/social 200 in 14.4s (next.js: 198ms, proxy.ts: 654ms, application-code: 13.5s)
+ GET /api/admin/social/drafts?draftId=c25bf1b6-cc9c-4590-8b11-aa0feda4011b 200 in 1755ms (next.js: 8ms, proxy.ts: 19ms, application-code: 1728ms)
+▲ Next.js 16.3.8 (webpack)
+- Local:         http://127.0.0.1:39036
+- Network:       http://127.0.0.1:39036
+✓ Ready in 672ms
+✓ Running next.config.ts took 154ms
+- Experiments (use with caution):
+  ✓ webpackMemoryOptimizations
+
+[21:19:19] [33mWARN[39m: [36mNo email adapter provided. Email will be written to console. More info at https://payloadcms.com/docs/email/overview.[39m
+○ Compiling /health/ready ...
+ GET /health/ready 200 in 9.6s (next.js: 4.3s, proxy.ts: 4.1s, application-code: 1235ms)
+○ Compiling /api/admin/social/worker ...
+ POST /api/admin/social/worker 200 in 6.7s (next.js: 4.0s, proxy.ts: 149ms, application-code: 2.6s)

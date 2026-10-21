@@ -1,0 +1,60 @@
+{
+  "checksPassed": 2,
+  "failed": 1,
+  "skipped": 0,
+  "phase": "partial-destination-and-browser",
+  "trace": [
+    {
+      "name": "isolated actor, site, account and session fixtures configured; no passkey acceptance claimed",
+      "passed": true
+    },
+    {
+      "name": "Social Command Center loads in Chromium with fixture operator session",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/social/drafts",
+      "method": "POST",
+      "status": 201
+    },
+    {
+      "route": "/api/admin/social/drafts",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/admin/social/drafts",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/admin/social/drafts",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/admin/social/drafts",
+      "method": "POST",
+      "status": 201
+    },
+    {
+      "route": "/api/admin/social/drafts",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/admin/social/drafts",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "route": "/api/admin/social/drafts",
+      "method": "POST",
+      "status": 200
+    },
+    {
+      "phase": "partial-destination-and-browser",
+      "failure": "UI dispatch persists one actual adapter success and one deliberate failure"
+    }
+  ]
+}

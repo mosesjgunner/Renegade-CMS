@@ -21,6 +21,10 @@ async function cycle(): Promise<void> {
     if (workerProfile !== 'commerce-only') {
       await payload.jobs.handleSchedules({ queue: 'operations' })
       await payload.jobs.run({ queue: 'operations' })
+      if (payload.collections['social-queue-items']) {
+        const { recoverSocialOutbox } = await import('../modules/social/tasks')
+        await recoverSocialOutbox(payload)
+      }
       await payload.jobs.run({ queue: 'media' }).catch(() => undefined)
     }
     await payload.jobs.run({ queue: 'commerce' })

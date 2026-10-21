@@ -15,6 +15,7 @@ const states = [
   'queued',
   'scheduled',
   'publishing',
+  'unknown',
   'published',
   'partially-published',
   'failed',
@@ -107,7 +108,14 @@ export const SocialDrafts: CollectionConfig = {
     { name: 'sourceContent', type: 'relationship', relationTo: 'content' },
     { name: 'sourceRevision', type: 'relationship', relationTo: 'revision-records' },
     { name: 'campaign', type: 'relationship', relationTo: 'campaigns' as never },
-    { name: 'status', type: 'select', required: true, defaultValue: 'draft', options: states },
+    {
+      name: 'status',
+      type: 'select',
+      required: true,
+      defaultValue: 'draft',
+      options: states,
+      access: { create: () => false, update: () => false },
+    },
     { name: 'requiresReview', type: 'checkbox', defaultValue: true },
     { name: 'provenance', type: 'json' },
     { name: 'canonicalUrl', type: 'text' },
@@ -145,16 +153,33 @@ export const SocialNetworkVariants: CollectionConfig = {
     { name: 'linkUrl', type: 'text' },
     { name: 'attachments', type: 'relationship', relationTo: 'media-assets', hasMany: true },
     { name: 'validation', type: 'json', defaultValue: [] },
-    { name: 'status', type: 'select', required: true, defaultValue: 'draft', options: states },
-    { name: 'approvalHash', type: 'text' },
-    { name: 'approvedAt', type: 'date' },
-    { name: 'approvedBy', type: 'relationship', relationTo: 'users' },
+    {
+      name: 'status',
+      type: 'select',
+      required: true,
+      defaultValue: 'draft',
+      options: states,
+      access: { create: () => false, update: () => false },
+    },
+    { name: 'approvalHash', access: { create: () => false, update: () => false }, type: 'text' },
+    { name: 'approvedAt', access: { create: () => false, update: () => false }, type: 'date' },
+    {
+      name: 'approvedBy',
+      access: { create: () => false, update: () => false },
+      type: 'relationship',
+      relationTo: 'users',
+    },
     { name: 'idempotencyKey', type: 'text', required: true, unique: true },
   ],
 }
 export const SocialQueueItems: CollectionConfig = {
   ...base('social-queue-items', 'idempotencyKey'),
-  access: operatorRelatedSiteAccess('account.site', 'social-accounts'),
+  access: {
+    ...operatorRelatedSiteAccess('account.site', 'social-accounts'),
+    create: () => false,
+    update: () => false,
+    delete: () => false,
+  },
   fields: [
     {
       name: 'variant',
@@ -198,7 +223,12 @@ export const SocialQueueItems: CollectionConfig = {
 }
 export const SocialPublishAttempts: CollectionConfig = {
   ...base('social-publish-attempts', 'idempotencyKey'),
-  access: operatorRelatedSiteAccess('variant.draft.site', 'social-network-variants'),
+  access: {
+    ...operatorRelatedSiteAccess('variant.draft.site', 'social-network-variants'),
+    create: () => false,
+    update: () => false,
+    delete: () => false,
+  },
   fields: [
     {
       name: 'queueItem',
@@ -230,7 +260,12 @@ export const SocialPublishAttempts: CollectionConfig = {
 }
 export const ExternalPosts: CollectionConfig = {
   ...base('external-posts', 'remoteId'),
-  access: operatorRelatedSiteAccess('account.site', 'social-accounts'),
+  access: {
+    ...operatorRelatedSiteAccess('account.site', 'social-accounts'),
+    create: () => false,
+    update: () => false,
+    delete: () => false,
+  },
   fields: [
     {
       name: 'variant',
@@ -263,7 +298,13 @@ export const Campaigns: CollectionConfig = {
     ...ownerFields(),
     { name: 'title', type: 'text', required: true },
     { name: 'sourceContent', type: 'relationship', relationTo: 'content' },
-    { name: 'status', type: 'select', required: true, defaultValue: 'draft', options: states },
+    {
+      name: 'status',
+      type: 'select',
+      required: true,
+      defaultValue: 'draft',
+      options: states,
+    },
     {
       name: 'visibility',
       type: 'select',

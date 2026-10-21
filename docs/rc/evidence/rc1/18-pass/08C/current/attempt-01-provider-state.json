@@ -1,0 +1,11 @@
+{
+  "records": [],
+  "requests": [
+    {
+      "network": "mastodon",
+      "key": "masto:scheduled:draft:fd56904f-8730-44c5-94ba-d4133b4822af:53f8462b-f9ac-473e-9de7-eec649230894:sha256:74c7bfd812bb58ea0573b55d79024a4d59399c42702c682ba8ff3a6e7fb3d4f0",
+      "text": "PARTIAL deliberately failing local Mastodon",
+      "receivedAt": "2026-10-21T01:28:10.367Z"
+    }
+  ]
+}

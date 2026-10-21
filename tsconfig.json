@@ -70,7 +70,9 @@
     ".next-rc108c/types/**/*.ts",
     ".next-rc108c/dev/types/**/*.ts",
     ".next-rc103d-20261020/types/**/*.ts",
-    ".next-rc103d-20261020/dev/types/**/*.ts"
+    ".next-rc103d-20261020/dev/types/**/*.ts",
+    ".next-rc109b/types/**/*.ts",
+    ".next-rc109b/dev/types/**/*.ts"
   ],
   "exclude": [
     "node_modules",

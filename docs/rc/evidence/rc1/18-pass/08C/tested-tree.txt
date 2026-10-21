@@ -1,0 +1,35 @@
+﻿ M docs/rc/RC1-70-SUBPASS-LEDGER.md
+ M docs/rc/evidence/rc1/18-pass/08C/01-draft-scheduled.png
+ M docs/rc/evidence/rc1/18-pass/08C/02-after-dispatch.png
+ M docs/rc/evidence/rc1/18-pass/08C/journey-trace.json
+ M docs/rc/evidence/rc1/18-pass/08C/state.json
+ M next-env.d.ts
+ M package-lock.json
+ M package.json
+ M src/app/(frontend)/api/admin/social/drafts/route.ts
+ M src/app/(frontend)/api/admin/social/worker/route.ts
+ M src/collections/Social.ts
+ M src/migrations/index.ts
+ M src/modules/admin/SocialCommandCenter.tsx
+ M src/modules/social/adapters/bluesky.ts
+ M src/modules/social/adapters/mastodon.ts
+ M src/modules/social/contracts.ts
+ M src/modules/social/models.ts
+ M src/modules/social/provider-runtime.ts
+ M src/modules/social/tasks.ts
+ M src/payload-types.ts
+ M src/scripts/run-jobs-worker.ts
+ M tests/rc1-08c/run-isolated.ps1
+ M tests/rc1-08c/verify.ts
+ M tests/unit/rc1-08c-social-dispatch.test.ts
+ M tests/unit/social-contracts.test.ts
+?? docs/rc/evidence/rc1/18-pass/08C/NEXT.md
+?? docs/rc/evidence/rc1/18-pass/08C/RESULT.md
+?? docs/rc/evidence/rc1/18-pass/08C/current/
+?? docs/rc/evidence/rc1/18-pass/08C/tested-tree.txt
+?? src/migrations/20261020_080000_rc1_social_dispatch_recovery.ts
+?? src/modules/social/dispatch-boundary.ts
+?? tests/rc1-08c/run-current.ps1
+?? tests/rc1-08c/tsconfig.current.json
+?? tests/rc1-08c/verify-current.ts
+?? tests/unit/rc1-08c-current.test.ts

@@ -4878,6 +4878,7 @@ export interface SocialDraft {
     | 'queued'
     | 'scheduled'
     | 'publishing'
+    | 'unknown'
     | 'published'
     | 'partially-published'
     | 'failed'
@@ -4917,6 +4918,7 @@ export interface Campaign {
     | 'queued'
     | 'scheduled'
     | 'publishing'
+    | 'unknown'
     | 'published'
     | 'partially-published'
     | 'failed'
@@ -5366,6 +5368,7 @@ export interface SocialNetworkVariant {
     | 'queued'
     | 'scheduled'
     | 'publishing'
+    | 'unknown'
     | 'published'
     | 'partially-published'
     | 'failed'
@@ -5395,6 +5398,7 @@ export interface SocialQueueItem {
     | 'queued'
     | 'scheduled'
     | 'publishing'
+    | 'unknown'
     | 'published'
     | 'partially-published'
     | 'failed'
@@ -15561,6 +15565,7 @@ export interface TaskSocialPublish {
   input: {
     queueItemId: string;
     workerId: string;
+    mode?: ('dispatch' | 'retry' | 'reconcile') | null;
   };
   output?: unknown;
 }
