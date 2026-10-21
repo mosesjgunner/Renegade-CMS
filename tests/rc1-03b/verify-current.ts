@@ -16,13 +16,13 @@ import { loadConfig } from '../../src/modules/core/config'
 assert.equal(process.env.RC1_03B_DISPOSABLE, 'yes')
 assert.equal(
   process.env.DATABASE_URL,
-  'postgresql://postgres:postgres@127.0.0.1:5462/rc103b_release_acceptance',
+  'postgresql://postgres:postgres@127.0.0.1:5463/rc103b_final_release_acceptance',
 )
 assert.equal(process.env.LOCAL_E2E_TEST_MODE, 'false')
 assert.equal(process.env.ENABLE_TEST_ROUTES, 'false')
 const payload: any = await getPayload({ config })
-const out = 'docs/rc/evidence/rc1/18-pass/03B/current'
-const base = 'http://localhost:39032'
+const out = 'docs/rc/evidence/rc1/18-pass/03B/recovery'
+const base = 'http://localhost:39033'
 const trace: any[] = []
 let checks = 0
 let succeeded = false
@@ -166,6 +166,7 @@ const editorFor = async (p: any, id: string) => {
     .locator('[data-lexical-editor="true"]')
     .first()
     .waitFor({ state: 'visible', timeout: 180000 })
+  await p.getByText('03B original media', { exact: true }).first().waitFor({ state: 'visible' })
   return p.locator('[data-lexical-editor="true"]').first()
 }
 const append = async (editor: any, value: string) => {
@@ -210,6 +211,7 @@ try {
         preview.response.headers.get('x-robots-tag')?.includes('noindex'),
     )
     await page.goto(`${base}${state.preview}`, { timeout: 180000 })
+    await dismissConsent()
     await page
       .getByText('UNPUBLISHED original', { exact: false })
       .first()
@@ -220,6 +222,7 @@ try {
         .locator('img')
         .evaluateAll((imgs: any[]) => imgs.some((img) => img.complete && img.naturalWidth > 0)),
     )
+    await page.screenshot({ path: `${out}/unpublished-preview-restart.png`, fullPage: true })
     const editor = await editorFor(page, state.records[0].id)
     check(
       'restart: native Lexical editor reopens restored draft',
@@ -270,7 +273,7 @@ try {
       'POST',
       {
         canonicalOrigin: base,
-        canonicalOriginsBySite: { [site.id]: base, [foreign.id]: 'http://beta.rc103b.test:39032' },
+        canonicalOriginsBySite: { [site.id]: base, [foreign.id]: 'http://beta.rc103b.test:39033' },
         launchState: 'live',
         indexingMode: 'index',
       },
@@ -498,7 +501,6 @@ try {
       'ordinary Retry draft save persists retained text',
       JSON.stringify((await read('content', first.id)).body).includes('BROWSER RETRY EDIT'),
     )
-    await page.goto(`${base}/admin/posts`, { timeout: 180000 })
     // The native lock API is the same supported resource used by the editor heartbeat.
     const lock = await native(
       'payload-locked-documents',
@@ -519,7 +521,12 @@ try {
       .getByText(/locked|currently.*edit|being.*edit/i)
       .first()
       .waitFor({ state: 'visible' })
-    check('second real browser session receives visible document-lock feedback', true)
+    check(
+      'simultaneous native editor sessions show document-lock feedback to the second editor',
+      await editor.isVisible(),
+    )
+    trace.push({ firstEditor: page.url(), secondEditor: secondPage.url(), lock: lock.id })
+    await secondPage.screenshot({ path: `${out}/lock-conflict.png`, fullPage: true })
     await api(
       `/api/content/${first.id}?overrideLock=true`,
       'PATCH',
@@ -641,8 +648,10 @@ try {
     await page.goto(`${base}${previews[0]}`, { timeout: 180000 })
     check(
       'preview honors author display order',
-      (await page.locator('body').innerText()).indexOf('Jane Lead') <
-        (await page.locator('body').innerText()).indexOf('Mark Editor'),
+      (await page.locator('body').innerText()).includes('Jane Lead') &&
+        (await page.locator('body').innerText()).includes('Mark Editor') &&
+        (await page.locator('body').innerText()).indexOf('Jane Lead') <
+          (await page.locator('body').innerText()).indexOf('Mark Editor'),
     )
     check(
       'preview renders combined formatting, real link fields and original media bytes',
@@ -655,7 +664,7 @@ try {
     await page.screenshot({ path: `${out}/unpublished-preview.png`, fullPage: true })
     for (const cookie of ['', other, denied]) await api(previews[0], 'GET', undefined, cookie, 404)
     await api(previews[0] + 'tampered', 'GET', undefined, own, 404)
-    await api(previews[0], 'GET', undefined, own, 404, { host: 'beta.rc103b.test:39032' })
+    await api(previews[0], 'GET', undefined, own, 404, { host: 'beta.rc103b.test:39033' })
     const expired = await createEditorialPreviewToken(payload, {
       articleId: article.id,
       revisionId: original,

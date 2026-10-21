@@ -1,492 +1,399 @@
+/* eslint-disable @typescript-eslint/no-explicit-any -- isolated supported HTTP acceptance */
+import assert from 'node:assert/strict'
 import { readFile, writeFile, mkdir } from 'node:fs/promises'
-import path from 'node:path'
+import { chromium } from '@playwright/test'
 import { getPayload } from 'payload'
-import config from '../../src/payload.config'
-import {
-  inspectLegacySite,
-  dryRunPreflight,
-  executeLegacyMigration,
-  verifyLegacyMigration,
-  activateLegacyMigration,
-  PayloadLegacyMigrationStore,
-} from '../../src/modules/portability/legacy-migration'
-import type { LegacySitePackage, LegacyThemeMapping } from '../../src/modules/portability/legacy-migration/types'
-import { createPortableManifest } from '../../src/modules/portability/contracts'
-import { PORTABLE_COLLECTIONS } from '../../src/modules/portability/workflow'
+import config from '@payload-config'
+import { ensureBootstrap, rotateBootstrapToken } from '../../src/modules/operations/installation'
+import { loadConfig } from '../../src/modules/core/config'
+import { parseWxr } from '../../src/modules/portability/legacy-migration/parser'
 
-async function main() {
-  console.log('--- RC1-03D: CONTENT IMPORT/EXPORT AND END-TO-END SITE BUILD VERIFICATION ---')
-  const payload = await getPayload({ config })
-  const store = new PayloadLegacyMigrationStore(payload)
-
-  const scratchDir = path.resolve(process.cwd(), 'scratch/rc103d-20261018')
-  await mkdir(scratchDir, { recursive: true })
-
-  // =========================================================================
-  // STAGE 1: CANONICAL OPERATOR CONTENT JOURNEY (FRESH SITE BUILD)
-  // =========================================================================
-  console.log('\n[STAGE 1] Testing Canonical Site Build (Operator Content Journey)...')
-
-  // 1.1 Create Site
-  const buildSite = await payload.create({
-    collection: 'sites',
-    data: {
-      name: 'The Standard Dispatch',
-      slug: `standard-dispatch-${Date.now()}`,
-      description: 'Independent civic journalism publication.',
-    },
-    overrideAccess: true,
+assert.equal(process.env.RC1_03D_DISPOSABLE, 'yes')
+assert.equal(
+  process.env.DATABASE_URL,
+  'postgresql://postgres:postgres@127.0.0.1:5465/rc103d_operator_release_acceptance',
+)
+assert.equal(process.env.LOCAL_E2E_TEST_MODE, 'false')
+assert.equal(process.env.ENABLE_TEST_ROUTES, 'false')
+const base = 'http://localhost:39035'
+const out = 'docs/rc/evidence/rc1/18-pass/03D'
+const scratch = 'scratch/rc103d-frozen-20261020'
+await mkdir(out, { recursive: true })
+await mkdir(scratch, { recursive: true })
+const payload: any = await getPayload({ config })
+const browser = await chromium.launch({ headless: true })
+const context = await browser.newContext(
+  (process.argv.includes('--restart') || process.argv.includes('--continue')) ? { storageState: `${scratch}/session.json` } : {},
+)
+const page = await context.newPage()
+page.setDefaultTimeout(120000)
+const trace: any[] = []
+page.on('pageerror', (error) => trace.push({ browserError: error.message }))
+let checks = 0
+const check = (name: string, value: unknown) => {
+  assert.ok(value, name)
+  checks++
+  trace.push({ name, passed: true })
+  console.log(`PASS ${checks}: ${name}`)
+}
+const api = async (route: string, method = 'GET', data?: any, expected = 200) => {
+  const response = await context.request.fetch(`${base}${route}`, {
+    method,
+    data,
+    headers: { origin: base },
+    timeout: 180000,
+    maxRedirects: 0,
   })
-  const siteId = String(buildSite.id)
-  console.log(`✓ Created canonical site: ${buildSite.name} (ID: ${siteId})`)
-
-  // 1.2 Create Publication & Navigation Menus
-  const buildPub = await payload.create({
-    collection: 'publications',
-    data: {
-      site: siteId,
-      name: 'The Standard Dispatch Edition',
-      slug: 'standard-dispatch-edition',
-      navigation: {
-        primary: [
-          { label: 'Home', href: '/' },
-          { label: 'About Us', href: '/about-us' },
-          { label: 'Special Reports', href: '/articles/special-report' },
-        ],
-        footer: [
-          { label: 'Privacy Policy', href: '/privacy' },
-          { label: 'Terms of Service', href: '/terms' },
+  const text = await response.text()
+  trace.push({
+    method,
+    route,
+    status: response.status(),
+    body: response.status() >= 400 ? text.slice(0, 1800) : undefined,
+  })
+  assert.equal(response.status(), expected, `${method} ${route}: ${text.slice(0, 3500)}`)
+  return { text, json: () => JSON.parse(text), response }
+}
+const native = async (collection: string, data: any) => {
+  if (process.argv.includes('--continue') && collection === 'content') {
+    const found = (await api(`/api/content?where[site][equals]=${data.site}&where[slug][equals]=${data.slug}`)).json().docs
+    if (found[0]) return found[0]
+  }
+  return (await api(`/api/${collection}`, 'POST', data, 201)).json().doc
+}
+const body = (text: string) => ({
+  root: {
+    type: 'root',
+    format: '',
+    direction: 'ltr',
+    indent: 0,
+    version: 1,
+    children: [
+      {
+        type: 'paragraph',
+        version: 1,
+        format: '',
+        direction: 'ltr',
+        indent: 0,
+        children: [
+          { type: 'text', text, version: 1, format: 0, detail: 0, mode: 'normal', style: '' },
         ],
       },
-    },
-    overrideAccess: true,
-  })
-  console.log(`✓ Configured publication and navigation menus (ID: ${buildPub.id})`)
-
-  // 1.3 Create Initial Page (Homepage)
-  const lexicalHomeBody = {
-    root: {
-      type: 'root',
-      format: '' as const,
-      indent: 0,
-      version: 1,
-      direction: 'ltr' as const,
-      children: [
-        {
-          type: 'paragraph',
-          format: '' as const,
-          indent: 0,
-          version: 1,
-          direction: 'ltr' as const,
-          children: [
-            {
-              type: 'text',
-              detail: 0,
-              format: 0,
-              mode: 'normal',
-              style: '',
-              text: 'Welcome to The Standard Dispatch. Uncompromising, verifiable public reporting.',
-              version: 1,
-            },
-          ],
-        },
-      ],
-    },
-  }
-
-  const homePage = await payload.create({
-    collection: 'content',
-    data: {
-      site: siteId,
-      contentType: 'page',
-      title: 'Home',
-      slug: 'home',
-      canonicalPath: '/',
-      status: 'published',
-      body: lexicalHomeBody,
-      seoTitle: 'The Standard Dispatch | Home',
-      seoDescription: 'Independent news and civic investigations.',
-    },
-    overrideAccess: true,
-  })
-  console.log(`✓ Created published homepage at canonical path: ${homePage.canonicalPath}`)
-
-  // 1.4 Create Child Page with Parent Page relationship
-  const lexicalAboutBody = {
-    root: {
-      type: 'root',
-      format: '' as const,
-      indent: 0,
-      version: 1,
-      direction: 'ltr' as const,
-      children: [
-        {
-          type: 'paragraph',
-          format: '' as const,
-          indent: 0,
-          version: 1,
-          direction: 'ltr' as const,
-          children: [
-            {
-              type: 'text',
-              detail: 0,
-              format: 0,
-              mode: 'normal',
-              style: '',
-              text: 'About our newsroom and commitment to truth.',
-              version: 1,
-            },
-          ],
-        },
-      ],
-    },
-  }
-
-  const aboutPage = await payload.create({
-    collection: 'content',
-    data: {
-      site: siteId,
-      contentType: 'page',
-      title: 'About Us',
-      slug: 'about-us',
-      canonicalPath: '/about-us',
-      status: 'published',
-      body: lexicalAboutBody,
-      seoTitle: 'About Us | The Standard Dispatch',
-    },
-    overrideAccess: true,
-  })
-
-  const teamPage = await payload.create({
-    collection: 'content',
-    data: {
-      site: siteId,
-      contentType: 'page',
-      title: 'Our Newsroom Team',
-      slug: 'team',
-      canonicalPath: '/about-us/team',
-      parentPage: aboutPage.id,
-      status: 'published',
-      body: lexicalAboutBody,
-      seoTitle: 'Our Team | The Standard Dispatch',
-    },
-    overrideAccess: true,
-  })
-  console.log(`✓ Created child page with parentPage relation: ${teamPage.title} (${teamPage.canonicalPath}) -> parent ${aboutPage.id}`)
-
-  // 1.5 Create Article
-  const firstArticle = await payload.create({
-    collection: 'content',
-    data: {
-      site: siteId,
-      contentType: 'article',
-      title: 'Investigation: Civic Infrastructure Transparency',
-      slug: 'special-report',
-      canonicalPath: '/articles/special-report',
-      status: 'published',
-      body: lexicalHomeBody,
-      seoTitle: 'Special Report | Transparency',
-    },
-    overrideAccess: true,
-  })
-  console.log(`✓ Created published article at canonical path: ${firstArticle.canonicalPath}`)
-
-  // Verify navigation and site output
-  const queriedPub = await payload.findByID({
-    collection: 'publications',
-    id: String(buildPub.id),
-    depth: 1,
-    overrideAccess: true,
-  })
-  const navItems = (queriedPub as unknown as { navigation?: { primary?: Array<{ label: string; href: string }> } })?.navigation?.primary ?? []
-  if (navItems.length !== 3) {
-    throw new Error(`Expected 3 primary navigation items, found ${navItems.length}`)
-  }
-  console.log(`✓ Public navigation verified: ${navItems.map(n => `${n.label} -> ${n.href}`).join(' | ')}`)
-
-  // =========================================================================
-  // STAGE 2: WORDPRESS / WXR MIGRATION INTO REAL DATABASE
-  // =========================================================================
-  console.log('\n[STAGE 2] Testing WordPress / WXR Import Pipeline...')
-
-  const fixtureDir = path.resolve(process.cwd(), 'tests/fixtures/legacy-migration')
-  const wxr = await readFile(path.join(fixtureDir, 'wordpress-fixture.xml'), 'utf8')
-  const mappingRaw = await readFile(path.join(fixtureDir, 'theme-mapping.json'), 'utf8')
-  const themeMapping = JSON.parse(mappingRaw) as LegacyThemeMapping
-
-  const pkg: LegacySitePackage = { wxr, themeMapping }
-
-  // 2.1 Inspect
-  const inspectReport = inspectLegacySite(pkg)
-  if (!inspectReport.valid) throw new Error(`Inspection failed: ${inspectReport.errors.join(', ')}`)
-  console.log(`✓ Inspection: valid WXR, ${inspectReport.summary.posts} posts, ${inspectReport.summary.pages} pages, ${inspectReport.detectedUnsupportedCount} unsupported artifacts detected.`)
-
-  // 2.2 Preflight
-  const preflight = await dryRunPreflight(pkg, store, {
-    actorId: 'operator-integration',
-    targetSiteMode: 'new-isolated-site',
-    newSiteName: 'Migrated Tribune Acceptance Site',
-    newSiteSlug: `tribune-acc-${Date.now()}`,
-    remoteMediaDownloadAllowed: false,
-  })
-  console.log(`✓ Preflight dry-run completed: stage '${preflight.stage}', ${preflight.reconciliation.created.content} content planned, ${preflight.redirectPlan.length} redirects planned.`)
-
-  // 2.3 Execute Import
-  const executed = await executeLegacyMigration(pkg, store, {
-    actorId: 'operator-integration',
-    targetSiteMode: 'new-isolated-site',
-    newSiteName: 'Migrated Tribune Acceptance Site',
-    newSiteSlug: `tribune-acc-${Date.now()}`,
-    remoteMediaDownloadAllowed: false,
-  })
-  if (executed.stage !== 'imported') {
-    throw new Error(`Migration execute failed with stage: ${executed.stage}`)
-  }
-  const migratedSiteId = executed.siteId!
-  console.log(`✓ Migration executed into isolated site ${migratedSiteId}. Created entities:`)
-  console.log(`  - Content: ${executed.createdEntityIds.contentIds.length}`)
-  console.log(`  - Authors: ${executed.createdEntityIds.authorIds.length}`)
-  console.log(`  - Categories: ${executed.createdEntityIds.categoryIds.length}`)
-  console.log(`  - Tags: ${executed.createdEntityIds.tagIds.length}`)
-  console.log(`  - Redirects: ${executed.createdEntityIds.redirectIds.length}`)
-  console.log(`  - Draft Layouts: ${executed.createdEntityIds.layoutIds.length}`)
-  console.log(`  - Quarantined: ${executed.quarantine.length}`)
-
-  // 2.4 Verify Database Records & Relationships
-  // Authors
-  const authors = await payload.find({
-    collection: 'authors',
-    where: { slug: { in: ['chief-editor', 'sarah-scribe'] } },
-    overrideAccess: true,
-  })
-  if (authors.docs.length < 2) throw new Error(`Expected at least 2 authors, got ${authors.docs.length}`)
-  console.log(`✓ Authors verified: ${authors.docs.map((a: unknown) => (a as { displayName: string }).displayName).join(', ')}`)
-
-  // Verify content has author relationship
-  const migratedPosts = await payload.find({
-    collection: 'content',
-    where: { site: { equals: migratedSiteId }, contentType: { equals: 'article' } },
-    overrideAccess: true,
-  })
-  const postWithAuthor = migratedPosts.docs.find((p: unknown) => {
-    const authorsArr = (p as { authors?: Array<{ author: unknown }> }).authors
-    return Boolean(authorsArr && authorsArr.length > 0)
-  })
-  if (!postWithAuthor) throw new Error('Expected migrated article to have assigned author relationship')
-  console.log(`✓ Content author mapping verified for: ${(postWithAuthor as { title: string }).title}`)
-
-  // Categories & Parent Relationship
-  const categories = await payload.find({
-    collection: 'categories',
-    where: { site: { equals: migratedSiteId } },
-    overrideAccess: true,
-  })
-  const invCat = categories.docs.find((c: unknown) => (c as { slug: string }).slug === 'investigative') as unknown as { id: string; parent?: unknown }
-  const newsCat = categories.docs.find((c: unknown) => (c as { slug: string }).slug === 'news') as unknown as { id: string }
-  if (!invCat || !newsCat) throw new Error('Categories news and investigative must exist')
-  const parentId = typeof invCat.parent === 'object' && invCat.parent !== null ? (invCat.parent as { id: string }).id : String(invCat.parent)
-  if (parentId !== String(newsCat.id)) {
-    throw new Error(`Category hierarchy mismatch: investigative parent was expected to be news (${newsCat.id}), got ${parentId}`)
-  }
-  console.log(`✓ Taxonomy hierarchy verified: investigative category parent is linked to news category (${parentId})`)
-
-  // Redirects with 308 status
-  const redirects = await payload.find({
-    collection: 'public-redirects',
-    where: { site: { equals: migratedSiteId } },
-    overrideAccess: true,
-  })
-  const postRedirect = redirects.docs.find((r: unknown) => (r as { fromPath: string }).fromPath === '/2026/08/investigating-algorithmic-censorship') as unknown as { toPath: string; statusCode: string }
-  if (!postRedirect || postRedirect.toPath !== '/articles/investigating-algorithmic-censorship' || postRedirect.statusCode !== '308') {
-    throw new Error(`Redirect verification failed: ${JSON.stringify(postRedirect)}`)
-  }
-  console.log(`✓ Public redirect verified: /2026/08/investigating-algorithmic-censorship -> ${postRedirect.toPath} (HTTP ${postRedirect.statusCode})`)
-
-  // Draft layouts
-  const layouts = await payload.find({
-    collection: 'page-layouts',
-    where: { site: { equals: migratedSiteId } },
-    overrideAccess: true,
-  })
-  for (const layout of layouts.docs as unknown as Array<{ status: string; path: string }>) {
-    if (layout.status !== 'draft') {
-      throw new Error(`Expected layout ${layout.path} to be 'draft' before activation, got '${layout.status}'`)
-    }
-  }
-  console.log(`✓ All ${layouts.docs.length} reconstructed layouts verified in DRAFT status prior to activation.`)
-
-  // Quarantined artifacts in database
-  const quarantineRecords = await store.getQuarantineRecords(executed.runId)
-  if (quarantineRecords.length < 6) {
-    throw new Error(`Expected at least 6 quarantine records, got ${quarantineRecords.length}`)
-  }
-  const phpRecord = quarantineRecords.find(q => q.kind === 'php-code')
-  const scriptRecord = quarantineRecords.find(q => q.kind === 'script')
-  const shortcodeRecord = quarantineRecords.find(q => q.kind === 'shortcode' || q.kind === 'form')
-  if (!phpRecord || !scriptRecord || !shortcodeRecord) {
-    throw new Error('Quarantine records must contain PHP, script, and shortcode items')
-  }
-  console.log(`✓ Quarantined artifacts verified: ${quarantineRecords.length} records safely isolated with actionable reasons and zero arbitrary PHP/script execution.`)
-
-  // 2.5 Verify Reconciliation
-  const verified = await verifyLegacyMigration(executed.runId, store)
-  if (verified.stage !== 'verified') throw new Error(`Verify failed: stage is ${verified.stage}`)
-  console.log('✓ Stage 4 Verification: all acceptance checklist gates passed.')
-
-  // 2.6 Deliberate Human Activation
-  const activated = await activateLegacyMigration(executed.runId, store, 'lead-operator@renegade.dev')
-  if (activated.stage !== 'activated') throw new Error(`Activation failed: stage is ${activated.stage}`)
-
-  const publishedLayouts = await payload.find({
-    collection: 'page-layouts',
-    where: { site: { equals: migratedSiteId } },
-    overrideAccess: true,
-  })
-  for (const layout of publishedLayouts.docs as unknown as Array<{ status: string; path: string }>) {
-    if (layout.status !== 'published') {
-      throw new Error(`Expected layout ${layout.path} to be 'published' after deliberate activation`)
-    }
-  }
-  console.log(`✓ Deliberate Human Activation: all ${publishedLayouts.docs.length} layouts transitioned to PUBLISHED.`)
-
-  // =========================================================================
-  // STAGE 3: SAFE RE-RUN IDEMPOTENCY & DUPLICATE REJECTION CONTRACT
-  // =========================================================================
-  console.log('\n[STAGE 3] Testing Safe Re-run & Duplicate Rejection...')
-
-  const contentBeforeRerun = await payload.find({
-    collection: 'content',
-    where: { site: { equals: migratedSiteId } },
-    overrideAccess: true,
-  })
-  const contentCountBefore = contentBeforeRerun.docs.length
-
-  // 3.1 Idempotent Re-run into same site
-  const rerunReport = await executeLegacyMigration(pkg, store, {
-    actorId: 'operator-integration',
-    targetSiteMode: 'existing-site',
-    targetSiteId: migratedSiteId,
-    remoteMediaDownloadAllowed: false,
-  })
-
-  const contentAfterRerun = await payload.find({
-    collection: 'content',
-    where: { site: { equals: migratedSiteId } },
-    overrideAccess: true,
-  })
-  if (contentAfterRerun.docs.length !== contentCountBefore) {
-    throw new Error(`Safe re-run duplicated records! Before: ${contentCountBefore}, After: ${contentAfterRerun.docs.length}`)
-  }
-  if (rerunReport.reconciliation.skipped === 0) {
-    throw new Error('Safe re-run must record skipped items in reconciliation')
-  }
-  console.log(`✓ Safe re-run verified: zero duplicate records created (${contentAfterRerun.docs.length} == ${contentCountBefore}), skipped ${rerunReport.reconciliation.skipped} existing items.`)
-
-  // 3.2 Duplicate Rejection when rejectDuplicates: true
-  const dupeRejectReport = await executeLegacyMigration(pkg, store, {
-    actorId: 'operator-integration',
-    targetSiteMode: 'existing-site',
-    targetSiteId: migratedSiteId,
-    rejectDuplicates: true,
-  })
-  if (dupeRejectReport.stage !== 'failed') {
-    throw new Error(`Expected rejectDuplicates run to fail, got stage: ${dupeRejectReport.stage}`)
-  }
-  const dupeError = dupeRejectReport.errors.find(e => e.code === 'DUPLICATE_ITEM_REJECTED')
-  if (!dupeError) {
-    throw new Error(`Expected DUPLICATE_ITEM_REJECTED error code, got: ${JSON.stringify(dupeRejectReport.errors)}`)
-  }
-  console.log(`✓ Duplicate rejection contract verified: returned actionable error: ${dupeError.message}`)
-
-  // =========================================================================
-  // STAGE 4: UNSUPPORTED INPUTS & ACTIONABLE ERRORS
-  // =========================================================================
-  console.log('\n[STAGE 4] Testing Unsupported Inputs & Actionable Error Handling...')
-
-  const emptyInspect = inspectLegacySite({ wxr: '' })
-  if (emptyInspect.valid !== false || !emptyInspect.errors[0]?.includes('WXR XML')) {
-    throw new Error(`Expected empty WXR to fail inspection with actionable error`)
-  }
-  console.log(`✓ Empty WXR rejected: ${emptyInspect.errors[0]}`)
-
-  const malformedInspect = inspectLegacySite({ wxr: '<<<NOT_A_VALID_WORDPRESS_EXPORT_FILE>>>' })
-  if (malformedInspect.summary.posts !== 0 || malformedInspect.warnings.length === 0) {
-    throw new Error('Malformed WXR must yield zero posts and actionable warning')
-  }
-  console.log(`✓ Malformed input labeled with actionable warning: ${malformedInspect.warnings[0]}`)
-
-  // =========================================================================
-  // STAGE 5: APPROVED PORTABILITY EXPORT PATH
-  // =========================================================================
-  console.log('\n[STAGE 5] Testing Approved Portability Export Path...')
-
-  const recordsToExport: Array<{ collection: string; id: string; data: Record<string, unknown> }> = []
-  const exportedSiteDoc = await payload.findByID({
-    collection: 'sites',
-    id: migratedSiteId,
-    overrideAccess: true,
-  })
-  recordsToExport.push({
-    collection: 'sites',
-    id: migratedSiteId,
-    data: { ...(exportedSiteDoc as unknown as Record<string, unknown>) },
-  })
-
-  for (const coll of PORTABLE_COLLECTIONS) {
-    if (coll === 'sites' || coll === 'site-settings') continue
-    if (!payload.collections[coll as keyof typeof payload.collections]) continue
-    try {
-      const docs = await payload.find({
-        collection: coll as never,
-        where: { site: { equals: migratedSiteId } },
-        limit: 500,
-        overrideAccess: true,
-      })
-      for (const d of docs.docs) {
-        recordsToExport.push({
-          collection: coll,
-          id: String(d.id),
-          data: { ...(d as unknown as Record<string, unknown>) },
-        })
-      }
-    } catch {}
-  }
-
-  const exportManifest = createPortableManifest({
-    createdAt: new Date().toISOString(),
-    records: recordsToExport,
-    media: [],
-  })
-
-  if (exportManifest.format !== 'renegade-portable-export' || exportManifest.version !== 1) {
-    throw new Error(`Invalid manifest format or version: ${exportManifest.format} v${exportManifest.version}`)
-  }
-  if (exportManifest.records.length < 10) {
-    throw new Error(`Export record count too low: ${exportManifest.records.length}`)
-  }
-  if (!exportManifest.exclusions.includes('passkey private material')) {
-    throw new Error('Manifest must declare secret exclusions')
-  }
-  console.log(`✓ Approved Portable Export generated: format '${exportManifest.format}' v${exportManifest.version}, ${exportManifest.records.length} records, ${Object.keys(exportManifest.checksums).length} checksums verified.`)
-
-  // Save snapshot for restart check
-  const snapshotData = {
-    canonicalSiteId: siteId,
-    migratedSiteId,
-    canonicalContentCount: 4, // home, about, team, article
-    migratedContentCount: contentCountBefore,
-    migratedCategoryCount: categories.docs.length,
-    quarantineCount: quarantineRecords.length,
-    exportRecordCount: exportManifest.records.length,
-    runId: executed.runId,
-  }
-  await writeFile(path.join(scratchDir, 'state.json'), JSON.stringify(snapshotData, null, 2), 'utf8')
-  console.log(`✓ State snapshot saved to ${path.join(scratchDir, 'state.json')}`)
-
-  console.log('\n--- ALL SUBPASS 03D CHECKS PASSED SUCCESSFULLY ---')
-}
-
-main().catch((err) => {
-  console.error('\n❌ SUBPASS 03D VERIFICATION FAILED:', err)
-  process.exit(1)
+    ],
+  },
 })
+const rows = async (collection: string, site: string) =>
+  (
+    await payload.find({
+      collection,
+      where: { site: { equals: site } },
+      depth: 0,
+      pagination: false,
+      limit: 0,
+    })
+  ).docs
+const png = Buffer.from(
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+j5XcAAAAASUVORK5CYII=',
+  'base64',
+)
+let passed = false
+try {
+  if (process.argv.includes('--restart')) {
+    const state = JSON.parse(await readFile(`${scratch}/state.json`, 'utf8'))
+    const records = await rows('content', state.site)
+    check(
+      'restart retains exact canonical content IDs',
+      JSON.stringify(records.map((row: any) => row.id).sort()) ===
+        JSON.stringify(state.contentIds.sort()),
+    )
+    check(
+      'restart retains imported content count',
+      (await rows('content', state.importSite)).length === state.importCount,
+    )
+    const report = (await api(`/api/migration/legacy/report/${state.runId}`)).json()
+    check(
+      'restart retains verified migration report',
+      report.runId === state.runId && report.stage === state.stage,
+    )
+    const exported = (await api(`/api/migration/export?siteId=${state.importSite}`)).json().manifest
+    check(
+      'restart exports original media bytes unchanged',
+      exported.media[0].objectData === png.toString('base64'),
+    )
+    const output = await api('/about-03d')
+    check(
+      'restart public output retains operator text and navigation',
+      output.text.includes('03D operator authored page') && output.text.includes('About 03D'),
+    )
+  } else {
+    if (!process.argv.includes('--continue')) {
+    check(
+      'fresh database has no sites or content',
+      (await payload.count({ collection: 'sites' })).totalDocs === 0 &&
+        (await payload.count({ collection: 'content' })).totalDocs === 0,
+    )
+    const warnings: string[] = []
+    const originalWarn = console.warn
+    console.warn = (...args: unknown[]) => {
+      warnings.push(String(args[0] ?? ''))
+    }
+    let token = ''
+    try {
+      await ensureBootstrap(payload, loadConfig())
+      if (warnings.length === 0) await rotateBootstrapToken(payload, loadConfig())
+      token = warnings.map((line) => line.match(/: ([A-Za-z0-9_-]+)$/)?.[1]).find(Boolean) ?? ''
+    } finally {
+      console.warn = originalWarn
+    }
+    assert.equal(token.length, 43, 'one-time installer bootstrap token available')
+    const client = await context.newCDPSession(page)
+    await client.send('WebAuthn.enable')
+    await client.send('WebAuthn.addVirtualAuthenticator', {
+      options: {
+        protocol: 'ctap2',
+        transport: 'internal',
+        hasResidentKey: true,
+        hasUserVerification: true,
+        isUserVerified: true,
+        automaticPresenceSimulation: true,
+      },
+    })
+    await page.goto(`${base}/setup`, { timeout: 180000, waitUntil: 'domcontentloaded' })
+    await page.waitForFunction(() => Object.keys(document.querySelector('input[type="email"]') ?? {}).some((key) => key.startsWith('__reactProps')), { timeout: 60000 })
+    console.log('Installer client hydrated')
+    await page.getByLabel('Bootstrap token').click()
+    await page.getByLabel('Bootstrap token').fill(token)
+    await page.getByLabel('Owner email').click()
+    await page.getByLabel('Owner email').fill('owner@rc103d.test')
+    console.log('Installer inputs supplied')
+
+    await page.getByRole('button', { name: 'Continue', exact: true }).click()
+    await page.getByLabel('Site or publication name').fill('03D Operator Dispatch')
+    await page.getByLabel('Site slug').fill('operator-dispatch-03d')
+    await page.getByLabel('Primary URL').fill(base)
+    await page.getByRole('button', { name: 'Continue', exact: true }).click()
+    await page.getByLabel('Starter site type').selectOption('blank-minimal')
+    await page.getByText('Create starter pages and sample content', { exact: false }).click()
+    await page.getByRole('button', { name: 'Continue', exact: true }).click()
+    await page.getByRole('button', { name: 'Continue', exact: true }).click()
+    const completeResponse = page.waitForResponse((response) => response.url().includes('/api/setup/complete'), { timeout: 180000 })
+    await page.getByRole('button', { name: 'Enroll passkey & create site' }).click()
+    assert.equal((await completeResponse).status(), 201, 'supported installer completion HTTP 201')
+    check(
+      'ordinary installer completes real virtual WebAuthn ceremony',
+      (await context.cookies()).some((cookie) => cookie.name === 'renegade-passkey'),
+    )
+    // Recovery codes and session cookies remain outside evidence.
+    await context.storageState({ path: `${scratch}/session.json` })
+    }
+    const site = (await api('/api/sites?limit=20'))
+      .json()
+      .docs.find((row: any) => row.slug === 'operator-dispatch-03d')
+    assert.ok(site)
+    const home = await native('content', {
+      site: site.id,
+      contentType: 'page',
+      title: '03D Home',
+      slug: 'home-03d',
+      canonicalPath: '/',
+      pathOverride: true,
+      body: body('03D operator authored homepage'),
+      status: 'published',
+    })
+    await api('/api/globals/site-settings', 'POST', { homepageSelection: { mode: 'page', page: home.id } })
+    const about = await native('content', {
+      site: site.id,
+      contentType: 'page',
+      title: 'About 03D',
+      slug: 'about-03d',
+      body: body('03D operator authored page'),
+      status: 'published',
+    })
+    const article = await native('content', {
+      site: site.id,
+      contentType: 'article',
+      title: '03D Report',
+      slug: 'report-03d',
+      body: body('03D operator reporting'),
+      status: 'draft',
+    })
+    await api(`/api/content/${article.id}`, 'PATCH', { status: 'published' })
+    const publications = (await api(`/api/publications?where[site][equals]=${site.id}`)).json().docs
+    assert.ok(publications[0], 'installer publication exists')
+    await api(`/api/publications/${publications[0].id}`, 'PATCH', {
+      navigation: {
+        primary: [
+          { label: 'Home 03D', href: '/' },
+          { label: 'About 03D', href: '/about-03d' },
+          { label: 'Report 03D', href: '/articles/report-03d' },
+        ],
+      },
+    })
+    check(
+      'native product API persisted authored pages/article',
+      [home.id, about.id, article.id].every((id) => id),
+    )
+    const output = await api('/about-03d')
+    check(
+      'public HTTP shows authored page and navigation',
+      output.text.includes('03D operator authored page') && output.text.includes('Report 03D'),
+    )
+    await page.goto(`${base}/about-03d`)
+    check(
+      'browser renders public navigation target',
+      (await page.getByRole('link', { name: 'Report 03D', exact: true }).count()) > 0,
+    )
+    await page.screenshot({ path: `${out}/public-site.png`, fullPage: true })
+    const wxr = await readFile('tests/fixtures/legacy-migration/wordpress-fixture.xml', 'utf8')
+    const themeMapping = JSON.parse(
+      await readFile('tests/fixtures/legacy-migration/theme-mapping.json', 'utf8'),
+    )
+    const pkg = {
+      wxr,
+      themeMapping,
+      mediaFiles: { 'tribune-hero.png': { buffer: png, fileName: 'tribune-hero.png' } },
+    }
+    const options = {
+      targetSiteMode: 'new-isolated-site',
+      newSiteName: '03D Imported Tribune',
+      newSiteSlug: 'imported-tribune-03d',
+      remoteMediaDownloadAllowed: false,
+    }
+    await api('/api/migration/legacy/inspect', 'POST', { wxr: '<<<NOT-XML>>>' }, 422)
+    check('malformed import rejected through supported endpoint', true)
+    const preflight = (
+      await api('/api/migration/legacy/preflight', 'POST', { pkg, options })
+    ).json()
+    check(
+      'dry-run plans content without creating a target site',
+      preflight.stage === 'dry-run' &&
+        (await payload.count({ collection: 'sites' })).totalDocs === 1,
+    )
+    const report = (await api('/api/migration/legacy/execute', 'POST', { pkg, options })).json()
+    await writeFile(`${out}/import-report.json`, JSON.stringify(report, null, 2))
+    check(
+      'representative import executes with no errors',
+      report.stage === 'imported' && report.errors.length === 0,
+    )
+    const imported = await rows('content', report.siteId)
+    const normalized = parseWxr(wxr)
+    check(
+      'exact imported content count',
+      imported.length ===
+        normalized.items.filter((row) => ['post', 'page'].includes(row.postType)).length,
+    )
+    check(
+      'author relationships persisted',
+      imported.some((row: any) => row.authors?.length),
+    )
+    const categories = await rows('categories', report.siteId)
+    const child = categories.find((row: any) => row.slug === 'investigative')
+    check(
+      'taxonomy hierarchy persisted',
+      child?.parent === categories.find((row: any) => row.slug === 'news')?.id,
+    )
+    const assets = await rows('media-assets', report.siteId)
+    check(
+      'actual imported image blob is persisted',
+      assets.length === 1 &&
+        assets[0].originalBlob &&
+        !assets[0].storageLocation.startsWith('local://'),
+    )
+    const exported = (await api(`/api/migration/export?siteId=${report.siteId}`)).json().manifest
+    check(
+      'supported export contains original media bytes',
+      exported.media[0].objectData === png.toString('base64'),
+    )
+    check(
+      'export includes mapped authors and revision history',
+      ['authors', 'revision-records', 'public-redirects'].every((name) =>
+        exported.records.some((record: any) => record.collection === name),
+      ),
+    )
+    check(
+      'export excludes operator site content',
+      !exported.records.some(
+        (record: any) => record.collection === 'content' && record.data.site !== report.siteId,
+      ),
+    )
+    const rerun = (
+      await api('/api/migration/legacy/execute', 'POST', {
+        pkg,
+        options: { targetSiteMode: 'existing-site', targetSiteId: report.siteId },
+      })
+    ).json()
+    check(
+      'rerun skips duplicates without creating content or media',
+      rerun.reconciliation.skipped > 0 &&
+        (await rows('content', report.siteId)).length === imported.length &&
+        (await rows('media-assets', report.siteId)).length === 1,
+    )
+    const reject = (
+      await api(
+        '/api/migration/legacy/execute',
+        'POST',
+        {
+          pkg,
+          options: {
+            targetSiteMode: 'existing-site',
+            targetSiteId: report.siteId,
+            rejectDuplicates: true,
+          },
+        },
+        422,
+      )
+    ).json()
+    check(
+      'explicit duplicate rejection returns actionable code',
+      reject.errors.some((error: any) => error.code === 'DUPLICATE_ITEM_REJECTED'),
+    )
+    const verified = (await api(`/api/migration/legacy/verify/${report.runId}`, 'POST')).json()
+    check(
+      'persisted verification passes all actual checks',
+      verified.stage === 'verified' && Object.values(verified.acceptanceChecklist).every(Boolean),
+    )
+    await api(`/api/migration/legacy/activate/${report.runId}`, 'POST')
+    check(
+      'activation persisted after successful server verification',
+      (await api(`/api/migration/legacy/report/${report.runId}`)).json().stage === 'activated',
+    )
+    await writeFile(
+      `${scratch}/state.json`,
+      JSON.stringify(
+        {
+          site: site.id,
+          contentIds: (await rows('content', site.id)).map((row: any) => row.id),
+          importSite: report.siteId,
+          importCount: imported.length,
+          runId: report.runId,
+          stage: 'activated',
+        },
+        null,
+        2,
+      ),
+    )
+  }
+  passed = true
+} catch (error) {
+  trace.push({ failure: error instanceof Error ? error.message : String(error) })
+  console.error(error)
+  await page.screenshot({ path: `${out}/failure.png`, fullPage: true }).catch(() => {})
+  await writeFile(
+    `${out}/failure-page.txt`,
+    (
+      await page
+        .locator('body')
+        .innerText()
+        .catch(() => '')
+    ).replace(/[A-Za-z0-9_-]{43}/g, '[redacted token]'),
+  )
+  process.exitCode = 1
+} finally {
+  await writeFile(
+    `${out}/${process.argv.includes('--restart') ? 'restart' : 'journey'}-trace.json`,
+    JSON.stringify({ checksPassed: checks, failed: passed ? 0 : 1, trace }, null, 2),
+  )
+  await browser.close()
+  await payload.destroy()
+  process.exit(process.exitCode ?? 0)
+}

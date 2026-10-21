@@ -21,6 +21,7 @@ export const PORTABLE_COLLECTIONS = [
   'categories',
   'tags',
   'taxonomy-redirects',
+  'public-redirects',
   'content',
   'article-family-content',
   'revision-records',

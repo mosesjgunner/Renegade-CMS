@@ -284,6 +284,18 @@ function stripTags(html: string): string {
 
 /** Parse full WordPress WXR XML into NormalizedWxr */
 export function parseWxr(xml: string): NormalizedWxr {
+  if (
+    !/<rss\b/i.test(xml) ||
+    !/<channel[\s>]/i.test(xml) ||
+    !/<\/channel>/i.test(xml) ||
+    !/<\/rss>/i.test(xml) ||
+    !/<wp:wxr_version>1\.[012]<\/wp:wxr_version>/i.test(xml) ||
+    /<!DOCTYPE|<!ENTITY/i.test(xml)
+  ) {
+    throw new Error(
+      'Provide a WordPress WXR 1.0-1.2 XML export with a complete RSS channel. DTDs and entities are unsupported.',
+    )
+  }
   // Site metadata
   const channelMatch = xml.match(/<channel>([\s\S]*?)<\/channel>/i)
   const channelXml = channelMatch ? channelMatch[1] : xml

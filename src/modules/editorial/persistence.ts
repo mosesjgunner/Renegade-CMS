@@ -13,9 +13,15 @@ import {
   type RichTextDocument,
 } from './contracts'
 import { importMarkdownToRichText } from './markdown'
-import { buildTableOfContents, estimateReadingTimeMinutes, extractPlainText } from './presentation'
+import {
+  buildTableOfContents,
+  canonicalLexicalDocument,
+  estimateReadingTimeMinutes,
+  extractPlainText,
+} from './presentation'
 import {
   EditorialWorkflow,
+  hashRevisionIntegrity,
   type EditorialActor,
   type EditorialCitation,
   type EditorialRevision,
@@ -400,7 +406,7 @@ export async function ensureEditorialCompanion(payload: Payload, content: Doc, r
     0,
     req,
   )
-  const rawBody = content.body as Record<string, unknown>
+  const rawBody = canonicalLexicalDocument(content.body as Record<string, unknown>)
   const document: RichTextDocument = {
     format: 'payload-lexical',
     schemaVersion: 1,
@@ -538,7 +544,26 @@ export const persistWorkflow = async (
   const existingRevisionIds = new Set(bundle.revisions.map((revision) => String(revision.id)))
   const persistedRevisionIds = new Map<string, string>()
 
-  for (const revision of workflow.article.revisions) {
+  const revisions = workflow.article.revisions.map((revision) => {
+    if (existingRevisionIds.has(revision.id)) return revision
+    const raw = canonicalLexicalDocument(revision.document.document)
+    const document = {
+      ...revision.document,
+      document: raw,
+      canonicalHash: hashRichTextDocument(raw),
+    }
+    return {
+      ...revision,
+      document,
+      integrityHash: hashRevisionIntegrity({
+        document,
+        citationAttachments: [],
+        mediaReferenceIds: [],
+        provenance: { createdBy: revision.createdBy },
+      }),
+    }
+  })
+  for (const revision of revisions) {
     if (existingRevisionIds.has(revision.id)) continue
     const persistedRevision = await createRevisionRecord(
       payload,
@@ -550,7 +575,7 @@ export const persistWorkflow = async (
     persistedRevisionIds.set(revision.id, String(persistedRevision.id))
   }
 
-  const currentRevision = workflow.article.revisions.find(
+  const currentRevision = revisions.find(
     (revision) => revision.id === workflow.article.currentRevisionId,
   )
   if (!currentRevision) throw new Error('The editorial workflow lost its current revision.')

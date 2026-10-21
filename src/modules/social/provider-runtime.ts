@@ -247,6 +247,15 @@ export const credentialsForSocialAccount = (connectionReference?: string | null)
     }
   }
 
+  // Support direct unencrypted JSON string
+  if (connectionReference.startsWith('{')) {
+    try {
+      return JSON.parse(connectionReference)
+    } catch {
+      return null
+    }
+  }
+
   // Fallback to environment variable lookup
   const key = connectionReference.toUpperCase().replace(/[^A-Z0-9]/g, '_')
   const identifier = process.env['SOCIAL_BLUESKY_' + key + '_IDENTIFIER']

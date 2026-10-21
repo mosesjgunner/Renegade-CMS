@@ -1,0 +1,12 @@
+﻿{
+    "baseManifestSha256":  "4d3e70f417bd207b959efc64ff3aa8af76c6c32c4ed7f189a9cefa5d1ca7dcaf",
+    "head":  "cabb9e5a0fb4052fd553e4bbb2b4d13760af433e",
+    "changes":  [
+                    {
+                        "path":  "tests/rc1-03b/verify-current.ts",
+                        "before":  "fa675e44e1137f5c540f0cbd588bf5beb28d914404bb5cf08c8ccfb8a3d2f98d",
+                        "after":  "706356932602edd778113b554b684f1b898a534bef73a6186d36f29976962b33",
+                        "reason":  "Dismiss privacy consent and capture clean preview during restart browser proof"
+                    }
+                ]
+}

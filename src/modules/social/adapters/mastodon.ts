@@ -89,7 +89,11 @@ export class MastodonAdapter implements SocialProviderAdapter {
     platformSettings?: MastodonPlatformSettings,
   ): string {
     const fromSettings = platformSettings?.instanceUrl
-    const fromCreds = authContext?.credentials?.instanceUrl || authContext?.credentials?.instance
+    const fromCreds =
+      authContext?.credentials?.instanceUrl ||
+      authContext?.credentials?.instance ||
+      authContext?.credentials?.serverUrl ||
+      authContext?.credentials?.url
     const raw = fromSettings || fromCreds || 'https://mastodon.social'
     return raw.replace(/\/+$/, '')
   }
@@ -347,6 +351,11 @@ export class MastodonAdapter implements SocialProviderAdapter {
       }
 
       const postData = (await response.json()) as { id: string; url: string; created_at: string }
+      const providerMode =
+        instanceUrl.includes('127.0.0.1') || instanceUrl.includes('localhost')
+          ? 'local-harness'
+          : 'live'
+
       return {
         status: 'published',
         remoteId: postData.id,
@@ -355,15 +364,24 @@ export class MastodonAdapter implements SocialProviderAdapter {
           remotePostId: postData.id,
           remoteUrl: postData.url,
           publishedAt: new Date(postData.created_at || Date.now()),
-          rawResponse: postData as Record<string, unknown>,
+          rawResponse: { ...postData, providerMode },
         },
       }
     } catch (err: unknown) {
+      const isTimeout =
+        err instanceof Error &&
+        (err.name === 'TimeoutError' ||
+          err.message.includes('timeout') ||
+          err.message.includes('timed out'))
       return {
         status: 'failed',
         error: normalizeProviderError({
           kind: 'transient',
-          message: err instanceof Error ? err.message : String(err),
+          message: isTimeout
+            ? 'Mastodon request timed out.'
+            : err instanceof Error
+              ? err.message
+              : String(err),
         }),
       }
     }

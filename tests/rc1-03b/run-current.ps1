@@ -1,24 +1,27 @@
 param(
   [Parameter(Mandatory = $true)]
-  [ValidateSet('start-db', 'migrate', 'verify', 'restart-check', 'serve', 'types', 'importmap')]
+  [ValidateSet('start-db', 'migrate', 'verify', 'privacy', 'restart-check', 'serve', 'build', 'serve-production', 'types', 'importmap')]
   [string]$Action
 )
 
 $ErrorActionPreference = 'Stop'
 Set-Location (Resolve-Path "$PSScriptRoot/../..")
 
-$containerName = 'rc103b-20261020'
-$pgPort = '5462'
-$dbName = 'rc103b_release_acceptance'
+$containerName = 'rc103b-final-20261020'
+$pgPort = '5463'
+$dbName = 'rc103b_final_release_acceptance'
 $dbUri = "postgresql://postgres:postgres@127.0.0.1:$pgPort/$dbName"
 
 $env:DATABASE_URL = $dbUri
 $env:DATABASE_URI = $dbUri
 $env:PAYLOAD_SECRET = 'rc103b-disposable-secret-for-local-verification-only-20261020'
-$env:APP_URL = 'http://localhost:39032'
+$env:APP_URL = 'http://localhost:39033'
 $env:EMAIL_MODE = 'disabled'
-$env:MEDIA_DIR = Join-Path (Get-Location) 'scratch/rc103b-20261020/media'
-$env:RENEGADE_NEXT_DIST_DIR = '.next-rc103b-current-20261020'
+$env:MEDIA_DIR = Join-Path (Get-Location) 'scratch/rc103b-final-20261020/media'
+$env:RENEGADE_NEXT_DIST_DIR = '.next-rc103b-final-20261020'
+if ($Action -in @('build', 'serve-production')) {
+  $env:RENEGADE_NEXT_DIST_DIR = '.next-rc103b-production-20261020'
+}
 $env:RENEGADE_MODULES = 'all'
 $env:RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT = 'true'
 $env:LOCAL_E2E_TEST_MODE = 'false'
@@ -64,6 +67,7 @@ switch ($Action) {
     Write-Host "Executing 03B rich editor and preview acceptance..."
     node ./node_modules/tsx/dist/cli.mjs tests/rc1-03b/verify-current.ts
   }
+  'privacy' { node ./node_modules/tsx/dist/cli.mjs tests/rc1-03b/verify-privacy.ts }
 
   'restart-check' {
     Write-Host "Restarting container $containerName..."
@@ -81,8 +85,11 @@ switch ($Action) {
   }
 
   'serve' {
-    node ./node_modules/next/dist/bin/next dev --hostname 127.0.0.1 --port 39032
+    node ./node_modules/next/dist/bin/next dev --webpack --hostname 127.0.0.1 --port 39033
   }
+
+  'build' { node ./node_modules/next/dist/bin/next build --webpack }
+  'serve-production' { node ./node_modules/next/dist/bin/next start --hostname 127.0.0.1 --port 39033 }
 
   'importmap' { npm.cmd run generate:importmap }
 

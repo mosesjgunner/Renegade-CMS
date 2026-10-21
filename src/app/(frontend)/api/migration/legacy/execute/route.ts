@@ -1,3 +1,4 @@
+import { canMigrateLegacySite } from '@/modules/portability/legacy-migration/access'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
@@ -29,7 +30,20 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Legacy package with WXR is required.' }, { status: 400 })
   }
 
-  const store = new PayloadLegacyMigrationStore(payload)
+  if (
+    !(await canMigrateLegacySite(
+      payload,
+      auth.user,
+      body.options?.targetSiteId,
+      body.options?.targetSiteMode !== 'existing-site',
+    ))
+  ) {
+    return NextResponse.json(
+      { error: 'Migration requires all-sites author authority; creating sites requires an owner.' },
+      { status: 403 },
+    )
+  }
+  const store = new PayloadLegacyMigrationStore(payload, auth.user ?? undefined)
   const options: LegacyMigrationOptions = {
     actorId: String(auth.user?.id ?? 'staff'),
     targetSiteMode: body.options?.targetSiteMode ?? 'new-isolated-site',
@@ -39,9 +53,17 @@ export async function POST(request: Request) {
     themeId: body.options?.themeId ?? 'neutral-starter',
     remoteMediaDownloadAllowed: body.options?.remoteMediaDownloadAllowed ?? false,
     dryRun: false,
-    autoActivate: body.options?.autoActivate ?? false,
+    autoActivate: false,
+    rejectDuplicates: body.options?.rejectDuplicates ?? false,
   }
 
-  const report = await executeLegacyMigration(body.pkg, store, options, body.runId)
-  return NextResponse.json(report, { status: report.stage === 'failed' ? 422 : 200 })
+  try {
+    const report = await executeLegacyMigration(body.pkg, store, options, body.runId)
+    return NextResponse.json(report, { status: report.stage === 'failed' ? 422 : 200 })
+  } catch (error) {
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : String(error) },
+      { status: 422 },
+    )
+  }
 }

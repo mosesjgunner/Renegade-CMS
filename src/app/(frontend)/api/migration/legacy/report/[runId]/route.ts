@@ -1,3 +1,4 @@
+import { canMigrateLegacySite } from '@/modules/portability/legacy-migration/access'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
@@ -15,12 +16,15 @@ export async function GET(request: Request, { params }: { params: Promise<{ runI
   }
 
   const { runId } = await params
-  const store = new PayloadLegacyMigrationStore(payload)
+  const store = new PayloadLegacyMigrationStore(payload, auth.user ?? undefined)
   const report = await store.getMigrationRun(runId)
 
   if (!report) {
     return NextResponse.json({ error: `Migration run '${runId}' was not found.` }, { status: 404 })
   }
+
+  if (!(await canMigrateLegacySite(payload, auth.user, report.siteId)))
+    return NextResponse.json({ error: 'Migration site access denied.' }, { status: 403 })
 
   return NextResponse.json(report, { status: 200 })
 }

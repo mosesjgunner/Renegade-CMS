@@ -13,6 +13,28 @@ const asRecord = (value: unknown): JsonRecord =>
 
 const asArray = (value: unknown): unknown[] => (Array.isArray(value) ? value : [])
 
+/** Revision snapshots store references, never response-depth-dependent related records. */
+export function canonicalLexicalDocument(document: JsonRecord): JsonRecord {
+  const visit = (value: unknown): unknown => {
+    if (Array.isArray(value)) return value.map(visit)
+    if (!value || typeof value !== 'object') return value
+    const node = Object.fromEntries(Object.entries(value).map(([key, item]) => [key, visit(item)]))
+    if (['relationship', 'upload'].includes(String(node.type))) {
+      const related = asRecord(node.value)
+      if (typeof related.id === 'string' || typeof related.id === 'number') node.value = related.id
+    }
+    if (['link', 'autolink'].includes(String(node.type))) {
+      const fields = asRecord(node.fields)
+      const doc = asRecord(fields.doc)
+      const related = asRecord(doc.value)
+      if (doc.relationTo && (typeof related.id === 'string' || typeof related.id === 'number'))
+        fields.doc = { ...doc, value: related.id }
+    }
+    return node
+  }
+  return visit(document) as JsonRecord
+}
+
 const slugify = (value: string): string =>
   value
     .toLowerCase()

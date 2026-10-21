@@ -388,6 +388,7 @@ export const assertSocialTransition = (from: SocialState, to: SocialState) => {
 export const campaignState = (states: readonly SocialState[]): SocialState => {
   if (states.includes('failed') && states.includes('published')) return 'partially-published'
   if (states.length && states.every((state) => state === 'published')) return 'published'
+  if (states.length && states.every((state) => state === 'failed')) return 'failed'
   if (states.includes('publishing')) return 'publishing'
   if (states.includes('scheduled')) return 'scheduled'
   if (states.includes('queued')) return 'queued'

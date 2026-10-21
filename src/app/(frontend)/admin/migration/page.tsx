@@ -1,3 +1,4 @@
+import { canMigrateLegacySite } from '@/modules/portability/legacy-migration/access'
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import { headers } from 'next/headers'
@@ -21,6 +22,8 @@ export default async function AdminMigrationPage({
   if (runId) {
     const store = new PayloadLegacyMigrationStore(payload)
     initialReport = (await store.getMigrationRun(runId)) ?? undefined
+    if (initialReport && !(await canMigrateLegacySite(payload, auth.user, initialReport.siteId)))
+      notFound()
   }
 
   return <LegacyMigrationReview initialReport={initialReport} />

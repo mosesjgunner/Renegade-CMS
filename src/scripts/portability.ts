@@ -1,3 +1,4 @@
+import { exportPortableSite } from '../modules/portability/site-export'
 import { readFile, writeFile } from 'node:fs/promises'
 import path from 'node:path'
 import { getPayload } from 'payload'
@@ -10,7 +11,6 @@ import {
 } from '../modules/portability/contracts'
 import {
   importPortableManifest,
-  PORTABLE_COLLECTIONS,
   assertPortableSiteBoundary,
   type PortabilityCheckpoint,
 } from '../modules/portability/workflow'
@@ -45,68 +45,7 @@ const portabilityPayload = payload as unknown as {
   create: (args: Record<string, unknown>) => Promise<unknown>
 }
 if (command === 'export') {
-  const records: { collection: string; id: string; data: Record<string, unknown> }[] = []
-  const sourceSite = (await portabilityPayload.findByID({
-    collection: 'sites',
-    id: siteId,
-    depth: 0,
-    overrideAccess: true,
-  })) as Record<string, unknown>
-  if (!sourceSite) throw new Error(`Source site was not found: ${siteId}`)
-  const {
-    id: sourceId,
-    createdAt: sourceCreatedAt,
-    updatedAt: sourceUpdatedAt,
-    ...sourceData
-  } = sourceSite
-  records.push({
-    collection: 'sites',
-    id: String(sourceId),
-    data: {
-      ...sourceData,
-      _portableTimestamps: { createdAt: sourceCreatedAt, updatedAt: sourceUpdatedAt },
-    },
-  })
-  for (const collection of PORTABLE_COLLECTIONS) {
-    if (collection === 'sites' || collection === 'site-settings') continue
-    const docs = await payload.find({
-      collection: collection as never,
-      limit: 0,
-      depth: 0,
-      overrideAccess: true,
-      where: { site: { equals: siteId } },
-    })
-    for (const doc of docs.docs) {
-      const { id, createdAt, updatedAt, ...data } = doc as Record<string, unknown>
-      records.push({
-        collection,
-        id: String(id),
-        data: { ...data, _portableTimestamps: { createdAt, updatedAt } },
-      })
-    }
-  }
-  const media = await Promise.all(
-    records
-      .filter((record) => record.collection === 'media-assets')
-      .map(async (record) => {
-        const location = String(record.data.storageLocation ?? '')
-        const bytes = location ? await storage.get(location) : undefined
-        if (!bytes) throw new Error(`Media object is missing for media-assets/${record.id}.`)
-        return {
-          id: record.id,
-          originalChecksum: String(record.data.checksum ?? ''),
-          derivativeChecksums: [],
-          encryptedBlobChecksum: null,
-          objectData: Buffer.from(bytes).toString('base64'),
-          mimeType: typeof record.data.mimeType === 'string' ? record.data.mimeType : undefined,
-        }
-      }),
-  )
-  const manifest = createPortableManifest({
-    createdAt: new Date().toISOString(),
-    records,
-    media,
-  })
+  const manifest = await exportPortableSite(payload, siteId)
   await writeFile(
     path.resolve(file),
     `${JSON.stringify(createPortableArchive(manifest, encryptionKey), null, 2)}\n`,
@@ -114,7 +53,7 @@ if (command === 'export') {
   )
   console.log(
     JSON.stringify(
-      { state: 'completed', records: records.length, file: path.resolve(file) },
+      { state: 'completed', records: manifest.records.length, file: path.resolve(file) },
       null,
       2,
     ),
@@ -202,3 +141,5 @@ if (command === 'export') {
   console.log(JSON.stringify({ ...report, checkpointFile }, null, 2))
   if (report.failedRows.length || report.validationErrors.length) process.exitCode = 1
 }
+
+await payload.db.destroy?.()

@@ -1,25 +1,25 @@
 param(
   [Parameter(Mandatory = $true)]
-  [ValidateSet('start-db', 'migrate', 'verify', 'restart-check', 'types')]
+  [ValidateSet('start-db', 'migrate', 'verify', 'restart-check', 'types', 'serve', 'continue', 'negatives')]
   [string]$Action
 )
 
 $ErrorActionPreference = 'Stop'
 Set-Location (Resolve-Path "$PSScriptRoot/../..")
 
-$containerName = 'rc103d-20261018-review'
-$pgPort = '5437'
-$dbName = 'rc103d_release_acceptance'
+$containerName = 'rc103d-frozen-20261020'
+$pgPort = '5465'
+$dbName = 'rc103d_operator_release_acceptance'
 $dbUri = "postgresql://postgres:postgres@127.0.0.1:$pgPort/$dbName"
 
 $env:DATABASE_URL = $dbUri
 $env:DATABASE_URI = $dbUri
-$env:PAYLOAD_SECRET = 'rc103d-disposable-secret-for-local-verification-only-20261018'
-$env:APP_URL = 'https://admin.rc103d.test:38906'
+$env:PAYLOAD_SECRET = 'rc103d-disposable-secret-for-local-verification-only-20261020'
+$env:APP_URL = 'http://localhost:39035'
 $env:PROXY_MODE = 'trusted'
 $env:EMAIL_MODE = 'disabled'
-$env:MEDIA_DIR = Join-Path (Get-Location) 'scratch/rc103d-20261018/media'
-$env:RENEGADE_NEXT_DIST_DIR = '.next-rc103d'
+$env:MEDIA_DIR = Join-Path (Get-Location) 'scratch/rc103d-frozen-20261020/media'
+$env:RENEGADE_NEXT_DIST_DIR = '.next-rc103d-frozen-20261020'
 $env:RENEGADE_MODULES = 'all'
 $env:RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT = 'true'
 $env:LOCAL_E2E_TEST_MODE = 'false'
@@ -33,10 +33,12 @@ switch ($Action) {
     $existing = docker ps -a --filter "name=$containerName" --format '{{.Names}}'
     if ($existing -eq $containerName) {
       Write-Host "Container $containerName exists. Starting..."
+      $label = ((docker inspect $containerName | ConvertFrom-Json)[0].Config.Labels.'renegade.acceptance')
+      if ($label -ne 'rc103d-frozen-20261020') { throw 'Refusing to reuse an unowned container.' }
       docker start $containerName
     } else {
       Write-Host "Creating disposable PostgreSQL container $containerName on port $pgPort..."
-      docker run -d --name $containerName -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=$dbName -p "${pgPort}:5432" postgres:17.6
+      docker run -d --name $containerName -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=$dbName -l renegade.acceptance=rc103d-frozen-20261020 -p "127.0.0.1:${pgPort}:5432" postgres:17.6
     }
     Write-Host "Waiting for database readiness..."
     $ready = $false
@@ -57,7 +59,11 @@ switch ($Action) {
   }
 
   'migrate' {
-    Write-Host "Running 116 fresh migrations on $dbUri..."
+    $label = ((docker inspect $containerName | ConvertFrom-Json)[0].Config.Labels.'renegade.acceptance')
+    if ($label -ne 'rc103d-frozen-20261020') { throw 'Refusing to migrate an unowned container.' }
+    $tableCount = docker exec $containerName psql -U postgres -d $dbName -tAc "SELECT count(*) FROM information_schema.tables WHERE table_schema='public'"
+    if ($LASTEXITCODE -ne 0 -or $tableCount.Trim() -ne '0') { throw 'Fresh migration requires this owned database to be empty.' }
+    Write-Host 'Running fresh migrations in the empty, isolated 03D database.' 
     npm.cmd run test:migrations:fresh
   }
 
@@ -78,8 +84,12 @@ switch ($Action) {
       Start-Sleep -Seconds 1
     }
     Write-Host "Verifying state persistence after restart..."
-    npx.cmd tsx tests/rc1-03d/verify-restart.ts
+    npx.cmd tsx tests/rc1-03d/verify-import-and-build.ts --restart
   }
+
+  'continue' { npx.cmd tsx tests/rc1-03d/verify-import-and-build.ts --continue }
+  'negatives' { npx.cmd tsx tests/rc1-03d/verify-negatives.ts }
+  'serve' { node ./node_modules/next/dist/bin/next dev --webpack --hostname 127.0.0.1 --port 39035 }
 
   'types' {
     npm.cmd run typecheck

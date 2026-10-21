@@ -1,6 +1,6 @@
 ﻿{
-    "head":  "7a5a3df6d63078ab5ae55c845be24114a806e33f",
-    "capturedAt":  "2026-10-20T09:23:27.5453602Z",
+    "head":  "cabb9e5a0fb4052fd553e4bbb2b4d13760af433e",
+    "capturedAt":  "2026-10-20T09:38:29.2197572Z",
     "files":  [
                   {
                       "path":  "eslint.config.mjs",
@@ -2924,11 +2924,11 @@
                   },
                   {
                       "path":  "src/modules/editorial/persistence.ts",
-                      "sha256":  "2229376c260558c4a9d8d53ad1d25402b068400a8472d7bc3b65cf74d822139f"
+                      "sha256":  "eeca79d7cebc4932d5ccdf5c83a463631d3d4293800b36b44f64d89401ca74ba"
                   },
                   {
                       "path":  "src/modules/editorial/presentation.ts",
-                      "sha256":  "c6ac2118d65fdfd232a3b17e8cdb3aed6e4cf7594c28278564add1ae4b6a349c"
+                      "sha256":  "19ce331462f462b5e1b0a0e4c81cdec7fab660e3bdf479cd3ad86965938144be"
                   },
                   {
                       "path":  "src/modules/editorial/publishing-pass.ts",
@@ -3640,7 +3640,7 @@
                   },
                   {
                       "path":  "src/modules/social/adapters/bluesky.ts",
-                      "sha256":  "c9171c2147798941d7843fcb1b491ab7a29b9ff30028021e64a1cd6622573917"
+                      "sha256":  "a17d6f125ee0b57bf1bc50b6228439c7344bf05abf4ee579e0f8dae886495f60"
                   },
                   {
                       "path":  "src/modules/social/adapters/discord.ts",
@@ -3660,7 +3660,7 @@
                   },
                   {
                       "path":  "src/modules/social/adapters/mastodon.ts",
-                      "sha256":  "ffac7516773e0f1d7bd090677d7be4dc05246d6207606c1cedf7a9f0ff906a64"
+                      "sha256":  "f2da1d0616a1cd88efb5f0cb7409f14209235e095ce09ce87fa1768be527c647"
                   },
                   {
                       "path":  "src/modules/social/adapters/pinterest.ts",
@@ -3708,7 +3708,7 @@
                   },
                   {
                       "path":  "src/modules/social/provider-runtime.ts",
-                      "sha256":  "a78ca02ff79aa5cd7b15fbf28ee1b5cfc2b6d5c8f63936eafdc627df5b5a0425"
+                      "sha256":  "787f6ff6fc9e38bb1f6ae47edaaaf2a00c02130dbf74c8a74a13f8f5290ae426"
                   },
                   {
                       "path":  "src/modules/social/queue.ts",
@@ -3724,7 +3724,7 @@
                   },
                   {
                       "path":  "src/modules/social/tasks.ts",
-                      "sha256":  "88adbdd189941ffae9b7ca3d7e6004505fad6949b90736ece567a826029d56fd"
+                      "sha256":  "d0e7d3713f337cb60907041c322d49add6120265fcae7d5a07f64a2e7f33fad9"
                   },
                   {
                       "path":  "src/modules/social/worker.ts",
@@ -4420,7 +4420,7 @@
                   },
                   {
                       "path":  "tests/rc1-03b/verify-current.ts",
-                      "sha256":  "2d83797ce27ae6c680cb608abfad830de350e54dbac4daba0eb48a442f5f3c72"
+                      "sha256":  "93ba56795fcab7cd9213300824be105f317e64616b1ab007bdc27383b0297cdf"
                   },
                   {
                       "path":  "tests/rc1-03b/verify-restart.ts",
@@ -5496,7 +5496,7 @@
                   },
                   {
                       "path":  "tests/unit/rc1-03b-current.test.tsx",
-                      "sha256":  "3c5ba135193bc3e12e1edcaf2313282aa36b7810d033fb26f7d5ffaadac3d797"
+                      "sha256":  "1d9ec17be79c3f55aa84e0d0e3cbfdcc04fba90ebae2a20a8c1a79128764900f"
                   },
                   {
                       "path":  "tests/unit/rc1-04a-layout-media.test.ts",

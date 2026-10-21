@@ -1,0 +1,349 @@
+{
+  "checks": 17,
+  "succeeded": false,
+  "trace": [
+    {
+      "route": "/api/globals/site-settings",
+      "method": "POST",
+      "status": 200,
+      "bytes": 2145,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/authors",
+      "method": "POST",
+      "status": 201,
+      "bytes": 299,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/authors",
+      "method": "POST",
+      "status": 201,
+      "bytes": 301,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 10297,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 10298,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/content",
+      "method": "POST",
+      "status": 201,
+      "bytes": 10282,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "native API creates and reloads article with rich blocks/media/authors",
+      "passed": true
+    },
+    {
+      "name": "native API creates and reloads article with rich blocks/media/authors",
+      "passed": true
+    },
+    {
+      "name": "native API creates and reloads page with rich blocks/media/authors",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/workflow/revisions?contentId=a469846d-7726-4f84-bea8-6662b525aee3",
+      "method": "GET",
+      "status": 200,
+      "bytes": 348,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "ordinary native editor loads real Lexical body, inline media and callout controls",
+      "passed": true
+    },
+    {
+      "name": "browser Lexical typing autosaves to real canonical content",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/workflow/revisions?contentId=a469846d-7726-4f84-bea8-6662b525aee3",
+      "method": "GET",
+      "status": 200,
+      "bytes": 637,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "autosave creates canonical saved revision",
+      "passed": true
+    },
+    {
+      "name": "reload retains browser-authored bold draft and original blocks",
+      "passed": true
+    },
+    {
+      "name": "failed autosave keeps editor text while persisted state is unchanged",
+      "passed": true
+    },
+    {
+      "name": "ordinary Retry draft save persists retained text",
+      "passed": true
+    },
+    {
+      "route": "/api/payload-locked-documents",
+      "method": "POST",
+      "status": 201,
+      "bytes": 578,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/workflow/revisions?contentId=a469846d-7726-4f84-bea8-6662b525aee3",
+      "method": "GET",
+      "status": 200,
+      "bytes": 926,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "simultaneous native editor sessions show document-lock feedback to the second editor",
+      "passed": true
+    },
+    {
+      "firstEditor": "http://localhost:39033/admin/collections/content/a469846d-7726-4f84-bea8-6662b525aee3",
+      "secondEditor": "http://localhost:39033/admin/collections/content/a469846d-7726-4f84-bea8-6662b525aee3",
+      "lock": "d4a54de3-076b-41b5-b131-f87346da67e3"
+    },
+    {
+      "route": "/api/content/a469846d-7726-4f84-bea8-6662b525aee3?overrideLock=true",
+      "method": "PATCH",
+      "status": 423,
+      "bytes": 139,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/workflow/revisions",
+      "method": "POST",
+      "status": 423,
+      "bytes": 124,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/workflow/revisions?contentId=a469846d-7726-4f84-bea8-6662b525aee3",
+      "method": "GET",
+      "status": 200,
+      "bytes": 926,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "native save and restore both honor another editor lock with no partial revisions",
+      "passed": true
+    },
+    {
+      "route": "/api/payload-locked-documents/d4a54de3-076b-41b5-b131-f87346da67e3",
+      "method": "DELETE",
+      "status": 200,
+      "bytes": 554,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/workflow/revisions?contentId=a469846d-7726-4f84-bea8-6662b525aee3",
+      "method": "GET",
+      "status": 200,
+      "bytes": 926,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/workflow/revisions?contentId=a469846d-7726-4f84-bea8-6662b525aee3",
+      "method": "GET",
+      "status": 200,
+      "bytes": 926,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "restore storage failure rolls back body, companion and appended revision",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/workflow/revisions?contentId=a469846d-7726-4f84-bea8-6662b525aee3",
+      "method": "GET",
+      "status": 200,
+      "bytes": 1203,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "ordinary history UI restores original body and appends a new revision",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/workflow/revisions?contentId=03add6d8-f36b-4ef3-9a5d-03ea02b3a876",
+      "method": "GET",
+      "status": 200,
+      "bytes": 348,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/content/03add6d8-f36b-4ef3-9a5d-03ea02b3a876",
+      "method": "PATCH",
+      "status": 200,
+      "bytes": 11361,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "supported API edit persists article without losing media/blocks",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/workflow/revisions",
+      "method": "POST",
+      "status": 200,
+      "bytes": 24,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/workflow/revisions?contentId=03add6d8-f36b-4ef3-9a5d-03ea02b3a876",
+      "method": "GET",
+      "status": 200,
+      "bytes": 914,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "supported API restore recovers exact original article and appends history",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/workflow/revisions?contentId=f141e6a7-37b6-485c-a3de-d9dc12776622",
+      "method": "GET",
+      "status": 200,
+      "bytes": 348,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/content/f141e6a7-37b6-485c-a3de-d9dc12776622",
+      "method": "PATCH",
+      "status": 200,
+      "bytes": 11345,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "supported API edit persists page without losing media/blocks",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/workflow/revisions",
+      "method": "POST",
+      "status": 200,
+      "bytes": 24,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/workflow/revisions?contentId=f141e6a7-37b6-485c-a3de-d9dc12776622",
+      "method": "GET",
+      "status": 200,
+      "bytes": 914,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "supported API restore recovers exact original page and appends history",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/content/preview",
+      "method": "POST",
+      "status": 200,
+      "bytes": 114,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/preview/article/4b240c37db9662a2f7820264ecd02a321182ee2e91c9e5cd",
+      "method": "GET",
+      "status": 200,
+      "bytes": 32395,
+      "etag": null,
+      "location": null,
+      "contentType": "text/html; charset=utf-8",
+      "robots": "noindex, nofollow"
+    }
+  ]
+}

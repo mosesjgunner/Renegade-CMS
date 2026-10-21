@@ -87,6 +87,8 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
     return d.toISOString().slice(0, 16)
   })
   const [persistedQueueItems, setPersistedQueueItems] = useState<any[]>([])
+  const [externalPosts, setExternalPosts] = useState<any[]>([])
+  const [publishAttempts, setPublishAttempts] = useState<any[]>([])
   const [workflowMessage, setWorkflowMessage] = useState<{
     type: 'success' | 'error' | 'info'
     text: string
@@ -171,6 +173,8 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
       setDraftTitle('')
       setDraftStatus(null)
       setPersistedQueueItems([])
+      setExternalPosts([])
+      setPublishAttempts([])
       setWorkflowMessage(null)
       return
     }
@@ -184,6 +188,8 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
         setDraftTitle(draft.title || '')
         setDraftStatus(draft.status || 'draft')
         setPersistedQueueItems(data.queueItems || [])
+        setExternalPosts(data.externalPosts || [])
+        setPublishAttempts(data.publishAttempts || [])
         setWorkflowMessage({
           type: 'info',
           text: `Loaded draft "${draft.title}" (Status: ${draft.status})`,
@@ -504,18 +510,80 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
       const res = await fetch('/api/admin/social/worker', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({}),
+        body: JSON.stringify({ action: 'dispatch' }),
       })
       const data = await res.json()
       if (res.ok) {
         setWorkerResult(
-          `Worker processed ${data.summary?.processedCount ?? 0} jobs (${data.summary?.succeededCount ?? 0} succeeded)`,
+          `Worker processed ${data.summary?.processedCount ?? 0} jobs (${data.summary?.succeededCount ?? 0} succeeded, ${data.summary?.failedCount ?? 0} failed)`,
         )
+        if (selectedDraftId) {
+          await loadDraft(selectedDraftId)
+        }
+        await refreshDrafts()
       } else {
         setWorkerResult(`Worker failed: ${data.error || 'Unknown error'}`)
       }
     } catch (err: unknown) {
       setWorkerResult(`Worker error: ${err instanceof Error ? err.message : String(err)}`)
+    } finally {
+      setIsProcessingQueue(false)
+    }
+  }
+
+  const handleDispatchQueue = async () => {
+    await handleProcessQueue()
+  }
+
+  const handleRetryFailed = async () => {
+    setIsProcessingQueue(true)
+    setWorkerResult(null)
+    try {
+      const res = await fetch('/api/admin/social/worker', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'retry-failed' }),
+      })
+      const data = await res.json()
+      if (res.ok) {
+        setWorkerResult(
+          `Retried ${data.summary?.retriedCount ?? 0} failed jobs (${data.summary?.succeededCount ?? 0} succeeded, ${data.summary?.failedAgainCount ?? 0} failed)`,
+        )
+        if (selectedDraftId) {
+          await loadDraft(selectedDraftId)
+        }
+        await refreshDrafts()
+      } else {
+        setWorkerResult(`Retry failed: ${data.error || 'Unknown error'}`)
+      }
+    } catch (err: unknown) {
+      setWorkerResult(`Retry error: ${err instanceof Error ? err.message : String(err)}`)
+    } finally {
+      setIsProcessingQueue(false)
+    }
+  }
+
+  const handleDispatchItem = async (itemId: string) => {
+    setIsProcessingQueue(true)
+    setWorkerResult(null)
+    try {
+      const res = await fetch('/api/admin/social/worker', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'dispatch-item', queueItemId: itemId }),
+      })
+      const data = await res.json()
+      if (res.ok) {
+        setWorkerResult(`Dispatched queue item ${itemId}: ${data.item?.status}`)
+        if (selectedDraftId) {
+          await loadDraft(selectedDraftId)
+        }
+        await refreshDrafts()
+      } else {
+        setWorkerResult(`Dispatch item failed: ${data.error || 'Unknown error'}`)
+      }
+    } catch (err: unknown) {
+      setWorkerResult(`Dispatch item error: ${err instanceof Error ? err.message : String(err)}`)
     } finally {
       setIsProcessingQueue(false)
     }
@@ -976,25 +1044,37 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
                 fontWeight: 700,
                 textTransform: 'uppercase',
                 backgroundColor:
-                  draftStatus === 'approved'
+                  draftStatus === 'published'
                     ? '#dcfce7'
-                    : draftStatus === 'review'
-                      ? '#dbeafe'
-                      : draftStatus === 'scheduled'
-                        ? '#f3e8ff'
-                        : draftStatus === 'cancelled'
-                          ? '#fee2e2'
-                          : '#fef3c7',
+                    : draftStatus === 'partially-published'
+                      ? '#fef3c7'
+                      : draftStatus === 'publishing'
+                        ? '#dbeafe'
+                        : draftStatus === 'approved'
+                          ? '#dcfce7'
+                          : draftStatus === 'review'
+                            ? '#dbeafe'
+                            : draftStatus === 'scheduled'
+                              ? '#f3e8ff'
+                              : draftStatus === 'failed' || draftStatus === 'cancelled'
+                                ? '#fee2e2'
+                                : '#fef3c7',
                 color:
-                  draftStatus === 'approved'
+                  draftStatus === 'published'
                     ? '#166534'
-                    : draftStatus === 'review'
-                      ? '#1e40af'
-                      : draftStatus === 'scheduled'
-                        ? '#6b21a8'
-                        : draftStatus === 'cancelled'
-                          ? '#991b1b'
-                          : '#92400e',
+                    : draftStatus === 'partially-published'
+                      ? '#b45309'
+                      : draftStatus === 'publishing'
+                        ? '#1d4ed8'
+                        : draftStatus === 'approved'
+                          ? '#166534'
+                          : draftStatus === 'review'
+                            ? '#1e40af'
+                            : draftStatus === 'scheduled'
+                              ? '#6b21a8'
+                              : draftStatus === 'failed' || draftStatus === 'cancelled'
+                                ? '#991b1b'
+                                : '#92400e',
               }}
             >
               {draftStatus || 'UNSAVED DRAFT'}
@@ -1195,20 +1275,87 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
           </div>
         )}
 
+        {/* Worker Result Banner */}
+        {workerResult && (
+          <div
+            data-testid="worker-result-banner"
+            style={{
+              marginTop: '12px',
+              padding: '10px 14px',
+              borderRadius: '6px',
+              fontSize: '13px',
+              fontWeight: 500,
+              backgroundColor: '#f8fafc',
+              color: '#334155',
+              border: '1px solid #cbd5e1',
+            }}
+          >
+            ⚙️ {workerResult}
+          </div>
+        )}
+
         {/* Persisted Queue Items Table */}
         {persistedQueueItems.length > 0 && (
           <div style={{ marginTop: '16px', borderTop: '1px solid #f1f5f9', paddingTop: '12px' }}>
             <div
               style={{
-                fontSize: '12px',
-                fontWeight: 600,
-                color: '#334155',
-                textTransform: 'uppercase',
-                marginBottom: '8px',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '10px',
+                flexWrap: 'wrap',
+                gap: '8px',
               }}
             >
-              Persisted Queue Items (
-              <span data-testid="persisted-queue-count">{persistedQueueItems.length}</span>)
+              <div
+                style={{
+                  fontSize: '12px',
+                  fontWeight: 600,
+                  color: '#334155',
+                  textTransform: 'uppercase',
+                }}
+              >
+                Persisted Queue Items (
+                <span data-testid="persisted-queue-count">{persistedQueueItems.length}</span>)
+              </div>
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button
+                  data-testid="dispatch-queue-btn"
+                  disabled={isProcessingQueue}
+                  onClick={() => void handleDispatchQueue()}
+                  style={{
+                    padding: '6px 12px',
+                    backgroundColor: '#2563eb',
+                    color: '#ffffff',
+                    border: 'none',
+                    borderRadius: '6px',
+                    fontSize: '12px',
+                    fontWeight: 600,
+                    cursor: isProcessingQueue ? 'wait' : 'pointer',
+                    opacity: isProcessingQueue ? 0.7 : 1,
+                  }}
+                >
+                  ⚡ Dispatch Due Queue
+                </button>
+                <button
+                  data-testid="retry-failed-btn"
+                  disabled={isProcessingQueue}
+                  onClick={() => void handleRetryFailed()}
+                  style={{
+                    padding: '6px 12px',
+                    backgroundColor: '#d97706',
+                    color: '#ffffff',
+                    border: 'none',
+                    borderRadius: '6px',
+                    fontSize: '12px',
+                    fontWeight: 600,
+                    cursor: isProcessingQueue ? 'wait' : 'pointer',
+                    opacity: isProcessingQueue ? 0.7 : 1,
+                  }}
+                >
+                  🔄 Retry Failed
+                </button>
+              </div>
             </div>
             <table
               data-testid="queue-items-table"
@@ -1221,49 +1368,168 @@ export default function SocialCommandCenter({ initialAccounts }: SocialCommandCe
             >
               <thead>
                 <tr style={{ backgroundColor: '#f8fafc', color: '#64748b' }}>
-                  <th style={{ padding: '6px 10px', borderBottom: '1px solid #e2e8f0' }}>ID</th>
+                  <th style={{ padding: '6px 10px', borderBottom: '1px solid #e2e8f0' }}>Target</th>
                   <th style={{ padding: '6px 10px', borderBottom: '1px solid #e2e8f0' }}>Status</th>
-                  <th style={{ padding: '6px 10px', borderBottom: '1px solid #e2e8f0' }}>
-                    Scheduled For
-                  </th>
-                  <th style={{ padding: '6px 10px', borderBottom: '1px solid #e2e8f0' }}>
-                    Idempotency Key
-                  </th>
+                  <th style={{ padding: '6px 10px', borderBottom: '1px solid #e2e8f0' }}>Attempts</th>
+                  <th style={{ padding: '6px 10px', borderBottom: '1px solid #e2e8f0' }}>Scheduled For</th>
+                  <th style={{ padding: '6px 10px', borderBottom: '1px solid #e2e8f0' }}>Delivery Receipt / Outcome</th>
+                  <th style={{ padding: '6px 10px', borderBottom: '1px solid #e2e8f0' }}>Action</th>
                 </tr>
               </thead>
               <tbody>
-                {persistedQueueItems.map((item) => (
-                  <tr key={item.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
-                    <td style={{ padding: '6px 10px', fontFamily: 'monospace' }}>{item.id}</td>
-                    <td style={{ padding: '6px 10px' }}>
-                      <span
-                        style={{
-                          padding: '2px 6px',
-                          borderRadius: '4px',
-                          backgroundColor: '#f3e8ff',
-                          color: '#6b21a8',
-                          fontWeight: 600,
-                        }}
-                      >
-                        {item.status}
-                      </span>
-                    </td>
-                    <td style={{ padding: '6px 10px' }}>{item.scheduledFor}</td>
-                    <td
-                      style={{
-                        padding: '6px 10px',
-                        fontFamily: 'monospace',
-                        color: '#64748b',
-                        maxWidth: '300px',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                      }}
-                    >
-                      {item.idempotencyKey}
-                    </td>
-                  </tr>
-                ))}
+                {persistedQueueItems.map((item) => {
+                  const network =
+                    item.variant?.network ||
+                    item.account?.network ||
+                    (typeof item.variant === 'object' && item.variant?.network) ||
+                    'unknown'
+                  const variantId =
+                    typeof item.variant === 'object' && item.variant !== null
+                      ? String(item.variant.id)
+                      : String(item.variant)
+                  const extPost = externalPosts.find(
+                    (p) =>
+                      String(
+                        typeof p.variant === 'object' && p.variant !== null
+                          ? p.variant.id
+                          : p.variant,
+                      ) === variantId ||
+                      String(p.queueItem) === String(item.id) ||
+                      String(p.queueItem?.id) === String(item.id),
+                  )
+                  const isPublished = item.status === 'published'
+                  const isFailed = item.status === 'failed'
+                  const isPublishing = item.status === 'publishing'
+
+                  return (
+                    <tr key={item.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                      <td style={{ padding: '6px 10px' }}>
+                        <span
+                          style={{
+                            padding: '2px 6px',
+                            borderRadius: '4px',
+                            backgroundColor: '#1e293b',
+                            color: '#ffffff',
+                            fontWeight: 700,
+                            fontSize: '11px',
+                            textTransform: 'uppercase',
+                          }}
+                        >
+                          {network}
+                        </span>
+                      </td>
+                      <td style={{ padding: '6px 10px' }}>
+                        <span
+                          data-testid={`item-status-${item.id}`}
+                          style={{
+                            padding: '2px 6px',
+                            borderRadius: '4px',
+                            backgroundColor: isPublished
+                              ? '#dcfce7'
+                              : isFailed
+                                ? '#fee2e2'
+                                : isPublishing
+                                  ? '#dbeafe'
+                                  : '#f3e8ff',
+                            color: isPublished
+                              ? '#166534'
+                              : isFailed
+                                ? '#991b1b'
+                                : isPublishing
+                                  ? '#1e40af'
+                                  : '#6b21a8',
+                            fontWeight: 700,
+                            textTransform: 'uppercase',
+                            fontSize: '11px',
+                          }}
+                        >
+                          {item.status}
+                        </span>
+                      </td>
+                      <td style={{ padding: '6px 10px' }}>
+                        <span
+                          data-testid={`item-attempts-${item.id}`}
+                          style={{ fontWeight: 600, color: '#475569' }}
+                        >
+                          {item.attemptCount || 0} / 3
+                        </span>
+                      </td>
+                      <td style={{ padding: '6px 10px', color: '#64748b' }}>
+                        {item.scheduledFor ? new Date(item.scheduledFor).toLocaleString() : 'Immediate'}
+                      </td>
+                      <td style={{ padding: '6px 10px' }}>
+                        {isPublished && (
+                          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                            <a
+                              data-testid={`external-post-link-${item.id}`}
+                              href={extPost?.remoteUrl || extPost?.externalUrl || '#'}
+                              target="_blank"
+                              rel="noreferrer"
+                              style={{ color: '#2563eb', textDecoration: 'underline', fontWeight: 500 }}
+                            >
+                              {extPost?.remoteId || 'Receipt Record'}
+                            </a>
+                            <span
+                              data-testid={`provider-mode-pill-${item.id}`}
+                              style={{
+                                padding: '1px 5px',
+                                borderRadius: '3px',
+                                backgroundColor: '#e0e7ff',
+                                color: '#3730a3',
+                                fontSize: '10px',
+                                fontWeight: 600,
+                              }}
+                            >
+                              local-harness
+                            </span>
+                          </div>
+                        )}
+                        {isFailed && (
+                          <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
+                            <span
+                              data-testid={`item-error-${item.id}`}
+                              style={{ color: '#dc2626', fontWeight: 500 }}
+                            >
+                              Reason:{' '}
+                              {typeof item.deadLetterReason === 'object' &&
+                              item.deadLetterReason !== null
+                                ? item.deadLetterReason.message ||
+                                  item.deadLetterReason.error ||
+                                  JSON.stringify(item.deadLetterReason)
+                                : item.deadLetterReason || item.lastError || 'Delivery failed'}
+                            </span>
+                          </div>
+                        )}
+                        {!isPublished && !isFailed && (
+                          <span style={{ color: '#94a3b8', fontStyle: 'italic' }}>
+                            Awaiting delivery dispatch
+                          </span>
+                        )}
+                      </td>
+                      <td style={{ padding: '6px 10px' }}>
+                        {(item.status === 'scheduled' || item.status === 'failed') && (
+                          <button
+                            data-testid={`dispatch-item-btn-${item.id}`}
+                            disabled={isProcessingQueue}
+                            onClick={() => void handleDispatchItem(item.id)}
+                            style={{
+                              padding: '4px 8px',
+                              backgroundColor: '#ffffff',
+                              border: '1px solid #cbd5e1',
+                              borderRadius: '4px',
+                              fontSize: '11px',
+                              fontWeight: 600,
+                              cursor: isProcessingQueue ? 'wait' : 'pointer',
+                              color: '#1e293b',
+                            }}
+                          >
+                            ⚡ Dispatch
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  )
+                })}
               </tbody>
             </table>
           </div>

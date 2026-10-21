@@ -1,0 +1,22 @@
+﻿{
+    "sourceBase":  "cabb9e5a0fb4052fd553e4bbb2b4d13760af433e",
+    "worktree":  "C:\\Projects\\RENEGADE CMS\\rc1-03b-frozen-20261020",
+    "container":  "f3ffba1ac8fe5bcac8a9ac35ec7366ab0bed62190ef58a255f390c8a2d3dcc91 sha256:00bc86618629af00d2937fdc5a5d63db3ff8450acf52f0636ec813c7f4902929 postgres:17.6 2026-10-20T09:49:34.402751695Z",
+    "web":  {
+                "pid":  27092,
+                "command":  "\"C:\\Program Files\\nodejs\\node.exe\" \"C:\\Projects\\RENEGADE CMS\\Renegade-CMS\\node_modules\\next\\dist\\server\\lib\\start-server.js\"",
+                "parentPid":  27156,
+                "parentCommand":  "\"C:\\Program Files\\nodejs\\node.exe\" ./node_modules/next/dist/bin/next dev --webpack --hostname 127.0.0.1 --port 39033"
+            },
+    "runtime":  "Next.js 16.3.8 dev with webpack; production build failed",
+    "database":  "rc103b_final_release_acceptance on 127.0.0.1:5463",
+    "media":  "scratch/rc103b-final-20261020/media",
+    "authentication":  "fixture-issued production-shaped sessions, test authentication/routes disabled; no WebAuthn ceremony",
+    "providerDelivery":  "disabled",
+    "restartedWeb":  {
+                         "pid":  21768,
+                         "parentPid":  7164,
+                         "command":  "\"C:\\Program Files\\nodejs\\node.exe\" ./node_modules/next/dist/bin/next dev --webpack --hostname 127.0.0.1 --port 39033"
+                     },
+    "databaseAfterRestart":  "f3ffba1ac8fe5bcac8a9ac35ec7366ab0bed62190ef58a255f390c8a2d3dcc91 2026-10-20T10:12:01.093551113Z"
+}

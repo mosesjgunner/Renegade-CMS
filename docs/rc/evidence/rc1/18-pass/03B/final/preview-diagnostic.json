@@ -1,0 +1,20 @@
+{
+  "status": 200,
+  "headers": {
+    "x-robots-tag": "noindex, nofollow",
+    "accept-ch": "Sec-CH-Prefers-Color-Scheme",
+    "vary": "rsc, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, Accept-Encoding",
+    "critical-ch": "Sec-CH-Prefers-Color-Scheme",
+    "x-powered-by": "Next.js, Payload",
+    "cache-control": "no-cache, must-revalidate",
+    "referrer-policy": "no-referrer",
+    "link": "</_next/static/css/app/(frontend)/layout.css?v=1792490339897>; rel=preload; as=\"style\"",
+    "content-type": "text/html; charset=utf-8",
+    "date": "Tue, 20 Oct 2026 09:59:09 GMT",
+    "connection": "keep-alive",
+    "keep-alive": "timeout=5",
+    "transfer-encoding": "chunked"
+  },
+  "original": true,
+  "callout": true
+}

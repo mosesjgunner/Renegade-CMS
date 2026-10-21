@@ -8,6 +8,7 @@
     "../../src/**/*.ts",
     "../../src/**/*.tsx",
     "./verify-current.ts",
+    "./verify-privacy.ts",
     "../unit/rich-editor-draft-preview.test.tsx",
     "../unit/rc1-03b-current.test.tsx"
   ],

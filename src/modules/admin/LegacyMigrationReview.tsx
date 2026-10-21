@@ -12,6 +12,9 @@ export default function LegacyMigrationReview({
   const [loading, setLoading] = useState(false)
   const [actionMessage, setActionMessage] = useState<string | null>(null)
   const [wxrInput, setWxrInput] = useState('')
+  const [mediaFiles, setMediaFiles] = useState<Record<string, {
+    fileName: string; buffer: { type: 'Buffer'; data: number[] }
+  }>>({})
   const [activeTab, setActiveTab] = useState<
     'content' | 'presentation' | 'redirects' | 'quarantine'
   >('content')
@@ -48,7 +51,7 @@ export default function LegacyMigrationReview({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          pkg: { wxr: wxrText },
+          pkg: { wxr: wxrText, mediaFiles },
           options: { targetSiteMode: 'new-isolated-site' },
         }),
       })
@@ -74,7 +77,7 @@ export default function LegacyMigrationReview({
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          pkg: { wxr: wxrText },
+          pkg: { wxr: wxrText, mediaFiles },
           options: { targetSiteMode: 'new-isolated-site', remoteMediaDownloadAllowed: false },
         }),
       })
@@ -94,10 +97,24 @@ export default function LegacyMigrationReview({
     }
   }
 
-  const handleVerify = () => {
+  const handleVerify = async () => {
     if (!report) return
-    setReport({ ...report, stage: 'verified' })
-    setActionMessage('Reconciliation verified. Ready for deliberate activation.')
+    setLoading(true)
+    try {
+      const res = await fetch(`/api/migration/legacy/verify/${report.runId}`, { method: 'POST' })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error || 'Verification failed.')
+      setReport(data)
+      setActionMessage(
+        data.stage === 'verified'
+          ? 'Persisted reconciliation verified. Ready for deliberate activation.'
+          : 'Reconciliation incomplete. Repair failed checks before activation.',
+      )
+    } catch (err) {
+      setActionMessage(err instanceof Error ? err.message : String(err))
+    } finally {
+      setLoading(false)
+    }
   }
 
   const handleActivate = async () => {
@@ -327,6 +344,34 @@ export default function LegacyMigrationReview({
             pipeline will inspect, normalize, map, dry-run preflight, and import safely into an
             isolated site.
           </p>
+          <p style={{ fontSize: '14px', color: '#64748b' }}>
+            Supports WXR 1.0?1.2 articles, pages, author mapping, taxonomy, acquired images and URL redirects.
+            Headings, paragraphs and quotes become editable prose; other HTML becomes text.
+            Plugin/PHP/script artifacts are quarantined. Templates require review; arbitrary WordPress themes do not convert.
+            Import requires authority over all sites because author identities are global.
+          </p>
+          <label>
+            WordPress WXR XML file
+            <input type="file" accept=".xml,text/xml,application/xml" onChange={async (event) => {
+              const file = event.target.files?.[0]
+              if (!file) return
+              if (file.size > 10 * 1024 * 1024) { setActionMessage('WXR file exceeds the 10 MB limit.'); return }
+              setWxrInput(await file.text())
+            }} />
+          </label>
+          <label>
+            Original media files (match exported filenames; no remote download)
+            <input type="file" multiple onChange={async (event) => {
+              const files = Array.from(event.target.files ?? [])
+              if (files.reduce((total, file) => total + file.size, 0) > 25 * 1024 * 1024) {
+                setActionMessage('Select at most 25 MB of local media per import.'); return
+              }
+              const entries = await Promise.all(files.map(async (file) => [file.name, {
+                fileName: file.name, buffer: { type: 'Buffer' as const, data: Array.from(new Uint8Array(await file.arrayBuffer())) },
+              }] as const))
+              setMediaFiles(Object.fromEntries(entries))
+            }} />
+          </label>
           <textarea
             data-testid="wxr-input-textarea"
             placeholder="Paste WordPress WXR XML export content here..."

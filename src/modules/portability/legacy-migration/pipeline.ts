@@ -223,7 +223,7 @@ export async function dryRunPreflight(
       sourceExcerpt: item.excerpt,
       renegadeTitle: item.title,
       renegadePath: canonicalPath,
-      renegadeStatus: 'draft',
+      renegadeStatus: item.status === 'publish' ? 'published' : 'draft',
       previewUrl: `/builder/preview?path=${encodeURIComponent(canonicalPath)}`,
       repairUrl: `/builder?path=${encodeURIComponent(canonicalPath)}`,
       status:
@@ -321,8 +321,17 @@ export async function executeLegacyMigration(
     planLegacyMigration(pkg, options)
   const actualRunId = existingRunId || runId
 
+  if (urlPlan.errors.length)
+    throw new Error(urlPlan.errors.map((error) => error.message).join('; '))
   // Check for existing checkpoint
   const existingReport = await store.getMigrationRun(actualRunId)
+  if (
+    existingReport &&
+    (existingReport.checksums.sourceWxr !== sourceChecksum ||
+      (options.targetSiteId && existingReport.siteId !== options.targetSiteId))
+  ) {
+    throw new Error('Migration checkpoint belongs to different source XML or target site.')
+  }
   const completedSet = new Set<string>(existingReport?.resumableCheckpoint.completedSourceIds ?? [])
 
   const warnings: Array<{ code: string; message: string; sourceId?: string }> =
@@ -510,7 +519,11 @@ export async function executeLegacyMigration(
 
   const mediaChecksums: Record<string, string> = {}
   for (const [sourceId, mediaData] of mediaResult.acquiredMedia.entries()) {
-    createdEntityIds.mediaIds.push(mediaData.mediaId)
+    if (
+      mediaResult.createdMediaIds.includes(mediaData.mediaId) &&
+      !createdEntityIds.mediaIds.includes(mediaData.mediaId)
+    )
+      createdEntityIds.mediaIds.push(mediaData.mediaId)
     mediaChecksums[sourceId] = mediaData.sha256
   }
 
@@ -520,7 +533,9 @@ export async function executeLegacyMigration(
   let skippedCount = 0
 
   // Sort content items so parent pages are created before child pages
-  const contentItems = normalized.items.filter((i) => i.postType === 'post' || i.postType === 'page')
+  const contentItems = normalized.items.filter(
+    (i) => i.postType === 'post' || i.postType === 'page',
+  )
   contentItems.sort((a, b) => {
     if (b.parentId === a.id) return -1
     if (a.parentId === b.id) return 1
@@ -825,8 +840,12 @@ export async function executeLegacyMigration(
   // 8. Quarantine Records
   for (const q of quarantineRecords) {
     q.siteId = siteId
+    q.runId = actualRunId
   }
 
+  for (const warning of warnings) {
+    if (warning.code.endsWith('_FAILED')) errors.push(warning)
+  }
   // 9. Assemble Final Report
   const posts = normalized.items.filter((i) => i.postType === 'post').length
   const pages = normalized.items.filter((i) => i.postType === 'page').length
@@ -895,6 +914,7 @@ export async function executeLegacyMigration(
 
   for (const q of quarantineRecords) {
     q.siteId = siteId
+    q.runId = actualRunId
   }
   await store.saveQuarantineRecords(quarantineRecords)
 
@@ -935,20 +955,30 @@ export async function verifyLegacyMigration(
     })),
   )
 
+  const persistedContent = await Promise.all(
+    report.sideBySide.map((item) => store.findContent(report.siteId, '', item.renegadePath)),
+  )
+  const contentIds = persistedContent.map((item) => item?.id).filter(Boolean)
+  const mediaChecks = await Promise.all(
+    Object.values(report.checksums.media).map((sha) => store.findMediaBySha256(report.siteId, sha)),
+  )
   report.acceptanceChecklist = {
     contentCountsMatch:
-      report.reconciliation.created.content ===
-      report.sourceSummary.posts + report.sourceSummary.pages,
+      contentIds.length === report.sourceSummary.posts + report.sourceSummary.pages &&
+      report.sideBySide.every((item, index) => persistedContent[index]?.id === item.renegadeId),
     mediaChecksumsVerified:
-      Object.keys(report.checksums.media).length > 0 || report.sourceSummary.media === 0,
+      mediaChecks.length === report.sourceSummary.media && mediaChecks.every(Boolean),
     urlsAndRedirectsLoopFree: !urlCheck.hasLoops && !urlCheck.hasCollisions,
     renderedTemplatesValid: report.reconciliation.created.templates > 0,
     themeSafeNoArbitraryExec: true,
     unsupportedQuarantined: report.quarantine.length >= report.sourceSummary.unsupported,
-    idempotencyVerified: true,
+    idempotencyVerified: new Set(contentIds).size === contentIds.length,
   }
 
-  report.stage = 'verified'
+  report.stage =
+    report.errors.length === 0 && Object.values(report.acceptanceChecklist).every(Boolean)
+      ? 'verified'
+      : 'failed'
   report.updatedAt = new Date().toISOString()
   report.checksums.report = computeSha256(JSON.stringify(report))
   await store.saveMigrationRun(report)
@@ -964,13 +994,15 @@ export async function activateLegacyMigration(
   const report = await store.getMigrationRun(runId)
   if (!report) throw new Error(`Migration run ${runId} was not found.`)
 
+  if (report.stage !== 'verified' && report.stage !== 'activated')
+    throw new Error('Verify a successful migration before activation.')
+  if (report.errors.length || Object.values(report.acceptanceChecklist).some((passed) => !passed))
+    throw new Error(
+      'Migration acceptance checks are incomplete; repair the report before activation.',
+    )
   // Publish all created draft layouts
   for (const layoutId of report.createdEntityIds.layoutIds) {
-    try {
-      await store.publishLayout(layoutId)
-    } catch {
-      // Ignored if already published
-    }
+    await store.publishLayout(layoutId)
   }
 
   // Update status
@@ -996,65 +1028,20 @@ export async function rollbackLegacyMigration(
   const report = await store.getMigrationRun(runId)
   if (!report) throw new Error(`Migration run ${runId} was not found.`)
 
-  // Delete created entities in reverse dependency order
-  for (const layoutId of report.createdEntityIds.layoutIds) {
-    try {
-      await store.deleteEntity('page-layouts', layoutId)
-    } catch {
-      // Best effort
-    }
+  // Native deletion may refuse retained/referenced content. Do not disable
+  // database constraints or report rollback success after a failed operation.
+  for (const [collection, ids] of [
+    ['page-layouts', report.createdEntityIds.layoutIds],
+    ['public-redirects', report.createdEntityIds.redirectIds],
+    ['content', [...report.createdEntityIds.contentIds].reverse()],
+    ['media-assets', report.createdEntityIds.mediaIds],
+    ['tags', report.createdEntityIds.tagIds],
+    ['categories', [...report.createdEntityIds.categoryIds].reverse()],
+    ['authors', report.createdEntityIds.authorIds],
+  ] as const) {
+    for (const id of ids) await store.deleteEntity(collection, id)
   }
-  for (const redirectId of report.createdEntityIds.redirectIds) {
-    try {
-      await store.deleteEntity('public-redirects', redirectId)
-    } catch {
-      // Best effort
-    }
-  }
-  for (const contentId of report.createdEntityIds.contentIds) {
-    try {
-      await store.deleteEntity('content', contentId)
-    } catch {
-      // Best effort
-    }
-  }
-  for (const mediaId of report.createdEntityIds.mediaIds) {
-    try {
-      await store.deleteEntity('media-assets', mediaId)
-    } catch {
-      // Best effort
-    }
-  }
-  for (const tagId of report.createdEntityIds.tagIds) {
-    try {
-      await store.deleteEntity('tags', tagId)
-    } catch {
-      // Best effort
-    }
-  }
-  for (const catId of report.createdEntityIds.categoryIds) {
-    try {
-      await store.deleteEntity('categories', catId)
-    } catch {
-      // Best effort
-    }
-  }
-  for (const authorId of report.createdEntityIds.authorIds) {
-    try {
-      await store.deleteEntity('authors', authorId)
-    } catch {
-      // Best effort
-    }
-  }
-
-  // If new isolated site was created, delete the site record
-  if (report.createdEntityIds.siteId) {
-    try {
-      await store.deleteSite(report.createdEntityIds.siteId)
-    } catch (err) {
-      console.error('[ROLLBACK] Failed to delete site:', err)
-    }
-  }
+  if (report.createdEntityIds.siteId) await store.deleteSite(report.createdEntityIds.siteId)
 
   report.stage = 'rolled-back'
   report.rolledBackAt = new Date().toISOString()

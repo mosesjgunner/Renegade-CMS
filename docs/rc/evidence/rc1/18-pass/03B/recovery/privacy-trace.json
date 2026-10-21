@@ -1,0 +1,265 @@
+{
+  "checks": 12,
+  "cacheFailures": 3,
+  "completed": true,
+  "succeeded": false,
+  "trace": [
+    {
+      "route": "/api/admin/workflow/revisions?contentId=a469846d-7726-4f84-bea8-6662b525aee3",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/admin/content/preview",
+      "method": "POST",
+      "status": 200,
+      "cacheControl": "private, no-store"
+    },
+    {
+      "route": "/preview/article/817352c72c306f4929e820d0bfb3eade7378bfd4bb65dc82",
+      "method": "GET",
+      "status": 200,
+      "robots": "noindex, nofollow",
+      "cacheControl": "no-cache, must-revalidate"
+    },
+    {
+      "name": "authorized unpublished article preview renders original blocks and noindex",
+      "passed": true
+    },
+    {
+      "name": "no-store a469846d-7726-4f84-bea8-6662b525aee3",
+      "passed": false,
+      "error": "AssertionError [ERR_ASSERTION]: Private preview must send no-store"
+    },
+    {
+      "route": "/articles/draft-0-1792489855292",
+      "method": "GET",
+      "status": 404,
+      "cacheControl": "no-cache, must-revalidate"
+    },
+    {
+      "name": "anonymous article URL excludes draft/private text",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/content/preview",
+      "method": "POST",
+      "status": 200,
+      "cacheControl": "private, no-store"
+    },
+    {
+      "route": "/preview/article/c5f74d5c0f58712cfa285872318ae18d39160741d405e954",
+      "method": "GET",
+      "status": 200,
+      "robots": "noindex, nofollow",
+      "cacheControl": "no-cache, must-revalidate"
+    },
+    {
+      "name": "authorized unpublished article preview renders original blocks and noindex",
+      "passed": true
+    },
+    {
+      "name": "no-store 03add6d8-f36b-4ef3-9a5d-03ea02b3a876",
+      "passed": false,
+      "error": "AssertionError [ERR_ASSERTION]: Private preview must send no-store"
+    },
+    {
+      "route": "/articles/draft-1-1792489855292",
+      "method": "GET",
+      "status": 404,
+      "cacheControl": "no-cache, must-revalidate"
+    },
+    {
+      "name": "anonymous article URL excludes draft/private text",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/content/preview",
+      "method": "POST",
+      "status": 200,
+      "cacheControl": "private, no-store"
+    },
+    {
+      "route": "/preview/article/8ea0a893261ad8a56fac90d58243b75e69e303cc53f038f6",
+      "method": "GET",
+      "status": 200,
+      "robots": "noindex, nofollow",
+      "cacheControl": "no-cache, must-revalidate"
+    },
+    {
+      "name": "authorized unpublished page preview renders original blocks and noindex",
+      "passed": true
+    },
+    {
+      "name": "no-store f141e6a7-37b6-485c-a3de-d9dc12776622",
+      "passed": false,
+      "error": "AssertionError [ERR_ASSERTION]: Private preview must send no-store"
+    },
+    {
+      "route": "/draft-2-1792489855292",
+      "method": "GET",
+      "status": 404,
+      "cacheControl": "no-cache, must-revalidate"
+    },
+    {
+      "name": "anonymous page URL excludes draft/private text",
+      "passed": true
+    },
+    {
+      "name": "rendered inline media bytes, combined marks and actual Lexical links",
+      "passed": true
+    },
+    {
+      "name": "author names render in explicit display order",
+      "passed": true
+    },
+    {
+      "route": "/preview/article/817352c72c306f4929e820d0bfb3eade7378bfd4bb65dc82",
+      "method": "GET",
+      "status": 404,
+      "robots": "noindex, nofollow",
+      "cacheControl": "no-cache, must-revalidate"
+    },
+    {
+      "route": "/preview/article/817352c72c306f4929e820d0bfb3eade7378bfd4bb65dc82",
+      "method": "GET",
+      "status": 404,
+      "robots": "noindex, nofollow",
+      "cacheControl": "no-cache, must-revalidate"
+    },
+    {
+      "route": "/preview/article/817352c72c306f4929e820d0bfb3eade7378bfd4bb65dc82",
+      "method": "GET",
+      "status": 404,
+      "robots": "noindex, nofollow",
+      "cacheControl": "no-cache, must-revalidate"
+    },
+    {
+      "route": "/preview/article/817352c72c306f4929e820d0bfb3eade7378bfd4bb65dc82tampered",
+      "method": "GET",
+      "status": 404,
+      "robots": "noindex, nofollow",
+      "cacheControl": "no-cache, must-revalidate"
+    },
+    {
+      "route": "/preview/article/817352c72c306f4929e820d0bfb3eade7378bfd4bb65dc82",
+      "method": "GET",
+      "status": 404,
+      "robots": "noindex, nofollow",
+      "cacheControl": "no-cache, must-revalidate"
+    },
+    {
+      "route": "/preview/article/880411fb4ebbbb00a77da1185be901decff355dbb9280108",
+      "method": "GET",
+      "status": 404,
+      "robots": "noindex, nofollow",
+      "cacheControl": "no-cache, must-revalidate"
+    },
+    {
+      "name": "anonymous, foreign creator/site, ungranted, tampered and expired previews denied",
+      "passed": true
+    },
+    {
+      "route": "/api/content/a469846d-7726-4f84-bea8-6662b525aee3",
+      "method": "PATCH",
+      "status": 403
+    },
+    {
+      "route": "/api/admin/workflow/revisions",
+      "method": "POST",
+      "status": 403
+    },
+    {
+      "route": "/api/admin/content/preview",
+      "method": "POST",
+      "status": 403
+    },
+    {
+      "route": "/api/content/a469846d-7726-4f84-bea8-6662b525aee3",
+      "method": "PATCH",
+      "status": 403
+    },
+    {
+      "route": "/api/admin/workflow/revisions",
+      "method": "POST",
+      "status": 403
+    },
+    {
+      "route": "/api/admin/content/preview",
+      "method": "POST",
+      "status": 404
+    },
+    {
+      "route": "/api/content/a469846d-7726-4f84-bea8-6662b525aee3",
+      "method": "PATCH",
+      "status": 403
+    },
+    {
+      "route": "/api/admin/workflow/revisions",
+      "method": "POST",
+      "status": 403
+    },
+    {
+      "route": "/api/admin/content/preview",
+      "method": "POST",
+      "status": 404
+    },
+    {
+      "route": "/api/admin/workflow/revisions?contentId=03add6d8-f36b-4ef3-9a5d-03ea02b3a876",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "route": "/api/admin/workflow/revisions",
+      "method": "POST",
+      "status": 404
+    },
+    {
+      "route": "/api/admin/workflow/revisions?contentId=a469846d-7726-4f84-bea8-6662b525aee3",
+      "method": "GET",
+      "status": 200
+    },
+    {
+      "name": "denied edits/restores/previews and foreign revision substitution preserve full content/history",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/content/preview",
+      "method": "POST",
+      "status": 200,
+      "cacheControl": "private, no-store"
+    },
+    {
+      "route": "/api/member-site-roles/975f0fe1-f4b8-4ff4-9e96-4a49ccbb4794",
+      "method": "DELETE",
+      "status": 200
+    },
+    {
+      "route": "/preview/article/cba5111fc426a1b603715d6e66c8cfa20c0415889b64dc87",
+      "method": "GET",
+      "status": 404,
+      "robots": "noindex, nofollow",
+      "cacheControl": "no-cache, must-revalidate"
+    },
+    {
+      "name": "revoking a creator grant denies its previously issued preview",
+      "passed": true
+    },
+    {
+      "route": "/sitemap.xml",
+      "method": "GET",
+      "status": 200,
+      "cacheControl": "public, no-cache, must-revalidate"
+    },
+    {
+      "route": "/feed.json",
+      "method": "GET",
+      "status": 200,
+      "cacheControl": "public, no-cache, must-revalidate"
+    },
+    {
+      "name": "draft/private paths and titles absent from public sitemap/feed",
+      "passed": true
+    }
+  ]
+}

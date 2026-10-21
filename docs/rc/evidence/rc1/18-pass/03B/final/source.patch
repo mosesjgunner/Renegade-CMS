@@ -1,0 +1,342 @@
+diff --git a/next-env.d.ts b/next-env.d.ts
+index fb013114..4560cb1b 100644
+--- a/next-env.d.ts
++++ b/next-env.d.ts
+@@ -1,7 +1,7 @@
+ /// <reference types="next" />
+ /// <reference types="next/image-types/global" />
+-import "./.next-rc103b-current-20261020/dev/types/routes.d.ts";
+-import "./.next-rc103b-current-20261020/dev/types/root-params.d.ts";
++import "./.next-rc103b-final-20261020/dev/types/routes.d.ts";
++import "./.next-rc103b-final-20261020/dev/types/root-params.d.ts";
+ 
+ // NOTE: This file should not be edited
+ // see https://nextjs.org/docs/app/api-reference/config/typescript for more information.
+diff --git a/src/modules/editorial/persistence.ts b/src/modules/editorial/persistence.ts
+index 348fd818..d9597551 100644
+--- a/src/modules/editorial/persistence.ts
++++ b/src/modules/editorial/persistence.ts
+@@ -13,9 +13,15 @@ import {
+   type RichTextDocument,
+ } from './contracts'
+ import { importMarkdownToRichText } from './markdown'
+-import { buildTableOfContents, estimateReadingTimeMinutes, extractPlainText } from './presentation'
++import {
++  buildTableOfContents,
++  canonicalLexicalDocument,
++  estimateReadingTimeMinutes,
++  extractPlainText,
++} from './presentation'
+ import {
+   EditorialWorkflow,
++  hashRevisionIntegrity,
+   type EditorialActor,
+   type EditorialCitation,
+   type EditorialRevision,
+@@ -400,7 +406,7 @@ export async function ensureEditorialCompanion(payload: Payload, content: Doc, r
+     0,
+     req,
+   )
+-  const rawBody = content.body as Record<string, unknown>
++  const rawBody = canonicalLexicalDocument(content.body as Record<string, unknown>)
+   const document: RichTextDocument = {
+     format: 'payload-lexical',
+     schemaVersion: 1,
+@@ -538,7 +544,26 @@ export const persistWorkflow = async (
+   const existingRevisionIds = new Set(bundle.revisions.map((revision) => String(revision.id)))
+   const persistedRevisionIds = new Map<string, string>()
+ 
+-  for (const revision of workflow.article.revisions) {
++  const revisions = workflow.article.revisions.map((revision) => {
++    if (existingRevisionIds.has(revision.id)) return revision
++    const raw = canonicalLexicalDocument(revision.document.document)
++    const document = {
++      ...revision.document,
++      document: raw,
++      canonicalHash: hashRichTextDocument(raw),
++    }
++    return {
++      ...revision,
++      document,
++      integrityHash: hashRevisionIntegrity({
++        document,
++        citationAttachments: [],
++        mediaReferenceIds: [],
++        provenance: { createdBy: revision.createdBy },
++      }),
++    }
++  })
++  for (const revision of revisions) {
+     if (existingRevisionIds.has(revision.id)) continue
+     const persistedRevision = await createRevisionRecord(
+       payload,
+@@ -550,7 +575,7 @@ export const persistWorkflow = async (
+     persistedRevisionIds.set(revision.id, String(persistedRevision.id))
+   }
+ 
+-  const currentRevision = workflow.article.revisions.find(
++  const currentRevision = revisions.find(
+     (revision) => revision.id === workflow.article.currentRevisionId,
+   )
+   if (!currentRevision) throw new Error('The editorial workflow lost its current revision.')
+diff --git a/src/modules/editorial/presentation.ts b/src/modules/editorial/presentation.ts
+index 161ce235..1fb2e666 100644
+--- a/src/modules/editorial/presentation.ts
++++ b/src/modules/editorial/presentation.ts
+@@ -13,6 +13,28 @@ const asRecord = (value: unknown): JsonRecord =>
+ 
+ const asArray = (value: unknown): unknown[] => (Array.isArray(value) ? value : [])
+ 
++/** Revision snapshots store references, never response-depth-dependent related records. */
++export function canonicalLexicalDocument(document: JsonRecord): JsonRecord {
++  const visit = (value: unknown): unknown => {
++    if (Array.isArray(value)) return value.map(visit)
++    if (!value || typeof value !== 'object') return value
++    const node = Object.fromEntries(Object.entries(value).map(([key, item]) => [key, visit(item)]))
++    if (['relationship', 'upload'].includes(String(node.type))) {
++      const related = asRecord(node.value)
++      if (typeof related.id === 'string' || typeof related.id === 'number') node.value = related.id
++    }
++    if (['link', 'autolink'].includes(String(node.type))) {
++      const fields = asRecord(node.fields)
++      const doc = asRecord(fields.doc)
++      const related = asRecord(doc.value)
++      if (doc.relationTo && (typeof related.id === 'string' || typeof related.id === 'number'))
++        fields.doc = { ...doc, value: related.id }
++    }
++    return node
++  }
++  return visit(document) as JsonRecord
++}
++
+ const slugify = (value: string): string =>
+   value
+     .toLowerCase()
+diff --git a/tests/rc1-03b/run-current.ps1 b/tests/rc1-03b/run-current.ps1
+index 245d7a31..f44eaa70 100644
+--- a/tests/rc1-03b/run-current.ps1
++++ b/tests/rc1-03b/run-current.ps1
+@@ -7,18 +7,18 @@ param(
+ $ErrorActionPreference = 'Stop'
+ Set-Location (Resolve-Path "$PSScriptRoot/../..")
+ 
+-$containerName = 'rc103b-20261020'
+-$pgPort = '5462'
+-$dbName = 'rc103b_release_acceptance'
++$containerName = 'rc103b-final-20261020'
++$pgPort = '5463'
++$dbName = 'rc103b_final_release_acceptance'
+ $dbUri = "postgresql://postgres:postgres@127.0.0.1:$pgPort/$dbName"
+ 
+ $env:DATABASE_URL = $dbUri
+ $env:DATABASE_URI = $dbUri
+ $env:PAYLOAD_SECRET = 'rc103b-disposable-secret-for-local-verification-only-20261020'
+-$env:APP_URL = 'http://localhost:39032'
++$env:APP_URL = 'http://localhost:39033'
+ $env:EMAIL_MODE = 'disabled'
+-$env:MEDIA_DIR = Join-Path (Get-Location) 'scratch/rc103b-20261020/media'
+-$env:RENEGADE_NEXT_DIST_DIR = '.next-rc103b-current-20261020'
++$env:MEDIA_DIR = Join-Path (Get-Location) 'scratch/rc103b-final-20261020/media'
++$env:RENEGADE_NEXT_DIST_DIR = '.next-rc103b-final-20261020'
+ $env:RENEGADE_MODULES = 'all'
+ $env:RENEGADE_ALLOW_UNSAFE_COLLECTION_COUNT = 'true'
+ $env:LOCAL_E2E_TEST_MODE = 'false'
+@@ -81,7 +81,7 @@ switch ($Action) {
+   }
+ 
+   'serve' {
+-    node ./node_modules/next/dist/bin/next dev --hostname 127.0.0.1 --port 39032
++    node ./node_modules/next/dist/bin/next dev --webpack --hostname 127.0.0.1 --port 39033
+   }
+ 
+   'importmap' { npm.cmd run generate:importmap }
+diff --git a/tests/rc1-03b/verify-current.ts b/tests/rc1-03b/verify-current.ts
+index 008fa073..2b51df2f 100644
+--- a/tests/rc1-03b/verify-current.ts
++++ b/tests/rc1-03b/verify-current.ts
+@@ -16,13 +16,13 @@ import { loadConfig } from '../../src/modules/core/config'
+ assert.equal(process.env.RC1_03B_DISPOSABLE, 'yes')
+ assert.equal(
+   process.env.DATABASE_URL,
+-  'postgresql://postgres:postgres@127.0.0.1:5462/rc103b_release_acceptance',
++  'postgresql://postgres:postgres@127.0.0.1:5463/rc103b_final_release_acceptance',
+ )
+ assert.equal(process.env.LOCAL_E2E_TEST_MODE, 'false')
+ assert.equal(process.env.ENABLE_TEST_ROUTES, 'false')
+ const payload: any = await getPayload({ config })
+-const out = 'docs/rc/evidence/rc1/18-pass/03B/current'
+-const base = 'http://localhost:39032'
++const out = 'docs/rc/evidence/rc1/18-pass/03B/final'
++const base = 'http://localhost:39033'
+ const trace: any[] = []
+ let checks = 0
+ let succeeded = false
+@@ -166,6 +166,7 @@ const editorFor = async (p: any, id: string) => {
+     .locator('[data-lexical-editor="true"]')
+     .first()
+     .waitFor({ state: 'visible', timeout: 180000 })
++  await p.getByText('03B original media', { exact: true }).first().waitFor({ state: 'visible' })
+   return p.locator('[data-lexical-editor="true"]').first()
+ }
+ const append = async (editor: any, value: string) => {
+@@ -270,7 +271,7 @@ try {
+       'POST',
+       {
+         canonicalOrigin: base,
+-        canonicalOriginsBySite: { [site.id]: base, [foreign.id]: 'http://beta.rc103b.test:39032' },
++        canonicalOriginsBySite: { [site.id]: base, [foreign.id]: 'http://beta.rc103b.test:39033' },
+         launchState: 'live',
+         indexingMode: 'index',
+       },
+@@ -498,7 +499,6 @@ try {
+       'ordinary Retry draft save persists retained text',
+       JSON.stringify((await read('content', first.id)).body).includes('BROWSER RETRY EDIT'),
+     )
+-    await page.goto(`${base}/admin/posts`, { timeout: 180000 })
+     // The native lock API is the same supported resource used by the editor heartbeat.
+     const lock = await native(
+       'payload-locked-documents',
+@@ -519,7 +519,12 @@ try {
+       .getByText(/locked|currently.*edit|being.*edit/i)
+       .first()
+       .waitFor({ state: 'visible' })
+-    check('second real browser session receives visible document-lock feedback', true)
++    check(
++      'simultaneous native editor sessions show document-lock feedback to the second editor',
++      await editor.isVisible(),
++    )
++    trace.push({ firstEditor: page.url(), secondEditor: secondPage.url(), lock: lock.id })
++    await secondPage.screenshot({ path: `${out}/lock-conflict.png`, fullPage: true })
+     await api(
+       `/api/content/${first.id}?overrideLock=true`,
+       'PATCH',
+@@ -641,8 +646,10 @@ try {
+     await page.goto(`${base}${previews[0]}`, { timeout: 180000 })
+     check(
+       'preview honors author display order',
+-      (await page.locator('body').innerText()).indexOf('Jane Lead') <
+-        (await page.locator('body').innerText()).indexOf('Mark Editor'),
++      (await page.locator('body').innerText()).includes('Jane Lead') &&
++        (await page.locator('body').innerText()).includes('Mark Editor') &&
++        (await page.locator('body').innerText()).indexOf('Jane Lead') <
++          (await page.locator('body').innerText()).indexOf('Mark Editor'),
+     )
+     check(
+       'preview renders combined formatting, real link fields and original media bytes',
+@@ -655,7 +662,7 @@ try {
+     await page.screenshot({ path: `${out}/unpublished-preview.png`, fullPage: true })
+     for (const cookie of ['', other, denied]) await api(previews[0], 'GET', undefined, cookie, 404)
+     await api(previews[0] + 'tampered', 'GET', undefined, own, 404)
+-    await api(previews[0], 'GET', undefined, own, 404, { host: 'beta.rc103b.test:39032' })
++    await api(previews[0], 'GET', undefined, own, 404, { host: 'beta.rc103b.test:39033' })
+     const expired = await createEditorialPreviewToken(payload, {
+       articleId: article.id,
+       revisionId: original,
+diff --git a/tests/unit/rc1-03b-current.test.tsx b/tests/unit/rc1-03b-current.test.tsx
+index 88808403..c3926d2b 100644
+--- a/tests/unit/rc1-03b-current.test.tsx
++++ b/tests/unit/rc1-03b-current.test.tsx
+@@ -1,11 +1,86 @@
+ import React from 'react'
+-import { describe, expect, it } from 'vitest'
++import { describe, expect, it, vi } from 'vitest'
+ import { renderToStaticMarkup } from 'react-dom/server'
+ import { SafeRichText } from '../../src/modules/editorial/RichText'
+-import { extractPlainText } from '../../src/modules/editorial/presentation'
++import {
++  canonicalLexicalDocument,
++  extractPlainText,
++} from '../../src/modules/editorial/presentation'
++import { hashRichTextDocument } from '../../src/modules/editorial/contracts'
++import { ensureEditorialCompanion } from '../../src/modules/editorial/persistence'
+ const render = (children: unknown[]) =>
+   renderToStaticMarkup(<SafeRichText document={{ root: { children } }} />)
+ describe('03B persisted Lexical rendering', () => {
++  it('snapshots reference IDs without related private records or response-depth drift', () => {
++    const hydrated = {
++      root: {
++        children: [
++          {
++            type: 'relationship',
++            relationTo: 'media-assets',
++            value: { id: 'media-id', owner: { email: 'private@example.test' } },
++          },
++          { type: 'upload', value: { id: 'upload-id', storageKey: 'private-location' } },
++          {
++            type: 'link',
++            fields: {
++              doc: { relationTo: 'content', value: { id: 'post-id', body: 'private draft' } },
++            },
++          },
++          { type: 'block', fields: { blockType: 'custom', preserved: { unknown: true } } },
++        ],
++      },
++    }
++    const original = JSON.stringify(hydrated)
++    const normalized = canonicalLexicalDocument(hydrated)
++    expect(JSON.stringify(normalized)).not.toContain('private')
++    expect(normalized).toEqual({
++      root: {
++        children: [
++          { type: 'relationship', relationTo: 'media-assets', value: 'media-id' },
++          { type: 'upload', value: 'upload-id' },
++          { type: 'link', fields: { doc: { relationTo: 'content', value: 'post-id' } } },
++          { type: 'block', fields: { blockType: 'custom', preserved: { unknown: true } } },
++        ],
++      },
++    })
++    expect(JSON.stringify(hydrated)).toBe(original)
++    expect(hashRichTextDocument(canonicalLexicalDocument(normalized))).toBe(
++      hashRichTextDocument(normalized),
++    )
++  })
++  it('does not append a spurious edited revision when only a media response is populated', async () => {
++    const raw = {
++      root: { children: [{ type: 'relationship', relationTo: 'media-assets', value: 'media-id' }] },
++    }
++    const create = vi.fn(),
++      update = vi.fn()
++    const payload = {
++      find: vi.fn().mockResolvedValue({
++        docs: [{ id: 'companion', lifecycle: 'draft', documentHash: hashRichTextDocument(raw) }],
++      }),
++      create,
++      update,
++    }
++    await ensureEditorialCompanion(payload as never, {
++      id: 'content',
++      contentType: 'article',
++      status: 'draft',
++      body: {
++        root: {
++          children: [
++            {
++              type: 'relationship',
++              relationTo: 'media-assets',
++              value: { id: 'media-id', title: 'Hydrated label' },
++            },
++          ],
++        },
++      },
++    })
++    expect(create).not.toHaveBeenCalled()
++    expect(update).not.toHaveBeenCalled()
++  })
+   it('preserves combined bold italic underline strike and code marks', () => {
+     const html = render([
+       { type: 'paragraph', children: [{ type: 'text', text: 'All marks', format: 31 }] },
+diff --git a/tsconfig.json b/tsconfig.json
+index e8c11837..a36fd21c 100644
+--- a/tsconfig.json
++++ b/tsconfig.json
+@@ -66,7 +66,9 @@
+     ".next-rc108b/types/**/*.ts",
+     ".next-rc108b/dev/types/**/*.ts",
+     ".next-rc103b-current-20261020/types/**/*.ts",
+-    ".next-rc103b-current-20261020/dev/types/**/*.ts"
++    ".next-rc103b-current-20261020/dev/types/**/*.ts",
++    ".next-rc103b-final-20261020/types/**/*.ts",
++    ".next-rc103b-final-20261020/dev/types/**/*.ts"
+   ],
+   "exclude": [
+     "node_modules",

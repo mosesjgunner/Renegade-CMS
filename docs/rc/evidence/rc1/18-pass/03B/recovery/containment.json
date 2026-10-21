@@ -1,0 +1,1174 @@
+﻿{
+    "testedBase":  "cabb9e5a0fb4052fd553e4bbb2b4d13760af433e",
+    "currentHead":  "cabb9e5a0fb4052fd553e4bbb2b4d13760af433e",
+    "scopeSourceMatches":  [
+                               {
+                                   "path":  "src/collections/Publishing.ts",
+                                   "testedSha256":  "bbc7a3ffd9fc004f80d293533f354c4f53916186631eff96852918400b3dbcf4",
+                                   "currentSha256":  "bbc7a3ffd9fc004f80d293533f354c4f53916186631eff96852918400b3dbcf4",
+                                   "difference":  "none"
+                               },
+                               {
+                                   "path":  "src/modules/admin/DraftAutosave.tsx",
+                                   "testedSha256":  "8b0dcef34b4f326120fd11c06d6df7b68b3fca8d177f75955df44e17f0a92408",
+                                   "currentSha256":  "8b0dcef34b4f326120fd11c06d6df7b68b3fca8d177f75955df44e17f0a92408",
+                                   "difference":  "none"
+                               },
+                               {
+                                   "path":  "src/modules/editorial/RichText.tsx",
+                                   "testedSha256":  "824811aa42bd28b4b472f8a29f94708fec083f3e5571a4f285a3d9c197a13b45",
+                                   "currentSha256":  "824811aa42bd28b4b472f8a29f94708fec083f3e5571a4f285a3d9c197a13b45",
+                                   "difference":  "none"
+                               },
+                               {
+                                   "path":  "src/modules/editorial/persistence.ts",
+                                   "testedSha256":  "eeca79d7cebc4932d5ccdf5c83a463631d3d4293800b36b44f64d89401ca74ba",
+                                   "currentSha256":  "eeca79d7cebc4932d5ccdf5c83a463631d3d4293800b36b44f64d89401ca74ba",
+                                   "difference":  "none"
+                               },
+                               {
+                                   "path":  "src/modules/editorial/presentation.ts",
+                                   "testedSha256":  "19ce331462f462b5e1b0a0e4c81cdec7fab660e3bdf479cd3ad86965938144be",
+                                   "currentSha256":  "19ce331462f462b5e1b0a0e4c81cdec7fab660e3bdf479cd3ad86965938144be",
+                                   "difference":  "none"
+                               },
+                               {
+                                   "path":  "src/proxy.ts",
+                                   "testedSha256":  "93c442b67b3bba8a1cf62dc6a26704f469d4ec10bb745c81df01dad2d2c08272",
+                                   "currentSha256":  "93c442b67b3bba8a1cf62dc6a26704f469d4ec10bb745c81df01dad2d2c08272",
+                                   "difference":  "none"
+                               },
+                               {
+                                   "path":  "src/app/(frontend)/preview/article/[token]/page.tsx",
+                                   "testedSha256":  "07d2d17277838c6592f77fabf5850476644b03720fee56c14307b4cd00568ae1",
+                                   "currentSha256":  "07d2d17277838c6592f77fabf5850476644b03720fee56c14307b4cd00568ae1",
+                                   "difference":  "none"
+                               },
+                               {
+                                   "path":  "src/app/(frontend)/api/admin/workflow/revisions/route.ts",
+                                   "testedSha256":  "20eb57491c1d9835a652c66fe8449d45d632354c7de929c05363396b66539a66",
+                                   "currentSha256":  "20eb57491c1d9835a652c66fe8449d45d632354c7de929c05363396b66539a66",
+                                   "difference":  "none"
+                               },
+                               {
+                                   "path":  "src/app/(payload)/admin/importMap.js",
+                                   "testedSha256":  "bc622748c81f18be2c5769fe44de1c0b6af5bc2a76a914070c2c50bfb3cea245",
+                                   "currentSha256":  "e02fc1c6ee82f42eaece92cf89d65c706d9f5ed86ba6765e74f8b192fa080cb2",
+                                   "difference":  "line endings only"
+                               },
+                               {
+                                   "path":  "tests/rc1-03b/run-current.ps1",
+                                   "testedSha256":  "387318259e500a0c1477b2ca33175faf04ddeb29baeab058b487633df24fc0eb",
+                                   "currentSha256":  "387318259e500a0c1477b2ca33175faf04ddeb29baeab058b487633df24fc0eb",
+                                   "difference":  "none"
+                               },
+                               {
+                                   "path":  "tests/rc1-03b/verify-current.ts",
+                                   "testedSha256":  "706356932602edd778113b554b684f1b898a534bef73a6186d36f29976962b33",
+                                   "currentSha256":  "706356932602edd778113b554b684f1b898a534bef73a6186d36f29976962b33",
+                                   "difference":  "none"
+                               },
+                               {
+                                   "path":  "tests/rc1-03b/verify-privacy.ts",
+                                   "testedSha256":  "64b3759ce069b174e74dcfee6e799e5552664c89584aa3faae5af84a5b954e78",
+                                   "currentSha256":  "64b3759ce069b174e74dcfee6e799e5552664c89584aa3faae5af84a5b954e78",
+                                   "difference":  "none"
+                               },
+                               {
+                                   "path":  "tests/unit/rc1-03b-current.test.tsx",
+                                   "testedSha256":  "862b93122c805aa8bd838de15c1240a8a97f814b8a29e11e9e5ea8dcf799a5e6",
+                                   "currentSha256":  "862b93122c805aa8bd838de15c1240a8a97f814b8a29e11e9e5ea8dcf799a5e6",
+                                   "difference":  "none"
+                               },
+                               {
+                                   "path":  "tests/rc1-03b/tsconfig.current.json",
+                                   "testedSha256":  "d9c216c408fa2ddd9cb9be87d510aca3d00ed2ec3913f5a9ef5e44b4b85c11d9",
+                                   "currentSha256":  "d9c216c408fa2ddd9cb9be87d510aca3d00ed2ec3913f5a9ef5e44b4b85c11d9",
+                                   "difference":  "none"
+                               }
+                           ],
+    "differencesFromPrivacySnapshot":  [
+                                           {
+                                               "path":  "next-env.d.ts",
+                                               "tested":  "9a5944f3f2c781af767584ab0be6e96697c490bc3e24922cad91d2bcd0b9339f",
+                                               "current":  "0c3a39c9a7acb2b224213b5cc9bb82bcb3e8c5159272a198f2a8fd7aa34f2578"
+                                           },
+                                           {
+                                               "path":  "scripts/rc06-operational-acceptance.mjs",
+                                               "tested":  "c119fc01fe69fecacece0624c78da3917e2baee12a269b53dec1d883b85f5320",
+                                               "current":  "0574219a3fd4501b4f1dfa1f1dffae000f8b89c2138ae8fd7dc0005ec3b5a7e0"
+                                           },
+                                           {
+                                               "path":  "scripts/rc07-configure-instance.mjs",
+                                               "tested":  "26154edd5ec691b430248c759119692d0514c1ae7ec3b4d74338441e64aae75f",
+                                               "current":  "5d841efdf97321566679b0a3f763c6bb1ebba82fbea600cdd02ea697c1f4a955"
+                                           },
+                                           {
+                                               "path":  "scripts/rc07-pass2-preflight.mjs",
+                                               "tested":  "d5bfa94e488d3805d4e0d46b846a063d9c83c4bbcf451914ce64416f4e5c02d7",
+                                               "current":  "a3106b87bc3c1ce15e3a91be0382996699337a73cf7529342458e4373c150363"
+                                           },
+                                           {
+                                               "path":  "scripts/rc07-setup-instances.mjs",
+                                               "tested":  "3b2ad0f0c973d0f460369fe6191a8e50741ddac8b74ae778e7a2b53a2e59249f",
+                                               "current":  "a1536ebac14093e106ee688a9f9b566c4291bf2a59c669b3dbedff11c8060258"
+                                           },
+                                           {
+                                               "path":  "src/app/(frontend)/admin/fulfillment/page.tsx",
+                                               "tested":  "3984dbd311fd2b9d553efe7ad513fec7ea103776bb0cb8c2cedab4a59a2d1fd7",
+                                               "current":  "f0fdb15873267b07fbcdb4a4084dffcd6b8ac5c82b0c57205d913bd1ae591c24"
+                                           },
+                                           {
+                                               "path":  "src/app/(frontend)/admin/layout.tsx",
+                                               "tested":  "e855d87b9ee61e14cb1da25e22c8598efd1985cdd6bc1eeb584a6de13d92466e",
+                                               "current":  "da2315b4b447652155706446387b5a8ff287fe95d3c0afa51aa8027284f982c4"
+                                           },
+                                           {
+                                               "path":  "src/app/(frontend)/api/admin/active-site/route.ts",
+                                               "tested":  "51d5d050a6d5c08cee0d7bf11714f0d10220c593b266466e14ce34a5b23f1a02",
+                                               "current":  "8e6eec54b2ce3ca5b71667d80acdfdf8a8e2841deaac1d84b21f2e4c02cedd2a"
+                                           },
+                                           {
+                                               "path":  "src/app/(frontend)/api/admin/commerce/webhooks/[eventId]/retry/route.ts",
+                                               "tested":  "7f60551907118048bd435a25d09c0d89bae0d73f206e8c5ac22b031a36f2964e",
+                                               "current":  "f0ce1a8cd62c9fae17b3d3dffd422dc81547d8549b1d59e08dee1ee198b2314e"
+                                           },
+                                           {
+                                               "path":  "src/app/(frontend)/api/admin/content/preview/route.ts",
+                                               "tested":  "e4dd9b6611407c37cfde14b0ff561a854d1cb1233588ca143ed0eddc38e66509",
+                                               "current":  "475dab28fe4cfe2051870aa036f21cdb96e8827b432fd6db2a4ad2cefad9c991"
+                                           },
+                                           {
+                                               "path":  "src/app/(frontend)/api/admin/social/drafts/route.ts",
+                                               "tested":  "5fddd313d5064f83aa9317e0c4c35b5bbc26ae88f917600d3daab7ecc48b2567",
+                                               "current":  "b528a74d4194f6b6ccc3ba158e969e1f9b1a6beb8e8ff7865a96955ae45cf5c7"
+                                           },
+                                           {
+                                               "path":  "src/app/(frontend)/api/admin/social/worker/route.ts",
+                                               "tested":  "f5f8ef7e1ab8c9d329034ff944cabb37c9844f50b271a4f90c9a4afed337b759",
+                                               "current":  "78f276a7748dc01ac3a95b745382e46ac0e486b24c7e2b9f0f6fd4289bbc1dc8"
+                                           },
+                                           {
+                                               "path":  "src/app/(frontend)/api/admin/staff/invite/route.ts",
+                                               "tested":  "4f001799bb40808bdc5b65276c48caf7c584e363261407db3b50bc2f7d93d2d2",
+                                               "current":  "cc3521208935b05d963c3d07229ec30b87bc8d96e7a350114f70649a0703c02b"
+                                           },
+                                           {
+                                               "path":  "src/app/(frontend)/api/admin/telecom/simulate/route.ts",
+                                               "tested":  "31a8fe37bc54e967855f7db4e5a670f3516510108b8803005238cb9924fc9f5d",
+                                               "current":  "5486002f18ff4c9caab6190fbc5fd4afa6ed1bd3b5bdcd237ab72bb088aea6d6"
+                                           },
+                                           {
+                                               "path":  "src/app/(frontend)/api/auth/enrollment/route.ts",
+                                               "tested":  "f07275a83885f1a09df6a591ab8bcce53ee53c1effddc97fa606b61053eb3931",
+                                               "current":  "0e23171703fd99ac6cd743b4d4dc7cfb672d7dfcc3b657b4349eb44141dc2d4d"
+                                           },
+                                           {
+                                               "path":  "src/app/(frontend)/api/auth/passkey/enroll/route.ts",
+                                               "tested":  "8513f5da3f1f2bd529608f9e1c3ee86194d3462f445b77661e1013f755804191",
+                                               "current":  "452c37487e26c01ec3d2f2c26d7dac4ddec555283a03548abfc035669d38a014"
+                                           },
+                                           {
+                                               "path":  "src/app/(frontend)/api/commerce/checkout/methods/route.ts",
+                                               "tested":  "fc9d16e5ef49e34f170577e91bdd82970cb613c8ef68450bdba41039ac6b294f",
+                                               "current":  "514c8985f4464346b2a01a53796382bf895bd0a6b86f145843c6c50950b9a0b0"
+                                           },
+                                           {
+                                               "path":  "src/app/(frontend)/api/commerce/subscriptions/plans/route.ts",
+                                               "tested":  "5567d12fe7b31f4827dd158373b6e276308678461f05e0011b46ea71e16e790c",
+                                               "current":  "2fdb58e69b862827996e953faf87ce9ee5dacf8e2bfe432e49b97097b30c1dd3"
+                                           },
+                                           {
+                                               "path":  "src/app/(frontend)/api/community/notification-unsubscribe/route.ts",
+                                               "tested":  "21682751b53d889926d3ed79876f81866ff68f712e6cd6c4fb250cb423570e2e",
+                                               "current":  "19519e7706059d5cda3c91583d0fb5acb416fa30a520d0c39e189b6345c8bd09"
+                                           },
+                                           {
+                                               "path":  "src/app/(frontend)/api/migration/export/route.ts",
+                                               "tested":  "152652746d1bd5dc512c17a73de289d3f4efab82b5d77b92c2581bf1008ccb53",
+                                               "current":  "8a46d5852ce99f4e8504f31948d2ddad9b10b2bda6f1b0714462bf64269f5b49"
+                                           },
+                                           {
+                                               "path":  "src/app/(frontend)/checkout/page.tsx",
+                                               "tested":  "96ac153eb216ac396fd89217a88532a9818c14b9df5e47d5220b48755db8ffc7",
+                                               "current":  "f0d0a749c3d6d9f62c209b2abd40940c1567a8875c3f48b6b8407d4a994b260c"
+                                           },
+                                           {
+                                               "path":  "src/app/(frontend)/enroll/layout.tsx",
+                                               "tested":  "70fcd0ed7f1af20e2da61d7558c91ca2ef6b8466f5cde4acbbd4f902ea868d18",
+                                               "current":  "d1ee97ef47fbf7cec36c8bee44782e7f54363e233787c13dfc16f0a61c5b98d1"
+                                           },
+                                           {
+                                               "path":  "src/app/(frontend)/enroll/page.tsx",
+                                               "tested":  "52a72ab590e27ea6a809f67d6a8a2eff98e0cbd36992bd4eeb24cfa0d97e634d",
+                                               "current":  "d0e835386f7d63bd99859626bb3e980dcfbe4307b9d6289acdc527c73420bc46"
+                                           },
+                                           {
+                                               "path":  "src/app/(frontend)/forms/[formId]/page.tsx",
+                                               "tested":  "65a9b15b33a9f2093c119fc4d7d2e21e101bf5c8227047225313710822416ac4",
+                                               "current":  "79d56fb412782e08311b6425d2b4df22b9793ffafabe89764b3a6fd4886999be"
+                                           },
+                                           {
+                                               "path":  "src/app/(frontend)/login/layout.tsx",
+                                               "tested":  "067b10b4de5eb18be7975323cf5855c5579fdda14c3aa39e7fe85976cf007256",
+                                               "current":  "84f20d3fdb4fe56f6de49907670fcba7fe38c81fd29b944fde2329c9eaf66e6d"
+                                           },
+                                           {
+                                               "path":  "src/app/(frontend)/member-auth/layout.tsx",
+                                               "tested":  "1e4cc84fbe0ea388cd6cde56594435103c5d61a598fca9848627d5da1ec1e560",
+                                               "current":  "be6885aa7fa0cd4066ceb1c2273938910598f363f0fcd6984c363c51eebb2d38"
+                                           },
+                                           {
+                                               "path":  "src/app/(frontend)/members/settings/layout.tsx",
+                                               "tested":  "fea8ad0292d6801e08e50824028e6a26808131a8ab5994bdc6c4261af1f5980f",
+                                               "current":  "c06408073067703202462316117bde9b594f65560b28bfda8c3279bdbbac2365"
+                                           },
+                                           {
+                                               "path":  "src/app/(frontend)/messages/layout.tsx",
+                                               "tested":  "a4c993672ffff0a1583691745fd644f93b849d5752aaa496eeb933c20a36ae2d",
+                                               "current":  "29cfa24d811c8ebc45b5d85e0205652fead914359105ffc2145c8dead53db856"
+                                           },
+                                           {
+                                               "path":  "src/app/(frontend)/notifications/layout.tsx",
+                                               "tested":  "f2b723e61898923f4fcba52a4289c1eb7fef206ef1b54e3a8994328e88416028",
+                                               "current":  "7d946d805174449b82eb4fc2a42b42c65fb7fb346c236ae2350e520770939835"
+                                           },
+                                           {
+                                               "path":  "src/app/(frontend)/preferences/layout.tsx",
+                                               "tested":  "55dd7583d083fd53a125f85ded308ffe560e6342d31543cbb52d3b8037184837",
+                                               "current":  "5de05cc3e70fccbe19dda0d9baa116bfb770b8a803e8c0ed996ef90c09af4cad"
+                                           },
+                                           {
+                                               "path":  "src/app/(frontend)/store/[slug]/page.tsx",
+                                               "tested":  "6eb2f96a71ef6b592611a832bac85332f22c98a3ea2ea270bfa2cbca0343910d",
+                                               "current":  "8a434ac9e11da676a0a49089e0589eeaf717c3393f887f8234baa515c00ab22d"
+                                           },
+                                           {
+                                               "path":  "src/app/(frontend)/subscribe/preferences/page.tsx",
+                                               "tested":  "56e2b1e5ccc3e0f14e609abd7327b7ff716194bfbe415c6ac513b4e776297c72",
+                                               "current":  "e8ebd39c072a2f6b71de50e43139c2fa296ca3b71b4a2154ad70567f6f94eb1d"
+                                           },
+                                           {
+                                               "path":  "src/app/(payload)/actions.ts",
+                                               "tested":  "e57bcb8adfaca2a1a38ed8b1fbe1198718a8a2cd6679f4a780dcdf5504f530cb",
+                                               "current":  "84b0b368e9b0e1cf6a572ba48af4c3ab47fb68ddbf1a9e17640173da7e2a5959"
+                                           },
+                                           {
+                                               "path":  "src/app/(payload)/admin/importMap.js",
+                                               "tested":  "bc622748c81f18be2c5769fe44de1c0b6af5bc2a76a914070c2c50bfb3cea245",
+                                               "current":  "e02fc1c6ee82f42eaece92cf89d65c706d9f5ed86ba6765e74f8b192fa080cb2"
+                                           },
+                                           {
+                                               "path":  "src/migrations/20261004_160000_rc03_network_outbox_ids.ts",
+                                               "tested":  "b76b76f1ec7350b9579c6e83fc09ee2ca06aa3724b4eb5b4961ebe99189c7ce2",
+                                               "current":  "b88c87aaa3d642c1333291431a2f1e280f38f5152abb5069c3b2cd8e8b738d3d"
+                                           },
+                                           {
+                                               "path":  "src/migrations/20261004_180000_rc04_canonical_moderation.ts",
+                                               "tested":  "2cd9f450f73dcb854ca5e7f47be718f1306dd0c272bc49184a480d8eb3d4c2b8",
+                                               "current":  "5926718423ec851051733a93a8567c70cab33bf86f480f881fccc2f6d0197ba0"
+                                           },
+                                           {
+                                               "path":  "src/migrations/20261006_013000_rc08b_federation_ids.ts",
+                                               "tested":  "cd2b035ff827b800d2848cf8f5ab3719cfce5b0e0891c224576b6aa0d09e7fcd",
+                                               "current":  "69c130be394ed825672dc58e79080e733ca124d49f29adf8e11c2cc336458b42"
+                                           },
+                                           {
+                                               "path":  "src/migrations/20261017_210000_rc1_review_comments.ts",
+                                               "tested":  "58652975854b0fb6ed3399bc7a896ffca22ff5c15e2badc513eddae63d63ea1e",
+                                               "current":  "04cc9639bba6bb0af7a8b7e1a01a7456a673168673f1f12588a716e7e339d65a"
+                                           },
+                                           {
+                                               "path":  "src/migrations/20261017_211000_rc1_review_comment_ids.ts",
+                                               "tested":  "c349faaf93f1d19d445a6e7525ac4ed7f402fb465cbd4f6d11c3510707f4fb6e",
+                                               "current":  "ef99da0fd48795eaf327f1e822068ffeac2195bb0b6aa6d3627b3feb884f8b0d"
+                                           },
+                                           {
+                                               "path":  "src/migrations/20261017_230000_rc1_content_hierarchy.ts",
+                                               "tested":  "1e635b23ab00f7594068550d07a2fa669f81ef182bc83d4e972f20f621d5c35f",
+                                               "current":  "06aba928b02a39f1c33a29d7a71aec07c6ccd132a8076a8e5f3fda140b456714"
+                                           },
+                                           {
+                                               "path":  "src/migrations/20261018_050000_rc1_content_visibility.ts",
+                                               "tested":  "0c705e4a9218a3f2939c19f5a1b9ae64c173444bd2217c38fb5b6b5c281cfeaa",
+                                               "current":  "995ec8be02a2b872505d607e4ea128f0f87cfc6bc5a1da2ec17636847b85abfc"
+                                           },
+                                           {
+                                               "path":  "src/migrations/20261018_060000_rc1_taxonomy_layout_seo_fields.ts",
+                                               "tested":  "ce39a24cb3d713a2b314f73c2fd0f5a3cd8c03cea8f8f8548f783ef8fd3d6161",
+                                               "current":  "21d95a3859a29c5091adbf6b7fe40746c8f8970529911959a509274c9035cc42"
+                                           },
+                                           {
+                                               "path":  "src/migrations/20261018_061000_rc1_content_entitlement.ts",
+                                               "tested":  "c6e48fdfbd12808f61023498f88ed1dd924a64b6587ef11811ee56e17e026885",
+                                               "current":  "5454f40165156da7c46234b3cacfe0a184cf40067609beb5ba6a89b9224d0812"
+                                           },
+                                           {
+                                               "path":  "src/modules/admin/ContentTypeEntry.tsx",
+                                               "tested":  "596a278dca56096b2df7c4d8bdfd31272b0c056cc40c605cb51b5d53b407e957",
+                                               "current":  "8677f78b34170be087c0c12ffc540c1cf431644991c6e48e3ee8601296bdc9cd"
+                                           },
+                                           {
+                                               "path":  "src/modules/admin/PublishingCenter.module.css",
+                                               "tested":  "aac1aa94a5664d06d51b3a72cffea419eca22581a7f9ff176a19d8fe3b7f44b2",
+                                               "current":  "e4162449c2a1f60ff9ce30a1df91a9944fb6d6b34f50ec25ec356cf7edd8a57b"
+                                           },
+                                           {
+                                               "path":  "src/modules/admin/PublishingCenter.tsx",
+                                               "tested":  "af9f80996ecf8fff392d539660eb11cc7bdde8482215bf6ebf825b764ece8402",
+                                               "current":  "b0fb72273698868f977cfaa1eb4a577522767e2781775ca73dc71ad117f7b191"
+                                           },
+                                           {
+                                               "path":  "src/modules/admin/RevisionHistory.module.css",
+                                               "tested":  "ff06558f5bc920b56d96f8e77f98dbbca28bc1f840e3a07203e2ed4e711733d2",
+                                               "current":  "3983f1b600bac2a6b9490646c5622596409209d59ca05c8ed5fea069aa25de88"
+                                           },
+                                           {
+                                               "path":  "src/modules/admin/RevisionHistory.tsx",
+                                               "tested":  "9bb23dfb3546cf44bde46dcf4a055298151da7ad91fcf2ff2f0b06395e4429fc",
+                                               "current":  "967f9b85221ff318f8c3225731199d16a7eddc7ac165940d935d377b4fa1eeb0"
+                                           },
+                                           {
+                                               "path":  "src/modules/admin/RevisionHistoryAdmin.tsx",
+                                               "tested":  "758658436e2316bb8f95eee90ab8147e80ace5a5d5dd9ca72489a0c3fb243f7e",
+                                               "current":  "3fdb0ead736b7884c57589ef9f97edef60c0362d05e3284d91cb0071605829a2"
+                                           },
+                                           {
+                                               "path":  "src/modules/admin/ScheduleContentAction.module.css",
+                                               "tested":  "112b2be22528a06f11ce2a4447ca7d27dd507fde631fb5073b14ad8df953c70d",
+                                               "current":  "8806b0e9271edcad9de0ea8e472c2d1c28a725b46913f4889f56c9ecef75c428"
+                                           },
+                                           {
+                                               "path":  "src/modules/admin/ScheduleContentAction.tsx",
+                                               "tested":  "c00ee08bd062052ebcd397299f0862a254c362261b2bc2b3fab9bbddd4074848",
+                                               "current":  "ad1fa8b7fc73ce9c25f2fe16b0aec859a9498e02073ce8b89a53226785598a31"
+                                           },
+                                           {
+                                               "path":  "src/modules/admin/SiteSwitcher.tsx",
+                                               "tested":  "c3f83f6de4b7b71cbe46aa468d655880b9dd79602b60e357b519fdc4a1364ae7",
+                                               "current":  "b124f8a521fbc1de9b8662070c94604d64e1b4bdfa3a37122004a56c07170a22"
+                                           },
+                                           {
+                                               "path":  "src/modules/admin/SocialCommandCenter.tsx",
+                                               "tested":  "42bfa1be45484921d6eeb697095e8bb00322ca2c734176392a0af1f6dd6d595f",
+                                               "current":  "c55e9bc3b3a93663318c1644072b7548e5b40249eeb8dc8505f55157c8900e42"
+                                           },
+                                           {
+                                               "path":  "src/modules/admin/StaffInvitations.tsx",
+                                               "tested":  "904255b568a8cdea45e5d7f166b37f052b679e9113f4c43435ed18aefaddc65e",
+                                               "current":  "de575278d5f6e9e4a25821bce227314f4d2edc6134a61c1ec9fc3d45665c1236"
+                                           },
+                                           {
+                                               "path":  "src/modules/admin/TrashContentAction.tsx",
+                                               "tested":  "d25a6721b6bf0fa7d02d3d8cd39df861774f681d236db31698b90f22727ef940",
+                                               "current":  "3a708ecfae47c00741660b4821700ab0931aab0b8205940d8e6aca118128d37d"
+                                           },
+                                           {
+                                               "path":  "src/modules/admin/UnavailableWorkspace.tsx",
+                                               "tested":  "5281ffe796106ee242a1a787d856b99411ebfb3d72a13017fedd2eb7f023d798",
+                                               "current":  "b59d6701c2b62de01206c24b143383a048ea1c1fefcfed157a92f36fa0599d02"
+                                           },
+                                           {
+                                               "path":  "src/modules/commerce/cart-access.ts",
+                                               "tested":  "970b68334cf4164373a6a0970a2c73f86dd0eb145007c9a9c4faf0a43ec5992d",
+                                               "current":  "5b64adda91813a43889ea531b01e7ebee34e03d6646b4e20781cccaeb38ecbeb"
+                                           },
+                                           {
+                                               "path":  "src/modules/commerce/digital-delivery.ts",
+                                               "tested":  "48e278b30c5a0b80cff99d6876807fd07a0af5f15b13edf67b402bbfac868fc2",
+                                               "current":  "45af979ca87eab31052a040e180bb8c18d0246c57c75cdd34e86f985ac5ec756"
+                                           },
+                                           {
+                                               "path":  "src/modules/commerce/MemberBilling.tsx",
+                                               "tested":  "d3d313b1d7d46590576a0ed7ae69fd6050fabb796af7c3df82da534867af6dc3",
+                                               "current":  "fc6e9af24c2cafbf39d289bd2cf1ee2ff5708fac738f8423c08897ba3535b978"
+                                           },
+                                           {
+                                               "path":  "src/modules/commerce/transactions.ts",
+                                               "tested":  "2d7b0bb1b832101c26d33f40a5241e5e248d484018cbc8cddb91fee5913a600c",
+                                               "current":  "91afdb1122c42c2cdfa1c1d9ae3067b308fb018c9aeafb445a98806686e59d6a"
+                                           },
+                                           {
+                                               "path":  "src/modules/community/event-notification-preferences.ts",
+                                               "tested":  "eafa9f2687b6ed39e95d3a803124253c980341205b3a90aef0a32362bd75c980",
+                                               "current":  "0ddcacded4cbe047073233b43966072499387f8b247bcda75df131b9fe8e7e05"
+                                           },
+                                           {
+                                               "path":  "src/modules/editorial/related-content.ts",
+                                               "tested":  "fd40891981ac2b557428068b8dfdad0454ecea90301031bcc4391a0e53542ac1",
+                                               "current":  "abe8074596f2fc9aa2f45b940c2b18f80c5787b0d3dc6abb2ef5bd0fa8fe5cd2"
+                                           },
+                                           {
+                                               "path":  "src/modules/events/schema.ts",
+                                               "tested":  "b911260e175ce4e25f4f7c8dc19d2e53500d962743e0ba4c4d856d0920d2bcb5",
+                                               "current":  "d0520bf316b8bfe5c4ef119e85b905b65f53a55014b42618bf065fec65b9baf6"
+                                           },
+                                           {
+                                               "path":  "src/modules/operations/execution-lock.ts",
+                                               "tested":  "2740fff763d096560f94bb2c6bf979fa67d59bcfbb0258b7104eec549eea950e",
+                                               "current":  "5eca831b2b8525a0cb56adca2f25bd299cbbee1186d02434ed5b228de31a567a"
+                                           },
+                                           {
+                                               "path":  "src/modules/operations/owner-recovery.ts",
+                                               "tested":  "a1fc547219ece6bc9f1594d8f74bd8ba2347196ea6758d997ba209aca25f3ac9",
+                                               "current":  "2533e6221f3641d28847fc536408d58b8285fbc895ec6d9ca152f80c32ff2fd0"
+                                           },
+                                           {
+                                               "path":  "src/modules/operations/redirect-site.ts",
+                                               "tested":  "d9df5a636e388863f01928b4eee0e235f6b284d4b798c64f6525379f4f9e1fb3",
+                                               "current":  "3c96992c889da4d3977553d57f51feac78c62cee9decea5484cee3bc7cb2739d"
+                                           },
+                                           {
+                                               "path":  "src/modules/public/content-navigation.ts",
+                                               "tested":  "cac0ba61b5016fa6c5d51cc7848d2b11e8a090456dbf01cae89bfc963e2a6a4a",
+                                               "current":  "149d4c08775cf4d3ec15f85c5907fb629da5b269c2d3210857b2cd244b093063"
+                                           },
+                                           {
+                                               "path":  "src/modules/public/layout-visibility.ts",
+                                               "tested":  "158535ae0b595e4863229f3fb22749ae46ff965400cd9e5514f3ff2a8f8501a6",
+                                               "current":  "81ae4f4ca6349fe0b9b7368d1c1f3e526de77baa13d36fb172446159bab2659e"
+                                           },
+                                           {
+                                               "path":  "src/modules/public/site-scope.ts",
+                                               "tested":  "9cd37de38ace1cb8c20c541d7fcc224e4f2602fde84f210d3797ad41dfab4cb0",
+                                               "current":  "a2cb079296b4f74cab361309f25fea321843cb1a5ce4b9001449ebca7b4349cb"
+                                           },
+                                           {
+                                               "path":  "src/modules/social/adapters/bluesky.ts",
+                                               "tested":  "c9171c2147798941d7843fcb1b491ab7a29b9ff30028021e64a1cd6622573917",
+                                               "current":  "0e355f4736f9a90389e3cd0f54ef99a566fdddb8980f14fd165f786f0511b076"
+                                           },
+                                           {
+                                               "path":  "src/modules/social/adapters/mastodon.ts",
+                                               "tested":  "ffac7516773e0f1d7bd090677d7be4dc05246d6207606c1cedf7a9f0ff906a64",
+                                               "current":  "5280c3ab9cc587085a2ba82612c94d038d3f72c55084b75c71390c5f0d758576"
+                                           },
+                                           {
+                                               "path":  "src/modules/social/contracts.ts",
+                                               "tested":  "c7bb1409e43aad7f28aae6c896dd840637fb28719fb2cd34b65eb785c7d5d1fa",
+                                               "current":  "28ff4f436d54be2e78aa533cc1644ee3333b353efed47afee123b9bd767b8e33"
+                                           },
+                                           {
+                                               "path":  "src/modules/social/provider-runtime.ts",
+                                               "tested":  "a78ca02ff79aa5cd7b15fbf28ee1b5cfc2b6d5c8f63936eafdc627df5b5a0425",
+                                               "current":  "787f6ff6fc9e38bb1f6ae47edaaaf2a00c02130dbf74c8a74a13f8f5290ae426"
+                                           },
+                                           {
+                                               "path":  "src/modules/social/tasks.ts",
+                                               "tested":  "88adbdd189941ffae9b7ca3d7e6004505fad6949b90736ece567a826029d56fd",
+                                               "current":  "3cf8d757959f3d10bd1485a987acc5bb187fb39dd72a4b86447c166bf51b8853"
+                                           },
+                                           {
+                                               "path":  "src/payload-types.ts",
+                                               "tested":  "2aa0f188df1c4ae27a4cbdfe55ed7e52f2200a41cb1e8afc069f3cdfff4d2b4b",
+                                               "current":  "504c5965ff9bb5ac6dddc5c6843496bc8fafa9a97c5be9b5e55c0d7b7c700c11"
+                                           },
+                                           {
+                                               "path":  "src/scripts/admin-truth-inventory.ts",
+                                               "tested":  "9dc7bcb412dffed814e972d279f7c32ecfb6f71936611148fe2c8c3697bbd177",
+                                               "current":  "178335758083db247723377fcdaa62941e3aa6fd023374e33aa9b419bd513c41"
+                                           },
+                                           {
+                                               "path":  "src/scripts/prepare-rc01-instance.mjs",
+                                               "tested":  "f3f589d1f4646e4d9f0c704a60d183c178a7d9beb587319984275c9bed6a701d",
+                                               "current":  "28b3444a9468e6eb8fbc508beaaa95d78da1f02bf2b893de9957816678d33db7"
+                                           },
+                                           {
+                                               "path":  "src/scripts/prepare-rc04-instance.mjs",
+                                               "tested":  "5209a0658314cc3556756c2c6b79b49de526faeb2e46660ab819b3279889e28b",
+                                               "current":  "50395d8d99695520cd62872100861cb993e702057b3f27239cb0946742084405"
+                                           },
+                                           {
+                                               "path":  "src/scripts/rc02-https.mjs",
+                                               "tested":  "a3b8e86bfb3498564b1bf7643c3a72d227bbe56668066853443231ad44df0760",
+                                               "current":  "2bd349fecd735c6d7ef03cdeaeb53187836a49b926e69bbda50f33f241fcdd05"
+                                           },
+                                           {
+                                               "path":  "src/scripts/rc02-network.mjs",
+                                               "tested":  "e1bab20bb9c656a00b86c74f4c0124f9607fbbb983b4d4adfe062b5840132052",
+                                               "current":  "55e7b75671c46f3a91f8e0f6c778881efed9a762ce9835b39bade89c62a8cd2a"
+                                           },
+                                           {
+                                               "path":  "src/scripts/rc02-runtime.mjs",
+                                               "tested":  "e88981d294f7e246163eaa7142e6a4c54e491c8bdb37aee768ed6a7e739d8658",
+                                               "current":  "9400268fdddeed02f8f315ba999d63cb066216b28f8861010acdd99979f92ee5"
+                                           },
+                                           {
+                                               "path":  "src/scripts/rc04-runtime.mjs",
+                                               "tested":  "08348396019b411b8cca7aaddbcb91c87e6bb8d98a50be02abd6a7cf8c6480f4",
+                                               "current":  "04e1cb8606c33862123d22de039d9e773b5a94aa31a297f50d117cf33a2f8ad4"
+                                           },
+                                           {
+                                               "path":  "tests/browser/product-publishing-ui.spec.ts",
+                                               "tested":  "f81411096e3a0f5c6928a0876c30cf509065649cf9514e210eaccd0e0c244493",
+                                               "current":  "8b592a40036b98dcc3a6019c60d96c08f14f691946b269acdc68d8408bac9282"
+                                           },
+                                           {
+                                               "path":  "tests/browser/rc1-local-proxy.mjs",
+                                               "tested":  "3cac18ab79d836bd2e8e1ba0744733cd73c04e16fcf18c3220a40b01c613bd74",
+                                               "current":  "3e9eba2d7ebfd974a11fd24bdd9ed6441735185b46c55462ae61a220de45d8f3"
+                                           },
+                                           {
+                                               "path":  "tests/integration/aud-public-subscription-journey.integration.test.ts",
+                                               "tested":  "7e9ab9f1885661d25269b7bad09e5e571b8a7c42e37a13c1bfff2b51738478b8",
+                                               "current":  "815200347b16c0feb8562b080e1c9542b8fb2ceb5924fcd06ec46c0723ca3e84"
+                                           },
+                                           {
+                                               "path":  "tests/integration/rc08d-lock-projection.integration.test.ts",
+                                               "tested":  "06211c7d45783bcfb752940bfe44ce6a2884d6f32123154450b4af3f58b1a1ff",
+                                               "current":  "3a80595fe24621b8a6ba63fbc0db896cdc1bf5f09c01e9f317f9230fbb3aa324"
+                                           },
+                                           {
+                                               "path":  "tests/integration/tenant-authorization-matrix.integration.test.ts",
+                                               "tested":  "2359563ce67d4fac5c4b5c309ad3fdbf1a0967f47d0ac142da27b6214c652333",
+                                               "current":  "5e7478fa889cc7287e1af54666d435572aa617ebfaeaab76c6725530e86ee611"
+                                           },
+                                           {
+                                               "path":  "tests/rc01/boundaries.spec.ts",
+                                               "tested":  "288efd1b2d3417f0dfa82abe6e0a3efe0bffe4dd9a6b10f135df47d6a405f378",
+                                               "current":  "432179de352517d12a6af078a51d54bf24ea7ae48ce257a8be393f48e6da39fc"
+                                           },
+                                           {
+                                               "path":  "tests/rc01/routes.spec.ts",
+                                               "tested":  "2647216665ee24e4052cb316e7544c250c6b8192f3c84289d52c6d21581e1376",
+                                               "current":  "740f8482c70402e45a049397dfe261bdca001d10e64a345dfde9a58926e81a43"
+                                           },
+                                           {
+                                               "path":  "tests/rc02/staff-invitation.spec.ts",
+                                               "tested":  "b988890b2db937ca3dee842c2738e7bd5584c7d8cfdeed839bcf54ffc59dc81d",
+                                               "current":  "db966153a762f519b4f8fa73e896ffff238a8f63e04764f5e09accebd55f15b5"
+                                           },
+                                           {
+                                               "path":  "tests/rc03/provider-fixture.mjs",
+                                               "tested":  "828871dddce597fa5572db4aa80446f638d342d7b0497edd76ac7570773fd2ed",
+                                               "current":  "1df783129a42ba2ef795b54fedb3c33a599e3255b92fbe67c24e9b78569c5f6b"
+                                           },
+                                           {
+                                               "path":  "tests/rc04/smtp-sink.mjs",
+                                               "tested":  "4cc597e4a5d7e9ae3f92b3785554cae6fba7a980ec530b8467a2bafa2a0cac1b",
+                                               "current":  "c38f587dd02536324b4b6967f40c1fec7891c9525d91465728bdeb0aaf75ec2d"
+                                           },
+                                           {
+                                               "path":  "tests/rc1-01b/owner.spec.ts",
+                                               "tested":  "cc75f5137e96160e8a5d2b654e93144c0bc70487560bd20618c4c499fdfccdb3",
+                                               "current":  "28192f1fd0634a04aad989e2d375c01fcf3812fb88218a0ee0c8a431cbacb2f5"
+                                           },
+                                           {
+                                               "path":  "tests/rc1-01c/instance-content.spec.ts",
+                                               "tested":  "47cb387a3eede28ff4dc310835606449f31211dbf106dfd378d51723ca6eaa09",
+                                               "current":  "c2483398aadaa3c90d0b3aee7e75a1f11b6cdf88062e60a551fd763529c96592"
+                                           },
+                                           {
+                                               "path":  "tests/rc1-02a/verify-02a.ts",
+                                               "tested":  "5c5e30dc056d49a60f9899025e60d40cba8165befd2d52044a940cc71f127ddc",
+                                               "current":  "8059f34bc937920bc21d95dfcdfebf865f12b829a9796f0b9f3d6fd364fb647c"
+                                           },
+                                           {
+                                               "path":  "tests/rc1-02b/verify-02b.ts",
+                                               "tested":  "01806c8ae5ddfa32c1d3d6c3916c5d11430b72377fe57ed70863fd68725896cc",
+                                               "current":  "afb0e2e693e97a1ab684f2829e14563961785e3939b70297f06af95f4683b38c"
+                                           },
+                                           {
+                                               "path":  "tests/rc1-02c/inventory.ts",
+                                               "tested":  "d81733805eacbf41ab84bfbeed1ca7f3229f71479887ea6846b283dd2d944a11",
+                                               "current":  "ad1606cc3b8f29b2f32c40db6857e1ecf4e99f7e838a689dee4995e9e2d94dd7"
+                                           },
+                                           {
+                                               "path":  "tests/rc1-02c/run-isolated.ps1",
+                                               "tested":  "33f7c6e3d3e4bdaa529dfcf15554cadf1bbdae2e31eb30d8f54b6aa941c63415",
+                                               "current":  "47082bf63e9f1181d6db301f28df4a106de9196bf0be2b70f89a137a8ce3dd0a"
+                                           },
+                                           {
+                                               "path":  "tests/rc1-02c/tls-proxy.mjs",
+                                               "tested":  "93700616e363bc1ce962813e5c250a41712becd214d82261e1706130bf39923e",
+                                               "current":  "e6eb4fb8d7cdd57e1b4dcc6559025451f5c64c133d4792d94a569fd445943ee1"
+                                           },
+                                           {
+                                               "path":  "tests/rc1-02c/verify-02c.ts",
+                                               "tested":  "f2ee4e44c58d43f176474debb89cd7aacf1748724460af526f59694ca6ac8aa2",
+                                               "current":  "10fcc64bdfe74950d97daef9f2e95204dcb42a52675543138cd9adcd61c2fa55"
+                                           },
+                                           {
+                                               "path":  "tests/rc1-02c/verify-controls.ts",
+                                               "tested":  "79b8338730ac3bd7ef0936878bd0ce4957217f5ba4815c2510dfc3337f0382fe",
+                                               "current":  "a443cbfec08d8fc00bcce5a95bcfbd1275bee23c073d58cf4bc66cdbbec47c30"
+                                           },
+                                           {
+                                               "path":  "tests/rc1-02c/verify-redirects.ts",
+                                               "tested":  "6de056b896cae266497074eca243bd54a4b4f0c4a32f0cd43351deb078700372",
+                                               "current":  "a567f224da99d549f83b4f5c248898eae5ee0226b9f8fea765247008f71c07ab"
+                                           },
+                                           {
+                                               "path":  "tests/rc1-02d/run-isolated.ps1",
+                                               "tested":  "fc6d29dd2772e9d5986ff5d7d9882d675785a0202d41ed86108860313c695379",
+                                               "current":  "7f3ce13cf332dcf02e4d3756ee131f752662bee1264b32bdd678a6493b9a5385"
+                                           },
+                                           {
+                                               "path":  "tests/rc1-02d/verify-adversarial-matrix.ts",
+                                               "tested":  "dd3cf8bbee910158b7377004c030f1792b4f17212ebcb02d8c6f3db54f83847d",
+                                               "current":  "f8f363e17bc5a75fa3daa47fab3a5a6141b6e675d5c0a5b96acc31c07e735e4a"
+                                           },
+                                           {
+                                               "path":  "tests/rc1-02d/verify-profiles.ts",
+                                               "tested":  "97870ad75606a2a263910bcf07349b8c642c4ee15f40fd706c345e6719c7a22c",
+                                               "current":  "6b7a2f11c658b42a3c215966c9cb951799b049a4ecf82896ba8b70054be51a2f"
+                                           },
+                                           {
+                                               "path":  "tests/rc1-03a/browser-public.ts",
+                                               "tested":  "607d0914c1e2eea0f80e6ad3b2575c5969c073bcbd4588f8093fe249ba123a91",
+                                               "current":  "e8963eb1a3978abde4f340e4d98380f10f184cc4450b6359252a7be738afd5c8"
+                                           },
+                                           {
+                                               "path":  "tests/rc1-03a/run-isolated.ps1",
+                                               "tested":  "fe9eb00d915ce3fbd2d9002b674172161730aefaaa017d4a49f71a0308375712",
+                                               "current":  "9d13423f737bbdb361b5ea84f6bd1aad188b510de1cf1a36b4b8665a09f86009"
+                                           },
+                                           {
+                                               "path":  "tests/rc1-03a/tsconfig.json",
+                                               "tested":  "702e1076e8b3c42b41a0914f4e18a1f794433cd4e145b99b719bcdbb447d01d0",
+                                               "current":  "e0f549d4533e18209277242713164abd493ab61c3017b391860dda2043d43490"
+                                           },
+                                           {
+                                               "path":  "tests/rc1-03a/verify-hierarchy.ts",
+                                               "tested":  "3bddbf50e1eaf4c073ca3fd0d3ffefa9905e34cb9f36d37434e5e5f3be0ab001",
+                                               "current":  "28e06d54fd2b4cf6349e978d6f10fa018dbb4cd6184d6dd7e76d3819908f2543"
+                                           },
+                                           {
+                                               "path":  "tests/rc1-03b/run-isolated.ps1",
+                                               "tested":  "fffdadf06d35f43d860ad602ea5ca024337303a0b66cb8129f57175e71ed86ab",
+                                               "current":  "582200ac698cb11397ca460ed2a5d55d180d00d6dcca758610ca362be31c9a77"
+                                           },
+                                           {
+                                               "path":  "tests/rc1-03b/verify-current.ts",
+                                               "tested":  "fa675e44e1137f5c540f0cbd588bf5beb28d914404bb5cf08c8ccfb8a3d2f98d",
+                                               "current":  "706356932602edd778113b554b684f1b898a534bef73a6186d36f29976962b33"
+                                           },
+                                           {
+                                               "path":  "tests/rc1-03b/verify-restart.ts",
+                                               "tested":  "cb0b6a80ada7fc67124709bd8dfbf29ba6943a4ff3cb5a413edcf22d993131b5",
+                                               "current":  "b2706932b8e0bd645fdd6179e42a117e7c422caf149ab26f43a30209e1451b0b"
+                                           },
+                                           {
+                                               "path":  "tests/rc1-03b/verify-rich-editor.ts",
+                                               "tested":  "cf5605fc9445f03a5114e69402a0efbc60a37cf1f94bb79ce12130b6c4e5cba1",
+                                               "current":  "3f8bdc7be039d9f6bee459ec92f96b1ca0c8859470dbae3809145b01ac7da87e"
+                                           },
+                                           {
+                                               "path":  "tests/rc1-03c/manifest.mjs",
+                                               "tested":  "b7f98d9ecac7c4af792ac2636c18fad2ca4b5c3cf4c866da73a4aa766a8998db",
+                                               "current":  "09a52fccb8f6e1fcf1bfc9083b3febab57d6156d1fe4324faaf0f931406964c5"
+                                           },
+                                           {
+                                               "path":  "tests/rc1-03d/run-isolated.ps1",
+                                               "tested":  "8c8cacdb691a838255927eeb243b244513e219c737ae4f7bd63f5068b6ac4645",
+                                               "current":  "6bb444c1cf75afd2a7eadec3d39b4cb586ec4d7a106ed2786749abef1764b2cb"
+                                           },
+                                           {
+                                               "path":  "tests/rc1-03d/verify-import-and-build.ts",
+                                               "tested":  "3c7ff2cc868d8884551c3648065e021ea4ce321df019fbd7d80c765d4d29d3f3",
+                                               "current":  "734d606b56190fce5c2c43ac28fa843fda449c88c8804ea5c84b611507c5c929"
+                                           },
+                                           {
+                                               "path":  "tests/rc1-03d/verify-restart.ts",
+                                               "tested":  "f40b89ba38294fe01bb96c02b8c40ad8c71e1d3315d124b7f2b9aa79d766a472",
+                                               "current":  "d12f54636eabbbfc06633f44e0ff7dbf1281d2979a8451fac72e35bb85f15c96"
+                                           },
+                                           {
+                                               "path":  "tests/rc1-04b/tsconfig.json",
+                                               "tested":  "5001858c84186237c20e5ab3c31bf876f9a0f6b374e404005bc946cb50e8ed63",
+                                               "current":  "a10e28b8dc5b9e9ed93f491f3b16a7b7117fce9a2a5a8860f3293dde60a6b80e"
+                                           },
+                                           {
+                                               "path":  "tests/rc1-04b/verify.ts",
+                                               "tested":  "ee82ca52c559f32aa4625c50e18143a1b068de2a28a259d875d1a12a11ccdaa1",
+                                               "current":  "3891aa593ff16a1d6712b961184b81a60b068bebce1362566542eb458eb0d3aa"
+                                           },
+                                           {
+                                               "path":  "tests/rc1-04b/verify-bundles.mjs",
+                                               "tested":  "62e3dc3f4a6482ee06917e410a2bd9621ad812fbb45b5e959519ad2cb67204e9",
+                                               "current":  "c7bf1cef0899d53d35f1399a89396f99de87ea6815c98c24f1eb43fbd091e04b"
+                                           },
+                                           {
+                                               "path":  "tests/rc1-04c/tsconfig.json",
+                                               "tested":  "9eac82b3d402f9f44c204655d83164f5c720428ab46d0aaf52fc944bffb793e5",
+                                               "current":  "e8ce5ada8754ab7562fda461abee31b06e9a654722146b3f0ca61cf7c6df3f3f"
+                                           },
+                                           {
+                                               "path":  "tests/rc1-04d/manifest.mjs",
+                                               "tested":  "fc5996d75eb5ce4b3aa1699be674e9a851aa215bde1a8c129fb372c4802b6aa7",
+                                               "current":  "3f58f624568c56fc4844f9e71e938d6818b2267605f9c93ead2f170a3ba95792"
+                                           },
+                                           {
+                                               "path":  "tests/rc1-04d/run-isolated.ps1",
+                                               "tested":  "13680be20deb9257157ced843f83447db5f07fc3f1a0c72249edd488ef456057",
+                                               "current":  "13115a8bc8fa1989fa6499f444d4ef23072e3afa4c97bc1bf5ac51e17307e015"
+                                           },
+                                           {
+                                               "path":  "tests/rc1-04d/tls-proxy.mjs",
+                                               "tested":  "bfbea1757f018fa7d6ebf20859099c4e9a93b4f3b9f64f9130706b2df62f9a73",
+                                               "current":  "ce9d67177b88785a57e125bccf0be94cafeaab3e9d84a4abc03ba61f83f84efa"
+                                           },
+                                           {
+                                               "path":  "tests/rc1-04d/tsconfig.json",
+                                               "tested":  "55edc0c0deb87bad4112743c10a920883ea9006505e875472d9acea401f74763",
+                                               "current":  "0733e02b5dd9ac352a0597cb98e8af3801db350fbbb4fd419a512b77bd664215"
+                                           },
+                                           {
+                                               "path":  "tests/rc1-04d/verify.ts",
+                                               "tested":  "6b83daebc45da6bf4a6826102eeb9514acb2161672c0df574c3c9ba5afee7138",
+                                               "current":  "0ca5de0024a15445b9bf080256eb6bdf2b6cb159362bb2d2749e3bf9f1b369d1"
+                                           },
+                                           {
+                                               "path":  "tests/rc1-04e/manifest.mjs",
+                                               "tested":  "984efbcc2cd5e073395d5bcd9ec043023b34d9b6eb1b11e44fde4ddd06bc932b",
+                                               "current":  "5fb105b502e6f38ae0c6f8d8cd80fad95a7f7317db23a906dc09ba8970e09144"
+                                           },
+                                           {
+                                               "path":  "tests/rc1-04e/run-isolated.ps1",
+                                               "tested":  "81cb73968b48461c3c4a970ccba3148d05761c0e32dfd2e06448a6a0d9dc3e10",
+                                               "current":  "714c80cbe24dffc51bb9bd6047941fb6417ddbcf60d9c48b183310151de76c2d"
+                                           },
+                                           {
+                                               "path":  "tests/rc1-04e/tls-proxy.mjs",
+                                               "tested":  "ad4077c161abf17e7451106edcd4cbf087563294484b7aa3555d0ef76b2813b5",
+                                               "current":  "6dae62f9aea9f5b8eb7ab9864f7378004cf5dcf8a18c842daef1f34bd2b55824"
+                                           },
+                                           {
+                                               "path":  "tests/rc1-04e/tsconfig.json",
+                                               "tested":  "4d3d2f49478094037da555387f8e31e98886e4b7ccaeff4fe2a1b4e9df31f256",
+                                               "current":  "58be7d51dbbfdfae0bcd22379a0487156355cfd21082a72d7250dcbb17e2fb8c"
+                                           },
+                                           {
+                                               "path":  "tests/rc1-04e/verify.ts",
+                                               "tested":  "9ef1d86123edc589f3d4f703c097e1f912864c80efe5ab137f345c2f9bc526bf",
+                                               "current":  "fef6eba49bdb4a1fc535f82d903a8088107bc54b95b66a49caf343bfc6bc0ef7"
+                                           },
+                                           {
+                                               "path":  "tests/rc1-04e/verify-bundles.mjs",
+                                               "tested":  "b5e975c0bbd20e5c2c4a9945606617122c7ff64ea8f457f295c8b1052ddfd192",
+                                               "current":  "79fcf8795f3c9cc5a936fcf2281dacd36e6d8ca1052333cd45b1304c7b095f49"
+                                           },
+                                           {
+                                               "path":  "tests/rc1-05a/run-isolated.ps1",
+                                               "tested":  "8e28f2a0f78c2ac984ef6f0edf54ba6b062dbd271b6fb406a84c46b29da25202",
+                                               "current":  "8a159825e776fc9754b914682004ecbb9145f345ed4e36858f0bff58d89971da"
+                                           },
+                                           {
+                                               "path":  "tests/rc1-05a/tsconfig.json",
+                                               "tested":  "f3de95bc06e8596f10129d1352001d0134f71e1de02f65da19f45c285e87948c",
+                                               "current":  "cbdf7a15e94d2ca664266888a1f7d05dbee24569f7d669dbedbbd9fc7ea16765"
+                                           },
+                                           {
+                                               "path":  "tests/rc1-05a/verify.ts",
+                                               "tested":  "c2a6e0a1e4d88247d7e5b8446336959281a1d1bcdf3a3769caa81d6b1ccbcc2d",
+                                               "current":  "e884ced89a6bdd287a363f8aa2251c28b231c8daa8fa7baeef29bd889f1a86b8"
+                                           },
+                                           {
+                                               "path":  "tests/rc1-05b/run-isolated.ps1",
+                                               "tested":  "13681f239576a5e2b77226d3872f1c95e3686668688352bb210a1882c6c9e410",
+                                               "current":  "a89b12373e176fe19ae80adfb2bc95de529d8082cfd0eb8880867e1f029cd39e"
+                                           },
+                                           {
+                                               "path":  "tests/rc1-05c/portability.ts",
+                                               "tested":  "48b72340ad3ca205375bc1609e9c72e7f1848b0017535a6b22b5c01dbcb9fdb5",
+                                               "current":  "8921b2069c1a68bf79b48ec1f1ae8a3025a163aa8026a40a449244e750bc5527"
+                                           },
+                                           {
+                                               "path":  "tests/rc1-05c/run-isolated.ps1",
+                                               "tested":  "35cf1ef2059a490406bebdfc97699529baa34a9dddc2ec1f5fde7653e74f7db5",
+                                               "current":  "5234f7510fd618e8314db9d4e080716d0ddb0c5105a481fa7cb520d2e7ab698d"
+                                           },
+                                           {
+                                               "path":  "tests/rc1-05c/verify-response.ts",
+                                               "tested":  "fcadd99ee0a1b29cecf9108e46cf1850875e4d9d9c192e087b7fa958b53f7807",
+                                               "current":  "29180104ab534b64bb258d4d3082074f0df2564b99d19a8662dd7072935fe793"
+                                           },
+                                           {
+                                               "path":  "tests/rc1-06a/run-isolated.ps1",
+                                               "tested":  "18ff75d052b0cbc20ceeceb6846ca108e7f7a4fe737ca67447637c8f56bcabf0",
+                                               "current":  "f3b4360bd8e3395b97833b286b251e30cf0b3dea1ffa15a50b3400baa32f0452"
+                                           },
+                                           {
+                                               "path":  "tests/rc1-06a/tsconfig.json",
+                                               "tested":  "d42bd679c3f3edb315aaf87fa6de852661568dd875e13b59191d772ec59c2b64",
+                                               "current":  "82ccb33d65e36cd2803d16ddbaab2be148f60e8c876612ba2a8f3b387aa65ea2"
+                                           },
+                                           {
+                                               "path":  "tests/rc1-07b/run-isolated.ps1",
+                                               "tested":  "e17fea82d9f6787fbe787bfd213325d1f2f3a1e67edd6f7b4afbc10701edc7e4",
+                                               "current":  "c19a5c07fe91c9f7dd0088d6b055674f66313f6819c7564c49fd6e16d09cdbf3"
+                                           },
+                                           {
+                                               "path":  "tests/rc1-07b/tsconfig.json",
+                                               "tested":  "5ce07d108537b69cedfbce25faf6bd35db8c4d4f4d21bf81b81b3f6e4c58738b",
+                                               "current":  "41bda1b6b00ca732f9821d38eaf08efee8357b742d6941ef8e39407d92362c45"
+                                           },
+                                           {
+                                               "path":  "tests/rc1-07b/verify.ts",
+                                               "tested":  "1b4203028b5ab0827e0d8ef0307ed302f4785218fc7255c5106fe6cadf6f1a26",
+                                               "current":  "93c2895859a2aa5da25a71498e7d1458bbe332d1f345233518a30b241b5b7f98"
+                                           },
+                                           {
+                                               "path":  "tests/rc1-08a/run-isolated.ps1",
+                                               "tested":  "8983212be55f0976074a942c915fed78f3e8c2529536c7735ad79e74010be8a8",
+                                               "current":  "f5e15edb3917eb74a20f3faed47d3ca0c35922ad986603f206a08a2d14d57ed5"
+                                           },
+                                           {
+                                               "path":  "tests/rc1-08a/tsconfig.json",
+                                               "tested":  "3d8276b4390bf8f88975152092ba01599ae36dbd2ed1e5e446a72ef090c2993c",
+                                               "current":  "34bae60ba38f8146df340bd3b4050be28ed04389f82bcc7f5322ace30af2af1f"
+                                           },
+                                           {
+                                               "path":  "tests/rc1-08a/verify.ts",
+                                               "tested":  "8b774158c9a25c3924d78c3d099179375227c66351857bdff5375e3e43820b68",
+                                               "current":  "b7d7da9f734d91acd86498b5a5cca4e78eae872a7e12f1ec527b8f7a4d341551"
+                                           },
+                                           {
+                                               "path":  "tests/rc1-08b/run-isolated.ps1",
+                                               "tested":  "9827112ecb51139d5b393f3f663178bef37a29e3d247c7e687985db1576d951f",
+                                               "current":  "35297463bde39d282662d1f918171dc0ea18c8c1eb54d5b6ad612c3239ec6bca"
+                                           },
+                                           {
+                                               "path":  "tests/rc1-08b/tsconfig.json",
+                                               "tested":  "1b68fccf2c3250742738399e05a4b7d8d15c5121c9aa7a8a9eeefe56e80ea05d",
+                                               "current":  "15be0dc09a72ef0f45fba43b6bf58f99ba9d1e53f0a1df2950de54d1bf8cd382"
+                                           },
+                                           {
+                                               "path":  "tests/rc1-08b/verify.ts",
+                                               "tested":  "8e163a19882e73ad4790326c940365fd5c337fcd38bfa0cbd907eeec9a8b1f3b",
+                                               "current":  "fb353512ac10d0f6ee0b49e702e067cdb41ec18c9f26a803d057e84410ad362d"
+                                           },
+                                           {
+                                               "path":  "tests/unit/active-site-route.test.ts",
+                                               "tested":  "37ad85e8973f739056924339c533f496eef174ad6b2387db4c2430e3bf8956c6",
+                                               "current":  "7be57312c52e7a333c5462ebbb362d784efcdb4cd158634b80772d79aeef4d36"
+                                           },
+                                           {
+                                               "path":  "tests/unit/admin-publishing-scope.test.tsx",
+                                               "tested":  "9285cebc40f6d32d7a96a1dfeac5fe6492660c5da7c9462121459139a3dff04f",
+                                               "current":  "010058cf78dc2c2c06f8cdf4e13ca293bebead126b38ea1e2e71baef35d21553"
+                                           },
+                                           {
+                                               "path":  "tests/unit/adversarial-cross-site-matrix.test.ts",
+                                               "tested":  "4b3700c87182cb6c943b4703d929d43aeecbc03ba30a8eb0d427e859348b41e5",
+                                               "current":  "df1f04ecb7c26d442006de03ca1557b1bce3697a4cba6f5aef7a12edb92995e6"
+                                           },
+                                           {
+                                               "path":  "tests/unit/article-route-hierarchy.test.ts",
+                                               "tested":  "115917661a0c59618cab3d62f7f10622e1a3263968bdcc2a7bb0a1a13c154166",
+                                               "current":  "59941feec7e577ceb37414df829b9642659451c4246a89e069f0332565c28575"
+                                           },
+                                           {
+                                               "path":  "tests/unit/authorization-matrix.test.ts",
+                                               "tested":  "6522991d8148d5285cc53ddfdac94c2ab018c5aba4b4410e1cdb6eb1f92e9909",
+                                               "current":  "2ad264facc9de62abfee4243debf9923544aeb39d12cc50b3bf4d3a8e389edbb"
+                                           },
+                                           {
+                                               "path":  "tests/unit/commerce-cart-access.test.ts",
+                                               "tested":  "3161c1583691d7c81d6e33fb5b1c53869cd7b862e95e05d6f76fa9ce28a63005",
+                                               "current":  "b1c64c67bdbce821bc6f9f3ee8a6c99f2ca00715a6b585499b973d67c60c1538"
+                                           },
+                                           {
+                                               "path":  "tests/unit/commerce-dashboard-scope.test.ts",
+                                               "tested":  "631cd5d5e50977d36e536e8d083cad091abd436e93ef7c9d3cb5b6b19203ab20",
+                                               "current":  "f5b9375483a38108427957832234b86ff62ff91e3659f72390d4f9c4aef5b2b3"
+                                           },
+                                           {
+                                               "path":  "tests/unit/commerce-merchant-selection.test.ts",
+                                               "tested":  "6d10f21006bd90e082eb2cf881db8a9453ae67e64f7146899dc0e3d94a2295b6",
+                                               "current":  "f116c5d626f81afe5cae899e91c4e64e025a858d1d7883ec763429994e5cfc8c"
+                                           },
+                                           {
+                                               "path":  "tests/unit/commerce-reconcile-scope.test.ts",
+                                               "tested":  "a88a2efbe88bd7ac6b05fe6a75c285e27386db000b1f397e2437f7b6406525d3",
+                                               "current":  "8ffd119404dc259389d017093f74b0d2b17cde7f9704f9b801b4caceabea32ec"
+                                           },
+                                           {
+                                               "path":  "tests/unit/commerce-webhook-retry.test.ts",
+                                               "tested":  "79c3326ddfec53c1107b9f9ec4230b4d321675f266ca6a9d15fc2b87a59d4b00",
+                                               "current":  "20415571195efe686d672af62da09de34f48e91f3cb0c134cda3465cb34a0ff2"
+                                           },
+                                           {
+                                               "path":  "tests/unit/content-hierarchy.test.tsx",
+                                               "tested":  "cfaf671eec4e02c286f14001639b6f03959fb6ad0510123ddecd371e6e95582c",
+                                               "current":  "38ac113725d334836ca0c42d58f64f9ffbea474200a40d2651d6b1b020b4bab4"
+                                           },
+                                           {
+                                               "path":  "tests/unit/donation-admin-scope.test.ts",
+                                               "tested":  "886d8ebe24ca26eed9ad0207cfb3f44c6e9070b1860f9399d940a2f443d988f2",
+                                               "current":  "f9751ce9f3f5d55a1fb4de878c2f3e9679733acee15eabbe5b230be0d34695ff"
+                                           },
+                                           {
+                                               "path":  "tests/unit/host-theme-cycle.test.ts",
+                                               "tested":  "02560fc5a8d4705611697af2938366e2f6e7d6a28faebdc02464f09d28cda92e",
+                                               "current":  "ad0c07e15f1ee0ec3b1205cbff99a582503a93636c601c7849eac1b5a4720347"
+                                           },
+                                           {
+                                               "path":  "tests/unit/module-profiles-acceptance.test.ts",
+                                               "tested":  "ec9d7e9cb8a7f779410232f087c90b6aa59bdc77228df09b7c616c07612d3621",
+                                               "current":  "910c72fa77d0936a18457eb4e07518d9d8e53e4c6693856d96d693b9a301c3b4"
+                                           },
+                                           {
+                                               "path":  "tests/unit/owner-recovery.test.ts",
+                                               "tested":  "aa566f6d683dabdadeec933c55af047588a2bda9eb54bb2445d94778f221aa7f",
+                                               "current":  "932df06ac29b047417318ace379038c460960c48139d7950881e7b8d0ff3b7cb"
+                                           },
+                                           {
+                                               "path":  "tests/unit/persisted-review-comments.test.ts",
+                                               "tested":  "e22c28af771be35e5706f99f6ee9991e37ea74737af7187a77c6e62a3deb48bc",
+                                               "current":  "0bf713dd8206f63affef536aaa2fafd28c00ed6eecc529cb39a35e652f0df9a8"
+                                           },
+                                           {
+                                               "path":  "tests/unit/production-module-config.test.ts",
+                                               "tested":  "150d584a513c7c17c4d406f6f97b76d841a2abce2197336bf0db059229eef861",
+                                               "current":  "fdf957d44f9460150540ba4862b0356ba0764e8d4aa5851688bc6c01b18bc0c5"
+                                           },
+                                           {
+                                               "path":  "tests/unit/rc02-content-preview.test.ts",
+                                               "tested":  "3db66b193277ac4abd18a0e74ca5bf7a0671c1ba8ab43f7102bf368d7b049875",
+                                               "current":  "cd6d2ab7a2fcb299506bda042cec164338045093991cf9cf9fab81198b3de2d4"
+                                           },
+                                           {
+                                               "path":  "tests/unit/rc02-event-schema.test.ts",
+                                               "tested":  "3b0bfc195159716356a919c1281aaac5fce9ef02570ed52dde3cc30a0275d367",
+                                               "current":  "3168b57c6ac495ce8982a1511bb69b0afaa9f8da0cd32afcdc0c8af3b36c98c1"
+                                           },
+                                           {
+                                               "path":  "tests/unit/rc02-layout-visibility.test.ts",
+                                               "tested":  "0f1b0a2e046fcb0aad69571f29ec919e13e54b09977b85024d1841c86af95f71",
+                                               "current":  "77d5f7bd2b42d05e1286cd9acd44cedd92e6ac89f770dc66092004fb5c92d4f1"
+                                           },
+                                           {
+                                               "path":  "tests/unit/rc02-public-queries.test.ts",
+                                               "tested":  "ab49c06c1874079899eda1e7d7c5a5c4af11a4b7601fb0d7d028e0f047abd7d2",
+                                               "current":  "58c960b915c3bbea967f8105f459ae088f7fb6e08ca71ae2e87b03a15b019cc8"
+                                           },
+                                           {
+                                               "path":  "tests/unit/rc02-published-revision.test.ts",
+                                               "tested":  "9f0a489da59b513656036f678c5627e50df0fa58c6f6a09f4e2f6960cbae7334",
+                                               "current":  "a97a69b8dfc3eadef9019a61d6e64f2176d88d50be3ec778a5cf235a2d9c0b25"
+                                           },
+                                           {
+                                               "path":  "tests/unit/rc02-related-content.test.ts",
+                                               "tested":  "4370f684e7b3561313aa823bb237022ae138035e57ce7f60a26cc42e4b4ddbc8",
+                                               "current":  "6913f6a42e8046661ee8dfc56a68eb8bbc7c823bf7c25ab12ca548781bb88968"
+                                           },
+                                           {
+                                               "path":  "tests/unit/rc06-auth-attacks.test.ts",
+                                               "tested":  "70466284d561daf738c65a2589694feba2338606170c21728ccbd47b6c398c18",
+                                               "current":  "25a82564c3c07c881665d462d912d2edd6f49b450125f53f8efb244bb871a314"
+                                           },
+                                           {
+                                               "path":  "tests/unit/rc08b-event-privacy.test.ts",
+                                               "tested":  "325a566070111df9e826457a780f6f303880032124d9a57e5ca8b7dee212ce3c",
+                                               "current":  "37aa5e2d649a23155744a90b8f038588b3e9ace3b3b095370e48d218de42f64c"
+                                           },
+                                           {
+                                               "path":  "tests/unit/rc08b-safety.test.ts",
+                                               "tested":  "dbd05a9652d79880566fe4fe91d83fce3f13d7e4288d9d6d4643591656f1c46a",
+                                               "current":  "54eb327bdb96fe3a6c49d518614ed91c0fd68b086a7a8e37dbdc72d57d81d580"
+                                           },
+                                           {
+                                               "path":  "tests/unit/rc08d-lock-projection.test.ts",
+                                               "tested":  "872de2da12d34551504ca1ffe42ac02e7a2f8164cdd1994cbc0594841f748313",
+                                               "current":  "6813e1e765d78a8900d975b06d9b0bbc73ff0ca9311c6da80003f595c746a8d7"
+                                           },
+                                           {
+                                               "path":  "tests/unit/rc1-04b-template-scope.test.ts",
+                                               "tested":  "e040f4add0f3be492158e94609a2a2db400130e2c99a03e1fcf351a6047bf770",
+                                               "current":  "4138e087ae5f7be4df582859c7537cf4bd275281d1fbe90b038a2d6e0637e9b9"
+                                           },
+                                           {
+                                               "path":  "tests/unit/rc1-04b-theme-boundaries.test.ts",
+                                               "tested":  "5429a12baddf15387e7d9aa9fd7f3dbbd603f1283a96fdcef324a0f131f8eeba",
+                                               "current":  "76b14ffda9bc565e6814cd7e1b34ddbbf96434404242d26bb49c7205b34a4c6d"
+                                           },
+                                           {
+                                               "path":  "tests/unit/rc1-04d-campaign-commerce.test.ts",
+                                               "tested":  "35ce1e831d25acb08aaa4bfa1fb4a2f1aa65897da04cf3b0198fcfe0354bd199",
+                                               "current":  "b824b24a4b8c64f1b8cbe3516ac801c0783642d9c8d7e1b0f56e8ca405d63c8e"
+                                           },
+                                           {
+                                               "path":  "tests/unit/rc1-04e-presentation-regression.test.ts",
+                                               "tested":  "2c61735295ce04e59364abe896a1d4b78a02b23d0dbbe793443bf19083b6015b",
+                                               "current":  "e30b4a601c86257ada3da0baec144cb2854b493d14fb63cdb6c80deb268b8c60"
+                                           },
+                                           {
+                                               "path":  "tests/unit/rc1-05a-media-lifecycle.test.ts",
+                                               "tested":  "8487c44e311109cbe2f75bb859d1fdf4a817793ad8571f3f8fe99d459c999d12",
+                                               "current":  "229566568f8d0dc73a3a68c71efde0e07162c483645315e8495f3fe479c7aa85"
+                                           },
+                                           {
+                                               "path":  "tests/unit/rc1-05b-private-media.test.ts",
+                                               "tested":  "6ade095a0b0da4df2986f1bc36597179330149b6b8842a14f23973967d219454",
+                                               "current":  "a83206da0afe76c72f122a126f5f795cf8e7d9d0e2aec042bbccb029cfc72db5"
+                                           },
+                                           {
+                                               "path":  "tests/unit/rc1-05c-editor.test.ts",
+                                               "tested":  "32c1ac2ca3e2c497ca34c0d3343c662dffa8045bde59d769ed0c5b8631437125",
+                                               "current":  "bcddf2789e01a8c59e008e345787a2d7185790f3754dfd7f3a4a51e48d85a8b7"
+                                           },
+                                           {
+                                               "path":  "tests/unit/rc1-05c-public-versions.test.ts",
+                                               "tested":  "01058452d8ac66d15008c3f3124a9f5f86cb44bfefc593917135ef4c6f4c6dac",
+                                               "current":  "8efe865448be7f339cfa94f213875c97f28bd095ff38db95123278f7cb665392"
+                                           },
+                                           {
+                                               "path":  "tests/unit/rc1-05c-variants.test.ts",
+                                               "tested":  "0c57d9cbeef10ce0b0649a3dd6ddab605cb0f3042aa5cc972e2685f98dca7700",
+                                               "current":  "49a5eb6f13416059f8cbdc61246f568c9018e8759cb172066db4c9f40fcd28bb"
+                                           },
+                                           {
+                                               "path":  "tests/unit/rc1-07b-scheduler-worker.test.ts",
+                                               "tested":  "f98f7739f4c260666f529bb5097df92a8bae9ce1ed57b5a469665af84212e6ef",
+                                               "current":  "0b77d44432c9044e07bbec626cab7e0658b631a27a38916067171f6323ffc01d"
+                                           },
+                                           {
+                                               "path":  "tests/unit/rc1-08a-social-providers.test.ts",
+                                               "tested":  "e1f6e306c96690374741cb9e4c938b69fc0179b4bfa8e8d72c69e31561a7054f",
+                                               "current":  "70a4e500d98f56accb780f0abb290c83acd00b5daee499ce8023ca982061ff84"
+                                           },
+                                           {
+                                               "path":  "tests/unit/rc1-08b-social-composer.test.ts",
+                                               "tested":  "364116d3eff781958d83544a53833bc8af1af7b412c1e6bfd99fe38068d20202",
+                                               "current":  "922ce13111000e856cdda219f7d0b25e6784ab8b9e5d36d04d6018f9cc2c2722"
+                                           },
+                                           {
+                                               "path":  "tests/unit/redirect-admin-scope.test.ts",
+                                               "tested":  "99627a16aace203962b5251b0c028714f263bb45f0574372b2e7da57517b09a3",
+                                               "current":  "cdc5c35969c378bf402d04bdcf470a4e000880eff271b9890547daa45dd8a889"
+                                           },
+                                           {
+                                               "path":  "tests/unit/rich-editor-draft-preview.test.tsx",
+                                               "tested":  "ff17cfd0a878d3710bc69bdf8a8fdcb7515270ca41e22eb00ab8637485a6bda0",
+                                               "current":  "4066a14bfebd7357818e5bfce7f3a3bd6cbb38e6f4b226c6e64c5d983e864906"
+                                           },
+                                           {
+                                               "path":  "tests/unit/security-negative-matrix.test.ts",
+                                               "tested":  "eaec56c8de92d4c47c72a244cea72a54e97daa3790f451369b8e4bf7cb3a94e4",
+                                               "current":  "b2115d947fe9902f8034742877cdc0b2920f8178052d36a7760dbb0b298599ff"
+                                           },
+                                           {
+                                               "path":  "tests/unit/site-settings-multisite.test.ts",
+                                               "tested":  "dd3c648ed658c5980271062f7871fc8e7734581258cc3ab60187558dcc8612a5",
+                                               "current":  "76f8bef33fb41cb4c4a4f6a6e58b6ee90218040c05732f6344ff0dc1507840b9"
+                                           },
+                                           {
+                                               "path":  "tests/unit/staff-enrollment.test.ts",
+                                               "tested":  "70abba34e2cfa1493d55562e347886d231dc9bc8c11b8826474745da9d55368c",
+                                               "current":  "0d1c2bfb4d5876c85643aca83e1c0424e936243b7676d174238fea1e55baf800"
+                                           },
+                                           {
+                                               "path":  "tests/unit/staff-invite-route.test.ts",
+                                               "tested":  "1d9e9f623d89edf462babc12a42b69103c8466ad0539be9a2c80bd23b1bd7991",
+                                               "current":  "25b012d6e74f969485945a0e9ff2ffb836ee300a182e0a017145cd160cefa03c"
+                                           },
+                                           {
+                                               "path":  "tests/unit/subscription-plans.test.ts",
+                                               "tested":  "7f1dc5c53d417f0329556391f116cd6ae047f0b7727d24eb89f19128b433ab50",
+                                               "current":  "221b80e2bf21a40ee6bd5e1ba537d888dcdb85f7d3ecbc0be5a3cf269392ee28"
+                                           },
+                                           {
+                                               "path":  "tests/unit/subscription-provider-plan-mapping.test.ts",
+                                               "tested":  "fa1cb40a79ab43b0c70320da948565d6f2226cac34d02360661535b4f802ea64",
+                                               "current":  "7c32d81d47e4bed6785ddb4454d6dcf9a58937ec8dee3f8a764d790d9aafb0f3"
+                                           },
+                                           {
+                                               "path":  "tests/unit/telecom-admin-simulate.test.ts",
+                                               "tested":  "bf81796737a3848618f51de12f0a9a9b510a55c0358ce8efbeba4abfa78a1bdf",
+                                               "current":  "75825536b90b74c561ff0d9e5c63b288656ccb74d1292d33dc5f16c6fcd58451"
+                                           },
+                                           {
+                                               "path":  "tsconfig.json",
+                                               "tested":  "5ba492985fb97d342b3e6e2ada11b9b2880fbeef95b58a4a13082249b2da6625",
+                                               "current":  "5258dc4063deb237d8ac2815357d4f1b748c691ecf06b1a63f82e43ec329b5d3"
+                                           }
+                                       ],
+    "currentDirtyOverlayRelativeToTestedBase":  [
+                                                    {
+                                                        "path":  "next-env.d.ts",
+                                                        "sha256":  "0c3a39c9a7acb2b224213b5cc9bb82bcb3e8c5159272a198f2a8fd7aa34f2578"
+                                                    },
+                                                    {
+                                                        "path":  "src/app/(frontend)/api/admin/social/drafts/route.ts",
+                                                        "sha256":  "b528a74d4194f6b6ccc3ba158e969e1f9b1a6beb8e8ff7865a96955ae45cf5c7"
+                                                    },
+                                                    {
+                                                        "path":  "src/app/(frontend)/api/admin/social/worker/route.ts",
+                                                        "sha256":  "78f276a7748dc01ac3a95b745382e46ac0e486b24c7e2b9f0f6fd4289bbc1dc8"
+                                                    },
+                                                    {
+                                                        "path":  "src/modules/admin/SocialCommandCenter.tsx",
+                                                        "sha256":  "c55e9bc3b3a93663318c1644072b7548e5b40249eeb8dc8505f55157c8900e42"
+                                                    },
+                                                    {
+                                                        "path":  "src/modules/editorial/persistence.ts",
+                                                        "sha256":  "eeca79d7cebc4932d5ccdf5c83a463631d3d4293800b36b44f64d89401ca74ba"
+                                                    },
+                                                    {
+                                                        "path":  "src/modules/editorial/presentation.ts",
+                                                        "sha256":  "19ce331462f462b5e1b0a0e4c81cdec7fab660e3bdf479cd3ad86965938144be"
+                                                    },
+                                                    {
+                                                        "path":  "src/modules/social/adapters/bluesky.ts",
+                                                        "sha256":  "0e355f4736f9a90389e3cd0f54ef99a566fdddb8980f14fd165f786f0511b076"
+                                                    },
+                                                    {
+                                                        "path":  "src/modules/social/adapters/mastodon.ts",
+                                                        "sha256":  "5280c3ab9cc587085a2ba82612c94d038d3f72c55084b75c71390c5f0d758576"
+                                                    },
+                                                    {
+                                                        "path":  "src/modules/social/contracts.ts",
+                                                        "sha256":  "28ff4f436d54be2e78aa533cc1644ee3333b353efed47afee123b9bd767b8e33"
+                                                    },
+                                                    {
+                                                        "path":  "src/modules/social/provider-runtime.ts",
+                                                        "sha256":  "787f6ff6fc9e38bb1f6ae47edaaaf2a00c02130dbf74c8a74a13f8f5290ae426"
+                                                    },
+                                                    {
+                                                        "path":  "src/modules/social/tasks.ts",
+                                                        "sha256":  "3cf8d757959f3d10bd1485a987acc5bb187fb39dd72a4b86447c166bf51b8853"
+                                                    },
+                                                    {
+                                                        "path":  "tests/rc1-03b/run-current.ps1",
+                                                        "sha256":  "387318259e500a0c1477b2ca33175faf04ddeb29baeab058b487633df24fc0eb"
+                                                    },
+                                                    {
+                                                        "path":  "tests/rc1-03b/tsconfig.current.json",
+                                                        "sha256":  "d9c216c408fa2ddd9cb9be87d510aca3d00ed2ec3913f5a9ef5e44b4b85c11d9"
+                                                    },
+                                                    {
+                                                        "path":  "tests/rc1-03b/verify-current.ts",
+                                                        "sha256":  "706356932602edd778113b554b684f1b898a534bef73a6186d36f29976962b33"
+                                                    },
+                                                    {
+                                                        "path":  "tests/rc1-03b/verify-privacy.ts",
+                                                        "sha256":  "64b3759ce069b174e74dcfee6e799e5552664c89584aa3faae5af84a5b954e78"
+                                                    },
+                                                    {
+                                                        "path":  "tests/rc1-08c/run-isolated.ps1",
+                                                        "sha256":  "6ccd83c6b0e4ae89bcc30b581a0639a46d4161c308f55823158c0b7076f72451"
+                                                    },
+                                                    {
+                                                        "path":  "tests/rc1-08c/tsconfig.json",
+                                                        "sha256":  "3c316ab8a7bb7f76769d45c00c843c8bae3eed18618e5b2d6718f7dd22c319dc"
+                                                    },
+                                                    {
+                                                        "path":  "tests/rc1-08c/verify.ts",
+                                                        "sha256":  "12c7e19214474653af8eaadfb1a1a236ab93474ae8f4cf2e28a525d2cccccbd2"
+                                                    },
+                                                    {
+                                                        "path":  "tests/unit/rc1-03b-current.test.tsx",
+                                                        "sha256":  "862b93122c805aa8bd838de15c1240a8a97f814b8a29e11e9e5ea8dcf799a5e6"
+                                                    },
+                                                    {
+                                                        "path":  "tests/unit/rc1-08c-social-dispatch.test.ts",
+                                                        "sha256":  "bb06cd1a9a1184b9f2571b4f27cb623fc8c2a36d8b3514cbd6285cb9d1061a61"
+                                                    },
+                                                    {
+                                                        "path":  "tsconfig.json",
+                                                        "sha256":  "5258dc4063deb237d8ac2815357d4f1b748c691ecf06b1a63f82e43ec329b5d3"
+                                                    }
+                                                ],
+    "claim":  "03B source containment only. Concurrent Social changes and generated type-path differences are not current-checkout acceptance."
+}

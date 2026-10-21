@@ -1,11 +1,86 @@
 import React from 'react'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { renderToStaticMarkup } from 'react-dom/server'
 import { SafeRichText } from '../../src/modules/editorial/RichText'
-import { extractPlainText } from '../../src/modules/editorial/presentation'
+import {
+  canonicalLexicalDocument,
+  extractPlainText,
+} from '../../src/modules/editorial/presentation'
+import { hashRichTextDocument } from '../../src/modules/editorial/contracts'
+import { ensureEditorialCompanion } from '../../src/modules/editorial/persistence'
 const render = (children: unknown[]) =>
   renderToStaticMarkup(<SafeRichText document={{ root: { children } }} />)
 describe('03B persisted Lexical rendering', () => {
+  it('snapshots reference IDs without related private records or response-depth drift', () => {
+    const hydrated = {
+      root: {
+        children: [
+          {
+            type: 'relationship',
+            relationTo: 'media-assets',
+            value: { id: 'media-id', owner: { email: 'private@example.test' } },
+          },
+          { type: 'upload', value: { id: 'upload-id', storageKey: 'private-location' } },
+          {
+            type: 'link',
+            fields: {
+              doc: { relationTo: 'content', value: { id: 'post-id', body: 'private draft' } },
+            },
+          },
+          { type: 'block', fields: { blockType: 'custom', preserved: { unknown: true } } },
+        ],
+      },
+    }
+    const original = JSON.stringify(hydrated)
+    const normalized = canonicalLexicalDocument(hydrated)
+    expect(JSON.stringify(normalized)).not.toContain('private')
+    expect(normalized).toEqual({
+      root: {
+        children: [
+          { type: 'relationship', relationTo: 'media-assets', value: 'media-id' },
+          { type: 'upload', value: 'upload-id' },
+          { type: 'link', fields: { doc: { relationTo: 'content', value: 'post-id' } } },
+          { type: 'block', fields: { blockType: 'custom', preserved: { unknown: true } } },
+        ],
+      },
+    })
+    expect(JSON.stringify(hydrated)).toBe(original)
+    expect(hashRichTextDocument(canonicalLexicalDocument(normalized))).toBe(
+      hashRichTextDocument(normalized),
+    )
+  })
+  it('does not append a spurious edited revision when only a media response is populated', async () => {
+    const raw = {
+      root: { children: [{ type: 'relationship', relationTo: 'media-assets', value: 'media-id' }] },
+    }
+    const create = vi.fn(),
+      update = vi.fn()
+    const payload = {
+      find: vi.fn().mockResolvedValue({
+        docs: [{ id: 'companion', lifecycle: 'draft', documentHash: hashRichTextDocument(raw) }],
+      }),
+      create,
+      update,
+    }
+    await ensureEditorialCompanion(payload as never, {
+      id: 'content',
+      contentType: 'article',
+      status: 'draft',
+      body: {
+        root: {
+          children: [
+            {
+              type: 'relationship',
+              relationTo: 'media-assets',
+              value: { id: 'media-id', title: 'Hydrated label' },
+            },
+          ],
+        },
+      },
+    })
+    expect(create).not.toHaveBeenCalled()
+    expect(update).not.toHaveBeenCalled()
+  })
   it('preserves combined bold italic underline strike and code marks', () => {
     const html = render([
       { type: 'paragraph', children: [{ type: 'text', text: 'All marks', format: 31 }] },

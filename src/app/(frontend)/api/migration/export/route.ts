@@ -1,13 +1,8 @@
 import config from '@payload-config'
 import { getPayload } from 'payload'
 import { NextResponse } from 'next/server'
-import {
-  createPortableManifest,
-  type PortableRecord,
-} from '@/modules/portability/contracts'
-import {
-  PORTABLE_COLLECTIONS,
-} from '@/modules/portability/workflow'
+import { exportPortableSite } from '@/modules/portability/site-export'
+import { checkOperatorSiteAccess } from '@/modules/operations/operator-grants'
 
 export const runtime = 'nodejs'
 
@@ -27,6 +22,8 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'siteId query parameter is required.' }, { status: 400 })
   }
 
+  if (!(await checkOperatorSiteAccess(payload, auth.user, siteId)))
+    return NextResponse.json({ error: 'Export site access denied.' }, { status: 403 })
   return exportSite(payload, siteId)
 }
 
@@ -43,68 +40,17 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'siteId is required in request body.' }, { status: 400 })
   }
 
+  if (!(await checkOperatorSiteAccess(payload, auth.user, siteId)))
+    return NextResponse.json({ error: 'Export site access denied.' }, { status: 403 })
   return exportSite(payload, siteId)
 }
 
 async function exportSite(payload: Awaited<ReturnType<typeof getPayload>>, siteId: string) {
   try {
-    const siteDoc = await payload.findByID({
-      collection: 'sites',
-      id: siteId,
-      depth: 0,
-      overrideAccess: true,
-    })
-    if (!siteDoc) {
-      return NextResponse.json({ error: `Site ${siteId} was not found.` }, { status: 404 })
-    }
-
-    const records: PortableRecord[] = []
-    const { id: sourceId, createdAt: sourceCreatedAt, updatedAt: sourceUpdatedAt, ...sourceData } =
-      siteDoc as unknown as Record<string, unknown>
-
-    records.push({
-      collection: 'sites',
-      id: String(sourceId),
-      data: {
-        ...sourceData,
-        _portableTimestamps: { createdAt: sourceCreatedAt, updatedAt: sourceUpdatedAt },
-      },
-    })
-
-    for (const collection of PORTABLE_COLLECTIONS) {
-      if (collection === 'sites' || collection === 'site-settings') continue
-      if (!payload.collections[collection as keyof typeof payload.collections]) continue
-
-      try {
-        const docs = await payload.find({
-          collection: collection as never,
-          limit: 500,
-          depth: 0,
-          overrideAccess: true,
-          where: { site: { equals: siteId } },
-        })
-        for (const doc of docs.docs) {
-          const { id, createdAt, updatedAt, ...data } = doc as Record<string, unknown>
-          records.push({
-            collection,
-            id: String(id),
-            data: { ...data, _portableTimestamps: { createdAt, updatedAt } },
-          })
-        }
-      } catch {
-        // Skip collections not configured or without site column
-      }
-    }
-
-    const manifest = createPortableManifest({
-      createdAt: new Date().toISOString(),
-      records,
-      media: [],
-    })
-
+    const manifest = await exportPortableSite(payload, siteId)
     return NextResponse.json({
       manifest,
-      recordCount: records.length,
+      recordCount: manifest.records.length,
       siteId,
     })
   } catch (err) {

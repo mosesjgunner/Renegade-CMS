@@ -1,0 +1,211 @@
+﻿{
+    "createdAt":  "2026-10-20T10:21:24.4687303Z",
+    "sourceCopyVerified":  true,
+    "artifactCount":  51,
+    "files":  [
+                  {
+                      "path":  "final/database.txt",
+                      "sha256":  "2d5c19e607734d297b2ce14ad4ee0d0d164e53ff707b5fd6020f93de53b2a789"
+                  },
+                  {
+                      "path":  "final/diff-check.txt",
+                      "sha256":  "b600d89275c183fa1f9762f9162dc0551111462c552eed8d035bf5dd4334acaf"
+                  },
+                  {
+                      "path":  "final/editor-fields.json",
+                      "sha256":  "e543627b9f211d414ad6a9b1df87c9417f9b5be34413bf56f80b5c3944687770"
+                  },
+                  {
+                      "path":  "final/editor-loaded.png",
+                      "sha256":  "6723dfb59dcd5e53d986ca33192eff52e93af1d171ae74ac893a90eb8ade2698"
+                  },
+                  {
+                      "path":  "final/editor-loaded.txt",
+                      "sha256":  "4e43690e52fe734a338d270905094e5cbaac8a28c518adb161746557339a80ed"
+                  },
+                  {
+                      "path":  "final/format.txt",
+                      "sha256":  "fbdd37869c73ce85afb11ffefa058e0181874c073fdfee7d7a4b5086b7ea3b1b"
+                  },
+                  {
+                      "path":  "final/inspect-preview.ts",
+                      "sha256":  "f96be0597607fe2c1ce14c9261927ece0a6edf0f315314af798864f368f47149"
+                  },
+                  {
+                      "path":  "final/journey-trace.json",
+                      "sha256":  "50ae8b6248c5f8e30807cb367b5bfa0db97436cb1620c9f1bc5ac82d4f131095"
+                  },
+                  {
+                      "path":  "final/journey.txt",
+                      "sha256":  "b4c272fd789506c9ecb6a53bc69dd65f22db975d7fd9950da59fbb97094f846d"
+                  },
+                  {
+                      "path":  "final/lint.txt",
+                      "sha256":  "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                  },
+                  {
+                      "path":  "final/lock-conflict.png",
+                      "sha256":  "e5d05dfd0b3f946b5d57fce7c46893fe08f4fbe704e37ffd7e0d6ca03a0f3347"
+                  },
+                  {
+                      "path":  "final/migrations.txt",
+                      "sha256":  "bf8dc653da54ec81d45cdc6393e041ecc51bd68d3c2250425a1e48ddc172349c"
+                  },
+                  {
+                      "path":  "final/preview-diagnostic.html",
+                      "sha256":  "b53ffb2fae5979a3736e002192b850c8507362a4ddd510f5baeb595c7154de63"
+                  },
+                  {
+                      "path":  "final/preview-diagnostic.json",
+                      "sha256":  "69ebea7b8d7597511c58f41339146a830ca8d8613ba2117457ce85c91bae5696"
+                  },
+                  {
+                      "path":  "final/repository-types.txt",
+                      "sha256":  "4cbc832f28b6d436c36958eed0b3c0cba7f3b8a7faeafd671f71b1b150326be9"
+                  },
+                  {
+                      "path":  "final/revision-restore.png",
+                      "sha256":  "85a195b9943306b64fe02a505477104e47f57ffc2a0f987aeff38a78c20e90ac"
+                  },
+                  {
+                      "path":  "final/server.txt",
+                      "sha256":  "4675fbd1facbffacc43c59c7a8056eed42fca5301e273a5304997f495c9df2e3"
+                  },
+                  {
+                      "path":  "final/source.patch",
+                      "sha256":  "533779faaf74624d828ea479bfdaf798afa89dbfbb350a029c121c20415e9137"
+                  },
+                  {
+                      "path":  "final/tested-source.json",
+                      "sha256":  "dabbdff15352b0321bc54c11923391fd4c35962b25c7d121101ca1d9d9fd39da"
+                  },
+                  {
+                      "path":  "final/types.txt",
+                      "sha256":  "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                  },
+                  {
+                      "path":  "final/units.txt",
+                      "sha256":  "2d009f27922bb67fed7e929fb89ded2aab2eae550abfe6098e09ae441fc4201c"
+                  },
+                  {
+                      "path":  "production/build.txt",
+                      "sha256":  "b69bd30042e3210a7b659d54cc7fc0924935fa97425f2e0f7bf6cde5f68efc70"
+                  },
+                  {
+                      "path":  "production/next.config.tested.ts",
+                      "sha256":  "4f3f2e81b1384613108cb0e9a42291ec79b08a2eacc77255fba00d5ff8e59a43"
+                  },
+                  {
+                      "path":  "recovery/closure.json",
+                      "sha256":  "fed77a726b50f90460ad90ac92681d3c65d70b2c0017eb3b032e19ab1f9bf3c8"
+                  },
+                  {
+                      "path":  "recovery/containment.json",
+                      "sha256":  "0d5db8f926272ea13942ce4a61e40c208be2a4da7a9a829b3fb1a1f1d3eebde8"
+                  },
+                  {
+                      "path":  "recovery/editor-restart.png",
+                      "sha256":  "366b5a002aafed7ac8846ce98a01093e6a44da8e4935d48de61b4ba039e2136e"
+                  },
+                  {
+                      "path":  "recovery/environment.json",
+                      "sha256":  "dfbdceff6c2fe77e632e2a3ac94516a9bb0322caf4d922eb99e27380727a323c"
+                  },
+                  {
+                      "path":  "recovery/format.txt",
+                      "sha256":  "fbdd37869c73ce85afb11ffefa058e0181874c073fdfee7d7a4b5086b7ea3b1b"
+                  },
+                  {
+                      "path":  "recovery/lint.txt",
+                      "sha256":  "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                  },
+                  {
+                      "path":  "recovery/media-identity.json",
+                      "sha256":  "b91f11594d729feab15cd775946c8b2cfc86cd28fd469a2b3ca5d27021a0dbd0"
+                  },
+                  {
+                      "path":  "recovery/persistence-sql.txt",
+                      "sha256":  "ab265bb3c226cc4c2894dc942d84b06c3b7236b02c726b9c8f4ff927aa909325"
+                  },
+                  {
+                      "path":  "recovery/persistence.json",
+                      "sha256":  "70063b9288ba4a79777981d3ceb09ba09b6626d92c393e751ca925741e0e78dd"
+                  },
+                  {
+                      "path":  "recovery/persistence.sql",
+                      "sha256":  "cd79a17253357b72c05d81a6f567e09c73bbfe330ae49badb3d43e1d4bbce1dd"
+                  },
+                  {
+                      "path":  "recovery/privacy-trace.json",
+                      "sha256":  "dcc21321e644231eb6ef8a1107cff1c24c36630b36dd64a3c9d1fab40535202c"
+                  },
+                  {
+                      "path":  "recovery/privacy.txt",
+                      "sha256":  "b3268ea620ab9cf61daf3f58fe2fe4e343e942cbbb766e9fd585bfcd11d37b55"
+                  },
+                  {
+                      "path":  "recovery/repository-types.txt",
+                      "sha256":  "4cbc832f28b6d436c36958eed0b3c0cba7f3b8a7faeafd671f71b1b150326be9"
+                  },
+                  {
+                      "path":  "recovery/resource-cleanup.txt",
+                      "sha256":  "5a57c02ace6ac397fe0332f3aa6495883d28def5478b5a6f62693e6ad90628cb"
+                  },
+                  {
+                      "path":  "recovery/restart-source-delta.json",
+                      "sha256":  "6b147e4035d165c04434c80fc4b35d5b829765e69d038c1d35f51b956f5ab142"
+                  },
+                  {
+                      "path":  "recovery/restart-trace.json",
+                      "sha256":  "e2f26918b7bf8841855d27a1a612904c76b927cfe07899b69325b945f9ef5c6b"
+                  },
+                  {
+                      "path":  "recovery/restart.txt",
+                      "sha256":  "56f277c8456f5c3dc691e95a59ac7f46e911cabd8df66782857bbceed6ef7c50"
+                  },
+                  {
+                      "path":  "recovery/server-restarted.txt",
+                      "sha256":  "e02a472fe9f43e082e2e96987e597cb84d6556f79bd0c52fa2cedaa3921dee09"
+                  },
+                  {
+                      "path":  "recovery/server.txt",
+                      "sha256":  "5607c55059af84dd429c2a5e7308d6b17989a28eafec810a07c2a7381d661450"
+                  },
+                  {
+                      "path":  "recovery/source.patch",
+                      "sha256":  "f59437d55072a9c913a6a5d3de179e967978e063d0f93432bd29cea2ad912889"
+                  },
+                  {
+                      "path":  "recovery/state.json",
+                      "sha256":  "014d18ae767b6dca52630f9e938cf830d176dd40a6bf39e8d091b62d12e8182d"
+                  },
+                  {
+                      "path":  "recovery/tested-source.json",
+                      "sha256":  "4d3e70f417bd207b959efc64ff3aa8af76c6c32c4ed7f189a9cefa5d1ca7dcaf"
+                  },
+                  {
+                      "path":  "recovery/types.txt",
+                      "sha256":  "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+                  },
+                  {
+                      "path":  "recovery/unpublished-preview-restart.png",
+                      "sha256":  "f353c2f85bee301c76e20a2271add3c7000cdde764c9f0439f28746b54a44c28"
+                  },
+                  {
+                      "path":  "recovery/unpublished-preview.png",
+                      "sha256":  "2acab9c04fd57a5d8b1877f2f7e494291c2a1cc5b8d98813d635184547504ebb"
+                  },
+                  {
+                      "path":  "recovery/web-restart.txt",
+                      "sha256":  "a0b0c5733fc870c68c8e2d96c3e5d504ce9ba9d1a103a3be3eb34fb954002178"
+                  },
+                  {
+                      "path":  "RESULT.md",
+                      "sha256":  "f1f15afa8e9ccbcc62dfa77a7c803cf9ec56cca5f47efdabb3708d3904e2ce2f"
+                  },
+                  {
+                      "path":  "NEXT.md",
+                      "sha256":  "40e1870762320942c429ba8ac89f5f87906ed2fc0b36e25ff75e2357b7f157d9"
+                  }
+              ]
+}

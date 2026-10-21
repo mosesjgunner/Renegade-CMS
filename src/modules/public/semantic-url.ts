@@ -307,6 +307,7 @@ export function resolvePublicUrl(
 }
 
 export function validatePublicPath(path: string): string {
+  if (path === '/') return path
   if (!/^\/(?:[a-z0-9]+(?:-[a-z0-9]+)*)(?:\/[a-z0-9]+(?:-[a-z0-9]+)*)*$/.test(path))
     throw new Error('Canonical paths use lowercase URL segments separated by single hyphens.')
   if (reserved.has(path.split('/')[1])) throw new Error(`/${path.split('/')[1]} is reserved.`)

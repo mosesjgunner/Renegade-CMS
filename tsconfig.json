@@ -66,7 +66,11 @@
     ".next-rc108b/types/**/*.ts",
     ".next-rc108b/dev/types/**/*.ts",
     ".next-rc103b-current-20261020/types/**/*.ts",
-    ".next-rc103b-current-20261020/dev/types/**/*.ts"
+    ".next-rc103b-current-20261020/dev/types/**/*.ts",
+    ".next-rc108c/types/**/*.ts",
+    ".next-rc108c/dev/types/**/*.ts",
+    ".next-rc103d-20261020/types/**/*.ts",
+    ".next-rc103d-20261020/dev/types/**/*.ts"
   ],
   "exclude": [
     "node_modules",

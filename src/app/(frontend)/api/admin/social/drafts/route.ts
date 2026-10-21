@@ -67,13 +67,33 @@ export async function GET(request: Request) {
         overrideAccess: true,
       })
 
-      // Query any queued items for these variants
+      // Query queued items, external posts, and publish attempts for these variants
       const variantIds = (variants.docs as any[]).map((v) => v.id)
       const queueItems = variantIds.length
         ? await payload.find({
             collection: 'social-queue-items' as never,
             where: { variant: { in: variantIds } },
-            depth: 0,
+            depth: 1,
+            overrideAccess: true,
+          })
+        : { docs: [] }
+
+      const externalPosts = variantIds.length
+        ? await payload.find({
+            collection: 'external-posts' as never,
+            where: { variant: { in: variantIds } },
+            depth: 1,
+            overrideAccess: true,
+          })
+        : { docs: [] }
+
+      const publishAttempts = variantIds.length
+        ? await payload.find({
+            collection: 'social-publish-attempts' as never,
+            where: { variant: { in: variantIds } },
+            sort: '-createdAt',
+            limit: 50,
+            depth: 1,
             overrideAccess: true,
           })
         : { docs: [] }
@@ -82,6 +102,8 @@ export async function GET(request: Request) {
         draft,
         variants: variants.docs,
         queueItems: queueItems.docs,
+        externalPosts: externalPosts.docs,
+        publishAttempts: publishAttempts.docs,
       })
     }
 

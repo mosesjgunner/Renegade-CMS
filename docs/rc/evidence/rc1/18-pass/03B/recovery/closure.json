@@ -1,0 +1,35 @@
+﻿{
+    "nativeJourneyApplicationSourceUnchanged":  true,
+    "privacyAndRestartSourceDelta":  [
+                                         "tests/rc1-03b/verify-current.ts"
+                                     ],
+    "unitTests":  {
+                      "passed":  58,
+                      "failed":  0,
+                      "skipped":  0,
+                      "files":  9
+                  },
+    "nativeJourney":  {
+                          "passed":  17,
+                          "failed":  1,
+                          "unexecuted":  11,
+                          "exit":  1
+                      },
+    "privacy":  {
+                    "passed":  12,
+                    "cacheFailures":  3,
+                    "unexecuted":  0,
+                    "exit":  1
+                },
+    "restart":  {
+                    "passed":  10,
+                    "failed":  0,
+                    "unexecuted":  0,
+                    "exit":  0
+                },
+    "freshMigrations":  123,
+    "rootTypeDiagnostics":  7,
+    "overall":  "NOT READY",
+    "productionJourneyExecuted":  false,
+    "ordinaryWebAuthnExecuted":  false
+}

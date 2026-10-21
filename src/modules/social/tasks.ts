@@ -2,20 +2,44 @@
 import type { Payload, TaskConfig } from 'payload'
 import { withExecutionLock } from '../operations/execution-lock'
 import {
+  campaignState,
   normalizeProviderError,
   retryDelayMs,
   shouldRetryProviderError,
   validateForProvider,
+  type SocialState,
   type SocialVariant,
 } from './contracts'
 import { credentialsForSocialAccount, socialProviderFor } from './provider-runtime'
 import { assertMediaIdsPublishable } from '../media/workflow'
 
-const MAX_PROVIDER_ATTEMPTS = 3
-const id = (value: unknown) =>
-  typeof value === 'object' && value && 'id' in value
-    ? String((value as { id: unknown }).id)
-    : String(value)
+export const MAX_PROVIDER_ATTEMPTS = 3
+const id = (value: unknown) => {
+  if (!value) return ''
+  if (typeof value === 'object' && 'id' in value) {
+    return String((value as { id: unknown }).id)
+  }
+  return String(value)
+}
+
+async function updateParentDraftStatus(payload: Payload, variant: any) {
+  const draftId = id(variant.draft)
+  if (!draftId || draftId === 'null' || draftId === 'undefined') return
+  const allVariants = (await payload.find({
+    collection: 'social-network-variants' as never,
+    where: { draft: { equals: draftId } },
+    depth: 0,
+    overrideAccess: true,
+  })) as any
+  const states: SocialState[] = allVariants.docs.map((v: any) => v.status)
+  const nextDraftState = campaignState(states)
+  await payload.update({
+    collection: 'social-drafts' as never,
+    id: draftId,
+    data: { status: nextDraftState } as never,
+    overrideAccess: true,
+  }).catch(() => undefined)
+}
 
 export const socialPublishTask = {
   slug: 'social-publish',
@@ -51,11 +75,36 @@ export async function executeSocialQueueItem(
       depth: 2,
       overrideAccess: true,
     } as never)) as any
-    if (['cancelled', 'published', 'failed'].includes(queue.status)) return { output: {} }
+
+    if (!queue) return { output: { skipped: true, reason: 'not-found' } }
+    if (['cancelled', 'published'].includes(queue.status)) {
+      return { output: { skipped: true, status: queue.status } }
+    }
+
     const variant = queue.variant as any,
       account = queue.account as any,
       now = new Date().toISOString(),
-      attempt = Number(queue.attemptCount ?? 0) + 1
+      currentAttempts = Number(queue.attemptCount ?? 0)
+
+    // Bounded retry check: do not exceed MAX_PROVIDER_ATTEMPTS
+    if (queue.status === 'failed' && currentAttempts >= MAX_PROVIDER_ATTEMPTS) {
+      return { output: { bounded: true, status: 'failed', attemptCount: currentAttempts } }
+    }
+
+    // Check if another worker holds an unexpired lease
+    if (
+      queue.status === 'publishing' &&
+      queue.leaseUntil &&
+      Date.parse(queue.leaseUntil) > Date.now() &&
+      queue.leaseOwner &&
+      queue.leaseOwner !== input.workerId
+    ) {
+      return { output: { locked: true, leaseOwner: queue.leaseOwner } }
+    }
+
+    const attempt = currentAttempts + 1
+
+    // Idempotent recovery check: was external-posts already created for this variant?
     const existing = (await payload.find({
       collection: 'external-posts' as never,
       where: { variant: { equals: id(variant.id) } },
@@ -67,11 +116,20 @@ export async function executeSocialQueueItem(
       await payload.update({
         collection: 'social-queue-items' as never,
         id: queue.id,
-        data: { status: 'published', leaseUntil: null } as never,
+        data: { status: 'published', leaseUntil: null, nextAttemptAt: null } as never,
         overrideAccess: true,
       } as never)
-      return { output: {} }
+      await payload.update({
+        collection: 'social-network-variants' as never,
+        id: variant.id,
+        data: { status: 'published' } as never,
+        overrideAccess: true,
+      } as never)
+      await updateParentDraftStatus(payload, variant)
+      return { output: { status: 'published', reconciled: true } }
     }
+
+    // Acquire lease and mark publishing
     await payload.update({
       collection: 'social-queue-items' as never,
       id: queue.id,
@@ -83,7 +141,58 @@ export async function executeSocialQueueItem(
       } as never,
       overrideAccess: true,
     } as never)
+
+    // Safe Disconnect Check: If account is revoked/disconnected, record reconnect-required terminal failure
+    const isDisconnected =
+      account.credentialHealth === 'revoked' ||
+      !account.connectionReference ||
+      account.capabilityState === 'unavailable'
+
+    if (isDisconnected) {
+      const disconnectError = normalizeProviderError({
+        kind: 'reconnect-required',
+        message: 'Account is disconnected or credentials revoked; reconnect account before publishing.',
+      })
+      await payload.create({
+        collection: 'social-publish-attempts' as never,
+        data: {
+          queueItem: queue.id,
+          variant: variant.id,
+          idempotencyKey: queue.idempotencyKey,
+          attemptNumber: attempt,
+          status: 'failed',
+          response: null,
+          error: disconnectError,
+          startedAt: now,
+          finishedAt: new Date().toISOString(),
+        } as never,
+        overrideAccess: true,
+      } as never)
+      await payload.update({
+        collection: 'social-queue-items' as never,
+        id: queue.id,
+        data: {
+          status: 'failed',
+          attemptCount: attempt,
+          leaseUntil: null,
+          nextAttemptAt: null,
+          deadLetterReason: disconnectError,
+        } as never,
+        overrideAccess: true,
+      } as never)
+      await payload.update({
+        collection: 'social-network-variants' as never,
+        id: variant.id,
+        data: { status: 'failed' } as never,
+        overrideAccess: true,
+      } as never)
+      await updateParentDraftStatus(payload, variant)
+      return { output: { status: 'failed', error: disconnectError } }
+    }
+
     const provider = socialProviderFor(variant.network)
+    const credentials = credentialsForSocialAccount(account.connectionReference)
+
     let rightsIssue: string | undefined
     try {
       const attachmentIds = Array.isArray(variant.attachments) ? variant.attachments.map(id) : []
@@ -91,10 +200,12 @@ export async function executeSocialQueueItem(
     } catch (error) {
       rightsIssue = error instanceof Error ? error.message : 'Attached media cannot publish.'
     }
+
     const issues = [
       ...validateForProvider(variant as SocialVariant, provider.capabilities),
       ...(rightsIssue ? [rightsIssue] : []),
     ]
+
     const result = issues.length
       ? {
           status: 'failed' as const,
@@ -111,10 +222,45 @@ export async function executeSocialQueueItem(
                   : 'This provider is not available in Renegade yet.',
             }),
           }
-        : await provider.publish(variant as SocialVariant, {
-            accountId: id(account),
-            credentials: credentialsForSocialAccount(account.connectionReference),
-          })
+        : await provider.publish(
+            {
+              ...(variant as SocialVariant),
+              idempotencyKey: queue.idempotencyKey || variant.idempotencyKey,
+            },
+            {
+              accountId: id(account),
+              accountHandle: account.displayName || `@${variant.network}-user`,
+              network: variant.network,
+              credentials: credentials || {},
+            },
+          )
+
+    const providerMode =
+      account.diagnostics?.mode ||
+      (result as any).receipt?.providerMode ||
+      (credentials?.service?.includes('127.0.0.1') || credentials?.service?.includes('localhost')
+        ? 'local-harness'
+        : provider.mode) ||
+      'local-harness'
+
+    const attemptResponse =
+      result.status === 'published'
+        ? {
+            status: 'published',
+            remoteId: result.remoteId,
+            remoteUrl: result.remoteUrl,
+            providerMode,
+            receipt: {
+              remotePostId: result.remoteId,
+              remoteUrl: result.remoteUrl,
+              publishedAt: now,
+              providerMode,
+              rawResponse:
+                (result as any).receipt?.rawResponse || (result as any).rawResponse || result,
+            },
+          }
+        : null
+
     await payload.create({
       collection: 'social-publish-attempts' as never,
       data: {
@@ -122,14 +268,15 @@ export async function executeSocialQueueItem(
         variant: variant.id,
         idempotencyKey: queue.idempotencyKey,
         attemptNumber: attempt,
-        status: result.status === 'published' ? 'published' : result.status,
-        response: result.status === 'published' ? result : null,
+        status: result.status === 'published' ? 'published' : 'failed',
+        response: attemptResponse,
         error: result.status === 'published' ? null : result.error,
         startedAt: now,
         finishedAt: new Date().toISOString(),
       } as never,
       overrideAccess: true,
     } as never)
+
     if (result.status === 'published') {
       await payload.create({
         collection: 'external-posts' as never,
@@ -139,6 +286,7 @@ export async function executeSocialQueueItem(
           remoteId: result.remoteId,
           remoteUrl: result.remoteUrl,
           publishedAt: now,
+          remoteState: 'published',
         } as never,
         overrideAccess: true,
       } as never)
@@ -151,39 +299,57 @@ export async function executeSocialQueueItem(
       await payload.update({
         collection: 'social-queue-items' as never,
         id: queue.id,
-        data: { status: 'published', leaseUntil: null, nextAttemptAt: null } as never,
+        data: {
+          status: 'published',
+          attemptCount: attempt,
+          leaseUntil: null,
+          nextAttemptAt: null,
+        } as never,
         overrideAccess: true,
       } as never)
-      return { output: {} }
+      await updateParentDraftStatus(payload, variant)
+      return { output: { status: 'published', remoteId: result.remoteId, remoteUrl: result.remoteUrl } }
     }
+
     const retry =
       result.status === 'failed' &&
       shouldRetryProviderError(result.error) &&
       attempt < MAX_PROVIDER_ATTEMPTS
+
     const nextAttemptAt = retry
       ? new Date(Date.now() + retryDelayMs(result.error, attempt)).toISOString()
       : null
+
     await payload.update({
       collection: 'social-queue-items' as never,
       id: queue.id,
       data: {
-        status: retry ? 'scheduled' : 'failed',
+        status: 'failed',
+        attemptCount: attempt,
         leaseUntil: null,
         nextAttemptAt,
-        deadLetterReason: retry ? null : result.error,
+        deadLetterReason: result.error,
       } as never,
       overrideAccess: true,
     } as never)
-    if (!retry)
-      await payload.update({
-        collection: 'social-network-variants' as never,
-        id: variant.id,
-        data: { status: 'failed' } as never,
-        overrideAccess: true,
-      } as never)
-    if (retry)
-      throw new Error('Retryable social provider failure; next attempt at ' + nextAttemptAt)
-    return { output: {} }
+
+    await payload.update({
+      collection: 'social-network-variants' as never,
+      id: variant.id,
+      data: { status: 'failed' } as never,
+      overrideAccess: true,
+    } as never)
+
+    await updateParentDraftStatus(payload, variant)
+
+    return {
+      output: {
+        status: 'failed',
+        error: result.error,
+        attemptCount: attempt,
+        nextAttemptAt,
+      },
+    }
   })
 }
 

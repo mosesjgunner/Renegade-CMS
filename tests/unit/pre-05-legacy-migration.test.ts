@@ -387,6 +387,15 @@ describe('PRE-05 Legacy Site Migration Unit Tests', () => {
       const pkg: LegacySitePackage = {
         wxr: wxrXml,
         themeMapping,
+        mediaFiles: {
+          'tribune-hero.png': {
+            fileName: 'tribune-hero.png',
+            buffer: Buffer.from(
+              'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+j5XcAAAAASUVORK5CYII=',
+              'base64',
+            ),
+          },
+        },
       }
       const store = new MemoryLegacyMigrationStore()
       const options = {
@@ -466,6 +475,7 @@ describe('PRE-05 Legacy Site Migration Unit Tests', () => {
       const hierarchicalWxr = `<?xml version="1.0" encoding="UTF-8" ?>
 <rss version="2.0" xmlns:wp="http://wordpress.org/export/1.2/" xmlns:dc="http://purl.org/dc/elements/1.1/">
 <channel>
+<wp:wxr_version>1.2</wp:wxr_version>
   <title>Hierarchy Test Site</title>
   <wp:category>
     <wp:term_id>10</wp:term_id>
@@ -583,8 +593,8 @@ describe('PRE-05 Legacy Site Migration Unit Tests', () => {
     it('rejects malformed WXR with actionable inspection error and quarantines unsupported items', () => {
       // Malformed XML
       const inspectMalformed = inspectLegacySite({ wxr: '<<<NOT-VALID-XML>>>' })
-      expect(inspectMalformed.valid).toBe(true) // Regex-based extract doesn't crash, but has 0 posts/pages
-      expect(inspectMalformed.warnings.length).toBeGreaterThan(0)
+      expect(inspectMalformed.valid).toBe(false)
+      expect(inspectMalformed.errors[0]).toContain('WordPress WXR')
 
       const inspectEmpty = inspectLegacySite({ wxr: '' })
       expect(inspectEmpty.valid).toBe(false)

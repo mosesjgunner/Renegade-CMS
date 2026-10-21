@@ -1,5 +1,5 @@
 {
-  "checks": 3,
+  "checks": 12,
   "succeeded": false,
   "trace": [
     {
@@ -75,7 +75,7 @@
       "passed": true
     },
     {
-      "route": "/api/admin/workflow/revisions?contentId=5c8ec48b-fa4b-4a21-a399-bc086a45d582",
+      "route": "/api/admin/workflow/revisions?contentId=7b17b4a4-2b1d-4b2d-859a-6c6b7bf4266e",
       "method": "GET",
       "status": 200,
       "bytes": 348,
@@ -83,6 +83,137 @@
       "location": null,
       "contentType": "application/json",
       "robots": null
+    },
+    {
+      "name": "ordinary native editor loads real Lexical body, inline media and callout controls",
+      "passed": true
+    },
+    {
+      "name": "browser Lexical typing autosaves to real canonical content",
+      "passed": true
+    },
+    {
+      "route": "/api/admin/workflow/revisions?contentId=7b17b4a4-2b1d-4b2d-859a-6c6b7bf4266e",
+      "method": "GET",
+      "status": 200,
+      "bytes": 637,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "autosave creates canonical saved revision",
+      "passed": true
+    },
+    {
+      "name": "reload retains browser-authored bold draft and original blocks",
+      "passed": true
+    },
+    {
+      "name": "failed autosave keeps editor text while persisted state is unchanged",
+      "passed": true
+    },
+    {
+      "name": "ordinary Retry draft save persists retained text",
+      "passed": true
+    },
+    {
+      "route": "/api/payload-locked-documents",
+      "method": "POST",
+      "status": 201,
+      "bytes": 578,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/workflow/revisions?contentId=7b17b4a4-2b1d-4b2d-859a-6c6b7bf4266e",
+      "method": "GET",
+      "status": 200,
+      "bytes": 926,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "simultaneous native editor sessions show document-lock feedback to the second editor",
+      "passed": true
+    },
+    {
+      "firstEditor": "http://localhost:39032/admin/collections/content/7b17b4a4-2b1d-4b2d-859a-6c6b7bf4266e",
+      "secondEditor": "http://localhost:39032/admin/collections/content/7b17b4a4-2b1d-4b2d-859a-6c6b7bf4266e",
+      "lock": "e1cbcbe0-2e13-4c86-881b-864888c15f87"
+    },
+    {
+      "route": "/api/content/7b17b4a4-2b1d-4b2d-859a-6c6b7bf4266e?overrideLock=true",
+      "method": "PATCH",
+      "status": 423,
+      "bytes": 139,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/workflow/revisions",
+      "method": "POST",
+      "status": 423,
+      "bytes": 124,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/workflow/revisions?contentId=7b17b4a4-2b1d-4b2d-859a-6c6b7bf4266e",
+      "method": "GET",
+      "status": 200,
+      "bytes": 926,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "native save and restore both honor another editor lock with no partial revisions",
+      "passed": true
+    },
+    {
+      "route": "/api/payload-locked-documents/e1cbcbe0-2e13-4c86-881b-864888c15f87",
+      "method": "DELETE",
+      "status": 200,
+      "bytes": 554,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/workflow/revisions?contentId=7b17b4a4-2b1d-4b2d-859a-6c6b7bf4266e",
+      "method": "GET",
+      "status": 200,
+      "bytes": 926,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "route": "/api/admin/workflow/revisions?contentId=7b17b4a4-2b1d-4b2d-859a-6c6b7bf4266e",
+      "method": "GET",
+      "status": 200,
+      "bytes": 926,
+      "etag": null,
+      "location": null,
+      "contentType": "application/json",
+      "robots": null
+    },
+    {
+      "name": "restore storage failure rolls back body, companion and appended revision",
+      "passed": true
     }
   ]
 }

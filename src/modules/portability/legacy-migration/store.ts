@@ -1,5 +1,9 @@
 import { randomUUID } from 'node:crypto'
 import type { Payload } from 'payload'
+import { loadConfig } from '../../core/config'
+import { uploadMedia } from '../../media/workflow'
+import { inspectMedia, mediaStorage } from '../../media/storage'
+import { legacyBodyToLexical } from './body'
 import type { LayoutBlock, PageLayout } from '../../public/page-builder'
 import type { MigrationReport, QuarantineRecord } from './types'
 
@@ -69,7 +73,7 @@ export interface LegacyMigrationStore {
     seoDescription?: string
     parentPageId?: string
   }): Promise<{ id: string }>
-  findContent(siteId: string, slug: string): Promise<{ id: string } | null>
+  findContent(siteId: string, slug: string, canonicalPath?: string): Promise<{ id: string } | null>
 
   createRedirect(data: {
     siteId: string
@@ -224,9 +228,17 @@ export class MemoryLegacyMigrationStore implements LegacyMigrationStore {
     return { id }
   }
 
-  async findContent(siteId: string, slug: string): Promise<{ id: string } | null> {
+  async findContent(
+    siteId: string,
+    slug: string,
+    canonicalPath?: string,
+  ): Promise<{ id: string } | null> {
     for (const c of this.content.values()) {
-      if (c.siteId === siteId && c.slug === slug) return { id: String(c.id) }
+      if (
+        c.siteId === siteId &&
+        (canonicalPath ? c.canonicalPath === canonicalPath : c.slug === slug)
+      )
+        return { id: String(c.id) }
     }
     return null
   }
@@ -296,7 +308,10 @@ export class MemoryLegacyMigrationStore implements LegacyMigrationStore {
 
 /** Real Payload CMS + PostgreSQL persistence store */
 export class PayloadLegacyMigrationStore implements LegacyMigrationStore {
-  constructor(private payload: Payload) {}
+  constructor(
+    private payload: Payload,
+    private actor?: { id?: unknown; role?: unknown; member?: unknown },
+  ) {}
 
   async createSite(data: {
     name: string
@@ -345,78 +360,12 @@ export class PayloadLegacyMigrationStore implements LegacyMigrationStore {
   }
 
   async deleteSite(siteId: string): Promise<void> {
-    const db = (
-      this.payload.db as unknown as {
-        pool?: { query: (q: string, p?: unknown[]) => Promise<unknown> }
-      }
-    ).pool
-    if (db) {
-      try {
-        await db.query("SET session_replication_role = 'replica'").catch(() => {})
-        try {
-          await db
-            .query(`DELETE FROM execution_events WHERE site_id = $1`, [siteId])
-            .catch(() => {})
-          await db.query(`DELETE FROM ai_proposals WHERE site_id = $1`, [siteId]).catch(() => {})
-          await db.query(`DELETE FROM publications WHERE site_id = $1`, [siteId]).catch(() => {})
-          await db
-            .query(`DELETE FROM public_api_webhooks WHERE site_id = $1`, [siteId])
-            .catch(() => {})
-          await db
-            .query(
-              `DELETE FROM revision_records WHERE article_id IN (SELECT id FROM article_family_content WHERE content_id IN (SELECT id FROM content WHERE site_id = $1))`,
-              [siteId],
-            )
-            .catch(() => {})
-          await db
-            .query(
-              `DELETE FROM article_family_content WHERE content_id IN (SELECT id FROM content WHERE site_id = $1)`,
-              [siteId],
-            )
-            .catch(() => {})
-          await db
-            .query(
-              `DELETE FROM content_authors WHERE _parent_id IN (SELECT id FROM content WHERE site_id = $1)`,
-              [siteId],
-            )
-            .catch(() => {})
-          await db
-            .query(
-              `DELETE FROM content_rels WHERE parent_id IN (SELECT id FROM content WHERE site_id = $1)`,
-              [siteId],
-            )
-            .catch(() => {})
-          await db.query(`DELETE FROM content WHERE site_id = $1`, [siteId]).catch(() => {})
-          await db.query(`DELETE FROM media_assets WHERE site_id = $1`, [siteId]).catch(() => {})
-          await db
-            .query(`DELETE FROM public_redirects WHERE site_id = $1`, [siteId])
-            .catch(() => {})
-          await db.query(`DELETE FROM page_layouts WHERE site_id = $1`, [siteId]).catch(() => {})
-          await db
-            .query(`UPDATE categories SET parent_id = NULL WHERE site_id = $1`, [siteId])
-            .catch(() => {})
-          await db.query(`DELETE FROM categories WHERE site_id = $1`, [siteId]).catch(() => {})
-          await db.query(`DELETE FROM tags WHERE site_id = $1`, [siteId]).catch(() => {})
-          await db
-            .query(`DELETE FROM legacy_migration_quarantine WHERE site_id = $1`, [siteId])
-            .catch(() => {})
-          await db
-            .query(`DELETE FROM legacy_migration_runs WHERE site_id = $1`, [siteId])
-            .catch(() => {})
-          await db.query(`DELETE FROM sites WHERE id = $1`, [siteId])
-        } finally {
-          await db.query("SET session_replication_role = 'origin'").catch(() => {})
-        }
-        return
-      } catch (err) {
-        console.error('Direct SQL deleteSite error, falling back to Payload delete:', err)
-      }
-    }
-
+    // Native hierarchy/retention guards must decide whether deletion is safe.
     await this.payload.delete({
       collection: 'sites',
       id: siteId,
-      overrideAccess: true,
+      overrideAccess: false,
+      user: this.actor,
     })
   }
 
@@ -527,27 +476,16 @@ export class PayloadLegacyMigrationStore implements LegacyMigrationStore {
     width?: number
     height?: number
   }): Promise<{ id: string; url: string }> {
-    const created = (await this.payload.create({
-      collection: 'media-assets',
-      overrideAccess: true,
-      data: {
-        site: data.siteId,
-        title: data.title || data.fileName,
-        kind: 'image',
-        storageLocation: `local://${data.siteId}/${data.fileName}`,
-        storageProvider: 'local',
-        mimeType: data.mimeType,
-        checksum: data.sha256,
-        sizeBytes: data.bytes.length,
-        altText: data.altText,
-        caption: data.caption,
-        width: data.width,
-        height: data.height,
-        retentionMode: 'permanent',
-      },
-    } as never)) as { id: string | number }
-    const id = String(created.id)
-    return { id, url: `/media/${id}` }
+    const created = await uploadMedia(this.payload, loadConfig(), {
+      user: this.actor ? { ...this.actor } : undefined,
+      scope: { kind: 'site', siteId: data.siteId },
+      title: data.title || data.fileName,
+      originalFilename: data.fileName,
+      bytes: data.bytes,
+      altText: data.altText,
+      caption: data.caption,
+    })
+    return { id: String(created.id), url: `/media/${created.id}` }
   }
 
   async findMediaBySha256(
@@ -562,7 +500,12 @@ export class PayloadLegacyMigrationStore implements LegacyMigrationStore {
       limit: 1,
       overrideAccess: true,
     })
-    return res.docs[0] ? { id: String(res.docs[0].id), url: `/media/${res.docs[0].id}` } : null
+    const found = res.docs[0]
+    if (!found) return null
+    const bytes = await mediaStorage(loadConfig()).get(String(found.storageLocation))
+    if (!bytes || inspectMedia(bytes).sha256 !== sha256)
+      throw new Error(`Imported original media is missing or corrupt: ${found.id}`)
+    return { id: String(found.id), url: `/media/${found.id}` }
   }
 
   async createContent(data: {
@@ -587,35 +530,7 @@ export class PayloadLegacyMigrationStore implements LegacyMigrationStore {
       author: authorId,
       displayOrder: index + 1,
     }))
-    const lexicalBody = {
-      root: {
-        type: 'root',
-        format: '' as const,
-        indent: 0,
-        version: 1,
-        direction: 'ltr' as const,
-        children: [
-          {
-            type: 'paragraph',
-            format: '' as const,
-            indent: 0,
-            version: 1,
-            direction: 'ltr' as const,
-            children: [
-              {
-                type: 'text',
-                detail: 0,
-                format: 0,
-                mode: 'normal',
-                style: '',
-                text: data.body,
-                version: 1,
-              },
-            ],
-          },
-        ],
-      },
-    }
+    const lexicalBody = legacyBodyToLexical(data.body)
     const created = (await this.payload.create({
       collection: 'content',
       overrideAccess: true,
@@ -641,11 +556,18 @@ export class PayloadLegacyMigrationStore implements LegacyMigrationStore {
     return { id: String(created.id) }
   }
 
-  async findContent(siteId: string, slug: string): Promise<{ id: string } | null> {
+  async findContent(
+    siteId: string,
+    slug: string,
+    canonicalPath?: string,
+  ): Promise<{ id: string } | null> {
     const res = await this.payload.find({
       collection: 'content',
       where: {
-        and: [{ site: { equals: siteId } }, { slug: { equals: slug } }],
+        and: [
+          { site: { equals: siteId } },
+          canonicalPath ? { canonicalPath: { equals: canonicalPath } } : { slug: { equals: slug } },
+        ],
       },
       limit: 1,
       overrideAccess: true,
@@ -748,30 +670,12 @@ export class PayloadLegacyMigrationStore implements LegacyMigrationStore {
   }
 
   async deleteEntity(collection: string, id: string): Promise<void> {
-    try {
-      if (collection === 'content') {
-        const db = (
-          this.payload.db as unknown as {
-            pool?: { query: (q: string, p: unknown[]) => Promise<unknown> }
-          }
-        ).pool
-        if (db) {
-          await db
-            .query(`DELETE FROM "revision_records" WHERE "article_id" = $1;`, [id])
-            .catch(() => {})
-          await db
-            .query(`DELETE FROM "article_family_content" WHERE "content_id" = $1;`, [id])
-            .catch(() => {})
-        }
-      }
-      await this.payload.delete({
-        collection: collection as never,
-        id,
-        overrideAccess: true,
-      })
-    } catch {
-      // Ignored if already deleted
-    }
+    await this.payload.delete({
+      collection: collection as never,
+      id,
+      overrideAccess: false,
+      user: this.actor,
+    })
   }
 
   async saveMigrationRun(report: MigrationReport): Promise<void> {
@@ -816,7 +720,7 @@ export class PayloadLegacyMigrationStore implements LegacyMigrationStore {
         )
       }
     } catch (err) {
-      console.error('Failed to save migration run:', err)
+      throw new Error('Failed to persist migration run.', { cause: err })
     }
   }
 
@@ -875,7 +779,7 @@ export class PayloadLegacyMigrationStore implements LegacyMigrationStore {
         }
       }
     } catch (err) {
-      console.error('Failed to save quarantine records:', err)
+      throw new Error('Failed to persist migration quarantine.', { cause: err })
     }
   }
 

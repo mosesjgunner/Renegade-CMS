@@ -1,0 +1,318 @@
+[
+  {
+    "name": "site Alpha created",
+    "passed": true
+  },
+  {
+    "name": "site Beta created",
+    "passed": true
+  },
+  {
+    "name": "users and operator grants seeded",
+    "passed": true
+  },
+  {
+    "name": "connected accounts seeded",
+    "passed": true
+  },
+  {
+    "route": "/api/admin/social/worker",
+    "method": "GET",
+    "status": 403,
+    "bytes": 25
+  },
+  {
+    "name": "negative: unauthenticated worker GET denied with 403",
+    "passed": true
+  },
+  {
+    "route": "/api/admin/social/worker",
+    "method": "POST",
+    "status": 403,
+    "bytes": 25
+  },
+  {
+    "name": "negative: unauthenticated worker POST denied with 403",
+    "passed": true
+  },
+  {
+    "route": "/api/admin/social/worker",
+    "method": "POST",
+    "status": 403,
+    "bytes": 25
+  },
+  {
+    "name": "negative: invalid token worker POST denied with 403",
+    "passed": true
+  },
+  {
+    "route": "/api/admin/social/drafts?siteId=36174bb9-57f2-48cd-86f3-6f97d6ecd3db",
+    "method": "GET",
+    "status": 403,
+    "bytes": 68
+  },
+  {
+    "name": "negative: foreign operator accessing site-alpha denied with 403",
+    "passed": true
+  },
+  {
+    "route": "/api/admin/social/worker",
+    "method": "GET",
+    "status": 200,
+    "bytes": 93
+  },
+  {
+    "name": "worker GET stats returns success",
+    "passed": true
+  },
+  {
+    "name": "worker GET stats has queue counters",
+    "passed": true
+  },
+  {
+    "route": "/api/admin/social/drafts",
+    "method": "POST",
+    "status": 201,
+    "bytes": 6534
+  },
+  {
+    "name": "Draft 1 created",
+    "passed": true
+  },
+  {
+    "route": "/api/admin/social/drafts",
+    "method": "POST",
+    "status": 200,
+    "bytes": 34
+  },
+  {
+    "route": "/api/admin/social/drafts",
+    "method": "POST",
+    "status": 200,
+    "bytes": 1470
+  },
+  {
+    "route": "/api/admin/social/drafts",
+    "method": "POST",
+    "status": 200,
+    "bytes": 7421
+  },
+  {
+    "name": "Draft 1 scheduled",
+    "passed": true
+  },
+  {
+    "name": "Draft 1 created 2 queue items",
+    "passed": true
+  },
+  {
+    "name": "Bluesky queue item identified",
+    "passed": true
+  },
+  {
+    "name": "ActivityPub queue item identified",
+    "passed": true
+  },
+  {
+    "name": "Browser loaded Social Command Center",
+    "passed": true
+  },
+  {
+    "name": "Browser selected Draft 1 and loaded queue items",
+    "passed": true
+  },
+  {
+    "name": "Initial draft status in UI is SCHEDULED",
+    "passed": true
+  },
+  {
+    "name": "UI dynamically updated draft status to PARTIALLY-PUBLISHED",
+    "passed": true
+  },
+  {
+    "name": "UI displays PUBLISHED for Bluesky item",
+    "passed": true
+  },
+  {
+    "name": "UI displays local-harness pill for Bluesky receipt",
+    "passed": true
+  },
+  {
+    "name": "UI displays FAILED for ActivityPub item",
+    "passed": true
+  },
+  {
+    "name": "UI displays truthful failure reason for ActivityPub",
+    "passed": true
+  },
+  {
+    "name": "DB Draft 1 status updated to partially-published",
+    "passed": true
+  },
+  {
+    "name": "DB Bluesky item status is published",
+    "passed": true
+  },
+  {
+    "name": "DB Bluesky attemptCount is 1",
+    "passed": true
+  },
+  {
+    "name": "DB ActivityPub item status is failed",
+    "passed": true
+  },
+  {
+    "name": "DB ActivityPub attemptCount is 1",
+    "passed": true
+  },
+  {
+    "name": "DB created 1 external-posts record for Bluesky",
+    "passed": true
+  },
+  {
+    "name": "External post records remoteId",
+    "passed": true
+  },
+  {
+    "name": "External post records remoteId URI",
+    "passed": true
+  },
+  {
+    "name": "External post records remoteUrl",
+    "passed": true
+  },
+  {
+    "name": "DB logged 2 publish attempts",
+    "passed": true
+  },
+  {
+    "name": "Bluesky attempt status is published",
+    "passed": true
+  },
+  {
+    "name": "ActivityPub attempt status is failed",
+    "passed": true
+  },
+  {
+    "name": "Idempotent: Bluesky was not re-sent on retry (harness calls unchanged)",
+    "passed": true
+  },
+  {
+    "name": "Failed-only: ActivityPub was retried (harness call count incremented)",
+    "passed": true
+  },
+  {
+    "name": "ActivityPub attemptCount incremented to 2",
+    "passed": true
+  },
+  {
+    "name": "ActivityPub attemptCount reached 3",
+    "passed": true
+  },
+  {
+    "route": "/api/admin/social/worker",
+    "method": "POST",
+    "status": 200,
+    "bytes": 109
+  },
+  {
+    "name": "Bounded policy: 0 items retried when attemptCount >= 3",
+    "passed": true
+  },
+  {
+    "route": "/api/admin/social/drafts",
+    "method": "POST",
+    "status": 201,
+    "bytes": 4055
+  },
+  {
+    "route": "/api/admin/social/drafts",
+    "method": "POST",
+    "status": 200,
+    "bytes": 34
+  },
+  {
+    "route": "/api/admin/social/drafts",
+    "method": "POST",
+    "status": 200,
+    "bytes": 1486
+  },
+  {
+    "route": "/api/admin/social/drafts",
+    "method": "POST",
+    "status": 200,
+    "bytes": 3837
+  },
+  {
+    "route": "/api/admin/social/worker",
+    "method": "POST",
+    "status": 200,
+    "bytes": 2080
+  },
+  {
+    "name": "Draft 2 dispatch-item succeeded",
+    "passed": true
+  },
+  {
+    "name": "Reconciled: createRecord was NOT invoked for existing record",
+    "passed": true
+  },
+  {
+    "name": "Draft 2 item status transitioned to published",
+    "passed": true
+  },
+  {
+    "name": "Draft 2 external post recorded",
+    "passed": true
+  },
+  {
+    "name": "Draft 2 external post remoteId recorded",
+    "passed": true
+  },
+  {
+    "name": "Draft 2 attempt receipt notes reconciled: true",
+    "passed": true
+  },
+  {
+    "name": "Draft 2 attempt receipt records local-harness",
+    "passed": true
+  },
+  {
+    "route": "/api/admin/social/drafts",
+    "method": "POST",
+    "status": 201,
+    "bytes": 3898
+  },
+  {
+    "route": "/api/admin/social/drafts",
+    "method": "POST",
+    "status": 200,
+    "bytes": 34
+  },
+  {
+    "route": "/api/admin/social/drafts",
+    "method": "POST",
+    "status": 200,
+    "bytes": 1439
+  },
+  {
+    "route": "/api/admin/social/drafts",
+    "method": "POST",
+    "status": 200,
+    "bytes": 3711
+  },
+  {
+    "route": "/api/admin/social/worker",
+    "method": "POST",
+    "status": 200,
+    "bytes": 2146
+  },
+  {
+    "name": "Draft 3 item status is failed",
+    "passed": true
+  },
+  {
+    "name": "Draft 3 dead letter reason recorded as reconnect-required",
+    "passed": true
+  }
+]

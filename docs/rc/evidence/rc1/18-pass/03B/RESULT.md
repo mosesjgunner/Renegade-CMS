@@ -1,133 +1,75 @@
-# RC1 subpass 03B — PASS
+# RC1 03B — NOT READY
 
-Date: 2026-10-18 (America/Chicago). Subpass 03B passed all mandatory acceptance requirements. Only 03B was executed; do not execute 03C automatically.
+2026-10-20. Only subpass 03B was executed. Aggregate RC1/current-checkout readiness is not established.
 
-## Source and isolation
+**First reproducible blocker:** the strict unpublished-preview gate expects `no-store`, but the exercised Next.js development runtime returns `Cache-Control: no-cache, must-revalidate`. Content and `X-Robots-Tag: noindex, nofollow` are correct. Installed Next code explicitly overrides development cache headers (`next/dist/server/base-server.js:1107`). Production verification could not run: `next build --webpack` fails with `UnhandledSchemeError: node:crypto`, imported by `src/modules/social/models.ts:1` through the client `src/modules/admin/SocialCommandCenter.tsx`. Social modules were retained and concurrent Social edits were preserved. No production cache success is claimed.
 
-- **Base commit (HEAD):** `bb3c0347d6c648e71f0bf7eac646df70fd1b5714`
-- **Overlay manifests:**
-  - Initial 03B overlay: [tested-tree.json](tested-tree.json) (`102` files, SHA-256: `ccbe4eae149b06e2c7e1cf5f7de96d311a85266b1a1321a7c2c86cbe6c869a08`)
-  - Current checkout overlay: [current-tree.json](current-tree.json) (`159` files, SHA-256: `f906cd49e82cab209b6f3ca2ad8d0badc55937b757b654d79c7e9f2cf93b5a47`)
-- **Isolation:** Disposable PostgreSQL 17.6 container `rc103b-20261018-review` on loopback port 5435, database `rc103b_release_acceptance`.
-- **Media directory:** `scratch/rc103b-20261018/media`
-- **Application URL:** `https://admin.rc103b.test:38905`
-- **Flags:** `LOCAL_E2E_TEST_MODE=false`, `ENABLE_TEST_ROUTES=false`, `SEED_ON_INIT=false`, `EMAIL_MODE=disabled`, `PROXY_MODE=trusted`.
-- **Cleanup status:** Database container `rc103b-20261018-review` stopped and preserved for inspection.
+**Implementation:**
 
-## Implementation
+- `src/modules/admin/DraftAutosave.tsx`: debounced native-form draft saves, truthful success/error state, retained edits, explicit retry and prevention of repeated automatic retries after an unchanged failed save.
+- `src/collections/Publishing.ts` and generated admin import map: mount autosave in Writing; retain default Lexical features and canonical media/content relationships; register the editable editorial callout block.
+- `src/modules/editorial/RichText.tsx`: preserve combined formatting, actual Lexical link fields, sub/sup and safe URL handling.
+- `src/modules/editorial/presentation.ts`: project callout text and canonicalize media/upload/internal-link references to IDs without discarding unknown block data.
+- `src/modules/editorial/persistence.ts`: transactional restore with canonical row/document locks and rollback; normalize newly written snapshots to prevent response-depth-dependent duplicate revisions and embedded related private records; preserve historical revision rows; recheck live creator site grants; order author labels.
+- `src/app/(frontend)/api/admin/workflow/revisions/route.ts`: retain lock/conflict status codes. `src/app/(frontend)/preview/article/[token]/page.tsx`: reject foreign site hosts. `src/proxy.ts`: private preview noindex/no-referrer/no-store intent; actual no-store acceptance remains blocked as above.
+- Focused tests and guarded operator runners: `tests/unit/rc1-03b-current.test.tsx`, `tests/rc1-03b/{run-current.ps1,verify-current.ts,verify-privacy.ts,tsconfig.current.json}`.
 
-1. **Lexical Rich-Text Editing & Rendering (`src/modules/editorial/RichText.tsx`):**
-   - Extended `SafeRichText` component with full support for standard elements (`heading` h1-h6, `paragraph`, `quote`, `list` ordered/bullet/checklist, `horizontalrule`, `link`) and inline styles (bold, italic, strikethrough, underline, inline code).
-   - Added support for `upload` nodes (rendering images with altText, dimensions, and captions) and `relationship` nodes (cross-referencing media assets and content).
-   - Added support for custom `block` nodes (such as callouts, media embeds, and custom components) with safe fallback rendering.
-   - Preserves semantic HTML and strict XSS hygiene without leaking unsafe HTML or unvetted scripts.
+Existing JSON storage and UI fields need no new migration. Canonical collections/services were reused.
 
-2. **Preview Token Hashing & Resolution (`src/modules/editorial/persistence.ts`):**
-   - Exported `hashPreviewToken` function generating deterministic `sha256:<hex_digest>` hashes matching the storage schema of `PreviewTokens`.
-   - Verified `createEditorialPreviewToken` and `resolveEditorialPreviewToken` with expiration checks, creator-session validation, and device viewport adaptations (`desktop`, `mobile`, `tablet`).
+**UI/operator and persistence proof:**
 
-3. **Public Discovery and Non-Indexing Contract (`src/modules/public/discovery.ts`):**
-   - Verified that unpublished and draft content is strictly non-indexable (`indexable: false`, `reason: 'draft'`).
-   - Directed `robotsDirectives` to enforce `{ index: false, follow: false }` headers and meta tags on all draft and preview presentations.
-   - Enforced that public readers (`loadPublishedArticleByPath`, `canRenderPublic`, `canDiscoverPublic`) reject draft articles with an error.
+Native staff API created two articles and one page with real uploaded PNG media, combined marks, a link, quote, callout and two ordered authors. The native Lexical browser editor typed and autosaved a draft, reloaded it, retained unsaved text after an intercepted HTTP 503, and persisted it through Retry draft save. Both native editors remained open while the second displayed Document locked; native save with `overrideLock=true` and History restore returned 423 without changing full content/history. An injected storage failure after revision/companion writes rolled back all three persisted objects. History UI restored the first draft; supported API edits/restores recovered exact original bodies for the second article and page.
 
-4. **Document Locking & Concurrency Protection (`payload-locked-documents` & `checkDocumentLockStatus`):**
-   - Integrated Payload 3.x document locking (`getIsLocked`, `checkDocumentLockStatus`) ensuring active editor sessions hold exclusive write locks.
-   - Concurrently conflicting editor updates receive clear `Locked` feedback while preserving PostgreSQL table contents without corruption.
-   - Document locks are automatically cleared upon successful update completion.
+Post-restart SQL (`recovery/persistence.sql` / `persistence-sql.txt`) reports:
 
-## UI/Operator Proof
+| Record | Persisted status | Revision sequence/count | Reasons |
+| --- | --- | --- | --- |
+| Article `a469846d-7726-4f84-bea8-6662b525aee3` | draft | 4 / 4 | created, edited, edited, restored |
+| Article `03add6d8-f36b-4ef3-9a5d-03ea02b3a876` | draft | 3 / 3 | created, edited, restored |
+| Page `f141e6a7-37b6-485c-a3de-d9dc12776622` | draft | 3 / 3 | created, edited, restored |
 
-### 1. Ordinary Content Creation & Save/Reload Persistence
-- Seeded Site Alpha (`site-alpha`), Site Beta (`site-beta`), Publications, Authors (`Jane Author`, `Mark Columnist`), and Media Assets in isolated PostgreSQL 17.6.
-- Created two draft articles and one page with rich formatting, lists, quotes, links, and media relationships:
-  - Article 1: `Alpha Investigative Field Report` (`id=2ba4db75-e227-4a62-a871-6644ba18ca52`)
-  - Article 2: `Alpha Economic Outlook` (`id=38c56faa-ff7c-4ced-9de6-d0449dd0abc7`)
-  - Page 1: `About Alpha Investigation Team` (`id=f3419a64-0081-479c-a522-5f940ca85815`)
-- Reloaded all three documents from PostgreSQL; verified title, draft status, author metadata, and body AST integrity.
-- Verified automatic creation of `article-family-content` companion record (`id=c265a6ab-339c-44b6-a701-cc41b68cf691`, `currentRevisionSequence=1`) and initial `revision-records` record (`sequence=1`, `reason='created'`, `rev1Id=64fc0be8-109e-4736-beaf-d335b9222b34`).
+Every inspected revision stores the inline media reference as an ID string. See `recovery/persistence.json`, `state.json`, and phase traces. Actual inline image decoding, callout/link/combined formatting and author order were observed in the browser. Anonymous canonical URLs returned 404; draft/private paths and titles were absent from sitemap/feed. Anonymous, foreign creator, foreign host, ungranted, tampered and expired preview requests returned 404. Unauthorized edits/restores/minting and foreign revision substitution were denied with full content/history unchanged. Deleting the creator's grant through the supported API immediately invalidated its existing preview.
 
-### 2. Draft Editing & Revision History Advancement
-- Edited Article 1 to simulate autosave/draft updates.
-- Verified revision sequence automatically advanced to `2` (`reason='edited'`, `parentRevision=rev1.id`, `rev2Id=694ace4b-8efb-49c2-a290-3739c4c14d10`).
-- Content updates persisted accurately in PostgreSQL.
+Both web and PostgreSQL were restarted. Ten checks confirmed exact body/authors/status for all three records, public exclusion, retained restored history, the original saved preview, decoded media bytes and the reopened native editor.
 
-### 3. Historical Revision Restore
-- Executed `restoreEditorialRevision` to restore historical Revision 1.
-- Verified revision sequence advanced to `3` in an append-only audit trail (`reason='restored'`, `restoredFromRevision=rev1.id`).
-- Verified that `content.body` in PostgreSQL reverted to Revision 1 content, cleanly omitting Edit 2 additions while preserving the original heading and structure.
+Authentication is fixture-issued production-shaped sessions backed by `admin_sessions`; test authentication/routes were disabled. These are supported operator/API and fixture-authenticated native UI observations, not an ordinary WebAuthn/login acceptance claim. No provider delivery, production image, deployment or release success is claimed.
 
-### 4. Unpublished Preview & Search Engine No-Index Enforcement
-- Generated raw preview token for Revision 3.
-- Resolved preview presentation with owner session:
-  - Verified `presentation.preview === true`
-  - Extracted Table of Contents from headings (`Executive Summary and Primary Findings`)
-  - Verified author metadata resolved to `Jane Author`
-- Tested public reader access: `loadPublishedArticleByPath` threw error, and `canRenderPublic`/`canDiscoverPublic` evaluated to `false`.
-- Tested discovery document generation: `discovery.indexability.indexable === false`, `discovery.indexability.reason === 'draft'`, and `robotsDirectives === { index: false, follow: false }`.
+**Commands, exits and counts:** all frozen commands ran in `C:\Projects\RENEGADE CMS\rc1-03b-frozen-20261020`. Logs retain exact runtime output.
 
-### 5. Negative Preview Cases (Expired, Foreign User, Tampered)
-- **Expired Token:** Created token with timestamp in the past; resolution was rejected with `Token expired` error.
-- **Foreign User Session:** Attempted resolution using Staff Beta session (foreign operator from another site); rejected with `Unauthorized creator session` error.
-- **Tampered Token:** Attempted resolution with invalid hex token; rejected with `Token not found` error.
-
-### 6. Negative Edit Cases (Unauthorized & Cross-Site)
-- Recorded PostgreSQL rowset snapshot before attack attempts: `SELECT id, site_id, title FROM content ORDER BY id`.
-- **Foreign Staff Edit:** Staff Beta attempted to mutate Site Alpha article -> Blocked by `tenantUpdateAccess`.
-- **Anonymous Edit:** Anonymous request attempted to mutate Article 1 -> Blocked at access layer.
-- **Subscriber Member Edit:** Non-staff subscriber member attempted to mutate Article 1 -> Blocked at access layer.
-- **Database Unchanged Assertion:** Executed post-attack SQL snapshot and compared against baseline; 100% identical.
-
-### 7. Document Locking & Simultaneous Editor Sessions
-- Owner acquired editing lock on Article 1 (`payload-locked-documents`, `lockId=65c0ff58-b552-46db-bb14-49038d9d599f`).
-- Verified lock status: `isLocked === false` for active owner; `isLocked === true` for concurrent Staff Alpha.
-- Staff Alpha attempted concurrent update with `checkDocumentLockStatus({ overrideLock: false })` -> Threw `Document is locked` error.
-- Verified PostgreSQL content row remained unchanged during the locked conflict.
-- Owner released lock.
-- Staff Alpha acquired lock and executed approved update (`Alpha Field Report - Staff Approved Note`).
-- Verified document lock automatically cleared upon update completion.
-
-### 8. Container Restart Persistence Verification
-- Restarted isolated PostgreSQL 17.6 container (`docker restart rc103b-20261018-review`).
-- Executed `run-isolated.ps1 restart-check` in a new Node process.
-- Reloaded Sites, Authors, Articles, Page, Article Family Companion, and all 3 Revision Records.
-- Verified 100% data integrity and relationship consistency across full container restart.
-
-## Scoped Acceptance Matrix
-
-| Check / Requirement | Status | Observed Proof |
-| --- | --- | --- |
-| **Lexical Rich-Text Editing** | **PASS** | Headings, paragraphs, inline styles, quotes, lists, links, media relationships verified in database and SafeRichText. |
-| **Author Metadata** | **PASS** | Multi-author displayOrder and roles (`Lead Reporter`, `Economics Editor`) populated and persisted. |
-| **Autosave / Draft Persistence** | **PASS** | Draft mutations advance revision sequence to 2 (`reason='edited'`). |
-| **Revision Restore** | **PASS** | Historical revision restored to sequence 3 (`reason='restored'`), body reverted to Rev 1 state in DB. |
-| **Preview Authorization** | **PASS** | Only creator session can resolve preview token; expired, foreign, and tampered tokens rejected. |
-| **Private Content No-Index** | **PASS** | `canRenderPublic: false`, `canDiscoverPublic: false`, `robotsDirectives: { index: false, follow: false }`. |
-| **Document Locking & Conflicts** | **PASS** | Concurrent edit blocked with `Locked` error; PostgreSQL unchanged during collision; auto-cleared on save. |
-| **Denied Roles & Cross-Site Edits** | **PASS** | Foreign staff, anonymous, and subscriber member edits blocked; DB snapshot unchanged. |
-| **Restart Persistence** | **PASS** | Container restarted; all documents, companions, and revision records reloaded intact. |
-
-## Automated Verification Commands & Counts
+| Command | Exit | Passed / failed / skipped / unexecuted | Evidence |
+| --- | --- | --- | --- |
+| `powershell -NoProfile -ExecutionPolicy Bypass -File tests/rc1-03b/run-current.ps1 start-db` | 0 | owned disposable container created | `final/database.txt` |
+| same runner, `migrate` (`npm.cmd run test:migrations:fresh`) | 0 | 123 / 0 / 0 / 0 migrations | `final/migrations.txt` |
+| focused Vitest command below | 0 | 58 / 0 / 0 / 0 tests, 9 files | `final/units.txt` |
+| runner `verify` | 1 | 17 / 1 / 0 / 11 checks; first preview cache failure stops this command | `final/journey.txt`, `journey-trace.json` |
+| runner `privacy` | 1 | 12 passed, 3 cache assertions failed, 0 skipped, 0 diagnostic checks unexecuted | `recovery/privacy.txt`, `privacy-trace.json` |
+| runner `restart-check` | 0 | 10 / 0 / 0 / 0 checks | `recovery/restart.txt`, `restart-trace.json`, `web-restart.txt` |
+| runner `types` | 0 | 0 scoped diagnostics; all application sources included | `recovery/types.txt` |
+| focused ESLint command below | 0 | 0 errors / 0 warnings, 11 files | `recovery/lint.txt` |
+| `npx.cmd prettier --check tests/rc1-03b/verify-privacy.ts tests/rc1-03b/verify-current.ts tests/unit/rc1-03b-current.test.tsx` | 0 | 3 files formatted; prior application formatting check also passed | `recovery/format.txt`, `final/format.txt` |
+| `git diff --check -- src tests next-env.d.ts tsconfig.json` | 0 | no whitespace errors; line-ending warnings retained | `final/diff-check.txt` |
+| `npx.cmd tsc --noEmit` | 1 | 7 diagnostics in existing `tests/rc1-03d/verify-import-and-build.ts`, first line 31 | `recovery/repository-types.txt` |
+| runner `build` (`node ./node_modules/next/dist/bin/next build --webpack`) | 1 | client node:crypto compilation blocker; subsequent build phases/start/journey unexecuted | `production/build.txt` |
+| read-only `docker exec rc103b-final-20261020 psql -U postgres -d rc103b_final_release_acceptance -c $query` | 0 | 3 persisted rows; `$query` is exactly `recovery/persistence.sql` | `recovery/persistence-sql.txt` |
 
 ```powershell
-# 1. Fresh Migration on Isolated Container (120 migrations applied cleanly)
-powershell.exe -ExecutionPolicy Bypass -File tests/rc1-03b/run-isolated.ps1 migrate
-# Exit: 0
+npx.cmd vitest run tests/unit/rich-editor-draft-preview.test.tsx tests/unit/rc1-03b-current.test.tsx tests/unit/rc02-content-preview.test.ts tests/unit/rc02-published-revision.test.ts tests/unit/rc08d-lock-projection.test.ts tests/unit/editorial-workflow.test.ts tests/unit/flow-01-cmos-workflow.test.ts tests/unit/flow-00-workflow-contract.test.ts tests/unit/editorial-workflow-permissions.test.ts
 
-# 2. End-to-End Acceptance Verification (All 10 phases passed)
-powershell.exe -ExecutionPolicy Bypass -File tests/rc1-03b/run-isolated.ps1 verify
-# Exit: 0
-
-# 3. Persistence Across Full Container Restart
-powershell.exe -ExecutionPolicy Bypass -File tests/rc1-03b/run-isolated.ps1 restart-check
-# Exit: 0
-
-# 4. Scoped Typecheck & ESLint
-npx.cmd eslint src/modules/editorial/RichText.tsx src/modules/editorial/persistence.ts tests/unit/rich-editor-draft-preview.test.tsx tests/rc1-03b/verify-rich-editor.ts tests/rc1-03b/verify-restart.ts
-# Exit: 0 (0 errors, 0 warnings)
-# Whole-repo typecheck: 0 errors in scoped files; only 6 TS errors in independent tests/rc1-03d/verify-import-and-build.ts
-
-# 5. Focused Vitest Suites (28 passed across 5 test files)
-npx.cmd vitest run tests/unit/rich-editor-draft-preview.test.tsx tests/unit/rc02-content-preview.test.ts tests/unit/rc02-published-revision.test.ts tests/unit/rc08d-lock-projection.test.ts tests/unit/editorial-workflow.test.ts
-# Exit: 0 (28 passed, 0 failed, 0 skipped)
+npx.cmd eslint src/modules/admin/DraftAutosave.tsx src/modules/editorial/RichText.tsx src/modules/editorial/persistence.ts src/modules/editorial/presentation.ts src/collections/Publishing.ts src/proxy.ts 'src/app/(frontend)/preview/article/[token]/page.tsx' 'src/app/(frontend)/api/admin/workflow/revisions/route.ts' tests/rc1-03b/verify-current.ts tests/rc1-03b/verify-privacy.ts tests/unit/rc1-03b-current.test.tsx
 ```
+
+The build attempt used an isolated, temporary `typescript.tsconfigPath` selecting the same strict all-application-source scoped configuration; its own compilation failed before typechecking/prerender. No ignoreBuildErrors setting or module removal was used. `production/next.config.tested.ts` preserves that test configuration for reproduction. The current checkout's Next configuration was not changed for it.
+
+The original strict assertion remains failing. The independent privacy diagnostic retains that assertion, records each failure and exits 1 while collecting independent security evidence. It does not convert these failures into a PASS. The full command's 11 follow-on checks were subsequently exercised by the independent diagnostic; an end-to-end production journey and production restart remain unexecuted. Genuine WebAuthn/login acceptance was not executed or claimed.
+
+**Source / artifact identity and preservation:**
+
+- Initial checkout was clean at `41fd29400811ef564043e4daaad1757f98f68513`. Tested frozen base: `cabb9e5a0fb4052fd553e4bbb2b4d13760af433e` plus dirty overlays. No commit was created by this agent.
+- `final/tested-source.json` binds the frozen native editor journey. `recovery/tested-source.json` binds 1,431 source/config/test files for the independent privacy phase: SHA-256 `4d3e70f417bd207b959efc64ff3aa8af76c6c32c4ed7f189a9cefa5d1ca7dcaf`. Restart-only harness delta: `recovery/restart-source-delta.json`, SHA-256 `6b147e4035d165c04434c80fc4b35d5b829765e69d038c1d35f51b956f5ab142`. `recovery/source.patch` is the reviewable final overlay.
+- Application source under `src/` stayed unchanged between frozen editor, privacy and restart phases. `recovery/containment.json` records current-checkout hashes for all 14 scoped source/harness paths; generated import-map line endings differ, with identical normalized content. Concurrent Social edits and generated type-path differences are recorded without claiming whole-checkout acceptance.
+- Next.js 16.3.8 / Node v24.19.0, development Webpack runtime; no application image was accepted. PostgreSQL 17.6 image ID `sha256:00bc86618629af00d2937fdc5a5d63db3ff8450acf52f0636ec813c7f4902929`. Exact process/container identities: `recovery/environment.json`.
+- Retained original PNG: 126 bytes, SHA-256 `4e5b75021a3f2565cdc7d52f2d42989938845bf2216013e477dc37269fe06d14`; see `recovery/media-identity.json`. Screenshots and artifact hashes are indexed in `recovery/evidence-index.json`. Clean preview: `recovery/unpublished-preview-restart.png`; native editor: `recovery/editor-restart.png`; lock feedback: `final/lock-conflict.png`; restore: `final/revision-restore.png`.
+- Prior 2026-10-18 receipt and evidence are preserved byte-for-byte under `prior-20261018/`; all five archived file hashes were rechecked. Earlier live-checkout experimentation under `current/` ended in a Next module-factory/stream error during concurrent recompilation, exit 1, and is not acceptance proof. `final/` is the frozen development attempt that stopped at its cache assertion, not an overall PASS.
+- Only owned web processes and containers `rc103b-20261020` / `rc103b-final-20261020` were stopped. Databases, media and frozen worktree remain retained. No existing environments were reset, cleaned, pushed, tagged, published or deployed.
+
+**Next:** resolve the client/server crypto build prerequisite in its owning scope, stabilize a candidate containing these 03B changes, then rerun strict unpublished-preview cache and complete runtime acceptance. Keep 03B NOT READY until that proof passes. 03C was not started.

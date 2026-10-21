@@ -1,0 +1,38 @@
+ M docs/rc/RC1-70-SUBPASS-LEDGER.md
+ M docs/rc/evidence/rc1/18-pass/03B/NEXT.md
+ M docs/rc/evidence/rc1/18-pass/03B/RESULT.md
+ M docs/rc/evidence/rc1/18-pass/03B/current/editor-loaded.png
+ M docs/rc/evidence/rc1/18-pass/03B/current/editor-loaded.txt
+ M docs/rc/evidence/rc1/18-pass/03B/current/journey-trace.json
+ M docs/rc/evidence/rc1/18-pass/03B/current/journey.txt
+ M docs/rc/evidence/rc1/18-pass/03B/current/tested-source.json
+ M docs/rc/evidence/rc1/18-pass/03B/current/units.txt
+ M next-env.d.ts
+ M src/app/(frontend)/api/admin/social/drafts/route.ts
+ M src/app/(frontend)/api/admin/social/worker/route.ts
+ M src/modules/admin/SocialCommandCenter.tsx
+ M src/modules/editorial/persistence.ts
+ M src/modules/editorial/presentation.ts
+ M src/modules/social/adapters/bluesky.ts
+ M src/modules/social/adapters/mastodon.ts
+ M src/modules/social/contracts.ts
+ M src/modules/social/provider-runtime.ts
+ M src/modules/social/tasks.ts
+ M tests/rc1-03b/run-current.ps1
+ M tests/rc1-03b/tsconfig.current.json
+ M tests/rc1-03b/verify-current.ts
+ M tests/unit/rc1-03b-current.test.tsx
+ M tsconfig.json
+?? docs/rc/evidence/rc1/18-pass/03B/current/editor-fields.json
+?? docs/rc/evidence/rc1/18-pass/03B/current/environment.json
+?? docs/rc/evidence/rc1/18-pass/03B/current/format.txt
+?? docs/rc/evidence/rc1/18-pass/03B/current/lock-conflict.png
+?? docs/rc/evidence/rc1/18-pass/03B/current/server.txt
+?? docs/rc/evidence/rc1/18-pass/03B/current/workflow-regressions.txt
+?? docs/rc/evidence/rc1/18-pass/03B/final/
+?? docs/rc/evidence/rc1/18-pass/03B/production/
+?? docs/rc/evidence/rc1/18-pass/03B/recovery/
+?? docs/rc/evidence/rc1/18-pass/08C/
+?? tests/rc1-03b/verify-privacy.ts
+?? tests/rc1-08c/
+?? tests/unit/rc1-08c-social-dispatch.test.ts

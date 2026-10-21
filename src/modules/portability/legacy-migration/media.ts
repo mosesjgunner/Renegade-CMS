@@ -11,6 +11,7 @@ export type MediaAcquisitionResult = {
   idRewireMap: Map<string, string> // sourceAttachmentId -> mediaId
   warnings: Array<{ code: string; message: string; sourceId?: string }>
   errors: Array<{ code: string; message: string; sourceId?: string }>
+  createdMediaIds: string[]
   totalDownloadedBytes: number
 }
 
@@ -58,6 +59,7 @@ export async function acquireLegacyMedia(
   const errors: Array<{ code: string; message: string; sourceId?: string }> = []
   const sha256ToAsset = new Map<string, { mediaId: string; url: string }>()
 
+  const createdMediaIds: string[] = []
   let totalDownloadedBytes = 0
 
   for (const item of items) {
@@ -72,7 +74,22 @@ export async function acquireLegacyMedia(
         Object.entries(options.localMediaFiles).find(([k]) => item.sourceUrl.endsWith(k))?.[1])
 
     if (localMatch) {
-      bytes = new Uint8Array(localMatch.buffer)
+      const raw = localMatch.buffer as Buffer | { type?: string; data?: number[] }
+      if (Buffer.isBuffer(raw)) bytes = new Uint8Array(raw)
+      else if (
+        raw?.type === 'Buffer' &&
+        Array.isArray(raw.data) &&
+        raw.data.every((value) => Number.isInteger(value) && value >= 0 && value <= 255)
+      )
+        bytes = new Uint8Array(raw.data)
+      else {
+        errors.push({
+          code: 'INVALID_LOCAL_MEDIA',
+          sourceId: item.id,
+          message: `Provide Buffer JSON bytes for ${item.fileName}.`,
+        })
+        continue
+      }
       fileName = localMatch.fileName || item.fileName
     } else if (item.sourceUrl.startsWith('http://') || item.sourceUrl.startsWith('https://')) {
       // 2. Remote download requires explicit permission
@@ -178,6 +195,7 @@ export async function acquireLegacyMedia(
           height: inspection.height,
         })
         mediaId = created.id
+        createdMediaIds.push(created.id)
         mediaUrl = created.url
         sha256ToAsset.set(sha256, { mediaId, url: mediaUrl })
       } catch (err) {
@@ -208,6 +226,7 @@ export async function acquireLegacyMedia(
     warnings,
     errors,
     totalDownloadedBytes,
+    createdMediaIds,
   }
 }
 
