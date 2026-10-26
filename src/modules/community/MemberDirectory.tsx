@@ -29,6 +29,8 @@ export function MemberDirectory({ siteId }: { siteId: string }) {
       const response = await fetch(`/api/community/directory?${params}`)
       const data = await response.json().catch(() => ({}))
       if (!response.ok) {
+        setEntries([])
+        setHasNext(false)
         setMessage(data.error ?? 'Directory unavailable.')
         return
       }
@@ -37,6 +39,8 @@ export function MemberDirectory({ siteId }: { siteId: string }) {
       setHasNext(data.hasNextPage === true)
       setMessage(data.profiles?.length ? '' : 'No listed members found.')
     } catch {
+      setEntries([])
+      setHasNext(false)
       setMessage('Directory unavailable. Please try again.')
     } finally {
       setBusy(false)

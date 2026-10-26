@@ -1,24 +1,33 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 
 export default function VerifyMemberLink() {
   const token = useSearchParams()?.get('token')
   const [message, setMessage] = useState('Signing you in…')
+  const requested = useRef<string | null>(null)
   useEffect(() => {
+    if (!token) return setMessage('This sign-in link is invalid or expired.')
+    if (requested.current === token) return
+    requested.current = token
     void fetch('/api/member-auth/magic-link/complete', {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({ token }),
-    }).then(async (response) =>
-      setMessage(
-        response.ok
-          ? 'Signed in.'
-          : ((await response.json()).error ?? 'This sign-in link is invalid or expired.'),
-      ),
-    )
+    })
+      .then(async (response) => {
+        const data = await response.json()
+        setMessage(
+          response.ok
+            ? data.status === 'pending-approval'
+              ? data.message
+              : 'Signed in.'
+            : (data.error ?? 'This sign-in link is invalid or expired.'),
+        )
+      })
+      .catch(() => setMessage('Sign-in unavailable. Please request a new link.'))
   }, [token])
   return (
     <main className="max-w-xl mx-auto px-6 py-16">

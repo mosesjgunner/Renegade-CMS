@@ -1,0 +1,198 @@
+[
+  {
+    "name": "member 1: ordinary email UI and captured SMTP link create a private canonical identity",
+    "passed": true
+  },
+  {
+    "name": "member 1: consumed email link replay denied",
+    "passed": true
+  },
+  {
+    "name": "member 1: UI edits persist privacy, bio and locale with exactly one profile",
+    "passed": true
+  },
+  {
+    "name": "member 1: refetch renders persisted profile",
+    "passed": true
+  },
+  {
+    "name": "member 1: WebAuthn enrollment verified and challenge replay denied",
+    "passed": true
+  },
+  {
+    "name": "member 1: ordinary sign-out revokes access",
+    "passed": true
+  },
+  {
+    "name": "member 1: WebAuthn login returns same identity; challenge replay denied",
+    "passed": true
+  },
+  {
+    "name": "member 1: email and passkey link to one member without admin cookies",
+    "passed": true
+  },
+  {
+    "name": "member 2: ordinary email UI and captured SMTP link create a private canonical identity",
+    "passed": true
+  },
+  {
+    "name": "member 2: consumed email link replay denied",
+    "passed": true
+  },
+  {
+    "name": "member 2: UI edits persist privacy, bio and locale with exactly one profile",
+    "passed": true
+  },
+  {
+    "name": "member 2: refetch renders persisted profile",
+    "passed": true
+  },
+  {
+    "name": "member 2: WebAuthn enrollment verified and challenge replay denied",
+    "passed": true
+  },
+  {
+    "name": "member 2: ordinary sign-out revokes access",
+    "passed": true
+  },
+  {
+    "name": "member 2: WebAuthn login returns same identity; challenge replay denied",
+    "passed": true
+  },
+  {
+    "name": "member 2: email and passkey link to one member without admin cookies",
+    "passed": true
+  },
+  {
+    "name": "member 3: ordinary email UI and captured SMTP link create a private canonical identity",
+    "passed": true
+  },
+  {
+    "name": "member 3: consumed email link replay denied",
+    "passed": true
+  },
+  {
+    "name": "member 3: UI edits persist privacy, bio and locale with exactly one profile",
+    "passed": true
+  },
+  {
+    "name": "member 3: refetch renders persisted profile",
+    "passed": true
+  },
+  {
+    "name": "member 3: WebAuthn enrollment verified and challenge replay denied",
+    "passed": true
+  },
+  {
+    "name": "member 3: ordinary sign-out revokes access",
+    "passed": true
+  },
+  {
+    "name": "member 3: WebAuthn login returns same identity; challenge replay denied",
+    "passed": true
+  },
+  {
+    "name": "member 3: email and passkey link to one member without admin cookies",
+    "passed": true
+  },
+  {
+    "name": "anonymous: follower bio and private locale omitted",
+    "passed": true
+  },
+  {
+    "name": "anonymous: private profile unavailable",
+    "passed": true
+  },
+  {
+    "name": "anonymous: public profile still hides only-me bio",
+    "passed": true
+  },
+  {
+    "name": "anonymous: raw profiles unavailable",
+    "passed": true
+  },
+  {
+    "name": "unrelated member: follower bio and private locale omitted",
+    "passed": true
+  },
+  {
+    "name": "unrelated member: private profile unavailable",
+    "passed": true
+  },
+  {
+    "name": "unrelated member: public profile still hides only-me bio",
+    "passed": true
+  },
+  {
+    "name": "unrelated member: raw profiles unavailable",
+    "passed": true
+  },
+  {
+    "name": "anonymous export requires authentication",
+    "passed": true
+  },
+  {
+    "name": "foreign member export denied",
+    "passed": true
+  },
+  {
+    "name": "cross-site profile request denied",
+    "passed": true
+  },
+  {
+    "name": "profile mutation without CSRF denied",
+    "passed": true
+  },
+  {
+    "name": "invalid profile link rejected",
+    "passed": true
+  },
+  {
+    "name": "directory UI lists public member while opt-out/private members are absent",
+    "passed": true
+  },
+  {
+    "name": "directory service error clears previous results",
+    "passed": true
+  },
+  {
+    "name": "directory empty state is truthful",
+    "passed": true
+  },
+  {
+    "name": "ordinary follow UI authorizes follower bio",
+    "passed": true
+  },
+  {
+    "name": "same member on another host cannot reuse site-local follower permission",
+    "passed": true
+  },
+  {
+    "name": "same-site staff: raw profile denied even with target membership; projection omits private fields",
+    "passed": true
+  },
+  {
+    "name": "foreign-site staff: raw profile denied even with target membership; projection omits private fields",
+    "passed": true
+  },
+  {
+    "name": "supported message API persists actual authored content",
+    "passed": true
+  },
+  {
+    "name": "unrelated member cannot read conversation",
+    "passed": true
+  },
+  {
+    "name": "supported comment API creates an owned contribution",
+    "passed": true
+  },
+  {
+    "name": "ordinary export UI downloads authored message and contribution",
+    "passed": true
+  },
+  {
+    "passed": false,
+    "error": "AssertionError [ERR_ASSERTION]: export excludes credential material and private storage keys"
+  }
+]

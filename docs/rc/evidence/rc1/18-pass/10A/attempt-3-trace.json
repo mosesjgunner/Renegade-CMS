@@ -1,0 +1,158 @@
+[
+  {
+    "name": "member 1: ordinary email UI and captured SMTP link create a private canonical identity",
+    "passed": true
+  },
+  {
+    "name": "member 1: consumed email link replay denied",
+    "passed": true
+  },
+  {
+    "name": "member 1: UI edits persist privacy, bio and locale with exactly one profile",
+    "passed": true
+  },
+  {
+    "name": "member 1: refetch renders persisted profile",
+    "passed": true
+  },
+  {
+    "name": "member 1: WebAuthn enrollment verified and challenge replay denied",
+    "passed": true
+  },
+  {
+    "name": "member 1: ordinary sign-out revokes access",
+    "passed": true
+  },
+  {
+    "name": "member 1: WebAuthn login returns same identity; challenge replay denied",
+    "passed": true
+  },
+  {
+    "name": "member 1: email and passkey link to one member without admin cookies",
+    "passed": true
+  },
+  {
+    "name": "member 2: ordinary email UI and captured SMTP link create a private canonical identity",
+    "passed": true
+  },
+  {
+    "name": "member 2: consumed email link replay denied",
+    "passed": true
+  },
+  {
+    "name": "member 2: UI edits persist privacy, bio and locale with exactly one profile",
+    "passed": true
+  },
+  {
+    "name": "member 2: refetch renders persisted profile",
+    "passed": true
+  },
+  {
+    "name": "member 2: WebAuthn enrollment verified and challenge replay denied",
+    "passed": true
+  },
+  {
+    "name": "member 2: ordinary sign-out revokes access",
+    "passed": true
+  },
+  {
+    "name": "member 2: WebAuthn login returns same identity; challenge replay denied",
+    "passed": true
+  },
+  {
+    "name": "member 2: email and passkey link to one member without admin cookies",
+    "passed": true
+  },
+  {
+    "name": "member 3: ordinary email UI and captured SMTP link create a private canonical identity",
+    "passed": true
+  },
+  {
+    "name": "member 3: consumed email link replay denied",
+    "passed": true
+  },
+  {
+    "name": "member 3: UI edits persist privacy, bio and locale with exactly one profile",
+    "passed": true
+  },
+  {
+    "name": "member 3: refetch renders persisted profile",
+    "passed": true
+  },
+  {
+    "name": "member 3: WebAuthn enrollment verified and challenge replay denied",
+    "passed": true
+  },
+  {
+    "name": "member 3: ordinary sign-out revokes access",
+    "passed": true
+  },
+  {
+    "name": "member 3: WebAuthn login returns same identity; challenge replay denied",
+    "passed": true
+  },
+  {
+    "name": "member 3: email and passkey link to one member without admin cookies",
+    "passed": true
+  },
+  {
+    "name": "anonymous: follower bio and private locale omitted",
+    "passed": true
+  },
+  {
+    "name": "anonymous: private profile unavailable",
+    "passed": true
+  },
+  {
+    "name": "anonymous: raw profiles unavailable",
+    "passed": true
+  },
+  {
+    "name": "unrelated member: follower bio and private locale omitted",
+    "passed": true
+  },
+  {
+    "name": "unrelated member: private profile unavailable",
+    "passed": true
+  },
+  {
+    "name": "unrelated member: raw profiles unavailable",
+    "passed": true
+  },
+  {
+    "name": "anonymous export requires authentication",
+    "passed": true
+  },
+  {
+    "name": "foreign member export denied",
+    "passed": true
+  },
+  {
+    "name": "cross-site profile request denied",
+    "passed": true
+  },
+  {
+    "name": "profile mutation without CSRF denied",
+    "passed": true
+  },
+  {
+    "name": "invalid profile link rejected",
+    "passed": true
+  },
+  {
+    "name": "directory UI lists public member while opt-out/private members are absent",
+    "passed": true
+  },
+  {
+    "name": "directory service error clears previous results",
+    "passed": true
+  },
+  {
+    "name": "directory empty state is truthful",
+    "passed": true
+  },
+  {
+    "passed": false,
+    "error": "Error: expect(locator).toHaveText(expected) failed\n\nLocator: getByRole('status')\nExpected: \"Follow enabled.\"\nTimeout: 60000ms\nError: element(s) not found\n\nCall log:\n  - Expect \"to.have.text\" with timeout 60000ms\n  - waiting for getByRole('status')\n"
+  }
+]

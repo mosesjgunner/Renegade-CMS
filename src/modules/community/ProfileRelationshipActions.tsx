@@ -21,6 +21,7 @@ export function ProfileRelationshipActions({
   const [message, setMessage] = useState('')
   const router = useRouter()
   const [state, setState] = useState({ following: false, muted: false, blocked: false })
+  const [ready, setReady] = useState(false)
   const [showReport, setShowReport] = useState(false)
   const [reportReason, setReportReason] = useState('')
   const [reportDetails, setReportDetails] = useState('')
@@ -50,10 +51,24 @@ export function ProfileRelationshipActions({
     }
   }
   useEffect(() => {
+    let active = true
+    setReady(false)
     const query = new URLSearchParams({ siteId, targetMemberId })
-    void fetch(`/api/community/relationships?${query}`).then(async (response) => {
-      if (response.ok) setState(await response.json())
-    })
+    void fetch(`/api/community/relationships?${query}`)
+      .then(async (response) => {
+        if (!response.ok) throw new Error('Relationship controls unavailable.')
+        const saved = await response.json()
+        if (active) {
+          setState(saved)
+          setReady(true)
+        }
+      })
+      .catch(() => {
+        if (active) setMessage('Relationship controls unavailable.')
+      })
+    return () => {
+      active = false
+    }
   }, [siteId, targetMemberId])
   async function update(kind: 'follow' | 'block' | 'mute', active: boolean) {
     const response = await fetch('/api/community/relationships', {
@@ -81,14 +96,25 @@ export function ProfileRelationshipActions({
         <button
           className="btn"
           type="button"
+          disabled={!ready}
           onClick={() => void update('follow', !state.following)}
         >
           {state.following ? 'Unfollow' : 'Follow'}
         </button>
-        <button className="btn" type="button" onClick={() => void update('mute', !state.muted)}>
+        <button
+          className="btn"
+          type="button"
+          disabled={!ready}
+          onClick={() => void update('mute', !state.muted)}
+        >
           {state.muted ? 'Unmute' : 'Mute'}
         </button>
-        <button className="btn" type="button" onClick={() => void update('block', !state.blocked)}>
+        <button
+          className="btn"
+          type="button"
+          disabled={!ready}
+          onClick={() => void update('block', !state.blocked)}
+        >
           {state.blocked ? 'Unblock' : 'Block'}
         </button>
         <a href={`/messages?targetMemberId=${encodeURIComponent(targetMemberId)}`} className="btn">
@@ -97,6 +123,7 @@ export function ProfileRelationshipActions({
         <button
           className="btn text-stone-500 hover:text-stone-700 dark:hover:text-stone-300"
           type="button"
+          disabled={!ready}
           onClick={() => setShowReport(!showReport)}
         >
           {showReport ? 'Cancel Report' : 'Report Member'}

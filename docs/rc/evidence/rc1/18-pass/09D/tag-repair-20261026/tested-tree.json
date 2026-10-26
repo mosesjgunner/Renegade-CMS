@@ -1,0 +1,22 @@
+{
+  "baseCommit": "0e37d694b856d6ff275c2e42d4799591717347ae",
+  "identity": "clean initial checkout plus exact tested dirty source overlay",
+  "files": [
+    {
+      "path": "src/modules/audience/service.ts",
+      "sha256": "bac8e030bf5cc94b7394960c4e2e9d53e13c69d4b30b18cb5a2cacb9a30800d5"
+    },
+    {
+      "path": "tests/rc1-09d/run-current.ps1",
+      "sha256": "8db9e012e9bbd5a4eb80951a9ddfb94161419e2149062e606f7f0e7016f42bc1"
+    },
+    {
+      "path": "tests/rc1-09d/segment-current.ts",
+      "sha256": "bc6e3d94a42408568be6bbb0f98f459990ef3d8f1371ec12805e314794ce1b5b"
+    },
+    {
+      "path": "tests/unit/rc1-09d-segments.test.ts",
+      "sha256": "b4b2df3037f73b9003c0818dc353d321793bf49f342c86c90d6066815494bf31"
+    }
+  ]
+}

@@ -16,6 +16,8 @@ import {
   csrfCookie,
   verifyCsrf,
   walletCapability,
+  resolveCommunityRegistrationPolicy,
+  consumeIdentityToken,
 } from '../../src/modules/identity/member-identity'
 import {
   beginMemberPasskeyLogin,
@@ -74,6 +76,56 @@ class MemoryStore {
 }
 
 describe('member identity', () => {
+  it('audits rejected enrollment without a fictitious member relationship', async () => {
+    const store = new MemoryStore()
+    const issued = await issueMagicLink(store as never, 'closed@example.test')
+    expect(
+      await consumeMagicLink(store as never, issued.token!, new Date(), { policy: 'disabled' }),
+    ).toBeNull()
+    expect(store.records.get('members')).toBeUndefined()
+    expect(store.records.get('identity-audit-events')?.[0]).not.toHaveProperty('member')
+  })
+  it('binds verified recovery to an existing canonical member without creating a duplicate', async () => {
+    const store = new MemoryStore()
+    const member = await store.create({
+      collection: 'members',
+      data: { email: 'existing@example.test', status: 'active' },
+    })
+    const issued = await issueMagicLink(store as never, 'existing@example.test')
+    const result = await consumeMagicLink(store as never, issued.token!)
+    expect(result?.memberId).toBe(member.id)
+    expect(store.records.get('members')).toHaveLength(1)
+    expect(store.records.get('profiles')).toHaveLength(1)
+  })
+  it('uses an atomic database claim and rejects losing or expired consumers', async () => {
+    let claimed = false
+    const store = {
+      db: {
+        pool: {
+          query: async (sql: string) => {
+            expect(sql).toContain('consumed_at IS NULL AND expires_at>$2')
+            if (claimed) return { rows: [] }
+            claimed = true
+            return { rows: [{ id: 'one' }] }
+          },
+        },
+      },
+    }
+    const results = await Promise.all([
+      consumeIdentityToken(store as never, 'one', new Date()),
+      consumeIdentityToken(store as never, 'one', new Date()),
+    ])
+    expect(results).toEqual([true, false])
+  })
+  it('resolves the host-selected registration policy instead of the first tenant', async () => {
+    const store = new MemoryStore()
+    await store.create({ collection: 'sites', data: { communityRegistrationPolicy: 'open' } })
+    const closed = await store.create({
+      collection: 'sites',
+      data: { communityRegistrationPolicy: 'disabled' },
+    })
+    expect(await resolveCommunityRegistrationPolicy(store as never, closed.id)).toBe('disabled')
+  })
   it('normalizes valid emails without accepting malformed addresses', () => {
     expect(normalizeEmail(' MEMBER@EXAMPLE.TEST ')).toBe('member@example.test')
     expect(normalizeEmail('not-an-email')).toBeNull()

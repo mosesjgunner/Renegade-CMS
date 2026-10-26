@@ -1,0 +1,6 @@
+[
+  {
+    "passed": false,
+    "error": "Error: expect(locator).toHaveValue(expected) failed\n\nLocator: getByRole('textbox', { name: 'Handle', exact: true })\nExpected pattern: /member-/\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n  - Expect \"to.have.value\" with timeout 5000ms\n  - waiting for getByRole('textbox', { name: 'Handle', exact: true })\n"
+  }
+]

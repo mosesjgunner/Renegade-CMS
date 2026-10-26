@@ -8,13 +8,15 @@ import {
   resolveCommunityRegistrationPolicy,
 } from '@/modules/identity/member-identity'
 import { loadConfig } from '@/modules/core/config'
+import { communitySiteForHost } from '@/modules/community/site-scope'
 export async function POST(request: Request) {
-  const body = (await request.json().catch(() => ({}))) as { token?: string; inviteCode?: string }
+  const body = (await request.json().catch(() => ({}))) as { token?: string }
   const payload = await getPayload({ config })
-  const policy = await resolveCommunityRegistrationPolicy(payload as never)
+  const siteId = await communitySiteForHost(payload, request.headers.get('host')).catch(() => null)
+  if (!siteId) return Response.json({ error: 'Community site unavailable.' }, { status: 404 })
+  const policy = await resolveCommunityRegistrationPolicy(payload as never, siteId)
   const result = await consumeMagicLink(payload as never, body.token ?? '', new Date(), {
     policy,
-    hasInvite: Boolean(body.inviteCode),
   })
   if (!result)
     return Response.json({ error: 'This sign-in link is invalid or expired.' }, { status: 400 })
@@ -40,7 +42,9 @@ export async function GET(request: Request) {
   const url = new URL(request.url)
   const token = url.searchParams.get('token') ?? ''
   const payload = await getPayload({ config })
-  const policy = await resolveCommunityRegistrationPolicy(payload as never)
+  const siteId = await communitySiteForHost(payload, request.headers.get('host')).catch(() => null)
+  if (!siteId) return Response.json({ error: 'Community site unavailable.' }, { status: 404 })
+  const policy = await resolveCommunityRegistrationPolicy(payload as never, siteId)
   const result = await consumeMagicLink(payload as never, token, new Date(), { policy })
   if (!result) {
     return Response.redirect(new URL('/member-auth?error=invalid-token', request.url))

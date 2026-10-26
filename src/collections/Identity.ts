@@ -92,7 +92,18 @@ export const Members: CollectionConfig = {
   },
   fields: [
     { name: 'displayName', type: 'text', required: true },
-    { name: 'email', type: 'email', unique: true, index: true },
+    {
+      name: 'email',
+      type: 'email',
+      unique: true,
+      index: true,
+      access: {
+        read: async ({ req }) =>
+          (await resolveOperatorGrantContext(req.payload, req.user)).isGlobalOwner,
+        update: async ({ req }) =>
+          (await resolveOperatorGrantContext(req.payload, req.user)).isGlobalOwner,
+      },
+    },
     {
       name: 'status',
       type: 'select',
@@ -282,7 +293,16 @@ export const IdentityAuditEvents: CollectionConfig = {
   fields: [
     { name: 'member', type: 'relationship', relationTo: 'members', index: true },
     { name: 'event', type: 'text', required: true, index: true },
-    { name: 'details', type: 'json' },
+    {
+      name: 'details',
+      type: 'json',
+      // Profile history includes private before/after values. Scoped staff may see
+      // event metadata, but private history uses the owner/self-service boundary.
+      access: {
+        read: async ({ req }) =>
+          (await resolveOperatorGrantContext(req.payload, req.user)).isGlobalOwner,
+      },
+    },
   ],
 }
 export const Profiles: CollectionConfig = {
@@ -290,7 +310,7 @@ export const Profiles: CollectionConfig = {
   admin: { useAsTitle: 'displayName', group: 'Community' },
   // Public reads use the versioned projection service. Payload REST/GraphQL
   // must never serialize the underlying preferences or field audience map.
-  access: operatorMemberScopeAccess(),
+  access: identityStoreAccess,
   fields: [
     {
       name: 'member',

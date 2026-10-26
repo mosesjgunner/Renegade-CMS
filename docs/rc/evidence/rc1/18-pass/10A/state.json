@@ -1,0 +1,25 @@
+{
+  "alpha": "cce0a33d-70fc-4f4d-975e-6ffca2fb1c00",
+  "beta": "c4f057a0-8883-44bd-8a8a-1dad9fe00d38",
+  "members": [
+    {
+      "memberId": "0f0fe24d-cafc-4d9c-8351-a7754d0276e4",
+      "handle": "member-a7754d0276e4"
+    },
+    {
+      "memberId": "798b5732-6e16-4934-bee9-6835f83e74f9",
+      "handle": "member-6835f83e74f9"
+    },
+    {
+      "memberId": "6ada7030-2860-4d1d-bc17-764b204a19e5",
+      "handle": "member-764b204a19e5"
+    }
+  ],
+  "conversationId": "01a177d2-a4f6-7134-824f-7db86e030621",
+  "messageId": "01a177d2-cd4f-7ae1-82bf-b1219415bfc7",
+  "marker": "mvp4l8jp",
+  "authMode": "test auth disabled; real WebAuthn protocol with Chromium virtual CTAP2 authenticator",
+  "delivery": "loopback SMTP only",
+  "smtpDeliveries": 4,
+  "developmentReloadRetries": 0
+}

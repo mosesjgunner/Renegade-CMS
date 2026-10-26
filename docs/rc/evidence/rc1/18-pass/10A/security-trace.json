@@ -1,0 +1,54 @@
+[
+  {
+    "name": "disabled tenant rejects caller-supplied invite without a fictitious audit member",
+    "passed": true
+  },
+  {
+    "name": "invite tenant rejects caller-supplied invite without a fictitious audit member",
+    "passed": true
+  },
+  {
+    "name": "denied registration creates no canonical member",
+    "passed": true
+  },
+  {
+    "name": "concurrent first-enrollment token consumption has exactly one winner",
+    "passed": true
+  },
+  {
+    "name": "concurrent enrollment persisted exactly one member and one profile",
+    "passed": true
+  },
+  {
+    "name": "authenticated profile writes on unknown hosts fail closed without persistence",
+    "passed": true
+  },
+  {
+    "name": "invalid recovery link returns a bounded error",
+    "passed": true
+  },
+  {
+    "name": "scoped staff can read event metadata but cannot recover private bio from audit history",
+    "passed": true
+  },
+  {
+    "name": "staff member administration omits private canonical email",
+    "passed": true
+  },
+  {
+    "name": "scoped staff cannot replace canonical recovery email",
+    "passed": true
+  },
+  {
+    "name": "different valid email links converge under concurrency without duplicate canonical identities",
+    "passed": true
+  },
+  {
+    "name": "profile persistence error rolls back member creation and token consumption",
+    "passed": true
+  },
+  {
+    "name": "same ordinary completion endpoint can retry after transactional rollback",
+    "passed": true
+  }
+]

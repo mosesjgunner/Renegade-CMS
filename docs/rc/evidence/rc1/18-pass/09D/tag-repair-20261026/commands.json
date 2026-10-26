@@ -1,0 +1,42 @@
+[
+  {
+    "command": "npx.cmd eslint src/modules/audience/service.ts tests/unit/rc1-09d-segments.test.ts tests/rc1-09d/segment-current.ts --max-warnings=0",
+    "exit": 0,
+    "log": "lint.log"
+  },
+  {
+    "command": "npx.cmd tsc --noEmit",
+    "exit": 0,
+    "log": "types.log"
+  },
+  {
+    "command": "npx.cmd vitest run tests/unit/rc1-09d-reporting.test.ts tests/unit/rc1-09d-segments.test.ts tests/unit/rc1-09d-crm-metrics.test.ts tests/unit/aud-07-audience-command.test.ts tests/unit/aud-01-audience-evidence.test.ts tests/unit/aud-04-engine.test.ts tests/unit/aud-06-telecom.test.ts tests/unit/rc1-09c-delivery.test.ts tests/unit/rc1-09c-telecom.test.ts tests/unit/comm-06b-inbox-notifications.test.ts tests/unit/rc1-09b-campaigns-templates.test.ts",
+    "exit": 0,
+    "passed": 117,
+    "log": "unit.log"
+  },
+  {
+    "command": "docker start rc109d-review-20261025",
+    "exit": 0
+  },
+  {
+    "command": "$env:RC1_09D_EVIDENCE_DIR='docs/rc/evidence/rc1/18-pass/09D/tag-repair-20261026'; powershell -ExecutionPolicy Bypass -File tests/rc1-09d/run-current.ps1 segment",
+    "exit": 0,
+    "passed": 15,
+    "log": "segment.log"
+  },
+  {
+    "command": "docker restart rc109d-review-20261025",
+    "exit": 0
+  },
+  {
+    "command": "$env:RC1_09D_EVIDENCE_DIR='docs/rc/evidence/rc1/18-pass/09D/tag-repair-20261026'; powershell -ExecutionPolicy Bypass -File tests/rc1-09d/run-current.ps1 segment-restart",
+    "exit": 0,
+    "passed": 3,
+    "log": "restart.log"
+  },
+  {
+    "command": "powershell -ExecutionPolicy Bypass -File tests/rc1-09d/run-current.ps1 stop-db",
+    "exit": 0
+  }
+]

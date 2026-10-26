@@ -1,0 +1,19 @@
+﻿{
+    "database":  {
+                     "finishedAt":  "2026-10-26T10:54:13.280155878Z",
+                     "startedAt":  "2026-10-26T10:49:43.255723732Z",
+                     "port":  "127.0.0.1:5454",
+                     "name":  "rc110a_release_acceptance",
+                     "label":  "10a",
+                     "container":  "3236830e24502e42db3f014b1a768a0eca3fc6c662c9c59ffa8c5bcc465dc2c2",
+                     "state":  "exited",
+                     "image":  "sha256:00bc86618629af00d2937fdc5a5d63db3ff8450acf52f0636ec813c7f4902929"
+                 },
+    "node":  "v24.19.0",
+    "browser":  "Chromium virtual CTAP2; real WebAuthn protocol; no physical-device claim",
+    "smtp":  "127.0.0.1:3142, stopped; example.test recipients only",
+    "app":  "127.0.0.1:39010, stopped",
+    "mode":  "development source, webpack, LOCAL_E2E_TEST_MODE=false, ENABLE_TEST_ROUTES=false",
+    "media":  "scratch/rc110a/media",
+    "next":  "16.3.8"
+}

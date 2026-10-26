@@ -568,6 +568,42 @@ export async function evaluateSegmentRecipients(
     }
   }
 
+  // Resolve persisted relationships in one query, including both tenant boundaries.
+  // A populated relationship or a contact/tag ID supplied on another site cannot
+  // authorize that site's labels as facts about this audience.
+  const contactIds = [
+    ...new Set(
+      (subscribersRes.docs as Doc[])
+        .map((sub) => relationId(sub.contact))
+        .filter((id): id is string => Boolean(id)),
+    ),
+  ]
+  const tagsByContact = new Map<string, Set<string>>()
+  if (contactIds.length) {
+    const taggings = await payload.find({
+      collection: 'contact-taggings',
+      where: {
+        and: [
+          { contact: { in: contactIds } },
+          { 'contact.site': { equals: input.siteId } },
+          { 'tag.site': { equals: input.siteId } },
+        ],
+      },
+      limit: 0,
+      pagination: false,
+      depth: 0,
+      overrideAccess: true,
+    })
+    for (const tagging of taggings.docs as Doc[]) {
+      const contactId = relationId(tagging.contact),
+        tagId = relationId(tagging.tag)
+      if (!contactId || !tagId) continue
+      const tags = tagsByContact.get(contactId) ?? new Set<string>()
+      tags.add(tagId)
+      tagsByContact.set(contactId, tags)
+    }
+  }
+
   for (const sub of subscribersRes.docs as Doc[]) {
     let email = ''
     try {
@@ -588,7 +624,7 @@ export async function evaluateSegmentRecipients(
       channelEligible: isActive && !isSuppressed,
       consentPurposes: isActive ? ['newsletter'] : [],
       lists,
-      tags: [],
+      tags: [...(tagsByContact.get(relationId(sub.contact) ?? '') ?? [])],
       formIds: [],
       sourceCampaigns: [],
       roles: [],

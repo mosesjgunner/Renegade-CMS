@@ -1,4 +1,4 @@
-param([ValidateSet('start-db','migrate','verify','restart-check','stop-db','browser','intake','telecom','telecom-restart','capture','restart','segment')][string]$Action)
+param([ValidateSet('start-db','migrate','verify','restart-check','stop-db','browser','intake','telecom','telecom-restart','capture','restart','segment','segment-restart')][string]$Action)
 $ErrorActionPreference = 'Stop'
 Set-Location (Resolve-Path "$PSScriptRoot/../..")
 $env:DATABASE_URL = 'postgresql://postgres:postgres@127.0.0.1:5453/rc109d_release_acceptance'
@@ -38,6 +38,7 @@ switch ($Action) {
     exit $LASTEXITCODE
   }
   'segment' { node --import tsx tests/rc1-09d/segment-current.ts; exit $LASTEXITCODE }
+  'segment-restart' { node --import tsx tests/rc1-09d/segment-current.ts --restart; exit $LASTEXITCODE }
   'capture' { node --import tsx tests/rc1-09d/restart-current.ts --capture; exit $LASTEXITCODE }
   'restart' {
     docker restart rc109d-review-20261025

@@ -9,6 +9,7 @@ import {
 
 import {
   digest,
+  consumeIdentityToken,
   memberMayAuthenticate,
   opaqueToken,
   MEMBER_SESSION_TTL_MS,
@@ -100,12 +101,8 @@ export async function completeMemberPasskeyRegistration(
   if (new Date(String(record.expiresAt)).getTime() <= now.getTime()) {
     throw new MemberPasskeyError('EXPIRED', 'This passkey enrollment request has expired.')
   }
-  await store.update({
-    collection: 'identity-tokens',
-    id: String(record.id),
-    data: { consumedAt: now.toISOString() },
-    overrideAccess: true,
-  })
+  if (!(await consumeIdentityToken(store, String(record.id), now)))
+    throw new MemberPasskeyError('ALREADY_USED', 'This request already completed.')
   const challenge = String((record.metadata as { challenge?: string } | undefined)?.challenge)
   const origin = new URL(input.appUrl)
   const verification = await verifyRegistrationResponse({
@@ -208,12 +205,8 @@ export async function completeMemberPasskeyLogin(
   })
   const identity = identities.docs[0]
   if (!identity) throw new MemberPasskeyError('NOT_FOUND', 'This passkey is not registered.')
-  await store.update({
-    collection: 'identity-tokens',
-    id: String(record.id),
-    data: { consumedAt: now.toISOString() },
-    overrideAccess: true,
-  })
+  if (!(await consumeIdentityToken(store, String(record.id), now)))
+    throw new MemberPasskeyError('ALREADY_USED', 'This request already completed.')
   const challenge = String((record.metadata as { challenge?: string } | undefined)?.challenge)
   const metadata = identity.metadata as PasskeyMetadata
   const origin = new URL(input.appUrl)

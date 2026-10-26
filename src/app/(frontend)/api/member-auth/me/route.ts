@@ -43,8 +43,13 @@ export async function GET(request: Request) {
     : null
   return Response.json(
     { memberId, profile: memberProfile, siteId },
-    existingCsrf
-      ? undefined
-      : { headers: { 'set-cookie': csrfCookie(csrfToken, loadConfig().secureCookies) } },
+    {
+      headers: {
+        'cache-control': 'private, no-store',
+        ...(!existingCsrf
+          ? { 'set-cookie': csrfCookie(csrfToken, loadConfig().secureCookies) }
+          : {}),
+      },
+    },
   )
 }

@@ -3,6 +3,9 @@ import { createHash, randomBytes, timingSafeEqual } from 'node:crypto'
 import { consumeApiRateLimit } from '../integrations/rate-limit'
 import { exportCommunityData } from './community-export'
 import type { Payload } from 'payload'
+import { createLocalReq } from 'payload'
+import { sql } from '@payloadcms/db-postgres'
+import { transactionPayload } from '../core/transaction-payload'
 
 export const MEMBER_SESSION_COOKIE = 'renegade-member'
 export const MEMBER_CSRF_COOKIE = 'renegade-member-csrf'
@@ -59,6 +62,29 @@ export function normalizeEmail(value: string): string | null {
 }
 export function digest(value: string): string {
   return createHash('sha256').update(value).digest('base64url')
+}
+
+/** Database compare-and-set makes a challenge single-use across concurrent web processes. */
+export async function consumeIdentityToken(store: IdentityStore, id: string, now: Date) {
+  const pool = (
+    store as unknown as {
+      db?: { pool?: { query: (sql: string, values: unknown[]) => Promise<{ rows: unknown[] }> } }
+    }
+  ).db?.pool
+  if (pool) {
+    const claimed = await pool.query(
+      'UPDATE identity_tokens SET consumed_at=$2 WHERE id=$1 AND consumed_at IS NULL AND expires_at>$2 RETURNING id',
+      [id, now.toISOString()],
+    )
+    return claimed.rows.length === 1
+  }
+  await store.update({
+    collection: 'identity-tokens',
+    id,
+    data: { consumedAt: now.toISOString() },
+    overrideAccess: true,
+  })
+  return true
 }
 export function opaqueToken(): string {
   return randomBytes(32).toString('base64url')
@@ -176,14 +202,23 @@ export function assertRegistrationAllowed(
 }
 
 /** Falls back to open registration when no Site record exists (single-tenant default install). */
-export async function resolveCommunityRegistrationPolicy(payload: {
-  find: (args: {
-    collection: string
-    limit: number
-    overrideAccess: boolean
-  }) => Promise<{ docs: Array<Record<string, unknown>> }>
-}): Promise<RegistrationPolicy> {
-  const sites = await payload.find({ collection: 'sites', limit: 1, overrideAccess: true })
+export async function resolveCommunityRegistrationPolicy(
+  payload: {
+    find: (args: {
+      collection: string
+      limit: number
+      overrideAccess: boolean
+      where?: Record<string, unknown>
+    }) => Promise<{ docs: Array<Record<string, unknown>> }>
+  },
+  siteId?: string,
+): Promise<RegistrationPolicy> {
+  const sites = await payload.find({
+    collection: 'sites',
+    limit: 1,
+    overrideAccess: true,
+    ...(siteId ? { where: { id: { equals: siteId } } } : {}),
+  })
   const policy = sites.docs[0]?.communityRegistrationPolicy
   return policy === 'invite' || policy === 'approval' || policy === 'disabled' ? policy : 'open'
 }
@@ -212,6 +247,13 @@ export async function issueMagicLink(
   if (previous && new Date(String(previous.createdAt ?? 0)).getTime() > now.getTime() - 60_000)
     return { accepted: true }
   const token = opaqueToken()
+  // Bind recovery of an existing canonical member without storing a second contact address.
+  const existing = await store.find({
+    collection: 'members',
+    where: { email: { equals: email } },
+    limit: 1,
+    overrideAccess: true,
+  })
   await store.create({
     collection: 'identity-tokens',
     overrideAccess: true,
@@ -219,6 +261,7 @@ export async function issueMagicLink(
       purpose: 'magic-link-sign-in',
       tokenHash: digest(token),
       emailHash,
+      ...(existing.docs[0] ? { member: existing.docs[0].id } : {}),
       expiresAt: new Date(now.getTime() + MAGIC_LINK_TTL_MS).toISOString(),
     },
   })
@@ -230,6 +273,60 @@ export async function consumeMagicLink(
   token: string,
   now = new Date(),
   registration: { policy?: RegistrationPolicy; hasInvite?: boolean } = {},
+): Promise<{ memberId: string; sessionToken: string; pendingApproval?: boolean } | null> {
+  const payload = store as unknown as Payload
+  if (!payload.db?.beginTransaction)
+    return consumeMagicLinkUnlocked(store, token, now, registration)
+  const found = await store.find({
+    collection: 'identity-tokens',
+    where: { tokenHash: { equals: digest(token) } },
+    limit: 1,
+    overrideAccess: true,
+  })
+  if (!found.docs[0]) return null
+  const transactionID = await payload.db.beginTransaction()
+  if (!transactionID) throw new Error('Member enrollment requires transactional storage.')
+  const req = await createLocalReq({}, payload)
+  req.transactionID = transactionID
+  const session = (
+    payload.db as unknown as {
+      sessions: Record<
+        string,
+        { db: { execute: (query: unknown) => Promise<{ rows: unknown[] }> } }
+      >
+    }
+  ).sessions[transactionID].db
+  try {
+    // Different valid links for the same email must converge on one canonical identity.
+    await session.execute(
+      sql`SELECT pg_advisory_xact_lock(hashtext(${`member-email:${String(found.docs[0].emailHash)}`}))`,
+    )
+    const result = await consumeMagicLinkUnlocked(
+      transactionPayload(payload, req) as unknown as IdentityStore,
+      token,
+      now,
+      registration,
+      async (_store, id, at) =>
+        (
+          await session.execute(
+            sql`UPDATE identity_tokens SET consumed_at=${at.toISOString()}::timestamptz WHERE id=${id}::uuid AND consumed_at IS NULL AND expires_at>${at.toISOString()}::timestamptz RETURNING id`,
+          )
+        ).rows.length === 1,
+    )
+    await payload.db.commitTransaction(transactionID)
+    return result
+  } catch (error) {
+    await payload.db.rollbackTransaction(transactionID)
+    throw error
+  }
+}
+
+async function consumeMagicLinkUnlocked(
+  store: IdentityStore,
+  token: string,
+  now = new Date(),
+  registration: { policy?: RegistrationPolicy; hasInvite?: boolean } = {},
+  claimToken = consumeIdentityToken,
 ): Promise<{ memberId: string; sessionToken: string; pendingApproval?: boolean } | null> {
   const found = await store.find({
     collection: 'identity-tokens',
@@ -245,12 +342,7 @@ export async function consumeMagicLink(
     new Date(String(record.expiresAt)).getTime() <= now.getTime()
   )
     return null
-  await store.update({
-    collection: 'identity-tokens',
-    id: String(record.id),
-    data: { consumedAt: now.toISOString() },
-    overrideAccess: true,
-  })
+  if (!(await claimToken(store, String(record.id), now))) return null
   const emailHash = String(record.emailHash)
   const identities = await store.find({
     collection: 'linked-identities',
@@ -270,40 +362,54 @@ export async function consumeMagicLink(
     const member = identities.docs[0].member
     memberId = typeof member === 'string' ? member : String((member as { id?: string }).id)
   } else {
-    const decision = assertRegistrationAllowed(
-      registration.policy ?? 'open',
-      Boolean(registration.hasInvite),
-    )
-    if (!decision.allowed) {
-      await audit(store, 'unknown', 'member.registration_denied', { reason: decision.reason })
-      return null
+    const existingMember =
+      typeof record.member === 'string'
+        ? record.member
+        : (record.member as { id?: string } | undefined)?.id
+    if (existingMember) memberId = existingMember
+    else {
+      const decision = assertRegistrationAllowed(
+        registration.policy ?? 'open',
+        Boolean(registration.hasInvite),
+      )
+      if (!decision.allowed) {
+        await audit(store, undefined, 'member.registration_denied', { reason: decision.reason })
+        return null
+      }
+      pendingApproval = decision.pendingApproval
+      // The email address itself is intentionally not duplicated in the identity record.
+      const member = await store.create({
+        collection: 'members',
+        overrideAccess: true,
+        data: {
+          displayName: 'New member',
+          status: pendingApproval ? 'pending' : 'active',
+          verifiedEmailAt: now.toISOString(),
+        },
+      })
+      memberId = member.id
     }
-    pendingApproval = decision.pendingApproval
-    // The email address itself is intentionally not duplicated in the identity record.
-    const member = await store.create({
-      collection: 'members',
-      overrideAccess: true,
-      data: {
-        displayName: 'New member',
-        status: pendingApproval ? 'pending' : 'active',
-        verifiedEmailAt: now.toISOString(),
-      },
-    })
-    memberId = member.id
-    await store.create({
+    const profiles = await store.find({
       collection: 'profiles',
+      where: { member: { equals: memberId } },
+      limit: 1,
       overrideAccess: true,
-      data: {
-        member: memberId,
-        displayName: 'New member',
-        handle: `member-${memberId
-          .replace(/[^a-z0-9]/gi, '')
-          .toLowerCase()
-          .slice(-12)}`,
-        visibility: 'private',
-        preferences: {},
-      },
     })
+    if (!profiles.docs.length)
+      await store.create({
+        collection: 'profiles',
+        overrideAccess: true,
+        data: {
+          member: memberId,
+          displayName: 'New member',
+          handle: `member-${memberId
+            .replace(/[^a-z0-9]/gi, '')
+            .toLowerCase()
+            .slice(-12)}`,
+          visibility: 'private',
+          preferences: {},
+        },
+      })
     await store.create({
       collection: 'linked-identities',
       overrideAccess: true,
@@ -1075,13 +1181,13 @@ export async function changeMemberHandle(
 
 async function audit(
   store: IdentityStore,
-  member: string,
+  member: string | undefined,
   event: string,
   details: Record<string, unknown> = {},
 ) {
   await store.create({
     collection: 'identity-audit-events',
     overrideAccess: true,
-    data: { member, event, details },
+    data: { ...(member ? { member } : {}), event, details },
   })
 }

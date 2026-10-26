@@ -1,0 +1,62 @@
+[
+  {
+    "name": "previously failing persisted fixture now returns its exact tagged subscriber",
+    "passed": true
+  },
+  {
+    "name": "canonical double-opt-in service persists active subscriber",
+    "passed": true
+  },
+  {
+    "name": "authorized native operator persists linked contact and tag",
+    "passed": true
+  },
+  {
+    "name": "authorized operator API evaluates saved segment",
+    "passed": true
+  },
+  {
+    "name": "tagged confirmed subscriber reconciles to exactly one eligible recipient",
+    "passed": true
+  },
+  {
+    "name": "anonymous tag segment evaluation denied",
+    "passed": true
+  },
+  {
+    "name": "foreign-site segment substitution denied",
+    "passed": true
+  },
+  {
+    "name": "foreign-site tag on local contact cannot contribute audience facts",
+    "passed": true
+  },
+  {
+    "name": "foreign-site contact cannot lend local tag facts through an inconsistent subscriber link",
+    "passed": true
+  },
+  {
+    "name": "restoring the authorized contact restores its canonical tag facts",
+    "passed": true
+  },
+  {
+    "name": "operator removal immediately removes recipient from the segment",
+    "passed": true
+  },
+  {
+    "name": "operator restoration re-evaluates canonical membership",
+    "passed": true
+  },
+  {
+    "name": "operator scheduling persists a real recipient snapshot",
+    "passed": true
+  },
+  {
+    "name": "snapshot binds the exact tagged subscriber and fingerprint",
+    "passed": true
+  },
+  {
+    "name": "tag selection cannot override canonical suppression",
+    "passed": true
+  }
+]

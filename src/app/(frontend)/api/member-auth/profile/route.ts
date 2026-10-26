@@ -24,14 +24,9 @@ export async function PATCH(request: Request) {
   const memberId = await currentMember(payload as never, readMemberSession(request.headers))
   if (!memberId) return Response.json({ error: 'Authentication required.' }, { status: 401 })
   try {
+    const siteId = await communitySiteForHost(payload, request.headers.get('host'))
     const changes = await request.json().catch(() => ({}))
-    const profile = await saveMemberProfile(
-      payload,
-      memberId,
-      changes,
-      undefined,
-      await communitySiteForHost(payload, request.headers.get('host')).catch(() => undefined),
-    )
+    const profile = await saveMemberProfile(payload, memberId, changes, undefined, siteId)
     return Response.json({ profile }, { headers: { 'cache-control': 'private, no-store' } })
   } catch (error) {
     return Response.json(

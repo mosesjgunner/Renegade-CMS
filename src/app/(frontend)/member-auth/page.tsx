@@ -1,12 +1,14 @@
 'use client'
 
-import { FormEvent, useState } from 'react'
+import { FormEvent, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { getMemberPasskey } from '@/modules/identity/member-passkey-browser'
 
 /** Public member entry point. It never reads or writes Payload admin credentials. */
 export default function MemberAuthPage() {
   const router = useRouter()
+  const [ready, setReady] = useState(false)
+  useEffect(() => setReady(true), [])
   const [email, setEmail] = useState('')
   const [message, setMessage] = useState('')
   async function requestLink(event: FormEvent<HTMLFormElement>) {
@@ -65,12 +67,17 @@ export default function MemberAuthPage() {
             onChange={(event) => setEmail(event.target.value)}
           />
         </label>
-        <button className="btn btn-primary" type="submit">
+        <button className="btn btn-primary" type="submit" disabled={!ready}>
           Email me a sign-in link
         </button>
       </form>
       <div className="mt-6">
-        <button className="btn" type="button" onClick={() => void signInWithPasskey()}>
+        <button
+          className="btn"
+          type="button"
+          disabled={!ready}
+          onClick={() => void signInWithPasskey()}
+        >
           Sign in with a passkey
         </button>
       </div>

@@ -1,0 +1,14 @@
+[
+  {
+    "name": "previously failing persisted fixture now returns its exact tagged subscriber",
+    "passed": true
+  },
+  {
+    "name": "restart retains canonical tag and snapshot membership",
+    "passed": true
+  },
+  {
+    "name": "restart retains exact approved recipient snapshot hash and member",
+    "passed": true
+  }
+]

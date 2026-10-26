@@ -2,6 +2,7 @@
 
 import { FormEvent, useEffect, useState } from 'react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { createMemberPasskey } from '@/modules/identity/member-passkey-browser'
 import { MemberRelationshipList } from '@/modules/community/MemberRelationshipList'
 import { NotificationPreferences } from '@/modules/community/NotificationPreferences'
@@ -16,6 +17,7 @@ function csrfHeader(): Record<string, string> {
 }
 
 export default function MemberSettingsPage() {
+  const router = useRouter()
   const [profile, setProfile] = useState<Record<string, unknown>>({})
   const [initialHandle, setInitialHandle] = useState('')
   const [siteId, setSiteId] = useState('')
@@ -130,16 +132,16 @@ export default function MemberSettingsPage() {
     document.body.appendChild(a)
     a.click()
     a.remove()
+    setTimeout(() => window.URL.revokeObjectURL(url), 0)
     setMessage('Member data export downloaded.')
   }
-  async function reactivateAccount() {
-    const response = await fetch('/api/member-auth/reactivate', {
+  async function signOut() {
+    const response = await fetch('/api/member-auth/logout', {
       method: 'POST',
       headers: csrfHeader(),
     })
-    setMessage(
-      response.ok ? 'Account reactivated and deletion cancelled.' : 'Could not reactivate account.',
-    )
+    if (response.ok) router.push('/member-auth')
+    else setMessage('Could not sign out. Please try again.')
   }
   async function enrollPasskey() {
     if (!window.PublicKeyCredential)
@@ -525,14 +527,15 @@ export default function MemberSettingsPage() {
           Download your account, profile, billing, relationships and identity audit data. Export
           includes your contributions and conversation history you can access, plus messages you
           sent. Private attachment bytes are unavailable. Permanent deletion is deferred;
-          deactivation remains available.
+          deactivation revokes all sessions and hides your profile. Retained contributions and
+          messages are not erased. Contact the site operator for account reinstatement.
         </p>
         <div className="mt-4 flex flex-wrap gap-3">
           <button className="btn" type="button" onClick={() => void exportData()}>
             Export my data (JSON)
           </button>
-          <button className="btn" type="button" onClick={() => void reactivateAccount()}>
-            Reactivate account
+          <button className="btn" type="button" onClick={() => void signOut()}>
+            Sign out
           </button>
           <button className="btn" type="button" onClick={() => void deactivate()}>
             Deactivate account
