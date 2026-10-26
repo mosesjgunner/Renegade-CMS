@@ -1,4 +1,3 @@
-> Release acceptance: **FAIL / NOT READY**, 2026-10-06. Package version `0.1.0`. Clean source `01908f39a3ce40b5eae5d4dec64b981e103d5fb1`: 1,140 unit and 261 integration tests pass; ordinary Site Settings reload and new staff enrollment fail. See the [final RC report](docs/rc/FINAL_RC_REPORT.md) for exact proof and remaining mandatory gates.
 
 <div align="center">
 
